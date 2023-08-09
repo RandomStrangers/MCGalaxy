@@ -40,9 +40,6 @@ namespace MCGalaxy.Commands {
                 if (!url.StartsWith("http://") && !args[1].StartsWith("https://")) {
                     p.SendMessage("Please use http:// or https:// in front of your URL"); return;
                 }
-                if (!url.EndsWith(".png")) {
-                    p.SendMessage("Please make sure your URL ends in .png"); return;
-                }
             }
             
             if (scope == "global") {
