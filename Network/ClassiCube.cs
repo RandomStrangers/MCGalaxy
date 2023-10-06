@@ -43,7 +43,7 @@ namespace MCGalaxy
                 "&version=7" +
                 "&salt=" + Server.salt +
                 "&users=" + Player.players.Count + 
-                "&software=" + Server.SoftwareNameVersioned;
+                "&software=" + Server.SoftwareNameVersioned2;
         }
         public bool UrlSaid = false;
 

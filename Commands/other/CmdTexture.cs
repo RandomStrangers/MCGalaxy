@@ -50,7 +50,7 @@ namespace MCGalaxy.Commands {
                         pl.SendSetMapAppearance(Server.defaultTextureUrl, p.level.EdgeBlock, p.level.HorizonBlock, p.level.EdgeLevel);
                     }
                 }
-                SrvProperties.Save("properties/server.properties");
+                SrvProperties.Save("server.properties");
             } else if (scope == "level") {
                 p.level.textureUrl = url;
                 p.SendMessage("Set level's texture to " + args[1]);

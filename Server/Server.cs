@@ -98,7 +98,7 @@ namespace MCGalaxy
                 return Version.Major + "." + Version.Minor + "." + Version.Build;
             }
         }
-        public const string InternalVersion = "1.7.3.0";
+        public const string InternalVersion = "1.7.3.1";
 
         public static string Version1 { get { return InternalVersion; } }
 
@@ -108,6 +108,12 @@ namespace MCGalaxy
         {
             // By default, if SoftwareName gets externally changed, that is reflected in SoftwareNameVersioned too
             get { return fullName ?? SoftwareName + " " + Version1; }
+            set { fullName = value; }
+        }
+        public static string SoftwareNameVersioned2
+        {
+            // By default, if SoftwareName gets externally changed, that is reflected in SoftwareNameVersioned too
+            get { return fullName ?? SoftwareName + " " + Version1 + " (Based on MCForge/MCLawl!)"; }
             set { fullName = value; }
         }
         // URL hash for connecting to the server
@@ -290,8 +296,8 @@ namespace MCGalaxy
         public static int ircPort = 6667;
         public static string ircNick = "MCGalaxyBot";
         public static string ircServer = "irc.esper.net";
-        public static string ircChannel = "#changethis";
-        public static string ircOpChannel = "#changethistoo";
+        public static string ircChannel = "#ClassiCube_IRC";
+        public static string ircOpChannel = "#ClassiCube-op-irc";
         public static bool ircIdentify = false;
         public static string ircPassword = "";
         public static bool verifyadmins = true;
@@ -514,8 +520,7 @@ namespace MCGalaxy
                 	}
                 }
             }
-            //UpdateGlobalSettings();
-            if (!Directory.Exists("properties")) Directory.CreateDirectory("properties");
+            //if (!Directory.Exists("properties")) Directory.CreateDirectory("properties");
             if (!Directory.Exists("levels")) Directory.CreateDirectory("levels");
             if (!Directory.Exists("bots")) Directory.CreateDirectory("bots");
             if (!Directory.Exists("text")) Directory.CreateDirectory("text");
@@ -545,10 +550,8 @@ namespace MCGalaxy
             if (!Directory.Exists("extra/copy/")) { Directory.CreateDirectory("extra/copy/"); }
             if (!Directory.Exists("extra/copyBackup/")) { Directory.CreateDirectory("extra/copyBackup/"); }
             if (!Directory.Exists("extra/Waypoints")) { Directory.CreateDirectory("extra/Waypoints"); }
-
             try
             {
-                if (File.Exists("server.properties")) File.Move("server.properties", "properties/server.properties");
                 if (File.Exists("rules.txt")) File.Move("rules.txt", "text/rules.txt");
                 if (File.Exists("welcome.txt")) File.Move("welcome.txt", "text/welcome.txt");
                 if (File.Exists("messages.txt")) File.Move("messages.txt", "text/messages.txt");
@@ -623,16 +626,10 @@ namespace MCGalaxy
                 {
                     Database.executeQuery("CREATE DATABASE if not exists `" + MySQLDatabaseName + "`", true); // works in both now, SQLite simply ignores this.
                 }
-                //catch (MySql.Data.MySqlClient.MySqlException e)
-                //{
-                //    Server.s.Log("MySQL settings have not been set! Many features will not be available if MySQL is not enabled");
-                //  //  Server.ErrorLog(e);
-                //}
                 catch (Exception e)
                 {
                     ErrorLog(e);
                     s.Log("MySQL settings have not been set! Please Setup using the properties window.");
-                    //process.Kill();
                     return;
                 }
                 Database.executeQuery(string.Format("CREATE TABLE if not exists Players (ID INTEGER {0}AUTO{1}INCREMENT NOT NULL, Name TEXT, IP CHAR(15), FirstLogin DATETIME, LastLogin DATETIME, totalLogin MEDIUMINT, Title CHAR(20), TotalDeaths SMALLINT, Money MEDIUMINT UNSIGNED, totalBlocks BIGINT, totalCuboided BIGINT, totalKicked MEDIUMINT, TimeSpent VARCHAR(20), color VARCHAR(6), title_color VARCHAR(6){2});", (useMySQL ? "" : "PRIMARY KEY "), (useMySQL ? "_" : ""), (Server.useMySQL ? ", PRIMARY KEY (ID)" : "")));
@@ -754,6 +751,7 @@ namespace MCGalaxy
                 catch (Exception e) { ErrorLog(e); }
             });
             Plugin.Load();
+            Plugin2.LoadAll();
             ml.Queue(delegate
             {
                 bannedIP = PlayerList.Load("banned-ip.txt", null);
@@ -1081,8 +1079,8 @@ namespace MCGalaxy
         }
         public static void LoadAllSettings()
         {
-            SrvProperties.Load("properties/server.properties");
-            Updater.Load("properties/update.properties");
+            SrvProperties.Load("server.properties");
+            Updater.Load("update.properties");
             Group.InitAll();
             Command.InitAll();
             GrpCommands.fillRanks();
@@ -1090,10 +1088,10 @@ namespace MCGalaxy
             Awards.Load();
             Economy.Load();
             Warp.LOAD();
-            CommandOtherPerms.Load();
             ProfanityFilter.Init();
             Alias.Load();
             BlockDefinition.LoadGlobal("blockdefs/global.json");
+            CommandOtherPerms.Load();
         }
 
         public static void Setup()
@@ -1152,9 +1150,8 @@ namespace MCGalaxy
                 else
                     Player.Find(p).Kick("Server restarted! Rejoin!");
             }
-            APIServer.Stop();
-            InfoServer.Stop();
-            //Player.players.ForEach(delegate(Player p) { p.Kick("Server shutdown. Rejoin in 10 seconds."); });
+            //APIServer.Stop();
+            //InfoServer.Stop();
             Player.connections.ForEach(
             delegate(Player p)
             {
@@ -1328,32 +1325,6 @@ namespace MCGalaxy
             }
             return Group.standard.color;
         }
-        /*public static void UpdateGlobalSettings()
-        {
-            try
-            {
-                gcipbans.Clear();
-                gcnamebans.Clear();
-                JArray jason; //jason plz (troll)
-                using (var client = new WebClient()) {
-                    jason = JArray.Parse(client.DownloadString("https://github.com/RandomStrangers/MCGalaxy/raw/master/Uploads/gcbanned.txt"));
-                }
-                foreach (JObject ban in jason) {
-                    if((string)ban["banned_isIp"] == "0")
-                        gcnamebans.Add(((string)ban["banned_name"]).ToLower(), "'" + (string)ban["banned_by"] + "', because: %d" + (string)ban["banned_reason"]);
-                    else if((string)ban["banned_isIp"] == "1")
-                        gcipbans.Add((string)ban["banned_name"], "'" + (string)ban["banned_by"] + "', because: %d" + (string)ban["banned_reason"]);
-                }
-                s.Log("GlobalChat Banlist updated!");
-            }
-            catch (Exception e)
-            {
-                ErrorLog(e);
-                s.Log("Could not update GlobalChat Banlist!");
-                gcnamebans.Clear();
-                gcipbans.Clear();
-            }
-        }*/
         public void UpdateStaffList() {
             try {
                 devs.Clear();

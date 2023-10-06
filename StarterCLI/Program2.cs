@@ -284,72 +284,6 @@ namespace StarterCLI
                 }
             }
         }
-        /*
-        public static void handleComm(string s)
-        {
-
-            string sentCmd = "", sentMsg = "";
-            List<string> cmdtest = new List<string>();
-            cmdtest = Command.all.commandNames();
-            //blank lines are considered accidental
-            if (s == "")
-            {
-                handleComm(Console.ReadLine());
-                return;
-            }
-
-            //commands all start with a slash
-
-            if (s.IndexOf('/') == 0)
-            {
-                //remove the preceding slash
-                s = s.Remove(0, 1);
-
-                //continue parsing
-                if (s.IndexOf(' ') != -1)
-                {
-                    sentCmd = s.Split(' ')[0];
-                    sentMsg = s.Substring(s.IndexOf(' ') + 1);
-                }
-                else if (s != "")
-                {
-                    sentCmd = s;
-                }
-            }
-            //anything else is treated as chat
-            else
-            {
-                sentCmd = "say";
-                sentMsg = Server.DefaultColor + "Console [&a" + Server.ZallState + Server.DefaultColor + "]: &f" + s;
-            }
-
-
-
-            try
-            {
-
-                Command cmd = Command.all.Find(sentCmd);
-                if (cmd != null)
-                {
-                    cmd.Use(null, sentMsg);
-                    Console.WriteLine("CONSOLE: USED /" + sentCmd + " " + sentMsg);
-                    handleComm(Console.ReadLine());
-                    return;
-                }
-
-
-            }
-            catch (Exception e)
-            {
-                Server.ErrorLog(e);
-                Console.WriteLine("CONSOLE: Failed command.");
-                handleComm(Console.ReadLine());
-                return;
-            }
-            //handleComm(Console.ReadLine());
-
-
-        } */
 
         public static bool CurrentUpdate = false;
         static bool msgOpen = false;
@@ -464,68 +398,10 @@ namespace StarterCLI
         {
             try
             {
-                //StreamWriter SW;
-                //if (!Server.mono)
-                //{
-                //    if (!File.Exists("Update.bat"))
-                //        SW = new StreamWriter(File.Create("Update.bat"));
-                //    else
-                //    {
-                //        if (File.ReadAllLines("Update.bat")[0] != "::Version 3")
-                //        {
-                //            SW = new StreamWriter(File.Create("Update.bat"));
-                //        }
-                //        else
-                //        {
-                //            SW = new StreamWriter(File.Create("Update_generated.bat"));
-                //        }
-                //    }
-                //    SW.WriteLine("::Version 3");
-                //    SW.WriteLine("TASKKILL /pid %2 /F");
-                //    SW.WriteLine("if exist MCGalaxy_.dll.backup (erase MCGalaxy_.dll.backup)");
-                //    SW.WriteLine("if exist MCGalaxy_.dll (rename MCGalaxy_.dll MCGalaxy_.dll.backup)");
-                //    SW.WriteLine("if exist MCGalaxy.new (rename MCGalaxy.new MCGalaxy_.dll)");
-                //    SW.WriteLine("start MCGalaxy.exe");
-                //}
-                //else
-                //{
-                //    if (!File.Exists("Update.sh"))
-                //        SW = new StreamWriter(File.Create("Update.sh"));
-                //    else
-                //    {
-                //        if (File.ReadAllLines("Update.sh")[0] != "#Version 2")
-                //        {
-                //            SW = new StreamWriter(File.Create("Update.sh"));
-                //        }
-                //        else
-                //        {
-                //            SW = new StreamWriter(File.Create("Update_generated.sh"));
-                //        }
-                //    }
-                //    SW.WriteLine("#Version 2");
-                //    SW.WriteLine("#!/bin/bash");
-                //    SW.WriteLine("kill $2");
-                //    SW.WriteLine("rm MCGalaxy_.dll.backup");
-                //    SW.WriteLine("mv MCGalaxy_.dll MCGalaxy.dll_.backup");
-                //    SW.WriteLine("wget " + DLLLocation);
-                //    SW.WriteLine("mono MCGalaxy.exe");
-                //}
-
-                //SW.Flush(); SW.Close(); SW.Dispose();
-
-                //Process proc = Process.GetCurrentProcess();
-                //string assemblyname = proc.ProcessName + ".exe";
-
-                //WebClient client = new WebClient();
-                //Server.selectedrevision = client.DownloadString(Program.CurrentVersionFile);
-                //client.Dispose();
-
-                //string verscheck = Server.selectedrevision.TrimStart('r');
-                //int vers = int.Parse(verscheck.Split('.')[0]);
                 try
                 {
-                    if (File.Exists("MCLawl.new"))
-                        File.Delete("MCLawl.new");
+                    if (File.Exists("MCGalaxy.new"))
+                        File.Delete("MCGalaxy.new");
                     if (File.Exists("Changelog.txt"))
                         File.Delete("Changelog.txt");
                     if (File.Exists("MCGalaxy_.update"))
@@ -580,17 +456,6 @@ namespace StarterCLI
 
             new Thread(new ThreadStart(delegate
             {
-                /*try
-                {
-                    if (MCGalaxy.Gui.Window.thisWindow.notifyIcon1 != null)
-                    {
-                        MCGalaxy.Gui.Window.thisWindow.notifyIcon1.Icon = null;
-                        MCGalaxy.Gui.Window.thisWindow.notifyIcon1.Visible = false;
-                        MCGalaxy.Gui.Window.thisWindow.notifyIcon1.Dispose();
-                    }
-                }
-                catch { }
-                */
                 if (AutoRestart)
                 {
                     saveAll(true);
@@ -603,7 +468,7 @@ namespace StarterCLI
                     }
                     else
                     {
-                        System.Diagnostics.Process.Start(Application.ExecutablePath);
+                        Process.Start(Application.ExecutablePath);
                         Application.Exit();
                     }
                 }
@@ -643,7 +508,7 @@ namespace StarterCLI
                 {
                     if (!Server.lava.active || !Server.lava.HasMap(l.name))
                     {
-                        level = level + l.name + "=" + l.physics + System.Environment.NewLine;
+                        level = level + l.name + "=" + l.physics + Environment.NewLine;
                         l.Save(false, true);
                     }
                     l.saveChanges();

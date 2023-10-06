@@ -126,9 +126,9 @@ namespace MCGalaxy
         {
             GroupList = new List<Group>();
 
-            if (File.Exists("properties/ranks.properties"))
+            if (File.Exists("ranks.properties"))
             {
-                string[] lines = File.ReadAllLines("properties/ranks.properties");
+                string[] lines = File.ReadAllLines("ranks.properties");
 
                 Group thisGroup = new Group();
                 int gots = 0, version = 1;
@@ -338,8 +338,8 @@ namespace MCGalaxy
         /// <param name="givenList">The list of groups to save</param>
         public static void saveGroups(List<Group> givenList)
         {
-            File.Create("properties/ranks.properties").Dispose();
-            using (StreamWriter SW = File.CreateText("properties/ranks.properties"))
+            File.Create("ranks.properties").Dispose();
+            using (StreamWriter SW = File.CreateText("ranks.properties"))
             {
                 SW.WriteLine("#Version 3");
                 SW.WriteLine("#RankName = string");
@@ -525,9 +525,9 @@ namespace MCGalaxy
                 allowedCommands.Add(allowVar);
             }
 
-            if (File.Exists("properties/command.properties"))
+            if (File.Exists("command.properties"))
             {
-                string[] lines = File.ReadAllLines("properties/command.properties");
+                string[] lines = File.ReadAllLines("command.properties");
 
                 //if (lines.Length == 0) ; // this is useless?
                 /*else */
@@ -627,8 +627,8 @@ namespace MCGalaxy
         {
             try
             {
-                File.Create("properties/command.properties").Dispose();
-                using (StreamWriter w = File.CreateText("properties/command.properties"))
+                File.Create("command.properties").Dispose();
+                using (StreamWriter w = File.CreateText("command.properties"))
                 {
                     w.WriteLine("#Version 2");
                     w.WriteLine("#   This file contains a reference to every command found in the server software");

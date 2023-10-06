@@ -563,9 +563,9 @@ namespace MCGalaxy
             }
 
             //CHECK FOR SPECIAL RANK ALLOWANCES SET BY USER
-            if (File.Exists("properties/block.properties"))
+            if (File.Exists("block.properties"))
             {
-                string[] lines = File.ReadAllLines("properties/block.properties");
+                string[] lines = File.ReadAllLines("block.properties");
 
                 //if (lines.Length == 0) ; // this is useless?
                 /*else */if (lines[0] == "#Version 2")
@@ -647,7 +647,7 @@ namespace MCGalaxy
         {
             try
             {
-				using (StreamWriter w = File.CreateText("properties/block.properties"))
+				using (StreamWriter w = File.CreateText("block.properties"))
 				{
 					w.WriteLine("#Version 2");
 					w.WriteLine("#   This file dictates what levels may use what blocks");

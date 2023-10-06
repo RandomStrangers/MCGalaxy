@@ -18,6 +18,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+
 namespace MCGalaxy
 {
     /// <summary>
@@ -127,7 +129,7 @@ namespace MCGalaxy
 
         public static void Save()
         {
-            using (StreamWriter SW = new StreamWriter("properties/ExtraCommandPermissions.properties"))
+            using (StreamWriter SW = new StreamWriter("ExtraCommandPermissions.properties"))
             {
                 SW.WriteLine("#     This file is used for setting up additional permissions that are needed in commands!!");
                 SW.WriteLine("#");
@@ -153,9 +155,9 @@ namespace MCGalaxy
         public static void Load()
         {
             if (list.Count == 0) { AddDefaultPerms(); }
-            if (File.Exists("properties/ExtraCommandPermissions.properties"))
+            if (File.Exists("ExtraCommandPermissions.properties"))
             {
-                using (StreamReader SR = new StreamReader("properties/ExtraCommandPermissions.properties"))
+                using (StreamReader SR = new StreamReader("ExtraCommandPermissions.properties"))
                 {
                     string line;
                     while (SR.EndOfStream == false)

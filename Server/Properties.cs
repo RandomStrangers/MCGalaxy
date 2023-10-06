@@ -197,11 +197,6 @@ namespace MCGalaxy {
 								if ( !value.Contains("System.Windows.Forms.TextBox, Text:") )
 									Server.backupLocation = value;
 								break;
-
-							//case "console-only": // Never used
-							//    Server.console = (value.ToLower() == "true") ? true : false;
-							//    break;
-
 							case "physicsrestart":
 								Server.physicsRestart = ( value.ToLower() == "true" ) ? true : false;
 								break;
@@ -420,10 +415,6 @@ namespace MCGalaxy {
 							case "money-name":
 								if ( value != "" ) Server.moneys = value;
 								break;
-							/*case "mono":
-								try { Server.mono = bool.Parse(value); }
-								catch { Server.s.Log("Invalid " + key + ". Using default."); }
-								break;*/
 							case "restart-on-error":
 								try { Server.restartOnError = bool.Parse(value); }
 								catch { Server.s.Log("Invalid " + key + ". Using default."); }
@@ -773,7 +764,6 @@ namespace MCGalaxy {
             w.WriteLine("menu-style = " + Server.menustyle.ToString());
 			w.WriteLine("main-name = " + Server.level);
             w.WriteLine("default-texture-url = " + Server.defaultTextureUrl);
-			//w.WriteLine("guest-goto = " + Server.guestGoto);
 			w.WriteLine();
 			w.WriteLine("# irc bot options");
 			w.WriteLine("irc = " + Server.irc.ToString().ToLower());
@@ -845,9 +835,6 @@ namespace MCGalaxy {
 			w.WriteLine("defaultColor = " + Server.DefaultColor);
 			w.WriteLine("irc-color = " + Server.IRCColour);
 			w.WriteLine();
-			/*w.WriteLine("#Running on mono?");
-			w.WriteLine("mono = " + Server.mono);
-			w.WriteLine();*/
 			w.WriteLine("#Custom Messages");
 			w.WriteLine("custom-ban = " + Server.customBan.ToString().ToLower());
 			w.WriteLine("custom-ban-message = " + Server.customBanMessage);

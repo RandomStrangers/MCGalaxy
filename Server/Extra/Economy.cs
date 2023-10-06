@@ -105,29 +105,8 @@ namespace MCGalaxy {
         }
 
         public static void Load(bool loadDatabase = false) {
-            /*if (loadDatabase) {
-            retry:
-                if (Server.useMySQL) MySQL.executeQuery(createTable); else SQLite.executeQuery(createTable); //create database on server loading
-                string queryP = "SELECT * FROM Players"; string queryE = "SELECT * FROM Economy";
-                DataTable eco = Server.useMySQL ? MySQL.fillData(queryE) : SQLite.fillData(queryE);
-                try {
-                    DataTable players = Server.useMySQL ? MySQL.fillData(queryP) : SQLite.fillData(queryP);
-                    if (players.Rows.Count == eco.Rows.Count) { } //move along, nothing to do here
-                    else if (eco.Rows.Count == 0) { //if first time, copy content from player to economy
-                        string query = "INSERT INTO Economy (player, money) SELECT Players.Name, Players.Money FROM Players";
-                        if (Server.useMySQL) MySQL.executeQuery(query); else SQLite.executeQuery(query);
-                    } else {
-                        //this will only be needed when the server shuts down while it was copying content (or some other error)
-                        if (Server.useMySQL) MySQL.executeQuery("DROP TABLE Economy"); else SQLite.executeQuery("DROP TABLE Economy");
-                        goto retry;
-                    }
-                    players.Dispose(); eco.Dispose();
-                } catch { }
-                return;
-            }*/
-
-            if (!File.Exists("properties/economy.properties")) { Server.s.Log("Economy properties don't exist, creating"); File.Create("properties/economy.properties").Close(); Save(); }
-            using (StreamReader r = File.OpenText("properties/economy.properties")) {
+            if (!File.Exists("economy.properties")) { Server.s.Log("Economy properties don't exist, creating"); File.Create("economy.properties").Close(); Save(); }
+            using (StreamReader r = File.OpenText("economy.properties")) {
                 string line;
                 while (!r.EndOfStream) {
                     line = r.ReadLine().ToLower().Trim();
@@ -227,11 +206,11 @@ namespace MCGalaxy {
         }
 
         public static void Save() {
-            if (!File.Exists("properties/economy.properties")) { Server.s.Log("Economy properties don't exist, creating"); }
+            if (!File.Exists("economy.properties")) { Server.s.Log("Economy properties don't exist, creating"); }
             //Thread.Sleep(2000);
-            File.Delete("properties/economy.properties");
+            File.Delete("economy.properties");
             //Thread.Sleep(2000);
-            using (StreamWriter w = File.CreateText("properties/economy.properties")) {
+            using (StreamWriter w = File.CreateText("economy.properties")) {
                 //enabled
                 w.WriteLine("enabled:" + Settings.Enabled);
                 //title

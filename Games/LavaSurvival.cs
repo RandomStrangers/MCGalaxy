@@ -27,7 +27,7 @@ namespace MCGalaxy
     public sealed class LavaSurvival
     {
         // Private variables
-        private string propsPath = "properties/lavasurvival/";
+        private string propsPath = "lavasurvival/";
         private List<string> maps, voted;
         private Dictionary<string, int> votes, deaths;
         private Random rand = new Random();
@@ -454,13 +454,13 @@ namespace MCGalaxy
 
         public void LoadSettings()
         {
-            if (!File.Exists("properties/lavasurvival.properties"))
+            if (!File.Exists("lavasurvival.properties"))
             {
                 SaveSettings();
                 return;
             }
 
-            foreach (string line in File.ReadAllLines("properties/lavasurvival.properties"))
+            foreach (string line in File.ReadAllLines("lavasurvival.properties"))
             {
                 try
                 {
@@ -504,8 +504,8 @@ namespace MCGalaxy
         }
         public void SaveSettings()
         {
-            File.Create("properties/lavasurvival.properties").Dispose();
-            using (StreamWriter SW = File.CreateText("properties/lavasurvival.properties"))
+            File.Create("lavasurvival.properties").Dispose();
+            using (StreamWriter SW = File.CreateText("lavasurvival.properties"))
             {
                 SW.WriteLine("#Lava Survival main properties");
                 SW.WriteLine("start-on-startup = " + startOnStartup.ToString().ToLower());
