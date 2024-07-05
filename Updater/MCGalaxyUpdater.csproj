@@ -89,9 +89,9 @@
     <Compile Include="HttpUtils.cs" />
     <Compile Include="IPUtils.cs" />
     <Compile Include="Listeners.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Sockets.cs" />
     <Compile Include="Updater.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="WebSocket.cs" />
   </ItemGroup>
   <ItemGroup>
