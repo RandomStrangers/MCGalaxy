@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Starter", "Starter.csproj",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MCGalaxy_", "MCGalaxy_.csproj", "{12597DB0-7C34-4DE1-88EA-9250FF3372EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MCGalaxyUpdater", "updater\MCGalaxyUpdater.csproj", "{6BA05A4E-A43C-4A0B-80E8-720520D64BA6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MCGalaxyUpdater", "Updater\MCGalaxyUpdater.csproj", "{6BA05A4E-A43C-4A0B-80E8-720520D64BA6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarterCLI", "StarterCLI\StarterCLI.csproj", "{F6866499-6E70-4FC0-A149-32A37D2233D8}"
 EndProject
