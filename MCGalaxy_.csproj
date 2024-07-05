@@ -749,7 +749,7 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="updater\MCGalaxyUpdater.csproj">
+    <ProjectReference Include="Updater\MCGalaxyUpdater.csproj">
       <Project>{6ba05a4e-a43c-4a0b-80e8-720520d64ba6}</Project>
       <Name>MCGalaxyUpdater</Name>
     </ProjectReference>
