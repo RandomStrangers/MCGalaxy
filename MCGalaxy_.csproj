@@ -537,7 +537,7 @@
     <Compile Include="Database\MySQLTransactionHelper.cs" />
     <Compile Include="Server\Extra\OmniBan.cs" />
     <Compile Include="Player\Player.Events.cs" />
-    <Compile Include="Scriptingutil\ScriptingVB.cs" />
+    <Compile Include="ScriptingUtil\ScriptingVB.cs" />
     <Compile Include="Server\Extra\Checktimer.cs" />
     <Compile Include="Server\Extra\UPnP.cs" />
     <Compile Include="Database\SQLite.cs" />
@@ -602,7 +602,7 @@
     <Compile Include="GUI\Window.Designer.cs">
       <DependentUpon>Window.cs</DependentUpon>
     </Compile>
-    <Compile Include="Scriptingutil\Scripting.cs" />
+    <Compile Include="ScriptingUtil\Scripting.cs" />
     <Compile Include="Server\Server.cs" />
     <Compile Include="Server\ServerSettings.cs" />
     <Compile Include="GUI\AutoScrollTextBox.cs">
