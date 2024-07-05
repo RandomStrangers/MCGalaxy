@@ -182,7 +182,7 @@
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\CommandKeywords.cs" />
     <Compile Include="Commands\CommandList.cs" />
-    <Compile Include="Commands\CommandotherPerms.cs" />
+    <Compile Include="Commands\CommandOtherPerms.cs" />
     <Compile Include="Commands\CPE\CmdModel.cs" />
     <Compile Include="Commands\CPE\CmdReachDistance.cs" />
     <Compile Include="Commands\CPE\CmdXModel.cs" />
