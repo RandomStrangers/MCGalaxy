@@ -57,7 +57,7 @@ namespace MCGalaxy
             {
                 using (WebClient client = HttpUtil.CreateWebClient())
                 {
-                    client.DownloadFile(Updater2.BaseURL + file, file);
+                    client.DownloadFile(MCGalaxyUpdater.Updater.BaseURL + file, file);
                 }
                 if (File.Exists(file))
                 {

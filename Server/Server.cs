@@ -98,11 +98,11 @@ namespace MCGalaxy
                 return Version.Major + "." + Version.Minor + "." + Version.Build;
             }
         }
-        public const string InternalVersion = "1.7.3.1";
+        public const string InternalVersion = "1.7.3.2";
 
         public static string Version1 { get { return InternalVersion; } }
 
-        public static string SoftwareName = "MCGalaxy";
+        public static string SoftwareName = "MCGalaxy Basic";
         static string fullName;
         public static string SoftwareNameVersioned
         {
@@ -1080,7 +1080,6 @@ namespace MCGalaxy
         public static void LoadAllSettings()
         {
             SrvProperties.Load("server.properties");
-            Updater.Load("update.properties");
             Group.InitAll();
             Command.InitAll();
             GrpCommands.fillRanks();
@@ -1347,7 +1346,7 @@ namespace MCGalaxy
                 gcmods.Clear();
                 devs.Add("hetal728");
                 devs.Add("UnknownShadow200");
-                devs.Add("sethbatman05");
+                devs.Add("HarmonyNetwork");
             }
         }
 

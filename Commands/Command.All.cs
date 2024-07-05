@@ -79,7 +79,6 @@ namespace MCGalaxy
             all.Add(new CmdDeleteLvl());
             all.Add(new CmdDelTempRank());
             all.Add(new CmdDemote());
-            all.Add(new CmdDevs());
             all.Add(new CmdDisagree());
             all.Add(new CmdDescend());
             all.Add(new CmdDisInfect());
@@ -114,14 +113,12 @@ namespace MCGalaxy
             all.Add(new CmdGun());
             all.Add(new CmdHackRank());
             all.Add(new CmdHacks());
-            all.Add(new CmdHasirc());
             all.Add(new CmdHeartbeat()); // DEBUG COMMAND DO NOT USE
             all.Add(new CmdHelp());
             all.Add(new CmdHide());
             all.Add(new CmdHigh5());
             all.Add(new CmdHighlight());
             all.Add(new CmdHollow());
-            all.Add(new CmdHost());
             all.Add(new CmdHug());
             all.Add(new CmdIgnore());
             all.Add(new CmdImpersonate());
@@ -219,7 +216,6 @@ namespace MCGalaxy
             all.Add(new CmdReplaceAll());
             all.Add(new CmdReplaceNot());
             all.Add(new CmdReport());
-            all.Add(new CmdResetBot());
             all.Add(new CmdResetPass());
             all.Add(new CmdRestart());
             all.Add(new CmdRestartPhysics());
@@ -282,7 +278,6 @@ namespace MCGalaxy
             all.Add(new CmdUnload());
             all.Add(new CmdUnloaded());
             all.Add(new CmdUnlock());
-            all.Add(new CmdUpdate());
             all.Add(new CmdView());
             all.Add(new CmdViewRanks());
             all.Add(new CmdVIP());
@@ -295,7 +290,6 @@ namespace MCGalaxy
             all.Add(new CmdWaypoint());
             all.Add(new CmdWhisper());
             all.Add(new CmdWhitelist());
-            all.Add(new CmdWhoip());
             all.Add(new CmdWhois());
             all.Add(new CmdWhoNick());
             all.Add(new CmdWhowas());
@@ -314,9 +308,6 @@ namespace MCGalaxy
             all.Add(new CmdZombieGame());
             all.Add(new CmdZone());
             all.Add(new CmdQuit());
-            // New/added commands
-            all.Add(new CmdServerInfo());
-            all.Add(new CmdMain2());
             // New/edited commands
             all.Add(new CmdMain2());
             all.Add(new CmdUpdate());
@@ -328,10 +319,8 @@ namespace MCGalaxy
             all.Add(new CmdResetBot());
             all.Add(new CmdHasirc());
             // These commands don't work or are out of date.
-            //new CommandKeywords((new CmdInfo()), "server detail");
-            //new CommandKeywords((new CmdClients()), "clients player app");
-            // These commands don't work or are out of date.
             //all.Add(new CmdInfo());
+            //all.Add(new CmdHost());
             core.commands = new List<Command>(all.commands);
             Scripting.Autoload();
         }

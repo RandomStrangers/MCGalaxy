@@ -1646,7 +1646,7 @@ txtBackupLocation.Text = folderDialog.SelectedPath;
             forceUpdateBtn.Enabled = false;
             if ( MessageBox.Show("Would you like to force update MCGalaxy now?", "Force Update", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK ) {
                 saveStuff();
-                MCGalaxy_.Gui.Program.PerformUpdate();
+                MCGalaxyUpdater.Program.Main(null);
                 Dispose();
             }
             else {
@@ -2259,8 +2259,8 @@ txtBackupLocation.Text = folderDialog.SelectedPath;
         	if (usebeta.Checked) {
         		DialogResult d = MessageBox.Show("Would you like to check for beta versions now?", "Check for updates.", MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
         		if (d == DialogResult.Yes)
-        			MCGalaxy_.Gui.Program.UpdateCheck();
-        	}
+                    MCGalaxyUpdater.Program.Main(null);
+            }
         }
 
         private void buttonEco_Click(object sender, EventArgs e) {

@@ -45,8 +45,6 @@ namespace StarterCLI
             Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             try
             {
-                if (File.Exists("Updater.exe"))
-                    File.Delete("Updater.exe");
                 if (File.Exists("MCGalaxy_.dll.backup"))
                     File.Delete("MCGalaxy_.dll.backup");
             }

@@ -79,7 +79,6 @@ namespace MCGalaxy.Commands
             new CommandKeywords((new CmdDeleteLvl()), "delete remove level lvl");
             new CommandKeywords((new CmdDelTempRank()), "del remove temp rank");
             new CommandKeywords((new CmdDemote()), "rank lower");
-            new CommandKeywords((new CmdDevs()), "dev MCGalaxy forgeware forgecraft");
             new CommandKeywords((new CmdDisagree()), "no rules");
             new CommandKeywords((new CmdDescend()), "down below");
             new CommandKeywords((new CmdDisInfect()), "infect player");
@@ -113,7 +112,6 @@ namespace MCGalaxy.Commands
             new CommandKeywords((new CmdHigh5()), "high 5 fun");
             new CommandKeywords((new CmdHighlight()), "mod high light block change history");
             new CommandKeywords((new CmdHollow()), "block create");
-            new CommandKeywords((new CmdHost()), "owner server " + Server.Owner + " " + Server.ZallState);
             new CommandKeywords((new CmdIgnore()), "abort chat player");
             new CommandKeywords((new CmdImport()), "dat imp extra");
             new CommandKeywords((new CmdImageprint()), "jpg bmp gif png image print");
@@ -274,7 +272,7 @@ namespace MCGalaxy.Commands
             new CommandKeywords((new CmdZone()), "area");
             // New/edited commands
             new CommandKeywords((new CmdMain2()), "set default map level lvl setmain seth");
-            new CommandKeywords((new CmdUpdate()), "server software mcforge");
+            new CommandKeywords((new CmdUpdate()), "server software mcforge ");
             new CommandKeywords((new CmdWhoip()), "who ip info");
             new CommandKeywords((new CmdClear()), "clear del player chat");
             new CommandKeywords((new CmdDevs()), "dev mcgalaxy forgeware forgecraft");
@@ -285,6 +283,7 @@ namespace MCGalaxy.Commands
             // These commands don't work or are out of date.
             //new CommandKeywords((new CmdInfo()), "server detail");
             //new CommandKeywords((new CmdClients()), "clients player app");
+            //new CommandKeywords((new CmdHost()), "owner server " + Server.Owner + " " + Server.ZallState);
         }
         public void Addcustom(Command cmd, string keywords)
         {

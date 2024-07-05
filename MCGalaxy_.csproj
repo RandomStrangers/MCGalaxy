@@ -80,12 +80,6 @@
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer">
-      <HintPath>packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>Newtonsoft.Json\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -96,27 +90,25 @@
     <Reference Include="System.Data.SQLite">
       <HintPath>.\System.Data.SQLite.dll</HintPath>
     </Reference>
-    <Reference Include="System.Data.SQLite.EF6">
-      <HintPath>packages\System.Data.SQLite.EF6.1.0.98.1\lib\net45\System.Data.SQLite.EF6.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Data.SQLite.Linq">
-      <HintPath>packages\System.Data.SQLite.Linq.1.0.98.1\lib\net45\System.Data.SQLite.Linq.dll</HintPath>
-    </Reference>
     <Reference Include="System.Design" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
     <Reference Include="MySql.Data, Version=6.3.0.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d">
       <HintPath>MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <Private>True</Private>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="System.Windows.Forms.Ribbon">
@@ -127,6 +119,7 @@
     <Compile Include="Commands\Added\Alias.cs" />
     <Compile Include="Commands\Added\CmdClear.cs" />
     <Compile Include="Commands\Added\CmdMain2.cs" />
+    <Compile Include="Commands\Added\CmdUpdate.cs" />
     <Compile Include="Commands\Added\Unused\CmdBCHeartbeat2.cs" />
     <Compile Include="Commands\Added\Unused\CmdCCHeartbeat2.cs" />
     <Compile Include="Commands\Added\Unused\CmdClients.cs" />
@@ -241,7 +234,6 @@
     <Compile Include="Commands\Information\CmdTime.cs" />
     <Compile Include="Commands\Information\CmdTop.cs" />
     <Compile Include="Commands\Information\CmdUnloaded.cs" />
-    <Compile Include="Commands\Information\CmdUpdate.cs" />
     <Compile Include="Commands\Information\CmdViewRanks.cs" />
     <Compile Include="Commands\Information\CmdWhoip.cs" />
     <Compile Include="Commands\Information\CmdWhoNick.cs" />
@@ -485,7 +477,6 @@
     <Compile Include="API\API.cs" />
     <Compile Include="Player\EmotesHandler.cs" />
     <Compile Include="Player\FullCP437Handler.cs" />
-    <Compile Include="Server\Added\Updater2.cs" />
     <Compile Include="Server\AutoSaver.cs" />
     <Compile Include="Player\Ban.cs" />
     <Compile Include="Levels\Block.cs" />
@@ -614,7 +605,6 @@
     <Compile Include="ScriptingUtil\Scripting.cs" />
     <Compile Include="Server\Server.cs" />
     <Compile Include="Server\ServerSettings.cs" />
-    <Compile Include="Server\Updater.cs" />
     <Compile Include="GUI\AutoScrollTextBox.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -758,7 +748,12 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="updater\MCGalaxyUpdater.csproj">
+      <Project>{6ba05a4e-a43c-4a0b-80e8-720520d64ba6}</Project>
+      <Name>MCGalaxyUpdater</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

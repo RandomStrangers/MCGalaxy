@@ -124,20 +124,18 @@ namespace MCGalaxy.Gui
             }
             else
             {
-                UpdSave("properties/update.properties");
                 Server.autoupdate = chkAutoUpdate.Checked;
             }
         }
 
         private void cmdDiscard_Click(object sender, EventArgs e)
         {
-            UpdLoadProp("properties/update.properties");
             Close();
         }
 
         private void cmdUpdate_Click(object sender, EventArgs e)
         {
-            MCGalaxy_.Gui.Program.PerformUpdate();
+            MCGalaxyUpdater.Program.Main(null);
       /*      if (!Program.CurrentUpdate)
                 Program.UpdateCheck();
             else
