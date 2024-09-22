@@ -20,9 +20,8 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 
-using System;
 
-namespace LibNoise
+namespace MCGalaxy.LibNoise
 {
     public static class GradientNoise
     {

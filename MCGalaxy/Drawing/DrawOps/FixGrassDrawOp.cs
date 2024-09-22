@@ -17,7 +17,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.DB;
-using MCGalaxy.Network;
 using MCGalaxy.Maths;
 using MCGalaxy.Drawing.Brushes;
 using BlockID = System.UInt16;

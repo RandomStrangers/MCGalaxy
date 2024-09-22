@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using System.Collections.Generic;
 using MCGalaxy.Commands;
 
@@ -60,7 +59,7 @@ namespace MCGalaxy.Eco
             RankEntry rank = Find(perm);
             if (rank != null) return rank;
             
-            rank = new RankItem.RankEntry(); rank.Perm = perm;
+            rank = new RankEntry(); rank.Perm = perm;
             Ranks.Add(rank);
             Ranks.Sort((a, b) => a.Perm.CompareTo(b.Perm));
             return rank;
@@ -93,7 +92,7 @@ namespace MCGalaxy.Eco
             }
             if (!CheckPrice(p, nextRank.Price, "the next rank")) return;
             
-            Group rank = Group.Find(nextRank.Perm); // TODO: What if null reference happens here
+            Group rank = Group.Find(nextRank.Perm);// TODO: What if null reference happens here
             Command.Find("SetRank").Use(Player.Console, p.name + " " + rank.Name);
             p.Message("You bought the rank " + rank.ColoredName);
             Economy.MakePurchase(p, nextRank.Price, "&3Rank: " + rank.ColoredName);

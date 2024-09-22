@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using MCGalaxy.DB;
 using MCGalaxy.Drawing.Ops;
 using BlockID = System.UInt16;
@@ -28,7 +27,7 @@ namespace MCGalaxy.Drawing.Brushes
         protected readonly Brush replacement;
         
         public ReplaceBrushBrush(BlockID include, Brush replacement) {
-            this.target = include; this.replacement = replacement;
+            target = include; this.replacement = replacement;
         }
         
         public override string Name { get { return "ReplaceBrush"; } }

@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using System.Collections.Generic;
 using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Maths;
@@ -82,13 +81,6 @@ namespace MCGalaxy.Drawing.Ops
                 // TODO: do we need to round properly here or not
                 points.Add(new Vec3S32((int)p2.X, (int)p2.Y, (int)p2.Z));
             }
-        }
-
-        /*static ushort Round(float value) {
-            int valueI = (int)value;
-            int floored = value < valueI ? valueI - 1 : valueI;
-            float frac = (value % 1.0f);
-            return (ushort)(floored + (frac > 0.5f ? 1 : 0));
-        }*/        
+        }   
     }
 }

@@ -25,7 +25,6 @@ Ideas, concepts, and code were used from the following two sources:
 
  */
 using System;
-using MCGalaxy.Generator.Classic;
 
 namespace MCGalaxy.Generator.Foliage 
 {

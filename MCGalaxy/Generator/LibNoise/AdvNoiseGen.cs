@@ -16,7 +16,7 @@
     permissions and limitations under the Licenses.
  */
 using System;
-using LibNoise;
+using MCGalaxy.LibNoise;
 
 namespace MCGalaxy.Generator 
 {

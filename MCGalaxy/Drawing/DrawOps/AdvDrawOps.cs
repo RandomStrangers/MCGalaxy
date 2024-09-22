@@ -20,7 +20,6 @@
 //Full use to all StormCom Server System codes (in regards to minecraft classic) have been granted to MCForge without restriction.
 //
 // ~Merlin33069
-using System;
 using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Maths;
 

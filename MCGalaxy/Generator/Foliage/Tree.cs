@@ -17,7 +17,6 @@
  */
 using System;
 using System.Collections.Generic;
-using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Generator.fCraft;
 using BlockID = System.UInt16;
 
