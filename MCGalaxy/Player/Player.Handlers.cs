@@ -55,7 +55,7 @@ namespace MCGalaxy
             BlockID old = level.GetBlock(x, y, z);
             if (old == Block.Invalid) return;
             
-            if (jailed || frozen || possessed) { RevertBlock(x, y, z); return; }
+            if (frozen || possessed) { RevertBlock(x, y, z); return; }
             if (!agreed) {
                 Message(mustAgreeMsg);
                 RevertBlock(x, y, z); return;
@@ -611,9 +611,6 @@ namespace MCGalaxy
             if (cmd.Length == 0) { Message("No command entered."); return false; }
             if (Server.Config.AgreeToRulesOnEntry && !agreed && !(cmd == "agree" || cmd == "rules" || cmd == "disagree" || cmd == "pass" || cmd == "setpass")) {
                 Message(mustAgreeMsg); return false;
-            }
-            if (jailed) {
-                Message("You cannot use any commands while jailed."); return false;
             }
             if (Unverified && !(cmd == "pass" || cmd == "setpass")) {
                 ExtraAuthenticator.Current.RequiresVerification(this, "use /" + cmd);

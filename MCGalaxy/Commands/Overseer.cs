@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using System.Collections.Generic;
 using MCGalaxy.Commands.CPE;
 using MCGalaxy.Generator;
@@ -266,7 +265,8 @@ namespace MCGalaxy.Commands.World {
             p.Message("The &T{0}&S command has been moved out of /{1} map.", name, commandShortcut);
             string args = message.Length == 0 ? "" : message + " ";
             if (newName == null) { newName = name; }
-            p.Message("Use &T/{0} {1} {2}&Sinstead.", commandShortcut, newName, args);
+            p.Message("Using &T/{0} {1} {2}&Sinstead.", commandShortcut, newName, args);
+            Command.Find("Overseer").Use(p, newName + " " + args);
         }
         static SubCommandGroup mapSubCommandGroup = new SubCommandGroup(commandShortcut + " map",
                 new List<SubCommand>() {

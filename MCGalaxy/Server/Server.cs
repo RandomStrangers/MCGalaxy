@@ -44,7 +44,7 @@ namespace MCGalaxy
 {
     public sealed partial class Server 
     {
-        public Server() { Server.s = this; }
+        public Server() { s = this; }
         
         //True = cancel event
         //Fale = dont cacnel event
@@ -191,7 +191,7 @@ namespace MCGalaxy
         static readonly object stopLock = new object();
         static volatile Thread stopThread;
         public static Thread Stop(bool restart, string msg) {
-            Server.shuttingDown = true;
+            shuttingDown = true;
             lock (stopLock) {
                 if (stopThread != null) return stopThread;
                 stopThread = new Thread(() => ShutdownThread(restart, msg));

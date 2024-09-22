@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using MCGalaxy.Network;
 using BlockID = System.UInt16;
 
 namespace MCGalaxy.Commands.CPE 

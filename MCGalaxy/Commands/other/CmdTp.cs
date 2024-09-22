@@ -53,7 +53,7 @@ namespace MCGalaxy.Commands.Misc {
                 Help(p); return;
             }
             
-            Entity dst = bot != null ? (Entity)bot : (Entity)target;
+            Entity dst = bot != null ? bot : (Entity)target;
             PlayerOperations.TeleportToEntity(p, dst);
         }
         

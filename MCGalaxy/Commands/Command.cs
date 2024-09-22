@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 using MCGalaxy.Commands;
@@ -170,9 +169,9 @@ namespace MCGalaxy
                          new CmdSetspawn(),  new CmdSpawn(),      new CmdUnflood(),    new CmdUnload(), 
                          new CmdPermissionBuild(),new CmdPermissionVisit());
 
-            RegisterCore(new CmdAward(),     new CmdAwardMod(),   new CmdAwards());
+            RegisterCore(new CmdAward(),     new CmdAwardMod(),   new CmdAwards(),    new CmdZombieSpawn());
         }
-        
+
         static void RegisterCore(params Command[] cmds) {
             foreach (Command cmd in cmds)
             {

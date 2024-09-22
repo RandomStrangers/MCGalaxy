@@ -15,9 +15,7 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using MCGalaxy.Games;
 using MCGalaxy.Events.PlayerEvents;
-using MCGalaxy.Network;
 
 namespace MCGalaxy.Commands.Fun {
     public sealed class CmdReferee : Command2 {

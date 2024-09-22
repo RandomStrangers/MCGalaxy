@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using BlockID = System.UInt16;
 using BlockRaw = System.Byte;
 
@@ -123,21 +122,12 @@ namespace MCGalaxy.Blocks.Physics {
             BlockID block = lvl.GetBlock(x, y, z, out index);
 
             switch (block) {
-                    //case Block.water:
-                    //case Block.lava:
                 case Block.Sapling:
                 case Block.Sand:
                 case Block.Gravel:
                 case Block.Log:
                 case Block.Leaves:
                 case Block.FloatWood:
-                    /*case Block.lava_fast:
-                    case Block.WaterDown:
-                    case Block.LavaDown:
-                    case Block.deathlava:
-                    case Block.deathwater:
-                    case Block.geyser:
-                    case Block.magma:*/
                     lvl.AddCheck(index);
                     break;
                 default:

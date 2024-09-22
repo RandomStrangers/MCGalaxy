@@ -119,8 +119,8 @@ namespace MCGalaxy.Commands.Fun {
             }
             team = Team.Find(args[1]);
             if (team != null) { p.Message("There is already an existing team with that name."); return; }
-            if (args[1].Length > 8) {
-                p.Message("Team names must be 8 characters or less."); return;
+            if (args[1].Length > 16) {
+                p.Message("Team names must be 16 characters or less."); return;
             }
             
             team = new Team(args[1], p.name);

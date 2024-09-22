@@ -106,6 +106,11 @@ namespace MCGalaxy {
             return DateTime.Now.ToString("hh:mm tt");
         }
         static string TokenIRC(Player p) {
+            if (!p.CanUse(Command.Find("HasIRC")))
+            {
+                p.Message("You cannot use /HasIRC, so you cannot see the server's IRC info.");
+                return "";
+            }
             return Server.Config.IRCServer + " > " + Server.Config.IRCChannels;
         }
         static string TokenBanned(Player p) {

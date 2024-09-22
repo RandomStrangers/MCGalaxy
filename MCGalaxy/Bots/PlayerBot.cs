@@ -17,10 +17,8 @@
  */
 using System;
 using System.Collections.Generic;
-using System.IO;
 using MCGalaxy.Bots;
 using MCGalaxy.Maths;
-using MCGalaxy.Network;
 using MCGalaxy.Commands;
 
 namespace MCGalaxy {
@@ -299,7 +297,7 @@ namespace MCGalaxy {
             p.Message("Bot {0} &S({1}) has:", ColoredName, name);
             p.Message("  Owner: &f{0}", string.IsNullOrEmpty(Owner) ? "no one" : p.FormatNick(Owner));
             if (CreationDate != 0)             { p.Message("  Created: &f{0}", CreationDate.FromUnixTime().ToString("yyyy-MM-dd")); }
-            if (!String.IsNullOrEmpty(AIName)) { p.Message("  AI: &f{0}", AIName); }
+            if (!string.IsNullOrEmpty(AIName)) { p.Message("  AI: &f{0}", AIName); }
             if (hunt || kill)                  { p.Message("  Hunt: &f{0}&S, Kill: %f{1}", hunt, kill); }
             if (SkinName != name)              { p.Message("  Skin: &f{0}", SkinName); }
             if (Model != "humanoid")           { p.Message("  Model: &f{0}", Model); }
@@ -311,28 +309,10 @@ namespace MCGalaxy {
                         );
             }
             
-            if (String.IsNullOrEmpty(ClickedOnText)) return;
+            if (string.IsNullOrEmpty(ClickedOnText)) return;
             ItemPerms perms = CommandExtraPerms.Find("About", 1) ?? new ItemPerms(LevelPermission.AdvBuilder);
             if (!perms.UsableBy(p)) return; //don't show bot's ClickedOnText if player isn't allowed to see message block contents
             p.Message("  Clicked-on text: {0}", ClickedOnText);
         }
-        
-        
-        /*
-         * Old water/lava swimming code - TODO: need to fix.
-         * 
-                if ((ushort)(foundPos[1] / 32) > y) {
-                    if (b1 == Block.water || b1 == Block.waterstill || b1 == Block.lava || b1 == Block.lavastill) {
-                        if (Block.Walkthrough(b2)) {
-                            pos[1] = (ushort)(pos[1] + (Math.Sign(foundPos[1] - pos[1])));
-                        }
-                    } else if (b2 == Block.water || b2 == Block.waterstill || b2 == Block.lava || b2 == Block.lavastill) {
-                        pos[1] = (ushort)(pos[1] + (Math.Sign(foundPos[1] - pos[1])));
-                    }
-                } else if ((ushort)(foundPos[1] / 32) < y) {
-                    if (b3 == Block.water || b3 == Block.waterstill || b3 == Block.lava || b3 == Block.lavastill) {
-                        pos[1] = (ushort)(pos[1] + (Math.Sign(foundPos[1] - pos[1])));
-                    }
-                }*/
     }
 }

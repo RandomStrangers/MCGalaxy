@@ -17,7 +17,6 @@
  */
 using System;
 using System.IO;
-using MCGalaxy.Blocks;
 using MCGalaxy.Config;
 using MCGalaxy.Network;
 using BlockID = System.UInt16;
@@ -126,7 +125,7 @@ namespace MCGalaxy {
                     if (obj == null || obj.Meta == null) continue;
                     
                     BlockDefinition def = (BlockDefinition)obj.Meta;
-                    if (String.IsNullOrEmpty(def.Name)) continue;
+                    if (string.IsNullOrEmpty(def.Name)) continue;
                     
                     BlockID block = def.GetBlock();
                     if (block >= defs.Length) {

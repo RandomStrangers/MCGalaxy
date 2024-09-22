@@ -12,7 +12,6 @@ BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
  */
-using System;
 using System.Collections.Generic;
 using MCGalaxy.Blocks;
 using MCGalaxy.Commands.CPE;
@@ -116,9 +115,9 @@ namespace MCGalaxy.Commands.Info
         bool ParseCommand(Player p, string message) {
             string[] args = message.SplitSpaces(2);
             string cmdName = args[0], cmdArgs = "";
-            Command.Search(ref cmdName, ref cmdArgs);
+            Search(ref cmdName, ref cmdArgs);
             
-            Command cmd = Command.Find(cmdName);
+            Command cmd = Find(cmdName);
             if (cmd == null) return false;
             
             if (args.Length == 1) {

@@ -16,7 +16,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Bots;
-using MCGalaxy.DB;
 
 namespace MCGalaxy.Commands.Chatting
 {    

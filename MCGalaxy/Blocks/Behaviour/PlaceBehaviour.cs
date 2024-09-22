@@ -16,7 +16,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Blocks.Physics;
-using System;
 using BlockID = System.UInt16;
 
 namespace MCGalaxy.Blocks {

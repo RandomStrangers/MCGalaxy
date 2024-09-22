@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using System.IO;
 using System.IO.Compression;
 using MCGalaxy.DB;
@@ -178,8 +177,8 @@ namespace MCGalaxy.Commands.Building
                 Directory.CreateDirectory("extra/savecopy");
             if (!Directory.Exists("extra/savecopy/" + p.name))
                 Directory.CreateDirectory("extra/savecopy/" + p.name);
-            if (Directory.GetFiles("extra/savecopy/" + p.name).Length > 15) {
-                p.Message("You can only save a maxmium of 15 copies. /copy delete some.");
+            if (Directory.GetFiles("extra/savecopy/" + p.name).Length > p.group.CopySlots) {
+                p.Message("You can only save a maxmium of {0} copies. /copy delete some.", p.group.CopySlots);
                 return;
             }
             

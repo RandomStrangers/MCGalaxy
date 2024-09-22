@@ -28,11 +28,6 @@ namespace MCGalaxy {
         /// <summary> Messages all players on a particular level </summary>
         /// <remarks> Excludes players who are ignoring all chat </remarks>
         Level,
-        [Obsolete("Chatrooms have been removed")]
-        Chatroom,
-        [Obsolete("Chatrooms have been removed")]
-        AllChatrooms,
-        
         /// <summary> Messages all players of a given rank </summary>
         Rank,
         /// <summary> Messages all players who can use an ItemPerms argument. </summary>

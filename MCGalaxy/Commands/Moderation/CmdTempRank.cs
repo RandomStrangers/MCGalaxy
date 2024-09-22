@@ -72,7 +72,7 @@ namespace MCGalaxy.Commands.Moderation {
         
         internal static void Delete(Player p, string target, CommandData data) {
             string line = Server.tempRanks.Get(target);
-            if (String.IsNullOrEmpty(line)) {
+            if (string.IsNullOrEmpty(line)) {
                 p.Message("{0} &Whas not been assigned a temp rank.", p.FormatNick(target));
                 return;
             }
@@ -94,7 +94,7 @@ namespace MCGalaxy.Commands.Moderation {
         
         static void Info(Player p, string target) {
             string data = Server.tempRanks.Get(target);
-            if (String.IsNullOrEmpty(data)) {
+            if (string.IsNullOrEmpty(data)) {
                 p.Message("{0} &Whas not been assigned a temp rank.", p.FormatNick(target));
             } else {
                 PrintTempRankInfo(p, target, data);
