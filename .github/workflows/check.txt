@@ -1,0 +1,85 @@
+name: Check LangVersion
+# trigger via either push to selected branches or on manual run
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}-Check
+  cancel-in-progress: true
+
+jobs:
+#============================================
+# ============== .NET 2.0 CHECK =============
+# ===========================================
+  check-mono2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile MCGalaxy using mono
+        shell: bash
+        id: compile
+        run: |
+          msbuild MCGalaxy.sln /p:Configuration=Release /p:TargetFrameworkVersion=v2.0 /p:DefineConstants="NET_20" /langversion:?
+
+      - uses: ./.github/actions/notify_failure
+        if: ${{ always() && steps.compile.outcome == 'failure' }}
+        with:
+          NOTIFY_MESSAGE: 'Failed to compile MCGalaxy .NET 2.0 build'
+          WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
+          
+      - uses: ./.github/actions/upload_build
+        if: ${{ always() && steps.compile.outcome == 'success' }}
+        with:
+          SOURCE_FILE: 'bin/Release'
+          DEST_NAME: 'MCGalaxy-net2.0'
+          
+      - uses: ./.github/actions/notify_success
+        if: ${{ always() && steps.compile.outcome == 'success' }}
+        with:
+          DESTINATION_URL: '${{ secrets.NOTIFY_URL }}'
+          WORKFLOW_NAME: 'net20'
+   
+   
+#============================================
+# ============== .NET 4.0 CHECK =============
+# ===========================================
+  check-mono4:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile MCGalaxy using mono
+        shell: bash
+        id: compile
+        run: |
+          msbuild MCGalaxy.sln /p:Configuration=Release
+          cp -R bin/Release bin/Release_normal
+          rm bin/Release/MCGalaxy_.dll bin/Release/MCGalaxy_.pdb
+          msbuild MCGalaxy/MCGalaxy_.csproj /p:Configuration=Release /t:Rebuild /p:DefineConstants="TEN_BIT_BLOCKS" /langversion:?
+
+      - uses: ./.github/actions/notify_failure
+        if: ${{ always() && steps.compile.outcome == 'failure' }}
+        with:
+          NOTIFY_MESSAGE: 'Failed to compile MCGalaxy .NET build'
+          WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
+          
+      - uses: ./.github/actions/upload_build
+        if: ${{ always() && steps.compile.outcome == 'success' }}
+        with:
+          SOURCE_FILE: 'bin/Release_normal'
+          DEST_NAME: 'MCGalaxy-net40'
+          
+      - uses: ./.github/actions/upload_build
+        if: ${{ always() && steps.compile.outcome == 'success' }}
+        with:
+          SOURCE_FILE: 'bin/Release'
+          DEST_NAME: 'MCGalaxy-net40-infid'
+          
+      - uses: ./.github/actions/notify_success
+        if: ${{ always() && steps.compile.outcome == 'success' }}
+        with:
+          DESTINATION_URL: '${{ secrets.NOTIFY_URL }}'
+          WORKFLOW_NAME: 'net40'
+          
