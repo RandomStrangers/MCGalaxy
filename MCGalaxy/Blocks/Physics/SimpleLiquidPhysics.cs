@@ -58,11 +58,11 @@ namespace MCGalaxy.Blocks.Physics {
         }
         
         
-        const int flowed_xMax = (1 << 0);
-        const int flowed_xMin = (1 << 1);
-        const int flowed_zMax = (1 << 2);
-        const int flowed_zMin = (1 << 3);
-        const int flowed_yMin = (1 << 4);
+        const int flowed_xMax = 1 << 0;
+        const int flowed_xMin = 1 << 1;
+        const int flowed_zMax = 1 << 2;
+        const int flowed_zMin = 1 << 3;
+        const int flowed_yMin = 1 << 4;
         const int flowed_maskAll = 0x1F;
         
         

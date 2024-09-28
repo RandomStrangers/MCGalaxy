@@ -15,11 +15,12 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+#if NET_20
 using System;
 using System.Collections.Generic;
 using System.Threading;
 
-#if NET_20
+
 namespace System.Runtime.CompilerServices 
 {
     [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Method)]

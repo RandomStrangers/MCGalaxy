@@ -76,7 +76,7 @@ namespace MCGalaxy.Scripting
             return null;
         }
 
-        static bool IsPluginDLL(Assembly a) { return String.IsNullOrEmpty(a.Location); }
+        static bool IsPluginDLL(Assembly a) { return string.IsNullOrEmpty(a.Location); }
         
         
         /// <summary> Constructs instances of all types which derive from T in the given assembly. </summary>

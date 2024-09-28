@@ -2,7 +2,6 @@
 using System.Windows.Forms;
 using System.Drawing;
 using System;
-using MCGalaxy;
 
 namespace MCGalaxy.Gui.Popups 
 {

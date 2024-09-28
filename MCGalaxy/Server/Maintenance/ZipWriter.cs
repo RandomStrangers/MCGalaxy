@@ -236,7 +236,7 @@ namespace MCGalaxy
             if (!zip64) { w.Write(emptyZip64Local); return; }
             
             // zip64 extra data entry
-            w.Write((ushort)EXTRA_TAG_ZIP64);          
+            w.Write(EXTRA_TAG_ZIP64);          
             w.Write((ushort)(ZIP64_LOCAL_EXTRA_SIZE - 4));
             w.Write(copy.UncompressedSize);
             w.Write(copy.CompressedSize);

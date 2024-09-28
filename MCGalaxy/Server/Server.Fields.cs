@@ -34,7 +34,7 @@ namespace MCGalaxy
         public static event VoidHandler OnSettingsUpdate;
         public static ServerConfig Config = new ServerConfig();
         public static DateTime StartTime;
-        
+        public static TimeSpan UpTime = DateTime.UtcNow - StartTime;
         public static PlayerExtList AutoloadMaps;
         public static PlayerMetaList RankInfo = new PlayerMetaList("text/rankinfo.txt");
         public static PlayerMetaList Notes = new PlayerMetaList("text/notes.txt");

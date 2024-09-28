@@ -309,7 +309,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             };
             return new JsonObject()
             {
-                { "since",      Server.StartTime.ToString() },
+                { "since",      Server.UpTime.ToString() },
                 { "activities", new JsonArray() { activity } },
                 { "status",     Status.ToString() },
                 { "afk",        false }

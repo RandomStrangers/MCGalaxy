@@ -15,11 +15,12 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using System.Diagnostics;
-using System.IO;
 using System.Reflection;
+#if MCG_DOTNET
+using System;
+using System.IO;
 using System.Runtime.InteropServices;
+#endif
 
 namespace MCGalaxy.Platform
 {

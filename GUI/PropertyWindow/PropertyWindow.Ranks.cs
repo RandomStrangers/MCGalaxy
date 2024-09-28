@@ -15,7 +15,6 @@ permissions and limitations under the Licenses.
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using MCGalaxy.Commands;
 
 namespace MCGalaxy.Gui {
 

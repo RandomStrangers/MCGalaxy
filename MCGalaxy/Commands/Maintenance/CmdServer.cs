@@ -35,7 +35,7 @@ namespace MCGalaxy.Commands.Maintenance {
                     case "backup": DoBackup(p, args); break;
                     case "restore": DoRestore(p); break;
                     case "import": DoImport(p, args); break;
-                    case "update" : p.Message("Use &T/Update &Sto update the server"); break;
+                    case "update" : Find("Help").Use(p, "Update"); break;
                     case "upgradeblockdb": DoBlockDBUpgrade(p, args); break;
                     default: Help(p); break;
             }

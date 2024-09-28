@@ -17,7 +17,6 @@
     permissions and limitations under the Licenses.
  
  */
-using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -159,7 +158,7 @@ namespace MCGalaxy.Authentication
 
             if (!HasPassword(p.name)) {
                 p.Message("You have not &Wset a verification password yet, &Suse &T/SetPass [password] &Wto set one");
-                p.Message("Make sure to use a different password than your Minecraft one!");
+                p.Message("Make sure to use a different password than your login one!");
                 return;
             }
             if (VerifyPassword(p.name, password)) {
@@ -211,7 +210,7 @@ namespace MCGalaxy.Authentication
             p.Message("&H Note that only {0}&S+ can reset passwords",
                       Group.GetColoredName(Server.Config.ResetPasswordRank));
             p.Message("&T/Pass set [password] &H- Sets your password to [password]");
-            p.Message("&H Note: &WDo NOT set this as your Minecraft password!");
+            p.Message("&H Note: &WDo NOT set this as your login password!");
             p.Message("&T/Pass [password]");
             p.Message("&H If you are {0}&H+, use this command to verify your login.",
                       Group.GetColoredName(Server.Config.VerifyAdminsRank));

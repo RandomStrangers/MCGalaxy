@@ -15,7 +15,6 @@ permissions and limitations under the Licenses.
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Threading;
 using MCGalaxy.Drawing;
 using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Drawing.Transforms;

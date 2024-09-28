@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using MCGalaxy.Blocks;
-using MCGalaxy.Commands;
 using MCGalaxy.Config;
 using MCGalaxy.Events.GroupEvents;
 

@@ -14,8 +14,6 @@ permissions and limitations under the Licenses.
  */
 using System;
 using System.Windows.Forms;
-using MCGalaxy.Commands;
-using MCGalaxy.SQL;
 using MCGalaxy.Gui.Popups;
 
 namespace MCGalaxy.Gui {

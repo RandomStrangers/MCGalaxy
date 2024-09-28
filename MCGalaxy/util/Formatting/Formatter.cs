@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using MCGalaxy.Authentication;
-using MCGalaxy.Blocks;
 using MCGalaxy.Commands;
 
 namespace MCGalaxy 
@@ -61,7 +60,7 @@ namespace MCGalaxy
                 dst.Append('/').Append(a.Trigger);
                 if (a.Format == null) { dst.Append(", "); continue; }
                 
-                string name = String.IsNullOrEmpty(cmd.shortcut) ? cmd.name : cmd.shortcut;
+                string name = string.IsNullOrEmpty(cmd.shortcut) ? cmd.name : cmd.shortcut;
                 if (name.Length > cmd.name.Length) name = cmd.name;
                 string args = a.Format.Replace("{args}", "[args]");
                 

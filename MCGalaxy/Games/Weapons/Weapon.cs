@@ -80,7 +80,8 @@ namespace MCGalaxy.Games
         /// <remarks> Activated by clicking through either PlayerClick or on a glass box around the player. </remarks>
         protected abstract void OnActivated(Vec3F32 dir, BlockID block);
 
-        
+        // TODO: This shouldn't change blocks in zones that the player can't build in
+
         static void BlockChangingCallback(Player p, ushort x, ushort y, ushort z, BlockID block, bool placing, ref bool cancel) {
             Weapon weapon = p.weapon;
             if (weapon == null) return;

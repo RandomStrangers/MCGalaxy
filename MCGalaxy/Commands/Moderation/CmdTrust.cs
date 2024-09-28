@@ -28,7 +28,7 @@ namespace MCGalaxy.Commands.Moderation {
             
             target.ignoreGrief = !target.ignoreGrief;
             p.Message("{0}&S's trust status: " + target.ignoreGrief, p.FormatNick(target));
-            target.Message("Your trust status was changed to: " + target.ignoreGrief);
+            if (target != p) target.Message("Your trust status was changed to: " + target.ignoreGrief);
         }
         
         public override void Help(Player p) {

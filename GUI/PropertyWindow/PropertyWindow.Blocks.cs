@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using MCGalaxy.Blocks;
 using BlockID = System.UInt16;
-using BlockRaw = System.Byte;
 
 namespace MCGalaxy.Gui {
     public partial class PropertyWindow : Form {

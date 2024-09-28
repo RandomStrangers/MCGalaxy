@@ -16,7 +16,6 @@
     permissions and limitations under the Licenses.
  */
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -223,7 +222,7 @@ namespace MCGalaxy
 
             try {
                 string autoload = SaveAllLevels();
-                if (Server.SetupFinished && !Server.Config.AutoLoadMaps) {
+                if (SetupFinished && !Config.AutoLoadMaps) {
                     File.WriteAllText("text/autoload.txt", autoload);
                 }
             } catch (Exception ex) { Logger.LogError(ex); }
@@ -309,7 +308,7 @@ namespace MCGalaxy
         
         public static bool SetMainLevel(string map) {
             OnMainLevelChangingEvent.Call(ref map);
-            string main = mainLevel != null ? mainLevel.name : Server.Config.MainLevel;
+            string main = mainLevel != null ? mainLevel.name : Config.MainLevel;
             if (map.CaselessEq(main)) return false;
             
             Level lvl = LevelInfo.FindExact(map);
