@@ -22,7 +22,7 @@ jobs:
         shell: bash
         id: compile
         run: |
- 	  /langversion:?
+          /langversion:?
           msbuild MCGalaxy.sln /p:Configuration=Release
           cp -R bin/Release bin/Release_normal
           rm bin/Release/MCGalaxy_.dll bin/Release/MCGalaxy_.pdb
