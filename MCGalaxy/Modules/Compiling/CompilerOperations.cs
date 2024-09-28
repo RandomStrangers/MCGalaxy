@@ -18,7 +18,6 @@
     permissions and limitations under the Licenses.
  */
 #if !MCG_STANDALONE
-using System;
 using System.IO;
 
 namespace MCGalaxy.Modules.Compiling 

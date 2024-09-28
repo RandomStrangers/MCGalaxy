@@ -18,9 +18,10 @@
     permissions and limitations under the Licenses.
  */
 #if !MCG_STANDALONE
-using System;
 using System.Collections.Generic;
+#if !MCG_DOTNET
 using System.CodeDom.Compiler;
+#endif
 
 namespace MCGalaxy.Modules.Compiling
 {

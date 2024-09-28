@@ -16,7 +16,6 @@
     permissions and limitations under the Licenses.
  */
 using System;
-using MCGalaxy.Blocks;
 using MCGalaxy.Maths;
 using BlockID = System.UInt16;
 
@@ -129,7 +128,7 @@ namespace MCGalaxy.Network
             byte[] buffer = new byte[67];
             buffer[0] = Opcode.CpeExtInfo;
             NetUtils.Write(Server.SoftwareNameVersioned, buffer, 1, false);
-            NetUtils.WriteI16((short)extsCount, buffer, 65);
+            NetUtils.WriteI16(extsCount, buffer, 65);
             return buffer;
         }
         
@@ -408,7 +407,7 @@ namespace MCGalaxy.Network
         /// e.g. 0 1.233 0 would give an upward force identical to a default clientside jump.
         /// </summary>
         public static byte[] VelocityControl(float x, float y, float z, byte xMode, byte yMode, byte zMode) {
-            byte[] buffer = new Byte[16];
+            byte[] buffer = new byte[16];
             buffer[0] = Opcode.CpeVelocityControl;
             NetUtils.WriteI32((int)(x * 10000), buffer, 1);
             NetUtils.WriteI32((int)(y * 10000), buffer, 5);

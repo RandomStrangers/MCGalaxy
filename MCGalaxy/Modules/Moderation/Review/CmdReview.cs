@@ -21,7 +21,6 @@
 using System;
 using System.Collections.Generic;
 using MCGalaxy.Commands;
-using MCGalaxy.Events.PlayerEvents;
 
 namespace MCGalaxy.Modules.Moderation.Review
 {
@@ -137,7 +136,7 @@ namespace MCGalaxy.Modules.Moderation.Review
                 return;
             }
             
-            Command.Find("TP").Use(p, target.name, data);
+            Find("TP").Use(p, target.name, data);
             p.Message("You have been teleported to " + p.FormatNick(target));
             target.Message("Your review request has been answered by {0}.", target.FormatNick(p));
             AnnounceQueueChanged();

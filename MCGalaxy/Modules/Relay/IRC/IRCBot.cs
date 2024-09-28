@@ -18,7 +18,6 @@
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
-using MCGalaxy.Modules.Relay;
 using Sharkbite.Irc;
 
 namespace MCGalaxy.Modules.Relay.IRC 
@@ -72,7 +71,7 @@ namespace MCGalaxy.Modules.Relay.IRC
         }
 
         void Join(string channel) {
-            if (String.IsNullOrEmpty(channel)) return;
+            if (string.IsNullOrEmpty(channel)) return;
             conn.SendJoin(channel);
         }
         
@@ -164,7 +163,7 @@ namespace MCGalaxy.Modules.Relay.IRC
         /// <summary> Formats a message for displaying on IRC </summary>
         /// <example> Converts colors such as &amp;0 into IRC color codes </example>
         string ConvertMessage(string message) {
-            if (String.IsNullOrEmpty(message.Trim())) message = ".";
+            if (string.IsNullOrEmpty(message.Trim())) message = ".";
             const string resetSignal = "\x03\x0F";
             
             message = ConvertMessageCommon(message);

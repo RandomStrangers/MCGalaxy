@@ -96,6 +96,8 @@ namespace MCGalaxy.Gui
             this.rank_cmbDefault = new System.Windows.Forms.ComboBox();
             this.sec_cbWhitelist = new System.Windows.Forms.CheckBox();
             this.sql_chkUseSQL = new System.Windows.Forms.CheckBox();
+            this.sql_chkDatabasePooling = new System.Windows.Forms.CheckBox();
+
             this.irc_chkEnabled = new System.Windows.Forms.CheckBox();
             this.irc_txtServer = new System.Windows.Forms.TextBox();
             this.irc_txtNick = new System.Windows.Forms.TextBox();
@@ -1162,6 +1164,18 @@ namespace MCGalaxy.Gui
                         "e installed it for this to work.");
             this.sql_chkUseSQL.UseVisualStyleBackColor = true;
             this.sql_chkUseSQL.CheckedChanged += new System.EventHandler(this.sql_chkUseSQL_CheckedChanged);
+            // 
+            // sql_chkDatabasePooling
+            // 
+            this.sql_chkDatabasePooling.AutoSize = true;
+            this.sql_chkDatabasePooling.Location = new System.Drawing.Point(12, 175);
+            this.sql_chkDatabasePooling.Name = "sql_chkDatabasePooling";
+            this.sql_chkDatabasePooling.Size = new System.Drawing.Size(77, 17);
+            this.sql_chkDatabasePooling.TabIndex = 28;
+            this.sql_chkDatabasePooling.Text = "Pool Database";
+            this.toolTip.SetToolTip(this.sql_chkDatabasePooling, "Reduces the number of connections made while using MySQL.");
+            this.sql_chkDatabasePooling.UseVisualStyleBackColor = true;
+            this.sql_chkDatabasePooling.CheckedChanged += new System.EventHandler(this.sql_chkDatabasePooling_CheckedChanged);
             // 
             // irc_chkEnabled
             // 
@@ -2632,6 +2646,7 @@ namespace MCGalaxy.Gui
             // sql_grp
             // 
             this.sql_grp.Controls.Add(this.sql_chkUseSQL);
+            this.sql_grp.Controls.Add(this.sql_chkDatabasePooling);
             this.sql_grp.Controls.Add(this.sql_linkDownload);
             this.sql_grp.Controls.Add(this.sql_lblUser);
             this.sql_grp.Controls.Add(this.sql_txtUser);
@@ -6412,6 +6427,7 @@ namespace MCGalaxy.Gui
         private System.Windows.Forms.TextBox sql_txtPass;
         private System.Windows.Forms.TextBox sql_txtUser;
         private System.Windows.Forms.CheckBox sql_chkUseSQL;
+        private System.Windows.Forms.CheckBox sql_chkDatabasePooling;
         private System.Windows.Forms.TabPage pageGames;
         private System.Windows.Forms.TabControl tabGames;
         private System.Windows.Forms.TabPage tabZS_old;

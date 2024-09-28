@@ -16,10 +16,8 @@
     permissions and limitations under the Licenses.
  */
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Sockets;
 using MCGalaxy.Config;
 using MCGalaxy.Events.ServerEvents;
 
@@ -92,7 +90,7 @@ namespace MCGalaxy.Network
         
         
         bool NeedsProcessing(string text) {
-            if (String.IsNullOrEmpty(text)) return false;
+            if (string.IsNullOrEmpty(text)) return false;
             if (text == LastResponse)       return false;
             
             // only need to process responses that have changed

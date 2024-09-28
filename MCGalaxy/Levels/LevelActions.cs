@@ -450,7 +450,7 @@ namespace MCGalaxy
             Level.LoadMetadata(res);
             BotsFile.Load(res);
             
-            LevelActions.Replace(lvl, res);
+            Replace(lvl, res);
             lvl = res;
         }
     }

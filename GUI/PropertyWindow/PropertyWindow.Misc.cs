@@ -75,6 +75,7 @@ namespace MCGalaxy.Gui {
             sql_txtDBName.Text = Server.Config.MySQLDatabaseName;
             sql_txtHost.Text = Server.Config.MySQLHost;
             sql_txtPort.Text = Server.Config.MySQLPort;
+            sql_chkDatabasePooling.Checked = Server.Config.DatabasePooling;
             ToggleMySQLSettings(Server.Config.UseMySQL);
         }
         
@@ -85,9 +86,8 @@ namespace MCGalaxy.Gui {
             Server.Config.MySQLDatabaseName = sql_txtDBName.Text;
             Server.Config.MySQLHost = sql_txtHost.Text;
             Server.Config.MySQLPort = sql_txtPort.Text;
-
             Database.UpdateActiveBackend();
-            //Server.Config.MySQLPooling = ; // No setting for this?            
+            Server.Config.DatabasePooling = sql_chkDatabasePooling.Checked;
         }
 
 
@@ -97,6 +97,7 @@ namespace MCGalaxy.Gui {
             sql_txtPort.Enabled = enabled; sql_lblPort.Enabled = enabled;
             sql_txtHost.Enabled = enabled; sql_lblHost.Enabled = enabled;
             sql_txtDBName.Enabled = enabled; sql_lblDBName.Enabled = enabled;
+            sql_chkDatabasePooling.Enabled = enabled;
         }
 
         void sql_linkDownload_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
@@ -105,6 +106,14 @@ namespace MCGalaxy.Gui {
 
         void sql_chkUseSQL_CheckedChanged(object sender, EventArgs e) {
             ToggleMySQLSettings(sql_chkUseSQL.Checked);
+        }
+        void ToggleDatabaseSettings(bool enabled)
+        {
+            Server.Config.DatabasePooling = enabled;
+        }
+        void sql_chkDatabasePooling_CheckedChanged(object sender, EventArgs e)
+        {
+            ToggleDatabaseSettings(sql_chkDatabasePooling.Checked);
         }
     }
 }

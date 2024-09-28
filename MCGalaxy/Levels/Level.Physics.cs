@@ -291,7 +291,7 @@ namespace MCGalaxy {
                     StartPhysics();
                 return true;
             } catch {
-                //s.Log("Warning-PhysicsUpdate");
+                //Logger.Log(LogType.Warning, "Warning-PhysicsUpdate");
                 //ListUpdate.Add(new Update(b, (byte)type));    //Lousy back up plan
                 return false;
             }
