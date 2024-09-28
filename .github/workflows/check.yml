@@ -22,11 +22,7 @@ jobs:
         shell: bash
         id: compile
         run: |
-          /langversion:?
-          msbuild MCGalaxy.sln /p:Configuration=Release
-          cp -R bin/Release bin/Release_normal
-          rm bin/Release/MCGalaxy_.dll bin/Release/MCGalaxy_.pdb
-          msbuild MCGalaxy/MCGalaxy_.csproj /p:Configuration=Release /t:Rebuild /p:DefineConstants="TEN_BIT_BLOCKS"
+          msbuild /langversion:?
 
       - uses: ./.github/actions/notify_failure
         if: ${{ always() && steps.compile.outcome == 'failure' }}
