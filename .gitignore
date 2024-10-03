@@ -13,6 +13,8 @@
 [Rr]eleases/
 Commands/Building/
 Commands/other/
+Building/
+Other/
 x64/
 x86/
 build/
