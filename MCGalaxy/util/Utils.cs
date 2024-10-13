@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace MCGalaxy 
 {
@@ -90,6 +91,12 @@ namespace MCGalaxy
 
         static char HexEncode(int i) {
             return i < 10 ? (char)(i + '0') : (char)((i - 10) + 'a');
+        }
+        
+        public static void SetBackgroundMode(Thread thread) {
+            // Throws an exception when called on a dead thread,
+            //  which can very rarely happen
+            try { thread.IsBackground = true; } catch { }
         }
     }
 }
