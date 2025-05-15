@@ -42,8 +42,11 @@ namespace MCGalaxy
         /// <summary> *** DO NOT USE THIS! *** Use VersionString, as this field is a constant and is inlined if used. </summary>
         public const string InternalVersion = "1.9.5.3";
         public static string Version { get { return InternalVersion; } }
-        
+        #if NAS
+        public static string SoftwareName = "MCGalaxy-NAS";
+        #else
         public static string SoftwareName = "MCGalaxy";
+        #endif
         static string fullName;
         public static string SoftwareNameVersioned {
             // By default, if SoftwareName gets externally changed, that is reflected in SoftwareNameVersioned too
