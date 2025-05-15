@@ -132,10 +132,13 @@ namespace MCGalaxy
             LoadCorePlugin(new MCGalaxy.Modules.Relay.IRC.IRCPlugin());
             LoadCorePlugin(new MCGalaxy.Modules.Security.IPThrottler());
             LoadCorePlugin(new MCGalaxy.Modules.Warps.WarpsPlugin());
+
 #if !MCG_STANDALONE
             LoadCorePlugin(new MCGalaxy.Modules.Compiling.CompilerPlugin());
 #endif
-
+#if NAS && TEN_BIT_BLOCKS
+            Load(new NotAwesomeSurvival.Nas(), true);
+#endif
             LoadCorePlugin(new MCGalaxy.Modules.Games.Countdown.CountdownPlugin());
             LoadCorePlugin(new MCGalaxy.Modules.Games.CTF.CTFPlugin());
             LoadCorePlugin(new MCGalaxy.Modules.Games.LS.LSPlugin());
