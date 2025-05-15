@@ -1,4 +1,4 @@
-﻿#if NAS
+﻿#if NAS && !NET_20
 using MCGalaxy;
 using NasBlockCollideAction =
     System.Action<NotAwesomeSurvival.NasEntity,

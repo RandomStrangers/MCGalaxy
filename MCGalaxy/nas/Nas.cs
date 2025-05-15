@@ -1,5 +1,5 @@
 ﻿
-#if NAS
+#if NAS && !NET_20
 using System;
 using System.IO;
 using System.Threading;
