@@ -45,8 +45,9 @@ namespace MCGalaxy.Commands.Info
                       LevelInfo.AllMapFiles().Length, LevelInfo.Loaded.Count, Server.Config.Currency);
 
             TimeSpan up = DateTime.UtcNow - Server.StartTime;
-            p.Message("  Been up for &a{0}&S, running &b{1} &a{2} &f" + Updater.SourceURL,
+            p.Message("  Been up for &a{0}&S, running &b{1} &a{2}",
                       up.Shorten(true), Server.SoftwareName, Server.Version);
+            p.Message("&f" + Updater.SourceURL);
 
             int updateInterval = 1000 / Server.Config.PositionUpdateInterval;
             p.Message("  Player positions are updated &a{0} &Stimes/second", updateInterval);
