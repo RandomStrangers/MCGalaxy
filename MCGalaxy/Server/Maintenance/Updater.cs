@@ -26,11 +26,16 @@ namespace MCGalaxy
 {
     /// <summary> Checks for and applies software updates. </summary>
     public static class Updater 
-    {    
+    {
+#if NAS
+        public static string SourceURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas";
+        public const string BaseURL = "https://raw.githubusercontent.com/RandomStrangers/MCGalaxy/nas/";
+        public const string UploadsURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas/Uploads";
+#else
         public static string SourceURL = "https://github.com/ClassiCube/MCGalaxy";
         public const string BaseURL    = "https://raw.githubusercontent.com/ClassiCube/MCGalaxy/master/";
-        public const string UploadsURL = "https://github.com/ClassiCube/MCGalaxy/tree/master/Uploads";        
-        const string CurrentVersionURL = BaseURL + "Uploads/current_version.txt";
+        public const string UploadsURL = "https://github.com/ClassiCube/MCGalaxy/tree/master/Uploads";   
+#endif
         const string CHANGELOG_URL     = BaseURL + "Changelog.txt";
         
         const string CDN_URL  = "https://cdn.classicube.net/client/mcg/{0}/";
@@ -43,13 +48,19 @@ namespace MCGalaxy
 #else
         const string CDN_BASE = CDN_URL + "net40/";
 #endif
-        
+
 #if MCG_STANDALONE
         static string DLL_URL = CDN_URL  + IOperatingSystem.DetectOS().StandaloneName;
+        const string CurrentVersionURL = BaseURL + "Uploads/current_version.txt";
+#elif NAS && !MCG_DOTNET && !MCG_STANDALONE && !NET_20 && !NET8_0 && !NET6_0
+        const string DLL_URL  = BaseURL + "Uploads/MCGalaxy_nas.dll";
+        const string CurrentVersionURL = BaseURL + "Uploads/nas_version.txt";
 #elif TEN_BIT_BLOCKS
         const string DLL_URL  = CDN_BASE + "MCGalaxy_infid.dll";
+        const string CurrentVersionURL = BaseURL + "Uploads/current_version.txt";
 #else
         const string DLL_URL  = CDN_BASE + "MCGalaxy_.dll";
+        const string CurrentVersionURL = BaseURL + "Uploads/current_version.txt";
 #endif
         const string GUI_URL  = CDN_BASE + "MCGalaxy.exe";
         const string CLI_URL  = CDN_BASE + "MCGalaxyCLI.exe";

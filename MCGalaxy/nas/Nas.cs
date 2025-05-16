@@ -12,6 +12,7 @@ using MCGalaxy.Commands;
 using MCGalaxy.Config;
 using System.Reflection;
 using System.Net;
+using MCGalaxy.Modules.Relay.Discord;
 
 //unknownshadow200: well player ids go from 0 up to 255. normal bots go from 127 down to 64, then 254 down to 127, then finally 63 down to 0.
 //UnknownShadow200: FromRaw adds 256 if the block id is >= 66, and ToRaw subtracts 256 if the block id is >= 66
@@ -118,14 +119,14 @@ namespace NotAwesomeSurvival
         { 
             get 
             { 
-                return "1.9.2.5"; 
+                return Server.NasVersion; 
             } 
         }
         public override string creator 
         { 
             get 
             { 
-                return "goodly"; 
+                return "HarmonyNetwork"; //Goodly no longer supports NAS. 
             } 
         }
         public const string textureURL = "https://dl.dropboxusercontent.com/s/2x5oxffkgpcyj16/nas.zip?dl=0";
@@ -144,16 +145,126 @@ namespace NotAwesomeSurvival
             return SavePath + p.name + ".txt";
         }
         public static bool firstEverPluginLoad = true;
-        public static void DownloadNasFiles()
+        public static bool EnsureFileExists(string url, string file)
         {
-            WebClient client = HttpUtil.CreateWebClient();
-            client.DownloadFile("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/selectorColors.png", Path + "selectorColors.png");
-            client.DownloadFile("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/terrain.png", Path + "terrain.png");
-            client.DownloadFile("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/effects/breakdust.properties", EffectsPath + "breakdust.properties");
-            client.DownloadFile("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/effects/breakleaf.properties", EffectsPath + "breakleaf.properties");
-            client.DownloadFile("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/effects/breakmeter.properties", EffectsPath + "breakmeter.properties");
-            client.DownloadFile("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/coredata/time.json", CoreSavePath + "time.json");
-            client.DownloadFile("https://github.com/cloverpepsi/place.cs/raw/main/global.json", "blockdefs/global.json");
+            if (File.Exists(file)) return true;
+
+            Logger.Log(LogType.SystemActivity, file + " doesn't exist, Downloading..");
+            try
+            {
+                using (WebClient client = HttpUtil.CreateWebClient())
+                {
+                    client.DownloadFile(url, file);
+                }
+                if (File.Exists(file))
+                {
+                    Logger.Log(LogType.SystemActivity, file + " download succesful!");
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                bool canRetry = HandleErrorResponse(ex, url, 30);
+                HttpUtil.DisposeErrorResponse(ex);
+                if (!canRetry)
+                {
+                    Logger.LogError("Downloading " + file + " failed, try again later", ex);
+                    return false;
+                }
+                else
+                {
+                    Retry(url, file);
+                }
+            }
+            return false;
+        }
+        public static void Retry(string url, string file)
+        {
+            EnsureFileExists(url, file);
+        }
+        public static bool HandleErrorResponse(Exception ex, string msg, int retry)
+        {
+            return HandleErrorResponse((WebException)ex, msg, retry);
+        }
+        public static bool HandleErrorResponse(WebException ex, string msg, int retry)
+        {
+            string err = HttpUtil.GetErrorResponse(ex);
+            HttpStatusCode status = GetStatus(ex);
+            // 429 errors simply require retrying after sleeping for a bit
+            if (status == (HttpStatusCode)429)
+            {
+                Sleep();
+                return true;
+            }
+
+            // 500 errors might be temporary outage, so still retry a few times
+            if (status >= (HttpStatusCode)500 && status <= (HttpStatusCode)504)
+            {
+                LogWarning(ex);
+                LogResponse(err);
+                return retry < 2;
+            }
+
+            // If unable to reach site at all, immediately give up
+            if (ex.Status == WebExceptionStatus.NameResolutionFailure)
+            {
+                LogWarning(ex);
+                return false;
+            }
+
+            // May be caused by connection dropout/reset, so still retry a few times
+            if (ex.InnerException is IOException)
+            {
+                LogWarning(ex);
+                return retry < 2;
+            }
+
+            LogError(ex, msg);
+            LogResponse(err);
+            return false;
+        }
+        static HttpStatusCode GetStatus(WebException ex)
+        {
+            if (ex.Response == null) return 0;
+            return ((HttpWebResponse)ex.Response).StatusCode;
+        }
+        static void LogError(Exception ex, string target)
+        {
+            Logger.Log(LogType.Warning, "Error sending request to Github API {0}: {1}", target, ex);
+        }
+
+        static void LogWarning(Exception ex)
+        {
+            Logger.Log(LogType.Warning, "Error sending request to Github API - " + ex.Message);
+        }
+
+        static void LogResponse(string err)
+        {
+            if (string.IsNullOrEmpty(err)) return;
+
+            // Github sometimes returns <html>..</html> responses for internal server errors
+            //  most of this is useless content, so just truncate these particular errors 
+            if (err.Length > 200) err = err.Substring(0, 200) + "...";
+
+            Logger.Log(LogType.Warning, "Github API returned: " + err);
+        }
+
+
+        static void Sleep()
+        {
+            float delay = 30;
+            Logger.Log(LogType.SystemActivity, "Waiting to download files...");
+            Thread.Sleep(TimeSpan.FromSeconds(delay + 0.5f));
+        }
+        public static void EnsureNasFilesExist()
+        {
+            EnsureFileExists("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/selectorColors.png", Path + "selectorColors.png");
+            EnsureFileExists("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/terrain.png", Path + "terrain.png");
+            EnsureFileExists("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/effects/breakdust.properties", EffectsPath + "breakdust.properties");
+            EnsureFileExists("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/effects/breakleaf.properties", EffectsPath + "breakleaf.properties");
+            EnsureFileExists("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/effects/breakmeter.properties", EffectsPath + "breakmeter.properties");
+            EnsureFileExists("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/coredata/time.json", CoreSavePath + "time.json");
+            EnsureFileExists("https://github.com/cloverpepsi/place.cs/raw/main/global.json", "blockdefs/global.json");
         }
         public override void Load(bool startup)
         {
@@ -183,11 +294,23 @@ namespace NotAwesomeSurvival
             }
             if (Directory.Exists("plugins/nas"))
             {
-                string[] files = Directory.GetFiles("plugins/nas");
-                foreach (string file in files)
+                string[] pluginfiles = Directory.GetFiles("plugins/nas");
+                foreach (string pluginfile in pluginfiles)
                 {
-                    File.Copy(file, System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/nas/" + file, true);
-                    File.Delete(file);
+                    string[] files = Directory.GetFiles("nas");
+                    foreach (string file in files)
+                    {
+                        if (!File.Exists(file))
+                        {
+                            File.Copy(pluginfile, System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/nas/" + pluginfile, true);
+                            File.Delete(pluginfile);
+                        }
+                        else
+                        {
+                            File.Delete(pluginfile);
+                            Logger.Log(LogType.Warning, "Duplicate file {0} found in plugins/nas folder, this should not have happened!");
+                        }
+                    }
                 }
             }
             if (!File.Exists("text/BookTitles.txt"))
@@ -249,8 +372,8 @@ namespace NotAwesomeSurvival
                 Server.Config.SkyColor = "#1489FF";
                 Server.Config.ShadowColor = "#888899";
                 SrvProperties.Save();
-                DownloadNasFiles();
             }
+            EnsureNasFilesExist();
             //I HATE IT
             OnlineStat.Stats.Add(PvP);
             OnlineStat.Stats.Add(Kills);

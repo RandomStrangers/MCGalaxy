@@ -38,15 +38,17 @@ namespace MCGalaxy
         public static PlayerExtList AutoloadMaps;
         public static PlayerMetaList RankInfo = new PlayerMetaList("text/rankinfo.txt");
         public static PlayerMetaList Notes = new PlayerMetaList("text/notes.txt");
-        
-        /// <summary> *** DO NOT USE THIS! *** Use VersionString, as this field is a constant and is inlined if used. </summary>
         public const string InternalVersion = "1.9.5.3";
-        public static string Version { get { return InternalVersion; } }
-        #if NAS
+        public static string Ver {  get { return InternalVersion; } } //Nas differs.
+        /// <summary> *** DO NOT USE THIS! *** Use VersionString, as this field is a constant and is inlined if used. </summary>
+#if NAS
+        public static string Version { get { return NasVersion; } }
         public static string SoftwareName = "MCGalaxy-NAS";
-        #else
+        public const string NasVersion = "1.0.0.1";
+#else
+        public static string Version { get { return InternalVersion; } }
         public static string SoftwareName = "MCGalaxy";
-        #endif
+#endif
         static string fullName;
         public static string SoftwareNameVersioned {
             // By default, if SoftwareName gets externally changed, that is reflected in SoftwareNameVersioned too

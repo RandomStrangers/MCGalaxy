@@ -49,7 +49,7 @@ namespace MCGalaxy.Gui
         // warn user if they're using the GUI with a DLL for different server version
         static void CheckVersions() {
             string gui_version = Server.InternalVersion;
-            string dll_version = Server.Version;
+            string dll_version = Server.Ver; // NAS differs.
             if (gui_version.CaselessEq(dll_version)) return;
             
             const string fmt = 

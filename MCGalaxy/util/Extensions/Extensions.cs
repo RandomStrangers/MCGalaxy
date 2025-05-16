@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 
 namespace MCGalaxy 
@@ -98,7 +99,7 @@ namespace MCGalaxy
  
             return str.Split(comma);
         }
-        
+
         public static void Separate(this string str, char splitter,
                                     out string prefix, out string suffix) {
             int index = str.IndexOf(splitter);

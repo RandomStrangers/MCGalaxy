@@ -68,7 +68,7 @@ namespace MCGalaxy
         
         public static void Load(Plugin pl, bool auto) {
             string ver = pl.MCGalaxy_Version;
-            if (!String.IsNullOrEmpty(ver) && new Version(ver) > new Version(Server.Version)) {
+            if (!String.IsNullOrEmpty(ver) && new Version(ver) > new Version(Server.InternalVersion)) {
                 string msg = string.Format("Plugin '{0}' requires a more recent version of {1}!", pl.name, Server.SoftwareName);
                 throw new InvalidOperationException(msg);
             }
