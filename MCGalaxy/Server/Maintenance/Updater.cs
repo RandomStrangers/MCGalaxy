@@ -28,9 +28,9 @@ namespace MCGalaxy
     public static class Updater 
     {
 #if NAS
-        public static string SourceURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas";
-        public const string BaseURL = "https://raw.githubusercontent.com/RandomStrangers/MCGalaxy/nas/";
-        public const string UploadsURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas/Uploads";
+        public static string SourceURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas-rework";
+        public const string BaseURL = "https://raw.githubusercontent.com/RandomStrangers/MCGalaxy/nas-rework/";
+        public const string UploadsURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas-rework/Uploads";
 #else
         public static string SourceURL = "https://github.com/ClassiCube/MCGalaxy";
         public const string BaseURL    = "https://raw.githubusercontent.com/ClassiCube/MCGalaxy/master/";
