@@ -31,7 +31,7 @@ namespace MCGalaxy.Modules.Games.CTF
             Command.Register(cmdCTF);
 
             CTFGame game     = CTFGame.Instance;
-            game.Config.Path = "properties/ctf.properties";
+            game.Config.Path = "props/ctf.props";
             game.ReloadConfig();
             game.AutoStart();
             
