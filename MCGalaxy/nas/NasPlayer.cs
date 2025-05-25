@@ -506,7 +506,7 @@ namespace NotAwesomeSurvival
             {
                 if (customDeathReason.Length == 0)
                 {
-                    customDeathReason = DeathReason(source);
+                    customDeathReason = DeathReason(source, p);
                 }
                 if (source == DamageSource.Entity)
                 {
