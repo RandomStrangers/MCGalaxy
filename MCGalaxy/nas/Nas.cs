@@ -347,13 +347,13 @@ namespace NotAwesomeSurvival
             MoveFile("global.json", "blockdefs/global.json"); //blockdefs
             MoveFile("default.txt", "blockprops/default.txt"); //blockprops
             MoveFile("customcolors.txt", "text/customcolors.txt"); //custom chat colors
-            MoveFile("command.properties", "properties/command.properties"); //command permissions
-            MoveFile("ExtraCommandPermissions.properties", "properties/ExtraCommandPermissions.properties"); //extra command permissions
-            MoveFile("ranks.properties", "properties/ranks.properties"); //ranks
+            MoveFile("command.properties", "props/command.props"); //command permissions
+            MoveFile("ExtraCommandPermissions.properties", "props/ExtraCommandPermissions.props"); //extra command permissions
+            MoveFile("ranks.properties", "props/ranks.props"); //ranks
             MoveFile("faq.txt", "text/faq.txt"); //faq
             MoveFile("messages.txt", "text/messages.txt"); //messages
             MoveFile("welcome.txt", "text/welcome.txt"); //welcome
-            string loadFile = "properties/loaded.txt";
+            string loadFile = "props/loaded.txt";
             string message = "Do not delete this file unless you are using the plugin for the first time!";
             if (!File.Exists(loadFile))
             {
