@@ -31,7 +31,7 @@ namespace MCGalaxy.Modules.Games.TW
             Command.Register(cmdTW);
             
             TWGame game      = TWGame.Instance;
-            game.Config.Path = "properties/tntwars.properties";
+            game.Config.Path = "props/tntwars.props";
             game.ReloadConfig();
             game.AutoStart();
             
