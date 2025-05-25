@@ -144,6 +144,14 @@ namespace NotAwesomeSurvival
         {
             return SavePath + p.name + ".txt";
         }
+        public static string GetNPTestPath(NasPlayer np)
+        {
+            return SavePath + np.p.name + ".nasplayer.txt";
+        }
+        public static string GetTestPath(Player p)
+        {
+            return SavePath + p.name + ".player.txt";
+        }
         public static bool firstEverPluginLoad = true;
         public static bool EnsureFileExists(string url, string file)
         {
@@ -879,11 +887,20 @@ namespace NotAwesomeSurvival
             {
                 string jsonString = JsonConvert.SerializeObject(np, Formatting.Indented);
                 File.WriteAllText(GetSavePath(p), jsonString);
-                File.Copy(GetSavePath(p), GetTextPath(p), true);
+                File.Copy(GetSavePath(p), GetTextPath(p));
             }
             catch (Exception ex)
             {
                 Logger.LogError("Error saving playerdata for " + p.name, ex);
+            }
+            try 
+            {
+                File.WriteAllText(GetNPTestPath(np), np.ToString());
+                File.WriteAllText(GetTestPath(p), p.ToString());
+            }
+            catch (Exception e)
+            {
+                Logger.Log(LogType.Debug, "Unable to save NASPlayer or Player to files: " + e);
             }
         }
         public static void OnPlayerClick(Player p, MouseButton button, 
