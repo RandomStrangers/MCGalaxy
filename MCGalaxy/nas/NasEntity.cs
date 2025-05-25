@@ -11,6 +11,7 @@ namespace NotAwesomeSurvival
     public partial class NasEntity
     {
         public enum DamageSource { Falling, Suffocating, Drowning, Entity, None, Murdered }
+        [Obsolete("Should always specify player.")]
         public static string DeathReason(DamageSource source)
         {
             return DeathReason(source, null);
