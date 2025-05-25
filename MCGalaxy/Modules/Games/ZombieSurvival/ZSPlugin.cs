@@ -31,7 +31,7 @@ namespace MCGalaxy.Modules.Games.ZS
             Command.Register(cmdZS);
             
             ZSGame game      = ZSGame.Instance;
-            game.Config.Path = "properties/zombiesurvival.properties";
+            game.Config.Path = "props/zombiesurvival.props";
             game.ReloadConfig();
             game.AutoStart();
             
