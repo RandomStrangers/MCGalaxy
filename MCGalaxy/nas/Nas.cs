@@ -887,6 +887,10 @@ namespace NotAwesomeSurvival
             {
                 string jsonString = JsonConvert.SerializeObject(np, Formatting.Indented);
                 File.WriteAllText(GetSavePath(p), jsonString);
+                if (File.Exists(GetTextPath(p))) 
+                {
+                    File.Delete(GetTextPath(p));
+                }
                 File.Copy(GetSavePath(p), GetTextPath(p));
             }
             catch (Exception ex)
