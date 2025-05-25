@@ -62,7 +62,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         [ConfigInt("extra-intents", "Intents", 0)]
         public int ExtraIntents;
         
-        public const string PROPS_PATH = "properties/discordbot.properties";
+        public const string PROPS_PATH = "props/discordbot.props";
         static ConfigElement[] cfg;
         
         public void Load() {
@@ -79,7 +79,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             using (StreamWriter w = FileIO.CreateGuarded(PROPS_PATH)) 
             {
                 w.WriteLine("# Discord relay bot configuration");
-                w.WriteLine("# See " + Updater.SourceURL + "/wiki/Discord-relay-bot/");
+                w.WriteLine("# See https://github.com/ClassiCube/MCGalaxy/wiki/Discord-relay-bot/");
                 w.WriteLine();
                 ConfigElement.Serialise(cfg, w, this);
             }
