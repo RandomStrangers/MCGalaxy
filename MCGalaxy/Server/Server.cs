@@ -130,7 +130,8 @@ namespace MCGalaxy
         }
         
         static void EnsureFilesExist() {
-            EnsureDirectoryExists("properties");
+            EnsureDirectoryDoesNotExist("properties");
+            EnsureDirectoryExists("props");
             EnsureDirectoryExists("levels");
             EnsureDirectoryExists("bots");
             EnsureDirectoryExists("text");
@@ -152,7 +153,13 @@ namespace MCGalaxy
                 Logger.LogError("Creating directory " + dir, ex);
             }
         }     
-        
+        public static void EnsureDirectoryDoesNotExist(string dir) {
+            try {
+                if (Directory.Exists(dir)) Directory.Delete(dir, true);
+            } catch (Exception ex) {
+                Logger.LogError("Deleting directory " + dir, ex);
+            }
+        }     
         public static void LoadAllSettings() { LoadAllSettings(false); }
         
         // TODO rethink this
