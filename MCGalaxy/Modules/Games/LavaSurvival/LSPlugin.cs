@@ -31,7 +31,7 @@ namespace MCGalaxy.Modules.Games.LS
             Command.Register(cmdLS);
             
             LSGame game      = LSGame.Instance;
-            game.Config.Path = "properties/lavasurvival.properties";
+            game.Config.Path = "props/lavasurvival.props";
             game.ReloadConfig();
             game.AutoStart();
             
