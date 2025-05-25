@@ -13,12 +13,17 @@ namespace NotAwesomeSurvival
         public enum DamageSource { Falling, Suffocating, Drowning, Entity, None, Murdered }
         public static string DeathReason(DamageSource source)
         {
+            return DeathReason(source, null);
+        }
+        public static string DeathReason(DamageSource source, Player p)
+        {
             switch (source)
             {
                 case DamageSource.Entity: 
                     return "@p &cdied.";
-                case DamageSource.Falling: 
-                    return "@p &cfell to their death.";
+                case DamageSource.Falling:
+                    if (p == null) return "@p &cfell to their death.";
+                    else return "@p &cfell to " + p.pronouns.Object + " death.";
                 case DamageSource.Suffocating: 
                     return "@p &esuffocated.";
                 case DamageSource.Drowning: 
