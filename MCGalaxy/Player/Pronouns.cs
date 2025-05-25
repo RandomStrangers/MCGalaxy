@@ -24,7 +24,7 @@ using MCGalaxy.Tasks;
 namespace MCGalaxy {
 
     public class Pronouns {
-        const string CONFIG_FILE = "properties/pronouns.properties";
+        const string CONFIG_FILE = "props/pronouns.props";
         const string PLAYER_PATH = "text/pronouns/";
 
         static readonly object locker = new object();
