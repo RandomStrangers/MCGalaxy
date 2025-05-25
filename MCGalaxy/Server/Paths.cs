@@ -39,17 +39,17 @@ namespace MCGalaxy
         public const string JokerFile = "text/joker.txt";        
         public const string EightBallFile = "text/8ball.txt";   
         
-        public const string BlockPermsFile  = "properties/block.properties";
-        public const string PlacePermsFile  = "properties/place.properties";
-        public const string DeletePermsFile = "properties/delete.properties";
+        public const string BlockPermsFile  = "props/block.props";
+        public const string PlacePermsFile  = "props/place.props";
+        public const string DeletePermsFile = "props/delete.props";
         
-        public const string CmdPermsFile = "properties/command.properties";
-        public const string CmdExtraPermsFile = "properties/ExtraCommandPermissions.properties";
-        public const string EconomyPropsFile = "properties/economy.properties";
-        public const string ServerPropsFile = "properties/server.properties";
-        public const string RankPropsFile = "properties/ranks.properties";
-        public const string AuthServicesFile = "properties/authservices.properties";
-        public const string CPEDisabledFile = "properties/cpe.properties";
+        public const string CmdPermsFile = "props/command.props";
+        public const string CmdExtraPermsFile = "props/ExtraCommandPermissions.props";
+        public const string EconomyPropsFile = "props/economy.props";
+        public const string ServerPropsFile = "props/server.props";
+        public const string RankPropsFile = "props/ranks.props";
+        public const string AuthServicesFile = "props/authservices.props";
+        public const string CPEDisabledFile = "props/cpe.props";
         
         public const string ImportsDir = "extra/import/";
         public const string WAYPOINTS_DIR = "extra/Waypoints/";
