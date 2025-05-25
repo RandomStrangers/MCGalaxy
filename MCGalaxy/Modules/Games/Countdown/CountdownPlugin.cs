@@ -31,7 +31,7 @@ namespace MCGalaxy.Modules.Games.Countdown
             Command.Register(cmdCD);
             
             CountdownGame game = CountdownGame.Instance;
-            game.Config.Path   = "properties/countdown.properties";
+            game.Config.Path   = "props/countdown.props";
             game.ReloadConfig();
             game.AutoStart();
             
