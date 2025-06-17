@@ -12,9 +12,7 @@ BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
  */
-using System;
 using System.Collections.Generic;
-using MCGalaxy.Blocks;
 using MCGalaxy.SQL;
 using BlockID = System.UInt16;
 
@@ -70,11 +68,11 @@ namespace MCGalaxy.Commands.Info
         }
         
         static void SearchCommands(Player p, string keyword, string modifier) {
-            List<string> commands  = Wildcard.Filter(Command.allCmds, keyword, cmd => cmd.name,
-                                                     null, Command.GetColoredName);
-            List<string> shortcuts = Wildcard.Filter(Command.allCmds, keyword, cmd => cmd.shortcut,
-                                                     cmd => !String.IsNullOrEmpty(cmd.shortcut), 
-                                                     Command.GetColoredName);
+            List<string> commands  = Wildcard.Filter(allCmds, keyword, cmd => cmd.name,
+                                                     null, GetColoredName);
+            List<string> shortcuts = Wildcard.Filter(allCmds, keyword, cmd => cmd.shortcut,
+                                                     cmd => !string.IsNullOrEmpty(cmd.shortcut),
+                                                     GetColoredName);
             
             // Match both names and shortcuts
             foreach (string shortcutCmd in shortcuts) 

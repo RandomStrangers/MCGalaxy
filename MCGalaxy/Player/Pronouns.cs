@@ -24,7 +24,7 @@ using MCGalaxy.Tasks;
 namespace MCGalaxy {
 
     public class Pronouns {
-        const string CONFIG_FILE = "props/pronouns.props";
+        const string CONFIG_FILE = "props/pronouns.properties";
         const string PLAYER_PATH = "text/pronouns/";
 
         static readonly object locker = new object();
@@ -256,7 +256,7 @@ namespace MCGalaxy {
         }
         void Write(StreamWriter w) {
             w.WriteLine(string.Format("{0} {1} {2} {3} {4} {5}",
-                Name, Subject, Object, Reflexive, (Plural ? "plural" : "singular"), ThirdPersonObjectiveSingular));
+                Name, Subject, Object, Reflexive, Plural ? "plural" : "singular", ThirdPersonObjectiveSingular));
             w.WriteLine();
         }
         public static void SaveFor(Player p) {

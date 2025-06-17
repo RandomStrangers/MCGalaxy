@@ -1,6 +1,5 @@
 ﻿// Part of fCraft | Copyright 2009-2015 Matvei Stefarov <me@matvei.org> | BSD-3 | See LICENSE.txt
 using System;
-using MCGalaxy;
 
 namespace MCGalaxy.Generator.fCraft 
 {

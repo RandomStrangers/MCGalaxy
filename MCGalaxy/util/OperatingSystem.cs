@@ -18,8 +18,10 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
+#if MCG_STANDALONE
+using System.Reflection;
+#endif
 
 namespace MCGalaxy.Platform
 {
@@ -96,7 +98,7 @@ namespace MCGalaxy.Platform
             // 8 kb should be more than enough to store the struct uname outputs
             sbyte* utsname = stackalloc sbyte[8192];
             uname(utsname);
-            string kernel  = new String(utsname);
+            string kernel  = new string(utsname);
 
             if (kernel == "Darwin") return new macOS();
             if (kernel == "Linux")  return new LinuxOS();

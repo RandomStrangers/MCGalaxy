@@ -15,9 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using System.IO;
-using MCGalaxy.Config;
 using MCGalaxy.Events.ServerEvents;
 
 namespace MCGalaxy.Modules.Games.TW
@@ -31,7 +28,7 @@ namespace MCGalaxy.Modules.Games.TW
             Command.Register(cmdTW);
             
             TWGame game      = TWGame.Instance;
-            game.Config.Path = "props/tntwars.props";
+            game.Config.Path = "props/tntwars.properties";
             game.ReloadConfig();
             game.AutoStart();
             

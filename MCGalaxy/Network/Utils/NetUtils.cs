@@ -44,24 +44,24 @@ namespace MCGalaxy
 
         public static void WriteI16(short value, byte[] array, int index) {
             array[index++] = (byte)(value >> 8);
-            array[index++] = (byte)(value);
+            array[index++] = (byte)value;
         }
 
         public static void WriteU16(ushort value, byte[] array, int index) {
             array[index++] = (byte)(value >> 8);
-            array[index++] = (byte)(value);
+            array[index++] = (byte)value;
         }
 
         public static void WriteI32(int value, byte[] array, int index) {
             array[index++] = (byte)(value >> 24);
             array[index++] = (byte)(value >> 16);
             array[index++] = (byte)(value >> 8);
-            array[index++] = (byte)(value);
+            array[index++] = (byte)value;
         }
 
         public unsafe static void WriteF32(float value, byte[] buffer, int i) {
             int num = *(int*)&value;
-            NetUtils.WriteI32(num, buffer, i);
+            WriteI32(num, buffer, i);
         }
 
         internal static int WritePos(Position pos, byte[] arr, int offset, bool extPos) {
@@ -93,7 +93,7 @@ namespace MCGalaxy
                 if (length == 0 && code != 0x20) { length = i + 1; }
                 characters[i] = ((char)code).Cp437ToUnicode();
             }
-            return new String(characters, 0, length);
+            return new string(characters, 0, length);
         }
 
         public static void Write(string str, byte[] array, int offset, bool hasCP437) {

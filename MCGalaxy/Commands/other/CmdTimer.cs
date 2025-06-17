@@ -44,7 +44,7 @@ namespace MCGalaxy.Commands.Misc {
 
             TimerArgs args = new TimerArgs();
             args.Message = message;
-            args.Repeats = (int)(TotalTime / 5) + 1;
+            args.Repeats = TotalTime / 5 + 1;
             args.Player  = p;
             
             p.cmdTimer = true;

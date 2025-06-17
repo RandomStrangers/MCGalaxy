@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using System.Collections.Generic;
 using System.IO;
 using MCGalaxy.SQL;
@@ -102,7 +101,7 @@ namespace MCGalaxy.DB
         }
         
         public static string FindOfflineIPMatches(Player p, string name, out string ip) {
-            string[] match = PlayerDB.MatchValues(p, name, "Name,IP");
+            string[] match = MatchValues(p, name, "Name,IP");
             ip   = match == null ? null : match[1];
             return match == null ? null : match[0];
         }

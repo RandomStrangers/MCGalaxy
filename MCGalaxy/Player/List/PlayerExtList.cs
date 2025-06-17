@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -70,20 +69,6 @@ namespace MCGalaxy {
         /// <summary> Returns whether the given name is in this list. </summary>
         public bool Contains(string name) {
             lock (locker) return names.CaselessContains(name);
-        }
-
-        /// <summary> Retrieves the data associated with the given name. </summary>
-        /// <remarks> Returns null if there is no data associated. </remarks>
-        [Obsolete("Use Get() instead")]
-        public string FindData(string name) {
-            lock (locker) {
-                int idx = names.CaselessIndexOf(name);
-                if (idx == -1) return null;
-                
-                string line = lines[idx];
-                idx = line.IndexOf(Separator);
-                return idx == -1 ? null : line.Substring(idx + 1);
-            }
         }
         
         /// <summary> Retrieves the data associated with the given name </summary>

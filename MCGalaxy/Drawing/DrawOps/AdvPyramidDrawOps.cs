@@ -33,7 +33,7 @@ namespace MCGalaxy.Drawing.Ops
         
         public override long BlocksAffected(Level lvl, Vec3S32[] marks) {
             long R = Radius, H = Height;
-            return (R * R * H) / 3;
+            return R * R * H / 3;
         }
         
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output) {
@@ -64,8 +64,8 @@ namespace MCGalaxy.Drawing.Ops
         
         public override long BlocksAffected(Level lvl, Vec3S32[] marks) {
             long R = Radius, H = Height;
-            long outer = (R * R * H) / 3;
-            long inner = ((R - 1) * (R - 1) * (H - 1)) / 3;
+            long outer = R * R * H / 3;
+            long inner = (R - 1) * (R - 1) * (H - 1) / 3;
             return outer - inner;
         }
         
@@ -78,7 +78,7 @@ namespace MCGalaxy.Drawing.Ops
             {
                 int dy         = Invert ? y - Min.Y : Max.Y - y;
                 int curRadius  = Radius * (dy + 1) / height;
-                int curRadius2 = Radius * (dy    ) / height;
+                int curRadius2 = Radius * dy     / height;
                 
                 for (ushort z = p1.Z; z <= p2.Z; z++)
                     for (ushort x = p1.X; x <= p2.X; x++)
@@ -87,7 +87,7 @@ namespace MCGalaxy.Drawing.Ops
                     if (xx > curRadius || zz > curRadius) continue;
                     
                     if (xx <= (curRadius - 1) && zz <= (curRadius - 1) && 
-                        xx <= (curRadius2)    && zz <= (curRadius2)  ) continue;
+                        xx <= curRadius2    && zz <= curRadius2  ) continue;
                     output(Place(x, y, z, brush));
                 }
             }

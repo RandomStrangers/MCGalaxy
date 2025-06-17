@@ -358,7 +358,7 @@ namespace MCGalaxy.Commands.CPE
                 }
             } else if (step == 4) {
                 if (CommandParser.GetUShort(p, value, "Texture ID", ref def.TopTex)) {
-                    step += (def.Shape == 0 ? 5 : 1); // skip other texture steps for sprites
+                    step += def.Shape == 0 ? 5 : 1; // skip other texture steps for sprites
                     if (def.Shape == 0) def.SetAllTex(def.TopTex);
                 }
             } else if (step == 5) {
@@ -400,7 +400,7 @@ namespace MCGalaxy.Commands.CPE
                     step++;
             } else if (step == 15) {
                 if (CommandParser.GetByte(p, value, "Fog density", ref def.FogDensity)) {
-                    step += (def.FogDensity == 0 ? 2 : 1);
+                    step += def.FogDensity == 0 ? 2 : 1;
                 }
             } else if (step == 16) {
                 ColorDesc rgb = default(ColorDesc);
@@ -716,7 +716,7 @@ namespace MCGalaxy.Commands.CPE
         static bool CheckRaw(Player p, string arg, BlockDefinitionsArgs args,
                              out int raw, bool air = false) {
             raw = -1;
-            int min = (air ? 0 : 1);
+            int min = air ? 0 : 1;
             int max = Block.MaxRaw;
             
             // Check for block names (can't use standard parsing behaviour)

@@ -15,9 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using System.IO;
-using MCGalaxy.Config;
 using MCGalaxy.Events.ServerEvents;
 
 namespace MCGalaxy.Modules.Games.Countdown
@@ -31,7 +28,7 @@ namespace MCGalaxy.Modules.Games.Countdown
             Command.Register(cmdCD);
             
             CountdownGame game = CountdownGame.Instance;
-            game.Config.Path   = "props/countdown.props";
+            game.Config.Path   = "props/countdown.properties";
             game.ReloadConfig();
             game.AutoStart();
             

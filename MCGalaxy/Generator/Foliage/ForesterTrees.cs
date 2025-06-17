@@ -210,7 +210,7 @@ namespace MCGalaxy.Generator.Foliage {
                 // of generating branches properly so that
                 // you get enough on small trees, but not too many on larger trees.
                 // Very difficult to get right... do not touch!
-                double value = (branchdensity * 220 * height) / (Math.Pow(ydist + dist, 3));
+                double value = branchdensity * 220 * height / Math.Pow(ydist + dist, 3);
                 if (value < random()) continue;
                 
                 float slope = (float)(branchslope + (0.5 - random()) * 0.16);
@@ -225,8 +225,8 @@ namespace MCGalaxy.Generator.Foliage {
                     basesize = endrad;
                 } else {
                     branchy = coord.Y - dist * slope;
-                    basesize = (endrad + (trunkradius - endrad) * 
-                                (topy - branchy) / trunkheight);
+                    basesize = endrad + (trunkradius - endrad) * 
+                                (topy - branchy) / trunkheight;
                 }
                 
                 double startsize = basesize * (1 + random()) * 0.618 * Math.Pow(dist / height, 0.618);
@@ -259,7 +259,7 @@ namespace MCGalaxy.Generator.Foliage {
             if (endrad < 1) endrad = 1;
             if (midrad < endrad) midrad = endrad;
             
-            bool mangrove = (this is MangroveTree);
+            bool mangrove = this is MangroveTree;
             // Make the root buttresses, if indicated
             if (ROOT_BUTTRESSES || mangrove) {
                 // The start radius of the trunk should be a little smaller if we are using root buttresses.
@@ -303,7 +303,7 @@ namespace MCGalaxy.Generator.Foliage {
         /// <remarks> Primarily, sets up the foliage cluster locations. </remarks>
         public override void Prepare() {
             Vec3S32 treeposition = pos;
-            trunkradius = (float)(Math.Sqrt(height * TRUNK_THICKNESS));
+            trunkradius = (float)Math.Sqrt(height * TRUNK_THICKNESS);
             if (trunkradius < 1) trunkradius = 1;
             trunkheight = 0.618f * height;
             int ystart = treeposition.Y, yend = treeposition.Y + height;

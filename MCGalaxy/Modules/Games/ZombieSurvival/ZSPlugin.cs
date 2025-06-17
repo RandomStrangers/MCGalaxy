@@ -15,9 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using System.IO;
-using MCGalaxy.Config;
 using MCGalaxy.Events.ServerEvents;
 
 namespace MCGalaxy.Modules.Games.ZS
@@ -31,7 +28,7 @@ namespace MCGalaxy.Modules.Games.ZS
             Command.Register(cmdZS);
             
             ZSGame game      = ZSGame.Instance;
-            game.Config.Path = "props/zombiesurvival.props";
+            game.Config.Path = "props/zombiesurvival.properties";
             game.ReloadConfig();
             game.AutoStart();
             

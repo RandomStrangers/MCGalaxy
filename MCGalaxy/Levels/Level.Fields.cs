@@ -118,7 +118,7 @@ namespace MCGalaxy {
         public bool CanDelete { get { return Config.Deletable && Config.BuildType != BuildType.NoModify; } }
 
         public int WinChance {
-            get { return Config.RoundsPlayed == 0 ? 100 : (Config.RoundsHumanWon * 100) / Config.RoundsPlayed; }
+            get { return Config.RoundsPlayed == 0 ? 100 : Config.RoundsHumanWon * 100 / Config.RoundsPlayed; }
         }
         
         public bool hasPortals, hasMessageBlocks;

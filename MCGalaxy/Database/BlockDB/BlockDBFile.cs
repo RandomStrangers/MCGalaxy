@@ -113,8 +113,8 @@ namespace MCGalaxy.DB
                         for (int i = 0; i < count; i++) {
                             int index = entryPtr[i].Index;
                             int x = index % dims.X;
-                            int y = (index / dims.X) / dims.Z;
-                            int z = (index / dims.X) % dims.Z;
+                            int y = index / dims.X / dims.Z;
+                            int z = index / dims.X % dims.Z;
                             entryPtr[i].Index = (y * length + z) * width + x;
                         }
                         dst.Write(bulk, 0, count * EntrySize);
@@ -166,7 +166,7 @@ namespace MCGalaxy.DB
                     BlockDBEntry* entryPtr = (BlockDBEntry*)ptr;
                     int count = ReadBackward(s, bulk, entryPtr);
                     if (count == 0) break;
-                    entryPtr += (count - 1);
+                    entryPtr += count - 1;
                     
                     for (int i = count - 1; i >= 0; i--) {
                         if (entryPtr->TimeDelta < start) return true;                        
@@ -189,7 +189,7 @@ namespace MCGalaxy.DB
         }
         
         static void WriteU16(ushort value, byte[] array, int index) {
-            array[index++] = (byte)(value);
+            array[index++] = (byte)value;
             array[index++] = (byte)(value >> 8);
         }
         

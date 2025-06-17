@@ -17,7 +17,6 @@
  */
 using System;
 using MCGalaxy.Commands;
-using MCGalaxy.Commands.Building;
 
 namespace MCGalaxy.Drawing.Transforms 
 {

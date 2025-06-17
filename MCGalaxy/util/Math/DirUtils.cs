@@ -38,7 +38,7 @@ namespace MCGalaxy.Maths
         
         public static void EightYaw(byte yaw, out int dirX, out int dirZ) {
             dirX = 0; dirZ = 0;
-            const byte extent = (64 / 4) * 3;
+            const byte extent = 64 / 4 * 3;
             
             if (yaw < (0 + extent) || yaw > (256 - extent))
                 dirZ = -1;
@@ -83,12 +83,12 @@ namespace MCGalaxy.Maths
         }
         
         public static Vec3F32 GetDirVectorExt(ushort yaw, ushort pitch) {
-            const double packed2Rad = (2 * Math.PI) / 65536.0;
+            const double packed2Rad = 2 * Math.PI / 65536.0;
             return GetDirVector(yaw * packed2Rad, pitch * packed2Rad);
         }
         
         public static Vec3F32 GetDirVector(byte yaw, byte pitch) {
-            const double packed2Rad = (2 * Math.PI) / 256.0;
+            const double packed2Rad = 2 * Math.PI / 256.0;
             return GetDirVector(yaw * packed2Rad, pitch * packed2Rad);
         }
         

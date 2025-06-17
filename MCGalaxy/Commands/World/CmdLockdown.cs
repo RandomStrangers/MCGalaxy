@@ -15,8 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System.IO;
-using System.Threading;
 namespace MCGalaxy.Commands.World {
     
     public sealed class CmdLockdown : Command2 {

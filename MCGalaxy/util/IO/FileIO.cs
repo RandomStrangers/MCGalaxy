@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using System.IO;
 
 namespace MCGalaxy 
@@ -77,13 +76,13 @@ namespace MCGalaxy
                 string src = realPath + ".tmp";
                 string dst = realPath;
                 string old = realPath + ".old";
-                
-                FileIO.TryDelete(old);
-                bool didExist = FileIO.TryMove(dst, old);
+
+                TryDelete(old);
+                bool didExist = TryMove(dst, old);
                 File.Move(src, dst);
                 
                 // Only delete old 'good' file if everything worked
-                if (didExist) FileIO.TryDelete(old);
+                if (didExist) TryDelete(old);
             }
         }
     }

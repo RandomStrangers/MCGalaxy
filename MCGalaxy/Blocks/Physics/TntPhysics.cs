@@ -16,8 +16,6 @@
     permissions and limitations under the Licenses.
  */
 using System;
-using System.Collections.Generic;
-using MCGalaxy.Games;
 using BlockID = System.UInt16;
 
 namespace MCGalaxy.Blocks.Physics 
@@ -100,9 +98,9 @@ namespace MCGalaxy.Blocks.Physics
         
         static void Explode(Level lvl, ushort x, ushort y, ushort z,
                             int size, Random rand, int prob, TNTImmuneFilter filter) {
-            for (int xx = (x - size); xx <= (x + size ); ++xx)
-                for (int yy = (y - size); yy <= (y + size); ++yy)
-                    for (int zz = (z - size); zz <= (z + size); ++zz)
+            for (int xx = x - size; xx <= (x + size ); ++xx)
+                for (int yy = y - size; yy <= (y + size); ++yy)
+                    for (int zz = z - size; zz <= (z + size); ++zz)
             {
                 int index;
                 BlockID b = lvl.GetBlock((ushort)xx, (ushort)yy, (ushort)zz, out index);

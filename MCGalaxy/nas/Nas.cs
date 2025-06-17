@@ -9,10 +9,8 @@ using MCGalaxy.DB;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Network;
 using MCGalaxy.Commands;
-using MCGalaxy.Config;
 using System.Reflection;
 using System.Net;
-using MCGalaxy.Modules.Relay.Discord;
 
 //unknownshadow200: well player ids go from 0 up to 255. normal bots go from 127 down to 64, then 254 down to 127, then finally 63 down to 0.
 //UnknownShadow200: FromRaw adds 256 if the block id is >= 66, and ToRaw subtracts 256 if the block id is >= 66
@@ -112,7 +110,7 @@ namespace NotAwesomeSurvival
         { 
             get 
             { 
-                return "nas"; 
+                return "Nas"; 
             } 
         }
         public override string MCGalaxy_Version 
@@ -126,7 +124,7 @@ namespace NotAwesomeSurvival
         { 
             get 
             { 
-                return "HarmonyNetwork"; //Goodly no longer supports NAS. 
+                return "HarmonyNetwork"; //Goodly/Zoey no longer supports NAS. 
             } 
         }
         public const string textureURL = "https://dl.dropboxusercontent.com/s/2x5oxffkgpcyj16/nas.zip?dl=0";
@@ -143,14 +141,6 @@ namespace NotAwesomeSurvival
         public static string GetTextPath(Player p)
         {
             return SavePath + p.name + ".txt";
-        }
-        public static string GetNPTestPath(NasPlayer np)
-        {
-            return SavePath + np.p.name + ".nasplayer.txt";
-        }
-        public static string GetTestPath(Player p)
-        {
-            return SavePath + p.name + ".player.txt";
         }
         public static bool firstEverPluginLoad = true;
         public static bool EnsureFileExists(string url, string file)
@@ -355,9 +345,9 @@ namespace NotAwesomeSurvival
             MoveFile("global.json", "blockdefs/global.json"); //blockdefs
             MoveFile("default.txt", "blockprops/default.txt"); //blockprops
             MoveFile("customcolors.txt", "text/customcolors.txt"); //custom chat colors
-            MoveFile("command.properties", "props/command.props"); //command permissions
-            MoveFile("ExtraCommandPermissions.properties", "props/ExtraCommandPermissions.props"); //extra command permissions
-            MoveFile("ranks.properties", "props/ranks.props"); //ranks
+            MoveFile("command.properties", "props/command.properties"); //command permissions
+            MoveFile("ExtraCommandPermissions.properties", "props/ExtraCommandPermissions.properties"); //extra command permissions
+            MoveFile("ranks.properties", "props/ranks.properties"); //ranks
             MoveFile("faq.txt", "text/faq.txt"); //faq
             MoveFile("messages.txt", "text/messages.txt"); //messages
             MoveFile("welcome.txt", "text/welcome.txt"); //welcome
@@ -440,6 +430,7 @@ namespace NotAwesomeSurvival
                     SrvProperties.Save();
                     //Server.SetMainLevel(mapName);
                     Thread.Sleep(1000);
+                    Chat.Message(ChatScope.All, "A server restart is required to initialize NAS plugin.", null, null, true);
                     Server.Stop(true, "A server restart is required to initialize NAS plugin.");
                 }
             }
@@ -509,7 +500,7 @@ namespace NotAwesomeSurvival
             level.Config.CloudColor = NasTimeCycle.globalCloudColor;
             level.Config.LightColor = NasTimeCycle.globalSunColor;
         }
-        public static void OnPlayerConnect(Player p)
+        /*public static void OnPlayerConnect(Player p)
         {
             //Player.Console.Message("OnPlayerConnect");
             string path = GetSavePath(p);
@@ -576,6 +567,63 @@ namespace NotAwesomeSurvival
             p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar delete◙", 45, 0, true));
             p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar confirmdelete◙", 25, 0, true));
             p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar toolinfo◙", 23, 0, true));
+        }*/
+        static void OnPlayerConnect(Player p)
+        {
+            //Player.Console.Message("OnPlayerConnect");
+            string path = GetSavePath(p);
+            string pathText = GetTextPath(p);
+
+            NasPlayer np;
+
+            if (!File.Exists(pathText)) File.Create(pathText).Dispose();
+            if (File.Exists(path))
+            {
+                string jsonString = File.ReadAllText(path);
+                np = JsonConvert.DeserializeObject<NasPlayer>(jsonString);
+                np.SetPlayer(p);
+                p.Extras[PlayerKey] = np;
+                Logger.Log(LogType.Debug, "Loaded save file " + path + "!");
+            }
+            else
+            {
+                np = new NasPlayer(p);
+                Orientation rot = new Orientation(Server.mainLevel.rotx, Server.mainLevel.roty);
+                NasEntity.SetLocation(np, Server.mainLevel.name, Server.mainLevel.SpawnPos, rot);
+                p.Extras[PlayerKey] = np;
+                Logger.Log(LogType.Debug, "Created new save file for " + p.name + "!");
+            }
+            np.DisplayHealth();
+            np.inventory.ClearHotbar();
+            np.inventory.DisplayHeldBlock(NasBlock.Default);
+            if (!np.bigUpdate || np.resetCount != 1)
+            { //tick up the one whenever you want to do a reset
+                np.UpdateValues();
+            }
+            //Q and E
+            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar left◙", 16, 0, true));
+            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar right◙", 18, 0, true));
+            //arrow keys
+            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar up◙", 200, 0, true));
+            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar down◙", 208, 0, true));
+            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar left◙", 203, 0, true));
+            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar right◙", 205, 0, true));
+
+            //WASD (lol)
+            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen up◙", 17, 0, true));
+            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen down◙", 31, 0, true));
+            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen left◙", 30, 0, true));
+            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen right◙", 32, 0, true));
+
+            //M and R
+            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar move◙", 50, 0, true)); //was 50 (M) was 42 (shift)
+            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar inv◙", 19, 0, true)); //was 23 (i)
+
+            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar delete◙", 45, 0, true));
+            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar confirmdelete◙", 25, 0, true));
+
+            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar toolinfo◙", 23, 0, true));
+
         }
         public static void OnPlayerCommand(Player p, string cmd, string message, CommandData data)
         {
@@ -874,7 +922,7 @@ namespace NotAwesomeSurvival
                 np.isInserting = false;
             }
         }
-        public static void OnPlayerDisconnect(Player p, string reason)
+        /*public static void OnPlayerDisconnect(Player p, string reason)
         {
             NasPlayer np = (NasPlayer)p.Extras[PlayerKey];
             //np.hasBeenSpawned = false;
@@ -897,15 +945,16 @@ namespace NotAwesomeSurvival
             {
                 Logger.LogError("Error saving playerdata for " + p.name, ex);
             }
-            try 
-            {
-                File.WriteAllText(GetNPTestPath(np), np.ToString());
-                File.WriteAllText(GetTestPath(p), p.ToString());
-            }
-            catch (Exception e)
-            {
-                Logger.Log(LogType.Debug, "Unable to save NASPlayer or Player to files: " + e);
-            }
+        }*/
+        static void OnPlayerDisconnect(Player p, string reason)
+        {
+            NasPlayer np = (NasPlayer)p.Extras[PlayerKey];
+
+            //np.hasBeenSpawned = false;
+            string jsonString;
+            jsonString = JsonConvert.SerializeObject(np, Formatting.Indented);
+            File.WriteAllText(GetSavePath(p), jsonString);
+            File.WriteAllText(GetTextPath(p), jsonString);
         }
         public static void OnPlayerClick(Player p, MouseButton button, 
             MouseAction action, ushort yaw, ushort pitch, byte entity, 

@@ -16,10 +16,7 @@
     permissions and limitations under the Licenses.
  */
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using MCGalaxy.Network;
 
 namespace MCGalaxy {
     
@@ -282,8 +279,8 @@ namespace MCGalaxy {
                 if (parts.Length != 7) continue;
                 col.Code = parts[0][0]; col.Fallback = parts[1][0]; col.Name = parts[2];
                 
-                if (Byte.TryParse(parts[3], out col.R) && Byte.TryParse(parts[4], out col.G)
-                    && Byte.TryParse(parts[5], out col.B) && Byte.TryParse(parts[6], out col.A)) {
+                if (byte.TryParse(parts[3], out col.R) && byte.TryParse(parts[4], out col.G)
+                    && byte.TryParse(parts[5], out col.B) && byte.TryParse(parts[6], out col.A)) {
                     List[col.Index] = col;
                 }
             }
@@ -307,9 +304,9 @@ namespace MCGalaxy {
                 G = (UnHex(hex[2]) << 4) | UnHex(hex[3]);
                 B = (UnHex(hex[4]) << 4) | UnHex(hex[5]);
             } else {
-                R = UnHex(hex[0]); R |= (R << 4);
-                G = UnHex(hex[1]); G |= (G << 4);
-                B = UnHex(hex[2]); B |= (B << 4);
+                R = UnHex(hex[0]); R |= R << 4;
+                G = UnHex(hex[1]); G |= G << 4;
+                B = UnHex(hex[2]); B |= B << 4;
             }
 
             c.R = (byte)R; c.G = (byte)G; c.B = (byte)B; c.A = 255;
@@ -324,9 +321,9 @@ namespace MCGalaxy {
         }
         
         public static int UnHex(char c) {
-            if (c >= '0' && c <= '9') { return (int)(c - '0'); }
-            if (c >= 'a' && c <= 'f') { return (int)(c - 'a') + 10; }
-            if (c >= 'A' && c <= 'F') { return (int)(c - 'A') + 10; }
+            if (c >= '0' && c <= '9') { return c - '0'; }
+            if (c >= 'a' && c <= 'f') { return c - 'a' + 10; }
+            if (c >= 'A' && c <= 'F') { return c - 'A' + 10; }
             
             return -1;
         }

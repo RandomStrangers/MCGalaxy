@@ -1,6 +1,5 @@
 ﻿// Part of fCraft | Copyright 2009-2015 Matvei Stefarov <me@matvei.org> | BSD-3 | See LICENSE.txt
 using System;
-using MCGalaxy.Commands;
 using MCGalaxy.Generator.Foliage;
 using BlockID = System.UInt16;
 
@@ -116,7 +115,7 @@ namespace MCGalaxy.Generator.fCraft {
             for( int i = 0; i < args.LoweredCorners; i++ ) {
                 corners[c++] = -args.Bias;
             }
-            float midpoint = (args.MidPoint * args.Bias);
+            float midpoint = args.MidPoint * args.Bias;
 
             // shuffle corners
             int[] keys = new int[corners.Length];
@@ -145,7 +144,7 @@ namespace MCGalaxy.Generator.fCraft {
             // Calculate above/below water multipliers
             float aboveWaterMultiplier = 0;
             if( desiredWaterLevel != 1 ) {
-                aboveWaterMultiplier = (args.MaxHeight / (1 - desiredWaterLevel));
+                aboveWaterMultiplier = args.MaxHeight / (1 - desiredWaterLevel);
             }
 
             // Calculate the slope

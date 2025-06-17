@@ -60,9 +60,9 @@ namespace MCGalaxy.Gui.Popups
             int x = 0;
             // Centre if even count, align under row if odd count
             if ((rows & 1) == 0) {
-                x = (rows * btnWidth) / 2 - (100 / 2);
+                x = rows * btnWidth / 2 - (100 / 2);
             } else {
-                x = ((rows / 2) * btnWidth) + (btnWidth - 100) / 2;
+                x = (rows / 2 * btnWidth) + (btnWidth - 100) / 2;
             }
 
             btnCancel.Location = new Point(8 + x, 12 + btnHeight * btnsPerCol);

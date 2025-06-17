@@ -15,10 +15,7 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using MCGalaxy.DB;
 using MCGalaxy.SQL;
 
@@ -38,7 +35,7 @@ namespace MCGalaxy.Commands.Maintenance {
                     case "backup": DoBackup(p, args); break;
                     case "restore": DoRestore(p); break;
                     case "import": DoImport(p, args); break;
-                    case "update" : p.Message("Use &T/Update &Sto update the server"); break;
+                    case "update" : Find("Update").Use(p, "check"); break;
                     case "upgradeblockdb": DoBlockDBUpgrade(p, args); break;
                     default: Help(p); break;
             }

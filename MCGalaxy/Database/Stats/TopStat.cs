@@ -135,7 +135,7 @@ namespace MCGalaxy.DB
             OrderBy = orderBy;
             if (OrderBy == null)
                 OrderBy = " " + column + " ";
-            OrderBy += (ascending ? "asc" : "desc");
+            OrderBy += ascending ? "asc" : "desc";
         }
         
         

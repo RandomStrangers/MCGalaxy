@@ -23,16 +23,9 @@
 //-------|__________________________________|-------\\
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using MCGalaxy.Blocks.Physics;
-using MCGalaxy.Commands.World;
-using MCGalaxy.Events;
-using MCGalaxy.Events.LevelEvents;
-using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Games;
 using MCGalaxy.Maths;
-using MCGalaxy.Network;
-using BlockID = System.UInt16;
 
 namespace MCGalaxy.Modules.Games.TW
 {    
@@ -318,7 +311,7 @@ namespace MCGalaxy.Modules.Games.TW
             if (i == 1) col = "&7";
             if (i == 2) col = "&4";
             
-            return String.Format("{0}) {2} - {1}{3} points", i + 1, col,
+            return string.Format("{0}) {2} - {1}{3} points", i + 1, col,
                                  p.p.ColoredName, p.Score);
         }
         

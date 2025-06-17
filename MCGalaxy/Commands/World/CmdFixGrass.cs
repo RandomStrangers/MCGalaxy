@@ -18,7 +18,6 @@
  */
 using MCGalaxy.Drawing.Ops;
 using MCGalaxy.Maths;
-using MCGalaxy.Network;
 using BlockID = System.UInt16;
 
 namespace MCGalaxy.Commands.World {

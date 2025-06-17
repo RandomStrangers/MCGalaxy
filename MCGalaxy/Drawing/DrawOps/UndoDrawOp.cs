@@ -77,8 +77,8 @@ namespace MCGalaxy.Drawing.Ops
                 int index = kvp.Key;
                 
                 int x = index % dims.X;
-                int y = (index / dims.X) / dims.Z;
-                int z = (index / dims.X) % dims.Z;
+                int y = index / dims.X / dims.Z;
+                int z = index / dims.X % dims.Z;
 
                 output(Place((ushort)x, (ushort)y, (ushort)z, kvp.Value));
             }
@@ -94,8 +94,8 @@ namespace MCGalaxy.Drawing.Ops
             if (block == Block.Invalid) return; // Exported BlockDB SQL table entries don't have previous block
             
             int x = e.Index % dims.X;
-            int y = (e.Index / dims.X) / dims.Z;
-            int z = (e.Index / dims.X) % dims.Z;
+            int y = e.Index / dims.X / dims.Z;
+            int z = e.Index / dims.X % dims.Z;
             
             if (x < Min.X || y < Min.Y || z < Min.Z) return;
             if (x > Max.X || y > Max.Y || z > Max.Z) return;

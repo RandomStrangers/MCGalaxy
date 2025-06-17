@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using MCGalaxy.DB;
 using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Maths;
@@ -38,9 +37,9 @@ namespace MCGalaxy.Drawing.Ops
         public override void SetMarks(Vec3S32[] m) {
             Origin = m[0];
             CopyState cState = CopyState;
-            if (cState.X != cState.OriginX) m[0].X -= (cState.Width - 1);
-            if (cState.Y != cState.OriginY) m[0].Y -= (cState.Height - 1);
-            if (cState.Z != cState.OriginZ) m[0].Z -= (cState.Length - 1);
+            if (cState.X != cState.OriginX) m[0].X -= cState.Width - 1;
+            if (cState.Y != cState.OriginY) m[0].Y -= cState.Height - 1;
+            if (cState.Z != cState.OriginZ) m[0].Z -= cState.Length - 1;
             
             Min = m[0]; Max = m[0];
             Max.X += cState.Width - 1; Max.Y += cState.Height - 1; Max.Z += cState.Length - 1;

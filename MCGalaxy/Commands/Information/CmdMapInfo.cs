@@ -105,10 +105,10 @@ namespace MCGalaxy.Commands.Info
             PrintRanks(p, data.Build, "  Modifiable by ");
             
             string realmOwner = cfg.RealmOwner;
-            if (String.IsNullOrEmpty(cfg.RealmOwner)) {
+            if (string.IsNullOrEmpty(cfg.RealmOwner)) {
                 realmOwner = LevelInfo.DefaultRealmOwner(data.MapName);
             }
-            if (String.IsNullOrEmpty(realmOwner)) return;
+            if (string.IsNullOrEmpty(realmOwner)) return;
             
             string[] owners = realmOwner.SplitComma();
             p.Message("  This map is a personal realm of {0}", owners.Join(n => p.FormatNick(n)));

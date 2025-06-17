@@ -120,7 +120,7 @@ namespace MCGalaxy.Gui {
         }
         
         void cmd_cmbSpecific_SelectedIndexChanged(object sender, EventArgs e) {
-            commandItems.OnSpecificChanged(((ComboBox)sender));
+            commandItems.OnSpecificChanged((ComboBox)sender);
         }
         
         void cmd_btnHelp_Click(object sender, EventArgs e) {
@@ -168,7 +168,7 @@ namespace MCGalaxy.Gui {
             GuiRank rank = (GuiRank)box.SelectedItem;
             if (rank == null) return;
             
-            int boxIdx = Array.IndexOf<ComboBox>(commandExtraBoxes, box);
+            int boxIdx = Array.IndexOf(commandExtraBoxes, box);
             CommandExtraPerms orig = extraPermsList[boxIdx];
             CommandExtraPerms copy = LookupExtraPerms(orig.CmdName, orig.Num);
             

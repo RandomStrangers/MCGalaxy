@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using BlockID = System.UInt16;
 using BlockRaw = System.Byte;
 
@@ -159,9 +158,9 @@ namespace MCGalaxy.Network
             for (int i = 0, j = 0; i < count; i++) 
             {
                 int index = indices[i];
-                int x = (index % level.Width);
-                int y = (index / level.Width) / level.Length;
-                int z = (index / level.Width) % level.Length;
+                int x = index % level.Width;
+                int y = index / level.Width / level.Length;
+                int z = index / level.Width % level.Length;
                 
                 data[j++] = Opcode.SetBlock;
                 data[j++] = (byte)(x >> 8); data[j++] = (byte)x;
@@ -203,9 +202,9 @@ namespace MCGalaxy.Network
             for (int i = 0, j = 0; i < count; i++) 
             {
                 int index = indices[i];
-                int x = (index % level.Width);
-                int y = (index / level.Width) / level.Length;
-                int z = (index / level.Width) % level.Length;
+                int x = index % level.Width;
+                int y = index / level.Width / level.Length;
+                int z = index / level.Width % level.Length;
                 
                 data[j++] = Opcode.SetBlock;
                 data[j++] = (byte)(x >> 8); data[j++] = (byte)x;
@@ -226,9 +225,9 @@ namespace MCGalaxy.Network
             for (int i = 0, j = 0; i < count; i++) 
             {
                 int index = indices[i];
-                int x = (index % level.Width);
-                int y = (index / level.Width) / level.Length;
-                int z = (index / level.Width) % level.Length;
+                int x = index % level.Width;
+                int y = index / level.Width / level.Length;
+                int z = index / level.Width % level.Length;
                 
                 data[j++] = Opcode.SetBlock;
                 data[j++] = (byte)(x >> 8); data[j++] = (byte)x;

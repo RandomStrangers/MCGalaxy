@@ -113,7 +113,7 @@ Trying to mix two versions is unsupported - you may experience issues";
             string players = " (" + playerCount + " players)";
             
             // ArgumentException thrown if text length is > 63
-            string text = (Server.Config.Name + players);
+            string text = Server.Config.Name + players;
             if (text.Length > 63) text = text.Substring(0, 63);
             notifyIcon.Text = text;
         }

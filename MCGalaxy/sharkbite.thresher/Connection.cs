@@ -239,7 +239,7 @@ namespace Sharkbite.Irc
 		/// <returns>A string array holding the correctly sized messages.</returns>
 		string[] BreakUpMessage(string message, int maxSize) 
 		{
-			int pieces = (int) Math.Ceiling( (float)message.Length / (float)maxSize );
+			int pieces = (int) Math.Ceiling(message.Length / (float)maxSize );
 			string[] parts = new string[ pieces ];
 			for( int i = 0; i < pieces; i++ ) 
 			{
@@ -609,7 +609,7 @@ namespace Sharkbite.Irc
 			}
 			else 
 			{
-				return String.Join(" ", strings, start, (strings.Length - start) );
+				return string.Join(" ", strings, start, strings.Length - start );
 			}
 		}
 		

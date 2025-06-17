@@ -294,7 +294,7 @@ namespace MCGalaxy.Modules.Games.ZS
 
         
         public override void OutputMapInfo(Player p, string map, LevelConfig cfg) {
-            int winChance = cfg.RoundsPlayed == 0 ? 100 : (cfg.RoundsHumanWon * 100) / cfg.RoundsPlayed;
+            int winChance = cfg.RoundsPlayed == 0 ? 100 : cfg.RoundsHumanWon * 100 / cfg.RoundsPlayed;
             p.Message("&a{0} &Srounds played total, &a{1}% &Swin chance for humans.",
                       cfg.RoundsPlayed, winChance);
         }

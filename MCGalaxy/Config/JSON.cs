@@ -278,7 +278,7 @@ namespace MCGalaxy.Config
         protected override void WriteValue(object value) { WriteObject(value); }
         
         void WriteConfigValue(ConfigAttribute a, string value) {
-            if (String.IsNullOrEmpty(value)) {
+            if (string.IsNullOrEmpty(value)) {
                 WriteNull();
             } else if (a is ConfigBoolAttribute || a is ConfigIntegerAttribute || a is ConfigRealAttribute) {
                 Write(value);

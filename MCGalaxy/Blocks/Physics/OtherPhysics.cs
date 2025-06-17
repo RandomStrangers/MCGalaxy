@@ -106,7 +106,7 @@ namespace MCGalaxy.Blocks.Physics {
             tree.Generate(x, y, z, (xT, yT, zT, bT) =>
                         {
                             if (!lvl.IsAirAt(xT, yT, zT)) return;
-                            lvl.Blockchange(xT, yT, zT, (ushort)bT);
+                            lvl.Blockchange(xT, yT, zT, bT);
                         });
             
             C.Data.Data = PhysicsArgs.RemoveFromChecks;

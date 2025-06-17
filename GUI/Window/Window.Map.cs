@@ -28,7 +28,7 @@ namespace MCGalaxy.Gui {
 
             string name = map_txtName.Text;
             string seed = map_txtSeed.Text;
-            if (String.IsNullOrEmpty(name)) { Popup.Warning("Map name cannot be blank."); return; }
+            if (string.IsNullOrEmpty(name)) { Popup.Warning("Map name cannot be blank."); return; }
             
             string x = Map_GetComboboxSize(map_cmbX, "width");
             if (x == null) return;           
@@ -40,7 +40,7 @@ namespace MCGalaxy.Gui {
             if (type == null) return;            
 
             string args = name + " " + x + " " + y + " " + z + " " + type;
-            if (!String.IsNullOrEmpty(seed)) args += " " + seed;
+            if (!string.IsNullOrEmpty(seed)) args += " " + seed;
             
             Thread genThread = new Thread(() => DoGen(name, args));
             genThread.Name = "GuiGenMap";

@@ -30,7 +30,7 @@ namespace MCGalaxy.Blocks.Extended {
             if (message == null) return false;
             message = message.Replace("@p", p.name);
             
-            if (message != p.prevMsg || (alwaysRepeat || Server.Config.RepeatMBs)) {
+            if (message != p.prevMsg || alwaysRepeat || Server.Config.RepeatMBs) {
                 Execute(p, message, new Vec3S32(x, y, z));
             }
             return true;
@@ -57,7 +57,7 @@ namespace MCGalaxy.Blocks.Extended {
         
         public static bool Validate(Player p, string message, bool allCmds) {
             string text;
-            List<string> cmds = MessageBlock.GetParts(message, out text);
+            List<string> cmds = GetParts(message, out text);
             
             foreach (string cmd in cmds) 
             {

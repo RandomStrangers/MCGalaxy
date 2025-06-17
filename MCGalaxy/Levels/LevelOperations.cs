@@ -18,9 +18,6 @@
 using System;
 using System.IO;
 using System.Text;
-using MCGalaxy.DB;
-using MCGalaxy.Events.LevelEvents;
-using MCGalaxy.SQL;
 
 namespace MCGalaxy 
 {

@@ -15,8 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-
-using System;
 namespace MCGalaxy.Commands.Moderation {
     
     public sealed class CmdPossess : Command2 {
@@ -46,7 +44,7 @@ namespace MCGalaxy.Commands.Moderation {
                 
                 Unpossess(target);
                 p.invincible = false;
-                Command.Find("Hide").Use(p, "", data);
+                Find("Hide").Use(p, "", data);
                 p.Message("Stopped possessing {0}&S.", p.FormatNick(target));
             } else {
                 Player target = PlayerInfo.FindMatches(p, name);
@@ -64,9 +62,9 @@ namespace MCGalaxy.Commands.Moderation {
                     Player prev = PlayerInfo.FindExact(p.possess);
                     if (prev != null) Unpossess(prev);
                 }
-                
-                Command.Find("TP").Use(p, target.name, data);
-                if (!p.hidden) Command.Find("Hide").Use(p, "", data);
+
+                Find("TP").Use(p, target.name, data);
+                if (!p.hidden) Find("Hide").Use(p, "", data);
                 p.possess = target.name;
                 target.following = p.name;
                 if (!p.invincible) p.invincible = true;

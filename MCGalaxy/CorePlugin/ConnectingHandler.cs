@@ -14,7 +14,6 @@ permissions and limitations under the Licenses.
  */
 using System;
 using MCGalaxy.Authentication;
-using MCGalaxy.Events;
 using MCGalaxy.Network;
 
 namespace MCGalaxy.Core {

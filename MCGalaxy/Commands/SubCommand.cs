@@ -120,7 +120,7 @@ namespace MCGalaxy.Commands {
             {
                 if (subCmd.AnyMatchingAlias(sub)) {
                     throw new ArgumentException(
-                        String.Format("One or more aliases of the existing subcommand \"{0}\" conflicts with the subcommand \"{1}\" that is being registered.",
+                        string.Format("One or more aliases of the existing subcommand \"{0}\" conflicts with the subcommand \"{1}\" that is being registered.",
                         sub.Name, subCmd.Name));
                 }
             }

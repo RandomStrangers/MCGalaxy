@@ -148,7 +148,7 @@ namespace fNbt {
             if (length < 0) throw new InvalidDataException("Negative list size given");
 
             for (int i = 0; i < length; i++) {
-                NbtTag newTag = NbtTag.Construct(ListType);
+                NbtTag newTag = Construct(ListType);
                 newTag.ReadTag(reader);
                 Tags.Add(newTag);
             }
@@ -275,7 +275,7 @@ namespace fNbt {
         readonly byte[] strBuffer = new byte[64];
 
         public NbtBinaryReader(Stream input, bool bigEndian) : base(input) {
-            swapNeeded = (BitConverter.IsLittleEndian == bigEndian);
+            swapNeeded = BitConverter.IsLittleEndian == bigEndian;
         }
 
         public NbtTagType ReadTagType() {

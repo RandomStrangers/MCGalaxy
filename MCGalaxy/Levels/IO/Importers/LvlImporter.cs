@@ -127,7 +127,7 @@ namespace MCGalaxy.Levels.IO
                 int* ptrInt = (int*)ptr;
                 for (int j = 0; j < entries; j++) {
                     C.Index    = *ptrInt;         ptrInt++;
-                    C.data.Raw = (uint)(*ptrInt); ptrInt++;
+                    C.data.Raw = (uint)*ptrInt; ptrInt++;
                     lvl.ListCheck.Items[i + j] = C;
                 }
             }

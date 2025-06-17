@@ -76,7 +76,7 @@ namespace MCGalaxy.Scripting
             return null;
         }
 
-        static bool IsPluginDLL(Assembly a) { return String.IsNullOrEmpty(a.Location); }
+        static bool IsPluginDLL(Assembly a) { return string.IsNullOrEmpty(a.Location); }
         
         
         /// <summary> Constructs instances of all types which derive from T in the given assembly. </summary>
@@ -99,12 +99,23 @@ namespace MCGalaxy.Scripting
         }
         
         /// <summary> Loads the given assembly from disc (and associated .pdb debug data) </summary>
-        public static Assembly LoadAssembly(string path) {
-            byte[] data  = File.ReadAllBytes(path);
-            byte[] debug = GetDebugData(path);
-            return Assembly.Load(data, debug);
+        public static Assembly LoadAssembly(string path) 
+        {
+            return LoadAssembly(path, true);
         }
-        
+        public static Assembly LoadAssembly(string path, bool loadDebug)
+        {
+            byte[] data = File.ReadAllBytes(path);
+            if (loadDebug)
+            {
+                byte[] debug = GetDebugData(path);
+                return Assembly.Load(data, debug);
+            }
+            else
+            {
+                return Assembly.Load(data);
+            }
+        }
         static byte[] GetDebugData(string path) {
             if (Server.RunningOnMono()) {
                 // Cmdtest.dll -> Cmdtest.dll.mdb
@@ -183,7 +194,7 @@ namespace MCGalaxy.Scripting
             
             // Ensure that plugin files are loaded in a consistent order,
             //  in case plugins have a dependency on other plugins
-            Array.Sort<string>(files);
+            Array.Sort(files);
             
             foreach (string path in files)
             {
@@ -203,8 +214,9 @@ namespace MCGalaxy.Scripting
             foreach (Plugin pl in plugins)
             {
                 if (Plugin.FindCustom(pl.name) != null)
+                {
                     throw new AlreadyLoadedException("Plugin " + pl.name + " is already loaded");
-                
+                }
                 Plugin.Load(pl, auto);
             }
             return plugins;

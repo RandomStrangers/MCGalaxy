@@ -19,7 +19,9 @@ using System;
 using System.IO;
 using System.Net;
 using MCGalaxy.Network;
+#if MCG_STANDALONE
 using MCGalaxy.Platform;
+#endif
 using MCGalaxy.Tasks;
 
 namespace MCGalaxy 

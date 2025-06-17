@@ -16,7 +16,6 @@ using System;
 using System.Windows.Forms;
 using MCGalaxy.Modules.Relay.Discord;
 using MCGalaxy.Modules.Relay.IRC;
-using MCGalaxy.SQL;
 
 namespace MCGalaxy.Gui {
 
@@ -134,7 +133,7 @@ namespace MCGalaxy.Gui {
         }
 
         void dis_lnkHelp_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            GuiUtils.OpenBrowser(Updater.SourceURL + "/wiki/Discord-relay-bot/");
+            GuiUtils.OpenBrowser("https://github.com/ClassiCube/MCGalaxy/wiki/Discord-relay-bot/");
         }
     }
 }

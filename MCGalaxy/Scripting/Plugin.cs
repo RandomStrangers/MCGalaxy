@@ -68,7 +68,7 @@ namespace MCGalaxy
         
         public static void Load(Plugin pl, bool auto) {
             string ver = pl.MCGalaxy_Version;
-            if (!String.IsNullOrEmpty(ver) && new Version(ver) > new Version(Server.InternalVersion)) {
+            if (!string.IsNullOrEmpty(ver) && new Version(ver) > new Version(Server.InternalVersion)) {
                 string msg = string.Format("Plugin '{0}' requires a more recent version of {1}!", pl.name, Server.SoftwareName);
                 throw new InvalidOperationException(msg);
             }
@@ -83,19 +83,21 @@ namespace MCGalaxy
                     Logger.Log(LogType.SystemActivity, "Plugin {0} was not loaded, you can load it with /pload", pl.name);
                 }
                 
-                if (!String.IsNullOrEmpty(pl.welcome)) Logger.Log(LogType.SystemActivity, pl.welcome);
+                if (!string.IsNullOrEmpty(pl.welcome)) Logger.Log(LogType.SystemActivity, pl.welcome);
             } catch {           
-                if (!String.IsNullOrEmpty(pl.creator)) Logger.Log(LogType.Warning, "You can go bug {0} about {1} failing to load.", pl.creator, pl.name);
+                if (!string.IsNullOrEmpty(pl.creator)) Logger.Log(LogType.Warning, "You can go bug {0} about {1} failing to load.", pl.creator, pl.name);
                 throw;
             }
         }
 
         public static bool Unload(Plugin pl) {
             bool success = UnloadPlugin(pl, false);
-            
-            // TODO only remove if successful?
-            custom.Remove(pl);
-            core.Remove(pl);
+
+            if (success)
+            {
+                custom.Remove(pl);
+                core.Remove(pl);
+            }
             return success;
         }
         
@@ -126,24 +128,24 @@ namespace MCGalaxy
         public static void LoadAll() {
             LoadCorePlugin(new CorePlugin());
             
-            LoadCorePlugin(new MCGalaxy.Modules.Moderation.Review.ReviewPlugin());
-            LoadCorePlugin(new MCGalaxy.Modules.Moderation.Notes.NotesPlugin());
-            LoadCorePlugin(new MCGalaxy.Modules.Relay.Discord.DiscordPlugin());
-            LoadCorePlugin(new MCGalaxy.Modules.Relay.IRC.IRCPlugin());
-            LoadCorePlugin(new MCGalaxy.Modules.Security.IPThrottler());
-            LoadCorePlugin(new MCGalaxy.Modules.Warps.WarpsPlugin());
+            LoadCorePlugin(new Modules.Moderation.Review.ReviewPlugin());
+            LoadCorePlugin(new Modules.Moderation.Notes.NotesPlugin());
+            LoadCorePlugin(new Modules.Relay.Discord.DiscordPlugin());
+            LoadCorePlugin(new Modules.Relay.IRC.IRCPlugin());
+            LoadCorePlugin(new Modules.Security.IPThrottler());
+            LoadCorePlugin(new Modules.Warps.WarpsPlugin());
 
 #if !MCG_STANDALONE
-            LoadCorePlugin(new MCGalaxy.Modules.Compiling.CompilerPlugin());
+            LoadCorePlugin(new Modules.Compiling.CompilerPlugin());
 #endif
 #if NAS && TEN_BIT_BLOCKS && !NET_20
             Load(new NotAwesomeSurvival.Nas(), true);
 #endif
-            LoadCorePlugin(new MCGalaxy.Modules.Games.Countdown.CountdownPlugin());
-            LoadCorePlugin(new MCGalaxy.Modules.Games.CTF.CTFPlugin());
-            LoadCorePlugin(new MCGalaxy.Modules.Games.LS.LSPlugin());
-            LoadCorePlugin(new MCGalaxy.Modules.Games.TW.TWPlugin());
-            LoadCorePlugin(new MCGalaxy.Modules.Games.ZS.ZSPlugin());
+            LoadCorePlugin(new Modules.Games.Countdown.CountdownPlugin());
+            LoadCorePlugin(new Modules.Games.CTF.CTFPlugin());
+            LoadCorePlugin(new Modules.Games.LS.LSPlugin());
+            LoadCorePlugin(new Modules.Games.TW.TWPlugin());
+            LoadCorePlugin(new Modules.Games.ZS.ZSPlugin());
             
             IScripting.AutoloadPlugins();
         }
@@ -153,7 +155,7 @@ namespace MCGalaxy
             if (disabled.CaselessContains(plugin.name)) return;
             
             plugin.Load(true);
-            Plugin.core.Add(plugin);
+            core.Add(plugin);
         }
     }
 }

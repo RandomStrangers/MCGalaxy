@@ -53,7 +53,7 @@ namespace MCGalaxy {
             // 32-63: index
             // 0-31 : block type
             ulong flags = (ulong)index << posShift;
-            flags |= (ulong)block;
+            flags |= block;
             
             lock (locker) Add(flags);
         }

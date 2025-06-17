@@ -15,10 +15,7 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Drawing.Ops;
-using BlockID = System.UInt16;
 
 namespace MCGalaxy.Commands.Building 
 {

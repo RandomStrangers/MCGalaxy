@@ -50,7 +50,7 @@ namespace MCGalaxy.Generator.Realistic
             }
 
             //Normalize
-            float range = (max - min);
+            float range = max - min;
             for (int i = 0; i < array.Length; ++i)
                 array[i] = (array[i] - min) / range;
         }
@@ -104,7 +104,7 @@ namespace MCGalaxy.Generator.Realistic
         /// <summary> Calculates smoothed noise across the given cell and its 8 neighbours </summary>
         unsafe static float SmoothNoise(float* noise, int i) {
             float corners = (noise[i - ONEX - ONEY] + noise[i + ONEX - ONEY] + noise[i - ONEX + ONEY] + noise[i + ONEX + ONEY]) / 16;
-            float sides   = (noise[i - ONEX] + noise[i + ONEX] + noise[i - ONEY] + noise[i + ONEY] / 8); // should be outside brackets, but kept for backwards compatibility
+            float sides   = noise[i - ONEX] + noise[i + ONEX] + noise[i - ONEY] + noise[i + ONEY] / 8; // should be outside brackets, but kept for backwards compatibility
             float center  = noise[i] / 4;
             return corners + sides + center;
         }

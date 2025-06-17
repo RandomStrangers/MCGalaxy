@@ -28,11 +28,6 @@ namespace MCGalaxy {
         /// <summary> Messages all players on a particular level </summary>
         /// <remarks> Excludes players who are ignoring all chat </remarks>
         Level,
-        [Obsolete("Chatrooms have been removed")]
-        Chatroom,
-        [Obsolete("Chatrooms have been removed")]
-        AllChatrooms,
-        
         /// <summary> Messages all players of a given rank </summary>
         Rank,
         /// <summary> Messages all players who can use an ItemPerms argument. </summary>
@@ -89,14 +84,13 @@ namespace MCGalaxy {
             return pl.level == arg && !pl.Ignores.All;
         }
         
-        static bool DeprecatedFilter(Player pl, object arg)   { return false; }    
         public static bool FilterRank(Player pl, object arg)  { return pl.Rank == (LevelPermission)arg; }
         public static bool FilterPerms(Player pl, object arg) { return ((ItemPerms)arg).UsableBy(pl); }
         public static bool FilterPM(Player pl, object arg)    { return pl == arg; }
         
         public static ChatMessageFilter[] scopeFilters = new ChatMessageFilter[] {
-            FilterAll, FilterGlobal, FilterLevel, DeprecatedFilter, 
-            DeprecatedFilter, FilterRank, FilterPerms, FilterPM,
+            FilterAll, FilterGlobal, FilterLevel, 
+            FilterRank, FilterPerms, FilterPM,
         };
         
         /// <summary> Filters chat to only players that can see the source player. </summary>

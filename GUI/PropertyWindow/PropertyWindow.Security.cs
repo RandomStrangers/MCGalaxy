@@ -118,7 +118,7 @@ namespace MCGalaxy.Gui {
             sec_numIPSecs.Enabled = enabled;
         }
         
-        void VerifyAdminsChecked(object sender, System.EventArgs e) {
+        void VerifyAdminsChecked(object sender, EventArgs e) {
             sec_cmbVerifyRank.Enabled = sec_cbVerifyAdmins.Checked;
         }
     }

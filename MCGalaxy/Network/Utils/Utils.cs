@@ -28,7 +28,7 @@ namespace MCGalaxy.Network
             if (ip.AddressFamily == AddressFamily.InterNetwork) {
                 byte[] addr = ip.GetAddressBytes();
                 // range of 172.16.0.0 - 172.31.255.255
-                if (addr[0] == 172 && (addr[1] >= 16 && addr[1] <= 31)) return true;
+                if (addr[0] == 172 && addr[1] >= 16 && addr[1] <= 31) return true;
                 
                 // range of 192.168.0.0 to 192.168.255.255
                 if (addr[0] == 192 && addr[1] == 168) return true;

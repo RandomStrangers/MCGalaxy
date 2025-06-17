@@ -15,7 +15,6 @@ permissions and limitations under the Licenses.
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Threading;
 using MCGalaxy.Drawing;
 using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Drawing.Transforms;
@@ -25,6 +24,9 @@ using MCGalaxy.Maths;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using MCGalaxy.Undo;
+#if NAS
+using Newtonsoft.Json;
+#endif
 using BlockID = System.UInt16;
 
 namespace MCGalaxy {
@@ -46,9 +48,13 @@ namespace MCGalaxy {
         /// <remarks> Use 'truename' for displaying/logging, use 'name' for storing data </remarks>
         public string truename;
         /// <summary> The underlying socket for sending/receiving raw data </summary>
+#if NAS
+        [JsonIgnore] public INetSocket Socket;
+        [JsonIgnore] public IGameSession Session;
+#else
         public INetSocket Socket;
         public IGameSession Session;
-        
+#endif
         public DateTime LastAction, AFKCooldown;
         public bool IsAfk, AutoAfk;
         public bool cmdTimer;
@@ -69,8 +75,13 @@ namespace MCGalaxy {
 
         public int warn;
         public byte id;
+#if NAS
+        [JsonIgnore] public IPAddress IP;
+        [JsonIgnore] public string ip;
+#else
         public IPAddress IP;
         public string ip;
+#endif
         public string color;
         public Group group;
         public LevelPermission hideRank = LevelPermission.Banned;
@@ -94,7 +105,7 @@ namespace MCGalaxy {
         /// <summary> Whether this player is a 'Super' player (Console, IRC, etc) </summary>
         public readonly bool IsSuper;
         /// <summary> Whether this player is the console player instance. </summary>
-        public bool IsConsole { get { return this == Player.Console; } }
+        public bool IsConsole { get { return this == Console; } }
         
         public virtual string FullName { get { return color + prefix + DisplayName; } }  
         public string ColoredName { get { return color + DisplayName; } }

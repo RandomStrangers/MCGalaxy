@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using System.IO;
 using MCGalaxy.Config;
 using MCGalaxy.Events.ServerEvents;
@@ -62,7 +61,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         [ConfigInt("extra-intents", "Intents", 0)]
         public int ExtraIntents;
         
-        public const string PROPS_PATH = "props/discordbot.props";
+        public const string PROPS_PATH = "props/discordbot.properties";
         static ConfigElement[] cfg;
         
         public void Load() {

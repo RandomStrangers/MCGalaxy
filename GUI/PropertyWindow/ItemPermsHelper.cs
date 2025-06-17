@@ -55,7 +55,7 @@ namespace MCGalaxy.Gui {
             
             List<LevelPermission> perms;
             ComboBox[] boxes;            
-            int boxIdx = Array.IndexOf<ComboBox>(AllowBoxes, box);
+            int boxIdx = Array.IndexOf(AllowBoxes, box);
             
             if (boxIdx == -1) {
                 if (curPerms.Disallowed == null)
@@ -63,7 +63,7 @@ namespace MCGalaxy.Gui {
                 
                 perms = curPerms.Disallowed;
                 boxes = DisallowBoxes;
-                boxIdx = Array.IndexOf<ComboBox>(DisallowBoxes, box);
+                boxIdx = Array.IndexOf(DisallowBoxes, box);
             } else {
                 if (curPerms.Allowed == null)
                     curPerms.Allowed = new List<LevelPermission>();

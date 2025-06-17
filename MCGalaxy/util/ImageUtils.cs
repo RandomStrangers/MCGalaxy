@@ -188,14 +188,14 @@ namespace MCGalaxy.Util
         
         Pixel Get24BppPixel(int x, int y) {
             Pixel p;
-            byte* ptr = (scan0 + y * stride) + (x * 3);
+            byte* ptr = scan0 + y * stride + (x * 3);
             p.B = ptr[0]; p.G = ptr[1]; p.R = ptr[2]; p.A = 255;
             return p;
         }
         
         Pixel Get32BppPixel(int x, int y) {
             Pixel p;
-            byte* ptr = (scan0 + y * stride) + (x * 4);            
+            byte* ptr = scan0 + y * stride + (x * 4);            
             p.B = ptr[0]; p.G = ptr[1]; p.R = ptr[2]; p.A = ptr[3];
             return p;
         }

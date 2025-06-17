@@ -23,7 +23,6 @@ using MCGalaxy.Commands;
 using MCGalaxy.Commands.Chatting;
 using MCGalaxy.DB;
 using MCGalaxy.Events.PlayerEvents;
-using MCGalaxy.Events.ServerEvents;
 using MCGalaxy.Games;
 using MCGalaxy.Maths;
 using MCGalaxy.Network;
@@ -403,7 +402,7 @@ namespace MCGalaxy
             if (TimesDied > short.MaxValue && Database.Backend.EnforcesIntegerLimits)
                 TimesDied = short.MaxValue;
 
-            if (Server.Config.AnnounceDeathCount && (TimesDied > 0 && TimesDied % 10 == 0)) {
+            if (Server.Config.AnnounceDeathCount && TimesDied > 0 && TimesDied % 10 == 0) {
                 AnnounceDeath("@p &Shas died &3" + TimesDied + " times");
             }
             deathCooldown = DateTime.UtcNow.Add(cooldown);

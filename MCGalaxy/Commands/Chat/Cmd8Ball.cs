@@ -47,7 +47,7 @@ namespace MCGalaxy.Commands.Chatting
            
             StringBuilder builder = new StringBuilder(question.Length);
             foreach (char c in question) {
-                if (Char.IsLetterOrDigit(c)) builder.Append(c);
+                if (char.IsLetterOrDigit(c)) builder.Append(c);
             }
            
             string msg = p.ColoredName + " &Sasked the &b8-Ball: &f" + question;

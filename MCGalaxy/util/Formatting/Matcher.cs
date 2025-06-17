@@ -75,7 +75,7 @@ namespace MCGalaxy
         /// <returns> If exactly one match, the matching item. </returns>
         public static T Find<T>(Player p, string name, out int matches, IEnumerable<T> items,
                                 Predicate<T> filter, StringFormatter<T> nameGetter, string group, int limit = 5)  {
-            return Find<T>(p, name, out matches, items, filter, nameGetter, nameGetter, group, limit);
+            return Find(p, name, out matches, items, filter, nameGetter, nameGetter, group, limit);
         }
         
         

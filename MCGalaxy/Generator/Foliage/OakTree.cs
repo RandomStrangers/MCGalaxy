@@ -42,7 +42,7 @@ namespace MCGalaxy.Generator.Foliage {
             
             // calculate variables
             size = Math.Max(maxExtent, 2); // max of initial cluster and all other clusters
-            height = (trunkHeight * 5 / 4) + (maxBranchHeight + 2); // branchEndY
+            height = (trunkHeight * 5 / 4) + maxBranchHeight + 2; // branchEndY
         }
         
         public override void Generate(ushort x, ushort y, ushort z, TreeOutput output) {

@@ -67,7 +67,7 @@ namespace MCGalaxy.Bots {
                 if (obj == null || obj.Meta == null) continue;
                 
                 BotProperties data = (BotProperties)obj.Meta;
-                if (String.IsNullOrEmpty(data.DisplayName)) data.DisplayName = data.Name;
+                if (string.IsNullOrEmpty(data.DisplayName)) data.DisplayName = data.Name;
                 props.Add(data);
             }
             return props;
@@ -104,7 +104,7 @@ namespace MCGalaxy.Bots {
         }
         
         internal static void LoadAi(BotProperties props, PlayerBot bot) {
-            if (String.IsNullOrEmpty(props.AI)) return;
+            if (string.IsNullOrEmpty(props.AI)) return;
             try {
                 ScriptFile.Parse(Player.Console, bot, props.AI);
             } catch (Exception ex) {
@@ -183,7 +183,7 @@ namespace MCGalaxy.Bots {
             bot.ScaleX = ScaleX; bot.ScaleY = ScaleY; bot.ScaleZ = ScaleZ;
 
             long longCreationDate;
-            if (!String.IsNullOrEmpty(CreationDate) && long.TryParse(CreationDate, out longCreationDate)) bot.CreationDate = longCreationDate;
+            if (!string.IsNullOrEmpty(CreationDate) && long.TryParse(CreationDate, out longCreationDate)) bot.CreationDate = longCreationDate;
         }
     }
 }

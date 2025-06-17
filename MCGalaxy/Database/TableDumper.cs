@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using System.IO;
 
 namespace MCGalaxy.SQL 
@@ -65,7 +64,7 @@ namespace MCGalaxy.SQL
             for (int col = 0; col < numColumns; col++) 
             {
                 sql.Write(record.DumpValue(col));
-                sql.Write((col < numColumns - 1 ? ", " : ");"));
+                sql.Write(col < numColumns - 1 ? ", " : ");");
             }
             
             sql.WriteLine();

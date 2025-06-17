@@ -55,29 +55,29 @@ namespace MCGalaxy.DB
         }
 
         public override long CountEntries(Stream s) {
-            return (s.Length / BlockDBFile.EntrySize) - BlockDBFile.HeaderEntries;
+            return (s.Length / EntrySize) - HeaderEntries;
         }
         
         // Inlined WriteI32/WriteU16 for better performance
         static void WriteEntry(BlockDBEntry entry, byte[] bulk, int index) {
-            bulk[index + 0 ] = (byte)(entry.PlayerID);
+            bulk[index + 0 ] = (byte)entry.PlayerID;
             bulk[index + 1 ] = (byte)(entry.PlayerID >> 8);
             bulk[index + 2 ] = (byte)(entry.PlayerID >> 16);
             bulk[index + 3 ] = (byte)(entry.PlayerID >> 24);
             
-            bulk[index + 4 ] = (byte)(entry.TimeDelta);
+            bulk[index + 4 ] = (byte)entry.TimeDelta;
             bulk[index + 5 ] = (byte)(entry.TimeDelta >> 8);
             bulk[index + 6 ] = (byte)(entry.TimeDelta >> 16);
             bulk[index + 7 ] = (byte)(entry.TimeDelta >> 24);
             
-            bulk[index + 8 ] = (byte)(entry.Index);
+            bulk[index + 8 ] = (byte)entry.Index;
             bulk[index + 9 ] = (byte)(entry.Index >> 8);
             bulk[index + 10] = (byte)(entry.Index >> 16);
             bulk[index + 11] = (byte)(entry.Index >> 24);
             
             bulk[index + 12] = entry.OldRaw;
             bulk[index + 13] = entry.NewRaw;
-            bulk[index + 14] = (byte)(entry.Flags);
+            bulk[index + 14] = (byte)entry.Flags;
             bulk[index + 15] = (byte)(entry.Flags >> 8);
         }
         
@@ -86,7 +86,7 @@ namespace MCGalaxy.DB
             int count = (int)Math.Min(remaining, BulkEntries);
             
             if (count > 0) {
-                BlockDBFile.ReadFully(s, bulk, 0, count * EntrySize);
+                ReadFully(s, bulk, 0, count * EntrySize);
             }
             return count;
         }
@@ -99,7 +99,7 @@ namespace MCGalaxy.DB
             if (count > 0) {
                 pos -= count * EntrySize;
                 s.Position = pos;
-                BlockDBFile.ReadFully(s, bulk, 0, count * EntrySize);
+                ReadFully(s, bulk, 0, count * EntrySize);
                 s.Position = pos; // set correct position for next backward read
             }
             return count;

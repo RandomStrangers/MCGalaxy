@@ -16,7 +16,6 @@
     permissions and limitations under the Licenses.
  */
 using System;
-using MCGalaxy.Games;
 using BlockID = System.UInt16;
 
 namespace MCGalaxy.Blocks.Physics {
@@ -36,7 +35,7 @@ namespace MCGalaxy.Blocks.Physics {
         public static void DoLava(Level lvl, ref PhysInfo C) {
             // upper 3 bits are time delay
             if (C.Data.Data < (4 << 5)) {
-                C.Data.Data += (1 << 5); return;
+                C.Data.Data += 1 << 5; return;
             }
             
             if (lvl.Config.FiniteLiquids) {
@@ -59,11 +58,11 @@ namespace MCGalaxy.Blocks.Physics {
         }
         
         
-        const int flowed_xMax = (1 << 0);
-        const int flowed_xMin = (1 << 1);
-        const int flowed_zMax = (1 << 2);
-        const int flowed_zMin = (1 << 3);
-        const int flowed_yMin = (1 << 4);
+        const int flowed_xMax = 1 << 0;
+        const int flowed_xMin = 1 << 1;
+        const int flowed_zMax = 1 << 2;
+        const int flowed_zMin = 1 << 3;
+        const int flowed_yMin = 1 << 4;
         const int flowed_maskAll = 0x1F;
         
         

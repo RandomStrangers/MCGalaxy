@@ -40,7 +40,7 @@ namespace MCGalaxy.Drawing.Brushes
             int n = (op.Coords.X + 1217 * op.Coords.Y + 4751 * op.Coords.Z + 673 * seed) & mask;
             n = (n >> 13) ^ n;
             int raw = (n * (n * n * 60493 + 19990303) + 1376312589) & mask;
-            next = (int)Math.Floor((raw / (double)mask) * blocks.Length);
+            next = (int)Math.Floor(raw / (double)mask * blocks.Length);
             return blocks[next];
         }
     }

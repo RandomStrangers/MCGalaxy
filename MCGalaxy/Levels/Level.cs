@@ -371,7 +371,7 @@ namespace MCGalaxy
                 get { return (BlockID)(oldRaw | ((flags & 0x03)       << Block.ExtendedShift)); }
             }
             public BlockID NewBlock {
-                get { return (BlockID)(newRaw | (((flags & 0xC >> 2)) << Block.ExtendedShift)); }
+                get { return (BlockID)(newRaw | ((flags & 0xC >> 2) << Block.ExtendedShift)); }
             }
             public DateTime Time {
                 get { return Server.StartTime.AddTicks((flags >> 4) * TimeSpan.TicksPerSecond); }
@@ -381,7 +381,7 @@ namespace MCGalaxy
                 TimeSpan delta = DateTime.UtcNow.Subtract(Server.StartTime);
                 flags = (int)delta.TotalSeconds << 4;
                 
-                oldRaw = (BlockRaw)oldBlock; flags |= (oldBlock >> Block.ExtendedShift);
+                oldRaw = (BlockRaw)oldBlock; flags |= oldBlock >> Block.ExtendedShift;
                 newRaw = (BlockRaw)newBlock; flags |= (newBlock >> Block.ExtendedShift) << 2;
             }
         }
@@ -413,7 +413,7 @@ namespace MCGalaxy
         }
         
         public void UpdateBlockHandlers(BlockID block) {
-            bool nonSolid = !MCGalaxy.Blocks.CollideType.IsSolid(CollideType(block));
+            bool nonSolid = !Blocks.CollideType.IsSolid(CollideType(block));
             DeleteHandlers[block]       = BlockBehaviour.GetDeleteHandler(block, Props);
             PlaceHandlers[block]        = BlockBehaviour.GetPlaceHandler(block, Props);
             WalkthroughHandlers[block]  = BlockBehaviour.GetWalkthroughHandler(block, Props, nonSolid);

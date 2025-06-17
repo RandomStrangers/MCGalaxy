@@ -11,11 +11,6 @@ namespace NotAwesomeSurvival
     public partial class NasEntity
     {
         public enum DamageSource { Falling, Suffocating, Drowning, Entity, None, Murdered }
-        [Obsolete("Should always specify player.")]
-        public static string DeathReason(DamageSource source)
-        {
-            return DeathReason(source, null);
-        }
         public static string DeathReason(DamageSource source, Player p)
         {
             switch (source)
@@ -36,7 +31,6 @@ namespace NotAwesomeSurvival
                 default: 
                     return Enum.GetName(typeof(DamageSource), source).ToLower();
             };
-            return null;
         }
         public const int SuffocationMilliseconds = 500;
 

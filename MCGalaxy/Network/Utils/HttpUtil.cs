@@ -70,7 +70,7 @@ namespace MCGalaxy.Network {
                 HttpWebRequest req = (HttpWebRequest)base.GetWebRequest(address);
                 req.ServicePoint.BindIPEndPointDelegate = BindIPEndPointCallback;
                 req.UserAgent = Server.SoftwareNameVersioned;
-                return (WebRequest)req;
+                return req;
             }
         }
         

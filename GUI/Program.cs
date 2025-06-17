@@ -32,9 +32,10 @@ namespace MCGalaxy.Gui
             // separate method, in case MCGalaxy_.dll is missing
             try {
                 StartGUI();
-            } catch (FileNotFoundException) {
+            } catch (FileNotFoundException ex) {
+                string file = GetFilename(ex.FileName);
                 // If MCGalaxy_.dll is missing, a FileNotFoundException will get thrown for MCGalaxy dll
-                Popup.Error("Cannot start server as MCGalaxy_.dll is missing from " + Environment.CurrentDirectory
+                Popup.Error("Cannot start server as " + file + " is missing from " + Environment.CurrentDirectory
                             + "\n\nDownload it from " + Updater.UploadsURL);
                 return;
             }    
@@ -52,7 +53,17 @@ namespace MCGalaxy.Gui
                 //  (since most users will not be trying to run .exe from a different folder anyways)
             }
         }
-        
+        static string GetFilename(string rawName)
+        {
+            try
+            {
+                return new AssemblyName(rawName).Name + ".dll";
+            }
+            catch
+            {
+                return rawName;
+            }
+        }
         static void StartGUI() {
             FileLogger.Init();
             Server.RestartPath = Application.ExecutablePath;

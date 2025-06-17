@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -25,7 +24,7 @@ namespace MCGalaxy.Gui {
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context) { return true; }
         public override bool GetStandardValuesExclusive(ITypeDescriptorContext context) { return true; }
         
-        public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context) {
+        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context) {
             List<string> colors = new List<string>();
             for (int i = 0; i < Colors.List.Length; i++) {
                 if (Colors.List[i].Undefined) continue;
@@ -39,7 +38,7 @@ namespace MCGalaxy.Gui {
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context) { return true; }
         public override bool GetStandardValuesExclusive(ITypeDescriptorContext context) { return true; }
         
-        public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context) {
+        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context) {
             List<string> ranks = new List<string>();
             foreach (Group g in Group.GroupList) 
             {
@@ -54,7 +53,7 @@ namespace MCGalaxy.Gui {
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context) { return true; }
         public override bool GetStandardValuesExclusive(ITypeDescriptorContext context) { return true; }
         
-        public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context) {
+        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context) {
             List<string> levels = new List<string>();
             Level[] loaded = LevelInfo.Loaded.Items;
             foreach (Level lvl in loaded)

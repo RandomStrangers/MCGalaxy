@@ -47,7 +47,7 @@ namespace MCGalaxy.Generator.fCraft
             float a1 = v0 - v1 - a0;
             float a2 = v2 - v0;
             float a3 = v1;
-            return (a0 * mu * mu2 + a1 * mu2 + a2 * mu + a3);
+            return a0 * mu * mu2 + a1 * mu2 + a2 * mu + a3;
         }
 
 

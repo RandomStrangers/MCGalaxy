@@ -85,8 +85,8 @@ namespace MCGalaxy.Drawing.Ops
                 ? DeleteHighlight : PlaceHighlight;
             
             int x = e.Index % dims.X;
-            int y = (e.Index / dims.X) / dims.Z;
-            int z = (e.Index / dims.X) % dims.Z;
+            int y = e.Index / dims.X / dims.Z;
+            int z = e.Index / dims.X % dims.Z;
             
             if (x < Min.X || y < Min.Y || z < Min.Z) return;
             if (x > Max.X || y > Max.Y || z > Max.Z) return;

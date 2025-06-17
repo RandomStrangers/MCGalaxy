@@ -30,8 +30,8 @@ namespace MCGalaxy.Drawing.Ops
         public override long BlocksAffected(Level lvl, Vec3S32[] marks) {
             int blocks = 0;
             foreach (char c in Text) {
-                if ((int)c >= 256 || letters[c] == 0) {
-                    blocks += (4 * Scale) * (4 * Scale);
+                if (c >= 256 || letters[c] == 0) {
+                    blocks += 4 * Scale * 4 * Scale;
                 } else {
                     // first 'vertical line flags' is at highest position
                     ulong flags = letters[c]; int shift = 56;
@@ -62,7 +62,7 @@ namespace MCGalaxy.Drawing.Ops
         }
         
         void DrawLetter(Player p, char c, Brush brush, DrawOpOutput output) {
-            if ((int)c >= 256 || letters[c] == 0) {
+            if (c >= 256 || letters[c] == 0) {
                 if (c != ' ') p.Message("\"{0}\" is not currently supported, replacing with space.", c);
                 pos += dir * (4 * Scale);
             } else {

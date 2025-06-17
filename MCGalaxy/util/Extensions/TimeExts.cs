@@ -57,7 +57,7 @@ namespace MCGalaxy
                 if (c == ' ') continue;
                 
                 if (c >= '0' && c <= '9') {
-                    num = checked(num * 10); num += (c - '0');
+                    num = checked(num * 10); num += c - '0';
                     continue;
                 }
                 

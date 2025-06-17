@@ -9,7 +9,6 @@ using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using MCGalaxy.DB;
-using MCGalaxy.Config;
 
 namespace NotAwesomeSurvival
 {
@@ -43,7 +42,7 @@ namespace NotAwesomeSurvival
             NasPlayer np = (NasPlayer)p.Extras[Nas.PlayerKey];
             np.nl = NasLevel.Get(p.level.name);
             np.SpawnPlayer(p.level, ref pos, ref yaw, ref pitch);
-            SaveTask = savingScheduler.QueueRepeat(np.SaveAction, null, TimeSpan.FromSeconds(5));
+            //SaveTask = savingScheduler.QueueRepeat(np.SaveAction, null, TimeSpan.FromSeconds(5));
         }
         /// <summary> Converts the given block ID into a raw block ID that can be sent to this player </summary>
         public ushort ConvertBlock(ushort block)

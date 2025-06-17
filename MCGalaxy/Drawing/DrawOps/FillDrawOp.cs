@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using System.Collections.Generic;
 using MCGalaxy.Commands.Building;
 using MCGalaxy.DB;
@@ -74,8 +73,8 @@ namespace MCGalaxy.Drawing.Ops
             while (count > 0 && buffer.Count <= p.group.DrawLimit) {
                 index = pos[count - 1]; count--;
                 ushort x = (ushort)(index % lvl.Width);
-                ushort y = (ushort)((index / lvl.Width) / lvl.Length);
-                ushort z = (ushort)((index / lvl.Width) % lvl.Length);
+                ushort y = (ushort)(index / lvl.Width / lvl.Length);
+                ushort z = (ushort)(index / lvl.Width % lvl.Length);
                 
                 if (temp.Count > 0) { pos[count] = temp.Dequeue(); count++; }
                 if (!bits.TrySetOn(x, y, z)) continue;

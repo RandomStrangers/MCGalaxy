@@ -206,10 +206,10 @@ namespace MCGalaxy.Drawing.Ops
                     errors[xx, yy]   = newPixel;
                     
                     Vec3F32 quantError = oldPixel - newPixel;
-                    if (xx + 1 < width                  )  errors[xx + 1, yy    ] += (7.0f / 16.0f) * quantError;
-                    if (xx - 1 > 0     && yy + 1 < height) errors[xx - 1, yy + 1] += (3.0f / 16.0f) * quantError;
-                    if (yy + 1 < height                 )  errors[xx,     yy + 1] += (5.0f / 16.0f) * quantError;
-                    if (xx + 1 < width && yy + 1 < height) errors[xx + 1, yy + 1] += (1.0f / 16.0f) * quantError;
+                    if (xx + 1 < width                  )  errors[xx + 1, yy    ] += 7.0f / 16.0f * quantError;
+                    if (xx - 1 > 0     && yy + 1 < height) errors[xx - 1, yy + 1] += 3.0f / 16.0f * quantError;
+                    if (yy + 1 < height                 )  errors[xx,     yy + 1] += 5.0f / 16.0f * quantError;
+                    if (xx + 1 < width && yy + 1 < height) errors[xx + 1, yy + 1] += 1.0f / 16.0f * quantError;
                 }
             }
         }

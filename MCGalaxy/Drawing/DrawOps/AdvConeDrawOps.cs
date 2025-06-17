@@ -48,7 +48,7 @@ namespace MCGalaxy.Drawing.Ops
             {
                 int dy         = Invert ? y - Min.Y : Max.Y - y;
                 int curRadius  = Radius * (dy + 1) / height;
-                int curRadius2 = Radius * (dy    ) / height;
+                int curRadius2 = Radius * dy     / height;
                 
                 for (ushort z = p1.Z; z <= p2.Z; z++)
                     for (ushort x = p1.X; x <= p2.X; x++)
@@ -58,7 +58,7 @@ namespace MCGalaxy.Drawing.Ops
                     if (dist > curRadius * curRadius) continue;
                     
                     if (dist <= (curRadius - 1) * (curRadius - 1) &&
-                        dist <= (curRadius2)    * (curRadius2)  ) continue;
+                        dist <= curRadius2    * curRadius2  ) continue;
                     output(Place(x, y, z, brush));
                 }
             }
@@ -83,7 +83,7 @@ namespace MCGalaxy.Drawing.Ops
             {
                 int dy         = Max.Y - y;
                 int curRadius  = Radius * (dy + 1) / height;
-                int curRadius2 = Radius * (dy    ) / height;
+                int curRadius2 = Radius * dy     / height;
                 
                 for (ushort z = p1.Z; z <= p2.Z; z++)
                     for (ushort x = p1.X; x <= p2.X; x++)
@@ -94,7 +94,7 @@ namespace MCGalaxy.Drawing.Ops
                     
                     bool layer = curRadius == 0 ||
                         !(dist <= (curRadius - 1) * (curRadius - 1) &&
-                          dist <= (curRadius2   ) * (curRadius2   ) );
+                          dist <= curRadius2    * curRadius2    );
 
                     BlockID block = layer ? Block.Grass : Block.StillLava;
                     output(Place(x, y, z, block));

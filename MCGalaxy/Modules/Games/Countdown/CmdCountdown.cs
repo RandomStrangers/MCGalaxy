@@ -17,7 +17,6 @@
 //--------------------------------------------------\\
 //the whole of the game 'countdown' was made by edh649\\
 //======================================================\\
-using System;
 using MCGalaxy.Commands;
 using MCGalaxy.Commands.Fun;
 using MCGalaxy.Games;

@@ -262,9 +262,9 @@ namespace MCGalaxy.Drawing
             }
             
             Init(minX, minY, minZ,
-                 (maxX - minX) + 1,
-                 (maxY - minY) + 1,
-                 (maxZ - minZ) + 1);
+                 maxX - minX + 1,
+                 maxY - minY + 1,
+                 maxZ - minZ + 1);
         }
     }
 }

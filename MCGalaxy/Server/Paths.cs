@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 
 namespace MCGalaxy 
 {
@@ -39,17 +38,17 @@ namespace MCGalaxy
         public const string JokerFile = "text/joker.txt";        
         public const string EightBallFile = "text/8ball.txt";   
         
-        public const string BlockPermsFile  = "props/block.props";
-        public const string PlacePermsFile  = "props/place.props";
-        public const string DeletePermsFile = "props/delete.props";
+        public const string BlockPermsFile  = "props/block.properties";
+        public const string PlacePermsFile  = "props/place.properties";
+        public const string DeletePermsFile = "props/delete.properties";
         
-        public const string CmdPermsFile = "props/command.props";
-        public const string CmdExtraPermsFile = "props/ExtraCommandPermissions.props";
-        public const string EconomyPropsFile = "props/economy.props";
-        public const string ServerPropsFile = "props/server.props";
-        public const string RankPropsFile = "props/ranks.props";
-        public const string AuthServicesFile = "props/authservices.props";
-        public const string CPEDisabledFile = "props/cpe.props";
+        public const string CmdPermsFile = "props/command.properties";
+        public const string CmdExtraPermsFile = "props/ExtraCommandPermissions.properties";
+        public const string EconomyPropsFile = "props/economy.properties";
+        public const string ServerPropsFile = "props/server.properties";
+        public const string RankPropsFile = "props/ranks.properties";
+        public const string AuthServicesFile = "props/authservices.properties";
+        public const string CPEDisabledFile = "props/cpe.properties";
         
         public const string ImportsDir = "extra/import/";
         public const string WAYPOINTS_DIR = "extra/Waypoints/";

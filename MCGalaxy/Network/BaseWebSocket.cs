@@ -263,7 +263,7 @@ namespace MCGalaxy.Network
                 "\r\n";
             
             string key = ComputeKey(verKey);
-            string headers = String.Format(fmt, key);
+            string headers = string.Format(fmt, key);
             SendRaw(Encoding.ASCII.GetBytes(headers), SendFlags.None);
             readingHeaders = false;
         }

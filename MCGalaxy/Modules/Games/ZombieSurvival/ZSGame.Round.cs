@@ -131,7 +131,7 @@ namespace MCGalaxy.Modules.Games.ZS
                             infectCombo++;
                             if (infectCombo >= 2) {
                                 killer.Message("You gained " + (2 + infectCombo) + " " + Server.Config.Currency);
-                                killer.SetMoney(killer.money + (2 + infectCombo));
+                                killer.SetMoney(killer.money + 2 + infectCombo);
                                 Map.Message("&c" + killer.DisplayName + " &Sis on a rampage! " + (infectCombo + 1) + " infections in a row!");
                             }
                         } else {

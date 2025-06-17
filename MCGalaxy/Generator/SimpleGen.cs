@@ -16,7 +16,6 @@
     permissions and limitations under the Licenses.
  */
 using System;
-using MCGalaxy.Generator.Realistic;
 
 namespace MCGalaxy.Generator 
 {
@@ -55,7 +54,7 @@ namespace MCGalaxy.Generator
         
         unsafe static void MapSet(int width, int length, byte* ptr,
                                   int yBeg, int yEnd, byte block) {
-            int beg = (yBeg * length) * width;
+            int beg = yBeg * length * width;
             int end = (yEnd * length + (length - 1)) * width + (width - 1);
             Utils.memset((IntPtr)ptr, block, beg, end - beg + 1);
         }

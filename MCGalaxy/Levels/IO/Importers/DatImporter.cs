@@ -175,7 +175,7 @@ namespace MCGalaxy.Levels.IO
         }
         
         // object is actually an int, so a simple cast to ushort will fail
-        static ushort U16(object o) { return (ushort)((int)o); }
+        static ushort U16(object o) { return (ushort)(int)o; }
         
         static void ParseRootObject(Level lvl, JObject obj) {
             JFieldDesc[] fields = obj.Desc.Fields;
@@ -307,8 +307,8 @@ namespace MCGalaxy.Levels.IO
         static unsafe object Value(DatReader r, char type) {
             if (type == 'B') return r.ReadUInt8();
             if (type == 'C') return (char)r.ReadUInt16();
-            if (type == 'D') { long tmp = r.ReadInt64(); return *(double*)(&tmp); }
-            if (type == 'F') { int tmp  = r.ReadInt32(); return *(float*)(&tmp); }
+            if (type == 'D') { long tmp = r.ReadInt64(); return *(double*)&tmp; }
+            if (type == 'F') { int tmp  = r.ReadInt32(); return *(float*)&tmp; }
             if (type == 'I') return r.ReadInt32();
             if (type == 'J') return r.ReadInt64();
             if (type == 'S') return r.ReadInt16();

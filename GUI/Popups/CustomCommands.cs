@@ -120,7 +120,7 @@ namespace MCGalaxy.Gui.Popups {
         
         
         void LoadCommands(string path) {
-            Assembly lib = IScripting.LoadAssembly(path);
+            Assembly lib = IScripting.LoadAssembly(path, false);
             if (lib == null) return;
             List<Command> commands = IScripting.LoadTypes<Command>(lib);
             

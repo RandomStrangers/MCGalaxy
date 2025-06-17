@@ -313,8 +313,8 @@ namespace MCGalaxy.Generator.Realistic
 
         //Forces the edge of a map to slope lower for island map types
         static float NegateEdge(ushort x, ushort z, Level lvl) {
-            float xAdj = ((float)x / (float)lvl.Width ) * 0.5f;
-            float zAdj = ((float)z / (float)lvl.Length) * 0.5f;
+            float xAdj = x / (float)lvl.Width  * 0.5f;
+            float zAdj = z / (float)lvl.Length * 0.5f;
             float adj;
             
             xAdj = Math.Abs(xAdj - 0.25f);

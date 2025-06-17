@@ -15,8 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using MCGalaxy.Commands;
 
 namespace MCGalaxy.Core {
     internal static class ConnectHandler {
@@ -30,7 +28,7 @@ namespace MCGalaxy.Core {
         
         static void LoadReach(Player p) {
             string reach = Server.reach.Get(p.name);
-            if (String.IsNullOrEmpty(reach)) return;
+            if (string.IsNullOrEmpty(reach)) return;
             
             short reachDist;
             if (!short.TryParse(reach, out reachDist)) return;

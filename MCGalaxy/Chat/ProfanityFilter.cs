@@ -17,7 +17,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
 */
-using System;
 using System.Collections.Generic;
 using MCGalaxy.Util;
 
@@ -42,7 +41,7 @@ namespace MCGalaxy {
                 if (IsGoodWord(words[i])) continue;
                 FilterBadWord(i, words, reduced);
             }          
-            return String.Join(" ", words);
+            return string.Join(" ", words);
         }
 
         static bool IsGoodWord(string word) {

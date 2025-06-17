@@ -157,7 +157,7 @@ namespace MCGalaxy
             // set bit flag for non-ascii filename
             foreach (char c in file) 
             {
-                if (c < ' ' || c > '~') entry.BitFlags |= (1 << 11);
+                if (c < ' ' || c > '~') entry.BitFlags |= 1 << 11;
             }
             
             ZipWriterStream dst = new ZipWriterStream(stream);
@@ -236,7 +236,7 @@ namespace MCGalaxy
             if (!zip64) { w.Write(emptyZip64Local); return; }
             
             // zip64 extra data entry
-            w.Write((ushort)EXTRA_TAG_ZIP64);          
+            w.Write(EXTRA_TAG_ZIP64);          
             w.Write((ushort)(ZIP64_LOCAL_EXTRA_SIZE - 4));
             w.Write(copy.UncompressedSize);
             w.Write(copy.CompressedSize);

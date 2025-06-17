@@ -72,9 +72,9 @@ namespace MCGalaxy.Drawing.Ops
         public bool AlwaysUsable;
 
 
-        public int SizeX { get { return (Max.X - Min.X + 1); } }
-        public int SizeY { get { return (Max.Y - Min.Y + 1); } }
-        public int SizeZ { get { return (Max.Z - Min.Z + 1); } }
+        public int SizeX { get { return Max.X - Min.X + 1; } }
+        public int SizeY { get { return Max.Y - Min.Y + 1; } }
+        public int SizeZ { get { return Max.Z - Min.Z + 1; } }
         
         
         /// <summary> Human friendly name of the draw operation. </summary>

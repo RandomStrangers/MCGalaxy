@@ -15,8 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using System.IO;
 using BlockID = System.UInt16;
 
 namespace MCGalaxy.Drawing 
@@ -110,11 +108,11 @@ namespace MCGalaxy.Drawing
         static int Rotate(int row, int x, int y, int z, CopyState state) {
             switch (row) {
                     case posX: return x;
-                    case negX: return (state.Width - 1 - x);
+                    case negX: return state.Width - 1 - x;
                     case posY: return y;
-                    case negY: return (state.Height - 1 - y);
+                    case negY: return state.Height - 1 - y;
                     case posZ: return z;
-                    case negZ: return (state.Length - 1 - z);
+                    case negZ: return state.Length - 1 - z;
             }
             return 0;
         }
@@ -247,7 +245,7 @@ namespace MCGalaxy.Drawing
                 // Find the next directional block to this one in sequence
                 // Each sequence is a group of 4 directional blocks
                 string name = defs[i].Name.Substring(0, dirIndex);
-                int sequence = (j / 4) * 4;
+                int sequence = j / 4 * 4;
                 string rotateDir = rotateDirs[sequence + ((j + 1) % 4)];
                 return Find(defs, name + "-" + rotateDir);
             }

@@ -1,8 +1,6 @@
 ﻿// Copyright 2014-2017 ClassicalSharp | Licensed under BSD-3
 // Based on: https://github.com/ClassiCube/ClassiCube/wiki/Minecraft-Classic-map-generation-algorithm
 using System;
-using System.Collections.Generic;
-using MCGalaxy;
 
 namespace MCGalaxy.Generator.Classic
 {
@@ -47,7 +45,7 @@ namespace MCGalaxy.Generator.Classic
                 
                 int x = index % Width;
                 int y = index / oneY;
-                int z = (index / Width) % Length;
+                int z = index / Width % Length;
                 
                 if (x > 0) stack.Push(index - 1);
                 if (x < Width - 1) stack.Push(index + 1);

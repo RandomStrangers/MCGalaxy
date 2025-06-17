@@ -20,7 +20,6 @@
 #if !MCG_STANDALONE
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using MCGalaxy.Scripting;
 

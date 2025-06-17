@@ -15,12 +15,10 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using MCGalaxy.DB;
-using MCGalaxy.Network;
 using BlockID = System.UInt16;
 
 namespace MCGalaxy.Commands.Moderation {
@@ -78,7 +76,7 @@ namespace MCGalaxy.Commands.Moderation {
                 if (isNumber) { // e.g. line is: 1) Do not do X
                     if (ruleNum == -1) ruleNum = 0;
                     ruleNum *= 10;
-                    ruleNum += (c - '0');
+                    ruleNum += c - '0';
                 } else {
                     sections[ruleNum] = rule.Substring(i);
                     return;
@@ -168,7 +166,7 @@ namespace MCGalaxy.Commands.Moderation {
             }
 
             if (confirmed != null) return name;
-            string msgReason = String.IsNullOrEmpty(reason) ? "" : " " + reason;
+            string msgReason = string.IsNullOrEmpty(reason) ? "" : " " + reason;
             p.Message("If you still want to {0} \"{1}\", use &T/{3} {1}{4}{2} confirm",
                            action, name, msgReason, cmd, cmdSuffix);
             return null;

@@ -15,9 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using System.IO;
-using MCGalaxy.Config;
 using MCGalaxy.Events.ServerEvents;
 
 namespace MCGalaxy.Modules.Games.LS
@@ -31,7 +28,7 @@ namespace MCGalaxy.Modules.Games.LS
             Command.Register(cmdLS);
             
             LSGame game      = LSGame.Instance;
-            game.Config.Path = "props/lavasurvival.props";
+            game.Config.Path = "props/lavasurvival.properties";
             game.ReloadConfig();
             game.AutoStart();
             

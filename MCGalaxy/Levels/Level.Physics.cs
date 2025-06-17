@@ -224,8 +224,8 @@ namespace MCGalaxy {
         public void AddCheck(int index, bool overRide, PhysicsArgs data) {
             try {
                 int x = index % Width;
-                int y = (index / Width) / Length;
-                int z = (index / Width) % Length;
+                int y = index / Width / Length;
+                int z = index / Width % Length;
                 if (x >= Width || y >= Height || z >= Length) return;
                 
                 if (listCheckExists.TrySetOn(x, y, z)) {
@@ -262,8 +262,8 @@ namespace MCGalaxy {
         public bool AddUpdate(int index, BlockID block, PhysicsArgs data, bool overRide = false) {
             try {
                 int x = index % Width;
-                int y = (index / Width) / Length;
-                int z = (index / Width) % Length;
+                int y = index / Width / Length;
+                int z = index / Width % Length;
                 if (x >= Width || y >= Height || z >= Length) return false;
                 
                 if (overRide) {

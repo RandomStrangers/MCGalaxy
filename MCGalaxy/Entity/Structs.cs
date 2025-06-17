@@ -39,7 +39,7 @@ namespace MCGalaxy
         
         public static Position FromFeet(int x, int y, int z) { return new Position(x, y + Entities.CharacterHeight, z); }
         public static Position FromFeetBlockCoords(int bX, int bY, int bZ) {
-            return Position.FromFeet(16 + bX * 32, bY * 32, 16 + bZ * 32);
+            return FromFeet(16 + bX * 32, bY * 32, 16 + bZ * 32);
         }
         
         /// <summary> World/block coordinate of this position. </summary>
@@ -88,8 +88,8 @@ namespace MCGalaxy
         
         static int SignExtend(long parts) {
             int value = (int)(parts & mask);
-            value <<= (32 - 21);
-            value >>= (32 - 21);
+            value <<= 32 - 21;
+            value >>= 32 - 21;
             return value;
         }
     }
@@ -115,7 +115,7 @@ namespace MCGalaxy
         
         /// <summary> Converts angle in range [0, 256) into range [0, 360). </summary>
         public static int PackedToDegrees(byte packed) {
-            return (packed * 360 / 256);
+            return packed * 360 / 256;
         }
         
         /// <summary> Converts angle in degrees into range [0, 256) </summary>

@@ -64,8 +64,8 @@ namespace MCGalaxy.Drawing.Ops
             if ((e.Flags & BlockDBFlags.UndoSelf) == 0) return; // not an undo
             
             int x = e.Index % dims.X;
-            int y = (e.Index / dims.X) / dims.Z;
-            int z = (e.Index / dims.X) % dims.Z;
+            int y = e.Index / dims.X / dims.Z;
+            int z = e.Index / dims.X % dims.Z;
             output(Place((ushort)x, (ushort)y, (ushort)z, block));
         }
     }

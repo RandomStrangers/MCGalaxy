@@ -17,7 +17,6 @@
  */
 using System;
 using System.IO;
-using System.Text;
 using MCGalaxy.DB;
 using MCGalaxy.Events.LevelEvents;
 using MCGalaxy.SQL;
@@ -233,7 +232,7 @@ namespace MCGalaxy {
             if (!plus || map.IndexOf('+') == -1) return null;
             
             // Convert username+23 to username+
-            while (map.Length > 0 && Char.IsNumber(map[map.Length - 1])) {
+            while (map.Length > 0 && char.IsNumber(map[map.Length - 1])) {
                 map = map.Substring(0, map.Length - 1);
             }
             

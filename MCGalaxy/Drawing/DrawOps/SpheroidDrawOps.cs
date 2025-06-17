@@ -31,7 +31,7 @@ namespace MCGalaxy.Drawing.Ops
         public double YCentre { get { return (Min.Y + Max.Y) / 2.0; } }
         public double ZCentre { get { return (Min.Z + Max.Z) / 2.0; } }
 
-        public int Height { get { return (Max.Y - Min.Y) + 1; } }
+        public int Height { get { return Max.Y - Min.Y + 1; } }
 
 
         public static double EllipsoidVolume(double rx, double ry, double rz) {
@@ -67,7 +67,7 @@ namespace MCGalaxy.Drawing.Ops
                     for (ushort x = min.X; x <= max.X; x++)
             {
                 double dx = x - cx, dy = y - cy, dz = z - cz;
-                if ((dx * dx) * rx2 + (dy * dy) * ry2 + (dz * dz) * rz2 <= 1)
+                if (dx * dx * rx2 + dy * dy * ry2 + dz * dz * rz2 <= 1)
                     output(Place(x, y, z, brush));
             }
         }
@@ -167,8 +167,8 @@ namespace MCGalaxy.Drawing.Ops
                 int dy   = Invert ? y - Min.Y : Max.Y - y;
                 double T = (double)(dy + 1) / height;
 
-                double rx  = ((Max.X - Min.X) / 2.0) * T + 0.25;
-                double rz  = ((Max.Z - Min.Z) / 2.0) * T + 0.25;
+                double rx  = (Max.X - Min.X) / 2.0 * T + 0.25;
+                double rz  = (Max.Z - Min.Z) / 2.0 * T + 0.25;
                 double rx2 = 1 / (rx * rx), rz2 = 1 / (rz * rz);
 
                 for (ushort z = p1.Z; z <= p2.Z; z++)
@@ -176,7 +176,7 @@ namespace MCGalaxy.Drawing.Ops
                 {
                     double dx = x - cx, dz = z - cz;
 
-                    if ((dx * dx) * rx2 + (dz * dz) * rz2 <= 1)
+                    if (dx * dx * rx2 + dz * dz * rz2 <= 1)
                         output(Place(x, y, z, brush));
                  }
             }

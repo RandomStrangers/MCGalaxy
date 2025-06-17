@@ -114,7 +114,7 @@ namespace MCGalaxy.Gui.Components {
             string trimMsg = "----- cut off, see log files for rest of logs -----" + Environment.NewLine;
             
             SelectedText = trimMsg;
-            SelectionColor = System.Drawing.Color.DarkGray;
+            SelectionColor = Color.DarkGray;
             selStart += trimMsg.Length - 1;            
         }
         
@@ -128,7 +128,7 @@ namespace MCGalaxy.Gui.Components {
             SelectionColor = ForeColor;
         }
 
-        void HandleLinkClicked(object sender, System.Windows.Forms.LinkClickedEventArgs e) {
+        void HandleLinkClicked(object sender, LinkClickedEventArgs e) {
             if (!Popup.OKCancel("Never open links from people that you don't trust!", "Warning!!")) return;
             GuiUtils.OpenBrowser(e.LinkText);
         }

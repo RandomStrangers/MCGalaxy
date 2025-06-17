@@ -18,7 +18,6 @@
     permissions and limitations under the Licenses.
  */
 using System;
-using MCGalaxy.DB;
 using MCGalaxy.SQL;
 
 namespace MCGalaxy.Commands.Info 

@@ -71,7 +71,7 @@ namespace MCGalaxy.Modules.Awards
                 if (AwardsList.Exists(awards[i])) count++;
             }
             
-            double percentHas = Math.Round(((double)count / total) * 100, 2);
+            double percentHas = Math.Round((double)count / total * 100, 2);
             return count + "/" + total + " (" + percentHas + "%)";
         }
 
