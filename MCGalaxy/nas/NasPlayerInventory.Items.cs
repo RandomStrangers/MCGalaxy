@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20
+﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
 using System.Text;
 using Newtonsoft.Json;
 using MCGalaxy;
@@ -129,7 +129,7 @@ namespace NotAwesomeSurvival
                 //only reset breaking if they actually are holding a different item than before
                 NasPlayer.StartCooldown(p, np.inventory.HeldItem.Prop.recharge);
                 np.ResetBreaking();
-                NassEffect.UndefineEffect(p, NasBlockChange.BreakMeterID);
+                NasEffect.UndefineEffect(p, NasBlockChange.BreakMeterID);
 
             }
 

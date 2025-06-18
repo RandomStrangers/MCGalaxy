@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20
+﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
 using System.Drawing;
 using System.IO;
 using MCGalaxy;
@@ -8,8 +8,8 @@ using MCGalaxy.Network;
 namespace NotAwesomeSurvival
 {
 
-    public class NassEffect
-    { //lol
+    public class NasEffect
+    {
         public const string Path = Nas.Path + "effects/";
         public static Effect breakMeter;
         public static Effect breakEarth;
@@ -98,7 +98,7 @@ namespace NotAwesomeSurvival
                 string fileNameInPluginsDir = "plugins/" + effectName + ".properties";
                 if (File.Exists(fileNameInPluginsDir))
                 {
-                    File.Move(fileNameInPluginsDir, fileName);
+                    FileIO.TryMove(fileNameInPluginsDir, fileName);
                 }
                 if (cfg == null)
                 cfg = ConfigElement.GetAll(typeof(Effect));

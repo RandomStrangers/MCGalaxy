@@ -1,5 +1,5 @@
 ﻿
-#if NAS && !NET_20
+#if NAS && !NET_20 && TEN_BIT_BLOCKS
 
 namespace NotAwesomeSurvival
 {

@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20
+﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -35,7 +35,7 @@ namespace NotAwesomeSurvival
         public void ResetBreaking()
         {
             breakX = breakY = breakZ = ushort.MaxValue;
-            //NassEffect.UndefineEffect(p, NasBlockChange.BreakMeterID);
+            //NasEffect.UndefineEffect(p, NasBlockChange.BreakMeterID);
             if (p.Extras.Contains("nas_taskDisplayMeter"))
             {
                 NasBlockChange.breakScheduler.Cancel((SchedulerTask)p.Extras["nas_taskDisplayMeter"]);
@@ -72,6 +72,18 @@ namespace NotAwesomeSurvival
         [JsonIgnore] public Color curFogColor = Color.White;
         [JsonIgnore] public float targetRenderDistance = Server.Config.MaxFogDistance;
         [JsonIgnore] public float curRenderDistance = Server.Config.MaxFogDistance;
+        [JsonIgnore] public bool SetInventoryNotif = false;
+        public bool CanDamage()
+        {
+            if (p.invincible || p.Game.Referee)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
         public NasPlayer(Player p)
         {
             this.p = p;
@@ -270,6 +282,20 @@ namespace NotAwesomeSurvival
             {
                 if (players[i].EntityID != entity) continue;
                 Player who = players[i];
+                if (!np.CanDamage())
+                {
+                    string reason = "";
+                    if (np.p.Game.Referee)
+                    {
+                        reason = "a referee";
+                    }
+                    if (np.p.invincible)
+                    {
+                        reason = "invincible";
+                    }
+                    np.p.Message("You cannot damage {0} because you are currently {1}.", who.DisplayName, reason);
+                    return;
+                }
                 Vec3F32 delta = p.Pos.ToVec3F32() - who.Pos.ToVec3F32();
                 float reachSq = p.ReachDistance * p.ReachDistance;
                 if (np.inventory.HeldItem.Prop.knockback < 0)
@@ -297,6 +323,7 @@ namespace NotAwesomeSurvival
                 np.inventory.UpdateItemDisplay();
                 NasPlayer w = GetNasPlayer(who);
                 w.lastAttackedPlayer = p;
+
                 if (w.pvpEnabled)
                 {
                     float added = 0;

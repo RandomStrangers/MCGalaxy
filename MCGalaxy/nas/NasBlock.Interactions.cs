@@ -1,5 +1,4 @@
-﻿//refrence System.dll
-#if NAS && !NET_20
+﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -409,8 +408,11 @@ namespace NotAwesomeSurvival
                 withX = Math.Min(np.nl.lvl.Width - 2, Math.Max(1, withX));
                 withZ = Math.Min(np.nl.lvl.Length - 2, Math.Max(1, withZ));
                 int withY = Math.Min(245, Math.Max(32, (int)y));
-
-                LevelActions.Load(np.p, newLevel, false);
+                Level lvl = LevelInfo.FindExact(newLevel);
+                if (!LevelInfo.Loaded.Contains(lvl))
+                {
+                    LevelActions.Load(np.p, newLevel, false);
+                }
                 Level grab = Level.Load(newLevel);
 
 
@@ -441,7 +443,7 @@ namespace NotAwesomeSurvival
                     withX += dX;
                     withY += dY;
                     withZ += dZ;
-                    np.p.Message(withX + " " + withY + " " + withZ);
+                    //np.p.Message(withX + " " + withY + " " + withZ);
                     dY = 0;
                     if (!worked)
                     {

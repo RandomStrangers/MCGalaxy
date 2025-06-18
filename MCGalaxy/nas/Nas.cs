@@ -1,5 +1,5 @@
 ﻿
-#if NAS && !NET_20
+#if NAS && !NET_20 && TEN_BIT_BLOCKS
 using System;
 using System.IO;
 using System.Threading;
@@ -282,9 +282,9 @@ namespace NotAwesomeSurvival
             { 
                 Directory.CreateDirectory(CoreSavePath); 
             }
-            if (!Directory.Exists(NassEffect.Path)) 
+            if (!Directory.Exists(NasEffect.Path)) 
             { 
-                Directory.CreateDirectory(NassEffect.Path); 
+                Directory.CreateDirectory(NasEffect.Path); 
             }
             if (!Directory.Exists("blockprops")) 
             { 
@@ -381,7 +381,7 @@ namespace NotAwesomeSurvival
             Command.Register(new NasPlayer.CmdSpawnDungeon());
             NasPlayer.Setup();
             NasBlock.Setup();
-            if (!NassEffect.Setup()) 
+            if (!NasEffect.Setup()) 
             { 
                 FailedLoad(); 
                 return; 

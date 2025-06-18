@@ -715,7 +715,6 @@
     <Compile Include="nas\Collision.cs" />
     <Compile Include="nas\Crafting.Setup.cs" />
     <Compile Include="nas\Drop.cs" />
-    <Compile Include="nas\NasLevel.Adventure.cs" />
     <Compile Include="nas\NasTimeCycle.cs" />
     <Compile Include="nas\NasTimeCycle.IO.cs" />
     <Compile Include="nas\NasTreeGens.cs" />

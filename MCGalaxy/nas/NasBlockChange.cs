@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20
+﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
 using System;
 using System.IO;
 using System.Drawing;
@@ -148,8 +148,8 @@ namespace NotAwesomeSurvival
 
             foreach (Player pl in np.p.level.players)
             {
-                NassEffect.Define(pl, GetBreakID(), NassEffect.breakEffects[(int)nasBlock.material], blockColors[nasBlock.selfID]);
-                NassEffect.Spawn(pl, GetBreakID(), NassEffect.breakEffects[(int)nasBlock.material], x, y, z, x, y, z);
+                NasEffect.Define(pl, GetBreakID(), NasEffect.breakEffects[(int)nasBlock.material], blockColors[nasBlock.selfID]);
+                NasEffect.Spawn(pl, GetBreakID(), NasEffect.breakEffects[(int)nasBlock.material], x, y, z, x, y, z);
             }
             SetBreakID((byte)(GetBreakID() - 1));
             np.justBrokeOrPlaced = true;
@@ -279,8 +279,8 @@ namespace NotAwesomeSurvival
             Player p = info.p;
             int millisecs = info.milliseconds;
             millisecs -= BreakMeterSpawnDelay;
-            NassEffect.Define(p, BreakMeterID, NassEffect.breakMeter, Color.White, (float)(millisecs / 1000.0f));
-            NassEffect.Spawn(p, BreakMeterID, NassEffect.breakMeter, info.x, info.y, info.z, info.x, info.y, info.z);
+            NasEffect.Define(p, BreakMeterID, NasEffect.breakMeter, Color.White, (float)(millisecs / 1000.0f));
+            NasEffect.Spawn(p, BreakMeterID, NasEffect.breakMeter, info.x, info.y, info.z, info.x, info.y, info.z);
         }
 
         public class BreakInfo
@@ -335,7 +335,7 @@ namespace NotAwesomeSurvival
                 np.ResetBreaking();
                 np.lastAirClickDate = null;
                 np.lastLeftClickReleaseDate = DateTime.UtcNow;
-                NassEffect.UndefineEffect(p, BreakMeterID);
+                NasEffect.UndefineEffect(p, BreakMeterID);
             }
             if (action == MouseAction.Pressed)
             {
@@ -345,7 +345,7 @@ namespace NotAwesomeSurvival
                 {
                     //p.Message("reset breaking since you clicked out of bounds");
                     np.ResetBreaking();
-                    NassEffect.UndefineEffect(p, BreakMeterID);
+                    NasEffect.UndefineEffect(p, BreakMeterID);
                     return;
                 }
 
@@ -356,7 +356,7 @@ namespace NotAwesomeSurvival
                 {
                     //p.Message("This block can't be broken");
                     np.ResetBreaking();
-                    NassEffect.UndefineEffect(p, BreakMeterID);
+                    NasEffect.UndefineEffect(p, BreakMeterID);
                     return;
                 }
 
@@ -368,7 +368,7 @@ namespace NotAwesomeSurvival
                    )
                 {
                     np.ResetBreaking();
-                    NassEffect.UndefineEffect(p, BreakMeterID);
+                    NasEffect.UndefineEffect(p, BreakMeterID);
                     return;
                 }
 
@@ -393,7 +393,7 @@ namespace NotAwesomeSurvival
                 {
                     //p.Message("This block is too strong for your current tool.");
                     np.ResetBreaking();
-                    NassEffect.UndefineEffect(p, BreakMeterID);
+                    NasEffect.UndefineEffect(p, BreakMeterID);
                     return;
                 }
 
@@ -407,7 +407,7 @@ namespace NotAwesomeSurvival
                     }
 
                     np.ResetBreaking();
-                    NassEffect.UndefineEffect(p, BreakMeterID);
+                    NasEffect.UndefineEffect(p, BreakMeterID);
                     return;
                 }
                 if (np.breakX == x && np.breakY == y && np.breakZ == z)
@@ -416,7 +416,7 @@ namespace NotAwesomeSurvival
                     return;
                 }
 
-                NassEffect.UndefineEffect(p, BreakMeterID);
+                NasEffect.UndefineEffect(p, BreakMeterID);
 
 
                 np.breakX = x;

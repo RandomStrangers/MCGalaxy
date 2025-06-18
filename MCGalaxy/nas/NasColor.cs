@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20
+﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
 using System;
 using System.IO;
 using System.Drawing;

@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20
+﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Blocks;
 using MCGalaxy.Network;
@@ -21,7 +21,12 @@ namespace NotAwesomeSurvival
         }
         public void Setup()
         {
-            Player.Console.Message("setting up inventory");
+            NasPlayer np = NasPlayer.GetNasPlayer(p);
+            if (!np.SetInventoryNotif)
+            {
+                Player.Console.Message("setting up inventory");
+                np.SetInventoryNotif = true; //Prevent spamming console
+            }
             //hide all blocks
             for (ushort clientushort = 1; clientushort <= Block.MaxRaw; clientushort++)
             {

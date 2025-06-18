@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20
+﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Tasks;
 using Newtonsoft.Json;
