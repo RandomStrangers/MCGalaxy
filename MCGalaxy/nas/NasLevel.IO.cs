@@ -89,14 +89,18 @@ namespace NotAwesomeSurvival
                 string jsonString = File.ReadAllText(fileName);
                 nl = JsonConvert.DeserializeObject<NasLevel>(jsonString);
                 nl.lvl = lvl;
-                all.Add(lvl.name, nl);
+                if (!all.ContainsKey(lvl.name))
+                {
+                    all.Add(lvl.name, nl);
+                }
                 nl.BeginTickTask();
-#if NAS_DUNGEONS
+
+                //Don't spawn dungeons in the nether
                 if (nl.biome < 0)
                 {
-                    nl.dungeons = true;
+                    nl.dungeons = false;
                 }
-                if (!nl.dungeons)
+                if (nl.dungeons)
                 {
                     Random rng = new Random(MakeInt(lvl.name));
                     int dungeonCount = rng.Next(3, 6);
@@ -106,7 +110,6 @@ namespace NotAwesomeSurvival
                     }
                     nl.dungeons = true;
                 }
-#endif
                 Logger.Log(LogType.Debug, "Loaded NasLevel " + fileName + "!");
             }
         }

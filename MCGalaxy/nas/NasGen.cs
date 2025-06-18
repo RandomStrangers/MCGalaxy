@@ -915,7 +915,7 @@ namespace NotAwesomeSurvival
             {
                 int genX = rng.Next(10, mapWideness - 10);
                 int genZ = rng.Next(10, mapWideness - 10);
-                int genY = rng.Next(10, 30);
+                int genY = rng.Next(0, 15);
                 //int genY = rng.Next(10, Math.Max(nsl.heightmap[genX, genZ] - 10, 10));
 
 

@@ -415,7 +415,7 @@ namespace NotAwesomeSurvival
         public override bool CanTakeDamage(DamageSource source)
         {
             //return false;
-            if (p.invincible) 
+            if (p.invincible || p.Game.Referee) 
             { 
                 return false; 
             }
@@ -748,7 +748,8 @@ namespace NotAwesomeSurvival
         {
             public override string name { get { return "NASSpawn"; } }
             public override string type { get { return "NAS"; } }
-
+            public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
+            public override bool SuperUseable { get { return false; } }
             public override void Use(Player p, string message)
             {
                 NasPlayer np = GetNasPlayer(p);
@@ -784,14 +785,11 @@ namespace NotAwesomeSurvival
                     return;
                 }
             }
-
             public override void Help(Player p)
             {
                 p.Message("&T/NASSpawn [true/false]");
                 p.Message("&HToggles hasBeenSpawned, but once you turn it on, you can't turn it off for 10 seconds.");
             }
-
-
         }
         public class CmdSpawnDungeon : Command
         {

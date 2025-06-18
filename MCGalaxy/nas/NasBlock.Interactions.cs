@@ -135,8 +135,6 @@ namespace NotAwesomeSurvival
                 np.p.Message(text);
             };
         }
-
-
         public static NasBlockInteraction BedInteraction()
         {
             return (np, button, action, nasBlock, x, y, z) => {
@@ -145,8 +143,17 @@ namespace NotAwesomeSurvival
                 Position coords = np.p.Pos;
                 Command.Find("tp").Use(np.p, x + " " + y + " " + z);
                 np.spawnCoords = np.p.Pos;
+                WarpList list = new WarpList();
+                list.Filename = "extra/Waypoints/" + np.p.name + "_nas.txt";
+                if (!np.p.Extras.Contains("NAS_WAYPOINTS"))
+                {
+                    np.p.Extras["NAS_WAYPOINTS"] = list;
+                }
                 WarpList waypoints = (WarpList)np.p.Extras["NAS_WAYPOINTS"];
-                if (!waypoints.Exists("Bed")) { waypoints.Create("Bed", np.p); }
+                if (!waypoints.Exists("Bed")) 
+                { 
+                    waypoints.Create("Bed", np.p); 
+                }
                 waypoints.Update(waypoints.Find("Bed"), np.p);
                 Command.Find("tp").Use(np.p, "-precise " + coords.X + " " + (coords.Y - 50) + " " + coords.Z);
                 np.spawnMap = np.p.level.name;
@@ -160,7 +167,6 @@ namespace NotAwesomeSurvival
 
             };
         }
-
         public static NasBlockInteraction SmithingTableAction()
         {
             return (np, button, action, nasBlock, x, y, z) => {
