@@ -10,27 +10,28 @@ namespace NotAwesomeSurvival
 
     public partial class NasEntity
     {
-        public enum DamageSource { Falling, Suffocating, Drowning, Entity, None, Murdered }
+        public enum DamageSource { Falling, Suffocating, Drowning, Entity, None, Murder }
         public static string DeathReason(DamageSource source, Player p)
         {
             switch (source)
             {
-                case DamageSource.Entity: 
+                case DamageSource.Entity:
                     return "@p &cdied.";
                 case DamageSource.Falling:
                     if (p == null) return "@p &cfell to their death.";
                     else return "@p &cfell to " + p.pronouns.Object + " death.";
-                case DamageSource.Suffocating: 
+                case DamageSource.Suffocating:
                     return "@p &esuffocated.";
-                case DamageSource.Drowning: 
+                case DamageSource.Drowning:
                     return "@p &rdrowned.";
-                case DamageSource.None: 
+                case DamageSource.None:
                     return "@p &adied from unknown causes.";
-                case DamageSource.Murdered:
-                    return "@p &8was murdered by &S@s";
-                default: 
+                case DamageSource.Murder:
+                    return "@p &8" + p.pronouns.PastVerb + "&8 murdered by &S@s";
+                default:
                     return Enum.GetName(typeof(DamageSource), source).ToLower();
-            };
+            }
+            ;
         }
         public const int SuffocationMilliseconds = 500;
 
@@ -131,7 +132,7 @@ namespace NotAwesomeSurvival
                         {
                             ushort xP = (ushort)x, yP = (ushort)y, zP = (ushort)z;
                             if (nl.lvl == null)
-                            nl.lvl = pl.Level;
+                                nl.lvl = pl.Level;
                             ushort block = nl.lvl.GetBlock(xP, yP, zP);
                             if (block == 0) block = Block.Air;
                             if (block == Block.Invalid) continue;

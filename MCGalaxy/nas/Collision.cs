@@ -71,7 +71,7 @@ namespace NotAwesomeSurvival
                 nb.bounds = bounds;
                 nb.fallDamageMultiplier = fallDamageMultiplier;
                 if (nb.collideAction == null)
-                nb.collideAction = collideAction;
+                    nb.collideAction = collideAction;
             }
             return nb;
         }

@@ -293,7 +293,7 @@ namespace NotAwesomeSurvival
                     {
                         reason = "invincible";
                     }
-                    np.p.Message("You cannot damage {0} because you are currently {1}.", who.DisplayName, reason);
+                    np.p.Message("&SYou cannot damage {0} &Sbecause you are currently {1}.", who.DisplayName, reason);
                     return;
                 }
                 Vec3F32 delta = p.Pos.ToVec3F32() - who.Pos.ToVec3F32();
@@ -323,14 +323,39 @@ namespace NotAwesomeSurvival
                 np.inventory.UpdateItemDisplay();
                 NasPlayer w = GetNasPlayer(who);
                 w.lastAttackedPlayer = p;
-
+                if (!w.CanTakeDamage(DamageSource.Murder))
+                {
+                    string reason = "";
+                    if (w.p.Game.Referee)
+                    {
+                        reason = "a referee";
+                    }
+                    if (w.p.invincible)
+                    {
+                        reason = "invincible";
+                    }
+                    if (w.headingToBed)
+                    {
+                        reason = "heading to bed";
+                    }
+                    if (who.Pos.FeetBlockCoords.X == w.bedCoords[0] && who.Pos.FeetBlockCoords.Y == w.bedCoords[1] && who.Pos.FeetBlockCoords.Z == w.bedCoords[2])
+                    {
+                        reason = "in bed";
+                    }
+                    if (!w.pvpEnabled)
+                    {
+                        reason = " does not " + who.pronouns.PresentPerfectVerb + " PVP enabled";
+                    }
+                    np.p.Message("&SYou cannot damage {0} &Sbecause " + who.pronouns.Subject + who.pronouns.PresentVerb + " currently {1}.", who.DisplayName, reason);
+                    return;
+                }
                 if (w.pvpEnabled)
                 {
                     float added = 0;
                     if (np.inventory.HeldItem.Enchant("Sharpness") != 0) added += 1;
                     added += np.inventory.HeldItem.Enchant("Sharpness") * 0.5f;
 
-                    w.TakeDamage(np.inventory.HeldItem.Prop.damage + added, DamageSource.Entity, "@p %fwas slain by " + p.ColoredName + " %fusing " + np.inventory.HeldItem.displayName);
+                    w.TakeDamage(np.inventory.HeldItem.Prop.damage + added, DamageSource.Entity, "@p %f" + who.pronouns.PastVerb + " slain by " + p.ColoredName + " %fusing " + np.inventory.HeldItem.displayName);
                     NasBlockChange.FishingInfo info = new NasBlockChange.FishingInfo
                     {
                         p = p,

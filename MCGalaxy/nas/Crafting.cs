@@ -133,7 +133,9 @@ namespace NotAwesomeSurvival
                 };
                 info.curRound = info.totalRounds;
                 info.delay = TimeSpan.FromMilliseconds(millisecs / info.totalRounds);
-                info.R = color.R; info.G = color.G; info.B = color.B;
+                info.R = color.R;
+                info.G = color.G;
+                info.B = color.B;
                 info.A = A;
                 info.ID = np.craftingAreaID++;
                 SchedulerTask showAreaTask = Server.MainScheduler.QueueRepeat(ShowAreaTask, info, TimeSpan.Zero);

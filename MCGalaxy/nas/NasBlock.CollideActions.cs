@@ -9,7 +9,7 @@ namespace NotAwesomeSurvival
     {
         public static NasBlockCollideAction DefaultSolidCollideAction()
         {
-            return (ne, nasBlock, headSurrounded, x, y, z) => 
+            return (ne, nasBlock, headSurrounded, x, y, z) =>
             {
                 if (headSurrounded)
                 {
@@ -24,11 +24,14 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockCollideAction LavaCollideAction()
         {
-            return (ne, nasBlock, headSurrounded, x, y, z) => 
+            return (ne, nasBlock, headSurrounded, x, y, z) =>
             {
                 if (headSurrounded)
                 {
-                    ne.holdingBreath = true;
+                    if (ne.CanTakeDamage(NasEntity.DamageSource.Drowning))
+                    {
+                        ne.holdingBreath = true;
+                    }
                 }
                 ne.TakeDamage(1.5f, NasEntity.DamageSource.Suffocating, "@p &cmelted in lava.");
             };
@@ -42,32 +45,39 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockCollideAction SpikeCollideAction()
         {
-            return (ne, nasBlock, headSurrounded, x, y, z) => 
+            return (ne, nasBlock, headSurrounded, x, y, z) =>
             {
                 ne.TakeDamage(3f, NasEntity.DamageSource.None, "@p &cgot impaled");
             };
         }
         public static NasBlockCollideAction PressureCollideAction()
         {
-            return (ne, nasBlock, headSurrounded, x, y, z) => 
+            return (ne, nasBlock, headSurrounded, x, y, z) =>
             {
                 ne.nl.SetBlock(x, y, z, Block.FromRaw(611));
+                if (!ne.nl.blockEntities.ContainsKey(x + " " + y + " " + z))
+                {
+                    ne.nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
+                }
                 ne.nl.blockEntities[x + " " + y + " " + z].strength = 15;
             };
         }
         public static NasBlockCollideAction LiquidCollideAction()
         {
-            return (ne, nasBlock, headSurrounded, x, y, z) => 
+            return (ne, nasBlock, headSurrounded, x, y, z) =>
             {
                 if (headSurrounded)
                 {
-                    ne.holdingBreath = true;
+                    if (ne.CanTakeDamage(NasEntity.DamageSource.Drowning))
+                    {
+                        ne.holdingBreath = true;
+                    }
                 }
             };
         }
         public static NasBlockCollideAction AirCollideAction()
         {
-            return (ne, nasBlock, headSurrounded, x, y, z) => 
+            return (ne, nasBlock, headSurrounded, x, y, z) =>
             {
                 if (headSurrounded)
                 {

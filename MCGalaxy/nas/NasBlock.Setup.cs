@@ -272,14 +272,14 @@ namespace NotAwesomeSurvival
                 disturbDelayMax = grassDelayMax,
                 disturbedAction = GrassBlockAction(Block.Grass, Block.Dirt),
                 dropHandler = (NasPlayer, dropID) =>
+                {
+                    Drop grassDrop = new Drop
                     {
-                        Drop grassDrop = new Drop
-                        {
-                            blockStacks = new List<BlockStack>()
-                        };
-                        grassDrop.blockStacks.Add(new BlockStack(3, 1));
-                        return grassDrop;
-                    }
+                        blockStacks = new List<BlockStack>()
+                    };
+                    grassDrop.blockStacks.Add(new BlockStack(3, 1));
+                    return grassDrop;
+                }
             };
             i = 129; //Wet grass
             blocks[i] = new NasBlock(i, Material.Earth)
@@ -289,13 +289,13 @@ namespace NotAwesomeSurvival
                 disturbedAction = GrassBlockAction(Block.Extended | 129, Block.Dirt),
                 interaction = StripInteraction(Block.FromRaw(547), "Shovel"),
                 dropHandler = (NasPlayer, dropID) =>
+                {
+                    if (NasPlayer.inventory.HeldItem.name == "Shears")
                     {
-                        if (NasPlayer.inventory.HeldItem.name == "Shears")
-                        {
-                            return new Drop(129, 1);
-                        }
-                        return new Drop(3, 1);
+                        return new Drop(129, 1);
                     }
+                    return new Drop(3, 1);
+                }
             };
             i = 139; //Snowy grass
             blocks[i] = new NasBlock(i, Material.Earth)
@@ -303,13 +303,13 @@ namespace NotAwesomeSurvival
                 disturbedAction = GrassBlockAction(Block.Extended | 139, Block.Dirt),
                 interaction = StripInteraction(Block.FromRaw(547), "Shovel"),
                 dropHandler = (NasPlayer, dropID) =>
+                {
+                    if (NasPlayer.inventory.HeldItem.name == "Shears")
                     {
-                        if (NasPlayer.inventory.HeldItem.name == "Shears")
-                        {
-                            return new Drop(139, 1);
-                        }
-                        return new Drop(3, 1);
+                        return new Drop(139, 1);
                     }
+                    return new Drop(3, 1);
+                }
             };
             i = 547; //Grass path
             blocks[i] = new NasBlock(i, Material.Earth)
@@ -318,13 +318,13 @@ namespace NotAwesomeSurvival
                 disturbDelayMax = 20f,
                 disturbedAction = GrassBlockAction(Block.Extended | 129, Block.Dirt),
                 dropHandler = (NasPlayer, dropID) =>
+                {
+                    if (NasPlayer.inventory.HeldItem.name == "Shears")
                     {
-                        if (NasPlayer.inventory.HeldItem.name == "Shears")
-                        {
-                            return new Drop(547, 1);
-                        }
-                        return new Drop(3, 1);
+                        return new Drop(547, 1);
                     }
+                    return new Drop(3, 1);
+                }
             };
             i = 3; //Dirt
             blocks[i] = new NasBlock(i, Material.Earth)
@@ -709,19 +709,19 @@ namespace NotAwesomeSurvival
                 disturbDelayMin = leafShrivelDelayMin,
                 disturbDelayMax = leafShrivelDelayMax,
                 dropHandler = (NasPlayer, dropID) =>
-                    {
-                        Drop drop = new Drop(18, 1);
-                        int rand = r.Next(0, 8);
-                        if (rand == 0)
-                        { //16 in 128 chance (1 in 8 chance) of sapling
-                            drop.blockStacks.Add(new BlockStack(6, 1));
-                        }
-                        else
-                        {
-                            drop = new Drop(18, 1);
-                        }
-                        return drop;
+                {
+                    Drop drop = new Drop(18, 1);
+                    int rand = r.Next(0, 8);
+                    if (rand == 0)
+                    { //16 in 128 chance (1 in 8 chance) of sapling
+                        drop.blockStacks.Add(new BlockStack(6, 1));
                     }
+                    else
+                    {
+                        drop = new Drop(18, 1);
+                    }
+                    return drop;
+                }
             };
             i = 103; //Pink leaves
             blocks[i] = new NasBlock(i, Material.Leaves)
@@ -730,19 +730,19 @@ namespace NotAwesomeSurvival
                 disturbDelayMin = leafShrivelDelayMin,
                 disturbDelayMax = leafShrivelDelayMax,
                 dropHandler = (NasPlayer, dropID) =>
+                {
+                    Drop drop = new Drop(103, 1);
+                    int rand = r.Next(0, 8);
+                    if (rand == 0)
                     {
-                        Drop drop = new Drop(103, 1);
-                        int rand = r.Next(0, 8);
-                        if (rand == 0)
-                        {
-                            drop.blockStacks.Add(new BlockStack(154, 1));
-                        }
-                        else
-                        {
-                            drop = new Drop(103, 1);
-                        }
-                        return drop;
+                        drop.blockStacks.Add(new BlockStack(154, 1));
                     }
+                    else
+                    {
+                        drop = new Drop(103, 1);
+                    }
+                    return drop;
+                }
             };
             i = 666; //dense Leaves
             blocks[i] = new NasBlock(i, Material.Leaves)
@@ -770,19 +770,19 @@ namespace NotAwesomeSurvival
                 disturbDelayMin = leafShrivelDelayMin,
                 disturbDelayMax = leafShrivelDelayMax,
                 dropHandler = (NasPlayer, dropID) =>
+                {
+                    Drop drop = new Drop(19, 1);
+                    int rand = r.Next(0, 8);
+                    if (rand == 0)
                     {
-                        Drop drop = new Drop(19, 1);
-                        int rand = r.Next(0, 8);
-                        if (rand == 0)
-                        {
-                            drop.blockStacks.Add(new BlockStack(689, 1));
-                        }
-                        else
-                        {
-                            drop = new Drop(19, 1);
-                        }
-                        return drop;
+                        drop.blockStacks.Add(new BlockStack(689, 1));
                     }
+                    else
+                    {
+                        drop = new Drop(19, 1);
+                    }
+                    return drop;
+                }
             };
             i = 20; //Glass
             blocks[i] = new NasBlock(i, Material.Glass);
@@ -932,9 +932,9 @@ namespace NotAwesomeSurvival
             {
                 durability = DefaultDurabilities[(int)Material.Stone],
                 dropHandler = (NasPlayer, dropID) =>
-                    {
-                        return new Drop(dropID, 2);
-                    },
+                {
+                    return new Drop(dropID, 2);
+                },
                 resourceCost = 2,
                 damageDoneToTool = 1f
             };
@@ -993,10 +993,10 @@ namespace NotAwesomeSurvival
                 disturbDelayMax = 15f,
                 disturbedAction = FireAction(),
                 dropHandler = (NasPlayer, dropID) =>
-                    {
-                        Drop fireDrop = new Drop(131, 1);
-                        return (r.Next(0, 100) == 0) ? fireDrop : null;
-                    },
+                {
+                    Drop fireDrop = new Drop(131, 1);
+                    return (r.Next(0, 100) == 0) ? fireDrop : null;
+                },
                 collideAction = FireCollideAction()
             };
             i = 55; //Dark door
@@ -1280,18 +1280,18 @@ namespace NotAwesomeSurvival
             {
                 disturbedAction = CropAction(wheatSet, 3),
                 dropHandler = (NasPlayer, dropID) =>
+                {
+                    if (r.Next(0, 2) == 0)
                     {
-                        if (r.Next(0, 2) == 0)
-                        {
-                            return new Drop(145, 1);
-                        }
-                        return new Drop(644, r.Next(2, 5));
-                        //Drop drop = new Drop();
-                        //drop.blockStacks = new List<BlockStack>();
-                        //drop.blockStacks.Add(new BlockStack(644, r.Next(1, 4)));
-                        //drop.blockStacks.Add(new BlockStack(145, 1));
-                        //return drop;
+                        return new Drop(145, 1);
                     }
+                    return new Drop(644, r.Next(2, 5));
+                    //Drop drop = new Drop();
+                    //drop.blockStacks = new List<BlockStack>();
+                    //drop.blockStacks.Add(new BlockStack(644, r.Next(1, 4)));
+                    //drop.blockStacks.Add(new BlockStack(145, 1));
+                    //return drop;
+                }
             };
             i = 624; //iron nug
             blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
@@ -1329,19 +1329,19 @@ namespace NotAwesomeSurvival
             {
                 disturbedAction = IronCropAction(ironSet, 3),
                 dropHandler = (NasPlayer, dropID) =>
+                {
+                    Drop finalDrop = new Drop(729, r.Next(1, 4));
+                    if (r.Next(0, 2) == 0)
                     {
-                        Drop finalDrop = new Drop(729, r.Next(1, 4));
-                        if (r.Next(0, 2) == 0)
-                        {
-                            finalDrop.blockStacks.Add(new BlockStack(624, 1));
-                        }
-                        return finalDrop;
-                        //Drop drop = new Drop();
-                        //drop.blockStacks = new List<BlockStack>();
-                        //drop.blockStacks.Add(new BlockStack(644, r.Next(1, 4)));
-                        //drop.blockStacks.Add(new BlockStack(145, 1));
-                        //return drop;
+                        finalDrop.blockStacks.Add(new BlockStack(624, 1));
                     }
+                    return finalDrop;
+                    //Drop drop = new Drop();
+                    //drop.blockStacks = new List<BlockStack>();
+                    //drop.blockStacks.Add(new BlockStack(644, r.Next(1, 4)));
+                    //drop.blockStacks.Add(new BlockStack(145, 1));
+                    //return drop;
+                }
             };
             const float sugarTotalSeconds = 10f * 60f;
             const float sugarMaxAddedSeconds = 15f * 60f;
@@ -1376,19 +1376,19 @@ namespace NotAwesomeSurvival
                 disturbDelayMin = leafShrivelDelayMin,
                 disturbDelayMax = leafShrivelDelayMax,
                 dropHandler = (NasPlayer, dropID) =>
-                    {
-                        Drop drop = new Drop(146, 1);
-                        int rand = r.Next(0, 8);
-                        if (rand == 0)
-                        { //16 in 128 chance (1 in 8 chance) of sapling
-                            drop.blockStacks.Add(new BlockStack(450, 1));
-                        }
-                        else
-                        {
-                            drop = new Drop(146, 1);
-                        }
-                        return drop;
+                {
+                    Drop drop = new Drop(146, 1);
+                    int rand = r.Next(0, 8);
+                    if (rand == 0)
+                    { //16 in 128 chance (1 in 8 chance) of sapling
+                        drop.blockStacks.Add(new BlockStack(450, 1));
                     }
+                    else
+                    {
+                        drop = new Drop(146, 1);
+                    }
+                    return drop;
+                }
             };
             i = 449; //lilypad
             blocks[i] = new NasBlock(i, Material.Plant)
@@ -2250,10 +2250,10 @@ namespace NotAwesomeSurvival
                 disturbedAction = SidewaysPistonAction("head", axis, direction, set, sticky),
                 collideAction = AirCollideAction(),
                 dropHandler = (NasPlayer, dropID) =>
-                    {
-                        Drop pistonDrop = new Drop(1, 1);
-                        return (1 == 0) ? pistonDrop : null;
-                    }
+                {
+                    Drop pistonDrop = new Drop(1, 1);
+                    return (1 == 0) ? pistonDrop : null;
+                }
             };
         }
     } //class NasBlock

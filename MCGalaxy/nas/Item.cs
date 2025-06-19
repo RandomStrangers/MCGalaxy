@@ -39,7 +39,7 @@ namespace NotAwesomeSurvival
             HP = prop.baseHP;
             armor = prop.armor;
             if (displayName == null)
-            displayName = ColoredName;
+                displayName = ColoredName;
         }
         [JsonIgnore]
         public string ColoredName

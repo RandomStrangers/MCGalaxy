@@ -6,6 +6,7 @@ namespace NotAwesomeSurvival
 
     public partial class ItemProp
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification = "<Pending>")]
         public static void Setup()
         {
 

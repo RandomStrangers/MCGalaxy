@@ -32,11 +32,11 @@ namespace NotAwesomeSurvival
                 return false;
             }
             if (breakScheduler == null)
-            breakScheduler = new Scheduler("BlockBreakScheduler");
+                breakScheduler = new Scheduler("BlockBreakScheduler");
             if (repeaterScheduler == null)
-            repeaterScheduler = new Scheduler("RepeaterScheduler");
+                repeaterScheduler = new Scheduler("RepeaterScheduler");
             if (fishingScheduler == null)
-            fishingScheduler = new Scheduler("FishingScheduler");
+                fishingScheduler = new Scheduler("FishingScheduler");
             Bitmap terrain;
             terrain = new Bitmap(Nas.Path + terrainImageName);
             terrain = new Bitmap(terrain, terrain.Width / 16, terrain.Height / 16);
@@ -123,7 +123,7 @@ namespace NotAwesomeSurvival
 
             if (np.isInserting)
             {
-                np.p.Message("&ePlease insert items into the container before breaking blocks."); 
+                np.p.Message("&ePlease insert items into the container before breaking blocks.");
                 return;
             }
 
@@ -322,8 +322,8 @@ namespace NotAwesomeSurvival
             public float x, y, z;
         }
 
-        public static void HandleLeftClick (Player p, MouseButton button, 
-            MouseAction action, ushort yaw, ushort pitch, byte entity, 
+        public static void HandleLeftClick(Player p, MouseButton button,
+            MouseAction action, ushort yaw, ushort pitch, byte entity,
             ushort x, ushort y, ushort z, TargetBlockFace face)
         {
             if (!p.agreed) { p.Message("You need to read and agree to the &b/rules&S to play"); return; }
@@ -382,7 +382,7 @@ namespace NotAwesomeSurvival
                         //         heldItem.name, mat, nasBlock.material);
                         if (nasBlock.material == mat)
                         {
-                            toolEffective = true; 
+                            toolEffective = true;
                             break;
                         }
                     }

@@ -787,6 +787,10 @@ namespace NotAwesomeSurvival
                     if (off == me)
                     {
                         nl.SetBlock(x, y, z, on);
+                        if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
+                        {
+                            return;
+                        }
                         nl.blockEntities[x + " " + y + " " + z].strength = 15;
                     }
                 }
@@ -795,6 +799,10 @@ namespace NotAwesomeSurvival
                     if (on == me)
                     {
                         nl.SetBlock(x, y, z, off);
+                        if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
+                        {
+                            return;
+                        }
                         nl.blockEntities[x + " " + y + " " + z].strength = 0;
                     }
                 }
@@ -1848,6 +1856,10 @@ namespace NotAwesomeSurvival
         {
             return (nl, nasBlock, x, y, z) => {
                 nl.SetBlock(x, y, z, Block.FromRaw(195));
+                if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
+                {
+                    return;
+                }
                 nl.blockEntities[x + " " + y + " " + z].strength = 0;
             };
 
@@ -1887,8 +1899,17 @@ namespace NotAwesomeSurvival
                     ((b[5] != null) && b[5].strength > 0 && (b[5].type == 2 || b[5].type == 4 || b[5].type == 9 || b[5].type == 13))
                 ;
                 if (!powered)
-                { nl.blockEntities[x + " " + y + " " + z].type = 0; return; }
-                if (nl.blockEntities[x + " " + y + " " + z].type == 1) { return; }
+                {
+                    if (nl.blockEntities.ContainsKey(x + " " + y + " " + z))
+                    { 
+                        nl.blockEntities[x + " " + y + " " + z].type = 0; 
+                        return; 
+                    }
+                }
+                if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z) || nl.blockEntities[x + " " + y + " " + z].type == 1) 
+                { 
+                    return; 
+                }
                 nl.blockEntities[x + " " + y + " " + z].type = 1;
                 {
                     ushort checkBlock = nl.GetBlock(x + changeX, y + changeY, z + changeZ);

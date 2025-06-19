@@ -82,8 +82,23 @@ namespace NotAwesomeSurvival
         }
         public static void TickLevelCallback(SchedulerTask task)
         {
-            NasLevel nl = (NasLevel)task.State;
-            nl.Tick();
+            object state = task.State;
+            if (state != null)
+            {
+                NasLevel nl = (NasLevel)state;
+                if (nl != null)
+                {
+                    nl.Tick();
+                }
+                else
+                {
+                    Player.Console.Message("NasLevel tick task was null, skipping tick.");
+                }
+            }
+            else
+            {
+                Player.Console.Message("NasLevel tick task was null, skipping tick.");
+            }
         }
         public void Tick()
         {
@@ -97,9 +112,31 @@ namespace NotAwesomeSurvival
                     break;
                 }
                 QueuedBlockUpdate qb = tickQueue.First;
-                if (NasBlock.blocksIndexedByServerushort[lvl.GetBlock((ushort)qb.x, (ushort)qb.y, (ushort)qb.z)].selfID == qb.nb.selfID)
+                if (lvl != null)
                 {
-                    qb.da(this, qb.nb, qb.x, qb.y, qb.z);
+                    ushort block = lvl.GetBlock((ushort)qb.x, (ushort)qb.y, (ushort)qb.z);
+                    if (block > 0)
+                    {
+                        ushort u = NasBlock.blocksIndexedByServerushort[block].selfID;
+                        if (u > 0)
+                        {
+                            if (u == qb.nb.selfID)
+                            {
+                                if (this != null)
+                                {
+                                    if (qb.nb != null)
+                                    {
+                                        qb.da(this, qb.nb, qb.x, qb.y, qb.z);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    Logger.Log(LogType.Warning, "NasLevel tick called on a null level, skipping tick");
+                    return;
                 }
                 tickQueue.Dequeue();
                 actions++;

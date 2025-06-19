@@ -101,7 +101,7 @@ namespace NotAwesomeSurvival
                     FileIO.TryMove(fileNameInPluginsDir, fileName);
                 }
                 if (cfg == null)
-                cfg = ConfigElement.GetAll(typeof(Effect));
+                    cfg = ConfigElement.GetAll(typeof(Effect));
                 if (!ConfigElement.ParseFile(cfg, fileName, this))
                 {
                     Player.Console.Message("NAS: Could not find required effect file {0}", effectName);

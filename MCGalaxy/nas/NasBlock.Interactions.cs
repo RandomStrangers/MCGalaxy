@@ -142,8 +142,12 @@ namespace NotAwesomeSurvival
                 Position coords = np.p.Pos;
                 Command.Find("tp").Use(np.p, x + " " + y + " " + z);
                 np.spawnCoords = np.p.Pos;
+                if (File.Exists("extra/Waypoints/" + np.p.name + "_nas.txt"))
+                {
+                    FileIO.TryMove("extra/Waypoints/" + np.p.name + "_nas.txt", "extra/Waypoints/" + np.p.truename + "_nas.txt");
+                }
                 WarpList list = new WarpList();
-                list.Filename = "extra/Waypoints/" + np.p.name + "_nas.txt";
+                list.Filename = "extra/Waypoints/" + np.p.truename + "_nas.txt";
                 if (!np.p.Extras.Contains("NAS_WAYPOINTS"))
                 {
                     np.p.Extras["NAS_WAYPOINTS"] = list;
@@ -521,6 +525,10 @@ namespace NotAwesomeSurvival
         public static NasBlockInteraction ChangeInteraction(ushort toggle)
         {
             return (np, button, action, nasBlock, x, y, z) => {
+                if (!np.nl.blockEntities.ContainsKey(x + " " + y + " " + z))
+                {
+                    np.nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
+                }
                 if (action == MouseAction.Pressed) { return; }
                 if (button == MouseButton.Right)
                 {

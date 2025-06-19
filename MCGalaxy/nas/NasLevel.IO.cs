@@ -60,6 +60,7 @@ namespace NotAwesomeSurvival
         public static void Unload(string name, NasLevel nl)
         {
             nl.EndTickTask();
+            nl.lvl.Save(true);
             string jsonString;
             jsonString = JsonConvert.SerializeObject(nl, Formatting.Indented);
             string fileName = GetFileName(name);
@@ -126,7 +127,7 @@ namespace NotAwesomeSurvival
             string fileName = Path + name + Extension;
             if (File.Exists(fileName))
             {
-                File.Delete(fileName);
+                FileIO.TryDelete(fileName);
                 Logger.Log(LogType.Debug, "Deleted NasLevel " + fileName + "!");
             }
         }
@@ -136,7 +137,7 @@ namespace NotAwesomeSurvival
             if (File.Exists(fileName))
             {
                 string newFileName = Path + dstMap + Extension;
-                File.Move(fileName, newFileName);
+                FileIO.TryMove(fileName, newFileName);
                 Logger.Log(LogType.Debug, "Renamed NasLevel " + fileName + " to " + newFileName + "!");
                 //Unload(srcMap, all[srcMap]);
             }

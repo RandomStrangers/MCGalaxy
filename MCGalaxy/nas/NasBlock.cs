@@ -30,9 +30,9 @@ namespace NotAwesomeSurvival
         /// </summary>
         public string GetName(Player p, ushort id = ushort.MaxValue)
         {
-            if (id == ushort.MaxValue) 
-            { 
-                id = parentID; 
+            if (id == ushort.MaxValue)
+            {
+                id = parentID;
             }
             return GetBlockName(p, Block.FromRaw(id)).Split('-')[0];
         }
@@ -46,14 +46,18 @@ namespace NotAwesomeSurvival
             if (!p.IsSuper)
             {
                 def = p.level.GetBlockDef(block);
+                if (def == null)
+                {
+                    def = BlockDefinition.GlobalDefs[block];
+                }
             }
             else
             {
                 def = BlockDefinition.GlobalDefs[block];
             }
-            if (def != null) 
-            { 
-                return def.Name; 
+            if (def != null)
+            {
+                return def.Name;
             }
             return "Unknown";
         }
@@ -102,7 +106,7 @@ namespace NotAwesomeSurvival
         public float beginDelayMin = 0f;
         public NasBlockAction disturbedAction = null;
         public NasBlockAction instantAction = null;
-        public NasBlockAction beginAction = null;
+        //public NasBlockAction beginAction = null;
         public NasBlockInteraction interaction = null;
         public NasBlockExistAction existAction = null;
         public NasBlockCollideAction collideAction = null;//DefaultCollideAction();
@@ -115,9 +119,9 @@ namespace NotAwesomeSurvival
             tierOfToolNeededToBreak = 0;
             durability = DefaultDurabilities[(int)mat];
             damageDoneToTool = 1f;
-            if (material == Material.Leaves || durability == 0) 
-            { 
-                damageDoneToTool = 0; 
+            if (material == Material.Leaves || durability == 0)
+            {
+                damageDoneToTool = 0;
             }
             dropHandler = DefaultDropHandler;
             resourceCost = 1;
