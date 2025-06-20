@@ -87,8 +87,7 @@ namespace MCGalaxy.Modules.Relay.IRC
             conn.Port     = Server.Config.IRCPort;
             conn.UseSSL   = Server.Config.IRCSSL;
 
-            // most IRC servers supporting SSL/TLS do so on port 6697
-            if (conn.Port == 6697) conn.UseSSL = true;
+            //if (conn.Port == 6697) conn.UseSSL = true;
             
             conn.Nick     = botNick;
             conn.UserName = botNick;
