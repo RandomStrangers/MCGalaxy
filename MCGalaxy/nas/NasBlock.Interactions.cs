@@ -23,13 +23,14 @@ namespace NotAwesomeSurvival
 
     public partial class NasBlock
     {
-
-        public static string Path = "nas/";
-        public static string SavePath = Path + "playerdata/";
-
+        public const string Path = Nas.SavePath + "blocks/";
         public static string GetTextPath(Player p)
         {
-            return SavePath + p.name + "text.txt";
+            if (!File.Exists(Path + p.truename + ".txt"))
+            {
+                File.WriteAllText(Path + p.truename + ".txt", string.Empty);
+            }
+            return Path + p.truename + ".txt";
         }
 
 
@@ -60,8 +61,8 @@ namespace NotAwesomeSurvival
 
         public class Container
         {
-            public const int ToolLimit = 10;
-            public const int BlockStackLimit = 10;
+            public const int ToolLimit = 15;
+            public const int BlockStackLimit = 15;
             public static object locker = new object();
             public enum Type { Chest, Barrel, Crate, Gravestone, AutoCraft, Dispenser }
             public Type type;

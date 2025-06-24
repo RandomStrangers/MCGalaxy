@@ -87,7 +87,6 @@ namespace MCGalaxy.Modules.Relay.IRC
             conn.Port     = Server.Config.IRCPort;
             conn.UseSSL   = Server.Config.IRCSSL;
 
-            //if (conn.Port == 6697) conn.UseSSL = true;
             
             conn.Nick     = botNick;
             conn.UserName = botNick;

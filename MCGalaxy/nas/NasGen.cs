@@ -26,8 +26,8 @@ namespace NotAwesomeSurvival
         public const float ironChance = 1f / 16f;
         public const float goldChance = 1f / 24f;
         public const float quartzChance = 1f / 24f;
-        public const float diamondChance = 1.5f / 48f;
-        public const float emeraldChance = 1.25f / 48f;
+        public const float diamondChance = 1.25f / 48f;
+        public const float emeraldChance = 1.25f / 40f;
         public static Color coalFogColor;
         public static Color ironFogColor;
         public static Color goldFogColor;
@@ -97,7 +97,7 @@ namespace NotAwesomeSurvival
             offsetZ = chunkOffsetZ * mapWideness;
             offsetX -= chunkOffsetX;
             offsetZ -= chunkOffsetZ;
-            p.Message("offsetX offsetZ {0} {1}", offsetX, offsetZ);
+            //p.Message("offsetX offsetZ {0} {1}", offsetX, offsetZ);
 
             Perlin adjNoise = new Perlin
             {
@@ -350,7 +350,7 @@ namespace NotAwesomeSurvival
                 p.Message("Calculating heightmap");
                 nl = new NasLevel
                 {
-                    //nl.heightmap = new ushort[lvl.Width, lvl.Length];
+                    heightmap = new ushort[lvl.Width, lvl.Length],
                     height = lvl.Height
                 };
                 for (ushort z = 0; z < lvl.Length; ++z)
@@ -362,14 +362,13 @@ namespace NotAwesomeSurvival
                             ushort curBlock = lvl.FastGetBlock(x, y, z);
                             if (NasBlock.IsPartOfSet(stoneTypes, curBlock) == -1)
                             {
-                                //nl.heightmap[x, z] = (ushort)(y - 1);
+                                nl.heightmap[x, z] = (ushort)(y - 1);
                                 break;
                             }
                         }
                     }
                 nl.lvl = lvl;
                 nl.biome = biome;
-                //NasLevel.all.Add(lvl.name, nl);
             }
             public void GenSoil()
             {
@@ -757,8 +756,8 @@ namespace NotAwesomeSurvival
                             {
                                 TryGenOre(x, y, z, ironDepth, ironChance, 628, 3);
                                 TryGenOre(x, y, z, goldDepth, goldChance, 629, 3);
-                                TryGenOre(x, y, z, diamondDepth, diamondChance, 630, 2);
-                                TryGenOre(x, y, z, emeraldDepth, emeraldChance, 649, 1);
+                                TryGenDiamond(x, y, z, diamondDepth, diamondChance, 630, 2);
+                                TryGenEmerald(x, y, z, emeraldDepth, emeraldChance, 649, 1);
                                 TryGenOre(x, y, z, coalDepth, coalChance, 627, r.Next(3, 4), 0.5);
                             }
                             if (biome == 1) { TryGenOre(x, y, z, coalDepth, quartzChance, 586, 3); }
@@ -789,7 +788,7 @@ namespace NotAwesomeSurvival
             public bool TryGenOre(int x, int y, int z, int oreDepth, float oreChance, ushort oreID, int size = 0, double vsf = 0.4)
             {
                 double chance = (double)(oreChance / 100);
-                int height = lvl.Height;//nl.heightmap[x, z];
+                int height = nl.heightmap[x, z];
                 if (height < oceanHeight) { height = oceanHeight; }
                 int hmbyhttdfttrh = lvl.Height - height;
                 hmbyhttdfttrh += oreDepth;
@@ -798,16 +797,61 @@ namespace NotAwesomeSurvival
                     && r.NextDouble() <= chance
                    )
                 {
-                    //if (r.NextDouble() > 0.5) {
-                    //    if (!BlockExposed(lvl, x, y, z)) { return false; }
-                    //}
+                    if (r.NextDouble() > 0.5) {
+                        if (BlockExposed(x, y, z)) { return false; }
+                    }
 
                     GenerateOreCluster(x, y, z, oreID, size, vsf);
                     return true;
                 }
                 return false;
             }
+            public bool TryGenDiamond(int x, int y, int z, int oreDepth, float oreChance, ushort oreID, int size = 0, double vsf = 0.4)
+            {
+                double chance = (double)(oreChance / 100);
+                int height = nl.heightmap[x, z];
+                Random rng = new Random();
+                int genY = rng.Next(0, 20);
+                if (height < oceanHeight) { height = oceanHeight; }
+                int hmbyhttdfttrh = lvl.Height - height;
+                hmbyhttdfttrh += oreDepth;
+                if (y <= lvl.Height - hmbyhttdfttrh
+                    && r.NextDouble() <= chance
+                   )
+                {
+                    if (r.NextDouble() > 0.5)
+                    {
+                        if (BlockExposed(x, y, z)) { return false; }
+                    }
 
+                    GenerateOreCluster(x, genY, z, oreID, size, vsf);
+                    return true;
+                }
+                return false;
+            }
+            public bool TryGenEmerald(int x, int y, int z, int oreDepth, float oreChance, ushort oreID, int size = 0, double vsf = 0.4)
+            {
+                double chance = (double)(oreChance / 100);
+                int height = nl.heightmap[x, z];
+                Random rng = new Random();
+                int genY = rng.Next(0, 15);
+                if (height < oceanHeight) { height = oceanHeight; }
+                int hmbyhttdfttrh = lvl.Height - height;
+                hmbyhttdfttrh += oreDepth;
+                if (y <= lvl.Height - hmbyhttdfttrh
+                    && r.NextDouble() <= chance
+                   )
+                {
+                    if (r.NextDouble() > 0.5)
+                    {
+                        if (BlockExposed(x, y, z)) { return false; }
+                    }
+
+                    GenerateOreCluster(x, genY, z, oreID, size, vsf);
+                    return true;
+                }
+                return false;
+            }
             public void GenerateOreCluster(int x, int y, int z, ushort oreID, int iteration, double chance = 0.4)
             {
                 if (x < 0 || y < 0 || z < 0 || x > mapWideness - 1 || z > mapWideness - 1 || y > mapTallness - 1)
@@ -916,7 +960,6 @@ namespace NotAwesomeSurvival
                 int genX = rng.Next(10, mapWideness - 10);
                 int genZ = rng.Next(10, mapWideness - 10);
                 int genY = rng.Next(0, 15);
-                //int genY = rng.Next(10, Math.Max(nsl.heightmap[genX, genZ] - 10, 10));
 
 
                 for (int dx = 0; dx < 9; dx++)

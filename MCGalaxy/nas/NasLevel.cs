@@ -41,7 +41,7 @@ namespace NotAwesomeSurvival
 
         [JsonIgnore] public static Dictionary<string, NasLevel> all = new Dictionary<string, NasLevel>();
         [JsonIgnore] public Level lvl;
-        public ushort[,] heightmap;
+        [JsonIgnore] public ushort[,] heightmap = new ushort[0, 0];
         public ushort height;
         public List<BlockLocation> blocksThatMustBeDisturbed = new List<BlockLocation>();
         public Dictionary<string, NasBlock.Entity> blockEntities = new Dictionary<string, NasBlock.Entity>();

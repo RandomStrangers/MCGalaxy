@@ -293,7 +293,7 @@ namespace NotAwesomeSurvival
                     {
                         reason = "invincible";
                     }
-                    np.p.Message("&SYou cannot damage {0} &Sbecause you are currently {1}.", who.DisplayName, reason);
+                    np.p.Message("&SYou cannot damage {0} &Sbecause you currently are {1}.", who.DisplayName, reason);
                     return;
                 }
                 Vec3F32 delta = p.Pos.ToVec3F32() - who.Pos.ToVec3F32();
@@ -328,25 +328,32 @@ namespace NotAwesomeSurvival
                     string reason = "";
                     if (w.p.Game.Referee)
                     {
-                        reason = "a referee";
+                        reason = who.pronouns.PresentVerb + " a referee";
                     }
                     if (w.p.invincible)
                     {
-                        reason = "invincible";
+                        reason = who.pronouns.PresentVerb + " invincible";
                     }
                     if (w.headingToBed)
                     {
-                        reason = "heading to bed";
+                        reason = who.pronouns.PresentVerb + " heading to bed";
                     }
                     if (who.Pos.FeetBlockCoords.X == w.bedCoords[0] && who.Pos.FeetBlockCoords.Y == w.bedCoords[1] && who.Pos.FeetBlockCoords.Z == w.bedCoords[2])
                     {
-                        reason = "in bed";
+                        reason = who.pronouns.PresentVerb + " in bed";
                     }
                     if (!w.pvpEnabled)
                     {
-                        reason = " does not " + who.pronouns.PresentPerfectVerb + " PVP enabled";
+                        if (who.pronouns.Plural)
+                        {
+                            reason = "do not " + who.pronouns.PresentPerfectVerb + " PVP enabled";
+                        }
+                        else
+                        {
+                            reason = "does not " + who.pronouns.PresentPerfectVerb + " PVP enabled";
+                        }
                     }
-                    np.p.Message("&SYou cannot damage {0} &Sbecause " + who.pronouns.Subject + who.pronouns.PresentVerb + " currently {1}.", who.DisplayName, reason);
+                    np.p.Message("&SYou cannot damage {0} &Sbecause " + who.pronouns.Subject + " currently {1}.", who.DisplayName, reason);
                     return;
                 }
                 if (w.pvpEnabled)

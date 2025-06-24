@@ -11,6 +11,7 @@ using MCGalaxy.Network;
 using MCGalaxy.Commands;
 using System.Reflection;
 using System.Net;
+using MCGalaxy.Events.ServerEvents;
 
 //unknownshadow200: well player ids go from 0 up to 255. normal bots go from 127 down to 64, then 254 down to 127, then finally 63 down to 0.
 //UnknownShadow200: FromRaw adds 256 if the block id is >= 66, and ToRaw subtracts 256 if the block id is >= 66
@@ -23,18 +24,17 @@ namespace NotAwesomeSurvival
 {
     public class NameGenerator
     {
-        public int[] numSyllables = new int[] { 1, 2, 3, 4, 5 };
-        public int[] numSyllablesChance = new int[] { 150, 500, 80, 10, 1 };
-        public int[] numConsonants = new int[] { 0, 1, 2, 3, 4 };
-        public int[] numConsonantsChance = new int[] { 80, 350, 25, 5, 1 };
-        public int[] numVowels = new int[] { 1, 2, 3 };
-        public int[] numVowelsChance = new int[] { 180, 25, 1 };
+        public long[] numSyllables = new long[] { 1, 2, 3, 4, 5 };
+        public long[] numSyllablesChance = new long[] { 150, 500, 80, 10, 1 };
+        public long[] numConsonants = new long[] { 0, 1, 2, 3, 4 };
+        public long[] numConsonantsChance = new long[] { 80, 350, 25, 5, 1 };
+        public long[] numVowels = new long[] { 1, 2, 3 };
+        public long[] numVowelsChance = new long[] { 180, 25, 1 };
         public char[] vowel = new char[] { 'a', 'e', 'i', 'o', 'u', 'y' };
-        public int[] vowelChance = new int[] { 10, 12, 10, 10, 8, 2 };
+        public long[] vowelChance = new long[] { 10, 12, 10, 10, 8, 2 };
         public char[] consonant = new char[] { 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z' };
-        public int[] consonantChance = new int[] { 10, 10, 10, 10, 10, 10, 10, 10, 12, 12, 12, 10, 5, 12, 12, 12, 8, 8, 3, 4, 3 };
+        public long[] consonantChance = new long[] { 10, 10, 10, 10, 10, 10, 10, 10, 12, 12, 12, 10, 5, 12, 12, 12, 8, 8, 3, 4, 3 };
         public Random random;
-
         /// <summary>
         /// Create an instance.
         /// </summary>
@@ -42,17 +42,16 @@ namespace NotAwesomeSurvival
         {
             random = new Random();
         }
-
-        public int IndexSelect(int[] intArray)
+        public long IndexSelect(long[] intArray)
         {
-            int totalPossible = 0;
-            for (int i = 0; i < intArray.Length; i++)
+            long totalPossible = 0;
+            for (long i = 0; i < intArray.LongLength; i++)
             {
                 totalPossible += intArray[i];
             }
-            int chosen = random.Next(totalPossible);
-            int chancesSoFar = 0;
-            for (int j = 0; j < intArray.Length; j++)
+            long chosen = random.Next((int)totalPossible);
+            long chancesSoFar = 0;
+            for (long j = 0; j < intArray.LongLength; j++)
             {
                 chancesSoFar += intArray[j];
                 if (chancesSoFar > chosen)
@@ -69,8 +68,8 @@ namespace NotAwesomeSurvival
         public string MakeConsonantBlock()
         {
             string newName = "";
-            int numberConsonants = numConsonants[IndexSelect(numConsonantsChance)];
-            for (int i = 0; i < numberConsonants; i++)
+            long numberConsonants = numConsonants[IndexSelect(numConsonantsChance)];
+            for (long i = 0; i < numberConsonants; i++)
             {
                 newName += consonant[IndexSelect(consonantChance)];
             }
@@ -79,8 +78,8 @@ namespace NotAwesomeSurvival
         public string MakeVowelBlock()
         {
             string newName = "";
-            int numberVowels = numVowels[IndexSelect(numVowelsChance)];
-            for (int i = 0; i < numberVowels; i++)
+            long numberVowels = numVowels[IndexSelect(numVowelsChance)];
+            for (long i = 0; i < numberVowels; i++)
             {
                 newName += vowel[IndexSelect(vowelChance)];
             }
@@ -94,9 +93,9 @@ namespace NotAwesomeSurvival
         /// <returns>A name string.</returns>
         public string MakeName()
         {
-            int numberSyllables = numSyllables[IndexSelect(numSyllablesChance)];
+            long numberSyllables = numSyllables[IndexSelect(numSyllablesChance)];
             string newName = "";
-            for (int i = 0; i < numberSyllables; i++)
+            for (long i = 0; i < numberSyllables; i++)
             {
                 newName += MakeSyllable();
             }
@@ -165,7 +164,6 @@ namespace NotAwesomeSurvival
         public static bool EnsureFileExists(string url, string file)
         {
             if (File.Exists(file)) return true;
-
             Logger.Log(LogType.SystemActivity, file + " doesn't exist, Downloading..");
             try
             {
@@ -199,11 +197,11 @@ namespace NotAwesomeSurvival
         {
             EnsureFileExists(url, file);
         }
-        public static bool HandleErrorResponse(Exception ex, string msg, int retry)
+        public static bool HandleErrorResponse(Exception ex, string msg, long retry)
         {
             return HandleErrorResponse((WebException)ex, msg, retry);
         }
-        public static bool HandleErrorResponse(WebException ex, string msg, int retry)
+        public static bool HandleErrorResponse(WebException ex, string msg, long retry)
         {
             string err = HttpUtil.GetErrorResponse(ex);
             HttpStatusCode status = GetStatus(ex);
@@ -213,7 +211,6 @@ namespace NotAwesomeSurvival
                 Sleep();
                 return true;
             }
-
             // 500 errors might be temporary outage, so still retry a few times
             if (status >= (HttpStatusCode)500 && status <= (HttpStatusCode)504)
             {
@@ -221,21 +218,18 @@ namespace NotAwesomeSurvival
                 LogResponse(err);
                 return retry < 2;
             }
-
             // If unable to reach site at all, immediately give up
             if (ex.Status == WebExceptionStatus.NameResolutionFailure)
             {
                 LogWarning(ex);
                 return false;
             }
-
             // May be caused by connection dropout/reset, so still retry a few times
             if (ex.InnerException is IOException)
             {
                 LogWarning(ex);
                 return retry < 2;
             }
-
             LogError(ex, msg);
             LogResponse(err);
             return false;
@@ -305,6 +299,10 @@ namespace NotAwesomeSurvival
             {
                 Directory.CreateDirectory(NasEffect.Path);
             }
+            if (!Directory.Exists(NasBlock.Path))
+            {
+                Directory.CreateDirectory(NasBlock.Path);
+            }
             if (!Directory.Exists("blockprops"))
             {
                 Directory.CreateDirectory("blockprops");
@@ -329,6 +327,7 @@ namespace NotAwesomeSurvival
                         }
                     }
                 }
+                Directory.Delete("plugins/nas", true);
             }
             if (!File.Exists("text/BookTitles.txt"))
             {
@@ -426,6 +425,7 @@ namespace NotAwesomeSurvival
             OnPlayerChatEvent.Register(OnPlayerMessage, Priority.Normal);
             OnPlayerDisconnectEvent.Register(OnPlayerDisconnect, Priority.Low);
             OnPlayerCommandEvent.Register(OnPlayerCommand, Priority.High);
+            OnShuttingDownEvent.Register(OnShutdown, Priority.Low);
             NasGen.Setup();
             NasLevel.Setup();
             NasTimeCycle.Setup();
@@ -449,7 +449,7 @@ namespace NotAwesomeSurvival
                     SrvProperties.Save();
                     //Server.SetMainLevel(mapName);
                     Chat.Message(ChatScope.All, "A server restart is required to initialize NAS plugin.", null, null, true);
-                    Thread.Sleep(1000);
+                    Thread.Sleep(5000);
                     Server.Stop(true, "A server restart is required to initialize NAS plugin.");
                 }
             }
@@ -460,22 +460,22 @@ namespace NotAwesomeSurvival
             {
                 if (target.pronouns.Plural)
                 {
-                    p.Message("&7  &fPLAYERS " + target.pronouns.PresentPerfectVerb.ToUpper() + " PVP &2ENABLED");
+                    p.Message("&7  &fPlayers " + target.pronouns.PresentPerfectVerb + " PVP &2enabled&f.");
                 }
                 else
                 {
-                    p.Message("&7  &fPLAYER " + target.pronouns.PresentPerfectVerb.ToUpper() + " PVP &2ENABLED");
+                    p.Message("&7  &fPlayer " + target.pronouns.PresentPerfectVerb + " PVP &2enabled&f.");
                 }
             }
             else
             {
                 if (target.pronouns.Plural)
                 {
-                    p.Message("&7  &fPLAYERS " + target.pronouns.PresentPerfectVerb.ToUpper() + " PVP &cDISABLED");
+                    p.Message("&7  &fPlayers " + target.pronouns.PresentPerfectVerb + " PVP &cdisabled&f.");
                 }
                 else
                 {
-                    p.Message("&7  &fPLAYER " + target.pronouns.PresentPerfectVerb.ToUpper() + " PVP &cDISABLED");
+                    p.Message("&7  &fPlayer " + target.pronouns.PresentPerfectVerb + " PVP &cdisabled&f.");
                 }
             }
         }
@@ -531,6 +531,7 @@ namespace NotAwesomeSurvival
             OnPlayerDisconnectEvent.Unregister(OnPlayerDisconnect);
             OnJoinedLevelEvent.Register(OnLevelJoined, Priority.High);
             OnPlayerCommandEvent.Unregister(OnPlayerCommand);
+            OnShuttingDownEvent.Unregister(OnShutdown);
             NasLevel.TakeDown();
             NasTimeCycle.TakeDown();
         }
@@ -540,74 +541,6 @@ namespace NotAwesomeSurvival
             level.Config.CloudColor = NasTimeCycle.globalCloudColor;
             level.Config.LightColor = NasTimeCycle.globalSunColor;
         }
-        /*public static void OnPlayerConnect(Player p)
-        {
-            //Player.Console.Message("OnPlayerConnect");
-            string path = GetSavePath(p);
-            string pathText = GetTextPath(p);
-            NasPlayer np = new NasPlayer(p);
-            if (!File.Exists(pathText))
-            {
-                File.Create(pathText).Dispose();
-            }
-            if (File.Exists(path))
-            {
-                ConfigElement[] configElements = ConfigElement.GetAll(typeof(NasPlayer));
-                foreach (ConfigElement config in configElements)
-                {
-                    string jsonString = config.Format(typeof(NasPlayer));
-                    np = JsonConvert.DeserializeObject<NasPlayer>(jsonString);
-                }
-                if (np == null)
-                {
-                    np = new NasPlayer(p);
-                    Orientation rot = new Orientation(Server.mainLevel.rotx, Server.mainLevel.roty);
-                    NasEntity.SetLocation(np, Server.mainLevel.name, Server.mainLevel.SpawnPos, rot);
-                    p.Extras[PlayerKey] = np;
-                    Logger.Log(LogType.Debug, "Created new save file for " + p.name + "!");
-                }
-                else
-                {
-                    np.SetPlayer(p);
-                    p.Extras[PlayerKey] = np;
-                    Logger.Log(LogType.Debug, "Loaded save file " + path + "!");
-                }
-            }
-            else
-            {
-                np = new NasPlayer(p);
-                Orientation rot = new Orientation(Server.mainLevel.rotx, Server.mainLevel.roty);
-                NasEntity.SetLocation(np, Server.mainLevel.name, Server.mainLevel.SpawnPos, rot);
-                p.Extras[PlayerKey] = np;
-                Logger.Log(LogType.Debug, "Created new save file for " + p.name + "!");
-            }
-            np.DisplayHealth();
-            np.inventory.ClearHotbar();
-            np.inventory.DisplayHeldBlock(NasBlock.Default);
-            if (!np.bigUpdate || np.resetCount != 1)
-            { //tick up the one whenever you want to do a reset
-                np.UpdateValues();
-            }
-            //Q and E
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar left◙", 16, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar right◙", 18, 0, true));
-            //arrow keys
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar up◙", 200, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar down◙", 208, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar left◙", 203, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar right◙", 205, 0, true));
-            //WASD (lol)
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen up◙", 17, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen down◙", 31, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen left◙", 30, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen right◙", 32, 0, true));
-            //M and R
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar move◙", 50, 0, true)); //was 50 (M) was 42 (shift)
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar inv◙", 19, 0, true)); //was 23 (i)
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar delete◙", 45, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar confirmdelete◙", 25, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar toolinfo◙", 23, 0, true));
-        }*/
         static void OnPlayerConnect(Player p)
         {
             //Player.Console.Message("OnPlayerConnect");
@@ -744,24 +677,6 @@ namespace NotAwesomeSurvival
             if (cmd.CaselessEq("goto") && p.Rank < LevelPermission.Operator && data.Context != CommandContext.SendCmd)
             {
                 p.Message("You cannot use /goto manually. It is triggered automatically when you go to map borders.");
-                p.cancelcommand = true;
-                return;
-            }
-            if (cmd.CaselessEq("deleteall") && p.Rank >= LevelPermission.Operator)
-            {
-                if (message.Length == 0)
-                {
-                    return;
-                }
-                string[] allMaps = LevelInfo.AllMapNames();
-                Command deleteLvl = Command.Find("deletelvl");
-                foreach (string mapName in allMaps)
-                {
-                    if (mapName.StartsWith(message))
-                    {
-                        deleteLvl.Use(p, mapName);
-                    }
-                }
                 p.cancelcommand = true;
                 return;
             }
@@ -962,30 +877,22 @@ namespace NotAwesomeSurvival
                 np.isInserting = false;
             }
         }
-        /*public static void OnPlayerDisconnect(Player p, string reason)
+        static void OnShutdown(bool restarting, string reason)
         {
-            NasPlayer np = (NasPlayer)p.Extras[PlayerKey];
-            //np.hasBeenSpawned = false;
-            if (p == null)
+            Logger.Log(LogType.SystemActivity, "Saving all player data...");
+            foreach (Player p in PlayerInfo.Online.Items)
             {
-                Logger.Log(LogType.Debug, "Player was null!");
-                return;
-            }
-            try
-            {
-                string jsonString = JsonConvert.SerializeObject(np, Formatting.Indented);
-                File.WriteAllText(GetSavePath(p), jsonString);
-                if (File.Exists(GetTextPath(p))) 
+                try
                 {
-                    File.Delete(GetTextPath(p));
+                    OnPlayerDisconnect(p, reason);
                 }
-                File.Copy(GetSavePath(p), GetTextPath(p));
+                catch (Exception ex)
+                {
+                    Logger.LogError("Error saving player data for " + p.name, ex);
+                }
             }
-            catch (Exception ex)
-            {
-                Logger.LogError("Error saving playerdata for " + p.name, ex);
-            }
-        }*/
+            Logger.Log(LogType.SystemActivity, "All player data saved.");
+        }
         static void OnPlayerDisconnect(Player p, string reason)
         {
             NasPlayer np = (NasPlayer)p.Extras[PlayerKey];
