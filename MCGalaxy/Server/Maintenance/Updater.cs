@@ -31,15 +31,14 @@ namespace MCGalaxy
     {
 #if NAS
         public static string SourceURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas-rework";
-        public const string BaseURL = "https://raw.githubusercontent.com/RandomStrangers/MCGalaxy/nas-rework/";
+        public const string BaseURL = "https://raw.githubusercontent.com/RandomStrangers/MCGalaxy/nas-rework/Uploads/";
         public const string UploadsURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas-rework/Uploads";
 #else
         public static string SourceURL = "https://github.com/ClassiCube/MCGalaxy";
         public const string BaseURL    = "https://raw.githubusercontent.com/ClassiCube/MCGalaxy/master/";
-        public const string UploadsURL = "https://github.com/ClassiCube/MCGalaxy/tree/master/Uploads";   
+        public const string UploadsURL = "https://github.com/ClassiCube/MCGalaxy/tree/master/Uploads";
 #endif
-        const string CHANGELOG_URL     = BaseURL + "Changelog.txt";
-        
+        const string CHANGELOG_URL = "https://raw.githubusercontent.com/ClassiCube/MCGalaxy/master/Changelog.txt";
         const string CDN_URL  = "https://cdn.classicube.net/client/mcg/{0}/";
 #if NET8_0
         const string CDN_BASE = CDN_URL + "net80/";
@@ -55,8 +54,8 @@ namespace MCGalaxy
         static string DLL_URL = CDN_URL  + IOperatingSystem.DetectOS().StandaloneName;
         const string CurrentVersionURL = BaseURL + "Uploads/current_version.txt";
 #elif NAS && !MCG_DOTNET && !MCG_STANDALONE && !NET_20 && !NET8_0 && !NET6_0
-        const string DLL_URL  = BaseURL + "Uploads/MCGalaxy_nas.dll";
-        const string CurrentVersionURL = BaseURL + "Uploads/nas_version.txt";
+        const string DLL_URL  = BaseURL + "MCGalaxy_nas.dll";
+        const string CurrentVersionURL = BaseURL + "nas_version.txt";
 #elif TEN_BIT_BLOCKS
         const string DLL_URL  = CDN_BASE + "MCGalaxy_infid.dll";
         const string CurrentVersionURL = BaseURL + "Uploads/current_version.txt";
@@ -91,7 +90,7 @@ namespace MCGalaxy
         public static bool NeedsUpdating() {
             using (WebClient client = HttpUtil.CreateWebClient()) {
                 string latest = client.DownloadString(CurrentVersionURL);
-                return new Version(latest) > new Version(Server.Version);
+                return new Version(latest) > new Version(Server.SoftwareVersion);
             }
         }
         
@@ -121,7 +120,6 @@ namespace MCGalaxy
                 DownloadFile(client, CLI_URL.Replace("{0}", mode), "MCGalaxyCLI.update");
 #endif
                 DownloadFile(client, CHANGELOG_URL, "Changelog.txt");
-
                 Server.SaveAllLevels();
                 Player[] players = PlayerInfo.Online.Items;
                 foreach (Player pl in players) pl.SaveStats();

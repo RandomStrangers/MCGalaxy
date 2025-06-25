@@ -10,6 +10,8 @@ using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Network;
 using MCGalaxy.Maths;
 using MCGalaxy.Tasks;
+using MCGalaxy.Blocks.Extended;
+using System.Security.Cryptography;
 
 namespace NotAwesomeSurvival
 {
@@ -75,7 +77,7 @@ namespace NotAwesomeSurvival
         [JsonIgnore] public bool SetInventoryNotif = false;
         public bool CanDamage()
         {
-            if (p.invincible || p.Game.Referee)
+            if (p.invincible || p.Game.Referee || !pvpEnabled)
             {
                 return false;
             }
@@ -267,33 +269,37 @@ namespace NotAwesomeSurvival
             exp = (int)Math.Floor(percentage * expRequired);
             return true;
         }
-
         public static void ClickOnPlayer(Player p, byte entity, MouseButton button, MouseAction action)
         {
             NasPlayer np = GetNasPlayer(p);
             if (entity == Entities.SelfID) { return; }
             if ((button == MouseButton.Right && np.inventory.HeldItem.Prop.knockback >= 0) || (button == MouseButton.Left && np.inventory.HeldItem.Prop.knockback < 0) || button == MouseButton.Middle || action == MouseAction.Pressed) { return; }
-            if (!np.pvpEnabled) { return; }
             if (!cooldowns.ContainsKey(p.name)) { cooldowns.Add(p.name, DateTime.UtcNow); }
 
             TimeSpan kbdelay = new TimeSpan(0);
             Player[] players = PlayerInfo.Online.Items;
             for (int i = 0; i < players.Length; i++)
             {
-                if (players[i].EntityID != entity) continue;
+                byte ID;
+                if (!p.EntityList.GetID(players[i], out ID)) continue;
+                if (ID != entity) continue;
                 Player who = players[i];
                 if (!np.CanDamage())
                 {
                     string reason = "";
                     if (np.p.Game.Referee)
                     {
-                        reason = "a referee";
+                        reason = "are a referee";
                     }
                     if (np.p.invincible)
                     {
-                        reason = "invincible";
+                        reason = "are invincible";
                     }
-                    np.p.Message("&SYou cannot damage {0} &Sbecause you currently are {1}.", who.DisplayName, reason);
+                    if (!np.pvpEnabled)
+                    {
+                        reason = "do not have PVP enabled";
+                    }
+                    np.p.Message("&SYou cannot damage {0} &Sbecause you currently {1}.", who.DisplayName, reason);
                     return;
                 }
                 Vec3F32 delta = p.Pos.ToVec3F32() - who.Pos.ToVec3F32();
@@ -346,11 +352,11 @@ namespace NotAwesomeSurvival
                     {
                         if (who.pronouns.Plural)
                         {
-                            reason = "do not " + who.pronouns.PresentPerfectVerb + " PVP enabled";
+                            reason = "do not have PVP enabled";
                         }
                         else
                         {
-                            reason = "does not " + who.pronouns.PresentPerfectVerb + " PVP enabled";
+                            reason = "does not have PVP enabled";
                         }
                     }
                     np.p.Message("&SYou cannot damage {0} &Sbecause " + who.pronouns.Subject + " currently {1}.", who.DisplayName, reason);
@@ -473,6 +479,10 @@ namespace NotAwesomeSurvival
 
         public override bool CanTakeDamage(DamageSource source)
         {
+            if (!pvpEnabled && (source == DamageSource.Murder || source == DamageSource.Entity))
+            {
+                return false;
+            }
             //return false;
             if (p.invincible || p.Game.Referee) 
             { 

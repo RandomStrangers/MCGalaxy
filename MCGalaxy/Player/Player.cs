@@ -68,7 +68,7 @@ namespace MCGalaxy {
             Socket  = socket;
             Session = session;
             SetIP(Socket.IP);
-            
+            EntityList = new EntityList(this, (byte)Session.MaxEntityID);
             CriticalTasks = new VolatileArray<SchedulerTask>();
             
             spamChecker = new SpamChecker(this);
@@ -80,8 +80,6 @@ namespace MCGalaxy {
                 BlockBindings[b] = (BlockID)b;
             }
         }
-        
-        public override byte EntityID { get { return id; } }
         public override Level Level { get { return level; } }
         public override bool RestrictsScale { get { return true; } }
         

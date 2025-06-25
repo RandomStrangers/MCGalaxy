@@ -786,11 +786,11 @@ namespace NotAwesomeSurvival
                 {
                     if (off == me)
                     {
-                        nl.SetBlock(x, y, z, on);
                         if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                         {
                             return;
                         }
+                        nl.SetBlock(x, y, z, on);
                         nl.blockEntities[x + " " + y + " " + z].strength = 15;
                     }
                 }
@@ -798,11 +798,11 @@ namespace NotAwesomeSurvival
                 {
                     if (on == me)
                     {
-                        nl.SetBlock(x, y, z, off);
                         if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                         {
                             return;
                         }
+                        nl.SetBlock(x, y, z, off);
                         nl.blockEntities[x + " " + y + " " + z].strength = 0;
                     }
                 }
@@ -1855,11 +1855,11 @@ namespace NotAwesomeSurvival
         public static NasBlockAction TurnOffAction()
         {
             return (nl, nasBlock, x, y, z) => {
-                nl.SetBlock(x, y, z, Block.FromRaw(195));
                 if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {
                     return;
                 }
+                nl.SetBlock(x, y, z, Block.FromRaw(195));
                 nl.blockEntities[x + " " + y + " " + z].strength = 0;
             };
 

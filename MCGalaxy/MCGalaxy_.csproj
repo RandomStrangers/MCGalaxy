@@ -433,6 +433,7 @@
     <Compile Include="Entity\CustomModel.cs" />
     <Compile Include="Entity\Entities.cs" />
     <Compile Include="Entity\Entity.cs" />
+    <Compile Include="Entity\EntityList.cs" />
     <Compile Include="Entity\ModelInfo.cs" />
     <Compile Include="Entity\Structs.cs" />
     <Compile Include="Entity\TabList.cs" />
@@ -617,6 +618,7 @@
     <Compile Include="Modules\Warps\Warp.cs" />
     <Compile Include="Modules\Warps\WarpCommand.cs" />
     <Compile Include="Modules\Warps\WarpPlugin.cs" />
+    <Compile Include="nas\Crafting.Items.cs" />
     <Compile Include="Network\BaseWebSocket.cs" />
     <Compile Include="Network\ClassicProtocol.cs" />
     <Compile Include="Network\CPESupport.cs" />

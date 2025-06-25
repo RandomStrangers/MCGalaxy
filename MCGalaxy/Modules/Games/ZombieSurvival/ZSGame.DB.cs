@@ -35,10 +35,10 @@ namespace MCGalaxy.Modules.Games.ZS
         static void HookStats() {
             statMostInfected = new DBTopStat("Infected", "Most players infected",
                                              "ZombieStats", "TotalInfected", TopStat.FormatInteger);
-            statMaxInfected  = new DBTopStat("Survived", "Most rounds survived",
-                                             "ZombieStats", "TotalRounds",   TopStat.FormatInteger);
-            statMostSurvived = new DBTopStat("ConsecutiveInfected", "Most consecutive infections",
-                                             "ZombieStats", "MaxInfected",   TopStat.FormatInteger);
+            statMostSurvived = new DBTopStat("Survived", "Most rounds survived",
+                                             "ZombieStats", "TotalRounds", TopStat.FormatInteger);
+            statMaxInfected = new DBTopStat("ConsecutiveInfected", "Most consecutive infections",
+                                             "ZombieStats", "MaxInfected", TopStat.FormatInteger);
             statMaxSurvived  = new DBTopStat("ConsecutiveSurvived", "Most consecutive rounds survived", 
                                              "ZombieStats", "MaxRounds",     TopStat.FormatInteger);
             

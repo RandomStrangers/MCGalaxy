@@ -259,8 +259,6 @@ namespace NotAwesomeSurvival
 
             Logger.Log(LogType.Warning, "Github API returned: " + err);
         }
-
-
         static void Sleep()
         {
             float delay = 30;

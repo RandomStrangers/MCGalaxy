@@ -55,6 +55,7 @@ namespace MCGalaxy {
         public INetSocket Socket;
         public IGameSession Session;
 #endif
+        public EntityList EntityList;
         public DateTime LastAction, AFKCooldown;
         public bool IsAfk, AutoAfk;
         public bool cmdTimer;
@@ -74,7 +75,6 @@ namespace MCGalaxy {
         internal List<Pronouns> pronounsList = new List<Pronouns> { Pronouns.Default };
 
         public int warn;
-        public byte id;
 #if NAS
         [JsonIgnore] public IPAddress IP;
         [JsonIgnore] public string ip;
@@ -231,7 +231,6 @@ namespace MCGalaxy {
         public string PreTeleportMap;
         
         public string summonedMap;
-        public Position _tempPos;
 
         // Extra storage for custom commands
         public ExtrasCollection Extras = new ExtrasCollection();

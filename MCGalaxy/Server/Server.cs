@@ -74,7 +74,7 @@ namespace MCGalaxy
             serverConfig = ConfigElement.GetAll(typeof(ServerConfig));
             levelConfig  = ConfigElement.GetAll(typeof(LevelConfig));
             zoneConfig   = ConfigElement.GetAll(typeof(ZoneConfig));
-
+            Version = SoftwareVersion;
             DotNetBackend.Init();
             IOperatingSystem.DetectOS().Init();
             
