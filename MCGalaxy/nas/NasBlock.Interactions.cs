@@ -28,7 +28,7 @@ namespace NotAwesomeSurvival
         {
             if (!File.Exists(Path + p.truename + ".txt"))
             {
-                File.WriteAllText(Path + p.truename + ".txt", string.Empty);
+                File.Create(Path + p.truename + ".txt").Dispose();
             }
             return Path + p.truename + ".txt";
         }

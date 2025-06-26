@@ -1,4 +1,9 @@
-﻿
+﻿#if NAS && NET_20
+#error NET 20 IS NOT SUPPORTED!
+#endif
+#if NAS && !TEN_BIT_BLOCKS
+#error TEN_BIT_BLOCKS NOT DEFINED!
+#endif
 #if NAS && !NET_20 && TEN_BIT_BLOCKS
 using System;
 using System.IO;
@@ -694,8 +699,23 @@ namespace NotAwesomeSurvival
                 }
                 return;
             }
+            if (cmd.CaselessEq("sign"))
+            {
+                p.cancelcommand = true;
+                if (string.IsNullOrEmpty(message))
+                {
+                    p.Message("You need to provide text to put in the sign.");
+                    return;
+                }
+                else
+                {
+                    File.WriteAllText(NasBlock.GetTextPath(p), message);
+                    return;
+                }
+            }
             if (cmd.CaselessEq("staff"))
             {
+                p.cancelcommand = true;
                 if (message != "alt")
                 {
                     NasPlayer npl = NasPlayer.GetNasPlayer(p);
@@ -705,6 +725,7 @@ namespace NotAwesomeSurvival
             }
             if (cmd.CaselessEq("smite"))
             {
+                p.cancelcommand = true;
                 if (p.Rank < LevelPermission.Operator)
                 {
                     return;

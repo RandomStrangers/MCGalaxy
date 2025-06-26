@@ -54,7 +54,7 @@ namespace MCGalaxy
             }
         }
         public static string SoftwareName = "MCGalaxy-NAS";
-        public const string NasVersion = "1.0.0.8";
+        public const string NasVersion = "1.0.0.9";
 #else
         public static string SoftwareVersion { get { return InternalVersion; } set { Version = value; } }
         public static string SoftwareName = "MCGalaxy";

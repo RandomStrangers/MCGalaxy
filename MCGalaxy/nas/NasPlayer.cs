@@ -329,7 +329,7 @@ namespace NotAwesomeSurvival
                 np.inventory.UpdateItemDisplay();
                 NasPlayer w = GetNasPlayer(who);
                 w.lastAttackedPlayer = p;
-                if (!w.CanTakeDamage(DamageSource.Murder))
+                if (!w.CanTakeDamage(DamageSource.Murder) || !w.CanTakeDamage(DamageSource.Entity))
                 {
                     string reason = "";
                     if (w.p.Game.Referee)
