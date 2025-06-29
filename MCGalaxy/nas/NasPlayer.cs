@@ -12,6 +12,8 @@ using MCGalaxy.Maths;
 using MCGalaxy.Tasks;
 using MCGalaxy.Blocks.Extended;
 using System.Security.Cryptography;
+using MCGalaxy.DB;
+using System.IO;
 
 namespace NotAwesomeSurvival
 {
@@ -654,6 +656,7 @@ namespace NotAwesomeSurvival
                 };
                 nl.blockEntities.Add(x + " " + y + " " + z, blockEntity);
                 p.Message("You dropped a gravestone at {0} {1} {2} in {3}", x, y, z, p.level.name);
+                File.AppendAllText(Nas.GetDeathPath(p.name), x + " " + y + " " + z + " in " + p.level.name + "\n");
                 nl.blockEntities[x + " " + y + " " + z].lockedBy = p.name;
                 nl.blockEntities[x + " " + y + " " + z].drop.exp = GetExp();
             }
@@ -766,15 +769,72 @@ namespace NotAwesomeSurvival
             heldNasBlock = nasBlock;
         }
 
+        public class CmdGravestones : Command2
+        {
+            public override string name { get { return "Gravestones"; } }
+            public override string type { get { return "NAS"; } }
+            public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+            public override void Use(Player p, string message, CommandData data)
+            {
+                string[] args = message.SplitSpaces();
+                string name = args[0];
+                if (CheckSuper(p, name, "player name"))
+                {
+                    return;
+                }
+                if (name.Length == 0)
+                {
+                    name = p.name;
+                }
+                PlayerData target = PlayerDB.Match(p, name);
+                if (target == null)
+                {
+                    return;
+                }
+                string[] deaths = File.ReadAllLines(Nas.GetDeathPath(target.Name));
+                if (deaths.Length == 0)
+                {
+                    p.Message("{0}&S has no gravestones recorded!", target.Name);
+                    return;
+                }
+                p.Message("{0}&S's gravestones:", target.Name);
+                p.MessageLines(deaths);
+            }
+            public override void Help(Player p)
+            {
+                p.Message("&T/Gravestones [name] &H- Views the location of the player's gravestones");
+            }
+        }
+        public class CmdMyGravestones : CmdGravestones
+        {
+            public override string name { get { return "MyGravestones"; } }
+            public override string type { get { return "NAS"; } }
+            public override bool SuperUseable { get { return false; } }
+            public override LevelPermission defaultRank { get { return LevelPermission.Guest; } }
+            public override void Use(Player p, string message, CommandData data)
+            {
+                string[] deaths = File.ReadAllLines(Nas.GetDeathPath(p.name));
+                if (deaths.Length == 0)
+                {
+                    p.Message("You have no gravestones recorded!");
+                    return;
+                }
+                p.Message("Your gravestones:");
+                p.MessageLines(deaths);
+            }
+            public override void Help(Player p)
+            {
+                p.Message("&T/MyGravestones &H- Views the location of the your own gravestones");
+            }
+        }
         public class CmdPVP : Command
         {
             public override string name { get { return "pvp"; } }
             public override string type { get { return "NAS"; } }
-
             public override void Use(Player p, string message)
             {
                 NasPlayer np = GetNasPlayer(p);
-                if (message == "on")
+                if (message == "on" || message == "enable")
                 {
                     if (!np.pvpEnabled)
                     {
@@ -783,15 +843,19 @@ namespace NotAwesomeSurvival
                         np.pvpCooldown = DateTime.UtcNow + new TimeSpan(1, 0, 0);
                         return;
                     }
-                    { p.Message("PvP is already enabled"); return; }
+                    else
+                    {
+                        p.Message("PvP is already enabled");
+                        return;
+                    }
                 }
-                if (message == "off")
+                if (message == "off" || message == "disable")
                 {
                     if (!np.pvpEnabled)
                     {
-                        p.Message("PvP is already disabled"); return;
+                        p.Message("PvP is already disabled");
+                        return;
                     }
-
                     if (np.pvpCooldown > DateTime.UtcNow)
                     {
                         TimeSpan remaining = np.pvpCooldown - DateTime.UtcNow;
@@ -802,16 +866,14 @@ namespace NotAwesomeSurvival
                     np.pvpEnabled = false;
                     return;
                 }
-                Help(p); return;
+                Help(p);
+                return;
             }
-
             public override void Help(Player p)
             {
                 p.Message("&T/pvp [on/off]");
                 p.Message("&HToggles pvp, but once you turn it on, you can't turn it off for an hour.");
             }
-
-
         }
         public class CmdNASSpawn : Command
         {

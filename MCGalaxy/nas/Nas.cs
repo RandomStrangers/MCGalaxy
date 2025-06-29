@@ -149,19 +149,38 @@ namespace NotAwesomeSurvival
         public const string SavePath = Path + "playerdata/";
         public const string CoreSavePath = Path + "coredata/";
         public const string EffectsPath = Path + "effects/";
+        public const string DeathsPath = SavePath + "deaths/";
+        public static Command[] Commands = new Command[]
+        {
+            new NasPlayer.CmdBarrelMode(),
+            new NasPlayer.CmdGravestones(),
+            new NasPlayer.CmdMyGravestones(),
+            new NasPlayer.CmdNASSpawn(),
+            new NasPlayer.CmdPVP()
+        };
         public static string GetSavePath(Player p)
         {
-            if (File.Exists(SavePath + p.name + ".json"))
+            if (p.name != p.truename)
             {
-                FileIO.TryMove(SavePath + p.name + ".json", SavePath + p.truename + ".json");
+                if (File.Exists(SavePath + p.name + ".json"))
+                {
+                    FileIO.TryMove(SavePath + p.name + ".json", SavePath + p.truename + ".json");
+                }
             }
             return SavePath + p.truename + ".json";
         }
+        public static string GetDeathPath(string name)
+        {
+            return DeathsPath + name + ".txt";
+        }
         public static string GetTextPath(Player p)
         {
-            if (File.Exists(SavePath + p.name + ".txt"))
+            if (p.name != p.truename)
             {
-                FileIO.TryMove(SavePath + p.name + ".txt", SavePath + p.truename + ".txt");
+                if (File.Exists(SavePath + p.name + ".txt"))
+                {
+                    FileIO.TryMove(SavePath + p.name + ".txt", SavePath + p.truename + ".txt");
+                }
             }
             return SavePath + p.truename + ".txt";
         }
@@ -280,6 +299,13 @@ namespace NotAwesomeSurvival
             EnsureFileExists("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/coredata/time.json", CoreSavePath + "time.json");
             EnsureFileExists("https://github.com/cloverpepsi/place.cs/raw/main/global.json", "blockdefs/global.json");
         }
+        public static void Register(params Command[] commands)
+        {
+            foreach (Command cmd in commands) 
+            {
+                Command.Register(cmd);
+            }
+        }
         public override void Load(bool startup)
         {
             if (!Directory.Exists(Path))
@@ -305,6 +331,10 @@ namespace NotAwesomeSurvival
             if (!Directory.Exists(NasBlock.Path))
             {
                 Directory.CreateDirectory(NasBlock.Path);
+            }
+            if (!Directory.Exists(DeathsPath))
+            {
+                Directory.CreateDirectory(DeathsPath);
             }
             if (!Directory.Exists("blockprops"))
             {
@@ -396,10 +426,7 @@ namespace NotAwesomeSurvival
             //I HATE IT
             OnlineStat.Stats.Add(PvP);
             OnlineStat.Stats.Add(Kills);
-            Command.Register(new NasPlayer.CmdPVP());
-            Command.Register(new NasPlayer.CmdNASSpawn());
-            Command.Register(new NasPlayer.CmdBarrelMode());
-            Command.Register(new NasPlayer.CmdSpawnDungeon());
+            Register(Commands);
             NasPlayer.Setup();
             NasBlock.Setup();
             if (!NasEffect.Setup())
@@ -520,10 +547,7 @@ namespace NotAwesomeSurvival
         {
             NasPlayer.TakeDown();
             DynamicColor.TakeDown();
-            Command.Unregister(Command.Find("PVP"));
-            Command.Unregister(Command.Find("NASSpawn"));
-            Command.Unregister(Command.Find("BarrelMode"));
-            Command.Unregister(Command.Find("SpawnDungeon"));
+            Command.Unregister(Commands);
             OnlineStat.Stats.Remove(PvP);
             OnlineStat.Stats.Remove(Kills);
             OnPlayerConnectEvent.Unregister(OnPlayerConnect);
@@ -551,7 +575,10 @@ namespace NotAwesomeSurvival
             string pathText = GetTextPath(p);
 
             NasPlayer np;
-
+            if (!File.Exists(GetDeathPath(p.name)))
+            {
+                File.Create(GetDeathPath(p.name)).Dispose();
+            }
             if (!File.Exists(pathText)) File.Create(pathText).Dispose();
             if (File.Exists(path))
             {
@@ -560,6 +587,14 @@ namespace NotAwesomeSurvival
                 np.SetPlayer(p);
                 p.Extras[PlayerKey] = np;
                 Logger.Log(LogType.Debug, "Loaded save file " + path + "!");
+            }
+            else if (File.Exists(pathText))
+            {
+                string jsonString = File.ReadAllText(pathText);
+                np = JsonConvert.DeserializeObject<NasPlayer>(jsonString);
+                np.SetPlayer(p);
+                p.Extras[PlayerKey] = np;
+                Logger.Log(LogType.Debug, "Loaded save file " + pathText + "!");
             }
             else
             {

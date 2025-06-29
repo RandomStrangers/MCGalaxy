@@ -18,6 +18,7 @@ using NasBlockExistAction =
     System.Action<NotAwesomeSurvival.NasPlayer,
     NotAwesomeSurvival.NasBlock, bool, ushort, ushort, ushort>;
 using MCGalaxy.Modules.Warps;
+using System.Linq;
 namespace NotAwesomeSurvival
 {
 
@@ -651,6 +652,16 @@ namespace NotAwesomeSurvival
                             }
                             else if (nasBlock.container.type == Container.Type.Gravestone)
                             {
+                                string[] locations = File.ReadAllLines(Nas.GetDeathPath(np.p.name));
+                                string[] newLocations = new string[locations.Length];
+                                for (int i = 0; i < locations.Length; i++)
+                                {
+                                    if (!locations[i].CaselessContains(x + " " + y + " " + z + " in " + np.p.level.name))
+                                    {
+                                        newLocations[i] = locations[i];
+                                    }
+                                }
+                                File.WriteAllLines(Nas.GetDeathPath(np.p.name), newLocations);
                                 RemoveAll(np, bEntity, bEntity.lockedBy.Length == 0);
                                 bEntity.lockedBy = "";
                             }
