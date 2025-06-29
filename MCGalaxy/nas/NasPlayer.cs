@@ -10,8 +10,6 @@ using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Network;
 using MCGalaxy.Maths;
 using MCGalaxy.Tasks;
-using MCGalaxy.Blocks.Extended;
-using System.Security.Cryptography;
 using MCGalaxy.DB;
 using System.IO;
 
@@ -605,7 +603,7 @@ namespace NotAwesomeSurvival
             isDead = true;
             lastAttackedPlayer = null;
             //p.Message("hasBeenSpawned set to {0}", hasBeenSpawned);
-            Player.Console.Message("{0}: hasBeenSpawned set to {1}", p.name.ToUpper(), hasBeenSpawned);
+            Player.Console.Message("{0}: hasBeenSpawned set to {1}", p.name, hasBeenSpawned);
             reason = thing.Replace("@p", p.ColoredName);
             PlayerActions.Respawn(p);
         }
@@ -656,7 +654,7 @@ namespace NotAwesomeSurvival
                 };
                 nl.blockEntities.Add(x + " " + y + " " + z, blockEntity);
                 p.Message("You dropped a gravestone at {0} {1} {2} in {3}", x, y, z, p.level.name);
-                File.AppendAllText(Nas.GetDeathPath(p.name), x + " " + y + " " + z + " in " + p.level.name + "\n");
+                File.AppendAllText(Nas.GetDeathPath(p.name), x + " " + y + " " + z + " in " + p.level.name);
                 nl.blockEntities[x + " " + y + " " + z].lockedBy = p.name;
                 nl.blockEntities[x + " " + y + " " + z].drop.exp = GetExp();
             }
@@ -791,8 +789,35 @@ namespace NotAwesomeSurvival
                 {
                     return;
                 }
-                string[] deaths = File.ReadAllLines(Nas.GetDeathPath(target.Name));
-                if (deaths.Length == 0)
+                string file = Nas.GetDeathPath(target.Name);
+                if (!File.Exists(file))
+                {
+                    p.Message("{0}&S has no gravestones recorded!", target.Name);
+                    return;
+                }
+                string[] deaths = File.ReadAllLines(file);
+                string[] deaths2 = File.ReadAllLines(file);
+                int count = deaths2.Length;
+                for (int i = 0; i < deaths2.Length; i++)
+                {
+                    if (!string.IsNullOrWhiteSpace(deaths2[i]))
+                    {
+                        foreach (char c in deaths2[i])
+                        {
+                            string cString = c.ToString();
+                            if (char.IsWhiteSpace(c))
+                            {
+                                deaths2[i] = deaths2[i].Replace(cString, "");
+                            }
+                        }
+                    }
+                    if (string.IsNullOrWhiteSpace(deaths2[i]))
+                    {
+                        deaths2[i] = null;
+                        count--;
+                    }
+                }
+                if (count <= 0)
                 {
                     p.Message("{0}&S has no gravestones recorded!", target.Name);
                     return;
@@ -813,10 +838,32 @@ namespace NotAwesomeSurvival
             public override LevelPermission defaultRank { get { return LevelPermission.Guest; } }
             public override void Use(Player p, string message, CommandData data)
             {
-                string[] deaths = File.ReadAllLines(Nas.GetDeathPath(p.name));
-                if (deaths.Length == 0)
+                string file = Nas.GetDeathPath(p.name);
+                string[] deaths = File.ReadAllLines(file);
+                string[] deaths2 = File.ReadAllLines(file);
+                int count = deaths2.Length;
+                for (int i = 0; i < deaths2.Length; i++)
                 {
-                    p.Message("You have no gravestones recorded!");
+                    if (!string.IsNullOrWhiteSpace(deaths2[i]))
+                    {
+                        foreach (char c in deaths2[i])
+                        {
+                            string cString = c.ToString();
+                            if (char.IsWhiteSpace(c))
+                            {
+                                deaths2[i] = deaths2[i].Replace(cString, "");
+                            }
+                        }
+                    }
+                    if (string.IsNullOrWhiteSpace(deaths2[i]))
+                    {
+                        deaths2[i] = null;
+                        count--;
+                    }
+                }
+                if (count <= 0)
+                {
+                    p.Message("&SYou have no gravestones recorded!");
                     return;
                 }
                 p.Message("Your gravestones:");

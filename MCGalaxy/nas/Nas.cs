@@ -579,7 +579,6 @@ namespace NotAwesomeSurvival
             {
                 File.Create(GetDeathPath(p.name)).Dispose();
             }
-            if (!File.Exists(pathText)) File.Create(pathText).Dispose();
             if (File.Exists(path))
             {
                 string jsonString = File.ReadAllText(path);
@@ -604,6 +603,7 @@ namespace NotAwesomeSurvival
                 p.Extras[PlayerKey] = np;
                 Logger.Log(LogType.Debug, "Created new save file for " + p.name + "!");
             }
+            if (!File.Exists(pathText)) File.Create(pathText).Dispose();
             np.DisplayHealth();
             np.inventory.ClearHotbar();
             np.inventory.DisplayHeldBlock(NasBlock.Default);
@@ -934,18 +934,47 @@ namespace NotAwesomeSurvival
         static void OnShutdown(bool restarting, string reason)
         {
             Logger.Log(LogType.SystemActivity, "Saving all player data...");
+            bool SavedPlayers = false;
+            bool SavedLevels = false;
             foreach (Player p in PlayerInfo.Online.Items)
             {
                 try
                 {
-                    OnPlayerDisconnect(p, reason);
+                    NasPlayer np = NasPlayer.GetNasPlayer(p);
+                    NasPlayer.SaveAction(np);
+                    SavedPlayers = true;
                 }
                 catch (Exception ex)
                 {
                     Logger.LogError("Error saving player data for " + p.name, ex);
+                    SavedPlayers = false;
                 }
             }
-            Logger.Log(LogType.SystemActivity, "All player data saved.");
+            if (SavedPlayers)
+            {
+                Logger.Log(LogType.SystemActivity, "All player data saved.");
+            }
+            Level[] loadedLevels = LevelInfo.Loaded.Items;
+            foreach (Level lvl in loadedLevels)
+            {
+                try
+                {
+                    if (NasLevel.all.ContainsKey(lvl.name))
+                    {
+                        lvl.Save(true);
+                        SavedLevels = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("Error saving level " + lvl.name, ex);
+                    SavedLevels = false;
+                }
+            }
+            if (SavedLevels)
+            {
+                Logger.Log(LogType.SystemActivity, "All levels saved.");
+            }
         }
         static void OnPlayerDisconnect(Player p, string reason)
         {

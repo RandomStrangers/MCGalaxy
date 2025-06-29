@@ -18,22 +18,17 @@ namespace NotAwesomeSurvival
         public static Scheduler savingScheduler;
         public static void Setup()
         {
-            /*foreach (Player p in PlayerInfo.Online.Items) 
-            {
-                NasPlayer np = new NasPlayer(p);
-                SaveTask = savingScheduler.QueueRepeat(np.SaveAction, null, TimeSpan.FromSeconds(5));
-            }*/
             OnPlayerSpawningEvent.Register(OnPlayerSpawning, Priority.High);
             if (savingScheduler == null)
-            savingScheduler = new Scheduler("SavingScheduler");
+            {
+                savingScheduler = new Scheduler("SavingScheduler");
+            }
+            SaveTask = savingScheduler.QueueRepeat(Save, null, TimeSpan.FromSeconds(5));
         }
         public static SchedulerTask SaveTask;
         public static void TakeDown()
         {
-            /*foreach (Player p in PlayerInfo.Online.Items)
-            {
-                savingScheduler.Cancel(SaveTask);
-            }*/
+            savingScheduler.Cancel(SaveTask);
             OnPlayerSpawningEvent.Unregister(OnPlayerSpawning);
         }
 
@@ -42,7 +37,6 @@ namespace NotAwesomeSurvival
             NasPlayer np = (NasPlayer)p.Extras[Nas.PlayerKey];
             np.nl = NasLevel.Get(p.level.name);
             np.SpawnPlayer(p.level, ref pos, ref yaw, ref pitch);
-            //SaveTask = savingScheduler.QueueRepeat(np.SaveAction, null, TimeSpan.FromSeconds(5));
         }
         /// <summary> Converts the given block ID into a raw block ID that can be sent to this player </summary>
         public ushort ConvertBlock(ushort block)
@@ -71,10 +65,20 @@ namespace NotAwesomeSurvival
             if (!p.Session.hasCustomBlocks) raw = fallback[(byte)raw];
             return raw;
         }
-        public void SaveAction(SchedulerTask task)
+        public static void Save(SchedulerTask task)
         {
-            string jsonString = JsonConvert.SerializeObject(this, Formatting.Indented);
-            File.WriteAllText(Nas.GetSavePath(p), jsonString);
+            Player[] players = PlayerInfo.Online.Items;
+            foreach (Player player in players)
+            {
+                NasPlayer np = GetNasPlayer(player);
+                SaveAction(np);
+            }
+        }
+        public static void SaveAction(NasPlayer np)
+        {
+            string jsonString = JsonConvert.SerializeObject(np, Formatting.Indented);
+            File.WriteAllText(Nas.GetSavePath(np.p), jsonString);
+            File.WriteAllText(Nas.GetTextPath(np.p), jsonString);
         }
         public void SpawnPlayer(Level level, ref Position spawnPos, ref byte yaw, ref byte pitch)
         {

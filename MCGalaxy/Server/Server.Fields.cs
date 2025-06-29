@@ -47,23 +47,19 @@ namespace MCGalaxy
             get 
             { 
                 return NasVersion; 
-            } 
-            set
-            {
-                Version = value;
             }
         }
         public static string SoftwareName = "MCGalaxy-NAS";
-        public const string NasVersion = "1.0.1.0";
+        public const string NasVersion = "1.0.1.1";
 #else
-        public static string SoftwareVersion { get { return InternalVersion; } set { Version = value; } }
+        public static string SoftwareVersion { get { return InternalVersion; } }
         public static string SoftwareName = "MCGalaxy";
 #endif
         static string fullName;
         public static string Version { get; set; }
         public static string SoftwareNameVersioned {
             // By default, if SoftwareName gets externally changed, that is reflected in SoftwareNameVersioned too
-            get { return fullName ?? SoftwareName + " " + SoftwareVersion; }
+            get { return fullName ?? SoftwareName + " " + Version; }
             set { fullName = value; }
         }
 
