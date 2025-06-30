@@ -135,7 +135,6 @@ namespace NotAwesomeSurvival
             //TODO threadsafe
             return blocks[clientushort];
         }
-
         [JsonIgnore] public CpeMessageType whereHeldBlockIsDisplayed = CpeMessageType.BottomRight3;
         public void DisplayHeldBlock(NasBlock nasBlock, int amountChanged = 0, bool showToNormalChat = false)
         {

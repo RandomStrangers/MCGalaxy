@@ -1,17 +1,13 @@
 ﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
 using System.Collections.Generic;
-
 namespace NotAwesomeSurvival
 {
-
     public partial class ItemProp
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification = "<Pending>")]
         public static void Setup()
         {
-
             Dictionary<string, bool> nothing = new Dictionary<string, bool>();
-
             Dictionary<string, bool> toolEnchants = new Dictionary<string, bool>(){
                 {"Efficiency",true},
                 {"Fortune",true},
@@ -19,14 +15,12 @@ namespace NotAwesomeSurvival
                 {"Silk Touch",true},
                 {"Unbreaking",true},
             };
-
             Dictionary<string, bool> swordEnchants = new Dictionary<string, bool>(){
                 {"Knockback",true},
                 {"Mending",true},
                 {"Sharpness",true},
                 {"Unbreaking",true},
             };
-
             Dictionary<string, bool> bootEnchants = new Dictionary<string, bool>(){
                 {"Feather Falling",true},
                 {"Mending",true},
@@ -34,7 +28,6 @@ namespace NotAwesomeSurvival
                 {"Thorns",true},
                 {"Unbreaking",true},
             };
-
             Dictionary<string, bool> helmetEnchants = new Dictionary<string, bool>(){
                 {"Aqua Affinity",true},
                 {"Mending",true},
@@ -43,34 +36,27 @@ namespace NotAwesomeSurvival
                 {"Thorns",true},
                 {"Unbreaking",true},
             };
-
             Dictionary<string, bool> armorEnchants = new Dictionary<string, bool>(){
                 {"Mending",true},
                 {"Protection",true},
                 {"Thorns",true},
                 {"Unbreaking",true},
             };
-
-
-
             ItemProp fist = new ItemProp("Fist|f|¬", nothing, NasBlock.Material.None, 0, 0)
             {
                 baseHP = int.MaxValue
             };
             Item.Fist = new Item("Fist");
-
             ItemProp key = new ItemProp("Key|f|σ", nothing, NasBlock.Material.None, 0, 0)
             {
                 baseHP = int.MaxValue
             };
-
             ItemProp fishing = new ItemProp("Fishing Rod|f|δ", nothing, NasBlock.Material.None, 0, 0)
             {
                 baseHP = baseHPconst * 7,
                 damage = 0f,
                 knockback = -1f
             };
-
             ItemProp shears = new ItemProp("Shears|f|µ", nothing, NasBlock.Material.Organic, 0.75f, 1)
             {
                 baseHP = baseHPconst * 8
@@ -79,7 +65,6 @@ namespace NotAwesomeSurvival
             {
                 baseHP = 12
             };
-
             ItemProp stonePick = new ItemProp("Stone Pickaxe|7|ß", toolEnchants, NasBlock.Material.Stone, 0.75f, 1);
             ItemProp stoneShovel = new ItemProp("Stone Shovel|7|Γ", toolEnchants, NasBlock.Material.Earth, 0.50f, 1);
             ItemProp stoneAxe = new ItemProp("Stone Axe|7|π", toolEnchants, NasBlock.Material.Wood, 0.60f, 1);
@@ -104,7 +89,6 @@ namespace NotAwesomeSurvival
             ironShovel.baseHP = ironBaseHP;
             ironAxe.baseHP = ironBaseHP;
             ironSword.baseHP = ironBaseHP;
-
             const int goldBaseHP = baseHPconst * 64;
             ItemProp goldPick = new ItemProp("Gold Pickaxe|6|ß", toolEnchants, NasBlock.Material.Stone, 0.90f, 3);
             ItemProp goldShovel = new ItemProp("Gold Shovel|6|Γ", toolEnchants, NasBlock.Material.Earth, 0.85f, 3);
@@ -120,7 +104,6 @@ namespace NotAwesomeSurvival
             goldShovel.baseHP = goldBaseHP;
             goldAxe.baseHP = goldBaseHP;
             goldSword.baseHP = goldBaseHP;
-
             const int diamondBaseHP = baseHPconst * 128;
             ItemProp diamondPick = new ItemProp("Diamond Pickaxe|b|ß", toolEnchants, NasBlock.Material.Stone, 0.95f, 4);
             ItemProp diamondShovel = new ItemProp("Diamond Shovel|b|Γ", toolEnchants, NasBlock.Material.Earth, 1f, 4);
@@ -136,7 +119,6 @@ namespace NotAwesomeSurvival
             diamondShovel.baseHP = diamondBaseHP;
             diamondAxe.baseHP = diamondBaseHP;
             diamondSword.baseHP = diamondBaseHP;
-
             const int emeraldBaseHP = baseHPconst * 192;
             ItemProp emeraldPick = new ItemProp("Emerald Pickaxe|2|ß", toolEnchants, NasBlock.Material.Stone, 0.975f, 5);
             emeraldPick.allowedEnchants["Efficiency"] = true;
@@ -153,18 +135,15 @@ namespace NotAwesomeSurvival
             emeraldShovel.baseHP = emeraldBaseHP;
             emeraldAxe.baseHP = emeraldBaseHP;
             emeraldSword.baseHP = emeraldBaseHP;
-
             ItemProp bedrockPick = new ItemProp("Bedrock Pickaxe|m|╟", nothing, NasBlock.Material.None, -1f, 5)
             {
                 baseHP = int.MaxValue
             };
-
             ItemProp etheriumPick = new ItemProp("Etherium Pickaxe|h|ß", toolEnchants, NasBlock.Material.Stone, 1f, 6);
             etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Leaves);
             etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Glass);
             etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Wood);
             etheriumPick.baseHP = int.MaxValue;
-
             ItemProp bedrockSword = new ItemProp("Bedrock Sword|0|α", swordEnchants, NasBlock.Material.Leaves, 1f, 6)
             {
                 damage = 50f,
@@ -172,7 +151,6 @@ namespace NotAwesomeSurvival
                 recharge = 3000,
                 baseHP = int.MaxValue
             };
-
             ItemProp ironHelmet = new ItemProp("Iron Helmet|f|τ", helmetEnchants, NasBlock.Material.None, 0, 0);
             ItemProp ironChest = new ItemProp("Iron Chestplate|f|Φ", armorEnchants, NasBlock.Material.None, 0, 0);
             ItemProp ironLegs = new ItemProp("Iron Leggings|f|Θ", armorEnchants, NasBlock.Material.None, 0, 0);
@@ -185,7 +163,6 @@ namespace NotAwesomeSurvival
             ironChest.armor = 5f;
             ironLegs.armor = 4f;
             ironBoots.armor = 1f;
-
             ItemProp goldHelmet = new ItemProp("Gold Helmet|6|τ", helmetEnchants, NasBlock.Material.None, 0, 0);
             ItemProp goldChest = new ItemProp("Gold Chestplate|6|Φ", armorEnchants, NasBlock.Material.None, 0, 0);
             ItemProp goldLegs = new ItemProp("Gold Leggings|6|Θ", armorEnchants, NasBlock.Material.None, 0, 0);
@@ -198,8 +175,6 @@ namespace NotAwesomeSurvival
             goldChest.armor = 6f;
             goldLegs.armor = 5f;
             goldBoots.armor = 2f;
-
-
             ItemProp diamondHelmet = new ItemProp("Diamond Helmet|b|τ", helmetEnchants, NasBlock.Material.None, 0, 0);
             ItemProp diamondChest = new ItemProp("Diamond Chestplate|b|Φ", armorEnchants, NasBlock.Material.None, 0, 0);
             ItemProp diamondLegs = new ItemProp("Diamond Leggings|b|Θ", armorEnchants, NasBlock.Material.None, 0, 0);
@@ -212,7 +187,6 @@ namespace NotAwesomeSurvival
             diamondChest.armor = 7f;
             diamondLegs.armor = 5f;
             diamondBoots.armor = 3f;
-
             ItemProp emeraldHelmet = new ItemProp("Emerald Helmet|2|τ", helmetEnchants, NasBlock.Material.None, 0, 0);
             ItemProp emeraldChest = new ItemProp("Emerald Chestplate|2|Φ", armorEnchants, NasBlock.Material.None, 0, 0);
             ItemProp emeraldLegs = new ItemProp("Emerald Leggings|2|Θ", armorEnchants, NasBlock.Material.None, 0, 0);
@@ -227,6 +201,5 @@ namespace NotAwesomeSurvival
             emeraldBoots.armor = 3f;
         }
     }
-
 }
 #endif

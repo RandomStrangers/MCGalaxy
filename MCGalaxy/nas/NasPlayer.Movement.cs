@@ -4,34 +4,58 @@ using System.Drawing;
 using System.IO;
 using Newtonsoft.Json;
 using MCGalaxy;
-
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using MCGalaxy.DB;
-
 namespace NotAwesomeSurvival
 {
-
     public partial class NasPlayer
     {
         public static Scheduler savingScheduler;
+        public static SchedulerTask SaveTask;
         public static void Setup()
         {
-            OnPlayerSpawningEvent.Register(OnPlayerSpawning, Priority.High);
             if (savingScheduler == null)
             {
                 savingScheduler = new Scheduler("SavingScheduler");
             }
-            SaveTask = savingScheduler.QueueRepeat(Save, null, TimeSpan.FromSeconds(5));
+            SaveTask = savingScheduler.QueueRepeat(SaveAll, null, TimeSpan.FromSeconds(5));
         }
-        public static SchedulerTask SaveTask;
         public static void TakeDown()
         {
             savingScheduler.Cancel(SaveTask);
+        }
+        public static void SaveAll(SchedulerTask task)
+        {
+            Player[] players = PlayerInfo.Online.Items;
+            foreach (Player player in players)
+            {
+                SaveAction(player);
+            }
+        }
+        public static void SaveAction(Player p)
+        {
+            NasPlayer np = GetNasPlayer(p);
+            if (np != null)
+            {
+                string jsonString = JsonConvert.SerializeObject(np, Formatting.Indented);
+                File.WriteAllText(Nas.GetSavePath(p), jsonString);
+                File.WriteAllText(Nas.GetTextPath(p), jsonString);
+            }
+        }
+        [JsonIgnore] public Scheduler PlayerSavingScheduler;
+        public static void Register()
+        {
+            //Setup();
+            OnPlayerSpawningEvent.Register(OnPlayerSpawning, Priority.High);
+        }
+        [JsonIgnore] public SchedulerTask PlayerSaveTask;
+        public static void Unregister()
+        {
+            //TakeDown();
             OnPlayerSpawningEvent.Unregister(OnPlayerSpawning);
         }
-
         public static void OnPlayerSpawning(Player p, ref Position pos, ref byte yaw, ref byte pitch, bool respawning)
         {
             NasPlayer np = (NasPlayer)p.Extras[Nas.PlayerKey];
@@ -50,42 +74,52 @@ namespace NotAwesomeSurvival
             {
                 raw = Block.Convert(block);
                 // show invalid physics blocks as Orange
-                if (raw >= Block.CPE_COUNT) raw = Block.Orange;
+                if (raw >= Block.CPE_COUNT)
+                {
+                    raw = Block.Orange;
+                }
             }
-            if (raw > Block.MaxRaw) raw = p.level.GetFallback(block);
-
+            if (raw > Block.MaxRaw)
+            {
+                raw = p.level.GetFallback(block);
+            }
             // Check if a custom block replaced a core block
             //  If so, assume fallback is the better block to display
             if (!p.Session.hasBlockDefs && raw < Block.CPE_COUNT)
             {
                 BlockDefinition def = p.level.CustomBlockDefs[raw];
-                if (def != null) raw = def.FallBack;
+                if (def != null)
+                {
+                    raw = def.FallBack;
+                }
             }
-
-            if (!p.Session.hasCustomBlocks) raw = fallback[(byte)raw];
+            if (!p.Session.hasCustomBlocks)
+            {
+                raw = fallback[(byte)raw];
+            }
             return raw;
         }
-        public static void Save(SchedulerTask task)
+        public void SaveStatsTask(SchedulerTask task)
         {
-            Player[] players = PlayerInfo.Online.Items;
-            foreach (Player player in players)
-            {
-                NasPlayer np = GetNasPlayer(player);
-                SaveAction(np);
-            }
+            Save();
         }
-        public static void SaveAction(NasPlayer np)
+        public void Save()
         {
-            string jsonString = JsonConvert.SerializeObject(np, Formatting.Indented);
-            File.WriteAllText(Nas.GetSavePath(np.p), jsonString);
-            File.WriteAllText(Nas.GetTextPath(np.p), jsonString);
+            if (this != null)
+            {
+                string jsonString = JsonConvert.SerializeObject(this, Formatting.Indented);
+                File.WriteAllText(Nas.GetSavePath(p), jsonString);
+                File.WriteAllText(Nas.GetTextPath(p), jsonString);
+            }
         }
         public void SpawnPlayer(Level level, ref Position spawnPos, ref byte yaw, ref byte pitch)
         {
-            if (level.Config.Deletable && level.Config.Buildable) { return; } //not a nas map
+            if (level.Config.Deletable && level.Config.Buildable) 
+            {
+                return; 
+            } //not a nas map
             CanDoStuffBasedOnPosition = false;
             inventory.Setup();
-
             if (isDead)
             {
                 if (!headingToBed)
@@ -116,13 +150,13 @@ namespace NotAwesomeSurvival
                 headingToBed = false;
                 isDead = false;
             }
-
-
-            if (!hasBeenSpawned) { SpawnPlayerFirstTime(level, ref spawnPos, ref yaw, ref pitch); return; }
-
+            if (!hasBeenSpawned) 
+            { 
+                SpawnPlayerFirstTime(level, ref spawnPos, ref yaw, ref pitch); 
+                return; 
+            }
             if (transferInfo != null)
             {
-
                 if (transferInfo.travelX == -1)
                 {
                     transferInfo.CalcNewPos();
@@ -141,7 +175,6 @@ namespace NotAwesomeSurvival
                         int orX = transferInfo.travelX;
                         int orY = transferInfo.travelY;
                         int orZ = transferInfo.travelZ;
-
                         SetSafetyBlock(orX, orY - 1, orZ, Block.FromRaw(162));
                         SetSafetyBlock(orX, orY + 2, orZ, Block.FromRaw(162));
                         ushort temp = nl.GetBlock(orX, orY + 1, orZ);
@@ -156,65 +189,54 @@ namespace NotAwesomeSurvival
                             nl.SetBlock(orX, orY, orZ, Block.FromRaw(457));
                             nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, BlockDBFlags.Drawn, temp, Block.FromRaw(457));
                         }
-
                         placePortal = false;
                     }
-
                 }
                 yaw = transferInfo.yawBeforeMapChange;
                 pitch = transferInfo.pitchBeforeMapChange;
-
                 atBorder = true;
                 transferInfo = null;
             }
-
-
-
-
-
         }
-
         public void SetSafetyBlock(int x, int y, int z, ushort block)
         {
             ushort oldBlock = nl.GetBlock(x, y, z);
-            if (nl.blockEntities.ContainsKey(x + " " + y + " " + z)) { return; }
+            if (nl.blockEntities.ContainsKey(x + " " + y + " " + z)) 
+            { 
+                return; 
+            }
             if (NasBlock.Get(Collision.ConvertToClientushort(oldBlock)).collideAction != NasBlock.DefaultSolidCollideAction())
             {
                 nl.SetBlock(x, y, z, block);
                 nl.lvl.BlockDB.Cache.Add(p, (ushort)x, (ushort)y, (ushort)z, BlockDBFlags.Drawn, oldBlock, block);
-
             }
-
         }
-
         public void SpawnPlayerFirstTime(Level level, ref Position spawnPos, ref byte yaw, ref byte pitch)
         {
-            if (hasBeenSpawned) { return; }
+            if (hasBeenSpawned) 
+            { 
+                return; 
+            }
             atBorder = true;
-            if (!p.Model.Contains("|0.93023255813953488372093023255814")) { Command.Find("model").Use(p, "human|0.93023255813953488372093023255814"); }
-
+            if (!p.Model.Contains("|0.93023255813953488372093023255814")) 
+            {
+                Command.Find("model").Use(p, "human|0.93023255813953488372093023255814"); 
+            }
             spawnPos = new Position(location.X, location.Y, location.Z);
             yaw = this.yaw;
             pitch = this.pitch;
             Logger.Log(LogType.Debug, "Teleporting " + p.name + "!");
-
             if (level.name != levelName)
             {
-                Player.Console.Message("{0}: trying to use /goto to move to the map they logged out in", p.name.ToUpper());
-                //goto will call OnPlayerSpawning again to complete the spawn
+                Player.Console.Message("{0}: trying to use /goto to move to the map they logged out in", p.name);
                 CommandData data = p.DefaultCmdData;
                 data.Context = CommandContext.SendCmd;
                 p.HandleCommand("goto", levelName, data);
                 return;
             }
-
             hasBeenSpawned = true;
-            //p.Message("hasBeenSpawned set to {0}", hasBeenSpawned);
-            Player.Console.Message("{0}: hasBeenSpawned set to {1}", p.name.ToUpper(), hasBeenSpawned);
-
+            Player.Console.Message("{0}: hasBeenSpawned set to {1}", p.name, hasBeenSpawned);
         }
-
-
         [JsonIgnore] public int round = 0;
         public void UpdateEnv()
         {
@@ -222,18 +244,24 @@ namespace NotAwesomeSurvival
             p.level.Config.CloudColor = NasTimeCycle.globalCloudColor;
             p.level.Config.LightColor = NasTimeCycle.globalSunColor;
         }
-
         public void DoMovement(Position next, byte yaw, byte pitch)
         {
             UpdateHeldBlock();
-            if (CanDoStuffBasedOnPosition) { UpdateAir(); }
+            if (CanDoStuffBasedOnPosition) 
+            { 
+                UpdateAir(); 
+            }
             CheckMapCrossing(p.Pos);
-            //p.Message("%gPos {0} {1} {2} %b{3}", next.FeetBlockCoords.X, next.FeetBlockCoords.Y, next.FeetBlockCoords.Z, Environment.TickCount);
-            if (CanDoStuffBasedOnPosition) { DoNasBlockCollideActions(next); }
-            if (CanDoStuffBasedOnPosition) { UpdatePosition(p.Pos, p.level.name); }
+            if (CanDoStuffBasedOnPosition) 
+            { 
+                DoNasBlockCollideActions(next); 
+            }
+            if (CanDoStuffBasedOnPosition) 
+            { 
+                UpdatePosition(p.Pos, p.level.name); 
+            }
             CheckGround(p.Pos);
             UpdateCaveFog(next);
-            //UpdateEnv();
             round++;
         }
         [JsonIgnore] public DateTime datePositionCheckingIsAllowed = DateTime.MinValue;
@@ -245,47 +273,48 @@ namespace NotAwesomeSurvival
             {
                 if (DateTime.UtcNow >= datePositionCheckingIsAllowed)
                 {
-                    //p.Message("CanDoStuffBasedOnPosition true");
                     return true;
                 }
-                //p.Message("CanDoStuffBasedOnPosition false");
                 return false;
             }
             set
             {
                 PingList pingList = p.Session.Ping;
-                //if (p != null) { p.Message("CanDoStuffBasedOnPosition: {0}", value); }
-                if (!value) { datePositionCheckingIsAllowed = DateTime.UtcNow.AddMilliseconds(2000 + pingList.HighestPing()); }
+                if (!value) 
+                { 
+                    datePositionCheckingIsAllowed = DateTime.UtcNow.AddMilliseconds(2000 + pingList.HighestPing()); 
+                }
             }
         }
         public void UpdatePosition(Position pos, string level)
         {
             location = new MCGalaxy.Maths.Vec3S32(pos.X, pos.Y, pos.Z);
             levelName = level;
-
         }
-
-
         public void CheckGround(Position next)
         {
-            if (p.invincible) { lastGroundedLocation = new MCGalaxy.Maths.Vec3S32(next.X, next.Y, next.Z); return; }
+            if (p.invincible) 
+            { 
+                lastGroundedLocation = new MCGalaxy.Maths.Vec3S32(next.X, next.Y, next.Z); 
+                return;
+            }
             Position below = next;
             below.Y -= 2;
             if (Collision.TouchesGround(p.level, bounds, below, out float fallDamageMultiplier))
             {
                 float fallHeight = lastGroundedLocation.Y - next.Y;
-                if (!CanDoStuffBasedOnPosition && fallHeight > 0 && !hasBeenSpawned) { p.Message("trying to take fall damage but cant"); }
+                if (!CanDoStuffBasedOnPosition && fallHeight > 0 && !hasBeenSpawned) 
+                { 
+                    p.Message("trying to take fall damage but cant");
+                }
                 if (fallHeight > 0 && CanDoStuffBasedOnPosition)
                 {
                     fallHeight /= 32f;
                     fallHeight -= 4;
-
                     if (fallHeight > 0)
                     {
                         float damage = (int)fallHeight * 2;
                         damage /= 4;
-
-                        //p.Message("damage is {0}", damage*fallDamageMultiplier);
                         TakeDamage(damage * fallDamageMultiplier, DamageSource.Falling);
                     }
                 }
@@ -305,7 +334,6 @@ namespace NotAwesomeSurvival
                 TryGoMapAt(1, 0);
                 return;
             }
-
             if (next.BlockZ <= 0)
             {
                 TryGoMapAt(0, -1);
@@ -322,20 +350,21 @@ namespace NotAwesomeSurvival
         {
             if (atBorder)
             {
-                //p.Message("Can't do it because already at border");
                 return false;
             }
             atBorder = true;
             int chunkOffsetX = 0, chunkOffsetZ = 0;
             string seed = "DEFAULT";
-            if (!NasGen.GetSeedAndChunkOffset(p.level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ)) { return false; }
+            if (!NasGen.GetSeedAndChunkOffset(p.level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ)) 
+            { 
+                return false;
+            }
             string mapName;
             chunkOffsetX += dirX;
             chunkOffsetZ += dirZ;
             mapName = seed + "_" + chunkOffsetX + "," + chunkOffsetZ;
             if (File.Exists("nas/leveldata/" + mapName + ".json"))
             {
-
                 transferInfo = new TransferInfo(p, dirX, dirZ, -1, -1, -1);
                 CommandData data = p.DefaultCmdData;
                 data.Context = CommandContext.SendCmd;
@@ -360,12 +389,10 @@ namespace NotAwesomeSurvival
                 return false;
             }
         }
-
         public bool NetherTravel(string map, TransferInfo trans)
         {
             if (atBorder)
             {
-                //p.Message("Can't do it because already at border");
                 return false;
             }
             atBorder = true;
@@ -377,7 +404,6 @@ namespace NotAwesomeSurvival
             NasGen.GetSeedAndChunkOffset(map, ref seed, ref chunkOffsetX, ref chunkOffsetZ);
             if (File.Exists("nas/leveldata/" + mapName + ".json"))
             {
-
                 transferInfo = trans;
                 placePortal = true;
                 CommandData data = p.DefaultCmdData;
@@ -403,8 +429,6 @@ namespace NotAwesomeSurvival
                 return false;
             }
         }
-
-
         public class GenInfo
         {
             public Player p;
@@ -418,7 +442,6 @@ namespace NotAwesomeSurvival
             Command.Find("newlvl").Use(info.p, info.mapName + " " + NasGen.mapWideness + " " + NasGen.mapTallness + " " + NasGen.mapWideness + " nasgen " + info.seed);
         }
         [JsonIgnore] public TransferInfo transferInfo = null;
-
         public class TransferInfo
         {
             public TransferInfo(Player p, int chunkOffsetX, int chunkOffsetZ)
@@ -442,7 +465,6 @@ namespace NotAwesomeSurvival
                 travelX = x;
                 travelZ = z;
                 travelY = y;
-
             }
             public void CalcNewPos()
             {
@@ -458,39 +480,46 @@ namespace NotAwesomeSurvival
             [JsonIgnore] public int chunkOffsetX, chunkOffsetZ;
             [JsonIgnore] public int travelX = -1, travelY = -1, travelZ = -1;
         }
-
         public void UpdateCaveFog(Position next)
         {
-            if (!NasLevel.all.ContainsKey(p.level.name)) { return; }
-
+            if (!NasLevel.all.ContainsKey(p.level.name)) 
+            { 
+                return; 
+            }
             const float change = 0.03125f;//0.03125f;
             if (curRenderDistance > targetRenderDistance)
             {
                 curRenderDistance *= 1 - change;
-                if (curRenderDistance < targetRenderDistance) { curRenderDistance = targetRenderDistance; }
+                if (curRenderDistance < targetRenderDistance) 
+                {
+                    curRenderDistance = targetRenderDistance; 
+                }
             }
             else if (curRenderDistance < targetRenderDistance)
             {
                 curRenderDistance *= 1 + change;
-                if (curRenderDistance > targetRenderDistance) { curRenderDistance = targetRenderDistance; }
+                if (curRenderDistance > targetRenderDistance) 
+                { 
+                    curRenderDistance = targetRenderDistance; 
+                }
             }
             curFogColor = ScaleColor(curFogColor, targetFogColor);
-
             p.Send(Packet.EnvMapProperty(EnvProp.MaxFog, (int)curRenderDistance));
             p.Send(Packet.EnvColor(2, curFogColor.R, curFogColor.G, curFogColor.B));
-
             NasLevel nl = NasLevel.all[p.level.name];
             int x = next.BlockX;
             int z = next.BlockZ;
             x = Utils.Clamp(x, 0, (ushort)(p.level.Width - 1));
             z = Utils.Clamp(z, 0, (ushort)(p.level.Length - 1));
             ushort height = (ushort)Utils.Clamp(z, 0, (ushort)(p.level.Height - 1));
-
-            if (next.BlockCoords == p.Pos.BlockCoords) { return; }
-
-            if (height < NasGen.oceanHeight) { height = NasGen.oceanHeight; }
-
-
+            if (next.BlockCoords == p.Pos.BlockCoords) 
+            { 
+                return; 
+            }
+            if (height < NasGen.oceanHeight) 
+            { 
+                height = NasGen.oceanHeight;
+            }
             int distanceBelow = nl.biome < 0 ? 0 : height - next.BlockY;
             int expFog;
             if (distanceBelow >= NasGen.diamondDepth)
@@ -525,7 +554,6 @@ namespace NotAwesomeSurvival
             }
             p.Send(Packet.EnvMapProperty(EnvProp.ExpFog, expFog));
         }
-
         public static Color ScaleColor(Color cur, Color goal)
         {
             byte R = ScaleChannel(cur.R, goal.R);
@@ -546,6 +574,5 @@ namespace NotAwesomeSurvival
             return curChannel;
         }
     }
-
 }
 #endif

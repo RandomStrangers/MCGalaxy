@@ -5,17 +5,14 @@ using MCGalaxy.Maths;
 using NasBlockCollideAction =
     System.Action<NotAwesomeSurvival.NasEntity,
     NotAwesomeSurvival.NasBlock, bool, ushort, ushort, ushort>;
-
 namespace NotAwesomeSurvival
 {
     public static class Collision
     {
-
         public static void Setup()
         {
             SetupBlockBounds(Server.mainLevel);
         }
-
         public static void SetupBlockBounds(Level lvl)
         {
             NasBlock.blocksIndexedByServerushort = new NasBlock[Block.ExtendedCount];
@@ -36,7 +33,6 @@ namespace NotAwesomeSurvival
             {
                 bounds = new AABB(def.MinX * 2, def.MinZ * 2, def.MinY * 2,
                                 def.MaxX * 2, def.MaxZ * 2, def.MaxY * 2);
-
                 switch (def.CollideType)
                 {
                     case CollideType.ClimbRope:
@@ -71,11 +67,12 @@ namespace NotAwesomeSurvival
                 nb.bounds = bounds;
                 nb.fallDamageMultiplier = fallDamageMultiplier;
                 if (nb.collideAction == null)
+                {
                     nb.collideAction = collideAction;
+                }
             }
             return nb;
         }
-
         public static ushort ConvertToClientushort(ushort serverushort)
         {
             ushort clientushort;
@@ -86,11 +83,13 @@ namespace NotAwesomeSurvival
             else
             {
                 clientushort = Block.Convert(serverushort);
-                if (clientushort >= Block.CPE_COUNT) clientushort = Block.Orange;
+                if (clientushort >= Block.CPE_COUNT)
+                {
+                    clientushort = Block.Orange;
+                }
             }
             return clientushort;
         }
-
         public static bool TouchesGround(Level lvl, AABB entityAABB, Position entityPos, out float fallDamageMultiplier)
         {
             //fallDamageMultiplier = 1;
@@ -99,13 +98,25 @@ namespace NotAwesomeSurvival
             worldAABB.Min.Z++;
             entityPos.X += entityAABB.Max.X;
             entityPos.Z += entityAABB.Max.Z;
-            if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier)) { return true; }
+            if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier)) 
+            {
+                return true; 
+            }
             entityPos.X += entityAABB.Min.X * 2;
-            if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier)) { return true; }
+            if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier)) 
+            { 
+                return true; 
+            }
             entityPos.Z += entityAABB.Min.Z * 2;
-            if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier)) { return true; }
+            if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier)) 
+            {
+                return true; 
+            }
             entityPos.X += entityAABB.Max.X * 2;
-            if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier)) { return true; }
+            if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier)) 
+            {
+                return true; 
+            }
             return false;
         }
         public static bool NASTouchesGround(Level lvl, AABB entityAABB, Position posToGetBlock, out float fallDamageMultiplier)
@@ -117,11 +128,16 @@ namespace NotAwesomeSurvival
             ushort serverushort = lvl.GetBlock((ushort)x,
                                                  (ushort)y,
                                                  (ushort)z);
-            if (serverushort == Block.Air) { return false; }
+            if (serverushort == Block.Air) 
+            { 
+                return false; 
+            }
             NasBlock nasBlock = NasBlock.blocksIndexedByServerushort[serverushort];
-            if (!nasBlock.collides) { return false; }
+            if (!nasBlock.collides) 
+            { 
+                return false; 
+            }
             fallDamageMultiplier = nasBlock.fallDamageMultiplier;
-
             AABB blockAABB = nasBlock.bounds;
             //running down stairs will kill you at the bottom if their actual max Y is respected
             //make them taller so the server can know you're touching them
@@ -129,17 +145,10 @@ namespace NotAwesomeSurvival
             blockAABB = blockAABB.Offset(x * 32, y * 32, z * 32);
             if (AABB.Intersects(ref entityAABB, ref blockAABB))
             {
-                //Player.Console.Message("nasblock ID is {0} and its fallDamageMultiplier is {1} and its max bound Y is {2}",
-                //                       nasBlock.selfID,
-                //                       nasBlock.fallDamageMultiplier,
-                //                       nasBlock.bounds.Max.Y
-                //                      );
-
                 return true;
             }
             return false;
         }
     }
-
 }
 #endif

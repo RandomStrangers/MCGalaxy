@@ -1286,11 +1286,6 @@ namespace NotAwesomeSurvival
                         return new Drop(145, 1);
                     }
                     return new Drop(644, r.Next(2, 5));
-                    //Drop drop = new Drop();
-                    //drop.blockStacks = new List<BlockStack>();
-                    //drop.blockStacks.Add(new BlockStack(644, r.Next(1, 4)));
-                    //drop.blockStacks.Add(new BlockStack(145, 1));
-                    //return drop;
                 }
             };
             i = 624; //iron nug
@@ -1336,11 +1331,6 @@ namespace NotAwesomeSurvival
                         finalDrop.blockStacks.Add(new BlockStack(624, 1));
                     }
                     return finalDrop;
-                    //Drop drop = new Drop();
-                    //drop.blockStacks = new List<BlockStack>();
-                    //drop.blockStacks.Add(new BlockStack(644, r.Next(1, 4)));
-                    //drop.blockStacks.Add(new BlockStack(145, 1));
-                    //return drop;
                 }
             };
             const float sugarTotalSeconds = 10f * 60f;

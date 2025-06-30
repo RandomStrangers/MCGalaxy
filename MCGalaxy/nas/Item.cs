@@ -2,10 +2,8 @@
 using Newtonsoft.Json;
 using MCGalaxy;
 using System.Collections.Generic;
-
 namespace NotAwesomeSurvival
 {
-
     public class Item
     {
         public static Item Fist;
@@ -29,9 +27,6 @@ namespace NotAwesomeSurvival
                 {"Unbreaking",0},
             };
         [JsonIgnore] public ItemProp Prop { get { return ItemProp.props[name]; } }
-
-
-
         public Item(string name)
         {
             ItemProp prop = ItemProp.props[name];
@@ -39,7 +34,9 @@ namespace NotAwesomeSurvival
             HP = prop.baseHP;
             armor = prop.armor;
             if (displayName == null)
+            {
                 displayName = ColoredName;
+            }
         }
         [JsonIgnore]
         public string ColoredName
@@ -51,18 +48,28 @@ namespace NotAwesomeSurvival
         {
             get { return "&" + ItemProp.props[name].color + ItemProp.props[name].character; }
         }
-
         [JsonIgnore]
         public ColorDesc[] HealthColors
         {
             get
             {
-                if (HP == int.MaxValue) { return DynamicColor.defaultColors; }
-                if (HP <= 1) { return DynamicColor.direHealthColors; }
-
+                if (HP == int.MaxValue) 
+                {
+                    return DynamicColor.defaultColors; 
+                }
+                if (HP <= 1) 
+                { 
+                    return DynamicColor.direHealthColors; 
+                }
                 float healthPercent = HP / Prop.baseHP;
-                if (healthPercent > 0.5f) { return DynamicColor.fullHealthColors; }
-                if (healthPercent > 0.25) { return DynamicColor.mediumHealthColors; }
+                if (healthPercent > 0.5f) 
+                {
+                    return DynamicColor.fullHealthColors; 
+                }
+                if (healthPercent > 0.25) 
+                { 
+                    return DynamicColor.mediumHealthColors; 
+                }
                 return DynamicColor.lowHealthColors;
             }
         }
@@ -73,7 +80,10 @@ namespace NotAwesomeSurvival
         /// <returns>true if the item should break</returns>
         public bool TakeDamage(float amount = 1)
         {
-            if (HP == int.MaxValue) { return false; }
+            if (HP == int.MaxValue) 
+            { 
+                return false; 
+            }
             HP -= amount;
             if (HP <= 0)
             {
@@ -87,22 +97,27 @@ namespace NotAwesomeSurvival
             {
                 foreach (KeyValuePair<string, int> x in enchants)
                 {
-                    if (x.Value > 0) return true;
+                    if (x.Value > 0)
+                    {
+                        return true;
+                    }
                 }
                 return false;
             }
-            catch { return false; }
+            catch 
+            { 
+                return false; 
+            }
         }
         public int Enchant(string s)
         {
-            if (enchants.ContainsKey(s)) return enchants[s];
+            if (enchants.ContainsKey(s))
+            {
+                return enchants[s];
+            }
             enchants.Add(s, 0);
             return 0;
         }
-
-
     }
-
-
 }
 #endif

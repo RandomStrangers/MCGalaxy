@@ -5,10 +5,8 @@ using System.Drawing;
 using MCGalaxy;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
-
 namespace NotAwesomeSurvival
 {
-
     public class DynamicColor
     {
         public static SchedulerTask task;
@@ -22,23 +20,20 @@ namespace NotAwesomeSurvival
         {
             if (File.Exists("plugins/" + selectorImageName))
             {
-                File.Move("plugins/" + selectorImageName, Nas.Path + selectorImageName);
+                FileIO.TryMove("plugins/" + selectorImageName, Nas.Path + selectorImageName);
             }
             if (!File.Exists(Nas.Path + selectorImageName))
             {
                 Player.Console.Message("Could not locate {0} (needed for tool health/selection colors)", selectorImageName);
                 return false;
             }
-
             Bitmap colorImage;
             colorImage = new Bitmap(Nas.Path + "selectorColors.png");
-
             defaultColors = new ColorDesc[colorImage.Width];
             fullHealthColors = new ColorDesc[colorImage.Width];
             mediumHealthColors = new ColorDesc[colorImage.Width];
             lowHealthColors = new ColorDesc[colorImage.Width];
             direHealthColors = new ColorDesc[colorImage.Width];
-
             int index = 0;
             SetupDescs(index++, colorImage, ref defaultColors);
             SetupDescs(index++, colorImage, ref fullHealthColors);
@@ -46,7 +41,6 @@ namespace NotAwesomeSurvival
             SetupDescs(index++, colorImage, ref lowHealthColors);
             SetupDescs(index++, colorImage, ref direHealthColors);
             colorImage.Dispose();
-
             task = Server.MainScheduler.QueueRepeat(Update, null, TimeSpan.FromMilliseconds(100));
             return true;
         }
@@ -65,31 +59,32 @@ namespace NotAwesomeSurvival
         }
         public static void TakeDown()
         {
-            if (task == null) return;
+            if (task == null)
+            {
+                return;
+            }
             Server.MainScheduler.Cancel(task);
         }
-
         public static int index;
         public static void Update(SchedulerTask task)
         {
             index = (index + 1) % defaultColors.Length;
             Player[] players = PlayerInfo.Online.Items;
-
             foreach (Player p in players)
             {
-                if (!p.Supports(CpeExt.TextColors)) continue;
+                if (!p.Supports(CpeExt.TextColors))
+                {
+                    continue;
+                }
                 NasPlayer np = NasPlayer.GetNasPlayer(p);
                 if (np == null)
                 {
-                    //p.Message("your NP is null");
                     continue;
                 }
                 ColorDesc desc = np.inventory.selectorColors[index];
-                //p.Message("Sending the color desc {0} {1} {2} {3}", desc.R, desc.G, desc.B, desc.Code);
                 p.Send(Packet.SetTextColor(desc));
             }
         }
     }
-
 }
 #endif

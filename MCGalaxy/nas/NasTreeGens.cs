@@ -6,67 +6,60 @@ using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Drawing.Ops;
 using MCGalaxy.Maths;
 using System.Collections.Generic;
-
-
 namespace NotAwesomeSurvival
 {
     public class BirchTree : Tree
     {
-
         public override long EstimateBlocksAffected() { return height + size * size * size; }
-
         public override int DefaultSize(Random rnd) { return rnd.Next(5, 8); }
-
-        // const ushort leavesID = 250 | Block.Extended;
-        // const ushort logID = Block.Extended|146;
-
         public override void SetData(Random rnd, int value)
         {
             height = value;
             size = height - rnd.Next(1, 3);
             this.rnd = rnd;
         }
-
         public override void Generate(ushort x, ushort y, ushort z, TreeOutput output)
         {
             for (ushort dy = 0; dy < height + size - 1; dy++)
-                output(x, (ushort)(y + dy), z, Block.FromRaw(242) /*leaves*/);
-
+            {
+                output(x, (ushort)(y + dy), z, Block.FromRaw(242));
+            }
             for (int dy = -size; dy <= size; ++dy)
+            { 
                 for (int dz = -size; dz <= size; ++dz)
+                { 
                     for (int dx = -size; dx <= size; ++dx)
                     {
                         int dist = (int)Math.Sqrt(dx * dx + dy * dy + dz * dz);
                         if ((dist < size + 1) && rnd.Next(dist) < 2)
                         {
                             ushort xx = (ushort)(x + dx), yy = (ushort)(y + dy + height), zz = (ushort)(z + dz);
-
                             if (xx != x || zz != z || dy >= size - 1)
-                                output(xx, yy, zz, Block.FromRaw(103) /*log*/);
+                            {
+                                output(xx, yy, zz, Block.FromRaw(103));
+                            }
                         }
                     }
+                }
+            }
         }
     }
-
     public class SwampTree : Tree
     {
         public override long EstimateBlocksAffected()
         {
             return height + 145;
         }
-
         public override int DefaultSize(Random rnd)
         {
             return rnd.Next(4, 8);
         }
-
         public override void SetData(Random rnd, int value)
         {
             height = value;
             size = 3;
             this.rnd = rnd;
         }
-
         public override void Generate(ushort x, ushort y, ushort z, TreeOutput output)
         {
             for (int i = 0; i <= height; i++)
@@ -91,7 +84,6 @@ namespace NotAwesomeSurvival
                                 {
                                     output(num2, y2, num3, Block.FromRaw(146));
                                 }
-
                             }
                             else
                             {
@@ -112,34 +104,24 @@ namespace NotAwesomeSurvival
         }
     }
 }
-
 namespace MCGalaxy.Generator.Foliage
-
 {
     public class SpruceTree : Tree
     {
         public int branchBaseHeight;
-
         public int branchAmount;
-
         public const int maxExtent = 5;
-
         public const int maxBranchHeight = 8;
-
         public const int maxCluster = 2;
-
         public List<Vec3S32> branch = new List<Vec3S32>();
-
         public override long EstimateBlocksAffected()
         {
             return height * (long)height * height;
         }
-
         public override int DefaultSize(Random rnd)
         {
             return rnd.Next(5, 8);
         }
-
         public override void SetData(Random rnd, int value)
         {
             this.rnd = rnd;
@@ -148,7 +130,6 @@ namespace MCGalaxy.Generator.Foliage
             branchBaseHeight = height / 4;
             branchAmount = rnd.Next(10, 25);
         }
-
         public override void Generate(ushort x, ushort y, ushort z, TreeOutput output)
         {
             Vec3S32 p = new Vec3S32(x, y, z);
@@ -159,7 +140,6 @@ namespace MCGalaxy.Generator.Foliage
                 DoBranch(x, y, z, output);
             }
         }
-
         public void DoBranch(int x, int y, int z, TreeOutput output)
         {
             int num = rnd.Next(-5, 5);
@@ -182,7 +162,6 @@ namespace MCGalaxy.Generator.Foliage
                 output(b.X, b.Y, b.Z, (byte)b.Block);
             });
         }
-
         public void Line(Vec3S32 p1, Vec3S32 p2, TreeOutput output)
         {
             ThingDrawOp.DrawLine(p1.X, p1.Y, p1.Z, 10000, p2.X, p2.Y, p2.Z, branch);
@@ -194,7 +173,6 @@ namespace MCGalaxy.Generator.Foliage
         }
     }
 }
-
 namespace MCGalaxy.Drawing.Ops
 {
     public class ThingDrawOp : DrawOp
@@ -202,16 +180,11 @@ namespace MCGalaxy.Drawing.Ops
         public struct Line
         {
             public int len2;
-
             public int dir;
-
             public int axis;
         }
-
         public bool WallsMode;
-
         public int MaxLength = 2147483647;
-
         public override string Name
         {
             get
@@ -219,7 +192,6 @@ namespace MCGalaxy.Drawing.Ops
                 return "Line";
             }
         }
-
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             Vec3U16 vec3U = Clamp(marks[0]);
@@ -249,7 +221,6 @@ namespace MCGalaxy.Drawing.Ops
                 }
             }
         }
-
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
             Vec3S32 vec3S = marks[0];
@@ -265,10 +236,10 @@ namespace MCGalaxy.Drawing.Ops
             int val2 = (int)Math.Ceiling(Math.Sqrt(num * num + num2 * num2 + num3 * num3));
             return Math.Min(val2, MaxLength);
         }
-
         public static void DrawLine(int x1, int y1, int z1, int maxLen, int x2, int y2, int z2, List<Vec3S32> buffer)
         {
-            int[] array = new int[] {
+            int[] array = new int[] 
+            {
                 x1,
                 y1,
                 z1
@@ -312,7 +283,6 @@ namespace MCGalaxy.Drawing.Ops
             item.Z = array[2];
             buffer.Add(item);
         }
-
         public static void DoLine(Line l1, Line l2, Line l3, int len, int[] pixel, int maxLen, List<Vec3S32> buffer)
         {
             int num = l1.len2 - len;

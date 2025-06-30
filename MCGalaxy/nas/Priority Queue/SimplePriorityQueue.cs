@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
 namespace Priority_Queue
 {
     /// <summary>
@@ -18,49 +17,41 @@ namespace Priority_Queue
         public class SimpleNode : GenericPriorityQueueNode<TPriority>
         {
             public TItem Data { get; set; }
-
             public SimpleNode(TItem data)
             {
                 Data = data;
             }
         }
-
         public const int INITIAL_QUEUE_SIZE = 10;
         public GenericPriorityQueue<SimpleNode, TPriority> _queue;
         public Dictionary<TItem, IList<SimpleNode>> _itemToNodesCache;
         public IList<SimpleNode> _nullNodesCache;
-
         #region Constructors
         /// <summary>
         /// Instantiate a new Priority Queue
         /// </summary>
         public SimplePriorityQueue() : this(Comparer<TPriority>.Default, EqualityComparer<TItem>.Default) { }
-
         /// <summary>
         /// Instantiate a new Priority Queue
         /// </summary>
         /// <param name="priorityComparer">The comparer used to compare TPriority values.  Defaults to Comparer&lt;TPriority&gt;.default</param>
         public SimplePriorityQueue(IComparer<TPriority> priorityComparer) : this(priorityComparer.Compare, EqualityComparer<TItem>.Default) { }
-
         /// <summary>
         /// Instantiate a new Priority Queue
         /// </summary>
         /// <param name="priorityComparer">The comparison function to use to compare TPriority values</param>
         public SimplePriorityQueue(Comparison<TPriority> priorityComparer) : this(priorityComparer, EqualityComparer<TItem>.Default) { }
-
         /// <summary>
         /// Instantiate a new Priority Queue       
         /// </summary>
         /// <param name="itemEquality">The equality comparison function to use to compare TItem values</param>
         public SimplePriorityQueue(IEqualityComparer<TItem> itemEquality) : this(Comparer<TPriority>.Default, itemEquality) { }
-
         /// <summary>
         /// Instantiate a new Priority Queue
         /// </summary>
         /// <param name="priorityComparer">The comparer used to compare TPriority values.  Defaults to Comparer&lt;TPriority&gt;.default</param>
         /// <param name="itemEquality">The equality comparison function to use to compare TItem values</param>
         public SimplePriorityQueue(IComparer<TPriority> priorityComparer, IEqualityComparer<TItem> itemEquality) : this(priorityComparer.Compare, itemEquality) { }
-
         /// <summary>
         /// Instantiate a new Priority Queue
         /// </summary>
@@ -73,7 +64,6 @@ namespace Priority_Queue
             _nullNodesCache = new List<SimpleNode>();
         }
         #endregion
-
         /// <summary>
         /// Given an item of type T, returns the existing SimpleNode in the queue
         /// </summary>
@@ -83,14 +73,12 @@ namespace Priority_Queue
             {
                 return _nullNodesCache.Count > 0 ? _nullNodesCache[0] : null;
             }
-
             if (!_itemToNodesCache.TryGetValue(item, out IList<SimpleNode> nodes))
             {
                 return null;
             }
             return nodes[0];
         }
-
         /// <summary>
         /// Adds an item to the Node-cache to allow for many methods to be O(1) or O(log n)
         /// </summary>
@@ -101,7 +89,6 @@ namespace Priority_Queue
                 _nullNodesCache.Add(node);
                 return;
             }
-
             if (!_itemToNodesCache.TryGetValue(node.Data, out IList<SimpleNode> nodes))
             {
                 nodes = new List<SimpleNode>();
@@ -109,7 +96,6 @@ namespace Priority_Queue
             }
             nodes.Add(node);
         }
-
         /// <summary>
         /// Removes an item to the Node-cache to allow for many methods to be O(1) or O(log n) (assuming no duplicates)
         /// </summary>
@@ -120,7 +106,6 @@ namespace Priority_Queue
                 _nullNodesCache.Remove(node);
                 return;
             }
-
             if (!_itemToNodesCache.TryGetValue(node.Data, out IList<SimpleNode> nodes))
             {
                 return;
@@ -131,7 +116,6 @@ namespace Priority_Queue
                 _itemToNodesCache.Remove(node.Data);
             }
         }
-
         /// <summary>
         /// Returns the number of nodes in the queue.
         /// O(1)
@@ -146,7 +130,6 @@ namespace Priority_Queue
                 }
             }
         }
-
         /// <summary>
         /// Returns the head of the queue, without removing it (use Dequeue() for that).
         /// Throws an exception when the queue is empty.
@@ -162,12 +145,10 @@ namespace Priority_Queue
                     {
                         throw new InvalidOperationException("Cannot call .First on an empty queue");
                     }
-
                     return _queue.First.Data;
                 }
             }
         }
-
         /// <summary>
         /// Removes every node from the queue.
         /// O(n)
@@ -181,7 +162,6 @@ namespace Priority_Queue
                 _nullNodesCache.Clear();
             }
         }
-
         /// <summary>
         /// Returns whether the given item is in the queue.
         /// O(1)
@@ -193,7 +173,6 @@ namespace Priority_Queue
                 return item == null ? _nullNodesCache.Count > 0 : _itemToNodesCache.ContainsKey(item);
             }
         }
-
         /// <summary>
         /// Removes the head of the queue (node with minimum priority; ties are broken by order of insertion), and returns it.
         /// If queue is empty, throws an exception
@@ -207,13 +186,11 @@ namespace Priority_Queue
                 {
                     throw new InvalidOperationException("Cannot call Dequeue() on an empty queue");
                 }
-
                 SimpleNode node = _queue.Dequeue();
                 RemoveFromNodeCache(node);
                 return node.Data;
             }
         }
-
         /// <summary>
         /// Enqueue the item with the given priority, without calling lock(_queue) or AddToNodeCache(node)
         /// </summary>
@@ -230,7 +207,6 @@ namespace Priority_Queue
             _queue.Enqueue(node, priority);
             return node;
         }
-
         /// <summary>
         /// Enqueue a node to the priority queue.  Lower values are placed in front. Ties are broken by first-in-first-out.
         /// This queue automatically resizes itself, so there's no concern of the queue becoming 'full'.
@@ -255,7 +231,6 @@ namespace Priority_Queue
                 nodes.Add(node);
             }
         }
-
         /// <summary>
         /// Enqueue a node to the priority queue if it doesn't already exist.  Lower values are placed in front. Ties are broken by first-in-first-out.
         /// This queue automatically resizes itself, so there's no concern of the queue becoming 'full'.  Null values are allowed.
@@ -289,7 +264,6 @@ namespace Priority_Queue
                 return true;
             }
         }
-
         /// <summary>
         /// Removes an item from the queue.  The item does not need to be the head of the queue.  
         /// If the item is not in the queue, an exception is thrown.  If unsure, check Contains() first.
@@ -327,7 +301,6 @@ namespace Priority_Queue
                 nodes.Remove(removeMe);
             }
         }
-
         /// <summary>
         /// Call this method to change the priority of an item.
         /// Calling this method on a item not in the queue will throw an exception.
@@ -344,7 +317,6 @@ namespace Priority_Queue
                 _queue.UpdatePriority(updateMe, priority);
             }
         }
-
         /// <summary>
         /// Returns the priority of the given item.
         /// Calling this method on a item not in the queue will throw an exception.
@@ -361,7 +333,6 @@ namespace Priority_Queue
                 return findMe.Priority;
             }
         }
-
         #region Try* methods for multithreading
         /// Get the head of the queue, without removing it (use TryDequeue() for that).
         /// Useful for multi-threading, where the queue may become empty between calls to Contains() and First
@@ -380,11 +351,9 @@ namespace Priority_Queue
                     }
                 }
             }
-
             first = default;
             return false;
         }
-
         /// <summary>
         /// Removes the head of the queue (node with minimum priority; ties are broken by order of insertion), and sets it to first.
         /// Useful for multi-threading, where the queue may become empty between calls to Contains() and Dequeue()
@@ -406,11 +375,9 @@ namespace Priority_Queue
                     }
                 }
             }
-
             first = default;
             return false;
         }
-
         /// <summary>
         /// Attempts to remove an item from the queue.  The item does not need to be the head of the queue.  
         /// Useful for multi-threading, where the queue may become empty between calls to Contains() and Remove()
@@ -450,7 +417,6 @@ namespace Priority_Queue
                 return true;
             }
         }
-
         /// <summary>
         /// Call this method to change the priority of an item.
         /// Useful for multi-threading, where the queue may become empty between calls to Contains() and UpdatePriority()
@@ -473,7 +439,6 @@ namespace Priority_Queue
                 return true;
             }
         }
-
         /// <summary>
         /// Attempt to get the priority of the given item.
         /// Useful for multi-threading, where the queue may become empty between calls to Contains() and GetPriority()
@@ -498,27 +463,23 @@ namespace Priority_Queue
             }
         }
         #endregion
-
         public IEnumerator<TItem> GetEnumerator()
         {
             List<TItem> queueData = new List<TItem>();
             lock (_queue)
             {
                 //Copy to a separate list because we don't want to 'yield return' inside a lock
-                foreach (var node in _queue)
+                foreach (SimpleNode node in _queue)
                 {
                     queueData.Add(node.Data);
                 }
             }
-
             return queueData.GetEnumerator();
         }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
-
         public bool IsValidQueue()
         {
             lock (_queue)
@@ -534,7 +495,6 @@ namespace Priority_Queue
                         }
                     }
                 }
-
                 // Check all items in queue are in cache
                 foreach (SimpleNode node in _queue)
                 {
@@ -543,13 +503,11 @@ namespace Priority_Queue
                         return false;
                     }
                 }
-
                 // Check queue structure itself
                 return _queue.IsValidQueue();
             }
         }
     }
-
     /// <summary>
     /// A simplified priority queue implementation.  Is stable, auto-resizes, and thread-safe, at the cost of being slightly slower than
     /// FastPriorityQueue
@@ -562,13 +520,11 @@ namespace Priority_Queue
         /// Instantiate a new Priority Queue
         /// </summary>
         public SimplePriorityQueue() { }
-
         /// <summary>
         /// Instantiate a new Priority Queue
         /// </summary>
         /// <param name="comparer">The comparer used to compare priority values.  Defaults to Comparer&lt;float&gt;.default</param>
         public SimplePriorityQueue(IComparer<float> comparer) : base(comparer) { }
-
         /// <summary>
         /// Instantiate a new Priority Queue
         /// </summary>

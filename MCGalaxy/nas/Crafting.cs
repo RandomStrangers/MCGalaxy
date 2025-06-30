@@ -6,17 +6,22 @@ using MCGalaxy;
 using MCGalaxy.Network;
 using MCGalaxy.Maths;
 using MCGalaxy.Tasks;
-
 namespace NotAwesomeSurvival
 {
-
     public partial class Crafting
     {
         public static object locker = new object();
         public static void ClearCraftingArea(Player p, ushort startX, ushort startY, ushort startZ, Station.Orientation ori, NasLevel nl)
         {
             bool WE = ori == Station.Orientation.WE;
-            if (WE) { startX--; } else { startZ--; }
+            if (WE) 
+            { 
+                startX--; 
+            } 
+            else 
+            { 
+                startZ--;
+            }
             startY += 3;
             if (WE)
             {
@@ -47,11 +52,17 @@ namespace NotAwesomeSurvival
                 }
             }
         }
-
         public static void ClearCraftingArea(NasLevel nl, ushort startX, ushort startY, ushort startZ, Station.Orientation ori)
         {
             bool WE = ori == Station.Orientation.WE;
-            if (WE) { startX--; } else { startZ--; }
+            if (WE) 
+            { 
+                startX--; 
+            } 
+            else 
+            { 
+                startZ--; 
+            }
             startY += 3;
             if (WE)
             {
@@ -82,7 +93,6 @@ namespace NotAwesomeSurvival
                 }
             }
         }
-
         public class Station
         {
             public string name;
@@ -93,7 +103,6 @@ namespace NotAwesomeSurvival
             /// </summary>
             public enum Orientation { None, WE, NS }
             public Orientation ori = Orientation.None;
-
             public Station() { }
             public Station(Station parent)
             {
@@ -101,14 +110,10 @@ namespace NotAwesomeSurvival
                 type = parent.type;
                 ori = parent.ori;
             }
-
             public void ShowArea(NasPlayer np, ushort x, ushort y, ushort z, Color color, int millisecs = 2000, byte A = 127)
             {
-                //if (np.craftingAreaBeingShown) { return; }
-                //np.craftingAreaBeingShown = true;
                 ushort startX = x, startY = y, startZ = z;
                 ushort endX = x, endY = y, endZ = z;
-
                 bool WE = ori == Orientation.WE;
                 if (WE)
                 {
@@ -158,7 +163,6 @@ namespace NotAwesomeSurvival
                 if (info.curRound <= 0)
                 {
                     info.np.p.Send(Packet.DeleteSelection(info.ID));
-                    //info.np.craftingAreaBeingShown = false;
                     task.Repeating = false;
                     return;
                 }
@@ -169,14 +173,15 @@ namespace NotAwesomeSurvival
             }
         }
         public static List<Recipe> recipes = new List<Recipe>();
-
         public static Recipe GetRecipe(NasLevel nl, ushort x, ushort y, ushort z, Station station)
         {
-            //Thread.Sleep(1000);
             NasBlock[,] area = GetArea(nl, x, y, z, station.ori);
             foreach (Recipe recipe in recipes)
             {
-                if (recipe.stationType != station.type) { continue; }
+                if (recipe.stationType != station.type) 
+                { 
+                    continue; 
+                }
                 if (recipe.shapeless)
                 {
                     if (recipe.MatchesShapeless(area))
@@ -195,7 +200,14 @@ namespace NotAwesomeSurvival
         {
             NasBlock[,] area = new NasBlock[3, 3];
             bool WE = ori == Station.Orientation.WE;
-            if (WE) { startX--; } else { startZ--; }
+            if (WE) 
+            { 
+                startX--; 
+            } 
+            else 
+            { 
+                startZ--; 
+            }
             startY += 3;
             int indexX = 0;
             int indexY = 0;
@@ -206,7 +218,10 @@ namespace NotAwesomeSurvival
                     for (ushort x = startX; x < startX + 3; x++)
                     {
                         ushort blockID = nl.lvl.GetBlock(x, y, startZ);
-                        if (blockID == Block.Invalid) { blockID = 0; }
+                        if (blockID == Block.Invalid) 
+                        { 
+                            blockID = 0; 
+                        }
                         ushort num;
                         if (blockID >= 256)
                         {
@@ -220,11 +235,8 @@ namespace NotAwesomeSurvival
                                 num = 22;
                             }
                         }
-
                         NasBlock nb = NasBlock.Get(num);
-                        //Player.Console.Message("Block at "+indexX+", "+indexY+" is "+block);
                         area[indexX, indexY] = nb;
-
                         indexX++;
                     }
                     indexX = 0;
@@ -238,7 +250,10 @@ namespace NotAwesomeSurvival
                     for (ushort z = startZ; z < startZ + 3; z++)
                     {
                         ushort blockID = nl.lvl.GetBlock(startX, y, z);
-                        if (blockID == Block.Invalid) { blockID = 0; }
+                        if (blockID == Block.Invalid) 
+                        { 
+                            blockID = 0; 
+                        }
                         ushort num;
                         if (blockID >= 256)
                         {
@@ -252,11 +267,8 @@ namespace NotAwesomeSurvival
                                 num = 22;
                             }
                         }
-
                         NasBlock nb = NasBlock.Get(num);
-                        //Player.Console.Message("Block at "+indexX+", "+indexY+" is "+block);
                         area[indexX, indexY] = nb;
-
                         indexX++;
                     }
                     indexX = 0;
@@ -265,7 +277,6 @@ namespace NotAwesomeSurvival
             }
             return area;
         }
-
         public class Recipe
         {
             public int expGiven = 0;
@@ -325,10 +336,8 @@ namespace NotAwesomeSurvival
             {
                 int patternWidth = pattern.GetLength(1);
                 int patternHeight = pattern.GetLength(0);
-
                 Dictionary<ushort, int> patternStacks = new Dictionary<ushort, int>();
                 Dictionary<ushort, int> areaStacks = new Dictionary<ushort, int>();
-
                 for (int patternX = 0; patternX < patternWidth; patternX++)
                 {
                     for (int patternY = 0; patternY < patternHeight; patternY++)
@@ -337,7 +346,6 @@ namespace NotAwesomeSurvival
                         FillDict(required, ref patternStacks);
                     }
                 }
-
                 for (int x = 0; x < 3; x++)
                 {
                     for (int y = 0; y < 3; y++)
@@ -351,7 +359,6 @@ namespace NotAwesomeSurvival
                         FillDict(supplied, ref areaStacks);
                     }
                 }
-
                 bool matches = true;
                 foreach (KeyValuePair<ushort, int> pair in patternStacks)
                 {
@@ -361,22 +368,17 @@ namespace NotAwesomeSurvival
                     }
                 }
                 return matches;
-
             }
             public bool Matches(NasBlock[,] area)
             {
                 int patternWidth = pattern.GetLength(1);
                 int patternHeight = pattern.GetLength(0);
-
                 for (int x = 0; x < 3; x++)
                 {
                     for (int y = 0; y < 3; y++)
                     {
-
-                        //p.Message("about to test the recipe at {0}, {1}", x, y);
                         if (TestRecipe(area, x, y, true) || TestRecipe(area, x, y, false))
                         {
-                            //p.Message("TestRecipe is true, and we're not out of bounds");
                             // Check to make sure there aren't any sneaky unused items in the grid
                             //bounds of the current recipe
                             int minX = x, maxX = x + patternWidth;
@@ -391,16 +393,13 @@ namespace NotAwesomeSurvival
                                     {
                                         if (area[_x, _y].selfID != 0)
                                         { //and the block at this spot is not air, there was an unused item and the recipe is invalid
-                                            //fp.Message("%cRecipe detected but a block was outside of it");
                                             return false;
                                         }
                                     }
                                 }
                             }
-
                             return true;
                         }
-
                     }
                 }
                 return false;
@@ -411,46 +410,31 @@ namespace NotAwesomeSurvival
                 int patternWidth = pattern.GetLength(1);
                 int patternHeight = pattern.GetLength(0);
                 //if we're out of bounds on lower-right side, it definitely doesn't match
-                //p.Message("testing recipe at offset {0}, {1}", offsetX, offsetY);
                 if (offsetX + patternWidth > 3 || offsetY + patternHeight > 3)
                 {
-                    //p.Message("out of bounds TestRecipe");
                     return false;
                 }
                 for (int x = 0; x < patternWidth; x++)
                 {
                     for (int y = 0; y < patternHeight; y++)
                     {
-
                         int xPattern = mirrored ? patternWidth - 1 - x : x;
-                        //p.Message("index of xPattern is {0}, {1}", xPattern, y);
-
                         NasBlock suppliedNB = area[x + offsetX, y + offsetY];
                         if (usesAlternateID)
                         {
                             suppliedNB = NasBlock.Get(suppliedNB.alternateID);
                         }
                         ushort supplied = usesParentID ? suppliedNB.parentID : suppliedNB.selfID;
-
                         ushort required = pattern[y, xPattern];
-                        //p.Message("supplied XY {0}{1}, required XY {2}{3}", x+offsetX, y+offsetY, x, y);
-                        //p.Message("supplied is {0}, required is {1}", supplied, required);
                         if (supplied != required)
                         {
-                            //p.Message("supplied isnt required");
                             return false;
                         }
                     }
                 }
-                //p.Message("tested success");
                 return true;
             }
-
-
         } //Recipe
-
-
     }
-
 }
 #endif

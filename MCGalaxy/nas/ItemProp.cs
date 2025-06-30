@@ -1,16 +1,13 @@
 ﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
 using System.Collections.Generic;
-
 namespace NotAwesomeSurvival
 {
-
     public partial class ItemProp
     {
 
         public string name;
         public string color;
         public string character;
-
         public List<NasBlock.Material> materialsEffectiveAgainst;
         public int tier;
         public float percentageOfTimeSaved;
@@ -22,7 +19,6 @@ namespace NotAwesomeSurvival
         public float knockback;
         public Dictionary<string, bool> allowedEnchants = new Dictionary<string, bool>();
         public static Dictionary<string, ItemProp> props = new Dictionary<string, ItemProp>();
-
         public ItemProp(string description, Dictionary<string, bool> enchants = null, NasBlock.Material effectiveAgainst = NasBlock.Material.None, float percentageOfTimeSaved = 0, int tier = 1)
         {
             string[] descriptionBits = description.Split('|');
@@ -43,12 +39,10 @@ namespace NotAwesomeSurvival
                 {"Thorns",false},
                 {"Unbreaking",false},
             };
-
             foreach (KeyValuePair<string, bool> x in enchants)
             {
                 allowedEnchants[x.Key] = x.Value;
             }
-
             if (effectiveAgainst != NasBlock.Material.None)
             {
                 materialsEffectiveAgainst = new List<NasBlock.Material>
@@ -71,6 +65,5 @@ namespace NotAwesomeSurvival
             props.Add(name, this);
         }
     }
-
 }
 #endif

@@ -19,19 +19,19 @@ namespace NotAwesomeSurvival
         }
         public static void TakeDown()
         {
+            Level[] loadedLevels = LevelInfo.Loaded.Items;
+            foreach (Level lvl in loadedLevels)
+            {
+                if (!all.ContainsKey(lvl.name))
+                {
+                    return;
+                }
+                Unload(lvl.name, all[lvl.name]);
+            }
             OnLevelLoadedEvent.Unregister(OnLevelLoaded);
             OnLevelUnloadEvent.Unregister(OnLevelUnload);
             OnLevelDeletedEvent.Unregister(OnLevelDeleted);
             OnLevelRenamedEvent.Unregister(OnLevelRenamed);
-            Level[] loadedLevels = LevelInfo.Loaded.Items;
-            foreach (Level lvl in loadedLevels)
-            {
-                if (!all.ContainsKey(lvl.name)) 
-                { 
-                    return; 
-                }
-                Unload(lvl.name, all[lvl.name]);
-            }
         }
         public static string GetFileName(string name)
         {
@@ -70,19 +70,22 @@ namespace NotAwesomeSurvival
         }
         public static int MakeInt(string seed)
         {
-            if (seed.Length == 0) return new Random().Next();
-
-            if (!int.TryParse(seed, out int value)) value = seed.GetHashCode();
+            if (seed.Length == 0)
+            {
+                return new Random().Next();
+            }
+            if (!int.TryParse(seed, out int value))
+            {
+                value = seed.GetHashCode();
+            }
             return value;
         }
         public static void OnLevelLoaded(Level lvl)
         {
             if (NasBlock.blocksIndexedByServerushort == null)
             {
-                //Player.Console.Message("This has to be filled in before NasLevels can work");
                 return;
             }
-            //Player.Console.Message("CALLING OnLevelLoaded for {0}", lvl.name);
             NasLevel nl = new NasLevel();
             string fileName = GetFileName(lvl.name);
             if (File.Exists(fileName))
@@ -95,8 +98,6 @@ namespace NotAwesomeSurvival
                     all.Add(lvl.name, nl);
                 }
                 nl.BeginTickTask();
-
-                //Don't spawn dungeons in the nether
                 if (nl.biome < 0)
                 {
                     nl.dungeons = false;
@@ -139,7 +140,6 @@ namespace NotAwesomeSurvival
                 string newFileName = Path + dstMap + Extension;
                 FileIO.TryMove(fileName, newFileName);
                 Logger.Log(LogType.Debug, "Renamed NasLevel " + fileName + " to " + newFileName + "!");
-                //Unload(srcMap, all[srcMap]);
             }
         }
     }

@@ -13,11 +13,6 @@ namespace NotAwesomeSurvival
             {
                 if (headSurrounded)
                 {
-                    //if (ne.GetType() == typeof(NasPlayer))
-                    //{
-                    //    NasPlayer np = (NasPlayer)ne;
-                    //    np.p.Message("head surrounded @ {0} {1} {2}", x, y, z);
-                    //}
                     ne.TakeDamage(1.5f, NasEntity.DamageSource.Suffocating);
                 }
             };

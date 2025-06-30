@@ -8,12 +8,10 @@ namespace Priority_Queue
         /// Cannot be manually edited - see queue.Enqueue() and queue.UpdatePriority() instead
         /// </summary>
         public float Priority { get; set; }
-
         /// <summary>
         /// Represents the current position in the queue
         /// </summary>
         public int QueueIndex { get; set; }
-
 #if DEBUG
         /// <summary>
         /// The queue this node is tied to. Used only for debug builds.

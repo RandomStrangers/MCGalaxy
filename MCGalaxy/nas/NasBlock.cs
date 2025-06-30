@@ -106,10 +106,9 @@ namespace NotAwesomeSurvival
         public float beginDelayMin = 0f;
         public NasBlockAction disturbedAction = null;
         public NasBlockAction instantAction = null;
-        //public NasBlockAction beginAction = null;
         public NasBlockInteraction interaction = null;
         public NasBlockExistAction existAction = null;
-        public NasBlockCollideAction collideAction = null;//DefaultCollideAction();
+        public NasBlockCollideAction collideAction = null;
         public NasBlock(ushort id, Material mat)
         {
             selfID = id;
