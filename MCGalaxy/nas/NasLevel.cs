@@ -1,15 +1,20 @@
-﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using MCGalaxy;
 using MCGalaxy.Tasks;
 using Priority_Queue;
-using NasBlockAction = System.Action<NotAwesomeSurvival.NasLevel, NotAwesomeSurvival.NasBlock, int, int, int>;
+using NasBlockAction = NotAwesomeSurvival.Action<NotAwesomeSurvival.NasLevel, NotAwesomeSurvival.NasBlock, int, int, int>;
 namespace NotAwesomeSurvival
 {
     public partial class NasLevel
     {
+        [JsonIgnore] public static Dictionary<string, NasLevel> all = new Dictionary<string, NasLevel>();
+        [JsonIgnore] public Level lvl;
+        [JsonIgnore] public ushort[,] heightmap = new ushort[0, 0];
+        [JsonIgnore] public SimplePriorityQueue<QueuedBlockUpdate, DateTime> tickQueue = new SimplePriorityQueue<QueuedBlockUpdate, DateTime>();
+        [JsonIgnore] public SchedulerTask schedulerTask;
         public int biome;
         public bool dungeons = false;
         public bool deepslateGenerated = true;
@@ -22,11 +27,15 @@ namespace NotAwesomeSurvival
             public BlockLocation() { }
             public BlockLocation(QueuedBlockUpdate qb)
             {
-                X = qb.x; Y = qb.y; Z = qb.z;
+                X = qb.x; 
+                Y = qb.y; 
+                Z = qb.z;
             }
             public BlockLocation(int x, int y, int z)
             {
-                X = x; Y = y; Z = z;
+                X = x; 
+                Y = y;
+                Z = z;
             }
         }
         public struct QueuedBlockUpdate
@@ -36,14 +45,9 @@ namespace NotAwesomeSurvival
             public DateTime date;
             public NasBlockAction da;
         }
-        [JsonIgnore] public static Dictionary<string, NasLevel> all = new Dictionary<string, NasLevel>();
-        [JsonIgnore] public Level lvl;
-        [JsonIgnore] public ushort[,] heightmap = new ushort[0, 0];
         public ushort height;
         public List<BlockLocation> blocksThatMustBeDisturbed = new List<BlockLocation>();
         public Dictionary<string, NasBlock.Entity> blockEntities = new Dictionary<string, NasBlock.Entity>();
-        [JsonIgnore] public SimplePriorityQueue<QueuedBlockUpdate, DateTime> tickQueue = new SimplePriorityQueue<QueuedBlockUpdate, DateTime>();
-        [JsonIgnore] public SchedulerTask schedulerTask;
         public void BeginTickTask()
         {
             if (TickScheduler == null)
@@ -216,7 +220,8 @@ namespace NotAwesomeSurvival
         /// Call to make the nasBlock at this location queue its "whatHappensWhenDisturbed" function.
         /// </summary>
         /// 
-        public ushort[] observers = {
+        public ushort[] observers = 
+        {
             Block.FromRaw(415),
             Block.FromRaw(416),
             Block.FromRaw(417),
@@ -224,7 +229,8 @@ namespace NotAwesomeSurvival
             Block.FromRaw(419),
             Block.FromRaw(420),
         };
-        public ushort[] repeatersOff = {
+        public ushort[] repeatersOff = 
+        {
             Block.FromRaw(176),
             Block.FromRaw(177),
             Block.FromRaw(174),
@@ -232,7 +238,8 @@ namespace NotAwesomeSurvival
             Block.FromRaw(172),
             Block.FromRaw(173),
         };
-        public ushort[] repeatersOn = {
+        public ushort[] repeatersOn = 
+        {
             Block.FromRaw(617),
             Block.FromRaw(618),
             Block.FromRaw(615),

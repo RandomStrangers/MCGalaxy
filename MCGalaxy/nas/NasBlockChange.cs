@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 using System;
 using System.IO;
 using System.Drawing;
@@ -127,7 +127,7 @@ namespace NotAwesomeSurvival
             }
             if (np.isInserting)
             {
-                np.p.Message("&ePlease insert items into the container before breaking blocks.");
+                np.Message("&ePlease insert items into the container before breaking blocks.");
                 return;
             }
             if (nasBlock.parentID != 0)
@@ -139,7 +139,7 @@ namespace NotAwesomeSurvival
             }
             else
             {
-                np.p.Message("Why the hell are you trying to get {0}? It's not even a real block..",
+                np.Message("Why the hell are you trying to get {0}? It's not even a real block..",
                           Block.GetName(np.p, serverushort));
             }
             nasBlock.existAction?.Invoke(np, nasBlock, false, x, y, z);
@@ -154,8 +154,8 @@ namespace NotAwesomeSurvival
             np.justBrokeOrPlaced = true;
             if (!np.hasBeenSpawned)
             {
-                np.p.Message("&chasBeenSpawned is &cfalse&S, this shouldn't happen if you didn't just die.");
-                np.p.Message("&bPlease report to randomstrangers on Discord what you were doing before this happened");
+                np.Message("&chasBeenSpawned is &cfalse&S, this shouldn't happen if you didn't just die.");
+                np.Message("&bPlease report to randomstrangers on Discord what you were doing before this happened");
             }
         }
         public static void CancelPlacedBlock(Player p, ushort x, ushort y, ushort z, NasPlayer np, ref bool cancel)
@@ -184,38 +184,38 @@ namespace NotAwesomeSurvival
             NasBlock nasBlock = NasBlock.Get(clientushort);
             if (nasBlock.parentID == 0)
             {
-                p.Message("You can't place undefined blocks.");
+                np.Message("You can't place undefined blocks.");
                 CancelPlacedBlock(p, x, y, z, np, ref cancel);
                 return;
             }
             if ((nasBlock.selfID == 10 || nasBlock.selfID == 476 || nasBlock.selfID == 178) && p.level.name.Contains("0,0") && !p.level.name.Contains("nether"))
             {
-                np.p.Message("&mCan't do that at 0,0.");
+                np.Message("&mCan't do that at 0,0.");
                 CancelPlacedBlock(p, x, y, z, np, ref cancel);
                 return;
             }
             if (np.nl.GetBlock(x, y, z + 1) == Block.FromRaw(703) || np.nl.GetBlock(x, y - 1, z) == Block.FromRaw(703))
             {
-                np.p.Message("&mCan't obstruct a bed!");
+                np.Message("&mCan't obstruct a bed!");
                 CancelPlacedBlock(p, x, y, z, np, ref cancel);
                 return;
             }
             if (nasBlock.selfID == 703 && (np.nl.GetBlock(x, y, z - 1) != Block.Air || np.nl.GetBlock(x, y + 1, z) != Block.Air))
             {
-                np.p.Message("&mCan't place a bed in an obstructed location!");
+                np.Message("&mCan't place a bed in an obstructed location!");
                 CancelPlacedBlock(p, x, y, z, np, ref cancel);
                 return;
             }
             int amount = np.inventory.GetAmount(nasBlock.parentID);
             if (amount < 1)
             {
-                p.Message("&cYou don't have any {0}.", nasBlock.GetName(p));
+                np.Message("&cYou don't have any {0}.", nasBlock.GetName(p));
                 CancelPlacedBlock(p, x, y, z, np, ref cancel);
                 return;
             }
             if (amount < nasBlock.resourceCost)
             {
-                p.Message("&cYou need at least {0} {1} to place {2}.",
+                np.Message("&cYou need at least {0} {1} to place {2}.",
                           nasBlock.resourceCost, nasBlock.GetName(p), nasBlock.GetName(p, clientushort));
                 CancelPlacedBlock(p, x, y, z, np, ref cancel);
                 return;
@@ -259,7 +259,7 @@ namespace NotAwesomeSurvival
             {
                 if ((np.inventory.GetAmount(696) >= 5) && nasBlock.selfID == 696) 
                 { 
-                    np.p.Message("&mYou have too many lava barrels!"); 
+                    np.Message("&mYou have too many lava barrels!"); 
                     return; 
                 }
                 BreakBlock(np, breakInfo.x, breakInfo.y, breakInfo.z, breakInfo.serverushort, nasBlock);

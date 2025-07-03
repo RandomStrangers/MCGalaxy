@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 using System;
 using System.Drawing;
 using System.IO;
@@ -12,6 +12,60 @@ namespace NotAwesomeSurvival
 {
     public partial class NasPlayer
     {
+        [JsonIgnore] public DateTime datePositionCheckingIsAllowed = DateTime.MinValue;
+        [JsonIgnore] public bool placePortal = false;
+        [JsonIgnore] public int round = 0;
+        [JsonIgnore] public bool atBorder = true;
+        [JsonIgnore] public TransferInfo transferInfo = null;
+        [JsonIgnore]
+        public bool CanDoStuffBasedOnPosition
+        {
+            get
+            {
+                if (DateTime.UtcNow >= datePositionCheckingIsAllowed)
+                {
+                    return true;
+                }
+                return false;
+            }
+            set
+            {
+                PingList pingList = p.Session.Ping;
+                if (!value)
+                {
+                    datePositionCheckingIsAllowed = DateTime.UtcNow.AddMilliseconds(2000 + pingList.HighestPing());
+                }
+            }
+        }
+        /*[JsonIgnore] public SchedulerTask SetPrefixTask;
+        [JsonIgnore] public Scheduler SetPrefixScheduler;
+        public void SetPrefix(SchedulerTask task)
+        {
+            SetPrefix(p);
+        }
+        public static void SetPrefix(Player p)
+        {
+            List<string> prefixes = new List<string>();
+            Team team = p.Game.Team;
+            IGame game = IGame.GameOn(p.level);
+            prefixes.Add(p.Game.Referee ? "&2[Ref] " : "");
+            prefixes.Add(p.GroupPrefix.Length > 0 ? p.GroupPrefix + p.color : "");
+            prefixes.Add(team == null ? "" : "<" + team.Color + team.Name + p.color + "> ");
+            prefixes.Add(game == null ? "" : game.GetPrefix(p));
+            bool devPrefix = Server.Config.SoftwareStaffPrefixes &&
+                             Server.Devs.CaselessContains(p.truename);
+            prefixes.Add(devPrefix ? MakeTitle(p, "Dev", "&9") : "");
+            prefixes.Add(p.title.Length > 0 ? MakeTitle(p, p.title, p.titlecolor) : "");
+            bool NASDevPrefix = Server.Config.SoftwareStaffPrefixes &&
+                             Nas.Devs.CaselessContains(p.truename);
+            prefixes.Add(NASDevPrefix ? MakeTitle(p, "NASDev", "&a") : "");
+            p.prefix = prefixes.Join("");
+            OnSettingPrefixEvent.Call(p, prefixes);
+        }
+        public static string MakeTitle(Player p, string title, string titleCol)
+        {
+            return p.color + "[" + titleCol + title + p.color + "] ";
+        }*/
         public static Scheduler savingScheduler;
         public static SchedulerTask SaveTask;
         public static void Setup()
@@ -44,13 +98,11 @@ namespace NotAwesomeSurvival
                 File.WriteAllText(Nas.GetTextPath(p), jsonString);
             }
         }
-        [JsonIgnore] public Scheduler PlayerSavingScheduler;
         public static void Register()
         {
             //Setup();
             OnPlayerSpawningEvent.Register(OnPlayerSpawning, Priority.High);
         }
-        [JsonIgnore] public SchedulerTask PlayerSaveTask;
         public static void Unregister()
         {
             //TakeDown();
@@ -138,7 +190,7 @@ namespace NotAwesomeSurvival
                 Logger.Log(LogType.Debug, "Teleporting " + p.name + " to their bed!");
                 if (!headingToBed)
                 {
-                    p.SendCpeMessage(CpeMessageType.Announcement, "&cY O U  D I E D");
+                    SendCpeMessage(CpeMessageType.Announcement, "&cY O U  D I E D");
                     Chat.MessageChat(p, reason, null, true);
                     curFogColor = Color.Black;
                     curRenderDistance = 1;
@@ -211,6 +263,12 @@ namespace NotAwesomeSurvival
                 nl.lvl.BlockDB.Cache.Add(p, (ushort)x, (ushort)y, (ushort)z, BlockDBFlags.Drawn, oldBlock, block);
             }
         }
+        public void SetModel(Player p)
+        {
+            p.UpdateModel("human|0.93023255813953488372093023255814");
+            Server.models.Update(p.name, "human|0.93023255813953488372093023255814");
+            Server.models.Save();
+        }
         public void SpawnPlayerFirstTime(Level level, ref Position spawnPos, ref byte yaw, ref byte pitch)
         {
             if (hasBeenSpawned) 
@@ -220,7 +278,7 @@ namespace NotAwesomeSurvival
             atBorder = true;
             if (!p.Model.Contains("|0.93023255813953488372093023255814")) 
             {
-                Command.Find("model").Use(p, "human|0.93023255813953488372093023255814"); 
+                SetModel(p);
             }
             spawnPos = new Position(location.X, location.Y, location.Z);
             yaw = this.yaw;
@@ -237,7 +295,6 @@ namespace NotAwesomeSurvival
             hasBeenSpawned = true;
             Player.Console.Message("{0}: hasBeenSpawned set to {1}", p.name, hasBeenSpawned);
         }
-        [JsonIgnore] public int round = 0;
         public void UpdateEnv()
         {
             p.level.Config.SkyColor = NasTimeCycle.globalSkyColor;
@@ -264,28 +321,6 @@ namespace NotAwesomeSurvival
             UpdateCaveFog(next);
             round++;
         }
-        [JsonIgnore] public DateTime datePositionCheckingIsAllowed = DateTime.MinValue;
-        [JsonIgnore] public bool placePortal = false;
-        [JsonIgnore]
-        public bool CanDoStuffBasedOnPosition
-        {
-            get
-            {
-                if (DateTime.UtcNow >= datePositionCheckingIsAllowed)
-                {
-                    return true;
-                }
-                return false;
-            }
-            set
-            {
-                PingList pingList = p.Session.Ping;
-                if (!value) 
-                { 
-                    datePositionCheckingIsAllowed = DateTime.UtcNow.AddMilliseconds(2000 + pingList.HighestPing()); 
-                }
-            }
-        }
         public void UpdatePosition(Position pos, string level)
         {
             location = new MCGalaxy.Maths.Vec3S32(pos.X, pos.Y, pos.Z);
@@ -305,7 +340,7 @@ namespace NotAwesomeSurvival
                 float fallHeight = lastGroundedLocation.Y - next.Y;
                 if (!CanDoStuffBasedOnPosition && fallHeight > 0 && !hasBeenSpawned) 
                 { 
-                    p.Message("trying to take fall damage but cant");
+                    Message("&WTrying to take fall damage but can't.");
                 }
                 if (fallHeight > 0 && CanDoStuffBasedOnPosition)
                 {
@@ -321,7 +356,6 @@ namespace NotAwesomeSurvival
                 lastGroundedLocation = new MCGalaxy.Maths.Vec3S32(next.X, next.Y, next.Z);
             }
         }
-        [JsonIgnore] public bool atBorder = true;
         public void CheckMapCrossing(Position next)
         {
             if (next.BlockX <= 0)
@@ -375,7 +409,7 @@ namespace NotAwesomeSurvival
             {
                 if (NasGen.currentlyGenerating)
                 {
-                    p.Message("&cA map is already generating!");
+                    Message("&cA map is already generating!");
                     return false;
                 }
                 GenInfo info = new GenInfo
@@ -415,7 +449,7 @@ namespace NotAwesomeSurvival
             {
                 if (NasGen.currentlyGenerating)
                 {
-                    p.Message("&cA map is already generating!");
+                    Message("&cA map is already generating!");
                     return false;
                 }
                 GenInfo info = new GenInfo
@@ -441,9 +475,13 @@ namespace NotAwesomeSurvival
             info.p.Message("Seed is {0}", info.seed);
             Command.Find("newlvl").Use(info.p, info.mapName + " " + NasGen.mapWideness + " " + NasGen.mapTallness + " " + NasGen.mapWideness + " nasgen " + info.seed);
         }
-        [JsonIgnore] public TransferInfo transferInfo = null;
         public class TransferInfo
         {
+            [JsonIgnore] public Position posBeforeMapChange;
+            [JsonIgnore] public byte yawBeforeMapChange;
+            [JsonIgnore] public byte pitchBeforeMapChange;
+            [JsonIgnore] public int chunkOffsetX, chunkOffsetZ;
+            [JsonIgnore] public int travelX = -1, travelY = -1, travelZ = -1;
             public TransferInfo(Player p, int chunkOffsetX, int chunkOffsetZ)
             {
                 posBeforeMapChange = p.Pos;
@@ -474,11 +512,6 @@ namespace NotAwesomeSurvival
                 posBeforeMapChange.X -= xOffset;
                 posBeforeMapChange.Z -= zOffset;
             }
-            [JsonIgnore] public Position posBeforeMapChange;
-            [JsonIgnore] public byte yawBeforeMapChange;
-            [JsonIgnore] public byte pitchBeforeMapChange;
-            [JsonIgnore] public int chunkOffsetX, chunkOffsetZ;
-            [JsonIgnore] public int travelX = -1, travelY = -1, travelZ = -1;
         }
         public void UpdateCaveFog(Position next)
         {
@@ -507,9 +540,7 @@ namespace NotAwesomeSurvival
             p.Send(Packet.EnvMapProperty(EnvProp.MaxFog, (int)curRenderDistance));
             p.Send(Packet.EnvColor(2, curFogColor.R, curFogColor.G, curFogColor.B));
             NasLevel nl = NasLevel.all[p.level.name];
-            int x = next.BlockX;
             int z = next.BlockZ;
-            x = Utils.Clamp(x, 0, (ushort)(p.level.Width - 1));
             z = Utils.Clamp(z, 0, (ushort)(p.level.Length - 1));
             ushort height = (ushort)Utils.Clamp(z, 0, (ushort)(p.level.Height - 1));
             if (next.BlockCoords == p.Pos.BlockCoords) 

@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -11,10 +11,10 @@ using MCGalaxy.Tasks;
 using MCGalaxy.Network;
 using MCGalaxy.DB;
 using NasBlockInteraction =
-    System.Action<NotAwesomeSurvival.NasPlayer, MCGalaxy.Events.PlayerEvents.MouseButton, MCGalaxy.Events.PlayerEvents.MouseAction,
+    NotAwesomeSurvival.Action<NotAwesomeSurvival.NasPlayer, MCGalaxy.Events.PlayerEvents.MouseButton, MCGalaxy.Events.PlayerEvents.MouseAction,
     NotAwesomeSurvival.NasBlock, ushort, ushort, ushort>;
 using NasBlockExistAction =
-    System.Action<NotAwesomeSurvival.NasPlayer,
+    NotAwesomeSurvival.Action<NotAwesomeSurvival.NasPlayer,
     NotAwesomeSurvival.NasBlock, bool, ushort, ushort, ushort>;
 using MCGalaxy.Modules.Warps;
 namespace NotAwesomeSurvival
@@ -28,22 +28,22 @@ namespace NotAwesomeSurvival
         }
         public class Entity
         {
-            public bool CanAccess(Player p)
-            {
-                return lockedBy.Length == 0 || lockedBy == p.name;
-            }
             [JsonIgnore]
             public string FormattedNameOfLocker
             {
                 get
                 {
-                    if (lockedBy.Length == 0) 
-                    { 
-                        return "no one"; 
+                    if (lockedBy.Length == 0)
+                    {
+                        return "no one";
                     }
                     Player locker = PlayerInfo.FindExact(lockedBy);
                     return locker == null ? lockedBy : locker.ColoredName;
                 }
+            }
+            public bool CanAccess(Player p)
+            {
+                return lockedBy.Length == 0 || lockedBy == p.name;
             }
             public string lockedBy = "";
             public string blockText = "";
@@ -59,8 +59,7 @@ namespace NotAwesomeSurvival
             public static object locker = new object();
             public enum Type { Chest, Barrel, Crate, Gravestone, AutoCraft, Dispenser }
             public Type type;
-            public string name { get { return Enum.GetName(typeof(Type), type); } 
-            }
+            public string name { get { return Enum.GetName(typeof(Type), type); } }
             public string description
             {
                 get
@@ -117,7 +116,7 @@ namespace NotAwesomeSurvival
                 {
                     return; 
                 }
-                np.p.Message(books[r.Next(0, 99)] + " by " + authors[r.Next(0, 74)]);
+                np.Message(books[r.Next(0, 99)] + " by " + authors[r.Next(0, 74)]);
             };
         }
         public static NasBlockInteraction CrateInteraction(string text)
@@ -127,7 +126,7 @@ namespace NotAwesomeSurvival
                 {
                     return; 
                 }
-                np.p.Message(text);
+                np.Message(text);
             };
         }
         public static NasBlockInteraction BedInteraction()
@@ -137,7 +136,7 @@ namespace NotAwesomeSurvival
                 {
                     return; 
                 }
-                np.p.Message("Spawnpoint set");
+                np.Message("Spawnpoint set");
                 Position coords = np.p.Pos;
                 Command.Find("tp").Use(np.p, x + " " + y + " " + z);
                 np.spawnCoords = np.p.Pos;
@@ -187,7 +186,7 @@ namespace NotAwesomeSurvival
                         np.inventory.HeldItem.HP = maxHP; 
                     }
                     np.nl.SetBlock(x, y + 1, z, Block.Air);
-                    np.p.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
+                    np.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
                     return;
                 }
                 if (np.inventory.HeldItem.name.CaselessContains("diamond") && aboveHere == Block.FromRaw(631))
@@ -198,7 +197,7 @@ namespace NotAwesomeSurvival
                         np.inventory.HeldItem.HP = maxHP; 
                     }
                     np.nl.SetBlock(x, y + 1, z, Block.Air);
-                    np.p.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
+                    np.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
                     return;
                 }
                 if (np.inventory.HeldItem.name.CaselessContains("gold") && aboveHere == Block.FromRaw(41))
@@ -209,7 +208,7 @@ namespace NotAwesomeSurvival
                         np.inventory.HeldItem.HP = maxHP; 
                     }
                     np.nl.SetBlock(x, y + 1, z, Block.Air);
-                    np.p.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
+                    np.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
                     return;
                 }
                 if (np.inventory.HeldItem.name.CaselessContains("iron") && aboveHere == Block.FromRaw(42))
@@ -220,7 +219,7 @@ namespace NotAwesomeSurvival
                         np.inventory.HeldItem.HP = maxHP; 
                     }
                     np.nl.SetBlock(x, y + 1, z, Block.Air);
-                    np.p.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
+                    np.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
                     return;
                 }
                 if (aboveHere == Block.FromRaw(171) && np.nl.blockEntities[x + " " + (y + 1) + " " + z].CanAccess(np.p) && np.nl.blockEntities[x + " " + (y + 1) + " " + z].blockText != "")
@@ -229,10 +228,10 @@ namespace NotAwesomeSurvival
                     np.inventory.HeldItem.displayName = words[1].Remove(0, 1);
                     np.nl.SetBlock(x, y + 1, z, Block.Air);
                     np.nl.blockEntities.Remove(x + " " + (y + 1) + " " + z);
-                    np.p.Message("Changed your tool's name to {0}!", np.inventory.HeldItem.displayName);
+                    np.Message("Changed your tool's name to {0}!", np.inventory.HeldItem.displayName);
                     return;
                 }
-                np.p.Message("No valid recipes available.");
+                np.Message("No valid recipes available.");
             };
         }
         public static NasBlockExistAction BeaconInteractAction()
@@ -296,8 +295,8 @@ namespace NotAwesomeSurvival
                         }
                         np.nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
                         np.nl.blockEntities[x + " " + y + " " + z].lockedBy = np.p.name;
-                        np.p.Message("To read the sign, right click.");
-                        np.p.Message("To rewrite the sign, use the /sign command then middle click.");
+                        np.Message("To read the sign, right click.");
+                        np.Message("To rewrite the sign, use the /sign command then middle click.");
                         return;
                     }
                     np.nl.blockEntities.Remove(x + " " + y + " " + z);
@@ -330,7 +329,7 @@ namespace NotAwesomeSurvival
                 if (!np.nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {
                     np.nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
-                    np.p.Message("This sign's data got deleted. Now, it's a public sign!");
+                    np.Message("This sign's data got deleted. Now, it's a public sign!");
                 }
                 Entity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
                 if (action == MouseAction.Pressed | button == MouseButton.Left) 
@@ -339,7 +338,7 @@ namespace NotAwesomeSurvival
                 }
                 if (button == MouseButton.Right) 
                 { 
-                    np.p.Message(bEntity.blockText); 
+                    np.Message(bEntity.blockText); 
                 }
                 if ((button == MouseButton.Middle) && (myText != ""))
                 {
@@ -348,8 +347,8 @@ namespace NotAwesomeSurvival
                         return; 
                     }
                     File.WriteAllText(GetTextPath(np.p), string.Empty);
-                    bEntity.blockText = np.p.name + " says: " + myText;
-                    np.p.Message("Overwritten!");
+                    bEntity.blockText = np.p.ColoredName + " says: " + myText;
+                    np.Message("Overwritten!");
                 }
             };
         }
@@ -360,7 +359,7 @@ namespace NotAwesomeSurvival
                 {
                     if (np.inventory.GetAmount(696) >= 5) 
                     {
-                        np.p.Message("&mYou have too many lava barrels!");
+                        np.Message("&mYou have too many lava barrels!");
                         return; 
                     }
                     bool[] isLava = { false, false, false, false, false, false };
@@ -420,9 +419,9 @@ namespace NotAwesomeSurvival
             return (np, nasBlock, exists, x, y, z) => {
                 if (exists)
                 {
-                    np.p.Message("You placed a &bSmithing table&S!");
-                    np.p.Message("Place the block you want to repair with on top.");
-                    np.p.Message("Then right click with the tool you want to repair.");
+                    np.Message("You placed a &bSmithing table&S!");
+                    np.Message("Place the block you want to repair with on top.");
+                    np.Message("Then right click with the tool you want to repair.");
                 }
             };
         }
@@ -541,10 +540,10 @@ namespace NotAwesomeSurvival
                             np.nl.blockEntities.Remove(x + " " + y + " " + z);
                         }
                         np.nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
-                        np.p.Message(nasBlock.container.description);
-                        np.p.Message("To insert, select what you want to store, then left click.");
-                        np.p.Message("To extract, right click.");
-                        np.p.Message("To inspect status, middle click.");
+                        np.Message(nasBlock.container.description);
+                        np.Message("To insert, select what you want to store, then left click.");
+                        np.Message("To extract, right click.");
+                        np.Message("To inspect status, middle click.");
                         return;
                     }
                     np.nl.blockEntities.Remove(x + " " + y + " " + z);
@@ -597,7 +596,7 @@ namespace NotAwesomeSurvival
                         np.p.Message("You cannot lock auto crafters.");
                         return;
                     }
-                    np.p.Message("You can right click to remove items from auto crafters.");
+                    np.Message("You can right click to remove items from auto crafters.");
                 }
                 if (button == MouseButton.Right)
                 {
@@ -620,7 +619,7 @@ namespace NotAwesomeSurvival
                         Entity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
                         if (!bEntity.CanAccess(np.p) && button != MouseButton.Middle)
                         {
-                            np.p.Message("This {0} is locked by {1}&S.", nasBlock.container.name.ToLower(), bEntity.FormattedNameOfLocker);
+                            np.Message("This {0} is locked by {1}&S.", nasBlock.container.name.ToLower(), bEntity.FormattedNameOfLocker);
                             return;
                         }
                         if (button == MouseButton.Middle)
@@ -635,18 +634,18 @@ namespace NotAwesomeSurvival
                             {
                                 if (nasBlock.container.type == Container.Type.Gravestone || nasBlock.container.type == Container.Type.Dispenser)
                                 {
-                                    np.p.Message("You cannot lock gravestones or dispensers.");
+                                    np.Message("You cannot lock gravestones or dispensers.");
                                 }
                                 else if (bEntity.lockedBy.Length == 0)
                                 {
                                     bEntity.lockedBy = np.p.name;
-                                    np.p.Message("You &flock&S the {0}. Only you can access it now.", nasBlock.container.name.ToLower());
+                                    np.Message("You &flock&S the {0}. Only you can access it now.", nasBlock.container.name.ToLower());
                                     return;
                                 }
                             }
                             if (nasBlock.container.type == Container.Type.Gravestone)
                             {
-                                np.p.Message("You can right click to extract from tombstones.");
+                                np.Message("You can right click to extract from tombstones.");
                                 return;
                             }
                             if (nasBlock.container.type == Container.Type.Chest)
@@ -667,7 +666,7 @@ namespace NotAwesomeSurvival
                                 if (bEntity.lockedBy.Length > 0)
                                 {
                                     bEntity.lockedBy = "";
-                                    np.p.Message("You &funlock&S the {0}. Anyone can access it now.", nasBlock.container.name.ToLower());
+                                    np.Message("You &funlock&S the {0}. Anyone can access it now.", nasBlock.container.name.ToLower());
                                     return;
                                 }
                             }
@@ -701,7 +700,7 @@ namespace NotAwesomeSurvival
                     }
                     if (nasBlock.container.type != Container.Type.Gravestone)
                     {
-                        np.p.Message("(BUG) The data inside this {0} was lost, but you can make it functional again by &cdeleting&S then &breplacing&S it.",
+                        np.Message("(BUG) The data inside this {0} was lost, but you can make it functional again by &cdeleting&S then &breplacing&S it.",
                                      nasBlock.container.name.ToLower());
                         np.nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
                     }
@@ -712,12 +711,12 @@ namespace NotAwesomeSurvival
         {
             if (bEntity.drop != null && bEntity.drop.items.Count >= Container.ToolLimit)
             {
-                np.p.Message("There can only be {0} tools at most in a chest.", Container.ToolLimit);
+                np.Message("There can only be {0} tools at most in a chest.", Container.ToolLimit);
                 return;
             }
             if (np.inventory.items[np.inventory.selectedItemIndex] == null)
             {
-                np.p.Message("You need to select a tool to insert it.");
+                np.Message("You need to select a tool to insert it.");
                 return;
             }
             if (bEntity.drop == null)
@@ -728,7 +727,7 @@ namespace NotAwesomeSurvival
             {
                 bEntity.drop.items.Add(np.inventory.items[np.inventory.selectedItemIndex]);
             }
-            np.p.Message("You put {0}&S in the chest.", np.inventory.items[np.inventory.selectedItemIndex].ColoredName);
+            np.Message("You put {0}&S in the chest.", np.inventory.items[np.inventory.selectedItemIndex].ColoredName);
             np.inventory.items[np.inventory.selectedItemIndex] = null;
             np.inventory.UpdateItemDisplay();
         }
@@ -736,7 +735,7 @@ namespace NotAwesomeSurvival
         {
             if (bEntity.drop == null)
             {
-                np.p.Message("There's no tools to extract.");
+                np.Message("There's no tools to extract.");
                 return;
             }
             Drop taken = new Drop(bEntity.drop.items[bEntity.drop.items.Count - 1]);
@@ -764,22 +763,22 @@ namespace NotAwesomeSurvival
             Entity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
             if (nasBlock.parentID == 0)
             {
-                p.Message("Select a block to store it.");
+                np.Message("Select a block to store it.");
                 return;
             }
             if (!np.oldBarrel)
             {
                 np.isInserting = true;
                 np.interactCoords = new int[] { x, y, z };
-                p.Send(Packet.Motd(p, "-hax +thirdperson +hold horspeed=0"));
-                p.Message("&ePlease enter in chat how many items you would like to put in the barrel.");
+                np.Send(Packet.Motd(p, "-hax +thirdperson horspeed=0"));
+                np.Message("&ePlease enter in chat how many items you would like to put in the barrel.");
             }
             else
             {
                 int amount = np.inventory.GetAmount(nasBlock.parentID);
                 if (amount < 1)
                 {
-                    p.Message("You don't have any {0} to store.", nasBlock.GetName(p));
+                    np.Message("You don't have any {0} to store.", nasBlock.GetName(p));
                     return;
                 }
                 if (amount > 3) 
@@ -804,7 +803,7 @@ namespace NotAwesomeSurvival
                 }
                 if (bEntity.drop.blockStacks.Count >= Container.BlockStackLimit)
                 {
-                    p.Message("It can't contain more than {0} stacks of blocks.", Container.BlockStackLimit);
+                    np.Message("It can't contain more than {0} stacks of blocks.", Container.BlockStackLimit);
                     return;
                 }
                 np.inventory.SetAmount(nasBlock.parentID, -amount, true, true);
@@ -818,7 +817,7 @@ namespace NotAwesomeSurvival
             {
                 if (bEntity.drop.blockStacks.Count == 0)
                 {
-                    p.Message("&cTHERE ARE 0 BLOCK STACKS INSIDE WARNING THIS SHOULD NEVER HAPPEN IT SHOULD BE NULL INSTEAD");
+                    np.Message("&cTHERE ARE 0 BLOCK STACKS INSIDE WARNING THIS SHOULD NEVER HAPPEN IT SHOULD BE NULL INSTEAD");
                     return;
                 }
                 BlockStack bs = null;
@@ -857,35 +856,34 @@ namespace NotAwesomeSurvival
                 }
                 return;
             }
-            p.Message("There's no blocks to extract.");
+            np.Message("There's no blocks to extract.");
         }
         public static void RemoveAll(NasPlayer np, Entity bEntity, bool message)
         {
-            Player p = np.p;
             if (bEntity.drop != null)
             {
                 bEntity.drop = np.inventory.GetDrop(bEntity.drop, message, true);
                 return;
             }
-            p.Message("There's nothing to extract.");
+            np.Message("There's nothing to extract.");
         }
         public static void CheckContents(NasPlayer np, NasBlock nb, Entity blockEntity)
         {
             if (blockEntity.drop == null)
             {
-                np.p.Message("There's nothing inside.");
+                np.Message("There's nothing inside.");
             }
             else
             {
                 if (blockEntity.drop.items != null)
                 {
-                    np.p.Message("There's {0} tool{1} inside.", blockEntity.drop.items.Count, blockEntity.drop.items.Count == 1 ? "" : "s");
+                    np.Message("There's {0} tool{1} inside.", blockEntity.drop.items.Count, blockEntity.drop.items.Count == 1 ? "" : "s");
                 }
                 if (blockEntity.drop.blockStacks != null)
                 {
                     foreach (BlockStack bs in blockEntity.drop.blockStacks)
                     {
-                        np.p.Message("There's &f{0} {1}&S inside.", bs.amount, blocks[bs.ID].GetName(np.p));
+                        np.Message("There's &f{0} {1}&S inside.", bs.amount, blocks[bs.ID].GetName(np.p));
                     }
                 }
             }
@@ -893,17 +891,17 @@ namespace NotAwesomeSurvival
             { 
                 return; 
             }
-            np.p.Message("&r(&fi&r)&S This {0} is &f{1}&S", nb.container.name.ToLower(), blockEntity.lockedBy.Length > 0 ? "locked" : "not locked");
+            np.Message("&r(&fi&r)&S This {0} is &f{1}&S", nb.container.name.ToLower(), blockEntity.lockedBy.Length > 0 ? "locked" : "not locked");
         }
         public static NasBlockExistAction CraftingExistAction()
         {
             return (np, nasBlock, exists, x, y, z) => {
                 if (exists)
                 {
-                    np.p.Message("You placed a &b{0}&S!", nasBlock.station.name);
-                    np.p.Message("Click to craft.");
-                    np.p.Message("Right click to auto-replace recipe.");
-                    np.p.Message("Left click for one-and-done.");
+                    np.Message("You placed a &b{0}&S!", nasBlock.station.name);
+                    np.Message("Click to craft.");
+                    np.Message("Right click to auto-replace recipe.");
+                    np.Message("Left click for one-and-done.");
                     nasBlock.station.ShowArea(np, x, y, z, Color.White);
                     return;
                 }
@@ -955,10 +953,10 @@ namespace NotAwesomeSurvival
                             np.nl.blockEntities.Remove(x + " " + y + " " + z);
                         }
                         np.nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
-                        np.p.Message("You placed an &bAuto Crafter&S!");
-                        np.p.Message("It can craft things without user input.");
-                        np.p.Message("When powered it tries to craft whatever is above it.");
-                        np.p.Message("Click it to remove all items crafted, like a gravestone.");
+                        np.Message("You placed an &bAuto Crafter&S!");
+                        np.Message("It can craft things without user input.");
+                        np.Message("When powered it tries to craft whatever is above it.");
+                        np.Message("Click it to remove all items crafted, like a gravestone.");
                         nasBlock.station.ShowArea(np, x, y, z, Color.White);
                         return;
                     }
@@ -1052,7 +1050,7 @@ namespace NotAwesomeSurvival
                         healthRestored = healthRestored
                     };
                     taskChew = Server.MainScheduler.QueueOnce(CanEatAgainCallback, eatInfo, TimeSpan.FromSeconds(chewSeconds));
-                    np.p.Message("*munch*");
+                    np.Message("*munch*");
                     np.p.level.BlockDB.Cache.Add(np.p, x, y, z, BlockDBFlags.ManualPlace, set[index], Block.Air);
                     if (index == set.Length - 1)
                     {
@@ -1089,15 +1087,15 @@ namespace NotAwesomeSurvival
                 np.ChangeHealth(healthRestored); 
             }
             np.isChewing = false;
-            np.p.Message("*gulp*");
+            np.Message("*gulp*");
             if (healthRestored < 0)
             {
-                np.p.Message("Oh no! It was &mPOISON! &7It tastes super good though..");
-                np.p.Message("&c{0} &f[{1}] HP ╝", healthRestored, np.HP);
+                np.Message("Oh no! It was &mPOISON! &7It tastes super good though..");
+                np.Message("&c{0} &f[{1}] HP ╝", healthRestored, np.HP);
             }
             else 
             { 
-                np.p.Message("&a+{0} &f[{1}] HP ♥", healthRestored, np.HP); 
+                np.Message("&a+{0} &f[{1}] HP ♥", healthRestored, np.HP); 
             }
         }
     }

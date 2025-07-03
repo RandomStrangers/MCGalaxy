@@ -1,10 +1,4 @@
-﻿#if NAS && NET_20
-#error NET 20 IS NOT SUPPORTED!
-#endif
-#if NAS && !TEN_BIT_BLOCKS
-#error TEN_BIT_BLOCKS NOT DEFINED!
-#endif
-#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 using System;
 using System.IO;
 using System.Threading;
@@ -17,9 +11,8 @@ using MCGalaxy.Commands;
 using System.Reflection;
 using System.Net;
 using MCGalaxy.Events.ServerEvents;
-using Sharkbite.Irc;
-using MCGalaxy.Commands.World;
 using MCGalaxy.Tasks;
+using System.Collections.Generic;
 //unknownshadow200: well player ids go from 0 up to 255. normal bots go from 127 down to 64, then 254 down to 127, then finally 63 down to 0.
 //UnknownShadow200: FromRaw adds 256 if the block id is >= 66, and ToRaw subtracts 256 if the block id is >= 66
 //"raw" is MCGalaxy's name for clientushort
@@ -114,12 +107,12 @@ namespace NotAwesomeSurvival
         {
             get
             {
-                return "Nas";
+                return "NAS";
             }
         }
         public static string GetVersion()
         {
-            if (!string.IsNullOrEmpty(Server.NasVersion))
+            if (!Server.NasVersion.IsNullOrEmpty())
             {
                 return Server.NasVersion;
             }
@@ -142,6 +135,35 @@ namespace NotAwesomeSurvival
                 return "HarmonyNetwork"; //Goodly/Zoey no longer supports NAS. 
             }
         }
+        public static List<string> Devs = new List<string>
+        {
+            //"goodlyay", //No longer supports.
+            //"zoeyvidae", //No longer supports.
+            //"UnseenServant", //No longer involved.
+            "HarmonyNetwork"
+        };
+        public static bool IsDev(Player p)
+        {
+            if (Devs.CaselessContains(p.truename))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public static bool IsDev(PlayerData data)
+        {
+            if (Devs.CaselessContains(data.Name))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         public const string textureURL = "https://dl.dropboxusercontent.com/s/2x5oxffkgpcyj16/nas.zip?dl=0";
         public const string KeyPrefix = "nas_";
         public const string PlayerKey = KeyPrefix + "NasPlayer";
@@ -149,7 +171,7 @@ namespace NotAwesomeSurvival
         public const string SavePath = Path + "playerdata/";
         public const string CoreSavePath = Path + "coredata/";
         public const string EffectsPath = Path + "effects/";
-        public const string DeathsPath = SavePath + "deaths/";
+        public static bool LoadedOnStartup = false;
         public static Command[] Commands = new Command[]
         {
             new NasPlayer.CmdBarrelMode(),
@@ -165,7 +187,7 @@ namespace NotAwesomeSurvival
         }
         public static string GetDeathPath(string name)
         {
-            return DeathsPath + name + ".txt";
+            return NasPlayer.DeathsPath + name + ".txt";
         }
         public static string GetTextPath(Player p)
         {
@@ -297,6 +319,10 @@ namespace NotAwesomeSurvival
         }
         public override void Load(bool startup)
         {
+            if (startup)
+            {
+                LoadedOnStartup = true;
+            }
             if (!Directory.Exists(Path))
             {
                 Directory.CreateDirectory(Path);
@@ -321,9 +347,9 @@ namespace NotAwesomeSurvival
             {
                 Directory.CreateDirectory(NasBlock.Path);
             }
-            if (!Directory.Exists(DeathsPath))
+            if (!Directory.Exists(NasPlayer.DeathsPath))
             {
-                Directory.CreateDirectory(DeathsPath);
+                Directory.CreateDirectory(NasPlayer.DeathsPath);
             }
             if (!Directory.Exists("blockprops"))
             {
@@ -413,6 +439,8 @@ namespace NotAwesomeSurvival
             EnsureNasFilesExist();
             OnlineStat.Stats.Add(PvP);
             OnlineStat.Stats.Add(Kills);
+            OnlineStat.Stats.Add(Dev);
+            OfflineStat.Stats.Add(Dev);
             Register(Commands);
             NasPlayer.Register();
             NasBlock.Setup();
@@ -449,7 +477,6 @@ namespace NotAwesomeSurvival
             NasTimeCycle.Setup();
             if (firstEverPluginLoad)
             {
-                //Player.Console.Message("GENERATING NEW MAP FIRST TIME EVER also main is {0}", lvl.name);
                 int chunkOffsetX = 0, chunkOffsetZ = 0;
                 string seed = "DEFAULT";
                 if (!NasGen.GetSeedAndChunkOffset(Server.mainLevel.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ))
@@ -465,7 +492,6 @@ namespace NotAwesomeSurvival
                                                " nasgen " + seed);
                     Server.Config.MainLevel = mapName;
                     SrvProperties.Save();
-                    //Server.SetMainLevel(mapName);
                     Chat.Message(ChatScope.All, "A server restart is required to initialize NAS plugin.", null, null, true);
                     Thread.Sleep(5000);
                     Server.Stop(true, "A server restart is required to initialize NAS plugin.");
@@ -497,6 +523,20 @@ namespace NotAwesomeSurvival
                 }
             }
         }
+        public void Dev(Player p, Player target)
+        {
+            if (IsDev(target))
+            {
+                p.Message("&S  {0} developer.", name.Capitalize());
+            }
+        }
+        public void Dev(Player p, PlayerData target)
+        {
+            if (IsDev(target))
+            {
+                p.Message("&S  {0} developer.", name.Capitalize());
+            }
+        }
         public void Kills(Player p, Player target)
         {
             NasPlayer np = NasPlayer.GetNasPlayer(target);
@@ -522,22 +562,28 @@ namespace NotAwesomeSurvival
             }
             else
             {
-                //firstEverPluginLoad = false;
             }
         }
         public static void FailedLoad()
         {
             string msg = "NAS: FAILED to load plugin. Please report this to randomstrangers on Discord!";
-            //string msg = "NAS: FAILED to load plugin. Please follow the instructions found on github.";
             Player.Console.Message(msg);
         }
         public override void Unload(bool shutdown)
         {
+            Chat.MessageAll("Attempting to unload NAS.");
+            if (!shutdown && LoadedOnStartup)
+            {
+                InvalidOperationException ioex = new InvalidOperationException("You cannot unload NAS manually, it can only be unloaded on server shutdown.");
+                throw ioex;
+            }
             NasPlayer.Unregister();
             DynamicColor.TakeDown();
             Command.Unregister(Commands);
             OnlineStat.Stats.Remove(PvP);
             OnlineStat.Stats.Remove(Kills);
+            OnlineStat.Stats.Remove(Dev);
+            OfflineStat.Stats.Remove(Dev);
             OnPlayerConnectEvent.Unregister(OnPlayerConnect);
             OnPlayerClickEvent.Unregister(OnPlayerClick);
             OnBlockChangingEvent.Unregister(OnBlockChanging);
@@ -564,25 +610,8 @@ namespace NotAwesomeSurvival
             {
                 return;
             }
-            if (!np.SetInventoryNotif)
-            {
-                Player.Console.Message("setting up inventory");
-                np.SetInventoryNotif = true; //Prevent spamming console
-            }
-            //hide all blocks
-            for (ushort clientushort = 1; clientushort <= Block.MaxRaw; clientushort++)
-            {
-                p.Send(Packet.BlockPermission(clientushort, false, false, true));
-                p.Send(Packet.SetInventoryOrder(clientushort, 0, true));
-            }
-            //unhide blocks you have access to
-            for (ushort clientushort = 1; clientushort <= Block.MaxRaw; clientushort++)
-            {
-                if (np.inventory.GetAmount(clientushort) > 0)
-                {
-                    np.inventory.UnhideBlock(clientushort);
-                }
-            }
+            np.inventory.Setup(p);
+            np.SendingMap = false;
         }
         public static bool Load(Player p, string file, out NasPlayer np)
         {
@@ -595,9 +624,10 @@ namespace NotAwesomeSurvival
                 Logger.Log(LogType.Debug, "Loaded save file " + file + "!");
                 return true;
             }
-            catch (Exception e)
+            catch
             {
-                throw e;
+                np = null;
+                return false;
             }
         }
         public static void OnPlayerConnect(Player p)
@@ -620,29 +650,38 @@ namespace NotAwesomeSurvival
                 np.UpdateValues();
             }
             //Q and E
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar left◙", 16, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar right◙", 18, 0, true));
+            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar left◙", 16, 0, true));
+            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar right◙", 18, 0, true));
             //arrow keys
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar up◙", 200, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar down◙", 208, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar left◙", 203, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar right◙", 205, 0, true));
+            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar up◙", 200, 0, true));
+            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar down◙", 208, 0, true));
+            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar left◙", 203, 0, true));
+            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar right◙", 205, 0, true));
             //WASD (lol)
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen up◙", 17, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen down◙", 31, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen left◙", 30, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen right◙", 32, 0, true));
+            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen up◙", 17, 0, true));
+            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen down◙", 31, 0, true));
+            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen left◙", 30, 0, true));
+            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen right◙", 32, 0, true));
             //M and R
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar move◙", 50, 0, true)); //was 50 (M) was 42 (shift)
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar inv◙", 19, 0, true)); //was 23 (i)
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar delete◙", 45, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar confirmdelete◙", 25, 0, true));
-            p.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar toolinfo◙", 23, 0, true));
+            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar move◙", 50, 0, true)); //was 50 (M) was 42 (shift)
+            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar inv◙", 19, 0, true)); //was 23 (i)
+            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar delete◙", 45, 0, true));
+            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar confirmdelete◙", 25, 0, true));
+            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar toolinfo◙", 23, 0, true));
             if (np.PlayerSavingScheduler == null)
             {
                 np.PlayerSavingScheduler = new Scheduler("SavingScheduler" + p.name);
             }
             np.PlayerSaveTask = np.PlayerSavingScheduler.QueueRepeat(np.SaveStatsTask, null, TimeSpan.FromSeconds(5));
+            /*if (np.SetPrefixScheduler == null)
+            {
+                np.SetPrefixScheduler = new Scheduler("SetPrefixScheduler" + p.name);
+            }
+            np.SetPrefixTask = np.SetPrefixScheduler.QueueRepeat(np.SetPrefix, null, TimeSpan.FromMilliseconds(1));*/
+        }
+        public static bool HasExtraPerm(Player p, string cmd, int num)
+        {
+            return CommandExtraPerms.Find(cmd, num).UsableBy(p.Rank);
         }
         public static void OnPlayerCommand(Player p, string cmd, string message, CommandData data)
         {
@@ -661,22 +700,48 @@ namespace NotAwesomeSurvival
             }
             if (cmd.CaselessEq("reload"))
             {
-                NasPlayer npl = NasPlayer.GetNasPlayer(p);
-                npl.SendingMap = true;
+                if (p.CanUse(cmd))
+                {
+                    NasPlayer npl = NasPlayer.GetNasPlayer(p);
+                    if (message.CaselessEq("all") && HasExtraPerm(p, cmd, 1))
+                    {
+                        Player[] players = PlayerInfo.Online.Items;
+                        foreach (Player player in players)
+                        {
+                            NasPlayer n = NasPlayer.GetNasPlayer(player);
+                            n.SendingMap = true;
+                        }
+                    }
+                    else if (message.Length > 0 && HasExtraPerm(p, cmd, 1))
+                    {
+                        Player[] players = PlayerInfo.Online.Items;
+                        foreach (Player player in players)
+                        {
+                            Level lvl = Matcher.FindLevels(p, message);
+                            if (player.level.name.CaselessEq(lvl.name))
+                            {
+                                NasPlayer n = NasPlayer.GetNasPlayer(player);
+                                n.SendingMap = true;
+                            }
+                        }
+                    }
+                    npl.SendingMap = true;
+                }
             }
             if (cmd.CaselessEq("gentree"))
             {
+                p.cancelcommand = true;
                 if (p.Rank < LevelPermission.Operator)
                 {
                     return;
                 }
                 string[] messageString = message.SplitSpaces();
                 NasTree.GenSwampTree(NasLevel.Get(p.level.name), new Random(), int.Parse(messageString[0]), int.Parse(messageString[1]), int.Parse(messageString[2]));
-                p.cancelcommand = true;
                 return;
             }
             if (cmd.CaselessEq("time") && message.SplitSpaces()[0] == "set")
             {
+                p.cancelcommand = true;
                 if (message.SplitSpaces().Length > 1)
                 {
                     int time = 0;
@@ -706,7 +771,6 @@ namespace NotAwesomeSurvival
                         return;
                     }
                     NasTimeCycle.cycleCurrentTime = time % NasTimeCycle.cycleMaxTime;
-                    p.cancelcommand = true;
                 }
             }
             if (cmd.CaselessEq("goto") && p.Rank < LevelPermission.Operator && data.Context != CommandContext.SendCmd)
@@ -963,6 +1027,11 @@ namespace NotAwesomeSurvival
                     np.PlayerSavingScheduler = new Scheduler("SavingScheduler" + p.name);
                 }
                 np.PlayerSavingScheduler.Cancel(np.PlayerSaveTask);
+                /*if (np.SetPrefixScheduler == null)
+                {
+                    np.SetPrefixScheduler = new Scheduler("SetPrefixScheduler" + p.name);
+                }
+                np.SetPrefixScheduler.Cancel(np.SetPrefixTask);*/
                 np.Save();
             }
         }

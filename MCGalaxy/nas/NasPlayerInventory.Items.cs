@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 using System.Text;
 using Newtonsoft.Json;
 using MCGalaxy;
@@ -8,16 +8,15 @@ namespace NotAwesomeSurvival
 {
     public partial class Inventory
     {
+        [JsonIgnore] public ColorDesc[] selectorColors = DynamicColor.defaultColors;
+        [JsonIgnore] public Item HeldItem { get { return items[selectedItemIndex] ?? Item.Fist; } }
+        [JsonIgnore] public bool bagOpen = false;
+        [JsonIgnore] public int slotToMoveTo = -1;
+        [JsonIgnore] public bool deleting = false;
         public Item[] items = new Item[maxItems];
         public const int maxItems = 27;
         public const int itemBarLength = 9;
         public int selectedItemIndex = 0;
-        [JsonIgnore] public ColorDesc[] selectorColors = DynamicColor.defaultColors;
-        [JsonIgnore]
-        public Item HeldItem
-        {
-            get { return items[selectedItemIndex] ?? Item.Fist; }
-        }
         public void SetupItems()
         {
             MoveBar(0, ref selectedItemIndex);
@@ -28,7 +27,7 @@ namespace NotAwesomeSurvival
             if (items[selectedItemIndex] == null)
             {
                 items[selectedItemIndex] = item;
-                p.Message("You got {0}&S!", item.displayName);
+                Message("You got {0}&S!", item.displayName);
                 return true;
             }
             for (int i = 0; i < maxItems; i++)
@@ -36,15 +35,13 @@ namespace NotAwesomeSurvival
                 if (items[i] == null)
                 {
                     items[i] = item;
-                    p.Message("You got {0}&S!", item.displayName);
+                    Message("You got {0}&S!", item.displayName);
                     return true;
                 }
             }
-            p.Message("You can't get {0}&S because your tool bag is full.", item.displayName);
+            Message("You can't get {0}&S because your tool bag is full.", item.displayName);
             return false;
         }
-        [JsonIgnore] public bool bagOpen = false;
-        [JsonIgnore] public int slotToMoveTo = -1;
         public void ToggleBagOpen()
         {
             deleting = false;
@@ -59,8 +56,8 @@ namespace NotAwesomeSurvival
             else
             {
                 p.SendMapMotd();
-                p.SendCpeMessage(CpeMessageType.Status2, "");
-                p.SendCpeMessage(CpeMessageType.Status3, "");
+                SendCpeMessage(CpeMessageType.Status2, "");
+                SendCpeMessage(CpeMessageType.Status3, "");
                 whereHeldBlockIsDisplayed = CpeMessageType.BottomRight3;
                 np.whereHealthIsDisplayed = CpeMessageType.BottomRight2;
             }
@@ -106,8 +103,8 @@ namespace NotAwesomeSurvival
             NasPlayer np = (NasPlayer)p.Extras[Nas.PlayerKey];
             if (!np.hasBeenSpawned)
             {
-                p.Message("&chasBeenSpawned is &cfalse&S, this shouldn't happen if you didn't just die.");
-                p.Message("&bPlease report to randomstrangers on Discord what you were doing before this happened");
+                Message("&chasBeenSpawned is &cfalse&S, this shouldn't happen if you didn't just die.");
+                Message("&bPlease report to randomstrangers on Discord what you were doing before this happened");
             }
             Item heldItemBeforeScrolled = HeldItem;
             deleting = false;
@@ -170,7 +167,6 @@ namespace NotAwesomeSurvival
                                    CpeMessageType location = CpeMessageType.BottomRight1)
         {
             StringBuilder builder = new StringBuilder(prefix);
-
             for (int i = offset; i < itemBarLength + offset; i++)
             {
                 bool moving = !(slotToMoveTo == -1);
@@ -206,7 +202,6 @@ namespace NotAwesomeSurvival
                     itemIndex = slotToMoveTo;
                 }
                 Item item = items[itemIndex];
-
                 if (item == null)
                 {
                     if (itemIndex > 22)
@@ -251,9 +246,8 @@ namespace NotAwesomeSurvival
             }
             builder.Append(suffix);
             string final = builder.ToString();
-            p.SendCpeMessage(location, final);
+            SendCpeMessage(location, final);
         }
-        [JsonIgnore] public bool deleting = false;
         public void DeleteItem(bool confirmed = false)
         {
             //don't even fuck with deleting if they're moving items
@@ -270,11 +264,11 @@ namespace NotAwesomeSurvival
             {
                 if (!confirmed)
                 {
-                    p.Message("Are you sure you want to delete {0}&S?", item.displayName);
-                    p.Message("Press P to Put it in the trash.");
+                    Message("Are you sure you want to delete {0}&S?", item.displayName);
+                    Message("Press P to Put it in the trash.");
                     return;
                 }
-                p.Message("Deleted {0}.", item.name);
+                Message("Deleted {0}.", item.name);
                 items[selectedItemIndex] = null;
                 deleting = false;
                 UpdateItemDisplay();
@@ -284,8 +278,8 @@ namespace NotAwesomeSurvival
             { 
                 return; 
             }
-            p.Message("Are you sure you want to delete {0}&S?", item.displayName);
-            p.Message("Press P to Put it in the trash.");
+            Message("Are you sure you want to delete {0}&S?", item.displayName);
+            Message("Press P to Put it in the trash.");
             deleting = true;
             UpdateItemDisplay();
         }
@@ -295,7 +289,7 @@ namespace NotAwesomeSurvival
             {
                 if (item == items[i])
                 {
-                    p.Message("Your {0}&S broke!", item.displayName);
+                    Message("Your {0}&S broke!", item.displayName);
                     items[i] = null;
                     break;
                 }
@@ -316,13 +310,13 @@ namespace NotAwesomeSurvival
             { 
                 return; 
             }
-            p.Message("Tool name: {0}", item.displayName);
-            p.Message("Tool durability: {0}/{1}", item.HP, item.Prop.baseHP);
+            Message("Tool name: {0}", item.displayName);
+            Message("Tool durability: {0}/{1}", item.HP, item.Prop.baseHP);
             foreach (KeyValuePair<string, int> x in item.enchants)
             {
                 if (x.Value > 0)
                 {
-                    p.Message(x.Key + " " + nums[x.Value]);
+                    Message(x.Key + " " + nums[x.Value]);
                 }
             }
         }

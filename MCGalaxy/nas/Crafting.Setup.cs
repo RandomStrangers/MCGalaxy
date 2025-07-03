@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 namespace NotAwesomeSurvival
 {
     public partial class Crafting

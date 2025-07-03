@@ -1,17 +1,17 @@
-﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 using System;
 using System.Collections.Generic;
 using MCGalaxy;
 using MCGalaxy.Maths;
-using NasBlockAction = System.Action<NotAwesomeSurvival.NasLevel, NotAwesomeSurvival.NasBlock, int, int, int>;
+using NasBlockAction = NotAwesomeSurvival.Action<NotAwesomeSurvival.NasLevel, NotAwesomeSurvival.NasBlock, int, int, int>;
 using NasBlockInteraction =
-    System.Action<NotAwesomeSurvival.NasPlayer, MCGalaxy.Events.PlayerEvents.MouseButton, MCGalaxy.Events.PlayerEvents.MouseAction,
+    NotAwesomeSurvival.Action<NotAwesomeSurvival.NasPlayer, MCGalaxy.Events.PlayerEvents.MouseButton, MCGalaxy.Events.PlayerEvents.MouseAction,
     NotAwesomeSurvival.NasBlock, ushort, ushort, ushort>;
 using NasBlockExistAction =
-    System.Action<NotAwesomeSurvival.NasPlayer,
+    NotAwesomeSurvival.Action<NotAwesomeSurvival.NasPlayer,
     NotAwesomeSurvival.NasBlock, bool, ushort, ushort, ushort>;
 using NasBlockCollideAction =
-    System.Action<NotAwesomeSurvival.NasEntity,
+    NotAwesomeSurvival.Action<NotAwesomeSurvival.NasEntity,
     NotAwesomeSurvival.NasBlock, bool, ushort, ushort, ushort>;
 namespace NotAwesomeSurvival
 {

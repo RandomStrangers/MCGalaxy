@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 using System;
 using System.IO;
 using System.Drawing;
@@ -82,7 +82,7 @@ namespace NotAwesomeSurvival
                     continue;
                 }
                 ColorDesc desc = np.inventory.selectorColors[index];
-                p.Send(Packet.SetTextColor(desc));
+                np.Send(Packet.SetTextColor(desc));
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 using System;
 using System.Drawing;
 using System.Collections.Generic;
@@ -27,10 +27,42 @@ namespace NotAwesomeSurvival
         [JsonIgnore] public bool isChewing = false;
         [JsonIgnore] public bool isInserting = false;
         [JsonIgnore] public int[] interactCoords;
+        [JsonIgnore] public bool SendingMap = false;
+        [JsonIgnore] public const string DeathsPath = Nas.SavePath + "deaths/";
+        [JsonIgnore] public Scheduler PlayerSavingScheduler;
+        [JsonIgnore] public SchedulerTask PlayerSaveTask;
+        [JsonIgnore] public bool hasBeenSpawned = false;
+        [JsonIgnore] public bool isDead = false;
+        [JsonIgnore] public bool headingToBed = false;
+        [JsonIgnore] public Color targetFogColor = Color.White;
+        [JsonIgnore] public Color curFogColor = Color.White;
+        [JsonIgnore] public float targetRenderDistance = Server.Config.MaxFogDistance;
+        [JsonIgnore] public float curRenderDistance = Server.Config.MaxFogDistance;
+        [JsonIgnore] public bool SetInventoryNotif = false;
+        [JsonIgnore] public Player lastAttackedPlayer = null;
+        [JsonIgnore] public string reason = null;
+        [JsonIgnore] public CpeMessageType whereHealthIsDisplayed = CpeMessageType.BottomRight2;
         public bool bigUpdate = false;
         public int resetCount = 0;
         public bool oldBarrel = true;
-        [JsonIgnore] public bool SendingMap = false;
+        public Inventory inventory;
+        public Position spawnCoords;
+        public int[] bedCoords;
+        public string spawnMap;
+        public DateTime pvpCooldown;
+        public bool pvpEnabled = false;
+        public bool staff = false;
+        public int kills = 0;
+        public int exp = 0;
+        public int levels = 0;
+        public void Message(string message, params object[] args) 
+        { 
+            p.Message(string.Format(message, args)); 
+        }
+        public void Send(byte[] buffer)
+        {
+            p.Socket.Send(buffer, SendFlags.None);
+        }
         public void ResetBreaking()
         {
             breakX = breakY = breakZ = ushort.MaxValue;
@@ -51,24 +83,6 @@ namespace NotAwesomeSurvival
             }
             return (NasPlayer)p.Extras[Nas.PlayerKey];
         }
-        public Inventory inventory;
-        public Position spawnCoords;
-        public int[] bedCoords;
-        public string spawnMap;
-        [JsonIgnore] public bool hasBeenSpawned = false;
-        [JsonIgnore] public bool isDead = false;
-        [JsonIgnore] public bool headingToBed = false;
-        public DateTime pvpCooldown;
-        public bool pvpEnabled = false;
-        public bool staff = false;
-        public int kills = 0;
-        public int exp = 0;
-        public int levels = 0;
-        [JsonIgnore] public Color targetFogColor = Color.White;
-        [JsonIgnore] public Color curFogColor = Color.White;
-        [JsonIgnore] public float targetRenderDistance = Server.Config.MaxFogDistance;
-        [JsonIgnore] public float curRenderDistance = Server.Config.MaxFogDistance;
-        [JsonIgnore] public bool SetInventoryNotif = false;
         public bool CanDamage()
         {
             if (p.invincible || p.Game.Referee || !pvpEnabled)
@@ -151,14 +165,13 @@ namespace NotAwesomeSurvival
                 {
                     if (action == MouseAction.Released) 
                     { 
-                        p.Message("&cPlease wait a moment before interacting with blocks"); 
+                        Message("&cPlease wait a moment before interacting with blocks"); 
                     }
                     return;
                 }
                 nasBlock.interaction(this, button, action, nasBlock, x, y, z);
             }
         }
-        [JsonIgnore] public Player lastAttackedPlayer = null;
         public static Dictionary<string, DateTime> cooldowns = new Dictionary<string, DateTime>();
         public static void StartCooldown(Player p, int milli)
         {
@@ -179,7 +192,7 @@ namespace NotAwesomeSurvival
             yaw = 128;
             pitch = 0;
             bigUpdate = true;
-            resetCount = 1;//tick this up as well
+            resetCount += 1;//tick this up as well
         }
         public static bool CooledDown(Player p)
         {
@@ -343,7 +356,7 @@ namespace NotAwesomeSurvival
                     {
                         reason = "do not have PVP enabled";
                     }
-                    np.p.Message("&SYou cannot damage {0} &Sbecause you currently {1}.", who.DisplayName, reason);
+                    np.Message("&SYou cannot damage {0} &Sbecause you currently {1}.", who.DisplayName, reason);
                     return;
                 }
                 Vec3F32 delta = p.Pos.ToVec3F32() - who.Pos.ToVec3F32();
@@ -410,7 +423,7 @@ namespace NotAwesomeSurvival
                             reason = "does not have PVP enabled";
                         }
                     }
-                    np.p.Message("&SYou cannot damage {0} &Sbecause " + who.pronouns.Subject + " currently {1}.", who.DisplayName, reason);
+                    np.Message("&SYou cannot damage {0} &Sbecause " + who.pronouns.Subject + " currently {1}.", who.DisplayName, reason);
                     return;
                 }
                 if (w.pvpEnabled)
@@ -453,7 +466,7 @@ namespace NotAwesomeSurvival
             }
             else
             {
-                p.Message("Please update to the latest ClassiCube build to hit with knockback.");
+                Message("Please update to the latest ClassiCube build to hit with knockback.");
             }
         }
         public override void ChangeHealth(float diff)
@@ -544,7 +557,7 @@ namespace NotAwesomeSurvival
             }
             if (!hasBeenSpawned) 
             { 
-                p.Message("If you get this message for more than 5 seconds, rejoin."); 
+                Message("If you get this message for more than 5 seconds, rejoin."); 
                 return false; 
             }
             if (source == DamageSource.Suffocating)
@@ -645,7 +658,6 @@ namespace NotAwesomeSurvival
             NasPlayer np = (NasPlayer)task.State;
             np.DisplayHealth();
         }
-        [JsonIgnore] public string reason = null;
         public override void Die(string thing)
         {
             hasBeenSpawned = false;
@@ -690,8 +702,8 @@ namespace NotAwesomeSurvival
                     y++;
                     if (y >= p.level.Height - 1)
                     {
-                        p.Message("Something weird happened. You died in a location such that we can't place a grave.");
-                        p.Message("Sorry, you've lost all your stuff.");
+                        Message("Something weird happened. You died in a location such that we can't place a grave.");
+                        Message("Sorry, you've lost all your stuff.");
                     }
                 }
                 //place tombstone
@@ -701,7 +713,7 @@ namespace NotAwesomeSurvival
                     drop = deathDrop
                 };
                 nl.blockEntities.Add(x + " " + y + " " + z, blockEntity);
-                p.Message("You dropped a gravestone at {0} {1} {2} in {3}", x, y, z, p.level.name);
+                Message("You dropped a gravestone at {0} {1} {2} in {3}", x, y, z, p.level.name);
                 File.AppendAllText(Nas.GetDeathPath(p.name), x + " " + y + " " + z + " in " + p.level.name);
                 nl.blockEntities[x + " " + y + " " + z].lockedBy = p.name;
                 nl.blockEntities[x + " " + y + " " + z].drop.exp = GetExp();
@@ -712,10 +724,13 @@ namespace NotAwesomeSurvival
             ushort here = nl.GetBlock(x, y, z);
             return NasBlock.CanPhysicsKillThis(here) || NasBlock.IsThisLiquid(here);
         }
-        [JsonIgnore] public CpeMessageType whereHealthIsDisplayed = CpeMessageType.BottomRight2;
+        public void SendCpeMessage(CpeMessageType type, string message)
+        {
+            p.SendCpeMessage(type, message);
+        }
         public void DisplayHealth(string healthColor = "p", string prefix = "&7[", string suffix = "&7]¼")
         {
-            p.SendCpeMessage(whereHealthIsDisplayed, OxygenString() + " " + prefix + HealthString(healthColor) + suffix + ArmorDisplay() + " " + ExpDisplay() + " " + AttackRecharge());
+            SendCpeMessage(whereHealthIsDisplayed, OxygenString() + " " + prefix + HealthString(healthColor) + suffix + ArmorDisplay() + " " + ExpDisplay() + " " + AttackRecharge());
         }
         public string HealthString(string healthColor)
         {
@@ -824,40 +839,71 @@ namespace NotAwesomeSurvival
             }
             heldNasBlock = nasBlock;
         }
-        public class CmdGravestones : Command2
+        public abstract class NASCommand : Command
         {
-            public override string name { get { return "Gravestones"; } }
+            public abstract string Name { get; }
+            public override string name { get { return Name; } }
             public override string type { get { return "NAS"; } }
+            public override void Use(Player p, string message)
+            {
+                NasPlayer np = GetNasPlayer(p);
+                Use(np, message);
+            }
+            public abstract void Use(NasPlayer np, string message);
+            public override bool SuperUseable { get { return false; } }
+            public override bool MessageBlockRestricted { get { return true; } }
+        }
+        public abstract class NASCommand2 : NASCommand
+        {
+            public override void Use(NasPlayer np, string message)
+            {
+                Execute(np.p, message);
+            }
+            public abstract void Execute(Player p, string message);
+        }
+        public class CmdGravestones : NASCommand2
+        {
+            public override string Name { get { return "Gravestones"; } }
             public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-            public override void Use(Player p, string message, CommandData data)
+            public override bool SuperUseable { get { return true; } }
+            public override void Execute(Player p, string message)
             {
                 string[] args = message.SplitSpaces();
                 string name = args[0];
+                string PlayerName;
                 if (CheckSuper(p, name, "player name"))
                 {
                     return;
                 }
                 if (name.Length == 0)
                 {
-                    name = p.name;
+                    PlayerName = p.name;
                 }
-                PlayerData target = PlayerDB.Match(p, name);
-                if (target == null)
+                else
                 {
-                    return;
+                    PlayerData target = PlayerDB.Match(p, name);
+                    if (target != null)
+                    {
+                        PlayerName = target.Name;
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
-                string file = Nas.GetDeathPath(target.Name);
+                string file = Nas.GetDeathPath(PlayerName);
                 if (!File.Exists(file))
                 {
-                    p.Message("{0}&S has no gravestones recorded!", target.Name);
+                    p.Message("{0}&S has no gravestones recorded!", PlayerName);
                     return;
                 }
+                //TODO: Simplify this, shouldn't copy deaths
                 string[] deaths = File.ReadAllLines(file);
                 string[] deaths2 = File.ReadAllLines(file);
                 int count = deaths2.Length;
                 for (int i = 0; i < deaths2.Length; i++)
                 {
-                    if (!string.IsNullOrWhiteSpace(deaths2[i]))
+                    if (!deaths2[i].IsNullOrWhiteSpace())
                     {
                         foreach (char c in deaths2[i])
                         {
@@ -868,7 +914,7 @@ namespace NotAwesomeSurvival
                             }
                         }
                     }
-                    if (string.IsNullOrWhiteSpace(deaths2[i]))
+                    if (deaths2[i].IsNullOrWhiteSpace())
                     {
                         deaths2[i] = null;
                         count--;
@@ -876,10 +922,10 @@ namespace NotAwesomeSurvival
                 }
                 if (count <= 0)
                 {
-                    p.Message("{0}&S has no gravestones recorded!", target.Name);
+                    p.Message("{0}&S has no gravestones recorded!", PlayerName);
                     return;
                 }
-                p.Message("{0}&S's gravestones:", target.Name);
+                p.Message("{0}&S's gravestones:", PlayerName);
                 p.MessageLines(deaths);
             }
             public override void Help(Player p)
@@ -887,21 +933,20 @@ namespace NotAwesomeSurvival
                 p.Message("&T/Gravestones [name] &H- Views the location of the player's gravestones");
             }
         }
-        public class CmdMyGravestones : CmdGravestones
+        public class CmdMyGravestones : NASCommand2
         {
-            public override string name { get { return "MyGravestones"; } }
-            public override string type { get { return "NAS"; } }
-            public override bool SuperUseable { get { return false; } }
+            public override string Name { get { return "MyGravestones"; } }
             public override LevelPermission defaultRank { get { return LevelPermission.Guest; } }
-            public override void Use(Player p, string message, CommandData data)
+            public override void Execute(Player p, string message)
             {
+                //TODO: Simplify this, shouldn't copy deaths
                 string file = Nas.GetDeathPath(p.name);
                 string[] deaths = File.ReadAllLines(file);
                 string[] deaths2 = File.ReadAllLines(file);
                 int count = deaths2.Length;
                 for (int i = 0; i < deaths2.Length; i++)
                 {
-                    if (!string.IsNullOrWhiteSpace(deaths2[i]))
+                    if (!deaths2[i].IsNullOrWhiteSpace())
                     {
                         foreach (char c in deaths2[i])
                         {
@@ -912,7 +957,7 @@ namespace NotAwesomeSurvival
                             }
                         }
                     }
-                    if (string.IsNullOrWhiteSpace(deaths2[i]))
+                    if (deaths2[i].IsNullOrWhiteSpace())
                     {
                         deaths2[i] = null;
                         count--;
@@ -931,110 +976,93 @@ namespace NotAwesomeSurvival
                 p.Message("&T/MyGravestones &H- Views the location of the your own gravestones");
             }
         }
-        public class CmdPVP : Command
+        public class CmdPVP : NASCommand
         {
-            public override string name { get { return "pvp"; } }
-            public override string type { get { return "NAS"; } }
-            public override void Use(Player p, string message)
+            public override string Name { get { return "PvP"; } }
+            public override void Use(NasPlayer np, string message)
             {
-                NasPlayer np = GetNasPlayer(p);
-                if (message == "on" || message == "enable")
+                if (message.CaselessEq("on") || message.CaselessEq("enable"))
                 {
                     if (!np.pvpEnabled)
                     {
-                        p.Message("You can now attack and be attacked by other players.");
+                        np.Message("You can now attack and be attacked by other players.");
                         np.pvpEnabled = true;
                         np.pvpCooldown = DateTime.UtcNow + new TimeSpan(1, 0, 0);
                         return;
                     }
                     else
                     {
-                        p.Message("PvP is already enabled");
+                        np.Message("PvP is already enabled");
                         return;
                     }
                 }
-                if (message == "off" || message == "disable")
+                if (message.CaselessEq("off") || message.CaselessEq("disable"))
                 {
                     if (!np.pvpEnabled)
                     {
-                        p.Message("PvP is already disabled");
+                        np.Message("PvP is already disabled");
                         return;
                     }
                     if (np.pvpCooldown > DateTime.UtcNow)
                     {
                         TimeSpan remaining = np.pvpCooldown - DateTime.UtcNow;
-                        p.Message("Please wait " + remaining.Minutes + " minutes and " + remaining.Seconds + " seconds before using this command");
+                        np.Message("Please wait " + remaining.Minutes + " minutes and " + remaining.Seconds + " seconds before using this command");
                         return;
                     }
-                    p.Message("You can no longer attack and be attacked by other players.");
+                    np.Message("You can no longer attack and be attacked by other players.");
                     np.pvpEnabled = false;
                     return;
                 }
-                Help(p);
+                Help(np.p);
                 return;
             }
             public override void Help(Player p)
             {
-                p.Message("&T/pvp [on/off]");
-                p.Message("&HToggles pvp, but once you turn it on, you can't turn it off for an hour.");
+                p.Message("&T/PvP [on/off]");
+                p.Message("&HToggles PvP, but once you turn it on, you can't turn it off for an hour.");
             }
         }
-        public class CmdNASSpawn : Command
+        public class CmdNASSpawn : NASCommand
         {
-            public override string name { get { return "NASSpawn"; } }
-            public override string type { get { return "NAS"; } }
+            public override string Name { get { return "NASSpawn"; } }
             public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-            public override bool SuperUseable { get { return false; } }
-            public override void Use(Player p, string message)
+            public override void Use(NasPlayer np, string message)
             {
-                NasPlayer np = GetNasPlayer(p);
-                if (message == "true")
+                if (message.IsNullOrEmpty() && np.hasBeenSpawned)
                 {
-                    if (!np.hasBeenSpawned)
-                    {
-                        p.Message("hasBeenSpawned set to true.");
-                        np.hasBeenSpawned = true;
-                        return;
-                    }
-                    else
-                    {
-                        p.Message("hasBeenSpawned is already true.");
-                        return;
-                    }
-                }
-                if (message == "false")
-                {
-                    if (!np.hasBeenSpawned)
-                    {
-                        p.Message("hasBeenSpawn is already false.");
-                        return;
-                    }
-                    else
-                        p.Message("hasBeenSpawned set to false.");
-                    np.hasBeenSpawned = false;
+                    Help(np.p);
                     return;
                 }
-                else
+                else if (!message.CaselessContains("confirm") && np.hasBeenSpawned)
                 {
-                    Help(p);
+                    np.Message("HasBeenSpawned is currently true. If you want to turn off HasBeenSpawned, type &T/NASSpawn confirm");
+                    return;
+                }
+                else if (message.CaselessContains("confirm") && np.hasBeenSpawned)
+                {
+                    np.hasBeenSpawned = false;
+                    np.Message("HasBeenSpawned set to false. Use &T/NASSpawn &Hto turn it back on.");
+                    return;
+                }
+                else if (!np.hasBeenSpawned)
+                {
+                    np.hasBeenSpawned = true;
+                    np.Message("HasBeenSpawned set to true.");
                     return;
                 }
             }
             public override void Help(Player p)
             {
-                p.Message("&T/NASSpawn [true/false] &H- Toggles hasBeenSpawned");
+                p.Message("&T/NASSpawn &H- Toggles hasBeenSpawned");
             }
         }
-        public class CmdSpawnDungeon : Command
+        public class CmdSpawnDungeon : NASCommand2
         {
-            public override string name { get { return "SpawnDungeon"; } }
-            public override string type { get { return "NAS"; } }
+            public override string Name { get { return "SpawnDungeon"; } }
             public override string shortcut {  get { return "GenerateDungeon"; } }
             public override bool museumUsable { get { return false; } }
             public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-            public override bool SuperUseable { get { return false; } }
-            public override bool MessageBlockRestricted { get { return true; } }
-            public override void Use(Player p, string message)
+            public override void Execute(Player p, string message)
             {
                 p.Message("Generating dungeon.");
                 Vec3S32 P = p.Pos.BlockCoords;
@@ -1046,27 +1074,25 @@ namespace NotAwesomeSurvival
                 p.Message("&HGenerates a dungeon.");
             }
         }
-        public class CmdBarrelMode : Command
+        public class CmdBarrelMode : NASCommand
         {
-            public override string name { get { return "barrelmode"; } }
-            public override string type { get { return "NAS"; } }
-            public override void Use(Player p, string message)
+            public override string Name { get { return "BarrelMode"; } }
+            public override void Use(NasPlayer np, string message)
             {
-                NasPlayer np = GetNasPlayer(p);
                 if (np.oldBarrel)
                 {
-                    p.Message("You now have to input the amount of items you want to put into the barrel manually.");
+                    np.Message("You now have to input the amount of items you want to put into the barrel manually.");
                     np.oldBarrel = false;
                 }
                 else
                 {
-                    p.Message("Half of the items you're holding will now be put into the barrel.");
+                    np.Message("Half of the items you're holding will now be put into the barrel.");
                     np.oldBarrel = true;
                 }
             }
             public override void Help(Player p)
             {
-                p.Message("&T/barrelmode");
+                p.Message("&T/BarrelMode");
                 p.Message("&HToggles how you enter items into barrels.");
             }
         }

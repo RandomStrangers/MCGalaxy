@@ -138,7 +138,7 @@ namespace MCGalaxy
 #if !MCG_STANDALONE
             LoadCorePlugin(new Modules.Compiling.CompilerPlugin());
 #endif
-#if NAS && TEN_BIT_BLOCKS && !NET_20
+#if NAS && TEN_BIT_BLOCKS
             Load(new NotAwesomeSurvival.Nas(), true);
 #endif
             LoadCorePlugin(new Modules.Games.Countdown.CountdownPlugin());

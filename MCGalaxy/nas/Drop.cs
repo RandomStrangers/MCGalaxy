@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 using System.Collections.Generic;
 namespace NotAwesomeSurvival
 {
@@ -87,7 +87,8 @@ namespace NotAwesomeSurvival
         public ushort ID;
         public BlockStack(ushort ID, int amount = 1)
         {
-            this.ID = ID; this.amount = amount;
+            this.ID = ID; 
+            this.amount = amount;
         }
     }
 }

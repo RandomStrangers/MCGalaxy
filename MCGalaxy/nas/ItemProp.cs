@@ -1,10 +1,9 @@
-﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 using System.Collections.Generic;
 namespace NotAwesomeSurvival
 {
     public partial class ItemProp
     {
-
         public string name;
         public string color;
         public string character;

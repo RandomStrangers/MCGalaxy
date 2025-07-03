@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 using System.Collections.Generic;
 namespace NotAwesomeSurvival
 {
@@ -75,130 +75,195 @@ namespace NotAwesomeSurvival
                 recharge = 750
             };
             const int ironBaseHP = baseHPconst * 8;
-            ItemProp ironPick = new ItemProp("Iron Pickaxe|f|ß", toolEnchants, NasBlock.Material.Stone, 0.85f, 3);
-            ItemProp ironShovel = new ItemProp("Iron Shovel|f|Γ", toolEnchants, NasBlock.Material.Earth, 0.60f, 3);
-            ItemProp ironAxe = new ItemProp("Iron Axe|f|π", toolEnchants, NasBlock.Material.Wood, 0.75f, 3);
+            ItemProp ironPick = new ItemProp("Iron Pickaxe|f|ß", toolEnchants, NasBlock.Material.Stone, 0.85f, 3)
+            {
+                baseHP = ironBaseHP
+            };
+            ItemProp ironShovel = new ItemProp("Iron Shovel|f|Γ", toolEnchants, NasBlock.Material.Earth, 0.60f, 3)
+            {
+                baseHP = ironBaseHP
+            };
+            ItemProp ironAxe = new ItemProp("Iron Axe|f|π", toolEnchants, NasBlock.Material.Wood, 0.75f, 3)
+            {
+                baseHP = ironBaseHP
+            };
             ironAxe.materialsEffectiveAgainst.Add(NasBlock.Material.Leaves);
             ItemProp ironSword = new ItemProp("Iron Sword|f|α", swordEnchants, NasBlock.Material.Leaves, 0.75f, 3)
             {
                 damage = 3f,
                 recharge = 750,
-                knockback = 1.25f
+                knockback = 1.25f,
+                baseHP = ironBaseHP
             };
-            ironPick.baseHP = ironBaseHP;
-            ironShovel.baseHP = ironBaseHP;
-            ironAxe.baseHP = ironBaseHP;
-            ironSword.baseHP = ironBaseHP;
             const int goldBaseHP = baseHPconst * 64;
-            ItemProp goldPick = new ItemProp("Gold Pickaxe|6|ß", toolEnchants, NasBlock.Material.Stone, 0.90f, 3);
-            ItemProp goldShovel = new ItemProp("Gold Shovel|6|Γ", toolEnchants, NasBlock.Material.Earth, 0.85f, 3);
-            ItemProp goldAxe = new ItemProp("Gold Axe|6|π", toolEnchants, NasBlock.Material.Wood, 0.90f, 3);
+            ItemProp goldPick = new ItemProp("Gold Pickaxe|6|ß", toolEnchants, NasBlock.Material.Stone, 0.90f, 3)
+            {
+                baseHP = goldBaseHP
+            };
+            ItemProp goldShovel = new ItemProp("Gold Shovel|6|Γ", toolEnchants, NasBlock.Material.Earth, 0.85f, 3)
+            {
+                baseHP = goldBaseHP
+            };
+            ItemProp goldAxe = new ItemProp("Gold Axe|6|π", toolEnchants, NasBlock.Material.Wood, 0.90f, 3)
+            {
+                baseHP = goldBaseHP
+            };
             goldAxe.materialsEffectiveAgainst.Add(NasBlock.Material.Leaves);
             ItemProp goldSword = new ItemProp("Gold Sword|6|α", swordEnchants, NasBlock.Material.Leaves, 0.85f, 3)
             {
                 damage = 3f,
                 recharge = 750,
-                knockback = 1.25f
+                knockback = 1.25f,
+                baseHP = goldBaseHP
             };
-            goldPick.baseHP = goldBaseHP;
-            goldShovel.baseHP = goldBaseHP;
-            goldAxe.baseHP = goldBaseHP;
-            goldSword.baseHP = goldBaseHP;
             const int diamondBaseHP = baseHPconst * 128;
-            ItemProp diamondPick = new ItemProp("Diamond Pickaxe|b|ß", toolEnchants, NasBlock.Material.Stone, 0.95f, 4);
-            ItemProp diamondShovel = new ItemProp("Diamond Shovel|b|Γ", toolEnchants, NasBlock.Material.Earth, 1f, 4);
-            ItemProp diamondAxe = new ItemProp("Diamond Axe|b|π", toolEnchants, NasBlock.Material.Wood, 0.95f, 4);
+            ItemProp diamondPick = new ItemProp("Diamond Pickaxe|b|ß", toolEnchants, NasBlock.Material.Stone, 0.95f, 4)
+            {
+                baseHP = diamondBaseHP
+            };
+            ItemProp diamondShovel = new ItemProp("Diamond Shovel|b|Γ", toolEnchants, NasBlock.Material.Earth, 1f, 4)
+            {
+                baseHP = diamondBaseHP
+            };
+            ItemProp diamondAxe = new ItemProp("Diamond Axe|b|π", toolEnchants, NasBlock.Material.Wood, 0.95f, 4)
+            {
+                baseHP = diamondBaseHP
+            };
             diamondAxe.materialsEffectiveAgainst.Add(NasBlock.Material.Leaves);
             ItemProp diamondSword = new ItemProp("Diamond Sword|b|α", swordEnchants, NasBlock.Material.Leaves, 1f, 4)
             {
                 damage = 3.5f,
                 recharge = 750,
-                knockback = 1.25f
+                knockback = 1.25f,
+                baseHP = diamondBaseHP
             };
-            diamondPick.baseHP = diamondBaseHP;
-            diamondShovel.baseHP = diamondBaseHP;
-            diamondAxe.baseHP = diamondBaseHP;
-            diamondSword.baseHP = diamondBaseHP;
             const int emeraldBaseHP = baseHPconst * 192;
-            ItemProp emeraldPick = new ItemProp("Emerald Pickaxe|2|ß", toolEnchants, NasBlock.Material.Stone, 0.975f, 5);
+            ItemProp emeraldPick = new ItemProp("Emerald Pickaxe|2|ß", toolEnchants, NasBlock.Material.Stone, 0.975f, 5)
+            {
+                baseHP = emeraldBaseHP
+            };
             emeraldPick.allowedEnchants["Efficiency"] = true;
-            ItemProp emeraldShovel = new ItemProp("Emerald Shovel|2|Γ", toolEnchants, NasBlock.Material.Earth, 1f, 5);
-            ItemProp emeraldAxe = new ItemProp("Emerald Axe|2|π", toolEnchants, NasBlock.Material.Wood, 0.975f, 5);
+            ItemProp emeraldShovel = new ItemProp("Emerald Shovel|2|Γ", toolEnchants, NasBlock.Material.Earth, 1f, 5)
+            {
+                baseHP = emeraldBaseHP
+            };
+            ItemProp emeraldAxe = new ItemProp("Emerald Axe|2|π", toolEnchants, NasBlock.Material.Wood, 0.975f, 5)
+            {
+                baseHP = emeraldBaseHP
+            };
             emeraldAxe.materialsEffectiveAgainst.Add(NasBlock.Material.Leaves);
             ItemProp emeraldSword = new ItemProp("Emerald Sword|2|α", swordEnchants, NasBlock.Material.Leaves, 1f, 5)
             {
                 damage = 4f,
                 recharge = 750,
-                knockback = 1.25f
+                knockback = 1.25f,
+                baseHP = emeraldBaseHP
             };
-            emeraldPick.baseHP = emeraldBaseHP;
-            emeraldShovel.baseHP = emeraldBaseHP;
-            emeraldAxe.baseHP = emeraldBaseHP;
-            emeraldSword.baseHP = emeraldBaseHP;
             ItemProp bedrockPick = new ItemProp("Bedrock Pickaxe|m|╟", nothing, NasBlock.Material.None, -1f, 5)
             {
                 baseHP = int.MaxValue
             };
-            ItemProp etheriumPick = new ItemProp("Etherium Pickaxe|h|ß", toolEnchants, NasBlock.Material.Stone, 1f, 6);
-            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Leaves);
-            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Glass);
+            ItemProp etheriumPick = new ItemProp("Etherium Pickaxe|h|ß", toolEnchants, NasBlock.Material.Stone, 1f, 6)
+            {
+                baseHP = int.MaxValue
+            };
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Stone);
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Earth);
             etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Wood);
-            etheriumPick.baseHP = int.MaxValue;
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Plant);
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Leaves);
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Organic);
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Glass);
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Metal);
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Liquid);
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Lava);
             ItemProp bedrockSword = new ItemProp("Bedrock Sword|0|α", swordEnchants, NasBlock.Material.Leaves, 1f, 6)
             {
                 damage = 50f,
                 knockback = 2f,
-                recharge = 3000,
+                recharge = 1,
                 baseHP = int.MaxValue
             };
-            ItemProp ironHelmet = new ItemProp("Iron Helmet|f|τ", helmetEnchants, NasBlock.Material.None, 0, 0);
-            ItemProp ironChest = new ItemProp("Iron Chestplate|f|Φ", armorEnchants, NasBlock.Material.None, 0, 0);
-            ItemProp ironLegs = new ItemProp("Iron Leggings|f|Θ", armorEnchants, NasBlock.Material.None, 0, 0);
-            ItemProp ironBoots = new ItemProp("Iron Boots|f|Ω", bootEnchants, NasBlock.Material.None, 0, 0);
-            ironHelmet.baseHP = ironBaseHP / 2f;
-            ironChest.baseHP = ironBaseHP / 2f;
-            ironLegs.baseHP = ironBaseHP / 2f;
-            ironBoots.baseHP = ironBaseHP / 2f;
-            ironHelmet.armor = 2f;
-            ironChest.armor = 5f;
-            ironLegs.armor = 4f;
-            ironBoots.armor = 1f;
-            ItemProp goldHelmet = new ItemProp("Gold Helmet|6|τ", helmetEnchants, NasBlock.Material.None, 0, 0);
-            ItemProp goldChest = new ItemProp("Gold Chestplate|6|Φ", armorEnchants, NasBlock.Material.None, 0, 0);
-            ItemProp goldLegs = new ItemProp("Gold Leggings|6|Θ", armorEnchants, NasBlock.Material.None, 0, 0);
-            ItemProp goldBoots = new ItemProp("Gold Boots|6|Ω", bootEnchants, NasBlock.Material.None, 0, 0);
-            goldHelmet.baseHP = goldBaseHP / 2f;
-            goldChest.baseHP = goldBaseHP / 2f;
-            goldLegs.baseHP = goldBaseHP / 2f;
-            goldBoots.baseHP = goldBaseHP / 2f;
-            goldHelmet.armor = 2f;
-            goldChest.armor = 6f;
-            goldLegs.armor = 5f;
-            goldBoots.armor = 2f;
-            ItemProp diamondHelmet = new ItemProp("Diamond Helmet|b|τ", helmetEnchants, NasBlock.Material.None, 0, 0);
-            ItemProp diamondChest = new ItemProp("Diamond Chestplate|b|Φ", armorEnchants, NasBlock.Material.None, 0, 0);
-            ItemProp diamondLegs = new ItemProp("Diamond Leggings|b|Θ", armorEnchants, NasBlock.Material.None, 0, 0);
-            ItemProp diamondBoots = new ItemProp("Diamond Boots|b|Ω", bootEnchants, NasBlock.Material.None, 0, 0);
-            diamondHelmet.baseHP = diamondBaseHP / 2f;
-            diamondChest.baseHP = diamondBaseHP / 2f;
-            diamondLegs.baseHP = diamondBaseHP / 2f;
-            diamondBoots.baseHP = diamondBaseHP / 2f;
-            diamondHelmet.armor = 3f;
-            diamondChest.armor = 7f;
-            diamondLegs.armor = 5f;
-            diamondBoots.armor = 3f;
-            ItemProp emeraldHelmet = new ItemProp("Emerald Helmet|2|τ", helmetEnchants, NasBlock.Material.None, 0, 0);
-            ItemProp emeraldChest = new ItemProp("Emerald Chestplate|2|Φ", armorEnchants, NasBlock.Material.None, 0, 0);
-            ItemProp emeraldLegs = new ItemProp("Emerald Leggings|2|Θ", armorEnchants, NasBlock.Material.None, 0, 0);
-            ItemProp emeraldBoots = new ItemProp("Emerald Boots|2|Ω", bootEnchants, NasBlock.Material.None, 0, 0);
-            emeraldHelmet.baseHP = emeraldBaseHP / 2f;
-            emeraldChest.baseHP = emeraldBaseHP / 2f;
-            emeraldLegs.baseHP = emeraldBaseHP / 2f;
-            emeraldBoots.baseHP = emeraldBaseHP / 2f;
-            emeraldHelmet.armor = 3f;
-            emeraldChest.armor = 8f;
-            emeraldLegs.armor = 6f;
-            emeraldBoots.armor = 3f;
+            ItemProp ironHelmet = new ItemProp("Iron Helmet|f|τ", helmetEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = ironBaseHP / 2f,
+                armor = 2f
+            };
+            ItemProp ironChest = new ItemProp("Iron Chestplate|f|Φ", armorEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = ironBaseHP / 2f,
+                armor = 5f
+            };
+            ItemProp ironLegs = new ItemProp("Iron Leggings|f|Θ", armorEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = ironBaseHP / 2f,
+                armor = 4f
+            };
+            ItemProp ironBoots = new ItemProp("Iron Boots|f|Ω", bootEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = ironBaseHP / 2f,
+                armor = 1f
+            };
+            ItemProp goldHelmet = new ItemProp("Gold Helmet|6|τ", helmetEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = goldBaseHP / 2f,
+                armor = 2f
+            };
+            ItemProp goldChest = new ItemProp("Gold Chestplate|6|Φ", armorEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = goldBaseHP / 2f,
+                armor = 6f
+            };
+            ItemProp goldLegs = new ItemProp("Gold Leggings|6|Θ", armorEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = goldBaseHP / 2f,
+                armor = 5f
+            };
+            ItemProp goldBoots = new ItemProp("Gold Boots|6|Ω", bootEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = goldBaseHP / 2f,
+                armor = 2f
+            };
+            ItemProp diamondHelmet = new ItemProp("Diamond Helmet|b|τ", helmetEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = diamondBaseHP / 2f,
+                armor = 3f
+            };
+            ItemProp diamondChest = new ItemProp("Diamond Chestplate|b|Φ", armorEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = diamondBaseHP / 2f,
+                armor = 7f
+            };
+            ItemProp diamondLegs = new ItemProp("Diamond Leggings|b|Θ", armorEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = diamondBaseHP / 2f,
+                armor = 5f
+            };
+            ItemProp diamondBoots = new ItemProp("Diamond Boots|b|Ω", bootEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = diamondBaseHP / 2f,
+                armor = 3f
+            };
+            ItemProp emeraldHelmet = new ItemProp("Emerald Helmet|2|τ", helmetEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = emeraldBaseHP / 2f,
+                armor = 3f
+            };
+            ItemProp emeraldChest = new ItemProp("Emerald Chestplate|2|Φ", armorEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = emeraldBaseHP / 2f,
+                armor = 8f
+            };
+            ItemProp emeraldLegs = new ItemProp("Emerald Leggings|2|Θ", armorEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = emeraldBaseHP / 2f,
+                armor = 6f
+            };
+            ItemProp emeraldBoots = new ItemProp("Emerald Boots|2|Ω", bootEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = emeraldBaseHP / 2f,
+                armor = 3f
+            };
         }
     }
 }

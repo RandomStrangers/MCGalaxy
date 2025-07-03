@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 using System;
 using Newtonsoft.Json;
 using MCGalaxy;
@@ -29,21 +29,22 @@ namespace NotAwesomeSurvival
                     return Enum.GetName(typeof(DamageSource), source).ToLower();
             }
         }
+        [JsonIgnore] public float AirPrev;
+        [JsonIgnore] public NasLevel nl;
+        [JsonIgnore] public AABB bounds = AABB.Make(new Vec3S32(0, 0, 0), new Vec3S32(16, 26 * 2, 16));
+        [JsonIgnore] public AABB eyeBounds = AABB.Make(new Vec3S32(0, 24 * 2 - 2, 0), new Vec3S32(4, 4, 4));
+        [JsonIgnore] public DateTime lastSuffocationDate = DateTime.MinValue;
         public const int SuffocationMilliseconds = 500;
         public float HP;
         public const float maxHP = 10;
         public float Air;
-        [JsonIgnore] public float AirPrev;
         public const float maxAir = 10;
         public bool holdingBreath = false;
         public string levelName;
-        [JsonIgnore] public NasLevel nl;
         public Vec3S32 location;
         public Vec3S32 lastGroundedLocation;
         public byte yaw;
         public byte pitch;
-        [JsonIgnore] public AABB bounds = AABB.Make(new Vec3S32(0, 0, 0), new Vec3S32(16, 26 * 2, 16));
-        [JsonIgnore] public AABB eyeBounds = AABB.Make(new Vec3S32(0, 24 * 2 - 2, 0), new Vec3S32(4, 4, 4));
         public static void SetLocation(NasEntity ne, string levelName, Position pos, Orientation rot)
         {
             ne.levelName = levelName;
@@ -53,7 +54,6 @@ namespace NotAwesomeSurvival
             ne.yaw = rot.RotY;
             ne.pitch = rot.HeadX;
         }
-        [JsonIgnore] public DateTime lastSuffocationDate = DateTime.MinValue;
         public virtual void ChangeHealth(float diff)
         {
             //TODO threadsafe

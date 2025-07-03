@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Blocks;
 using MCGalaxy.Network;
@@ -10,10 +10,23 @@ namespace NotAwesomeSurvival
     public partial class Inventory
     {
         [JsonIgnore] public Player p;
+        [JsonIgnore] public CpeMessageType whereHeldBlockIsDisplayed = CpeMessageType.BottomRight3;
         public int[] blocks = new int[Block.MaxRaw + 1];
         public Inventory(Player p) 
         { 
             this.p = p; 
+        }
+        public void Message(string message, params object[] args)
+        {
+            p.Message(string.Format(message, args));
+        }
+        public void Send(byte[] buffer) 
+        { 
+            p.Socket.Send(buffer, SendFlags.None); 
+        }
+        public void SendCpeMessage(CpeMessageType type, string message)
+        {
+            p.SendCpeMessage(type, message);
         }
         public void SetPlayer(Player p) 
         { 
@@ -30,8 +43,8 @@ namespace NotAwesomeSurvival
             //hide all blocks
             for (ushort clientushort = 1; clientushort <= Block.MaxRaw; clientushort++)
             {
-                p.Send(Packet.BlockPermission(clientushort, false, false, true));
-                p.Send(Packet.SetInventoryOrder(clientushort, 0, true));
+                Send(Packet.BlockPermission(clientushort, false, false, true));
+                Send(Packet.SetInventoryOrder(clientushort, 0, true));
             }
             //unhide blocks you have access to
             for (ushort clientushort = 1; clientushort <= Block.MaxRaw; clientushort++)
@@ -43,11 +56,16 @@ namespace NotAwesomeSurvival
             }
             SetupItems();
         }
+        public void Setup(Player pl)
+        {
+            SetPlayer(pl);
+            Setup();
+        }
         public void ClearHotbar()
         {
             for (byte i = 0; i <= 9; i++)
             {
-                p.Send(Packet.SetHotbar(0, i, true));
+                Send(Packet.SetHotbar(0, i, true));
             }
         }
         /// <summary>
@@ -135,7 +153,6 @@ namespace NotAwesomeSurvival
             //TODO threadsafe
             return blocks[clientushort];
         }
-        [JsonIgnore] public CpeMessageType whereHeldBlockIsDisplayed = CpeMessageType.BottomRight3;
         public void DisplayHeldBlock(NasBlock nasBlock, int amountChanged = 0, bool showToNormalChat = false)
         {
             string display = DisplayedBlockString(nasBlock);
@@ -149,9 +166,9 @@ namespace NotAwesomeSurvival
             }
             if (showToNormalChat)
             {
-                p.Message(display);
+                Message(display);
             }
-            p.SendCpeMessage(whereHeldBlockIsDisplayed, display);
+            SendCpeMessage(whereHeldBlockIsDisplayed, display);
         }
         public string DisplayedBlockString(NasBlock nasBlock)
         {
@@ -177,15 +194,15 @@ namespace NotAwesomeSurvival
         }
         public void HideBlock(ushort clientushort)
         {
-            p.Send(Packet.BlockPermission(clientushort, false, false, true));
-            p.Send(Packet.SetInventoryOrder(clientushort, 0, true));
+            Send(Packet.BlockPermission(clientushort, false, false, true));
+            Send(Packet.SetInventoryOrder(clientushort, 0, true));
             NasBlock nasBlock = NasBlock.blocks[clientushort];
             if (nasBlock.childIDs != null)
             {
                 foreach (ushort childID in nasBlock.childIDs)
                 {
-                    p.Send(Packet.BlockPermission(childID, false, false, true));
-                    p.Send(Packet.SetInventoryOrder(childID, 0, true));
+                    Send(Packet.BlockPermission(childID, false, false, true));
+                    Send(Packet.SetInventoryOrder(childID, 0, true));
                 }
             }
         }
@@ -200,8 +217,8 @@ namespace NotAwesomeSurvival
             { 
                 return; 
             }
-            p.Send(Packet.BlockPermission(clientushort, true, false, true));
-            p.Send(Packet.SetInventoryOrder(clientushort, (def.InventoryOrder == -1) ? clientushort : (ushort)def.InventoryOrder, true));
+            Send(Packet.BlockPermission(clientushort, true, false, true));
+            Send(Packet.SetInventoryOrder(clientushort, (def.InventoryOrder == -1) ? clientushort : (ushort)def.InventoryOrder, true));
             NasBlock nasBlock = NasBlock.blocks[clientushort];
             if (nasBlock.childIDs != null)
             {
@@ -216,8 +233,8 @@ namespace NotAwesomeSurvival
                     { 
                         continue; 
                     }
-                    p.Send(Packet.BlockPermission(childID, true, false, true));
-                    p.Send(Packet.SetInventoryOrder(childID, (def.InventoryOrder == -1) ? childID : (ushort)def.InventoryOrder, true));
+                    Send(Packet.BlockPermission(childID, true, false, true));
+                    Send(Packet.SetInventoryOrder(childID, (def.InventoryOrder == -1) ? childID : (ushort)def.InventoryOrder, true));
                 }
             }
         }

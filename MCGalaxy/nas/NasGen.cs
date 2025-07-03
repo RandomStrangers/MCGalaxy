@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 using System;
 using System.Drawing;
 using System.IO;
@@ -31,7 +31,12 @@ namespace NotAwesomeSurvival
         public static Color diamondFogColor;
         public static Color emeraldFogColor;
         public static Scheduler genScheduler;
-        public static ushort[] stoneTypes = { Block.Sandstone, Block.Stone, 48 };
+        public static ushort[] stoneTypes = 
+        { 
+            Block.Sandstone, 
+            Block.Stone, 
+            48 
+        };
         public static void Setup()
         {
             if (genScheduler == null)
@@ -527,7 +532,6 @@ namespace NotAwesomeSurvival
             public void GenRandom()
             {
                 int width = lvl.Width, height = lvl.Height, length = lvl.Length;
-
                 p.Message("Now creating random patches");
                 adjNoise.Seed = MakeInt(seed + "random");
                 adjNoise.Frequency = 1; //more frequency = smaller map scale

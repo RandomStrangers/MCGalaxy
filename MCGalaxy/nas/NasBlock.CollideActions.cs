@@ -1,7 +1,7 @@
-﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using NasBlockCollideAction =
-    System.Action<NotAwesomeSurvival.NasEntity,
+    NotAwesomeSurvival.Action<NotAwesomeSurvival.NasEntity,
     NotAwesomeSurvival.NasBlock, bool, ushort, ushort, ushort>;
 namespace NotAwesomeSurvival
 {

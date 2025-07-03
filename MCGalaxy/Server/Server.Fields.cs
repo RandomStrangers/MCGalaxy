@@ -41,7 +41,7 @@ namespace MCGalaxy
         public const string InternalVersion = "1.9.5.3";
         public static string Ver { get { return InternalVersion; } } //Nas differs.
         /// <summary> *** DO NOT USE THIS! *** Use VersionString, as this field is a constant and is inlined if used. </summary>
-#if NAS && TEN_BIT_BLOCKS && !NET_20
+#if NAS && TEN_BIT_BLOCKS
         public static string SoftwareVersion 
         {
             get 
@@ -50,7 +50,7 @@ namespace MCGalaxy
             }
         }
         public static string SoftwareName = "MCGalaxy-NAS";
-        public const string NasVersion = "1.0.1.2";
+        public const string NasVersion = "1.0.1.3";
 #else
         public static string SoftwareVersion { get { return InternalVersion; } }
         public static string SoftwareName = "MCGalaxy";

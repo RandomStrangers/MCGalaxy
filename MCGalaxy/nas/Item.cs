@@ -1,4 +1,4 @@
-﻿#if NAS && !NET_20 && TEN_BIT_BLOCKS
+﻿#if NAS && TEN_BIT_BLOCKS
 using Newtonsoft.Json;
 using MCGalaxy;
 using System.Collections.Generic;
@@ -6,6 +6,39 @@ namespace NotAwesomeSurvival
 {
     public class Item
     {
+        [JsonIgnore] public ItemProp Prop { get { return ItemProp.props[name]; } }
+        [JsonIgnore]
+        public string ColoredName { get { return "&" + ItemProp.props[name].color + name; } }
+        [JsonIgnore]
+        public string ColoredIcon
+        {
+            get { return "&" + ItemProp.props[name].color + ItemProp.props[name].character; }
+        }
+        [JsonIgnore]
+        public ColorDesc[] HealthColors
+        {
+            get
+            {
+                if (HP == int.MaxValue)
+                {
+                    return DynamicColor.defaultColors;
+                }
+                if (HP <= 1)
+                {
+                    return DynamicColor.direHealthColors;
+                }
+                float healthPercent = HP / Prop.baseHP;
+                if (healthPercent > 0.5f)
+                {
+                    return DynamicColor.fullHealthColors;
+                }
+                if (healthPercent > 0.25)
+                {
+                    return DynamicColor.mediumHealthColors;
+                }
+                return DynamicColor.lowHealthColors;
+            }
+        }
         public static Item Fist;
         public string name;
         public float HP;
@@ -26,7 +59,6 @@ namespace NotAwesomeSurvival
                 {"Thorns",0},
                 {"Unbreaking",0},
             };
-        [JsonIgnore] public ItemProp Prop { get { return ItemProp.props[name]; } }
         public Item(string name)
         {
             ItemProp prop = ItemProp.props[name];
@@ -36,41 +68,6 @@ namespace NotAwesomeSurvival
             if (displayName == null)
             {
                 displayName = ColoredName;
-            }
-        }
-        [JsonIgnore]
-        public string ColoredName
-        {
-            get { return "&" + ItemProp.props[name].color + name; }
-        }
-        [JsonIgnore]
-        public string ColoredIcon
-        {
-            get { return "&" + ItemProp.props[name].color + ItemProp.props[name].character; }
-        }
-        [JsonIgnore]
-        public ColorDesc[] HealthColors
-        {
-            get
-            {
-                if (HP == int.MaxValue) 
-                {
-                    return DynamicColor.defaultColors; 
-                }
-                if (HP <= 1) 
-                { 
-                    return DynamicColor.direHealthColors; 
-                }
-                float healthPercent = HP / Prop.baseHP;
-                if (healthPercent > 0.5f) 
-                {
-                    return DynamicColor.fullHealthColors; 
-                }
-                if (healthPercent > 0.25) 
-                { 
-                    return DynamicColor.mediumHealthColors; 
-                }
-                return DynamicColor.lowHealthColors;
             }
         }
         /// <summary>
