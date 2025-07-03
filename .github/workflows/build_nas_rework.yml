@@ -12,6 +12,33 @@ concurrency:
 
 jobs:
 #============================================
+# ============== .NET 2.0 BUILD =============
+# ===========================================
+  build-mono2:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile MCGalaxy using mono
+        shell: bash
+        id: compile
+        run: |
+          msbuild MCGalaxy.sln /p:Configuration=Release /p:TargetFrameworkVersion=v2.0 /p:DefineConstants="NET_20%3BTEN_BIT_BLOCKS%3BNAS"
+
+      - uses: ./.github/actions/notify_failure
+        if: ${{ always() && steps.compile.outcome == 'failure' }}
+        with:
+          NOTIFY_MESSAGE: 'Failed to compile MCGalaxy .NET 2.0 NAS-Rework build! <@999409543001931788>'
+          WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
+          
+      - uses: ./.github/actions/notify_success_old
+        if: ${{ always() && steps.compile.outcome == 'success' }}
+        with:
+          NOTIFY_MESSAGE: 'Successfully compiled MCGalaxy .NET 2.0 NAS-Rework build.'
+          WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
+          SOURCE_FILE: 'bin/Release'
+          DEST_NAME: 'MCGalaxy-net20-NAS-Rework'
+   
+#============================================
 # ============== .NET 4.0 BUILD =============
 # ===========================================
   build-mono4:
@@ -28,13 +55,13 @@ jobs:
       - uses: ./.github/actions/notify_failure
         if: ${{ always() && steps.compile.outcome == 'failure' }}
         with:
-          NOTIFY_MESSAGE: 'Failed to compile MCGalaxy .NET NAS-Rework build! <@999409543001931788>'
+          NOTIFY_MESSAGE: 'Failed to compile MCGalaxy .NET 4.0 NAS-Rework build! <@999409543001931788>'
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
           
       - uses: ./.github/actions/notify_success_old
         if: ${{ always() && steps.compile.outcome == 'success' }}
         with:
-          NOTIFY_MESSAGE: 'Successfully compiled MCGalaxy .NET NAS-Rework build.'
+          NOTIFY_MESSAGE: 'Successfully compiled MCGalaxy .NET 4.0 NAS-Rework build.'
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
           SOURCE_FILE: 'bin/Release'
           DEST_NAME: 'MCGalaxy-net40-NAS-Rework'
