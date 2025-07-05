@@ -17,6 +17,10 @@ namespace NotAwesomeSurvival
         public static Scheduler fishingScheduler;
         public static Color[] blockColors = new Color[Block.MaxRaw + 1];
         public const string terrainImageName = "terrain.png";
+        public static void Log(string format, params object[] args)
+        {
+            Logger.Log(LogType.Debug, string.Format(format, args));
+        }
         public static bool Setup()
         {
             if (File.Exists("plugins/" + terrainImageName))
@@ -25,7 +29,7 @@ namespace NotAwesomeSurvival
             }
             if (!File.Exists(Nas.Path + terrainImageName))
             {
-                Player.Console.Message("Could not locate {0} (needed for block particle colors)", terrainImageName);
+                Log("Could not locate {0} (needed for block particle colors)", terrainImageName);
                 return false;
             }
             if (breakScheduler == null)
@@ -120,7 +124,7 @@ namespace NotAwesomeSurvival
             //COPY PASTED IN 2 PLACES
             if (nasBlock.container != null &&
                 np.nl.blockEntities.ContainsKey(x + " " + y + " " + z) &&
-                (np.nl.blockEntities[x + " " + y + " " + z].drop != null || !np.nl.blockEntities[x + " " + y + " " + z].CanAccess(np.p))
+                (np.nl.blockEntities[x + " " + y + " " + z].drop != null || !np.nl.blockEntities[x + " " + y + " " + z].CanAccess(np))
                )
             {
                 return;
@@ -164,7 +168,7 @@ namespace NotAwesomeSurvival
             p.RevertBlock(x, y, z);
             if (!np.isDead) 
             { 
-                Command.Find("tp").Use(p, "-precise ~ ~ ~"); 
+                np.Teleport("-precise ~ ~ ~"); 
             }
         }
         public static void PlaceBlock(Player p, ushort x, ushort y, ushort z, ushort serverushort, bool placing, ref bool cancel)
@@ -179,7 +183,7 @@ namespace NotAwesomeSurvival
                 cancel = true;
                 return; 
             }
-            NasPlayer np = (NasPlayer)p.Extras[Nas.PlayerKey];
+            NasPlayer np = NasPlayer.GetNasPlayer(p);
             ushort clientushort = np.ConvertBlock(serverushort);
             NasBlock nasBlock = NasBlock.Get(clientushort);
             if (nasBlock.parentID == 0)
@@ -229,16 +233,12 @@ namespace NotAwesomeSurvival
             { 
                 return; 
             }
-            NasPlayer np = (NasPlayer)p.Extras[Nas.PlayerKey];
-            NasLevel nl;
-            if (!NasLevel.all.ContainsKey(np.p.level.name))
+            NasPlayer np = NasPlayer.GetNasPlayer(p);
+            if (!NasLevel.IsNasLevel(p.level))
             {
                 return;
             }
-            else
-            {
-                nl = NasLevel.all[np.p.level.name];
-            }
+            NasLevel nl = NasLevel.Get(p.level.name);
             NasBlock nasBlock = NasBlock.blocksIndexedByServerushort[p.level.GetBlock(x, y, z)];
             nasBlock.existAction?.Invoke(np, nasBlock, true, x, y, z);
             nl?.SimulateSetBlock(x, y, z);
@@ -326,7 +326,7 @@ namespace NotAwesomeSurvival
                 p.Message("You need to read and agree to the &b/rules&S to play"); 
                 return; 
             }
-            NasPlayer np = (NasPlayer)p.Extras[Nas.PlayerKey];
+            NasPlayer np = NasPlayer.GetNasPlayer(p);
             if (action == MouseAction.Released)
             {
                 np.ResetBreaking();
@@ -357,7 +357,7 @@ namespace NotAwesomeSurvival
                 //COPY PASTED IN 2 PLACES
                 if (nasBlock.container != null &&
                     np.nl.blockEntities.ContainsKey(x + " " + y + " " + z) &&
-                    (np.nl.blockEntities[x + " " + y + " " + z].drop != null || !np.nl.blockEntities[x + " " + y + " " + z].CanAccess(p))
+                    (np.nl.blockEntities[x + " " + y + " " + z].drop != null || !np.nl.blockEntities[x + " " + y + " " + z].CanAccess(np))
                    )
                 {
                     np.ResetBreaking();

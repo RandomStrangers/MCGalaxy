@@ -37,7 +37,8 @@ namespace NotAwesomeSurvival
                 }
             }
         }
-        /*[JsonIgnore] public SchedulerTask SetPrefixTask;
+        /*
+        [JsonIgnore] public SchedulerTask SetPrefixTask;
         [JsonIgnore] public Scheduler SetPrefixScheduler;
         public void SetPrefix(SchedulerTask task)
         {
@@ -45,9 +46,9 @@ namespace NotAwesomeSurvival
         }
         public static void SetPrefix(Player p)
         {
-            List<string> prefixes = new List<string>();
-            Team team = p.Game.Team;
-            IGame game = IGame.GameOn(p.level);
+            System.Collections.Generic.List<string> prefixes = new System.Collections.Generic.List<string>();
+            MCGalaxy.Games.Team team = p.Game.Team;
+            MCGalaxy.Games.IGame game = MCGalaxy.Games.IGame.GameOn(p.level);
             prefixes.Add(p.Game.Referee ? "&2[Ref] " : "");
             prefixes.Add(p.GroupPrefix.Length > 0 ? p.GroupPrefix + p.color : "");
             prefixes.Add(team == null ? "" : "<" + team.Color + team.Name + p.color + "> ");
@@ -65,7 +66,7 @@ namespace NotAwesomeSurvival
         public static string MakeTitle(Player p, string title, string titleCol)
         {
             return p.color + "[" + titleCol + title + p.color + "] ";
-        }*/
+        }
         public static Scheduler savingScheduler;
         public static SchedulerTask SaveTask;
         public static void Setup()
@@ -97,7 +98,7 @@ namespace NotAwesomeSurvival
                 File.WriteAllText(Nas.GetSavePath(p), jsonString);
                 File.WriteAllText(Nas.GetTextPath(p), jsonString);
             }
-        }
+        }*/
         public static void Register()
         {
             //Setup();
@@ -110,7 +111,7 @@ namespace NotAwesomeSurvival
         }
         public static void OnPlayerSpawning(Player p, ref Position pos, ref byte yaw, ref byte pitch, bool respawning)
         {
-            NasPlayer np = (NasPlayer)p.Extras[Nas.PlayerKey];
+            NasPlayer np = GetNasPlayer(p);
             np.nl = NasLevel.Get(p.level.name);
             np.SpawnPlayer(p.level, ref pos, ref yaw, ref pitch);
         }
@@ -166,7 +167,7 @@ namespace NotAwesomeSurvival
         }
         public void SpawnPlayer(Level level, ref Position spawnPos, ref byte yaw, ref byte pitch)
         {
-            if (level.Config.Deletable && level.Config.Buildable) 
+            if (!NasLevel.IsNasLevel(level)) 
             {
                 return; 
             } //not a nas map
@@ -187,7 +188,7 @@ namespace NotAwesomeSurvival
                 data.Context = CommandContext.SendCmd;
                 Orientation rot = new Orientation(Server.mainLevel.rotx, Server.mainLevel.roty);
                 SetLocation(this, spawnMap, spawnCoords, rot);
-                Logger.Log(LogType.Debug, "Teleporting " + p.name + " to their bed!");
+                Log("Teleporting {0} to {1} bed!", p.truename, p.pronouns.Object);
                 if (!headingToBed)
                 {
                     SendCpeMessage(CpeMessageType.Announcement, "&cY O U  D I E D");
@@ -263,7 +264,7 @@ namespace NotAwesomeSurvival
                 nl.lvl.BlockDB.Cache.Add(p, (ushort)x, (ushort)y, (ushort)z, BlockDBFlags.Drawn, oldBlock, block);
             }
         }
-        public void SetModel(Player p)
+        public void SetModel()
         {
             p.UpdateModel("human|0.93023255813953488372093023255814");
             Server.models.Update(p.name, "human|0.93023255813953488372093023255814");
@@ -278,22 +279,22 @@ namespace NotAwesomeSurvival
             atBorder = true;
             if (!p.Model.Contains("|0.93023255813953488372093023255814")) 
             {
-                SetModel(p);
+                SetModel();
             }
             spawnPos = new Position(location.X, location.Y, location.Z);
             yaw = this.yaw;
             pitch = this.pitch;
-            Logger.Log(LogType.Debug, "Teleporting " + p.name + "!");
+            Log("Teleporting {0}!", p.truename);
             if (level.name != levelName)
             {
-                Player.Console.Message("{0}: trying to use /goto to move to the map they logged out in", p.name);
+                Log("{0}: trying to use /goto to move to the map they logged out in", p.truename);
                 CommandData data = p.DefaultCmdData;
                 data.Context = CommandContext.SendCmd;
                 p.HandleCommand("goto", levelName, data);
                 return;
             }
             hasBeenSpawned = true;
-            Player.Console.Message("{0}: hasBeenSpawned set to {1}", p.name, hasBeenSpawned);
+            Log("{0}: hasBeenSpawned set to {1}", p.truename, hasBeenSpawned);
         }
         public void UpdateEnv()
         {
@@ -397,7 +398,7 @@ namespace NotAwesomeSurvival
             chunkOffsetX += dirX;
             chunkOffsetZ += dirZ;
             mapName = seed + "_" + chunkOffsetX + "," + chunkOffsetZ;
-            if (File.Exists("nas/leveldata/" + mapName + ".json"))
+            if (File.Exists(NasLevel.GetFileName(mapName)))
             {
                 transferInfo = new TransferInfo(p, dirX, dirZ, -1, -1, -1);
                 CommandData data = p.DefaultCmdData;
@@ -436,7 +437,7 @@ namespace NotAwesomeSurvival
             string mapName;
             mapName = map;
             NasGen.GetSeedAndChunkOffset(map, ref seed, ref chunkOffsetX, ref chunkOffsetZ);
-            if (File.Exists("nas/leveldata/" + mapName + ".json"))
+            if (File.Exists(NasLevel.GetFileName(mapName)))
             {
                 transferInfo = trans;
                 placePortal = true;
@@ -473,7 +474,28 @@ namespace NotAwesomeSurvival
         {
             GenInfo info = (GenInfo)task.State;
             info.p.Message("Seed is {0}", info.seed);
-            Command.Find("newlvl").Use(info.p, info.mapName + " " + NasGen.mapWideness + " " + NasGen.mapTallness + " " + NasGen.mapWideness + " nasgen " + info.seed);
+            GenMap(info);
+        }
+        public static void GenMap(GenInfo info)
+        {
+            Level lvl = null;
+            try
+            {
+                string width = NasGen.mapWideness.ToString();
+                string height = NasGen.mapTallness.ToString();
+                string length = NasGen.mapWideness.ToString();
+                lvl = NasLevel.GenerateMap(info.p, info.mapName, width, height, length, info.seed);
+                if (lvl == null)
+                {
+                    return;
+                }
+                lvl.Save(true);
+            }
+            finally
+            {
+                lvl?.Dispose();
+                Server.DoGC();
+            }
         }
         public class TransferInfo
         {
@@ -537,8 +559,8 @@ namespace NotAwesomeSurvival
                 }
             }
             curFogColor = ScaleColor(curFogColor, targetFogColor);
-            p.Send(Packet.EnvMapProperty(EnvProp.MaxFog, (int)curRenderDistance));
-            p.Send(Packet.EnvColor(2, curFogColor.R, curFogColor.G, curFogColor.B));
+            Send(Packet.EnvMapProperty(EnvProp.MaxFog, (int)curRenderDistance));
+            Send(Packet.EnvColor(2, curFogColor.R, curFogColor.G, curFogColor.B));
             NasLevel nl = NasLevel.all[p.level.name];
             int z = next.BlockZ;
             z = Utils.Clamp(z, 0, (ushort)(p.level.Length - 1));
@@ -583,7 +605,7 @@ namespace NotAwesomeSurvival
                 targetFogColor = Color.White;
                 expFog = 0;
             }
-            p.Send(Packet.EnvMapProperty(EnvProp.ExpFog, expFog));
+            Send(Packet.EnvMapProperty(EnvProp.ExpFog, expFog));
         }
         public static Color ScaleColor(Color cur, Color goal)
         {

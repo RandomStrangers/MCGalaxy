@@ -16,6 +16,10 @@ namespace NotAwesomeSurvival
         public static ColorDesc[] lowHealthColors;
         public static ColorDesc[] direHealthColors;
         public const string selectorImageName = "selectorColors.png";
+        public static void Log(string format, params object[] args)
+        {
+            Logger.Log(LogType.Debug, string.Format(format, args));
+        }
         public static bool Setup()
         {
             if (File.Exists("plugins/" + selectorImageName))
@@ -24,7 +28,7 @@ namespace NotAwesomeSurvival
             }
             if (!File.Exists(Nas.Path + selectorImageName))
             {
-                Player.Console.Message("Could not locate {0} (needed for tool health/selection colors)", selectorImageName);
+                Log("Could not locate {0} (needed for tool health/selection colors)", selectorImageName);
                 return false;
             }
             Bitmap colorImage;

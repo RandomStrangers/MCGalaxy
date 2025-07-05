@@ -162,7 +162,7 @@ namespace NotAwesomeSurvival
                 AreaInfo info = (AreaInfo)task.State;
                 if (info.curRound <= 0)
                 {
-                    info.np.p.Send(Packet.DeleteSelection(info.ID));
+                    info.np.Send(Packet.DeleteSelection(info.ID));
                     task.Repeating = false;
                     return;
                 }

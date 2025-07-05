@@ -1,5 +1,6 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
+using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using Newtonsoft.Json;
 using System;
@@ -11,8 +12,7 @@ namespace NotAwesomeSurvival
         // Vars
         public static float globalCurrentTime;
         public static DayCycles globalCurrentDayCycle;
-        public static float staticMaxTime;
-        public static int gameday = 0; // just defining it here, starting at 0. then adding on to it :)
+        public static int gameday = 0;
         public static string TimeFilePath = Nas.CoreSavePath + "time.json";
         public static JsonSerializer serializer = new JsonSerializer();
         public static Scheduler weatherScheduler;
@@ -42,7 +42,7 @@ namespace NotAwesomeSurvival
             if (!File.Exists(TimeFilePath))
             {
                 File.Create(TimeFilePath).Dispose();
-                Logger.Log(LogType.Debug, "Created new json time file " + TimeFilePath + " !");
+                Log("Created new json time file {0}!", TimeFilePath);
                 using (StreamWriter sw = new StreamWriter(TimeFilePath))
                 { // To help you better understand, this is the stream writer
                     using (JsonWriter writer = new JsonTextWriter(sw))
@@ -56,10 +56,9 @@ namespace NotAwesomeSurvival
             dayCycle = ntc.cycle;
             gameday = ntc.day;
             cycleCurrentTime = ntc.minutes;
-            gameday = cyc.day;
-            cycleCurrentTime = cyc.minutes;
-            dayCycle = cyc.cycle;
-            staticMaxTime = cycleMaxTime;
+            cyc.cycle = ntc.cycle;
+            cyc.day = ntc.day;
+            cyc.minutes = ntc.minutes;
         }
         public static void TakeDown()
         {
@@ -76,7 +75,7 @@ namespace NotAwesomeSurvival
             if (cycleCurrentTime >= cycleMaxTime)
             {
                 cycleCurrentTime = 0; // back to 0 (restarting cycle time)
-                gameday += 1; // one more in-game day just passed :p
+                gameday += 1; // one more in-game day just passed
                 dayCycle++; // change cycle state
             }
             //when to change cycles
@@ -100,70 +99,108 @@ namespace NotAwesomeSurvival
             { 
                 dayCycle = DayCycles.Midnight; 
             } // 0 am
-            // Sunrise state (you can do a lot of stuff based on every cycle state, like enable monster spawning only when dark)
-            if (dayCycle == DayCycles.Sunrise)
+            switch (dayCycle)
             {
-                globalCloudColor = "#ff8c00"; // Dark Orange
-                globalSkyColor = "#FFA500"; // Orange
-                globalSunColor = "#a9a9a9"; // Dark Gray
-                globalShadowColor = "#828282";
-            }
-            // Mid Day state
-            if (dayCycle == DayCycles.Day)
-            {
-                globalCloudColor = "#ffffff"; // white
-                globalSkyColor = "#ADD8E6"; // light blue
-                globalSunColor = "#ffffff"; // white
-                globalShadowColor = "#9B9B9B";
-            }
-            // Sunset state
-            if (dayCycle == DayCycles.Sunset)
-            {
-                globalCloudColor = "#cf5c00"; // Dark Orange
-                globalSkyColor = "#FFB500"; // Orange
-                globalSunColor = "#a9a9a9"; // Dark Gray
-                globalShadowColor = "#828282";
-            }
-            // Night state
-            if (dayCycle == DayCycles.Night)
-            {
-                globalCloudColor = "#808080"; // grey
-                globalSkyColor = "#404040"; // darko grey
-                globalSunColor = "#808080"; // grey
-                globalShadowColor = "#595959";
-            }
-            // Midnight state
-            if (dayCycle == DayCycles.Midnight)
-            {
-                globalCloudColor = "#404040"; // darko grey
-                globalSkyColor = "#000000"; // black
-                globalSunColor = "#404040"; // darko grey
-                globalShadowColor = "#494949";
+                // Sunrise state (you can do a lot of stuff based on every cycle state, like enable monster spawning only when dark)
+                case DayCycles.Sunrise:
+                    globalCloudColor = "#ff8c00"; // Dark Orange
+                    globalSkyColor = "#FFA500"; // Orange
+                    globalSunColor = "#a9a9a9"; // Dark Gray
+                    globalShadowColor = "#828282";
+                    break;
+                // Mid Day state
+                case DayCycles.Day:
+                    globalCloudColor = "#ffffff"; // White
+                    globalSkyColor = "#ADD8E6"; // Light Blue
+                    globalSunColor = "#ffffff"; // White
+                    globalShadowColor = "#9B9B9B";
+                    break;
+                // Sunset state
+                case DayCycles.Sunset:
+                    globalCloudColor = "#cf5c00"; // Dark Orange
+                    globalSkyColor = "#FFB500"; // Orange
+                    globalSunColor = "#a9a9a9"; // Dark Gray
+                    globalShadowColor = "#828282";
+                    break;
+                // Night state
+                case DayCycles.Night:
+                    globalCloudColor = "#808080"; // Gray
+                    globalSkyColor = "#404040"; // Darker Gray
+                    globalSunColor = "#808080"; // Gray
+                    globalShadowColor = "#595959";
+                    break;
+                // Midnight state
+                case DayCycles.Midnight:
+                    globalCloudColor = "#404040"; // Darker Gray
+                    globalSkyColor = "#000000"; // Black
+                    globalSunColor = "#404040"; // Darker Gray
+                    globalShadowColor = "#494949";
+                    break;
             }
             UpdateEnvSettings(globalCloudColor, globalSkyColor, globalSunColor, globalShadowColor);
             StoreTimeData(gameday, cycleCurrentTime, dayCycle);
         }
         public static void UpdateEnvSettings(string cloud, string sky, string sun, string shadow)
         {
+            bool changed = false;
             foreach (Level lvl in LevelInfo.Loaded.Items)
             {
-                if (NasLevel.Get(lvl.name).biome < 0) 
-                { 
-                    continue; 
+                if (NasLevel.Get(lvl.name).biome >= 0) 
+                {
+                    if (lvl.Config.LightColor != sun)
+                    {
+                        changed = true;
+                        lvl.Config.LightColor = sun; // Sun Colour
+                    }
+                    if (lvl.Config.CloudColor != cloud)
+                    {
+                        changed = true;
+                        lvl.Config.CloudColor = cloud; // Cloud Colour
+                    }
+                    if (lvl.Config.SkyColor != sky)
+                    {
+                        changed = true;
+                        lvl.Config.SkyColor = sky; // Sky
+                    }
+                    if (lvl.Config.ShadowColor != shadow)
+                    {
+                        changed = true;
+                        lvl.Config.ShadowColor = shadow; // Shadow
+                    }
+                    if (changed)
+                    {
+                        lvl.SaveSettings(); // We save these settings after
+                    }
                 }
-                lvl.Config.LightColor = sun; // Sun Colour
-                lvl.Config.CloudColor = cloud; // Cloud Colour
-                lvl.Config.SkyColor = sky; // Sky
-                lvl.Config.ShadowColor = shadow; // Shadow
-                lvl.SaveSettings(); // We save these settings after
             }
             foreach (Player p in PlayerInfo.Online.Items)
             {
-                if (NasLevel.Get(p.level.name).biome < 0) 
-                { 
-                    continue; 
+                if (NasLevel.Get(p.level.name).biome >= 0) 
+                {
+                    if (changed)
+                    {
+                        if (p.Supports(CpeExt.EnvColors))
+                        {
+                            if (Colors.TryParseHex(sky, out ColorDesc c))
+                            {
+                                p.Send(Packet.EnvColor(0, c.R, c.G, c.B));
+                            }
+                            if (Colors.TryParseHex(cloud, out c))
+                            {
+                                p.Send(Packet.EnvColor(1, c.R, c.G, c.B));
+                            }
+                            if (Colors.TryParseHex(shadow, out c))
+                            {
+                                p.Send(Packet.EnvColor(3, c.R, c.G, c.B));
+                            }
+                            if (Colors.TryParseHex(sun, out c))
+                            {
+                                p.Send(Packet.EnvColor(4, c.R, c.G, c.B));
+                            }
+                        }
+                        //p.SendCurrentEnv();
+                    }
                 }
-                p.SendCurrentEnv();
             }
         }
     }

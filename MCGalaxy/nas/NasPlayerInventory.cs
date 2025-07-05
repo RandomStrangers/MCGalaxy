@@ -16,6 +16,10 @@ namespace NotAwesomeSurvival
         { 
             this.p = p; 
         }
+        public static void Log(string format, params object[] args)
+        {
+            Logger.Log(LogType.Debug, string.Format(format, args));
+        }
         public void Message(string message, params object[] args)
         {
             p.Message(string.Format(message, args));
@@ -37,7 +41,7 @@ namespace NotAwesomeSurvival
             NasPlayer np = NasPlayer.GetNasPlayer(p);
             if (!np.SetInventoryNotif)
             {
-                Player.Console.Message("setting up inventory");
+                Log("Setting up inventory for {0}", np.p.truename);
                 np.SetInventoryNotif = true; //Prevent spamming console
             }
             //hide all blocks

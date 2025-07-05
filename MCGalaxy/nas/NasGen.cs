@@ -37,13 +37,17 @@ namespace NotAwesomeSurvival
             Block.Stone, 
             48 
         };
+        public static void Log(string format, params object[] args)
+        {
+            Logger.Log(LogType.Debug, string.Format(format, args));
+        }
         public static void Setup()
         {
             if (genScheduler == null)
             {
                 genScheduler = new Scheduler("MapGenScheduler");
             }
-            MapGen.Register("nasGen", GenType.Advanced, Gen, "hello?");
+            MapGen.Register("NASGen", GenType.Advanced, Gen, "hello?");
             coalFogColor = ColorTranslator.FromHtml("#BCC9E8");
             ironFogColor = ColorTranslator.FromHtml("#A1A3A8");
             goldFogColor = ColorTranslator.FromHtml("#7A706A");
@@ -52,6 +56,11 @@ namespace NotAwesomeSurvival
         }
         public static void TakeDown()
         {
+            MapGen gen = MapGen.Find("NASGen");
+            if (gen != null)
+            {
+                MapGen.Generators.Remove(gen);
+            }
         }
         public static int MakeInt(string seed)
         {
@@ -138,7 +147,7 @@ namespace NotAwesomeSurvival
             }
             instance.Do();
             lvl.Config.Deletable = false;
-            lvl.Config.MOTD = "-hax +thirdperson maxspeed=1.5 +hold";
+            lvl.Config.MOTD = "-hax +thirdperson maxspeed=1.5";
             lvl.Config.GrassGrow = false;
             TimeSpan timeTaken = DateTime.UtcNow.Subtract(dateStart);
             p.Message("Done in {0}", timeTaken.Shorten(true, true));
@@ -347,8 +356,12 @@ namespace NotAwesomeSurvival
                         }
                     }
                     TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
-                    if (span > TimeSpan.FromSeconds(10))
+                    if (span > TimeSpan.FromSeconds(5))
                     {
+                        if (p != Player.Console)
+                        {
+                            Log("Initial gen {0}% complete.", (int)(y / height * 100));
+                        }
                         p.Message("Initial gen {0}% complete.", (int)(y / height * 100));
                         dateStartLayer = DateTime.UtcNow;
                     }
@@ -390,11 +403,14 @@ namespace NotAwesomeSurvival
                 adjNoise.Seed = MakeInt(seed + "soil");
                 adjNoise.Frequency = 1;
                 adjNoise.OctaveCount = 6;
-                for (int y = 0; y < height - 1; y++)
+                DateTime dateStartLayer;
+                //counter = 0;
+                dateStartLayer = DateTime.UtcNow;
+                for (double y = 0; y < height - 1; y++)
                 { 
-                    for (int z = 0; z < length; ++z)
+                    for (double z = 0; z < length; ++z)
                     { 
-                        for (int x = 0; x < width; ++x)
+                        for (double x = 0; x < width; ++x)
                         {
                             if (biome == 1) 
                             {
@@ -417,7 +433,7 @@ namespace NotAwesomeSurvival
                                 {
                                     soil = Block.Sand;
                                 }
-                                int startY = y;
+                                int startY = (int)y;
                                 for (int yCol = startY; yCol > startY - 2 - r.Next(0, 2); yCol--)
                                 {
                                     if (yCol < 0) 
@@ -432,7 +448,21 @@ namespace NotAwesomeSurvival
                             }
                         }
                     }
+                    TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
+                    if (span > TimeSpan.FromSeconds(5))
+                    {
+                        if (p != Player.Console)
+                        {
+                            Log("Soil gen {0}% complete.", (int)(y / height * 100));
+                        }
+                        p.Message("Soil gen {0}% complete.", (int)(y / height * 100));
+                        dateStartLayer = DateTime.UtcNow;
+                    }
                 }
+            }
+            public bool ShouldThereBeSoil(double x, double y, double z)
+            {
+                return ShouldThereBeSoil((int)x, (int)y, (int)z);
             }
             public bool ShouldThereBeSoil(int x, int y, int z)
             {
@@ -521,8 +551,12 @@ namespace NotAwesomeSurvival
                         }
                     }
                     TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
-                    if (span > TimeSpan.FromSeconds(10))
+                    if (span > TimeSpan.FromSeconds(5))
                     {
+                        if (p != Player.Console)
+                        {
+                            Log("Cave gen {0}% complete.", (int)(y / height * 100));
+                        }
                         p.Message("Cave gen {0}% complete.", (int)(y / height * 100));
                         dateStartLayer = DateTime.UtcNow;
                     }
@@ -571,8 +605,12 @@ namespace NotAwesomeSurvival
                         }
                     }
                     TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
-                    if (span > TimeSpan.FromSeconds(10))
+                    if (span > TimeSpan.FromSeconds(5))
                     {
+                        if (p != Player.Console)
+                        {
+                            Log("Random gen {0}% complete.", (int)(y / height * 100));
+                        }
                         p.Message("Random gen {0}% complete.", (int)(y / height * 100));
                         dateStartLayer = DateTime.UtcNow;
                     }
@@ -609,11 +647,15 @@ namespace NotAwesomeSurvival
                 adjNoise.Seed = MakeInt(seed + "tree");
                 adjNoise.Frequency = 1;
                 adjNoise.OctaveCount = 1;
-                for (int y = 0; y < (ushort)(lvl.Height - 1); y++)
+                DateTime dateStartLayer;
+                //counter = 0;
+                dateStartLayer = DateTime.UtcNow;
+                int height = lvl.Height - 1, width = lvl.Width, length = lvl.Length;
+                for (double y = 0; y < (ushort)height; y++)
                 {
-                    for (int z = 0; z < lvl.Length; ++z)
+                    for (double z = 0; z < length; ++z)
                     {
-                        for (int x = 0; x < lvl.Width; ++x)
+                        for (double x = 0; x < width; ++x)
                         {
                             topSoil = Block.Extended | 129; //Block.Grass;
                             if (biome == 1)
@@ -712,29 +754,38 @@ namespace NotAwesomeSurvival
                             }
                         }
                     }
-                }
-                p.Message("Foliage gen complete.");
-                if (biome != 6)
-                {
-                    return;
-                }
-                for (int z = 0; z < lvl.Length; ++z)
-                { 
-                    for (int x = 0; x < lvl.Width; ++x)
+                    TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
+                    if (span > TimeSpan.FromSeconds(5))
                     {
-                        if (NasBlock.IsPartOfSet(NasBlock.waterSet, lvl.FastGetBlock((ushort)x, oceanHeight - 1, (ushort)z)) != -1)
+                        if (p != Player.Console)
                         {
-                            if (lvl.FastGetBlock((ushort)x, oceanHeight, (ushort)z) != 0)
+                            Log("Foilage gen {0}% complete.", (int)(y / height * 100));
+                        }
+                        p.Message("Foilage gen {0}% complete.", (int)(y / height * 100));
+                        dateStartLayer = DateTime.UtcNow;
+                    }
+                }
+                if (biome == 6)
+                {
+                    for (int z = 0; z < length; ++z)
+                    {
+                        for (int x = 0; x < width; ++x)
+                        {
+                            if (NasBlock.IsPartOfSet(NasBlock.waterSet, lvl.FastGetBlock((ushort)x, oceanHeight - 1, (ushort)z)) != -1)
                             {
-                                continue;
-                            }
-                            if (r.NextDouble() <= 0.05)
-                            {
-                                lvl.SetBlock((ushort)x, oceanHeight, (ushort)z, Block.FromRaw(449));
+                                if (lvl.FastGetBlock((ushort)x, oceanHeight, (ushort)z) != 0)
+                                {
+                                    continue;
+                                }
+                                if (r.NextDouble() <= 0.05)
+                                {
+                                    lvl.SetBlock((ushort)x, oceanHeight, (ushort)z, Block.FromRaw(449));
+                                }
                             }
                         }
                     }
                 }
+                p.Message("Foliage gen 100% complete.");
             }
             public void GenTree(ushort x, ushort y, ushort z)
             {
@@ -1095,6 +1146,10 @@ namespace NotAwesomeSurvival
                 {
                     GenerateDungeon(r, lvl, nl);
                 }
+            }
+            public static void GenerateDungeon(NasPlayer np, int x, int y, int z, Level level, NasLevel nsl)
+            {
+                GenerateDungeon(np.p, x, y, z, level, nsl);
             }
             public static void GenerateDungeon(Player p, int x, int y, int z, Level level, NasLevel nsl)
             {

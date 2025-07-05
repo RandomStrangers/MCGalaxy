@@ -8,6 +8,27 @@ namespace NotAwesomeSurvival
 {
     public partial class NasLevel
     {
+        public static bool IsNasLevel(Level lvl)
+        {
+            bool valid = true;
+            if (lvl.Config.Deletable && lvl.Config.Buildable)
+            {
+                valid = false;
+            }
+            if (Get(lvl) == null)
+            {
+                valid = false;
+            }
+            return valid;
+        }
+        public static NasLevel Get(Level lvl)
+        {
+            if (all.ContainsKey(lvl.name))
+            {
+                return all[lvl.name];
+            }
+            return null;
+        }
         public const string Path = Nas.Path + "leveldata/";
         public const string Extension = ".json";
         public static void Setup()
@@ -37,6 +58,22 @@ namespace NotAwesomeSurvival
         {
             return Path + name + Extension;
         }
+        public bool Save(string name = "")
+        {
+            if (name == "")
+            {
+                name = lvl.name;
+            }
+            EndTickTask();
+            lvl.Save(true);
+            string jsonString = JsonConvert.SerializeObject(this, Formatting.Indented);
+            string fileName = GetFileName(name);
+            File.WriteAllText(fileName, jsonString);
+            Log("Unloaded(saved) NasLevel {0}!", fileName);
+            all.Remove(name);
+            Server.DoGC();
+            return true;
+        }
         public static NasLevel ForceGet(string name)
         {
             NasLevel nl = new NasLevel();
@@ -47,6 +84,7 @@ namespace NotAwesomeSurvival
                 nl = JsonConvert.DeserializeObject<NasLevel>(jsonString);
                 return nl;
             }
+            Log("NasLevel {0} does not exist, creating a new one!", name);
             return nl;//Never return null, results in error
         }
         public static NasLevel Get(string name)
@@ -59,14 +97,7 @@ namespace NotAwesomeSurvival
         }
         public static void Unload(string name, NasLevel nl)
         {
-            nl.EndTickTask();
-            nl.lvl.Save(true);
-            string jsonString;
-            jsonString = JsonConvert.SerializeObject(nl, Formatting.Indented);
-            string fileName = GetFileName(name);
-            File.WriteAllText(fileName, jsonString);
-            Logger.Log(LogType.Debug, "Unloaded(saved) NasLevel " + fileName + "!");
-            all.Remove(name);
+            nl.Save(name);
         }
         public static int MakeInt(string seed)
         {
@@ -86,7 +117,7 @@ namespace NotAwesomeSurvival
             {
                 return;
             }
-            NasLevel nl = new NasLevel();
+            NasLevel nl;
             string fileName = GetFileName(lvl.name);
             if (File.Exists(fileName))
             {
@@ -112,7 +143,7 @@ namespace NotAwesomeSurvival
                     }
                     nl.dungeons = true;
                 }
-                Logger.Log(LogType.Debug, "Loaded NasLevel " + fileName + "!");
+                Log("Loaded NasLevel {0}!", fileName);
             }
         }
         public static void OnLevelUnload(Level lvl, ref bool cancel)
@@ -129,7 +160,7 @@ namespace NotAwesomeSurvival
             if (File.Exists(fileName))
             {
                 FileIO.TryDelete(fileName);
-                Logger.Log(LogType.Debug, "Deleted NasLevel " + fileName + "!");
+                Log("Deleted NasLevel {0}!", fileName);
             }
         }
         public static void OnLevelRenamed(string srcMap, string dstMap)
@@ -139,7 +170,7 @@ namespace NotAwesomeSurvival
             {
                 string newFileName = Path + dstMap + Extension;
                 FileIO.TryMove(fileName, newFileName);
-                Logger.Log(LogType.Debug, "Renamed NasLevel " + fileName + " to " + newFileName + "!");
+                Log("Renamed NasLevel {0} to {1}!", fileName, newFileName);
             }
         }
     }

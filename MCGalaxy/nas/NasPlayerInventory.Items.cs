@@ -45,7 +45,7 @@ namespace NotAwesomeSurvival
         public void ToggleBagOpen()
         {
             deleting = false;
-            NasPlayer np = (NasPlayer)p.Extras[Nas.PlayerKey];
+            NasPlayer np = NasPlayer.GetNasPlayer(p);
             bagOpen = !bagOpen;
             if (bagOpen)
             {
@@ -100,7 +100,7 @@ namespace NotAwesomeSurvival
         }
         public void MoveItemBarSelection(int direction)
         {
-            NasPlayer np = (NasPlayer)p.Extras[Nas.PlayerKey];
+            NasPlayer np = NasPlayer.GetNasPlayer(p);
             if (!np.hasBeenSpawned)
             {
                 Message("&chasBeenSpawned is &cfalse&S, this shouldn't happen if you didn't just die.");

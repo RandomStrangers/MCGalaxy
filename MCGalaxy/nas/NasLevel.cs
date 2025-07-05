@@ -21,6 +21,9 @@ namespace NotAwesomeSurvival
         public static Scheduler TickScheduler;
         public static TimeSpan tickDelay = TimeSpan.FromMilliseconds(100);
         public static Random r = new Random();
+        public ushort height;
+        public List<BlockLocation> blocksThatMustBeDisturbed = new List<BlockLocation>();
+        public Dictionary<string, NasBlock.Entity> blockEntities = new Dictionary<string, NasBlock.Entity>();
         public class BlockLocation
         {
             public int X, Y, Z;
@@ -45,16 +48,17 @@ namespace NotAwesomeSurvival
             public DateTime date;
             public NasBlockAction da;
         }
-        public ushort height;
-        public List<BlockLocation> blocksThatMustBeDisturbed = new List<BlockLocation>();
-        public Dictionary<string, NasBlock.Entity> blockEntities = new Dictionary<string, NasBlock.Entity>();
+        public static void Log(string format, params object[] args)
+        {
+            Logger.Log(LogType.Debug, string.Format(format, args));
+        }
         public void BeginTickTask()
         {
             if (TickScheduler == null)
             {
                 TickScheduler = new Scheduler("NasLevelTickScheduler");
             }
-            Player.Console.Message("Re-disturbing {0} blocks.", blocksThatMustBeDisturbed.Count);
+            Log("Re-disturbing {0} blocks.", blocksThatMustBeDisturbed.Count);
             foreach (BlockLocation blockLoc in blocksThatMustBeDisturbed)
             {
                 DisturbBlock(blockLoc.X, blockLoc.Y, blockLoc.Z);
@@ -69,7 +73,7 @@ namespace NotAwesomeSurvival
                 TickScheduler = new Scheduler("NasLevelTickScheduler");
             }
             TickScheduler.Cancel(schedulerTask);
-            Player.Console.Message("Saving {0} blocks to re-disturb later.", tickQueue.Count);
+            Log("Saving {0} blocks to re-disturb later.", tickQueue.Count);
             if (tickQueue.Count == 0) 
             { 
                 return; 
@@ -98,12 +102,12 @@ namespace NotAwesomeSurvival
                 }
                 else
                 {
-                    Player.Console.Message("NasLevel tick task was null, skipping tick.");
+                    Log("NasLevel tick task was null, skipping tick.");
                 }
             }
             else
             {
-                Player.Console.Message("NasLevel tick task was null, skipping tick.");
+                Log("NasLevel tick task was null, skipping tick.");
             }
         }
         public void Tick()
@@ -143,7 +147,7 @@ namespace NotAwesomeSurvival
                 }
                 else
                 {
-                    Logger.Log(LogType.Warning, "NasLevel tick called on a null level, skipping tick");
+                    Log("NasLevel tick called on a null level, skipping tick");
                     return;
                 }
                 tickQueue.Dequeue();
@@ -153,6 +157,10 @@ namespace NotAwesomeSurvival
                     break; 
                 }
             }
+        }
+        public void SetBlock(double x, double y, double z, ushort serverushort, bool disturbDiagonals = false)
+        {
+            SetBlock((int)x, (int)y, (int)z, serverushort, disturbDiagonals);
         }
         public void SetBlock(int x, int y, int z, ushort serverushort, bool disturbDiagonals = false)
         {
@@ -341,14 +349,6 @@ namespace NotAwesomeSurvival
         public ushort GetBlock(int x, int y, int z)
         {
             return lvl.GetBlock((ushort)x, (ushort)y, (ushort)z);
-        }
-    }
-    public static class DateExtensions
-    {
-        public static DateTime Floor(this DateTime date, TimeSpan span)
-        {
-            long ticks = date.Ticks / span.Ticks;
-            return new DateTime(ticks * span.Ticks);
         }
     }
 }

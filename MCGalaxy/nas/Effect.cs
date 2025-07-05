@@ -102,12 +102,16 @@ namespace NotAwesomeSurvival
                 }
                 if (!ConfigElement.ParseFile(cfg, fileName, this))
                 {
-                    Player.Console.Message("NAS: Could not find required effect file {0}", effectName);
+                    Log("NAS: Could not find required effect file {0}", effectName);
                     return false;
                 }
                 offset = pixelSize / 32;
                 return true;
             }
+        }
+        public static void Log(string format, params object[] args)
+        {
+            Logger.Log(LogType.Debug, string.Format(format, args));
         }
         public static void Define(Player p, byte ID, Effect effect, Color? color = null, float? lifetime = null)
         {

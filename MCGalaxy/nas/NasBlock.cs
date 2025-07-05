@@ -36,6 +36,10 @@ namespace NotAwesomeSurvival
             }
             return GetBlockName(p, Block.FromRaw(id)).Split('-')[0];
         }
+        public string GetName(NasPlayer np, ushort id = ushort.MaxValue)
+        {
+            return GetName(np.p, id);
+        }
         public static string GetBlockName(Player p, ushort block)
         {
             if (Block.IsPhysicsType(block))

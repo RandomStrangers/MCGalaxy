@@ -619,6 +619,8 @@
     <Compile Include="Modules\Warps\WarpCommand.cs" />
     <Compile Include="Modules\Warps\WarpPlugin.cs" />
     <Compile Include="nas\Crafting.Items.cs" />
+    <Compile Include="nas\NameGenerator.cs" />
+    <Compile Include="nas\PluginEvents.cs" />
     <Compile Include="nas\Utils.cs" />
     <Compile Include="Network\BaseWebSocket.cs" />
     <Compile Include="Network\ClassicProtocol.cs" />

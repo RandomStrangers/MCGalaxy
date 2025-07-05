@@ -236,12 +236,14 @@ namespace MCGalaxy
         }
 
         /// <summary>
-        /// Adds the given entity. Returns true if an entity was spawned, otherwise false if it could not immediately be spawned (it will spawn later if enough are removed)
+        /// Adds the given entity and calls OnSendingModelEvent. Returns true if an entity was spawned, otherwise false if it could not immediately be spawned (it will spawn later if enough are removed)
         /// If this returns false and tabList is true, once the entity spawns, it will be added to the tab list.
         /// </summary>
         public bool Add(Entity e, Position pos, Orientation rot, string skin, string name, string model, bool tabList)
         {
             bool self = e == p;
+
+            OnSendingModelEvent.Call(e, ref model, p);
 
             lock (locker)
             {
@@ -348,8 +350,12 @@ namespace MCGalaxy
             p.Session.SendRemoveEntity(vis.id);
         }
 
+        /// <summary>
+        /// Calls OnSendingModelEvent and changes the model of the given entity.
+        /// </summary>
         public void SendModel(Entity e, string model)
         {
+            OnSendingModelEvent.Call(e, ref model, p);
             lock (locker)
             {
                 VisibleEntity vis;
@@ -361,7 +367,6 @@ namespace MCGalaxy
         {
             if (p.hasChangeModel)
             {
-                OnSendingModelEvent.Call(vis.e, ref model, p);
                 if (!(spawning && model.CaselessEq("humanoid"))) p.Session.SendChangeModel(vis.id, model);
             }
         }

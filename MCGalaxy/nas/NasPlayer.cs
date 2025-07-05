@@ -51,13 +51,16 @@ namespace NotAwesomeSurvival
         public string spawnMap;
         public DateTime pvpCooldown;
         public bool pvpEnabled = false;
-        public bool staff = false;
         public int kills = 0;
         public int exp = 0;
         public int levels = 0;
         public void Message(string message, params object[] args) 
         { 
             p.Message(string.Format(message, args)); 
+        }
+        public void MessageLines(IEnumerable<string> lines)
+        {
+            p.MessageLines(lines);
         }
         public void Send(byte[] buffer)
         {
@@ -70,6 +73,10 @@ namespace NotAwesomeSurvival
             {
                 NasBlockChange.breakScheduler.Cancel((SchedulerTask)p.Extras["nas_taskDisplayMeter"]);
             }
+        }
+        public static void Log(string format, params object[] args)
+        {
+            Logger.Log(LogType.Debug, string.Format(format, args));
         }
         public static NasPlayer GetNasPlayer(Player p)
         {
@@ -108,7 +115,7 @@ namespace NotAwesomeSurvival
         {
             if (log)
             {
-                Player.Console.Message("setting player in inventory");
+                Log("setting {0} in inventory", p.truename);
             }
             this.p = p;
             inventory.SetPlayer(p);
@@ -466,7 +473,7 @@ namespace NotAwesomeSurvival
             }
             else
             {
-                Message("Please update to the latest ClassiCube build to hit with knockback.");
+                p.Message("Please update to the latest ClassiCube build to hit with knockback.");
             }
         }
         public override void ChangeHealth(float diff)
@@ -663,7 +670,7 @@ namespace NotAwesomeSurvival
             hasBeenSpawned = false;
             isDead = true;
             lastAttackedPlayer = null;
-            Player.Console.Message("{0}: hasBeenSpawned set to {1}", p.name, hasBeenSpawned);
+            Log("{0}: hasBeenSpawned set to {1}", p.truename, hasBeenSpawned);
             reason = thing.Replace("@p", p.ColoredName);
             PlayerActions.Respawn(p);
         }
@@ -839,6 +846,81 @@ namespace NotAwesomeSurvival
             }
             heldNasBlock = nasBlock;
         }
+        [JsonIgnore]
+        public const string precisePrefix = "-precise ";
+        public void Teleport(string message)
+        {
+            bool preciseTP = message.CaselessStarts(precisePrefix);
+            if (preciseTP)
+            {
+                message = message.Substring(precisePrefix.Length);
+            }
+            string[] args = message.SplitSpaces();
+            TeleportCoords(args, preciseTP);
+        }
+        public bool GetTeleportCoords(Entity ori, string[] args, bool precise,
+                                               out Position pos, out byte yaw, out byte pitch)
+        {
+            Vec3S32 P;
+            pos = p.Pos;
+            yaw = ori.Rot.RotY;
+            pitch = ori.Rot.HeadX;
+            if (!precise)
+            {
+                P = p.Pos.FeetBlockCoords;
+                if (!GetCoords(p, args, 0, ref P))
+                {
+                    return false;
+                }
+                pos = Position.FromFeetBlockCoords(P.X, P.Y, P.Z);
+            }
+            else
+            {
+                P = new Vec3S32(p.Pos.X, p.Pos.Y - Entities.CharacterHeight, p.Pos.Z);
+                if (!GetCoords(p, args, 0, ref P))
+                {
+                    return false;
+                }
+                pos = new Position(P.X, P.Y + Entities.CharacterHeight, P.Z);
+            }
+            int angle = 0;
+            if (args.Length > 3)
+            {
+                if (!GetInt(p, args[3], "Yaw angle", ref angle, -360, 360))
+                {
+                    return false;
+                }
+                yaw = Orientation.DegreesToPacked(angle);
+            }
+            if (args.Length > 4)
+            {
+                if (!GetInt(p, args[4], "Pitch angle", ref angle, -360, 360))
+                {
+                    return false;
+                }
+                pitch = Orientation.DegreesToPacked(angle);
+            }
+            return true;
+        }
+        public void TeleportCoords(string[] args, bool precise)
+        {
+            if (!GetTeleportCoords(p, args, precise, out Position pos, out byte yaw, out byte pitch))
+            {
+                return;
+            }
+            PlayerOperations.TeleportToCoords(p, pos, new Orientation(yaw, pitch));
+        }
+        public void SendToMain()
+        {
+            if (p.level == Server.mainLevel)
+            {
+                PlayerActions.Respawn(p);
+            }
+            else
+            {
+                PlayerActions.ChangeMap(p, Server.mainLevel);
+            }
+        }
         public abstract class NASCommand : Command
         {
             public abstract string Name { get; }
@@ -866,12 +948,22 @@ namespace NotAwesomeSurvival
             public override string Name { get { return "Gravestones"; } }
             public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
             public override bool SuperUseable { get { return true; } }
+            public bool IsSuper(Player p, string message, string type)
+            {
+                if (message.Length > 0 || !p.IsSuper) return false;
+                SuperNeedsArgs(p, type);
+                return true;
+            }
+            public void SuperNeedsArgs(Player p, string type)
+            {
+                p.Message("When using /{0} from {2}, you must provide a {1}.", Name, type, p.SuperName);
+            }
             public override void Execute(Player p, string message)
             {
                 string[] args = message.SplitSpaces();
                 string name = args[0];
                 string PlayerName;
-                if (CheckSuper(p, name, "player name"))
+                if (IsSuper(p, name, "player name"))
                 {
                     return;
                 }
@@ -933,14 +1025,14 @@ namespace NotAwesomeSurvival
                 p.Message("&T/Gravestones [name] &H- Views the location of the player's gravestones");
             }
         }
-        public class CmdMyGravestones : NASCommand2
+        public class CmdMyGravestones : NASCommand
         {
             public override string Name { get { return "MyGravestones"; } }
             public override LevelPermission defaultRank { get { return LevelPermission.Guest; } }
-            public override void Execute(Player p, string message)
+            public override void Use(NasPlayer np, string message)
             {
                 //TODO: Simplify this, shouldn't copy deaths
-                string file = Nas.GetDeathPath(p.name);
+                string file = Nas.GetDeathPath(np.p.name);
                 string[] deaths = File.ReadAllLines(file);
                 string[] deaths2 = File.ReadAllLines(file);
                 int count = deaths2.Length;
@@ -965,11 +1057,11 @@ namespace NotAwesomeSurvival
                 }
                 if (count <= 0)
                 {
-                    p.Message("&SYou have no gravestones recorded!");
+                    np.Message("&SYou have no gravestones recorded!");
                     return;
                 }
-                p.Message("Your gravestones:");
-                p.MessageLines(deaths);
+                np.Message("Your gravestones:");
+                np.MessageLines(deaths);
             }
             public override void Help(Player p)
             {
@@ -1028,20 +1120,15 @@ namespace NotAwesomeSurvival
             public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
             public override void Use(NasPlayer np, string message)
             {
-                if (message.IsNullOrEmpty() && np.hasBeenSpawned)
+                if ((!message.CaselessContains("confirm") || message.IsNullOrEmpty()) && np.hasBeenSpawned)
                 {
-                    Help(np.p);
-                    return;
-                }
-                else if (!message.CaselessContains("confirm") && np.hasBeenSpawned)
-                {
-                    np.Message("HasBeenSpawned is currently true. If you want to turn off HasBeenSpawned, type &T/NASSpawn confirm");
+                    np.Message("&HHasBeenSpawned is currently true. If you want to turn off HasBeenSpawned, type &T/NASSpawn &Hconfirm");
                     return;
                 }
                 else if (message.CaselessContains("confirm") && np.hasBeenSpawned)
                 {
-                    np.hasBeenSpawned = false;
                     np.Message("HasBeenSpawned set to false. Use &T/NASSpawn &Hto turn it back on.");
+                    np.hasBeenSpawned = false;
                     return;
                 }
                 else if (!np.hasBeenSpawned)
@@ -1056,17 +1143,17 @@ namespace NotAwesomeSurvival
                 p.Message("&T/NASSpawn &H- Toggles hasBeenSpawned");
             }
         }
-        public class CmdSpawnDungeon : NASCommand2
+        public class CmdSpawnDungeon : NASCommand
         {
             public override string Name { get { return "SpawnDungeon"; } }
             public override string shortcut {  get { return "GenerateDungeon"; } }
             public override bool museumUsable { get { return false; } }
             public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-            public override void Execute(Player p, string message)
+            public override void Use(NasPlayer np, string message)
             {
-                p.Message("Generating dungeon.");
-                Vec3S32 P = p.Pos.BlockCoords;
-                NasGen.GenInstance.GenerateDungeon(p, P.X, P.Y, P.Z, p.level, NasLevel.Get(p.level.name));
+                np.Message("Generating dungeon.");
+                Vec3S32 P = np.p.Pos.BlockCoords;
+                NasGen.GenInstance.GenerateDungeon(np, P.X, P.Y, P.Z, np.p.level, NasLevel.Get(np.p.level.name));
             }
             public override void Help(Player p)
             {

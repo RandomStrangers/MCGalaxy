@@ -41,9 +41,9 @@ namespace NotAwesomeSurvival
                     return locker == null ? lockedBy : locker.ColoredName;
                 }
             }
-            public bool CanAccess(Player p)
+            public bool CanAccess(NasPlayer np)
             {
-                return lockedBy.Length == 0 || lockedBy == p.name;
+                return lockedBy.Length == 0 || lockedBy == np.p.name;
             }
             public string lockedBy = "";
             public string blockText = "";
@@ -138,7 +138,7 @@ namespace NotAwesomeSurvival
                 }
                 np.Message("Spawnpoint set");
                 Position coords = np.p.Pos;
-                Command.Find("tp").Use(np.p, x + " " + y + " " + z);
+                np.Teleport(x + " " + y + " " + z);
                 np.spawnCoords = np.p.Pos;
                 WarpList list = new WarpList
                 {
@@ -154,7 +154,7 @@ namespace NotAwesomeSurvival
                     waypoints.Create("Bed", np.p); 
                 }
                 waypoints.Update(waypoints.Find("Bed"), np.p);
-                Command.Find("tp").Use(np.p, "-precise " + coords.X + " " + (coords.Y - 50) + " " + coords.Z);
+                np.Teleport("-precise " + coords.X + " " + (coords.Y - 50) + " " + coords.Z);
                 np.spawnMap = np.p.level.name;
                 np.bedCoords = new int[] 
                 { 
@@ -166,7 +166,6 @@ namespace NotAwesomeSurvival
                     NasTimeCycle.cycleCurrentTime = 4200;
                     Chat.MessageChat(np.p, "&fSay thanks to " + np.p.ColoredName + " &ffor skipping the night!", null, true);
                 }
-
             };
         }
         public static NasBlockInteraction SmithingTableAction()
@@ -222,7 +221,7 @@ namespace NotAwesomeSurvival
                     np.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
                     return;
                 }
-                if (aboveHere == Block.FromRaw(171) && np.nl.blockEntities[x + " " + (y + 1) + " " + z].CanAccess(np.p) && np.nl.blockEntities[x + " " + (y + 1) + " " + z].blockText != "")
+                if (aboveHere == Block.FromRaw(171) && np.nl.blockEntities[x + " " + (y + 1) + " " + z].CanAccess(np) && np.nl.blockEntities[x + " " + (y + 1) + " " + z].blockText != "")
                 {
                     string[] words = np.nl.blockEntities[x + " " + (y + 1) + " " + z].blockText.Split(new[] { ':' }, 2);
                     np.inventory.HeldItem.displayName = words[1].Remove(0, 1);
@@ -246,7 +245,7 @@ namespace NotAwesomeSurvival
                     { 
                         np.p.invincible = true; 
                     }
-                    Command.Find("Main").Use(np.p, "");
+                    np.SendToMain();
                     np.lastGroundedLocation = new Vec3S32(Server.mainLevel.SpawnPos.X, Server.mainLevel.SpawnPos.Y, Server.mainLevel.SpawnPos.Z);
                     NasBlockChange.InvInfo invInfo = new NasBlockChange.InvInfo
                     {
@@ -325,7 +324,12 @@ namespace NotAwesomeSurvival
         public static NasBlockInteraction MessageInteraction()
         {
             return (np, button, action, nasBlock, x, y, z) => {
-                string myText = File.ReadAllText(GetTextPath(np.p));
+                string file = GetTextPath(np.p);
+                if (!File.Exists(file))
+                {
+                    File.WriteAllText(file, string.Empty);
+                }
+                string myText = File.ReadAllText(file);
                 if (!np.nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {
                     np.nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
@@ -342,12 +346,12 @@ namespace NotAwesomeSurvival
                 }
                 if ((button == MouseButton.Middle) && (myText != ""))
                 {
-                    if (!bEntity.CanAccess(np.p)) 
+                    if (!bEntity.CanAccess(np)) 
                     { 
                         return; 
                     }
-                    File.WriteAllText(GetTextPath(np.p), string.Empty);
-                    bEntity.blockText = np.p.ColoredName + " says: " + myText;
+                    bEntity.blockText = np.p.ColoredName + " &Ssays: " + myText;
+                    File.WriteAllText(file, string.Empty);
                     np.Message("Overwritten!");
                 }
             };
@@ -593,7 +597,7 @@ namespace NotAwesomeSurvival
                 {
                     if (np.inventory.HeldItem.name == "Key")
                     {
-                        np.p.Message("You cannot lock auto crafters.");
+                        np.Message("You cannot lock auto crafters.");
                         return;
                     }
                     np.Message("You can right click to remove items from auto crafters.");
@@ -617,7 +621,7 @@ namespace NotAwesomeSurvival
                     if (np.nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                     {
                         Entity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
-                        if (!bEntity.CanAccess(np.p) && button != MouseButton.Middle)
+                        if (!bEntity.CanAccess(np) && button != MouseButton.Middle)
                         {
                             np.Message("This {0} is locked by {1}&S.", nasBlock.container.name.ToLower(), bEntity.FormattedNameOfLocker);
                             return;
@@ -756,9 +760,8 @@ namespace NotAwesomeSurvival
         }
         public static void AddBlocks(NasPlayer np, int x, int y, int z)
         {
-            Player p = np.p;
-            //p.ClientHeldBlock is server block ID
-            ushort clientushort = np.ConvertBlock(p.ClientHeldBlock);
+            //np.p.ClientHeldBlock is server block ID
+            ushort clientushort = np.ConvertBlock(np.p.ClientHeldBlock);
             NasBlock nasBlock = Get(clientushort);
             Entity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
             if (nasBlock.parentID == 0)
@@ -770,7 +773,7 @@ namespace NotAwesomeSurvival
             {
                 np.isInserting = true;
                 np.interactCoords = new int[] { x, y, z };
-                np.Send(Packet.Motd(p, "-hax +thirdperson horspeed=0"));
+                np.Send(Packet.Motd(np.p, "-hax +thirdperson horspeed=0"));
                 np.Message("&ePlease enter in chat how many items you would like to put in the barrel.");
             }
             else
@@ -778,7 +781,7 @@ namespace NotAwesomeSurvival
                 int amount = np.inventory.GetAmount(nasBlock.parentID);
                 if (amount < 1)
                 {
-                    np.Message("You don't have any {0} to store.", nasBlock.GetName(p));
+                    np.Message("You don't have any {0} to store.", nasBlock.GetName(np));
                     return;
                 }
                 if (amount > 3) 
@@ -812,7 +815,6 @@ namespace NotAwesomeSurvival
         }
         public static void RemoveBlocks(NasPlayer np, Entity bEntity)
         {
-            Player p = np.p;
             if (bEntity.drop != null && bEntity.drop.blockStacks != null)
             {
                 if (bEntity.drop.blockStacks.Count == 0)
@@ -821,7 +823,7 @@ namespace NotAwesomeSurvival
                     return;
                 }
                 BlockStack bs = null;
-                ushort clientushort = np.ConvertBlock(p.ClientHeldBlock);
+                ushort clientushort = np.ConvertBlock(np.p.ClientHeldBlock);
                 NasBlock nasBlock = Get(clientushort);
                 foreach (BlockStack stack in bEntity.drop.blockStacks)
                 {
