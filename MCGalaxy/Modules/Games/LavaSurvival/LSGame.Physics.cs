@@ -60,7 +60,7 @@ namespace MCGalaxy.Modules.Games.LS
             bool placed = TryPlaceBlock(p, ref data.SpongesLeft, "Sponges", Block.Sponge, x, y, z);
             if (!placed) return ChangeResult.Unchanged;
 
-            PhysInfo C = default(PhysInfo);
+            PhysInfo C = default;
             C.X = x; C.Y = y; C.Z = z;
             OtherPhysics.DoSponge(Map, ref C, !waterMode);
             return ChangeResult.Modified;
@@ -134,8 +134,7 @@ namespace MCGalaxy.Modules.Games.LS
 
                 
         void SpreadWater(Level lvl, ushort x, ushort y, ushort z, BlockID type) {
-            int index;
-            BlockID block = lvl.GetBlock(x, y, z, out index);
+            BlockID block = lvl.GetBlock(x, y, z, out int index);
             if (InSafeZone(x, y, z)) return;
 
             switch (block) {
@@ -170,8 +169,7 @@ namespace MCGalaxy.Modules.Games.LS
         }
         
         void SpreadLava(Level lvl, ushort x, ushort y, ushort z, BlockID type) {
-            int index;
-            BlockID block = lvl.GetBlock(x, y, z, out index);
+            BlockID block = lvl.GetBlock(x, y, z, out int index);
             if (InSafeZone(x, y, z)) return;
 
             // in LS, sponge should stop lava too
@@ -225,7 +223,7 @@ namespace MCGalaxy.Modules.Games.LS
                     lvl.AddUpdate(index, Block.Air, default(PhysicsArgs));
                 }
             } else if (!lvl.Props[block].OPBlock && rand.Next(1, 101) <= burnChance) {
-                PhysicsArgs C = default(PhysicsArgs);
+                PhysicsArgs C = default;
                 C.Type1  = PhysicsArgs.Wait;      C.Value1 = destroyDelay;
                 C.Type2  = PhysicsArgs.Dissipate; C.Value2 = dissipateChance;
                 lvl.AddUpdate(index, Block.CoalOre, C);

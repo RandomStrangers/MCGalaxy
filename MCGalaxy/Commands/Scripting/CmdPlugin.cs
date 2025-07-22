@@ -51,19 +51,26 @@ namespace MCGalaxy.Commands.Scripting
             } else if (cmd.CaselessEq("unload")) {
                 UnloadPlugin(p, name);
             } else if (cmd.CaselessEq("create")) {
+#if !MCG_STANDALONE
+                Find("CmdCreate").Use(p, "plugin " + name, data);
+#else
                 p.Message("Use &T/PCreate &Sinstead");
+#endif
             } else if (cmd.CaselessEq("compile")) {
+#if !MCG_STANDALONE
+                Find("Compile").Use(p, "plugin " + name, data);
+#else
                 p.Message("Use &T/PCompile &Sinstead");
+#endif
             } else {
                 Help(p);
             }
         }
         
         static void UnloadPlugin(Player p, string name) {
-            int matches;
-            Plugin plugin = Matcher.Find(p, name, out matches, Plugin.custom, 
+            Plugin plugin = Matcher.Find(p, name, out int matches, Plugin.custom,
                                          null, pln => pln.name, "plugins");
-            
+
             if (plugin == null) return;
             ScriptingOperations.UnloadPlugin(p, plugin);
         }

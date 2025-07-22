@@ -30,7 +30,7 @@ namespace MCGalaxy.Commands.Info
         public override void Use(Player p, string message, CommandData data) {
             p.Message("Server time: {0:HH:mm:ss} on {0:yyyy-MM-dd}", DateTime.Now);
             IGame game = IGame.GameOn(p.level);
-            if (game != null) game.OutputTimeInfo(p);
+            game?.OutputTimeInfo(p);
         }
         
         public override void Help(Player p) {

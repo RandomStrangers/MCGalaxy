@@ -76,7 +76,7 @@ namespace MCGalaxy.Generator.Foliage
         };
         
         public static Tree Find(string name) {
-            foreach (var entry in TreeTypes) 
+            foreach (KeyValuePair<string, TreeConstructor> entry in TreeTypes) 
             {
                 if (entry.Key.CaselessEq(name)) return entry.Value();
             }

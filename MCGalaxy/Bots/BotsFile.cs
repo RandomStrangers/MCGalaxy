@@ -30,7 +30,7 @@ namespace MCGalaxy.Bots {
         static void LoadCore(Level lvl) {
             string path = Paths.BotsPath(lvl.MapName);
             if (!File.Exists(path)) return;
-            List<BotProperties> props = null;
+            List<BotProperties> props;
             
             try {
                 props = ReadAll(path);
@@ -52,13 +52,16 @@ namespace MCGalaxy.Bots {
             List<BotProperties> props = new List<BotProperties>();
             if (elems == null) elems = ConfigElement.GetAll(typeof(BotProperties));
             string json = File.ReadAllText(path);
-            
-            JsonReader reader = new JsonReader(json);
-            reader.OnMember   = (obj, key, value) => {
-                if (obj.Meta == null) obj.Meta = new BotProperties();
-                ConfigElement.Parse(elems, obj.Meta, key, (string)value);
+
+            JsonReader reader = new JsonReader(json)
+            {
+                OnMember = (obj, key, value) =>
+                {
+                    if (obj.Meta == null) obj.Meta = new BotProperties();
+                    ConfigElement.Parse(elems, obj.Meta, key, (string)value);
+                }
             };
-            
+
             JsonArray array = (JsonArray)reader.Parse();
             if (array == null) return props;
             
@@ -182,8 +185,7 @@ namespace MCGalaxy.Bots {
             bot.ClickedOnText = ClickedOnText; bot.DeathMessage = DeathMessage;
             bot.ScaleX = ScaleX; bot.ScaleY = ScaleY; bot.ScaleZ = ScaleZ;
 
-            long longCreationDate;
-            if (!string.IsNullOrEmpty(CreationDate) && long.TryParse(CreationDate, out longCreationDate)) bot.CreationDate = longCreationDate;
+            if (!string.IsNullOrEmpty(CreationDate) && long.TryParse(CreationDate, out long longCreationDate)) bot.CreationDate = longCreationDate;
         }
     }
 }

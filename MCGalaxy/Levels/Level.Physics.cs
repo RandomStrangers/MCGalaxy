@@ -83,7 +83,7 @@ namespace MCGalaxy {
                         continue;
                     }
 
-                    DateTime tickStart = default(DateTime);
+                    DateTime tickStart = default;
                     try {
                         lock (physTickLock) {
                             tickStart = DateTime.UtcNow;
@@ -124,7 +124,7 @@ namespace MCGalaxy {
 
         public PhysicsArgs foundInfo(ushort x, ushort y, ushort z) {
             if (!listCheckExists.Get(x, y, z))
-                return default(PhysicsArgs);
+                return default;
             
             int index = PosToInt(x, y, z);
             for (int i = 0; i < ListCheck.Count; i++) {
@@ -132,7 +132,7 @@ namespace MCGalaxy {
                 if (C.Index != index) continue;
                 return C.data;
             }
-            return default(PhysicsArgs);
+            return default;
         }
 
         void PhysicsTick() {
@@ -210,14 +210,14 @@ namespace MCGalaxy {
                 }
             }
             
-            if (bulkSender != null) bulkSender.Flush();
+            bulkSender?.Flush();
             ListUpdate.Clear(); listUpdateExists.Clear();
         }
         
         
         /// <summary> Adds the given coordinates to the list of ticked coordinates with empty data </summary>
         public void AddCheck(int index, bool overRide = false) {
-            AddCheck(index, overRide, default(PhysicsArgs));
+            AddCheck(index, overRide, default);
         }
         
         /// <summary> Adds the given coordinates to the list of ticked coordinates with the given data </summary>
@@ -252,7 +252,7 @@ namespace MCGalaxy {
         /// <summary> Adds the given entry to the list of updates to be applied at the end of the current physics tick </summary>
         /// <remarks> Must only be called from the physics thread (i.e. in a HandlePhysics handler function) </remarks>
         public bool AddUpdate(int index, BlockID block, bool overRide = false) {
-            PhysicsArgs args = default(PhysicsArgs);
+            PhysicsArgs args = default;
             args.Raw |= (uint)(PhysicsArgs.ExtBit * (block >> Block.ExtendedShift));
             return AddUpdate(index, block, args, overRide);
         }
@@ -300,11 +300,12 @@ namespace MCGalaxy {
         void RemoveExpiredChecks() {
             Check[] items = ListCheck.Items;
             int j = 0, count = ListCheck.Count;
-            ushort x, y, z;
-            
-            for (int i = 0; i < count; i++) {
-                if (items[i].data.Data == PhysicsArgs.RemoveFromChecks) {
-                    IntToPos(items[i].Index, out x, out y, out z);
+
+            for (int i = 0; i < count; i++)
+            {
+                if (items[i].data.Data == PhysicsArgs.RemoveFromChecks)
+                {
+                    IntToPos(items[i].Index, out ushort x, out ushort y, out ushort z);
                     listCheckExists.Set(x, y, z, false);
                     continue;
                 }
@@ -355,10 +356,10 @@ namespace MCGalaxy {
                 // Copy paste here because it's worthwhile inlining
                 if (args.Type1 == PhysicsArgs.Revert) {
                     BlockID block = (BlockID)(args.Value1 | (args.ExtBlock << Block.ExtendedShift));
-                    Blockchange(C.Index, block, true, default(PhysicsArgs));
+                    Blockchange(C.Index, block, true, default);
                 } else if (args.Type2 == PhysicsArgs.Revert) {
                     BlockID block = (BlockID)(args.Value2 | (args.ExtBlock << Block.ExtendedShift));
-                    Blockchange(C.Index, block, true, default(PhysicsArgs));
+                    Blockchange(C.Index, block, true, default);
                 }
             } catch (Exception e) {
                 Logger.LogError(e);

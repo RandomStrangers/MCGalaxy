@@ -54,9 +54,9 @@ namespace MCGalaxy.Blocks {
         //  Behind the scenes, 'return XYZ;' is actually compiled into 'return new HandleDelete(XYZ);'
         //  So by declaring a static variable, 'new HandleDelete(XYZ)' is only ever called once
         //   instead of over and over - thereby slightly reducing memory usage by a few KB per Level
-        static HandleDelete DB_revert = DeleteBehaviour.RevertDoor;
-        static HandleDelete DB_oDoor  = DeleteBehaviour.oDoor;
-        static HandleDelete DB_Door   = DeleteBehaviour.Door;
+        static readonly HandleDelete DB_revert = DeleteBehaviour.RevertDoor;
+        static readonly HandleDelete DB_oDoor  = DeleteBehaviour.oDoor;
+        static readonly HandleDelete DB_Door   = DeleteBehaviour.Door;
         
         /// <summary> Retrieves the default delete block handler for the given block. </summary>
         internal static HandleDelete GetDeleteHandler(BlockID block, BlockProps[] props) {
@@ -95,9 +95,9 @@ namespace MCGalaxy.Blocks {
 
         
         // See comments noted above for reasoning behind static declaration of some HandleDelete handlers
-        static HandlePhysics PH_do_Door  = DoorPhysics.Do;
-        static HandlePhysics PH_do_oDoor = DoorPhysics.oDoor;
-        static HandlePhysics PH_do_Other = OtherPhysics.DoOther;
+        static readonly HandlePhysics PH_do_Door  = DoorPhysics.Do;
+        static readonly HandlePhysics PH_do_oDoor = DoorPhysics.oDoor;
+        static readonly HandlePhysics PH_do_Other = OtherPhysics.DoOther;
         
         /// <summary> Retrieves the default physics block handler for the given block. </summary>
         internal static HandlePhysics GetPhysicsHandler(BlockID block, BlockProps[] props) {

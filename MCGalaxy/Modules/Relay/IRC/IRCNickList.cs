@@ -22,7 +22,7 @@ namespace MCGalaxy.Modules.Relay.IRC
     /// <summary> Manages a list of IRC nicks and asssociated permissions </summary>
     sealed class IRCNickList 
     {
-        Dictionary<string, List<string>> userMap = new Dictionary<string, List<string>>();     
+        readonly Dictionary<string, List<string>> userMap = new Dictionary<string, List<string>>();     
         public IRCBot bot;
         
         public void Clear() { userMap.Clear(); }
@@ -33,14 +33,14 @@ namespace MCGalaxy.Modules.Relay.IRC
         }
 
         public void OnLeft(string userNick) {
-            foreach (var chans in userMap) 
+            foreach (KeyValuePair<string, List<string>> chans in userMap) 
             {
                 RemoveNick(userNick, chans.Value);
             }
         }
         
         public void OnChangedNick(string userNick, string newNick) {
-            foreach (var chans in userMap)
+            foreach (KeyValuePair<string, List<string>> chans in userMap)
             {
                 int index = GetNickIndex(userNick, chans.Value);
                 if (index >= 0) {
@@ -61,7 +61,7 @@ namespace MCGalaxy.Modules.Relay.IRC
         
         
         List<string> GetNicks(string channel) {
-            foreach (var chan in userMap) 
+            foreach (KeyValuePair<string, List<string>> chan in userMap) 
             {
                 if (chan.Key.CaselessEq(channel)) return chan.Value;
             }

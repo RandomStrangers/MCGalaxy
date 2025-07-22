@@ -15,15 +15,14 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+#if !NET_20
 using System;
 using System.Threading;
-
-#if !NET_20
 namespace MCGalaxy.Util 
 {
     public sealed class IReaderWriterLock 
-    {        
-        ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
+    {
+        readonly ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
 
         public IDisposable AccquireRead() { return AccquireRead(-1); }
         public IDisposable AccquireWrite() { return AccquireWrite(-1); }
@@ -41,7 +40,7 @@ namespace MCGalaxy.Util
         class SlimLock : IDisposable 
         {
             ReaderWriterLockSlim locker;
-            bool writeMode;
+            readonly bool writeMode;
             
             public SlimLock(ReaderWriterLockSlim locker, bool writeMode) {
                 this.locker = locker;

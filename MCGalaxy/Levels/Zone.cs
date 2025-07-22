@@ -96,9 +96,8 @@ namespace MCGalaxy {
         public bool Shows { get { return Config.ShowAlpha != 0 && Config.ShowColor.Length > 0; } }
         public void Show(Player p) {
             if (!Shows) return;
-            
-            ColorDesc color; 
-            Colors.TryParseHex(Config.ShowColor, out color);
+
+            Colors.TryParseHex(Config.ShowColor, out ColorDesc color);
             color.A = (byte)Config.ShowAlpha;
             
             Vec3U16 min = new Vec3U16(MinX, MinY, MinZ);

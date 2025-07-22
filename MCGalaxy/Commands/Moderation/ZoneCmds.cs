@@ -117,7 +117,7 @@ namespace MCGalaxy.Commands.Moderation {
         }
         
         void SetZoneProp(Player p, string[] args, Zone zone) {
-            ColorDesc desc = default(ColorDesc);
+            ColorDesc desc = default;
             if (args.Length < 4) { 
                 p.Message("No value provided. See &T/Help zone properties");
                 return;

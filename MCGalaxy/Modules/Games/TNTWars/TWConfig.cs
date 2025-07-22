@@ -75,7 +75,7 @@ namespace MCGalaxy.Modules.Games.TW
         [ConfigVec3("red-spawn", null)]  public Vec3U16 RedSpawn;
         [ConfigVec3("blue-spawn", null)] public Vec3U16 BlueSpawn;
         
-        const string propsDir = "properties/tntwars/";
+        const string propsDir = "props/tntwars/";
         static ConfigElement[] cfg;        
         public override void Load(string map) {
             if (cfg == null) cfg = ConfigElement.GetAll(typeof(TWMapConfig));

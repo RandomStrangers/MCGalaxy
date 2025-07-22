@@ -57,10 +57,9 @@ namespace MCGalaxy.Commands.Moderation {
             JsonReader reader = new JsonReader(json);
             JsonObject obj    = (JsonObject)reader.Parse();
             if (obj == null) { p.Message("&WError parsing GeoIP info"); return; }
-            
-            object region = null, country = null;
-            obj.TryGetValue("region",   out region);
-            obj.TryGetValue("country", out country);
+
+            obj.TryGetValue("region", out object region);
+            obj.TryGetValue("country", out object country);
             string fullName = CountryUtils.GetName(country.ToString());
             if (fullName != null) country = fullName;
             

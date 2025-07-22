@@ -38,9 +38,8 @@ namespace MCGalaxy.Commands.Info
                 message = p.name;
             }
             if (!Formatter.ValidPlayerName(p, message)) return;
-            
-            int matches;
-            Player who = PlayerInfo.FindMatches(p, message, out matches);
+
+            Player who = PlayerInfo.FindMatches(p, message, out int matches);
             if (matches > 1) return;
             
             if (matches == 0) {

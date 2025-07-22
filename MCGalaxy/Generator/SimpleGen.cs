@@ -73,12 +73,12 @@ namespace MCGalaxy.Generator
             if (!args.ParseArgs(p)) return false;
             
             int maxX = lvl.Width - 1, maxY = lvl.Height - 1, maxZ = lvl.Length - 1;
-            NextBlock nextBlock = () => Block.White;
-            
+            byte nextBlock() => Block.White;
+
             // Cuboid the four walls
-            Cuboid(lvl, 0, 1, 0,    maxX, maxY, 0,    nextBlock);
+            Cuboid(lvl, 0, 1, 0,    maxX, maxY, 0, nextBlock);
             Cuboid(lvl, 0, 1, maxZ, maxX, maxY, maxZ, nextBlock);
-            Cuboid(lvl, 0, 1, 0,    0, maxY, maxZ,    nextBlock);
+            Cuboid(lvl, 0, 1, 0,    0, maxY, maxZ, nextBlock);
             Cuboid(lvl, maxX, 1, 0, maxX, maxY, maxZ, nextBlock);
             
             // Cuboid base
@@ -93,17 +93,17 @@ namespace MCGalaxy.Generator
             
             int maxX = lvl.Width - 1, maxY = lvl.Height - 1, maxZ = lvl.Length - 1;
             Random rng = new Random(args.Seed);
-            NextBlock nextBlock = () => rng.Next(100) == 0 ? biome.Ground : biome.Surface;
+            byte nextBlock() => rng.Next(100) == 0 ? biome.Ground : biome.Surface;
 
             // Cuboid the four walls
-            Cuboid(lvl, 0, 2, 0,    maxX, maxY, 0,    nextBlock);
+            Cuboid(lvl, 0, 2, 0,    maxX, maxY, 0, nextBlock);
             Cuboid(lvl, 0, 2, maxZ, maxX, maxY, maxZ, nextBlock);
-            Cuboid(lvl, 0, 2, 0,    0, maxY, maxZ,    nextBlock);
+            Cuboid(lvl, 0, 2, 0,    0, maxY, maxZ, nextBlock);
             Cuboid(lvl, maxX, 2, 0, maxX, maxY, maxZ, nextBlock);
             
             // Cuboid base and top
             Cuboid(lvl, 0, 0, 0,    maxX, 0, maxZ, () => Block.Bedrock);
-            Cuboid(lvl, 0, 1, 0,    maxX, 1, maxZ,    nextBlock);
+            Cuboid(lvl, 0, 1, 0,    maxX, 1, maxZ, nextBlock);
             Cuboid(lvl, 0, maxY, 0, maxX, maxY, maxZ, nextBlock);
             
             lvl.Config.EdgeLevel = 1;
@@ -115,16 +115,16 @@ namespace MCGalaxy.Generator
             
             int maxX = lvl.Width - 1, maxY = lvl.Height - 1, maxZ = lvl.Length - 1;
             Random rng = new Random(args.Seed);
-            NextBlock nextBlock = () => (byte)rng.Next(Block.Red, Block.White);
+            byte nextBlock() => (byte)rng.Next(Block.Red, Block.White);
 
             // Cuboid the four walls
-            Cuboid(lvl, 0, 1, 0,    maxX, maxY, 0,    nextBlock);
+            Cuboid(lvl, 0, 1, 0,    maxX, maxY, 0, nextBlock);
             Cuboid(lvl, 0, 1, maxZ, maxX, maxY, maxZ, nextBlock);
-            Cuboid(lvl, 0, 1, 0,    0, maxY, maxZ,    nextBlock);
+            Cuboid(lvl, 0, 1, 0,    0, maxY, maxZ, nextBlock);
             Cuboid(lvl, maxX, 1, 0, maxX, maxY, maxZ, nextBlock);
             
             // Cuboid base and top
-            Cuboid(lvl, 0, 0, 0,    maxX, 0, maxZ,    nextBlock);
+            Cuboid(lvl, 0, 0, 0,    maxX, 0, maxZ, nextBlock);
             Cuboid(lvl, 0, maxY, 0, maxX, maxY, maxZ, nextBlock);
             return true;
         }

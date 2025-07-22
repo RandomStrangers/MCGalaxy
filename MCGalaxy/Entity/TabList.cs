@@ -32,8 +32,7 @@ namespace MCGalaxy
             byte grpPerm = (byte)(offset - p.Rank);
             if (!Server.Config.TablistRankSorted) grpPerm = 1;
 
-            string name, group;
-            GetEntry(p, dst, out name, out group);
+            GetEntry(p, dst, out string name, out string group);
 
             name = Colors.Escape(name); // for nicks
             dst.EntityList.SendAddTabEntry(p, p.truename, name, group, grpPerm);

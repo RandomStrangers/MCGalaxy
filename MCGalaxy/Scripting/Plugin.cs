@@ -72,10 +72,10 @@ namespace MCGalaxy
                 string msg = string.Format("Plugin '{0}' requires a more recent version of {1}!", pl.name, Server.SoftwareName);
                 throw new InvalidOperationException(msg);
             }
-            
+
             try {
                 custom.Add(pl);
-                
+
                 if (pl.LoadAtStartup || !auto) {
                     pl.Load(auto);
                     Logger.Log(LogType.SystemActivity, "Plugin {0} loaded...build: {1}", pl.name, pl.build);
@@ -86,6 +86,10 @@ namespace MCGalaxy
                 if (!string.IsNullOrEmpty(pl.welcome)) Logger.Log(LogType.SystemActivity, pl.welcome);
             } catch {           
                 if (!string.IsNullOrEmpty(pl.creator)) Logger.Log(LogType.Warning, "You can go bug {0} about {1} failing to load.", pl.creator, pl.name);
+                if (custom.Contains(pl))
+                {
+                    custom.Remove(pl);
+                }
                 throw;
             }
         }

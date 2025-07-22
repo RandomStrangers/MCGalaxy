@@ -27,46 +27,40 @@ namespace MCGalaxy
     {
         /// <summary> Finds partial matches of 'color' against the list of colors. </summary>
         public static string FindColor(Player p, string color) {
-            int matches;
-            ColorDesc desc = Find(p, color, out matches, Colors.List,
+            ColorDesc desc = Find(p, color, out int matches, Colors.List,
                                   col => !col.Undefined, col => col.Name, "colors", 20);
             return desc.Undefined ? null : "&" + desc.Code;
         }
         
         /// <summary> Finds partial matches of 'name' against the list of bots in same level as player. </summary>
         public static PlayerBot FindBots(Player p, string name) {
-            int matches;
-            return Find(p, name, out matches, p.level.Bots.Items,
+            return Find(p, name, out int matches, p.level.Bots.Items,
                         null, b => b.name, "bots");
         }
         
         /// <summary> Find partial matches of 'name' against the list of loaded maps/levels. </summary>
         public static Level FindLevels(Player p, string name) {
-            int matches;
-            return Find(p, name, out matches, LevelInfo.Loaded.Items,
+            return Find(p, name, out int matches, LevelInfo.Loaded.Items,
                         null, l => l.name, l => l.ColoredName, "loaded levels");
         }
 
         /// <summary> Find partial matches of 'name' against the list of all map files. </summary>
         public static string FindMaps(Player pl, string name) {
-            if (!Formatter.ValidMapName(pl, name)) return null;            
-            int matches;
-            return Find(pl, name, out matches, LevelInfo.AllMapNames(),
+            if (!Formatter.ValidMapName(pl, name)) return null;
+            return Find(pl, name, out int matches, LevelInfo.AllMapNames(),
                         null, l => l, "levels", 10);
         }
         
         /// <summary> Find partial matches of 'name' against the list of ranks. </summary>
         public static Group FindRanks(Player p, string name) {
             Group.MapName(ref name);
-            int matches;
-            return Find(p, name, out matches, Group.GroupList,
+            return Find(p, name, out int matches, Group.GroupList,
                         null, g => Colors.Strip(g.Name), g => g.ColoredName, "ranks");
         }
         
         /// <summary> Find partial matches of 'name' against the list of zones in a map. </summary>
         public static Zone FindZones(Player p, Level lvl, string name) {
-            int matches;
-            return Find(p, name, out matches, lvl.Zones.Items,
+            return Find(p, name, out int matches, lvl.Zones.Items,
                         null, z => z.Config.Name, "zones");
         }
         
@@ -84,7 +78,7 @@ namespace MCGalaxy
         public static T Find<T>(Player p, string name, out int matches, IEnumerable<T> items,
                                 Predicate<T> filter, StringFormatter<T> nameGetter, 
                                 StringFormatter<T> itemFormatter, string group, int limit = 5)  {
-            T match = default(T); matches = 0;
+            T match = default; matches = 0;
             StringBuilder output = new StringBuilder();
             const StringComparison comp = StringComparison.OrdinalIgnoreCase;
 
@@ -105,7 +99,7 @@ namespace MCGalaxy
             
             if (matches == 1) return match;
             if (matches == 0) {
-                p.Message("No {0} match \"{1}\".", group, name); return default(T);
+                p.Message("No {0} match \"{1}\".", group, name); return default;
             }
             
             string count = matches > limit ? limit + "+ " : matches + " ";
@@ -113,7 +107,7 @@ namespace MCGalaxy
             
             p.Message("{0}{1} match \"{2}\":", count, group, name);
             p.Message(names);
-            return default(T);
+            return default;
         }
     }
 }

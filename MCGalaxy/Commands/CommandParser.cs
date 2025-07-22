@@ -97,11 +97,11 @@ namespace MCGalaxy.Commands
         /// <summary> Attempts to parse the given argument as an integer. </summary>
         public static bool GetInt(Player p, string input, string argName, ref int result,
                                   int min = int.MinValue, int max = int.MaxValue) {
-            int value;
-            if (!NumberUtils.TryParseInt32(input, out value)) {
+            if (!NumberUtils.TryParseInt32(input, out int value))
+            {
                 p.Message("&W\"{0}\" is not a valid integer for {1}.", input, argName.ToLowerInvariant()); return false;
             }
-            
+
             if (!CheckRange(p, value, argName, min, max)) return false;
             result = value; return true;
         }
@@ -109,11 +109,11 @@ namespace MCGalaxy.Commands
         /// <summary> Attempts to parse the given argument as a real number. </summary>
         public static bool GetReal(Player p, string input, string argName, ref float result,
                                    float min = float.NegativeInfinity, float max = float.MaxValue) {
-            float value;
-            if (!NumberUtils.TryParseSingle(input, out value)) {
+            if (!NumberUtils.TryParseSingle(input, out float value))
+            {
                 p.Message("&W\"{0}\" is not a valid number for {1}.", input, argName.ToLowerInvariant()); return false;
             }
-            
+
             if (value < min || value > max) {
                 p.Message("&W{0} must be between {1} and {2}", argName, 
                                min.ToString("F4"), max.ToString("F4"));
@@ -144,8 +144,8 @@ namespace MCGalaxy.Commands
         
         /// <summary> Attempts to parse the given argument as a hex color. </summary>
         public static bool GetHex(Player p, string input, ref ColorDesc col) {
-            ColorDesc tmp;
-            if (!Colors.TryParseHex(input, out tmp)) {
+            if (!Colors.TryParseHex(input, out ColorDesc tmp))
+            {
                 p.Message("&W\"#{0}\" is not a valid HEX color.", input); return false;
             }
             col = tmp; return true;
@@ -230,18 +230,18 @@ namespace MCGalaxy.Commands
         
         public static int GetBlocks(Player p, string input, 
                                     List<BlockID> blocks, bool allowSkip) {
-            string[] bits;
-            if (!IsRawBlockRange(input, out bits)) {
-                BlockID block;
-                
-                if (!allowSkip || !IsSkipBlock(input, out block)) {
+            if (!IsRawBlockRange(input, out string[] bits))
+            {
+
+                if (!allowSkip || !IsSkipBlock(input, out ushort block))
+                {
                     if (!GetBlock(p, input, out block)) return 0;
                 }
-                
+
                 blocks.Add(block);
                 return 1;
             }
-            
+
             BlockID min = 0, max = 0;
             if (!GetUShort(p, bits[0], "Raw block ID", ref min, Block.Air, Block.MaxRaw)) return 0;
             if (!GetUShort(p, bits[1], "Raw block ID", ref max, Block.Air, Block.MaxRaw)) return 0;
@@ -266,10 +266,8 @@ namespace MCGalaxy.Commands
             bits = null;
             if (input.IndexOf('-') == -1) return false;
             bits = input.Split(new char[] { '-' }, 2);
-            
-            int tmp;
-            return NumberUtils.TryParseInt32(bits[0], out tmp)
-                && NumberUtils.TryParseInt32(bits[1], out tmp);
+            return NumberUtils.TryParseInt32(bits[0], out _)
+                && NumberUtils.TryParseInt32(bits[1], out _);
         }
     }
 }

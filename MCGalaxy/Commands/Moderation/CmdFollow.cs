@@ -60,7 +60,7 @@ namespace MCGalaxy.Commands.Moderation {
             }
         }
 
-        static void Follow(Player p, string name, CommandData data, bool stealth) {
+        static void Follow(Player p, string name, CommandData data, bool _) {
             Player target = PlayerInfo.FindMatches(p, name);
             if (target == null) return;
             if (target == p) { p.Message("Cannot follow yourself."); return; }

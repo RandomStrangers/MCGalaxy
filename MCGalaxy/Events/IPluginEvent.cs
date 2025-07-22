@@ -52,9 +52,12 @@ namespace MCGalaxy.Events
                 string msg = MethodFormat("Method {0} already registered as a {1} event handler", method);
                 throw new ArgumentException(msg);
             }
-            
-            handler = new IEvent<IMethod>();
-            handler.method = method; handler.priority = priority;
+
+            handler = new IEvent<IMethod>
+            {
+                method = method,
+                priority = priority
+            };
             AddHandler(handler);
         }
         
@@ -68,7 +71,7 @@ namespace MCGalaxy.Events
             Delegate methodDel = (Delegate)(object)method;
             IEvent<IMethod>[] items = handlers.Items;
             
-            foreach (var p in items) 
+            foreach (IEvent<IMethod> p in items) 
             {
                 Delegate pMethodDel = (Delegate)(object)p.method;
                 if (pMethodDel == methodDel) return p;

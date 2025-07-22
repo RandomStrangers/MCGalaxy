@@ -29,24 +29,26 @@ namespace MCGalaxy.Modules.Relay.IRC
     {
         internal Connection conn;
         string botNick;
-        IRCNickList nicks;
+        readonly IRCNickList nicks;
         bool ready;
         
         public override string RelayName { get { return "IRC"; } }
         public override bool Enabled  { get { return Server.Config.UseIRC; } }
-        public override string UserID { get { return conn == null ? null : conn.Nick; } }
+        public override string UserID { get { return conn?.Nick; } }
         
         public override void LoadControllers() {
             Controllers = PlayerList.Load("ranks/IRC_Controllers.txt");
         }
         
         public IRCBot() {
-            nicks     = new IRCNickList();
-            nicks.bot = this;
+            nicks = new IRCNickList
+            {
+                bot = this
+            };
         }
         
         
-        static char[] newline = { '\n' };
+        static readonly char[] newline = { '\n' };
         protected override void DoSendMessage(string channel, string message) {
             if (!ready) return;
             message = ConvertMessage(message);
@@ -283,18 +285,22 @@ namespace MCGalaxy.Modules.Relay.IRC
         void OnPrivate(string user, string message) {
             string nick = Connection.ExtractNick(user);
 
-            RelayUser rUser = new RelayUser();
-            rUser.ID        = nick;
-            rUser.Nick      = nick;
+            RelayUser rUser = new RelayUser
+            {
+                ID = nick,
+                Nick = nick
+            };
             HandleDirectMessage(rUser, nick, message);
         }        
 
         void OnPublic(string user, string channel, string message) {
             string nick = Connection.ExtractNick(user);
 
-            RelayUser rUser = new RelayUser();
-            rUser.ID        = nick;
-            rUser.Nick      = nick;
+            RelayUser rUser = new RelayUser
+            {
+                ID = nick,
+                Nick = nick
+            };
             HandleChannelMessage(rUser, channel, message);
         }
         

@@ -80,8 +80,12 @@ namespace MCGalaxy.Drawing.Ops
         }
         
         static void DoQueuedDrawOp(Player p, DrawOp op, Brush brush, Vec3S32[] marks) {
-            PendingDrawOp item = new PendingDrawOp();
-            item.Op = op; item.Brush = brush; item.Marks = marks;
+            PendingDrawOp item = new PendingDrawOp
+            {
+                Op = op,
+                Brush = brush,
+                Marks = marks
+            };
 
             lock (p.pendingDrawOpsLock) {
                 p.PendingDrawOps.Add(item);
@@ -114,7 +118,7 @@ namespace MCGalaxy.Drawing.Ops
             UndoDrawOpEntry entry = new UndoDrawOpEntry();
             entry.Init(op.Name, op.Level.name);
             
-            if (brush != null) brush.Configure(op, p);
+            brush?.Configure(op, p);
             DrawOpOutputter outputter = new DrawOpOutputter(op);
             
             if (op.AffectedByTransform) {

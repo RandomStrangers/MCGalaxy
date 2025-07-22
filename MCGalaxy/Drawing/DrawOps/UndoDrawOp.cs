@@ -68,12 +68,12 @@ namespace MCGalaxy.Drawing.Ops
                 BlockDBReadLock = Level.BlockDB.Locker.AccquireRead();
                 Level.BlockDB.FindChangesBy(ids, Start, End, out dims, UndoBlock);
             } finally {
-                if (BlockDBReadLock != null) BlockDBReadLock.Dispose();
+                BlockDBReadLock?.Dispose();
                 BlockDBReadLock = null;
             }
             
             if (oldest == null) return;
-            foreach (var kvp in oldest) {
+            foreach (KeyValuePair<int, ushort> kvp in oldest) {
                 int index = kvp.Key;
                 
                 int x = index % dims.X;
@@ -109,8 +109,10 @@ namespace MCGalaxy.Drawing.Ops
             if ((e.Flags & flags) != 0) {
                 Player.Message("&WThis undo overlaps with previous undos, " +
                                "so undoing may take longer..");
-                oldest = new Dictionary<int, BlockID>();
-                oldest[e.Index] = block;
+                oldest = new Dictionary<int, BlockID>
+                {
+                    [e.Index] = block
+                };
                 
                 conservative = true;
                 found        = true;

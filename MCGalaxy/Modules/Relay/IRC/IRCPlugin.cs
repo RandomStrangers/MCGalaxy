@@ -26,8 +26,8 @@ namespace MCGalaxy.Modules.Relay.IRC
 
         public static IRCBot Bot = new IRCBot();
         
-        static Command cmdIrcBot   = new CmdIRCBot();
-        static Command cmdIrcCtrls = new CmdIrcControllers();
+        static readonly Command cmdIrcBot   = new CmdIRCBot();
+        static readonly Command cmdIrcCtrls = new CmdIrcControllers();
         
         public override void Load(bool startup) {
             Command.Register(cmdIrcBot);

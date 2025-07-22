@@ -22,7 +22,7 @@ namespace MCGalaxy.Modules.Games.CTF
     public sealed class CTFPlugin : Plugin 
     {
         public override string name { get { return "CTF"; } }
-        static Command cmdCTF = new CmdCTF();
+        static readonly Command cmdCTF = new CmdCTF();
         
         public override void Load(bool startup) {
             Command.Register(cmdCTF);

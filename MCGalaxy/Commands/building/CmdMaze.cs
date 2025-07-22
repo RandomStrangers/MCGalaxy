@@ -25,8 +25,10 @@ namespace MCGalaxy.Commands.Building
         public override string name { get { return "Maze"; } }
 
         protected override DrawOp GetDrawOp(DrawArgs dArgs) {
-            MazeDrawOp op = new MazeDrawOp();
-            op.rng        = MapGen.MakeRng(dArgs.Message);
+            MazeDrawOp op = new MazeDrawOp
+            {
+                rng = MapGen.MakeRng(dArgs.Message)
+            };
             return op;
         }
         

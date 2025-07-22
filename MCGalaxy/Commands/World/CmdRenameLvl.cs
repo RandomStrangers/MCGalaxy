@@ -29,11 +29,10 @@ namespace MCGalaxy.Commands.World {
         public override void Use(Player p, string message, CommandData data) {
             string[] args = message.SplitSpaces();
             if (args.Length != 2) { Help(p); return; }
-            LevelConfig cfg;
-                       
+
             string src = Matcher.FindMaps(p, args[0]);
             if (src == null) return;
-            if (!LevelInfo.Check(p, data.Rank, src, "rename this map", out cfg)) return;
+            if (!LevelInfo.Check(p, data.Rank, src, "rename this map", out LevelConfig cfg)) return;
             
             string dst = args[1].ToLower();
             if (!Formatter.ValidMapName(p, dst)) return;

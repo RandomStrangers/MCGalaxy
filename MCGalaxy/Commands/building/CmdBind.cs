@@ -38,17 +38,15 @@ namespace MCGalaxy.Commands.Building
                 p.Message("All bindings were unbound.");
                 return;
             }
-            
-            BlockID src;
-            if (!CommandParser.GetBlock(p, args[0], out src)) return;
+
+            if (!CommandParser.GetBlock(p, args[0], out ushort src)) return;
             if (Block.IsPhysicsType(src)) {
                 p.Message("Physics blocks cannot be bound to another block."); return; 
             }
 
             if (args.Length == 2) {
-                BlockID dst;
-                if (!CommandParser.GetBlockIfAllowed(p, args[1], "bind a block to", out dst)) return;
-                
+                if (!CommandParser.GetBlockIfAllowed(p, args[1], "bind a block to", out ushort dst)) return;
+
                 p.BlockBindings[src] = dst;
                 p.Message("{0} bound to {1}", Block.GetName(p, src), Block.GetName(p, dst));
             } else {

@@ -53,9 +53,8 @@ namespace MCGalaxy.UI
                 text = text.Substring(1);
             
             lastCMD = text;
-            string name, args;
-            text.Separate(' ', out name, out args);
-            
+            text.Separate(' ', out string name, out string args);
+
             Command.Search(ref name, ref args);
             if (Server.Check(name, args)) { Server.cancelcommand = false; return; }
             Command cmd = Command.Find(name);
@@ -66,18 +65,24 @@ namespace MCGalaxy.UI
             if (!cmd.SuperUseable) { 
                 Logger.Log(LogType.CommandUsage, "(console): /{0} can only be used in-game.", cmd.name); return; 
             }
-            
-            Thread thread;
-            Server.StartThread(out thread, "ConsoleCMD_" + name, 
-                () => {
-                    try {
+
+            Server.StartThread(out Thread thread, "ConsoleCMD_" + name,
+                () =>
+                {
+                    try
+                    {
                         cmd.Use(Player.Console, args);
-                        if (args.Length == 0) {
+                        if (args.Length == 0)
+                        {
                             Logger.Log(LogType.CommandUsage, "(console) used /" + cmd.name);
-                        } else {
+                        }
+                        else
+                        {
                             Logger.Log(LogType.CommandUsage, "(console) used /" + cmd.name + " " + args);
                         }
-                    } catch (Exception ex) {
+                    }
+                    catch (Exception ex)
+                    {
                         Logger.LogError(ex);
                         Logger.Log(LogType.CommandUsage, "(console): FAILED COMMAND");
                     }

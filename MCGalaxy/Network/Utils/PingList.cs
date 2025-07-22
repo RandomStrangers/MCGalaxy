@@ -50,7 +50,7 @@ namespace MCGalaxy.Network
             int pingHead  = (Interlocked.Increment(ref nextPingHead) - 1) % 10;
             
             Entries[pingHead].Data     = (ushort)pingValue;
-            Entries[pingHead].TimeRecv = default(DateTime);
+            Entries[pingHead].TimeRecv = default;
             Entries[pingHead].TimeSent = DateTime.UtcNow;
 
             if (startIgnoringPosition) Interlocked.Exchange(ref ignorePositionData, pingValue);

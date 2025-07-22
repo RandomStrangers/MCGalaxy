@@ -27,7 +27,7 @@ namespace MCGalaxy
 {
     class ConfigEnvIntAttribute : ConfigIntegerAttribute 
     {
-        int minValue, maxValue;
+        readonly int minValue, maxValue;
         
         public ConfigEnvIntAttribute(string name, int min, int max)
             : base(name, "Env") { minValue = min; maxValue = max; }
@@ -59,8 +59,7 @@ namespace MCGalaxy
         public ConfigExpFogAttribute(string name) : base(name, -1, 1) { }
         
         public override object Parse(string raw) {
-            bool value;
-            if (bool.TryParse(raw, out value)) return value ? 1 : 0;
+            if (bool.TryParse(raw, out bool value)) return value ? 1 : 0;
             return base.Parse(raw);
         }
     }

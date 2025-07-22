@@ -69,7 +69,7 @@ namespace MCGalaxy.DB
         }
         
         
-        static List<TopStat> stats = new List<TopStat>() {
+        static readonly List<TopStat> stats = new List<TopStat>() {
             new DBTopStat("Logins", "Most logins", "Players",
                         PlayerData.ColumnLogins, FormatInteger),
             new DBTopStat("Deaths", "Most deaths", "Players",

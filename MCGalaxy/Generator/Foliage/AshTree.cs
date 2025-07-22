@@ -26,7 +26,7 @@ namespace MCGalaxy.Generator.Foliage {
         
         int branchBaseHeight, branchAmount;
         const int maxExtent = 5, maxBranchHeight = 10, maxCluster = 3;
-        List<Vec3S32> branch = new List<Vec3S32>();
+        readonly List<Vec3S32> branch = new List<Vec3S32>();
         
         public override long EstimateBlocksAffected() { return (long)height * height * height; }
                 

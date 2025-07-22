@@ -46,7 +46,7 @@ namespace MCGalaxy.DB
         }
         
         public static BlockDBFile ReadHeader(Stream s, out Vec3U16 dims) {
-            dims = default(Vec3U16);
+            dims = default;
             byte[] header = new byte[EntrySize * HeaderEntries];
             ReadFully(s, header, 0, header.Length);
             
@@ -98,8 +98,7 @@ namespace MCGalaxy.DB
             string tempPath = TempPath(db.MapName);
             
             using (Stream src = File.OpenRead(path), dst = File.Create(tempPath)) {
-                Vec3U16 dims;
-                ReadHeader(src, out dims);
+                ReadHeader(src, out Vec3U16 dims);
                 WriteHeader(dst, db.Dims);
                 int width = db.Dims.X, length = db.Dims.Z;
                 byte[] bulk = new byte[BulkEntries * EntrySize];
@@ -133,8 +132,7 @@ namespace MCGalaxy.DB
             if (!File.Exists(path)) return 0;
 
             using (Stream src = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite)) {
-                Vec3U16 dims;
-                BlockDBFile file = ReadHeader(src, out dims);
+                BlockDBFile file = ReadHeader(src, out Vec3U16 dims);
                 return file.CountEntries(src);
             }
         }

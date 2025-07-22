@@ -227,7 +227,7 @@ namespace NotAwesomeSurvival
             np.inventory.SetAmount(nasBlock.parentID, -nasBlock.resourceCost);
             np.justBrokeOrPlaced = true;
         }
-        public static void OnBlockChanged(Player p, ushort x, ushort y, ushort z, ChangeResult result)
+        public static void OnBlockChanged(Player p, ushort x, ushort y, ushort z, ChangeResult _)
         {
             if (p.level.Config.Deletable && p.level.Config.Buildable) 
             { 
@@ -317,8 +317,8 @@ namespace NotAwesomeSurvival
             public int milliseconds;
             public float x, y, z;
         }
-        public static void HandleLeftClick(Player p, MouseButton button,
-            MouseAction action, ushort yaw, ushort pitch, byte entity,
+        public static void HandleLeftClick(Player p, MouseButton _,
+            MouseAction action, ushort __, ushort ___, byte ____,
             ushort x, ushort y, ushort z, TargetBlockFace face)
         {
             if (!p.agreed) 

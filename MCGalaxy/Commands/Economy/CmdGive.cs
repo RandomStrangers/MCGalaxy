@@ -26,15 +26,12 @@ namespace MCGalaxy.Commands.Eco {
         public override bool MessageBlockRestricted { get { return true; } }
 
         public override void Use(Player p, string message, CommandData data) {
-            EcoTransaction trans;
             bool all = false;
-            if (!ParseArgs(p, message, ref all, "give", out trans)) return;
-            
-            int matches = 1;
-            Player who = PlayerInfo.FindMatches(p, trans.TargetName, out matches);
+            if (!ParseArgs(p, message, ref all, "give", out EcoTransaction trans)) return;
+
+            Player who = PlayerInfo.FindMatches(p, trans.TargetName, out int matches);
             if (matches > 1) return;
-            int money = 0;
-            
+            int money;
             if (who == null) {
                 trans.TargetName = Economy.FindMatches(p, trans.TargetName, out money);
                 if (trans.TargetName == null) return;

@@ -108,13 +108,13 @@ namespace MCGalaxy.Modules.Games.ZS
             }
         }
         
-        void DoCollisions(Player[] aliveList, Player[] deadList, Random random) {
+        void DoCollisions(Player[] _, Player[] deadList, Random random) {
             int dist = (int)(Config.HitboxDist * 32);
             foreach (Player killer in deadList)
             {
                 ZSData killerData = Get(killer);
                 killer.infected = true;
-                aliveList = Alive.Items;
+                Player[] aliveList = Alive.Items;
 
                 foreach (Player alive in aliveList) 
                 {
@@ -200,7 +200,7 @@ namespace MCGalaxy.Modules.Games.ZS
             Player setter = PlayerInfo.FindExact(bounty.Origin);
             if (pKiller == null) {
                 Map.Message("Bounty on " + p.ColoredName + " &Sis no longer active");
-                if (setter != null) setter.SetMoney(setter.money + bounty.Amount);
+                setter?.SetMoney(setter.money + bounty.Amount);
             } else if (setter == null) {
                 pKiller.Message("Cannot collect the bounty, as the player who set it is offline.");
             } else {
@@ -211,12 +211,15 @@ namespace MCGalaxy.Modules.Games.ZS
         }
         
         void ShowInfectMessage(Random random, Player pAlive, Player pKiller) {
-            string text = null;
             List<string> infectMsgs = Get(pKiller).InfectMessages;
-            
-            if (infectMsgs != null && infectMsgs.Count > 0 && random.Next(0, 10) < 5) {
+
+            string text;
+            if (infectMsgs != null && infectMsgs.Count > 0 && random.Next(0, 10) < 5)
+            {
                 text = infectMsgs[random.Next(infectMsgs.Count)];
-            } else {
+            }
+            else
+            {
                 text = infectMessages[random.Next(infectMessages.Count)];
             }
 
@@ -271,7 +274,7 @@ namespace MCGalaxy.Modules.Games.ZS
             
             string group = count == 1 ? " zombie " : " zombies ";
             string suffix = maxKills == 1 ? " &Skill" : " &Skills";
-            StringFormatter<Player> formatter = p => Get(p).CurrentInfected == maxKills ? p.ColoredName : null;
+            string formatter(Player p) => Get(p).CurrentInfected == maxKills ? p.ColoredName : null;
             Map.Message("&8Best" + group + "&S(&b" + maxKills + suffix + "&S)&8: " + dead.Join(formatter));
         }
 

@@ -44,9 +44,11 @@ namespace MCGalaxy.Commands.Building {
                 Directory.CreateDirectory("extra/images/");
             if (message.Length == 0) { Help(p); return; }
             string[] parts = message.SplitSpaces(5);
-            
-            DrawArgs dArgs = new DrawArgs();
-            dArgs.Pal = ImagePalette.Find("color");
+
+            DrawArgs dArgs = new DrawArgs
+            {
+                Pal = ImagePalette.Find("color")
+            };
             if (dArgs.Pal == null) dArgs.Pal = ImagePalette.Palettes[0];
             
             if (parts.Length > 1) {
@@ -104,8 +106,7 @@ namespace MCGalaxy.Commands.Building {
         bool DoImage(Player p, Vec3S32[] m, object state, BlockID block) {
             if (m[0].X == m[1].X && m[0].Z == m[1].Z) { p.Message("No direction was selected"); return false; }
 
-            Thread thread;
-            Server.StartThread(out thread, "ImagePrint",
+            Server.StartThread(out Thread thread, "ImagePrint",
                                () => DoDrawImage(p, m, (DrawArgs)state));
             Utils.SetBackgroundMode(thread);
             return false;

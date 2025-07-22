@@ -30,11 +30,10 @@ namespace MCGalaxy.Commands.Moderation {
         public override void Use(Player p, string message, CommandData data) {
             if (message.Length == 0) { Help(p); return; }
             string[] args = message.SplitSpaces(2);
-            string name, addr = ModActionCmd.FindIP(p, args[0], "UnbanIP", out name);
+            string addr = ModActionCmd.FindIP(p, args[0], "UnbanIP", out _);
             if (addr == null) return;
 
-            IPAddress ip;
-            if (!IPAddress.TryParse(addr, out ip)) { p.Message("\"{0}\" is not a valid IP.", addr); return; }
+            if (!IPAddress.TryParse(addr, out IPAddress ip)) { p.Message("\"{0}\" is not a valid IP.", addr); return; }
             if (ip.Equals(p.IP))                   { p.Message("You cannot un-IP ban yourself."); return; }
             if (!Server.bannedIP.Contains(addr))   { p.Message(addr + " is not a banned IP."); return; }
             

@@ -56,9 +56,9 @@ namespace MCGalaxy.Modules.Games.CTF
         public CTFConfig Config = new CTFConfig();
         public override string GameName { get { return "CTF"; } }
         public override RoundsGameConfig GetConfig() { return Config; }
-        
-        CtfTeam Red  = new CtfTeam("Red", Colors.red);
-        CtfTeam Blue = new CtfTeam("Blue", Colors.blue);
+
+        readonly CtfTeam Red  = new CtfTeam("Red", Colors.red);
+        readonly CtfTeam Blue = new CtfTeam("Blue", Colors.blue);
         
         public static CTFGame Instance = new CTFGame();
         public CTFGame() { Picker = new SimpleLevelPicker(); }
@@ -82,7 +82,7 @@ namespace MCGalaxy.Modules.Games.CTF
         }
         
         static CtfData TryGet(Player p) {
-            object data; p.Extras.TryGet(ctfExtrasKey, out data); return (CtfData)data;
+            p.Extras.TryGet(ctfExtrasKey, out object data); return (CtfData)data;
         }
         
         public override void UpdateMapConfig() {

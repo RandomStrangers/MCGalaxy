@@ -36,10 +36,10 @@ namespace MCGalaxy.Modules.Games.LS
             Economy.Items.Remove(itemDoors);
         }       
         
-        static Item itemLife    = new LifeItem();
-        static Item itemSponges = new SpongesItem();
-        static Item itemWater   = new WaterItem();
-        static Item itemDoors   = new DoorsItem();
+        static readonly Item itemLife    = new LifeItem();
+        static readonly Item itemSponges = new SpongesItem();
+        static readonly Item itemWater   = new WaterItem();
+        static readonly Item itemDoors   = new DoorsItem();
                 
         
         static void HookCommands() {
@@ -50,6 +50,6 @@ namespace MCGalaxy.Modules.Games.LS
             Command.Unregister(cmdLives);
         }
         
-        static Command cmdLives = new CmdLives();
+        static readonly Command cmdLives = new CmdLives();
     }
 }

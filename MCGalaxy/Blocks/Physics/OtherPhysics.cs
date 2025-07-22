@@ -70,14 +70,17 @@ namespace MCGalaxy.Blocks.Physics {
         
         public static void DoFloatwood(Level lvl, ref PhysInfo C) {
             ushort x = C.X, y = C.Y, z = C.Z;
-            int index;
-            
-            if (lvl.GetBlock(x, (ushort)(y - 1), z, out index) == Block.Air) {
+
+            if (lvl.GetBlock(x, (ushort)(y - 1), z, out int index) == Block.Air)
+            {
                 lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
                 lvl.AddUpdate(index, Block.FloatWood, default(PhysicsArgs));
-            } else {
+            }
+            else
+            {
                 BlockID above = lvl.GetBlock(x, (ushort)(y + 1), z, out index);
-                if (above == Block.StillWater || Block.Convert(above) == Block.Water) {
+                if (above == Block.StillWater || Block.Convert(above) == Block.Water)
+                {
                     lvl.AddUpdate(C.Index, C.Block);
                     lvl.AddUpdate(index, Block.FloatWood, default(PhysicsArgs));
                 }
@@ -99,9 +102,7 @@ namespace MCGalaxy.Blocks.Physics {
             }
             
             lvl.SetTile(x, y, z, Block.Air);        
-            Tree tree = Tree.Find(lvl.Config.TreeType);
-            if (tree == null) tree = new NormalTree();
-            
+            Tree tree = Tree.Find(lvl.Config.TreeType) ?? new NormalTree();
             tree.SetData(rand, tree.DefaultSize(rand));
             tree.Generate(x, y, z, (xT, yT, zT, bT) =>
                         {
@@ -156,9 +157,8 @@ namespace MCGalaxy.Blocks.Physics {
                 for (int zz = z - 2; zz <= z + 2; ++zz)
                     for (int xx = x - 2; xx <= x + 2; ++xx)
             {
-                int index;
-                BlockID block = lvl.GetBlock((ushort)xx, (ushort)yy, (ushort)zz, out index);
-                if (Block.Convert(block) == target || Block.Convert(block) == alt) {
+                        BlockID block = lvl.GetBlock((ushort)xx, (ushort)yy, (ushort)zz, out int index);
+                        if (Block.Convert(block) == target || Block.Convert(block) == alt) {
                     lvl.AddUpdate(index, Block.Air, default(PhysicsArgs));
                 }
             }
@@ -168,17 +168,15 @@ namespace MCGalaxy.Blocks.Physics {
         public static void DoSpongeRemoved(Level lvl, int b, bool lava) {
             BlockID target = lava ? Block.Lava : Block.Water;
             BlockID alt    = lava ? Block.StillLava : Block.StillWater;
-            ushort x, y, z;
-            lvl.IntToPos(b, out x, out y, out z);
-            
+            lvl.IntToPos(b, out ushort x, out ushort y, out ushort z);
+
             for (int yy = -3; yy <= +3; ++yy)
                 for (int zz = -3; zz <= +3; ++zz)
                     for (int xx = -3; xx <= +3; ++xx)
             {
                 if (Math.Abs(xx) == 3 || Math.Abs(yy) == 3 || Math.Abs(zz) == 3) { // Calc only edge
-                    int index;
-                    BlockID block = lvl.GetBlock((ushort)(x + xx), (ushort)(y + yy), (ushort)(z + zz), out index);
-                    if (Block.Convert(block) == target || Block.Convert(block) == alt)
+                            BlockID block = lvl.GetBlock((ushort)(x + xx), (ushort)(y + yy), (ushort)(z + zz), out int index);
+                            if (Block.Convert(block) == target || Block.Convert(block) == alt)
                         lvl.AddCheck(index);
                 }
             }

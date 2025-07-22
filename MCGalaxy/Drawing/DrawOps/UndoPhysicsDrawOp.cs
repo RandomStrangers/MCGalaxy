@@ -16,7 +16,6 @@
     permissions and limitations under the Licenses.
  */
 using System;
-using MCGalaxy.Blocks.Physics;
 using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Maths;
 using BlockID = System.UInt16;
@@ -57,17 +56,16 @@ namespace MCGalaxy.Drawing.Ops
             }
         }
         
-        bool CheckBlockPhysics(Player p, Level lvl, int i) {
+        bool CheckBlockPhysics(Player _, Level lvl, int i) {
             Level.UndoPos undo = lvl.UndoBuffer[i];
             if (undo.Time < Start) return false;
-            
-            ushort x, y, z;
-            lvl.IntToPos(undo.Index, out x, out y, out z);
+
+            lvl.IntToPos(undo.Index, out ushort x, out ushort y, out ushort z);
             BlockID cur = lvl.GetBlock(x, y, z);
             
             BlockID newBlock = undo.NewBlock;
             if (cur == newBlock || Block.Convert(cur) == Block.Water || Block.Convert(cur) == Block.Lava) {
-                lvl.Blockchange(x, y, z, undo.OldBlock, true, default(PhysicsArgs), false);
+                lvl.Blockchange(x, y, z, undo.OldBlock, true, default, false);
             }
             return true;
         }

@@ -79,9 +79,11 @@ namespace MCGalaxy.Commands.Building
         }
         
         void HandleOther(Player p, string[] parts, int offsetIndex) {
-            CopyArgs cArgs = new CopyArgs();
-            cArgs.offsetIndex = offsetIndex;
-            
+            CopyArgs cArgs = new CopyArgs
+            {
+                offsetIndex = offsetIndex
+            };
+
             for (int i = 0; i < parts.Length; i++) {
                 string opt = parts[i];
                 if (opt.CaselessEq("cut")) {
@@ -100,10 +102,11 @@ namespace MCGalaxy.Commands.Building
         
         void CompleteCopy(Player p, Vec3S32[] m, CopyArgs cArgs) {
             if (!cArgs.cut) return;
-            DrawOp op = new CuboidDrawOp();
-
-            op.Flags = BlockDBFlags.Cut;
-            op.AffectedByTransform = false;
+            DrawOp op = new CuboidDrawOp
+            {
+                Flags = BlockDBFlags.Cut,
+                AffectedByTransform = false
+            };
             Brush brush = new SolidBrush(Block.Air);
             DrawOpPerformer.Do(op, brush, p, new Vec3S32[] { m[0], m[1] }, false);
         }
@@ -125,11 +128,15 @@ namespace MCGalaxy.Commands.Building
             Vec3S32 min = Vec3S32.Min(m[0], m[1]), max = Vec3S32.Max(m[0], m[1]);
             ushort minX = (ushort)min.X, minY = (ushort)min.Y, minZ = (ushort)min.Z;
             ushort maxX = (ushort)max.X, maxY = (ushort)max.Y, maxZ = (ushort)max.Z;
-            
+
             CopyState cState = new CopyState(minX, minY, minZ, maxX - minX + 1,
-                                             maxY - minY + 1, maxZ - minZ + 1);
-            cState.OriginX = m[0].X; cState.OriginY = m[0].Y; cState.OriginZ = m[0].Z;
-            
+                                             maxY - minY + 1, maxZ - minZ + 1)
+            {
+                OriginX = m[0].X,
+                OriginY = m[0].Y,
+                OriginZ = m[0].Z
+            };
+
             int index = 0; cState.UsedBlocks = 0;
             cState.PasteAir = cArgs.air;
             
@@ -148,7 +155,7 @@ namespace MCGalaxy.Commands.Building
             if (cState.UsedBlocks > p.group.DrawLimit) {
                 p.Message("You tried to copy {0} blocks. You cannot copy more than {1} blocks.",
                           cState.UsedBlocks, p.group.DrawLimit);
-                cState.Clear(); cState = null;
+                cState.Clear();
                 p.ClearSelection();
                 return;
             }

@@ -17,7 +17,6 @@
  */
 using System.Collections.Generic;
 using MCGalaxy.Commands;
-using BlockID = System.UInt16;
 
 namespace MCGalaxy.Drawing.Brushes 
 {
@@ -26,7 +25,7 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name { get { return "Cloudy"; } }        
         public override string[] Help { get { return HelpString; } }
         
-        static string[] HelpString = new string[] {
+        static readonly string[] HelpString = new string[] {
             "&TArguments: [block1/frequency] [block2] <args>..",
             "&HDraws by selecting blocks from the given [blocks] using perlin noise.",
             "&Hfrequency is optional (defaults to 1), and specifies the number of times " +
@@ -37,7 +36,7 @@ namespace MCGalaxy.Drawing.Brushes
         };
         
         public override Brush Construct(BrushArgs args) {
-            NoiseArgs n = default(NoiseArgs);
+            NoiseArgs n = default;
             // Constants borrowed from fCraft to match it
             n.Amplitude = 1;
             n.Frequency = 0.08f;
@@ -45,11 +44,9 @@ namespace MCGalaxy.Drawing.Brushes
             n.Seed = int.MinValue;
             n.Persistence = 0.75f;
             n.Lacunarity = 2;
-            
-            List<BlockID> toAffect;
-            List<int> freqs;
-            
-            bool ok = FrequencyBrush.GetBlocks(args, out toAffect, out freqs,
+
+
+            bool ok = FrequencyBrush.GetBlocks(args, out List<ushort> toAffect, out List<int> freqs,
                                                Filter, arg => Handler(arg, args.Player, ref n));
             if (!ok) return null;
             

@@ -158,7 +158,7 @@ namespace MCGalaxy.Games
             }
         }
         
-        string NextLevel(Random r, List<string> levels) {
+        string NextLevel(Random _, List<string> __) {
             Player[] online = PlayerInfo.Online.Items;
             foreach (Player pl in online) pl.voted = false;
             

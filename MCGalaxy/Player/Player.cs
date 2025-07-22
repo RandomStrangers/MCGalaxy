@@ -120,9 +120,11 @@ namespace MCGalaxy {
         }
         
         public void SetPrefix() {
-            List<string> prefixes = new List<string>(6);
-            prefixes.Add(Game.Referee           ? "&2[Ref] " : "");
-            prefixes.Add(GroupPrefix.Length > 0 ? GroupPrefix + color : "");
+            List<string> prefixes = new List<string>(6)
+            {
+                Game.Referee ? "&2[Ref] " : "",
+                GroupPrefix.Length > 0 ? GroupPrefix + color : ""
+            };
             
             Team team = Game.Team;
             prefixes.Add(team == null ? "" : "<" + team.Color + team.Name + color + "> ");
@@ -251,7 +253,7 @@ namespace MCGalaxy {
             
             // Disconnected before sent handshake
             if (name == null) {
-                if (Socket != null) Socket.Close();
+                Socket?.Close();
                 Logger.Log(LogType.UserActivity, "{0} disconnected.", IP);
                 return;
             }
@@ -263,7 +265,7 @@ namespace MCGalaxy {
                     return;
                 }
 
-                if (weapon != null) weapon.Disable();
+                weapon?.Disable();
                 if (chatMsg != null) chatMsg = Colors.Escape(chatMsg);
                 discMsg = Colors.Escape(discMsg);
                 
@@ -315,12 +317,12 @@ namespace MCGalaxy {
             Extras.Clear();
             
             foreach (CopyState cState in CopySlots) { 
-                if (cState != null) cState.Clear();
+                cState?.Clear();
             }
             CopySlots.Clear();
             
             DrawOps.Clear();
-            if (spamChecker != null) spamChecker.Clear();
+            spamChecker?.Clear();
             ClearSerialCommands();
         }
 
@@ -414,7 +416,7 @@ namespace MCGalaxy {
         }
         
         public void CheckForMessageSpam() {
-            if (spamChecker != null) spamChecker.CheckChatSpam();
+            spamChecker?.CheckChatSpam();
         }
 
         internal void SetBaseTotalModified(long modified) {
@@ -469,7 +471,7 @@ namespace MCGalaxy {
                 RevertBlock(x, y, z);
                 
                 selMarks[selIndex] = new Vec3S32(x, y, z);
-                if (selMarkCallback != null) selMarkCallback(p, selMarks, selIndex, selState, block);
+                selMarkCallback?.Invoke(p, selMarks, selIndex, selState, block);
                 // Mark callback cancelled selection
                 if (selCallback == null) return;
                 

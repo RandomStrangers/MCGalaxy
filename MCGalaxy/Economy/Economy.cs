@@ -25,7 +25,7 @@ namespace MCGalaxy.Eco
     public static partial class Economy 
     {
         public static bool Enabled;
-        static Dictionary<string, List<string>> itemCfg = new Dictionary<string, List<string>>();
+        static readonly Dictionary<string, List<string>> itemCfg = new Dictionary<string, List<string>>();
         
         public static bool CheckIsEnabled(Player p, Command cmd) {
             if (Enabled) return true;
@@ -35,9 +35,8 @@ namespace MCGalaxy.Eco
         }
         
         static List<string> GetConfig(string item) {
-            List<string> cfg;
-            if (itemCfg.TryGetValue(item, out cfg)) return cfg;
-            
+            if (itemCfg.TryGetValue(item, out List<string> cfg)) return cfg;
+
             cfg = new List<string>();
             itemCfg[item] = cfg;
             return cfg;
@@ -65,8 +64,7 @@ namespace MCGalaxy.Eco
         }
         
         static void ParseLine(string line) {
-            string name, value;
-            line.Separate(':', out name, out value);
+            line.Separate(':', out string name, out string value);
             if (value.Length == 0) return;
             
             if (name.CaselessEq("enabled")) {
@@ -77,7 +75,7 @@ namespace MCGalaxy.Eco
             name = item != null ? item.Name : name;
             
             GetConfig(name).Add(value);            
-            if (item != null) item.LoadConfig(value);
+            item?.LoadConfig(value);
         }
 
         static readonly object saveLock = new object();
@@ -101,7 +99,7 @@ namespace MCGalaxy.Eco
                     item.SaveConfig(cfg);
                 }
                 
-                foreach (var kvp in itemCfg)
+                foreach (KeyValuePair<string, List<string>> kvp in itemCfg)
                 {
                     w.WriteLine();
                     foreach (string prop in kvp.Value)
@@ -163,12 +161,14 @@ namespace MCGalaxy.Eco
         
         public static void MakePurchase(Player p, int cost, string item) {
             p.SetMoney(p.money - cost);
-            EcoTransaction transaction = new EcoTransaction();
-            transaction.TargetName = p.name;
-            transaction.TargetFormatted = p.ColoredName;
-            transaction.Amount = cost;
-            transaction.Type = EcoTransactionType.Purchase;
-            transaction.ItemDescription = item;
+            EcoTransaction transaction = new EcoTransaction
+            {
+                TargetName = p.name,
+                TargetFormatted = p.ColoredName,
+                Amount = cost,
+                Type = EcoTransactionType.Purchase,
+                ItemDescription = item
+            };
             OnEcoTransactionEvent.Call(transaction);
         }
     }

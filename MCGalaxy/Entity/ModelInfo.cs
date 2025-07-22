@@ -67,9 +67,8 @@ namespace MCGalaxy
         public static float GetRawScale(string model) {
             int sep = model.IndexOf('|');
             string str = sep == -1 ? null : model.Substring(sep + 1);
-            
-            float scale;
-            if (!NumberUtils.TryParseSingle(str, out scale)) scale = 1.0f;
+
+            if (!NumberUtils.TryParseSingle(str, out float scale)) scale = 1.0f;
             if (scale < 0.01f) scale = 0.01f;
             
             // backwards compatibility for giant model
@@ -102,12 +101,14 @@ namespace MCGalaxy
             string model = GetRawModel(entity.Model);
             
             AABB bb;
-            BlockID raw;
-            if (BlockID.TryParse(model, out raw) && raw <= Block.MaxRaw) {
+            if (BlockID.TryParse(model, out ushort raw) && raw <= Block.MaxRaw)
+            {
                 BlockID block = Block.FromRaw(raw);
                 bb = Block.BlockAABB(block, entity.Level);
                 bb = bb.Offset(-16, 0, -16); // centre around [-16, 16] instead of [0, 32]
-            } else {
+            }
+            else
+            {
                 bb = AABB.Make(new Vec3S32(0, 0, 0), Get(model).BaseSize);
             }
             bb = bb.Expand(-1); // adjust the model AABB inwards slightly
@@ -130,9 +131,8 @@ namespace MCGalaxy
         public static int CalcEyeHeight(Entity entity) {
             Vec3F32 scale = CalcScale(entity);
             string model  = GetRawModel(entity.Model);
-            BlockID raw;
-            if (BlockID.TryParse(model, out raw) && raw <= Block.MaxRaw) return 16; //lazily return middle of full block if it thinks it's a block ID.
-            
+            if (BlockID.TryParse(model, out ushort raw) && raw <= Block.MaxRaw) return 16; //lazily return middle of full block if it thinks it's a block ID.
+
             float eyeHeight = Get(model).EyeHeight;
             eyeHeight *= scale.Y;
             eyeHeight *= 2f; //multiply by two because world positions are measured in half-pixels

@@ -33,9 +33,8 @@ namespace MCGalaxy.Levels.IO {
         public override Level Read(Stream src, string name, bool metadata) {
             NbtFile file = new NbtFile();
             file.LoadFromStream(src);
-            
-            Level lvl;
-            ReadData(file.RootTag, name, out lvl);
+
+            ReadData(file.RootTag, name, out Level lvl);
             if (!metadata) return lvl;
             
             ReadMetadata(file.RootTag, lvl);

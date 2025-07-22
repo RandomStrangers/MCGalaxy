@@ -21,7 +21,7 @@ namespace MCGalaxy.Gui
 {
     public partial class PropertyWindow : Form 
     {
-        ZombieProperties zsSettings = new ZombieProperties();
+        readonly ZombieProperties zsSettings = new ZombieProperties();
         
         public PropertyWindow() {
             InitializeComponent();

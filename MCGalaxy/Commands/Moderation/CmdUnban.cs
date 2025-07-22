@@ -32,8 +32,7 @@ namespace MCGalaxy.Commands.Moderation {
             if (reason == null) return;
             
             if (!Server.tempBans.Contains(args[0])) {
-                int matches;
-                args[0] = Group.BannedRank.Players.FindMatches(p, args[0], "banned players", out matches);
+                args[0] = Group.BannedRank.Players.FindMatches(p, args[0], "banned players", out _);
                 if (args[0] == null) return;
             }
             

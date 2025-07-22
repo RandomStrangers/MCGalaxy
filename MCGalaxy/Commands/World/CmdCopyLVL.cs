@@ -34,11 +34,10 @@ namespace MCGalaxy.Commands.World {
             if (args.Length < 2) {
                 p.Message("You did not specify the destination level name."); return;
             }
-            LevelConfig cfg;
-            
+
             string src = Matcher.FindMaps(p, args[0]);
             if (src == null) return;
-            if (!LevelInfo.Check(p, data.Rank, src, "copy this map", out cfg)) return;
+            if (!LevelInfo.Check(p, data.Rank, src, "copy this map", out LevelConfig cfg)) return;
             
             string dst = args[1];
             if (!Formatter.ValidMapName(p, dst)) return;

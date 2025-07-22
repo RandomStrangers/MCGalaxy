@@ -62,10 +62,12 @@ namespace MCGalaxy.Commands.Maintenance {
         }
         
         static void DoShutdown(int delay, string reason) {
-            ShutdownArgs args = new ShutdownArgs();
-            args.Delay  = delay - 1;
-            args.Reason = reason;
-            
+            ShutdownArgs args = new ShutdownArgs
+            {
+                Delay = delay - 1,
+                Reason = reason
+            };
+
             if (reason.Length > 0) reason = ": " + reason;
             Log("Server shutdown started" + reason);
             Log("Server shutdown in " + delay + " seconds");

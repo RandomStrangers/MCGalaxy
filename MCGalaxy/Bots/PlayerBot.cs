@@ -109,7 +109,7 @@ namespace MCGalaxy
             return bots.Length;
         }
 
-        internal static int RemoveBotsOwnedBy(Player p, string ownerName, Level lvl, bool save)
+        internal static int RemoveBotsOwnedBy(Player _, string ownerName, Level lvl, bool save)
         {
             PlayerBot[] bots = lvl.Bots.Items;
             int removedCount = 0;

@@ -58,7 +58,7 @@ namespace MCGalaxy.Games {
         public void UpdatePrefix() {
             foreach (string name in Members) {
                 Player p = PlayerInfo.FindExact(name);
-                if (p != null) p.SetPrefix();
+                p?.SetPrefix();
             }
         }
         
@@ -119,8 +119,10 @@ namespace MCGalaxy.Games {
             switch (key.ToLower()) {
                 case "name":
                     if (tmp.Name != null) Add(tmp);
-                    tmp = new Team();
-                    tmp.Name = value;
+                    tmp = new Team
+                    {
+                        Name = value
+                    };
                     break;
                 case "color":
                     tmp.Color = value; break;

@@ -95,8 +95,8 @@ namespace MCGalaxy.Modules.Relay.Discord
         public static DiscordConfig Config = new DiscordConfig();
         public static DiscordBot Bot = new DiscordBot();
         
-        static Command cmdDiscordBot   = new CmdDiscordBot();
-        static Command cmdDiscordCtrls = new CmdDiscordControllers();
+        static readonly Command cmdDiscordBot   = new CmdDiscordBot();
+        static readonly Command cmdDiscordCtrls = new CmdDiscordControllers();
         
         public override void Load(bool startup) {
             Server.EnsureDirectoryExists("text/discord");

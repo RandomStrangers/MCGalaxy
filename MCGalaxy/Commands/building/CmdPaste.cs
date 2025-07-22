@@ -47,8 +47,10 @@ namespace MCGalaxy.Commands.Building {
             if (brush == null) return false;
 
             CopyState cState = p.CurrentCopy;
-            PasteDrawOp op   = new PasteDrawOp();
-            op.CopyState     = cState;
+            PasteDrawOp op = new PasteDrawOp
+            {
+                CopyState = cState
+            };
 
             m[0] += cState.Offset;
             DrawOpPerformer.Do(op, brush, p, m);

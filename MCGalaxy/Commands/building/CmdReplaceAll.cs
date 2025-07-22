@@ -46,9 +46,11 @@ namespace MCGalaxy.Commands.Building {
                 p.Message("You cannot draw more than " + p.group.DrawLimit + ".");
                 return;
             }
-            
-            DrawOp op = new CuboidDrawOp();
-            op.AffectedByTransform = false;
+
+            DrawOp op = new CuboidDrawOp
+            {
+                AffectedByTransform = false
+            };
             if (!DrawOpPerformer.Do(op, brush, p, marks, false)) return;
             p.Message("&4/replaceall finished!");
         }

@@ -41,21 +41,21 @@ namespace MCGalaxy.Commands.Maintenance {
             }
         }
         
-        void SetPublic(Player p, string[] args) {
+        void SetPublic(Player p, string[] _) {
             Server.Config.Public = true;
             p.Message("Server is now public!");
             Logger.Log(LogType.SystemActivity, "Server is now public!");
             SrvProperties.Save();
         }
         
-        void SetPrivate(Player p, string[] args) {
+        void SetPrivate(Player p, string[] _) {
             Server.Config.Public = false; 
             p.Message("Server is now private!");
             Logger.Log(LogType.SystemActivity, "Server is now private!");
             SrvProperties.Save();
         }
         
-        void DoReload(Player p, string[] args) {
+        void DoReload(Player p, string[] _) {
             p.Message("Reloading settings...");
             Server.LoadAllSettings();
             Server.LoadPlayerLists();

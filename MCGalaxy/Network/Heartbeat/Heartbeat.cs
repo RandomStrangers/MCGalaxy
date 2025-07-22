@@ -129,9 +129,12 @@ namespace MCGalaxy.Network
             foreach (string url in urls.SplitComma())
             {
                 AuthService service = AuthService.GetOrCreate(url);
-                
-                Heartbeat beat = new ClassiCubeBeat() { URL = url };
-                beat.Auth = service;
+
+                Heartbeat beat = new ClassiCubeBeat
+                {
+                    URL = url,
+                    Auth = service
+                };
                 Register(beat);
             }
         }

@@ -50,8 +50,10 @@ namespace MCGalaxy.Commands.Moderation {
             reason = ModActionCmd.ExpandReason(p, reason);
             if (reason == null) return;
 
-            ModAction action = new ModAction(target, p, ModActionType.Ban, reason, span);
-            action.targetGroup = group;
+            ModAction action = new ModAction(target, p, ModActionType.Ban, reason, span)
+            {
+                targetGroup = group
+            };
             OnModActionEvent.Call(action);
         }
         

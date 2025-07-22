@@ -40,7 +40,6 @@ namespace LibNoise
         public override double GetValue(double x, double y, double z)
         {
             double value = 0.0;
-            double signal = 0.0;
             double curPersistence = 1.0;
 
             x *= Frequency;
@@ -49,7 +48,7 @@ namespace LibNoise
 
             for (int octave = 0; octave < OctaveCount; octave++)
             {
-                signal = GradientNoise.GradientCoherentNoise(x, y, z, Seed + octave);
+                double signal = GradientNoise.GradientCoherentNoise(x, y, z, Seed + octave);
                 signal = 2.0 * Math.Abs(signal) - 1.0;
                 value += signal * curPersistence;
 

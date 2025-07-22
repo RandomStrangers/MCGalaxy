@@ -102,8 +102,8 @@ namespace MCGalaxy.DB
         
         public static string FindOfflineIPMatches(Player p, string name, out string ip) {
             string[] match = MatchValues(p, name, "Name,IP");
-            ip   = match == null ? null : match[1];
-            return match == null ? null : match[0];
+            ip   = match?[1];
+            return match?[0];
         }
         
         
@@ -120,25 +120,22 @@ namespace MCGalaxy.DB
         
         public static string MatchNames(Player p, string name) {
             List<string> names = MatchMulti(name, "Name", r => r.GetText(0));
-            
-            int matches;
-            return Matcher.Find(p, name, out matches, names,
+
+            return Matcher.Find(p, name, out int matches, names,
                                 null, n => n, "players", 20);
         }
         
         public static string[] MatchValues(Player p, string name, string columns) {
             List<string[]> name_values = MatchMulti(name, columns, Database.ParseFields);
 
-            int matches;
-            return Matcher.Find(p, name, out matches, name_values,
+            return Matcher.Find(p, name, out int matches, name_values,
                                 null, n => n[0], "players", 20);
         }  
         
         public static PlayerData Match(Player p, string name) {
             List<PlayerData> stats = MatchMulti(name, "*", PlayerData.Parse);
-            
-            int matches;
-            return Matcher.Find(p, name, out matches, stats,
+
+            return Matcher.Find(p, name, out int matches, stats,
                                 null, stat => stat.Name, "players", 20);
         }
         

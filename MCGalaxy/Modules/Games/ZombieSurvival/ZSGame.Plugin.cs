@@ -63,24 +63,21 @@ namespace MCGalaxy.Modules.Games.ZS
         
         
         void HandleCanSeeEntity(Player p, ref bool canSee, Entity other) {
-            Player target = other as Player;
-            if (!canSee || p.Game.Referee || target == null) return;
-            
+            if (!canSee || p.Game.Referee || !(other is Player target)) return;
+
             ZSData data = TryGet(target);
             if (data == null || target.level != Map) return;
             canSee = !(target.Game.Referee || data.Invisible);
         }
         
         void HandleSendingModel(Entity e, ref string model, Player dst) {
-            Player p = e as Player;
-            if (p == null || !IsInfected(p)) return;
+            if (!(e is Player p) || !IsInfected(p)) return;
             model = p == dst ? p.Model : Config.ZombieModel;
         }
         
         void HandleTabListEntryAdded(Entity e, ref string tabName, ref string tabGroup, Player dst) {
-            Player p = e as Player;
-            if (p == null || p.level != Map) return;
-            
+            if (!(e is Player p) || p.level != Map) return;
+
             if (p.Game.Referee) {
                 tabGroup = "&2Referees";
             } else if (IsInfected(p)) {
@@ -101,8 +98,7 @@ namespace MCGalaxy.Modules.Games.ZS
         }
         
         void HandleEntitySpawned(Entity e, ref string name, ref string skin, ref string model, Player dst) {
-            Player p = e as Player;
-            if (p == null || !IsInfected(p)) return;
+            if (!(e is Player p) || !IsInfected(p)) return;
 
             name = p.truename;
             if (Config.ZombieName.Length > 0 && !Get(dst).AkaMode) {

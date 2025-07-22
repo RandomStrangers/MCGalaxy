@@ -56,7 +56,7 @@ namespace MCGalaxy
         public override bool CanSeek  { get { return false; } }
         public override bool CanWrite { get { return true;  } }
         
-        static Exception ex = new NotSupportedException();
+        static readonly Exception ex = new NotSupportedException();
         public override void Flush() { stream.Flush(); }
         public override long Length { get { throw ex; } }
         public override long Position { get { throw ex; } set { throw ex; } }
@@ -84,14 +84,15 @@ namespace MCGalaxy
         }
         
         long WriteData(Stream dst, Stream src, byte[] buffer) {
-            int count = 0;
             long totalLen = 0;
-            
-            while ((count = src.Read(buffer, 0, buffer.Length)) > 0) {
+
+            int count;
+            while ((count = src.Read(buffer, 0, buffer.Length)) > 0)
+            {
                 dst.Write(buffer, 0, count);
                 totalLen += count;
-                
-                for (int i = 0; i < count; i++) 
+
+                for (int i = 0; i < count; i++)
                 {
                     Crc32 = crc32Table[(Crc32 ^ buffer[i]) & 0xFF] ^ (Crc32 >> 8);
                 }
@@ -99,7 +100,7 @@ namespace MCGalaxy
             return totalLen;
         }
         
-        static uint[] crc32Table;
+        static readonly uint[] crc32Table;
         static ZipWriterStream() {
             crc32Table = new uint[256];
             for (int i = 0; i < crc32Table.Length; i++) 
@@ -119,12 +120,12 @@ namespace MCGalaxy
     /// <summary> Writes entries into a ZIP archive. </summary>
     public sealed class ZipWriter 
     {
-        BinaryWriter writer;
-        Stream stream;
-        byte[] buffer = new byte[81920];
+        readonly BinaryWriter writer;
+        readonly Stream stream;
+        readonly byte[] buffer = new byte[81920];
 
         bool zip64;
-        List<ZipEntry> entries = new List<ZipEntry>();      
+        readonly List<ZipEntry> entries = new List<ZipEntry>();      
         int numEntries;
         long centralDirOffset, centralDirSize, zip64EndOffset;    
         const ushort ver_norm = 20, ver_zip64 = 45;   
@@ -132,7 +133,7 @@ namespace MCGalaxy
         const ushort EXTRA_TAG_ZIP64 = 0x0001;
         const ushort ZIP64_CENTRAL_EXTRA_SIZE = 28;
         const ushort ZIP64_LOCAL_EXTRA_SIZE   = 20;
-        static byte[] emptyZip64Local = new byte[ZIP64_LOCAL_EXTRA_SIZE];
+        static readonly byte[] emptyZip64Local = new byte[ZIP64_LOCAL_EXTRA_SIZE];
         
         public ZipWriter(Stream stream) {
             this.stream = stream;
@@ -140,7 +141,7 @@ namespace MCGalaxy
         }
         
         public void WriteEntry(Stream src, string file, bool compress) {
-            ZipEntry entry = default(ZipEntry);
+            ZipEntry entry = default;
             entry.Filename = Encoding.UTF8.GetBytes(file);
             entry.LocalHeaderOffset = stream.Position;
             

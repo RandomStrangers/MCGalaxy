@@ -42,11 +42,14 @@ namespace MCGalaxy.Levels.IO {
                 byte[] header = new byte[16];
                 Vec3U16 dims = ReadHeader(header, gs);
 
-                Level lvl = new Level(name, dims.X, dims.Y, dims.Z);
-                lvl.spawnx = BitConverter.ToUInt16(header, 6);
-                lvl.spawnz = BitConverter.ToUInt16(header, 8);
-                lvl.spawny = BitConverter.ToUInt16(header, 10);
-                lvl.rotx = header[12]; lvl.roty = header[13];
+                Level lvl = new Level(name, dims.X, dims.Y, dims.Z)
+                {
+                    spawnx = BitConverter.ToUInt16(header, 6),
+                    spawnz = BitConverter.ToUInt16(header, 8),
+                    spawny = BitConverter.ToUInt16(header, 10),
+                    rotx = header[12],
+                    roty = header[13]
+                };
                 // 2 bytes for perbuild and pervisit
 
                 byte[] blocks = new byte[2 * lvl.blocks.Length];

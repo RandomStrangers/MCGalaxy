@@ -15,8 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System.IO;
-using MCGalaxy.DB;
 using MCGalaxy.Events.PlayerEvents;
 
 namespace MCGalaxy.Commands.Moderation

@@ -38,7 +38,7 @@ namespace MCGalaxy.Gui
         delegate void VoidDelegate();
         bool mapgen, loaded;
 
-        NotifyIcon notifyIcon = new NotifyIcon();
+        readonly NotifyIcon notifyIcon = new NotifyIcon();
         Player curPlayer;
 
         public Window() {
@@ -141,7 +141,7 @@ Trying to mix two versions is unsupported - you may experience issues";
         
         // cache LogMessage, avoids new object being allocated every time
         delegate void LogCallback(LogType type, string message);
-        LogCallback logCallback;
+        readonly LogCallback logCallback;
         
         void LogMessage(LogType type, string message) {
             if (!Server.Config.ConsoleLogging[(int)type]) return;
@@ -184,7 +184,7 @@ Trying to mix two versions is unsupported - you may experience issues";
             return date + Environment.NewLine + message + Environment.NewLine + "-------------------------";
         }
         
-        static string msgPrefix = Environment.NewLine + "Message: ";
+        static readonly string msgPrefix = Environment.NewLine + "Message: ";
         static string ExtractErrorMessage(string raw) {
             // Error messages are usually structured like so:
             //   Type: whatever
@@ -217,8 +217,10 @@ Trying to mix two versions is unsupported - you may experience issues";
         }
         
         static void RunAsync(ThreadStart func) {
-            Thread thread = new Thread(func);
-            thread.Name = "MsgBox";
+            Thread thread = new Thread(func)
+            {
+                Name = "MsgBox"
+            };
             thread.Start();
         }
         

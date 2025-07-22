@@ -23,9 +23,9 @@ namespace MCGalaxy.Modules.Compiling
     {
         public override string name { get { return "Compiler"; } }
 
-        Command cmdCreate   = new CmdCmdCreate();
-        Command cmdCompile  = new CmdCompile();
-        Command cmdCompLoad = new CmdCompLoad();
+        readonly Command cmdCreate   = new CmdCmdCreate();
+        readonly Command cmdCompile  = new CmdCompile();
+        readonly Command cmdCompLoad = new CmdCompLoad();
 
         public override void Load(bool startup) {
             Server.EnsureDirectoryExists(ICompiler.COMMANDS_SOURCE_DIR);

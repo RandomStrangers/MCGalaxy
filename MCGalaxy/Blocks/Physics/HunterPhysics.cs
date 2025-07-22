@@ -94,8 +94,7 @@ namespace MCGalaxy.Blocks.Physics {
         }
         
         static bool MoveTo(Level lvl, ref PhysInfo C, BlockID target, ushort x, ushort y, ushort z) {
-            int index;
-            BlockID block = lvl.GetBlock(x, y, z, out index);            
+            BlockID block = lvl.GetBlock(x, y, z, out int index);
             if (block == target && lvl.AddUpdate(index, C.Block)) {
                 lvl.AddUpdate(C.Index, target);
                 return true;

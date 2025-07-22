@@ -50,8 +50,8 @@ namespace MCGalaxy.Generator.Classic
             
             return c1 + v * (c2 - c1);
         }
-        
-        byte[] p = new byte[512];
+
+        readonly byte[] p = new byte[512];
     }
     
     public sealed class OctaveNoise 

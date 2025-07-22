@@ -278,8 +278,8 @@ namespace MCGalaxy.SQL
         string sqlCmd;
         internal SQLiteConnection conn;
         SQLiteStatement stmt;
-        List<string> param_names  = new List<string>();
-        List<object> param_values = new List<object>();
+        readonly List<string> param_names  = new List<string>();
+        readonly List<object> param_values = new List<object>();
         
         public SQLiteCommand(string sql, SQLiteConnection connection) {
             sqlCmd = sql;
@@ -287,7 +287,7 @@ namespace MCGalaxy.SQL
         }
         
         void DisposeStatement() {
-            if (stmt != null) stmt.Dispose();
+            stmt?.Dispose();
             stmt = null;
         }
         
@@ -312,7 +312,7 @@ namespace MCGalaxy.SQL
                 throw;
             }
             
-            if (stmt != null) stmt.BindAll(param_names, param_values);
+            stmt?.BindAll(param_names, param_values);
             return stmt;
         }
         
@@ -346,13 +346,13 @@ namespace MCGalaxy.SQL
 
     static class SQLiteConvert 
     {
-        static string[] _datetimeFormats = new string[] {
+        static readonly string[] _datetimeFormats = new string[] {
             DATEFORMAT_UTC, DATEFORMAT_LOCAL
         };
 
         const string DATEFORMAT_UTC   = "yyyy-MM-dd HH:mm:ssK";
         const string DATEFORMAT_LOCAL = "yyyy-MM-dd HH:mm:ss";
-        static Encoding utf8 = new UTF8Encoding();
+        static readonly Encoding utf8 = new UTF8Encoding();
 
         public static byte[] ToUTF8(string text) {
             int count = utf8.GetByteCount(text) + 1;
@@ -585,7 +585,7 @@ namespace MCGalaxy.SQL
             return msg.Trim();
         }
         
-        static string[] errors = new string[] {
+        static readonly string[] errors = new string[] {
             /* SQLITE_OK          */ "not an error",
             /* SQLITE_ERROR       */ "SQL logic error or missing database",
             /* SQLITE_INTERNAL    */ "internal logic error",

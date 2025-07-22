@@ -35,12 +35,14 @@ namespace MCGalaxy.Gui.Popups
         void MakeButton(ChatToken token) {
             int row = index / btnsPerCol, col = index % btnsPerCol;
             index++;
-            
-            Button btn = new Button();
-            btn.Location = new Point(9 + row * btnWidth, 7 + col * btnHeight);
-            btn.Size = new Size(btnWidth, btnHeight);
-            btn.Name = "b" + index;
-            btn.TabIndex = index;
+
+            Button btn = new Button
+            {
+                Location = new Point(9 + row * btnWidth, 7 + col * btnHeight),
+                Size = new Size(btnWidth, btnHeight),
+                Name = "b" + index,
+                TabIndex = index
+            };
             toolTip.SetToolTip(btn, token.Description);
             
             btn.Text   = token.Trigger;
@@ -56,8 +58,8 @@ namespace MCGalaxy.Gui.Popups
         void UpdateBaseLayout() {
             int rows = index / btnsPerCol;
             if ((index % btnsPerCol) != 0) rows++; // round up
-            
-            int x = 0;
+
+            int x;
             // Centre if even count, align under row if odd count
             if ((rows & 1) == 0) {
                 x = rows * btnWidth / 2 - (100 / 2);

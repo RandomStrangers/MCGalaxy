@@ -50,9 +50,9 @@ namespace MCGalaxy.Gui {
             Server.Config.AdminsJoinSilently = rank_cbSilentAdmins.Checked;
             Server.Config.ListEmptyRanks     = rank_cbEmpty.Checked;
         }
-        
-        
-        List<Group> copiedGroups = new List<Group>();
+
+
+        readonly List<Group> copiedGroups = new List<Group>();
         Group curGroup;
         void LoadRanks() {
             rank_list.Items.Clear();

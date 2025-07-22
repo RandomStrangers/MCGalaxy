@@ -30,14 +30,17 @@ namespace MCGalaxy.Commands.Info
         
         public override void Use(Player p, string message, CommandData data) {
             string end = DateTime.Now.ToInvariantDateString();
-            string start = "thismonth", name = null;
+            string start = "thismonth";
             string[] args = message.SplitSpaces();
-            
-            if (message.Length == 0 || ValidTimespan(message.ToLower())) {
+            string name;
+            if (message.Length == 0 || ValidTimespan(message.ToLower()))
+            {
                 if (p.IsSuper) { SuperRequiresArgs(p, "player name"); return; }
                 name = p.name;
                 if (message.Length > 0) start = message.ToLower();
-            } else {
+            }
+            else
+            {
                 name = PlayerInfo.FindMatchesPreferOnline(p, args[0]);
                 if (args.Length > 1 && ValidTimespan(args[1].ToLower()))
                     start = args[1].ToLower();

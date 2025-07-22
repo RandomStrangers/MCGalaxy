@@ -110,13 +110,19 @@ namespace MCGalaxy.Blocks.Physics {
         }
         
         static bool MoveZombie(Level lvl, ref PhysInfo C, ushort x, ushort y, ushort z) {
-            int index;
-            
+
             // Move zombie up or down blocks
-            if (       lvl.IsAirAt(x, (ushort)(y - 1), z, out index) && lvl.IsAirAt(x, y,               z)) {
-            } else if (lvl.IsAirAt(x, y,               z, out index) && lvl.IsAirAt(x, (ushort)(y + 1), z)) {
-            } else if (lvl.IsAirAt(x, (ushort)(y + 1), z, out index) && lvl.IsAirAt(x, (ushort)(y + 2), z)) {
-            } else {
+            if (lvl.IsAirAt(x, (ushort)(y - 1), z, out int index) && lvl.IsAirAt(x, y, z))
+            {
+            }
+            else if (lvl.IsAirAt(x, y, z, out index) && lvl.IsAirAt(x, (ushort)(y + 1), z))
+            {
+            }
+            else if (lvl.IsAirAt(x, (ushort)(y + 1), z, out index) && lvl.IsAirAt(x, (ushort)(y + 2), z))
+            {
+            }
+            else
+            {
                 return false;
             }
 

@@ -39,7 +39,7 @@ namespace MCGalaxy.Gui {
                 if (value < 0) value = 0;
                 
                 totalSecs = value;
-                if (ValueChanged != null) ValueChanged(this, EventArgs.Empty);
+                ValueChanged?.Invoke(this, EventArgs.Empty);
                 UpdateEditText();
             }
         }

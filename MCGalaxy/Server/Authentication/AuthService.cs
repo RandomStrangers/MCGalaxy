@@ -49,10 +49,12 @@ namespace MCGalaxy.Authentication
             {
                 if (s.URL.CaselessEq(url)) return s;
             }
-            
-            AuthService service = new AuthService();
-            service.URL  = url;
-            service.Salt = Server.GenerateSalt();
+
+            AuthService service = new AuthService
+            {
+                URL = url,
+                Salt = Server.GenerateSalt()
+            };
             Services.Add(service);
             
             // TODO: Maybe seperate method instead
@@ -64,8 +66,8 @@ namespace MCGalaxy.Authentication
             }
             return service;
         }
- 
-        
+
+
         /// <summary> Updates list of authentication services from authservices.properties </summary>
         internal static void UpdateList() {
             AuthService cur = null;

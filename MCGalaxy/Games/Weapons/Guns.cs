@@ -35,19 +35,20 @@ namespace MCGalaxy.Games
         }
         
         protected AmmunitionData MakeArgs(Vec3F32 dir, BlockID block) {
-            AmmunitionData args = new AmmunitionData();
-            args.block  = block;
-            
-            args.start  = (Vec3U16)p.Pos.BlockCoords;
-            args.dir    = dir;
-            args.iterations = 4;
+            AmmunitionData args = new AmmunitionData
+            {
+                block = block,
+
+                start = (Vec3U16)p.Pos.BlockCoords,
+                dir = dir,
+                iterations = 4
+            };
             return args;
         }
         
         protected void BufferedRevert(Vec3U16 pos, BufferedBlockSender buffer) {
-            int index;
-            BlockID block = p.level.GetBlock(pos.X, pos.Y, pos.Z, out index);
-            
+            BlockID block = p.level.GetBlock(pos.X, pos.Y, pos.Z, out int index);
+
             if (index == -1) return;
             buffer.Add(index, block);
         }

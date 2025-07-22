@@ -159,9 +159,8 @@ namespace MCGalaxy {
         /// <param name="customColors"> if false, converts custom colour codes into fallback colour codes </param>
         public static string CleanupColors(string value, bool fullAmpersands, bool customColors) {
             if (value.IndexOf('&') == -1) return value;
-            
-            int len;
-            char[] chars = CleanupColors(value, out len, fullAmpersands, customColors);
+
+            char[] chars = CleanupColors(value, out int len, fullAmpersands, customColors);
             return new string(chars, 0, len);
         }
 

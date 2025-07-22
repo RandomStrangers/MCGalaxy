@@ -159,9 +159,8 @@ namespace MCGalaxy {
         /// <summary> Gets the extended tile at the given position index </summary>
         /// <remarks> GetBlock / FastGetBlock is preferred over calling this method </remarks>
         public byte GetExtTile(int index) {
-            ushort x, y, z;
-            IntToPos(index, out x, out y, out z);
-            
+            IntToPos(index, out ushort x, out ushort y, out ushort z);
+
             int cx = x >> 4, cy = y >> 4, cz = z >> 4;
             byte[] chunk = CustomBlocks[(cy * ChunksZ + cz) * ChunksX + cx];
             return chunk == null ? Block.Air : chunk[(y & 0x0F) << 8 | (z & 0x0F) << 4 | (x & 0x0F)];
@@ -348,25 +347,24 @@ namespace MCGalaxy {
         }
         
         public void Blockchange(int b, BlockID block, bool overRide = false,
-                                PhysicsArgs data = default(PhysicsArgs), bool addUndo = true) { //Block change made by physics
+                                PhysicsArgs data = default, bool addUndo = true) { //Block change made by physics
             if (!DoPhysicsBlockchange(b, block, overRide, data, addUndo)) return;
-            
-            ushort x, y, z;
-            IntToPos(b, out x, out y, out z);
+
+            IntToPos(b, out ushort x, out ushort y, out ushort z);
             BroadcastChange(x, y, z, block);
         }
         
         public void Blockchange(ushort x, ushort y, ushort z, BlockID block, bool overRide = false,
-                                PhysicsArgs data = default(PhysicsArgs), bool addUndo = true) {
+                                PhysicsArgs data = default, bool addUndo = true) {
             Blockchange(PosToInt(x, y, z), block, overRide, data, addUndo); //Block change made by physics
         }
         
         public void Blockchange(ushort x, ushort y, ushort z, BlockID block) {
-            Blockchange(PosToInt(x, y, z), block, false, default(PhysicsArgs)); //Block change made by physics
+            Blockchange(PosToInt(x, y, z), block, false, default); //Block change made by physics
         }
         
         public bool DoPhysicsBlockchange(int b, BlockID block, bool overRide = false,
-                                         PhysicsArgs data = default(PhysicsArgs), bool addUndo = true) {
+                                         PhysicsArgs data = default, bool addUndo = true) {
             if (blocks == null || b < 0 || b >= blocks.Length) return false;
             BlockID old = blocks[b];
             #if TEN_BIT_BLOCKS
@@ -390,7 +388,7 @@ namespace MCGalaxy {
                 }
 
                 if (addUndo) {
-                    UndoPos uP = default(UndoPos);
+                    UndoPos uP = default;
                     uP.Index = b;
                     uP.SetData(old, block);
 
@@ -408,17 +406,15 @@ namespace MCGalaxy {
                 if (block >= Block.Extended) {
                     #if TEN_BIT_BLOCKS
                     blocks[b] = Block.ExtendedClass[block >> Block.ExtendedShift];
-                    #else
+#else
                     blocks[b] = Block.custom_block;
-                    #endif
-                    ushort x, y, z;
-                    IntToPos(b, out x, out y, out z);
+#endif
+                    IntToPos(b, out ushort x, out ushort y, out ushort z);
                     FastSetExtTile(x, y, z, (BlockRaw)block);
                 } else {
                     blocks[b] = (BlockRaw)block;
                     if (old >= Block.Extended) {
-                        ushort x, y, z;
-                        IntToPos(b, out x, out y, out z);
+                        IntToPos(b, out ushort x, out ushort y, out ushort z);
                         FastRevertExtTile(x, y, z);
                     }
                 }
@@ -435,8 +431,7 @@ namespace MCGalaxy {
         
         public void UpdateBlock(Player p, ushort x, ushort y, ushort z, BlockID block,
                                 ushort flags = BlockDBFlags.ManualPlace, bool buffered = false) {
-            int index;
-            BlockID old = GetBlock(x, y, z, out index);
+            BlockID old = GetBlock(x, y, z, out int index);
             bool drawn = (flags & BlockDBFlags.ManualPlace) == 0;
             
             ChangeResult result = TryChangeBlock(p, x, y, z, block, drawn);

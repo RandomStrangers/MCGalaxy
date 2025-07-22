@@ -38,8 +38,8 @@ namespace Sharkbite.Irc
 		TcpClient client;
 		StreamReader reader;
 		StreamWriter writer;
-		Encoding encoding;
-		Random rnd = new Random();
+        readonly Encoding encoding;
+        readonly Random rnd = new Random();
 
 		/// <summary>
 		/// Prepare a connection to an IRC server but do not open it.
@@ -171,10 +171,12 @@ namespace Sharkbite.Irc
 				client.Connect( Hostname, Port );
 				Stream s  = MakeDataStream();
 				Connected = true;
-				
-				writer = new StreamWriter( s, encoding );
-				writer.AutoFlush = true;
-				reader = new StreamReader( s, encoding );
+
+                writer = new StreamWriter(s, encoding)
+                {
+                    AutoFlush = true
+                };
+                reader = new StreamReader( s, encoding );
 				
 				SendPass(ServerPassword);
 				// NOTE: The following two commands may fail if
@@ -195,7 +197,7 @@ namespace Sharkbite.Irc
 		
 
 		const string ctcpTypes = "(FINGER|USERINFO|VERSION|SOURCE|CLIENTINFO|ERRMSG|PING|TIME)";
-		static Regex ctcpRegex = new Regex(":([^ ]+) [A-Z]+ [^:]+:\u0001" + ctcpTypes + "([^\u0001]*)\u0001", RegexOptions.Compiled | RegexOptions.Singleline );
+		static readonly Regex ctcpRegex = new Regex(":([^ ]+) [A-Z]+ [^:]+:\u0001" + ctcpTypes + "([^\u0001]*)\u0001", RegexOptions.Compiled | RegexOptions.Singleline );
 		/// <summary> Test if the message contains CTCP commands. </summary>
 		/// <param name="message">The raw message from the IRC server</param>
 		/// <returns>True if this is a Ctcp request or reply.</returns>
@@ -203,7 +205,7 @@ namespace Sharkbite.Irc
 			return ctcpRegex.IsMatch( message );
 		}
 		
-		static Regex dccMatchRegex = new Regex(":([^ ]+) PRIVMSG [^:]+:\u0001DCC (CHAT|SEND|GET|RESUME|ACCEPT)[^\u0001]*\u0001", RegexOptions.Compiled | RegexOptions.Singleline );
+		static readonly Regex dccMatchRegex = new Regex(":([^ ]+) PRIVMSG [^:]+:\u0001DCC (CHAT|SEND|GET|RESUME|ACCEPT)[^\u0001]*\u0001", RegexOptions.Compiled | RegexOptions.Singleline );
 		/// <summary> Test if the message contains a DCC request. </summary>
 		/// <param name="message">The raw message from the IRC server</param>
 		/// <returns>True if this is a DCC request.</returns>
@@ -527,11 +529,8 @@ namespace Sharkbite.Irc
 					OnQuit( user, GetSuffix( tokens, 2 ) );
 					break;
 				case "INVITE":
-					if( OnInvite != null ) 
-					{
-						OnInvite( user, RemoveLeadingColon( tokens[3] ) );
-					}
-					break;
+                    OnInvite?.Invoke(user, RemoveLeadingColon(tokens[3]));
+                    break;
 				case "KICK":
 					OnKick( user, tokens[2], tokens[3], GetSuffix( tokens, 4 ) );
 					break;
@@ -592,11 +591,11 @@ namespace Sharkbite.Irc
 			{
 				OnError(code, GetSuffix( tokens, 3 ) );
 			}
-			else if( OnReply != null )
-			{
-				OnReply(code, GetSuffix( tokens, 3 ) );
-			}
-		}
+			else
+            {
+                OnReply?.Invoke(code, GetSuffix(tokens, 3));
+            }
+        }
 		
 		/// <summary>
 		/// Turn an array of strings back into a single string.

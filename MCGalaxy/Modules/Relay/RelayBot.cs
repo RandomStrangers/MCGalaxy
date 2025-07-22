@@ -255,7 +255,7 @@ namespace MCGalaxy.Modules.Relay
         
         static bool FilterIRC(Player pl, object arg) {
             return !pl.Ignores.IRC && !pl.Ignores.IRCNicks.Contains((string)arg);
-        } static ChatMessageFilter filterIRC = FilterIRC;
+        } static readonly ChatMessageFilter filterIRC = FilterIRC;
         
         public static void MessageInGame(string srcNick, string message) {
             Chat.Message(ChatScope.Global, message, srcNick, filterIRC);
@@ -344,13 +344,13 @@ namespace MCGalaxy.Modules.Relay
             
             if (HandleListPlayers(user, channel, cmdName, false)) return;
             Command.Search(ref cmdName, ref cmdArgs);
-            
-            string error;
-            if (!CanUseCommand(user, cmdName, out error)) {
+
+            if (!CanUseCommand(user, cmdName, out string error))
+            {
                 if (error != null) SendMessage(channel, error);
                 return;
             }
-            
+
             ExecuteCommand(user, channel, cmdName, cmdArgs);
         }
 
@@ -394,8 +394,10 @@ namespace MCGalaxy.Modules.Relay
             if (!isWho || (DateTime.UtcNow - last).TotalSeconds <= 5) return false;
             
             try {
-                RelayPlayer p = new RelayPlayer(channel, user, this);
-                p.group = Group.DefaultRank;
+                RelayPlayer p = new RelayPlayer(channel, user, this)
+                {
+                    group = Group.DefaultRank
+                };
                 MessagePlayers(p);
             } catch (Exception e) {
                 Logger.LogError(e);
@@ -412,17 +414,17 @@ namespace MCGalaxy.Modules.Relay
         }
         
                 
-        bool HandleCommand(RelayUser user, string channel, string message, string[] parts) {
+        bool HandleCommand(RelayUser user, string channel, string _, string[] parts) {
             string cmdName = parts.Length > 1 ? parts[1].ToLower() : "";
             string cmdArgs = parts.Length > 2 ? parts[2].Trim()    : "";
             Command.Search(ref cmdName, ref cmdArgs);
-            
-            string error;
-            if (!CanUseCommand(user, cmdName, out error)) {
+
+            if (!CanUseCommand(user, cmdName, out string error))
+            {
                 if (error != null) SendMessage(channel, error);
                 return false;
             }
-            
+
             return ExecuteCommand(user, channel, cmdName, cmdArgs);
         }
         

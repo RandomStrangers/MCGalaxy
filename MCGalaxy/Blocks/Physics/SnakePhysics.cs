@@ -111,18 +111,24 @@ namespace MCGalaxy.Blocks.Physics {
         }
         
         static bool MoveSnake(Level lvl, ref PhysInfo C, ushort x, ushort y, ushort z) {
-            int index;
-            
+
             // Move snake up or down blocks
-            if (       lvl.IsAirAt(x, (ushort)(y - 1), z, out index) && lvl.IsAirAt(x, y,               z)) {
-            } else if (lvl.IsAirAt(x, y,               z, out index) && lvl.IsAirAt(x, (ushort)(y + 1), z)) {
-            } else if (lvl.IsAirAt(x, (ushort)(y + 1), z, out index) && lvl.IsAirAt(x, (ushort)(y + 2), z)) {
-            } else {
+            if (lvl.IsAirAt(x, (ushort)(y - 1), z, out int index) && lvl.IsAirAt(x, y, z))
+            {
+            }
+            else if (lvl.IsAirAt(x, y, z, out index) && lvl.IsAirAt(x, (ushort)(y + 1), z))
+            {
+            }
+            else if (lvl.IsAirAt(x, (ushort)(y + 1), z, out index) && lvl.IsAirAt(x, (ushort)(y + 2), z))
+            {
+            }
+            else
+            {
                 return false;
             }
 
             if (lvl.AddUpdate(index, C.Block)) {
-                PhysicsArgs args = default(PhysicsArgs);
+                PhysicsArgs args = default;
                 args.Type1 = PhysicsArgs.Wait; args.Value1 = 5;
                 args.Type2 = PhysicsArgs.Revert; args.Value2 = Block.Air;
                 lvl.AddUpdate(C.Index, Block.SnakeTail, args, true);
@@ -132,14 +138,13 @@ namespace MCGalaxy.Blocks.Physics {
         }
         
         static bool MoveSnakeY(Level lvl, ref PhysInfo C, ushort x, ushort y, ushort z) {
-            int index;
-            BlockID block  = lvl.GetBlock(x, y, z, out index);
+            BlockID block = lvl.GetBlock(x, y, z, out int index);
             BlockID above  = lvl.GetBlock(x, (ushort)(y + 1), z);
             BlockID above2 = lvl.GetBlock(x, (ushort)(y + 2), z);
             
             if (block == Block.Air && (above == Block.Grass || above == Block.Dirt && above2 == Block.Air)) {
                 if (lvl.AddUpdate(index, C.Block)) {
-                    PhysicsArgs args = default(PhysicsArgs);
+                    PhysicsArgs args = default;
                     args.Type1 = PhysicsArgs.Wait; args.Value1 = 5;
                     args.Type2 = PhysicsArgs.Revert; args.Value2 = Block.Air;
                     lvl.AddUpdate(C.Index, Block.SnakeTail, args, true);

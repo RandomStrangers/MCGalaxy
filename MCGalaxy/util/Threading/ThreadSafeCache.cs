@@ -31,24 +31,24 @@ namespace MCGalaxy.Util
         
         public object GetLocker(string key) {
             lock (locker) {
-                object value;
-                if (!items.TryGetValue(key, out value)) {
+                if (!items.TryGetValue(key, out object value))
+                {
                     value = new object();
                     items[key] = value;
                 }
-                
+
                 access[key] = DateTime.UtcNow;
                 return value;
             }
         }
         
         
-        public void CleanupTask(SchedulerTask task) {
+        public void CleanupTask(SchedulerTask _) {
             List<string> free = null;
             DateTime now = DateTime.UtcNow;
             
             lock (locker) {
-                foreach (var kvp in access) {
+                foreach (KeyValuePair<string, DateTime> kvp in access) {
                     // Has the cached item last been accessed in 5 minutes?
                     if ((now - kvp.Value).TotalMinutes <= 5) continue;
                     

@@ -12,7 +12,6 @@ BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
  */
-using System;
 using System.Text;
 using System.Collections.Generic;
 using MCGalaxy.Commands;
@@ -248,7 +247,7 @@ namespace MCGalaxy {
         }
         
         readonly object locker = new object();
-        Dictionary<CpeMessageType, List<PersistentMessage>> persistentMsgs = 
+        readonly Dictionary<CpeMessageType, List<PersistentMessage>> persistentMsgs = 
             new Dictionary<CpeMessageType, List<PersistentMessage>>();
         
         /// <returns> false if there is currently a higher priority persistent message set for the given type </returns>
@@ -256,15 +255,15 @@ namespace MCGalaxy {
             if (!IsPersistent(type)) return true;
             
             lock (locker) {
-                List<PersistentMessage> field = null;
-                
-                if (!persistentMsgs.TryGetValue(type, out field)) {
+
+                if (!persistentMsgs.TryGetValue(type, out List<PersistentMessage> field))
+                {
                     field = new List<PersistentMessage>();
                     persistentMsgs[type] = field;
                 }
 
                 PersistentMessage curMsg = null;
-                foreach (var msg in field) 
+                foreach (PersistentMessage msg in field) 
                 {
                     if (msg.priority == priority) { curMsg = msg; break; }
                 }
@@ -273,7 +272,7 @@ namespace MCGalaxy {
                     field.Remove(curMsg);
                     PersistentMessage highestRemainingMsg = null;
                     
-                    foreach (var msg in field)
+                    foreach (PersistentMessage msg in field)
                     {
                         if (highestRemainingMsg == null || msg.priority > highestRemainingMsg.priority) highestRemainingMsg = msg;
                     }
@@ -282,15 +281,17 @@ namespace MCGalaxy {
                     if (highestRemainingMsg != null) message = highestRemainingMsg.message;
                 } else {
                     if (curMsg == null) {
-                        curMsg = new PersistentMessage();
-                        curMsg.priority = priority;
+                        curMsg = new PersistentMessage
+                        {
+                            priority = priority
+                        };
                         field.Add(curMsg);
                     }
                     curMsg.message = message;
                 }
             
                 // don't send if there is a a higher priority message currently in this field
-                foreach (var msg in field) 
+                foreach (PersistentMessage msg in field) 
                 {
                     if (msg.priority > priority) return false;
                 }

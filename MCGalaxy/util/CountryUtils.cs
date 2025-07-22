@@ -33,7 +33,7 @@ namespace MCGalaxy.Util {
         /// <summary>
         /// Based on https://www.iban.com/country-codes
         /// </summary>
-        static Dictionary<string, string> CodesToNames = new Dictionary<string, string>() {
+        static readonly Dictionary<string, string> CodesToNames = new Dictionary<string, string>() {
             { "AF", "Afghanistan" },
             { "AL", "Albania" },
             { "DZ", "Algeria" },

@@ -34,7 +34,7 @@ namespace MCGalaxy.Platform
             return path;
         }
         
-        public static Assembly ResolvePluginReference(string name) {
+        public static Assembly ResolvePluginReference(string _) {
             return null;
         }
     }

@@ -21,8 +21,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+#if !NET_20
 using MCGalaxy.Platform;
-
+#endif
 namespace MCGalaxy.Scripting
 {
     /// <summary> Exception raised when attempting to load a new command/plugin 
@@ -75,10 +76,9 @@ namespace MCGalaxy.Scripting
 #endif
             return null;
         }
-
-        static bool IsPluginDLL(Assembly a) { return string.IsNullOrEmpty(a.Location); }
-        
-        
+#if !NET_20
+        static bool IsPluginDLL(Assembly a) { return String.IsNullOrEmpty(a.Location); }
+#endif
         /// <summary> Constructs instances of all types which derive from T in the given assembly. </summary>
         /// <returns> The list of constructed instances. </returns>
         public static List<T> LoadTypes<T>(Assembly lib) {
@@ -99,7 +99,7 @@ namespace MCGalaxy.Scripting
         }
         
         /// <summary> Loads the given assembly from disc (and associated .pdb debug data) </summary>
-        public static Assembly LoadAssembly(string path) 
+        public static Assembly LoadAssembly(string path)
         {
             return LoadAssembly(path, true);
         }

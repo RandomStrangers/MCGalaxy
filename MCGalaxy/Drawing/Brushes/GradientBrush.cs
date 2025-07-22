@@ -23,7 +23,8 @@ namespace MCGalaxy.Drawing.Brushes
     public sealed class GradientBrush : Brush 
     {
         readonly BlockID[] blocks;
-        CustomModelAnimAxis axis, _axis;
+        private readonly CustomModelAnimAxis axis;
+        private CustomModelAnimAxis _axis;
         int xLen, yLen, zLen;
 
         public GradientBrush(BlockID[] blocks, CustomModelAnimAxis axis) {

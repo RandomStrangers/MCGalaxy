@@ -107,10 +107,9 @@ namespace MCGalaxy.Modules.Games.Countdown
         static void MakeSquares(Level lvl) {
             int maxX = lvl.Width - 1, maxZ = lvl.Length - 1;
             Cuboid(4, 4, 4, maxX - 4, 4, maxZ - 4, Block.Glass, lvl);
-            
-            int begX, endX, begZ, endZ;
-            CountdownMap.CalcBoardExtents(lvl.Width,  out begX, out endX);
-            CountdownMap.CalcBoardExtents(lvl.Length, out begZ, out endZ);
+
+            CountdownMap.CalcBoardExtents(lvl.Width, out int begX, out int endX);
+            CountdownMap.CalcBoardExtents(lvl.Length, out int begZ, out int endZ);
             
             for (int z = begZ; z <= endZ; z += 3)
                 for (int x = begX; x <= endX; x += 3)

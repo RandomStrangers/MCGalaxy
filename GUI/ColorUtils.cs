@@ -102,7 +102,7 @@ namespace MCGalaxy.Gui
         
         // https://stackoverflow.com/questions/3018313/algorithm-to-convert-rgb-to-hsv-and-hsv-to-rgb-in-range-0-255-for-both
         static HSV RGBToHSV(RGB rgb) {
-            HSV hsv = default(HSV);
+            HSV hsv = default;
             double maxc = Math.Max(rgb.R, Math.Max(rgb.G, rgb.B));
             double minc = Math.Min(rgb.R, Math.Min(rgb.G, rgb.B));
             
@@ -133,7 +133,7 @@ namespace MCGalaxy.Gui
         static RGB HSVToRGB(HSV hsv) {
             double hh, p, q, t, ff;
             int    i;
-            RGB    rgb = default(RGB);
+            RGB    rgb = default;
 
             if (hsv.S <= 0.0) {
                 rgb.R = hsv.V;

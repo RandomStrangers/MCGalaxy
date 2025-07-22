@@ -34,10 +34,12 @@ namespace MCGalaxy.Games
         protected override void OnDisabled(Player p) { }
 
         protected override void OnActivated(Vec3F32 dir, BlockID block) {
-            MissileData args = new MissileData();
-            args.block = block;
-            args.type  = type;
-            args.pos   = (Vec3U16)p.Pos.BlockCoords;
+            MissileData args = new MissileData
+            {
+                block = block,
+                type = type,
+                pos = (Vec3U16)p.Pos.BlockCoords
+            };
 
             SchedulerTask task = new SchedulerTask(MissileCallback, args,
                                                    TimeSpan.FromMilliseconds(100), true);

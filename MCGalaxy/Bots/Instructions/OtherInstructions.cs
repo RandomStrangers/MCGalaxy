@@ -29,7 +29,7 @@ namespace MCGalaxy.Bots
         }
         
         public override string[] Help { get { return help; } }
-        static string[] help = new string[] { 
+        static readonly string[] help = new string[] { 
             "&T/BotAI add [name] reset",
             "&HCauses the bot to go back to the first instruction",
         };
@@ -45,7 +45,7 @@ namespace MCGalaxy.Bots
         }
         
         public override string[] Help { get { return help; } }
-        static string[] help = new string[] { 
+        static readonly string[] help = new string[] { 
             "&T/BotAI add [name] remove",
             "&HCauses the bot to be removed from the world",
         };
@@ -66,7 +66,7 @@ namespace MCGalaxy.Bots
         }
         
         public override InstructionData Parse(string[] args) {
-            InstructionData data = default(InstructionData);
+            InstructionData data = default;
             data.Metadata = args[1];
             return data;
         }
@@ -81,7 +81,7 @@ namespace MCGalaxy.Bots
         }
         
         public override string[] Help { get { return help; } }
-        static string[] help = new string[] { 
+        static readonly string[] help = new string[] { 
             "&T/BotAI add [name] linkscript [ai name]",
             "&HCauses the bot to switch to the given AI, and execute that AI's instructions instead.",
         };
@@ -104,7 +104,7 @@ namespace MCGalaxy.Bots
         }
         
         public override InstructionData Parse(string[] args) {
-            InstructionData data = default(InstructionData);
+            InstructionData data = default;
             data.Metadata = short.Parse(args[1]);
             return data;
         }
@@ -115,7 +115,7 @@ namespace MCGalaxy.Bots
         }
         
         public override string[] Help { get { return help; } }
-        static string[] help = new string[] { 
+        static readonly string[] help = new string[] { 
             "&T/BotAI add [name] wait <interval>",
             "&HCauses the bot to stay still for a period of time.",
             "&H  <interval> is in tenths of a second, so an interval of 20 means " +

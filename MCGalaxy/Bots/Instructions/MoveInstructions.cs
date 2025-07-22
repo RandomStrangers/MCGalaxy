@@ -42,7 +42,7 @@ namespace MCGalaxy.Bots
             coords.RotX = byte.Parse(args[4]);
             coords.RotY = byte.Parse(args[5]);
             
-            InstructionData data = default(InstructionData);
+            InstructionData data = default;
             data.Metadata = coords;
             return data;
         }
@@ -58,7 +58,7 @@ namespace MCGalaxy.Bots
         }
         
         public override string[] Help { get { return help; } }
-        static string[] help = new string[] {
+        static readonly string[] help = new string[] {
             "&T/BotAI add [name] teleport",
             "&HCauses the bot to instantly teleport to a position.",
             "&H  Note: The position saved to the AI is your current position.",
@@ -88,7 +88,7 @@ namespace MCGalaxy.Bots
         protected virtual void StartMoving(PlayerBot bot) { }
         
         public override string[] Help { get { return help; } }
-        static string[] help = new string[] {
+        static readonly string[] help = new string[] {
             "&T/BotAI add [name] move",
             "&HCauses the bot to move towards to a position.",
             "&H  Note: The position saved to the AI is your current position.",
@@ -105,7 +105,7 @@ namespace MCGalaxy.Bots
         }
         
         public override string[] Help { get { return help; } }
-        static string[] help = new string[] {
+        static readonly string[] help = new string[] {
             "&T/BotAI add [name] walk",
             "&HCauses the bot to walk towards to a position.",
             "&H  Note: The position saved to the AI is your current position.",
@@ -123,7 +123,7 @@ namespace MCGalaxy.Bots
         }
         
         public override string[] Help { get { return help; } }
-        static string[] help = new string[] {
+        static readonly string[] help = new string[] {
             "&T/BotAI add [name] jump",
             "&HCauses the bot to perform a jump.",
             "&H  Note bots can also do other instructions while jumping",
@@ -143,7 +143,7 @@ namespace MCGalaxy.Bots
         }
         
         public override InstructionData Parse(string[] args) {
-            InstructionData data = default(InstructionData);
+            InstructionData data = default;
             data.Metadata = short.Parse(args[1]);
             return data;
         }
@@ -154,7 +154,7 @@ namespace MCGalaxy.Bots
         }
         
         public override string[] Help { get { return help; } }
-        static string[] help = new string[] {
+        static readonly string[] help = new string[] {
             "&T/BotAI add [name] speed [percentage]",
             "&HSets how fast the bot moves, relative to its normal speed.",
             "&H  100 means it moves at normal speed",

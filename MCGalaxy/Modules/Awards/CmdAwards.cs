@@ -40,8 +40,8 @@ namespace MCGalaxy.Modules.Awards
             if (awards.Count == 0) { p.Message("This server has no awards yet."); return; }
             
             List<string> playerAwards = PlayerAwards.Get(name);
-            ItemPrinter<Award> printer = (p_, award) => PrintAward(p_, award, playerAwards);
-            
+            void printer(Player p_, Award award) => PrintAward(p_, award, playerAwards);
+
             string cmd = name.Length == 0 ? "awards" : "awards " + name;
             string modifier = args.Length > offset ? args[offset] : "";
             

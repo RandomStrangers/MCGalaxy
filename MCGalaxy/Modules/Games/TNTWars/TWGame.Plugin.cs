@@ -88,8 +88,7 @@ namespace MCGalaxy.Modules.Games.TW
         }
         
         void HandleTabListEntryAdded(Entity entity, ref string tabName, ref string tabGroup, Player dst) {
-            Player p = entity as Player;
-            if (p == null || p.level != Map) return;
+            if (!(entity is Player p) || p.level != Map) return;
             TWTeam team = TeamOf(p);
             
             if (p.Game.Referee) {

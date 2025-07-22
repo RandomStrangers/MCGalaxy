@@ -13,7 +13,7 @@ namespace MCGalaxy.Config
         public object Meta;
         
         public void Deserialise(ConfigElement[] elems, object instance) {
-            foreach (var kvp in this) 
+            foreach (KeyValuePair<string, object> kvp in this) 
             {
                 ConfigElement.Parse(elems, instance, kvp.Key, (string)kvp.Value);
             }
@@ -33,7 +33,7 @@ namespace MCGalaxy.Config
         
         int offset;
         char Cur { get { return Value[offset]; } }
-        StringBuilder strBuffer = new StringBuilder(96);
+        readonly StringBuilder strBuffer = new StringBuilder(96);
         
         public JsonReader(string value) {
             Value    = value;
@@ -241,16 +241,24 @@ namespace MCGalaxy.Config
                 WriteNull();
             } else if (value is int) {
                 Write(value.ToString());
-            } else if (value is bool) {
-                bool val = (bool)value;
+            } else if (value is bool val)
+            {
                 Write(val ? "true" : "false");
-            } else if (value is string) {
-                WriteString((string)value);
-            } else if (value is JsonArray) {
-                WriteArray((JsonArray)value);
-            }  else if (value is JsonObject) {
+            }
+            else if (value is string v)
+            {
+                WriteString(v);
+            }
+            else if (value is JsonArray array)
+            {
+                WriteArray(array);
+            }
+            else if (value is JsonObject)
+            {
                 WriteObject(value);
-            } else {
+            }
+            else
+            {
                 throw new InvalidOperationException("Unknown datatype: " + value.GetType());
             }
         }
@@ -259,7 +267,7 @@ namespace MCGalaxy.Config
             string separator = null;
             JsonObject obj   = (JsonObject)value;
             
-            foreach (var kvp in obj) 
+            foreach (KeyValuePair<string, object> kvp in obj) 
             {
                 Write(separator);
                 WriteObjectKey(kvp.Key);
@@ -271,7 +279,7 @@ namespace MCGalaxy.Config
     
     public class JsonConfigWriter : JsonWriter 
     {
-        ConfigElement[] elems;    
+        readonly ConfigElement[] elems;    
         public JsonConfigWriter(TextWriter dst, ConfigElement[] cfg) : base(dst) { elems = cfg; }
         
         // Only ever write an object
@@ -308,12 +316,6 @@ namespace MCGalaxy.Config
     
     public static class Json 
     {
-        [Obsolete("Use JsonWriter instead", true)]
-        public static void Serialise(TextWriter dst, ConfigElement[] elems, object instance) {
-            JsonConfigWriter w = new JsonConfigWriter(dst, elems);
-            w.WriteObject(instance);
-        }
-        
         /// <summary> Shorthand for serialising an object to a JSON object </summary>
         public static string SerialiseObject(object obj) {
             StringWriter dst  = new StringWriter();

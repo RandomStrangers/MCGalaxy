@@ -27,8 +27,8 @@ namespace MCGalaxy.Generator
         public float Lacunarity = 2;
         public float Persistence = 2;
         public int Octaves = 1;
-        
-        byte[] p = new byte[512];
+
+        readonly byte[] p = new byte[512];
         
         public ImprovedNoise( Random rnd ) {
             for( int i = 0; i < 256; i++ )

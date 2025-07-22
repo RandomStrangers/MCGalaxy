@@ -22,7 +22,7 @@ namespace MCGalaxy.Modules.Games.Countdown
     public sealed class CountdownPlugin : Plugin 
     {
         public override string name { get { return "Countdown"; } }
-        static Command cmdCD = new CmdCountdown();
+        static readonly Command cmdCD = new CmdCountdown();
         
         public override void Load(bool startup) {
             Command.Register(cmdCD);

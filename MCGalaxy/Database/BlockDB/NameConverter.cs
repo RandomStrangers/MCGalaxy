@@ -33,7 +33,7 @@ namespace MCGalaxy.DB
             if (name != null) return name;
             
             name = Database.ReadString("Players", "Name", "WHERE ID=@0", id);
-            return name != null ? name : "ID#" + id;
+            return name ?? "ID#" + id;
         }
         
         /// <summary> Finds all the IDs associated with the given name. </summary>

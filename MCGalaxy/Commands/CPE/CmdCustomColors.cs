@@ -58,10 +58,9 @@ namespace MCGalaxy.Commands.CPE
                 p.Message("&WCannot change system defined color codes using %T/CustomColors");
                 return;
             }
-            
-            char fallback;
-            if (!CheckName(p, args[2]) || !CheckFallback(p, args[3], code, out fallback)) return;
-            ColorDesc col = default(ColorDesc);
+
+            if (!CheckName(p, args[2]) || !CheckFallback(p, args[3], code, out char fallback)) return;
+            ColorDesc col = default;
             if (!CommandParser.GetHex(p, args[4], ref col)) return;
             
             col.Code = code; col.Fallback = fallback; col.Name = args[2];
@@ -111,13 +110,12 @@ namespace MCGalaxy.Commands.CPE
                 p.Message("Set name of {0} to {1}", col.Name, args[3]);
                 col.Name = args[3];
             } else if (args[2].CaselessEq("fallback")) {
-                char fallback;
-                if (!CheckFallback(p, args[3], code, out fallback)) return;
-                
+                if (!CheckFallback(p, args[3], code, out char fallback)) return;
+
                 p.Message("Set fallback of {0} to %&S{1}", col.Name, fallback);
                 col.Fallback = fallback;
             } else if (args[2].CaselessEq("hex") || args[2].CaselessEq("color")) {
-                ColorDesc rgb = default(ColorDesc);
+                ColorDesc rgb = default;
                 if (!CommandParser.GetHex(p, args[3], ref rgb)) return;
                 
                 p.Message("Set hex color of {0} to {1}", col.Name, Utils.Hex(rgb.R, rgb.G, rgb.B));

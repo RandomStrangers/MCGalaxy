@@ -105,7 +105,7 @@ namespace MCGalaxy.Commands.Info
         
         static void PrintEmote(Player p, char emote) {
             List<string> keywords = new List<string>();
-            foreach (var kvp in EmotesHandler.Keywords) 
+            foreach (KeyValuePair<string, char> kvp in EmotesHandler.Keywords) 
             {
                 if (kvp.Value == emote) keywords.Add("(&S" + kvp.Key + ")");
             }
@@ -143,7 +143,7 @@ namespace MCGalaxy.Commands.Info
             return true;
         }
         
-        void DescribePhysics(Player p, string message, BlockID b) {
+        void DescribePhysics(Player p, string _, BlockID b) {
             BlockProps props = p.IsSuper ? Block.Props[b] : p.level.Props[b];
             
             if (props.IsDoor) {

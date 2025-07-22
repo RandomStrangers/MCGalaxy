@@ -19,7 +19,7 @@
 namespace MCGalaxy.SQL 
 {
     /// <summary> Describes a column for an SQL create statement. </summary>
-    public struct ColumnDesc 
+    public readonly struct ColumnDesc 
     {
         public readonly string Column;
         public readonly ColumnType Type;
@@ -50,7 +50,7 @@ namespace MCGalaxy.SQL
             return colTypes[(int)Type];
         }
         
-        static string[] colTypes = new string[] {
+        static readonly string[] colTypes = new string[] {
             "TINYINT UNSIGNED", "SMALLINT UNSIGNED", "MEDIUMINT UNSIGNED", "INT UNSIGNED", "BIGINT UNSIGNED", 
             "TINYINT", "SMALLINT", "MEDIUMINT", "INT", "BIGINT", 
             "INTEGER", "DATETIME",

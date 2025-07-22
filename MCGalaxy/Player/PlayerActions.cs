@@ -15,11 +15,8 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using System.Threading;
 using MCGalaxy.Events.PlayerEvents;
-using MCGalaxy.Games;
-using MCGalaxy.Commands.World;
 
 namespace MCGalaxy
 {
@@ -127,7 +124,7 @@ namespace MCGalaxy
             return false;
         }
 
-        static bool GotoLevel(Player p, Level lvl, bool autoloaded)
+        static bool GotoLevel(Player p, Level lvl, bool _)
         {
             if (p.level == lvl) { p.Message("You are already in {0}&S.", lvl.ColoredName); return false; }
 

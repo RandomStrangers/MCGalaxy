@@ -41,9 +41,11 @@ namespace MCGalaxy.Gui {
 
             string args = name + " " + x + " " + y + " " + z + " " + type;
             if (!string.IsNullOrEmpty(seed)) args += " " + seed;
-            
-            Thread genThread = new Thread(() => DoGen(name, args));
-            genThread.Name = "GuiGenMap";
+
+            Thread genThread = new Thread(() => DoGen(name, args))
+            {
+                Name = "GuiGenMap"
+            };
             genThread.Start();
         }
         
@@ -89,9 +91,9 @@ namespace MCGalaxy.Gui {
                 Popup.Warning("Map " + propName + " cannot be blank.");
                 return null;
             }
-            
-            ushort size;
-            if (!ushort.TryParse(value, out size) || size == 0 || size > 16384) {
+
+            if (!ushort.TryParse(value, out ushort size) || size == 0 || size > 16384)
+            {
                 Popup.Warning("Map " + propName + " must be an integer between 1 and 16384");
                 return null;
             }

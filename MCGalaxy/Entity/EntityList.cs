@@ -82,13 +82,13 @@ namespace MCGalaxy
         }
 
 
-        Player p;
+        readonly Player p;
 
-        Dictionary<Entity, VisibleEntity> visible = new Dictionary<Entity, VisibleEntity>();
-        List<WaitingEntity> invisible = new List<WaitingEntity>();
+        readonly Dictionary<Entity, VisibleEntity> visible = new Dictionary<Entity, VisibleEntity>();
+        readonly List<WaitingEntity> invisible = new List<WaitingEntity>();
         WaitingEntity IsWaitingToSpawn(Entity e)
         {
-            foreach (var vis in invisible)
+            foreach (WaitingEntity vis in invisible)
             {
                 if (vis.e == e) return vis;
             }
@@ -96,34 +96,34 @@ namespace MCGalaxy
         }
 
         //Thanks fCraft
-        Stack<byte> freeIDs;
+        readonly Stack<byte> freeIDs;
         readonly object locker = new object();
 
 
         #region TabList
-        Dictionary<object, TabObject> tabObjects = new Dictionary<object, TabObject>();
-        bool[] usedTabIDs;
+        readonly Dictionary<object, TabObject> tabObjects = new Dictionary<object, TabObject>();
+        readonly bool[] usedTabIDs;
 
         void AddTab(Entity e)
         {
-            if (e is Player)
+            if (e is Player player)
             {
-                if (!Server.Config.TablistGlobal) TabList.Add(p, (Player)e);
+                if (!Server.Config.TablistGlobal) TabList.Add(p, player);
             }
-            else if (e is PlayerBot)
+            else if (e is PlayerBot bot)
             {
-                if (Server.Config.TablistBots) TabList.Add(p, (PlayerBot)e);
+                if (Server.Config.TablistBots) TabList.Add(p, bot);
             }
         }
         void RemoveTab(Entity e)
         {
-            if (e is Player)
+            if (e is Player player)
             {
-                if (!Server.Config.TablistGlobal) TabList.Remove(p, (Player)e);
+                if (!Server.Config.TablistGlobal) TabList.Remove(p, player);
             }
-            else if (e is PlayerBot)
+            else if (e is PlayerBot bot)
             {
-                if (Server.Config.TablistBots) TabList.Remove(p, (PlayerBot)e);
+                if (Server.Config.TablistBots) TabList.Remove(p, bot);
             }
         }
 
@@ -134,9 +134,8 @@ namespace MCGalaxy
 
             lock (locker)
             {
-                TabObject tabby;
 
-                if (tabObjects.TryGetValue(o, out tabby))
+                if (tabObjects.TryGetValue(o, out TabObject tabby))
                 {
                     tabby.UpdateFields(name, nick, group, groupRank); //Refresh every field other than entity and ID
                     //p.Message("RETABBING {0}&S with ID {1}", name, tabby.id);
@@ -160,11 +159,10 @@ namespace MCGalaxy
             if (self) return Entities.SelfID;
 
             //Try finding a matching visible entity for the ID
-            if (o is Entity)
+            if (o is Entity entity)
             {
-                VisibleEntity vis;
-                Entity e = (Entity)o;
-                if (visible.TryGetValue(e, out vis) && usedTabIDs[vis.id] != true)
+                Entity e = entity;
+                if (visible.TryGetValue(e, out VisibleEntity vis) && usedTabIDs[vis.id] != true)
                 {
                     //We need to match the tablist ID to the matching entity in the level if possible,
                     //because a few popular plugins (chatsounds, CEF) rely on this
@@ -198,8 +196,7 @@ namespace MCGalaxy
 
             lock (locker)
             {
-                TabObject tabby;
-                if (tabObjects.TryGetValue(o, out tabby))
+                if (tabObjects.TryGetValue(o, out TabObject tabby))
                 {
                     tabby = tabObjects[o];
                     if (o != p) usedTabIDs[tabby.id] = false;
@@ -249,8 +246,7 @@ namespace MCGalaxy
             {
                 if (freeIDs.Count > 0 || self)
                 {
-                    VisibleEntity vis;
-                    if (!visible.TryGetValue(e, out vis))
+                    if (!visible.TryGetValue(e, out VisibleEntity vis))
                     {
                         byte ID = self ? Entities.SelfID : freeIDs.Pop();
                         //p.Message("| &a+ &S{0}&S with ID {1}", name, ID);
@@ -267,8 +263,7 @@ namespace MCGalaxy
 
                     //If this entity has a matching tab entry, we need to make sure the IDs get synced
                     //because a few popular plugins (chatsounds, CEF) rely on this
-                    TabObject tabby;
-                    if (tabObjects.TryGetValue(vis.e, out tabby) && tabby.id != vis.id)
+                    if (tabObjects.TryGetValue(vis.e, out TabObject tabby) && tabby.id != vis.id)
                     {
                         //p.Message("%bReadding tab {0} :)", tabby.nick);
                         SendRemoveTabEntry(vis.e);
@@ -307,10 +302,9 @@ namespace MCGalaxy
                     return false;
                 }
 
-                VisibleEntity vis;
-                if (visible.TryGetValue(e, out vis))
+                if (visible.TryGetValue(e, out _))
                 {
-                    vis = visible[e];
+                    VisibleEntity vis = visible[e];
                     if (!self) freeIDs.Push(vis.id);
                     //p.Message("| &c- &S{0}&S with ID {1}", vis.displayName, vis.id);
 
@@ -358,8 +352,7 @@ namespace MCGalaxy
             OnSendingModelEvent.Call(e, ref model, p);
             lock (locker)
             {
-                VisibleEntity vis;
-                if (!visible.TryGetValue(e, out vis)) return;
+                if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
                 _SendModel(vis, model, false);
             }
         }
@@ -384,8 +377,7 @@ namespace MCGalaxy
         {
             lock (locker)
             {
-                VisibleEntity vis;
-                if (!visible.TryGetValue(e, out vis)) return;
+                if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
                 _SendScales(vis);
             }
         }
@@ -413,8 +405,7 @@ namespace MCGalaxy
             if (!p.Supports(CpeExt.EntityProperty)) return;
             lock (locker)
             {
-                VisibleEntity vis;
-                if (!visible.TryGetValue(e, out vis)) return;
+                if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
                 p.Session.SendEntityProperty(vis.id, prop, value);
             }
         }
@@ -423,8 +414,7 @@ namespace MCGalaxy
         {
             lock (locker)
             {
-                VisibleEntity vis;
-                if (visible.TryGetValue(e, out vis))
+                if (visible.TryGetValue(e, out VisibleEntity vis))
                 {
                     id = vis.id;
                     return true;
@@ -441,8 +431,7 @@ namespace MCGalaxy
         {
             lock (locker)
             {
-                VisibleEntity vis;
-                if (!visible.TryGetValue(e, out vis)) return;
+                if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
                 if (!p.Session.SendTeleport(vis.id, pos, rot, mode))
                 {
                     p.Session.SendTeleport(vis.id, pos, rot);
@@ -456,8 +445,7 @@ namespace MCGalaxy
         {
             lock (locker)
             {
-                VisibleEntity vis;
-                if (!visible.TryGetValue(e, out vis)) return;
+                if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
                 p.Session.SendTeleport(vis.id, pos, rot);
             }
         }
@@ -497,13 +485,13 @@ namespace MCGalaxy
                 if (dst == e || dst.level != e.Level || !dst.CanSeeEntity(e)) continue;
 
                 Orientation rot = e.Rot; byte pitch = rot.HeadX;
+                //No pattern matching because we're ancient C#
                 //CODE REVIEW: How should this be done? We could maybe have the visible pitch be a virtual getter in Entity and player implements its own logic
-                if (e is Player)
+                if (e is Player pl)
                 {
-                    Player p = (Player)e; //No pattern matching because we're ancient C#
-                    if (Server.flipHead || p.flipHead) pitch = FlippedPitch(pitch);
+                    if (Server.flipHead || pl.flipHead) pitch = FlippedPitch(pitch);
                     // flip head when infected in ZS, but doesn't support model
-                    if (!dst.hasChangeModel && p.infected)
+                    if (!dst.hasChangeModel && pl.infected)
                         pitch = FlippedPitch(pitch);
                 }
 

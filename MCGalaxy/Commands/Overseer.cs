@@ -36,7 +36,7 @@ namespace MCGalaxy.Commands.World {
         }
 
         static void UseCommand(Player p, string cmd, string args) {
-            CommandData data = default(CommandData);
+            CommandData data = default;
             data.Rank = LevelPermission.Owner;
             Command.Find(cmd).Use(p, args, data);
         }
@@ -65,7 +65,7 @@ namespace MCGalaxy.Commands.World {
             p.Message("You have reached the limit for your overseer maps."); return null;
         }
 
-        static string[] addHelp = new string[] {
+        static readonly string[] addHelp = new string[] {
             "&T/os add &H- Creates a flat map (128x128x128).",
             "&T/os add [theme] &H- Creates a map with [theme] terrain.",
             "&H  Use &T/Help newlvl themes &Hfor a list of map themes.",
@@ -100,7 +100,7 @@ namespace MCGalaxy.Commands.World {
             }
         }
 
-        static string[] deleteHelp = new string[] {
+        static readonly string[] deleteHelp = new string[] {
             "&T/os delete &H- Deletes your map.",
             "&T/os delete "+CmdDeleteLvl.BACKUP_FLAG+" [backup]",
             "&H  -Permanently- deletes [backup] from your map.",
@@ -125,28 +125,28 @@ namespace MCGalaxy.Commands.World {
             UseCommand(p, "DeleteLvl", p.level.name);
         }
 
-        static string[] allowHelp = new string[] {
+        static readonly string[] allowHelp = new string[] {
             "&T/os allow [player]",
             "&H  Allows [player] to build in your map.",
         };
         static void HandleAllow(Player p, string message) {
             _HandlePerm(p, message, "allow", "perbuild", "+");
         }
-        static string[] disallowHelp = new string[] {
+        static readonly string[] disallowHelp = new string[] {
             "&T/os disallow [player]",
             "&H  Disallows [player] from building in your map.",
         };
         static void HandleDisallow(Player p, string message) {
             _HandlePerm(p, message, "disallow", "perbuild", "-");
         }
-        static string[] banHelp = new string[] {
+        static readonly string[] banHelp = new string[] {
             "&T/os ban [player]",
             "&H  Bans [player] from visiting your map.",
         };
         static void HandleBan(Player p, string message) {
             _HandlePerm(p, message, "ban", "pervisit", "-");
         }
-        static string[] unbanHelp = new string[] {
+        static readonly string[] unbanHelp = new string[] {
             "&T/os unban [player]",
             "&H  Unbans [player] from visiting your map.",
         };
@@ -158,7 +158,7 @@ namespace MCGalaxy.Commands.World {
             UseCommand(p, cmd, prefix + message);
         }
 
-        static string[] blockPropsHelp = new string[] {
+        static readonly string[] blockPropsHelp = new string[] {
             "&T/os blockprops [id] [action] <args> &H- Changes properties of blocks in your map.",
             "&H  See &T/Help blockprops &Hfor how to use this command.",
             "&H  Remember to substitute /blockprops for /os blockprops when using the command based on the help",
@@ -168,7 +168,7 @@ namespace MCGalaxy.Commands.World {
             UseCommand(p, "BlockProperties", "level " + message);
         }
 
-        static string[] envHelp = new string[] {
+        static readonly string[] envHelp = new string[] {
             "&T/os env [fog/cloud/sky/shadow/sun] [hex color] &H- Changes env colors of your map.",
             "&T/os env level [height] &H- Sets the water height of your map.",
             "&T/os env cloudheight [height] &H-Sets cloud height of your map.",
@@ -186,15 +186,14 @@ namespace MCGalaxy.Commands.World {
             p.MessageLines(envHelp);
         }
 
-        static string[] gotoHelp = new string[] {
+        static readonly string[] gotoHelp = new string[] {
             "&T/os go &H- Teleports you to your first map.",
             "&T/os go [num] &H- Teleports you to your nth map.",
         };
         static void HandleGoto(Player p, string map) {
-            byte mapNum = 0;
             if (map.Length == 0) map = "1";
 
-            if (!byte.TryParse(map, out mapNum)) {
+            if (!byte.TryParse(map, out byte mapNum)) {
                 p.MessageLines(gotoHelp); return;
             }
             map = GetLevelName(p, mapNum);
@@ -205,7 +204,7 @@ namespace MCGalaxy.Commands.World {
                 PlayerActions.ChangeMap(p, map);
         }
 
-        static string[] kickHelp = new string[] {
+        static readonly string[] kickHelp = new string[] {
             "&T/os kick [name] &H- Removes that player from your map.",
         };
         static void HandleKick(Player p, string name) {
@@ -220,7 +219,7 @@ namespace MCGalaxy.Commands.World {
             }
         }
 
-        static string[] kickAllHelp = new string[] {
+        static readonly string[] kickAllHelp = new string[] {
             "&T/os kickall &H- Removes all other players from your map.",
         };
         static void HandleKickAll(Player p, string unused) {
@@ -231,7 +230,7 @@ namespace MCGalaxy.Commands.World {
             }
         }
 
-        static string[] levelBlockHelp = new string[] {
+        static readonly string[] levelBlockHelp = new string[] {
             "&T/os lb [action] <args> &H- Manages custom blocks on your map.",
             "&H  Use &T/Help lb &Hfor how to use this command.",
             "&H  Remember to substitute /lb for /os lb when using the command based on the help",
@@ -240,7 +239,7 @@ namespace MCGalaxy.Commands.World {
             CustomBlockCommand.Execute(p, lbArgs, p.DefaultCmdData, false, "/os lb");
         }
 
-        static string[] mapHelp = new string[] {
+        static readonly string[] mapHelp = new string[] {
             "&T/os map [option] <value> &H- Toggles that map option.",
             "&H  See &T/Help map &Hfor a list of map options",
         };
@@ -289,7 +288,7 @@ namespace MCGalaxy.Commands.World {
             behaviour(p, message);
         }
         
-        static SubCommandGroup mapSubCommandGroup = new SubCommandGroup(commandShortcut + " map",
+        static readonly SubCommandGroup mapSubCommandGroup = new SubCommandGroup(commandShortcut + " map",
                 new List<SubCommand>() {
                     new SubCommand("Physics",  (p, arg) => { MapMoved(p, arg, "physics",  HandlePhysics);   }),
                     new SubCommand("Add",      (p, arg) => { MapMoved(p, arg, "add",      HandleAdd, false);}, false, new string[] { "create", "new" } ),
@@ -303,7 +302,7 @@ namespace MCGalaxy.Commands.World {
                 }
             );
 
-        static string[] physicsHelp = new string[] {
+        static readonly string[] physicsHelp = new string[] {
             "&T/os physics [number]",
             "&H  Changes the physics settings in your map.",
             "&H  See &T/help physics &Hfor details."
@@ -319,7 +318,7 @@ namespace MCGalaxy.Commands.World {
             CmdPhysics.SetPhysics(p.level, level);
         }
 
-        static string[] resizeHelp = new string[] {
+        static readonly string[] resizeHelp = new string[] {
             "&T/os resize [width] [height] [length]",
             "&H  Resizes your map.",
         };
@@ -332,8 +331,7 @@ namespace MCGalaxy.Commands.World {
                 return;
             }
 
-            bool needConfirm;
-            if (CmdResizeLvl.DoResize(p, args, p.DefaultCmdData, out needConfirm)) return;
+            if (CmdResizeLvl.DoResize(p, args, p.DefaultCmdData, out bool needConfirm)) return;
 
             if (!needConfirm) return;
             p.Message("Type &T/{0} resize {1} {2} {3} confirm &Sif you're sure.",
@@ -341,7 +339,7 @@ namespace MCGalaxy.Commands.World {
         }
 
 
-        static string[] pervisitHelp = new string[] {
+        static readonly string[] pervisitHelp = new string[] {
             "&T/os pervisit [rank]",
             "&H  Changes the rank required to visit your map.",
         };
@@ -359,7 +357,7 @@ namespace MCGalaxy.Commands.World {
             UseCommand(p, "PerVisit", message);
         }
 
-        static string[] perbuildHelp = new string[] {
+        static readonly string[] perbuildHelp = new string[] {
             "&T/os perbuild [rank]",
             "&H  Changes the rank required to build in your map.",
         };
@@ -372,7 +370,7 @@ namespace MCGalaxy.Commands.World {
             UseCommand(p, "PerBuild", message);
         }
 
-        static string[] textureHelp = new string[] {
+        static readonly string[] textureHelp = new string[] {
             "&T/os texture [url]",
             "&H  Changes the textures used in your map.",
         };
@@ -382,7 +380,7 @@ namespace MCGalaxy.Commands.World {
             UseCommand(p, "Texture", "levelzip " + message);
         }
 
-        static string[] presetHelp = new string[] {
+        static readonly string[] presetHelp = new string[] {
             "&T/os preset [name] &H- Changes the environment color preset in your map.",
         };
         static void HandlePreset(Player p, string preset) {
@@ -391,14 +389,14 @@ namespace MCGalaxy.Commands.World {
         }
 
 
-        static string[] spawnHelp = new string[] {
+        static readonly string[] spawnHelp = new string[] {
             "&T/os setspawn &H- Sets the map's spawn point to your current position.",
         };
         static void HandleSpawn(Player p, string unused) {
             UseCommand(p, "SetSpawn", "");
         }
 
-        static string[] plotHelp = new string[] {
+        static readonly string[] plotHelp = new string[] {
             "&T/os plot [args]",
             "&H  Plots are zones that can change permissions and environment." +
             "&H  See &T/Help zone &Hto learn what args you can use.",
@@ -414,7 +412,7 @@ namespace MCGalaxy.Commands.World {
             }
         }
 
-        static string[] saveHelp = new string[] {
+        static readonly string[] saveHelp = new string[] {
             "&T/os save",
             "&H  Creates a backup of your map.",
             "&H  Your map is saved automatically, so this is only useful",
@@ -424,7 +422,7 @@ namespace MCGalaxy.Commands.World {
             UseCommand(p, "Save", "");
         }
         
-        static string[] restoreHelp = new string[] {
+        static readonly string[] restoreHelp = new string[] {
             "&T/os restore <number>",
             "&H  Restores a backup of your map.",
             "&H  Use without a number to see total backup count.",

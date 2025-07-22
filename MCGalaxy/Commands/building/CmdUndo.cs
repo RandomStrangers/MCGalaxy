@@ -60,11 +60,15 @@ namespace MCGalaxy.Commands.Building {
                 UndoDrawOpEntry entry = entries[i];
                 if (entry.DrawOpName == "UndoSelf") continue;
                 p.DrawOps.Remove(entry);
-                
-                UndoSelfDrawOp op = new UndoSelfDrawOp();
-                op.who = p.name; op.ids = NameConverter.FindIds(p.name);
-                
-                op.Start = entry.Start; op.End = entry.End;
+
+                UndoSelfDrawOp op = new UndoSelfDrawOp
+                {
+                    who = p.name,
+                    ids = NameConverter.FindIds(p.name),
+
+                    Start = entry.Start,
+                    End = entry.End
+                };
                 DrawOpPerformer.Do(op, null, p, new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal } );
                 p.Message("Undo performed.");
                 return;
@@ -82,8 +86,10 @@ namespace MCGalaxy.Commands.Building {
             }
             
             CmdPhysics.SetPhysics(p.level, 0);
-            UndoPhysicsDrawOp op = new UndoPhysicsDrawOp();
-            op.Start = DateTime.UtcNow.Subtract(delta);
+            UndoPhysicsDrawOp op = new UndoPhysicsDrawOp
+            {
+                Start = DateTime.UtcNow.Subtract(delta)
+            };
             DrawOpPerformer.Do(op, null, p, new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal } );
             
             p.level.Message("Physics were undone &b" + delta.Shorten());
@@ -92,10 +98,13 @@ namespace MCGalaxy.Commands.Building {
         }
         
         void UndoSelf(Player p, TimeSpan delta) {
-            UndoDrawOp op = new UndoSelfDrawOp();
-            op.Start = DateTime.UtcNow.Subtract(delta);
-            op.who = p.name; op.ids = NameConverter.FindIds(p.name);
-            
+            UndoDrawOp op = new UndoSelfDrawOp
+            {
+                Start = DateTime.UtcNow.Subtract(delta),
+                who = p.name,
+                ids = NameConverter.FindIds(p.name)
+            };
+
             DrawOpPerformer.Do(op, null, p, new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal });
             if (op.found) {
                 p.Message("Undid your changes for the past &b{0}", delta.Shorten(true));

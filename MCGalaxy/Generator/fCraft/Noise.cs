@@ -140,9 +140,8 @@ namespace MCGalaxy.Generator.fCraft
 
 
         public static void Normalize( float[] map, float low, float high ) {
-            float multiplier, constant;
-            CalculateNormalizationParams( map, low, high, out multiplier, out constant );
-            for( int i = 0; i < map.Length; i++ ) {
+            CalculateNormalizationParams(map, low, high, out float multiplier, out float constant);
+            for ( int i = 0; i < map.Length; i++ ) {
                 map[i] = map[i] * multiplier + constant; // (map[i] - min) * multiplier + low
             }
         }
@@ -243,9 +242,9 @@ namespace MCGalaxy.Generator.fCraft
             for( int i = 0; i < ThresholdSearchPasses; i++ ) {
                 float coverage = CalculateCoverage( data, threshold );
                 if( coverage > desiredCoverage ) {
-                    threshold = threshold - 1 / (float)(4 << i);
+                    threshold -= 1 / (float)(4 << i);
                 } else {
-                    threshold = threshold + 1 / (float)(4 << i);
+                    threshold += 1 / (float)(4 << i);
                 }
             }
             return threshold;

@@ -50,10 +50,9 @@ namespace MCGalaxy.Commands.World {
 
             if (words.Length > 1) { Help(p); return; }
             string map = Matcher.FindMaps(p, message);
-            LevelConfig cfg;
-            
-            if (map == null) return;            
-            if (!LevelInfo.Check(p, data.Rank, map, "delete this map",out cfg)) return;
+
+            if (map == null) return;
+            if (!LevelInfo.Check(p, data.Rank, map, "delete this map",out LevelConfig cfg)) return;
 
             if (!LevelActions.Delete(p, map)) return;
             Chat.MessageGlobal("Level {0} &Swas deleted", cfg.Color + map);

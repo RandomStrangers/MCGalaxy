@@ -25,7 +25,7 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name { get { return "ReplaceBrush"; } }       
         public override string[] Help { get { return HelpString; } }
         
-        static string[] HelpString = new string[] {
+        static readonly string[] HelpString = new string[] {
             "&TArguments: [block] [brush name] <brush args>",
             "&HDraws by replacing existing blocks that are the given [block] with the output of the given brush"
         };
@@ -58,7 +58,7 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name { get { return "ReplaceNotBrush"; } }        
         public override string[] Help { get { return HelpString; } }
         
-        static string[] HelpString = new string[] {
+        static readonly string[] HelpString = new string[] {
             "&TArguments: [block] [brush name] <brush args>",
             "&HDraws by replacing existing blocks that not the given [block] with the output of the given brush"
         };    

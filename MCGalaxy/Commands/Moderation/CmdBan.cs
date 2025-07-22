@@ -45,8 +45,10 @@ namespace MCGalaxy.Commands.Moderation {
                 return;
             }
 
-            ModAction action = new ModAction(target, p, ModActionType.Ban, reason);
-            action.targetGroup = group;
+            ModAction action = new ModAction(target, p, ModActionType.Ban, reason)
+            {
+                targetGroup = group
+            };
             OnModActionEvent.Call(action);
         }
         

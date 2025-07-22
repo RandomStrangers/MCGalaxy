@@ -164,7 +164,7 @@ namespace MCGalaxy.Gui.Components {
             }
         }
         
-        static Dictionary<int, Color> color_cache = new Dictionary<int, Color>();
+        static readonly Dictionary<int, Color> color_cache = new Dictionary<int, Color>();
         static Color GetColor(char c, Color foreCol, bool nightMode) {
             if (c == 'S' || c == 'f' || c == 'F') return foreCol;
             Colors.Map(ref c);
@@ -173,9 +173,9 @@ namespace MCGalaxy.Gui.Components {
             if (color.Undefined) return foreCol;
             
             int key = color.R | (color.G << 8) | (color.B << 16);
-            Color rgb;
-            
-            if (!color_cache.TryGetValue(key, out rgb)) {
+
+            if (!color_cache.TryGetValue(key, out Color rgb))
+            {
                 rgb = ColorUtils.AdjustBrightness(color, nightMode);
                 color_cache[key] = rgb;
             }

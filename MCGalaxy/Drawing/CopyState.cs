@@ -226,7 +226,7 @@ namespace MCGalaxy.Drawing
         }
         
         /// <summary> Loads this copy state from the given stream, using the very old format. </summary>
-        public void LoadFromOld(Stream stream, Stream underlying) {
+        public void LoadFromOld(Stream _, Stream underlying) {
             byte[] raw = new byte[underlying.Length];
             underlying.Read(raw, 0, (int)underlying.Length);
             raw = raw.Decompress(16);

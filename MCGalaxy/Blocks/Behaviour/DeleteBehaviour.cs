@@ -25,12 +25,11 @@ namespace MCGalaxy.Blocks {
     
     internal static class DeleteBehaviour {
 
-        internal static ChangeResult RocketStart(Player p, BlockID old, ushort x, ushort y, ushort z) {
+        internal static ChangeResult RocketStart(Player p, BlockID _, ushort x, ushort y, ushort z) {
             if (p.level.physics < 2 || p.level.physics == 5) return ChangeResult.Unchanged;
-            
-            int dx = 0, dy = 0, dz = 0;
-            DirUtils.EightYaw(p.Rot.RotY, out dx, out dz);
-            DirUtils.Pitch(p.Rot.HeadX, out dy);
+
+            DirUtils.EightYaw(p.Rot.RotY, out int dx, out int dz);
+            DirUtils.Pitch(p.Rot.HeadX, out int dy);
 
             // Looking straight up or down
             byte pitch = p.Rot.HeadX;
@@ -47,14 +46,16 @@ namespace MCGalaxy.Blocks {
             return ChangeResult.Unchanged;
         }
         
-        internal static ChangeResult Firework(Player p, BlockID old, ushort x, ushort y, ushort z) {
+        internal static ChangeResult Firework(Player p, BlockID _, ushort x, ushort y, ushort z) {
             if (p.level.physics == 0 || p.level.physics == 5) return ChangeResult.Unchanged;
             
             Random rand = new Random();
             // Offset the firework randomly
-            Vec3U16 pos = new Vec3U16(0, 0, 0);
-            pos.X = (ushort)(x + rand.Next(0, 2) - 1);
-            pos.Z = (ushort)(z + rand.Next(0, 2) - 1);
+            Vec3U16 pos = new Vec3U16(0, 0, 0)
+            {
+                X = (ushort)(x + rand.Next(0, 2) - 1),
+                Z = (ushort)(z + rand.Next(0, 2) - 1)
+            };
             ushort headY = (ushort)(y + 2), tailY = (ushort)(y + 1);
 
             bool headFree = p.level.IsAirAt(pos.X, headY, pos.Z) && p.level.CheckClear(pos.X, headY, pos.Z);
@@ -62,7 +63,7 @@ namespace MCGalaxy.Blocks {
             if (headFree && tailFree) {
                 p.level.Blockchange(pos.X, headY, pos.Z, Block.Fireworks);
                 
-                PhysicsArgs args = default(PhysicsArgs);
+                PhysicsArgs args = default;
                 args.Type1 = PhysicsArgs.Wait; args.Value1 = 1;
                 args.Type2 = PhysicsArgs.Dissipate; args.Value2 = 100;
                 p.level.Blockchange(pos.X, tailY, pos.Z, Block.StillLava, false, args);
@@ -70,21 +71,20 @@ namespace MCGalaxy.Blocks {
             return ChangeResult.Unchanged;
         }
         
-        internal static ChangeResult C4Det(Player p, BlockID old, ushort x, ushort y, ushort z) {
+        internal static ChangeResult C4Det(Player p, BlockID _, ushort x, ushort y, ushort z) {
             int index = p.level.PosToInt(x, y, z);
             C4Physics.BlowUp(index, p.level);
             return p.ChangeBlock(x, y, z, Block.Air);
         }
         
-        internal static ChangeResult RevertDoor(Player p, BlockID old, ushort x, ushort y, ushort z) {
+        internal static ChangeResult RevertDoor(Player _, BlockID __, ushort ___, ushort ____, ushort _____) {
             return ChangeResult.Unchanged;
         }
         
         internal static ChangeResult Door(Player p, BlockID old, ushort x, ushort y, ushort z) {
             if (p.level.physics == 0) return p.ChangeBlock(x, y, z, Block.Air);
-            
-            BlockID physForm;
-            PhysicsArgs args = ActivateablePhysics.GetDoorArgs(old, out physForm);
+
+            PhysicsArgs args = ActivateablePhysics.GetDoorArgs(old, out ushort physForm);
             p.level.Blockchange(x, y, z, physForm, false, args);
             return ChangeResult.Modified;
         }
@@ -98,14 +98,14 @@ namespace MCGalaxy.Blocks {
             return ChangeResult.Unchanged;
         }
         
-        internal static ChangeResult DoPortal(Player p, BlockID old, ushort x, ushort y, ushort z) {
+        internal static ChangeResult DoPortal(Player p, BlockID _, ushort x, ushort y, ushort z) {
             if (!Portal.Handle(p, x, y, z)) {
                 return p.ChangeBlock(x, y, z, Block.Air);
             }
             return ChangeResult.Unchanged;
         }
         
-        internal static ChangeResult DoMessageBlock(Player p, BlockID old, ushort x, ushort y, ushort z) {
+        internal static ChangeResult DoMessageBlock(Player p, BlockID _, ushort x, ushort y, ushort z) {
             if (!MessageBlock.Handle(p, x, y, z, true)) {
                 return p.ChangeBlock(x, y, z, Block.Air);
             }

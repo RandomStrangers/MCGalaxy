@@ -78,9 +78,8 @@ namespace MCGalaxy.Tasks {
             foreach (string line in lines) {
                 string[] args = line.SplitSpaces();
                 if (args.Length < 4) continue;
-                
-                long expiry;
-                if (!long.TryParse(args[3], out expiry)) continue;
+
+                if (!long.TryParse(args[3], out long expiry)) continue;
                 if (DateTime.UtcNow < expiry.FromUnixTime()) continue;
                 
                 callback(args);
@@ -104,10 +103,9 @@ namespace MCGalaxy.Tasks {
                 foreach (string line in lines) {
                     string[] args = line.SplitSpaces();
                     if (args.Length < 4) continue;
-                    
-                    long expiry;
-                    if (!long.TryParse(args[3], out expiry)) continue;
-                    
+
+                    if (!long.TryParse(args[3], out long expiry)) continue;
+
                     DateTime expireTime = expiry.FromUnixTime();
                     if (expireTime < nextRun)
                         nextRun = expireTime;

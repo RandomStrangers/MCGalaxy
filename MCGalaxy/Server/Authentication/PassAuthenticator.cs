@@ -35,7 +35,7 @@ namespace MCGalaxy.Authentication
         protected abstract void Deactivate();
         
         public static void SetActive(ExtraAuthenticator auth) {
-            if (Current != null) Current.Deactivate();
+            Current?.Deactivate();
             
             Current = auth;
             auth.Activate();

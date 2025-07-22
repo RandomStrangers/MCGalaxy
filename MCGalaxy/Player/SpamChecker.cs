@@ -25,8 +25,8 @@ namespace MCGalaxy {
             chatLog  = new List<DateTime>(Server.Config.ChatSpamCount);
             cmdLog   = new List<DateTime>(Server.Config.CmdSpamCount);
         }
-        
-        Player p;
+
+        readonly Player p;
         readonly object chatLock = new object(), cmdLock = new object();
         readonly List<DateTime> blockLog, chatLog, cmdLog;
         

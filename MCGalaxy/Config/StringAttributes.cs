@@ -21,7 +21,7 @@ namespace MCGalaxy.Config
 {    
     public sealed class ConfigColorAttribute : ConfigAttribute 
     {
-        string defCol;
+        readonly string defCol;
         
         public ConfigColorAttribute(string name, string section, string def)
             : base(name, section) { defCol = def; }
@@ -43,8 +43,8 @@ namespace MCGalaxy.Config
     
     public sealed class ConfigStringAttribute : ConfigAttribute 
     {
-        bool allowEmpty;
-        string defValue, allowedChars;
+        readonly bool allowEmpty;
+        readonly string defValue, allowedChars;
  
         // NOTE: required to define these, some compilers error when we try using optional parameters with:
         // "An attribute argument must be a constant expression, typeof expression.."

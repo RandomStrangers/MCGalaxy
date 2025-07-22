@@ -563,7 +563,7 @@ namespace MCGalaxy.Network
             int i = WriteDefineModelPart(buffer, modelId, part);
 
             for (int j = 0; j < MaxCustomModelAnims; j++) {
-                var anim = part.anims[j];
+                CustomModelAnim anim = part.anims[j];
 
                 buffer[i++] = (byte)(
                     ((byte)anim.type & 0x3F) | ((byte)anim.axis << 6)

@@ -39,9 +39,8 @@ namespace MCGalaxy.Commands.Moderation
             
             string[] args = message.SplitSpaces(2);
             if (args.Length < 2) { Help(p); return; }
-            
-            BlockID block;
-            if (!CommandParser.GetBlockIfAllowed(p, args[0], "change permissions of", out block)) return;
+
+            if (!CommandParser.GetBlockIfAllowed(p, args[0], "change permissions of", out ushort block)) return;
 
             if (canPlace) {
                 BlockPerms perms = BlockPerms.GetPlace(block);

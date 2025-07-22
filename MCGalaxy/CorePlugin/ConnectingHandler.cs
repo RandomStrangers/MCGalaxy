@@ -46,11 +46,9 @@ namespace MCGalaxy.Core {
             try {
                 string data = Server.tempBans.Get(p.name);
                 if (string.IsNullOrEmpty(data)) return true;
-                
-                string banner, reason;
-                DateTime expiry;
-                Ban.UnpackTempBanData(data, out reason, out banner, out expiry);
-                
+
+                Ban.UnpackTempBanData(data, out string reason, out string banner, out DateTime expiry);
+
                 if (expiry < DateTime.UtcNow) {
                     Server.tempBans.Remove(p.name);
                     Server.tempBans.Save();
@@ -95,11 +93,8 @@ namespace MCGalaxy.Core {
                 return false;
             }
             if (p.Rank != LevelPermission.Banned) return true;
-            
-            string banner, reason, prevRank;
-            DateTime time;
-            Ban.GetBanData(p.name, out banner, out reason, out time, out prevRank);
-            
+            Ban.GetBanData(p.name, out string banner, out string reason, out _, out _);
+
             if (banner != null) {
                 p.Kick(null, "Banned by " + banner + ": " + reason, true);
             } else {

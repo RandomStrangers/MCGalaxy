@@ -415,9 +415,8 @@ namespace MCGalaxy
 
             if (text != "/afk" && IsAfk)
                 CmdAfk.ToggleAfk(this, "");
-            
-            bool isCommand;
-            text = Chat.ParseInput(text, out isCommand);
+
+            text = Chat.ParseInput(text, out bool isCommand);
             if (isCommand) { DoCommand(text); return; }
 
             // People who are muted can't speak or vote
@@ -517,9 +516,8 @@ namespace MCGalaxy
                 }
                 Message("Repeating &T/" + text);
             }
-            
-            string cmd, args;
-            text.Separate(' ', out cmd, out args);
+
+            text.Separate(' ', out string cmd, out string args);
             HandleCommand(cmd, args, DefaultCmdData);
         }
         
@@ -554,9 +552,8 @@ namespace MCGalaxy
                 } else {
                     callback = ExecuteSerialCommands;
                 }
-                
-                Thread thread;
-                Server.StartThread(out thread, "CMD_ " + cmd, callback);
+
+                Server.StartThread(out Thread thread, "CMD_ " + cmd, callback);
                 Utils.SetBackgroundMode(thread);
             } catch (Exception e) {
                 Logger.LogError(e);
@@ -581,8 +578,7 @@ namespace MCGalaxy
                     messages.Add(args); commands.Add(command);
                 }
 
-                Thread thread;
-                Server.StartThread(out thread, "CMDS_", 
+                Server.StartThread(out Thread thread, "CMDS_",
                                    () => UseCommands(commands, messages, data));
                 Utils.SetBackgroundMode(thread);
             } catch (Exception e) {
@@ -646,18 +642,19 @@ namespace MCGalaxy
         
         Command GetCommand(ref string cmdName, ref string cmdArgs, CommandData data) {
             if (!CheckCommand(cmdName)) return null;
-            
-            string bound;
-            byte bindIndex;
-            if (CmdBindings.TryGetValue(cmdName, out bound)) {
+
+            if (CmdBindings.TryGetValue(cmdName, out string bound))
+            {
                 // user defined command shortcuts take priority
                 bound.Separate(' ', out cmdName, out cmdArgs);
-            } else if (byte.TryParse(cmdName, out bindIndex) && bindIndex < 10) {
+            }
+            else if (byte.TryParse(cmdName, out byte bindIndex) && bindIndex < 10)
+            {
                 // backwards compatibility for old /cmdbind behaviour
                 Message("No command is bound to: &T/" + cmdName);
                 return null;
             }
-            
+
             Command.Search(ref cmdName, ref cmdArgs);
             OnPlayerCommandEvent.Call(this, cmdName, cmdArgs, data);
             if (cancelcommand) { cancelcommand = false; return null; }
@@ -715,7 +712,7 @@ namespace MCGalaxy
         }
         
         bool EnqueueSerialCommand(Command cmd, string args, CommandData data) {
-            SerialCommand head = default(SerialCommand);
+            SerialCommand head = default;
             SerialCommand scmd;
             
             scmd.cmd  = cmd;

@@ -29,7 +29,7 @@ namespace MCGalaxy.Commands
         public int Num;
         public override string ItemName { get { return CmdName + ":" + Num; } }
         
-        static List<CommandExtraPerms> list = new List<CommandExtraPerms>();
+        static readonly List<CommandExtraPerms> list = new List<CommandExtraPerms>();
         
         
         public CommandExtraPerms(string cmd, int num, string desc, LevelPermission min) : base(min) {

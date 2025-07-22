@@ -75,8 +75,7 @@ namespace MCGalaxy.Blocks.Physics {
         }
         
         static void FloodAir(Level lvl, ushort x, ushort y, ushort z, BlockID block) {
-            int index;
-            BlockID curBlock = Block.Convert(lvl.GetBlock(x, y, z, out index));
+            BlockID curBlock = Block.Convert(lvl.GetBlock(x, y, z, out int index));
             if (curBlock == Block.Water || curBlock == Block.Lava) {
                 lvl.AddUpdate(index, block);
             }

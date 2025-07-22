@@ -24,7 +24,7 @@ namespace MCGalaxy.Generator.Foliage {
     public sealed class OakTree : Tree {
         
         int numBranches, maxExtent, maxBranchHeight, trunkHeight;
-        List<Vec3S32> branch = new List<Vec3S32>();
+        readonly List<Vec3S32> branch = new List<Vec3S32>();
         
         public override int MinSize { get { return 0; } }
                 

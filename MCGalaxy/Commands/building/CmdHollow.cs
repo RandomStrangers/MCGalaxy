@@ -27,9 +27,11 @@ namespace MCGalaxy.Commands.Building {
             if (dArgs.Message.Length > 0) {
                 if (!CommandParser.GetBlock(dArgs.Player, dArgs.Message, out skip)) return null;
             }
-            
-            HollowDrawOp op = new HollowDrawOp();
-            op.Skip = skip;
+
+            HollowDrawOp op = new HollowDrawOp
+            {
+                Skip = skip
+            };
             return op;
         }
         

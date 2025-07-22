@@ -96,7 +96,7 @@ namespace MCGalaxy.Commands.CPE
         
         static string GetPath(string url) { return url.Length == 0 ? "(none)" : url; }
         
-        static void UpdateGlobal(Player p) {
+        static void UpdateGlobal(Player _) {
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players) {
                 pl.SendCurrentTextures();

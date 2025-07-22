@@ -35,18 +35,20 @@ namespace MCGalaxy.Commands.Info
             {
                 if (!p.CanSee(pl, data.Rank)) continue;
                 string appName = pl.Session.ClientName();
-                    
-               List<Player> usingClient;
-               if (!clients.TryGetValue(appName, out usingClient)) {
+
+                if (!clients.TryGetValue(appName, out List<Player> usingClient))
+                {
                     usingClient = new List<Player>();
                     clients[appName] = usingClient;
                 }
                 usingClient.Add(pl);
             }
             
-            List<string> lines = new List<string>();
-            lines.Add("Players using:");
-            foreach (var kvp in clients) 
+            List<string> lines = new List<string>
+            {
+                "Players using:"
+            };
+            foreach (KeyValuePair<string, List<Player>> kvp in clients) 
             {
                 StringBuilder builder = new StringBuilder();
                 List<Player> players  = kvp.Value;

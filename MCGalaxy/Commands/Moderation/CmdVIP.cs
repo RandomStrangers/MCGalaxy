@@ -54,7 +54,7 @@ namespace MCGalaxy.Commands.Moderation {
                 p.Message("{0} &Sis now a VIP.", p.FormatNick(name));
                 
                 Player vip = PlayerInfo.FindExact(name);
-                if (vip != null) vip.Message("You are now a VIP!");
+                vip?.Message("You are now a VIP!");
             }
         }
         
@@ -69,7 +69,7 @@ namespace MCGalaxy.Commands.Moderation {
                 p.Message("{0} &Sis no longer a VIP.", p.FormatNick(name));
                 
                 Player vip = PlayerInfo.FindExact(name);
-                if (vip != null) vip.Message("You are no longer a VIP!");
+                vip?.Message("You are no longer a VIP!");
             }
         }
         

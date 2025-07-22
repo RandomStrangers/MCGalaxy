@@ -121,8 +121,7 @@ namespace MCGalaxy.Modules.Games.CTF
         }
         
         void HandleTabListEntryAdded(Entity entity, ref string tabName, ref string tabGroup, Player dst) {
-            Player p = entity as Player;
-            if (p == null || p.level != Map) return;
+            if (!(entity is Player p) || p.level != Map) return;
             CtfTeam team = TeamOf(p);
             
             if (p.Game.Referee) {

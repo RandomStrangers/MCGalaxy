@@ -37,16 +37,18 @@ namespace MCGalaxy.Commands.Misc {
             if (!p.isFlying) return;
             
             p.Message("You are now flying. &cJump!");
-            
-            FlyState state = new FlyState();
-            state.player = p;
+
+            FlyState state = new FlyState
+            {
+                player = p
+            };
             SchedulerTask task = new SchedulerTask(FlyCallback, state, TimeSpan.Zero, true);
             p.CriticalTasks.Add(task);
         }
         
         class FlyState {
             public Player player;
-            public Position oldPos = default(Position);
+            public Position oldPos = default;
             public List<Vec3U16> lastGlass = new List<Vec3U16>();
             public List<Vec3U16> glassCoords = new List<Vec3U16>();
         }

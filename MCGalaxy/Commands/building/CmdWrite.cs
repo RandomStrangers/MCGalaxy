@@ -39,10 +39,13 @@ namespace MCGalaxy.Commands.Building {
             byte scale = 1, spacing = 1;
             if (!CommandParser.GetByte(p, args[0], "Scale",   ref scale))   return null;
             if (!CommandParser.GetByte(p, args[1], "Spacing", ref spacing)) return null;
-            
-            WriteDrawOp op = new WriteDrawOp();
-            op.Scale = scale; op.Spacing = spacing;
-            op.Text = args[2].ToUpper();
+
+            WriteDrawOp op = new WriteDrawOp
+            {
+                Scale = scale,
+                Spacing = spacing,
+                Text = args[2].ToUpper()
+            };
             return op;
         }
 

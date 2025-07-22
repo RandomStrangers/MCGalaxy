@@ -17,7 +17,6 @@
  */
 #if NET_20
 using System;
-using System.Collections.Generic;
 using System.Threading;
 
 
@@ -30,8 +29,8 @@ namespace System.Runtime.CompilerServices
 namespace MCGalaxy.Util 
 {
     public sealed class IReaderWriterLock 
-    {        
-        ReaderWriterLock locker = new ReaderWriterLock();
+    {
+        readonly ReaderWriterLock locker = new ReaderWriterLock();
 
         public IDisposable AccquireRead() { return AccquireRead(int.MaxValue); }
         public IDisposable AccquireWrite() { return AccquireWrite(int.MaxValue); }
@@ -58,7 +57,7 @@ namespace MCGalaxy.Util
         class SlimLock : IDisposable 
         {
             ReaderWriterLock locker;
-            bool writeMode;
+            readonly bool writeMode;
             
             public SlimLock(ReaderWriterLock locker, bool writeMode) {
                 this.locker = locker;

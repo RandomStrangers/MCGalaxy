@@ -71,7 +71,7 @@ namespace MCGalaxy.Platform
         
         /// <summary> Measures resource usage by the current process </summary>
         public virtual ProcInfo MeasureResourceUsage(Process proc, bool all) {
-            ProcInfo info = default(ProcInfo);
+            ProcInfo info = default;
             
             info.ProcessorTime = proc.TotalProcessorTime;
             if (all) {
@@ -127,7 +127,7 @@ namespace MCGalaxy.Platform
         
         
         public override CPUTime MeasureAllCPUTime() {
-            CPUTime all = default(CPUTime);
+            CPUTime all = default;
             GetSystemTimes(out all.IdleTime, out all.KernelTime, out all.UserTime);
 
             // https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getsystemtimes
@@ -201,7 +201,7 @@ namespace MCGalaxy.Platform
         protected static extern int execvp(string path, string[] argv);
 
 
-        public override CPUTime MeasureAllCPUTime() { return default(CPUTime); }
+        public override CPUTime MeasureAllCPUTime() { return default; }
 
         [DllImport("libc", SetLastError = true)]
         protected unsafe static extern int sysctlbyname(string name, void* oldp, IntPtr* oldlenp, IntPtr newp, IntPtr newlen);
@@ -246,7 +246,7 @@ namespace MCGalaxy.Platform
                 if (line.StartsWith("cpu ")) return ParseCpuLine(line);
             }
 
-            return default(CPUTime);
+            return default;
         }
 
         static CPUTime ParseCpuLine(string line) {

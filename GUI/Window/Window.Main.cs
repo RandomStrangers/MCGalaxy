@@ -81,10 +81,10 @@ namespace MCGalaxy.Gui {
         void tsMap_Save_Click(object sender, EventArgs e) {     LevelCmd("Save"); }
         void tsMap_Unload_Click(object sender, EventArgs e) {   LevelCmd("Unload"); }
         void tsMap_Reload_Click(object sender, EventArgs e) {   LevelCmd("Reload"); }
-        
-        
-        
-        List<string> inputLog = new List<string>(21);
+
+
+
+        readonly List<string> inputLog = new List<string>(21);
         int inputIndex = -1;
         
         void main_TxtInput_KeyDown(object sender, KeyEventArgs e) {
@@ -199,8 +199,7 @@ namespace MCGalaxy.Gui {
         
         
         bool Main_IsUsingUrl() {
-            Uri uri;
-            return Uri.TryCreate(main_txtUrl.Text, UriKind.Absolute, out uri);
+            return Uri.TryCreate(main_txtUrl.Text, UriKind.Absolute, out _);
         }
         
         void Main_UpdateUrl(string s) {

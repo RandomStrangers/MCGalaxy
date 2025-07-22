@@ -63,9 +63,8 @@ namespace MCGalaxy.Commands.Misc
                         if (p.level.GetBlock(xx, yy, zz) != Block.Train) continue;
                         p.trainGrab = true;
 
-                        byte yaw, pitch;
                         Vec3F32 dir = new Vec3F32(dx, 0, dz);
-                        DirUtils.GetYawPitch(dir, out yaw, out pitch);
+                        DirUtils.GetYawPitch(dir, out byte yaw, out byte pitch);
 
                         if (dy == 1) pitch = 240;
                         else if (dy == 0) pitch = 0;

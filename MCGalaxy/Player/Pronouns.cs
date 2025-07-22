@@ -28,13 +28,13 @@ namespace MCGalaxy {
         const string PLAYER_PATH = "text/pronouns/";
 
         static readonly object locker = new object();
-        static List<Pronouns> Loaded = new List<Pronouns>();
+        static readonly List<Pronouns> Loaded = new List<Pronouns>();
 
         public static Pronouns Default;
         /// <summary>
         /// Called once to initialize the defaults and write/read the config file as necessary.
         /// </summary>
-        public static void Init(SchedulerTask task) {
+        public static void Init(SchedulerTask _) {
 
             if (!Directory.Exists(PLAYER_PATH)) {
                 Directory.CreateDirectory(PLAYER_PATH);
@@ -180,9 +180,9 @@ namespace MCGalaxy {
         }
         /// <summary> Finds partial matches of 'name' against the list of all pronouns </summary>
         public static Pronouns FindMatch(Player p, string name) {
-            int matches;
-            lock(locker) {
-                Pronouns pronouns = Matcher.Find(p, name, out matches, Loaded,
+            lock (locker)
+            {
+                Pronouns pronouns = Matcher.Find(p, name, out int matches, Loaded,
                                            null, pro => pro.Name, "pronouns");
                 return pronouns;
             }

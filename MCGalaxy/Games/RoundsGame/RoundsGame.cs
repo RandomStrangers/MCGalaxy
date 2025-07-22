@@ -81,9 +81,8 @@ namespace MCGalaxy.Games
             foreach (Player pl in players) {
                 if (pl.level == Map) PlayerJoinedGame(pl);
             }
-            
-            Thread thread;
-            Server.StartThread(out thread, "Game_ " + GameName, RunGame);
+
+            Server.StartThread(out Thread thread, "Game_ " + GameName, RunGame);
             Utils.SetBackgroundMode(thread);
         }
 
@@ -130,8 +129,7 @@ namespace MCGalaxy.Games
         
         protected virtual bool SetMap(string map) {
             Picker.QueuedMap = null;
-            Level next = LevelInfo.FindExact(map);
-            if (next == null) next = LevelActions.Load(Player.Console, map, false);
+            Level next = LevelInfo.FindExact(map) ?? LevelActions.Load(Player.Console, map, false);
             if (next == null) return false;
             
             Map = next;
@@ -280,12 +278,12 @@ namespace MCGalaxy.Games
             // in case players left game partway through
             foreach (Player pl in players) { SaveStats(pl); }
             
-            if (Map != null) Map.Message(GameName + " &Sgame ended");
+            Map?.Message(GameName + " &Sgame ended");
             Logger.Log(LogType.GameActivity, "[{0}] Game ended", GameName);
-            if (Picker != null) Picker.Clear();
+            Picker?.Clear();
             
             LastMap = "";
-            if (Map != null) Map.AutoUnload();
+            Map?.AutoUnload();
             Map = null;
         }
         

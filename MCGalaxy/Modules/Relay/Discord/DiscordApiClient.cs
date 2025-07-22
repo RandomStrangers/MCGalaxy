@@ -153,13 +153,17 @@ namespace MCGalaxy.Modules.Relay.Discord
         static void SleepForRetryPeriod(WebResponse res) {
             string resetAfter = res.Headers["X-RateLimit-Reset-After"];
             string retryAfter = res.Headers["Retry-After"];
-            float delay;
-            
-            if (NumberUtils.TryParseSingle(resetAfter, out delay) && delay > 0) {
+
+            if (NumberUtils.TryParseSingle(resetAfter, out float delay) && delay > 0)
+            {
                 // Prefer Discord "X-RateLimit-Reset-After" (millisecond precision)
-            } else if (NumberUtils.TryParseSingle(retryAfter, out delay) && delay > 0) {
+            }
+            else if (NumberUtils.TryParseSingle(retryAfter, out delay) && delay > 0)
+            {
                 // Fallback to general "Retry-After" header
-            } else {
+            }
+            else
+            {
                 // No recommended retry delay.. 30 seconds is a good bet
                 delay = 30;
             }

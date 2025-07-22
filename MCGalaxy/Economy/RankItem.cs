@@ -58,9 +58,11 @@ namespace MCGalaxy.Eco
         public RankEntry GetOrAdd(LevelPermission perm) {
             RankEntry rank = Find(perm);
             if (rank != null) return rank;
-            
-            rank = new RankEntry(); rank.Perm = perm;
-            Ranks.Add(rank);
+
+            rank = new RankEntry
+            {
+                Perm = perm
+            }; Ranks.Add(rank);
             Ranks.Sort((a, b) => a.Perm.CompareTo(b.Perm));
             return rank;
         }

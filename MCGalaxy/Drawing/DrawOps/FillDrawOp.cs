@@ -50,10 +50,10 @@ namespace MCGalaxy.Drawing.Ops
         }
         
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output) {
-            ushort x, y, z;
-            for (int i = 0; i < Positions.Count; i++) {
+            for (int i = 0; i < Positions.Count; i++)
+            {
                 int pos = Positions[i];
-                Level.IntToPos(pos, out x, out y, out z);
+                Level.IntToPos(pos, out ushort x, out ushort y, out ushort z);
                 output(Place(x, y, z, brush));
             }
         }

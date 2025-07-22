@@ -26,6 +26,8 @@ namespace MCGalaxy.Cli {
 
         [STAThread]
         public static void Main(string[] args) {
+            Console.WriteLine(args);
+            Console.Clear();
             SetCurrentDirectory();
 
             // If MCGalaxy_.dll is missing, a FileNotFoundException will get thrown for MCGalaxy dll
@@ -157,7 +159,7 @@ namespace MCGalaxy.Cli {
             }
         }
         
-        static string msgPrefix = Environment.NewLine + "Message: ";
+        static readonly string msgPrefix = Environment.NewLine + "Message: ";
         static string ExtractErrorMessage(string raw) {
             // Error messages are usually structured like so:
             //   Type: whatever

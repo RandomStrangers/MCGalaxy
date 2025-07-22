@@ -69,9 +69,11 @@ namespace MCGalaxy.Commands.Bots
         
         void AddBot(Player p, string botName) {
             botName = botName.Replace(' ', '_');
-            PlayerBot bot = new PlayerBot(botName, p.level);
-            bot.Owner = p.name;
-            bot.CreationDate = DateTime.UtcNow.ToUnixTime();
+            PlayerBot bot = new PlayerBot(botName, p.level)
+            {
+                Owner = p.name,
+                CreationDate = DateTime.UtcNow.ToUnixTime()
+            };
             TryAddBot(p, bot);
         }
         

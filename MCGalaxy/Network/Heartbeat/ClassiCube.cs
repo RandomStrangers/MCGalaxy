@@ -78,8 +78,7 @@ namespace MCGalaxy.Network
             if (!text.Contains("\"errors\":")) {
                 OnSuccess(text);
             } else {
-                string error = GetError(text);
-                if (error == null) error = "Error while finding URL. Is the port open?";
+                string error = GetError(text) ?? "Error while finding URL. Is the port open?";
                 OnError(error);
             }
         }
@@ -120,15 +119,12 @@ namespace MCGalaxy.Network
             //   "response": "",
             //   "status": "fail"
             // }
-            JsonObject obj = reader.Parse() as JsonObject;
-            if (obj == null || !obj.ContainsKey("errors")) return null;
-            
-            JsonArray errors = obj["errors"] as JsonArray;
-            if (errors == null) return null;
+            if (!(reader.Parse() is JsonObject obj) || !obj.ContainsKey("errors")) return null;
+
+            if (!(obj["errors"] is JsonArray errors)) return null;
 
             foreach (object raw in errors) {
-                JsonArray err = raw as JsonArray;
-                if (err != null && err.Count > 0) return (string)err[0];
+                if (raw is JsonArray err && err.Count > 0) return (string)err[0];
             }
             return null;
         }

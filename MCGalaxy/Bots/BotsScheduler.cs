@@ -46,7 +46,7 @@ namespace MCGalaxy {
 
         static void BotTick(PlayerBot bot) {
             if (bot.kill) {
-                InstructionData data = default(InstructionData);
+                InstructionData data = default;
                 // The kill instruction should not interfere with the bot AI
                 int actualCur = bot.cur;
                 BotInstruction.Find("kill").Execute(bot, data);
@@ -56,7 +56,7 @@ namespace MCGalaxy {
 
             if (bot.Instructions.Count == 0) {
                 if (bot.hunt) {
-                    InstructionData data = default(InstructionData);
+                    InstructionData data = default;
                     BotInstruction.Find("hunt").Execute(bot, data);
                 }
             } else {

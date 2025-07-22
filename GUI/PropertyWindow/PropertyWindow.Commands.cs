@@ -20,8 +20,8 @@ using MCGalaxy.Gui.Popups;
 
 namespace MCGalaxy.Gui {
     public partial class PropertyWindow : Form {
-        
-        ItemPermsHelper commandItems = new ItemPermsHelper();
+
+        readonly ItemPermsHelper commandItems = new ItemPermsHelper();
         ComboBox[] commandExtraBoxes;
         Label[] commandExtraLabels;
         Command cmd;
@@ -30,8 +30,8 @@ namespace MCGalaxy.Gui {
         // to modify the server's live permissions if user clicks 'discard'
         CommandPerms commandPermsOrig, commandPermsCopy;
         List<CommandExtraPerms> extraPermsList;
-        List<CommandPerms> commandPermsChanged = new List<CommandPerms>();
-        List<CommandExtraPerms> commandExtraPermsChanged = new List<CommandExtraPerms>();
+        readonly List<CommandPerms> commandPermsChanged = new List<CommandPerms>();
+        readonly List<CommandExtraPerms> commandExtraPermsChanged = new List<CommandExtraPerms>();
         
         void LoadCommands() {
             cmd_list.Items.Clear();
@@ -89,7 +89,7 @@ namespace MCGalaxy.Gui {
             
             commandItems.SupressEvents = true;
             CommandInitExtraPerms();
-            CommandPerms perms = commandPermsCopy != null ? commandPermsCopy : commandPermsOrig;
+            CommandPerms perms = commandPermsCopy ?? commandPermsOrig;
             commandItems.Update(perms);
         }
         
@@ -144,9 +144,7 @@ namespace MCGalaxy.Gui {
             
             int height = 12;
             for (int i = 0; i < extraPermsList.Count; i++) {
-                CommandExtraPerms perms = LookupExtraPerms(extraPermsList[i].CmdName, extraPermsList[i].Num);
-                if (perms == null) perms = extraPermsList[i];
-                
+                CommandExtraPerms perms = LookupExtraPerms(extraPermsList[i].CmdName, extraPermsList[i].Num) ?? extraPermsList[i];
                 GuiPerms.SetSelectedRank(commandExtraBoxes[i], perms.MinRank);
                 commandExtraBoxes[i].Visible = true;
                 commandExtraLabels[i].Text = "+ " + perms.Desc;

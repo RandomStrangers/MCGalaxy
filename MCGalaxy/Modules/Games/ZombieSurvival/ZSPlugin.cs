@@ -22,7 +22,7 @@ namespace MCGalaxy.Modules.Games.ZS
     public sealed class ZSPlugin : Plugin 
     {
         public override string name { get { return "ZS"; } }
-        static Command cmdZS = new CmdZombieSurvival();
+        static readonly Command cmdZS = new CmdZombieSurvival();
         
         public override void Load(bool startup) {
             Command.Register(cmdZS);

@@ -104,11 +104,10 @@ namespace MCGalaxy.Gui {
         }
         
         static void SetSpecificPerms(List<LevelPermission> perms, ComboBox[] boxes) {
-            ComboBox box = null;
             int permsCount = perms == null ? 0 : perms.Count;
             
             for (int i = 0; i < boxes.Length; i++) {
-                box = boxes[i];
+                ComboBox box = boxes[i];
                 // Hide the non-visible specific permissions
                 box.Text = "";
                 box.Enabled = false;

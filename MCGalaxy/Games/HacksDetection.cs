@@ -63,7 +63,7 @@ namespace MCGalaxy.Games {
         
         public NoclipDetector(Player p) : base(p) { }
         
-        public bool Detect(Position newPos) {
+        public bool Detect(Position _) {
             Player p = player;
             if (p.Game.Referee || Hacks.CanUseNoclip(p)) return false;
             if (!p.IsLikelyInsideBlock() || log.AddSpamEntry(5, interval)) return false;

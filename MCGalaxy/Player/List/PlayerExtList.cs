@@ -25,8 +25,8 @@ namespace MCGalaxy {
     public class PlayerExtList {
         public char Separator = ' ';
         public string Path;
-        
-        List<string> names = new List<string>(), lines = new List<string>();
+
+        readonly List<string> names = new List<string>(), lines = new List<string>();
         internal readonly object locker = new object();
         readonly object saveLocker = new object();
 
@@ -102,10 +102,12 @@ namespace MCGalaxy {
         }
         
         public static PlayerExtList Load(string path, char separator = ' ') {
-            PlayerExtList list = new PlayerExtList();
-            list.Path = path;
-            list.Separator = separator;
-            
+            PlayerExtList list = new PlayerExtList
+            {
+                Path = path,
+                Separator = separator
+            };
+
             if (!File.Exists(path)) {
                 File.Create(path).Close();
                 Logger.Log(LogType.SystemActivity, "CREATED NEW: " + path);

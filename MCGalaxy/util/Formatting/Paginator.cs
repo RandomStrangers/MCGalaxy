@@ -42,7 +42,7 @@ namespace MCGalaxy
         public static void Output<T>(Player p, IList<T> items,
                               StringFormatter<T> formatter, ItemPrinter<T> printer,
                               string cmd, string type, string modifier, int perPage) {
-            int page, total = items.Count;
+            int total = items.Count;
             
             if (modifier.Length == 0) {
                 OutputPage(p, items, formatter, printer, cmd, type, 1, perPage);
@@ -51,7 +51,7 @@ namespace MCGalaxy
             } else if (modifier.CaselessEq("all")) {
                 OutputItems(p, items, 0, items.Count, formatter, printer);
                 p.Message("Showing {0} 1-{1} (out of {1})", type, items.Count);
-            } else if (!NumberUtils.TryParseInt32(modifier, out page)) {
+            } else if (!NumberUtils.TryParseInt32(modifier, out int page)) {
                 p.Message("Input must be either \"all\" or an integer.");
             } else {
                 OutputPage(p, items, formatter, printer, cmd, type, page, perPage);

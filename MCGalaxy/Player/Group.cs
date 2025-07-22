@@ -88,12 +88,22 @@ namespace MCGalaxy
 
         /// <summary> Creates a copy of this group, except for members list and usable commands and blocks. </summary>
         public Group CopyConfig() {
-            Group copy = new Group();
-            copy.Name = Name; copy.Color = Color; copy.Permission = Permission;
-            copy.DrawLimit = DrawLimit; copy.MaxUndo = MaxUndo; copy.MOTD = MOTD;
-            copy.GenVolume = GenVolume; copy.OverseerMaps = OverseerMaps;
-            copy.AfkKicked = AfkKicked; copy.AfkKickTime = AfkKickTime;
-            copy.Prefix = Prefix; copy.CopySlots = CopySlots; copy.filename = filename;
+            Group copy = new Group
+            {
+                Name = Name,
+                Color = Color,
+                Permission = Permission,
+                DrawLimit = DrawLimit,
+                MaxUndo = MaxUndo,
+                MOTD = MOTD,
+                GenVolume = GenVolume,
+                OverseerMaps = OverseerMaps,
+                AfkKicked = AfkKicked,
+                AfkKickTime = AfkKickTime,
+                Prefix = Prefix,
+                CopySlots = CopySlots,
+                filename = filename
+            };
             return copy;
         }
         
@@ -146,11 +156,10 @@ namespace MCGalaxy
         
         public static LevelPermission ParsePermOrName(string value, LevelPermission defPerm) {
             if (value == null) return defPerm;
-            
-            sbyte perm;
-            if (NumberUtils.TryParseInt8(value, out perm))
+
+            if (NumberUtils.TryParseInt8(value, out sbyte perm))
                 return (LevelPermission)perm;
-            
+
             Group grp = Find(value);
             return grp != null ? grp.Permission : defPerm;
         }
@@ -218,8 +227,7 @@ namespace MCGalaxy
         }
         
         static void UpdateGroup(Player p) {
-            Group grp = Find(p.group.Permission);
-            if (grp == null) grp = DefaultRank;
+            Group grp = Find(p.group.Permission) ?? DefaultRank;
             p.group = grp;
             
             p.UpdateColor(PlayerInfo.DefaultColor(p));
@@ -285,8 +293,10 @@ namespace MCGalaxy
             if (key.CaselessEq("RankName")) {
                 if (temp != null) AddGroup(temp);
 
-                temp      = new Group();
-                temp.Name = value.Replace(" ", "");
+                temp = new Group
+                {
+                    Name = value.Replace(" ", "")
+                };
             } else {
                 if (temp == null) return;
                 // for prefix we need to keep space at end

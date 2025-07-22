@@ -40,8 +40,11 @@ namespace MCGalaxy.Commands.Building {
                 p.Message("&WThe Interval cannot be greater than the distance."); return null;
             }
 
-            SPlaceDrawOp op = new SPlaceDrawOp();
-            op.Distance = distance; op.Interval = interval;
+            SPlaceDrawOp op = new SPlaceDrawOp
+            {
+                Distance = distance,
+                Interval = interval
+            };
             return op;
         }
         

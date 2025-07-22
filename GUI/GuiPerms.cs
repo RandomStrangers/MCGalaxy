@@ -41,8 +41,10 @@ namespace MCGalaxy.Gui
                 Ranks.Add(new GuiRank(group.Name, group.Permission));
             }
 
-            RanksRemove = new List<GuiRank>(Ranks);
-            RanksRemove.Add(new GuiRank("(remove rank)", LevelPermission.Null));
+            RanksRemove = new List<GuiRank>(Ranks)
+            {
+                new GuiRank("(remove rank)", LevelPermission.Null)
+            };
         }
         
         internal static LevelPermission GetSelectedRank(ComboBox box, LevelPermission defPerm) {

@@ -41,10 +41,8 @@ namespace MCGalaxy.Commands.Info
         }
         
         static string FormatMap(Player p, string file) {
-            LevelPermission visitP, buildP;
-            bool loadOnGoto;
             string map = Path.GetFileNameWithoutExtension(file);
-            RetrieveProps(map, out visitP, out buildP, out loadOnGoto);
+            RetrieveProps(map, out LevelPermission visitP, out LevelPermission buildP, out bool loadOnGoto);
             
             LevelPermission maxPerm = visitP;
             if (maxPerm < buildP) maxPerm = buildP;

@@ -49,8 +49,8 @@ namespace MCGalaxy.Generator.Realistic
             
             rng   = new Random(gen_args.Seed);
             biome = MapGenBiome.Get(gen_args.Biome);
-            
-            if (preprocessor != null) preprocessor(lvl, gen_args);
+
+            preprocessor?.Invoke(lvl, gen_args);
             terrain = new float[lvl.Width * lvl.Length];
             overlay = new float[lvl.Width * lvl.Length];
             

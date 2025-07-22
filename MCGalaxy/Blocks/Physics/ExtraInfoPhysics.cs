@@ -44,7 +44,7 @@ namespace MCGalaxy.Blocks.Physics {
             if (!C.Data.HasWait && C.Block == Block.Air)
                 C.Data.ResetTypes();
             
-            ExtraInfoArgs args = default(ExtraInfoArgs);
+            ExtraInfoArgs args = default;
             ParseType(C.Data.Type1, ref args, C.Data.Value1);
             ParseType(C.Data.Type2, ref args, C.Data.Value2);
             args.ExtBlock = C.Data.ExtBlock;
@@ -88,7 +88,7 @@ namespace MCGalaxy.Blocks.Physics {
             }
             
             if (args.Revert) {
-                PhysicsArgs revertArgs = default(PhysicsArgs);
+                PhysicsArgs revertArgs = default;
                 revertArgs.ExtBlock = args.ExtBlock;
                 lvl.AddUpdate(C.Index, args.RevertType, revertArgs);
                 
@@ -134,8 +134,7 @@ namespace MCGalaxy.Blocks.Physics {
         }
         
         static void DoDrop(Level lvl, ref PhysInfo C, Random rand, int dropnum, ushort x, ushort y, ushort z) {
-            int index;
-            BlockID below = lvl.GetBlock(x, (ushort)(y - 1), z, out index);
+            BlockID below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
             if (!(below == Block.Air || below == Block.Lava || below == Block.Water)) return;
             
             if (rand.Next(1, 100) < dropnum && lvl.AddUpdate(index, C.Block, C.Data)) {

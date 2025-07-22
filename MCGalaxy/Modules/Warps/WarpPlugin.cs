@@ -23,8 +23,8 @@ namespace MCGalaxy.Modules.Warps
     {
         public override string name { get { return "Warps"; } }
 
-        Command cmdWarps     = new CmdWarp();
-        Command cmdWaypoints = new CmdWaypoint();
+        readonly Command cmdWarps     = new CmdWarp();
+        readonly Command cmdWaypoints = new CmdWaypoint();
 
         public override void Load(bool startup) {
             Server.EnsureDirectoryExists(Paths.WAYPOINTS_DIR);

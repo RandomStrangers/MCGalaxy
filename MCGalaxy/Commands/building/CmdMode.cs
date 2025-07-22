@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using BlockID = System.UInt16;
 
 namespace MCGalaxy.Commands.Building {
     public sealed class CmdMode : Command2 {
@@ -48,10 +47,9 @@ namespace MCGalaxy.Commands.Building {
                 }
                 return;
             }
-            
-            BlockID block;
-            if (!CommandParser.GetBlockIfAllowed(p, message, "place", out block)) return;
-            
+
+            if (!CommandParser.GetBlockIfAllowed(p, message, "place", out ushort block)) return;
+
             if (p.ModeBlock == block) {
                 p.Message("&b{0} &Smode: &cOFF", Block.GetName(p, p.ModeBlock));
                 p.ModeBlock = Block.Invalid;

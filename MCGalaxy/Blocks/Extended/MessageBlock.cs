@@ -37,8 +37,7 @@ namespace MCGalaxy.Blocks.Extended {
         }
         
         public static void Execute(Player p, string message, Vec3S32 mbCoords) {
-            string text;
-            List<string> cmds = GetParts(message, out text);
+            List<string> cmds = GetParts(message, out string text);
             if (text != null) p.Message(text);
             
             CommandData data = p.DefaultCmdData;
@@ -56,9 +55,8 @@ namespace MCGalaxy.Blocks.Extended {
         }
         
         public static bool Validate(Player p, string message, bool allCmds) {
-            string text;
-            List<string> cmds = GetParts(message, out text);
-            
+            List<string> cmds = GetParts(message, out _);
+
             foreach (string cmd in cmds) 
             {
                 if (!CheckCommand(p, cmd, allCmds)) return false;
@@ -82,9 +80,9 @@ namespace MCGalaxy.Blocks.Extended {
             return false;
         }
         
-        static string[] sep = new string[] { " |/" };
+        static readonly string[] sep = new string[] { " |/" };
         const StringSplitOptions opts = StringSplitOptions.RemoveEmptyEntries;
-        static List<string> empty = new List<string>();
+        static readonly List<string> empty = new List<string>();
         static List<string> GetParts(string message, out string text) {
             if (message.IndexOf('|') == -1) return ParseSingle(message, out text);
             
@@ -99,9 +97,8 @@ namespace MCGalaxy.Blocks.Extended {
         }
         
         static List<string> ParseSingle(string message, out string text) {
-            bool isCommand;
-            message = Chat.ParseInput(message, out isCommand);
-            
+            message = Chat.ParseInput(message, out bool isCommand);
+
             if (isCommand) {
                 text = null; return new List<string>(){ message };
             } else {

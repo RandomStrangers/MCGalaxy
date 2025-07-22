@@ -30,7 +30,7 @@ namespace LibNoise
         
         double mLacunarity;
         const int MaxOctaves = 30;
-        double[] SpectralWeights = new double[MaxOctaves];
+        readonly double[] SpectralWeights = new double[MaxOctaves];
 
         public RidgedMultifractal()
         {
@@ -43,8 +43,6 @@ namespace LibNoise
             x *= Frequency;
             y *= Frequency;
             z *= Frequency;
-
-            double signal = 0.0;
             double value = 0.0;
             double weight = 1.0;
 
@@ -55,7 +53,7 @@ namespace LibNoise
 
             for (int octave = 0; octave < OctaveCount; octave++)
             {
-                signal = GradientNoise.GradientCoherentNoise(x, y, z, (Seed + octave) & 0x7fffffff);
+                double signal = GradientNoise.GradientCoherentNoise(x, y, z, (Seed + octave) & 0x7fffffff);
 
                 // Make the ridges.
                 signal = Math.Abs(signal);

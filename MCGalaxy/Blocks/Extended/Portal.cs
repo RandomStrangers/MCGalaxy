@@ -34,7 +34,7 @@ namespace MCGalaxy.Blocks.Extended {
             
             if (p.level.name != exit.Map) {
                 p.summonedMap = exit.Map;
-                bool changedMap = false;
+                bool changedMap;
                 
                 try {
                     changedMap = PlayerActions.ChangeMap(p, exit.Map);
@@ -63,12 +63,14 @@ namespace MCGalaxy.Blocks.Extended {
         }
         
         static PortalExit ParseExit(ISqlRecord record) {
-            PortalExit data = new PortalExit();
-            data.Map = record.GetText(0);
-            
-            data.X = (ushort)record.GetInt32(1);
-            data.Y = (ushort)record.GetInt32(2);
-            data.Z = (ushort)record.GetInt32(3);
+            PortalExit data = new PortalExit
+            {
+                Map = record.GetText(0),
+
+                X = (ushort)record.GetInt32(1),
+                Y = (ushort)record.GetInt32(2),
+                Z = (ushort)record.GetInt32(3)
+            };
             return data;
         }
         

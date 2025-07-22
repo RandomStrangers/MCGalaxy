@@ -77,11 +77,10 @@ namespace MCGalaxy.Commands.Building {
             if (palette == null) {
                 p.Message("Palette {0} does not exist.", args[1]); return;
             }
-            
-            BlockID block;
-            if (!CommandParser.GetBlock(p, args[2], out block)) return;
-            
-            ColorDesc rgb = default(ColorDesc);
+
+            if (!CommandParser.GetBlock(p, args[2], out ushort block)) return;
+
+            ColorDesc rgb = default;
             if (!CommandParser.GetHex(p, args[3], ref rgb)) return;
             PaletteEntry entry = new PaletteEntry(rgb.R, rgb.G, rgb.B, block);
             AddEntry(p, palette, entry);
@@ -105,9 +104,8 @@ namespace MCGalaxy.Commands.Building {
             if (palette == null) {
                 p.Message("Palette {0} does not exist.", args[1]); return;
             }
-            
-            BlockID block;
-            if (!CommandParser.GetBlock(p, args[2], out block)) return;
+
+            if (!CommandParser.GetBlock(p, args[2], out ushort block)) return;
             RemoveEntry(p, palette, block);
         }
         

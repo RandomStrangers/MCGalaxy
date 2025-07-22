@@ -26,7 +26,7 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name { get { return "Normal"; } }
         public override string[] Help { get { return HelpString; } }
         
-        static string[] HelpString = new string[] {
+        static readonly string[] HelpString = new string[] {
             "&TArguments: [block]",
             "&HDraws using the specified block.",
             "&H  If [block] is not given, your currently held block is used.",
@@ -38,9 +38,8 @@ namespace MCGalaxy.Drawing.Brushes
                 if (!CommandParser.IsBlockAllowed(p, "draw with", args.Block)) return null;
                 return new SolidBrush(args.Block);
             }
-            
-            BlockID block;
-            if (!CommandParser.GetBlockIfAllowed(p, args.Message, "draw with", out block)) return null;
+
+            if (!CommandParser.GetBlockIfAllowed(p, args.Message, "draw with", out ushort block)) return null;
             return new SolidBrush(block);
         }
         
@@ -48,8 +47,7 @@ namespace MCGalaxy.Drawing.Brushes
         //  it's worth overriding this to avoid an unnecessary object allocation
         public override bool Validate(BrushArgs args) {
             if (args.Message.Length == 0) return true;
-            BlockID block;
-            return CommandParser.GetBlockIfAllowed(args.Player, args.Message, "draw with", out block);
+            return CommandParser.GetBlockIfAllowed(args.Player, args.Message, "draw with", out _);
         }
     }
     
@@ -58,7 +56,7 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name { get { return "Checkered"; } }
         public override string[] Help { get { return HelpString; } }
         
-        static string[] HelpString = new string[] {
+        static readonly string[] HelpString = new string[] {
             "&TArguments: [block1] [block2] <block3>..",
             "&HDraws an alternating pattern of blocks.",
             "&H  If [block1] is not given, your currently held block is used.",
@@ -74,10 +72,8 @@ namespace MCGalaxy.Drawing.Brushes
                 return new CheckeredBrush(args.Block, Block.Invalid);
             }
 
-            List<BlockID> toAffect;
-            List<int> freqs;
-            
-            bool ok = FrequencyBrush.GetBlocks(args, out toAffect, out freqs, 
+
+            bool ok = FrequencyBrush.GetBlocks(args, out List<ushort> toAffect, out List<int> freqs,
                                                P => false, null);
             if (!ok) return null;
 
@@ -93,7 +89,7 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name { get { return "Grid"; } }
         public override string[] Help { get { return HelpString; } }
         
-        static string[] HelpString = new string[] {
+        static readonly string[] HelpString = new string[] {
             "&TArguments: [grid block]/<size> [cell block]/<size> <border>",
             "&HDraws an gridline pattern of blocks.",
             "&H  If a <size> is not given, a size of 1 is assumed.",
@@ -101,10 +97,8 @@ namespace MCGalaxy.Drawing.Brushes
         };
         
         public override Brush Construct(BrushArgs args) {
-            List<BlockID> toAffect;
-            List<int> freqs;
-            
-            bool ok = FrequencyBrush.GetBlocks(args, out toAffect, out freqs, 
+
+            bool ok = FrequencyBrush.GetBlocks(args, out List<ushort> toAffect, out List<int> freqs,
                                                P => false, null);
             if (!ok) return null;
 
@@ -117,7 +111,7 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name { get { return "Paste"; } }
         public override string[] Help { get { return HelpString; } }
         
-        static string[] HelpString = new string[] {
+        static readonly string[] HelpString = new string[] {
             "&TArguments: none",
             "&HDraws by pasting blocks from current &T/Copy.",
             "&TArguments: [block1] [block2]..",
@@ -138,12 +132,16 @@ namespace MCGalaxy.Drawing.Brushes
             string[] parts = args.Message.SplitSpaces();            
             
             if (parts[0].CaselessEq("not")) {
-                PasteNotBrush brush = new PasteNotBrush(cState);
-                brush.Exclude = ReplaceBrushFactory.GetBlocks(args.Player, 1, parts.Length, parts);
+                PasteNotBrush brush = new PasteNotBrush(cState)
+                {
+                    Exclude = ReplaceBrushFactory.GetBlocks(args.Player, 1, parts.Length, parts)
+                };
                 return brush.Exclude == null ? null : brush;
             } else {
-                PasteBrush brush = new PasteBrush(cState);
-                brush.Include = ReplaceBrushFactory.GetBlocks(args.Player, 0, parts.Length, parts);
+                PasteBrush brush = new PasteBrush(cState)
+                {
+                    Include = ReplaceBrushFactory.GetBlocks(args.Player, 0, parts.Length, parts)
+                };
                 return brush.Include == null ? null : brush;
             }
         }
@@ -154,7 +152,7 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name { get { return "Striped"; } }
         public override string[] Help { get { return HelpString; } }
         
-        static string[] HelpString = new string[] {
+        static readonly string[] HelpString = new string[] {
             "&TArguments: [block1] [block2]",
             "&HDraws a diagonally-alternating pattern of block1 and block2.",
             "&H   If block1 is not given, the currently held block is used.",
@@ -168,14 +166,12 @@ namespace MCGalaxy.Drawing.Brushes
                 return new StripedBrush(args.Block, Block.Invalid);
             }
             string[] parts = args.Message.SplitSpaces();
-            
-            BlockID block1;
-            if (!CommandParser.GetBlockIfAllowed(p, parts[0], "draw with", out block1, true)) return null;
+
+            if (!CommandParser.GetBlockIfAllowed(p, parts[0], "draw with", out ushort block1, true)) return null;
             if (parts.Length == 1)
                 return new StripedBrush(block1, Block.Invalid);
-            
-            BlockID block2;
-            if (!CommandParser.GetBlockIfAllowed(p, parts[1], "draw with", out block2, true)) return null;
+
+            if (!CommandParser.GetBlockIfAllowed(p, parts[1], "draw with", out ushort block2, true)) return null;
             return new StripedBrush(block1, block2);
         }
     }
@@ -186,7 +182,7 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name { get { return "Rainbow"; } }
         public override string[] Help { get { return HelpString; } }
         
-        static string[] HelpString = new string[] {
+        static readonly string[] HelpString = new string[] {
             "&TArguments: none or 'random'",
             "&HIf no arguments are given, draws a diagonally repeating rainbow",
             "&HIf 'random' is given, draws by randomly selecting blocks from the rainbow pattern.",
@@ -204,7 +200,7 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name { get { return "BWRainbow"; } }
         public override string[] Help { get { return HelpString; } }
         
-        static string[] HelpString = new string[] {
+        static readonly string[] HelpString = new string[] {
             "&TArguments: none or 'random'",
             "&HIf no arguments are given, draws a diagonally repeating black-white rainbow",
             "&HIf 'random' is given, draws by randomly selecting blocks from the rainbow pattern.",

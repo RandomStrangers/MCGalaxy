@@ -179,9 +179,8 @@ namespace MCGalaxy
         /// Supports LevelInfo.LATEST_MUSEUM_FLAG as backup to return latest backup path.
         /// </summary>
         public static void DeleteBackup(Player p, string map, string backup) {
-            string discard;
-            if (!LevelInfo.GetBackupPath(p, map, backup, out discard)) return;
-            
+            if (!LevelInfo.GetBackupPath(p, map, backup, out _)) return;
+
             foreach (Player pl in PlayerInfo.Online.Items) {
                 //Find if any player is in a museum of the level backup being deleted
                 if (pl.level.MapName.CaselessEq(map) && pl.level.IsMuseum) {
@@ -386,7 +385,7 @@ namespace MCGalaxy
         }
         
         
-        public static Level LoadMuseum(Player p, string name, string mapName, string path) {
+        public static Level LoadMuseum(Player _, string name, string mapName, string path) {
             Level lvl    = GetMuseum(name, path);
             lvl.MapName  = mapName;
             lvl.IsMuseum = true;
@@ -405,11 +404,13 @@ namespace MCGalaxy
             {
                 Level lvl = pl.level;
                 if (!lvl.IsMuseum || lvl.name != name) continue;
-                
-                Level clone        = new Level();
-                clone.blocks       = lvl.blocks;
-                clone.CustomBlocks = lvl.CustomBlocks;
-                
+
+                Level clone = new Level
+                {
+                    blocks = lvl.blocks,
+                    CustomBlocks = lvl.CustomBlocks
+                };
+
                 // Just in case museum was unloaded a split second before
                 if (clone.blocks == null || clone.CustomBlocks == null) break;
                 
@@ -422,9 +423,11 @@ namespace MCGalaxy
         
         
         public static void Resize(ref Level lvl, int width, int height, int length) {
-            Level res = new Level(lvl.name, (ushort)width, (ushort)height, (ushort)length);
-            res.hasPortals       = lvl.hasPortals;
-            res.hasMessageBlocks = lvl.hasMessageBlocks;
+            Level res = new Level(lvl.name, (ushort)width, (ushort)height, (ushort)length)
+            {
+                hasPortals = lvl.hasPortals,
+                hasMessageBlocks = lvl.hasMessageBlocks
+            };
             byte[] src = lvl.blocks, dst = res.blocks;
             
             // Copy blocks in bulk

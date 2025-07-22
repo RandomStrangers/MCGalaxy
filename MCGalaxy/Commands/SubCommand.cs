@@ -32,7 +32,7 @@ namespace MCGalaxy.Commands {
         public readonly Behavior behavior;
         readonly HelpBehavior helpBehavior = null;
         readonly bool MapOnly;
-        string[] Aliases;
+        readonly string[] Aliases;
 
         /// <summary>
         /// Construct a SubCommand with simple style help.
@@ -108,7 +108,7 @@ namespace MCGalaxy.Commands {
         public enum UsageResult { NoneFound, Success, Disallowed }
 
         public readonly string parentCommandName;
-        List<SubCommand> subCommands;
+        readonly List<SubCommand> subCommands;
 
         public SubCommandGroup(string parentCmd, List<SubCommand> initialCmds) {
             parentCommandName = parentCmd;

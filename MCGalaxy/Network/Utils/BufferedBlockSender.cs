@@ -42,7 +42,7 @@ namespace MCGalaxy.Network
         /// <summary> Constructs a bulk sender that will only send block changes to that player </summary>
         public BufferedBlockSender(Player player) {
             this.player = player;
-            this.level  = player.level;
+            level  = player.level;
         }
         
         /// <summary> Adds a block change to list of buffered changes </summary>

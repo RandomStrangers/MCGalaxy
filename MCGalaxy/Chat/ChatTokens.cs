@@ -183,7 +183,7 @@ namespace MCGalaxy {
             return p.SkinName;
         }
         static string TokenLevel(Player p) {
-            return p.level == null ? null : p.level.name;
+            return p.level?.name;
         }
         static string TokenCurrency(Player p) {
             return Server.Config.Currency;

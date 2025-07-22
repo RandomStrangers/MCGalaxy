@@ -59,8 +59,7 @@ namespace MCGalaxy.Commands.Chatting
             if (p.Ignores.Names.CaselessRemove(action)) {
                 p.Message("&aNo longer ignoring {0}", action);
             } else {
-                int matches;
-                Player target = PlayerInfo.FindMatches(p, action, out matches);
+                Player target = PlayerInfo.FindMatches(p, action, out int matches);
                 if (target == null) {
                     if (matches == 0) p.Message("You must use the full name when unignoring offline players.");
                     return;

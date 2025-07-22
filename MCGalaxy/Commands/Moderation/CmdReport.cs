@@ -111,7 +111,7 @@ namespace MCGalaxy.Commands.Moderation {
             Logger.Log(LogType.UserActivity, "Reports on {1} were deleted by {0}", p.name, target);
         }
         
-        void HandleClear(Player p, string[] args, CommandData data) {
+        void HandleClear(Player p, string[] _, CommandData data) {
             if (!CheckExtraPerm(p, data, 1)) return;
             if (!Directory.Exists("extra/reportedbackups"))
                 Directory.CreateDirectory("extra/reportedbackups");

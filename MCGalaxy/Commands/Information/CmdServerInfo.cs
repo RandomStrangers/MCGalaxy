@@ -68,7 +68,7 @@ namespace MCGalaxy.Commands.Info
             p.Message("Measuring resource usage...one second");
             IOperatingSystem os = IOperatingSystem.DetectOS();
 
-            if (startTime == default(DateTime)) {
+            if (startTime == default) {
                 startTime = DateTime.UtcNow;
                 startUsg  = os.MeasureResourceUsage(proc, false);
             }

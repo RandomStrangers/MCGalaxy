@@ -198,7 +198,7 @@ namespace MCGalaxy.Commands.Info
             }
             
             public void FromMap(string map) {
-                this.Name = map; MapName = map;
+                Name = map; MapName = map;
                 string path  = LevelInfo.MapPath(map);
                 Vec3U16 dims = IMapImporter.GetFor(path).ReadDimensions(path);
                 

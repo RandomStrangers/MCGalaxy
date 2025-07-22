@@ -95,7 +95,7 @@ namespace MCGalaxy.Drawing.Ops
             return bits;
         }
         
-        static ulong[] letters;
+        static readonly ulong[] letters;
         static WriteDrawOp() {
             letters = new ulong[256];
             // Each letter is represented as 8 bytes

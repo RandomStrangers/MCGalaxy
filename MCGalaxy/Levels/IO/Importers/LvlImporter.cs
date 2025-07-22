@@ -43,14 +43,16 @@ namespace MCGalaxy.Levels.IO
                 byte[] header = new byte[HEADER_SIZE];
                 Vec3U16 dims  = ReadHeader(gs, header);
 
-                Level lvl  = new Level(name, dims.X, dims.Y, dims.Z);
-                lvl.spawnx = BitConverter.ToUInt16(header,  8);
-                lvl.spawnz = BitConverter.ToUInt16(header, 10);
-                lvl.spawny = BitConverter.ToUInt16(header, 12);
-                lvl.rotx   = header[14];
-                lvl.roty   = header[15];
+                Level lvl = new Level(name, dims.X, dims.Y, dims.Z)
+                {
+                    spawnx = BitConverter.ToUInt16(header, 8),
+                    spawnz = BitConverter.ToUInt16(header, 10),
+                    spawny = BitConverter.ToUInt16(header, 12),
+                    rotx = header[14],
+                    roty = header[15]
+                };
                 // pervisit/perbuild permission bytes ignored
-                
+
                 ReadFully(gs, lvl.blocks, lvl.blocks.Length);
                 ReadCustomBlocksSection(lvl, gs);
                 if (!metadata) return lvl;
@@ -148,11 +150,16 @@ namespace MCGalaxy.Levels.IO
         }
         
         static void ParseZone(Level lvl, ref byte[] buffer, Stream gs) {
-            Zone z = new Zone();
-            z.MinX = Read_U16(buffer, gs); z.MaxX = Read_U16(buffer, gs);
-            z.MinY = Read_U16(buffer, gs); z.MaxY = Read_U16(buffer, gs);
-            z.MinZ = Read_U16(buffer, gs); z.MaxZ = Read_U16(buffer, gs);
-            
+            Zone z = new Zone
+            {
+                MinX = Read_U16(buffer, gs),
+                MaxX = Read_U16(buffer, gs),
+                MinY = Read_U16(buffer, gs),
+                MaxY = Read_U16(buffer, gs),
+                MinZ = Read_U16(buffer, gs),
+                MaxZ = Read_U16(buffer, gs)
+            };
+
             int metaCount = TryRead_I32(buffer, gs);
             ConfigElement[] elems = Server.zoneConfig;
             
@@ -161,8 +168,8 @@ namespace MCGalaxy.Levels.IO
                 if (size > buffer.Length) buffer = new byte[size + 16];
                 ReadFully(gs, buffer, size);
                 
-                string line = Encoding.UTF8.GetString(buffer, 0, size), key, value;
-                PropertiesFile.ParseLine(line, '=', out key, out value);
+                string line = Encoding.UTF8.GetString(buffer, 0, size);
+                PropertiesFile.ParseLine(line, '=', out string key, out string value);
                 if (key == null) continue;
                 
                 value = value.Trim();

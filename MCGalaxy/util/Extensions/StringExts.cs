@@ -93,7 +93,7 @@ namespace MCGalaxy
 
         /// <summary> Converts a unicode character into a code page 437 indice. </summary>        
         public static char UnicodeToCp437(this char c) {
-            int cpIndex = 0;
+            int cpIndex;
             if (c >= ' ' && c <= '~') {
                 return c;
             } else if ((cpIndex = EmotesHandler.ControlCharReplacements.IndexOf(c)) >= 0 ) {

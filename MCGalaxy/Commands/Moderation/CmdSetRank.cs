@@ -61,10 +61,12 @@ namespace MCGalaxy.Commands.Moderation {
                 return;
             }
             if (!CanChangeRank(target, curRank, newRank, p, data, ref reason)) return;
-            
-            ModAction action = new ModAction(target, p, ModActionType.Rank, reason);
-            action.targetGroup = curRank;
-            action.Metadata = newRank;
+
+            ModAction action = new ModAction(target, p, ModActionType.Rank, reason)
+            {
+                targetGroup = curRank,
+                Metadata = newRank
+            };
             OnModActionEvent.Call(action);
         }
         

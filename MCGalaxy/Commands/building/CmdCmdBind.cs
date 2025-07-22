@@ -30,7 +30,7 @@ namespace MCGalaxy.Commands.Building
         public override void Use(Player p, string message, CommandData data) {
             if (message.Length == 0) {
                 bool anyBinds = false;
-                foreach (var kvp in p.CmdBindings)
+                foreach (System.Collections.Generic.KeyValuePair<string, string> kvp in p.CmdBindings)
                 {
                     p.Message("&T/{0} &Sbound to &T/{1}", kvp.Key, kvp.Value);
                     anyBinds = true;
@@ -44,10 +44,12 @@ namespace MCGalaxy.Commands.Building
             string trigger = parts[0];
 
             if (parts.Length == 1) {
-                string value;
-                if (!p.CmdBindings.TryGetValue(trigger, out value)) {
+                if (!p.CmdBindings.TryGetValue(trigger, out string value))
+                {
                     p.Message("No command bound for &T/{0}", trigger);
-                } else {
+                }
+                else
+                {
                     p.Message("&T/{0} &Sbound to &T/{1}", trigger, value);
                 }
             } else {

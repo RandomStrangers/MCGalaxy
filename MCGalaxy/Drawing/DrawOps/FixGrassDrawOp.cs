@@ -68,8 +68,7 @@ namespace MCGalaxy.Drawing.Ops
                     
                     if (!lvl.LightPasses(above)) output(Place(x, y, z, dirt));
                 }
-                index++;
-            }
+                    }
         }
         
         void FixLight(DrawOpOutput output) {
@@ -104,8 +103,7 @@ namespace MCGalaxy.Drawing.Ops
                     BlockID dirt = lvl.Props[block].DirtBlock;
                     if (inShadow) output(Place(x, y, z, dirt));
                 }
-                index++;
-            }
+                    }
         }
     }
 }

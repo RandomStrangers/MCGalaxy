@@ -44,8 +44,10 @@ namespace MCGalaxy.Eco
             
             LevelPreset preset = FindPreset(args[0]);
             if (preset == null) {
-                preset = new LevelPreset();
-                preset.name = args[0];
+                preset = new LevelPreset
+                {
+                    name = args[0]
+                };
                 Presets.Add(preset);
             }
             
@@ -127,10 +129,12 @@ namespace MCGalaxy.Eco
         
         void AddPreset(Player p, string[] args, LevelPreset preset) {
             if (preset != null) { p.Message("&WThat preset level already exists"); return; }
-            
-            preset = new LevelPreset();
-            preset.name = args[2];
-            
+
+            preset = new LevelPreset
+            {
+                name = args[2]
+            };
+
             ushort x = 0, y = 0, z = 0;
             if (!MapGen.GetDimensions(p, args, 3, ref x, ref y, ref z)) return;
             preset.x = args[3]; preset.y = args[4]; preset.z = args[5];
@@ -149,7 +153,7 @@ namespace MCGalaxy.Eco
             p.Message("Map Price: &f" + preset.price + " &3" + Server.Config.Currency);
         }
         
-        void RemovePreset(Player p, string[] args, LevelPreset preset) {
+        void RemovePreset(Player p, string[] _, LevelPreset preset) {
             if (preset == null) { p.Message("&WThat preset level doesn't exist"); return; }
             Presets.Remove(preset);
             p.Message("&aSuccessfully removed preset: &f" + preset.name);

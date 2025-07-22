@@ -24,12 +24,10 @@ namespace MCGalaxy.Commands.Eco {
         public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }     
         public override bool MessageBlockRestricted { get { return true; } }
         public override void Use(Player p, string message, CommandData data) {
-            EcoTransaction trans;
             bool all = true;
-            if (!ParseArgs(p, message, ref all, "take", out trans)) return;
-            
-            int matches = 1;
-            Player who = PlayerInfo.FindMatches(p, trans.TargetName, out matches);
+            if (!ParseArgs(p, message, ref all, "take", out EcoTransaction trans)) return;
+
+            Player who = PlayerInfo.FindMatches(p, trans.TargetName, out int matches);
             if (matches > 1) return;
             
             int money = 0;

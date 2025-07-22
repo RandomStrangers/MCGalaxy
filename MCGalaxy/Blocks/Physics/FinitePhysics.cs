@@ -25,9 +25,8 @@ namespace MCGalaxy.Blocks.Physics {
         public unsafe static void DoWaterOrLava(Level lvl, ref PhysInfo C) {
             Random rand = lvl.physRandom;            
             ushort x = C.X, y = C.Y, z = C.Z;
-            int index;
-            BlockID below = lvl.GetBlock(x, (ushort)(y - 1), z, out index);
-            
+            BlockID below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
+
             if (below == Block.Air) {
                 lvl.AddUpdate(index, C.Block, C.Data);
                 lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
@@ -77,8 +76,7 @@ namespace MCGalaxy.Blocks.Physics {
         }
         
         static bool Expand(Level lvl, ushort x, ushort y, ushort z) {
-            int index;
-            return lvl.IsAirAt(x, y, z, out index) && lvl.AddUpdate(index, Block.FiniteWater, default(PhysicsArgs));
+            return lvl.IsAirAt(x, y, z, out int index) && lvl.AddUpdate(index, Block.FiniteWater, default(PhysicsArgs));
         }
         
         public unsafe static void DoFaucet(Level lvl, ref PhysInfo C) {

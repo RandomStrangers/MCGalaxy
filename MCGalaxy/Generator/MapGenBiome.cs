@@ -193,7 +193,7 @@ namespace MCGalaxy.Generator
         
         
         public static MapGenBiome Get(string biome) {
-            foreach (var kvp in Biomes)
+            foreach (KeyValuePair<string, MapGenBiome> kvp in Biomes)
             {
                 if (kvp.Key.CaselessEq(biome)) return kvp.Value;
             }
@@ -201,10 +201,9 @@ namespace MCGalaxy.Generator
         }
         
         public static string FindMatch(Player p, string biome) {
-            int matches = 0;
-            var match = Matcher.Find(p, biome, out matches, Biomes, 
+            KeyValuePair<string, MapGenBiome> match = Matcher.Find(p, biome, out int matches, Biomes,
                                         null, b => b.Key, "biomes");
-            
+
             if (match.Key == null && matches == 0) ListBiomes(p);
             return match.Key;
         }

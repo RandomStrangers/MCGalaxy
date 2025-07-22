@@ -40,9 +40,8 @@ namespace MCGalaxy.Eco
         
         
         public void LoadConfig(string line) {
-            string prop, value;
-            line.Separate(':', out prop, out value);
-            
+            line.Separate(':', out string prop, out string value);
+
             if (prop.CaselessEq("enabled")) {
                 Enabled = value.CaselessEq("true");
             } else if (prop.CaselessEq("purchaserank")) {
@@ -51,7 +50,7 @@ namespace MCGalaxy.Eco
                 Parse(prop, value);
             }
         }
-        
+
         /// <summary> Parses item-specific properties from the given configuration </remarks>
         public abstract void Parse(string prop, string value);
         
@@ -60,7 +59,7 @@ namespace MCGalaxy.Eco
             cfg.Add("purchaserank:" + (int)PurchaseRank);
             Serialise(cfg);
         }
-        
+
         /// <summary> Saves item-specific properties to the given configuration </summary>
         public abstract void Serialise(List<string> cfg);
         

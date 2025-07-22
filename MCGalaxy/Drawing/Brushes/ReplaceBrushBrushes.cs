@@ -27,7 +27,7 @@ namespace MCGalaxy.Drawing.Brushes
         protected readonly Brush replacement;
         
         public ReplaceBrushBrush(BlockID include, Brush replacement) {
-            this.target = include; this.replacement = replacement;
+            target = include; this.replacement = replacement;
         }
         
         public override string Name { get { return "ReplaceBrush"; } }

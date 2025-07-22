@@ -36,7 +36,7 @@ namespace MCGalaxy.Tasks {
             File.WriteAllText("ranks/agreed.txt", data);
         }
         
-        internal static void UpgradeOldTempranks(SchedulerTask task) {
+        internal static void UpgradeOldTempranks(SchedulerTask _) {
             if (!File.Exists(Paths.TempRanksFile)) return;
 
             // Check if empty, or not old form
@@ -73,7 +73,7 @@ namespace MCGalaxy.Tasks {
         }
 
         
-        internal static void UpgradeDBTimeSpent(SchedulerTask task) {
+        internal static void UpgradeDBTimeSpent(SchedulerTask _) {
             string time = Database.ReadString("Players", "TimeSpent", "LIMIT 1");
             if (time == null) return; // no players at all in DB
             if (time.IndexOf(' ') == -1) return; // already upgraded

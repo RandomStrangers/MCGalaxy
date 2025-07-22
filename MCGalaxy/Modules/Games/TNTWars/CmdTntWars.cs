@@ -91,7 +91,7 @@ namespace MCGalaxy.Modules.Games.TW
             } else if (prop.CaselessEq("graceperiod")) {
                 SetBool(p, ref cfg.GracePeriod, value, "Grace period");
             } else if (prop.CaselessEq("gracetime")) {
-                TimeSpan time = default(TimeSpan);
+                TimeSpan time = default;
                 if (!CommandParser.GetTimespan(p, value, ref time, "set grace time to", "s")) return;
                 cfg.GracePeriodTime = time;
                 

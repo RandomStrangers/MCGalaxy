@@ -24,7 +24,7 @@ namespace MCGalaxy
     /// <summary> Asynchronously performs work on a background thread </summary>
     public abstract class AsyncWorker<T> 
     {
-        AutoResetEvent handle = new AutoResetEvent(false);
+        readonly AutoResetEvent handle = new AutoResetEvent(false);
         volatile bool terminating;
         
         protected Queue<T> queue = new Queue<T>();
@@ -66,8 +66,7 @@ namespace MCGalaxy
         
         /// <summary> Starts the background worker thread </summary>
         public void RunAsync() {
-            Thread worker;
-            Server.StartThread(out worker, ThreadName, SendLoop);
+            Server.StartThread(out Thread worker, ThreadName, SendLoop);
             Utils.SetBackgroundMode(worker);
         }
         

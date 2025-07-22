@@ -90,7 +90,7 @@ namespace MCGalaxy.Modules.Games.ZS
         }        
         
                 
-        static ColumnDesc[] zsTable = new ColumnDesc[] {
+        static readonly ColumnDesc[] zsTable = new ColumnDesc[] {
             new ColumnDesc("ID", ColumnType.Integer, priKey: true, autoInc: true, notNull: true),
             new ColumnDesc("Name", ColumnType.Char, 20),
             new ColumnDesc("TotalRounds", ColumnType.Int32),
@@ -111,7 +111,7 @@ namespace MCGalaxy.Modules.Games.ZS
         }
         
         static ZombieStats LoadStats(string name) {
-            ZombieStats stats = default(ZombieStats);
+            ZombieStats stats = default;
             Database.ReadRows("ZombieStats", "*", 
                                 record => stats = ParseStats(record), 
                                 "WHERE Name=@0", name);
@@ -148,17 +148,17 @@ namespace MCGalaxy.Modules.Games.ZS
                                cmdLastLevels, cmdQueue, cmdShowQueue);
         }
         
-        static Command cmdAka        = new CmdAka();
-        static Command cmdAlive      = new CmdAlive();
-        static Command cmdBounties   = new CmdBounties();
-        static Command cmdBounty     = new CmdBounty();
-        static Command cmdDisinfect  = new CmdDisInfect();
-        static Command cmdHuman      = new CmdHuman();
-        static Command cmdInfect     = new CmdInfect();
-        static Command cmdInfected   = new CmdInfected();
-        static Command cmdLastLevels = new CmdLastLevels();
-        static Command cmdQueue      = new CmdQueue();
-        static Command cmdShowQueue  = new CmdShowQueue();
+        static readonly Command cmdAka        = new CmdAka();
+        static readonly Command cmdAlive      = new CmdAlive();
+        static readonly Command cmdBounties   = new CmdBounties();
+        static readonly Command cmdBounty     = new CmdBounty();
+        static readonly Command cmdDisinfect  = new CmdDisInfect();
+        static readonly Command cmdHuman      = new CmdHuman();
+        static readonly Command cmdInfect     = new CmdInfect();
+        static readonly Command cmdInfected   = new CmdInfected();
+        static readonly Command cmdLastLevels = new CmdLastLevels();
+        static readonly Command cmdQueue      = new CmdQueue();
+        static readonly Command cmdShowQueue  = new CmdShowQueue();
         
         
         static void HookItems() {
@@ -177,10 +177,10 @@ namespace MCGalaxy.Modules.Games.ZS
             Economy.Items.Remove(itemInv);
         }       
         
-        static Item itemQueue     = new QueueLevelItem();
-        static Item itemBlocks    = new BlocksItem();
-        static Item itemRevive    = new ReviveItem();
-        static Item itemInfectMsg = new InfectMessageItem();
-        static Item itemInv       = new InvisibilityItem();
+        static readonly Item itemQueue     = new QueueLevelItem();
+        static readonly Item itemBlocks    = new BlocksItem();
+        static readonly Item itemRevive    = new ReviveItem();
+        static readonly Item itemInfectMsg = new InfectMessageItem();
+        static readonly Item itemInv       = new InvisibilityItem();
     }
 }

@@ -27,8 +27,7 @@ namespace MCGalaxy.Blocks.Physics {
                     if (c4.detIndex != index) continue;
                     
                     foreach (int explodeIndex in c4.list) {
-                        ushort x, y, z;
-                        lvl.IntToPos(explodeIndex, out x, out y, out z);
+                        lvl.IntToPos(explodeIndex, out ushort x, out ushort y, out ushort z);
                         lvl.MakeExplosion(x, y, z, 0);
                     }
                     lvl.C4list.Remove(c4);

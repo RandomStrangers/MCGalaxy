@@ -36,7 +36,7 @@ namespace MCGalaxy.Blocks.Physics {
             if (C.Data.Data <= C.Data.Value1) { // value1 for wait time
                 C.Data.Data++;
             } else {
-                PhysicsArgs dArgs = default(PhysicsArgs);
+                PhysicsArgs dArgs = default;
                 dArgs.ExtBlock = C.Data.ExtBlock;
                 lvl.AddUpdate(C.Index, C.Data.Value2, dArgs);
                 C.Data.Data = PhysicsArgs.RemoveFromChecks;
@@ -75,8 +75,7 @@ namespace MCGalaxy.Blocks.Physics {
         }
         
         static void ActivateODoor(Level lvl, BlockID target, ushort x, ushort y, ushort z) {
-            int index;
-            BlockID block = lvl.GetBlock(x, y, z, out index);
+            BlockID block = lvl.GetBlock(x, y, z, out int index);
             block = lvl.Props[block].oDoorBlock;
             
             if (index >= 0 && block == target) {
@@ -95,9 +94,8 @@ namespace MCGalaxy.Blocks.Physics {
         }
         
         static void ActivateTDoor(Level lvl, ushort x, ushort y, ushort z) {
-            int index;
-            BlockID block = lvl.GetBlock(x, y, z, out index);
-            
+            BlockID block = lvl.GetBlock(x, y, z, out int index);
+
             if (lvl.Props[block].IsTDoor) {
                 PhysicsArgs args = ActivateablePhysics.GetTDoorArgs(block);
                 lvl.AddUpdate(index, Block.Air, args);

@@ -32,8 +32,10 @@ namespace MCGalaxy.Commands.Building {
         public override bool SuperUseable { get { return false; } }
 
         public override void Use(Player p, string message, CommandData data) {
-            PortalArgs pArgs = new PortalArgs();
-            pArgs.Multi = false;
+            PortalArgs pArgs = new PortalArgs
+            {
+                Multi = false
+            };
             string[] args = message.SplitSpaces();
             string block = message.Length == 0 ? "" : args[0].ToLower();
 

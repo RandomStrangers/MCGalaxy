@@ -29,12 +29,12 @@ namespace MCGalaxy.DB
     public sealed class BlockDBTableDumper 
     {       
         string mapName;
-        Dictionary<string, int> nameCache = new Dictionary<string, int>();
+        readonly Dictionary<string, int> nameCache = new Dictionary<string, int>();
         Stream stream;
         bool errorOccurred;
         Vec3U16 dims;
         BlockDBEntry entry;
-        FastList<BlockDBEntry> buffer = new FastList<BlockDBEntry>(4096);
+        readonly FastList<BlockDBEntry> buffer = new FastList<BlockDBEntry>(4096);
         uint entriesWritten;
         
         public void DumpTable(string table) {
@@ -49,7 +49,7 @@ namespace MCGalaxy.DB
                 AppendCbdbFile();
                 SaveCbdbFile();
             } finally {
-                if (stream != null) stream.Close();
+                stream?.Close();
                 stream = null;
             }
             
@@ -144,9 +144,8 @@ namespace MCGalaxy.DB
         }
         
         void UpdatePlayerID(ISqlRecord record) {
-            int id;
             string user = record.GetString(0);
-            if (!nameCache.TryGetValue(user, out id)) {
+            if (!nameCache.TryGetValue(user, out int id)) {
                 int[] ids = NameConverter.FindIds(user);
                 if (ids.Length > 0) {
                     nameCache[user] = ids[0];

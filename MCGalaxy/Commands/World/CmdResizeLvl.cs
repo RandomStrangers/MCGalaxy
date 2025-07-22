@@ -30,10 +30,9 @@ namespace MCGalaxy.Commands.World {
         public override void Use(Player p, string message, CommandData data) {
             string[] args = message.SplitSpaces();
             if (args.Length < 4) { Help(p); return; }
-            
-            bool needConfirm;
-            if (DoResize(p, args, data, out needConfirm)) return;
-            
+
+            if (DoResize(p, args, data, out bool needConfirm)) return;
+
             if (!needConfirm) return;
             p.Message("Type &T/ResizeLvl {0} {1} {2} {3} confirm &Sif you're sure.",
                       args[0], args[1], args[2], args[3]);

@@ -94,8 +94,7 @@ namespace MCGalaxy.Drawing.Ops
             while (stack.Count > 0) { //if no nodes are free anymore end the generation
                 GridNode P = stack.Peek();
                 if (TurnsPossible(P)) {
-                    GridNode P1, P2;
-                    MoveRandomDir(P, out P1, out P2);
+                    MoveRandomDir(P, out GridNode P1, out GridNode P2);
                     wall[P1.X, P1.Y] = false;
                     wall[P2.X, P2.Y] = false;
                     stack.Push(P2);

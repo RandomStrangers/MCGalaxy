@@ -23,9 +23,11 @@ namespace MCGalaxy.Commands.Building {
         public override string shortcut { get { return "r"; } }
         public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
         
-        protected override DrawOp GetDrawOp(DrawArgs dArgs) { 
-            DrawOp op = new CuboidDrawOp(); 
-            op.AffectedByTransform = false;
+        protected override DrawOp GetDrawOp(DrawArgs dArgs) {
+            DrawOp op = new CuboidDrawOp
+            {
+                AffectedByTransform = false
+            };
             return op;
         }
         

@@ -63,10 +63,12 @@ namespace MCGalaxy.Commands.Moderation {
             Group curRank = PlayerInfo.GetGroup(target);
             string reason = args.Length > 3 ? args[3] : "assigning temp rank";
             if (!CmdSetRank.CanChangeRank(target, curRank, newRank, p, data, ref reason)) return;
-            
-            ModAction action = new ModAction(target, p, ModActionType.Rank, reason, duration);
-            action.targetGroup = curRank;
-            action.Metadata = newRank;
+
+            ModAction action = new ModAction(target, p, ModActionType.Rank, reason, duration)
+            {
+                targetGroup = curRank,
+                Metadata = newRank
+            };
             OnModActionEvent.Call(action);
         }
         
@@ -85,10 +87,12 @@ namespace MCGalaxy.Commands.Moderation {
             
             string reason = "temp rank unassigned";
             if (!CmdSetRank.CanChangeRank(target, curRank, oldRank, p, data, ref reason)) return;
-            
-            ModAction action = new ModAction(target, p, ModActionType.Rank, reason);
-            action.Metadata = oldRank;
-            action.targetGroup = curRank;
+
+            ModAction action = new ModAction(target, p, ModActionType.Rank, reason)
+            {
+                Metadata = oldRank,
+                targetGroup = curRank
+            };
             OnModActionEvent.Call(action);
         }
         

@@ -22,7 +22,7 @@ namespace MCGalaxy.Modules.Games.TW
     public sealed class TWPlugin : Plugin 
     {
         public override string name { get { return "TW"; } }
-        static Command cmdTW = new CmdTntWars();
+        static readonly Command cmdTW = new CmdTntWars();
         
         public override void Load(bool startup) {
             Command.Register(cmdTW);

@@ -61,7 +61,7 @@ namespace MCGalaxy.Modules.Games.LS
         }
         
         static bool ParseTimespan(Player p, string arg, string[] args, ref TimeSpan? span) {
-            TimeSpan value = default(TimeSpan);
+            TimeSpan value = default;
             if (!CommandParser.GetTimespan(p, args[3], ref value, "set " + arg + " to", "m")) return false;
             
             span = value;

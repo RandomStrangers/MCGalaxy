@@ -71,7 +71,7 @@ namespace MCGalaxy.Events
         public object Metadata;
         
         public ModAction(string target, Player actor, ModActionType type,
-                                string reason = null, TimeSpan duration = default(TimeSpan)) {
+                                string reason = null, TimeSpan duration = default) {
             Target = target;
             Actor = actor;
             Type = type;

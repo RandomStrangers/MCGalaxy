@@ -31,7 +31,7 @@ namespace MCGalaxy
             p.Message("When using /{0} from {2}, you must provide a {1}.", name, type, p.SuperName);
         }
         
-        protected bool HasExtraPerm(Player p, string cmd, LevelPermission plRank, int num) {
+        protected bool HasExtraPerm(Player _, string cmd, LevelPermission plRank, int num) {
             return CommandExtraPerms.Find(cmd, num).UsableBy(plRank);
         }
         
@@ -77,8 +77,7 @@ namespace MCGalaxy
         
         
         public static bool IsListModifier(string str) {
-            int ignored;
-            return str.CaselessEq("all") || NumberUtils.TryParseInt32(str, out ignored);
+            return str.CaselessEq("all") || NumberUtils.TryParseInt32(str, out _);
         }      
         
         public static bool IsCreateAction(string str) {

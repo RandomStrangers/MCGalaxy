@@ -79,13 +79,13 @@ namespace MCGalaxy.Commands.Maintenance {
                 if (args.Length < 3) {
                     p.Message("A new IP address must be provided."); return;
                 }
-                
-                IPAddress ip;
-                if (!IPAddress.TryParse(args[2], out ip)) {
+
+                if (!IPAddress.TryParse(args[2], out IPAddress ip))
+                {
                     p.Message("&W\"{0}\" is not a valid IP address.", args[2]); return;
                 }
-                
-                if (who != null) who.SetIP(ip);
+
+                who?.SetIP(ip);
                 PlayerDB.Update(args[0], PlayerData.ColumnIP, args[2]);
                 MessageDataChanged(p, args[0], args[1], args[2]);
             }  else if (opt == "modified") {
@@ -145,13 +145,13 @@ namespace MCGalaxy.Commands.Maintenance {
                 p.Message("Dates must be in the format: " + Database.DateFormat);
                 return;
             }
-            
-            DateTime dt;
-            if (!args[2].TryParseInvariantDateString(out dt)) {
+
+            if (!args[2].TryParseInvariantDateString(out DateTime dt))
+            {
                 p.Message("Invalid date. It must be in format: " + Database.DateFormat);
                 return;
             }
-            
+
             if (who != null) setter(dt);
             PlayerDB.Update(args[0], column, args[2]);
             MessageDataChanged(p, args[0], args[1], args[2]);

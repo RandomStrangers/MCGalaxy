@@ -22,11 +22,11 @@ using MCGalaxy.Games;
 
 namespace MCGalaxy.Gui {
     public sealed class GamesHelper {
-        CheckBox cbStart, cbMap, cbMain;
-        Button btnStart, btnStop, btnEnd, btnAdd, btnDel;
-        ListBox lbUsed, lbNotUsed;
-        
-        RoundsGame game;
+        readonly CheckBox cbStart, cbMap, cbMain;
+        readonly Button btnStart, btnStop, btnEnd/*, btnAdd, btnDel*/;
+        readonly ListBox lbUsed;
+        readonly ListBox lbNotUsed;
+        readonly RoundsGame game;
         public GamesHelper(RoundsGame game,
                            CheckBox start_, CheckBox map, CheckBox main,
                            Button start, Button stop, Button end,
@@ -34,7 +34,8 @@ namespace MCGalaxy.Gui {
             this.game = game;
             cbStart = start_; cbMap = map; cbMain = main;
             btnStart = start; btnStop = stop; btnEnd = end;
-            btnAdd = add; btnDel = del; lbUsed = used; lbNotUsed = notUsed;
+            //btnAdd = add; btnDel = del; 
+            lbUsed = used; lbNotUsed = notUsed;
             
             start.Click += StartGame_Click;
             stop.Click  += StopGame_Click;

@@ -46,8 +46,10 @@ namespace MCGalaxy.Modules.Moderation.Notes
             Group group = ModActionCmd.CheckTarget(p, data, "note", target);
             if (group == null) return;
 
-            ModAction action = new ModAction(target, p, modActionType, note);
-            action.Announce  = announce;
+            ModAction action = new ModAction(target, p, modActionType, note)
+            {
+                Announce = announce
+            };
             OnModActionEvent.Call(action);
         }
 

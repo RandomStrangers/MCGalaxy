@@ -67,8 +67,7 @@ namespace fNbt {
         
         public override NbtTag this[string tagName] {
             get {
-                NbtTag result;
-                if (tags.TryGetValue(tagName, out result)) return result;
+                if (tags.TryGetValue(tagName, out NbtTag result)) return result;
                 return null;
             }
         }

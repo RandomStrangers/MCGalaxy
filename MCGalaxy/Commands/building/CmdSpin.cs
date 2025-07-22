@@ -66,10 +66,12 @@ namespace MCGalaxy.Commands.Building {
         }
         
         bool Handle(ref char axis, ref int angle, string arg) {
-            int value;
-            if (arg == "x" || arg == "y" || arg == "z") {
+            if (arg == "x" || arg == "y" || arg == "z")
+            {
                 axis = char.ToUpper(arg[0]); return true;
-            } else if (NumberUtils.TryParseInt32(arg, out value)) {
+            }
+            else if (NumberUtils.TryParseInt32(arg, out int value))
+            {
                 // Clamp to [0, 360)
                 value %= 360;
                 if (value < 0) value += 360;

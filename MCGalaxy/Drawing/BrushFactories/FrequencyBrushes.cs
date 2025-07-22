@@ -107,7 +107,7 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name { get { return "Random"; } }
         public override string[] Help { get { return HelpString; } }
         
-        static string[] HelpString = new string[] {
+        static readonly string[] HelpString = new string[] {
             "&TArguments: [block1/frequency] [block2]..",
             "&HDraws by randomly selecting blocks from the given [blocks].",
             "&Hfrequency is optional (defaults to 1), and specifies the number of times " +
@@ -115,10 +115,8 @@ namespace MCGalaxy.Drawing.Brushes
         };
         
         public override Brush Construct(BrushArgs args) {
-            List<BlockID> toAffect;
-            List<int> freqs;
-            
-            bool ok = FrequencyBrush.GetBlocks(args, out toAffect, out freqs, 
+
+            bool ok = FrequencyBrush.GetBlocks(args, out List<ushort> toAffect, out List<int> freqs,
                                                P => false, null);
             if (!ok) return null;
 
@@ -132,7 +130,7 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name { get { return "Gradient"; } }
         public override string[] Help { get { return HelpString; } }
         
-        static string[] HelpString = new string[] {
+        static readonly string[] HelpString = new string[] {
             "&TArguments: <axis> [block1/frequency] [block2]..",
             "&HDraws by linearly selecting blocks from the given [blocks].",
             "&Hfrequency is optional (defaults to 1), and specifies the number of times " +
@@ -141,10 +139,8 @@ namespace MCGalaxy.Drawing.Brushes
         
         public override Brush Construct(BrushArgs args) {
             CustomModelAnimAxis axis = GetAxis(ref args);
-            List<BlockID> toAffect;
-            List<int> freqs;
-            
-            bool ok = FrequencyBrush.GetBlocks(args, out toAffect, out freqs, 
+
+            bool ok = FrequencyBrush.GetBlocks(args, out List<ushort> toAffect, out List<int> freqs,
                                                P => false, null);
             if (!ok) return null;
 

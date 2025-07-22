@@ -92,7 +92,7 @@ namespace MCGalaxy
         public static void Log(LogType type, string message) {
             lock (logLock) {
                 try {
-                    if (LogHandler != null) LogHandler(type, message);
+                    LogHandler?.Invoke(type, message);
                 } catch (Exception ex) {
                     // a LogHandler threw an exception, try to log that error
                     LogLoggerError(ex);
@@ -154,18 +154,15 @@ namespace MCGalaxy
             
             // Exception-specific extra details
             try {
-                ReflectionTypeLoadException refEx = ex as ReflectionTypeLoadException;
-                if (refEx != null) LogLoaderErrors(refEx, sb);
+                if (ex is ReflectionTypeLoadException refEx) LogLoaderErrors(refEx, sb);
             } catch { }
             
             try {
-                SocketException sockEx = ex as SocketException;
-                if (sockEx != null) sb.AppendLine("Error: " + sockEx.SocketErrorCode);
+                if (ex is SocketException sockEx) sb.AppendLine("Error: " + sockEx.SocketErrorCode);
             } catch { }
             
             try {
-                TypeLoadException typeEx = ex as TypeLoadException;
-                if (typeEx != null) sb.AppendLine("Loading type: " + typeEx.TypeName);
+                if (ex is TypeLoadException typeEx) sb.AppendLine("Loading type: " + typeEx.TypeName);
             } catch { }
         }
         

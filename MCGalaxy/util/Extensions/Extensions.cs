@@ -30,7 +30,7 @@ namespace MCGalaxy
     
     public static class Extensions 
     {       
-        static char[] space = new char[] { ' ' };
+        static readonly char[] space = new char[] { ' ' };
         
         /// <summary> Same as value.Split(' '), but doesn't allocate ' ' each time. </summary>
         /// <example> "abc def xyz".SplitSpaces() becomes "abc", "def", "xyz" </example>
@@ -84,8 +84,8 @@ namespace MCGalaxy
             for (; i < split.Length; i++) { split[i] = null; }
         }
                 
-        static char[] comma = new char[] { ',' };
-        static string[] emptyStrs = new string[0];
+        static readonly char[] comma = new char[] { ',' };
+        static readonly string[] emptyStrs = new string[0];
         
         /// <summary> Trims spaces then calls Split(','). However, returns an empty array on empty input, 
         /// instead of a array consisting of "" that a .Split() call would. </summary>

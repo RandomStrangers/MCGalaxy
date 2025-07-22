@@ -78,7 +78,7 @@ namespace MCGalaxy.Modules.Games.TW
         }
 
         void AddTntCheck(int b, Player p) {
-            PhysicsArgs args = default(PhysicsArgs);
+            PhysicsArgs args = default;
             int sessionID = p.Session.ID;
             
             args.Type1  = PhysicsArgs.Custom;

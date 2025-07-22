@@ -50,22 +50,24 @@ namespace MCGalaxy
         
         public static TimeSpan ParseShort(this string value, string defaultUnit) {
             int num = 0;
-            long amount = 0, total = 0;
-            
-            for (int i = 0; i < value.Length; i++) {
+            long total = 0;
+            long amount;
+            for (int i = 0; i < value.Length; i++)
+            {
                 char c = value[i];
                 if (c == ' ') continue;
-                
-                if (c >= '0' && c <= '9') {
+
+                if (c >= '0' && c <= '9')
+                {
                     num = checked(num * 10); num += c - '0';
                     continue;
                 }
-                
+
                 amount = GetTicks(num, GetUnit(value, i));
-                total  = checked(total + amount);
+                total = checked(total + amount);
                 num = 0;
             }
-            
+
             amount = GetTicks(num, defaultUnit);
             total  = checked(total + amount);
             return TimeSpan.FromTicks(total);

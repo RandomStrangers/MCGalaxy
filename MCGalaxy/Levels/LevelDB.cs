@@ -41,14 +41,16 @@ namespace MCGalaxy
         }
 
         static Zone ParseZone(ISqlRecord record) {
-            Zone z = new Zone();
-            z.MinX = (ushort)record.GetInt("SmallX");
-            z.MinY = (ushort)record.GetInt("SmallY");
-            z.MinZ = (ushort)record.GetInt("SmallZ");
-            
-            z.MaxX = (ushort)record.GetInt("BigX");
-            z.MaxY = (ushort)record.GetInt("BigY");
-            z.MaxZ = (ushort)record.GetInt("BigZ");
+            Zone z = new Zone
+            {
+                MinX = (ushort)record.GetInt("SmallX"),
+                MinY = (ushort)record.GetInt("SmallY"),
+                MinZ = (ushort)record.GetInt("SmallZ"),
+
+                MaxX = (ushort)record.GetInt("BigX"),
+                MaxY = (ushort)record.GetInt("BigY"),
+                MaxZ = (ushort)record.GetInt("BigZ")
+            };
             z.Config.Name = record.GetText("Owner");
             return z;
         }

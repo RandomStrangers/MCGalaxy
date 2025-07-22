@@ -28,8 +28,7 @@ namespace MCGalaxy.Commands.Moderation {
         
         /// <summary> Expands @[rule number] to the actual rule with that number. </summary>
         public static string ExpandReason(Player p, string reason) {
-            int ruleNum;
-            string expanded = TryExpandReason(reason, out ruleNum);
+            string expanded = TryExpandReason(reason, out int ruleNum);
             if (expanded != null) return expanded;
             
             Dictionary<int, string> sections = GetRuleSections();            
@@ -46,8 +45,8 @@ namespace MCGalaxy.Commands.Moderation {
             if (!NumberUtils.TryParseInt32(reason, out ruleNum)) return "@" + reason;
             
             // Treat @num as a shortcut for rule #num
-            Dictionary<int, string> sections = GetRuleSections();          
-            string rule; sections.TryGetValue(ruleNum, out rule); return rule;
+            Dictionary<int, string> sections = GetRuleSections();
+            sections.TryGetValue(ruleNum, out string rule); return rule;
         }
         
         static Dictionary<int, string> GetRuleSections() {
@@ -173,8 +172,7 @@ namespace MCGalaxy.Commands.Moderation {
         }
         
         static string MatchName(Player p, ref string name) {
-            int matches;
-            Player target = PlayerInfo.FindMatches(p, name, out matches);
+            Player target = PlayerInfo.FindMatches(p, name, out int matches);
             if (matches > 1) return null;
             if (matches == 1) { name = target.name; return name; }
             
@@ -202,10 +200,8 @@ namespace MCGalaxy.Commands.Moderation {
         /// <remarks> "@input" can be used to always find IP by matching account name. <br/>
         /// Warns the player if the input matches both an IP and an account name. </remarks>
         internal static string FindIP(Player p, string message, string cmd, out string name) {
-            IPAddress ip;
             name = null;
-            
-            if (IPAddress.TryParse(message, out ip) && ValidIP(message)) {
+            if (IPAddress.TryParse(message, out _) && ValidIP(message)) {
                 string account = Server.FromRawUsername(message);
                 // TODO ip.ToString()
                 if (PlayerDB.FindName(account) == null) return message;
@@ -222,8 +218,7 @@ namespace MCGalaxy.Commands.Moderation {
             if (who != null) { name = who.name; return who.ip; }
             
             p.Message("Searching PlayerDB..");
-            string dbIP;
-            name = PlayerDB.FindOfflineIPMatches(p, message, out dbIP);
+            name = PlayerDB.FindOfflineIPMatches(p, message, out string dbIP);
             return dbIP;
         }
     }

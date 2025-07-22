@@ -33,7 +33,7 @@ namespace MCGalaxy
         public override bool CanSeek  { get { return false; } }
         public override bool CanWrite { get { return false; } }
         
-        static Exception ex = new NotSupportedException();
+        static readonly Exception ex = new NotSupportedException();
         public override void Flush() { stream.Flush(); }
         public override long Length { get { throw ex; } }
         public override long Position { get { throw ex; } set { throw ex; } }
@@ -63,10 +63,10 @@ namespace MCGalaxy
     /// <summary> Reads entries from a ZIP archive. </summary>
     public sealed class ZipReader 
     {
-        BinaryReader reader;
-        Stream stream;
-        
-        List<ZipEntry> entries = new List<ZipEntry>();
+        readonly BinaryReader reader;
+        readonly Stream stream;
+
+        readonly List<ZipEntry> entries = new List<ZipEntry>();
         int numEntries;
         long centralDirOffset, zip64EndOffset;
         
@@ -87,10 +87,12 @@ namespace MCGalaxy
             
             entry = ReadLocalFileRecord();
             file  = Encoding.UTF8.GetString(entry.Filename);
-            
-            ZipReaderStream part = new ZipReaderStream(stream);
-            part.CompressedLen = entry.CompressedSize;
-            
+
+            ZipReaderStream part = new ZipReaderStream(stream)
+            {
+                CompressedLen = entry.CompressedSize
+            };
+
             if (entry.CompressionMethod == 0) return part;
             return new DeflateStream(part, CompressionMode.Decompress);
         }
@@ -149,7 +151,7 @@ namespace MCGalaxy
         
         ZipEntry ReadLocalFileRecord() {
             BinaryReader r = reader;
-            ZipEntry entry = default(ZipEntry);
+            ZipEntry entry = default;
             
             r.ReadUInt16(); // version
             r.ReadUInt16(); // bitflags
@@ -180,7 +182,7 @@ namespace MCGalaxy
         
         ZipEntry ReadCentralDirectoryRecord() {
             BinaryReader r = reader;
-            ZipEntry entry = default(ZipEntry);
+            ZipEntry entry = default;
             
             r.ReadUInt16(); // version
             r.ReadUInt16(); // version
@@ -192,7 +194,7 @@ namespace MCGalaxy
             entry.UncompressedSize = r.ReadUInt32();
             int filenameLen = r.ReadUInt16();
             int extraLen = r.ReadUInt16();
-            int commentLen = r.ReadUInt16();
+            //int commentLen = r.ReadUInt16();
             r.ReadUInt16(); // disc number
             r.ReadUInt16(); // internal attributes
             r.ReadUInt32(); // external attributes

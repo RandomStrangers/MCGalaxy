@@ -27,12 +27,12 @@ namespace MCGalaxy.Config
          
         // separate function to avoid boxing in derived classes
         protected int ParseInteger(string raw, int def, int min, int max) {
-            int value;
-            if (!NumberUtils.TryParseInt32(raw, out value)) {
+            if (!NumberUtils.TryParseInt32(raw, out int value))
+            {
                 Logger.Log(LogType.Warning, "Config key \"{0}\" has invalid integer '{2}', using default of {1}", Name, def, raw);
                 value = def;
             }
-            
+
             if (value < min) {
                 Logger.Log(LogType.Warning, "Config key \"{0}\" is too small an integer, using {1}", Name, min);
                 value = min;
@@ -45,7 +45,7 @@ namespace MCGalaxy.Config
         }
 
         public override string Serialise(object value) {
-            if (value is int) return NumberUtils.StringifyInt((int)value);
+            if (value is int v) return NumberUtils.StringifyInt(v);
             
             return base.Serialise(value);
         }
@@ -53,7 +53,7 @@ namespace MCGalaxy.Config
     
     public sealed class ConfigIntAttribute : ConfigIntegerAttribute 
     {
-        int defValue, minValue, maxValue;
+        readonly int defValue, minValue, maxValue;
         
         public ConfigIntAttribute()
             : this(null, null, 0, int.MinValue, int.MaxValue) { }
@@ -68,7 +68,7 @@ namespace MCGalaxy.Config
     
     public sealed class ConfigBlockAttribute : ConfigIntegerAttribute 
     {
-        BlockID defBlock;
+        readonly BlockID defBlock;
         public ConfigBlockAttribute() : this(null, null, Block.Air) { }
         public ConfigBlockAttribute(string name, string section, BlockID def)
             : base(name, section) { defBlock = def; }
@@ -106,12 +106,12 @@ namespace MCGalaxy.Config
             : base(name, section) { }
         
         protected double ParseReal(string raw, double def, double min, double max) {
-            double value;
-            if (!NumberUtils.TryParseDouble(raw, out value)) {
+            if (!NumberUtils.TryParseDouble(raw, out double value))
+            {
                 Logger.Log(LogType.Warning, "Config key \"{0}\" has invalid number '{2}', using default of {1}", Name, def, raw);
                 value = def;
             }
-            
+
             if (value < min) {
                 Logger.Log(LogType.Warning, "Config key \"{0}\" is too small a number, using {1}", Name, min);
                 value = min;
@@ -124,8 +124,8 @@ namespace MCGalaxy.Config
         }
 
         public override string Serialise(object value) {
-            if (value is float)  return NumberUtils.StringifyDouble((float)value);
-            if (value is double) return NumberUtils.StringifyDouble((double)value);
+            if (value is float v)  return NumberUtils.StringifyDouble(v);
+            if (value is double v1) return NumberUtils.StringifyDouble(v1);
             
             return base.Serialise(value);
         }
@@ -133,7 +133,7 @@ namespace MCGalaxy.Config
     
     public class ConfigFloatAttribute : ConfigRealAttribute 
     {
-        float defValue, minValue, maxValue;
+        readonly float defValue, minValue, maxValue;
         
         public ConfigFloatAttribute()
             : this(null, null, 0, float.NegativeInfinity, float.PositiveInfinity) { }
@@ -148,7 +148,7 @@ namespace MCGalaxy.Config
     
     public class ConfigTimespanAttribute : ConfigRealAttribute 
     {
-        bool mins; int def;
+        readonly bool mins; readonly int def;
         public ConfigTimespanAttribute(string name, string section, int def, bool mins)
             : base(name, section) { this.def = def; this.mins = mins; }
         

@@ -132,9 +132,8 @@ namespace MCGalaxy.Maths
                 if (!Intersects(ref bb, ref blockBB)) continue;
                 
                 BlockDefinition def = lvl.GetBlockDef(block);
-                bool solid = false;
-                
-                if (def != null) {
+                        bool solid;
+                        if (def != null) {
                     solid = CollideType.IsSolid(def.CollideType);
                 } else {
                     solid = block == Block.Invalid || !Block.Walkthrough(Block.Convert(block));

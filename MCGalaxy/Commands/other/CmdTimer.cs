@@ -42,11 +42,13 @@ namespace MCGalaxy.Commands.Misc {
 
             if (TotalTime > 300) { p.Message("Cannot have more than 5 minutes in a timer"); return; }
 
-            TimerArgs args = new TimerArgs();
-            args.Message = message;
-            args.Repeats = TotalTime / 5 + 1;
-            args.Player  = p;
-            
+            TimerArgs args = new TimerArgs
+            {
+                Message = message,
+                Repeats = TotalTime / 5 + 1,
+                Player = p
+            };
+
             p.cmdTimer = true;
             p.level.Message("Timer lasting for " + TotalTime + " seconds has started.");
             p.level.Message(args.Message);

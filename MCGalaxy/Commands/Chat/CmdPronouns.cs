@@ -40,7 +40,7 @@ namespace MCGalaxy.Commands.Chatting {
             }
 
             List<Pronouns> final = new List<Pronouns>();
-            foreach (var pair in pros) {
+            foreach (KeyValuePair<string, Pronouns> pair in pros) {
                 final.Add(pair.Value);
             }
 

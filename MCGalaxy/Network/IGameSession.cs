@@ -58,7 +58,7 @@ namespace MCGalaxy.Network
             return read;
         }
 
-        public virtual int MaxEntityID { get; }
+        public abstract int MaxEntityID { get; }
 
         public void Disconnect() { player.Disconnect(); }
         /// <summary> Sends raw data to the client </summary>

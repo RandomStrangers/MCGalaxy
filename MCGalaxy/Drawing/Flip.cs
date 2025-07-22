@@ -22,8 +22,8 @@ namespace MCGalaxy.Drawing
     /// <summary> Utility methods for rotating and mirroring a CopyState. </summary>
     public static class Flip 
     {
-        static string[] rotX_90_270 = new string[] { "NS", "UD" };
-        static string[] rotX_180 = new string[] { "N", "S",  "NE", "SE",  "NW", "SW" };
+        static readonly string[] rotX_90_270 = new string[] { "NS", "UD" };
+        static readonly string[] rotX_180 = new string[] { "N", "S",  "NE", "SE",  "NW", "SW" };
         public static CopyState RotateX(CopyState state, int angle, BlockDefinition[] defs) {
             CopyState newState = Clone(state);
             newState.Height = angle == 180 ? state.Height : state.Length;
@@ -40,9 +40,9 @@ namespace MCGalaxy.Drawing
             return Rotate(state, newState, m, transform);
         }
 
-        static string[] rotY_90 = new string[]  { "N", "E", "S", "W",  "NE", "SE", "SW", "NW",  "WE", "NS", "WE", "NS" };
-        static string[] rotY_180 = new string[] { "W", "E", "N", "S",  "NE", "SW", "NW", "SE"                          };
-        static string[] rotY_270 = new string[] { "N", "W", "S", "E",  "NE", "NW", "SW", "SE",  "WE", "NS", "WE", "NS" };
+        static readonly string[] rotY_90 = new string[]  { "N", "E", "S", "W",  "NE", "SE", "SW", "NW",  "WE", "NS", "WE", "NS" };
+        static readonly string[] rotY_180 = new string[] { "W", "E", "N", "S",  "NE", "SW", "NW", "SE"                          };
+        static readonly string[] rotY_270 = new string[] { "N", "W", "S", "E",  "NE", "NW", "SW", "SE",  "WE", "NS", "WE", "NS" };
         public static CopyState RotateY(CopyState state, int angle, BlockDefinition[] defs) {
             CopyState newState = Clone(state);
             newState.Width = angle == 180 ? state.Width : state.Length;
@@ -60,8 +60,8 @@ namespace MCGalaxy.Drawing
             return Rotate(state, newState, m, transform);
         }
         
-        static string[] rotZ_90_270 = new string[] { "WE", "UD" };
-        static string[] rotZ_180 = new string[] { "W", "E",  "NW", "NE",  "SW", "SE" };
+        static readonly string[] rotZ_90_270 = new string[] { "WE", "UD" };
+        static readonly string[] rotZ_180 = new string[] { "W", "E",  "NW", "NE",  "SW", "SE" };
         public static CopyState RotateZ(CopyState state, int angle, BlockDefinition[] defs) {
             CopyState newState = Clone(state);
             newState.Width = angle == 180 ? state.Width : state.Height;
@@ -81,8 +81,7 @@ namespace MCGalaxy.Drawing
         static CopyState Rotate(CopyState state, CopyState flipped, int[] m, BlockID[] transform) {
             int volume = state.Volume;
             for (int i = 0; i < volume; i++) {
-                ushort x, y, z;
-                state.GetCoords(i, out x, out y, out z);
+                state.GetCoords(i, out ushort x, out ushort y, out ushort z);
                 BlockID block = transform[state.Get(i)];
                 
                 flipped.Set(block,
@@ -119,13 +118,15 @@ namespace MCGalaxy.Drawing
         
         static CopyState Clone(CopyState state) {
             CopyState newState = new CopyState(state.X, state.Y, state.Z,
-                                               state.Width, state.Height, state.Length);
-            newState.UsedBlocks = state.UsedBlocks;
-            newState.PasteAir = state.PasteAir;
+                                               state.Width, state.Height, state.Length)
+            {
+                UsedBlocks = state.UsedBlocks,
+                PasteAir = state.PasteAir
+            };
             return newState;
         }
         
-        static string[] mirrorX = new string[] { "W", "E",  "NW", "NE",  "SW", "SE" };
+        static readonly string[] mirrorX = new string[] { "W", "E",  "NW", "NE",  "SW", "SE" };
         public static void MirrorX(CopyState state, BlockDefinition[] defs) {
             // ceiling division by 2, because for odd length, we still want to
             // mirror the middle row to rotate directional blocks
@@ -149,7 +150,7 @@ namespace MCGalaxy.Drawing
             }
         }
         
-        static string[] mirrorY = new string[] { "D", "U" };
+        static readonly string[] mirrorY = new string[] { "D", "U" };
         public static void MirrorY(CopyState state, BlockDefinition[] defs) {
             int midY = (state.Height + 1) / 2, maxY = state.Height - 1;
             state.OriginY = state.OppositeOriginY;
@@ -172,7 +173,7 @@ namespace MCGalaxy.Drawing
             }
         }
         
-        static string[] mirrorZ = new string[] { "N", "S",  "NW", "SW",  "NE", "SE" };
+        static readonly string[] mirrorZ = new string[] { "N", "S",  "NW", "SW",  "NE", "SE" };
         public static void MirrorZ(CopyState state, BlockDefinition[] defs) {
             int midZ = (state.Length + 1) / 2, maxZ = state.Length - 1;
             state.OriginZ  = state.OppositeOriginZ;
@@ -208,8 +209,8 @@ namespace MCGalaxy.Drawing
                 if (defs[i] == null) continue;
                 int dirIndex = defs[i].Name.LastIndexOf('-');
                 if (dirIndex == -1) continue;
-                
-                BlockDefinition transformed = null;
+
+                BlockDefinition transformed;
                 if (mirrorDirs != null) {
                     transformed = MirrorTransform(defs, i, dirIndex, mirrorDirs);
                 } else {

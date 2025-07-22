@@ -85,7 +85,7 @@ namespace MCGalaxy {
                     case 'f': return new ColorDesc('f', "White");
             }
             
-            ColorDesc col = default(ColorDesc);
+            ColorDesc col = default;
             col.Code      = code;
             return col;
         }
@@ -271,7 +271,7 @@ namespace MCGalaxy {
         static void LoadCore() {
             if (!File.Exists(Paths.CustomColorsFile)) return;
             string[] lines = File.ReadAllLines(Paths.CustomColorsFile);
-            ColorDesc col = default(ColorDesc);
+            ColorDesc col = default;
             
             for (int i = 0; i < lines.Length; i++) 
             {
@@ -289,7 +289,7 @@ namespace MCGalaxy {
         
         /// <summary> Parses an #RRGGBB hex color string. </summary>
         public static bool TryParseHex(string hex, out ColorDesc c) {
-            c = default(ColorDesc);
+            c = default;
             if (hex == null || hex.Length == 0) return false;
             if (hex[0] == '#') hex = hex.Remove(0, 1);
             if (!(hex.Length == 3 || hex.Length == 6)) return false;
@@ -315,8 +315,7 @@ namespace MCGalaxy {
         
         /// <summary> Parses an #RRGGBB hex color string. </summary>
         public static ColorDesc ParseHex(string hex) {
-            ColorDesc c;
-            if (!TryParseHex(hex, out c)) throw new ArgumentException("invalid input");
+            if (!TryParseHex(hex, out ColorDesc c)) throw new ArgumentException("invalid input");
             return c;
         }
         

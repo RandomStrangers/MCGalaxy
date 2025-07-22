@@ -22,7 +22,7 @@ namespace MCGalaxy
 {
     public static partial class Block 
     {
-        static string[] coreNames = new string[CORE_COUNT];
+        static readonly string[] coreNames = new string[CORE_COUNT];
         public static bool Undefined(BlockID block) { return IsPhysicsType(block) && coreNames[block].CaselessEq("unknown"); }
         
         public static bool ExistsGlobal(BlockID b) { return ExistsFor(Player.Console, b); }
@@ -52,19 +52,19 @@ namespace MCGalaxy
 
         public static BlockID Parse(Player p, string input) {
             BlockDefinition[] defs = p.IsSuper ? BlockDefinition.GlobalDefs : p.level.CustomBlockDefs;
-            BlockID block;
             // raw ID is treated specially, before names
-            if (BlockID.TryParse(input, out block)) {
-                if (block < CPE_COUNT || (block <= MaxRaw && defs[FromRaw(block)] != null)) {
+            if (BlockID.TryParse(input, out ushort block))
+            {
+                if (block < CPE_COUNT || (block <= MaxRaw && defs[FromRaw(block)] != null))
+                {
                     return FromRaw(block);
                 } // TODO redo to use ExistsFor?
             }
-            
+
             BlockDefinition def = BlockDefinition.ParseName(input, defs);
             if (def != null) return def.GetBlock();
-            
-            byte coreID;
-            bool success = Aliases.TryGetValue(input.ToLower(), out coreID);
+
+            bool success = Aliases.TryGetValue(input.ToLower(), out byte coreID);
             return success ? coreID : Invalid;
         }
         
@@ -98,13 +98,13 @@ namespace MCGalaxy
             return block <= Leaves ? block : v4_fallback[block - Sponge];
         }
 
-        static byte[] v7_fallback = {
+        static readonly byte[] v7_fallback = {
             // CobbleSlab Rope      Sandstone Snow Fire  LightPink ForestGreen Brown
                Slab,      Mushroom, Sand,     Air, Lava, Pink,     Green,      Dirt,
             // DeepBlue Turquoise Ice    CeramicTile Magma     Pillar Crate StoneBrick
                Blue,    Cyan,     Glass, Iron,       Obsidian, White, Wood, Stone
         };
-        static byte[] v6_fallback = {
+        static readonly byte[] v6_fallback = {
             // Iron   DoubleSlab Slab  Brick TNT  Bookshelf MossyRocks   Obsidian
                Stone, Gray,      Gray, Red,  Red, Wood,     Cobblestone, Black,
             // CobbleSlab   Rope      Sandstone Snow Fire  LightPink ForestGreen Brown
@@ -112,7 +112,7 @@ namespace MCGalaxy
             // DeepBlue Turquoise Ice    CeramicTile Magma        Pillar Crate StoneBrick
                Blue,    Cyan,     Glass, Gold,       Cobblestone, White, Wood, Stone
         };
-        static byte[] v5_fallback = {
+        static readonly byte[] v5_fallback = {
             // Red   Orange Yellow Lime  Green Teal  Aqua  Cyan
                Sand, Sand,  Sand,  Sand, Sand, Sand, Sand, Sand,
             // Blue  Indigo Violet Magenta Pink  Black  Gray   White
@@ -126,7 +126,7 @@ namespace MCGalaxy
             // DeepBlue Turquoise Ice    CeramicTile Magma        Pillar Crate StoneBrick
                Sand,    Sand,     Glass, Stone,      Cobblestone, Stone, Wood, Stone
         };
-        static byte[] v4_fallback = {
+        static readonly byte[] v4_fallback = {
             // Sponge   Glass
                GoldOre, Leaves,
             // Red   Orange Yellow Lime  Green Teal  Aqua  Cyan

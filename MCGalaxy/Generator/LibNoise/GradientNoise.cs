@@ -31,7 +31,7 @@ namespace LibNoise
         const int SEED_NOISE = 1013;
         const int SHIFT_NOISE_GEN = 8;
 
-        static double[] RandomVectors = 
+        static readonly double[] RandomVectors = 
         {
             -0.763874, -0.596439, -0.246489,
             0.396055, 0.904518, -0.158073,

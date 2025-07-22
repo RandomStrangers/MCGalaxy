@@ -41,13 +41,13 @@ namespace MCGalaxy
             lock (locker) { return dict.TryGetValue(key, out value); }
         }        
         public object Get(string key) {
-            object value; TryGet(key, out value); return value;
+            TryGet(key, out object value); return value;
         }
 
         public bool GetBoolean(string key) { return GetBoolean(key, false); }
         public bool GetBoolean(string key, bool defaultValue) {
-            object value;
-            if (TryGet(key, out value)) {
+            if (TryGet(key, out object value))
+            {
                 try { return Convert.ToBoolean(value); }
                 catch (Exception) { }
             }
@@ -56,8 +56,8 @@ namespace MCGalaxy
 
         public int GetInt(string key) { return GetInt(key, 0); }
         public int GetInt(string key, int defaultValue) {
-            object value;
-            if (TryGet(key, out value)) {
+            if (TryGet(key, out object value))
+            {
                 try { return Convert.ToInt32(value); }
                 catch (Exception) { }
             }
@@ -66,21 +66,12 @@ namespace MCGalaxy
 
         public string GetString(string key) { return GetString(key, null); }
         public string GetString(string key, string defaultValue) {
-            object value;
-            if (TryGet(key, out value)) {
+            if (TryGet(key, out object value))
+            {
                 try { return Convert.ToString(value); }
                 catch (Exception) { }
             }
             return defaultValue;
         }
-
-        [Obsolete("Use extras[key] = value; instead", true)]
-        public void Put(string key, object value)       { this[key] = value; }
-        [Obsolete("Use extras[key] = value; instead", true)]
-        public void PutBoolean(string key, bool value)  { this[key] = value; }
-        [Obsolete("Use extras[key] = value; instead", true)]
-        public void PutInt(string key, int value)       { this[key] = value; }
-        [Obsolete("Use extras[key] = value; instead", true)]
-        public void PutString(string key, string value) { this[key] = value; }
     }
 }

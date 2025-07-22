@@ -80,7 +80,7 @@ namespace MCGalaxy.Modules.Games.LS
         }
         
         static TimeSpan GetTimespan(TimeSpan? mapValue, TimeSpan defaultValue) {         
-            return mapValue.HasValue ? mapValue.Value : defaultValue;
+            return mapValue ?? defaultValue;
         }
     }
     
@@ -113,7 +113,7 @@ namespace MCGalaxy.Modules.Games.LS
         [ConfigVec3("safe-zone-max", null)] public Vec3U16 SafeZoneMax;
         
         
-        const string propsDir = "properties/lavasurvival/";
+        const string propsDir = "props/lavasurvival/";
         static ConfigElement[] cfg;       
         public override void Load(string map) {
             if (cfg == null) cfg = ConfigElement.GetAll(typeof(LSMapConfig));

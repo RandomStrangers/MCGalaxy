@@ -62,9 +62,9 @@ namespace MCGalaxy.Gui {
         class NumericalCell : DataGridViewTextBoxCell {
             protected override bool SetValue(int rowIndex, object raw) {
                 if (raw == null) return true;
-                string str = raw.ToString(); int num;
+                string str = raw.ToString(); 
                 
-                if (!int.TryParse(str, out num) || num < 0) return false;
+                if (!int.TryParse(str, out int num) || num < 0) return false;
                 return base.SetValue(rowIndex, raw);
             }
         }
@@ -74,7 +74,7 @@ namespace MCGalaxy.Gui {
                                                         ref DataGridViewCellStyle cellStyle, TypeConverter valueTypeConverter, 
                                                         TypeConverter formattedValueTypeConverter, DataGridViewDataErrorContexts context) {
                 MapGen gen = MapGen.Find((string)value);
-                return gen != null ? gen.Theme : null;
+                return gen?.Theme;
             }
         }
         
@@ -116,9 +116,9 @@ namespace MCGalaxy.Gui {
                 eco_gbRank.Visible = true;
                 eco_cbRank.Checked = Economy.Ranks.Enabled;
                 Eco_UpdateRanks();
-            } else if (item is SimpleItem) {
+            } else if (item is SimpleItem item1) {
                 eco_gbItem.Visible = true;
-                eco_curItem = (SimpleItem)item;
+                eco_curItem = item1;
                 eco_cbItem.Checked = item.Enabled;
                 Eco_UpdateItem();
             }
@@ -229,16 +229,17 @@ namespace MCGalaxy.Gui {
             List<LevelItem.LevelPreset> presets = new List<LevelItem.LevelPreset>();
             foreach (DataGridViewRow row in eco_dgvMaps.Rows) 
             {
-                LevelItem.LevelPreset p = new LevelItem.LevelPreset();
-                
-                p.name  = row.Cells[0].Value.ToString();
-                p.price = int.Parse(row.Cells[1].Value.ToString());
-                
-                p.x = row.Cells[2].Value.ToString();
-                p.y = row.Cells[3].Value.ToString();
-                p.z = row.Cells[4].Value.ToString();
-                
-                p.type = row.Cells[5].Value.ToString();
+                LevelItem.LevelPreset p = new LevelItem.LevelPreset
+                {
+                    name = row.Cells[0].Value.ToString(),
+                    price = int.Parse(row.Cells[1].Value.ToString()),
+
+                    x = row.Cells[2].Value.ToString(),
+                    y = row.Cells[3].Value.ToString(),
+                    z = row.Cells[4].Value.ToString(),
+
+                    type = row.Cells[5].Value.ToString()
+                };
                 presets.Add(p);
             }
             Economy.Levels.Presets = presets;

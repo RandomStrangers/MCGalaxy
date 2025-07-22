@@ -70,7 +70,7 @@ namespace MCGalaxy.Authentication
     /// <summary> Authenticates a player using the Mojang session verification API </summary>
     public class MojangAuthenticator : LoginAuthenticator 
     {
-        static ThreadSafeCache ip_cache = new ThreadSafeCache();
+        static readonly ThreadSafeCache ip_cache = new ThreadSafeCache();
         public override bool Verify(Player p, string mppass) {
             foreach (AuthService auth in AuthService.Services)
             {
@@ -113,11 +113,16 @@ namespace MCGalaxy.Authentication
 
             return false;
         }
-        
+#if MCG_DOTNET
+#pragma warning disable SYSLIB0021
+#endif
         static string GetServerID(Player p) {
             byte[] data = Encoding.UTF8.GetBytes(p.ip);
             byte[] hash = new SHA1Managed().ComputeHash(data);
             return Utils.ToHexString(hash);
         }
+#if MCG_DOTNET
+#pragma warning restore SYSLIB0021
+#endif
     }
 }

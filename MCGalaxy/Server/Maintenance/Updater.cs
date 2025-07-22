@@ -79,8 +79,9 @@ namespace MCGalaxy
             try {
                 if (!NeedsUpdating()) {
                     Logger.Log(LogType.SystemActivity, "No update found!");
-                } else if (NewerVersionDetected != null) {
-                    NewerVersionDetected(null, EventArgs.Empty);
+                } else
+                {
+                    NewerVersionDetected?.Invoke(null, EventArgs.Empty);
                 }
             } catch (Exception ex) {
                 Logger.LogError("Error checking for updates", ex);

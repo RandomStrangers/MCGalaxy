@@ -79,12 +79,12 @@ namespace MCGalaxy.Modules.Games.TW
         protected override string WelcomeMessage {
             get { return "&4TNT Wars &Sis running! Type &T/TW go &Sto join"; }
         }
-        
-        TWTeam Red  = new TWTeam("Red", Colors.red);
-        TWTeam Blue = new TWTeam("Blue", Colors.blue);
+
+        readonly TWTeam Red  = new TWTeam("Red", Colors.red);
+        readonly TWTeam Blue = new TWTeam("Blue", Colors.blue);
         public List<TWZone> tntFreeZones = new List<TWZone>();
         public List<TWZone> tntImmuneZones = new List<TWZone>();
-        VolatileArray<Player> allPlayers = new VolatileArray<Player>();
+        readonly VolatileArray<Player> allPlayers = new VolatileArray<Player>();
         TNTImmuneFilter tntImmuneFilter;
         
         public static TWGame Instance = new TWGame();
@@ -102,7 +102,7 @@ namespace MCGalaxy.Modules.Games.TW
         }
         
         static TWData TryGet(Player p) {
-            object data; p.Extras.TryGet(twExtrasKey, out data); return (TWData)data;
+            p.Extras.TryGet(twExtrasKey, out object data); return (TWData)data;
         }
         
         public override void UpdateMapConfig() {
@@ -293,8 +293,10 @@ namespace MCGalaxy.Modules.Games.TW
             
             for (int i = 0; i < all.Length; i++) 
             {
-                PlayerAndScore entry = new PlayerAndScore();
-                entry.p = all[i];
+                PlayerAndScore entry = new PlayerAndScore
+                {
+                    p = all[i]
+                };
                 entry.Score = Get(entry.p).Score;
                 sorted[i] = entry;
             }

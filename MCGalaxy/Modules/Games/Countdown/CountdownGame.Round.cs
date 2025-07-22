@@ -31,9 +31,9 @@ namespace MCGalaxy.Modules.Games.Countdown
             public ushort X, Z;
             public SquarePos(int x, int z) { X = (ushort)x; Z = (ushort)z; }
         }
-        
-        List<SquarePos> squaresLeft = new List<SquarePos>();
-        BufferedBlockSender bulk = new BufferedBlockSender();
+
+        readonly List<SquarePos> squaresLeft = new List<SquarePos>();
+        readonly BufferedBlockSender bulk = new BufferedBlockSender();
         
         protected override void DoRound() {
             bulk.level = Map;
@@ -103,10 +103,9 @@ namespace MCGalaxy.Modules.Games.Countdown
             int maxX = Map.Width - 1, maxZ = Map.Length - 1;
             Cuboid(4, 4, 4, maxX - 4, 4, maxZ - 4, Block.Glass);          
             squaresLeft.Clear();
-            
-            int begX, endX, begZ, endZ;
-            CountdownMap.CalcBoardExtents(Map.Width,  out begX, out endX);
-            CountdownMap.CalcBoardExtents(Map.Length, out begZ, out endZ);
+
+            CountdownMap.CalcBoardExtents(Map.Width, out int begX, out int endX);
+            CountdownMap.CalcBoardExtents(Map.Length, out int begZ, out int endZ);
             
             for (int z = begZ; z <= endZ; z += 3)
                 for (int x = begX; x <= endX; x += 3)
@@ -162,10 +161,9 @@ namespace MCGalaxy.Modules.Games.Countdown
         void RemoveBoardBorders() {
             int minX1 = 4, maxX2 = Map.Width  - 1 - 4;
             int minZ1 = 4, maxZ2 = Map.Length - 1 - 4;
-            
-            int maxX1, minX2, maxZ1, minZ2;
-            CountdownMap.CalcBoardExtents(Map.Width,  out maxX1, out minX2);
-            CountdownMap.CalcBoardExtents(Map.Length, out maxZ1, out minZ2);
+
+            CountdownMap.CalcBoardExtents(Map.Width, out int maxX1, out int minX2);
+            CountdownMap.CalcBoardExtents(Map.Length, out int maxZ1, out int minZ2);
             // Adjust coordinates to the borders around the board
             maxX1 -= 2; maxZ1 -= 2; minX2 += 3; minZ2 += 3;
             

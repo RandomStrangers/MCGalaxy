@@ -29,20 +29,23 @@ namespace MCGalaxy.Commands.Building {
         
         protected override DrawOp GetDrawOp(DrawArgs dArgs) {
             string[] args = dArgs.Message.SplitSpaces(3);            
-            Tree tree = Tree.Find(args[0]);
-            if (tree == null) tree = new NormalTree();
-            
-            int size;            
-            if (args.Length > 1 && NumberUtils.TryParseInt32(args[1], out size)) {
+            Tree tree = Tree.Find(args[0]) ?? new NormalTree();
+            if (args.Length > 1 && NumberUtils.TryParseInt32(args[1], out int size))
+            {
                 Player p = dArgs.Player;
-                string opt = args[0] + " tree size";                
+                string opt = args[0] + " tree size";
                 if (!CommandParser.GetInt(p, args[1], opt, ref size, tree.MinSize, tree.MaxSize)) return null;
-            } else {
+            }
+            else
+            {
                 size = -1;
             }
 
-            TreeDrawOp op = new TreeDrawOp();
-            op.Tree = tree; op.Size = size;
+            TreeDrawOp op = new TreeDrawOp
+            {
+                Tree = tree,
+                Size = size
+            };
             return op;
         }
         

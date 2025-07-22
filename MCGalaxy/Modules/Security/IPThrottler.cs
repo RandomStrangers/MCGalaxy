@@ -55,12 +55,12 @@ namespace MCGalaxy.Modules.Security
             int failed   = 0;
             
             lock (ipsLock) {
-                IPThrottleEntry entry;
-                if (!ips.TryGetValue(ipStr, out entry)) {
+                if (!ips.TryGetValue(ipStr, out IPThrottleEntry entry))
+                {
                     entry = new IPThrottleEntry();
                     ips[ipStr] = entry;
                 }
-                
+
                 // Check if that IP is repeatedly trying to connect
                 if (entry.BlockedUntil < now) {
                     if (!entry.AddSpamEntry(Server.Config.IPSpamCount, Server.Config.IPSpamInterval)) {
@@ -89,8 +89,7 @@ namespace MCGalaxy.Modules.Security
             
             // Most of work is done on initial connection
             lock (ipsLock) {
-                IPThrottleEntry entry;
-                if (!ips.TryGetValue(p.ip, out entry)) return;
+                if (!ips.TryGetValue(p.ip, out IPThrottleEntry entry)) return;
                 blockedUntil = entry.BlockedUntil;
             }
             if (blockedUntil < now) return;
@@ -114,7 +113,7 @@ namespace MCGalaxy.Modules.Security
                 // Find all connections which last joined before the connection spam check interval
                 DateTime threshold = DateTime.UtcNow.Add(-Server.Config.IPSpamInterval);
                 List<string> expired = null;
-                foreach (var kvp in ips) {
+                foreach (KeyValuePair<string, IPThrottleEntry> kvp in ips) {
                     DateTime lastJoin = kvp.Value[kvp.Value.Count - 1];
                     if (lastJoin >= threshold) continue;
                     

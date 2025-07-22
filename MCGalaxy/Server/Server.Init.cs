@@ -93,13 +93,13 @@ namespace MCGalaxy
             }
         }
         
-        static void SetupSocket(SchedulerTask task) {        
-            IPAddress ip;
-            
-            if (!IPAddress.TryParse(Config.ListenIP, out ip)) {
+        static void SetupSocket(SchedulerTask task) {
+
+            if (!IPAddress.TryParse(Config.ListenIP, out IPAddress ip))
+            {
                 Logger.Log(LogType.Warning, "Unable to parse listen IP config key, listening on any IP");
                 ip = IPAddress.Any;
-            }            
+            }
             Listener.Listen(ip, Config.Port);
         }
         

@@ -23,7 +23,7 @@ namespace MCGalaxy.Eco
 {
     public static partial class Economy 
     {
-        static ColumnDesc[] ecoTable = new ColumnDesc[] {
+        static readonly ColumnDesc[] ecoTable = new ColumnDesc[] {
             new ColumnDesc("player", ColumnType.VarChar, 20, priKey: true),
             new ColumnDesc("money", ColumnType.Int32),
             new ColumnDesc("total", ColumnType.Int32),
@@ -60,7 +60,7 @@ namespace MCGalaxy.Eco
         public static string FindMatches(Player p, string name, out int money) {
             string[] match = PlayerDB.MatchValues(p, name, "Name,Money");
             money = match == null ? 0    : NumberUtils.ParseInt32(match[1]);
-            return  match == null ? null : match[0];
+            return  match?[0];
         }
         
         public static void UpdateMoney(string name, int money) {
@@ -101,7 +101,7 @@ namespace MCGalaxy.Eco
         }
         
         public static EcoStats RetrieveStats(string name) {
-            EcoStats stats = default(EcoStats);
+            EcoStats stats = default;
             stats.Player   = name;
             Database.ReadRows("Economy", "*", 
                                 record => stats = ParseStats(record),

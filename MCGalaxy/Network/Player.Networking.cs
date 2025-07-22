@@ -231,7 +231,7 @@ namespace MCGalaxy
         
         
         class VisibleSelection { public object data; public byte ID; }
-        VolatileArray<VisibleSelection> selections = new VolatileArray<VisibleSelection>();
+        readonly VolatileArray<VisibleSelection> selections = new VolatileArray<VisibleSelection>();
         
         public bool AddVisibleSelection(string label, Vec3U16 min, Vec3U16 max, ColorDesc color, object instance) {
             lock (selections.locker) {
@@ -273,11 +273,13 @@ namespace MCGalaxy
             {
                 if (used[id] == 0) break;
             }
-            
-            VisibleSelection sel = new VisibleSelection();
-            sel.data = instance;
-            sel.ID   = id;
-            
+
+            VisibleSelection sel = new VisibleSelection
+            {
+                data = instance,
+                ID = id
+            };
+
             selections.Add(sel);
             return id;
         }

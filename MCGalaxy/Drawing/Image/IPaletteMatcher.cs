@@ -37,18 +37,16 @@ namespace MCGalaxy.Drawing
         }
         
         public BlockID BestMatch(ref Pixel P) {
-            int pos;
-            MinDist(P.R, P.G, P.B, front, out pos);
-            
+            MinDist(P.R, P.G, P.B, front, out int pos);
+
             // TODO avoid code.. just return index/position, and move this into imageprint
             P.R = front[pos].R; P.G = front[pos].G; P.B = front[pos].B;
             return front[pos].Block;
         }
 
         public BlockID BestMatch(byte R, byte G, byte B, out bool backLayer) {
-            int frontPos, backPos;
-            int frontDist = MinDist(R, G, B, front, out frontPos);
-            int backDist  = MinDist(R, G, B, back,  out backPos);
+            int frontDist = MinDist(R, G, B, front, out int frontPos);
+            int backDist  = MinDist(R, G, B, back,  out int backPos);
             
             // TODO too much duplication
             backLayer = backDist < frontDist;
@@ -87,9 +85,8 @@ namespace MCGalaxy.Drawing
         }
         
         public BlockID BestMatch(ref Pixel P) {
-            int pos;
-            MinDist(P.R, P.G, P.B, palette, out pos);
-            
+            MinDist(P.R, P.G, P.B, palette, out int pos);
+
             // TODO avoid duplication with RGB palette matcher
             P.R = front[pos].R; P.G = front[pos].G; P.B = front[pos].B;
             return front[pos].Block;
@@ -97,9 +94,8 @@ namespace MCGalaxy.Drawing
         
         public BlockID BestMatch(byte R, byte G, byte B, out bool backLayer) {
             backLayer = false;
-            int pos;
-            MinDist(R, G, B, palette, out pos);
-            
+            MinDist(R, G, B, palette, out int pos);
+
             // TODO avoid duplication with BestMatch
             return front[pos].Block;
         }
@@ -129,11 +125,11 @@ namespace MCGalaxy.Drawing
             // First convert RGB to CIE-XYZ
             double R = r / 255.0, G = g / 255.0, B = b / 255.0;
             if (R > 0.04045) R = Math.Pow((R + 0.055) / 1.055, 2.4);
-            else R = R / 12.92;
+            else R /= 12.92;
             if (G > 0.04045) G = Math.Pow((G + 0.055) / 1.055, 2.4);
-            else G = G / 12.92;
+            else G /= 12.92;
             if (B > 0.04045) B = Math.Pow((B + 0.055) / 1.055, 2.4);
-            else B = B / 12.92;
+            else B /= 12.92;
 
             double X = R * 0.4124 + G * 0.3576 + B * 0.1805;
             double Y = R * 0.2126 + G * 0.7152 + B * 0.0722;
@@ -150,7 +146,7 @@ namespace MCGalaxy.Drawing
             if (Z > 0.008856) Z = Math.Pow(Z, 1.0/3);
             else Z = (7.787 * Z) + (16.0 / 116);
 
-            LabColor lab = default(LabColor);
+            LabColor lab = default;
             lab.L = 116 * Y - 16;
             lab.A = 500 * (X - Y);
             lab.B = 200 * (Y - Z);

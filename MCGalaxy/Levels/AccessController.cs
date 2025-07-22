@@ -220,7 +220,7 @@ namespace MCGalaxy {
         
         public LevelAccessController(LevelConfig cfg, string levelName, bool isVisit) {
             this.cfg = cfg;
-            this.lvlName = levelName;
+            lvlName = levelName;
             this.isVisit = isVisit;
         }
 
@@ -258,7 +258,7 @@ namespace MCGalaxy {
         protected override void ApplyChanges(Player p, Level lvl, string msg) {
             Update(lvl);
             Logger.Log(LogType.UserActivity, "{0} &Son {1}", msg, lvlName);            
-            if (lvl != null) lvl.Message(Chat.LocalPrefix + msg);
+            lvl?.Message(Chat.LocalPrefix + msg);
             
             if (p != Player.Console && p.level != lvl) {
                 p.Message("{0} &Son {1} &Sby you.", msg, ColoredName);

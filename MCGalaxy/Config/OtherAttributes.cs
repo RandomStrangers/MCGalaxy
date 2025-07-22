@@ -21,15 +21,15 @@ using MCGalaxy.Maths;
 namespace MCGalaxy.Config {
     
     public sealed class ConfigBoolAttribute : ConfigAttribute {
-        bool defValue;
+        readonly bool defValue;
         
         public ConfigBoolAttribute() : this(null, null, false) { }
         public ConfigBoolAttribute(string name, string section, bool def)
             : base(name, section) { defValue = def; }
         
         public override object Parse(string raw) {
-            bool value;
-            if (!bool.TryParse(raw, out value)) {
+            if (!bool.TryParse(raw, out bool value))
+            {
                 Logger.Log(LogType.Warning, "Config key \"{0}\" has invalid boolean '{2}', using default of {1}", Name, defValue, raw);
                 return defValue;
             }
@@ -44,7 +44,7 @@ namespace MCGalaxy.Config {
     
     public sealed class ConfigPermAttribute : ConfigAttribute 
     {
-        LevelPermission defPerm;
+        readonly LevelPermission defPerm;
         
         public ConfigPermAttribute(string name, string section, LevelPermission def)
             : base(name, section) { defPerm = def; }
@@ -76,8 +76,8 @@ namespace MCGalaxy.Config {
     
     public sealed class ConfigEnumAttribute : ConfigAttribute 
     {
-        object defValue;
-        Type enumType;
+        readonly object defValue;
+        readonly Type enumType;
         
         public ConfigEnumAttribute(string name, string section, object def, Type type)
             : base(name, section) { defValue = def; enumType = type; }
@@ -106,7 +106,7 @@ namespace MCGalaxy.Config {
                 value = new Vec3U16(ushort.Parse(p[0]), ushort.Parse(p[1]), ushort.Parse(p[2]));
             } catch {
                 Logger.Log(LogType.Warning, "Config key \"{0}\" is not a valid vec3, using default", Name);
-                value = default(Vec3U16);
+                value = default;
             }
             return value;
         }
@@ -114,8 +114,8 @@ namespace MCGalaxy.Config {
     
     public sealed class ConfigBoolArrayAttribute : ConfigAttribute 
     {
-        bool defValue;
-        int minCount;
+        readonly bool defValue;
+        readonly int minCount;
         
         public ConfigBoolArrayAttribute() : this(null, null, false, 0) { }
         public ConfigBoolArrayAttribute(string name, string section, bool def, int min)

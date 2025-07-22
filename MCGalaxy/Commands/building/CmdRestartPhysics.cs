@@ -32,7 +32,7 @@ namespace MCGalaxy.Commands.Building {
         public override bool SuperUseable { get { return false; } }
 
         public override void Use(Player p, string message, CommandData data) {
-            PhysicsArgs extraInfo = default(PhysicsArgs);
+            PhysicsArgs extraInfo = default;
             message = message.ToLower();
             if (message.Length > 0 && !ParseArgs(p, message, ref extraInfo)) return;
 
@@ -67,8 +67,7 @@ namespace MCGalaxy.Commands.Building {
         
         bool Parse(Player p, string name, string arg, ref byte type, ref byte value, ref byte isExt) {
             if (name == "revert") {
-                BlockID block;
-                if (!CommandParser.GetBlock(p, arg, out block)) return false;
+                if (!CommandParser.GetBlock(p, arg, out ushort block)) return false;
 
                 type = PhysicsArgs.Revert; value = (BlockRaw)block;
                 isExt = (byte)(block >> Block.ExtendedShift);
@@ -91,16 +90,16 @@ namespace MCGalaxy.Commands.Building {
         bool DoRestart(Player p, Vec3S32[] m, object state, BlockID block) {
             PhysicsArgs args = (PhysicsArgs)state;
             List<int> buffer = new List<int>();
-            int index;
-            
+
             for (int y = Math.Min(m[0].Y, m[1].Y); y <= Math.Max(m[0].Y, m[1].Y); y++)
                 for (int z = Math.Min(m[0].Z, m[1].Z); z <= Math.Max(m[0].Z, m[1].Z); z++)
                     for (int x = Math.Min(m[0].X, m[1].X); x <= Math.Max(m[0].X, m[1].X); x++)
-            {
-                if (!p.level.IsAirAt((ushort)x, (ushort)y, (ushort)z, out index)) {
-                    buffer.Add(index);
-                }
-            }
+                    {
+                        if (!p.level.IsAirAt((ushort)x, (ushort)y, (ushort)z, out int index))
+                        {
+                            buffer.Add(index);
+                        }
+                    }
 
             if (args.Raw == 0) {
                 if (buffer.Count > Server.Config.PhysicsRestartNormLimit) {

@@ -23,7 +23,7 @@ namespace MCGalaxy.Gui
 {
     public partial class Window : Form 
     {
-        PlayerProperties playerProps;
+        //PlayerProperties playerProps;
         
         void NoPlayerSelected() { Popup.Warning("No player selected"); }
 
@@ -59,7 +59,7 @@ namespace MCGalaxy.Gui
             string[] args  = text.SplitSpaces(2);
             string cmdName = args[0], cmdArgs = args.Length > 1 ? args[1] : "";
             
-            CommandData data = default(CommandData);
+            CommandData data = default;
             data.Rank    = LevelPermission.Console;
             data.Context = CommandContext.SendCmd;
             curPlayer.HandleCommand(cmdName, cmdArgs, data);
@@ -151,7 +151,7 @@ namespace MCGalaxy.Gui
         }
         
         void Players_SetSelected(string name, PlayerProperties props) {
-            playerProps     = props;
+            //playerProps     = props;
             pl_gbProps.Text = "Properties for " + name;
             
             pl_pgProps.SelectedObject = props;

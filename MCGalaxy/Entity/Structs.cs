@@ -58,7 +58,7 @@ namespace MCGalaxy
         public int BlockZ { get { return Z >> 5; } }
         
         
-        public override bool Equals(object obj) { return (obj is Position) && Equals((Position)obj); }
+        public override bool Equals(object obj) { return (obj is Position position) && Equals(position); }
         
         public bool Equals(Position other) {
             return X == other.X && Y == other.Y && Z == other.Z;

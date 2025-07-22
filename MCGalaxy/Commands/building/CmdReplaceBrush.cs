@@ -35,8 +35,10 @@ namespace MCGalaxy.Commands.Building
                           "&S, so therefore cannot use this command."); return null;
             }
 
-            DrawOp op = new CuboidDrawOp();
-            op.AffectedByTransform = false;
+            DrawOp op = new CuboidDrawOp
+            {
+                AffectedByTransform = false
+            };
             return op;
         }
         

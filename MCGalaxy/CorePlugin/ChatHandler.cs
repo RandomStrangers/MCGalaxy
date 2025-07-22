@@ -22,7 +22,7 @@ namespace MCGalaxy.Core {
     internal static class ChatHandler {
         
         internal static void HandleOnChat(ChatScope scope, Player source, ref string msg, 
-                                          object arg, ref ChatMessageFilter filter, bool irc) {
+                                          object _, ref ChatMessageFilter __, bool ___) {
             string text = msg.Replace("λFULL", source.name).Replace("λNICK", source.name);
             LogType logType = LogType.PlayerChat;
             
@@ -31,14 +31,11 @@ namespace MCGalaxy.Core {
             } else if (scope == ChatScope.Rank) {
                 logType = LogType.RankChat;
             }
-            //else if (scope == ChatScope.Chatroom || scope == ChatScope.AllChatrooms) {
-            //    logType = LogType.ChatroomChat;
-            //} 
             
             if (scope != ChatScope.PM) Logger.Log(logType, text);
         }
         
-        internal static void HandleCommand(Player p, string cmd, string args, CommandData data) {
+        internal static void HandleCommand(Player p, string cmd, string _, CommandData __) {
             if (!Server.Config.CoreSecretCommands) return;
 
             // DO NOT REMOVE THE TWO COMMANDS BELOW, /PONY AND /RAINBOWDASHLIKESCOOLTHINGS. -EricKilla

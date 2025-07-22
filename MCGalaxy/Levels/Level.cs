@@ -133,9 +133,9 @@ namespace MCGalaxy
             try {
                 t = physThread;
                 // Wake up physics thread from Thread.Sleep
-                if (t != null) t.Interrupt();
+                t?.Interrupt();
                 // Wait up to 1 second for physics thread to finish
-                if (t != null) t.Join(1000);
+                t?.Join(1000);
             } catch {
                 // No physics thread at all
             }

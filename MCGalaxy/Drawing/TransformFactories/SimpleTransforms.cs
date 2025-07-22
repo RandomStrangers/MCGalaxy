@@ -25,7 +25,7 @@ namespace MCGalaxy.Drawing.Transforms
         public override string Name { get { return "None"; } }
         public override string[] Help { get { return HelpString; } }
         
-        static string[] HelpString = new string[] {
+        static readonly string[] HelpString = new string[] {
             "&TArguments: none",
             "&HDoes not affect the output of draw operations.",
         };
@@ -40,7 +40,7 @@ namespace MCGalaxy.Drawing.Transforms
         public override string Name { get { return "Scale"; } }
         public override string[] Help { get { return HelpString; } }
         
-        static string[] HelpString = new string[] {
+        static readonly string[] HelpString = new string[] {
             "&TArguments: [scaleX] [scaleY] [scaleZ] <centre>",
             "&TAlternatively: [scale] <centre>",
             "&H[scale] values can be an integer or a fraction (e.g. 2 or 1/2).",
@@ -51,15 +51,19 @@ namespace MCGalaxy.Drawing.Transforms
         public override Transform Construct(Player p, string message) {
             string[] args = message.SplitSpaces();
             if (message.Length == 0 || args.Length > 4) { p.MessageLines(Help); return null; }
-            int mul = 0, div = 0;
+
             ScaleTransform scaler = new ScaleTransform();
-            
-            if (args.Length <= 2) {
+            int div;
+            int mul;
+            if (args.Length <= 2)
+            {
                 if (!ParseFraction(p, args[0], "Scale", out mul, out div)) return null;
                 scaler.XMul = mul; scaler.XDiv = div;
                 scaler.YMul = mul; scaler.YDiv = div;
                 scaler.ZMul = mul; scaler.ZDiv = div;
-            } else {
+            }
+            else
+            {
                 if (!ParseFraction(p, args[0], "X scale", out mul, out div)) return null;
                 scaler.XMul = mul; scaler.XDiv = div;
                 if (!ParseFraction(p, args[1], "Y scale", out mul, out div)) return null;

@@ -71,12 +71,12 @@ namespace MCGalaxy.Drawing.Ops
         void CalcLayerColors() {
             PaletteEntry[] front = new PaletteEntry[Palette.Entries.Length];
             PaletteEntry[] back  = new PaletteEntry[Palette.Entries.Length];
-            
-            ColorDesc sun, dark, bright;
-            if (!Colors.TryParseHex(Level.Config.LightColor, out sun)) {
+
+            ColorDesc bright;
+            if (!Colors.TryParseHex(Level.Config.LightColor, out ColorDesc sun)) {
                 sun = Colors.ParseHex("FFFFFF");
             }
-            if (!Colors.TryParseHex(Level.Config.ShadowColor, out dark)) {
+            if (!Colors.TryParseHex(Level.Config.ShadowColor, out ColorDesc dark)) {
                 dark = Colors.ParseHex("9B9B9B");
             }
             bright = Colors.ParseHex("FFFFFF");
@@ -120,9 +120,8 @@ namespace MCGalaxy.Drawing.Ops
                 if (!DualLayer) {
                     block = selector.BestMatch(ref P);
                 } else {
-                    bool backLayer;
-                    block = selector.BestMatch(P.R, P.G, P.B, out backLayer);                    
-                    if (!backLayer) {
+                        block = selector.BestMatch(P.R, P.G, P.B, out bool backLayer);
+                        if (!backLayer) {
                         x = (ushort)(x - adj.X);
                         z = (ushort)(z - adj.Z);
                     }
@@ -132,7 +131,7 @@ namespace MCGalaxy.Drawing.Ops
         }
         
         public void CalcState(Vec3S32[] m) {
-            dx = default(Vec3S32); dy = default(Vec3S32); adj = default(Vec3S32);
+            dx = default; dy = default; adj = default;
             DualLayer = DualLayer && !LayerMode;
             
             int dir;

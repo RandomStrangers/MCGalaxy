@@ -25,7 +25,7 @@ namespace MCGalaxy.Gui {
         string inMsg, outMsg;
         
         public PlayerProperties(Player player) {
-            this.p = player;
+            p = player;
             inMsg  = PlayerDB.GetLoginMessage(player.name);
             outMsg = PlayerDB.GetLogoutMessage(player.name);
         }

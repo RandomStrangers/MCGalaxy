@@ -46,9 +46,9 @@ namespace MCGalaxy
         public Server() { s = this; }
         
         //True = cancel event
-        //Fale = dont cacnel event
+        //Fale = don't cancel event
         public static bool Check(string cmd, string message) {
-            if (ConsoleCommand != null) ConsoleCommand(cmd, message);
+            ConsoleCommand?.Invoke(cmd, message);
             return cancelcommand;
         }
         
@@ -292,7 +292,7 @@ namespace MCGalaxy
 
 
         public static void UpdateUrl(string url) {
-            if (OnURLChange != null) OnURLChange(url);
+            OnURLChange?.Invoke(url);
         }
 
         static void RandomMessage(SchedulerTask task) {
@@ -302,7 +302,7 @@ namespace MCGalaxy
         }
 
         internal static void SettingsUpdate() {
-            if (OnSettingsUpdate != null) OnSettingsUpdate();
+            OnSettingsUpdate?.Invoke();
         }
         
         public static bool SetMainLevel(string map) {
@@ -310,9 +310,7 @@ namespace MCGalaxy
             string main = mainLevel != null ? mainLevel.name : Config.MainLevel;
             if (map.CaselessEq(main)) return false;
             
-            Level lvl = LevelInfo.FindExact(map);
-            if (lvl == null)
-                lvl = LevelActions.Load(Player.Console, map, false);
+            Level lvl = LevelInfo.FindExact(map) ?? LevelActions.Load(Player.Console, map, false);
             if (lvl == null) return false;
             
             SetMainLevel(lvl); 
@@ -326,7 +324,7 @@ namespace MCGalaxy
         }
         
         public static void DoGC() {
-            var sw = Stopwatch.StartNew();
+            Stopwatch sw = Stopwatch.StartNew();
             long start = GC.GetTotalMemory(false);
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -367,11 +365,16 @@ namespace MCGalaxy
             }
             return new string(str);
         }
-        
-        static System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
-        static MD5CryptoServiceProvider md5  = new MD5CryptoServiceProvider();
-        static object md5Lock = new object();
-        
+#if MCG_DOTNET
+#pragma warning disable SYSLIB0021
+#endif
+
+        static readonly System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
+        static readonly MD5CryptoServiceProvider md5  = new MD5CryptoServiceProvider();
+        static readonly object md5Lock = new object();
+#if MCG_DOTNET
+#pragma warning restore SYSLIB0021
+#endif
         /// <summary> Calculates mppass (verification token) for the given username. </summary>
         public static string CalcMppass(string name, string salt) {
             byte[] hash = null;

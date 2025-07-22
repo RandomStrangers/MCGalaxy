@@ -100,8 +100,8 @@ namespace MCGalaxy
             return false;
         }
         
-        static char[] separators = { '/', '\\', ':' };
-        static char[] invalid    = { '<', '>', '|', '"', '*', '?' };
+        static readonly char[] separators = { '/', '\\', ':' };
+        static readonly char[] invalid    = { '<', '>', '|', '"', '*', '?' };
         /// <summary> Checks that the input is a valid filename (non-empty and no directory separator) </summary>
         /// <remarks> If the input is invalid, messages the player the reason why </remarks>
         public static bool ValidFilename(Player p, string name) {

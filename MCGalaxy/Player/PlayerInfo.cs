@@ -53,14 +53,14 @@ namespace MCGalaxy
         
         /// <summary> Matches given name against the names of all online players that the given player can see </summary>
         /// <returns> A Player instance if exactly one match was found </returns>
-        public static Player FindMatches(Player pl, string name, bool _useless = false) {
-            int matches; return FindMatches(pl, name, out matches);
+        public static Player FindMatches(Player pl, string name) {
+            return FindMatches(pl, name, out int _);
         }
         
         /// <summary> Matches given name against the names of all online players that the given player can see </summary>
         /// <param name="matches"> Outputs the number of matching players </param>
         /// <returns> A Player instance if exactly one match was found </returns>
-        public static Player FindMatches(Player pl, string name, out int matches, bool _useless = false) {
+        public static Player FindMatches(Player pl, string name, out int matches) {
             matches = 0;
             if (!Formatter.ValidPlayerName(pl, name)) return null;
             
@@ -74,9 +74,8 @@ namespace MCGalaxy
         
         public static string FindMatchesPreferOnline(Player p, string name) {
             if (!Formatter.ValidPlayerName(p, name)) return null;
-            int matches;
-            Player target = FindMatches(p, name, out matches);
-            
+            Player target = FindMatches(p, name, out int matches);
+
             if (matches > 1) return null;
             if (target != null) return target.name;
             p.Message("Searching PlayerDB for \"{0}\"..", name);
@@ -153,10 +152,12 @@ namespace MCGalaxy
         }
            
         static OnlineListEntry OnlineOfRank(Player p, LevelPermission plRank, Group group) {
-            OnlineListEntry entry = new OnlineListEntry();
-            entry.group   = group;
-            entry.players = new List<Player>();
-            
+            OnlineListEntry entry = new OnlineListEntry
+            {
+                group = group,
+                players = new List<Player>()
+            };
+
             Player[] online = Online.Items;
             foreach (Player pl in online) {
                 if (pl.group != group || !p.CanSee(pl, plRank)) continue;

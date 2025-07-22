@@ -97,9 +97,8 @@ namespace MCGalaxy.Gui {
         void chat_ParseColor(string value, Button target) {
             char code = value[1];
             target.Text = Colors.Name(value);
-            
-            Color textCol;
-            target.BackColor = ColorSelector.LookupColor(code, out textCol);
+
+            target.BackColor = ColorSelector.LookupColor(code, out Color textCol);
             target.ForeColor = textCol;
         }
         
@@ -111,9 +110,8 @@ namespace MCGalaxy.Gui {
                 DialogResult result = sel.ShowDialog();
                 if (result == DialogResult.Cancel) return;
                 
-                target.Text = Colors.Name(sel.ColorCode);     
-                Color textCol;
-                target.BackColor = ColorSelector.LookupColor(sel.ColorCode, out textCol);
+                target.Text = Colors.Name(sel.ColorCode);
+                target.BackColor = ColorSelector.LookupColor(sel.ColorCode, out Color textCol);
                 target.ForeColor = textCol;
             }
         }

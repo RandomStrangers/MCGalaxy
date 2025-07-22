@@ -34,7 +34,7 @@ namespace MCGalaxy.Commands.Misc {
             DoFakerank(p, who, newRank);
         }
 
-        internal static void DoFakerank(Player p, Player who, Group newRank) {            
+        internal static void DoFakerank(Player _, Player who, Group newRank) {            
             if (newRank.Permission == LevelPermission.Banned) {
                 Chat.MessageGlobal("{0} &Swas &8banned&S.", who.ColoredName);
             } else {

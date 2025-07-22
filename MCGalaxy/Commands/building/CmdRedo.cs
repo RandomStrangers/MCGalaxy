@@ -40,9 +40,12 @@ namespace MCGalaxy.Commands.Building {
                 UndoDrawOpEntry entry = entries[i];
                 if (entry.DrawOpName != "UndoSelf") continue;
                 p.DrawOps.Remove(entry);
-                
-                RedoSelfDrawOp op = new RedoSelfDrawOp();
-                op.Start = entry.Start; op.End = entry.End;
+
+                RedoSelfDrawOp op = new RedoSelfDrawOp
+                {
+                    Start = entry.Start,
+                    End = entry.End
+                };
                 DrawOpPerformer.Do(op, null, p, new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal });
                 p.Message("Redo performed.");
                 return;

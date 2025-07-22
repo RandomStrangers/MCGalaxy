@@ -44,7 +44,7 @@ namespace MCGalaxy.Core {
                 + " on %f" + DateTime.Now.ToString(CultureInfo.InvariantCulture);
             
             Player p = PlayerInfo.FindExact(data.TargetName);
-            if (p != null) p.Message("Your balance is now &f{0} &3{1}", p.money, Server.Config.Currency);
+            p?.Message("Your balance is now &f{0} &3{1}", p.money, Server.Config.Currency);
             Economy.UpdateStats(stats);
         }
         

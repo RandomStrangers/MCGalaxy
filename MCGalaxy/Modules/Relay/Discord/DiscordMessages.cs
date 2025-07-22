@@ -50,8 +50,8 @@ namespace MCGalaxy.Modules.Relay.Discord
     /// <summary> Message for sending text to a channel </summary>
     public class ChannelSendMessage : DiscordApiMessage
     {
-        static JsonArray default_allowed = new JsonArray() { "users", "roles" };
-        StringBuilder content;
+        static readonly JsonArray default_allowed = new JsonArray() { "users", "roles" };
+        readonly StringBuilder content;
         public JsonArray Allowed;
         
         public ChannelSendMessage(string channelID, string message) {
@@ -74,9 +74,8 @@ namespace MCGalaxy.Modules.Relay.Discord
         }
         
         public override bool CombineWith(DiscordApiMessage prior) {
-            ChannelSendMessage msg = prior as ChannelSendMessage;
-            if (msg == null || msg.Path != Path) return false;
-            
+            if (!(prior is ChannelSendMessage msg) || msg.Path != Path) return false;
+
             if (content.Length + msg.content.Length > 1024) return false;
             
             // TODO: is stringbuilder even beneficial here
@@ -99,7 +98,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         
         JsonArray GetFields() {
             JsonArray arr = new JsonArray();
-            foreach (var raw in Fields) 
+            foreach (KeyValuePair<string, string> raw in Fields) 
             { 
                 JsonObject field = new JsonObject()
                 {

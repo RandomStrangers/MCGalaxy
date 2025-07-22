@@ -56,8 +56,8 @@ namespace MCGalaxy.Modules.Games.LS
         public LSGame() { Picker = new SimpleLevelPicker(); }
         
         public static LSData Get(Player p) {
-            object data;
-            if (!p.Extras.TryGet("MCG_LS_DATA", out data)) {
+            if (!p.Extras.TryGet("MCG_LS_DATA", out object data))
+            {
                 data = new LSData();
                 p.Extras["MCG_LS_DATA"] = data;
             }
@@ -166,7 +166,7 @@ namespace MCGalaxy.Modules.Games.LS
             HandleJoinedLevel(p, Map, Map, ref announce);
         }
 
-        static void ResetRoundState(Player p, LSData data) {
+        static void ResetRoundState(Player _, LSData data) {
             data.SpongesLeft = 10;
             data.WaterLeft   = 30;
             data.DoorsLeft   =  0;

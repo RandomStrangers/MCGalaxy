@@ -56,8 +56,12 @@ namespace MCGalaxy.Commands.Moderation {
                 HighlightPlayer(p, delta, parts[0], ids, marks);
             } else {
                 p.Message("Place or break two blocks to determine the edges.");
-                HighlightAreaArgs args = new HighlightAreaArgs();
-                args.ids = ids; args.who = parts[0]; args.delta = delta;
+                HighlightAreaArgs args = new HighlightAreaArgs
+                {
+                    ids = ids,
+                    who = parts[0],
+                    delta = delta
+                };
                 p.MakeSelection(2,  "Selecting region for &SHighlight", args, DoHighlightArea);
             }
         }
@@ -72,9 +76,12 @@ namespace MCGalaxy.Commands.Moderation {
         
         
         static void HighlightPlayer(Player p, TimeSpan delta, string who, int[] ids, Vec3S32[] marks) {
-            HighlightDrawOp op = new HighlightDrawOp();
-            op.Start = DateTime.UtcNow.Subtract(delta);
-            op.who = who; op.ids = ids;
+            HighlightDrawOp op = new HighlightDrawOp
+            {
+                Start = DateTime.UtcNow.Subtract(delta),
+                who = who,
+                ids = ids
+            };
             op.Setup(p, p.level, marks);
             
             BufferedBlockSender buffer = new BufferedBlockSender(p);

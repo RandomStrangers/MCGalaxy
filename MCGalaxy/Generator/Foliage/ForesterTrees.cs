@@ -253,45 +253,49 @@ namespace MCGalaxy.Generator.Foliage {
             int x = treeposition.X, z = treeposition.Z;
             
             float end_size_factor = trunkheight / height;
-            float startrad = 0;
             float midrad = trunkradius * (1 - end_size_factor * 0.5f);
             float endrad = trunkradius * (1 - end_size_factor);
             if (endrad < 1) endrad = 1;
             if (midrad < endrad) midrad = endrad;
             
             bool mangrove = this is MangroveTree;
+            float startrad;
             // Make the root buttresses, if indicated
-            if (ROOT_BUTTRESSES || mangrove) {
+            if (ROOT_BUTTRESSES || mangrove)
+            {
                 // The start radius of the trunk should be a little smaller if we are using root buttresses.
                 startrad = trunkradius * 0.8f;
                 float buttress_radius = trunkradius * 0.382f;
                 // posradius is how far the root buttresses should be offset from the trunk.
                 float posradius = trunkradius;
                 // In mangroves, the root buttresses are much more extended.
-                if (mangrove) posradius = posradius * 2.618f;
+                if (mangrove) posradius *= 2.618f;
                 int num_of_buttresses = (int)(Math.Sqrt(trunkradius) + 3.5);
-                
-                for (int i = 0; i < num_of_buttresses; i++) {
-                    double rndang = random()* 2 * Math.PI;
+
+                for (int i = 0; i < num_of_buttresses; i++)
+                {
+                    double rndang = random() * 2 * Math.PI;
                     double thisposradius = posradius * (0.9 + random() * 0.2);
                     // thisx and thisz are the x and z position for the base of the root buttress.
                     int thisx = x + (int)(thisposradius * Math.Sin(rndang));
                     int thisz = z + (int)(thisposradius * Math.Cos(rndang));
-                    
+
                     // thisbuttressradius is the radius of the buttress.
                     // Currently, root buttresses do not taper.
                     float thisbuttressradius = buttress_radius * (float)(0.618 + random());
                     if (thisbuttressradius < 1) thisbuttressradius = 1;
-                    
+
                     // Make the root buttress.
                     TaperedCylinder(new Vec3S32(thisx, starty, thisz), new Vec3S32(x, midy, z),
                                     thisbuttressradius, thisbuttressradius);
                 }
-            } else {
+            }
+            else
+            {
                 // If root buttresses are turned off, set the trunk radius to normal size.
                 startrad = trunkradius;
             }
-            
+
             // Make the lower and upper sections of the trunk.
             TaperedCylinder(new Vec3S32(x, starty, z), new Vec3S32(x, midy, z), startrad, midrad);
             TaperedCylinder(new Vec3S32(x, midy, z),   new Vec3S32(x, topy, z), midrad,   endrad);
@@ -309,7 +313,6 @@ namespace MCGalaxy.Generator.Foliage {
             int ystart = treeposition.Y, yend = treeposition.Y + height;
             
             branchdensity = BRANCH_DENSITY / FOLIAGE_DENSITY;
-            int topy = treeposition.Y + (int)(trunkheight + 0.5);
             int num_of_clusters_per_y = (int)(1.5 + Math.Pow(FOLIAGE_DENSITY * height / 19.0, 2));
             if (num_of_clusters_per_y < 1) num_of_clusters_per_y = 1;
             
@@ -341,7 +344,7 @@ namespace MCGalaxy.Generator.Foliage {
             base.Prepare();
             branchslope = 0.382f;
             foliage_shape = new float[] { 2, 3, 3, 2.5f, 1.6f };
-            trunkradius = trunkradius * 0.8f;
+            trunkradius *= 0.8f;
             trunkheight = TRUNK_HEIGHT * trunkheight;
         }
         
@@ -353,8 +356,7 @@ namespace MCGalaxy.Generator.Foliage {
             
             double radius = height / 2.0;
             double adj    = height / 2.0 - y;
-            double dist   = 0;
-            
+            double dist;
             if (adj == 0) {
                 dist = radius;
             } else if (Math.Abs(adj) >= radius) {
@@ -375,7 +377,7 @@ namespace MCGalaxy.Generator.Foliage {
             base.Prepare();
             branchslope = 0.15f;
             foliage_shape = new float[] { 3, 2.6f, 2, 1 };
-            trunkradius = trunkradius * 0.5f;
+            trunkradius *= 0.5f;
         }
         
         protected override double ShapeFunc(int y) {
@@ -399,8 +401,8 @@ namespace MCGalaxy.Generator.Foliage {
             base.Prepare();
             foliage_shape = new float[] { 3.4f, 2.6f };
             branchslope = 1.0f;
-            trunkradius = trunkradius * 0.382f;
-            trunkheight = trunkheight * 0.9f;
+            trunkradius *= 0.382f;
+            trunkheight *= 0.9f;
         }
         
         protected override double ShapeFunc(int y) {
@@ -429,7 +431,7 @@ namespace MCGalaxy.Generator.Foliage {
         public override void Prepare() {
             base.Prepare();
             branchslope = 1.0f;
-            trunkradius = trunkradius * 0.618f;
+            trunkradius *= 0.618f;
         }
         
         protected override double ShapeFunc(int y) {

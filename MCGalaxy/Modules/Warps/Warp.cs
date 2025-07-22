@@ -65,7 +65,7 @@ namespace MCGalaxy.Modules.Warps
             Save();
         }
 
-        public void Remove(Warp warp, Player p) {
+        public void Remove(Warp warp, Player _) {
             Items.Remove(warp);
             Save();
         }
@@ -87,9 +87,8 @@ namespace MCGalaxy.Modules.Warps
         /// <summary> Find partial matches of 'name' against this list of warps. </summary>
         public Warp FindMatch(Player p, string name) {
             string group = (this == Global) ? "warps" : "waypoints";
-            int matches;
-            
-            return Matcher.Find(p, name, out matches, Items,
+
+            return Matcher.Find(p, name, out int matches, Items,
                                 null, wp => wp.Name, group);
         }
         

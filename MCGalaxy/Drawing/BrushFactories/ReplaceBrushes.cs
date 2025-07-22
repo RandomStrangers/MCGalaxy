@@ -26,7 +26,7 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name { get { return "Replace"; } }       
         public override string[] Help { get { return HelpString; } }
         
-        static string[] HelpString = new string[] {
+        static readonly string[] HelpString = new string[] {
             "&TArguments: [block1] [block2].. [new]",
             "&HDraws by replacing existing blocks that are in the given [blocks] with [new]",
             "&H  If only [block] is given, replaces with your held block.",
@@ -43,10 +43,9 @@ namespace MCGalaxy.Drawing.Brushes
             int count = parts.Length == 1 ? 1 : parts.Length - 1;
             BlockID[] toAffect = GetBlocks(args.Player, 0, count, parts);
             if (toAffect == null) return null;
-            
-            BlockID target;
-            if (!GetTargetBlock(args, parts, out target)) return null;
-            
+
+            if (!GetTargetBlock(args, parts, out ushort target)) return null;
+
             if (not) return new ReplaceNotBrush(toAffect, target);
             return new ReplaceBrush(toAffect, target);
         }
@@ -86,7 +85,7 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name { get { return "ReplaceNot"; } }        
         public override string[] Help { get { return HelpString; } }
         
-        static string[] HelpString = new string[] {
+        static readonly string[] HelpString = new string[] {
             "&TArguments: [block1] [block2].. [new]",
             "&HDraws by replacing existing blocks that not are in the given [blocks] with [new]",
             "&H  If only [block] is given, replaces with your held block.",

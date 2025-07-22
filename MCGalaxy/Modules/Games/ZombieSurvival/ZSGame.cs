@@ -94,11 +94,12 @@ namespace MCGalaxy.Modules.Games.ZS
         internal static ZSData Get(Player p) {
             ZSData data = TryGet(p);
             if (data != null) return data;
-            data = new ZSData();
-            
-            // TODO: Is this even thread-safe
-            // TODO don't load here, add a LoadInfectMessages method
-            data.InfectMessages = ZSConfig.LoadPlayerInfectMessages(p.name);
+            data = new ZSData
+            {
+                // TODO: Is this even thread-safe
+                // TODO don't load here, add a LoadInfectMessages method
+                InfectMessages = ZSConfig.LoadPlayerInfectMessages(p.name)
+            };
             ZombieStats s = LoadStats(p.name);
             data.MaxInfected = s.MaxInfected;     data.TotalInfected = s.TotalInfected;
             data.MaxRoundsSurvived = s.MaxRounds; data.TotalRoundsSurvived = s.TotalRounds;
@@ -108,7 +109,7 @@ namespace MCGalaxy.Modules.Games.ZS
         }
 
         internal static ZSData TryGet(Player p) {
-            object data; p.Extras.TryGet(zsExtrasKey, out data); return (ZSData)data;
+            p.Extras.TryGet(zsExtrasKey, out object data); return (ZSData)data;
         }
         
         // TODO: Move ZS map config to per-game properties
@@ -258,7 +259,7 @@ namespace MCGalaxy.Modules.Games.ZS
                 BountyData.Bounties.Remove(b);
                 
                 Player setter = PlayerInfo.FindExact(b.Origin);
-                if (setter != null) setter.SetMoney(setter.money + b.Amount);
+                setter?.SetMoney(setter.money + b.Amount);
             }
         }
 
@@ -336,7 +337,7 @@ namespace MCGalaxy.Modules.Games.ZS
             p.Message("{0} &Swas queued.", p.FormatNick(target));
             QueuedZombie = target.name;
             
-            if (Map != null) Map.Message(target.ColoredName + " &Swas queued as the next zombie.");
+            Map?.Message(target.ColoredName + " &Swas queued as the next zombie.");
             return true;
         }
         
@@ -347,7 +348,7 @@ namespace MCGalaxy.Modules.Games.ZS
             p.Message(map + " was queued.");
             Picker.QueuedMap = map.ToLower();
             
-            if (Map != null) Map.Message(map + " was queued as the next map.");
+            Map?.Message(map + " was queued as the next map.");
             return true;
         }
         

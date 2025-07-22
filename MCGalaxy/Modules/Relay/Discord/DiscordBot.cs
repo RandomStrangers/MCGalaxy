@@ -45,21 +45,21 @@ namespace MCGalaxy.Modules.Relay.Discord
         protected DiscordWebsocket socket;
         protected DiscordSession session;
         protected string botUserID;
-        
-        Dictionary<string, byte> channelTypes = new Dictionary<string, byte>();
+
+        readonly Dictionary<string, byte> channelTypes = new Dictionary<string, byte>();
         const byte CHANNEL_DIRECT = 0;
         const byte CHANNEL_TEXT   = 1;
 
-        List<string> filter_triggers = new List<string>();
-        List<string> filter_replacements = new List<string>();
+        readonly List<string> filter_triggers = new List<string>();
+        readonly List<string> filter_replacements = new List<string>();
         JsonArray allowed;
 
         public override string RelayName { get { return "Discord"; } }
         public override bool Enabled     { get { return Config.Enabled; } }
         public override string UserID    { get { return botUserID; } }
         public DiscordConfig Config;
-        
-        TextFile replacementsFile = new TextFile("text/discord/replacements.txt",
+
+        readonly TextFile replacementsFile = new TextFile("text/discord/replacements.txt",
                                         "// This file is used to replace words/phrases sent to Discord",
                                         "// Lines starting with // are ignored",
                                         "// Lines should be formatted like this:",
@@ -76,20 +76,22 @@ namespace MCGalaxy.Modules.Relay.Discord
         }
         
         protected override void DoConnect() {
-            socket = new DiscordWebsocket(WSPath);
-            socket.Session   = session;
-            socket.Token     = Config.BotToken;
-            socket.Host      = WSHost;
-            socket.Presence  = Config.PresenceEnabled;
-            socket.Status    = Config.Status;
-            socket.Activity  = Config.Activity;
-            socket.GetStatus = GetStatusMessage;
-            
-            socket.OnReady         = HandleReadyEvent;
-            socket.OnResumed       = HandleResumedEvent;
-            socket.OnMessageCreate = HandleMessageEvent;
-            socket.OnChannelCreate = HandleChannelEvent;
-            socket.OnGatewayEvent  = HandleGatewayEvent;
+            socket = new DiscordWebsocket(WSPath)
+            {
+                Session = session,
+                Token = Config.BotToken,
+                Host = WSHost,
+                Presence = Config.PresenceEnabled,
+                Status = Config.Status,
+                Activity = Config.Activity,
+                GetStatus = GetStatusMessage,
+
+                OnReady = HandleReadyEvent,
+                OnResumed = HandleResumedEvent,
+                OnMessageCreate = HandleMessageEvent,
+                OnChannelCreate = HandleChannelEvent,
+                OnGatewayEvent = HandleGatewayEvent
+            };
             socket.Connect();
         }
                 
@@ -180,46 +182,42 @@ namespace MCGalaxy.Modules.Relay.Discord
         
         DiscordUser ExtractUser(JsonObject data) {
             JsonObject author = (JsonObject)data["author"];
-            
-            DiscordUser user = new DiscordUser();
-            user.Nick = GetNick(data) ?? GetUser(author);
-            user.ID   = (string)author["id"];
-            
-            user.ReferencedUser = ExtractReferencedUser(data);
+
+            DiscordUser user = new DiscordUser
+            {
+                Nick = GetNick(data) ?? GetUser(author),
+                ID = (string)author["id"],
+
+                ReferencedUser = ExtractReferencedUser(data)
+            };
             return user;
         }
         
         string GetNick(JsonObject data) {
             if (!Config.UseNicks) return null;
-            object raw;
-            if (!data.TryGetValue("member", out raw)) return null;
-            
+            if (!data.TryGetValue("member", out object raw)) return null;
+
             // Make sure this is really a member object first
-            JsonObject member = raw as JsonObject;
-            if (member == null) return null;
-            
+            if (!(raw is JsonObject member)) return null;
+
             member.TryGetValue("nick", out raw);
             return raw as string;
         }
         
         string GetUser(JsonObject author) {
             // User's chosen display name (configurable)
-            object name = null;
-            author.TryGetValue("global_name", out name);
+            author.TryGetValue("global_name", out object name);
             if (name != null) return (string)name;
 
             return (string)author["username"];
         }
         
         string ExtractReferencedUser(JsonObject data) {
-            object refMsgRaw;
-            data.TryGetValue("referenced_message", out refMsgRaw);
-            
-            JsonObject refMsgData = refMsgRaw as JsonObject;
-            if (refMsgData == null) return null;
-            
-            object authorRaw;
-            refMsgData.TryGetValue("author", out authorRaw);
+            data.TryGetValue("referenced_message", out object refMsgRaw);
+
+            if (!(refMsgRaw is JsonObject refMsgData)) return null;
+
+            refMsgData.TryGetValue("author", out object authorRaw);
             if (authorRaw == null) return null;
             
             return GetUser((JsonObject)authorRaw);
@@ -233,7 +231,6 @@ namespace MCGalaxy.Modules.Relay.Discord
             
             string channel = (string)data["channel_id"];
             string message = (string)data["content"];
-            byte type;
 
             // Working out whether a channel is a direct message channel
             //  or not without querying the Discord API is a bit of a pain
@@ -244,12 +241,13 @@ namespace MCGalaxy.Modules.Relay.Discord
             //  "Bots no longer receive Channel Create Gateway Event for DMs"
             // Therefore the code is now forced to instead calculate which
             //  channels are probably text channels, and which aren't        
-            if (!channelTypes.TryGetValue(channel, out type)) {
+            if (!channelTypes.TryGetValue(channel, out byte type))
+            {
                 type = GuessChannelType(data);
                 // channel is definitely a text/normal channel
                 if (type == CHANNEL_TEXT) channelTypes[channel] = type;
             }
-            
+
             if (type == CHANNEL_DIRECT) {
                 HandleDirectMessage(user,  channel, message);
             } else {
@@ -259,17 +257,14 @@ namespace MCGalaxy.Modules.Relay.Discord
         }
         
         void PrintAttachments(RelayUser user, JsonObject data, string channel) {
-            object raw;
-            if (!data.TryGetValue("attachments", out raw)) return;
-            
-            JsonArray list = raw as JsonArray;
-            if (list == null) return;
-            
+            if (!data.TryGetValue("attachments", out object raw)) return;
+
+            if (!(raw is JsonArray list)) return;
+
             foreach (object entry in list) 
             {
-                JsonObject attachment = entry as JsonObject;
-                if (attachment == null) continue;
-                
+                if (!(entry is JsonObject attachment)) continue;
+
                 string url = (string)attachment["url"];
                 HandleChannelMessage(user, channel, url);
             }
@@ -310,9 +305,11 @@ namespace MCGalaxy.Modules.Relay.Discord
         void HandleResumedEvent(JsonObject data) {
             // May not be null when reconnecting
             if (api == null) {
-                api = new DiscordApiClient();
-                api.Token = Config.BotToken;
-                api.Host  = APIHost;
+                api = new DiscordApiClient
+                {
+                    Token = Config.BotToken,
+                    Host = APIHost
+                };
                 api.RunAsync();
             }
             OnReady();
@@ -361,7 +358,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         DateTime nextUpdate;
 
         public void UpdateDiscordStatus() {
-            TimeSpan delay = default(TimeSpan);
+            TimeSpan delay = default;
             DateTime now   = DateTime.UtcNow;
 
             // websocket gets disconnected with code 4008 if try to send too many updates too quickly
@@ -404,8 +401,10 @@ namespace MCGalaxy.Modules.Relay.Discord
         
         
         protected override void OnStart() {
-            DiscordSession s = new DiscordSession();
-            s.Intents = DiscordWebsocket.DEFAULT_INTENTS | Config.ExtraIntents;
+            DiscordSession s = new DiscordSession
+            {
+                Intents = DiscordWebsocket.DEFAULT_INTENTS | Config.ExtraIntents
+            };
             session   = s;
             
             base.OnStart();            
@@ -439,7 +438,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         /// <summary> Asynchronously sends a message to the discord API </summary>
         public void Send(DiscordApiMessage msg) {
             // can be null in gap between initial connection and ready event received
-            if (api != null) api.QueueAsync(msg);
+            api?.QueueAsync(msg);
         }
         
         protected override void DoSendMessage(string channel, string message) {
@@ -453,9 +452,11 @@ namespace MCGalaxy.Modules.Relay.Discord
             {
                 int partLen = Math.Min(message.Length - offset, MAX_MSG_LEN);
                 string part = message.Substring(offset, partLen);
-                
-                ChannelSendMessage msg = new ChannelSendMessage(channel, part);
-                msg.Allowed = allowed;
+
+                ChannelSendMessage msg = new ChannelSendMessage(channel, part)
+                {
+                    Allowed = allowed
+                };
                 Send(msg);
             }
         }
@@ -492,9 +493,8 @@ namespace MCGalaxy.Modules.Relay.Discord
         
         protected override void MessagePlayers(RelayPlayer p) {
             ChannelSendEmbed embed = new ChannelSendEmbed(p.ChannelID);
-            int total;
-            List<OnlineListEntry> entries = PlayerInfo.GetOnlineList(p, p.Rank, out total);
-            
+            List<OnlineListEntry> entries = PlayerInfo.GetOnlineList(p, p.Rank, out int total);
+
             embed.Color  = Config.EmbedColor;
             embed.Title  = string.Format("{0} player{1} currently online",
                                         total, total.Plural());

@@ -50,8 +50,8 @@ namespace MCGalaxy.Drawing.Ops
                 }
             }
         }
-        
-        List<Vec3S32> points = new List<Vec3S32>();
+
+        readonly List<Vec3S32> points = new List<Vec3S32>();
         const float objspace_flatness_squared = 0.35f * 0.35f;
         
         // Based off stbtt__tesselate_curve from https://github.com/nothings/stb/blob/master/stb_truetype.h

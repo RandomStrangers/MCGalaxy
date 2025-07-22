@@ -28,8 +28,8 @@ namespace MCGalaxy.Blocks
         public BlockID ID;
         public override string ItemName { get { return ID.ToString(); } }
         
-        static BlockPerms[] PlaceList  = new BlockPerms[Block.SUPPORTED_COUNT];
-        static BlockPerms[] DeleteList = new BlockPerms[Block.SUPPORTED_COUNT];
+        static readonly BlockPerms[] PlaceList  = new BlockPerms[Block.SUPPORTED_COUNT];
+        static readonly BlockPerms[] DeleteList = new BlockPerms[Block.SUPPORTED_COUNT];
         
         
         public BlockPerms(BlockID id, LevelPermission min) : base(min) {
@@ -152,19 +152,17 @@ namespace MCGalaxy.Blocks
                 if (line.IsCommentLine()) continue;
                 // Format - ID : Lowest : Disallow : Allow
                 line.Replace(" ", "").FixedSplit(args, ':');
-                
-                BlockID block;
-                if (!BlockID.TryParse(args[0], out block)) {
+
+                if (!BlockID.TryParse(args[0], out ushort block))
+                {
                     // Old format - Name : Lowest : Disallow : Allow
                     block = Block.Parse(Player.Console, args[0]);
                 }
                 if (block == Block.Invalid) continue;
 
                 try {
-                    LevelPermission min;
-                    List<LevelPermission> allowed, disallowed;
-                    
-                    Deserialise(args, 1, out min, out allowed, out disallowed);
+
+                    Deserialise(args, 1, out LevelPermission min, out List<LevelPermission> allowed, out List<LevelPermission> disallowed);
                     Set(block, min, list,  allowed, disallowed);
                 } catch {
                     Logger.Log(LogType.Warning, "Hit an error on the block " + line);

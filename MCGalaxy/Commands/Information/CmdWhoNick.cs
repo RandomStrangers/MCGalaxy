@@ -39,9 +39,8 @@ namespace MCGalaxy.Commands.Info
         static void ForPlayer(Player p, string nick) {
             nick = Colors.Strip(nick);
             Player[] players = PlayerInfo.Online.Items;
-            int matches;
-            
-            Player match = Matcher.Find(p, nick, out matches, players, pl => p.CanSee(pl),
+
+            Player match = Matcher.Find(p, nick, out int matches, players, pl => p.CanSee(pl),
                                         pl => Colors.Strip(pl.DisplayName),
                                         pl => pl.ColoredName + " &S(" + pl.name + ")",
                                         "online player nicks");
@@ -52,11 +51,10 @@ namespace MCGalaxy.Commands.Info
         static void ForBot(Player p, string nick) {
             nick = Colors.Strip(nick);
             PlayerBot[] bots = p.level.Bots.Items;
-            int matches;
-            
-            PlayerBot match = Matcher.Find(p, nick, out matches, bots, bot => true,
-                                           bot => Colors.Strip(bot.DisplayName), 
-                                           bot => bot.ColoredName + " &S(" + bot.name + ")", 
+
+            PlayerBot match = Matcher.Find(p, nick, out int matches, bots, bot => true,
+                                           bot => Colors.Strip(bot.DisplayName),
+                                           bot => bot.ColoredName + " &S(" + bot.name + ")",
                                            "bot nicknames");
             if (match == null) return;
             p.Message("The bot nicknamed {0} &Sis named {1}", match.DisplayName, match.name);

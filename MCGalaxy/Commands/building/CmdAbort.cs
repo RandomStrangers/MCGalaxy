@@ -42,7 +42,7 @@ namespace MCGalaxy.Commands.Building
             p.Transform = Transform.DefaultTransform;
             p.DefaultBrushArgs = "";
             
-            if (p.weapon != null) p.weapon.Disable();
+            p.weapon?.Disable();
             p.Message("Every toggle or action was aborted.");
         }
         

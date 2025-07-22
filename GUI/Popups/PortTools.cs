@@ -26,7 +26,7 @@ namespace MCGalaxy.Gui.Popups
     {
         readonly BackgroundWorker worker;
         readonly UPnP upnp;
-        int port;
+        readonly int port;
         
         public PortTools(int port) {
             InitializeComponent();
@@ -36,9 +36,11 @@ namespace MCGalaxy.Gui.Popups
             
             this.port = port;
             btnForward.Text = "Forward " + port;
-            
-            upnp = new UPnP();
-            upnp.Log = LogUPnP;
+
+            upnp = new UPnP
+            {
+                Log = LogUPnP
+            };
         }
         
         void PortTools_Load(object sender, EventArgs e) {
@@ -76,7 +78,7 @@ namespace MCGalaxy.Gui.Popups
         void MakeLogsVisible() {
             if (gbLogs.Visible) return;
             // https://stackoverflow.com/questions/5962595/how-do-you-resize-a-form-to-fit-its-content-automatically
-            this.AutoSize  = true;
+            AutoSize  = true;
             gbLogs.Visible = true;
         }
         

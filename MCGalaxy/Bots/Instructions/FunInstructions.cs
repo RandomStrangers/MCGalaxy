@@ -40,10 +40,12 @@ namespace MCGalaxy.Bots
         protected class Metadata { public short Seconds, Speed; }
         
         public override InstructionData Parse(string[] args) {
-            InstructionData data = default(InstructionData);
-            Metadata meta = new Metadata();
-            meta.Seconds  = short.Parse(args[1]);
-            meta.Speed    = short.Parse(args[2]);
+            InstructionData data = default;
+            Metadata meta = new Metadata
+            {
+                Seconds = short.Parse(args[1]),
+                Speed = short.Parse(args[2])
+            };
             data.Metadata = meta;
             return data;
         }
@@ -55,7 +57,7 @@ namespace MCGalaxy.Bots
         }
         
         public override string[] Help { get { return help; } }
-        static string[] help = new string[] { 
+        static readonly string[] help = new string[] { 
             "&T/BotAI add [name] spin <interval> <speed>",
             "&HCauses the bot to spin around for a period of time.",
             "&H  <interval> is in tenths of a second, so an interval of 20 means " +
@@ -98,7 +100,7 @@ namespace MCGalaxy.Bots
         }
         
         public override string[] Help { get { return help; } }
-        static string[] help = new string[] {
+        static readonly string[] help = new string[] {
             "&T/BotAI add [name] nod <interval> <speed>",
             "&HCauses the bot to nod up and down for a period of time.",
             "&H  <interval> is in tenths of a second, so an interval of 20 means " +

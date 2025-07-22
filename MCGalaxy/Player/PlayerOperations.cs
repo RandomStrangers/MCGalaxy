@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using MCGalaxy.DB;
 using MCGalaxy.Network;
 
@@ -146,7 +145,7 @@ namespace MCGalaxy
             }
 
             if (who != null) who.title = title;
-            if (who != null) who.SetPrefix();
+            who?.SetPrefix();
             PlayerDB.Update(target, PlayerData.ColumnTitle, title.UnicodeToCp437());
             return true;
         }
@@ -170,7 +169,7 @@ namespace MCGalaxy
             }
 
             if (who != null) who.titlecolor = color;
-            if (who != null) who.SetPrefix();
+            who?.SetPrefix();
             PlayerDB.Update(target, PlayerData.ColumnTColor, color);
             return true;
         }
@@ -178,9 +177,9 @@ namespace MCGalaxy
         /// <summary> Attempts to change the color of the target player </summary>
         public static bool SetColor(Player p, string target, string name)
         {
-            string color = "";
             Player who = PlayerInfo.FindExact(target);
 
+            string color;
             if (name.Length == 0)
             {
                 color = Group.GroupIn(target).Color;
@@ -196,7 +195,7 @@ namespace MCGalaxy
                 PlayerDB.Update(target, PlayerData.ColumnColor, color);
                 MessageAction(p, target, who, "λACTOR &Schanged λTARGET color to " + color + Colors.Name(color));
             }
-            if (who != null) who.UpdateColor(color);
+            who?.UpdateColor(color);
             return true;
         }
 
@@ -242,8 +241,7 @@ namespace MCGalaxy
             SavePreTeleportState(p);
             Level lvl = dst.Level;
 
-            Player target = dst as Player;
-            if (target != null && target.Loading)
+            if (dst is Player target && target.Loading)
             {
                 p.Message("Waiting for {0} &Sto spawn..", p.FormatNick(target));
                 target.BlockUntilLoad(10);

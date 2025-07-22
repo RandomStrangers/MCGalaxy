@@ -61,7 +61,7 @@ namespace MCGalaxy.Modules.Games.CTF
         public int Capture_PointsLost = 10;
 
         
-        const string propsDir = "properties/CTF/";
+        const string propsDir = "props/CTF/";
         static ConfigElement[] cfg;
         public override void Load(string map) {
             if (cfg == null) cfg = ConfigElement.GetAll(typeof(CTFMapConfig));

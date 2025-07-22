@@ -81,24 +81,41 @@ namespace MCGalaxy {
         public static BlockDefinition[] GlobalDefs;
         
         public BlockDefinition Copy() {
-            BlockDefinition def = new BlockDefinition();
-            def.RawID = RawID; def.Name = Name;
-            def.Speed = Speed; def.CollideType = CollideType;
-            def.TopTex = TopTex; def.BottomTex = BottomTex;
-            
-            def.BlocksLight = BlocksLight; def.WalkSound = WalkSound;
-            def.FullBright = FullBright; def.Shape = Shape;
-            def.BlockDraw = BlockDraw; def.FallBack = FallBack;
-            
-            def.FogDensity = FogDensity;
-            def.FogR = FogR; def.FogG = FogG; def.FogB = FogB;
-            def.MinX = MinX; def.MinY = MinY; def.MinZ = MinZ;
-            def.MaxX = MaxX; def.MaxY = MaxY; def.MaxZ = MaxZ;
-            
-            def.LeftTex = LeftTex; def.RightTex = RightTex;
-            def.FrontTex = FrontTex; def.BackTex = BackTex;
-            def.InventoryOrder = InventoryOrder;
-            def.Brightness = Brightness; def.UseLampBrightness = UseLampBrightness;
+            BlockDefinition def = new BlockDefinition
+            {
+                RawID = RawID,
+                Name = Name,
+                Speed = Speed,
+                CollideType = CollideType,
+                TopTex = TopTex,
+                BottomTex = BottomTex,
+
+                BlocksLight = BlocksLight,
+                WalkSound = WalkSound,
+                FullBright = FullBright,
+                Shape = Shape,
+                BlockDraw = BlockDraw,
+                FallBack = FallBack,
+
+                FogDensity = FogDensity,
+                FogR = FogR,
+                FogG = FogG,
+                FogB = FogB,
+                MinX = MinX,
+                MinY = MinY,
+                MinZ = MinZ,
+                MaxX = MaxX,
+                MaxY = MaxY,
+                MaxZ = MaxZ,
+
+                LeftTex = LeftTex,
+                RightTex = RightTex,
+                FrontTex = FrontTex,
+                BackTex = BackTex,
+                InventoryOrder = InventoryOrder,
+                Brightness = Brightness,
+                UseLampBrightness = UseLampBrightness
+            };
             return def;
         }
 
@@ -110,13 +127,16 @@ namespace MCGalaxy {
             
             try {
                 string json = File.ReadAllText(path);
-                
-                JsonReader reader = new JsonReader(json);
-                reader.OnMember   = (obj, key, value) => {
-                    if (obj.Meta == null) obj.Meta = new BlockDefinition();
-                    ConfigElement.Parse(elems, obj.Meta, key, (string)value);
+
+                JsonReader reader = new JsonReader(json)
+                {
+                    OnMember = (obj, key, value) =>
+                    {
+                        if (obj.Meta == null) obj.Meta = new BlockDefinition();
+                        ConfigElement.Parse(elems, obj.Meta, key, (string)value);
+                    }
                 };
-                
+
                 JsonArray array = (JsonArray)reader.Parse();
                 if (array == null) return defs;
                 
@@ -165,7 +185,7 @@ namespace MCGalaxy {
 
             using (StreamWriter w = FileIO.CreateGuarded(path)) {
                 w.WriteLine("[");
-                var ser = new JsonConfigWriter(w, elems);
+                JsonConfigWriter ser = new JsonConfigWriter(w, elems);
 
                 for (int i = 0; i < defs.Length; i++) 
                 {

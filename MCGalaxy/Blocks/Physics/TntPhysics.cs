@@ -80,11 +80,10 @@ namespace MCGalaxy.Blocks.Physics
                                          bool force = false, TNTImmuneFilter filter = null) {
             Random rand = new Random();
             if ((lvl.physics < 2 || lvl.physics == 5) && !force) return;
-            
-            int index;
-            BlockID block = lvl.GetBlock(x, y, z, out index);
+
+            BlockID block = lvl.GetBlock(x, y, z, out int index);
             if (index >= 0 && !lvl.Props[block].OPBlock) {
-                lvl.AddUpdate(index, Block.TNT_Explosion, default(PhysicsArgs), true);
+                lvl.AddUpdate(index, Block.TNT_Explosion, default, true);
             }
 
             Explode(lvl, x, y, z, size + 1, rand, -1, filter);
@@ -102,9 +101,8 @@ namespace MCGalaxy.Blocks.Physics
                 for (int yy = y - size; yy <= (y + size); ++yy)
                     for (int zz = z - size; zz <= (z + size); ++zz)
             {
-                int index;
-                BlockID b = lvl.GetBlock((ushort)xx, (ushort)yy, (ushort)zz, out index);
-                if (b == Block.Invalid) continue;
+                        BlockID b = lvl.GetBlock((ushort)xx, (ushort)yy, (ushort)zz, out int index);
+                        if (b == Block.Invalid) continue;
                 
                 bool doDestroy = prob < 0 || rand.Next(1, 10) < prob;
                 if (doDestroy && Block.Convert(b) != Block.TNT) {
@@ -118,7 +116,7 @@ namespace MCGalaxy.Blocks.Physics
                     } else if (mode <= 8) {
                         lvl.AddUpdate(index, Block.Air, default(PhysicsArgs));
                     } else {
-                        PhysicsArgs args = default(PhysicsArgs);
+                        PhysicsArgs args = default;
                         args.Type1 = PhysicsArgs.Drop;      args.Value1 = 50;
                         args.Type2 = PhysicsArgs.Dissipate; args.Value2 = 8;
                         lvl.AddCheck(index, false, args);

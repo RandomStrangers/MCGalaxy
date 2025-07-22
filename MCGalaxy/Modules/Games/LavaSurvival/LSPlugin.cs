@@ -22,7 +22,7 @@ namespace MCGalaxy.Modules.Games.LS
     public sealed class LSPlugin : Plugin 
     {
         public override string name { get { return "LS"; } }
-        static Command cmdLS = new CmdLavaSurvival();
+        static readonly Command cmdLS = new CmdLavaSurvival();
         
         public override void Load(bool startup) {
             Command.Register(cmdLS);

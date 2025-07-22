@@ -66,20 +66,24 @@ namespace MCGalaxy {
                 }
 
                 string keyword = message.Substring(begIndex + 1, endIndex - begIndex - 1);
-                char substitute;
-                if (tokens.TryGetValue(keyword.ToLowerInvariant(), out substitute))
+                if (tokens.TryGetValue(keyword.ToLowerInvariant(), out char substitute))
                 {
-                    if (escaped) {
+                    if (escaped)
+                    {
                         begIndex++;
                         output.Append(message, lastAppendedIndex, begIndex - lastAppendedIndex - 2);
                         lastAppendedIndex = begIndex - 1;
-                    } else {
+                    }
+                    else
+                    {
                         output.Append(message, lastAppendedIndex, begIndex - lastAppendedIndex);
                         output.Append(substitute);
                         begIndex = endIndex + 1;
                         lastAppendedIndex = begIndex;
                     }
-                } else {
+                }
+                else
+                {
                     begIndex++;
                 }
                 begIndex = message.IndexOf('(', begIndex);

@@ -27,7 +27,7 @@ namespace MCGalaxy.Commands
         public string CmdName;
         public override string ItemName { get { return CmdName; } }
         
-        static List<CommandPerms> List = new List<CommandPerms>();
+        static readonly List<CommandPerms> List = new List<CommandPerms>();
         
         
         public CommandPerms(string cmd, LevelPermission min) : base(min) {
@@ -120,10 +120,8 @@ namespace MCGalaxy.Commands
                 line.Replace(" ", "").FixedSplit(args, ':');
                 
                 try {
-                    LevelPermission min;
-                    List<LevelPermission> allowed, disallowed;
-                    
-                    Deserialise(args, 1, out min, out allowed, out disallowed);
+
+                    Deserialise(args, 1, out LevelPermission min, out List<LevelPermission> allowed, out List<LevelPermission> disallowed);
                     perms = GetOrAdd(args[0], min);
                     perms.Init(min, allowed, disallowed);
                 } catch {

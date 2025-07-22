@@ -24,7 +24,7 @@ namespace MCGalaxy.Drawing.Transforms
         public override string Name { get { return "Rotate"; } }
         public override string[] Help { get { return HelpString; } }
         
-        static string[] HelpString = new string[] {
+        static readonly string[] HelpString = new string[] {
             "&TArguments: [angleX] [angleY] [angleZ]",
             "&HRotates the output of the draw operation around its bottom left corner",
             "&TArguments: [angleX] [angleY] [angleZ] centre",

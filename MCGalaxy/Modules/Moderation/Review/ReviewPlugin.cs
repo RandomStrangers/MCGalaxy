@@ -24,7 +24,7 @@ namespace MCGalaxy.Modules.Moderation.Review
     {
         public override string name { get { return "Review"; } }
 
-        Command cmdReview = new CmdReview();
+        readonly Command cmdReview = new CmdReview();
 
         public override void Load(bool startup) {
             OnPlayerConnectEvent.Register(CheckReviewList, Priority.Low);

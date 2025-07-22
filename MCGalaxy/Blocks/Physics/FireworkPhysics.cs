@@ -37,7 +37,7 @@ namespace MCGalaxy.Blocks.Physics {
                     int bAbove = lvl.PosToInt(x, (ushort)(y + 1), z);
                     bool unblocked = bAbove < 0 || !lvl.listUpdateExists.Get(x, y + 1, z);
                     if (unblocked) {
-                        PhysicsArgs args = default(PhysicsArgs);
+                        PhysicsArgs args = default;
                         args.Type1 = PhysicsArgs.Wait; args.Value1 = 1;
                         args.Type2 = PhysicsArgs.Dissipate; args.Value2 = 100;
                         
@@ -59,15 +59,14 @@ namespace MCGalaxy.Blocks.Physics {
             // Not using override, since override = true makes it more likely that a colored block will be
             // generated with no extraInfo, because it sets a Check for that position with no extraInfo.
             lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
-            
-            int index;
+
             ushort x = C.X, y = C.Y, z = C.Z;
             for (int yy = y - (size + 1); yy <= y + (size + 1); ++yy)
                 for (int zz = z - (size + 1); zz <= z + (size + 1); ++zz)
                     for (int xx = x - (size + 1); xx <= x + (size + 1); ++xx)
             {               
-                if (lvl.IsAirAt((ushort)xx, (ushort)yy, (ushort)zz, out index) && rand.Next(1, 40) < 2) {
-                    PhysicsArgs args = default(PhysicsArgs);
+                if (lvl.IsAirAt((ushort)xx, (ushort)yy, (ushort)zz, out int index) && rand.Next(1, 40) < 2) {
+                    PhysicsArgs args = default;
                     args.Type1 = PhysicsArgs.Drop; args.Value1 = 100;
                     args.Type2 = PhysicsArgs.Dissipate; args.Value2 = 25;
                     lvl.AddUpdate(index, (byte)rand.Next(min, max), args);

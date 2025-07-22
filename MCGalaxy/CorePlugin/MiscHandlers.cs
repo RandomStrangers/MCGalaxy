@@ -39,7 +39,7 @@ namespace MCGalaxy.Core
             cancel = true;
         }
 
-        internal static void HandleSentMap(Player p, Level prevLevel, Level level)
+        internal static void HandleSentMap(Player p, Level _, Level level)
         {
             p.AFKCooldown = DateTime.UtcNow.AddSeconds(2);
             p.prevMsg = "";
@@ -75,8 +75,8 @@ namespace MCGalaxy.Core
             }
         }
 
-        internal static void HandlePlayerClick(Player p, MouseButton button, MouseAction action, ushort yaw, ushort pitch,
-                                               byte id, ushort x, ushort y, ushort z, TargetBlockFace face)
+        internal static void HandlePlayerClick(Player p, MouseButton _, MouseAction action, ushort __, ushort ___,
+                                               byte id, ushort x, ushort y, ushort z, TargetBlockFace ____)
         {
             if (action != MouseAction.Pressed) return;
             if (id != Entities.SelfID && ClickOnBot(p, id)) return;
@@ -97,8 +97,7 @@ namespace MCGalaxy.Core
             for (int i = 0; i < bots.Length; i++)
             {
 
-                byte botID;
-                if (!p.EntityList.GetID(bots[i], out botID)) continue;
+                if (!p.EntityList.GetID(bots[i], out byte botID)) continue;
                 if (botID != id) continue;
 
                 if (bots[i].ClickedOnText == null && !p.checkingBotInfo) return false;

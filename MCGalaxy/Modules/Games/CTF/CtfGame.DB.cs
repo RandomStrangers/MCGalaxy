@@ -26,7 +26,7 @@ namespace MCGalaxy.Modules.Games.CTF
     {
         struct CtfStats { public int Points, Captures, Tags; }
         
-        static ColumnDesc[] ctfTable = new ColumnDesc[] {
+        static readonly ColumnDesc[] ctfTable = new ColumnDesc[] {
             new ColumnDesc("ID", ColumnType.Integer, priKey: true, autoInc: true, notNull: true),
             new ColumnDesc("Name", ColumnType.VarChar, 20),
             new ColumnDesc("Points", ColumnType.UInt24),
@@ -43,7 +43,7 @@ namespace MCGalaxy.Modules.Games.CTF
         }
         
         static CtfStats LoadStats(string name) {
-            CtfStats stats = default(CtfStats);
+            CtfStats stats = default;
             Database.ReadRows("CTF", "*",
                                 record => stats = ParseStats(record),
                                 "WHERE Name=@0", name);

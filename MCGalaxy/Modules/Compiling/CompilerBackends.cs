@@ -122,12 +122,14 @@ namespace MCGalaxy.Modules.Compiling
         }
         
         protected static ProcessStartInfo CreateStartInfo(string path, string args) {
-            ProcessStartInfo psi = new ProcessStartInfo(path, args);
-            psi.WorkingDirectory       = Environment.CurrentDirectory;
-            psi.UseShellExecute        = false;
-            psi.CreateNoWindow         = true;
-            psi.RedirectStandardOutput = true;
-            psi.RedirectStandardError  = true;
+            ProcessStartInfo psi = new ProcessStartInfo(path, args)
+            {
+                WorkingDirectory = Environment.CurrentDirectory,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            };
             return psi;
         }
         

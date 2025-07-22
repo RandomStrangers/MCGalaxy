@@ -60,7 +60,7 @@ namespace MCGalaxy.Blocks {
             return ChangeResult.Modified;
         }        
         
-        internal static ChangeResult C4(Player p, BlockID block, ushort x, ushort y, ushort z) {
+        internal static ChangeResult C4(Player p, BlockID _, ushort x, ushort y, ushort z) {
             if (p.level.physics == 0 || p.level.physics == 5) return ChangeResult.Unchanged;
             
             // Use red wool to detonate c4
@@ -81,11 +81,11 @@ namespace MCGalaxy.Blocks {
             }
             
             C4Data c4 = C4Physics.Find(p.level, p.c4circuitNumber);
-            if (c4 != null) c4.list.Add(p.level.PosToInt(x, y, z));
+            c4?.list.Add(p.level.PosToInt(x, y, z));
             return p.ChangeBlock(x, y, z, Block.C4);
         }
         
-        internal static ChangeResult C4Det(Player p, BlockID block, ushort x, ushort y, ushort z) {
+        internal static ChangeResult C4Det(Player p, BlockID _, ushort x, ushort y, ushort z) {
             if (p.level.physics == 0 || p.level.physics == 5) {
                 p.c4circuitNumber = -1;
                 return ChangeResult.Unchanged;

@@ -78,7 +78,7 @@ namespace MCGalaxy.Bots
         }
         
         public override InstructionData Parse(string[] args) {
-            InstructionData data = default(InstructionData);
+            InstructionData data = default;
             if (args.Length > 1)
                 data.Metadata = ushort.Parse(args[1]);
             return data;
@@ -93,7 +93,7 @@ namespace MCGalaxy.Bots
         }
         
         public override string[] Help { get { return help; } }
-        static string[] help = new string[] { 
+        static readonly string[] help = new string[] { 
             "&T/BotAI add [name] hunt <radius>",
             "&HCauses the bot to move towards the closest player in the search radius.",
             "&H  <radius> defaults to 75 blocks.",
@@ -114,8 +114,7 @@ namespace MCGalaxy.Bots
                 int dz = Math.Abs(bot.Pos.Z - p.Pos.Z);
                 
                 if (dx <= 8 && dy <= 16 && dz <= 8) {
-                    string msg = bot.DeathMessage;
-                    if (msg == null) msg = "@p &Swas &cterminated.";
+                    string msg = bot.DeathMessage ?? "@p &Swas &cterminated.";
                     p.HandleDeath(Block.Cobblestone, msg);
                 }
             }
@@ -123,7 +122,7 @@ namespace MCGalaxy.Bots
         }
         
         public override string[] Help { get { return help; } }
-        static string[] help = new string[] {
+        static readonly string[] help = new string[] {
             "&T/BotAI add [name] kill",
             "&HCauses the bot to kill any players it is touching.",
         };
@@ -143,7 +142,7 @@ namespace MCGalaxy.Bots
         }
         
         public override InstructionData Parse(string[] args) {
-            InstructionData data = default(InstructionData);
+            InstructionData data = default;
             if (args.Length > 1)
                 data.Metadata = ushort.Parse(args[1]);
             return data;
@@ -167,7 +166,7 @@ namespace MCGalaxy.Bots
         }
         
         public override string[] Help { get { return help; } }
-        static string[] help = new string[] { 
+        static readonly string[] help = new string[] { 
             "&T/BotAI add [name] stare <radius>",
             "&HCauses the bot to stare at the closest player in the search radius.",
             "&H  <radius> defaults to 1000 blocks.",

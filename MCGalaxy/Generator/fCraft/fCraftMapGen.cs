@@ -45,11 +45,11 @@ namespace MCGalaxy.Generator.fCraft {
             GenerateMap(map);
         }
 
-        void ReportProgress(int relativeIncrease, string message) {
+        void ReportProgress(int _, string message) {
             Logger.Log(LogType.SystemActivity, message);
         }
         
-        void ApplyBiome(Level map) {
+        void ApplyBiome(Level _) {
             MapGenBiome biome = MapGenBiome.Get(args.Biome);
             bGroundSurface    = biome.Surface;
             bWater    = biome.Water;
@@ -70,7 +70,7 @@ namespace MCGalaxy.Generator.fCraft {
 
         #region Heightmap Processing
 
-        void GenerateHeightmap(Level map) {
+        void GenerateHeightmap(Level _) {
             ReportProgress( 10, "Heightmap: Priming" );
             heightmap  = new float[_width * _length];
             surfaceMap = new ushort[_width * _length];

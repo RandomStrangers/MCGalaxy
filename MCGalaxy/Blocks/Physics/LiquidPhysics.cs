@@ -22,8 +22,7 @@ namespace MCGalaxy.Blocks.Physics {
     public static class LiquidPhysics {
         
         public static void PhysWater(Level lvl, ushort x, ushort y, ushort z, BlockID type) {
-            int index;
-            BlockID block = lvl.GetBlock(x, y, z, out index);
+            BlockID block = lvl.GetBlock(x, y, z, out int index);
 
             switch (block) {
                 case Block.Air:
@@ -57,8 +56,7 @@ namespace MCGalaxy.Blocks.Physics {
         }
         
         public static void PhysLava(Level lvl, ushort x, ushort y, ushort z, BlockID type) {
-            int index;
-            BlockID block = lvl.GetBlock(x, y, z, out index);
+            BlockID block = lvl.GetBlock(x, y, z, out int index);
 
             switch (block) {
                 case Block.Air:

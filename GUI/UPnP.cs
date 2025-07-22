@@ -42,7 +42,7 @@ namespace MCGalaxy
             "\r\n";
 
         string _serviceUrl;
-        List<string> visitedLocations = new List<string>();
+        readonly List<string> visitedLocations = new List<string>();
         
         
         public bool Discover() {

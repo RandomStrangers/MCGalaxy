@@ -73,10 +73,12 @@ namespace MCGalaxy.Generator
         public bool Generate(Player p, Level lvl, string seed) {
             lvl.Config.Theme = Theme;
             lvl.Config.Seed  = seed;
-            
-            MapGenArgs args = new MapGenArgs();
-            args.Args       = seed;
-            
+
+            MapGenArgs args = new MapGenArgs
+            {
+                Args = seed
+            };
+
             bool success = GenFunc(p, lvl, args);
             MapGenBiome.Get(args.Biome).ApplyEnv(lvl.Config);
             return success;
@@ -86,9 +88,8 @@ namespace MCGalaxy.Generator
         /// <summary> Creates an RNG initialised with the given seed. </summary>
         public static Random MakeRng(string seed) {
             if (seed.Length == 0) return new Random();
-            
-            int value;
-            if (!NumberUtils.TryParseInt32(seed, out value)) 
+
+            if (!NumberUtils.TryParseInt32(seed, out int value))
                 value = seed.GetHashCode();
             return new Random(value);
         } // TODO move to CmdMaze

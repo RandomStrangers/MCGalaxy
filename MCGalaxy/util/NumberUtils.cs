@@ -28,9 +28,9 @@ namespace MCGalaxy
         // Not all languages use . as their decimal point separator
         public static bool TryParseSingle(string s, out float result) {
             if (s != null && s.IndexOf(',') >= 0) s = s.Replace(',', '.');
-            result = 0; float temp;
+            result = 0; 
 
-            if (!float.TryParse(s, DECIMAL_STYLE, NumberFormatInfo.InvariantInfo, out temp)) return false;
+            if (!float.TryParse(s, DECIMAL_STYLE, NumberFormatInfo.InvariantInfo, out float temp)) return false;
             if (float.IsInfinity(temp) || float.IsNaN(temp)) return false;
             result = temp;
             return true;
@@ -38,9 +38,9 @@ namespace MCGalaxy
         
         public static bool TryParseDouble(string s, out double result) {
             if (s != null && s.IndexOf(',') >= 0) s = s.Replace(',', '.');
-            result = 0; double temp;
+            result = 0; 
             
-            if (!double.TryParse(s, DECIMAL_STYLE, NumberFormatInfo.InvariantInfo, out temp)) return false;
+            if (!double.TryParse(s, DECIMAL_STYLE, NumberFormatInfo.InvariantInfo, out double temp)) return false;
             if (double.IsInfinity(temp) || double.IsNaN(temp)) return false;
             result = temp;
             return true;

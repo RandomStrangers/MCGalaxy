@@ -111,7 +111,7 @@ namespace MCGalaxy.Network
             }
         }
         
-        static AsyncCallback acceptCallback = new AsyncCallback(AcceptCallback);
+        static readonly AsyncCallback acceptCallback = new AsyncCallback(AcceptCallback);
         static void AcceptCallback(IAsyncResult result) {
             if (Server.shuttingDown) return;
             TcpListen listen = (TcpListen)result.AsyncState;
@@ -138,7 +138,7 @@ namespace MCGalaxy.Network
                 }
             } catch (Exception ex) {
                 if (!(ex is SocketException)) Logger.LogError(ex);
-                if (s != null) s.Close();
+                s?.Close();
             }
             listen.AcceptNextAsync();
         }
@@ -146,7 +146,7 @@ namespace MCGalaxy.Network
         public override void Close() {
             try {
                 Listening = false;
-                if (socket != null) socket.Close();
+                socket?.Close();
             } catch (Exception ex) { 
                 Logger.LogError(ex); 
             }

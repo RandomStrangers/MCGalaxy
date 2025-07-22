@@ -31,9 +31,9 @@ namespace MCGalaxy
         static bool disposed;
         static DateTime last;
 
-        static object logLock = new object();
-        static FileLogGroup err = new FileLogGroup();
-        static FileLogGroup msg = new FileLogGroup();
+        static readonly object logLock = new object();
+        static readonly FileLogGroup err = new FileLogGroup();
+        static readonly FileLogGroup msg = new FileLogGroup();
         static SchedulerTask logTask;
 
         public static void Init() {

@@ -24,7 +24,7 @@ namespace MCGalaxy
 {
     public sealed partial class Server
     {
-        static ColumnDesc[] playersTable = new ColumnDesc[] {
+        static readonly ColumnDesc[] playersTable = new ColumnDesc[] {
             new ColumnDesc("ID", ColumnType.Integer, priKey: true, autoInc: true, notNull: true),
             new ColumnDesc("Name", ColumnType.VarChar, 17),
             new ColumnDesc("IP", ColumnType.Char, 15),
@@ -43,7 +43,7 @@ namespace MCGalaxy
             new ColumnDesc("Messages", ColumnType.UInt24),
         };
         
-        static ColumnDesc[] opstatsTable = new ColumnDesc[] {
+        static readonly ColumnDesc[] opstatsTable = new ColumnDesc[] {
             new ColumnDesc("ID", ColumnType.Integer, priKey: true, autoInc: true, notNull: true),
             new ColumnDesc("Time", ColumnType.DateTime),
             new ColumnDesc("Name", ColumnType.VarChar, 17),

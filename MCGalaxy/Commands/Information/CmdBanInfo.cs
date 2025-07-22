@@ -53,10 +53,8 @@ namespace MCGalaxy.Commands.Info
             else if (!ipBanned && !isBanned) msg += " &Sis not banned";
             else if (ipBanned && isBanned) msg += " &Sand their IP are &cBANNED";
             else msg += " &Sis not banned, but their IP is &cBANNED";
-            
-            string banner, reason, prevRank;
-            DateTime time;
-            Ban.GetBanData(target, out banner, out reason, out time, out prevRank);
+
+            Ban.GetBanData(target, out string banner, out string reason, out DateTime time, out string prevRank);
             if (banner != null && permaBanned) {
                 string grpName = Group.GetColoredName(prevRank);
                 msg += " &S(Former rank: " + grpName + "&S)";

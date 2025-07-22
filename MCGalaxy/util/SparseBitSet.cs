@@ -21,9 +21,9 @@ namespace MCGalaxy.Util {
     /// <remarks> Typically this means 1 bit per block for a level. </remarks>
     /// <remarks> Does NOT perform any bounds checking. </remarks>
     public sealed class SparseBitSet {
-        
-        int chunksX, chunksY, chunksZ;
-        byte[][] bits;
+
+        readonly int chunksX, chunksY, chunksZ;
+        readonly byte[][] bits;
         
         /// <summary> Initialises a sparse bit set for the given 3D volume. </summary>
         public SparseBitSet(int width, int height, int length) {

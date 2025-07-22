@@ -50,7 +50,7 @@ namespace MCGalaxy.Drawing.Ops
                 BlockDBReadLock = Level.BlockDB.Locker.AccquireRead();
                 if (Level.BlockDB.FindChangesBy(ids, Start, End, out dims, RedoBlock)) return;
             } finally {
-                if (BlockDBReadLock != null) BlockDBReadLock.Dispose();
+                BlockDBReadLock?.Dispose();
             }
             this.output = null;
         }

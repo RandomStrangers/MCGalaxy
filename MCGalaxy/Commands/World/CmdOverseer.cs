@@ -17,7 +17,7 @@
  */
 
 namespace MCGalaxy.Commands.World {
-    public sealed partial class CmdOverseer : Command2 {
+    public sealed class CmdOverseer : Command2 {
         public override string name { get { return "Overseer"; } }
         public override string shortcut { get { return Overseer.commandShortcut; } }
         public override string type { get { return CommandTypes.Moderation; } }

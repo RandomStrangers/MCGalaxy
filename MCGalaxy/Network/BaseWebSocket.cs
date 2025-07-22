@@ -87,8 +87,8 @@ namespace MCGalaxy.Network
         }
         
         int state, opcode, frameLen, maskRead, frameRead;
-        byte[] mask = new byte[4], frame;
-        
+        private readonly byte[] mask = new byte[4];
+        private byte[] frame;
         const int state_header1 = 0;
         const int state_header2 = 1;
         const int state_extLen1 = 2;

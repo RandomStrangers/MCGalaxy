@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using BlockID = System.UInt16;
 
 namespace MCGalaxy.Commands.CPE 
 {    
@@ -30,9 +29,8 @@ namespace MCGalaxy.Commands.CPE
         public override void Use(Player p, string message, CommandData data) {
             if (message.Length == 0) { Help(p); return; }      
             string[] args = message.SplitSpaces(2);
-            
-            BlockID block;
-            if (!CommandParser.GetBlock(p, args[0], out block)) return;
+
+            if (!CommandParser.GetBlock(p, args[0], out ushort block)) return;
             bool locked = false;
             if (args.Length > 1 && !CommandParser.GetBool(p, args[1], ref locked)) return;
             

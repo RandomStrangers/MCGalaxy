@@ -128,7 +128,7 @@ namespace MCGalaxy.Modules.Games.ZS
         const string InfectZombieObjectPlaceholder = "<zobject>";
         const string InfectHumanObjectPlaceholder = "<hobject>";
 
-        static string[] defMessages = new string[] { "<zombie> WIKIWOO'D <human>", "<zombie> stuck <zobject> teeth into <human>",
+        static readonly string[] defMessages = new string[] { "<zombie> WIKIWOO'D <human>", "<zombie> stuck <zobject> teeth into <human>",
             "<zombie> licked <human>'s brain ", "<zombie> danubed <human>", "<zombie> made <human> meet <hobject> maker", "<zombie> tripped <human>",
             "<zombie> made some zombie babies with <human>", "<zombie> made <human> see the dark side", "<zombie> tweeted <human>",
             "<zombie> made <human> open source", "<zombie> infected <human>", "<zombie> iDotted <human>", "<human> got nommed on",

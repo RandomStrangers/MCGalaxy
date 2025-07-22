@@ -148,19 +148,25 @@ namespace MCGalaxy
         }
         
         static string ExtractItem(ZipReader reader, int i, ref int errors) {
-            string path;
-            using (Stream part = reader.GetEntry(i, out path)) {
+            using (Stream part = reader.GetEntry(i, out string path))
+            {
                 // old server backup used to URI encode files
                 path = Uri.UnescapeDataString(path);
-                
-                try {
+
+                try
+                {
                     Extract(part, path); return path;
-                } catch {
-                    try {
+                }
+                catch
+                {
+                    try
+                    {
                         string dir = Path.GetDirectoryName(path);
                         Directory.CreateDirectory(dir);
                         Extract(part, path); return path;
-                    } catch (IOException e) {
+                    }
+                    catch (IOException e)
+                    {
                         Logger.LogError(e);
                         Logger.Log(LogType.Warning, "&WError extracting {0}, continuing with rest.", path);
                         errors++;
@@ -243,14 +249,13 @@ namespace MCGalaxy
                 }
                 bulk.Commit();
             } finally {
-                if (bulk != null) bulk.Dispose();
+                bulk?.Dispose();
             }
         }
         
         static string NextStatement(StreamReader r, List<string> buffer) {
             buffer.Clear();
-            string line = null;
-            
+            string line;
             while ((line = r.ReadLine()) != null) {
                 if (line.StartsWith("--")) continue; // comment
                 line = line.Trim();

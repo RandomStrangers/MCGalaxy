@@ -79,9 +79,10 @@ namespace MCGalaxy.Modules.Warps
         }
         
         protected static WarpList LoadList(string path) {
-            WarpList list = new WarpList();
-            
-            list.Filename = path;
+            WarpList list = new WarpList
+            {
+                Filename = path
+            };
             list.Load();
             return list;
         }

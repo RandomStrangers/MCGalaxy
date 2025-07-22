@@ -73,8 +73,8 @@ namespace MCGalaxy
             
             foreach (ConfigElement elem in elements) 
             {
-                List<ConfigElement> members;
-                if (!sections.TryGetValue(elem.Attrib.Section, out members)) {
+                if (!sections.TryGetValue(elem.Attrib.Section, out List<ConfigElement> members))
+                {
                     members = new List<ConfigElement>();
                     sections[elem.Attrib.Section] = members;
                 }
@@ -82,7 +82,7 @@ namespace MCGalaxy
             }
             
             // group output by sections
-            foreach (var kvp in sections) 
+            foreach (KeyValuePair<string, List<ConfigElement>> kvp in sections) 
             {
                 dst.WriteLine("# " + kvp.Key + " settings");
                 foreach (ConfigElement elem in kvp.Value) 

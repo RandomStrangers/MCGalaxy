@@ -25,7 +25,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
         public override string name { get { return "Notes"; } }
 
 
-        static Command[] cmds = new Command[] { new CmdNotes(), new CmdMyNotes(), new CmdNote(), new CmdOpNote(), };
+        static readonly Command[] cmds = new Command[] { new CmdNotes(), new CmdMyNotes(), new CmdNote(), new CmdOpNote(), };
 
         public override void Load(bool startup) {
             OnModActionEvent.Register(HandleModerationAction, Priority.Low);
@@ -96,7 +96,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
             }
 
             string modActionString = action.Type.ToString();
-            foreach (var na in All) {
+            foreach (NoteAcronym na in All) {
                 if (na.Action == modActionString) { return na.Acronym; }
             }
             return null;
@@ -105,7 +105,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
         /// Returns the appropriate Action from a mod note acronym. If none are found, returns the original argument.
         /// </summary>
         public static string GetAction(string acronym) {
-            foreach (var na in All) {
+            foreach (NoteAcronym na in All) {
                 if (na.Acronym == acronym) { return na.Action; }
             }
             return acronym;

@@ -122,11 +122,11 @@ namespace MCGalaxy.Network
     /// <summary> Abstracts sending to/receiving from a TCP socket </summary>
     public sealed class TcpSocket : INetSocket 
     {
-        readonly Socket socket;        
-        byte[] recvBuffer = new byte[256];
+        readonly Socket socket;
+        readonly byte[] recvBuffer = new byte[256];
         readonly SocketAsyncEventArgs recvArgs = new SocketAsyncEventArgs();
-        
-        byte[] sendBuffer = new byte[4096];
+
+        readonly byte[] sendBuffer = new byte[4096];
         readonly object sendLock = new object();
         readonly Queue<byte[]> sendQueue = new Queue<byte[]>(64);
         volatile bool sendInProgress;
@@ -152,7 +152,7 @@ namespace MCGalaxy.Network
         public override bool LowLatency { set { socket.NoDelay = value; } }
         
         
-        static EventHandler<SocketAsyncEventArgs> recvCallback = RecvCallback;
+        static readonly EventHandler<SocketAsyncEventArgs> recvCallback = RecvCallback;
         void ReceiveNextAsync() {
             // ReceiveAsync returns false if completed sync
             if (!socket.ReceiveAsync(recvArgs)) RecvCallback(null, recvArgs);
@@ -180,7 +180,7 @@ namespace MCGalaxy.Network
         }
         
         
-        static EventHandler<SocketAsyncEventArgs> sendCallback = SendCallback;
+        static readonly EventHandler<SocketAsyncEventArgs> sendCallback = SendCallback;
         public override void Send(byte[] buffer, SendFlags flags) {
             if (Disconnected || !socket.Connected) return;
 
@@ -257,7 +257,7 @@ namespace MCGalaxy.Network
         
         // Close while also notifying higher level (i.e. show 'X disconnected' in chat)
         void Disconnect() {
-            if (protocol != null) protocol.Disconnect();
+            protocol?.Disconnect();
             Close();
         }
         
@@ -301,7 +301,7 @@ namespace MCGalaxy.Network
         }
         
         protected override void OnDisconnected(int reason) {
-            if (protocol != null) protocol.Disconnect();
+            protocol?.Disconnect();
             s.Close();
         }
         
@@ -321,7 +321,7 @@ namespace MCGalaxy.Network
         // by default the following IPs are trusted for proxying/forwarding connections
         //  1) loopback (assumed to be a reverse proxy running on the same machine as the server)
         //  2) classicube.net's websocket proxy IP (used as a fallback for https only connections)
-        static IPAddress ccnetIP = new IPAddress(0xFA05DF22); // 34.223.5.250
+        static readonly IPAddress ccnetIP = new IPAddress(0xFA05DF22); // 34.223.5.250
         bool IsTrustedForwarderIP() {
             IPAddress ip = IP;
             return IPAddress.IsLoopback(ip) || ip.Equals(ccnetIP);
@@ -334,9 +334,9 @@ namespace MCGalaxy.Network
     public sealed class TcpLegacySocket : INetSocket 
     {
         readonly Socket socket;
-        byte[] recvBuffer = new byte[256];
-        
-        byte[] sendBuffer = new byte[4096];
+        readonly byte[] recvBuffer = new byte[256];
+
+        readonly byte[] sendBuffer = new byte[4096];
         readonly object sendLock = new object();
         readonly Queue<byte[]> sendQueue = new Queue<byte[]>(64);
         volatile bool sendInProgress;
@@ -353,7 +353,7 @@ namespace MCGalaxy.Network
         public override bool LowLatency { set { socket.NoDelay = value; } }
         
         
-        static AsyncCallback recvCallback = RecvCallback;
+        static readonly AsyncCallback recvCallback = RecvCallback;
         void ReceiveNextAsync() {
             socket.BeginReceive(recvBuffer, 0, recvBuffer.Length, 0, recvCallback, this);
         }
@@ -380,7 +380,7 @@ namespace MCGalaxy.Network
         }
         
         
-        static AsyncCallback sendCallback = SendCallback;
+        static readonly AsyncCallback sendCallback = SendCallback;
         public override void Send(byte[] buffer, SendFlags flags) {
             if (Disconnected || !socket.Connected) return;
 
@@ -442,7 +442,7 @@ namespace MCGalaxy.Network
         
         // Close while also notifying higher level (i.e. show 'X disconnected' in chat)
         void Disconnect() {
-            if (protocol != null) protocol.Disconnect();
+            protocol?.Disconnect();
             Close();
         }
         

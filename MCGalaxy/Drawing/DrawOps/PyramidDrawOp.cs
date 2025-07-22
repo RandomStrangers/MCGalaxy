@@ -77,8 +77,8 @@ namespace MCGalaxy.Drawing.Ops
     
     public class PyramidReverseDrawOp : PyramidDrawOp 
     {
-        DrawOp wallOp;
-        Brush airBrush;
+        readonly DrawOp wallOp;
+        readonly Brush airBrush;
         public PyramidReverseDrawOp() : base(new CuboidDrawOp(), -1) {
             wallOp   = new CuboidWallsDrawOp();
             airBrush = new SolidBrush(Block.Air);

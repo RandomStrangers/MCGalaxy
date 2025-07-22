@@ -99,11 +99,13 @@ namespace MCGalaxy.DB
         }
         
         internal static PlayerData Parse(ISqlRecord record) {
-            PlayerData data = new PlayerData();
-            data.Name = record.GetText(ColumnName);
-            data.IP   = record.GetText(ColumnIP);
-            data.DatabaseID = record.GetInt(ColumnID);
-            
+            PlayerData data = new PlayerData
+            {
+                Name = record.GetText(ColumnName),
+                IP = record.GetText(ColumnIP),
+                DatabaseID = record.GetInt(ColumnID)
+            };
+
             // Backwards compatibility with old format
             string rawTime = record.GetText(ColumnTimeSpent);
             try {
@@ -155,11 +157,10 @@ namespace MCGalaxy.DB
         
         static DateTime ParseDateTime(ISqlRecord record, string name) {
             int i = record.GetOrdinal(name);
-            DateTime dt;
-            
+
             // dates are a major pain
             string raw = record.GetStringValue(i);
-            if (raw.TryParseInvariantDateString(out dt)) return dt;
+            if (raw.TryParseInvariantDateString(out DateTime dt)) return dt;
             
             try {
                 return record.GetDateTime(i);

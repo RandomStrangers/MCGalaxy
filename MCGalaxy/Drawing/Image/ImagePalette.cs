@@ -113,7 +113,7 @@ namespace MCGalaxy.Drawing
         }
 
         
-        static PaletteEntry[] Color = new PaletteEntry[] {
+        static readonly PaletteEntry[] Color = new PaletteEntry[] {
             new PaletteEntry(128, 86,   57, Block.Dirt),
             new PaletteEntry(162, 129,  75, Block.Wood),
             new PaletteEntry(244, 237, 174, Block.Sand),
@@ -137,21 +137,21 @@ namespace MCGalaxy.Drawing
             new PaletteEntry(0,    0,    0, Block.Obsidian),
         };      
         
-        static PaletteEntry[] Grayscale = new PaletteEntry[] {
+        static readonly PaletteEntry[] Grayscale = new PaletteEntry[] {
             new PaletteEntry(0,     0,   0, Block.Obsidian),
             new PaletteEntry(46,   68,  47, Block.Black),
             new PaletteEntry(135, 145, 130, Block.Gray),
             new PaletteEntry(230, 240, 225, Block.White),
         };
         
-        static PaletteEntry[] GrayscaleSimple = new PaletteEntry[] {
+        static readonly PaletteEntry[] GrayscaleSimple = new PaletteEntry[] {
             new PaletteEntry(32,   32,  32, Block.Obsidian),
             new PaletteEntry(96,   96,  96, Block.Black),
             new PaletteEntry(160, 160, 160, Block.Gray),
             new PaletteEntry(224, 224, 224, Block.White),
         };
         
-        static PaletteEntry[] BlackWhite = new PaletteEntry[] {
+        static readonly PaletteEntry[] BlackWhite = new PaletteEntry[] {
             new PaletteEntry(255, 255, 255, Block.White),
             new PaletteEntry(0,     0,   0, Block.Obsidian),
         };

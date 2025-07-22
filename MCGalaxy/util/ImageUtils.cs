@@ -86,7 +86,7 @@ namespace MCGalaxy.Util
         }
 
         static void OnDecodeError(Player p, IBitmap2D bmp) {
-            if (bmp != null) bmp.Dispose();
+            bmp?.Dispose();
             // TODO failed to decode the image. make sure you are using the URL of the image directly, not just the webpage it is hosted on              
             p.Message("&WThere was an error reading the downloaded image.");
             p.Message("&WThe url may need to end with its extension (such as .jpg).");
@@ -104,7 +104,9 @@ namespace MCGalaxy.Util
         int stride;
         
         public override object RawImage { get { return bmp; } }
-
+#if MCG_DOTNET
+#pragma warning disable CA1416
+#endif
         public override void Decode(byte[] data) {
             Image tmp = Image.FromStream(new MemoryStream(data));
             SetBitmap(tmp);
@@ -136,7 +138,7 @@ namespace MCGalaxy.Util
 
         public override void Dispose() {
             UnlockBits();
-            if (img != null) img.Dispose();
+            img?.Dispose();
 
             img = null;
             bmp = null;
@@ -201,7 +203,7 @@ namespace MCGalaxy.Util
         }
     }
 #else
-    unsafe sealed class ImageSharpBitmap : IBitmap2D
+        unsafe sealed class ImageSharpBitmap : IBitmap2D
     {
         Image<Rgba32> img;
         
@@ -256,5 +258,8 @@ namespace MCGalaxy.Util
         public override void LockBits() { }
         public override void UnlockBits() { }
     }
+#endif
+#if MCG_DOTNET
+#pragma warning restore CA1416
 #endif
 }

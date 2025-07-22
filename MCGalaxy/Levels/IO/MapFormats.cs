@@ -43,14 +43,13 @@ namespace MCGalaxy.Levels.IO
         
         
         protected static void ConvertCustom(Level lvl) {
-            ushort x, y, z;
             byte[] blocks = lvl.blocks; // local var to avoid JIT bounds check
             for (int i = 0; i < blocks.Length; i++) {
                 byte raw = blocks[i];
                 if (raw <= Block.CPE_MAX_BLOCK) continue;
                 
                 blocks[i] = Block.custom_block;
-                lvl.IntToPos(i, out x, out y, out z);
+                lvl.IntToPos(i, out ushort x, out ushort y, out ushort z);
                 lvl.FastSetExtTile(x, y, z, raw);
             }
         }

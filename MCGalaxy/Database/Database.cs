@@ -244,10 +244,9 @@ namespace MCGalaxy.SQL
         }
         
         public static DateTime ParseDBDate(string value) {
-            DateTime dt;
             // prefer the exact format
-            if (value.TryParseInvariantDateString(out dt)) return dt;
-            
+            if (value.TryParseInvariantDateString(out DateTime dt)) return dt;
+
             return DateTime.Parse(value);
         }
     }

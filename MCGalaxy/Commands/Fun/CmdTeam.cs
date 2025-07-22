@@ -131,7 +131,7 @@ namespace MCGalaxy.Commands.Fun {
             Chat.MessageFrom(p, "λNICK &Screated the &a" + args[1] + " &Steam");
         }
         
-        void HandleJoin(Player p, string[] args) {
+        void HandleJoin(Player p, string[] _) {
             Team team = p.Game.Team;
             if (p.Game.TeamInvite == null) { p.Message("You do not currently have any invitation to join a team."); return; }
             if (team != null) { p.Message("You need to leave your current team before you can join another one."); return; }

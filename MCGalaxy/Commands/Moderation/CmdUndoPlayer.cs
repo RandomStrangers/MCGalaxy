@@ -43,8 +43,8 @@ namespace MCGalaxy.Commands.Moderation {
             if (CheckSuper(p, message, "player name")) return;
             if (message.Length == 0) { p.Message("You need to provide a player name."); return; }
             
-            string[] parts = message.SplitSpaces(), names = null;
-            int[] ids = GetIds(p, parts, data, out names);
+            string[] parts = message.SplitSpaces();
+            int[] ids = GetIds(p, parts, data, out string[] names);
             if (ids == null) return;
             
             TimeSpan delta = CmdUndo.GetDelta(p, parts[0], parts, 1);
@@ -55,8 +55,12 @@ namespace MCGalaxy.Commands.Moderation {
                 UndoPlayer(p, delta, names, ids, marks);
             } else {
                 p.Message("Place or break two blocks to determine the edges.");
-                UndoAreaArgs args = new UndoAreaArgs();
-                args.ids = ids; args.names = names; args.delta = delta;
+                UndoAreaArgs args = new UndoAreaArgs
+                {
+                    ids = ids,
+                    names = names,
+                    delta = delta
+                };
                 p.MakeSelection(2, "Selecting region for &SUndo player", args, DoUndoArea);
             }
         }
@@ -71,11 +75,14 @@ namespace MCGalaxy.Commands.Moderation {
         
 
         static void UndoPlayer(Player p, TimeSpan delta, string[] names, int[] ids, Vec3S32[] marks) {
-            UndoDrawOp op = new UndoDrawOp();
-            op.Start = DateTime.UtcNow.Subtract(delta);
-            op.who = names[0]; op.ids = ids;
-            op.AlwaysUsable = true;
-            
+            UndoDrawOp op = new UndoDrawOp
+            {
+                Start = DateTime.UtcNow.Subtract(delta),
+                who = names[0],
+                ids = ids,
+                AlwaysUsable = true
+            };
+
             if (p.IsSuper) {
                 // undo them across all loaded levels
                 Level[] levels = LevelInfo.Loaded.Items;

@@ -52,10 +52,9 @@ namespace MCGalaxy.Drawing.Brushes
         }
         
         public static BrushFactory FindMatch(Player p, string name) {
-            int matches;
-            BrushFactory match = Matcher.Find(p, name, out matches, Brushes,
+            BrushFactory match = Matcher.Find(p, name, out int matches, Brushes,
                                               null, b => b.Name, "brushes");
-            
+
             if (match == null && matches == 0) List(p);
             return match;
         }

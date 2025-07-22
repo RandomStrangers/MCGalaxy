@@ -32,17 +32,18 @@ namespace MCGalaxy.Commands.Eco
             if (!Formatter.ValidPlayerName(p, message)) return;
             
             if (!Economy.CheckIsEnabled(p, this)) return;
-            
-            int matches = 1;
-            Player who  = PlayerInfo.FindMatches(p, message, out matches);
+
+            Player who = PlayerInfo.FindMatches(p, message, out int matches);
             if (matches > 1) return;
-            
-            string target = null;
-            int money = 0;
-            if (matches == 0) {
+            string target;
+            int money;
+            if (matches == 0)
+            {
                 target = Economy.FindMatches(p, message, out money);
                 if (target == null) return;
-            } else {
+            }
+            else
+            {
                 target = who.name; money = who.money;
             }
 
@@ -82,10 +83,9 @@ namespace MCGalaxy.Commands.Eco
             string suffix = "";
             if (index < value.Length)
                 suffix = value.Substring(index);
-            
-            DateTime time;
-            if (!DateTime.TryParseExact(date, dateFormat, null, 0, out time)) return false;
-            
+
+            if (!DateTime.TryParseExact(date, dateFormat, null, 0, out DateTime time)) return false;
+
             TimeSpan delta = DateTime.Now - time;
             value = prefix + " &f" + delta.Shorten() + " ago" + suffix;
             return true;

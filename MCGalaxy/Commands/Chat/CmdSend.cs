@@ -67,7 +67,7 @@ namespace MCGalaxy.Commands.Chatting
             }
         }
         
-        static ColumnDesc[] createInbox = new ColumnDesc[] {
+        static readonly ColumnDesc[] createInbox = new ColumnDesc[] {
             new ColumnDesc("PlayerFrom", ColumnType.Char, 20),
             new ColumnDesc("TimeSent", ColumnType.DateTime),
             new ColumnDesc("Contents", ColumnType.VarChar, 255),

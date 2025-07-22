@@ -45,7 +45,7 @@ namespace MCGalaxy.Maths
         public float Length { get { return (float)Math.Sqrt( X * X + Y * Y + Z * Z ); } }
 
         public override bool Equals(object obj) {
-            return (obj is Vec3U16) && Equals((Vec3U16)obj);
+            return (obj is Vec3U16 u) && Equals(u);
         }
         
         public bool Equals(Vec3U16 other) {
@@ -140,7 +140,7 @@ namespace MCGalaxy.Maths
         
 
         public override bool Equals(object obj) {
-            return (obj is Vec3S32) && Equals((Vec3S32)obj);
+            return (obj is Vec3S32 s) && Equals(s);
         }
         
         public bool Equals(Vec3S32 other) {
@@ -232,7 +232,7 @@ namespace MCGalaxy.Maths
         
         
         public override bool Equals(object obj) {
-            return (obj is Vec3F32) && Equals((Vec3F32)obj);
+            return (obj is Vec3F32 f) && Equals(f);
         }
         
         public bool Equals(Vec3F32 other) {

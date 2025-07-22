@@ -33,15 +33,16 @@ namespace MCGalaxy.Drawing.Brushes
         public CloudyBrush(List<BlockID> blocks, List<int> counts, NoiseArgs n) {
             this.blocks = blocks.ToArray();
             this.counts = counts.ToArray();
-            this.thresholds = new float[counts.Count];
+            thresholds = new float[counts.Count];
             Random r = n.Seed == int.MinValue ? new Random() : new Random(n.Seed);
-            noise = new ImprovedNoise(r);
-            
-            noise.Frequency   = n.Frequency;
-            noise.Amplitude   = n.Amplitude;
-            noise.Octaves     = n.Octaves;
-            noise.Lacunarity  = n.Lacunarity;
-            noise.Persistence = n.Persistence;
+            noise = new ImprovedNoise(r)
+            {
+                Frequency = n.Frequency,
+                Amplitude = n.Amplitude,
+                Octaves = n.Octaves,
+                Lacunarity = n.Lacunarity,
+                Persistence = n.Persistence
+            };
         }
         
         public override string Name { get { return "Cloudy"; } }

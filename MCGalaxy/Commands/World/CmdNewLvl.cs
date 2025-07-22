@@ -38,7 +38,7 @@ namespace MCGalaxy.Commands.World {
                 
                 lvl.Save(true);
             } finally {
-                if (lvl != null) lvl.Dispose();
+                lvl?.Dispose();
                 Server.DoGC();
             }
         }

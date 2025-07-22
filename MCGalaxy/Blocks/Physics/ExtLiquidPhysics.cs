@@ -27,9 +27,8 @@ namespace MCGalaxy.Blocks.Physics {
             if (C.Data.Data < 3) return;
             
             ushort x = C.X, y = C.Y, z = C.Z;
-            int index;
-            BlockID below = lvl.GetBlock(x, (ushort)(y - 1), z, out index);
-            
+            BlockID below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
+
             if (below == Block.Air) {
                 lvl.AddUpdate(index, Block.Magma, default(PhysicsArgs));
             } else if (below != Block.Magma) {
@@ -54,9 +53,8 @@ namespace MCGalaxy.Blocks.Physics {
         }
         
         static void MagmaFlow(Level lvl, int x, int y, int z, ref bool flowUp) {
-            int index;
-            BlockID block = lvl.GetBlock((ushort)x, (ushort)y, (ushort)z, out index);
-            
+            BlockID block = lvl.GetBlock((ushort)x, (ushort)y, (ushort)z, out int index);
+
             if (lvl.Props[block].LavaKills) {
                 lvl.AddUpdate(index, Block.Magma, default(PhysicsArgs));
                 flowUp = true;
@@ -67,9 +65,8 @@ namespace MCGalaxy.Blocks.Physics {
             C.Data.Data++;
             
             ushort x = C.X, y = C.Y, z = C.Z;
-            int index;
-            BlockID below = lvl.GetBlock(x, (ushort)(y - 1), z, out index);
-            
+            BlockID below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
+
             if (below == Block.Air) {
                 lvl.AddUpdate(index, Block.Geyser, default(PhysicsArgs));
             } else if (below != Block.Geyser) {
@@ -94,9 +91,8 @@ namespace MCGalaxy.Blocks.Physics {
         }
         
         static void GeyserFlow(Level lvl, int x, int y, int z, ref bool flowUp) {
-            int index;
-            BlockID block = lvl.GetBlock((ushort)x, (ushort)y, (ushort)z, out index);
-            
+            BlockID block = lvl.GetBlock((ushort)x, (ushort)y, (ushort)z, out int index);
+
             if (lvl.Props[block].WaterKills) {
                 lvl.AddUpdate(index, Block.Geyser, default(PhysicsArgs));
                 flowUp = true;
@@ -105,9 +101,8 @@ namespace MCGalaxy.Blocks.Physics {
         
         public static void DoWaterfall(Level lvl, ref PhysInfo C) {
             ushort x = C.X, y = C.Y, z = C.Z;
-            int index;
-            BlockID below = lvl.GetBlock(x, (ushort)(y - 1), z, out index);
-            
+            BlockID below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
+
             switch (below) {
                 case Block.Air:
                     lvl.AddUpdate(index, Block.WaterDown, default(PhysicsArgs));
@@ -132,9 +127,8 @@ namespace MCGalaxy.Blocks.Physics {
         
         public static void DoLavafall(Level lvl, ref PhysInfo C) {
             ushort x = C.X, y = C.Y, z = C.Z;
-            int index;
-            BlockID below = lvl.GetBlock(x, (ushort)(y - 1), z, out index);
-            
+            BlockID below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
+
             switch (below)
             {
                 case Block.Air:
@@ -162,10 +156,9 @@ namespace MCGalaxy.Blocks.Physics {
             if (C.Data.Data < 2) return;
             C.Data.Data = 0;
 
-            Random rand = lvl.physRandom;  
-            int index;
-            BlockID below = lvl.GetBlock(C.X, (ushort)(C.Y - 1), C.Z, out index);
-            
+            Random rand = lvl.physRandom;
+            BlockID below = lvl.GetBlock(C.X, (ushort)(C.Y - 1), C.Z, out int index);
+
             if (below == Block.Air || below == target) {
                 if (rand.Next(1, 10) > 7) {
                     lvl.AddUpdate(index, Block.Air_FloodDown, default(PhysicsArgs));

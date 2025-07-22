@@ -30,7 +30,7 @@ namespace MCGalaxy {
         public static bool Read(string path, SimpleLineProcessor processor,
                                 char separator = '=', bool trimValue = true) {
             object obj = null;
-            LineProcessor<object> del = (string key, string value, ref object state) => { processor(key, value); };
+            void del(string key, string value, ref object state) { processor(key, value); }
             return Read(path, ref obj, del, separator, trimValue);
         }
         
@@ -39,9 +39,9 @@ namespace MCGalaxy {
             if (!File.Exists(path)) return false;
             
             using (StreamReader r = new StreamReader(path)) {
-                string line, key, value;
+                string line;
                 while ((line = r.ReadLine()) != null) {
-                    ParseLine(line, separator, out key, out value);
+                    ParseLine(line, separator, out string key, out string value);
                     if (key == null) continue;
 
                     try {

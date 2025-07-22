@@ -45,10 +45,9 @@ namespace MCGalaxy.Drawing.Transforms {
         }
         
         public static TransformFactory FindMatch(Player p, string name) {
-            int matches;
-            TransformFactory match = Matcher.Find(p, name, out matches, Transforms,
+            TransformFactory match = Matcher.Find(p, name, out int matches, Transforms,
                                               null, t => t.Name, "transforms");
-            
+
             if (match == null && matches == 0) List(p);
             return match;
         }

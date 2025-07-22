@@ -76,11 +76,11 @@ namespace MCGalaxy.Modules.Games.CTF
             }
         }
         
-        void ResetPlayerFlag(Player p, CtfData data) {
+        void ResetPlayerFlag(Player _, CtfData data) {
             Vec3S32 last = data.LastHeadPos;
             ushort x = (ushort)last.X, y = (ushort)last.Y, z = (ushort)last.Z;
             
-            data.LastHeadPos = default(Vec3S32);            
+            data.LastHeadPos = default;            
             Map.BroadcastRevert(x, y, z);
         }
         

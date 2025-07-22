@@ -181,8 +181,8 @@ namespace MCGalaxy.Games
     internal sealed class AimBox 
     {        
         Player player;
-        List<Vec3U16> lastGlass = new List<Vec3U16>();
-        List<Vec3U16> curGlass  = new List<Vec3U16>();
+        readonly List<Vec3U16> lastGlass = new List<Vec3U16>();
+        readonly List<Vec3U16> curGlass  = new List<Vec3U16>();
         
         public void Hook(Player p) {
             player = p;

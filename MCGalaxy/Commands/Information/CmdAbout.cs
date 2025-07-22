@@ -84,7 +84,7 @@ namespace MCGalaxy.Commands.Info
                                                       "WHERE X=@0 AND Y=@1 AND Z=@2", x, y, z);
             
             if (entries.Count > 0) foundAny = true;
-            BlockDBEntry entry = default(BlockDBEntry);
+            BlockDBEntry entry = default;
             entry.OldRaw = Block.Invalid;
             
             foreach (string[] row in entries)
@@ -111,8 +111,8 @@ namespace MCGalaxy.Commands.Info
         }
         
         static void OutputEntry(Player p, ref bool foundAny, Dictionary<int, string> names, BlockDBEntry entry) {
-            string name;
-            if (!names.TryGetValue(entry.PlayerID, out name)) {
+            if (!names.TryGetValue(entry.PlayerID, out string name))
+            {
                 name = NameConverter.FindName(entry.PlayerID);
                 names[entry.PlayerID] = name;
             }

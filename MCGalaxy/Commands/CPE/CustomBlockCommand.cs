@@ -40,14 +40,16 @@ namespace MCGalaxy.Commands.CPE
             string[] parts = message.SplitSpaces(4);
             Level lvl = p.IsSuper ? null : p.level;
 
-            BlockDefinitionsArgs args = new BlockDefinitionsArgs();
-            args.global = global;
-            args.level  = lvl;
-            args.cmd    = cmd;
-            args.scope  = global ? "global" : "level";
-            args.defs   = global ? BlockDefinition.GlobalDefs : lvl.CustomBlockDefs;
-            args.curDef = global ? p.gbBlock : p.lbBlock;
-            
+            BlockDefinitionsArgs args = new BlockDefinitionsArgs
+            {
+                global = global,
+                level = lvl,
+                cmd = cmd,
+                scope = global ? "global" : "level",
+                defs = global ? BlockDefinition.GlobalDefs : lvl.CustomBlockDefs,
+                curDef = global ? p.gbBlock : p.lbBlock
+            };
+
             for (int i = 0; i < Math.Min(parts.Length, 3); i++)
                 parts[i] = parts[i].ToLower();
             
@@ -172,9 +174,8 @@ namespace MCGalaxy.Commands.CPE
             BlockDefinition[] srcDefs = args.defs;
 
             BlockID dst;
-            int min, max;           
-            if (!CheckRawBlocks(p, parts[1], args, out min, out max, true)) return;
-            
+            if (!CheckRawBlocks(p, parts[1], args, out int min, out int max, true)) return;
+
             if (parts.Length > 2) {
                 if (!CheckBlock(p, parts[2], args, out dst)) return;
                 
@@ -222,9 +223,8 @@ namespace MCGalaxy.Commands.CPE
         
         static void InfoHandler(Player p, string[] parts, BlockDefinitionsArgs args) {
             if (parts.Length == 1) { Help(p, args.cmd); return; }
-            int min, max;
-            if (!CheckRawBlocks(p, parts[1], args, out min, out max)) return;
-            
+            if (!CheckRawBlocks(p, parts[1], args, out int min, out int max)) return;
+
             for (int i = min; i <= max; i++) 
             {
                 DoInfo(p, args, Block.FromRaw((BlockID)i));
@@ -305,9 +305,8 @@ namespace MCGalaxy.Commands.CPE
         
         static void RemoveHandler(Player p, string[] parts, BlockDefinitionsArgs args) {
             if (parts.Length <= 1) { Help(p, args.cmd); return; }
-            
-            int min, max;
-            if (!CheckRawBlocks(p, parts[1], args, out min, out max)) return;
+
+            if (!CheckRawBlocks(p, parts[1], args, out int min, out int max)) return;
             bool changed = false;
             
             for (int i = min; i <= max; i++)
@@ -403,7 +402,7 @@ namespace MCGalaxy.Commands.CPE
                     step += def.FogDensity == 0 ? 2 : 1;
                 }
             } else if (step == 16) {
-                ColorDesc rgb = default(ColorDesc);
+                ColorDesc rgb = default;
                 if (CommandParser.GetHex(p, value, ref rgb)) {
                     def.FogR = rgb.R; def.FogG = rgb.G; def.FogB = rgb.B;
                     step++;
@@ -520,7 +519,7 @@ namespace MCGalaxy.Commands.CPE
                     if (!EditByte(p, value, "Fog density", ref def.FogDensity, arg)) return false;
                     break;
                 case "fogcolor":
-                    ColorDesc rgb = default(ColorDesc);
+                    ColorDesc rgb = default;
                     if (!CommandParser.GetHex(p, value, ref rgb)) return false;
                     def.FogR = rgb.R; def.FogG = rgb.G; def.FogB = rgb.B;
                     break;
@@ -594,9 +593,8 @@ namespace MCGalaxy.Commands.CPE
                 }
                 return;
             }
-            
-            int min, max;
-            if (!CheckRawBlocks(p, parts[1], args, out min, out max)) return;
+
+            if (!CheckRawBlocks(p, parts[1], args, out int min, out int max)) return;
             bool changed = false;
             
             for (int i = min; i <= max; i++) 
@@ -635,9 +633,8 @@ namespace MCGalaxy.Commands.CPE
         }
         
         static BlockRaw GetFallback(Player p, string value) {
-            BlockID block;
-            if (!CommandParser.GetBlock(p, value, out block)) return Block.Invalid;
-            
+            if (!CommandParser.GetBlock(p, value, out ushort block)) return Block.Invalid;
+
             if (block >= Block.Extended) {
                 p.Message("&WCustom blocks cannot be used as fallback blocks.");
                 return Block.Invalid;
@@ -715,7 +712,6 @@ namespace MCGalaxy.Commands.CPE
         
         static bool CheckRaw(Player p, string arg, BlockDefinitionsArgs args,
                              out int raw, bool air = false) {
-            raw = -1;
             int min = air ? 0 : 1;
             int max = Block.MaxRaw;
             
@@ -736,11 +732,10 @@ namespace MCGalaxy.Commands.CPE
         
         static bool CheckRawBlocks(Player p, string arg, BlockDefinitionsArgs args,
                                    out int min, out int max, bool air = false) {
-            string[] bits;
             bool success;
-            
+
             // Either "[id]" or "[min]-[max]"
-            if (CommandParser.IsRawBlockRange(arg, out bits)) {
+            if (CommandParser.IsRawBlockRange(arg, out string[] bits)) {
                 success = CheckRaw(p, bits[0], args, out min, air) 
                         & CheckRaw(p, bits[1], args, out max, air);                
             } else {
@@ -752,9 +747,8 @@ namespace MCGalaxy.Commands.CPE
         
         static bool CheckBlock(Player p, string arg, BlockDefinitionsArgs args,
                                out BlockID block, bool air = false) {
-            int raw;
-            bool success = CheckRaw(p, arg, args, out raw, air);
-            
+            bool success = CheckRaw(p, arg, args, out int raw, air);
+
             block = Block.FromRaw((BlockID)raw);
             return success;
         }
@@ -833,12 +827,12 @@ namespace MCGalaxy.Commands.CPE
         }
         
         
-        static string[] stepsHelp = new string[] {
+        static readonly string[] stepsHelp = new string[] {
             null, null, "name", "shape", "toptex", "sidetex", "bottomtex", "min", "max", "collide",
             "speed", "blockslight", "sound", "fullbright", "blockdraw", "fogdensity", "fogcolor", "fallback" };
         
         const string texLine = "Press F10 to see the numbers for each texture in terrain.png";
-        static Dictionary<string, string[]> helpSections = new Dictionary<string, string[]>() {
+        static readonly Dictionary<string, string[]> helpSections = new Dictionary<string, string[]>() {
             { "name", new string[]  { "Type the name for the block." } },
             { "shape", new string[] { "Type '0' if the block is a cube, '1' if a sprite (e.g roses)." } },
             { "blockslight", new string[] { "Type 'yes' if the block casts a shadow, 'no' if it doesn't." } },

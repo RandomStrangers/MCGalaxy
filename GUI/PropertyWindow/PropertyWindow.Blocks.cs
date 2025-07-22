@@ -20,19 +20,18 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using MCGalaxy.Blocks;
 using BlockID = System.UInt16;
-using BlockRaw = System.Byte;
 
 namespace MCGalaxy.Gui {
     public partial class PropertyWindow : Form {
         BlockID curBlock;
         List<BlockID> blockIDMap;
-        ItemPermsHelper blockItems = new ItemPermsHelper();
+        readonly ItemPermsHelper blockItems = new ItemPermsHelper();
         
         // need to keep a list of changed block perms, because we don't want
         // to modify the server's live permissions if user clicks 'discard'
         BlockPerms placePermsOrig, placePermsCopy;
-        List<BlockPerms> placePermsChanged = new List<BlockPerms>();
-        BlockProps[] blockPropsChanged = new BlockProps[Block.Props.Length];
+        readonly List<BlockPerms> placePermsChanged = new List<BlockPerms>();
+        readonly BlockProps[] blockPropsChanged = new BlockProps[Block.Props.Length];
         // TODO delete permissions too
         
         void LoadBlocks() {
@@ -124,7 +123,7 @@ namespace MCGalaxy.Gui {
             blk_cbLava.Checked = props.LavaKills;
             blk_cbWater.Checked = props.WaterKills;
             
-            BlockPerms perms = placePermsCopy != null ? placePermsCopy : placePermsOrig;
+            BlockPerms perms = placePermsCopy ?? placePermsOrig;
             blockItems.Update(perms);
         }
         

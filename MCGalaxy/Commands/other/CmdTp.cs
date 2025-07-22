@@ -53,7 +53,7 @@ namespace MCGalaxy.Commands.Misc {
                 Help(p); return;
             }
             
-            Entity dst = bot != null ? bot : (Entity)target;
+            Entity dst = bot ?? (Entity)target;
             PlayerOperations.TeleportToEntity(p, dst);
         }
         
@@ -87,8 +87,7 @@ namespace MCGalaxy.Commands.Misc {
         }
         
         static void TeleportCoords(Player p, string[] args, bool precise) {
-            Position pos; byte yaw, pitch;
-            if (!GetTeleportCoords(p, p, args, precise, out pos, out yaw, out pitch)) return;
+            if (!GetTeleportCoords(p, p, args, precise, out Position pos, out byte yaw, out byte pitch)) return;
 
             PlayerOperations.TeleportToCoords(p, pos, new Orientation(yaw, pitch));
         }

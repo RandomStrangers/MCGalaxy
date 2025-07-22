@@ -27,6 +27,8 @@ namespace MCGalaxy.Gui
     {   
         [STAThread]
         public static void Main(string[] args) {
+            Console.WriteLine(args);
+            Console.Clear();
             SetCurrentDirectory();
 
             // separate method, in case MCGalaxy_.dll is missing

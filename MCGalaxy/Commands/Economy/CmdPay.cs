@@ -24,9 +24,8 @@ namespace MCGalaxy.Commands.Eco {
         public override bool MessageBlockRestricted { get { return true; } }
         
         public override void Use(Player p, string message, CommandData data) {
-            EcoTransaction trans;
             bool all = false;
-            if (!ParseArgs(p, message, ref all, "pay", out trans)) return;
+            if (!ParseArgs(p, message, ref all, "pay", out EcoTransaction trans)) return;
             
             // Player can use /pay messages to bypass a mute
             // TODO: Make MessageCmd.CanSpeak more generic so that can be used here instead
@@ -34,9 +33,8 @@ namespace MCGalaxy.Commands.Eco {
                 p.Message("&WCannot specify a payment reason, as you cannot currently speak");
                 return;
             }
-            
-            int matches = 1;
-            Player who = PlayerInfo.FindMatches(p, trans.TargetName, out matches);
+
+            Player who = PlayerInfo.FindMatches(p, trans.TargetName, out int matches);
             if (matches > 1) return;
             if (p == who) { p.Message("&WYou cannot pay yourself &3" + Server.Config.Currency); return; }
             int money, srcMoney = p.IsSuper ? int.MaxValue : p.money;

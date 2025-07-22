@@ -34,7 +34,7 @@ namespace MCGalaxy {
             LampLight = args.Length > 6 ? args[6] : "";
         }
             
-        static Dictionary<string, string> Presets = new Dictionary<string, string>() {
+        static readonly Dictionary<string, string> Presets = new Dictionary<string, string>() {
                         //   fog   sky   clouds   sun   shadow
             { "Cartoon",  "00FFFF 1E90FF 00BFFF F5DEB3 F4A460" },
             { "Noir",     "000000 1F1F1F 000000 696969 1F1F1F" },
@@ -60,7 +60,7 @@ namespace MCGalaxy {
         }
 
         static EnvPreset FindDefault(string name) {
-            foreach (var kvp in Presets) {
+            foreach (KeyValuePair<string, string> kvp in Presets) {
                 if (kvp.Key.CaselessEq(name)) return new EnvPreset(kvp.Value);
             }
             return null;

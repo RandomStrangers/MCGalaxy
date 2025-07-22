@@ -33,7 +33,7 @@ namespace MCGalaxy.Bots
         
         /// <summary> Parses the given arguments which contains the data for this instruction. </summary>
         public virtual InstructionData Parse(string[] args) {
-            return default(InstructionData);
+            return default;
         }
         
         /// <summary> Writes the data for this instruction to the given AI file. </summary>

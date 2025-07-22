@@ -199,14 +199,12 @@ namespace MCGalaxy.Modules.Relay.Discord
         
         void HandleDispatch(JsonObject obj) {
             // update last sequence number
-            object sequence;
-            if (obj.TryGetValue("s", out sequence)) 
+            if (obj.TryGetValue("s", out object sequence))
                 Session.LastSeq = (string)sequence;
-            
+
             string eventName = (string)obj["t"];
-            
-            object rawData;            
-            obj.TryGetValue("d", out rawData);
+
+            obj.TryGetValue("d", out object rawData);
             JsonObject data = rawData as JsonObject;
             
             if (eventName == "READY") {
@@ -223,8 +221,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         }
         
         void HandleReady(JsonObject data) {
-            object session;
-            if (data.TryGetValue("session_id", out session)) 
+            if (data.TryGetValue("session_id", out object session))
                 Session.ID = (string)session;
         }
         
@@ -248,8 +245,10 @@ namespace MCGalaxy.Modules.Relay.Discord
         }
         
         void SendHeartbeat(SchedulerTask task) {
-            JsonObject obj = new JsonObject();
-            obj["op"] = OPCODE_HEARTBEAT;
+            JsonObject obj = new JsonObject
+            {
+                ["op"] = OPCODE_HEARTBEAT
+            };
             
             if (Session.LastSeq != null) {
                 obj["d"] = NumberUtils.ParseInt32(Session.LastSeq);

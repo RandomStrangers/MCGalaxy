@@ -29,7 +29,7 @@ namespace MCGalaxy.Network
         public override bool CanSeek { get { return false; } }
         public override bool CanWrite { get { return true; } }
         
-        static Exception ex = new NotSupportedException();
+        static readonly Exception ex = new NotSupportedException();
         public override void Flush() { }
         public override long Length { get { throw ex; } }
         public override long Position { get { throw ex; } set { throw ex; } }

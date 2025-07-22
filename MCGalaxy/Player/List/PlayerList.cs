@@ -24,8 +24,8 @@ namespace MCGalaxy {
     /// <summary> Represents a list of player names. Case insensitive. Thread safe. </summary>
     public class PlayerList {
         public string Path;
-        
-        List<string> names = new List<string>();        
+
+        readonly List<string> names = new List<string>();        
         internal readonly object locker = new object();
         readonly object saveLocker = new object();
         
@@ -129,9 +129,11 @@ namespace MCGalaxy {
         }
         
         public static PlayerList Load(string path) {
-            PlayerList list = new PlayerList();
-            list.Path = path;
-            
+            PlayerList list = new PlayerList
+            {
+                Path = path
+            };
+
             if (!File.Exists(path)) {
                 File.Create(path).Close();
                 Logger.Log(LogType.SystemActivity, "CREATED NEW: " + path);

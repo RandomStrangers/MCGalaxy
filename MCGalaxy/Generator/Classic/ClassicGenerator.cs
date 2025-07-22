@@ -76,8 +76,8 @@ namespace MCGalaxy.Generator.Classic
         
         void CreateStrata() {
             OctaveNoise n = new OctaveNoise(8, rnd);
-            CurrentState = "Creating strata";            
-            int hMapIndex = 0, maxY = Height - 1, mapIndex = 0;
+            CurrentState = "Creating strata";
+            int hMapIndex = 0, maxY = Height - 1;
             // Try to bulk fill bottom of the map if possible
             int minStoneY = CreateStrataFast();
             byte ground = biome.Ground;
@@ -92,9 +92,9 @@ namespace MCGalaxy.Generator.Classic
                 
                 stoneHeight = Math.Min(stoneHeight, maxY);
                 dirtHeight  = Math.Min(dirtHeight,  maxY);
-                
-                mapIndex = minStoneY * oneY + z * Width + x;
-                for (int y = minStoneY; y <= stoneHeight; y++) 
+
+                    int mapIndex = minStoneY * oneY + z * Width + x;
+                    for (int y = minStoneY; y <= stoneHeight; y++) 
                 {
                     blocks[mapIndex] = cliff; mapIndex += oneY;
                 }
@@ -153,7 +153,7 @@ namespace MCGalaxy.Generator.Classic
                     caveZ += Math.Cos(theta) * Math.Cos(phi);
                     caveY += Math.Sin(phi);
                     
-                    theta = theta + deltaTheta * 0.2;
+                    theta += deltaTheta * 0.2;
                     deltaTheta = deltaTheta * 0.9 + rnd.NextFloat() - rnd.NextFloat();
                     phi = phi / 2 + deltaPhi / 4;
                     deltaPhi = deltaPhi * 0.75 + rnd.NextFloat() - rnd.NextFloat();
@@ -165,7 +165,7 @@ namespace MCGalaxy.Generator.Classic
                     
                     double radius = (Height - cenY) / (double)Height;
                     radius = 1.2 + (radius * 3.5 + 1) * caveRadius;
-                    radius = radius * Math.Sin(j * Math.PI / caveLen);
+                    radius *= Math.Sin(j * Math.PI / caveLen);
                     FillOblateSpheroid(cenX, cenY, cenZ, (float)radius, Block.Air);
                 }
             }

@@ -23,8 +23,8 @@ namespace MCGalaxy.Blocks.Physics {
     public static class FirePhysics {
         
         static bool ExpandToAir(Level lvl, int x, int y, int z) {
-            int index;
-            if (lvl.IsAirAt((ushort)x, (ushort)y, (ushort)z, out index)) {
+            if (lvl.IsAirAt((ushort)x, (ushort)y, (ushort)z, out int index))
+            {
                 lvl.AddUpdate(index, Block.Fire, default(PhysicsArgs));
                 return true;
             }
@@ -45,9 +45,8 @@ namespace MCGalaxy.Blocks.Physics {
         }
         
         static void ExpandAvanced(Level lvl, int x, int y, int z) {
-            int index;
-            BlockID block = lvl.GetBlock((ushort)x, (ushort)y, (ushort)z, out index);
-            
+            BlockID block = lvl.GetBlock((ushort)x, (ushort)y, (ushort)z, out int index);
+
             if (block == Block.TNT) {
                 lvl.MakeExplosion((ushort)x, (ushort)y, (ushort)z, -1);
             } else if (block != Block.Air && lvl.Props[block].LavaKills) {
