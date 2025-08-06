@@ -41,17 +41,19 @@ namespace MCGalaxy.Modules.Compiling
     /// <summary> Compiles C# source files into a .dll by invoking a compiler executable directly </summary>
     public abstract class CommandLineCompiler
     {
-        public ICompilerErrors Compile(string[] srcPaths, string dstPath, List<string> referenced) {
+        public ICompilerErrors Compile(string[] srcPaths, string dstPath, List<string> referenced)
+        {
             string args = GetCommandLineArguments(srcPaths, dstPath, referenced);
-            string exe  = GetExecutable();
+            string exe = GetExecutable();
 
             ICompilerErrors errors = new ICompilerErrors();
-            List<string> output    = new List<string>();
+            List<string> output = new List<string>();
             int retValue = Compile(exe, GetCompilerArgs(exe, args), output);
 
             // Only look for errors/warnings if the compile failed
             // TODO still log warnings anyways error when success?
-            if (retValue != 0) {
+            if (retValue != 0)
+            {
                 foreach (string line in output)
                 {
                     ProcessCompilerOutputLine(errors, line);
@@ -59,17 +61,22 @@ namespace MCGalaxy.Modules.Compiling
             }
             return errors;
         }
-        
-        
+
+
         protected virtual string GetCommandLineArguments(string[] srcPaths, string dstPath,
-                                                         List<string> referencedAssemblies) {
+                                                         List<string> referencedAssemblies)
+        {
             StringBuilder sb = new StringBuilder();
             sb.Append("/t:library ");
 
+            // /noconfig disables compiler adding a list of default additional system libraries
+            // TODO: should this be left enabled?
             sb.Append("/utf8output /noconfig /fullpaths ");
-            
+
             AddCoreAssembly(sb);
             AddReferencedAssemblies(sb, referencedAssemblies);
+
+            dstPath = Path.GetFullPath(dstPath);
             sb.AppendFormat("/out:{0} ", Quote(dstPath));
 
             sb.Append("/D:DEBUG /debug+ /optimize- ");
@@ -81,32 +88,35 @@ namespace MCGalaxy.Modules.Compiling
             }
             return sb.ToString();
         }
-        
-        protected virtual void AddCoreAssembly(StringBuilder sb) {
+
+        protected virtual void AddCoreAssembly(StringBuilder sb)
+        {
             string coreAssemblyFileName = typeof(object).Assembly.Location;
 
-            if (!string.IsNullOrEmpty(coreAssemblyFileName)) {
+            if (!string.IsNullOrEmpty(coreAssemblyFileName))
+            {
                 sb.Append("/nostdlib+ ");
                 sb.AppendFormat("/R:{0} ", Quote(coreAssemblyFileName));
             }
         }
-        
+
         protected abstract void AddReferencedAssemblies(StringBuilder sb, List<string> referenced);
 
         protected static string Quote(string value) { return "\"" + value.Trim() + "\""; }
-        
+
         protected abstract string GetExecutable();
         protected abstract string GetCompilerArgs(string exe, string args);
-        
 
-        static int Compile(string path, string args, List<string> output) {
+
+        static int Compile(string path, string args, List<string> output)
+        {
             // https://stackoverflow.com/questions/285760/how-to-spawn-a-process-and-capture-its-stdout-in-net
             ProcessStartInfo psi = CreateStartInfo(path, args);
 
             using (Process p = new Process())
             {
                 p.OutputDataReceived += (s, e) => { if (e.Data != null) output.Add(e.Data); }; // csc errors
-                p.ErrorDataReceived  += (s, e) => { if (e.Data != null) output.Add(e.Data); }; // mcs errors
+                p.ErrorDataReceived += (s, e) => { if (e.Data != null) output.Add(e.Data); }; // mcs errors
 
                 p.StartInfo = psi;
                 p.Start();
@@ -120,8 +130,9 @@ namespace MCGalaxy.Modules.Compiling
                 return p.ExitCode;
             }
         }
-        
-        protected static ProcessStartInfo CreateStartInfo(string path, string args) {
+
+        protected static ProcessStartInfo CreateStartInfo(string path, string args)
+        {
             ProcessStartInfo psi = new ProcessStartInfo(path, args)
             {
                 WorkingDirectory = Environment.CurrentDirectory,
@@ -132,13 +143,15 @@ namespace MCGalaxy.Modules.Compiling
             };
             return psi;
         }
-        
-        
+
+
         static Regex outputRegWithFileAndLine;
         static Regex outputRegSimple;
-        
-        static void ProcessCompilerOutputLine(ICompilerErrors errors, string line) {
-            if (outputRegSimple == null) {
+
+        static void ProcessCompilerOutputLine(ICompilerErrors errors, string line)
+        {
+            if (outputRegSimple == null)
+            {
                 outputRegWithFileAndLine =
                     new Regex(@"(^(.*)(\(([0-9]+),([0-9]+)\)): )(error|warning) ([A-Z]+[0-9]+) ?: (.*)");
                 outputRegSimple =
@@ -148,9 +161,12 @@ namespace MCGalaxy.Modules.Compiling
             //First look for full file info
             Match m = outputRegWithFileAndLine.Match(line);
             bool full;
-            if (m.Success) {
+            if (m.Success)
+            {
                 full = true;
-            } else {
+            }
+            else
+            {
                 m = outputRegSimple.Match(line);
                 full = false;
             }
@@ -158,15 +174,16 @@ namespace MCGalaxy.Modules.Compiling
             if (!m.Success) return;
             ICompilerError ce = new ICompilerError();
 
-            if (full) {
+            if (full)
+            {
                 ce.FileName = m.Groups[2].Value;
-                ce.Line     = NumberUtils.ParseInt32(m.Groups[4].Value);
-                ce.Column   = NumberUtils.ParseInt32(m.Groups[5].Value);
+                ce.Line = NumberUtils.ParseInt32(m.Groups[4].Value);
+                ce.Column = NumberUtils.ParseInt32(m.Groups[5].Value);
             }
 
-            ce.IsWarning   = m.Groups[full ? 6 : 1].Value.CaselessEq("warning");
+            ce.IsWarning = m.Groups[full ? 6 : 1].Value.CaselessEq("warning");
             ce.ErrorNumber = m.Groups[full ? 7 : 2].Value;
-            ce.ErrorText   = m.Groups[full ? 8 : 3].Value;
+            ce.ErrorText = m.Groups[full ? 8 : 3].Value;
             errors.Add(ce);
         }
     }
@@ -174,26 +191,30 @@ namespace MCGalaxy.Modules.Compiling
 #if !MCG_DOTNET
     internal class ClassicCSharpCompiler : CommandLineCompiler
     {
-        protected override void AddCoreAssembly(StringBuilder sb) {
-            string coreAssemblyFileName = typeof(object).Assembly.Location;
+        protected override void AddCoreAssembly(StringBuilder sb)
+        {
+            // When running under mono, disabling referencing the standard library results
+            //  in the compiler failing to find system referenced libraries (e.g. System.dll)
+            // Not a huge deal, since AFAIK mono only supports running on one runtime anyways
+            // TODO: Investigate why this used to previously work fine with CodeDomProvider
+            if (Server.RunningOnMono()) return;
 
-            if (!string.IsNullOrEmpty(coreAssemblyFileName)) {
-                sb.Append("/nostdlib+ ");
-                sb.AppendFormat("/R:{0} ", Quote(coreAssemblyFileName));
-            }
+            base.AddCoreAssembly(sb);
         }
-        
-        protected override void AddReferencedAssemblies(StringBuilder sb, List<string> referenced) {
+
+        protected override void AddReferencedAssemblies(StringBuilder sb, List<string> referenced)
+        {
             foreach (string path in referenced)
             {
                 sb.AppendFormat("/R:{0} ", Quote(path));
             }
         }
-        
-        
-        protected override string GetExecutable() {
+
+
+        protected override string GetExecutable()
+        {
             string root = RuntimeEnvironment.GetRuntimeDirectory();
-            
+
             string[] paths = new string[] {
                 // Modern Visual Studio compilers
                 @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\Roslyn\csc.exe",
@@ -201,19 +222,20 @@ namespace MCGalaxy.Modules.Compiling
                 // First try new C# compiler
                 Path.Combine(root, "csc.exe"),
                 // Then fallback to old Mono C# compiler
-                Path.Combine(root, @"../../../bin/mcs"), 
+                Path.Combine(root, @"../../../bin/mcs"),
                 Path.Combine(root, "mcs.exe"),
                 "/usr/bin/mcs",
             };
-            
+
             foreach (string path in paths)
             {
                 if (File.Exists(path)) return path;
             }
             return paths[0];
         }
-        
-        protected override string GetCompilerArgs(string exe, string args) {
+
+        protected override string GetCompilerArgs(string exe, string args)
+        {
             return args;
         }
     }

@@ -220,25 +220,11 @@ namespace NotAwesomeSurvival
         {
             if (NasPlayer.GetNasPlayer(target).pvpEnabled)
             {
-                if (target.pronouns.Plural)
-                {
-                    p.Message("&S  Players " + target.pronouns.PresentPerfectVerb + " PVP &2enabled&S.");
-                }
-                else
-                {
-                    p.Message("&S  Player " + target.pronouns.PresentPerfectVerb + " PVP &2enabled&S.");
-                }
+                p.Message("&S  " + target.pronouns.Subject + " " + target.pronouns.PresentPerfectVerb + " PVP &2enabled&S.");
             }
             else
             {
-                if (target.pronouns.Plural)
-                {
-                    p.Message("&S  Players " + target.pronouns.PresentPerfectVerb + " PVP &cdisabled&S.");
-                }
-                else
-                {
-                    p.Message("&S  Player " + target.pronouns.PresentPerfectVerb + " PVP &cdisabled&S.");
-                }
+                p.Message("&S  " + target.pronouns.Subject + " " + target.pronouns.PresentPerfectVerb + " PVP &cdisabled&S.");
             }
         }
         public void Dev(Player p, Player target)
@@ -258,14 +244,7 @@ namespace NotAwesomeSurvival
         public void Kills(Player p, Player target)
         {
             NasPlayer np = NasPlayer.GetNasPlayer(target);
-            if (target.pronouns.Plural)
-            {
-                p.Message("&S  Players " + target.pronouns.PresentPerfectVerb + " " + np.kills + " kills.");
-            }
-            else
-            {
-                p.Message("&S  Player " + target.pronouns.PresentPerfectVerb + " " + np.kills + " kills.");
-            }
+            p.Message("&S  " + target.pronouns.Subject + " " + target.pronouns.PresentPerfectVerb + " " + np.kills + " kills.");
         }
         public static void FailedLoad()
         {
