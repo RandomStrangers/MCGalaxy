@@ -29,7 +29,7 @@ namespace MCGalaxy
     /// <summary> Checks for and applies software updates. </summary>
     public static class Updater 
     {
-#if NAS
+#if NAS && TEN_BIT_BLOCKS
         public static string SourceURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas-rework";
         public const string BaseURL = "https://raw.githubusercontent.com/RandomStrangers/MCGalaxy/nas-rework/Uploads/";
         public const string UploadsURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas-rework/Uploads";
@@ -49,13 +49,16 @@ namespace MCGalaxy
 #else
         const string CDN_BASE = CDN_URL + "net40/";
 #endif
-
-#if MCG_STANDALONE
+#if NAS && TEN_BIT_BLOCKS && !MCG_DOTNET && !MCG_STANDALONE
+#if NET_20
+        const string DLL_URL = BaseURL + "MCGalaxy_nas_net20.dll";
+#else
+        const string DLL_URL = BaseURL + "MCGalaxy_nas.dll";
+#endif
+        const string CurrentVersionURL = BaseURL + "nas_version.txt";
+#elif MCG_STANDALONE
         static string DLL_URL = CDN_URL  + IOperatingSystem.DetectOS().StandaloneName;
         const string CurrentVersionURL = BaseURL + "Uploads/current_version.txt";
-#elif NAS && !MCG_DOTNET && !MCG_STANDALONE && !NET_20 && !NET8_0 && !NET6_0
-        const string DLL_URL  = BaseURL + "MCGalaxy_nas.dll";
-        const string CurrentVersionURL = BaseURL + "nas_version.txt";
 #elif TEN_BIT_BLOCKS
         const string DLL_URL  = CDN_BASE + "MCGalaxy_infid.dll";
         const string CurrentVersionURL = BaseURL + "Uploads/current_version.txt";
@@ -91,7 +94,13 @@ namespace MCGalaxy
         public static bool NeedsUpdating() {
             using (WebClient client = HttpUtil.CreateWebClient()) {
                 string latest = client.DownloadString(CurrentVersionURL);
-                return new Version(latest) > new Version(Server.SoftwareVersion);
+                Version l = new Version(latest);
+#if NAS && TEN_BIT_BLOCKS
+                Version v = new Version(Server.NasVersion);
+#else
+                Version v = new Version(Server.InternalVersion);
+#endif
+                return l > v;
             }
         }
         
@@ -106,7 +115,7 @@ namespace MCGalaxy
                                 "prev_MCGalaxy_.dll", "prev_MCGalaxy.exe", "prev_MCGalaxyCLI.exe");
                 } catch {
                 }
-        		
+
                 string mode = release ? "release" : "latest";
                 Logger.Log(LogType.SystemActivity, "Downloading {0} update files", mode);               
                 WebClient client = HttpUtil.CreateWebClient();
@@ -117,7 +126,10 @@ namespace MCGalaxy
 #elif MCG_DOTNET
                 DownloadFile(client, CLI_URL.Replace("{0}", mode), "MCGalaxyCLI.update");
 #else
-                DownloadFile(client, GUI_URL.Replace("{0}", mode), "MCGalaxy.update");
+                if (!Server.RunningOnMono())
+                {
+                    DownloadFile(client, GUI_URL.Replace("{0}", mode), "MCGalaxy.update");
+                }
                 DownloadFile(client, CLI_URL.Replace("{0}", mode), "MCGalaxyCLI.update");
 #endif
                 DownloadFile(client, CHANGELOG_URL, "Changelog.txt");
@@ -141,7 +153,10 @@ namespace MCGalaxy
 
                 // Move update files to current files
                 FileIO.TryMove("MCGalaxy_.update",   serverDLL);
-                FileIO.TryMove("MCGalaxy.update",    serverGUI);
+                if (!Server.RunningOnMono())
+                {
+                    FileIO.TryMove("MCGalaxy.update", serverGUI);
+                }
                 FileIO.TryMove("MCGalaxyCLI.update", serverCLI);                             
 
                 Server.Stop(true, "Updating server.");
