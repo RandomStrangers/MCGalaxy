@@ -28,9 +28,9 @@ namespace MCGalaxy
     public static class Updater 
     {
 #if NAS
-        public static string SourceURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas";
-        public const string BaseURL = "https://raw.githubusercontent.com/RandomStrangers/MCGalaxy/nas/";
-        public const string UploadsURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas/Uploads";
+        public static string SourceURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas-rework";
+        public const string BaseURL = "https://raw.githubusercontent.com/RandomStrangers/MCGalaxy/nas-rework/";
+        public const string UploadsURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas-rework/Uploads";
 #else
         public static string SourceURL = "https://github.com/ClassiCube/MCGalaxy";
         public const string BaseURL    = "https://raw.githubusercontent.com/ClassiCube/MCGalaxy/master/";
@@ -87,12 +87,16 @@ namespace MCGalaxy
         }
         
         public static bool NeedsUpdating() {
+#if NAS
+            return true;
+#else
             using (WebClient client = HttpUtil.CreateWebClient()) {
                 string latest = client.DownloadString(CurrentVersionURL);
                 return new Version(latest) > new Version(Server.Version);
             }
+#endif
         }
-        
+
 
         // Backwards compatibility
         public static void PerformUpdate() { PerformUpdate(true); }
