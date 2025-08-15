@@ -7,8 +7,8 @@ namespace NotAwesomeSurvival
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification = "<Pending>")]
         public static void Setup()
         {
-            Dictionary<string, bool> nothing = new Dictionary<string, bool>();
-            Dictionary<string, bool> toolEnchants = new Dictionary<string, bool>(){
+            Dictionary<string, bool> nothing = new Dictionary<string, bool>(),
+                toolEnchants = new Dictionary<string, bool>(){
                 {"Efficiency",true},
                 {"Fortune",true},
                 {"Mending",true},
@@ -65,9 +65,9 @@ namespace NotAwesomeSurvival
             {
                 baseHP = 12
             };
-            ItemProp stonePick = new ItemProp("Stone Pickaxe|7|ß", toolEnchants, NasBlock.Material.Stone, 0.75f, 1);
-            ItemProp stoneShovel = new ItemProp("Stone Shovel|7|Γ", toolEnchants, NasBlock.Material.Earth, 0.50f, 1);
-            ItemProp stoneAxe = new ItemProp("Stone Axe|7|π", toolEnchants, NasBlock.Material.Wood, 0.60f, 1);
+            ItemProp stonePick = new ItemProp("Stone Pickaxe|7|ß", toolEnchants, NasBlock.Material.Stone, 0.75f, 1),
+                stoneShovel = new ItemProp("Stone Shovel|7|Γ", toolEnchants, NasBlock.Material.Earth, 0.50f, 1),
+                stoneAxe = new ItemProp("Stone Axe|7|π", toolEnchants, NasBlock.Material.Wood, 0.60f, 1);
             stoneAxe.materialsEffectiveAgainst.Add(NasBlock.Material.Leaves);
             ItemProp stoneSword = new ItemProp("Stone Sword|7|α", swordEnchants, NasBlock.Material.Leaves, 0.50f, 1)
             {

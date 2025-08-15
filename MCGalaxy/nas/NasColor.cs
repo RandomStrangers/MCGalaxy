@@ -10,11 +10,11 @@ namespace NotAwesomeSurvival
     public class DynamicColor
     {
         public static SchedulerTask task;
-        public static ColorDesc[] defaultColors;
-        public static ColorDesc[] fullHealthColors;
-        public static ColorDesc[] mediumHealthColors;
-        public static ColorDesc[] lowHealthColors;
-        public static ColorDesc[] direHealthColors;
+        public static ColorDesc[] defaultColors,
+            fullHealthColors,
+            mediumHealthColors,
+            lowHealthColors,
+            direHealthColors;
         public const string selectorImageName = "selectorColors.png";
         public static void Log(string format, params object[] args)
         {

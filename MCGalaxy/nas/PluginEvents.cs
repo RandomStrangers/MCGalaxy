@@ -377,9 +377,9 @@ namespace NotAwesomeSurvival
                     np.Message("You don't have any {0} to store.", nasBlock.GetName(np));
                     return;
                 }
-                int x = np.interactCoords[0];
-                int y = np.interactCoords[1];
-                int z = np.interactCoords[2];
+                int x = np.interactCoords[0],
+                    y = np.interactCoords[1],
+                    z = np.interactCoords[2];
                 NasBlock.Entity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
                 if (bEntity.drop == null)
                 {
@@ -452,8 +452,8 @@ namespace NotAwesomeSurvival
         }
         public static void OnPlayerConnect(Player p)
         {
-            string path = GetSavePath(p);
-            string pathText = GetTextPath(p);
+            string path = GetSavePath(p),
+                pathText = GetTextPath(p);
             if (!Load(p, path, out NasPlayer np) && !Load(p, pathText, out np))
             {
                 np = new NasPlayer(p);

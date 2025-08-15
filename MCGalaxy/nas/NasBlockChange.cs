@@ -12,9 +12,9 @@ namespace NotAwesomeSurvival
 {
     public static class NasBlockChange
     {
-        public static Scheduler breakScheduler;
-        public static Scheduler repeaterScheduler;
-        public static Scheduler fishingScheduler;
+        public static Scheduler breakScheduler,
+            repeaterScheduler,
+            fishingScheduler;
         public static Color[] blockColors = new Color[Block.MaxRaw + 1];
         public const string terrainImageName = "terrain.png";
         public static void Log(string format, params object[] args)
@@ -59,17 +59,17 @@ namespace NotAwesomeSurvival
                     blockColors[blockID] = Color.White;
                     continue;
                 }
-                int x = def.BackTex % 16;
-                int y = def.BackTex / 16;
+                int x = def.BackTex % 16,
+                    y = def.BackTex / 16;
                 blockColors[blockID] = terrain.GetPixel(x, y);
             }
             terrain.Dispose();
             return true;
         }
-        public const string ClickableBlocksKey = "__clickableBlocks_";
-        public const string LastClickedCoordsKey = ClickableBlocksKey + "lastClickedCoords";
-        public const string BreakAmountKey = ClickableBlocksKey + "breakAmount";
-        public const string BreakIDKey = ClickableBlocksKey + "breakID";
+        public const string ClickableBlocksKey = "__clickableBlocks_",
+            LastClickedCoordsKey = ClickableBlocksKey + "lastClickedCoords",
+            BreakAmountKey = ClickableBlocksKey + "breakAmount",
+            BreakIDKey = ClickableBlocksKey + "breakID";
         public const byte BreakEffectIDcount = 6;
         public static byte BreakEffectID = 255;
         public const byte BreakMeterID = byte.MaxValue - BreakEffectIDcount;
@@ -287,8 +287,8 @@ namespace NotAwesomeSurvival
         public class BreakInfo
         {
             public NasPlayer np;
-            public ushort x, y, z;
-            public ushort serverushort;
+            public ushort x, y, z,
+                serverushort;
             public NasBlock nasBlock;
             public int breakAttempt;
             public Item toolUsed;
@@ -298,8 +298,8 @@ namespace NotAwesomeSurvival
             public NasLevel nl;
             public int x, y, z;
             public NasBlock.Entity b, strength1;
-            public int type;
-            public int direction;
+            public int type,
+                direction;
             public ushort oldBlock;
         }
         public class FishingInfo
@@ -344,8 +344,8 @@ namespace NotAwesomeSurvival
                     NasEffect.UndefineEffect(p, BreakMeterID);
                     return;
                 }
-                ushort serverushort = p.level.GetBlock(x, y, z);
-                ushort clientushort = np.ConvertBlock(serverushort);
+                ushort serverushort = p.level.GetBlock(x, y, z),
+                    clientushort = np.ConvertBlock(serverushort);
                 NasBlock nasBlock = NasBlock.Get(clientushort);
                 if (nasBlock.durability == int.MaxValue)
                 {

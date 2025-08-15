@@ -57,14 +57,15 @@ namespace NotAwesomeSurvival
             //"UnseenServant", //No longer involved.
             "HarmonyNetwork"
         };
-        public const string textureURL = "https://dl.dropboxusercontent.com/s/2x5oxffkgpcyj16/nas.zip?dl=0";
-        public const string KeyPrefix = "nas_";
-        public const string PlayerKey = KeyPrefix + "NasPlayer";
-        public const string Path = "nas/";
-        public const string SavePath = Path + "playerdata/";
-        public const string CoreSavePath = Path + "coredata/";
-        public const string EffectsPath = Path + "effects/";
-        public static bool LoadedOnStartup = false;
+        public const string textureURL = "https://dl.dropboxusercontent.com/s/2x5oxffkgpcyj16/nas.zip?dl=0",
+            KeyPrefix = "nas_",
+            PlayerKey = KeyPrefix + "NasPlayer",
+            Path = "nas/",
+            SavePath = Path + "playerdata/",
+            CoreSavePath = Path + "coredata/",
+            EffectsPath = Path + "effects/";
+        public static bool LoadedOnStartup = false,
+            firstEverPluginLoad = false;
         public static Command[] Commands = new Command[]
         {
             new NasPlayer.CmdBarrelMode(),
@@ -74,24 +75,15 @@ namespace NotAwesomeSurvival
             new NasPlayer.CmdPVP(),
             new NasPlayer.CmdSpawnDungeon()
         };
-        public static bool firstEverPluginLoad = false;
         public static void EnsureNasFilesExist()
         {
-            EnsureFileExists("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/selectorColors.png", Path + "selectorColors.png");
-            EnsureFileExists("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/terrain.png", Path + "terrain.png");
-            EnsureFileExists("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/effects/breakdust.properties", EffectsPath + "breakdust.properties");
-            EnsureFileExists("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/effects/breakleaf.properties", EffectsPath + "breakleaf.properties");
-            EnsureFileExists("https://github.com/SuperNova-DeadNova/MCGalaxy/raw/debug/Uploads/nas/effects/breakmeter.properties", EffectsPath + "breakmeter.properties");
+            EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/nas-rework/Uploads/nas/selectorColors.png", Path + "selectorColors.png");
+            EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/nas-rework/Uploads/nas/terrain.png", Path + "terrain.png");
+            EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/nas-rework/Uploads/nas/effects/breakdust.properties", EffectsPath + "breakdust.properties");
+            EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/nas-rework/Uploads/nas/effects/breakleaf.properties", EffectsPath + "breakleaf.properties");
+            EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/nas-rework/Uploads/nas/effects/breakmeter.properties", EffectsPath + "breakmeter.properties");
             EnsureFileExists("https://github.com/cloverpepsi/place.cs/raw/main/global.json", "blockdefs/global.json");
             EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/nas-rework/Newtonsoft.Json.dll", "Newtonsoft.Json.dll");
-            if (!File.Exists("text/BookTitles.txt"))
-            {
-                File.Create("text/BookTitles.txt").Dispose();
-            }
-            if (!File.Exists("text/BookAuthors.txt"))
-            {
-                File.Create("text/BookAuthors.txt").Dispose();
-            }
         }
         public static void EnsureDirectoriesExist()
         {

@@ -17,15 +17,13 @@ namespace NotAwesomeSurvival
         public static JsonSerializer serializer = new JsonSerializer();
         public static Scheduler weatherScheduler;
         public static SchedulerTask task;
-        public static string globalSkyColor; // self explanatory
-        public static string globalCloudColor;
-        public static string globalSunColor;
-        public static string globalShadowColor;
+        public static string globalSkyColor, globalCloudColor, 
+            globalSunColor, globalShadowColor; // self explanatory
         // Cycle Settings
         public static DayCycles dayCycle = DayCycles.Sunrise; // default cycle
-        public static int cycleCurrentTime = 0; // current cycle time (must be zero to start)
-        public static int cycleMaxTime = 14400; // duration a whole day
-        public static int hourMinutes = 600; //seconds in an hour
+        public static int cycleCurrentTime = 0, /* current cycle time (must be zero to start)*/
+            cycleMaxTime = 14400, /* duration a whole day*/ 
+            hourMinutes = 600; //seconds in an hour
         public enum DayCycles // Enum with day and night cycles
         {
             Sunrise, Day, Sunset, Night, Midnight

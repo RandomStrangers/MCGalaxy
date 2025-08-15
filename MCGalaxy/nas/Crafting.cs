@@ -112,8 +112,8 @@ namespace NotAwesomeSurvival
             }
             public void ShowArea(NasPlayer np, ushort x, ushort y, ushort z, Color color, int millisecs = 2000, byte A = 127)
             {
-                ushort startX = x, startY = y, startZ = z;
-                ushort endX = x, endY = y, endZ = z;
+                ushort startX = x, startY = y, startZ = z,
+                    endX = x, endY = y, endZ = z;
                 bool WE = ori == Orientation.WE;
                 if (WE)
                 {
@@ -148,14 +148,11 @@ namespace NotAwesomeSurvival
             public class AreaInfo
             {
                 public NasPlayer np;
-                public Vec3U16 start;
-                public Vec3U16 end;
-                public int totalRounds;
-                public int curRound;
+                public Vec3U16 start, end;
+                public int totalRounds, curRound;
                 public TimeSpan delay;
                 public short R, G, B;
-                public byte A;
-                public byte ID;
+                public byte A, ID;
             }
             public static void ShowAreaTask(SchedulerTask task)
             {
@@ -209,8 +206,7 @@ namespace NotAwesomeSurvival
                 startZ--; 
             }
             startY += 3;
-            int indexX = 0;
-            int indexY = 0;
+            int indexX = 0, indexY = 0;
             if (WE)
             {
                 for (ushort y = startY; y > startY - 3; y--)
@@ -314,9 +310,9 @@ namespace NotAwesomeSurvival
             /// false to make this recipe strict (e.g. sideways stick doesn't work, only upright)
             /// and true to make this recipe work with any rotation of a block group (e.g. all four monitors work)
             /// </summary>
-            public bool usesParentID = false;
-            public bool usesAlternateID = false;
-            public bool shapeless = false;
+            public bool usesParentID = false, 
+                usesAlternateID = false, 
+                shapeless = false;
             public Drop drop;
             public Recipe()
             {
@@ -334,10 +330,10 @@ namespace NotAwesomeSurvival
             }
             public bool MatchesShapeless(NasBlock[,] area)
             {
-                int patternWidth = pattern.GetLength(1);
-                int patternHeight = pattern.GetLength(0);
-                Dictionary<ushort, int> patternStacks = new Dictionary<ushort, int>();
-                Dictionary<ushort, int> areaStacks = new Dictionary<ushort, int>();
+                int patternWidth = pattern.GetLength(1),
+                    patternHeight = pattern.GetLength(0);
+                Dictionary<ushort, int> patternStacks = new Dictionary<ushort, int>(),
+                    areaStacks = new Dictionary<ushort, int>();
                 for (int patternX = 0; patternX < patternWidth; patternX++)
                 {
                     for (int patternY = 0; patternY < patternHeight; patternY++)
@@ -371,8 +367,8 @@ namespace NotAwesomeSurvival
             }
             public bool Matches(NasBlock[,] area)
             {
-                int patternWidth = pattern.GetLength(1);
-                int patternHeight = pattern.GetLength(0);
+                int patternWidth = pattern.GetLength(1),
+                    patternHeight = pattern.GetLength(0);
                 for (int x = 0; x < 3; x++)
                 {
                     for (int y = 0; y < 3; y++)
@@ -381,8 +377,8 @@ namespace NotAwesomeSurvival
                         {
                             // Check to make sure there aren't any sneaky unused items in the grid
                             //bounds of the current recipe
-                            int minX = x, maxX = x + patternWidth;
-                            int minY = y, maxY = y + patternHeight;
+                            int minX = x, maxX = x + patternWidth,
+                                minY = y, maxY = y + patternHeight;
                             //for the entire crafting grid,
                             for (int _x = 0; _x < 3; _x++)
                             {
@@ -407,8 +403,8 @@ namespace NotAwesomeSurvival
             public bool TestRecipe(NasBlock[,] area, int offsetX, int offsetY, bool mirrored)
             {
                 //the offset describes an offset down-right into the crafting grid
-                int patternWidth = pattern.GetLength(1);
-                int patternHeight = pattern.GetLength(0);
+                int patternWidth = pattern.GetLength(1),
+                    patternHeight = pattern.GetLength(0);
                 //if we're out of bounds on lower-right side, it definitely doesn't match
                 if (offsetX + patternWidth > 3 || offsetY + patternHeight > 3)
                 {
@@ -424,8 +420,8 @@ namespace NotAwesomeSurvival
                         {
                             suppliedNB = NasBlock.Get(suppliedNB.alternateID);
                         }
-                        ushort supplied = usesParentID ? suppliedNB.parentID : suppliedNB.selfID;
-                        ushort required = pattern[y, xPattern];
+                        ushort supplied = usesParentID ? suppliedNB.parentID : suppliedNB.selfID,
+                            required = pattern[y, xPattern];
                         if (supplied != required)
                         {
                             return false;

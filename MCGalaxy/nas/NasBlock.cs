@@ -86,9 +86,9 @@ namespace NotAwesomeSurvival
             Lava,
             Count
         }
-        public ushort selfID;
-        public ushort parentID;
-        public ushort alternateID;
+        public ushort selfID,
+            parentID,
+            alternateID;
         public List<ushort> childIDs = null;
         public Material material;
         public int tierOfToolNeededToBreak;
@@ -101,15 +101,15 @@ namespace NotAwesomeSurvival
         public Container container;
         public bool collides = true;
         public AABB bounds;
-        public float fallDamageMultiplier = -1;
-        public float disturbDelayMax = 0f;
-        public float disturbDelayMin = 0f;
-        public int expGivenMax = 0;
-        public int expGivenMin = 0;
-        public float beginDelayMax = 0f;
-        public float beginDelayMin = 0f;
-        public NasBlockAction disturbedAction = null;
-        public NasBlockAction instantAction = null;
+        public float fallDamageMultiplier = -1,
+            disturbDelayMax = 0f,
+            disturbDelayMin = 0f;
+        public int expGivenMax = 0,
+            expGivenMin = 0;
+        public float beginDelayMax = 0f,
+            beginDelayMin = 0f;
+        public NasBlockAction disturbedAction = null,
+            instantAction = null;
         public NasBlockInteraction interaction = null;
         public NasBlockExistAction existAction = null;
         public NasBlockCollideAction collideAction = null;

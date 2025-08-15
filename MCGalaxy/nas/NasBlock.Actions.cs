@@ -79,9 +79,9 @@ namespace NotAwesomeSurvival
             }
             return false;
         }
-        public static int LiquidInfiniteIndex = 0;
-        public static int LiquidSourceIndex = 1;
-        public static int LiquidWaterfallIndex = 2;
+        public static int LiquidInfiniteIndex = 0,
+            LiquidSourceIndex = 1,
+            LiquidWaterfallIndex = 2;
         /// <summary>
         /// First ID is the infinite-flood version of the liquid, second is the source, third is waterfall, the rest are heights from tallest to shortest
         /// </summary>
@@ -290,10 +290,10 @@ namespace NotAwesomeSurvival
             xNeg = true;
             zPos = true;
             zNeg = true;
-            bool xBlockedPos = false;
-            bool xBlockedNeg = false;
-            bool zBlockedPos = false;
-            bool zBlockedNeg = false;
+            bool xBlockedPos = false,
+                xBlockedNeg = false,
+                zBlockedPos = false,
+                zBlockedNeg = false;
             List<Vec3S32> holes = HolesInRange(nl, x, y, z, 4, set, out int originalHoleDistance);
             if (holes.Count > 0)
             {
@@ -302,10 +302,10 @@ namespace NotAwesomeSurvival
                 CloserToAHole(x, y, z, 0, 1, originalHoleDistance, holes, ref zPos);
                 CloserToAHole(x, y, z, 0, -1, originalHoleDistance, holes, ref zNeg);
             }
-            int neighborIndex1 = CanReplaceBlockAt(nl, x + 1, y, z, set, spreadIndex);
-            int neighborIndex2 = CanReplaceBlockAt(nl, x - 1, y, z, set, spreadIndex);
-            int neighborIndex3 = CanReplaceBlockAt(nl, x, y, z + 1, set, spreadIndex);
-            int neighborIndex4 = CanReplaceBlockAt(nl, x, y, z - 1, set, spreadIndex);
+            int neighborIndex1 = CanReplaceBlockAt(nl, x + 1, y, z, set, spreadIndex),
+                neighborIndex2 = CanReplaceBlockAt(nl, x - 1, y, z, set, spreadIndex),
+                neighborIndex3 = CanReplaceBlockAt(nl, x, y, z + 1, set, spreadIndex),
+                neighborIndex4 = CanReplaceBlockAt(nl, x, y, z - 1, set, spreadIndex);
             if (neighborIndex1 == -1)
             {
                 xBlockedPos = true;
@@ -358,10 +358,10 @@ namespace NotAwesomeSurvival
         public class FloodSim
         {
             public NasLevel nl;
-            public int xO;
-            public int yO;
-            public int zO;
-            public int totalDistance;
+            public int xO,
+                yO,
+                zO,
+                totalDistance;
             public ushort[] liquidSet;
             public bool[,] waterAtSpot;
             public int widthAndHeight;
@@ -433,8 +433,8 @@ namespace NotAwesomeSurvival
             }
             public bool AlreadyFlooded(int x, int z)
             {
-                int xI = x - xO;
-                int zI = z - zO;
+                int xI = x - xO,
+                    zI = z - zO;
                 xI += totalDistance;
                 zI += totalDistance;
                 //both dimensions are the same 
@@ -451,8 +451,8 @@ namespace NotAwesomeSurvival
             }
             public void Flood(int x, int z, bool value)
             {
-                int xI = x - xO;
-                int zI = z - zO;
+                int xI = x - xO,
+                    zI = z - zO;
                 xI += totalDistance;
                 zI += totalDistance;
                 waterAtSpot[xI, zI] = value;
@@ -918,9 +918,9 @@ namespace NotAwesomeSurvival
         public static NasBlockAction SidewaysPistonAction(string type, string axis, int dir, ushort[] pistonSet, bool sticky = false)
         {
             return (nl, nasBlock, x, y, z) => {
-                int changeX = 0;
-                int changeZ = 0;
-                int changeY = 0;
+                int changeX = 0,
+                changeZ = 0,
+                changeY = 0;
                 ushort[] dontpush = 
                 { 
                     0, 0, 0, 0, 
@@ -2007,9 +2007,9 @@ namespace NotAwesomeSurvival
                     nl.blockEntities[x + " " + y + " " + z].strength = 0;
                     nl.blockEntities[x + " " + y + " " + z].type = type;
                 }
-                Entity b = nl.blockEntities[x + " " + y + " " + z];
-                Entity strength1 = new Entity();
-                Entity strength2 = new Entity();
+                Entity b = nl.blockEntities[x + " " + y + " " + z],
+                strength1 = new Entity(),
+                strength2 = new Entity();
                 int strength0 = b.strength;
                 if (direction == 0)
                 {
@@ -2157,8 +2157,8 @@ namespace NotAwesomeSurvival
                     nl.blockEntities[x + " " + y + " " + z].strength = 0;
                     nl.blockEntities[x + " " + y + " " + z].type = direction;
                 }
-                Entity b = nl.blockEntities[x + " " + y + " " + z];
-                Entity strength1 = new Entity();
+                Entity b = nl.blockEntities[x + " " + y + " " + z],
+                strength1 = new Entity();
                 if (direction == 5)
                 {
                     if (nl.blockEntities.ContainsKey(x + " " + (y + 1) + " " + z))
@@ -2312,8 +2312,8 @@ namespace NotAwesomeSurvival
                     { 
                         return; 
                     }
-                    ushort clientushort = bs.ID;
-                    ushort addedushort = 0;
+                    ushort clientushort = bs.ID,
+                    addedushort = 0;
                     if (clientushort == 643) 
                     { 
                         clientushort = 9; 

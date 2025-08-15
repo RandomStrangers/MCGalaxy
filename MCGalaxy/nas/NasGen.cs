@@ -10,26 +10,26 @@ namespace NotAwesomeSurvival
 {
     public static class NasGen
     {
-        public const int mapWideness = 384;
-        public const int mapTallness = 256;
+        public const int mapWideness = 384,
+            mapTallness = 256;
         public const string seed = "a";
-        public const ushort oceanHeight = 60;
-        public const ushort coalDepth = 4;
-        public const ushort ironDepth = 16;
-        public const ushort goldDepth = 30;
-        public const ushort diamondDepth = 45;
-        public const ushort emeraldDepth = 60;
-        public const float coalChance = 1f / 8f;
-        public const float ironChance = 1f / 16f;
-        public const float goldChance = 1f / 24f;
-        public const float quartzChance = 1f / 24f;
-        public const float diamondChance = 1.25f / 48f;
-        public const float emeraldChance = 1.25f / 40f;
-        public static Color coalFogColor;
-        public static Color ironFogColor;
-        public static Color goldFogColor;
-        public static Color diamondFogColor;
-        public static Color emeraldFogColor;
+        public const ushort oceanHeight = 60,
+            coalDepth = 4,
+            ironDepth = 16,
+            goldDepth = 30,
+            diamondDepth = 45,
+            emeraldDepth = 60;
+        public const float coalChance = 1f / 8f,
+            ironChance = 1f / 16f,
+            goldChance = 1f / 24f,
+            quartzChance = 1f / 24f,
+            diamondChance = 1.25f / 48f,
+            emeraldChance = 1.25f / 40f;
+        public static Color coalFogColor,
+            ironFogColor,
+            goldFogColor,
+            diamondFogColor,
+            emeraldFogColor;
         public static Scheduler genScheduler;
         public static ushort[] stoneTypes = 
         { 
@@ -113,8 +113,8 @@ namespace NotAwesomeSurvival
                 return false;
             }
             currentlyGenerating = true;
-            int offsetX, offsetZ;
-            int chunkOffsetX = 0, chunkOffsetZ = 0;
+            int offsetX, offsetZ,
+                chunkOffsetX = 0, chunkOffsetZ = 0;
             GetSeedAndChunkOffset(lvl.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ);
             offsetX = chunkOffsetX * mapWideness;
             offsetZ = chunkOffsetZ * mapWideness;
@@ -165,8 +165,7 @@ namespace NotAwesomeSurvival
             public Random r;
             public string seed;
             public int biome;
-            public ushort topSoil;
-            public ushort soil;
+            public ushort topSoil, soil;
             public void Do()
             {
                 p.Message("Generating with biome " + biome);
@@ -217,8 +216,9 @@ namespace NotAwesomeSurvival
                     for (double x = 0; x < lvl.Width; ++x)
                     {
                         //divide by more for bigger scale
-                        double scale = 150;
-                        double xVal = (x + offsetX) / scale, zVal = (z + offsetZ) / scale;
+                        double scale = 150,
+                            xVal = (x + offsetX) / scale, 
+                            zVal = (z + offsetZ) / scale;
                         const double adj = 1;
                         xVal += adj;
                         zVal += adj;
@@ -269,11 +269,11 @@ namespace NotAwesomeSurvival
                                     threshDiv = 1; 
                                 }
                             }
-                            double averageLandHeightAboveSeaLevel = biome == -1 ? 10 : 1;// - (6*tallRandom);
-                            double minimumFlatness = biome == -1 ? 0 : 5;
-                            double maxFlatnessAdded = biome == -1 ? 80 : 28;
-                            //multiply by more to more strictly follow halfway under = solid, above = air
-                            double threshold =
+                            double averageLandHeightAboveSeaLevel = biome == -1 ? 10 : 1,/* - (6*tallRandom);*/
+                                minimumFlatness = biome == -1 ? 0 : 5,
+                                maxFlatnessAdded = biome == -1 ? 80 : 28,
+                            /*multiply by more to more strictly follow halfway under = solid, above = air*/
+                                threshold =
                                 (((y + (oceanHeight - averageLandHeightAboveSeaLevel)) / height) - 0.5)
                                 * (minimumFlatness + (maxFlatnessAdded * threshDiv)); //4.5f
                             if (threshold < -1.5)
@@ -478,8 +478,8 @@ namespace NotAwesomeSurvival
             }
             public bool IsNeighborLowEnough(int x, int y, int z, int offX, int offZ)
             {
-                int neighborX = x + offX;
-                int neighborZ = z + offZ;
+                int neighborX = x + offX,
+                    neighborZ = z + offZ;
                 if (neighborX >= lvl.Width || neighborX < 0 ||
                     neighborZ >= lvl.Length || neighborZ < 0) 
                 { 
@@ -1250,14 +1250,14 @@ namespace NotAwesomeSurvival
                 {
                     for (int count = 0; count < 4; count++)
                     {
-                        int dx = rng.Next(1, 8);
-                        int dz = rng.Next(1, 8);
+                        int dx = rng.Next(1, 8),
+                            dz = rng.Next(1, 8);
                         level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), Block.FromRaw(604));
                     }
                     for (int count = 0; count < 4; count++)
                     {
-                        int dx = rng.Next(1, 8);
-                        int dz = rng.Next(1, 8);
+                        int dx = rng.Next(1, 8),
+                            dz = rng.Next(1, 8);
                         level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), Block.FromRaw(653));
                     }
                     GenLoot(x + 4, y + 2, z + 4, level, rng, nsl, forced, p);
@@ -1309,9 +1309,9 @@ namespace NotAwesomeSurvival
             }
             public static void GenerateDungeon(Random rng, Level level, NasLevel nsl)
             {
-                int genX = rng.Next(10, mapWideness - 10);
-                int genZ = rng.Next(10, mapWideness - 10);
-                int genY = rng.Next(0, 15);
+                int genX = rng.Next(10, mapWideness - 10),
+                    genZ = rng.Next(10, mapWideness - 10),
+                    genY = rng.Next(0, 15);
                 GenerateDungeon(rng, genX , genY, genZ, level, nsl, false, Player.Console);
             }
             public static void GenLoot(int x, int y, int z, Level level, Random rng, NasLevel nsl, bool forced)

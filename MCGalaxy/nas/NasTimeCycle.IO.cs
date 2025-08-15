@@ -7,8 +7,7 @@ namespace NotAwesomeSurvival
     public partial class NasTimeCycle
     {
         public static NasTimeCycle cyc = new NasTimeCycle();
-        public int day = 0;
-        public int minutes = 7 * hourMinutes;
+        public int day = 0, minutes = 7 * hourMinutes;
         public DayCycles cycle = DayCycles.Sunrise;
         public static void Log(string format, params object[] args)
         {

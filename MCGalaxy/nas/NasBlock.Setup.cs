@@ -33,8 +33,8 @@ namespace NotAwesomeSurvival
                 disturbedAction = FloodAction(waterSet),
                 collideAction = LiquidCollideAction()
             };
-            const float waterDisturbDelayMin = 0.5f;
-            const float waterDisturbDelayMax = 0.5f;
+            const float waterDisturbDelayMin = 0.5f,
+                waterDisturbDelayMax = 0.5f;
             i = 643; //Water barrel
             blocks[i] = new NasBlock(i, Material.Wood, DefaultDurabilities[(int)Material.Wood] * 2)
             {
@@ -115,8 +115,8 @@ namespace NotAwesomeSurvival
                 disturbedAction = LimitedFloodAction(waterSet, 2),
                 collideAction = LiquidCollideAction()
             };
-            float lavaDisturbDelayMin = 1.5f;
-            float lavaDisturbDelayMax = 1.5f;
+            float lavaDisturbDelayMin = 1.5f,
+                lavaDisturbDelayMax = 1.5f;
             i = 10; //Active lava
             blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
             {
@@ -263,8 +263,8 @@ namespace NotAwesomeSurvival
             blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 475; // blackstone chiseled
             blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            const float grassDelayMin = 10;
-            const float grassDelayMax = 60;
+            const float grassDelayMin = 10,
+                grassDelayMax = 60;
             i = 2; //Grass
             blocks[i] = new NasBlock(i, Material.Earth)
             {
@@ -583,8 +583,8 @@ namespace NotAwesomeSurvival
                 disturbDelayMax = 0.75f,
                 disturbedAction = FallingBlockAction(Block.FromRaw(i))
             };
-            const float treeDelayMin = 30f;
-            const float treeDelayMax = 60f;
+            const float treeDelayMin = 30f,
+                treeDelayMax = 60f;
             i = 6; //Sapling
             blocks[i] = new NasBlock(i, Material.Plant)
             {
@@ -700,8 +700,8 @@ namespace NotAwesomeSurvival
                 disturbDelayMax = 0.7f,
                 disturbedAction = FallingBlockAction(Block.Gravel)
             };
-            const float leafShrivelDelayMin = 0.2f;
-            const float leafShrivelDelayMax = 0.4f;
+            const float leafShrivelDelayMin = 0.2f,
+                leafShrivelDelayMax = 0.4f;
             i = 18; //Leaves
             blocks[i] = new NasBlock(i, Material.Leaves)
             {
@@ -1247,10 +1247,10 @@ namespace NotAwesomeSurvival
             //blocks[i].expGivenMin = 4;
             //blocks[i].expGivenMax = 9;
             //from 20 to 40 minutes (avg 30)
-            const float wheatTotalSeconds = 20f * 60f;
-            const float wheatMaxAddedSeconds = 20f * 60f;
-            const float wheatGrowMin = wheatTotalSeconds / 3f;
-            const float wheatGrowMax = (wheatTotalSeconds + wheatMaxAddedSeconds) / 3f;
+            const float wheatTotalSeconds = 20f * 60f,
+                wheatMaxAddedSeconds = 20f * 60f,
+                wheatGrowMin = wheatTotalSeconds / 3f,
+                wheatGrowMax = (wheatTotalSeconds + wheatMaxAddedSeconds) / 3f;
             i = 644; //Wheat (baby)
             blocks[i] = new NasBlock(i, Material.Plant)
             {
@@ -1333,10 +1333,10 @@ namespace NotAwesomeSurvival
                     return finalDrop;
                 }
             };
-            const float sugarTotalSeconds = 10f * 60f;
-            const float sugarMaxAddedSeconds = 15f * 60f;
-            const float sugarGrowMin = sugarTotalSeconds / 2f;
-            const float sugarGrowMax = (sugarTotalSeconds + sugarMaxAddedSeconds) / 2f;
+            const float sugarTotalSeconds = 10f * 60f,
+                sugarMaxAddedSeconds = 15f * 60f,
+                sugarGrowMin = sugarTotalSeconds / 2f,
+                sugarGrowMax = (sugarTotalSeconds + sugarMaxAddedSeconds) / 2f;
             i = 667; //sugarcane
             blocks[i] = new NasBlock(i, Material.Plant)
             {

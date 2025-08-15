@@ -24,20 +24,20 @@ namespace NotAwesomeSurvival
         [JsonIgnore] public DateTime lastLeftClickReleaseDate = DateTime.MinValue;
         [JsonIgnore] public bool justBrokeOrPlaced = false;
         [JsonIgnore] public byte craftingAreaID = 0;
-        [JsonIgnore] public bool isChewing = false;
-        [JsonIgnore] public bool isInserting = false;
+        [JsonIgnore] public bool isChewing = false,
+            isInserting = false;
         [JsonIgnore] public int[] interactCoords;
         [JsonIgnore] public bool SendingMap = false;
         [JsonIgnore] public const string DeathsPath = Nas.SavePath + "deaths/";
         [JsonIgnore] public Scheduler PlayerSavingScheduler;
         [JsonIgnore] public SchedulerTask PlayerSaveTask;
-        [JsonIgnore] public bool hasBeenSpawned = false;
-        [JsonIgnore] public bool isDead = false;
-        [JsonIgnore] public bool headingToBed = false;
-        [JsonIgnore] public Color targetFogColor = Color.White;
-        [JsonIgnore] public Color curFogColor = Color.White;
-        [JsonIgnore] public float targetRenderDistance = Server.Config.MaxFogDistance;
-        [JsonIgnore] public float curRenderDistance = Server.Config.MaxFogDistance;
+        [JsonIgnore] public bool hasBeenSpawned = false,
+            isDead = false,
+            headingToBed = false;
+        [JsonIgnore] public Color targetFogColor = Color.White,
+            curFogColor = Color.White;
+        [JsonIgnore] public float targetRenderDistance = Server.Config.MaxFogDistance,
+            curRenderDistance = Server.Config.MaxFogDistance;
         [JsonIgnore] public bool SetInventoryNotif = false;
         [JsonIgnore] public Player lastAttackedPlayer = null;
         [JsonIgnore] public string reason = null;
@@ -51,9 +51,9 @@ namespace NotAwesomeSurvival
         public string spawnMap;
         public DateTime pvpCooldown;
         public bool pvpEnabled = false;
-        public int kills = 0;
-        public int exp = 0;
-        public int levels = 0;
+        public int kills = 0,
+            exp = 0,
+            levels = 0;
         public void Message(string message, params object[] args) 
         { 
             p.Message(string.Format(message, args)); 
@@ -120,13 +120,13 @@ namespace NotAwesomeSurvival
             this.p = p;
             inventory.SetPlayer(p);
         }
-        public void HandleInteraction(MouseButton button, MouseAction action, ushort x, ushort y, ushort z, byte entityID, TargetBlockFace face)
+        public void HandleInteraction(MouseButton button, MouseAction action, ushort x, ushort y, ushort z, byte _, TargetBlockFace face)
         {
             if (button == MouseButton.Right && p.ClientHeldBlock != 0)
             {
-                ushort xPlacing = x;
-                ushort yPlacing = y; 
-                ushort zPlacing = z;
+                ushort xPlacing = x,
+                    yPlacing = y,
+                    zPlacing = z;
                 if (face == TargetBlockFace.AwayX) 
                 { 
                     xPlacing++; 
@@ -153,9 +153,9 @@ namespace NotAwesomeSurvival
                 }
                 if (p.level.GetBlock(xPlacing, yPlacing, zPlacing) == Block.Air)
                 {
-                    AABB worldAABB = bounds.OffsetPosition(p.Pos);
-                    //checking as if its a fully sized block
-                    AABB blockAABB = new AABB(0, 0, 0, 32, 32, 32);
+                    AABB worldAABB = bounds.OffsetPosition(p.Pos),
+                    /*checking as if its a fully sized block*/
+                        blockAABB = new AABB(0, 0, 0, 32, 32, 32);
                     blockAABB = blockAABB.Offset(xPlacing * 32, yPlacing * 32, zPlacing * 32);
                     if (!AABB.Intersects(ref worldAABB, ref blockAABB))
                     {
@@ -163,8 +163,8 @@ namespace NotAwesomeSurvival
                     }
                 }
             }
-            ushort serverushort = p.level.GetBlock(x, y, z);
-            ushort clientushort = ConvertBlock(serverushort);
+            ushort serverushort = p.level.GetBlock(x, y, z),
+                clientushort = ConvertBlock(serverushort);
             NasBlock nasBlock = NasBlock.Get(clientushort);
             if (nasBlock.interaction != null)
             {
@@ -182,8 +182,8 @@ namespace NotAwesomeSurvival
         public static Dictionary<string, DateTime> cooldowns = new Dictionary<string, DateTime>();
         public static void StartCooldown(Player p, int milli)
         {
-            int milliseconds = milli % 1000;
-            int seconds = milli / 1000;
+            int milliseconds = milli % 1000,
+                seconds = milli / 1000;
             DateTime expires = DateTime.UtcNow.AddMilliseconds(milliseconds);
             expires = expires.AddSeconds(seconds);
             cooldowns[p.name] = expires;
@@ -453,15 +453,17 @@ namespace NotAwesomeSurvival
         }
         public void Knockback(SchedulerTask task)
         {
-            Player who = ((NasBlockChange.FishingInfo)task.State).who;
-            Player p = ((NasBlockChange.FishingInfo)task.State).p;
-            int srcHeight = ModelInfo.CalcEyeHeight(p);
-            int dstHeight = ModelInfo.CalcEyeHeight(who);
-            int dx = p.Pos.X - who.Pos.X, dy = p.Pos.Y + srcHeight - (who.Pos.Y + dstHeight), dz = p.Pos.Z - who.Pos.Z;
+            Player who = ((NasBlockChange.FishingInfo)task.State).who,
+                p = ((NasBlockChange.FishingInfo)task.State).p;
+            int srcHeight = ModelInfo.CalcEyeHeight(p),
+                dstHeight = ModelInfo.CalcEyeHeight(who),
+                dx = p.Pos.X - who.Pos.X,
+                dy = p.Pos.Y + srcHeight - (who.Pos.Y + dstHeight), 
+                dz = p.Pos.Z - who.Pos.Z;
             Vec3F32 dir = new Vec3F32(dx, dy, dz);
             dir = Vec3F32.Normalise(dir);
-            float mult = inventory.HeldItem.Prop.knockback + 0.25f * inventory.HeldItem.Enchant("Knockback");
-            float yChange = 0f;
+            float mult = inventory.HeldItem.Prop.knockback + 0.25f * inventory.HeldItem.Enchant("Knockback"),
+                yChange = 0f;
             if (mult < 0)
             {
                 mult = (p.Pos.ToVec3F32() - who.Pos.ToVec3F32()).Length / -2f;
@@ -611,8 +613,8 @@ namespace NotAwesomeSurvival
             ChangeHealth(-damage);
             curFogColor = Color.FromArgb(255, 255, 0, 0);
             Position next = p.Pos;
-            int x = Utils.Clamp(next.BlockX, 0, (ushort)(p.level.Width - 1));
-            int z = Utils.Clamp(next.BlockZ, 0, (ushort)(p.level.Length - 1));
+            int x = Utils.Clamp(next.BlockX, 0, (ushort)(p.level.Width - 1)),
+                z = Utils.Clamp(next.BlockZ, 0, (ushort)(p.level.Length - 1));
             ushort y = (ushort)Utils.Clamp(next.BlockY, 0, (ushort)(p.level.Height - 1));
             if (y < NasGen.oceanHeight) 
             { 
@@ -685,9 +687,9 @@ namespace NotAwesomeSurvival
                 }
                 Vec3S32 gravePos = p.Pos.FeetBlockCoords;
                 p.level.ClampPos(gravePos);
-                int x = gravePos.X;
-                int y = gravePos.Y;
-                int z = gravePos.Z;
+                int x = gravePos.X,
+                    y = gravePos.Y,
+                    z = gravePos.Z;
                 if (x < 0) 
                 { 
                     x = 0; 
@@ -743,8 +745,8 @@ namespace NotAwesomeSurvival
         {
             StringBuilder builder = new StringBuilder("&8", (int)maxHP + 6);
             string final;
-            float totalLostHealth = maxHP - HP;
-            float lostHealthRemaining = totalLostHealth;
+            float totalLostHealth = maxHP - HP,
+                lostHealthRemaining = totalLostHealth;
             for (int i = 0; i < totalLostHealth; ++i)
             {
                 if (lostHealthRemaining < 1)
@@ -961,8 +963,7 @@ namespace NotAwesomeSurvival
             public override void Execute(Player p, string message)
             {
                 string[] args = message.SplitSpaces();
-                string name = args[0];
-                string PlayerName;
+                string name = args[0], PlayerName;
                 if (IsSuper(p, name, "player name"))
                 {
                     return;
@@ -990,8 +991,8 @@ namespace NotAwesomeSurvival
                     return;
                 }
                 //TODO: Simplify this, shouldn't copy deaths
-                string[] deaths = File.ReadAllLines(file);
-                string[] deaths2 = File.ReadAllLines(file);
+                string[] deaths = File.ReadAllLines(file),
+                    deaths2 = File.ReadAllLines(file);
                 int count = deaths2.Length;
                 for (int i = 0; i < deaths2.Length; i++)
                 {
@@ -1033,8 +1034,13 @@ namespace NotAwesomeSurvival
             {
                 //TODO: Simplify this, shouldn't copy deaths
                 string file = Nas.GetDeathPath(np.p.name);
-                string[] deaths = File.ReadAllLines(file);
-                string[] deaths2 = File.ReadAllLines(file);
+                if (!File.Exists(file))
+                {
+                    np.Message("You have no gravestones recorded!");
+                    return;
+                }
+                string[] deaths = File.ReadAllLines(file),
+                    deaths2 = File.ReadAllLines(file);
                 int count = deaths2.Length;
                 for (int i = 0; i < deaths2.Length; i++)
                 {

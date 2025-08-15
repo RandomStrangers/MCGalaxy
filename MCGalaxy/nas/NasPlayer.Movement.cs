@@ -152,7 +152,7 @@ namespace NotAwesomeSurvival
             }
             return raw;
         }
-        public void SaveStatsTask(SchedulerTask task)
+        public void SaveStatsTask(SchedulerTask _)
         {
             Save();
         }
@@ -225,9 +225,9 @@ namespace NotAwesomeSurvival
                     spawnPos.Z = transferInfo.travelZ * 32 + 16;
                     if (placePortal)
                     {
-                        int orX = transferInfo.travelX;
-                        int orY = transferInfo.travelY;
-                        int orZ = transferInfo.travelZ;
+                        int orX = transferInfo.travelX,
+                            orY = transferInfo.travelY,
+                            orZ = transferInfo.travelZ;
                         SetSafetyBlock(orX, orY - 1, orZ, Block.FromRaw(162));
                         SetSafetyBlock(orX, orY + 2, orZ, Block.FromRaw(162));
                         ushort temp = nl.GetBlock(orX, orY + 1, orZ);
@@ -302,7 +302,7 @@ namespace NotAwesomeSurvival
             p.level.Config.CloudColor = NasTimeCycle.globalCloudColor;
             p.level.Config.LightColor = NasTimeCycle.globalSunColor;
         }
-        public void DoMovement(Position next, byte yaw, byte pitch)
+        public void DoMovement(Position next, byte _, byte __)
         {
             UpdateHeldBlock();
             if (CanDoStuffBasedOnPosition) 
@@ -467,8 +467,7 @@ namespace NotAwesomeSurvival
         public class GenInfo
         {
             public Player p;
-            public string mapName;
-            public string seed;
+            public string mapName, seed;
         }
         public static void GenTask(SchedulerTask task)
         {
@@ -481,9 +480,9 @@ namespace NotAwesomeSurvival
             Level lvl = null;
             try
             {
-                string width = NasGen.mapWideness.ToString();
-                string height = NasGen.mapTallness.ToString();
-                string length = NasGen.mapWideness.ToString();
+                string width = NasGen.mapWideness.ToString(),
+                    height = NasGen.mapTallness.ToString(),
+                    length = NasGen.mapWideness.ToString();
                 lvl = NasLevel.GenerateMap(info.p, info.mapName, width, height, length, info.seed);
                 if (lvl == null)
                 {
@@ -500,10 +499,9 @@ namespace NotAwesomeSurvival
         public class TransferInfo
         {
             [JsonIgnore] public Position posBeforeMapChange;
-            [JsonIgnore] public byte yawBeforeMapChange;
-            [JsonIgnore] public byte pitchBeforeMapChange;
-            [JsonIgnore] public int chunkOffsetX, chunkOffsetZ;
-            [JsonIgnore] public int travelX = -1, travelY = -1, travelZ = -1;
+            [JsonIgnore] public byte yawBeforeMapChange, pitchBeforeMapChange;
+            [JsonIgnore] public int chunkOffsetX, chunkOffsetZ,
+                travelX = -1, travelY = -1, travelZ = -1;
             public TransferInfo(Player p, int chunkOffsetX, int chunkOffsetZ)
             {
                 posBeforeMapChange = p.Pos;
@@ -529,8 +527,8 @@ namespace NotAwesomeSurvival
             public void CalcNewPos()
             {
                 //* 32 because its in player units
-                int xOffset = chunkOffsetX * NasGen.mapWideness * 32;
-                int zOffset = chunkOffsetZ * NasGen.mapWideness * 32;
+                int xOffset = chunkOffsetX * NasGen.mapWideness * 32,
+                    zOffset = chunkOffsetZ * NasGen.mapWideness * 32;
                 posBeforeMapChange.X -= xOffset;
                 posBeforeMapChange.Z -= zOffset;
             }
@@ -573,8 +571,7 @@ namespace NotAwesomeSurvival
             { 
                 height = NasGen.oceanHeight;
             }
-            int distanceBelow = nl.biome < 0 ? 0 : height - next.BlockY;
-            int expFog;
+            int distanceBelow = nl.biome < 0 ? 0 : height - next.BlockY, expFog;
             if (distanceBelow >= NasGen.diamondDepth)
             {
                 targetRenderDistance = 128;
@@ -609,9 +606,9 @@ namespace NotAwesomeSurvival
         }
         public static Color ScaleColor(Color cur, Color goal)
         {
-            byte R = ScaleChannel(cur.R, goal.R);
-            byte G = ScaleChannel(cur.G, goal.G);
-            byte B = ScaleChannel(cur.B, goal.B);
+            byte R = ScaleChannel(cur.R, goal.R),
+                G = ScaleChannel(cur.G, goal.G),
+                B = ScaleChannel(cur.B, goal.B);
             return Color.FromArgb(R, G, B);
         }
         public static byte ScaleChannel(byte curChannel, byte goalChannel)

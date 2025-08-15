@@ -13,7 +13,6 @@ or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
  */
 
-using System;
 using System.Collections.Generic;
 using MCGalaxy.DB;
 using MCGalaxy.SQL;
@@ -31,8 +30,7 @@ namespace MCGalaxy
             return target != null ? target.group : Group.GroupIn(name);
         }
         
-        [Obsolete("Use p.FormatNick instead")]
-        public static string GetColoredName(Player p, string name) { return p.FormatNick(name); }
+
         
         /// <summary> Calculates default color for the given player. </summary>
         public static string DefaultColor(Player p) {
@@ -54,7 +52,7 @@ namespace MCGalaxy
         /// <summary> Matches given name against the names of all online players that the given player can see </summary>
         /// <returns> A Player instance if exactly one match was found </returns>
         public static Player FindMatches(Player pl, string name) {
-            return FindMatches(pl, name, out int _);
+            return FindMatches(pl, name, out _);
         }
         
         /// <summary> Matches given name against the names of all online players that the given player can see </summary>

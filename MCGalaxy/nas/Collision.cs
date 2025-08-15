@@ -122,9 +122,9 @@ namespace NotAwesomeSurvival
         public static bool NASTouchesGround(Level lvl, AABB entityAABB, Position posToGetBlock, out float fallDamageMultiplier)
         {
             fallDamageMultiplier = 1;
-            int x = posToGetBlock.FeetBlockCoords.X;
-            int y = posToGetBlock.FeetBlockCoords.Y;
-            int z = posToGetBlock.FeetBlockCoords.Z;
+            int x = posToGetBlock.FeetBlockCoords.X,
+                y = posToGetBlock.FeetBlockCoords.Y,
+                z = posToGetBlock.FeetBlockCoords.Z;
             ushort serverushort = lvl.GetBlock((ushort)x,
                                                  (ushort)y,
                                                  (ushort)z);

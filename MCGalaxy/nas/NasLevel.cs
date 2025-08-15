@@ -16,8 +16,8 @@ namespace NotAwesomeSurvival
         [JsonIgnore] public SimplePriorityQueue<QueuedBlockUpdate, DateTime> tickQueue = new SimplePriorityQueue<QueuedBlockUpdate, DateTime>();
         [JsonIgnore] public SchedulerTask schedulerTask;
         public int biome;
-        public bool dungeons = false;
-        public bool deepslateGenerated = true;
+        public bool dungeons = false,
+            deepslateGenerated = true;
         public static Scheduler TickScheduler;
         public static TimeSpan tickDelay = TimeSpan.FromMilliseconds(100);
         public static Random r = new Random();

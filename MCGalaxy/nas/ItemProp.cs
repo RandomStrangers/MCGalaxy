@@ -4,18 +4,18 @@ namespace NotAwesomeSurvival
 {
     public partial class ItemProp
     {
-        public string name;
-        public string color;
-        public string character;
+        public string name,
+            color,
+            character;
         public List<NasBlock.Material> materialsEffectiveAgainst;
         public int tier;
         public float percentageOfTimeSaved;
         public const int baseHPconst = 200;
-        public float baseHP;
-        public float damage;
+        public float baseHP,
+            damage;
         public int recharge;
-        public float armor;
-        public float knockback;
+        public float armor,
+            knockback;
         public Dictionary<string, bool> allowedEnchants = new Dictionary<string, bool>();
         public static Dictionary<string, ItemProp> props = new Dictionary<string, ItemProp>();
         public ItemProp(string description, Dictionary<string, bool> enchants = null, NasBlock.Material effectiveAgainst = NasBlock.Material.None, float percentageOfTimeSaved = 0, int tier = 1)

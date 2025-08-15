@@ -14,8 +14,8 @@ namespace NotAwesomeSurvival
         [JsonIgnore] public int slotToMoveTo = -1;
         [JsonIgnore] public bool deleting = false;
         public Item[] items = new Item[maxItems];
-        public const int maxItems = 27;
-        public const int itemBarLength = 9;
+        public const int maxItems = 27, 
+            itemBarLength = 9;
         public int selectedItemIndex = 0;
         public void SetupItems()
         {
@@ -90,8 +90,8 @@ namespace NotAwesomeSurvival
         }
         public void FinalizeItemMove()
         {
-            Item gettingMoved = items[selectedItemIndex];
-            Item to = items[slotToMoveTo];
+            Item gettingMoved = items[selectedItemIndex],
+                to = items[slotToMoveTo];
             //swap around
             items[selectedItemIndex] = to;
             items[slotToMoveTo] = gettingMoved;
@@ -169,10 +169,10 @@ namespace NotAwesomeSurvival
             StringBuilder builder = new StringBuilder(prefix);
             for (int i = offset; i < itemBarLength + offset; i++)
             {
-                bool moving = !(slotToMoveTo == -1);
-                bool handsHere = i == slotToMoveTo;
-                bool selectionHere = i == selectedItemIndex;
-                bool selectionNext = moving ? i + 1 == slotToMoveTo : i + 1 == selectedItemIndex;
+                bool moving = !(slotToMoveTo == -1),
+                    handsHere = i == slotToMoveTo,
+                    selectionHere = i == selectedItemIndex,
+                    selectionNext = moving ? i + 1 == slotToMoveTo : i + 1 == selectedItemIndex;
                 int itemIndex = i;
                 if (handsHere) 
                 { 

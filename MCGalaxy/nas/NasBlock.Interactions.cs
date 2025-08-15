@@ -1,26 +1,44 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Drawing;
-using Newtonsoft.Json;
 using MCGalaxy;
+using MCGalaxy.DB;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Maths;
-using MCGalaxy.Tasks;
+using MCGalaxy.Modules.Warps;
 using MCGalaxy.Network;
-using MCGalaxy.DB;
-using NasBlockInteraction =
-    NotAwesomeSurvival.Action<NotAwesomeSurvival.NasPlayer, MCGalaxy.Events.PlayerEvents.MouseButton, MCGalaxy.Events.PlayerEvents.MouseAction,
-    NotAwesomeSurvival.NasBlock, ushort, ushort, ushort>;
+using MCGalaxy.Tasks;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Text;
 using NasBlockExistAction =
     NotAwesomeSurvival.Action<NotAwesomeSurvival.NasPlayer,
     NotAwesomeSurvival.NasBlock, bool, ushort, ushort, ushort>;
-using MCGalaxy.Modules.Warps;
+using NasBlockInteraction =
+    NotAwesomeSurvival.Action<NotAwesomeSurvival.NasPlayer, MCGalaxy.Events.PlayerEvents.MouseButton, MCGalaxy.Events.PlayerEvents.MouseAction,
+    NotAwesomeSurvival.NasBlock, ushort, ushort, ushort>;
 namespace NotAwesomeSurvival
 {
     public partial class NasBlock
     {
+        public static List<string> ReadAllLinesList(string path)
+        {
+            if (!File.Exists(path))
+            {
+                File.Create(path).Dispose();
+            }
+            List<string> lines = new List<string>();
+            using (StreamReader r = new StreamReader(path, Encoding.UTF8))
+            {
+                string line;
+                while ((line = r.ReadLine()) != null)
+                {
+                    lines.Add(line);
+                }
+            }
+            return lines;
+        }
         public const string Path = Nas.SavePath + "blocks/";
         public static string GetTextPath(Player p)
         {
@@ -45,17 +63,17 @@ namespace NotAwesomeSurvival
             {
                 return lockedBy.Length == 0 || lockedBy == np.p.name;
             }
-            public string lockedBy = "";
-            public string blockText = "";
+            public string lockedBy = "",
+                blockText = "";
             public int strength = 0;
             public Drop drop = null;
-            public int type = 0;
-            public int direction = 0;
+            public int type = 0,
+                direction = 0;
         }
         public class Container
         {
-            public const int ToolLimit = 15;
-            public const int BlockStackLimit = 15;
+            public const int ToolLimit = 15,
+                BlockStackLimit = 15;
             public static object locker = new object();
             public enum Type { Chest, Barrel, Crate, Gravestone, AutoCraft, Dispenser }
             public Type type;
@@ -107,8 +125,8 @@ namespace NotAwesomeSurvival
                 }
             };
         }
-        public static List<string> books = Utils.ReadAllLinesList("text/BookTitles.txt");
-        public static List<string> authors = Utils.ReadAllLinesList("text/BookAuthors.txt");
+        public static List<string> books = ReadAllLinesList("text/BookTitles.txt"),
+            authors = ReadAllLinesList("text/BookAuthors.txt");
         public static NasBlockInteraction BookshelfInteraction()
         {
             return (np, button, action, nasBlock, x, y, z) => {
@@ -447,11 +465,11 @@ namespace NotAwesomeSurvival
                 double mult = nether ? 8 : (double)1 / 8;
                 absoluteX = (int)Math.Floor(absoluteX * mult);
                 absoluteZ = (int)Math.Floor(absoluteZ * mult);
-                int levelX = (int)Math.Floor((double)absoluteX / np.nl.lvl.Width);
-                int levelZ = (int)Math.Floor((double)absoluteZ / np.nl.lvl.Length);
+                int levelX = (int)Math.Floor((double)absoluteX / np.nl.lvl.Width),
+                levelZ = (int)Math.Floor((double)absoluteZ / np.nl.lvl.Length);
                 string newLevel = seed.Replace("-nether", "") + (!nether ? "-nether" : "") + "_" + levelX + "," + levelZ;
-                int withX = absoluteX - levelX * np.nl.lvl.Width;
-                int withZ = absoluteZ - levelZ * np.nl.lvl.Length;
+                int withX = absoluteX - levelX * np.nl.lvl.Width,
+                withZ = absoluteZ - levelZ * np.nl.lvl.Length;
                 withX = Math.Min(np.nl.lvl.Width - 2, Math.Max(1, withX));
                 withZ = Math.Min(np.nl.lvl.Length - 2, Math.Max(1, withZ));
                 int withY = Math.Min(245, Math.Max(32, (int)y));
@@ -496,8 +514,8 @@ namespace NotAwesomeSurvival
                     {
                         for (int offY = 32 - withY; offY + withY <= 245; offY++)
                         {
-                            ushort block1 = grab.FastGetBlock((ushort)withX, (ushort)(withY + offY), (ushort)withZ);
-                            ushort block2 = grab.FastGetBlock((ushort)withX, (ushort)(withY + offY + 1), (ushort)withZ);
+                            ushort block1 = grab.FastGetBlock((ushort)withX, (ushort)(withY + offY), (ushort)withZ),
+                            block2 = grab.FastGetBlock((ushort)withX, (ushort)(withY + offY + 1), (ushort)withZ);
                             if (block2 == Block.Air && (block1 == Block.FromRaw(457) || block1 == Block.Air))
                             {
                                 dY = offY;
@@ -684,8 +702,13 @@ namespace NotAwesomeSurvival
                             }
                             else if (nasBlock.container.type == Container.Type.Gravestone)
                             {
-                                string[] locations = File.ReadAllLines(Nas.GetDeathPath(np.p.name));
-                                string[] newLocations = new string[locations.Length];
+                                string file = Nas.GetDeathPath(np.p.name);
+                                if (!File.Exists(file))
+                                {
+                                    File.Create(Nas.GetDeathPath(np.p.name)).Dispose();
+                                }
+                                string[] locations = File.ReadAllLines(Nas.GetDeathPath(np.p.name)),
+                                newLocations = new string[locations.Length];
                                 for (int i = 0; i < locations.Length; i++)
                                 {
                                     if (!locations[i].CaselessContains(x + " " + y + " " + z + " in " + np.p.level.name))
@@ -1027,10 +1050,10 @@ namespace NotAwesomeSurvival
                 return;
             };
         }
-        public static ushort[] waffleSet = { Block.Extended | 542, Block.Extended | 543 };
-        public static ushort[] breadSet = new ushort[] { Block.Extended | 640, Block.Extended | 641, Block.Extended | 642 };
-        public static ushort[] pieSet = new ushort[] { Block.Extended | 668, Block.Extended | 669, Block.Extended | 670, Block.Extended | 671 };
-        public static ushort[] peachPieSet = new ushort[] { Block.Extended | 698, Block.Extended | 699, Block.Extended | 700, Block.Extended | 701 };
+        public static ushort[] waffleSet = { Block.Extended | 542, Block.Extended | 543 },
+            breadSet = new ushort[] { Block.Extended | 640, Block.Extended | 641, Block.Extended | 642 },
+            pieSet = new ushort[] { Block.Extended | 668, Block.Extended | 669, Block.Extended | 670, Block.Extended | 671 },
+            peachPieSet = new ushort[] { Block.Extended | 698, Block.Extended | 699, Block.Extended | 700, Block.Extended | 701 };
         public static NasBlockInteraction EatInteraction(ushort[] set, int index, float healthRestored, float chewSeconds = 2)
         {
             return (np, button, action, nasBlock, x, y, z) => {
@@ -1072,8 +1095,8 @@ namespace NotAwesomeSurvival
         {
             EatInfo eatInfo = (EatInfo)task.State;
             NasPlayer np = eatInfo.np;
-            float healthRestored = eatInfo.healthRestored;
-            float roundAdd = ((float)Math.Floor(np.HP * 2f) / 2f) - np.HP;
+            float healthRestored = eatInfo.healthRestored,
+                roundAdd = ((float)Math.Floor(np.HP * 2f) / 2f) - np.HP;
             np.ChangeHealth(roundAdd);
             float HPafterHeal = np.HP + healthRestored;
             if (HPafterHeal > NasEntity.maxHP)

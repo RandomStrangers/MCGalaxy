@@ -9,9 +9,7 @@ namespace NotAwesomeSurvival
     public class NasEffect
     {
         public const string Path = Nas.Path + "effects/";
-        public static Effect breakMeter;
-        public static Effect breakEarth;
-        public static Effect breakLeaves;
+        public static Effect breakMeter, breakEarth, breakLeaves;
         public static Effect[] breakEffects = new Effect[(int)NasBlock.Material.Count];
         public static bool Setup()
         {

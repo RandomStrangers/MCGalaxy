@@ -302,9 +302,9 @@ namespace MCGalaxy
                     return false;
                 }
 
-                if (visible.TryGetValue(e, out _))
+                if (visible.TryGetValue(e, out VisibleEntity vis))
                 {
-                    VisibleEntity vis = visible[e];
+                    vis = visible[e];
                     if (!self) freeIDs.Push(vis.id);
                     //p.Message("| &c- &S{0}&S with ID {1}", vis.displayName, vis.id);
 
@@ -335,7 +335,7 @@ namespace MCGalaxy
         void Spawn(VisibleEntity vis, Position pos, Orientation rot, string skin, string name, string model)
         {
             p.Session.SendSpawnEntity(vis.id, name, skin, pos, rot);
-            _SendModel(vis, model, true);
+            _SendModel(vis, model);
             _SendRot(vis, rot);
             _SendScales(vis);
         }
@@ -353,14 +353,14 @@ namespace MCGalaxy
             lock (locker)
             {
                 if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
-                _SendModel(vis, model, false);
+                _SendModel(vis, model);
             }
         }
-        void _SendModel(VisibleEntity vis, string model, bool spawning)
+        void _SendModel(VisibleEntity vis, string model)
         {
             if (p.hasChangeModel)
             {
-                if (!(spawning && model.CaselessEq("humanoid"))) p.Session.SendChangeModel(vis.id, model);
+                p.Session.SendChangeModel(vis.id, model);
             }
         }
         void _SendRot(VisibleEntity vis, Orientation rot)
@@ -484,7 +484,8 @@ namespace MCGalaxy
 
                 if (dst == e || dst.level != e.Level || !dst.CanSeeEntity(e)) continue;
 
-                Orientation rot = e.Rot; byte pitch = rot.HeadX;
+                Orientation rot = e.Rot; 
+                byte pitch = rot.HeadX;
                 //No pattern matching because we're ancient C#
                 //CODE REVIEW: How should this be done? We could maybe have the visible pitch be a virtual getter in Entity and player implements its own logic
                 if (e is Player pl)
@@ -516,7 +517,8 @@ namespace MCGalaxy
             {
                 if (pair.Key.untracked)
                 {
-                    pair.Key._lastPos = pair.Key._positionUpdatePos; pair.Key._lastRot = pair.Key.Rot;
+                    pair.Key._lastPos = pair.Key._positionUpdatePos; 
+                    pair.Key._lastRot = pair.Key.Rot;
                 }
             }
         }

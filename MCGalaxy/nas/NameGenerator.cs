@@ -4,16 +4,16 @@ namespace NotAwesomeSurvival
 {
     public class NameGenerator
     {
-        public long[] numSyllables = new long[] { 1, 2, 3, 4, 5 };
-        public long[] numSyllablesChance = new long[] { 150, 500, 80, 10, 1 };
-        public long[] numConsonants = new long[] { 0, 1, 2, 3, 4 };
-        public long[] numConsonantsChance = new long[] { 80, 350, 25, 5, 1 };
-        public long[] numVowels = new long[] { 1, 2, 3 };
-        public long[] numVowelsChance = new long[] { 180, 25, 1 };
-        public char[] vowel = new char[] { 'a', 'e', 'i', 'o', 'u', 'y' };
-        public long[] vowelChance = new long[] { 10, 12, 10, 10, 8, 2 };
-        public char[] consonant = new char[] { 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z' };
-        public long[] consonantChance = new long[] { 10, 10, 10, 10, 10, 10, 10, 10, 12, 12, 12, 10, 5, 12, 12, 12, 8, 8, 3, 4, 3 };
+        public long[] numSyllables = new long[] { 1, 2, 3, 4, 5 },
+            numSyllablesChance = new long[] { 150, 500, 80, 10, 1 },
+            numConsonants = new long[] { 0, 1, 2, 3, 4 },
+            numConsonantsChance = new long[] { 80, 350, 25, 5, 1 },
+            numVowels = new long[] { 1, 2, 3 },
+            numVowelsChance = new long[] { 180, 25, 1 },
+            vowelChance = new long[] { 10, 12, 10, 10, 8, 2 },
+            consonantChance = new long[] { 10, 10, 10, 10, 10, 10, 10, 10, 12, 12, 12, 10, 5, 12, 12, 12, 8, 8, 3, 4, 3 };
+        public char[] vowel = new char[] { 'a', 'e', 'i', 'o', 'u', 'y' },
+            consonant = new char[] { 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z' };
         public Random random;
         /// <summary>
         /// Create an instance.
@@ -29,8 +29,8 @@ namespace NotAwesomeSurvival
             {
                 totalPossible += intArray[i];
             }
-            long chosen = random.Next((int)totalPossible);
-            long chancesSoFar = 0;
+            long chosen = random.Next((int)totalPossible),
+                chancesSoFar = 0;
             for (long j = 0; j < intArray.LongLength; j++)
             {
                 chancesSoFar += intArray[j];

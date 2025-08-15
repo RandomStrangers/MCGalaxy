@@ -29,8 +29,8 @@ namespace NotAwesomeSurvival
             }
             return null;
         }
-        public const string Path = Nas.Path + "leveldata/";
-        public const string Extension = ".json";
+        public const string Path = Nas.Path + "leveldata/",
+            Extension = ".json";
         public static void Setup()
         {
             OnLevelLoadedEvent.Register(OnLevelLoaded, Priority.High);
@@ -66,8 +66,8 @@ namespace NotAwesomeSurvival
             }
             EndTickTask();
             lvl.Save(true);
-            string jsonString = JsonConvert.SerializeObject(this, Formatting.Indented);
-            string fileName = GetFileName(name);
+            string jsonString = JsonConvert.SerializeObject(this, Formatting.Indented),
+                fileName = GetFileName(name);
             File.WriteAllText(fileName, jsonString);
             Log("Unloaded(saved) NasLevel {0}!", fileName);
             all.Remove(name);

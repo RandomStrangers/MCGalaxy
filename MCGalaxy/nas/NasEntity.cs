@@ -43,8 +43,8 @@ namespace NotAwesomeSurvival
         public string levelName;
         public Vec3S32 location;
         public Vec3S32 lastGroundedLocation;
-        public byte yaw;
-        public byte pitch;
+        public byte yaw,
+            pitch;
         public static void SetLocation(NasEntity ne, string levelName, Position pos, Orientation rot)
         {
             ne.levelName = levelName;

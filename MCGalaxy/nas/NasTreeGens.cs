@@ -73,9 +73,9 @@ namespace NotAwesomeSurvival
                 {
                     for (int l = -num; l <= num; l++)
                     {
-                        ushort num2 = (ushort)(x + l);
-                        ushort y2 = (ushort)(y + j);
-                        ushort num3 = (ushort)(z + k);
+                        ushort num2 = (ushort)(x + l),
+                            y2 = (ushort)(y + j),
+                            num3 = (ushort)(z + k);
                         if (num2 != x || num3 != z || j > height)
                         {
                             if (Math.Abs(l) == num && Math.Abs(k) == num)
@@ -108,11 +108,10 @@ namespace MCGalaxy.Generator.Foliage
 {
     public class SpruceTree : Tree
     {
-        public int branchBaseHeight;
-        public int branchAmount;
-        public const int maxExtent = 5;
-        public const int maxBranchHeight = 8;
-        public const int maxCluster = 2;
+        public int branchBaseHeight, branchAmount;
+        public const int maxExtent = 5,
+            maxBranchHeight = 8,
+            maxCluster = 2;
         public List<Vec3S32> branch = new List<Vec3S32>();
         public override long EstimateBlocksAffected()
         {
@@ -132,8 +131,8 @@ namespace MCGalaxy.Generator.Foliage
         }
         public override void Generate(ushort x, ushort y, ushort z, TreeOutput output)
         {
-            Vec3S32 p = new Vec3S32(x, y, z);
-            Vec3S32 p2 = new Vec3S32(x, y + height, z);
+            Vec3S32 p = new Vec3S32(x, y, z),
+                p2 = new Vec3S32(x, y + height, z);
             Line(p, p2, output);
             for (int i = 0; i < branchAmount; i++)
             {
@@ -142,13 +141,13 @@ namespace MCGalaxy.Generator.Foliage
         }
         public void DoBranch(int x, int y, int z, TreeOutput output)
         {
-            int num = rnd.Next(-5, 5);
-            int num2 = rnd.Next(-5, 5);
-            int num3 = rnd.Next(1, 3);
-            int num4 = rnd.Next(branchBaseHeight, height);
-            int num5 = num4 + rnd.Next(3, 10);
-            Vec3S32 p = new Vec3S32(x, y + num4, z);
-            Vec3S32 p2 = new Vec3S32(x + num, y + num5, z + num2);
+            int num = rnd.Next(-5, 5),
+                num2 = rnd.Next(-5, 5),
+                num3 = rnd.Next(1, 3),
+                num4 = rnd.Next(branchBaseHeight, height), 
+                num5 = num4 + rnd.Next(3, 10);
+            Vec3S32 p = new Vec3S32(x, y + num4, z),
+                p2 = new Vec3S32(x + num, y + num5, z + num2);
             Line(p, p2, output);
             int num6 = num3;
             Vec3S32[] marks = new Vec3S32[] {
@@ -179,9 +178,7 @@ namespace MCGalaxy.Drawing.Ops
     {
         public struct Line
         {
-            public int len2;
-            public int dir;
-            public int axis;
+            public int len2, dir, axis;
         }
         public bool WallsMode;
         public int MaxLength = 2147483647;
@@ -194,14 +191,14 @@ namespace MCGalaxy.Drawing.Ops
         }
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
-            Vec3U16 vec3U = Clamp(marks[0]);
-            Vec3U16 vec3U2 = Clamp(marks[1]);
+            Vec3U16 vec3U = Clamp(marks[0]),
+                vec3U2 = Clamp(marks[1]);
             List<Vec3S32> list = new List<Vec3S32>();
             DrawLine(vec3U.X, vec3U.Y, vec3U.Z, MaxLength, vec3U2.X, vec3U2.Y, vec3U2.Z, list);
             if (WallsMode)
             {
-                ushort y = vec3U.Y;
-                ushort y2 = vec3U2.Y;
+                ushort y = vec3U.Y,
+                    y2 = vec3U2.Y;
                 vec3U.Y = Math.Min(y, y2);
                 vec3U2.Y = Math.Max(y, y2);
             }
@@ -223,11 +220,11 @@ namespace MCGalaxy.Drawing.Ops
         }
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
-            Vec3S32 vec3S = marks[0];
-            Vec3S32 vec3S2 = marks[1];
-            double num = Math.Abs(vec3S2.X - vec3S.X) + 0.25;
-            double num2 = Math.Abs(vec3S2.Y - vec3S.Y) + 0.25;
-            double num3 = Math.Abs(vec3S2.Z - vec3S.Z) + 0.25;
+            Vec3S32 vec3S = marks[0],
+                vec3S2 = marks[1];
+            double num = Math.Abs(vec3S2.X - vec3S.X) + 0.25,
+                num2 = Math.Abs(vec3S2.Y - vec3S.Y) + 0.25,
+                num3 = Math.Abs(vec3S2.Z - vec3S.Z) + 0.25;
             if (WallsMode)
             {
                 int val = (int)Math.Ceiling(Math.Sqrt(num * num + num3 * num3));
@@ -244,18 +241,18 @@ namespace MCGalaxy.Drawing.Ops
                 y1,
                 z1
             };
-            int value = x2 - x1;
-            int value2 = y2 - y1;
-            int value3 = z2 - z1;
+            int value = x2 - x1,
+                value2 = y2 - y1,
+                value3 = z2 - z1;
             Line line;
             line.dir = Math.Sign(value);
             Line line2;
             line2.dir = Math.Sign(value2);
             Line line3;
             line3.dir = Math.Sign(value3);
-            int num = Math.Abs(value);
-            int num2 = Math.Abs(value2);
-            int num3 = Math.Abs(value3);
+            int num = Math.Abs(value),
+                num2 = Math.Abs(value2),
+                num3 = Math.Abs(value3);
             line.len2 = num << 1;
             line2.len2 = num2 << 1;
             line3.len2 = num3 << 1;
@@ -285,9 +282,9 @@ namespace MCGalaxy.Drawing.Ops
         }
         public static void DoLine(Line l1, Line l2, Line l3, int len, int[] pixel, int maxLen, List<Vec3S32> buffer)
         {
-            int num = l1.len2 - len;
-            int num2 = l2.len2 - len;
-            int num3 = 0;
+            int num = l1.len2 - len,
+                num2 = l2.len2 - len,
+                num3 = 0;
             while (num3 < len && num3 < maxLen - 1)
             {
                 Vec3S32 item;
