@@ -3,36 +3,41 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace MCGalaxy.Gui.Popups 
+namespace MCGalaxy.Gui.Popups
 {
-    internal sealed partial class TokenSelector : Form 
+    internal sealed partial class TokenSelector : Form
     {
         public string Token;
 
-        public TokenSelector(string title) {
+        public TokenSelector(string title)
+        {
             InitializeComponent();
-            Text = title;         
+            Text = title;
             SuspendLayout();
-            
-            foreach (ChatToken token in ChatTokens.Standard) {
+
+            foreach (ChatToken token in ChatTokens.Standard)
+            {
                 MakeButton(token);
             }
-            foreach (ChatToken token in ChatTokens.Custom) {
+            foreach (ChatToken token in ChatTokens.Custom)
+            {
                 MakeButton(token);
             }
-            
+
             UpdateBaseLayout();
             ResumeLayout(false);
         }
-        
-        void TokenSelector_Load(object sender, EventArgs e) {
+
+        void TokenSelector_Load(object sender, EventArgs e)
+        {
             GuiUtils.SetIcon(this);
         }
-        
-        
+
+
         const int btnWidth = 110, btnHeight = 40, btnsPerCol = 9;
         int index = 0;
-        void MakeButton(ChatToken token) {
+        void MakeButton(ChatToken token)
+        {
             int row = index / btnsPerCol, col = index % btnsPerCol;
             index++;
 
@@ -44,8 +49,8 @@ namespace MCGalaxy.Gui.Popups
                 TabIndex = index
             };
             toolTip.SetToolTip(btn, token.Description);
-            
-            btn.Text   = token.Trigger;
+
+            btn.Text = token.Trigger;
             btn.Click += delegate { Token = token.Trigger; DialogResult = DialogResult.OK; Close(); };
             btn.Margin = new Padding(0);
             btn.UseMnemonic = false;
@@ -53,17 +58,21 @@ namespace MCGalaxy.Gui.Popups
             btn.Font = new Font("Microsoft Sans Serif", 9.5F, FontStyle.Regular, GraphicsUnit.Point, 0);
             Controls.Add(btn);
         }
-        
-        
-        void UpdateBaseLayout() {
+
+
+        void UpdateBaseLayout()
+        {
             int rows = index / btnsPerCol;
             if ((index % btnsPerCol) != 0) rows++; // round up
 
             int x;
             // Centre if even count, align under row if odd count
-            if ((rows & 1) == 0) {
+            if ((rows & 1) == 0)
+            {
                 x = rows * btnWidth / 2 - (100 / 2);
-            } else {
+            }
+            else
+            {
                 x = (rows / 2 * btnWidth) + (btnWidth - 100) / 2;
             }
 

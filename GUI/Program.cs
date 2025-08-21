@@ -21,33 +21,39 @@ using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace MCGalaxy.Gui 
+namespace MCGalaxy.Gui
 {
-    public static class Program 
-    {   
+    public static class Program
+    {
         [STAThread]
-        public static void Main(string[] args) {
-            Console.WriteLine(args);
-            Console.Clear();
+        public static void Main(string[] _)
+        {
             SetCurrentDirectory();
 
             // separate method, in case MCGalaxy_.dll is missing
-            try {
+            try
+            {
                 StartGUI();
-            } catch (FileNotFoundException ex) {
+            }
+            catch (FileNotFoundException ex)
+            {
                 string file = GetFilename(ex.FileName);
                 // If MCGalaxy_.dll is missing, a FileNotFoundException will get thrown for MCGalaxy dll
                 Popup.Error("Cannot start server as " + file + " is missing from " + Environment.CurrentDirectory
                             + "\n\nDownload it from " + Updater.UploadsURL);
                 return;
-            }    
+            }
         }
 
-        static void SetCurrentDirectory() {
+        static void SetCurrentDirectory()
+        {
             string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            try {
+            try
+            {
                 Environment.CurrentDirectory = path;
-            } catch {
+            }
+            catch
+            {
                 // assembly.Location usually gives full path of the .exe, but has issues with mkbundle
                 //   https://mono-devel-list.ximian.narkive.com/KfCAxY1F/mkbundle-assembly-getentryassembly
                 //   https://stackoverflow.com/questions/57648241/reliably-get-location-of-bundled-executable-on-linux
@@ -66,42 +72,51 @@ namespace MCGalaxy.Gui
                 return rawName;
             }
         }
-        static void StartGUI() {
+        static void StartGUI()
+        {
             FileLogger.Init();
             Server.RestartPath = Application.ExecutablePath;
             AppDomain.CurrentDomain.UnhandledException += GlobalExHandler;
             Application.ThreadException += ThreadExHandler;
             DetectBuggyCursors();
 
-            try {
+            try
+            {
                 Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault( false );
+                Application.SetCompatibleTextRenderingDefault(false);
                 Application.Run(new Window());
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Logger.LogError(e);
             }
         }
-        
-        static void LogAndRestart(Exception ex) {
+
+        static void LogAndRestart(Exception ex)
+        {
             Logger.LogError(ex);
             FileLogger.Flush(null);
-            
+
             Thread.Sleep(500);
-            if (Server.Config.restartOnError) {
+            if (Server.Config.restartOnError)
+            {
                 Thread stopThread = Server.Stop(true, "Server restart - unhandled error");
                 stopThread.Join();
             }
         }
-        
-        static void GlobalExHandler(object sender, UnhandledExceptionEventArgs e) {
+
+        static void GlobalExHandler(object sender, UnhandledExceptionEventArgs e)
+        {
             LogAndRestart((Exception)e.ExceptionObject);
         }
 
-        static void ThreadExHandler(object sender, ThreadExceptionEventArgs e) {
+        static void ThreadExHandler(object sender, ThreadExceptionEventArgs e)
+        {
             LogAndRestart(e.Exception);
         }
 
-        static void DetectBuggyCursors() {
+        static void DetectBuggyCursors()
+        {
             // In very rare cases, trying to create SizeNWSE cursor on Mono on Linux will throw an ArgumentException
             // Message: A null reference or invalid value was found[GDI + status: InvalidParameter]
             //   ..
@@ -115,18 +130,24 @@ namespace MCGalaxy.Gui
             // However, some X11 video drivers will cause XQueryBestCursor to return width/height 0,
             //  which will then cause the subsequent 'new Bitmap(width, height)' in XplatUIX11.DefineCursor to fail
             // See https://github.com/ClassiCube/MCGalaxy/issues/658 for more details
-            try {
+            try
+            {
                 Cursor c = Cursors.SizeNWSE;
-            } catch (ArgumentException ex) {
+            }
+            catch (ArgumentException ex)
+            {
                 Logger.LogError("checking Cursors", ex);
                 try { BypassCursorsHACK(); } catch { }
                 Popup.Warning("Video driver appears to be returning buggy cursor sizes\n\nAttempted to workaround this issue (might not work)");
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Logger.LogError("checking Cursors", ex);
-            } 
+            }
         }
 
-        static void BypassCursorsHACK() {
+        static void BypassCursorsHACK()
+        {
             if (!Server.RunningOnMono()) return;
             Type stdCursorType = typeof(Cursor).Assembly.GetType("System.Windows.Forms.StdCursor");
 

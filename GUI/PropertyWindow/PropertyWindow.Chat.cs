@@ -17,23 +17,26 @@ using System.Drawing;
 using System.Windows.Forms;
 using MCGalaxy.Gui.Popups;
 
-namespace MCGalaxy.Gui {
-    
-    public partial class PropertyWindow : Form {
-        
-        void LoadChatProps() {
+namespace MCGalaxy.Gui
+{
+
+    public partial class PropertyWindow : Form
+    {
+
+        void LoadChatProps()
+        {
             chat_ParseColor(Server.Config.DefaultColor, chat_btnDefault);
             chat_ParseColor(Server.Config.IRCColor, chat_btnIRC);
             chat_ParseColor(Server.Config.HelpSyntaxColor, chat_btnSyntax);
             chat_ParseColor(Server.Config.HelpDescriptionColor, chat_btnDesc);
             chat_ParseColor(Server.Config.WarningErrorColor, chat_btnWarn);
-            
+
             chat_txtConsole.Text = Server.Config.ConsoleName;
             chat_chkFilter.Checked = Server.Config.ProfanityFiltering;
             chat_cbTabRank.Checked = Server.Config.TablistRankSorted;
             chat_cbTabLevel.Checked = !Server.Config.TablistGlobal;
             chat_cbTabBots.Checked = Server.Config.TablistBots;
-            
+
             chat_txtShutdown.Text = Server.Config.DefaultShutdownMessage;
             chat_chkCheap.Checked = Server.Config.ShowInvincibleMessage;
             chat_txtCheap.Enabled = chat_chkCheap.Checked;
@@ -44,20 +47,21 @@ namespace MCGalaxy.Gui {
             chat_txtLogin.Text = Server.Config.DefaultLoginMessage;
             chat_txtLogout.Text = Server.Config.DefaultLogoutMessage;
         }
-        
-        void ApplyChatProps() {
+
+        void ApplyChatProps()
+        {
             Server.Config.DefaultColor = Colors.Parse(chat_btnDefault.Text);
             Server.Config.IRCColor = Colors.Parse(chat_btnIRC.Text);
             Server.Config.HelpSyntaxColor = Colors.Parse(chat_btnSyntax.Text);
             Server.Config.HelpDescriptionColor = Colors.Parse(chat_btnDesc.Text);
             Server.Config.WarningErrorColor = Colors.Parse(chat_btnWarn.Text);
-            
+
             Server.Config.ConsoleName = chat_txtConsole.Text;
             Server.Config.ProfanityFiltering = chat_chkFilter.Checked;
             Server.Config.TablistRankSorted = chat_cbTabRank.Checked;
             Server.Config.TablistGlobal = !chat_cbTabLevel.Checked;
             Server.Config.TablistBots = chat_cbTabBots.Checked;
-            
+
             Server.Config.DefaultShutdownMessage = chat_txtShutdown.Text;
             Server.Config.ShowInvincibleMessage = chat_chkCheap.Checked;
             Server.Config.InvincibleMessage = chat_txtCheap.Text;
@@ -67,49 +71,58 @@ namespace MCGalaxy.Gui {
             Server.Config.DefaultLoginMessage = chat_txtLogin.Text;
             Server.Config.DefaultLogoutMessage = chat_txtLogout.Text;
         }
-        
 
-        void chat_chkCheap_CheckedChanged(object sender, EventArgs e) {
+
+        void chat_chkCheap_CheckedChanged(object sender, EventArgs e)
+        {
             chat_txtCheap.Enabled = chat_chkCheap.Checked;
         }
 
-        void chat_cmbDefault_Click(object sender, EventArgs e) {
+        void chat_cmbDefault_Click(object sender, EventArgs e)
+        {
             chat_ShowColorDialog(chat_btnDefault, "Default color");
         }
 
-        void chat_btnIRC_Click(object sender, EventArgs e) {
+        void chat_btnIRC_Click(object sender, EventArgs e)
+        {
             chat_ShowColorDialog(chat_btnIRC, "IRC text color");
         }
-        
-        void chat_btnSyntax_Click(object sender, EventArgs e) {
+
+        void chat_btnSyntax_Click(object sender, EventArgs e)
+        {
             chat_ShowColorDialog(chat_btnSyntax, "Help syntax color");
         }
 
-        void chat_btnDesc_Click(object sender, EventArgs e) {
+        void chat_btnDesc_Click(object sender, EventArgs e)
+        {
             chat_ShowColorDialog(chat_btnDesc, "Help description color");
         }
-		
-		void chat_btnWarn_Click(object sender, EventArgs e) {
+
+        void chat_btnWarn_Click(object sender, EventArgs e)
+        {
             chat_ShowColorDialog(chat_btnWarn, "Warning / error color");
         }
-        
-        
-        void chat_ParseColor(string value, Button target) {
+
+
+        void chat_ParseColor(string value, Button target)
+        {
             char code = value[1];
             target.Text = Colors.Name(value);
 
             target.BackColor = ColorSelector.LookupColor(code, out Color textCol);
             target.ForeColor = textCol;
         }
-        
-        void chat_ShowColorDialog(Button target, string title) {
+
+        void chat_ShowColorDialog(Button target, string title)
+        {
             string parsed = Colors.Parse(target.Text);
             char col = parsed.Length == 0 ? 'f' : parsed[1];
-            
-            using (ColorSelector sel = new ColorSelector(title, col)) {
+
+            using (ColorSelector sel = new ColorSelector(title, col))
+            {
                 DialogResult result = sel.ShowDialog();
                 if (result == DialogResult.Cancel) return;
-                
+
                 target.Text = Colors.Name(sel.ColorCode);
                 target.BackColor = ColorSelector.LookupColor(sel.ColorCode, out Color textCol);
                 target.ForeColor = textCol;

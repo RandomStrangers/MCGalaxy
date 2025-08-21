@@ -1,12 +1,15 @@
-﻿namespace MCGalaxy.Gui.Popups {
-    partial class TokenSelector {
-        
+﻿namespace MCGalaxy.Gui.Popups
+{
+    partial class TokenSelector
+    {
+
         /// <summary>
         /// This method is required for Windows Forms designer support.
         /// Do not change the method contents inside the source code editor. The Forms designer might
         /// not be able to load this method if it was changed manually.
         /// </summary>
-        private void InitializeComponent() {
+        private void InitializeComponent()
+        {
             this.btnCancel = new System.Windows.Forms.Button();
             this.components = new System.ComponentModel.Container();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
@@ -40,12 +43,13 @@
             this.Text = "ColorPicker";
             this.ResumeLayout(false);
         }
-                
-        protected override void Dispose(bool disposing) {
+
+        protected override void Dispose(bool disposing)
+        {
             if (disposing && components != null) { components.Dispose(); }
             base.Dispose(disposing);
         }
-        
+
         private System.ComponentModel.IContainer components;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.Button btnCancel;

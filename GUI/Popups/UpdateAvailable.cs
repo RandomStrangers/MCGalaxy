@@ -24,35 +24,44 @@ namespace MCGalaxy.Gui.Popups
     public sealed partial class UpdateAvailable : Form
     {
         public static volatile bool Active;
-        
-        public UpdateAvailable() {
+
+        public UpdateAvailable()
+        {
             Active = true;
             InitializeComponent();
-            Text   = "Update " + Server.SoftwareName + "?";
+            Text = "Update " + Server.SoftwareName + "?";
         }
-        
-        protected override void OnPaint(PaintEventArgs e) {
-            try {
+
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            try
+            {
                 e.Graphics.DrawIcon(SystemIcons.Question, 25, 26);
-            } catch {
+            }
+            catch
+            {
                 // not a critical error
             }
             base.OnPaint(e);
         }
-        
-        void UpdateCheck_Closed(object sender, EventArgs e) {
+
+        void UpdateCheck_Closed(object sender, EventArgs e)
+        {
             Active = false;
         }
-        
-        void UpdateCheck_Load(object sender, EventArgs e) {
+
+        void UpdateCheck_Load(object sender, EventArgs e)
+        {
             GuiUtils.SetIcon(this);
         }
-        
-        void BtnNo_Click(object sender, EventArgs e) {
+
+        void BtnNo_Click(object sender, EventArgs e)
+        {
             Close();
         }
-        
-        void BtnUpdate_Click(object sender, EventArgs e) {
+
+        void BtnUpdate_Click(object sender, EventArgs e)
+        {
             Updater.PerformUpdate();
             Close();
         }

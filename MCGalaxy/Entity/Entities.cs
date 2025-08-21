@@ -181,7 +181,7 @@ namespace MCGalaxy
         public static void DisplayPosition(Player p, Entity src, string displayName)
         {
             Vec3S32 feet = src.Pos.FeetBlockCoords;
-            int x = src.Pos.X, y = src.Pos.Y - Entities.CharacterHeight, z = src.Pos.Z;
+            int x = src.Pos.X, y = src.Pos.Y - CharacterHeight, z = src.Pos.Z;
             p.Message("{0} &Sis on {1}", displayName, src.Level.ColoredName);
             p.Message("     Block coords: &b{0} {1} {2}",
                       feet.X, feet.Y, feet.Z);

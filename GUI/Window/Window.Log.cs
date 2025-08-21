@@ -19,26 +19,35 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 
-namespace MCGalaxy.Gui {
-    public partial class Window : Form {
-        
-        void logs_dateGeneral_Changed(object sender, EventArgs e) {
+namespace MCGalaxy.Gui
+{
+    public partial class Window : Form
+    {
+
+        void logs_dateGeneral_Changed(object sender, EventArgs e)
+        {
             string date = logs_dateGeneral.Value.ToString("yyyy-MM-dd");
             string path = Path.Combine("logs", date + ".txt");
 
-            try {
+            try
+            {
                 logs_txtGeneral.Text = ReadAllText(path);
-            } catch (FileNotFoundException) {
+            }
+            catch (FileNotFoundException)
+            {
                 logs_txtGeneral.Text = "No logs found for: " + date;
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 logs_txtGeneral.Text = null;
-                
+
                 Logger.LogError("Opening " + path, ex);
                 Popup.Error("Failed to open logfile " + path);
             }
         }
 
-        static string ReadAllText(string path) {
+        static string ReadAllText(string path)
+        {
             // can't just use File.ReadAllText, because it'll fail with sharing violation
             //  (due to FileLogger using FileShare.ReadWrite, while File.ReadAllText uses FileShare.Read)
             // so try with just FileShare.Read first, then fall back onto FileShare.ReadWrite
@@ -48,10 +57,14 @@ namespace MCGalaxy.Gui {
             }
         }
 
-        static Stream OpenFile(string path) {
-            try {
-                return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read,      4096, FileOptions.SequentialScan);
-            } catch (IOException) {
+        static Stream OpenFile(string path)
+        {
+            try
+            {
+                return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan);
+            }
+            catch (IOException)
+            {
                 return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, FileOptions.SequentialScan);
             }
         }

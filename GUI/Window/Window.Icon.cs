@@ -20,11 +20,14 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
-namespace MCGalaxy.Gui {
-    public partial class Window : Form {
-        
-        Icon GetIcon() {
-            byte[] data   = Convert.FromBase64String(icon_source);
+namespace MCGalaxy.Gui
+{
+    public partial class Window : Form
+    {
+
+        Icon GetIcon()
+        {
+            byte[] data = Convert.FromBase64String(icon_source);
             Stream source = new MemoryStream(data);
             return new Icon(source);
         }

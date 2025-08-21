@@ -637,9 +637,9 @@ namespace MCGalaxy.Gui
             this.main_Maps.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this.main_Maps.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.main_Maps.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-        	        	        	this.main_colLvlName,
-        	        	        	this.main_colLvlPlayers,
-        	        	        	this.main_colLvlPhysics});
+                                    this.main_colLvlName,
+                                    this.main_colLvlPlayers,
+                                    this.main_colLvlPhysics});
             this.main_Maps.ContextMenuStrip = this.tsMap;
             this.main_Maps.Location = new System.Drawing.Point(512, 292);
             this.main_Maps.MultiSelect = false;
@@ -793,9 +793,9 @@ namespace MCGalaxy.Gui
             this.main_Players.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this.main_Players.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.main_Players.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-        	        	        	this.main_colPlName,
-        	        	        	this.main_colPlMap,
-        	        	        	this.main_colPlRank});
+                                    this.main_colPlName,
+                                    this.main_colPlMap,
+                                    this.main_colPlRank});
             this.main_Players.ContextMenuStrip = this.tsPlayer;
             this.main_Players.Location = new System.Drawing.Point(512, 7);
             this.main_Players.MultiSelect = false;

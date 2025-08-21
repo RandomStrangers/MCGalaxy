@@ -29,14 +29,15 @@ namespace MCGalaxy.Gui
         public override string ToString() { return Name; }
     }
 
-    internal static class GuiPerms 
+    internal static class GuiPerms
     {
         static List<GuiRank> Ranks, RanksRemove;
-        
-        internal static void UpdateRanks() {
+
+        internal static void UpdateRanks()
+        {
             Ranks = new List<GuiRank>(Group.AllRanks.Count);
-            
-            foreach (Group group in Group.AllRanks) 
+
+            foreach (Group group in Group.AllRanks)
             {
                 Ranks.Add(new GuiRank(group.Name, group.Permission));
             }
@@ -46,32 +47,39 @@ namespace MCGalaxy.Gui
                 new GuiRank("(remove rank)", LevelPermission.Null)
             };
         }
-        
-        internal static LevelPermission GetSelectedRank(ComboBox box, LevelPermission defPerm) {
+
+        internal static LevelPermission GetSelectedRank(ComboBox box, LevelPermission defPerm)
+        {
             GuiRank rank = (GuiRank)box.SelectedItem;
             return rank == null ? defPerm : rank.Permission;
         }
-        
-        internal static void SetSelectedRank(ComboBox box, LevelPermission perm) {
+
+        internal static void SetSelectedRank(ComboBox box, LevelPermission perm)
+        {
             List<GuiRank> ranks = (List<GuiRank>)box.DataSource;
             GuiRank rank = ranks.Find(r => r.Permission == perm);
 
-            if (rank == null) {
+            if (rank == null)
+            {
                 box.SelectedIndex = 1;
-            } else {
-                box.SelectedItem  = rank;
+            }
+            else
+            {
+                box.SelectedItem = rank;
             }
         }
 
-        internal static void SetRanks(ComboBox box, bool removeRank = false) {
+        internal static void SetRanks(ComboBox box, bool removeRank = false)
+        {
             List<GuiRank> ranks = removeRank ? RanksRemove : Ranks;
             box.DisplayMember = "Name";
-            box.ValueMember   = "Permission";
+            box.ValueMember = "Permission";
             // run into issues otherwise if multiple combo boxes share same source
-            box.DataSource    = new List<GuiRank>(ranks);
+            box.DataSource = new List<GuiRank>(ranks);
         }
-        
-        internal static void SetRanks(ComboBox[] boxes, bool removeRank = false) {
+
+        internal static void SetRanks(ComboBox[] boxes, bool removeRank = false)
+        {
             foreach (ComboBox box in boxes)
             {
                 SetRanks(box, removeRank);

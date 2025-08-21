@@ -16,25 +16,29 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace MCGalaxy.Gui {
+namespace MCGalaxy.Gui
+{
 
-    public partial class PropertyWindow : Form {
-        
+    public partial class PropertyWindow : Form
+    {
+
         bool rankSupressEvents = false;
-        
-        void LoadRankProps() {
+
+        void LoadRankProps()
+        {
             LoadDefaultRank();
             GuiPerms.SetRanks(rank_cmbOsMap);
             GuiPerms.SetSelectedRank(rank_cmbOsMap, Server.Config.OSPerbuildDefault);
 
-            rank_cbTPHigher.Checked      = Server.Config.HigherRankTP;
-            rank_cbSilentAdmins.Checked  = Server.Config.AdminsJoinSilently;
-            rank_cbEmpty.Checked         = Server.Config.ListEmptyRanks;
+            rank_cbTPHigher.Checked = Server.Config.HigherRankTP;
+            rank_cbSilentAdmins.Checked = Server.Config.AdminsJoinSilently;
+            rank_cbEmpty.Checked = Server.Config.ListEmptyRanks;
         }
 
-        void LoadDefaultRank() {
+        void LoadDefaultRank()
+        {
             rank_cmbDefault.Items.Clear();
-            foreach (Group group in Group.GroupList) 
+            foreach (Group group in Group.GroupList)
             {
                 rank_cmbDefault.Items.Add(group.Name);
             }
@@ -42,51 +46,56 @@ namespace MCGalaxy.Gui {
             rank_cmbDefault.SelectedItem = Server.Config.DefaultRankName;
             if (rank_cmbDefault.SelectedItem == null) rank_cmbDefault.SelectedIndex = 1; // guest rank (usually) TODO rethink
         }
-        
-        void ApplyRankProps() {
-            Server.Config.DefaultRankName    = rank_cmbDefault.SelectedItem.ToString();
-            Server.Config.OSPerbuildDefault  = GuiPerms.GetSelectedRank(rank_cmbOsMap, LevelPermission.Owner);
-            Server.Config.HigherRankTP       = rank_cbTPHigher.Checked;
+
+        void ApplyRankProps()
+        {
+            Server.Config.DefaultRankName = rank_cmbDefault.SelectedItem.ToString();
+            Server.Config.OSPerbuildDefault = GuiPerms.GetSelectedRank(rank_cmbOsMap, LevelPermission.Owner);
+            Server.Config.HigherRankTP = rank_cbTPHigher.Checked;
             Server.Config.AdminsJoinSilently = rank_cbSilentAdmins.Checked;
-            Server.Config.ListEmptyRanks     = rank_cbEmpty.Checked;
+            Server.Config.ListEmptyRanks = rank_cbEmpty.Checked;
         }
 
 
         readonly List<Group> copiedGroups = new List<Group>();
         Group curGroup;
-        void LoadRanks() {
+        void LoadRanks()
+        {
             rank_list.Items.Clear();
             copiedGroups.Clear();
             curGroup = null;
-            
-            foreach (Group grp in Group.GroupList) 
+
+            foreach (Group grp in Group.GroupList)
             {
                 copiedGroups.Add(grp.CopyConfig());
                 rank_list.Items.Add(grp.Name + " = " + (int)grp.Permission);
             }
             rank_list.SelectedIndex = 0;
         }
-        
-        void SaveRanks() {
+
+        void SaveRanks()
+        {
             Group.SaveAll(copiedGroups);
             Group.LoadAll();
             LoadRanks();
         }
-        
-        
-        void rank_btnColor_Click(object sender, EventArgs e) {
+
+
+        void rank_btnColor_Click(object sender, EventArgs e)
+        {
             chat_ShowColorDialog(rank_btnColor, curGroup.Name + " rank color");
             curGroup.Color = Colors.Parse(rank_btnColor.Text);
         }
 
-        void rank_list_SelectedIndexChanged(object sender, EventArgs e) {
+        void rank_list_SelectedIndexChanged(object sender, EventArgs e)
+        {
             if (rankSupressEvents) return;
             curGroup = null;
             if (rank_list.SelectedIndex == -1) return;
-            
+
             Group grp = copiedGroups[rank_list.SelectedIndex];
             curGroup = grp;
-            
+
             rank_txtName.Text = grp.Name;
             rank_numPerm.Value = (int)grp.Permission;
             chat_ParseColor(grp.Color, rank_btnColor);
@@ -94,7 +103,7 @@ namespace MCGalaxy.Gui {
             rank_txtPrefix.Text = grp.Prefix;
             rank_cbAfk.Checked = grp.AfkKicked;
             rank_numAfk.Value = grp.AfkKickTime;
-            
+
             rank_numDraw.Value = grp.DrawLimit;
             rank_numUndo.Value = grp.MaxUndo;
             rank_numMaps.Value = grp.OverseerMaps;
@@ -102,20 +111,23 @@ namespace MCGalaxy.Gui {
             rank_numCopy.Value = grp.CopySlots;
         }
 
-        void rank_txtName_TextChanged(object sender, EventArgs e) {
-            if (rank_txtName.Text.IndexOf(' ') > 0) {
+        void rank_txtName_TextChanged(object sender, EventArgs e)
+        {
+            if (rank_txtName.Text.IndexOf(' ') > 0)
+            {
                 rank_txtName.Text = rank_txtName.Text.Replace(" ", "");
                 return;
             }
             if (rank_txtName.Text.Length == 0) return;
-            
+
             curGroup.Name = rank_txtName.Text;
             rankSupressEvents = true;
             rank_list.Items[rank_list.SelectedIndex] = rank_txtName.Text + " = " + (int)curGroup.Permission;
             rankSupressEvents = false;
         }
 
-        void rank_numPerm_ValueChanged(object sender, EventArgs e) {
+        void rank_numPerm_ValueChanged(object sender, EventArgs e)
+        {
             int perm = (int)rank_numPerm.Value;
             curGroup.Permission = (LevelPermission)perm;
             rankSupressEvents = true;
@@ -123,64 +135,75 @@ namespace MCGalaxy.Gui {
             rankSupressEvents = false;
         }
 
-        
-        void rank_txtMOTD_TextChanged(object sender, EventArgs e) {
+
+        void rank_txtMOTD_TextChanged(object sender, EventArgs e)
+        {
             curGroup.MOTD = rank_txtMOTD.Text;
         }
-        
-        void rank_txtPrefix_TextChanged(object sender, EventArgs e) {
+
+        void rank_txtPrefix_TextChanged(object sender, EventArgs e)
+        {
             curGroup.Prefix = rank_txtPrefix.Text;
         }
-        
-        void rank_cbAfk_CheckedChanged(object sender, EventArgs e) {
+
+        void rank_cbAfk_CheckedChanged(object sender, EventArgs e)
+        {
             curGroup.AfkKicked = rank_cbAfk.Checked;
             rank_numAfk.Enabled = rank_cbAfk.Checked;
         }
-        
-        void rank_numAfk_ValueChanged(object sender, EventArgs e) {
+
+        void rank_numAfk_ValueChanged(object sender, EventArgs e)
+        {
             curGroup.AfkKickTime = rank_numAfk.Value;
-        }       
-        
-        void rank_numDraw_ValueChanged(object sender, EventArgs e) {
+        }
+
+        void rank_numDraw_ValueChanged(object sender, EventArgs e)
+        {
             curGroup.DrawLimit = (int)rank_numDraw.Value;
         }
-        
-        void rank_numUndo_ValueChanged(object sender, EventArgs e) {
+
+        void rank_numUndo_ValueChanged(object sender, EventArgs e)
+        {
             curGroup.MaxUndo = rank_numUndo.Value;
         }
-        
-        void rank_numMaps_ValueChanged(object sender, EventArgs e) {
+
+        void rank_numMaps_ValueChanged(object sender, EventArgs e)
+        {
             curGroup.OverseerMaps = (int)rank_numMaps.Value;
         }
-        
-        void rank_numGen_ValueChanged(object sender, EventArgs e) {
+
+        void rank_numGen_ValueChanged(object sender, EventArgs e)
+        {
             curGroup.GenVolume = (int)rank_numGen.Value;
         }
-        
-        void rank_numCopy_ValueChanged(object sender, EventArgs e) {
+
+        void rank_numCopy_ValueChanged(object sender, EventArgs e)
+        {
             curGroup.CopySlots = (int)rank_numCopy.Value;
         }
-        
-        void rank_btnAdd_Click(object sender, EventArgs e) {
+
+        void rank_btnAdd_Click(object sender, EventArgs e)
+        {
             // Find first free rank permission
             int perm = 5;
-            for (int i = (int)LevelPermission.Guest; i <= (int)LevelPermission.Owner; i++) 
+            for (int i = (int)LevelPermission.Guest; i <= (int)LevelPermission.Owner; i++)
             {
                 if (PermissionFree(i)) { perm = i; break; }
             }
-            
+
             Group newGroup = Group.DefaultRank.CopyConfig();
             newGroup.Permission = (LevelPermission)perm;
             newGroup.Name = "CHANGEME_" + perm;
             newGroup.Color = "&1";
-            
+
             copiedGroups.Add(newGroup);
             rank_list.Items.Add(newGroup.Name + " = " + (int)newGroup.Permission);
         }
 
-        void rank_btnDel_Click(object sender, EventArgs e) {
+        void rank_btnDel_Click(object sender, EventArgs e)
+        {
             if (rank_list.Items.Count == 0) return;
-            
+
             copiedGroups.RemoveAt(rank_list.SelectedIndex);
             rankSupressEvents = true;
             rank_list.Items.RemoveAt(rank_list.SelectedIndex);
@@ -189,9 +212,11 @@ namespace MCGalaxy.Gui {
             int i = rank_list.Items.Count > 0 ? 0 : -1;
             rank_list.SelectedIndex = i;
         }
-        
-        bool PermissionFree(int i) {
-            foreach (Group grp in copiedGroups) {
+
+        bool PermissionFree(int i)
+        {
+            foreach (Group grp in copiedGroups)
+            {
                 if (grp.Permission == (LevelPermission)i) return false;
             }
             return true;

@@ -20,52 +20,62 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace MCGalaxy.Gui 
+namespace MCGalaxy.Gui
 {
     // NET 2.0 doesn't include the "Action delegate without parameters" type
     public delegate void UIAction();
-	
+
     /// <summary> Shortcuts for MessageBox.Show </summary>
-    public static class Popup 
+    public static class Popup
     {
-        public static void Message(string message, string title = "") {
+        public static void Message(string message, string title = "")
+        {
             MessageBox.Show(message, title);
         }
-        
-        public static void Error(string message) {
+
+        public static void Error(string message)
+        {
             MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
-        
-        public static void Warning(string message) {
+
+        public static void Warning(string message)
+        {
             MessageBox.Show(message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
-        
-        public static bool OKCancel(string message, string title) {
+
+        public static bool OKCancel(string message, string title)
+        {
             return MessageBox.Show(message, title, MessageBoxButtons.OKCancel,
                                   MessageBoxIcon.Warning) == DialogResult.OK;
         }
-        
-        public static bool YesNo(string message, string title) {
-            return MessageBox.Show(message, title, MessageBoxButtons.YesNo, 
+
+        public static bool YesNo(string message, string title)
+        {
+            return MessageBox.Show(message, title, MessageBoxButtons.YesNo,
                                    MessageBoxIcon.Question) == DialogResult.Yes;
         }
     }
-    
-    public static class GuiUtils 
-    {   
+
+    public static class GuiUtils
+    {
         /// <summary> MCGalaxy window icon (shared) </summary>
         public static Icon WinIcon;
-        
-        public static void SetIcon(Form form) {
+
+        public static void SetIcon(Form form)
+        {
             try { form.Icon = WinIcon; } catch { }
         }
-        
+
         /// <summary> Opens the given url in the system's default web browser </summary>
         /// <remarks> Catches and logs any unhandled errors </remarks>
-        public static void OpenBrowser(string url) {
-            try { 
+        public static void OpenBrowser(string url)
+        {
+            try
+            {
                 Process.Start(url);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Logger.LogError("Opening url in browser", ex);
                 Popup.Error("Failed to open " + url);
             }

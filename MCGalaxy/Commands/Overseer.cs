@@ -15,6 +15,7 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using System;
 using System.Collections.Generic;
 using MCGalaxy.Commands.CPE;
 using MCGalaxy.Generator;
@@ -65,9 +66,7 @@ namespace MCGalaxy.Commands.World
             int realmsOwned = 0;
             foreach (string lvlName in allMaps)
             {
-                if (!lvlName.CaselessStarts(p.name)) continue;
-
-                if (LevelInfo.IsRealmOwner(p.name, lvlName))
+                if (IsOwnedBy(p.name, lvlName))
                 {
                     realmsOwned += 1;
                     if (realmsOwned >= p.group.OverseerMaps)
@@ -92,6 +91,25 @@ namespace MCGalaxy.Commands.World
 
             p.Message("You have reached the limit for your overseer maps.");
             return null;
+        }
+        /// <summary>
+        /// Returns all the os maps owned by p, sorted alphabetically.
+        /// </summary>
+        static List<string> AllOwnedBy(string playerName)
+        {
+            string[] allMaps = LevelInfo.AllMapNames();
+            List<string> owned = new List<string>();
+            foreach (string lvlName in allMaps)
+            {
+                if (IsOwnedBy(playerName, lvlName)) owned.Add(lvlName);
+            }
+            owned.Sort(new AlphanumComparator());
+            return owned;
+        }
+
+        static bool IsOwnedBy(string playerName, string levelName)
+        {
+            return levelName.CaselessStarts(playerName) && LevelInfo.IsRealmOwner(playerName, levelName);
         }
 
         static readonly string[] addHelp = new string[] {
@@ -524,8 +542,20 @@ namespace MCGalaxy.Commands.World
         };
         static void HandleRename(Player p, string args)
         {
+            if (!Server.Config.OSRenameAllowed)
+            {
+                p.Message("This server does not allow renaming os realms.");
+                return;
+            }
+
             if (args.Length > 0 && !Formatter.IsValidName(p, args, "os name", Player.USERNAME_ALPHABET))
             {
+                return;
+            }
+            const int MAX_LENGTH = 16;
+            if (args.Length > MAX_LENGTH)
+            {
+                p.Message("Your os name must be {0} characters or fewer.", MAX_LENGTH);
                 return;
             }
             UseCommand(p, "RenameLvl", p.level.name + " " + GetLevelName(p, args));
@@ -539,6 +569,74 @@ namespace MCGalaxy.Commands.World
         static void HandleRestore(Player p, string args)
         {
             UseCommand(p, "Restore", args);
+        }
+
+        static readonly string[] listHelp = new string[] {
+            "&T/os list <player>",
+            "&H  Lists all the os realms for <player>",
+            "&H  By default, lists your own realms.",
+        };
+        static void HandleList(Player p, string args)
+        {
+            string[] words = args.SplitSpaces(2);
+            string word0 = words[0];
+            string word1 = words.Length > 1 ? words[1] : ""; //How many times have I typed a variant of this
+            string playerName = word0.Length == 0 ? p.name : PlayerInfo.FindMatchesPreferOnline(p, word0);
+            if (playerName == null) return;
+            string page = word1;
+            LevelInfo.ListMaps(p, AllOwnedBy(playerName), "OS realms", "os list " + playerName, "OS realms", page, playerName != p.name);
+        }
+        static readonly string[] nextHelp = new string[] {
+            "&T/os next",
+            "&H  Determines who owns the realm you're in,",
+            "&H  then takes you to that player's next realm.",
+        };
+        static void HandleNext(Player p, string unused)
+        {
+            Level curLevel = p.level; //Cache in case another thread changes it
+
+            string[] owners = curLevel.Config.RealmOwner.SplitComma();
+            string curLevelOwner = null;
+            foreach (string owner in owners)
+            {
+                if (curLevel.name.CaselessStarts(owner)) { curLevelOwner = owner; break; }
+            }
+            if (curLevelOwner == null)
+            {
+                p.Message("This level is not an OS realm.");
+                p.Message("Therefore, you cannot go to the next one.");
+                p.Message("If you're looking for more levels to visit, try &T/levels");
+                return;
+            }
+
+            List<string> realms = AllOwnedBy(curLevelOwner);
+            int curIndex = -1;
+            for (int i = 0; i < realms.Count; i++)
+            {
+                if (curLevel.name == realms[i]) { curIndex = i; break; }
+            }
+            if (curIndex == -1)
+            {
+                throw new System.InvalidOperationException(
+                    string.Format("Guessed \"{0}\" as the realm owner of \"{1}\", but \"{2}\" does not actually own the level \"{3}\"",
+                    curLevelOwner, curLevel.name, curLevelOwner, curLevel.name));
+            }
+
+            bool blockedFromJoining = false;
+        next:
+            curIndex++;
+            if (realms.Count <= curIndex)
+            {
+                string who = curLevelOwner == p.name ? "your" : p.FormatNick(curLevelOwner) + "&S's";
+                p.Message("You are in {0} last {1}realm.", who, blockedFromJoining ? "accessible " : "");
+                return;
+            }
+            if (!PlayerActions.ChangeMap(p, realms[curIndex]))
+            {
+                blockedFromJoining = true;
+                // Try going to the next one until you get to one that can actually be visited
+                goto next;
+            }
         }
 
         //Placed at the end so that the help arrays aren't null
@@ -571,6 +669,8 @@ namespace MCGalaxy.Commands.World
                     new SubCommand("Delete",     HandleDelete,     deleteHelp, true, new string[] { "del", "remove" } ),
                     new SubCommand("Rename",     HandleRename,     renameHelp),
                     new SubCommand("Restore",    HandleRestore,    restoreHelp),
+                    new SubCommand("List",       HandleList,       listHelp, false),
+                    new SubCommand("Next",       HandleNext,       nextHelp, false),
                 }
             );
 

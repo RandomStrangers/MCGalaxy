@@ -22,37 +22,45 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using MCGalaxy.UI;
 
-namespace MCGalaxy.Gui.Components {
+namespace MCGalaxy.Gui.Components
+{
 
     /// <summary> Extended rich text box that auto-colors minecraft classic text. </summary>
-    public class ColoredTextBox : RichTextBox {
+    public class ColoredTextBox : RichTextBox
+    {
 
         bool _nightMode = false, _colorize = true;
         bool _showDateStamp = true, _autoScroll = true;
         int lines = 0;
         const int maxLines = 2000, linesToTrim = 25;
 
-        public bool AutoScroll {
+        public bool AutoScroll
+        {
             get { return _autoScroll; }
-            set {
+            set
+            {
                 _autoScroll = value;
                 if (value) ScrollToEnd(0);
             }
         }
-        
-        public bool Colorize {
+
+        public bool Colorize
+        {
             get { return _colorize; }
             set { _colorize = value; }
         }
-        
-        public bool DateStamp {
+
+        public bool DateStamp
+        {
             get { return _showDateStamp; }
             set { _showDateStamp = value; }
         }
-        
-        public bool NightMode {
+
+        public bool NightMode
+        {
             get { return _nightMode; }
-            set {
+            set
+            {
                 _nightMode = value;
                 BackColor = value ? Color.Black : Color.White;
                 ForeColor = value ? Color.White : Color.Black;
@@ -63,115 +71,133 @@ namespace MCGalaxy.Gui.Components {
 
         string CurrentDate { get { return "[" + DateTime.Now.ToString("T") + "] "; } }
 
-        public ColoredTextBox() : base() {
+        public ColoredTextBox() : base()
+        {
             LinkClicked += HandleLinkClicked;
         }
-        
+
         /// <summary> Clears all text from this textbox. </summary>
-        public void ClearLog() {
+        public void ClearLog()
+        {
             Clear();
             lines = 0;
         }
-        
+
         /// <summary> Appends text to this textbox. </summary>
         public void AppendLog(string text) { AppendLog(text, ForeColor, DateStamp); }
 
         /// <summary> Appends text to this textbox. </summary>
-        public void AppendLog(string text, Color color, bool dateStamp) {
+        public void AppendLog(string text, Color color, bool dateStamp)
+        {
             int line = GetLineFromCharIndex(Math.Max(0, TextLength - 1));
             int selLength = SelectionLength, selStart = 0;
             if (selLength > 0) selStart = SelectionStart;
             AppendLogCore(text, color, dateStamp);
-            
+
             lines++;
             if (lines > maxLines) TrimLog(ref selStart);
-            
+
             // preserve user's selection
-            if (selLength > 0 && selStart > 0) {
+            if (selLength > 0 && selStart > 0)
+            {
                 SelectionStart = selStart;
                 SelectionLength = selLength;
             }
             if (AutoScroll) ScrollToEnd(line);
         }
-        
-        void AppendLogCore(string text, Color color, bool dateStamp) {
+
+        void AppendLogCore(string text, Color color, bool dateStamp)
+        {
             if (dateStamp) AppendColoredText(CurrentDate, Color.Gray);
-            
-            if (!Colorize) {
+
+            if (!Colorize)
+            {
                 AppendText(Colors.StripUsed(text));
-            } else {
+            }
+            else
+            {
                 AppendFormatted(text, color);
             }
         }
-        
-        void TrimLog(ref int selStart) {
+
+        void TrimLog(ref int selStart)
+        {
             int trimLength = GetFirstCharIndexFromLine(linesToTrim);
             selStart -= trimLength;
             lines -= linesToTrim;
-            
+
             SelectionStart = 0;
-            SelectionLength = trimLength;            
+            SelectionLength = trimLength;
             string trimMsg = "----- cut off, see log files for rest of logs -----" + Environment.NewLine;
-            
+
             SelectedText = trimMsg;
             SelectionColor = Color.DarkGray;
-            selStart += trimMsg.Length - 1;            
+            selStart += trimMsg.Length - 1;
         }
-        
+
         /// <summary> Appends text with a specific color to this textbox. </summary>
-        internal void AppendColoredText(string text, Color color) {
+        internal void AppendColoredText(string text, Color color)
+        {
             SelectionStart = TextLength;
             SelectionLength = 0;
-            
+
             SelectionColor = color;
             AppendText(text);
             SelectionColor = ForeColor;
         }
 
-        void HandleLinkClicked(object sender, LinkClickedEventArgs e) {
+        void HandleLinkClicked(object sender, LinkClickedEventArgs e)
+        {
             if (!Popup.OKCancel("Never open links from people that you don't trust!", "Warning!!")) return;
             GuiUtils.OpenBrowser(e.LinkText);
         }
 
         /// <summary> Scrolls to the end of the log </summary>
-        internal void ScrollToEnd(int startIndex) {
+        internal void ScrollToEnd(int startIndex)
+        {
             int lines = GetLineFromCharIndex(TextLength - 1) - startIndex + 1;
-            try {
-                for (int i = 0; i < lines; i++) {
+            try
+            {
+                for (int i = 0; i < lines; i++)
+                {
                     SendMessage(Handle, 0xB5, (IntPtr)1, IntPtr.Zero);
                 }
-            } catch (DllNotFoundException) {
+            }
+            catch (DllNotFoundException)
+            {
                 // mono throws this if you're missing libMonoSupportW
                 // TODO: Maybe we should cache this instead of catching all the time
             }
             Invalidate();
         }
-        
+
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-        
-        
-        void AppendFormatted(string message, Color foreColor) {
-            int index  = 0;
+
+
+        void AppendFormatted(string message, Color foreColor)
+        {
+            int index = 0;
             char color = 'S';
             message = UIHelpers.Format(message);
-            
-            while (index < message.Length) 
+
+            while (index < message.Length)
             {
                 char curCode = color;
-                string part  = UIHelpers.OutputPart(ref color, ref index, message);
+                string part = UIHelpers.OutputPart(ref color, ref index, message);
                 if (part.Length > 0) AppendColoredText(part, GetColor(curCode, foreColor, _nightMode));
             }
         }
-        
+
         static readonly Dictionary<int, Color> color_cache = new Dictionary<int, Color>();
-        static Color GetColor(char c, Color foreCol, bool nightMode) {
+        static Color GetColor(char c, Color foreCol, bool nightMode)
+        {
             if (c == 'S' || c == 'f' || c == 'F') return foreCol;
             Colors.Map(ref c);
 
             ColorDesc color = Colors.Get(c);
             if (color.Undefined) return foreCol;
-            
+
             int key = color.R | (color.G << 8) | (color.B << 16);
 
             if (!color_cache.TryGetValue(key, out Color rgb))

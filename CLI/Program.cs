@@ -21,19 +21,25 @@ using System.Reflection;
 using System.Threading;
 using MCGalaxy.UI;
 
-namespace MCGalaxy.Cli {
-    public static class Program {
+namespace MCGalaxy.Cli
+{
+    public static class Program
+    {
 
         [STAThread]
-        public static void Main(string[] args) {
+        public static void Main(string[] args)
+        {
             Console.WriteLine(args);
             Console.Clear();
             SetCurrentDirectory();
 
             // If MCGalaxy_.dll is missing, a FileNotFoundException will get thrown for MCGalaxy dll
-            try {
+            try
+            {
                 EnableCLIMode();
-            } catch (FileNotFoundException ex) {
+            }
+            catch (FileNotFoundException ex)
+            {
                 Console.WriteLine("Cannot start server as {0} is missing from {1}",
                                   GetFilename(ex.FileName), Environment.CurrentDirectory);
                 Console.WriteLine("Download from " + Updater.UploadsURL);
@@ -41,25 +47,33 @@ namespace MCGalaxy.Cli {
                 Console.ReadKey(true);
                 return;
             }
-            
+
             // separate method, in case MCGalaxy_.dll is missing
             StartCLI();
         }
-        
-        static string GetFilename(string rawName) {
-            try {
+
+        static string GetFilename(string rawName)
+        {
+            try
+            {
                 return new AssemblyName(rawName).Name + ".dll";
-            } catch {
+            }
+            catch
+            {
                 return rawName;
             }
         }
-        
-        static void SetCurrentDirectory() {
+
+        static void SetCurrentDirectory()
+        {
 #if !MCG_STANDALONE
             string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            try {
+            try
+            {
                 Environment.CurrentDirectory = path;
-            } catch {
+            }
+            catch
+            {
                 // assembly.Location usually gives full path of the .exe, but has issues with mkbundle
                 //   https://mono-devel-list.ximian.narkive.com/KfCAxY1F/mkbundle-assembly-getentryassembly
                 //   https://stackoverflow.com/questions/57648241/reliably-get-location-of-bundled-executable-on-linux
@@ -69,28 +83,34 @@ namespace MCGalaxy.Cli {
             }
 #endif
         }
-        
-        static void EnableCLIMode() {
-            try {
+
+        static void EnableCLIMode()
+        {
+            try
+            {
                 Server.CLIMode = true;
-            } catch {
+            }
+            catch
+            {
                 // in case user is running CLI with older MCGalaxy dll which lacked CLIMode field
             }
-        	
+
 #if !MCG_STANDALONE
             Server.RestartPath = Assembly.GetEntryAssembly().Location;
 #endif
         }
-        
-        
-        static void StartCLI() {
+
+
+        static void StartCLI()
+        {
             FileLogger.Init();
             AppDomain.CurrentDomain.UnhandledException += GlobalExHandler;
-            
-            try {
+
+            try
+            {
                 Logger.LogHandler += LogMessage;
                 Updater.NewerVersionDetected += LogNewerVersionDetected;
-                
+
                 EnableCLIMode();
                 Server.Start();
                 Console.Title = Server.Config.Name + " - " + Server.SoftwareNameVersioned;
@@ -98,51 +118,60 @@ namespace MCGalaxy.Cli {
 
                 CheckNameVerification();
                 ConsoleLoop();
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Logger.LogError(e);
                 FileLogger.Flush(null);
             }
         }
-        
-        static void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e) {
-            switch (e.SpecialKey) {
+
+        static void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        {
+            switch (e.SpecialKey)
+            {
                 case ConsoleSpecialKey.ControlBreak:
                     // Cannot set e.Cancel for this one
                     Write("&e-- Server shutdown (Ctrl+Break) --");
                     Thread stopThread = Server.Stop(false, Server.Config.DefaultShutdownMessage);
                     stopThread.Join();
                     break;
-                    
+
                 case ConsoleSpecialKey.ControlC:
                     e.Cancel = true;
-                    Write("&e-- Server shutdown (Ctrl+C) --" );
+                    Write("&e-- Server shutdown (Ctrl+C) --");
                     Server.Stop(false, Server.Config.DefaultShutdownMessage);
                     break;
             }
         }
-        
-        static void LogAndRestart(Exception ex) {
+
+        static void LogAndRestart(Exception ex)
+        {
             Logger.LogError(ex);
             FileLogger.Flush(null);
-            
+
             Thread.Sleep(500);
-            if (Server.Config.restartOnError) {
+            if (Server.Config.restartOnError)
+            {
                 Thread stopThread = Server.Stop(true, "Server restart - unhandled error");
                 stopThread.Join();
             }
         }
-        
-        static void GlobalExHandler(object sender, UnhandledExceptionEventArgs e) {
+
+        static void GlobalExHandler(object sender, UnhandledExceptionEventArgs e)
+        {
             LogAndRestart((Exception)e.ExceptionObject);
         }
-        
-        
+
+
         static string CurrentDate() { return DateTime.Now.ToString("(HH:mm:ss) "); }
 
-        static void LogMessage(LogType type, string message) {
+        static void LogMessage(LogType type, string message)
+        {
             if (!Server.Config.ConsoleLogging[(int)type]) return;
-            
-            switch (type) {
+
+            switch (type)
+            {
                 case LogType.Error:
                     Write("&c!!!Error" + ExtractErrorMessage(message)
                           + " - See " + FileLogger.ErrorLogPath + " for more details.");
@@ -158,9 +187,10 @@ namespace MCGalaxy.Cli {
                     break;
             }
         }
-        
+
         static readonly string msgPrefix = Environment.NewLine + "Message: ";
-        static string ExtractErrorMessage(string raw) {
+        static string ExtractErrorMessage(string raw)
+        {
             // Error messages are usually structured like so:
             //   Type: whatever
             //   Message: whatever
@@ -168,16 +198,17 @@ namespace MCGalaxy.Cli {
             // this code extracts the Message line from the raw message
             int beg = raw.IndexOf(msgPrefix);
             if (beg == -1) return "";
-            
+
             beg += msgPrefix.Length;
             int end = raw.IndexOf(Environment.NewLine, beg);
             if (end == -1) return "";
-            
+
             return " (" + raw.Substring(beg, end - beg) + ")";
         }
-        
 
-        static void CheckNameVerification() {
+
+        static void CheckNameVerification()
+        {
             if (Server.Config.VerifyNames) return;
             Write("&e==============================================");
             Write("&eWARNING: Name verification is disabled! This means players can login as anyone, including YOU");
@@ -185,41 +216,55 @@ namespace MCGalaxy.Cli {
             Write("&e==============================================");
         }
 
-        static void LogNewerVersionDetected(object sender, EventArgs e) {
+        static void LogNewerVersionDetected(object sender, EventArgs e)
+        {
             Write("&cMCGalaxy update available! Update by replacing with the files from " + Updater.UploadsURL);
         }
-        
-        static void ConsoleLoop() {
+
+        static void ConsoleLoop()
+        {
             int eofs = 0;
-            while (true) {
-                try {
+            while (true)
+            {
+                try
+                {
                     string msg = Console.ReadLine();
                     // null msg is triggered in two cases:
                     //   a) when pressing Ctrl+C to shutdown CLI on Windows
                     //   b) underlying terminal provides a bogus EOF
                     // b) actually happens very rarely (e.g. a few times on startup with wine mono),
                     // so ignore the first few EOFs to workaround this case
-                    if (msg == null) {
+                    if (msg == null)
+                    {
                         eofs++;
                         if (eofs >= 15) { Write("&e** EOF, console no longer accepts input **"); break; }
                         continue;
                     }
-                    
+
                     msg = msg.Trim();
-                    if (msg == "/") {
+                    if (msg == "/")
+                    {
                         UIHelpers.RepeatCommand();
-                    } else if (msg.Length > 0 && msg[0] == '/') {
+                    }
+                    else if (msg.Length > 0 && msg[0] == '/')
+                    {
                         UIHelpers.HandleCommand(msg.Substring(1));
-                    } else {
+                    }
+                    else
+                    {
                         UIHelpers.HandleChat(msg);
                     }
-                } catch (UnauthorizedAccessException) {
+                }
+                catch (UnauthorizedAccessException)
+                {
                     // UnauthorizedAccessException can get thrown when stdin is unreadable
                     // See https://github.com/dotnet/runtime/issues/21913 for instance
-                     Write("&e** Access denied to stdin, console no longer accepts input **"); 
-                     Write("&e** If nohup is being used, remove that to avoid this issue **"); 
-                     break;
-                } catch (Exception ex) {
+                    Write("&e** Access denied to stdin, console no longer accepts input **");
+                    Write("&e** If nohup is being used, remove that to avoid this issue **");
+                    break;
+                }
+                catch (Exception ex)
+                {
                     // ArgumentException is raised on Mono when you:
                     //  1) Type a message into a large CLI window
                     //  2) Resize the CLI window to be smaller
@@ -228,13 +273,14 @@ namespace MCGalaxy.Cli {
                 }
             }
         }
-        
-        static void Write(string message) {
+
+        static void Write(string message)
+        {
             int index = 0;
             char col = 'S';
             message = UIHelpers.Format(message);
-            
-            while (index < message.Length) 
+
+            while (index < message.Length)
             {
                 char curCol = col;
                 string part = UIHelpers.OutputPart(ref col, ref index, message);
@@ -242,11 +288,14 @@ namespace MCGalaxy.Cli {
                 if (part.Length == 0) continue;
                 ConsoleColor color = GetConsoleColor(curCol);
 
-                if (color == ConsoleColor.White) {
+                if (color == ConsoleColor.White)
+                {
                     // show in user's preferred console text color
-                    Console.ResetColor(); 
-                } else { 
-                    Console.ForegroundColor = color; 
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.ForegroundColor = color;
                 }
                 Console.Write(part);
             }
@@ -255,28 +304,30 @@ namespace MCGalaxy.Cli {
             Console.WriteLine();
         }
 
-        static ConsoleColor GetConsoleColor(char c) {
+        static ConsoleColor GetConsoleColor(char c)
+        {
             if (c == 'S') return ConsoleColor.White;
             Colors.Map(ref c);
-            
-            switch (c) {
-                    case '0': return ConsoleColor.DarkGray; // black text on black background is unreadable
-                    case '1': return ConsoleColor.DarkBlue;
-                    case '2': return ConsoleColor.DarkGreen;
-                    case '3': return ConsoleColor.DarkCyan;
-                    case '4': return ConsoleColor.DarkRed;
-                    case '5': return ConsoleColor.DarkMagenta;
-                    case '6': return ConsoleColor.DarkYellow;
-                    case '7': return ConsoleColor.Gray;
-                    case '8': return ConsoleColor.DarkGray;
-                    case '9': return ConsoleColor.Blue;
-                    case 'a': return ConsoleColor.Green;
-                    case 'b': return ConsoleColor.Cyan;
-                    case 'c': return ConsoleColor.Red;
-                    case 'd': return ConsoleColor.Magenta;
-                    case 'e': return ConsoleColor.Yellow;
-                    case 'f': return ConsoleColor.White;
-                    
+
+            switch (c)
+            {
+                case '0': return ConsoleColor.DarkGray; // black text on black background is unreadable
+                case '1': return ConsoleColor.DarkBlue;
+                case '2': return ConsoleColor.DarkGreen;
+                case '3': return ConsoleColor.DarkCyan;
+                case '4': return ConsoleColor.DarkRed;
+                case '5': return ConsoleColor.DarkMagenta;
+                case '6': return ConsoleColor.DarkYellow;
+                case '7': return ConsoleColor.Gray;
+                case '8': return ConsoleColor.DarkGray;
+                case '9': return ConsoleColor.Blue;
+                case 'a': return ConsoleColor.Green;
+                case 'b': return ConsoleColor.Cyan;
+                case 'c': return ConsoleColor.Red;
+                case 'd': return ConsoleColor.Magenta;
+                case 'e': return ConsoleColor.Yellow;
+                case 'f': return ConsoleColor.White;
+
                 default:
                     if (!Colors.IsDefined(c)) return ConsoleColor.White;
                     return GetConsoleColor(Colors.Get(c).Fallback);

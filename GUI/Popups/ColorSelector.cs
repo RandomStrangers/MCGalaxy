@@ -3,46 +3,51 @@ using System.Windows.Forms;
 using System.Drawing;
 using System;
 
-namespace MCGalaxy.Gui.Popups 
+namespace MCGalaxy.Gui.Popups
 {
-    internal sealed partial class ColorSelector : Form 
+    internal sealed partial class ColorSelector : Form
     {
         public char ColorCode;
 
-        internal static Color LookupColor(char colorCode, out Color textColor) {
+        internal static Color LookupColor(char colorCode, out Color textColor)
+        {
             ColorDesc color = Colors.Get(colorCode);
-            
+
             if (color.Undefined)
                 color = new ColorDesc(255, 255, 255);
-            
+
             textColor = ColorUtils.CalcTextColor(color);
             return Color.FromArgb(color.R, color.G, color.B);
         }
-        
 
-        public ColorSelector(string title, char oldColorCode) {
+
+        public ColorSelector(string title, char oldColorCode)
+        {
             ColorCode = oldColorCode;
             InitializeComponent();
             Text = title;
-            
+
             SuspendLayout();
-            for (int i = 0; i < Colors.List.Length; i++) {
+            for (int i = 0; i < Colors.List.Length; i++)
+            {
                 if (Colors.List[i].Undefined) continue;
                 MakeButton(Colors.List[i].Code);
             }
-            
+
             UpdateBaseLayout();
             ResumeLayout(false);
         }
-        
-        void ColorSelector_Load(object sender, EventArgs e) {
+
+        void ColorSelector_Load(object sender, EventArgs e)
+        {
             GuiUtils.SetIcon(this);
         }
-        
-        
+
+
         const int btnWidth = 130, btnHeight = 40, btnsPerCol = 8;
         int index = 0;
-        void MakeButton(char colCode) {
+        void MakeButton(char colCode)
+        {
             int row = index / btnsPerCol, col = index % btnsPerCol;
             index++;
 
@@ -63,17 +68,21 @@ namespace MCGalaxy.Gui.Popups
             btn.Font = new Font("Microsoft Sans Serif", 9.5F, FontStyle.Regular, GraphicsUnit.Point, 0);
             Controls.Add(btn);
         }
-        
-        
-        void UpdateBaseLayout() {
+
+
+        void UpdateBaseLayout()
+        {
             int rows = index / btnsPerCol;
             if ((index % btnsPerCol) != 0) rows++; // round up
 
             int x;
             // Centre if even count, align under row if odd count
-            if ((rows & 1) == 0) {
+            if ((rows & 1) == 0)
+            {
                 x = rows * btnWidth / 2 - (100 / 2);
-            } else {
+            }
+            else
+            {
                 x = (rows / 2 * btnWidth) + (btnWidth - 100) / 2;
             }
 

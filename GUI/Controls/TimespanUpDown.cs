@@ -20,92 +20,114 @@ using System.ComponentModel;
 using System.Media;
 using System.Windows.Forms;
 
-namespace MCGalaxy.Gui {
+namespace MCGalaxy.Gui
+{
     [DefaultBindingProperty("Seconds"), DefaultEvent("ValueChanged"), DefaultProperty("Seconds")]
-    public class TimespanUpDown : UpDownBase, ISupportInitialize {
+    public class TimespanUpDown : UpDownBase, ISupportInitialize
+    {
         long totalSecs;
         bool initialising;
 
         public event EventHandler ValueChanged;
-        
+
         [Bindable(true)]
-        public long Seconds {
-            get {
+        public long Seconds
+        {
+            get
+            {
                 if (UserEdit) ValidateEditText();
                 return totalSecs;
             }
-            set {
+            set
+            {
                 if (value == totalSecs) return;
                 if (value < 0) value = 0;
-                
+
                 totalSecs = value;
                 ValueChanged?.Invoke(this, EventArgs.Empty);
                 UpdateEditText();
             }
         }
-        
-        public TimeSpan Value {
+
+        public TimeSpan Value
+        {
             get { return TimeSpan.FromSeconds(Seconds); }
             set { Seconds = (long)value.TotalSeconds; }
         }
-        
+
         public TimespanUpDown() { Text = "0s"; }
         public void BeginInit() { initialising = true; }
-        
-        public void EndInit() {
+
+        public void EndInit()
+        {
             initialising = false;
             Seconds = totalSecs;
             UpdateEditText();
         }
 
-        protected override void OnTextBoxKeyPress(object source, KeyPressEventArgs e) {
+        protected override void OnTextBoxKeyPress(object source, KeyPressEventArgs e)
+        {
             base.OnTextBoxKeyPress(source, e);
             // don't intercept ctrl+A, ctrl+C etc
             if ((ModifierKeys & (Keys.Control | Keys.Alt)) != Keys.None) return;
             // always allowed to input numbers
             if (e.KeyChar == '\b' || char.IsDigit(e.KeyChar)) return;
-            
-            try {
+
+            try
+            {
                 (Text + e.KeyChar.ToString()).ParseShort("s");
-            } catch {
+            }
+            catch
+            {
                 e.Handled = true;
                 SystemSounds.Beep.Play();
             }
         }
-        
-        protected override void OnLostFocus(EventArgs e) {
+
+        protected override void OnLostFocus(EventArgs e)
+        {
             base.OnLostFocus(e);
             if (UserEdit) UpdateEditText();
         }
-        
-        public override void DownButton() {
+
+        public override void DownButton()
+        {
             if (UserEdit) ParseEditText();
             if (totalSecs <= 0) totalSecs = 1;
             Seconds = totalSecs - 1;
         }
-        
-        public override void UpButton() {
+
+        public override void UpButton()
+        {
             if (UserEdit) ParseEditText();
             if (totalSecs == long.MaxValue) return;
             Seconds = totalSecs + 1;
         }
 
-        void ParseEditText() {
-            try {
+        void ParseEditText()
+        {
+            try
+            {
                 Value = Text.ParseShort("s");
-            } catch {
-            } finally {
+            }
+            catch
+            {
+            }
+            finally
+            {
                 UserEdit = false;
             }
         }
-        
-        protected override void UpdateEditText() {
+
+        protected override void UpdateEditText()
+        {
             if (initialising) return;
             if (UserEdit) ParseEditText();
             Text = TimeSpan.FromSeconds(totalSecs).Shorten(true, true);
         }
-        
-        protected override void ValidateEditText() {
+
+        protected override void ValidateEditText()
+        {
             ParseEditText();
             UpdateEditText();
         }
