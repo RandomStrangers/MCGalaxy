@@ -493,11 +493,6 @@ namespace NotAwesomeSurvival
                 np.PlayerSavingScheduler = new Scheduler("SavingScheduler" + p.name);
             }
             np.PlayerSaveTask = np.PlayerSavingScheduler.QueueRepeat(np.SaveStatsTask, null, TimeSpan.FromSeconds(5));
-            /*if (np.SetPrefixScheduler == null)
-            {
-                np.SetPrefixScheduler = new Scheduler("SetPrefixScheduler" + p.name);
-            }
-            np.SetPrefixTask = np.SetPrefixScheduler.QueueRepeat(np.SetPrefix, null, TimeSpan.FromMilliseconds(1));*/
         }
         public static void OnShutdown(bool restarting, string reason)
         {
@@ -513,11 +508,6 @@ namespace NotAwesomeSurvival
                     np.PlayerSavingScheduler = new Scheduler("SavingScheduler" + p.name);
                 }
                 np.PlayerSavingScheduler.Cancel(np.PlayerSaveTask);
-                /*if (np.SetPrefixScheduler == null)
-                {
-                    np.SetPrefixScheduler = new Scheduler("SetPrefixScheduler" + p.name);
-                }
-                np.SetPrefixScheduler.Cancel(np.SetPrefixTask);*/
                 np.Save();
             }
         }

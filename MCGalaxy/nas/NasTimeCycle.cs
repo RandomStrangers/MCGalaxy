@@ -60,7 +60,7 @@ namespace NotAwesomeSurvival
         }
         public static void TakeDown()
         {
-            Server.MainScheduler.Cancel(task);
+            weatherScheduler.Cancel(task);
         }
         public static void Update(SchedulerTask task) // this gets executed each time a second has passed.
         {
