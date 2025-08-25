@@ -66,7 +66,7 @@ namespace MCGalaxy.Commands.World
             int realmsOwned = 0;
             foreach (string lvlName in allMaps)
             {
-                if (IsOwnedBy(p.name, lvlName))
+                if (LevelInfo.IsPersonalRealmOwner(p.name, lvlName))
                 {
                     realmsOwned += 1;
                     if (realmsOwned >= p.group.OverseerMaps)
@@ -91,25 +91,6 @@ namespace MCGalaxy.Commands.World
 
             p.Message("You have reached the limit for your overseer maps.");
             return null;
-        }
-        /// <summary>
-        /// Returns all the os maps owned by p, sorted alphabetically.
-        /// </summary>
-        static List<string> AllOwnedBy(string playerName)
-        {
-            string[] allMaps = LevelInfo.AllMapNames();
-            List<string> owned = new List<string>();
-            foreach (string lvlName in allMaps)
-            {
-                if (IsOwnedBy(playerName, lvlName)) owned.Add(lvlName);
-            }
-            owned.Sort(new AlphanumComparator());
-            return owned;
-        }
-
-        static bool IsOwnedBy(string playerName, string levelName)
-        {
-            return levelName.CaselessStarts(playerName) && LevelInfo.IsRealmOwner(playerName, levelName);
         }
 
         static readonly string[] addHelp = new string[] {
@@ -584,17 +565,36 @@ namespace MCGalaxy.Commands.World
             string playerName = word0.Length == 0 ? p.name : PlayerInfo.FindMatchesPreferOnline(p, word0);
             if (playerName == null) return;
             string page = word1;
-            LevelInfo.ListMaps(p, AllOwnedBy(playerName), "OS realms", "os list " + playerName, "OS realms", page, playerName != p.name);
+            LevelInfo.ListMaps(p, LevelInfo.AllPersonalRealms(playerName), "OS realms", "os list " + playerName, "OS realms", page, playerName != p.name);
         }
-        static readonly string[] nextHelp = new string[] {
-            "&T/os next",
+
+        static readonly string[] tourHelp = new string[] {
+            "&T/os tour",
             "&H  Determines who owns the realm you're in,",
             "&H  then takes you to that player's next realm.",
+            "&T/os tour prev",
+            "&H  takes you to that player's previous realm.",
         };
-        static void HandleNext(Player p, string unused)
+        static void HandleTour(Player p, string arg)
         {
-            Level curLevel = p.level; //Cache in case another thread changes it
+            int direction = 1;
 
+            // Allow "/os visit next" to work for consistency's sake
+            if (arg.Length > 0 && !arg.CaselessEq("next"))
+            {
+                if (arg.CaselessEq("prev") || arg.CaselessEq("previous") || arg.CaselessEq("back"))
+                {
+                    direction = -1;
+                }
+                else
+                {
+                    p.Message("To visit the next os map, use &T/os next");
+                    p.Message("To go backwards, use &T/os next prev");
+                    return;
+                }
+            }
+
+            Level curLevel = p.level; // Cache in case another thread changes it
             string[] owners = curLevel.Config.RealmOwner.SplitComma();
             string curLevelOwner = null;
             foreach (string owner in owners)
@@ -603,13 +603,14 @@ namespace MCGalaxy.Commands.World
             }
             if (curLevelOwner == null)
             {
-                p.Message("This level is not an OS realm.");
-                p.Message("Therefore, you cannot go to the next one.");
-                p.Message("If you're looking for more levels to visit, try &T/levels");
+                p.Message("&HTo use &T/os tour&H, first join any player's personal realm.");
+                p.Message("&S(to join your own, use &T/os go&S)");
+                p.Message("&HOnce you are in someone's realm, use &T/os tour <prev/next>");
+                p.Message("&Hto easily join other realms owned by that player.");
                 return;
             }
 
-            List<string> realms = AllOwnedBy(curLevelOwner);
+            List<string> realms = LevelInfo.AllPersonalRealms(curLevelOwner);
             int curIndex = -1;
             for (int i = 0; i < realms.Count; i++)
             {
@@ -617,25 +618,29 @@ namespace MCGalaxy.Commands.World
             }
             if (curIndex == -1)
             {
-                throw new System.InvalidOperationException(
+                throw new InvalidOperationException(
                     string.Format("Guessed \"{0}\" as the realm owner of \"{1}\", but \"{2}\" does not actually own the level \"{3}\"",
                     curLevelOwner, curLevel.name, curLevelOwner, curLevel.name));
             }
 
             bool blockedFromJoining = false;
-        next:
-            curIndex++;
-            if (realms.Count <= curIndex)
+        tryAgain:
+            curIndex += 1 * direction;
+            if (curIndex >= realms.Count || curIndex < 0)
             {
                 string who = curLevelOwner == p.name ? "your" : p.FormatNick(curLevelOwner) + "&S's";
-                p.Message("You are in {0} last {1}realm.", who, blockedFromJoining ? "accessible " : "");
+
+                p.Message("You are in {0} {1} {2}realm.",
+                    who,
+                    direction == 1 ? "last" : "first",
+                    blockedFromJoining ? "accessible " : "");
                 return;
             }
             if (!PlayerActions.ChangeMap(p, realms[curIndex]))
             {
                 blockedFromJoining = true;
                 // Try going to the next one until you get to one that can actually be visited
-                goto next;
+                goto tryAgain;
             }
         }
 
@@ -670,7 +675,7 @@ namespace MCGalaxy.Commands.World
                     new SubCommand("Rename",     HandleRename,     renameHelp),
                     new SubCommand("Restore",    HandleRestore,    restoreHelp),
                     new SubCommand("List",       HandleList,       listHelp, false),
-                    new SubCommand("Next",       HandleNext,       nextHelp, false),
+                    new SubCommand("Tour",       HandleTour,       tourHelp, false),
                 }
             );
 

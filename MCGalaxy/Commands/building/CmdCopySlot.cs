@@ -29,68 +29,110 @@ namespace MCGalaxy.Commands.Building
         public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
         public override bool SuperUseable { get { return false; } }
 
-        public override void Use(Player p, string message, CommandData data) {
-            if (message.Length == 0) {
+        public override void Use(Player p, string message, CommandData data)
+        {
+            if (message.Length == 0)
+            {
                 OutputCopySlots(p);
-            } else if (message.CaselessEq("random")) {
+            }
+            else if (message.CaselessEq("random"))
+            {
                 SetRandomCopySlot(p);
-            } else {
+            }
+            else if (message.CaselessStarts("clear"))
+            {
+                string[] words = message.SplitSpaces();
+                if (words.Length < 2)
+                {
+                    p.Message("You must provide a slot number to clear.");
+                    return;
+                }
+                int num = 0;
+                if (!CommandParser.GetInt(p, words[1], "Slot number", ref num, 1, p.group.CopySlots)) return;
+
+                ClearCopySlot(p, num);
+            }
+            else
+            {
                 int i = 0;
                 if (!CommandParser.GetInt(p, message, "Slot number", ref i, 1, p.group.CopySlots)) return;
-                
+
                 SetCopySlot(p, i);
             }
         }
-        
-        static void OutputCopySlots(Player p) {
+
+        static void OutputCopySlots(Player p)
+        {
             List<CopyState> copySlots = p.CopySlots;
             int used = 0;
-            
+
             for (int i = 0; i < copySlots.Count; i++)
             {
                 if (copySlots[i] == null) continue;
                 p.Message("  #{0}: {1}", i + 1, copySlots[i].Summary);
                 used++;
             }
-            
+
             p.Message("Using {0} of {1} slots, with slot #{2} selected.",
                       used, p.group.CopySlots, p.CurrentCopySlot + 1);
         }
-        
-        static void SetRandomCopySlot(Player p) {
+
+        static void SetRandomCopySlot(Player p)
+        {
             List<CopyState> copySlots = p.CopySlots;
             List<int> slots = new List<int>();
-            
+
             for (int i = 0; i < copySlots.Count; i++)
             {
                 if (copySlots[i] == null) continue;
                 slots.Add(i);
             }
-            
-            if (slots.Count == 0) {
+
+            if (slots.Count == 0)
+            {
                 p.Message("&WCannot randomly select when all copy slots are unused/empty");
                 return;
             }
-            
+
             int idx = new Random().Next(slots.Count);
             SetCopySlot(p, slots[idx] + 1);
         }
-        
-        static void SetCopySlot(Player p, int i) {
+
+        static void SetCopySlot(Player p, int i)
+        {
             p.CurrentCopySlot = i - 1;
-            if (p.CurrentCopy == null) {
+            if (p.CurrentCopy == null)
+            {
                 p.Message("Selected copy slot {0} (unused)", i);
-            } else {
+            }
+            else
+            {
                 p.Message("Selected copy slot {0}: {1}", i, p.CurrentCopy.Summary);
             }
         }
-        
-        public override void Help(Player p) {
+
+        static void ClearCopySlot(Player p, int num)
+        {
+            int i = num - 1; //We know that i is 0 at min bc num passed to this is 1 at min
+            List<CopyState> copySlots = p.CopySlots;
+            if (i >= copySlots.Count || copySlots[i] == null)
+            {
+                p.Message("Copy slot {0} is already empty.", num);
+                return;
+            }
+            copySlots[i] = null;
+            p.Message("Cleared copy slot {0}.", num);
+        }
+
+        public override void Help(Player p)
+        {
             p.Message("&T/CopySlot random");
             p.Message("&HSelects a random slot to &T/copy &Hand &T/paste &Hfrom");
             p.Message("&T/CopySlot [number]");
             p.Message("&HSelects the slot to &T/copy &Hand &T/paste &Hfrom");
             p.Message("&HMaxmimum number of copy slots is determined by your rank");
+            p.Message("&T/CopySlot clear [number]");
+            p.Message("&HRemoves the copy data from the given slot, making it empty");
             p.Message("&T/CopySlot");
             p.Message("&HLists details about any copies stored in any slots");
         }
