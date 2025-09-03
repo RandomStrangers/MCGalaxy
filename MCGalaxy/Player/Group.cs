@@ -270,7 +270,8 @@ namespace MCGalaxy
             if (File.Exists("ranks/" + newFile)) return false;
             
             try {
-                File.Move("ranks/" + filename, "ranks/" + newFile);
+                //File.Move("ranks/" + filename, "ranks/" + newFile);
+                FileIO.TryMove("ranks/" + filename, "ranks/" + newFile);
                 filename = newFile;
                 return true;
             } catch (Exception ex) {

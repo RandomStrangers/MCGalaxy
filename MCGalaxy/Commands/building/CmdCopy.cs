@@ -61,15 +61,17 @@ namespace MCGalaxy.Commands.Building
                 
                 string path = FindCopy(p.name, parts[1]);
                 if (path == null) { p.Message("No such copy exists."); return; }
-                File.Delete(path);
+                //File.Delete(path);
+                FileIO.TryDelete(path);
                 p.Message("Deleted copy " + parts[1]);
             } else if (IsListAction(opt)) {
                 string dir = "extra/savecopy/" + p.name;
                 if (!Directory.Exists(dir)) {
                     p.Message("You have no saved copies"); return;
                 }
-                
-                string[] files = Directory.GetFiles(dir);
+
+                //string[] files = Directory.GetFiles(dir);
+                string[] files = FileIO.TryGetFiles(dir);
                 for (int i = 0; i < files.Length; i++) {
                     p.Message(Path.GetFileNameWithoutExtension(files[i]));
                 }
@@ -184,7 +186,8 @@ namespace MCGalaxy.Commands.Building
                 Directory.CreateDirectory("extra/savecopy");
             if (!Directory.Exists("extra/savecopy/" + p.name))
                 Directory.CreateDirectory("extra/savecopy/" + p.name);
-            if (Directory.GetFiles("extra/savecopy/" + p.name).Length > 15) {
+            //if (Directory.GetFiles("extra/savecopy/" + p.name).Length > 15) {
+            if (FileIO.TryGetFiles("extra/savecopy/" + p.name).Length > 15) {
                 p.Message("You can only save a maxmium of 15 copies. /copy delete some.");
                 return;
             }
@@ -207,7 +210,8 @@ namespace MCGalaxy.Commands.Building
             string path = FindCopy(p.name, file);
             if (path == null) { p.Message("No such copy exists"); return; }
             
-            using (FileStream fs = File.OpenRead(path))
+            //using (FileStream fs = File.OpenRead(path))
+            using (FileStream fs = FileIO.TryOpenRead(path))
                 using (GZipStream gs = new GZipStream(fs, CompressionMode.Decompress))
             {
                 CopyState state = new CopyState(0, 0, 0, 0, 0, 0);

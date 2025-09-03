@@ -130,7 +130,8 @@ namespace MCGalaxy.Blocks
                 SetDefaultSpecialDeletePerms();
                 
                 try { 
-                    File.Move(Paths.BlockPermsFile, Paths.BlockPermsFile + ".bak"); 
+                    //File.Move(Paths.BlockPermsFile, Paths.BlockPermsFile + ".bak"); 
+                    FileIO.TryMove(Paths.BlockPermsFile, Paths.BlockPermsFile + ".bak");
                 } catch (Exception ex) {
                     Logger.LogError("Moving old block.properties file", ex);
                 }

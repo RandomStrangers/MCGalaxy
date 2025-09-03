@@ -28,14 +28,16 @@ namespace MCGalaxy.Levels.IO
         public abstract string Description { get; }
         
         public virtual Level Read(string path, string name, bool metadata) {
-            using (FileStream fs = File.OpenRead(path))
+            //using (FileStream fs = File.OpenRead(path))
+            using (FileStream fs = FileIO.TryOpenRead(path))
                 return Read(fs, name, metadata);
         }
         
         public abstract Level Read(Stream src, string name, bool metadata);
 
         public virtual Vec3U16 ReadDimensions(string path) {
-            using (FileStream fs = File.OpenRead(path))
+            //using (FileStream fs = File.OpenRead(path))
+            using (FileStream fs = FileIO.TryOpenRead(path))
                 return ReadDimensions(fs);
         }
 

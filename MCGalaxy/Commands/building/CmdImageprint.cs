@@ -79,7 +79,12 @@ namespace MCGalaxy.Commands.Building {
             } else {
                 string path = "extra/images/" + parts[0] + ".bmp";
                 if (!File.Exists(path)) { p.Message("{0} does not exist", path); return; }
-                dArgs.Data = File.ReadAllBytes(path);
+                if (!FileIO.TryReadBytes(path, out byte[] bytes))
+                {
+                    p.Message("Could not read {0}", path);
+                    return;
+                }
+                dArgs.Data = bytes;
             }
 
             p.Message("Place or break two blocks to determine direction.");

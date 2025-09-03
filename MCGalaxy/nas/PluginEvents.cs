@@ -242,7 +242,8 @@ namespace NotAwesomeSurvival
                 }
                 else
                 {
-                    File.WriteAllText(NasBlock.GetTextPath(p), message);
+                    //File.WriteAllText(NasBlock.GetTextPath(p), message);
+                    FileIO.TryWriteAllText(NasBlock.GetTextPath(p), message);
                     return;
                 }
             }
@@ -437,7 +438,8 @@ namespace NotAwesomeSurvival
         {
             try
             {
-                string jsonString = File.ReadAllText(file);
+                //string jsonString = File.ReadAllText(file);
+                string jsonString = FileIO.TryReadAllText(file);
                 np = JsonConvert.DeserializeObject<NasPlayer>(jsonString);
                 np.SetPlayer(p);
                 p.Extras[PlayerKey] = np;

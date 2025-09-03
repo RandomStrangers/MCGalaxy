@@ -238,13 +238,17 @@ namespace MCGalaxy
             if (blocks == null) return;
             if (File.Exists(path)) {
                 string prevPath = Paths.PrevMapFile(name);
-                if (File.Exists(prevPath)) File.Delete(prevPath);
-                File.Copy(path, prevPath, true);
-                File.Delete(path);
+                //if (File.Exists(prevPath)) File.Delete(prevPath);
+                FileIO.TryDelete(prevPath);
+                //File.Copy(path, prevPath, true);
+                FileIO.TryCopy(path, prevPath, true);
+                //File.Delete(path);
+                FileIO.TryDelete(path);
             }
             
             IMapExporter.Formats[0].Write(path + ".backup", this);
-            File.Copy(path + ".backup", path);
+            //File.Copy(path + ".backup", path);
+            FileIO.TryCopy(path + ".backup", path);
             SaveSettings();
 
             Logger.Log(LogType.SystemActivity, "SAVED: Level \"{0}\". ({1}/{2}/{3})",

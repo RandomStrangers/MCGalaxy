@@ -270,7 +270,8 @@ namespace MCGalaxy {
         
         static void LoadCore() {
             if (!File.Exists(Paths.CustomColorsFile)) return;
-            string[] lines = File.ReadAllLines(Paths.CustomColorsFile);
+            //string[] lines = File.ReadAllLines(Paths.CustomColorsFile);
+            string[] lines = FileIO.TryReadAllLines(Paths.CustomColorsFile);
             ColorDesc col = default;
             
             for (int i = 0; i < lines.Length; i++) 

@@ -126,7 +126,8 @@ namespace MCGalaxy {
             if (elems == null) elems = ConfigElement.GetAll(typeof(BlockDefinition));
             
             try {
-                string json = File.ReadAllText(path);
+                //string json = File.ReadAllText(path);
+                string json = FileIO.TryReadAllText(path);
 
                 JsonReader reader = new JsonReader(json)
                 {
@@ -208,10 +209,12 @@ namespace MCGalaxy {
             GlobalDefs[Block.Air] = null;
             
             try {
-                if (File.Exists(GlobalPath)) {
-                    File.Copy(GlobalPath, GlobalBackupPath, true);
-                }
-            } catch (Exception ex) {
+                FileIO.TryCopy(GlobalPath, GlobalBackupPath, true);
+                //if (File.Exists(GlobalPath)) {
+                //File.Copy(GlobalPath, GlobalBackupPath, true);
+                //}
+            }
+            catch (Exception ex) {
                 Logger.LogError("Error backing up global block defs", ex);
             }
             

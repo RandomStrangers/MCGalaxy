@@ -184,8 +184,9 @@ namespace MCGalaxy.DB
             string path = FilePath;
             
             using (IDisposable writeLock = Locker.AccquireWrite()) {
-                if (!File.Exists(path)) return;
-                File.Delete(path);
+                //if (!File.Exists(path)) return;
+                //File.Delete(path);
+                FileIO.TryDelete(path);
             }
         }
 

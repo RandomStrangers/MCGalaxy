@@ -345,9 +345,11 @@ namespace NotAwesomeSurvival
                 string file = GetTextPath(np.p);
                 if (!File.Exists(file))
                 {
-                    File.WriteAllText(file, string.Empty);
+                    //File.WriteAllText(file, string.Empty);
+                    FileIO.TryWriteAllText(file, string.Empty);
                 }
-                string myText = File.ReadAllText(file);
+                //string myText = File.ReadAllText(file);
+                string myText = FileIO.TryReadAllText(file);
                 if (!np.nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {
                     np.nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
@@ -369,7 +371,8 @@ namespace NotAwesomeSurvival
                         return; 
                     }
                     bEntity.blockText = np.p.ColoredName + " &Ssays: " + myText;
-                    File.WriteAllText(file, string.Empty);
+                    //File.WriteAllText(file, string.Empty);
+                    FileIO.TryWriteAllText(file, string.Empty);
                     np.Message("Overwritten!");
                 }
             };
@@ -707,7 +710,8 @@ namespace NotAwesomeSurvival
                                 {
                                     File.Create(Nas.GetDeathPath(np.p.name)).Dispose();
                                 }
-                                string[] locations = File.ReadAllLines(Nas.GetDeathPath(np.p.name)),
+                                //string[] locations = File.ReadAllLines(Nas.GetDeathPath(np.p.name)),
+                                string[] locations = FileIO.TryReadAllLines(Nas.GetDeathPath(np.p.name)),
                                 newLocations = new string[locations.Length];
                                 for (int i = 0; i < locations.Length; i++)
                                 {
@@ -716,7 +720,7 @@ namespace NotAwesomeSurvival
                                         newLocations[i] = locations[i];
                                     }
                                 }
-                                File.WriteAllLines(Nas.GetDeathPath(np.p.name), newLocations);
+                                FileIO.TryWriteAllLines(Nas.GetDeathPath(np.p.name), newLocations);
                                 RemoveAll(np, bEntity, bEntity.lockedBy.Length == 0);
                                 bEntity.lockedBy = "";
                             }

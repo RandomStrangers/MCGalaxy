@@ -161,8 +161,10 @@ namespace NotAwesomeSurvival
             if (this != null)
             {
                 string jsonString = JsonConvert.SerializeObject(this, Formatting.Indented);
-                File.WriteAllText(Nas.GetSavePath(p), jsonString);
-                File.WriteAllText(Nas.GetTextPath(p), jsonString);
+                //File.WriteAllText(Nas.GetSavePath(p), jsonString);
+                FileIO.TryWriteAllText(Nas.GetSavePath(p), jsonString);
+                //File.WriteAllText(Nas.GetTextPath(p), jsonString);
+                FileIO.TryWriteAllText(Nas.GetTextPath(p), jsonString);
             }
         }
         public void SpawnPlayer(Level level, ref Position spawnPos, ref byte yaw, ref byte pitch)

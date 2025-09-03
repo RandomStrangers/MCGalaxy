@@ -30,7 +30,8 @@ namespace MCGalaxy.Commands.Info
                 Directory.CreateDirectory("extra/text");
             
             if (message.Length == 0) {
-                string[] files = Directory.GetFiles("extra/text", "*.txt");
+                //string[] files = Directory.GetFiles("extra/text", "*.txt");
+                string[] files = FileIO.TryGetFiles("extra/text", "*.txt");
                 string all = files.Join(f => Path.GetFileNameWithoutExtension(f));
 
                 if (all.Length == 0) {
@@ -43,7 +44,8 @@ namespace MCGalaxy.Commands.Info
                 message = Path.GetFileName(message);
                 
                 if (File.Exists("extra/text/" + message + ".txt")) {
-                    string[] lines = File.ReadAllLines("extra/text/" + message + ".txt");
+                    //string[] lines = File.ReadAllLines("extra/text/" + message + ".txt");
+                    string[] lines = FileIO.TryReadAllLines("extra/text/" + message + ".txt");
                     p.MessageLines(lines);
                 } else {
                     p.Message("File specified doesn't exist");

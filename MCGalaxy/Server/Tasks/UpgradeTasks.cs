@@ -28,14 +28,16 @@ namespace MCGalaxy.Tasks {
             if (!File.Exists("ranks/agreed.txt")) return;
             
             string data = null;
-            using (FileStream fs = File.OpenRead("ranks/agreed.txt")) {
+            //using (FileStream fs = File.OpenRead("ranks/agreed.txt")) {
+            using (FileStream fs = FileIO.TryOpenRead("ranks/agreed.txt")) {
                 if (fs.ReadByte() != ' ') return;
                 data = new StreamReader(fs).ReadToEnd();
                 data = data.Replace(" ", Environment.NewLine);
             }
-            File.WriteAllText("ranks/agreed.txt", data);
+            //File.WriteAllText("ranks/agreed.txt", data);
+            FileIO.TryWriteAllText("ranks/agreed.txt", data);
         }
-        
+
         internal static void UpgradeOldTempranks(SchedulerTask _) {
             if (!File.Exists(Paths.TempRanksFile)) return;
 
@@ -47,7 +49,8 @@ namespace MCGalaxy.Tasks {
                 if (parts.Length < 9) return;
             }
 
-            string[] lines = File.ReadAllLines(Paths.TempRanksFile);
+            //string[] lines = File.ReadAllLines(Paths.TempRanksFile);
+            string[] lines = FileIO.TryReadAllLines(Paths.TempRanksFile);
             for (int i = 0; i < lines.Length; i++) {
                 string[] args = lines[i].SplitSpaces();
                 if (args.Length < 9) continue;
@@ -69,10 +72,11 @@ namespace MCGalaxy.Tasks {
                 lines[i] = args[0] + " " + args[9] + " " + assigned.ToUnixTime() +
                     " " + expiry.ToUnixTime() + " " + args[2] + " " + args[1];
             }
-            File.WriteAllLines(Paths.TempRanksFile, lines);
+            //File.WriteAllLines(Paths.TempRanksFile, lines);
+            FileIO.TryWriteAllLines(Paths.TempRanksFile, lines);
         }
 
-        
+
         internal static void UpgradeDBTimeSpent(SchedulerTask _) {
             string time = Database.ReadString("Players", "TimeSpent", "LIMIT 1");
             if (time == null) return; // no players at all in DB

@@ -81,23 +81,27 @@ namespace MCGalaxy.DB
         /// <summary> Deletes the backing file on disc if it exists. </summary>
         public static void DeleteBackingFile(string map) {
             string path = FilePath(map);
-            if (!File.Exists(path)) return;
-            File.Delete(path);
+            //if (!File.Exists(path)) return;
+            //File.Delete(path);
+            FileIO.TryDelete(path);
         }
         
         /// <summary> Moves the backing file on disc if it exists. </summary>
         public static void MoveBackingFile(string srcMap, string dstMap) {
             string srcPath = FilePath(srcMap), dstPath = FilePath(dstMap);
             if (!File.Exists(srcPath)) return;
-            if (File.Exists(dstPath)) File.Delete(dstPath);
-            File.Move(srcPath, dstPath);
+            //if (File.Exists(dstPath)) File.Delete(dstPath);
+            FileIO.TryDelete(dstPath);
+            //File.Move(srcPath, dstPath);
+            FileIO.TryMove(srcPath, dstPath);
         }
         
         public static void ResizeBackingFile(BlockDB db, string path) {
             Logger.Log(LogType.BackgroundActivity, "Resizing BlockDB for " + db.MapName);
             string tempPath = TempPath(db.MapName);
             
-            using (Stream src = File.OpenRead(path), dst = File.Create(tempPath)) {
+            //using (Stream src = File.OpenRead(path), dst = File.Create(tempPath)) {
+            using (Stream src = FileIO.TryOpenRead(path), dst = File.Create(tempPath)) {
                 ReadHeader(src, out Vec3U16 dims);
                 WriteHeader(dst, db.Dims);
                 int width = db.Dims.X, length = db.Dims.Z;
@@ -121,8 +125,10 @@ namespace MCGalaxy.DB
                 }
             }
             
-            File.Delete(path);
-            File.Move(tempPath, path);
+            //File.Delete(path);
+            //File.Move(tempPath, path);
+            FileIO.TryDelete(path);
+            FileIO.TryMove(tempPath, path);
         }
         
         

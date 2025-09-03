@@ -36,7 +36,8 @@ namespace MCGalaxy
                 p.Message(name + " &Shas no backups yet"); return;
             }
 
-            string[] backups = Directory.GetDirectories(root);
+            //string[] backups = Directory.GetDirectories(root);
+            string[] backups = FileIO.TryGetDirectories(root);
             p.Message(name + " &Shas &b" + backups.Length + " &Sbackups");
             int count = 0;
             StringBuilder custom = new StringBuilder();

@@ -49,7 +49,8 @@ namespace NotAwesomeSurvival
                     }
                 }
             }
-            string jsonString = File.ReadAllText(TimeFilePath);
+            //string jsonString = File.ReadAllText(TimeFilePath);
+            string jsonString = FileIO.TryReadAllText(TimeFilePath);
             NasTimeCycle ntc = JsonConvert.DeserializeObject<NasTimeCycle>(jsonString);
             dayCycle = ntc.cycle;
             gameday = ntc.day;

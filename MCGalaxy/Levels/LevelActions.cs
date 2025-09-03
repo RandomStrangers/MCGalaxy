@@ -71,7 +71,8 @@ namespace MCGalaxy
                 return false;
             }
             
-            File.Move(LevelInfo.MapPath(src), LevelInfo.MapPath(dst));
+            //File.Move(LevelInfo.MapPath(src), LevelInfo.MapPath(dst));
+            FileIO.TryMove(LevelInfo.MapPath(src), LevelInfo.MapPath(dst));
             DoAll(src, dst, action_move);
             
             // TODO: Should we move backups still
@@ -119,7 +120,7 @@ namespace MCGalaxy
                                     "WHERE ExitMap=@0", src, dst);
             }
         }
-        
+
         /*static void MoveBackups(string src, string dst) {
             string srcBase = LevelInfo.BackupBasePath(src);
             string dstBase = LevelInfo.BackupBasePath(dst);
@@ -134,13 +135,14 @@ namespace MCGalaxy
                 string dstDir = LevelInfo.BackupDirPath(dst, name);
                 
                 Directory.CreateDirectory(dstDir);
-                File.Move(srcFile, dstFile);
+                //File.Move(srcFile, dstFile);
+                FileIO.TryMove(srcFile, dstFile);
                 Directory.Delete(backups[i]);
             }
             Directory.Delete(srcBase);
         }*/
-        
-        
+
+
         /// <summary> Deletes a level and its associated metadata. </summary>
         public static bool Delete(Player p, string map) {
             Level lvl = LevelInfo.FindExact(map);
@@ -162,9 +164,11 @@ namespace MCGalaxy
                 int num = 0;
                 while (File.Exists(Paths.DeletedMapFile(map + num))) num++;
 
-                File.Move(LevelInfo.MapPath(map), Paths.DeletedMapFile(map + num));
+                //File.Move(LevelInfo.MapPath(map), Paths.DeletedMapFile(map + num));
+                FileIO.TryMove(LevelInfo.MapPath(map), Paths.DeletedMapFile(map + num));
             } else {
-                File.Move(LevelInfo.MapPath(map), Paths.DeletedMapFile(map));
+                //File.Move(LevelInfo.MapPath(map), Paths.DeletedMapFile(map));
+                FileIO.TryMove(LevelInfo.MapPath(map), Paths.DeletedMapFile(map));
             }
 
             DoAll(map, "", action_delete);
@@ -193,7 +197,8 @@ namespace MCGalaxy
                 }
             }
 
-            Directory.Delete(LevelInfo.BackupDirPath(map, backup), true);
+            //Directory.Delete(LevelInfo.BackupDirPath(map, backup), true);
+            FileIO.TryDeleteDirectory(LevelInfo.BackupDirPath(map, backup), true);
             p.Message("Deleted backup {0}.", backup);
         }
         
@@ -244,7 +249,8 @@ namespace MCGalaxy
                 p.Message("&WUnable to save {0}! Some recent block changes may not be copied.", src);
             }
             
-            File.Copy(LevelInfo.MapPath(src), LevelInfo.MapPath(dst));
+            //File.Copy(LevelInfo.MapPath(src), LevelInfo.MapPath(dst));
+            FileIO.TryCopy(LevelInfo.MapPath(src), LevelInfo.MapPath(dst));
             DoAll(src, dst, action_copy);
             CopyDatabaseTables(src, dst);
             OnLevelCopiedEvent.Call(src, dst);
@@ -310,11 +316,14 @@ namespace MCGalaxy
             if (!File.Exists(src)) return true;
             try {
                 if (action == action_delete) {
-                    File.Delete(src);
+                    //File.Delete(src);
+                    FileIO.TryDelete(src);
                 } else if (action == action_move) {
-                    File.Move(src, dst);
+                    //File.Move(src, dst);
+                    FileIO.TryMove(src, dst);
                 } else if (action == action_copy) {
-                    File.Copy(src, dst, true);
+                    //File.Copy(src, dst, true);
+                    FileIO.TryCopy(src, dst, true);
                 }
                 return true;
             } catch (Exception ex) {

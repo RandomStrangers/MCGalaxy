@@ -53,7 +53,8 @@ namespace MCGalaxy {
             if (preset != null) return preset;
 
             if (File.Exists(FOLDER + "/" + value.ToLower() + FILE_EXTENSION)) {
-                string text = File.ReadAllText(FOLDER + "/" + value.ToLower() + FILE_EXTENSION);
+                //string text = File.ReadAllText(FOLDER + "/" + value.ToLower() + FILE_EXTENSION);
+                string text = FileIO.TryReadAllText(FOLDER + "/" + value.ToLower() + FILE_EXTENSION);
                 return new EnvPreset(text);
             }
             return null;

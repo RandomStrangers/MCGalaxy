@@ -29,7 +29,9 @@ namespace MCGalaxy {
             if (!File.Exists(path)) return;
             
             try {
-                string[] lines = File.ReadAllLines(path);
+                //string[] lines = File.ReadAllLines(path);
+                string[] lines = FileIO.TryReadAllLines(path);
+
                 foreach (string line in lines) {
                     if (line == "&global") continue; // deprecated /ignore global
                     if (line == "&all") { All = true; continue; }

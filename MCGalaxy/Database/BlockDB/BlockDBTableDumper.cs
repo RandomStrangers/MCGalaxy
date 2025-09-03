@@ -101,7 +101,8 @@ namespace MCGalaxy.DB
             if (!File.Exists(path) || stream == null) return;
             
             byte[] bulk = new byte[4096];
-            using (Stream cbdb = File.OpenRead(path)) {
+            //using (Stream cbdb = File.OpenRead(path)) {
+            using (Stream cbdb = FileIO.TryOpenRead(path)) {
                 cbdb.Read(bulk, 0, BlockDBFile.EntrySize); // header
                 int read = 0;
                 while ((read = cbdb.Read(bulk, 0, 4096)) > 0) {
@@ -117,8 +118,10 @@ namespace MCGalaxy.DB
             
             string dumpPath = BlockDBFile.DumpPath(mapName);
             string filePath = BlockDBFile.FilePath(mapName);
-            if (File.Exists(filePath)) File.Delete(filePath);
-            File.Move(dumpPath, filePath);
+            //if (File.Exists(filePath)) File.Delete(filePath);
+            FileIO.TryDelete(filePath);
+            //File.Move(dumpPath, filePath);
+            FileIO.TryMove(dumpPath, filePath);
         }
         
         

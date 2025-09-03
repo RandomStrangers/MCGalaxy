@@ -58,7 +58,8 @@ namespace MCGalaxy
         // TODO: support loading other map files eventually
         public static string[] AllMapFiles()
         {
-            return Directory.GetFiles("levels", "*.lvl");
+            //return Directory.GetFiles("levels", "*.lvl");
+            return FileIO.TryGetFiles("levels", "*.lvl");
         }
 
         public static string[] AllMapNames()
@@ -109,7 +110,8 @@ namespace MCGalaxy
         public static int LatestBackup(string map)
         {
             string root = BackupBasePath(map);
-            string[] backups = Directory.GetDirectories(root);
+            //string[] backups = Directory.GetDirectories(root);
+            string[] backups = FileIO.TryGetDirectories(root);
             int latest = 0;
 
             foreach (string path in backups)

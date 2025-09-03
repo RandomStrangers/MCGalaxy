@@ -118,7 +118,8 @@ namespace MCGalaxy.Commands.Maintenance {
             if (!File.Exists(args[1] + ".sql")) { p.Message("File \"{0}\".sql does not exist.", args[1]); return; }
             
             p.Message("Importing table {0} started. Please wait while import finishes.", args[1]);
-            using (Stream fs = File.OpenRead(args[1] + ".sql"))
+            //using (Stream fs = File.OpenRead(args[1] + ".sql"))
+            using (Stream fs = FileIO.TryOpenRead(args[1] + ".sql"))
                 Backup.ImportSql(fs);
             p.Message("Finished importing table {0}.", args[1]);
         }

@@ -27,7 +27,8 @@ namespace MCGalaxy.Bots {
                 p.Message("Could not find specified AI."); return false;
             }
 
-            string[] instructions = File.ReadAllLines(path);
+            //string[] instructions = File.ReadAllLines(path);
+            string[] instructions = FileIO.TryReadAllLines(path);
             if (instructions.Length == 0) {
                 p.Message("No instructions in the AI."); return false;
             }

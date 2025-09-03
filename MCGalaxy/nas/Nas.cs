@@ -107,10 +107,12 @@ namespace NotAwesomeSurvival
             EnsureDirectoriesExist();
             if (Directory.Exists("plugins/nas"))
             {
-                string[] pluginfiles = Directory.GetFiles("plugins/nas");
+                //string[] pluginfiles = Directory.GetFiles("plugins/nas");
+                string[] pluginfiles = FileIO.TryGetFiles("plugins/nas");
                 foreach (string pluginfile in pluginfiles)
                 {
-                    string[] files = Directory.GetFiles(Path);
+                    //string[] files = Directory.GetFiles(Path);
+                    string[] files = FileIO.TryGetFiles(Path);
                     foreach (string file in files)
                     {
                         if (!File.Exists(file))
@@ -124,7 +126,8 @@ namespace NotAwesomeSurvival
                         }
                     }
                 }
-                Directory.Delete("plugins/nas", true);
+                //Directory.Delete("plugins/nas", true);
+                FileIO.TryDeleteDirectory("plugins/nas", true);
             }
             EnsureNasFilesExist();
             /*if (Block.Props.Length != 1024)
@@ -159,7 +162,8 @@ namespace NotAwesomeSurvival
             else
             {
                 firstEverPluginLoad = true;
-                File.WriteAllText(loadFile, message);
+                //File.WriteAllText(loadFile, message);
+                FileIO.TryWriteAllText(loadFile, message);
             }
             if (firstEverPluginLoad)
             {

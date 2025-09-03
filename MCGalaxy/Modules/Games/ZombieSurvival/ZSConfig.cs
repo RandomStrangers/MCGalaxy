@@ -146,7 +146,8 @@ namespace MCGalaxy.Modules.Games.ZS
             List<string> msgs = new List<string>();
             try {
                 if (!File.Exists("text/infectmessages.txt")) {
-                    File.WriteAllLines("text/infectmessages.txt", defMessages);
+                    //File.WriteAllLines("text/infectmessages.txt", defMessages);
+                    FileIO.TryWriteAllLines("text/infectmessages.txt", defMessages);
                 }
                 msgs = Utils.ReadAllLinesList("text/infectmessages.txt");
             } catch (Exception ex) {
@@ -171,7 +172,8 @@ namespace MCGalaxy.Modules.Games.ZS
                 Directory.CreateDirectory("text/infect");
             
             string path = InfectPath(name);
-            File.AppendAllText(path, msg + Environment.NewLine);
+            //File.AppendAllText(path, msg + Environment.NewLine);
+            FileIO.TryAppendAllText(path, msg + Environment.NewLine);
         }
 
         static List<string> ConvertInfectMessages(List<string> messages) {

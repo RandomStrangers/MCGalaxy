@@ -48,7 +48,9 @@ namespace MCGalaxy.Util
         }
         
         public string[] GetText() {
-            return File.ReadAllLines(Filename);
+            //return File.ReadAllLines(Filename);
+            return FileIO.TryReadAllLines(Filename);
+
         }
         /// <summary>
         /// Returns all text lines in the file that do not begin with # and are not empty.
@@ -65,7 +67,8 @@ namespace MCGalaxy.Util
         }
         
         public void SetText(string[] text) {
-            File.WriteAllLines(Filename, text);
+            //File.WriteAllLines(Filename, text);
+            FileIO.TryWriteAllLines(Filename, text);
             OnTextChanged?.Invoke();
         }
         

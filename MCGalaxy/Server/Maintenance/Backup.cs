@@ -57,7 +57,8 @@ namespace MCGalaxy
         }
         
         static List<string> GetAllFiles(bool lite) {
-            string[] all = Directory.GetFiles("./", "*", SearchOption.AllDirectories);
+            //string[] all = Directory.GetFiles("./", "*", SearchOption.AllDirectories);
+            string[] all = FileIO.TryGetFiles("./", "*", SearchOption.AllDirectories);
             List<string> paths = new List<string>();
             
             for (int i = 0; i < all.Length; i++) {
@@ -89,7 +90,8 @@ namespace MCGalaxy
                 bool compressThis = compress && !path.CaselessContains(".lvl");
                 
                 try {
-                    using (Stream src = File.OpenRead(path)) {
+                    //using (Stream src = File.OpenRead(path)) {
+                    using (Stream src = FileIO.TryOpenRead(path)) {
                         writer.WriteEntry(src, path, compressThis);
                     }
                 } catch (Exception ex) {
@@ -103,7 +105,8 @@ namespace MCGalaxy
         
         static void SaveDatabase(ZipWriter writer, bool compress) {
             Logger.Log(LogType.SystemActivity, "Compressing Database...");
-            using (Stream src = File.OpenRead(sqlPath)) {
+            //using (Stream src = File.OpenRead(sqlPath)) {
+            using (Stream src = FileIO.TryOpenRead(sqlPath)) {
                 writer.WriteEntry(src, sqlPath, compress);
             }
             Logger.Log(LogType.SystemActivity, "Database compressed");
@@ -111,7 +114,8 @@ namespace MCGalaxy
 
         public static void Extract(Player p) {
             int errors = 0;
-            using (FileStream src = File.OpenRead(zipPath)) {
+            //using (FileStream src = File.OpenRead(zipPath)) {
+            using (FileStream src = FileIO.TryOpenRead(zipPath)) {
                 ZipReader reader = new ZipReader(src);
                 reader.FindFooter();
                 int entries = reader.FindEntries();

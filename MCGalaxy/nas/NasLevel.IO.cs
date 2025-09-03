@@ -68,7 +68,8 @@ namespace NotAwesomeSurvival
             lvl.Save(true);
             string jsonString = JsonConvert.SerializeObject(this, Formatting.Indented),
                 fileName = GetFileName(name);
-            File.WriteAllText(fileName, jsonString);
+            //File.WriteAllText(fileName, jsonString);
+            FileIO.TryWriteAllText(fileName, jsonString);
             Log("Unloaded(saved) NasLevel {0}!", fileName);
             all.Remove(name);
             Server.DoGC();
@@ -80,7 +81,8 @@ namespace NotAwesomeSurvival
             string fileName = GetFileName(name);
             if (File.Exists(fileName))
             {
-                string jsonString = File.ReadAllText(fileName);
+                //string jsonString = File.ReadAllText(fileName);
+                string jsonString = FileIO.TryReadAllText(fileName);
                 nl = JsonConvert.DeserializeObject<NasLevel>(jsonString);
                 return nl;
             }
@@ -121,7 +123,8 @@ namespace NotAwesomeSurvival
             string fileName = GetFileName(lvl.name);
             if (File.Exists(fileName))
             {
-                string jsonString = File.ReadAllText(fileName);
+                //string jsonString = File.ReadAllText(fileName);
+                string jsonString = FileIO.TryReadAllText(fileName);
                 nl = JsonConvert.DeserializeObject<NasLevel>(jsonString);
                 nl.lvl = lvl;
                 if (!all.ContainsKey(lvl.name))

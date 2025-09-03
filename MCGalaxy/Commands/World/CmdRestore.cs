@@ -53,7 +53,8 @@ namespace MCGalaxy.Commands.World {
         
         static void DoRestore(Level lvl, string backup) {
             lock (lvl.saveLock) {
-                File.Copy(LevelInfo.BackupFilePath(lvl.name, backup), LevelInfo.MapPath(lvl.name), true);
+                //File.Copy(LevelInfo.BackupFilePath(lvl.name, backup), LevelInfo.MapPath(lvl.name), true);
+                FileIO.TryCopy(LevelInfo.BackupFilePath(lvl.name, backup), LevelInfo.MapPath(lvl.name), true);
                 lvl.SaveChanges = false;
             }
             
@@ -62,7 +63,8 @@ namespace MCGalaxy.Commands.World {
                 LevelActions.Replace(lvl, restore);
             } else {
                 Logger.Log(LogType.Warning, "Restore nulled");
-                File.Copy(LevelInfo.MapPath(lvl.name) + ".backup", LevelInfo.MapPath(lvl.name), true);
+                //File.Copy(LevelInfo.MapPath(lvl.name) + ".backup", LevelInfo.MapPath(lvl.name), true);
+                FileIO.TryCopy(LevelInfo.MapPath(lvl.name) + ".backup", LevelInfo.MapPath(lvl.name), true);
             }
         }
 

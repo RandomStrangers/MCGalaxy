@@ -51,7 +51,8 @@ namespace MCGalaxy.Drawing
             
             if (!Directory.Exists("extra/palettes"))
                 Directory.CreateDirectory("extra/palettes");
-            string[] files = Directory.GetFiles("extra/palettes");
+            //string[] files = Directory.GetFiles("extra/palettes");
+            string[] files = FileIO.TryGetFiles("extra/palettes");
             foreach (string file in files)
                 LoadPalette(file);
         }
@@ -61,7 +62,9 @@ namespace MCGalaxy.Drawing
             ImagePalette palette = Find(name);
             if (palette != null) Palettes.Remove(palette);
 
-            string[] lines = File.ReadAllLines(file);
+            //string[] lines = File.ReadAllLines(file);
+            string[] lines = FileIO.TryReadAllLines(file);
+
             List<PaletteEntry> entries = new List<PaletteEntry>();
             string[] parts = new string[5];
             
@@ -108,8 +111,9 @@ namespace MCGalaxy.Drawing
         
         public static void Remove(ImagePalette palette) {
             Palettes.Remove(palette);
-            if (!File.Exists(palette.FileName)) return;
-            File.Delete(palette.FileName);
+            //if (!File.Exists(palette.FileName)) return;
+            //File.Delete(palette.FileName);
+            FileIO.TryDelete(palette.FileName);
         }
 
         

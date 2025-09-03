@@ -51,7 +51,8 @@ namespace MCGalaxy.SQL
             // sqlite3.dll is the .DLL that MCGalaxy will actually load on Windows
             try {
                 string dll = IntPtr.Size == 8 ? "sqlite3_x64.dll" : "sqlite3_x32.dll";
-                if (File.Exists(dll)) File.Copy(dll, "sqlite3.dll", true);
+                //if (File.Exists(dll)) File.Copy(dll, "sqlite3.dll", true);
+                FileIO.TryCopy(dll, "sqlite3.dll", true);
             } catch (Exception ex) {
                 // e.g. can happen when multiple server instances running
                 Logger.LogError("Error moving SQLite dll", ex);

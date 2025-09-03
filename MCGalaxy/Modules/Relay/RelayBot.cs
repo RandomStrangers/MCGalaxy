@@ -226,7 +226,8 @@ namespace MCGalaxy.Modules.Relay
             BannedCommands = new List<string>() { "IRCBot", "DiscordBot", "OpRules", "IRCControllers", "DiscordControllers" };
             
             if (!File.Exists("text/irccmdblacklist.txt")) {
-                File.WriteAllLines("text/irccmdblacklist.txt", new string[] {
+                //File.WriteAllLines("text/irccmdblacklist.txt", new string[] {
+                FileIO.TryWriteAllLines("text/irccmdblacklist.txt", new string[] {
                                        "# Here you can put commands that cannot be used from the IRC bot.",
                                        "# Lines starting with \"#\" are ignored." });
             }

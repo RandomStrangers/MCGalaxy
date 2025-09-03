@@ -16,7 +16,7 @@
     permissions and limitations under the Licenses.
  */
 using System;
-using System.IO;
+//using System.IO;
 using System.Text;
 
 namespace MCGalaxy 
@@ -87,7 +87,8 @@ namespace MCGalaxy
         public static void GetBanData(string who, out string banner, out string reason, 
                                       out DateTime time, out string prevRank) {
             who = who.ToLower();
-            foreach (string line in File.ReadAllLines(bans.file)) 
+            //foreach (string line in File.ReadAllLines(bans.file)) 
+            foreach (string line in FileIO.TryReadAllLines(bans.file))
             {
                 string[] parts = line.SplitSpaces();
                 if (parts.Length <= 5 || parts[1] != who) continue;
@@ -107,7 +108,8 @@ namespace MCGalaxy
                                         out DateTime time) {
             who = who.ToLower();
             unbanner = null; reason = null;
-            foreach (string line in File.ReadAllLines(unbans.file)) 
+            //foreach (string line in File.ReadAllLines(unbans.file)) 
+            foreach (string line in FileIO.TryReadAllLines(unbans.file))
             {
                 string[] parts = line.SplitSpaces();
                 if (parts.Length <= 3 || parts[1] != who) continue;
@@ -148,8 +150,9 @@ namespace MCGalaxy
             name = name.ToLower();
             bool found = false;
             StringBuilder sb = new StringBuilder();
-            
-            foreach (string line in File.ReadAllLines(list.file)) {
+
+            //foreach (string line in File.ReadAllLines(list.file)) {
+            foreach (string line in FileIO.TryReadAllLines(list.file)) {
                 string[] parts = line.SplitSpaces();
                 if (parts.Length > 1 && parts[1] == name) {
                     found = true;
@@ -157,8 +160,9 @@ namespace MCGalaxy
                     sb.AppendLine(line);
                 }
             }
-            
-            if (found) File.WriteAllText(list.file, sb.ToString());
+
+            //if (found) File.WriteAllText(list.file, sb.ToString());
+            if (found) FileIO.TryWriteAllText(list.file, sb.ToString());
             return found;
         }
         
@@ -175,8 +179,9 @@ namespace MCGalaxy
             reason = reason.Replace(" ", "%20");
             bool found = false;
             StringBuilder sb = new StringBuilder();
-            
-            foreach (string line in File.ReadAllLines(list.file)) {
+
+            //foreach (string line in File.ReadAllLines(list.file)) {
+            foreach (string line in FileIO.TryReadAllLines(list.file)) {
                 string[] parts = line.SplitSpaces();
                 if (parts.Length > 2 && parts[1] == who) {
                     found = true;
@@ -186,8 +191,9 @@ namespace MCGalaxy
                     sb.AppendLine(line);
                 }
             }
-            
-            if (found) File.WriteAllText(list.file, sb.ToString());
+
+            //if (found) File.WriteAllText(list.file, sb.ToString());
+            if (found) FileIO.TryWriteAllText(list.file, sb.ToString());
             return found;
         }
     }

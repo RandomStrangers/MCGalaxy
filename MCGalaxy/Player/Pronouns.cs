@@ -145,8 +145,9 @@ namespace MCGalaxy {
                 string data;
                 lock (locker) {
                     if (!File.Exists(myPath)) { return new List<Pronouns> { Default }; }
-                    data = File.ReadAllText(myPath);
-                }				
+                    //data = File.ReadAllText(myPath);
+                    data = FileIO.TryReadAllText(myPath);
+                }
                 data = data.Trim();		
                 if (data.Length == 0) return new List<Pronouns> { Default };
 
@@ -263,11 +264,18 @@ namespace MCGalaxy {
             string path = PlayerPath(p.name);
             try {
                 //Reduce clutter by simply erasing the file if it's default
-                if (p.pronounsList.Count == 1 && p.pronounsList[0] == Default) { File.Delete(path); return; }
+                if (p.pronounsList.Count == 1 && p.pronounsList[0] == Default) 
+                { 
+                    //File.Delete(path); 
+                    FileIO.TryDelete(path);
+                    return; 
+                }
 
-                File.WriteAllText(path, ListFor(p, " "));
+                //File.WriteAllText(path, ListFor(p, " "));
+                FileIO.TryWriteAllText(path, ListFor(p, " "));
 
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 Logger.LogError(e);
                 p.Message("&WThere was an error when saving your pronouns: &S{0}", e.Message);
             }

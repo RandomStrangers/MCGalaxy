@@ -51,7 +51,8 @@ namespace MCGalaxy.Bots {
         internal static List<BotProperties> ReadAll(string path) {
             List<BotProperties> props = new List<BotProperties>();
             if (elems == null) elems = ConfigElement.GetAll(typeof(BotProperties));
-            string json = File.ReadAllText(path);
+            //string json = File.ReadAllText(path);
+            string json = FileIO.TryReadAllText(path);
 
             JsonReader reader = new JsonReader(json)
             {

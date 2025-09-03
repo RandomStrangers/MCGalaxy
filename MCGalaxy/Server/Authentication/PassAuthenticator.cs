@@ -236,14 +236,16 @@ namespace MCGalaxy.Authentication
             byte[] hash = ComputeHash(name, password);
             
             Directory.CreateDirectory(PASS_FOLDER);
-            File.WriteAllBytes(HashPath(name), hash);
+            //File.WriteAllBytes(HashPath(name), hash);
+            FileIO.TryWriteAllBytes(HashPath(name), hash);
         }
-        
+
         public override bool ResetPassword(string name) {
             string path = GetHashPath(name);
             if (path == null) return false;
             
-            File.Delete(path);
+            //File.Delete(path);
+            FileIO.TryDelete(path);
             return true;
         }
         
@@ -261,7 +263,8 @@ namespace MCGalaxy.Authentication
         }
 
         static bool CheckHash(string path, string name, string pass) {
-            byte[] stored   = File.ReadAllBytes(path);
+            if (!FileIO.TryReadBytes(path, out byte[] stored)) return false;
+            //byte[] stored   = File.ReadAllBytes(path);
             byte[] computed = ComputeHash(name, pass);
             return ArraysEqual(computed, stored);
         }

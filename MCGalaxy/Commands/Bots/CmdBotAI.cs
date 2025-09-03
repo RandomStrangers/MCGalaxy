@@ -78,9 +78,11 @@ namespace MCGalaxy.Commands.Bots
         
         static void DeleteAI(Player p, string ai, int attempt) {
             if (attempt == 0) {
-                File.Move("bots/" + ai, "bots/deleted/" + ai);
+                //File.Move("bots/" + ai, "bots/deleted/" + ai);
+                FileIO.TryMove("bots/" + ai, "bots/deleted/" + ai);
             } else {
-                File.Move("bots/" + ai, "bots/deleted/" + ai + attempt);
+                //File.Move("bots/" + ai, "bots/deleted/" + ai + attempt);
+                FileIO.TryMove("bots/" + ai, "bots/deleted/" + ai + attempt);
             }
             p.Message("Deleted bot AI &b" + ai);
         }
@@ -89,7 +91,8 @@ namespace MCGalaxy.Commands.Bots
             List<string> lines = Utils.ReadAllLinesList("bots/" + ai);
             if (lines.Count > 0) lines.RemoveAt(lines.Count - 1);
 
-            File.WriteAllLines("bots/" + ai, lines.ToArray());
+            //File.WriteAllLines("bots/" + ai, lines.ToArray());
+            FileIO.TryWriteAllLines("bots/" + ai, lines.ToArray());
             p.Message("Deleted last instruction from bot AI &b" + ai);
         }
 
@@ -110,7 +113,8 @@ namespace MCGalaxy.Commands.Bots
         }
         
         void HandleList(Player p, string modifier) {
-            string[] files = Directory.GetFiles("bots");
+            //string[] files = Directory.GetFiles("bots");
+            string[] files = FileIO.TryGetFiles("bots");
             Paginator.Output(p, files, f => Path.GetFileName(f),
                              "BotAI list", "bot AIs", modifier);
         }
@@ -119,7 +123,8 @@ namespace MCGalaxy.Commands.Bots
             if (!File.Exists("bots/" + ai)) {
                 p.Message("There is no bot AI with that name."); return;
             }
-            string[] lines = File.ReadAllLines("bots/" + ai);
+            //string[] lines = File.ReadAllLines("bots/" + ai);
+            string[] lines = FileIO.TryReadAllLines("bots/" + ai);
             foreach (string line in lines) {
                 if (line.IsCommentLine()) continue;
                 p.Message(line);

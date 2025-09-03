@@ -84,8 +84,10 @@ namespace MCGalaxy.Commands.Moderation {
             if (!HasReports(target)) {
                 p.Message("{0} &Shas not been reported.", nick); return;
             }
-            
-            string[] reports = File.ReadAllLines("extra/reported/" + target + ".txt");
+
+            //string[] reports = File.ReadAllLines("extra/reported/" + target + ".txt");
+            string[] reports = FileIO.TryReadAllLines("extra/reported/" + target + ".txt");
+
             p.MessageLines(reports);
         }
         
@@ -149,7 +151,9 @@ namespace MCGalaxy.Commands.Moderation {
             if (reason == null) return;
             
             reports.Add(reason + " - Reported by " + p.name + " at " + DateTime.Now);
-            File.WriteAllLines(ReportPath(target), reports.ToArray());
+            //File.WriteAllLines(ReportPath(target), reports.ToArray());
+            FileIO.TryWriteAllLines(ReportPath(target), reports.ToArray());
+
             p.Message("&aReport sent! It should be viewed when a {0} &ais online", 
                       checkPerms.Describe());
             
@@ -172,7 +176,9 @@ namespace MCGalaxy.Commands.Moderation {
         }
                 
         static string[] GetReportedUsers() {
-            string[] users = Directory.GetFiles("extra/reported", "*.txt");
+            //string[] users = Directory.GetFiles("extra/reported", "*.txt");
+            string[] users = FileIO.TryGetFiles("extra/reported", "*.txt");
+
             for (int i = 0; i < users.Length; i++) {
                 users[i] = Path.GetFileNameWithoutExtension(users[i]);
             }
@@ -182,7 +188,8 @@ namespace MCGalaxy.Commands.Moderation {
         static void DeleteReport(string user) {
             string backup = "extra/reportedbackups/" + user + ".txt";
             FileIO.TryDelete(backup);           
-            File.Move(ReportPath(user), backup);
+            //File.Move(ReportPath(user), backup);
+            FileIO.TryMove(ReportPath(user), backup);
         }
         
         public override void Help(Player p) {

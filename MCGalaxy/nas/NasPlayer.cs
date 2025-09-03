@@ -723,7 +723,8 @@ namespace NotAwesomeSurvival
                 };
                 nl.blockEntities.Add(x + " " + y + " " + z, blockEntity);
                 Message("You dropped a gravestone at {0} {1} {2} in {3}", x, y, z, p.level.name);
-                File.AppendAllText(Nas.GetDeathPath(p.name), x + " " + y + " " + z + " in " + p.level.name);
+                //File.AppendAllText(Nas.GetDeathPath(p.name), x + " " + y + " " + z + " in " + p.level.name);
+                FileIO.TryAppendAllText(Nas.GetDeathPath(p.name), x + " " + y + " " + z + " in " + p.level.name);
                 nl.blockEntities[x + " " + y + " " + z].lockedBy = p.name;
                 nl.blockEntities[x + " " + y + " " + z].drop.exp = GetExp();
             }
@@ -991,8 +992,9 @@ namespace NotAwesomeSurvival
                     return;
                 }
                 //TODO: Simplify this, shouldn't copy deaths
-                string[] deaths = File.ReadAllLines(file),
-                    deaths2 = File.ReadAllLines(file);
+                //string[] deaths = File.ReadAllLines(file), deaths2 = File.ReadAllLines(file);
+                string[] deaths = FileIO.TryReadAllLines(file), 
+                    deaths2 = FileIO.TryReadAllLines(file);
                 int count = deaths2.Length;
                 for (int i = 0; i < deaths2.Length; i++)
                 {
@@ -1039,8 +1041,9 @@ namespace NotAwesomeSurvival
                     np.Message("You have no gravestones recorded!");
                     return;
                 }
-                string[] deaths = File.ReadAllLines(file),
-                    deaths2 = File.ReadAllLines(file);
+                //string[] deaths = File.ReadAllLines(file), deaths2 = File.ReadAllLines(file);
+                string[] deaths = FileIO.TryReadAllLines(file),
+                    deaths2 = FileIO.TryReadAllLines(file);
                 int count = deaths2.Length;
                 for (int i = 0; i < deaths2.Length; i++)
                 {

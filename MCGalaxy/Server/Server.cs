@@ -121,7 +121,7 @@ namespace MCGalaxy
         }
         
         static void EnsureFilesExist() {
-            EnsureDirectoryDoesNotExist("properties");
+            FileIO.TryDeleteDirectory("properties", true);
             EnsureDirectoryExists("props");
             EnsureDirectoryExists("levels");
             EnsureDirectoryExists("bots");
@@ -144,13 +144,7 @@ namespace MCGalaxy
                 Logger.LogError("Creating directory " + dir, ex);
             }
         }     
-        public static void EnsureDirectoryDoesNotExist(string dir) {
-            try {
-                if (Directory.Exists(dir)) Directory.Delete(dir, true);
-            } catch (Exception ex) {
-                Logger.LogError("Deleting directory " + dir, ex);
-            }
-        }     
+        
         public static void LoadAllSettings() { LoadAllSettings(false); }
         
         // TODO rethink this
@@ -222,7 +216,8 @@ namespace MCGalaxy
             try {
                 string autoload = SaveAllLevels();
                 if (SetupFinished && !Config.AutoLoadMaps) {
-                    File.WriteAllText("text/autoload.txt", autoload);
+                    //File.WriteAllText("text/autoload.txt", autoload);
+                    FileIO.TryWriteAllText("text/autoload.txt", autoload);
                 }
             } catch (Exception ex) { Logger.LogError(ex); }
             

@@ -16,7 +16,7 @@
     permissions and limitations under the Licenses.
  */
 using System;
-using System.IO;
+//using System.IO;
 using System.Net;
 using MCGalaxy.Config;
 using MCGalaxy.Events.ServerEvents;
@@ -100,7 +100,9 @@ namespace MCGalaxy.Network
         static void OnSuccess(string text) {
             text = Truncate(text);
             Server.UpdateUrl(text);
-            File.WriteAllText("text/externalurl.txt", text);
+            //File.WriteAllText("text/externalurl.txt", text);
+            FileIO.TryWriteAllText("text/externalurl.txt", text);
+
             Logger.Log(LogType.SystemActivity, "Server URL found: " + text);
         }
         

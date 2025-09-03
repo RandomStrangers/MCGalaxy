@@ -33,7 +33,8 @@ namespace MCGalaxy.Commands.World {
             }
             
             if (message.CaselessEq("all")) {
-                string[] paths = Directory.GetFiles(Paths.ImportsDir);
+                //string[] paths = Directory.GetFiles(Paths.ImportsDir);
+                string[] paths = FileIO.TryGetFiles(Paths.ImportsDir);
                 ImportFiles(p, paths);
             } else if (message.IndexOf('/') >= 0) {
                 ImportWeb(p, message);
@@ -60,7 +61,8 @@ namespace MCGalaxy.Commands.World {
         static void ImportFiles(Player p, string[] paths) {
             foreach (string path in paths)
             {
-                using (Stream src = File.OpenRead(path))
+                //using (Stream src = File.OpenRead(path))
+                using (Stream src = FileIO.TryOpenRead(path))
                     ImportFrom(p, src, path);
             }
         }
@@ -74,7 +76,8 @@ namespace MCGalaxy.Commands.World {
                 path = Path.ChangeExtension(path, imp.Extension);
                 if (!File.Exists(path)) continue;
                 
-                using (Stream src = File.OpenRead(path)) {
+                //using (Stream src = File.OpenRead(path)) {
+                using (Stream src = FileIO.TryOpenRead(path)) {
                     Import(p, imp, src, map); return;
                 }
             }

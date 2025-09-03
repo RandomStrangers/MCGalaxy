@@ -107,7 +107,8 @@ namespace MCGalaxy.Modules.Compiling
             string dir = Path.Combine(root, name);
             if (!Directory.Exists(dir)) return srcPaths;
 
-            return Directory.GetFiles(dir, "*" + compiler.FileExtension);
+            //return Directory.GetFiles(dir, "*" + compiler.FileExtension);
+            return FileIO.TryGetFiles(dir, "*" + compiler.FileExtension);
         }
 
         public override void Help(Player p)
