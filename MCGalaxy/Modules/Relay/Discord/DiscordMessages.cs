@@ -15,10 +15,10 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.Config;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
-using MCGalaxy.Config;
 
 namespace MCGalaxy.Modules.Relay.Discord
 {
@@ -31,37 +31,39 @@ namespace MCGalaxy.Modules.Relay.Discord
         /// <summary> The HTTP method to handle the path/route with </summary>
         /// <example> POST, PATCH, DELETE </example>
         public string Method = "POST";
-        
-        
+
+
         /// <summary> Returns the JSON representation of the request data </summary>
         public abstract JsonObject ToJson();
-        
+
         /// <summary> Attempts to combine this message with a prior message to reduce API calls </summary>
         public virtual bool CombineWith(DiscordApiMessage prior) { return false; }
-        
+
 
         /// <summary> Optionally adjusts the request to send to Discord </summary>
         public virtual void OnRequest(HttpWebRequest req) { }
-        
+
         /// <summary> Processes the response received from Discord </summary>
         public virtual void ProcessResponse(string response) { }
     }
-    
+
     /// <summary> Message for sending text to a channel </summary>
     public class ChannelSendMessage : DiscordApiMessage
     {
-        static readonly JsonArray default_allowed = new JsonArray() { "users", "roles" };
+        static readonly JsonArray default_allowed = new() { "users", "roles" };
         readonly StringBuilder content;
         public JsonArray Allowed;
-        
-        public ChannelSendMessage(string channelID, string message) {
-            Path    = "/channels/" + channelID + "/messages";
+
+        public ChannelSendMessage(string channelID, string message)
+        {
+            Path = "/channels/" + channelID + "/messages";
             content = new StringBuilder(message);
         }
-        
-        public override JsonObject ToJson() {
+
+        public override JsonObject ToJson()
+        {
             // only allow pinging certain groups
-            JsonObject allowed = new JsonObject()
+            JsonObject allowed = new()
             {
                 { "parse", Allowed ?? default_allowed }
             };
@@ -72,12 +74,13 @@ namespace MCGalaxy.Modules.Relay.Discord
                 { "allowed_mentions", allowed }
             };
         }
-        
-        public override bool CombineWith(DiscordApiMessage prior) {
-            if (!(prior is ChannelSendMessage msg) || msg.Path != Path) return false;
+
+        public override bool CombineWith(DiscordApiMessage prior)
+        {
+            if (prior is not ChannelSendMessage msg || msg.Path != Path) return false;
 
             if (content.Length + msg.content.Length > 1024) return false;
-            
+
             // TODO: is stringbuilder even beneficial here
             msg.content.Append('\n');
             msg.content.Append(content.ToString());
@@ -85,22 +88,24 @@ namespace MCGalaxy.Modules.Relay.Discord
             return true;
         }
     }
-    
+
     public class ChannelSendEmbed : DiscordApiMessage
     {
         public string Title;
-        public Dictionary<string, string> Fields = new Dictionary<string, string>();
+        public Dictionary<string, string> Fields = new();
         public int Color;
-        
-        public ChannelSendEmbed(string channelID) {
+
+        public ChannelSendEmbed(string channelID)
+        {
             Path = "/channels/" + channelID + "/messages";
         }
-        
-        JsonArray GetFields() {
-            JsonArray arr = new JsonArray();
-            foreach (KeyValuePair<string, string> raw in Fields) 
-            { 
-                JsonObject field = new JsonObject()
+
+        JsonArray GetFields()
+        {
+            JsonArray arr = new();
+            foreach (KeyValuePair<string, string> raw in Fields)
+            {
+                JsonObject field = new()
                 {
                     { "name",   raw.Key  },
                     { "value", raw.Value }
@@ -109,8 +114,9 @@ namespace MCGalaxy.Modules.Relay.Discord
             }
             return arr;
         }
-        
-        public override JsonObject ToJson() {
+
+        public override JsonObject ToJson()
+        {
             return new JsonObject()
             {
                 { "embeds", new JsonArray()

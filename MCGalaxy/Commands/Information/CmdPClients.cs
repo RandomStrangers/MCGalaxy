@@ -18,20 +18,21 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MCGalaxy.Commands.Info 
+namespace MCGalaxy.Commands.Info
 {
-    public sealed class CmdPClients : Command2 
+    public sealed class CmdPClients : Command2
     {
         public override string name { get { return "PClients"; } }
         public override string shortcut { get { return "Clients"; } }
         public override string type { get { return CommandTypes.Information; } }
         public override bool UseableWhenFrozen { get { return true; } }
-        
-        public override void Use(Player p, string message, CommandData data) {
-            Dictionary<string, List<Player>> clients = new Dictionary<string, List<Player>>();
+
+        public override void Use(Player p, string message, CommandData data)
+        {
+            Dictionary<string, List<Player>> clients = new();
             Player[] online = PlayerInfo.Online.Items;
-            
-            foreach (Player pl in online) 
+
+            foreach (Player pl in online)
             {
                 if (!p.CanSee(pl, data.Rank)) continue;
                 string appName = pl.Session.ClientName();
@@ -43,17 +44,17 @@ namespace MCGalaxy.Commands.Info
                 }
                 usingClient.Add(pl);
             }
-            
-            List<string> lines = new List<string>
+
+            List<string> lines = new()
             {
                 "Players using:"
             };
-            foreach (KeyValuePair<string, List<Player>> kvp in clients) 
+            foreach (KeyValuePair<string, List<Player>> kvp in clients)
             {
-                StringBuilder builder = new StringBuilder();
-                List<Player> players  = kvp.Value;
-                
-                for (int i = 0; i < players.Count; i++) 
+                StringBuilder builder = new();
+                List<Player> players = kvp.Value;
+
+                for (int i = 0; i < players.Count; i++)
                 {
                     string nick = Colors.StripUsed(p.FormatNick(players[i]));
                     builder.Append(nick);
@@ -65,7 +66,8 @@ namespace MCGalaxy.Commands.Info
             p.MessageLines(lines);
         }
 
-        public override void Help(Player p) {
+        public override void Help(Player p)
+        {
             p.Message("&T/PClients");
             p.Message("&HLists the clients players are using, and who uses which client.");
         }

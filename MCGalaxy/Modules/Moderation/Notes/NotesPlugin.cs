@@ -15,45 +15,49 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
 */
-using System;
 using MCGalaxy.Events;
+using System;
 
-namespace MCGalaxy.Modules.Moderation.Notes 
+namespace MCGalaxy.Modules.Moderation.Notes
 {
-    public sealed class NotesPlugin : Plugin 
+    public sealed class NotesPlugin : Plugin
     {
         public override string name { get { return "Notes"; } }
 
 
         static readonly Command[] cmds = new Command[] { new CmdNotes(), new CmdMyNotes(), new CmdNote(), new CmdOpNote(), };
 
-        public override void Load(bool startup) {
+        public override void Load(bool startup)
+        {
             OnModActionEvent.Register(HandleModerationAction, Priority.Low);
             foreach (Command cmd in cmds) { Command.Register(cmd); }
             NoteAcronym.Init();
         }
-        
-        public override void Unload(bool shutdown) {
+
+        public override void Unload(bool shutdown)
+        {
             OnModActionEvent.Unregister(HandleModerationAction);
             Command.Unregister(cmds);
         }
 
 
-        static void HandleModerationAction(ModAction action) {
+        static void HandleModerationAction(ModAction action)
+        {
             string acronym = NoteAcronym.GetAcronym(action);
             if (acronym == null) return;
 
             AddNote(action, acronym);
         }
 
-        static void AddNote(ModAction e, string type) {
-             if (!Server.Config.LogNotes) return;
-             string src = e.Actor.name;
-             
-             string time = DateTime.UtcNow.ToString("dd/MM/yyyy");
-             string data = e.Target + " " + type + " " + src + " " + time + " " + 
-                           e.Reason.Replace(" ", "%20") + " " + e.Duration.Ticks;
-             Server.Notes.Append(data);
+        static void AddNote(ModAction e, string type)
+        {
+            if (!Server.Config.LogNotes) return;
+            string src = e.Actor.name;
+
+            string time = DateTime.UtcNow.ToString("dd/MM/yyyy");
+            string data = e.Target + " " + type + " " + src + " " + time + " " +
+                          e.Reason.Replace(" ", "%20") + " " + e.Duration.Ticks;
+            Server.Notes.Append(data);
         }
     }
 
@@ -65,38 +69,43 @@ namespace MCGalaxy.Modules.Moderation.Notes
         public readonly string Acronym;
         public readonly string Action;
 
-        private NoteAcronym(string acronym, string action) {
+        private NoteAcronym(string acronym, string action)
+        {
             Acronym = acronym;
             Action = action;
         }
-        
-        
-        private readonly static NoteAcronym Warned     = new NoteAcronym("W", "Warned");
-        private readonly static NoteAcronym Kicked     = new NoteAcronym("K", "Kicked");
-        private readonly static NoteAcronym Muted      = new NoteAcronym("M", "Muted");
-        private readonly static NoteAcronym Banned     = new NoteAcronym("B", "Banned");
-        private readonly static NoteAcronym Jailed     = new NoteAcronym("J", "Jailed"); // Jailing was removed, but still appears in notes for historical reasons
-        private readonly static NoteAcronym Frozen     = new NoteAcronym("F", "Frozen");
-        private readonly static NoteAcronym TempBanned = new NoteAcronym("T", "Temp-Banned");
-        private readonly static NoteAcronym Noted      = new NoteAcronym("N", "Noted");
-        public  readonly static NoteAcronym OpNoted    = new NoteAcronym("O", "OpNoted");
+
+
+        private static readonly NoteAcronym Warned = new("W", "Warned");
+        private static readonly NoteAcronym Kicked = new("K", "Kicked");
+        private static readonly NoteAcronym Muted = new("M", "Muted");
+        private static readonly NoteAcronym Banned = new("B", "Banned");
+        private static readonly NoteAcronym Jailed = new("J", "Jailed"); // Jailing was removed, but still appears in notes for historical reasons
+        private static readonly NoteAcronym Frozen = new("F", "Frozen");
+        private static readonly NoteAcronym TempBanned = new("T", "Temp-Banned");
+        private static readonly NoteAcronym Noted = new("N", "Noted");
+        public static readonly NoteAcronym OpNoted = new("O", "OpNoted");
 
         static NoteAcronym[] All;
 
-        internal static void Init() {
+        internal static void Init()
+        {
             All = new NoteAcronym[] { Warned, Kicked, Muted, Banned, Jailed, Frozen, TempBanned, Noted, OpNoted };
         }
 
         /// <summary>
         /// Returns the appropriate Acronym to log when a mod action occurs.
         /// </summary>
-        public static string GetAcronym(ModAction action) {
-            if (action.Type == ModActionType.Ban) {
+        public static string GetAcronym(ModAction action)
+        {
+            if (action.Type == ModActionType.Ban)
+            {
                 return action.Duration.Ticks != 0 ? TempBanned.Acronym : Banned.Acronym;
             }
 
             string modActionString = action.Type.ToString();
-            foreach (NoteAcronym na in All) {
+            foreach (NoteAcronym na in All)
+            {
                 if (na.Action == modActionString) { return na.Acronym; }
             }
             return null;
@@ -104,8 +113,10 @@ namespace MCGalaxy.Modules.Moderation.Notes
         /// <summary>
         /// Returns the appropriate Action from a mod note acronym. If none are found, returns the original argument.
         /// </summary>
-        public static string GetAction(string acronym) {
-            foreach (NoteAcronym na in All) {
+        public static string GetAction(string acronym)
+        {
+            foreach (NoteAcronym na in All)
+            {
                 if (na.Acronym == acronym) { return na.Action; }
             }
             return acronym;

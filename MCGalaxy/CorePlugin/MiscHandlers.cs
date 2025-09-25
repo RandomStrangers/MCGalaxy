@@ -15,11 +15,11 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using MCGalaxy.Blocks.Extended;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Maths;
-using BlockID = System.UInt16;
+using System;
+
 
 namespace MCGalaxy.Core
 {
@@ -83,7 +83,7 @@ namespace MCGalaxy.Core
 
             // if Deletable is enabled, handle MBs/Portals in SetBlock instead
             if (p.level.Config.Deletable || !p.level.IsValidPos(x, y, z)) return;
-            BlockID block = p.level.GetBlock(x, y, z);
+            ushort block = p.level.GetBlock(x, y, z);
             bool isMB = p.level.Props[block].IsMessageBlock;
             bool isPortal = p.level.Props[block].IsPortal;
 

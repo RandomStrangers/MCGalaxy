@@ -15,9 +15,9 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using MCGalaxy.Maths;
 using MCGalaxy.Tasks;
+using System;
 
 namespace MCGalaxy.Commands.Misc
 {
@@ -36,7 +36,7 @@ namespace MCGalaxy.Commands.Misc
             p.trainInvincible = true;
             p.Message("Stand near a train to mount it");
 
-            SchedulerTask task = new SchedulerTask(RideCallback, p, TimeSpan.Zero, true);
+            SchedulerTask task = new(RideCallback, p, TimeSpan.Zero, true);
             p.CriticalTasks.Add(task);
         }
 
@@ -63,7 +63,7 @@ namespace MCGalaxy.Commands.Misc
                         if (p.level.GetBlock(xx, yy, zz) != Block.Train) continue;
                         p.trainGrab = true;
 
-                        Vec3F32 dir = new Vec3F32(dx, 0, dz);
+                        Vec3F32 dir = new(dx, 0, dz);
                         DirUtils.GetYawPitch(dir, out byte yaw, out byte pitch);
 
                         if (dy == 1) pitch = 240;

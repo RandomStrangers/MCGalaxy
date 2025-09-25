@@ -17,18 +17,19 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using MCGalaxy.SQL;
+using System;
 
-namespace MCGalaxy.Commands.Info 
+namespace MCGalaxy.Commands.Info
 {
-    public sealed class CmdOpStats : Command2 
+    public sealed class CmdOpStats : Command2
     {
         public override string name { get { return "OpStats"; } }
         public override string type { get { return CommandTypes.Information; } }
         public override bool UseableWhenFrozen { get { return true; } }
-        
-        public override void Use(Player p, string message, CommandData data) {
+
+        public override void Use(Player p, string message, CommandData data)
+        {
             string end = DateTime.Now.ToInvariantDateString();
             string start = "thismonth";
             string[] args = message.SplitSpaces();
@@ -46,37 +47,48 @@ namespace MCGalaxy.Commands.Info
                     start = args[1].ToLower();
             }
             if (name == null) return;
-            
-            if (start == "today") {
+
+            if (start == "today")
+            {
                 start = DateTime.Now.ToString("yyyy-MM-dd 00:00:00");
-            } else if (start == "yesterday")  {
+            }
+            else if (start == "yesterday")
+            {
                 start = DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd 00:00:00");
                 end = DateTime.Now.ToString("yyyy-MM-dd 00:00:00");
-            } else if (start == "thismonth") {
+            }
+            else if (start == "thismonth")
+            {
                 start = DateTime.Now.ToString("yyyy-MM-01 00:00:00");
-            } else if (start == "lastmonth") {
+            }
+            else if (start == "lastmonth")
+            {
                 start = DateTime.Now.AddMonths(-1).ToString("yyyy-MM-01 00:00:00");
                 end = DateTime.Now.ToString("yyyy-MM-01 00:00:00");
-            } else if (start == "all") {
+            }
+            else if (start == "all")
+            {
                 start = "0000-00-00 00:00:00";
-            } else {
+            }
+            else
+            {
                 Help(p); return;
             }
 
             p.Message("OpStats for {0} &Ssince {1}", p.FormatNick(name), start);
-            
+
             int reviews = Count(start, end, name, "review", "LIKE 'next'");
             int ranks = Count(start, end, name, "setrank", "!=''");
             int promotes = Count(start, end, name, "setrank", "LIKE '+up%'");
             int demotes = Count(start, end, name, "setrank", "LIKE '-down%'");
             int promotesOld = Count(start, end, name, "promote");
             int demotesOld = Count(start, end, name, "demote");
-            
+
             int mutes = Count(start, end, name, "mute");
             int freezes = Count(start, end, name, "freeze");
             int warns = Count(start, end, name, "warn");
             int kicks = Count(start, end, name, "kick");
-            
+
             int bans = Count(start, end, name, "ban");
             int kickbans = Count(start, end, name, "kickban");
             int ipbans = Count(start, end, name, "banip");
@@ -91,17 +103,20 @@ namespace MCGalaxy.Commands.Info
                            reviews, ranks + promotesOld + demotesOld,
                            promotes + promotesOld, demotes + demotesOld);
         }
-        
-        static bool ValidTimespan(string value) {
+
+        static bool ValidTimespan(string value)
+        {
             return value == "today" || value == "yesterday" || value == "thismonth" || value == "lastmonth" || value == "all";
         }
- 
-        static int Count(string start, string end, string name, string cmd, string msg = "!=''") {
+
+        static int Count(string start, string end, string name, string cmd, string msg = "!=''")
+        {
             const string whereSQL = "WHERE Time >= @0 AND Time < @1 AND Name LIKE @2 AND Cmd LIKE @3 AND Cmdmsg ";
             return Database.CountRows("Opstats", whereSQL + msg, start, end, name, cmd);
         }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/OpStats [player] today/yesterday/thismonth/lastmonth/all");
             p.Message("&HDisplays information about operator command usage.");
         }

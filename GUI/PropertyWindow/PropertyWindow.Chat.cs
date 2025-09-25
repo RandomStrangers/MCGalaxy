@@ -12,10 +12,10 @@ BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
  */
+using MCGalaxy.Gui.Popups;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using MCGalaxy.Gui.Popups;
 
 namespace MCGalaxy.Gui
 {
@@ -118,15 +118,13 @@ namespace MCGalaxy.Gui
             string parsed = Colors.Parse(target.Text);
             char col = parsed.Length == 0 ? 'f' : parsed[1];
 
-            using (ColorSelector sel = new ColorSelector(title, col))
-            {
-                DialogResult result = sel.ShowDialog();
-                if (result == DialogResult.Cancel) return;
+            using ColorSelector sel = new(title, col);
+            DialogResult result = sel.ShowDialog();
+            if (result == DialogResult.Cancel) return;
 
-                target.Text = Colors.Name(sel.ColorCode);
-                target.BackColor = ColorSelector.LookupColor(sel.ColorCode, out Color textCol);
-                target.ForeColor = textCol;
-            }
+            target.Text = Colors.Name(sel.ColorCode);
+            target.BackColor = ColorSelector.LookupColor(sel.ColorCode, out Color textCol);
+            target.ForeColor = textCol;
         }
     }
 }

@@ -16,20 +16,20 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Drawing.Ops;
-using BlockID = System.UInt16;
 
-namespace MCGalaxy.Drawing.Brushes 
+
+namespace MCGalaxy.Drawing.Brushes
 {
-    public abstract class Brush 
+    public abstract class Brush
     {
         public static string DefaultBrush = "Normal";
-    	
+
         public abstract string Name { get; }
         public virtual void Configure(DrawOp op, Player p) { }
-        
+
         /// <summary> Returns the next block that should be placed in the world, 
         /// based on the draw operation's current state. </summary>
         /// <remarks> Returns Block.Invalid if no block should be placed. </remarks>
-        public abstract BlockID NextBlock(DrawOp op);
+        public abstract ushort NextBlock(DrawOp op);
     }
 }

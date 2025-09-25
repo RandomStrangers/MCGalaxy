@@ -1,13 +1,13 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using System;
-using System.Drawing;
-using System.IO;
-using Newtonsoft.Json;
 using MCGalaxy;
+using MCGalaxy.DB;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
-using MCGalaxy.DB;
+using Newtonsoft.Json;
+using System;
+using System.Drawing;
+using System.IO;
 namespace NotAwesomeSurvival
 {
     public partial class NasPlayer
@@ -169,9 +169,9 @@ namespace NotAwesomeSurvival
         }
         public void SpawnPlayer(Level level, ref Position spawnPos, ref byte yaw, ref byte pitch)
         {
-            if (!NasLevel.IsNasLevel(level)) 
+            if (!NasLevel.IsNasLevel(level))
             {
-                return; 
+                return;
             } //not a nas map
             CanDoStuffBasedOnPosition = false;
             inventory.Setup();
@@ -188,7 +188,7 @@ namespace NotAwesomeSurvival
                 }
                 CommandData data = p.DefaultCmdData;
                 data.Context = CommandContext.SendCmd;
-                Orientation rot = new Orientation(Server.mainLevel.rotx, Server.mainLevel.roty);
+                Orientation rot = new(Server.mainLevel.rotx, Server.mainLevel.roty);
                 SetLocation(this, spawnMap, spawnCoords, rot);
                 Log("Teleporting {0} to {1} bed!", p.truename, p.pronouns.Object);
                 if (!headingToBed)
@@ -205,10 +205,10 @@ namespace NotAwesomeSurvival
                 headingToBed = false;
                 isDead = false;
             }
-            if (!hasBeenSpawned) 
-            { 
-                SpawnPlayerFirstTime(level, ref spawnPos, ref yaw, ref pitch); 
-                return; 
+            if (!hasBeenSpawned)
+            {
+                SpawnPlayerFirstTime(level, ref spawnPos, ref yaw, ref pitch);
+                return;
             }
             if (transferInfo != null)
             {
@@ -256,9 +256,9 @@ namespace NotAwesomeSurvival
         public void SetSafetyBlock(int x, int y, int z, ushort block)
         {
             ushort oldBlock = nl.GetBlock(x, y, z);
-            if (nl.blockEntities.ContainsKey(x + " " + y + " " + z)) 
-            { 
-                return; 
+            if (nl.blockEntities.ContainsKey(x + " " + y + " " + z))
+            {
+                return;
             }
             if (NasBlock.Get(Collision.ConvertToClientushort(oldBlock)).collideAction != NasBlock.DefaultSolidCollideAction())
             {
@@ -274,12 +274,12 @@ namespace NotAwesomeSurvival
         }
         public void SpawnPlayerFirstTime(Level level, ref Position spawnPos, ref byte yaw, ref byte pitch)
         {
-            if (hasBeenSpawned) 
-            { 
-                return; 
+            if (hasBeenSpawned)
+            {
+                return;
             }
             atBorder = true;
-            if (!p.Model.Contains("|0.93023255813953488372093023255814")) 
+            if (!p.Model.Contains("|0.93023255813953488372093023255814"))
             {
                 SetModel();
             }
@@ -307,18 +307,18 @@ namespace NotAwesomeSurvival
         public void DoMovement(Position next, byte _, byte __)
         {
             UpdateHeldBlock();
-            if (CanDoStuffBasedOnPosition) 
-            { 
-                UpdateAir(); 
+            if (CanDoStuffBasedOnPosition)
+            {
+                UpdateAir();
             }
             CheckMapCrossing(p.Pos);
-            if (CanDoStuffBasedOnPosition) 
-            { 
-                DoNasBlockCollideActions(next); 
+            if (CanDoStuffBasedOnPosition)
+            {
+                DoNasBlockCollideActions(next);
             }
-            if (CanDoStuffBasedOnPosition) 
-            { 
-                UpdatePosition(p.Pos, p.level.name); 
+            if (CanDoStuffBasedOnPosition)
+            {
+                UpdatePosition(p.Pos, p.level.name);
             }
             CheckGround(p.Pos);
             UpdateCaveFog(next);
@@ -331,9 +331,9 @@ namespace NotAwesomeSurvival
         }
         public void CheckGround(Position next)
         {
-            if (p.invincible) 
-            { 
-                lastGroundedLocation = new MCGalaxy.Maths.Vec3S32(next.X, next.Y, next.Z); 
+            if (p.invincible)
+            {
+                lastGroundedLocation = new MCGalaxy.Maths.Vec3S32(next.X, next.Y, next.Z);
                 return;
             }
             Position below = next;
@@ -341,8 +341,8 @@ namespace NotAwesomeSurvival
             if (Collision.TouchesGround(p.level, bounds, below, out float fallDamageMultiplier))
             {
                 float fallHeight = lastGroundedLocation.Y - next.Y;
-                if (!CanDoStuffBasedOnPosition && fallHeight > 0 && !hasBeenSpawned) 
-                { 
+                if (!CanDoStuffBasedOnPosition && fallHeight > 0 && !hasBeenSpawned)
+                {
                     Message("&WTrying to take fall damage but can't.");
                 }
                 if (fallHeight > 0 && CanDoStuffBasedOnPosition)
@@ -392,8 +392,8 @@ namespace NotAwesomeSurvival
             atBorder = true;
             int chunkOffsetX = 0, chunkOffsetZ = 0;
             string seed = "DEFAULT";
-            if (!NasGen.GetSeedAndChunkOffset(p.level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ)) 
-            { 
+            if (!NasGen.GetSeedAndChunkOffset(p.level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ))
+            {
                 return false;
             }
             string mapName;
@@ -415,7 +415,7 @@ namespace NotAwesomeSurvival
                     Message("&cA map is already generating!");
                     return false;
                 }
-                GenInfo info = new GenInfo
+                GenInfo info = new()
                 {
                     p = p,
                     mapName = mapName,
@@ -455,7 +455,7 @@ namespace NotAwesomeSurvival
                     Message("&cA map is already generating!");
                     return false;
                 }
-                GenInfo info = new GenInfo
+                GenInfo info = new()
                 {
                     p = p,
                     mapName = mapName,
@@ -502,7 +502,8 @@ namespace NotAwesomeSurvival
         {
             [JsonIgnore] public Position posBeforeMapChange;
             [JsonIgnore] public byte yawBeforeMapChange, pitchBeforeMapChange;
-            [JsonIgnore] public int chunkOffsetX, chunkOffsetZ,
+            [JsonIgnore]
+            public int chunkOffsetX, chunkOffsetZ,
                 travelX = -1, travelY = -1, travelZ = -1;
             public TransferInfo(Player p, int chunkOffsetX, int chunkOffsetZ)
             {
@@ -537,25 +538,25 @@ namespace NotAwesomeSurvival
         }
         public void UpdateCaveFog(Position next)
         {
-            if (!NasLevel.all.ContainsKey(p.level.name)) 
-            { 
-                return; 
+            if (!NasLevel.all.ContainsKey(p.level.name))
+            {
+                return;
             }
             const float change = 0.03125f;//0.03125f;
             if (curRenderDistance > targetRenderDistance)
             {
                 curRenderDistance *= 1 - change;
-                if (curRenderDistance < targetRenderDistance) 
+                if (curRenderDistance < targetRenderDistance)
                 {
-                    curRenderDistance = targetRenderDistance; 
+                    curRenderDistance = targetRenderDistance;
                 }
             }
             else if (curRenderDistance < targetRenderDistance)
             {
                 curRenderDistance *= 1 + change;
-                if (curRenderDistance > targetRenderDistance) 
-                { 
-                    curRenderDistance = targetRenderDistance; 
+                if (curRenderDistance > targetRenderDistance)
+                {
+                    curRenderDistance = targetRenderDistance;
                 }
             }
             curFogColor = ScaleColor(curFogColor, targetFogColor);
@@ -565,12 +566,12 @@ namespace NotAwesomeSurvival
             int z = next.BlockZ;
             z = Utils.Clamp(z, 0, (ushort)(p.level.Length - 1));
             ushort height = (ushort)Utils.Clamp(z, 0, (ushort)(p.level.Height - 1));
-            if (next.BlockCoords == p.Pos.BlockCoords) 
-            { 
-                return; 
+            if (next.BlockCoords == p.Pos.BlockCoords)
+            {
+                return;
             }
-            if (height < NasGen.oceanHeight) 
-            { 
+            if (height < NasGen.oceanHeight)
+            {
                 height = NasGen.oceanHeight;
             }
             int distanceBelow = nl.biome < 0 ? 0 : height - next.BlockY, expFog;

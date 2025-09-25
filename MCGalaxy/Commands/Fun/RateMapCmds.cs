@@ -17,54 +17,62 @@
  */
 using MCGalaxy.Games;
 
-namespace MCGalaxy.Commands.Fun 
+namespace MCGalaxy.Commands.Fun
 {
-    public class CmdLike : Command2 
+    public class CmdLike : Command2
     {
         public override string name { get { return "Like"; } }
         public override string type { get { return CommandTypes.Games; } }
         public override bool SuperUseable { get { return false; } }
-        
+
         public override void Use(Player p, string message, CommandData data) { RateMap(p, true); }
-        
-        protected bool RateMap(Player p, bool like) {
+
+        protected bool RateMap(Player p, bool like)
+        {
             string prefix = like ? "" : "dis";
-            
+
             IGame game = IGame.GameOn(p.level);
-            if (game == null) {
-                p.Message("Can only {0}like this map when a game is running on it.", prefix); return false; 
+            if (game == null)
+            {
+                p.Message("Can only {0}like this map when a game is running on it.", prefix); return false;
             }
-            
-            if (p.Game.RatedMap) {
+
+            if (p.Game.RatedMap)
+            {
                 prefix = p.Game.LikedMap ? "" : "dis";
-                p.Message("You have already {0}liked this map.", prefix); return false; 
+                p.Message("You have already {0}liked this map.", prefix); return false;
             }
-            if (CheckIsAuthor(p)) {
+            if (CheckIsAuthor(p))
+            {
                 p.Message("Cannot {0}like this map as you are an author of it.", prefix); return false;
             }
-            
+
             game.RateMap(p, like);
             p.Game.RatedMap = true;
             p.Game.LikedMap = like;
             return true;
         }
-        
-        protected static bool CheckIsAuthor(Player p) {
+
+        protected static bool CheckIsAuthor(Player p)
+        {
             string[] authors = p.level.Config.Authors.SplitComma();
             return authors.CaselessContains(p.name);
         }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/Like");
             p.Message("&HIncrements the number of times this map has been liked.");
         }
     }
-    
-    public sealed class CmdDislike : CmdLike {
-        public override string name { get { return "Dislike"; } }        
+
+    public sealed class CmdDislike : CmdLike
+    {
+        public override string name { get { return "Dislike"; } }
         public override void Use(Player p, string message, CommandData data) { RateMap(p, false); }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/Dislike");
             p.Message("&HIncrements the number of times this map has been disliked.");
         }

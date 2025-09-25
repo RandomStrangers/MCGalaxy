@@ -19,23 +19,25 @@ using MCGalaxy.Events.ServerEvents;
 
 namespace MCGalaxy.Modules.Games.CTF
 {
-    public sealed class CTFPlugin : Plugin 
+    public sealed class CTFPlugin : Plugin
     {
         public override string name { get { return "CTF"; } }
         static readonly Command cmdCTF = new CmdCTF();
-        
-        public override void Load(bool startup) {
+
+        public override void Load(bool startup)
+        {
             Command.Register(cmdCTF);
 
-            CTFGame game     = CTFGame.Instance;
+            CTFGame game = CTFGame.Instance;
             game.Config.Path = "props/ctf.properties";
             game.ReloadConfig();
             game.AutoStart();
-            
+
             OnConfigUpdatedEvent.Register(game.ReloadConfig, Priority.Low);
         }
-        
-        public override void Unload(bool shutdown) {
+
+        public override void Unload(bool shutdown)
+        {
             CTFGame game = CTFGame.Instance;
             OnConfigUpdatedEvent.Unregister(game.ReloadConfig);
             Command.Unregister(cmdCTF);

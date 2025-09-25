@@ -18,17 +18,20 @@
 using MCGalaxy.Drawing.Ops;
 using MCGalaxy.Generator.Foliage;
 
-namespace MCGalaxy.Commands.Building {
-    public sealed class CmdTree : DrawCmd {
+namespace MCGalaxy.Commands.Building
+{
+    public sealed class CmdTree : DrawCmd
+    {
         public override string name { get { return "Tree"; } }
         public override string type { get { return CommandTypes.Building; } }
-        
+
         protected override int MarksCount { get { return 1; } }
         protected override string SelectionType { get { return "location"; } }
         protected override string PlaceMessage { get { return "Select where you wish your tree to grow"; } }
-        
-        protected override DrawOp GetDrawOp(DrawArgs dArgs) {
-            string[] args = dArgs.Message.SplitSpaces(3);            
+
+        protected override DrawOp GetDrawOp(DrawArgs dArgs)
+        {
+            string[] args = dArgs.Message.SplitSpaces(3);
             Tree tree = Tree.Find(args[0]) ?? new NormalTree();
             if (args.Length > 1 && NumberUtils.TryParseInt32(args[1], out int size))
             {
@@ -41,29 +44,35 @@ namespace MCGalaxy.Commands.Building {
                 size = -1;
             }
 
-            TreeDrawOp op = new TreeDrawOp
+            TreeDrawOp op = new()
             {
                 Tree = tree,
                 Size = size
             };
             return op;
         }
-        
-        protected override void GetBrush(DrawArgs dArgs) {
+
+        protected override void GetBrush(DrawArgs dArgs)
+        {
             TreeDrawOp op = (TreeDrawOp)dArgs.Op;
-            if (op.Size != -1) {
+            if (op.Size != -1)
+            {
                 dArgs.BrushArgs = dArgs.Message.Splice(2, 0); // type, value/height, brush args
-            } else {
+            }
+            else
+            {
                 dArgs.BrushArgs = dArgs.Message.Splice(1, 0); // type, brush args
             }
-            
+
             // use leaf blocks by default
-            if (dArgs.BrushName.CaselessEq("Normal") && dArgs.BrushArgs.Length == 0) {
+            if (dArgs.BrushName.CaselessEq("Normal") && dArgs.BrushArgs.Length == 0)
+            {
                 dArgs.BrushArgs = Block.Leaves.ToString();
             }
         }
 
-        public override void Help(Player p) {
+        public override void Help(Player p)
+        {
             p.Message("&T/Tree [type] <brush args> &H- Draws a tree.");
             p.Message("&T/Tree [type] [size/height] <brush args>");
             p.Message("&H  Types: &f{0}", Tree.TreeTypes.Join(t => t.Key));

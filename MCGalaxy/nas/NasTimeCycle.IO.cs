@@ -6,7 +6,7 @@ namespace NotAwesomeSurvival
 {
     public partial class NasTimeCycle
     {
-        public static NasTimeCycle cyc = new NasTimeCycle();
+        public static NasTimeCycle cyc = new();
         public int day = 0, minutes = 7 * hourMinutes;
         public DayCycles cycle = DayCycles.Sunrise;
         public static void Log(string format, params object[] args)
@@ -23,14 +23,11 @@ namespace NotAwesomeSurvival
                 File.Create(TimeFilePath).Dispose();
                 Log("Created new json time file {0}!", TimeFilePath);
             }
-            using (StreamWriter sw = new StreamWriter(TimeFilePath))
-            { // To help you better understand, this is the stream writer
-                using (JsonWriter writer = new JsonTextWriter(sw))
-                {
-                    // this is the json writer that will help me to serialize and deserialize items in the file
-                    serializer.Serialize(writer, cyc);
-                }
-            }
+            using StreamWriter sw = new(TimeFilePath);
+            // To help you better understand, this is the stream writer
+            using JsonWriter writer = new JsonTextWriter(sw);
+            // this is the json writer that will help me to serialize and deserialize items in the file
+            serializer.Serialize(writer, cyc);
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using System.Text;
-using Newtonsoft.Json;
 using MCGalaxy;
 using MCGalaxy.Network;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Text;
 namespace NotAwesomeSurvival
 {
     public partial class Inventory
@@ -14,7 +14,7 @@ namespace NotAwesomeSurvival
         [JsonIgnore] public int slotToMoveTo = -1;
         [JsonIgnore] public bool deleting = false;
         public Item[] items = new Item[maxItems];
-        public const int maxItems = 27, 
+        public const int maxItems = 27,
             itemBarLength = 9;
         public int selectedItemIndex = 0;
         public void SetupItems()
@@ -74,13 +74,13 @@ namespace NotAwesomeSurvival
         }
         public void DoItemMove()
         {
-            if (slotToMoveTo == -1) 
+            if (slotToMoveTo == -1)
             {
                 BeginItemMove();
-            } 
-            else 
-            { 
-                FinalizeItemMove(); 
+            }
+            else
+            {
+                FinalizeItemMove();
             }
             UpdateItemDisplay();
         }
@@ -145,9 +145,9 @@ namespace NotAwesomeSurvival
             }
             selection += direction;
             selection %= length;
-            if (selection < 0) 
+            if (selection < 0)
             {
-                selection += length; 
+                selection += length;
             }
             UpdateItemDisplay();
         }
@@ -166,7 +166,7 @@ namespace NotAwesomeSurvival
         public void DisplayItemBar(int offset = 0, string prefix = "&7←«", string suffix = "%7»→",
                                    CpeMessageType location = CpeMessageType.BottomRight1)
         {
-            StringBuilder builder = new StringBuilder(prefix);
+            StringBuilder builder = new(prefix);
             for (int i = offset; i < itemBarLength + offset; i++)
             {
                 bool moving = !(slotToMoveTo == -1),
@@ -174,9 +174,9 @@ namespace NotAwesomeSurvival
                     selectionHere = i == selectedItemIndex,
                     selectionNext = moving ? i + 1 == slotToMoveTo : i + 1 == selectedItemIndex;
                 int itemIndex = i;
-                if (handsHere) 
-                { 
-                    builder.Append("&h╣"); 
+                if (handsHere)
+                {
+                    builder.Append("&h╣");
                 }
                 else if (selectionHere && !moving)
                 {
@@ -189,8 +189,8 @@ namespace NotAwesomeSurvival
                         builder.Append("&hƒ");
                     }
                 }
-                else if (i == offset) 
-                { 
+                else if (i == offset)
+                {
                     builder.Append("⌐");
                 }
                 if (handsHere)
@@ -208,9 +208,9 @@ namespace NotAwesomeSurvival
                     {
                         builder.Append("&e¬");
                     }
-                    else 
-                    { 
-                        builder.Append("¬"); 
+                    else
+                    {
+                        builder.Append("¬");
                     }
                 }
                 else
@@ -219,14 +219,14 @@ namespace NotAwesomeSurvival
                     {
                         builder.Append("&e¬");
                     }
-                    else 
-                    { 
-                        builder.Append(item.ColoredIcon); 
+                    else
+                    {
+                        builder.Append(item.ColoredIcon);
                     }
                 }
-                if (handsHere) 
-                { 
-                    builder.Append("&h╕"); 
+                if (handsHere)
+                {
+                    builder.Append("&h╕");
                 }
                 else if (selectionHere && !moving)
                 {
@@ -251,14 +251,14 @@ namespace NotAwesomeSurvival
         public void DeleteItem(bool confirmed = false)
         {
             //don't even fuck with deleting if they're moving items
-            if (slotToMoveTo != -1) 
+            if (slotToMoveTo != -1)
             {
-                return; 
+                return;
             }
             Item item = items[selectedItemIndex];
-            if (item == null) 
-            { 
-                return; 
+            if (item == null)
+            {
+                return;
             }
             if (deleting)
             {
@@ -274,9 +274,9 @@ namespace NotAwesomeSurvival
                 UpdateItemDisplay();
                 return;
             }
-            if (confirmed) 
-            { 
-                return; 
+            if (confirmed)
+            {
+                return;
             }
             Message("Are you sure you want to delete {0}&S?", item.displayName);
             Message("Press P to Put it in the trash.");
@@ -297,7 +297,7 @@ namespace NotAwesomeSurvival
         }
         public void ToolInfo()
         {
-            Dictionary<int, string> nums = new Dictionary<int, string>() 
+            Dictionary<int, string> nums = new()
             {
                 {1,"I"},
                 {2,"II"},
@@ -306,9 +306,9 @@ namespace NotAwesomeSurvival
                 {5,"V"},
             };
             Item item = items[selectedItemIndex];
-            if (item == null) 
-            { 
-                return; 
+            if (item == null)
+            {
+                return;
             }
             Message("Tool name: {0}", item.displayName);
             Message("Tool durability: {0}/{1}", item.HP, item.Prop.baseHP);

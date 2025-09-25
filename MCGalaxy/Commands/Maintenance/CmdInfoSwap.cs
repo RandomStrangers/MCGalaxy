@@ -15,21 +15,24 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using MCGalaxy.DB;
 using MCGalaxy.Events.PlayerDBEvents;
 using MCGalaxy.SQL;
+using System;
 
-namespace MCGalaxy.Commands.Maintenance {
-    public sealed class CmdInfoSwap : Command2 {       
+namespace MCGalaxy.Commands.Maintenance
+{
+    public sealed class CmdInfoSwap : Command2
+    {
         public override string name { get { return "InfoSwap"; } }
         public override string type { get { return CommandTypes.Moderation; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Owner; } }
 
-        public override void Use(Player p, string text, CommandData data) {
+        public override void Use(Player p, string text, CommandData data)
+        {
             string[] args = text.SplitSpaces();
             if (args.Length != 2) { Help(p); return; }
-            
+
             string src = GetName(p, args[0]), dst = GetName(p, args[1]);
             if (src == null || dst == null) return;
 
@@ -40,34 +43,39 @@ namespace MCGalaxy.Commands.Maintenance {
             SwapStats(src, dst);
             SwapGroups(src, dst, srcGroup, dstGroup);
             OnInfoSwapEvent.Call(src, dst);
-            
+
             p.Message("Successfully infoswapped {0} &Sand {1}",
                       p.FormatNick(src), p.FormatNick(dst));
         }
-        
-        static string GetName(Player p, string name) {
+
+        static string GetName(Player p, string name)
+        {
             if (!Formatter.ValidPlayerName(p, name)) return null;
-            if (PlayerInfo.FindExact(name) != null) {
+            if (PlayerInfo.FindExact(name) != null)
+            {
                 p.Message("\"{0}\" must be offline to use &T/InfoSwap", name); return null;
             }
-            
+
             string match = PlayerDB.FindName(name);
-            if (match == null) {
+            if (match == null)
+            {
                 p.Message("\"{0}\" was not found in the database.", name); return null;
             }
             return match;
         }
-        
-        static void SwapStats(string src, string dst) {
+
+        static void SwapStats(string src, string dst)
+        {
             int tmpNum = new Random().Next(0, 10000000);
             string tmpName = "-tmp" + tmpNum + "-";
-            
+
             Database.UpdateRows("Players", "Name=@1", "WHERE Name=@0", dst, tmpName); // PLAYERS[dst] = tmp
             Database.UpdateRows("Players", "Name=@1", "WHERE Name=@0", src, dst);     // PLAYERS[src] = dst
             Database.UpdateRows("Players", "Name=@1", "WHERE Name=@0", tmpName, src); // PLAYERS[tmp] = src
         }
-        
-        static void SwapGroups(string src, string dst, Group srcGroup, Group dstGroup) {
+
+        static void SwapGroups(string src, string dst, Group srcGroup, Group dstGroup)
+        {
             srcGroup.Players.Remove(src);
             dstGroup.Players.Remove(dst);
             srcGroup.Players.Add(dst);
@@ -75,8 +83,9 @@ namespace MCGalaxy.Commands.Maintenance {
             srcGroup.Players.Save();
             dstGroup.Players.Save();
         }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/InfoSwap [source] [other]");
             p.Message("&HSwaps all the player's info from [source] to [other].");
             p.Message("&HNote that both players must be offline for this to work.");

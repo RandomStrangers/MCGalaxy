@@ -1,25 +1,25 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using System;
-using System.Drawing;
-using System.Collections.Generic;
 using MCGalaxy;
-using MCGalaxy.Network;
 using MCGalaxy.Maths;
+using MCGalaxy.Network;
 using MCGalaxy.Tasks;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 namespace NotAwesomeSurvival
 {
     public partial class Crafting
     {
-        public static object locker = new object();
+        public static object locker = new();
         public static void ClearCraftingArea(Player p, ushort startX, ushort startY, ushort startZ, Station.Orientation ori, NasLevel nl)
         {
             bool WE = ori == Station.Orientation.WE;
-            if (WE) 
-            { 
-                startX--; 
-            } 
-            else 
-            { 
+            if (WE)
+            {
+                startX--;
+            }
+            else
+            {
                 startZ--;
             }
             startY += 3;
@@ -55,13 +55,13 @@ namespace NotAwesomeSurvival
         public static void ClearCraftingArea(NasLevel nl, ushort startX, ushort startY, ushort startZ, Station.Orientation ori)
         {
             bool WE = ori == Station.Orientation.WE;
-            if (WE) 
-            { 
-                startX--; 
-            } 
-            else 
-            { 
-                startZ--; 
+            if (WE)
+            {
+                startX--;
+            }
+            else
+            {
+                startZ--;
             }
             startY += 3;
             if (WE)
@@ -129,7 +129,7 @@ namespace NotAwesomeSurvival
                 }
                 startY += 4;
                 endY++;
-                AreaInfo info = new AreaInfo
+                AreaInfo info = new()
                 {
                     np = np,
                     start = new Vec3U16(startX, startY, startZ),
@@ -169,15 +169,15 @@ namespace NotAwesomeSurvival
                 info.curRound--;
             }
         }
-        public static List<Recipe> recipes = new List<Recipe>();
+        public static List<Recipe> recipes = new();
         public static Recipe GetRecipe(NasLevel nl, ushort x, ushort y, ushort z, Station station)
         {
             NasBlock[,] area = GetArea(nl, x, y, z, station.ori);
             foreach (Recipe recipe in recipes)
             {
-                if (recipe.stationType != station.type) 
-                { 
-                    continue; 
+                if (recipe.stationType != station.type)
+                {
+                    continue;
                 }
                 if (recipe.shapeless)
                 {
@@ -197,13 +197,13 @@ namespace NotAwesomeSurvival
         {
             NasBlock[,] area = new NasBlock[3, 3];
             bool WE = ori == Station.Orientation.WE;
-            if (WE) 
-            { 
-                startX--; 
-            } 
-            else 
-            { 
-                startZ--; 
+            if (WE)
+            {
+                startX--;
+            }
+            else
+            {
+                startZ--;
             }
             startY += 3;
             int indexX = 0, indexY = 0;
@@ -214,9 +214,9 @@ namespace NotAwesomeSurvival
                     for (ushort x = startX; x < startX + 3; x++)
                     {
                         ushort blockID = nl.lvl.GetBlock(x, y, startZ);
-                        if (blockID == Block.Invalid) 
-                        { 
-                            blockID = 0; 
+                        if (blockID == Block.Invalid)
+                        {
+                            blockID = 0;
                         }
                         ushort num;
                         if (blockID >= 256)
@@ -246,9 +246,9 @@ namespace NotAwesomeSurvival
                     for (ushort z = startZ; z < startZ + 3; z++)
                     {
                         ushort blockID = nl.lvl.GetBlock(startX, y, z);
-                        if (blockID == Block.Invalid) 
-                        { 
-                            blockID = 0; 
+                        if (blockID == Block.Invalid)
+                        {
+                            blockID = 0;
                         }
                         ushort num;
                         if (blockID >= 256)
@@ -282,7 +282,7 @@ namespace NotAwesomeSurvival
             {
                 get
                 {
-                    Dictionary<ushort, int> patternCost = new Dictionary<ushort, int>();
+                    Dictionary<ushort, int> patternCost = new();
                     for (int x = 0; x < pattern.GetLength(1); x++)
                     {
                         for (int y = 0; y < pattern.GetLength(0); y++)
@@ -310,8 +310,8 @@ namespace NotAwesomeSurvival
             /// false to make this recipe strict (e.g. sideways stick doesn't work, only upright)
             /// and true to make this recipe work with any rotation of a block group (e.g. all four monitors work)
             /// </summary>
-            public bool usesParentID = false, 
-                usesAlternateID = false, 
+            public bool usesParentID = false,
+                usesAlternateID = false,
                 shapeless = false;
             public Drop drop;
             public Recipe()
@@ -332,8 +332,8 @@ namespace NotAwesomeSurvival
             {
                 int patternWidth = pattern.GetLength(1),
                     patternHeight = pattern.GetLength(0);
-                Dictionary<ushort, int> patternStacks = new Dictionary<ushort, int>(),
-                    areaStacks = new Dictionary<ushort, int>();
+                Dictionary<ushort, int> patternStacks = new(),
+                    areaStacks = new();
                 for (int patternX = 0; patternX < patternWidth; patternX++)
                 {
                     for (int patternY = 0; patternY < patternHeight; patternY++)

@@ -17,26 +17,31 @@
  */
 using MCGalaxy.Games;
 
-namespace MCGalaxy.Commands.Info 
+namespace MCGalaxy.Commands.Info
 {
-    public sealed class CmdWhere : Command2 
+    public sealed class CmdWhere : Command2
     {
         public override string name { get { return "Where"; } }
         public override string type { get { return CommandTypes.Information; } }
-        
-        public override void Use(Player p, string message, CommandData data) {
+
+        public override void Use(Player p, string message, CommandData data)
+        {
             Entity target;
             string targetName;
-            if (message.CaselessStarts("bot ")) {
+            if (message.CaselessStarts("bot "))
+            {
                 string botName = message.SplitSpaces(2)[1];
                 target = Matcher.FindBots(p, botName);
                 if (target == null) return;
                 targetName = "Bot " + ((PlayerBot)target).ColoredName;
-            } else {
+            }
+            else
+            {
                 if (message.Length == 0) message = p.name;
                 target = PlayerInfo.FindMatches(p, message);
                 if (target == null) return;
-                if (IGame.GameOn(target.Level) != null && !(p.IsSuper || p.Game.Referee)) {
+                if (IGame.GameOn(target.Level) != null && !(p.IsSuper || p.Game.Referee))
+                {
                     p.Message("You can only use /where on people in games when you are in referee mode."); return;
                 }
                 targetName = p.FormatNick((Player)target);
@@ -45,7 +50,8 @@ namespace MCGalaxy.Commands.Info
             Entities.DisplayPosition(p, target, targetName);
         }
 
-        public override void Help(Player p) {
+        public override void Help(Player p)
+        {
             p.Message("&T/Where [name]");
             p.Message("&HDisplays level, position, and orientation of that player.");
             p.Message("&T/Where bot [name]");

@@ -18,33 +18,36 @@
 using MCGalaxy.Commands;
 using MCGalaxy.Events.PlayerEvents;
 
-namespace MCGalaxy.Modules.Moderation.Review 
+namespace MCGalaxy.Modules.Moderation.Review
 {
-    public sealed class ReviewPlugin : Plugin 
+    public sealed class ReviewPlugin : Plugin
     {
         public override string name { get { return "Review"; } }
 
         readonly Command cmdReview = new CmdReview();
 
-        public override void Load(bool startup) {
+        public override void Load(bool startup)
+        {
             OnPlayerConnectEvent.Register(CheckReviewList, Priority.Low);
             Command.Register(cmdReview);
         }
-        
-        public override void Unload(bool shutdown) {
+
+        public override void Unload(bool shutdown)
+        {
             OnPlayerConnectEvent.Unregister(CheckReviewList);
             Command.Unregister(cmdReview);
         }
 
 
-        static void CheckReviewList(Player p) {
+        static void CheckReviewList(Player p)
+        {
             if (!p.CanUse("Review")) return;
             ItemPerms checkPerms = CommandExtraPerms.Find("Review", 1);
             if (!checkPerms.UsableBy(p)) return;
-            
+
             int count = Server.reviewlist.Count;
             if (count == 0) return;
-            
+
             string suffix = count == 1 ? " player is " : " players are ";
             p.Message(count + suffix + "waiting for a review. Type &T/Review view");
         }

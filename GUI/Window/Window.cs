@@ -15,18 +15,18 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
 */
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Threading;
-using System.Windows.Forms;
 using MCGalaxy.Events;
 using MCGalaxy.Events.LevelEvents;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Generator;
 using MCGalaxy.Gui.Popups;
 using MCGalaxy.Tasks;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace MCGalaxy.Gui
 {
@@ -38,7 +38,7 @@ namespace MCGalaxy.Gui
         delegate void VoidDelegate();
         bool mapgen, loaded;
 
-        readonly NotifyIcon notifyIcon = new NotifyIcon();
+        readonly NotifyIcon notifyIcon = new();
         Player curPlayer;
 
         public Window()
@@ -233,7 +233,7 @@ Trying to mix two versions is unsupported - you may experience issues";
         void ShowUpdateMessageBox()
         {
             if (UpdateAvailable.Active) return;
-            UpdateAvailable form = new UpdateAvailable();
+            UpdateAvailable form = new();
 
             // https://stackoverflow.com/questions/8566582/how-to-centerparent-a-non-modal-form
             form.Location = new Point(Location.X + (Width - form.Width) / 2,
@@ -243,7 +243,7 @@ Trying to mix two versions is unsupported - you may experience issues";
 
         static void RunAsync(ThreadStart func)
         {
-            Thread thread = new Thread(func)
+            Thread thread = new(func)
             {
                 Name = "MsgBox"
             };
@@ -272,7 +272,8 @@ Trying to mix two versions is unsupported - you may experience issues";
 
         void Player_PlayerConnect(Player p)
         {
-            RunOnUI_Async(() => {
+            RunOnUI_Async(() =>
+            {
                 Main_UpdatePlayersList();
                 Players_UpdateList();
             });
@@ -280,7 +281,8 @@ Trying to mix two versions is unsupported - you may experience issues";
 
         void Player_PlayerDisconnect(Player p, string reason)
         {
-            RunOnUI_Async(() => {
+            RunOnUI_Async(() =>
+            {
                 Main_UpdateMapList();
                 Main_UpdatePlayersList();
                 Players_UpdateList();
@@ -289,7 +291,8 @@ Trying to mix two versions is unsupported - you may experience issues";
 
         void Player_OnJoinedLevel(Player p, Level prevLevel, Level lvl)
         {
-            RunOnUI_Async(() => {
+            RunOnUI_Async(() =>
+            {
                 Main_UpdateMapList();
                 Main_UpdatePlayersList();
                 Players_UpdateSelected();
@@ -300,14 +303,16 @@ Trying to mix two versions is unsupported - you may experience issues";
         {
             if (action.Type != ModActionType.Rank) return;
 
-            RunOnUI_Async(() => {
+            RunOnUI_Async(() =>
+            {
                 Main_UpdatePlayersList();
             });
         }
 
         void Level_LevelAdded(Level lvl)
         {
-            RunOnUI_Async(() => {
+            RunOnUI_Async(() =>
+            {
                 Main_UpdateMapList();
                 Map_UpdateLoadedList();
                 Map_UpdateUnloadedList();
@@ -316,7 +321,8 @@ Trying to mix two versions is unsupported - you may experience issues";
 
         void Level_LevelRemoved(Level lvl)
         {
-            RunOnUI_Async(() => {
+            RunOnUI_Async(() =>
+            {
                 Main_UpdateMapList();
                 Map_UpdateLoadedList();
                 Map_UpdateUnloadedList();
@@ -325,7 +331,8 @@ Trying to mix two versions is unsupported - you may experience issues";
 
         void Level_PhysicsLevelChanged(Level lvl, int level)
         {
-            RunOnUI_Async(() => {
+            RunOnUI_Async(() =>
+            {
                 Main_UpdateMapList();
                 Map_UpdateLoadedList();
             });
@@ -334,7 +341,8 @@ Trying to mix two versions is unsupported - you may experience issues";
 
         void SettingsUpdate()
         {
-            RunOnUI_Async(() => {
+            RunOnUI_Async(() =>
+            {
                 if (Server.shuttingDown) return;
                 Text = Server.Config.Name + " - " + Server.SoftwareNameVersioned;
                 UpdateNotifyIconText();

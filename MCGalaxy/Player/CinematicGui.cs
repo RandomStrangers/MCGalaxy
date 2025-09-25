@@ -17,12 +17,14 @@
  */
 
 
-namespace MCGalaxy {
+namespace MCGalaxy
+{
 
     /// <summary>
     /// Describes options for cinematic gui. It may be sent to a player using Player.Session.SendCinematicGui
     /// </summary>
-    public class CinematicGui {
+    public class CinematicGui
+    {
 
         public bool hideCrosshair;
         public bool hideHand;
@@ -30,7 +32,7 @@ namespace MCGalaxy {
         /// <summary>
         /// The color of the cinematic bars, if visible
         /// </summary>
-        public ColorDesc barColor = new ColorDesc(0, 0, 0);
+        public ColorDesc barColor = new(0, 0, 0);
         /// <summary>
         /// From 0 to 1 where 0 is not visible and 1 is screen fully covered
         /// </summary>

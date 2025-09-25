@@ -18,51 +18,59 @@
 using System;
 using System.IO;
 
-namespace MCGalaxy {
-    
+namespace MCGalaxy
+{
+
     public delegate void LineProcessor<T>(string key, string value, ref T state);
     public delegate void SimpleLineProcessor(string key, string value);
-    
+
     /// <summary> Handles text files that have multiple key-value lines in the format 'key=value'. </summary>
     /// <remarks> Also supports # for commented lines. </remarks>
-    public static class PropertiesFile {
-        
+    public static class PropertiesFile
+    {
+
         public static bool Read(string path, SimpleLineProcessor processor,
-                                char separator = '=', bool trimValue = true) {
+                                char separator = '=', bool trimValue = true)
+        {
             object obj = null;
             void del(string key, string value, ref object state) { processor(key, value); }
             return Read(path, ref obj, del, separator, trimValue);
         }
-        
-        public static bool Read<T>(string path, ref T state, LineProcessor<T> processor,
-                                   char separator = '=', bool trimValue = true) {
-            if (!File.Exists(path)) return false;
-            
-            using (StreamReader r = new StreamReader(path)) {
-                string line;
-                while ((line = r.ReadLine()) != null) {
-                    ParseLine(line, separator, out string key, out string value);
-                    if (key == null) continue;
 
-                    try {
-                        if (trimValue) value = value.Trim();
-                        processor(key.Trim(), value, ref state);
-                    } catch (Exception ex) {
-                        Logger.LogError(ex);
-                        Logger.Log(LogType.Warning, "Line \"{0}\" in {1} caused an error", line, path);
-                    }
+        public static bool Read<T>(string path, ref T state, LineProcessor<T> processor,
+                                   char separator = '=', bool trimValue = true)
+        {
+            if (!File.Exists(path)) return false;
+
+            using StreamReader r = new(path);
+            string line;
+            while ((line = r.ReadLine()) != null)
+            {
+                ParseLine(line, separator, out string key, out string value);
+                if (key == null) continue;
+
+                try
+                {
+                    if (trimValue) value = value.Trim();
+                    processor(key.Trim(), value, ref state);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex);
+                    Logger.Log(LogType.Warning, "Line \"{0}\" in {1} caused an error", line, path);
                 }
             }
             return true;
         }
-        
-        internal static void ParseLine(string line, char separator, out string key, out string value) {
+
+        internal static void ParseLine(string line, char separator, out string key, out string value)
+        {
             key = null; value = null;
             if (line.IsCommentLine()) return;
-            
+
             int index = line.IndexOf(separator);
             if (index == -1) return;
-            
+
             key = line.Substring(0, index).Trim();
             value = line.Substring(index + 1);
         }

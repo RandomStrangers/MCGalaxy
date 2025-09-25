@@ -16,36 +16,46 @@
     permissions and limitations under the Licenses.
  */
 
-namespace MCGalaxy.Commands.Moderation {
-    public sealed class CmdFollow : Command2 {
+namespace MCGalaxy.Commands.Moderation
+{
+    public sealed class CmdFollow : Command2
+    {
         public override string name { get { return "Follow"; } }
         public override string type { get { return CommandTypes.Moderation; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
         public override bool SuperUseable { get { return false; } }
 
-        public override void Use(Player p, string message, CommandData data) {
+        public override void Use(Player p, string message, CommandData data)
+        {
             if (p.possessed) { p.Message("You're currently being &4possessed&S!"); return; }
             string[] args = message.SplitSpaces(2);
             string name = args[0];
 
             bool stealth = false;
-            if (message == "#") {
+            if (message == "#")
+            {
                 if (p.following.Length > 0) { stealth = true; name = ""; }
                 else { Help(p); return; }
-            } else if (args.Length > 1 && args[0] == "#") {
+            }
+            else if (args.Length > 1 && args[0] == "#")
+            {
                 if (p.hidden) stealth = true;
                 name = args[1];
             }
 
             if (name.Length == 0 && p.following.Length == 0) { Help(p); return; }
-            if (name.CaselessEq(p.following) || (name.Length == 0 && p.following.Length > 0)) {
+            if (name.CaselessEq(p.following) || (name.Length == 0 && p.following.Length > 0))
+            {
                 Unfollow(p, data, stealth);
-            } else {
+            }
+            else
+            {
                 Follow(p, name, data, stealth);
             }
         }
 
-        static void Unfollow(Player p, CommandData data, bool stealth) {
+        static void Unfollow(Player p, CommandData data, bool stealth)
+        {
             p.Message("Stopped following " + p.FormatNick(p.following));
 
             Player target = PlayerInfo.FindExact(p.following);
@@ -53,20 +63,25 @@ namespace MCGalaxy.Commands.Moderation {
             p.following = "";
 
             if (!p.hidden) return;
-            if (!stealth) {
+            if (!stealth)
+            {
                 Find("Hide").Use(p, "", data);
-            } else {
+            }
+            else
+            {
                 p.Message("You are still hidden.");
             }
         }
 
-        static void Follow(Player p, string name, CommandData data, bool _) {
+        static void Follow(Player p, string name, CommandData data, bool _)
+        {
             Player target = PlayerInfo.FindMatches(p, name);
             if (target == null) return;
             if (target == p) { p.Message("Cannot follow yourself."); return; }
             if (!CheckRank(p, data, target, "follow", false)) return;
 
-            if (target.following.Length > 0) {
+            if (target.following.Length > 0)
+            {
                 p.Message("{0} &Sis already following {1}",
                           p.FormatNick(target), p.FormatNick(target.following)); return;
             }
@@ -74,7 +89,8 @@ namespace MCGalaxy.Commands.Moderation {
             if (!p.hidden) Find("Hide").Use(p, "", data);
 
             if (p.level != target.level) Find("TP").Use(p, target.name, data);
-            if (p.following.Length > 0) {
+            if (p.following.Length > 0)
+            {
                 Player old = PlayerInfo.FindExact(p.following);
                 if (old != null) Entities.Spawn(p, old);
             }
@@ -84,7 +100,8 @@ namespace MCGalaxy.Commands.Moderation {
             Entities.Despawn(p, target);
         }
 
-        public override void Help(Player p) {
+        public override void Help(Player p)
+        {
             p.Message("&T/Follow [name]");
             p.Message("&HFollows <name> until the command is cancelled");
             p.Message("&T/Follow # [name]");

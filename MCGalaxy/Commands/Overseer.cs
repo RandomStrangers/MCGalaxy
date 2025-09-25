@@ -15,10 +15,10 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using System.Collections.Generic;
 using MCGalaxy.Commands.CPE;
 using MCGalaxy.Generator;
+using System;
+using System.Collections.Generic;
 
 namespace MCGalaxy.Commands.World
 {
@@ -168,7 +168,7 @@ namespace MCGalaxy.Commands.World
         };
         static void HandleAllow(Player p, string message)
         {
-            _HandlePerm(p, message, "allow", "perbuild", "+");
+            HandlePerm2(p, message, "allow", "perbuild", "+");
         }
         static readonly string[] disallowHelp = new string[] {
             "&T/os disallow [player]",
@@ -176,7 +176,7 @@ namespace MCGalaxy.Commands.World
         };
         static void HandleDisallow(Player p, string message)
         {
-            _HandlePerm(p, message, "disallow", "perbuild", "-");
+            HandlePerm2(p, message, "disallow", "perbuild", "-");
         }
         static readonly string[] banHelp = new string[] {
             "&T/os ban [player]",
@@ -184,7 +184,7 @@ namespace MCGalaxy.Commands.World
         };
         static void HandleBan(Player p, string message)
         {
-            _HandlePerm(p, message, "ban", "pervisit", "-");
+            HandlePerm2(p, message, "ban", "pervisit", "-");
         }
         static readonly string[] unbanHelp = new string[] {
             "&T/os unban [player]",
@@ -192,9 +192,9 @@ namespace MCGalaxy.Commands.World
         };
         static void HandleUnban(Player p, string message)
         {
-            _HandlePerm(p, message, "unban", "pervisit", "+");
+            HandlePerm2(p, message, "unban", "pervisit", "+");
         }
-        static void _HandlePerm(Player p, string message, string action, string cmd, string prefix)
+        static void HandlePerm2(Player p, string message, string action, string cmd, string prefix)
         {
             if (message.Length == 0) { p.Message("&WYou need to type a player name to {0}.", action); return; }
             UseCommand(p, cmd, prefix + message);
@@ -363,18 +363,18 @@ namespace MCGalaxy.Commands.World
             behaviour(p, message);
         }
 
-        static readonly SubCommandGroup mapSubCommandGroup = new SubCommandGroup(commandShortcut + " map",
+        static readonly SubCommandGroup mapSubCommandGroup = new(commandShortcut + " map",
                 new List<SubCommand>() {
-                    new SubCommand("Physics",  (p, arg) => { MapMoved(p, arg, "physics",  HandlePhysics);   }),
-                    new SubCommand("Add",      (p, arg) => { MapMoved(p, arg, "add",      HandleAdd, false);}, false, new string[] { "create", "new" } ),
-                    new SubCommand("Delete",   (p, arg) => { MapMoved(p, arg, "delete",   HandleDelete);    }, false, new string[] { "del", "remove" } ),
-                    new SubCommand("Save",     (p, arg) => { MapMoved(p, arg, "save",     HandleSave);      }),
-                    new SubCommand("Rename",   (p, arg) => { MapMoved(p, arg, "rename",   HandleRename);    }),
-                    new SubCommand("Restore",  (p, arg) => { MapMoved(p, arg, "restore",  HandleRestore);   }),
-                    new SubCommand("Resize",   (p, arg) => { MapMoved(p, arg, "resize",   HandleResize);    }),
-                    new SubCommand("PerVisit", (p, arg) => { MapMoved(p, arg, "pervisit", HandlePervisit);  }),
-                    new SubCommand("PerBuild", (p, arg) => { MapMoved(p, arg, "perbuild", HandlePerbuild);  }),
-                    new SubCommand("Texture",  (p, arg) => { MapMoved(p, arg, "texture",  HandleTexture);   }, false, new string[] { "texturezip", "texturepack" } ),
+                    new("Physics",  (p, arg) => { MapMoved(p, arg, "physics",  HandlePhysics);   }),
+                    new("Add",      (p, arg) => { MapMoved(p, arg, "add",      HandleAdd, false);}, false, new string[] { "create", "new" } ),
+                    new("Delete",   (p, arg) => { MapMoved(p, arg, "delete",   HandleDelete);    }, false, new string[] { "del", "remove" } ),
+                    new("Save",     (p, arg) => { MapMoved(p, arg, "save",     HandleSave);      }),
+                    new("Rename",   (p, arg) => { MapMoved(p, arg, "rename",   HandleRename);    }),
+                    new("Restore",  (p, arg) => { MapMoved(p, arg, "restore",  HandleRestore);   }),
+                    new("Resize",   (p, arg) => { MapMoved(p, arg, "resize",   HandleResize);    }),
+                    new("PerVisit", (p, arg) => { MapMoved(p, arg, "pervisit", HandlePervisit);  }),
+                    new("PerBuild", (p, arg) => { MapMoved(p, arg, "perbuild", HandlePerbuild);  }),
+                    new("Texture",  (p, arg) => { MapMoved(p, arg, "texture",  HandleTexture);   }, false, new string[] { "texturezip", "texturepack" } ),
                 }
             );
 
@@ -588,8 +588,8 @@ namespace MCGalaxy.Commands.World
                 }
                 else
                 {
-                    p.Message("To visit the next os map, use &T/os next");
-                    p.Message("To go backwards, use &T/os next prev");
+                    p.Message("To visit the next os map, use &T/os tour");
+                    p.Message("To go backwards, use &T/os tour prev");
                     return;
                 }
             }
@@ -619,7 +619,7 @@ namespace MCGalaxy.Commands.World
             if (curIndex == -1)
             {
                 throw new InvalidOperationException(
-                    string.Format("Guessed \"{0}\" as the realm owner of \"{1}\", but \"{2}\" does not actually own the level \"{3}\"",
+                    String.Format("Guessed \"{0}\" as the realm owner of \"{1}\", but \"{2}\" does not actually own the level \"{3}\"",
                     curLevelOwner, curLevel.name, curLevelOwner, curLevel.name));
             }
 
@@ -645,37 +645,37 @@ namespace MCGalaxy.Commands.World
         }
 
         //Placed at the end so that the help arrays aren't null
-        internal static SubCommandGroup subCommandGroup = new SubCommandGroup(commandShortcut,
+        internal static SubCommandGroup subCommandGroup = new(commandShortcut,
                 new List<SubCommand>() {
-                    new SubCommand("Add",        HandleAdd,        addHelp,  false, new string[] { "create", "new" }),
-                    new SubCommand("Go",         HandleGoto,       gotoHelp, false),
-                    new SubCommand("Allow",      HandleAllow,      allowHelp),
-                    new SubCommand("Disallow",   HandleDisallow,   disallowHelp),
-                    new SubCommand("Ban",        HandleBan,        banHelp),
-                    new SubCommand("Unban",      HandleUnban,      unbanHelp),
-                    new SubCommand("SetSpawn",   HandleSpawn,      spawnHelp, true, new string[] { "spawn" }),
-                    new SubCommand("Env",        HandleEnv,        envHelp),
-                    new SubCommand("Preset",     HandlePreset,     presetHelp),
-                    new SubCommand("Map",        HandleMap,        mapHelp, false),
+                    new("Add",        HandleAdd,        addHelp,  false, new string[] { "create", "new" }),
+                    new("Go",         HandleGoto,       gotoHelp, false),
+                    new("Allow",      HandleAllow,      allowHelp),
+                    new("Disallow",   HandleDisallow,   disallowHelp),
+                    new("Ban",        HandleBan,        banHelp),
+                    new("Unban",      HandleUnban,      unbanHelp),
+                    new("SetSpawn",   HandleSpawn,      spawnHelp, true, new string[] { "spawn" }),
+                    new("Env",        HandleEnv,        envHelp),
+                    new("Preset",     HandlePreset,     presetHelp),
+                    new("Map",        HandleMap,        mapHelp, false),
 
-                    new SubCommand("Plot",       HandlePlot,       plotHelp, true, new string[] { "plots" }),
-                    new SubCommand("PerBuild",   HandlePerbuild,   perbuildHelp),
-                    new SubCommand("PerVisit",   HandlePervisit,   pervisitHelp),
-                    new SubCommand("Physics",    HandlePhysics,    physicsHelp),
+                    new("Plot",       HandlePlot,       plotHelp, true, new string[] { "plots" }),
+                    new("PerBuild",   HandlePerbuild,   perbuildHelp),
+                    new("PerVisit",   HandlePervisit,   pervisitHelp),
+                    new("Physics",    HandlePhysics,    physicsHelp),
 
-                    new SubCommand("LB",         HandleLevelBlock, levelBlockHelp, true, new string[] {"LevelBlock" }),
-                    new SubCommand("BlockProps", HandleBlockProps, blockPropsHelp, true, new string[] { "BlockProperties" }),
-                    new SubCommand("Texture",    HandleTexture,    textureHelp,    true, new string[] { "texturezip", "texturepack" }),
-                    new SubCommand("Kick",       HandleKick,       kickHelp),
-                    new SubCommand("KickAll",    HandleKickAll,    kickAllHelp),
+                    new("LB",         HandleLevelBlock, levelBlockHelp, true, new string[] {"LevelBlock" }),
+                    new("BlockProps", HandleBlockProps, blockPropsHelp, true, new string[] { "BlockProperties" }),
+                    new("Texture",    HandleTexture,    textureHelp,    true, new string[] { "texturezip", "texturepack" }),
+                    new("Kick",       HandleKick,       kickHelp),
+                    new("KickAll",    HandleKickAll,    kickAllHelp),
 
-                    new SubCommand("Resize",     HandleResize,     resizeHelp),
-                    new SubCommand("Save",       HandleSave,       saveHelp),
-                    new SubCommand("Delete",     HandleDelete,     deleteHelp, true, new string[] { "del", "remove" } ),
-                    new SubCommand("Rename",     HandleRename,     renameHelp),
-                    new SubCommand("Restore",    HandleRestore,    restoreHelp),
-                    new SubCommand("List",       HandleList,       listHelp, false),
-                    new SubCommand("Tour",       HandleTour,       tourHelp, false),
+                    new("Resize",     HandleResize,     resizeHelp),
+                    new("Save",       HandleSave,       saveHelp),
+                    new("Delete",     HandleDelete,     deleteHelp, true, new string[] { "del", "remove" } ),
+                    new("Rename",     HandleRename,     renameHelp),
+                    new("Restore",    HandleRestore,    restoreHelp),
+                    new("List",       HandleList,       listHelp, false),
+                    new("Tour",       HandleTour,       tourHelp, false),
                 }
             );
 
@@ -732,10 +732,10 @@ namespace MCGalaxy.Commands.World
             HandlePlot(p, raw);
         }
 
-        internal static SubCommandGroup deprecatedSubCommandGroup = new SubCommandGroup(commandShortcut,
+        internal static SubCommandGroup deprecatedSubCommandGroup = new(commandShortcut,
                 new List<SubCommand>() {
-                    new SubCommand("Zone",  HandleZone, false),
-                    new SubCommand("Zones", ZonesMoved, false),
+                    new("Zone",  HandleZone, false),
+                    new("Zones", ZonesMoved, false),
                 }
             );
     }

@@ -20,25 +20,26 @@ using MCGalaxy.Games;
 
 namespace MCGalaxy.Modules.Games.Countdown
 {
-    public sealed class CountdownConfig : RoundsGameConfig 
+    public sealed class CountdownConfig : RoundsGameConfig
     {
         [ConfigEnum("default-speed", "Defaults", CountdownSpeed.Normal, typeof(CountdownSpeed))]
         public CountdownSpeed DefaultSpeed = CountdownSpeed.Normal;
-        
-        [ConfigInt("winner-reward-min", "Rewards",  5, 0)]
-        public int RewardMin =  5;
+
+        [ConfigInt("winner-reward-min", "Rewards", 5, 0)]
+        public int RewardMin = 5;
         [ConfigInt("winner-reward-max", "Rewards", 10, 0)]
         public int RewardMax = 10;
-        
+
         public override bool AllowAutoload { get { return true; } }
         protected override string GameName { get { return "Countdown"; } }
-        
-        public override void Load() {
+
+        public override void Load()
+        {
             base.Load();
             if (Maps.Count == 0) Maps.Add("countdown");
         }
     }
-    
+
     public enum CountdownSpeed
     {
         Slow, Normal, Fast, Extreme, Ultimate

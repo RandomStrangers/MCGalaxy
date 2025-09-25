@@ -19,46 +19,49 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace MCGalaxy.Games 
+namespace MCGalaxy.Games
 {
-    public abstract class LevelPicker 
+    public abstract class LevelPicker
     {
         public string QueuedMap;
-        public List<string> RecentMaps = new List<string>();
+        public List<string> RecentMaps = new();
         public bool Voting;
-        
+
         public abstract List<string> GetCandidateMaps(RoundsGame game);
-        
-        public virtual string GetRandomMap(Random r, List<string> maps) {
+
+        public virtual string GetRandomMap(Random r, List<string> maps)
+        {
             int i = r.Next(0, maps.Count);
             string map = maps[i];
             maps.RemoveAt(i);
             return map;
         }
-        
-        
+
+
         public abstract string ChooseNextLevel(RoundsGame game);
-        
-        
-        public virtual void AddRecentMap(string map) {
+
+
+        public virtual void AddRecentMap(string map)
+        {
             if (RecentMaps.Count >= 20)
                 RecentMaps.RemoveAt(0);
             RecentMaps.Add(map);
         }
-        
-        public virtual void Clear() {
+
+        public virtual void Clear()
+        {
             QueuedMap = null;
             RecentMaps.Clear();
         }
-        
-        
+
+
         public abstract bool HandlesMessage(Player p, string message);
-        
+
         public abstract void SendVoteMessage(Player p);
-        
+
         public abstract void ResetVoteMessage(Player p);
     }
-    
+
     public class SimpleLevelPicker : LevelPicker
     {
         public int VoteTime = 20;
@@ -66,84 +69,94 @@ namespace MCGalaxy.Games
         internal string Candidate1 = "", Candidate2 = "", Candidate3 = "";
         internal int Votes1, Votes2, Votes3;
         const int MIN_MAPS = 3;
-        
-        public override List<string> GetCandidateMaps(RoundsGame game) {
+
+        public override List<string> GetCandidateMaps(RoundsGame game)
+        {
             return new List<string>(game.GetConfig().Maps);
         }
-        
 
-        public override string ChooseNextLevel(RoundsGame game) {
+
+        public override string ChooseNextLevel(RoundsGame game)
+        {
             if (QueuedMap != null) return QueuedMap;
-            
-            try {
+
+            try
+            {
                 List<string> maps = GetCandidateMaps(game);
-                if (maps.Count < MIN_MAPS) {
+                if (maps.Count < MIN_MAPS)
+                {
                     Logger.Log(LogType.Warning, "You must have 3 or more maps configured to change levels in " + game.GameName);
                     return null;
                 }
                 if (maps == null) return null;
-                
+
                 RemoveRecentLevels(maps);
                 Votes1 = 0; Votes2 = 0; Votes3 = 0;
-                
-                Random r = new Random();
+
+                Random r = new();
                 Candidate1 = GetRandomMap(r, maps);
                 Candidate2 = GetRandomMap(r, maps);
                 Candidate3 = GetRandomMap(r, maps);
-                
+
                 if (!game.Running) return null;
                 DoLevelVote(game);
                 if (!game.Running) return null;
-                
+
                 return NextLevel(r, maps);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Logger.LogError(ex);
                 return null;
             }
         }
-        
-        void RemoveRecentLevels(List<string> maps) {
+
+        void RemoveRecentLevels(List<string> maps)
+        {
             // Try to avoid recently played levels, avoiding most recent
             List<string> recent = RecentMaps;
-            for (int i = recent.Count - 1; i >= 0; i--) 
+            for (int i = recent.Count - 1; i >= 0; i--)
             {
                 if (maps.Count > MIN_MAPS) maps.CaselessRemove(recent[i]);
             }
-            
+
             // Try to avoid maps voted last round if possible
             if (maps.Count > MIN_MAPS) maps.CaselessRemove(Candidate1);
             if (maps.Count > MIN_MAPS) maps.CaselessRemove(Candidate2);
             if (maps.Count > MIN_MAPS) maps.CaselessRemove(Candidate3);
         }
-        
-        void DoLevelVote(IGame game) {
+
+        void DoLevelVote(IGame game)
+        {
             Voting = true;
             Player[] players = PlayerInfo.Online.Items;
-            foreach (Player pl in players) 
+            foreach (Player pl in players)
             {
                 if (pl.level != game.Map) continue;
                 SendVoteMessage(pl);
             }
-            
+
             VoteCountdown(game);
             Voting = false;
         }
-        
-        void VoteCountdown(IGame game) {
+
+        void VoteCountdown(IGame game)
+        {
             // Show message for non-CPE clients
             Player[] players = PlayerInfo.Online.Items;
-            foreach (Player pl in players) 
+            foreach (Player pl in players)
             {
                 if (pl.level != game.Map || pl.Supports(CpeExt.MessageTypes)) continue;
                 pl.Message("You have " + VoteTime + " seconds to vote for the next map");
             }
-            
+
             Level map = game.Map;
-            for (int i = 0; i < VoteTime; i++) {
+            for (int i = 0; i < VoteTime; i++)
+            {
                 players = PlayerInfo.Online.Items;
                 if (!game.Running) break;
-                
-                foreach (Player pl in players) 
+
+                foreach (Player pl in players)
                 {
                     if (pl.level != map || !pl.Supports(CpeExt.MessageTypes)) continue;
                     string timeLeft = "&e" + (VoteTime - i) + "s &Sleft to vote";
@@ -151,50 +164,63 @@ namespace MCGalaxy.Games
                 }
                 Thread.Sleep(1000);
             }
-            
+
             players = PlayerInfo.Online.Items;
-            foreach (Player pl in players) {
+            foreach (Player pl in players)
+            {
                 if (pl.level == map) ResetVoteMessage(pl);
             }
         }
-        
-        string NextLevel(Random _, List<string> __) {
+
+        string NextLevel(Random _, List<string> __)
+        {
             Player[] online = PlayerInfo.Online.Items;
             foreach (Player pl in online) pl.voted = false;
-            
-            if (Votes3 > Votes1 && Votes3 > Votes2) {
+
+            if (Votes3 > Votes1 && Votes3 > Votes2)
+            {
                 return Candidate3;
-            } else if (Votes1 >= Votes2) {
+            }
+            else if (Votes1 >= Votes2)
+            {
                 return Candidate1;
-            } else {
+            }
+            else
+            {
                 return Candidate2;
             }
         }
-        
-        
-        public override bool HandlesMessage(Player p, string message) {
+
+
+        public override bool HandlesMessage(Player p, string message)
+        {
             if (!Voting) return false;
-            
+
             return
-                Player.CheckVote(message, p, "1", "one",   ref Votes1) ||
-                Player.CheckVote(message, p, "2", "two",   ref Votes2) ||
+                Player.CheckVote(message, p, "1", "one", ref Votes1) ||
+                Player.CheckVote(message, p, "2", "two", ref Votes2) ||
                 Player.CheckVote(message, p, "3", "three", ref Votes3);
         }
-        
-        public override void SendVoteMessage(Player p) {
+
+        public override void SendVoteMessage(Player p)
+        {
             const string line1 = "&eLevel vote - type &a1&e, &b2&e or &c3";
             string line2 = "&a" + Candidate1 + "&e, &b" + Candidate2 + "&e, &c" + Candidate3;
-            
-            if (p.Supports(CpeExt.MessageTypes)) {
+
+            if (p.Supports(CpeExt.MessageTypes))
+            {
                 p.SendCpeMessage(CpeMessageType.BottomRight3, line1);
                 p.SendCpeMessage(CpeMessageType.BottomRight2, line2);
-            } else {
+            }
+            else
+            {
                 p.Message(line1);
                 p.Message(line2);
             }
         }
-        
-        public override void ResetVoteMessage(Player p) {
+
+        public override void ResetVoteMessage(Player p)
+        {
             p.SendCpeMessage(CpeMessageType.BottomRight3, "");
             p.SendCpeMessage(CpeMessageType.BottomRight2, "");
             p.SendCpeMessage(CpeMessageType.BottomRight1, "");

@@ -57,7 +57,7 @@ namespace MCGalaxy.Gui
         }
 
 
-        readonly List<Group> copiedGroups = new List<Group>();
+        readonly List<Group> copiedGroups = new();
         Group curGroup;
         void LoadRanks()
         {

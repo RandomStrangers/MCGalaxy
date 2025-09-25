@@ -19,23 +19,25 @@ using MCGalaxy.Events.ServerEvents;
 
 namespace MCGalaxy.Modules.Games.Countdown
 {
-    public sealed class CountdownPlugin : Plugin 
+    public sealed class CountdownPlugin : Plugin
     {
         public override string name { get { return "Countdown"; } }
         static readonly Command cmdCD = new CmdCountdown();
-        
-        public override void Load(bool startup) {
+
+        public override void Load(bool startup)
+        {
             Command.Register(cmdCD);
-            
+
             CountdownGame game = CountdownGame.Instance;
-            game.Config.Path   = "props/countdown.properties";
+            game.Config.Path = "props/countdown.properties";
             game.ReloadConfig();
             game.AutoStart();
-            
+
             OnConfigUpdatedEvent.Register(game.ReloadConfig, Priority.Low);
         }
-        
-        public override void Unload(bool shutdown) {
+
+        public override void Unload(bool shutdown)
+        {
             CountdownGame game = CountdownGame.Instance;
             OnConfigUpdatedEvent.Unregister(game.ReloadConfig);
             Command.Unregister(cmdCD);

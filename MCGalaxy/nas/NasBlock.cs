@@ -1,18 +1,18 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using System;
-using System.Collections.Generic;
 using MCGalaxy;
 using MCGalaxy.Maths;
+using System;
+using System.Collections.Generic;
 using NasBlockAction = NotAwesomeSurvival.Action<NotAwesomeSurvival.NasLevel, NotAwesomeSurvival.NasBlock, int, int, int>;
-using NasBlockInteraction =
-    NotAwesomeSurvival.Action<NotAwesomeSurvival.NasPlayer, MCGalaxy.Events.PlayerEvents.MouseButton, MCGalaxy.Events.PlayerEvents.MouseAction,
-    NotAwesomeSurvival.NasBlock, ushort, ushort, ushort>;
-using NasBlockExistAction =
-    NotAwesomeSurvival.Action<NotAwesomeSurvival.NasPlayer,
-    NotAwesomeSurvival.NasBlock, bool, ushort, ushort, ushort>;
 using NasBlockCollideAction =
     NotAwesomeSurvival.Action<NotAwesomeSurvival.NasEntity,
     NotAwesomeSurvival.NasBlock, bool, ushort, ushort, ushort>;
+using NasBlockExistAction =
+    NotAwesomeSurvival.Action<NotAwesomeSurvival.NasPlayer,
+    NotAwesomeSurvival.NasBlock, bool, ushort, ushort, ushort>;
+using NasBlockInteraction =
+    NotAwesomeSurvival.Action<NotAwesomeSurvival.NasPlayer, MCGalaxy.Events.PlayerEvents.MouseButton, MCGalaxy.Events.PlayerEvents.MouseAction,
+    NotAwesomeSurvival.NasBlock, ushort, ushort, ushort>;
 namespace NotAwesomeSurvival
 {
     public partial class NasBlock
@@ -50,10 +50,7 @@ namespace NotAwesomeSurvival
             if (!p.IsSuper)
             {
                 def = p.level.GetBlockDef(block);
-                if (def == null)
-                {
-                    def = BlockDefinition.GlobalDefs[block];
-                }
+                def ??= BlockDefinition.GlobalDefs[block];
             }
             else
             {

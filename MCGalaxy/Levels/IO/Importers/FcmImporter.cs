@@ -15,11 +15,11 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.Maths;
 using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-using MCGalaxy.Maths;
 
 namespace MCGalaxy.Levels.IO
 {
@@ -31,15 +31,15 @@ namespace MCGalaxy.Levels.IO
 
         public override Vec3U16 ReadDimensions(Stream src)
         {
-            BinaryReader reader = new BinaryReader(src);
+            BinaryReader reader = new(src);
             return ReadHeader(reader);
         }
 
         public override Level Read(Stream src, string name, bool metadata)
         {
-            BinaryReader reader = new BinaryReader(src);
+            BinaryReader reader = new(src);
             Vec3U16 dims = ReadHeader(reader);
-            Level lvl = new Level(name, dims.X, dims.Y, dims.Z)
+            Level lvl = new(name, dims.X, dims.Y, dims.Z)
             {
                 spawnx = (ushort)(reader.ReadInt32() / 32),
                 spawny = (ushort)(reader.ReadInt32() / 32),
@@ -54,7 +54,7 @@ namespace MCGalaxy.Levels.IO
             reader.ReadBytes(26); // layer index
             int metaSize = reader.ReadInt32();
 
-            using (DeflateStream ds = new DeflateStream(src, CompressionMode.Decompress))
+            using (DeflateStream ds = new(src, CompressionMode.Decompress))
             {
                 reader = new BinaryReader(ds);
                 for (int i = 0; i < metaSize; i++)
@@ -105,7 +105,7 @@ namespace MCGalaxy.Levels.IO
         {
             string[] parts = raw.Split(comma);
             string[] header = parts[0].SplitSpaces();
-            Zone zone = new Zone();
+            Zone zone = new();
 
             // fCraft uses Z for height
             zone.Config.Name = header[0];

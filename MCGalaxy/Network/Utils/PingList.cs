@@ -18,103 +18,118 @@
 using System;
 using System.Threading;
 
-namespace MCGalaxy.Network 
+namespace MCGalaxy.Network
 {
-    public sealed class PingList 
-    {        
-        public struct PingEntry 
+    public sealed class PingList
+    {
+        public struct PingEntry
         {
             public DateTime TimeSent, TimeRecv;
             public ushort Data;
-            public double Latency { get {
+            public double Latency
+            {
+                get
+                {
                     // Half, because received->reply time is actually twice time it takes to send data
                     return (TimeRecv - TimeSent).TotalMilliseconds * 0.5;
-                } }
+                }
+            }
         }
-        
+
         // Pings are stored using a circular array 
         public PingEntry[] Entries = new PingEntry[10];
         int pingCounter, nextPingHead;
 
         long ignorePositionData = -1;
 
-        public bool IgnorePosition {
+        public bool IgnorePosition
+        {
             get { return Interlocked.Read(ref ignorePositionData) >= 0; }
         }
-        internal void UnIgnorePosition(ushort data) {
+        internal void UnIgnorePosition(ushort data)
+        {
             Interlocked.CompareExchange(ref ignorePositionData, -1, data);
         }
-        
-        public ushort NextTwoWayPingData(bool startIgnoringPosition = false) {
+
+        public ushort NextTwoWayPingData(bool startIgnoringPosition = false)
+        {
             int pingValue = Interlocked.Increment(ref pingCounter);
-            int pingHead  = (Interlocked.Increment(ref nextPingHead) - 1) % 10;
-            
-            Entries[pingHead].Data     = (ushort)pingValue;
+            int pingHead = (Interlocked.Increment(ref nextPingHead) - 1) % 10;
+
+            Entries[pingHead].Data = (ushort)pingValue;
             Entries[pingHead].TimeRecv = default;
             Entries[pingHead].TimeSent = DateTime.UtcNow;
 
             if (startIgnoringPosition) Interlocked.Exchange(ref ignorePositionData, pingValue);
             return (ushort)pingValue;
         }
-        
-        public void Update(ushort data) {
-            for (int i = 0; i < Entries.Length; i++) 
+
+        public void Update(ushort data)
+        {
+            for (int i = 0; i < Entries.Length; i++)
             {
                 if (Entries[i].Data != data) continue;
                 Entries[i].TimeRecv = DateTime.UtcNow;
                 return;
             }
         }
-        
-        
-        bool Valid(int i) {
+
+
+        bool Valid(int i)
+        {
             PingEntry e = Entries[i];
             return e.TimeSent.Ticks != 0 && e.TimeRecv.Ticks != 0;
         }
-        
-        public int Measures() {
+
+        public int Measures()
+        {
             int measures = 0;
-            for (int i = 0; i < Entries.Length; i++) 
+            for (int i = 0; i < Entries.Length; i++)
             {
                 if (Valid(i)) measures++;
             }
             return measures;
         }
-        
-        public int LowestPing() {
+
+        public int LowestPing()
+        {
             double ms = 100000000;
-            for (int i = 0; i < Entries.Length; i++) 
+            for (int i = 0; i < Entries.Length; i++)
             {
                 if (Valid(i)) { ms = Math.Min(ms, Entries[i].Latency); }
             }
             return (int)ms;
         }
-        
-        public int AveragePing() {
+
+        public int AveragePing()
+        {
             double ms = 0;
             int measures = 0;
-            for (int i = 0; i < Entries.Length; i++) 
+            for (int i = 0; i < Entries.Length; i++)
             {
                 if (Valid(i)) { ms += Entries[i].Latency; measures++; }
             }
             return measures == 0 ? 0 : (int)(ms / measures);
         }
-        
-        public int HighestPing() {
+
+        public int HighestPing()
+        {
             double ms = 0;
-            for (int i = 0; i < Entries.Length; i++) 
+            for (int i = 0; i < Entries.Length; i++)
             {
                 if (Valid(i)) { ms = Math.Max(ms, Entries[i].Latency); }
             }
             return (int)ms;
         }
-        
-        public string Format() {
+
+        public string Format()
+        {
             return string.Format("Lowest ping {0}ms, average {1}ms, highest {2}ms",
                                  LowestPing(), AveragePing(), HighestPing());
         }
 
-        public string FormatAll() {
+        public string FormatAll()
+        {
             return string.Format(" &a{0}&S:&7{1}&S:&c{2}",
                                  LowestPing(), AveragePing(), HighestPing());
         }

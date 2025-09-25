@@ -1,9 +1,9 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using System.IO;
-using System;
-using Newtonsoft.Json;
 using MCGalaxy;
 using MCGalaxy.Events.LevelEvents;
+using Newtonsoft.Json;
+using System;
+using System.IO;
 namespace NotAwesomeSurvival
 {
     public partial class NasLevel
@@ -77,7 +77,7 @@ namespace NotAwesomeSurvival
         }
         public static NasLevel ForceGet(string name)
         {
-            NasLevel nl = new NasLevel();
+            NasLevel nl = new();
             string fileName = GetFileName(name);
             if (File.Exists(fileName))
             {
@@ -138,7 +138,7 @@ namespace NotAwesomeSurvival
                 }
                 if (nl.dungeons)
                 {
-                    Random rng = new Random(MakeInt(lvl.name));
+                    Random rng = new(MakeInt(lvl.name));
                     int dungeonCount = rng.Next(3, 6);
                     for (int done = 0; done <= dungeonCount; done++)
                     {
@@ -151,9 +151,9 @@ namespace NotAwesomeSurvival
         }
         public static void OnLevelUnload(Level lvl, ref bool cancel)
         {
-            if (!all.ContainsKey(lvl.name)) 
-            { 
-                return; 
+            if (!all.ContainsKey(lvl.name))
+            {
+                return;
             }
             Unload(lvl.name, all[lvl.name]);
         }

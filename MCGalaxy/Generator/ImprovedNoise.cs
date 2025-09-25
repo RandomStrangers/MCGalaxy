@@ -17,11 +17,11 @@
  */
 using System;
 
-namespace MCGalaxy.Generator 
-{    
+namespace MCGalaxy.Generator
+{
     /// <summary> Implements improved perlin noise as described in http://mrl.nyu.edu/~perlin/noise/ </summary>
-    public sealed class ImprovedNoise 
-    {    
+    public sealed class ImprovedNoise
+    {
         public float Frequency = 1;
         public float Amplitude = 1;
         public float Lacunarity = 2;
@@ -29,25 +29,29 @@ namespace MCGalaxy.Generator
         public int Octaves = 1;
 
         readonly byte[] p = new byte[512];
-        
-        public ImprovedNoise( Random rnd ) {
-            for( int i = 0; i < 256; i++ )
+
+        public ImprovedNoise(Random rnd)
+        {
+            for (int i = 0; i < 256; i++)
                 p[i] = (byte)i;
-            
-            for( int i = 0; i < 256; i++ ) {
-                int j = rnd.Next( i, 256 );
+
+            for (int i = 0; i < 256; i++)
+            {
+                int j = rnd.Next(i, 256);
                 byte temp = p[i]; p[i] = p[j]; p[j] = temp;
             }
-            for( int i = 0; i < 256; i++ )
+            for (int i = 0; i < 256; i++)
                 p[i + 256] = p[i];
         }
-        
-        public float NormalisedNoise(float x, float y, float z) {
+
+        public float NormalisedNoise(float x, float y, float z)
+        {
             float sum = 0;
             float freq = Frequency, amp = Amplitude;
             float scale = 0;
-            
-            for( int i = 0; i < Octaves; i++) {
+
+            for (int i = 0; i < Octaves; i++)
+            {
                 sum += Noise(x * freq, y * freq, z * freq) * amp;
                 scale += amp;
                 amp *= Persistence;
@@ -55,30 +59,33 @@ namespace MCGalaxy.Generator
             }
             return sum / scale;
         }
-        
-        public float OctaveNoise(float x, float y, float z) {
+
+        public float OctaveNoise(float x, float y, float z)
+        {
             float sum = 0;
             float freq = Frequency, amp = Amplitude;
-            for(int i = 0; i < Octaves;i++) {
+            for (int i = 0; i < Octaves; i++)
+            {
                 sum += Noise(x * freq, y * freq, z * freq) * amp;
-                
+
                 amp *= Persistence;
                 freq *= Lacunarity;
             }
             return sum;
         }
-        
-        public float Noise(float x, float y, float z) {
+
+        public float Noise(float x, float y, float z)
+        {
             int xFloor = x >= 0 ? (int)x : (int)x - 1;
             int yFloor = y >= 0 ? (int)y : (int)y - 1;
             int zFloor = z >= 0 ? (int)z : (int)z - 1;
             int X = xFloor & 0xFF, Y = yFloor & 0xFF, Z = zFloor & 0xFF;
             x -= xFloor; y -= yFloor; z -= zFloor;
-            
+
             float u = Fade(x), v = Fade(y), w = Fade(z);
             int A = p[X] + Y, AA = p[A] + Z, AB = p[A + 1] + Z;
             int B = p[X + 1] + Y, BA = p[B] + Z, BB = p[B + 1] + Z;
-            
+
             return Lerp(
                 Lerp(
                     Lerp(Grad(p[AA], x, y, z),
@@ -98,35 +105,39 @@ namespace MCGalaxy.Generator
                     v),
                 w);
         }
-        
-        
-        static float Fade(float t) {
+
+
+        static float Fade(float t)
+        {
             return t * t * t * (t * (t * 6 - 15) + 10);
         }
-        
-        static float Grad(int hash, float x, float y, float z) {
-            switch (hash & 0xF) {
-                    case 0x0: return  x + y;
-                    case 0x1: return -x + y;
-                    case 0x2: return  x - y;
-                    case 0x3: return -x - y;
-                    case 0x4: return  x + z;
-                    case 0x5: return -x + z;
-                    case 0x6: return  x - z;
-                    case 0x7: return -x - z;
-                    case 0x8: return  y + z;
-                    case 0x9: return -y + z;
-                    case 0xA: return  y - z;
-                    case 0xB: return -y - z;
-                    case 0xC: return  y + x;
-                    case 0xD: return -y + z;
-                    case 0xE: return  y - x;
-                    case 0xF: return -y - z;
-                    default: return 0; // never happens
-            }
+
+        static float Grad(int hash, float x, float y, float z)
+        {
+            return (hash & 0xF) switch
+            {
+                0x0 => x + y,
+                0x1 => -x + y,
+                0x2 => x - y,
+                0x3 => -x - y,
+                0x4 => x + z,
+                0x5 => -x + z,
+                0x6 => x - z,
+                0x7 => -x - z,
+                0x8 => y + z,
+                0x9 => -y + z,
+                0xA => y - z,
+                0xB => -y - z,
+                0xC => y + x,
+                0xD => -y + z,
+                0xE => y - x,
+                0xF => -y - z,
+                _ => 0,// never happens
+            };
         }
-        
-        static float Lerp(float a, float b, float t) {
+
+        static float Lerp(float a, float b, float t)
+        {
             return a + t * (b - a);
         }
     }

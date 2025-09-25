@@ -1,42 +1,42 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
 using MCGalaxy;
 using MCGalaxy.Tasks;
+using Newtonsoft.Json;
 using Priority_Queue;
+using System;
+using System.Collections.Generic;
 using NasBlockAction = NotAwesomeSurvival.Action<NotAwesomeSurvival.NasLevel, NotAwesomeSurvival.NasBlock, int, int, int>;
 namespace NotAwesomeSurvival
 {
     public partial class NasLevel
     {
-        [JsonIgnore] public static Dictionary<string, NasLevel> all = new Dictionary<string, NasLevel>();
+        [JsonIgnore] public static Dictionary<string, NasLevel> all = new();
         [JsonIgnore] public Level lvl;
         [JsonIgnore] public ushort[,] heightmap = new ushort[0, 0];
-        [JsonIgnore] public SimplePriorityQueue<QueuedBlockUpdate, DateTime> tickQueue = new SimplePriorityQueue<QueuedBlockUpdate, DateTime>();
+        [JsonIgnore] public SimplePriorityQueue<QueuedBlockUpdate, DateTime> tickQueue = new();
         [JsonIgnore] public SchedulerTask schedulerTask;
         public int biome;
         public bool dungeons = false,
             deepslateGenerated = true;
         public static Scheduler TickScheduler;
         public static TimeSpan tickDelay = TimeSpan.FromMilliseconds(100);
-        public static Random r = new Random();
+        public static Random r = new();
         public ushort height;
-        public List<BlockLocation> blocksThatMustBeDisturbed = new List<BlockLocation>();
-        public Dictionary<string, NasBlock.Entity> blockEntities = new Dictionary<string, NasBlock.Entity>();
+        public List<BlockLocation> blocksThatMustBeDisturbed = new();
+        public Dictionary<string, NasBlock.Entity> blockEntities = new();
         public class BlockLocation
         {
             public int X, Y, Z;
             public BlockLocation() { }
             public BlockLocation(QueuedBlockUpdate qb)
             {
-                X = qb.x; 
-                Y = qb.y; 
+                X = qb.x;
+                Y = qb.y;
                 Z = qb.z;
             }
             public BlockLocation(int x, int y, int z)
             {
-                X = x; 
+                X = x;
                 Y = y;
                 Z = z;
             }
@@ -54,10 +54,7 @@ namespace NotAwesomeSurvival
         }
         public void BeginTickTask()
         {
-            if (TickScheduler == null)
-            {
-                TickScheduler = new Scheduler("NasLevelTickScheduler");
-            }
+            TickScheduler ??= new Scheduler("NasLevelTickScheduler");
             Log("Re-disturbing {0} blocks.", blocksThatMustBeDisturbed.Count);
             foreach (BlockLocation blockLoc in blocksThatMustBeDisturbed)
             {
@@ -68,22 +65,19 @@ namespace NotAwesomeSurvival
         }
         public void EndTickTask()
         {
-            if (TickScheduler == null)
-            {
-                TickScheduler = new Scheduler("NasLevelTickScheduler");
-            }
+            TickScheduler ??= new Scheduler("NasLevelTickScheduler");
             TickScheduler.Cancel(schedulerTask);
             Log("Saving {0} blocks to re-disturb later.", tickQueue.Count);
-            if (tickQueue.Count == 0) 
-            { 
-                return; 
+            if (tickQueue.Count == 0)
+            {
+                return;
             }
             blocksThatMustBeDisturbed = new List<BlockLocation>();
             foreach (QueuedBlockUpdate qb in tickQueue)
             {
-                BlockLocation blockLoc = new BlockLocation(qb);
-                if (blocksThatMustBeDisturbed.Contains(blockLoc)) 
-                { 
+                BlockLocation blockLoc = new(qb);
+                if (blocksThatMustBeDisturbed.Contains(blockLoc))
+                {
                     continue;
                 }
                 blocksThatMustBeDisturbed.Add(blockLoc);
@@ -112,9 +106,9 @@ namespace NotAwesomeSurvival
         }
         public void Tick()
         {
-            if (tickQueue.Count < 1) 
-            { 
-                return; 
+            if (tickQueue.Count < 1)
+            {
+                return;
             }
             int actions = 0;
             while (tickQueue.First.date < DateTime.UtcNow)
@@ -152,9 +146,9 @@ namespace NotAwesomeSurvival
                 }
                 tickQueue.Dequeue();
                 actions++;
-                if (tickQueue.Count < 1) 
-                { 
-                    break; 
+                if (tickQueue.Count < 1)
+                {
+                    break;
                 }
             }
         }
@@ -172,8 +166,8 @@ namespace NotAwesomeSurvival
                 z >= lvl.Length ||
                 z < 0 ||
                 serverushort == 255)
-            { 
-                return; 
+            {
+                return;
             }
             lvl.Blockchange((ushort)x, (ushort)y, (ushort)z, serverushort);
             DisturbBlocks(x, y, z, disturbDiagonals);
@@ -192,8 +186,8 @@ namespace NotAwesomeSurvival
                 y < 0 ||
                 z >= lvl.Length ||
                 z < 0)
-            { 
-                return; 
+            {
+                return;
             }
             DisturbBlocks(x, y, z, disturbDiagonals);
         }
@@ -228,7 +222,7 @@ namespace NotAwesomeSurvival
         /// Call to make the nasBlock at this location queue its "whatHappensWhenDisturbed" function.
         /// </summary>
         /// 
-        public ushort[] observers = 
+        public ushort[] observers =
         {
             Block.FromRaw(415),
             Block.FromRaw(416),
@@ -237,7 +231,7 @@ namespace NotAwesomeSurvival
             Block.FromRaw(419),
             Block.FromRaw(420),
         };
-        public ushort[] repeatersOff = 
+        public ushort[] repeatersOff =
         {
             Block.FromRaw(176),
             Block.FromRaw(177),
@@ -246,7 +240,7 @@ namespace NotAwesomeSurvival
             Block.FromRaw(172),
             Block.FromRaw(173),
         };
-        public ushort[] repeatersOn = 
+        public ushort[] repeatersOn =
         {
             Block.FromRaw(617),
             Block.FromRaw(618),
@@ -265,60 +259,60 @@ namespace NotAwesomeSurvival
                 y + changeY < 0 ||
                 z + changeZ >= lvl.Length ||
                 z + changeZ < 0)
-            { 
-                return; 
+            {
+                return;
             }
             ushort block = lvl.FastGetBlock((ushort)(x + changeX), (ushort)(y + changeY), (ushort)(z + changeZ));
             int index = NasBlock.IsPartOfSet(observers, block);
-            if (index == -1) 
-            { 
-                index = NasBlock.IsPartOfSet(repeatersOff, block); 
+            if (index == -1)
+            {
+                index = NasBlock.IsPartOfSet(repeatersOff, block);
             }
-            if (index == -1) 
-            { 
-                index = NasBlock.IsPartOfSet(repeatersOn, block); 
+            if (index == -1)
+            {
+                index = NasBlock.IsPartOfSet(repeatersOn, block);
             }
             if (index != -1 && Math.Abs(changeX) + Math.Abs(changeY) + Math.Abs(changeZ) == 1)
             {
                 bool cancel = true;
-                if (index == 0 && changeZ == 1) 
-                { 
-                    cancel = false; 
-                }
-                if (index == 1 && changeX == -1) 
+                if (index == 0 && changeZ == 1)
                 {
-                    cancel = false; 
+                    cancel = false;
                 }
-                if (index == 2 && changeZ == -1) 
-                { 
-                    cancel = false; 
+                if (index == 1 && changeX == -1)
+                {
+                    cancel = false;
                 }
-                if (index == 3 && changeX == 1) 
-                { 
-                    cancel = false; 
+                if (index == 2 && changeZ == -1)
+                {
+                    cancel = false;
                 }
-                if (index == 4 && changeY == -1) 
-                { 
-                    cancel = false; 
+                if (index == 3 && changeX == 1)
+                {
+                    cancel = false;
                 }
-                if (index == 5 && changeY == 1) 
-                { 
-                    cancel = false; 
+                if (index == 4 && changeY == -1)
+                {
+                    cancel = false;
                 }
-                if (cancel) 
-                { 
-                    return; 
+                if (index == 5 && changeY == 1)
+                {
+                    cancel = false;
+                }
+                if (cancel)
+                {
+                    return;
                 }
             }
             x += changeX;
             y += changeY;
             z += changeZ;
             NasBlock nb = NasBlock.blocksIndexedByServerushort[block];
-            if (nb.disturbedAction == null) 
+            if (nb.disturbedAction == null)
             {
-                return; 
+                return;
             }
-            QueuedBlockUpdate qb = new QueuedBlockUpdate
+            QueuedBlockUpdate qb = new()
             {
                 x = x,
                 y = y,
@@ -330,9 +324,9 @@ namespace NotAwesomeSurvival
             qb.nb = nb;
             qb.da = nb.disturbedAction;
             tickQueue.Enqueue(qb, qb.date);
-            if (nb.instantAction == null) 
-            { 
-                return; 
+            if (nb.instantAction == null)
+            {
+                return;
             }
             qb = new QueuedBlockUpdate
             {

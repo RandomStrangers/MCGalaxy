@@ -15,99 +15,115 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using MCGalaxy.DB;
 using MCGalaxy.Drawing.Ops;
 using MCGalaxy.Maths;
 using MCGalaxy.Network;
-using BlockID = System.UInt16;
+using System;
 
-namespace MCGalaxy.Commands.Moderation {
-    public sealed class CmdHighlight : Command2 {
+namespace MCGalaxy.Commands.Moderation
+{
+    public sealed class CmdHighlight : Command2
+    {
         public override string name { get { return "Highlight"; } }
         public override string type { get { return CommandTypes.Moderation; } }
         public override bool museumUsable { get { return false; } }
         public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool SuperUseable { get { return false; } }        
-        public override CommandAlias[] Aliases {
-            get { return new CommandAlias[] { new CommandAlias("HighlightArea", "area") }; }
+        public override bool SuperUseable { get { return false; } }
+        public override CommandAlias[] Aliases
+        {
+            get { return new CommandAlias[] { new("HighlightArea", "area") }; }
         }
 
-        public override void Use(Player p, string message, CommandData data) {
+        public override void Use(Player p, string message, CommandData data)
+        {
             TimeSpan delta = TimeSpan.Zero;
             bool area = message.CaselessStarts("area ");
             if (area) message = message.Substring("area ".Length);
-            
+
             if (message.Length == 0) message = p.name;
             string[] parts = message.SplitSpaces();
 
-            if (parts.Length >= 2) {
+            if (parts.Length >= 2)
+            {
                 if (!CommandParser.GetTimespan(p, parts[1], ref delta, "highlight the past", "s")) return;
-            } else {
-                delta = TimeSpan.FromMinutes(30);
             }
-            
+            else
+            {
+                delta = TimeSpan.FromDays(100);
+            }
+
             parts[0] = PlayerDB.MatchNames(p, parts[0]);
             if (parts[0] == null) return;
             int[] ids = NameConverter.FindIds(parts[0]);
-            
-            if (!area) {
+
+            if (!area)
+            {
                 Vec3S32[] marks = new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal };
                 HighlightPlayer(p, delta, parts[0], ids, marks);
-            } else {
+            }
+            else
+            {
                 p.Message("Place or break two blocks to determine the edges.");
-                HighlightAreaArgs args = new HighlightAreaArgs
+                HighlightAreaArgs args = new()
                 {
                     ids = ids,
                     who = parts[0],
                     delta = delta
                 };
-                p.MakeSelection(2,  "Selecting region for &SHighlight", args, DoHighlightArea);
+                p.MakeSelection(2, "Selecting region for &SHighlight", args, DoHighlightArea);
             }
         }
-        
-        bool DoHighlightArea(Player p, Vec3S32[] marks, object state, BlockID block) {
+
+        bool DoHighlightArea(Player p, Vec3S32[] marks, object state, ushort block)
+        {
             HighlightAreaArgs args = (HighlightAreaArgs)state;
             HighlightPlayer(p, args.delta, args.who, args.ids, marks);
             return false;
         }
 
         struct HighlightAreaArgs { public string who; public int[] ids; public TimeSpan delta; }
-        
-        
-        static void HighlightPlayer(Player p, TimeSpan delta, string who, int[] ids, Vec3S32[] marks) {
-            HighlightDrawOp op = new HighlightDrawOp
+
+
+        static void HighlightPlayer(Player p, TimeSpan delta, string who, int[] ids, Vec3S32[] marks)
+        {
+            HighlightDrawOp op = new()
             {
                 Start = DateTime.UtcNow.Subtract(delta),
                 who = who,
                 ids = ids
             };
             op.Setup(p, p.level, marks);
-            
-            BufferedBlockSender buffer = new BufferedBlockSender(p);
+
+            BufferedBlockSender buffer = new(p);
             op.Perform(marks, null,
-                       P => {
+                       P =>
+                       {
                            int index = p.level.PosToInt(P.X, P.Y, P.Z);
                            buffer.Add(index, P.Block);
                        });
             buffer.Flush();
-            
-            if (op.totalChanges > 0) {
+
+            if (op.totalChanges > 0)
+            {
                 p.Message("Highlighting &T{0}&S changes by {1}&S in the past &b{2}",
                            op.totalChanges.ToString("N0"), p.FormatNick(who), delta.Shorten(true));
                 p.Message("&WUse /reload to un-highlight");
-            } else {
+            }
+            else
+            {
                 p.Message("No changes found by {1} &Sin the past &b{0}",
                            delta.Shorten(true), p.FormatNick(who));
             }
         }
 
-        public override void Help(Player p) {
+        public override void Help(Player p)
+        {
             p.Message("&T/Highlight [player] <timespan>");
             p.Message("&HHighlights blocks changed by [player] in the past <timespan>");
             p.Message("&T/Highlight area [player] <timespan>");
             p.Message("&HOnly highlights in the specified region.");
-            p.Message("&H If <timespan> is not given, highlights for last 30 minutes");
+            p.Message("&H If <timespan> is not given, highlights for last 100 days");
             p.Message("&W/Highlight cannot be disabled, use /reload to un-highlight");
         }
     }

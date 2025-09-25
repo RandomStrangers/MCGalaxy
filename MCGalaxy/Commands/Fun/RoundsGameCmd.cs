@@ -17,88 +17,126 @@
  */
 using MCGalaxy.Games;
 
-namespace MCGalaxy.Commands.Fun {
-    public abstract class RoundsGameCmd : Command2 {
+namespace MCGalaxy.Commands.Fun
+{
+    public abstract class RoundsGameCmd : Command2
+    {
         public override string type { get { return CommandTypes.Games; } }
         public override bool museumUsable { get { return false; } }
         public override bool SuperUseable { get { return false; } }
         protected abstract RoundsGame Game { get; }
-        
-        public override void Use(Player p, string message, CommandData data) {
+
+        public override void Use(Player p, string message, CommandData data)
+        {
             RoundsGame game = Game;
-            if (message.CaselessEq("go")) {
+            if (message.CaselessEq("go"))
+            {
                 HandleGo(p, game); return;
-            } else if (IsInfoAction(message)) {
+            }
+            else if (IsInfoAction(message))
+            {
                 HandleStatus(p, game); return;
             }
             if (!CheckExtraPerm(p, data, 1)) return;
-            
-            if (message.CaselessEq("start") || message.CaselessStarts("start ")) {
+
+            if (message.CaselessEq("start") || message.CaselessStarts("start "))
+            {
                 HandleStart(p, game, message.SplitSpaces());
-            } else if (message.CaselessEq("end")) {
+            }
+            else if (message.CaselessEq("end"))
+            {
                 HandleEnd(p, game);
-            } else if (message.CaselessEq("stop")) {
+            }
+            else if (message.CaselessEq("stop"))
+            {
                 HandleStop(p, game);
-            } else if (message.CaselessEq("add")) {
+            }
+            else if (message.CaselessEq("add"))
+            {
                 RoundsGameConfig.AddMap(p, p.level.name, p.level.Config, game);
-            } else if (IsDeleteAction(message)) {
+            }
+            else if (IsDeleteAction(message))
+            {
                 RoundsGameConfig.RemoveMap(p, p.level.name, p.level.Config, game);
-            } else if (message.CaselessStarts("set ") || message.CaselessStarts("setup ")) {
+            }
+            else if (message.CaselessStarts("set ") || message.CaselessStarts("setup "))
+            {
                 HandleSet(p, game, message.SplitSpaces());
-            } else {
+            }
+            else
+            {
                 Help(p);
             }
         }
 
-        protected virtual void HandleGo(Player p, RoundsGame game) {
-            if (!game.Running) {
+        protected virtual void HandleGo(Player p, RoundsGame game)
+        {
+            if (!game.Running)
+            {
                 p.Message("{0} is not running", game.GameName);
-            } else {
+            }
+            else
+            {
                 PlayerActions.ChangeMap(p, game.Map);
             }
         }
-        
-        protected virtual void HandleStart(Player p, RoundsGame game, string[] args) {
+
+        protected virtual void HandleStart(Player p, RoundsGame game, string[] args)
+        {
             if (game.Running) { p.Message("{0} is already running", game.GameName); return; }
 
             string map = args.Length > 1 ? args[1] : "";
             game.Start(p, map, int.MaxValue);
         }
-        
-        protected virtual void HandleEnd(Player p, RoundsGame game) {
-            if (game.RoundInProgress) {
+
+        protected virtual void HandleEnd(Player p, RoundsGame game)
+        {
+            if (game.RoundInProgress)
+            {
                 game.EndRound();
-            } else {
+            }
+            else
+            {
                 p.Message("No round is currently in progress");
             }
         }
-        
-        protected virtual void HandleStop(Player p, RoundsGame game) {
-            if (!game.Running) {
+
+        protected virtual void HandleStop(Player p, RoundsGame game)
+        {
+            if (!game.Running)
+            {
                 p.Message("{0} is not running", game.GameName);
-            } else {
+            }
+            else
+            {
                 game.End();
                 Chat.MessageGlobal(game.GameName + " has ended! We hope you had fun!");
             }
         }
 
-        protected virtual void HandleStatus(Player p, RoundsGame game) {
-            if (!game.Running) {
+        protected virtual void HandleStatus(Player p, RoundsGame game)
+        {
+            if (!game.Running)
+            {
                 p.Message("{0} is not running", game.GameName);
-            } else {
+            }
+            else
+            {
                 p.Message("Running on map: " + game.Map.ColoredName);
                 game.OutputStatus(p);
             }
         }
-        
+
         protected abstract void HandleSet(Player p, RoundsGame game, string[] args);
-        
-        protected void LoadMapConfig(Player p, RoundsGameMapConfig cfg) {
+
+        protected void LoadMapConfig(Player p, RoundsGameMapConfig cfg)
+        {
             cfg.SetDefaults(p.level);
             cfg.Load(p.level.name);
         }
-        
-        protected void SaveMapConfig(Player p, RoundsGameMapConfig cfg) {
+
+        protected void SaveMapConfig(Player p, RoundsGameMapConfig cfg)
+        {
             RoundsGame game = Game;
             cfg.Save(p.level.name);
             if (p.level == game.Map) game.UpdateMapConfig();

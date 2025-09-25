@@ -15,10 +15,10 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.Maths;
 using System;
 using System.IO;
 using System.IO.Compression;
-using MCGalaxy.Maths;
 
 namespace MCGalaxy.Levels.IO
 {
@@ -32,37 +32,33 @@ namespace MCGalaxy.Levels.IO
         }
         public override Level Read(Stream src, string name, bool metadata)
         {
-            using (GZipStream s = new GZipStream(src, CompressionMode.Decompress))
+            using GZipStream s = new(src, CompressionMode.Decompress);
+            Level lvl = new(name, 0, 0, 0);
+            JavaReader r = new()
             {
-                Level lvl = new Level(name, 0, 0, 0);
-                JavaReader r = new JavaReader
-                {
-                    src = new BinaryReader(s)
-                };
-                int signature = r.ReadInt32();
-                // Format version 0 - preclassic to classic 0.12
-                //  (technically this format doesn't have a signature, 
-                //   but 99% of such maps will start with these 4 bytes)
-                if (signature == 0x01010101)
-                {
-                    return ReadFormat0(lvl, s);
-                }
-                // All valid .dat maps must start with these 4 bytes
-                if (signature != 0x271BB788)
-                {
-                    throw new InvalidDataException("Invalid .dat map signature");
-                }
-                switch (r.ReadUInt8())
-                {
-                    // Format version 1 - classic 0.13
-                    case 0x01:
-                        return ReadFormat1(lvl, r);
-                    // Format version 2 - classic 0.15 to 0.30
-                    case 0x02:
-                        return ReadFormat2(lvl, r);
-                }
-                throw new InvalidDataException("Invalid .dat map version");
+                src = new BinaryReader(s)
+            };
+            int signature = r.ReadInt32();
+            // Format version 0 - preclassic to classic 0.12
+            //  (technically this format doesn't have a signature, 
+            //   but 99% of such maps will start with these 4 bytes)
+            if (signature == 0x01010101)
+            {
+                return ReadFormat0(lvl, s);
             }
+            // All valid .dat maps must start with these 4 bytes
+            if (signature != 0x271BB788)
+            {
+                throw new InvalidDataException("Invalid .dat map signature");
+            }
+            return r.ReadUInt8() switch
+            {
+                // Format version 1 - classic 0.13
+                0x01 => ReadFormat1(lvl, r),
+                // Format version 2 - classic 0.15 to 0.30
+                0x02 => ReadFormat2(lvl, r),
+                _ => throw new InvalidDataException("Invalid .dat map version"),
+            };
         }
         // Map 'format' is just the 256x64x256 blocks of the level
         const int PC_WIDTH = 256, PC_HEIGHT = 64, PC_LENGTH = 256;
@@ -73,9 +69,9 @@ namespace MCGalaxy.Levels.IO
             lvl.Length = PC_LENGTH;
             // First 4 bytes were already read earlier as signature
             byte[] blocks = new byte[PC_WIDTH * PC_HEIGHT * PC_LENGTH];
-            blocks[0] = 1; 
+            blocks[0] = 1;
             blocks[1] = 1;
-            blocks[2] = 1; 
+            blocks[2] = 1;
             blocks[3] = 1;
             s.Read(blocks, 4, blocks.Length - 4);
             lvl.blocks = blocks;
@@ -126,9 +122,9 @@ namespace MCGalaxy.Levels.IO
             return lvl;
         }
         // object is actually an int, so a simple cast to ushort will fail
-        static ushort U16(object o) 
-        { 
-            return (ushort)(int)o; 
+        static ushort U16(object o)
+        {
+            return (ushort)(int)o;
         }
         static void ParseRootObject(Level lvl, JObject obj)
         {

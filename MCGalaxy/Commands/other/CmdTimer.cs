@@ -15,16 +15,19 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using MCGalaxy.Tasks;
+using System;
 
-namespace MCGalaxy.Commands.Misc {
-    public sealed class CmdTimer : Command2 {
+namespace MCGalaxy.Commands.Misc
+{
+    public sealed class CmdTimer : Command2
+    {
         public override string name { get { return "Timer"; } }
         public override string type { get { return CommandTypes.Other; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
 
-        public override void Use(Player p, string message, CommandData data) {
+        public override void Use(Player p, string message, CommandData data)
+        {
             if (p.cmdTimer) { p.Message("Can only have one timer at a time. Use /abort to cancel your previous timer."); return; }
             if (message.Length == 0) { Help(p); return; }
 
@@ -33,7 +36,7 @@ namespace MCGalaxy.Commands.Misc {
             {
                 string[] bits = message.SplitSpaces(2);
                 TotalTime = int.Parse(bits[0]);
-                message   = bits[1];
+                message = bits[1];
             }
             catch
             {
@@ -42,7 +45,7 @@ namespace MCGalaxy.Commands.Misc {
 
             if (TotalTime > 300) { p.Message("Cannot have more than 5 minutes in a timer"); return; }
 
-            TimerArgs args = new TimerArgs
+            TimerArgs args = new()
             {
                 Message = message,
                 Repeats = TotalTime / 5 + 1,
@@ -54,29 +57,35 @@ namespace MCGalaxy.Commands.Misc {
             p.level.Message(args.Message);
             Server.MainScheduler.QueueRepeat(TimerCallback, args, TimeSpan.FromSeconds(5));
         }
-        
-        class TimerArgs {
+
+        class TimerArgs
+        {
             public string Message;
             public int Repeats;
             public Player Player;
         }
-        
-        static void TimerCallback(SchedulerTask task) {
-            TimerArgs args = (TimerArgs)task.State;            
+
+        static void TimerCallback(SchedulerTask task)
+        {
+            TimerArgs args = (TimerArgs)task.State;
             Player p = args.Player;
 
             args.Repeats--;
-            if (args.Repeats == 0 || !p.cmdTimer) {
+            if (args.Repeats == 0 || !p.cmdTimer)
+            {
                 p.Message("Timer ended.");
                 p.cmdTimer = false;
                 task.Repeating = false;
-            } else {
+            }
+            else
+            {
                 p.level.Message(args.Message);
                 p.level.Message("Timer has " + (args.Repeats * 5) + " seconds remaining.");
             }
         }
-        
-        public override void Help(Player p)  {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/Timer [time] [message]");
             p.Message("&HStarts a timer which repeats [message] every 5 seconds.");
             p.Message("&HRepeats constantly until [time] has passed");

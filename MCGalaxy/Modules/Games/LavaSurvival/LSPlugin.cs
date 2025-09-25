@@ -19,23 +19,25 @@ using MCGalaxy.Events.ServerEvents;
 
 namespace MCGalaxy.Modules.Games.LS
 {
-    public sealed class LSPlugin : Plugin 
+    public sealed class LSPlugin : Plugin
     {
         public override string name { get { return "LS"; } }
         static readonly Command cmdLS = new CmdLavaSurvival();
-        
-        public override void Load(bool startup) {
+
+        public override void Load(bool startup)
+        {
             Command.Register(cmdLS);
-            
-            LSGame game      = LSGame.Instance;
+
+            LSGame game = LSGame.Instance;
             game.Config.Path = "props/lavasurvival.properties";
             game.ReloadConfig();
             game.AutoStart();
-            
+
             OnConfigUpdatedEvent.Register(game.ReloadConfig, Priority.Low);
         }
-        
-        public override void Unload(bool shutdown) {
+
+        public override void Unload(bool shutdown)
+        {
             LSGame game = LSGame.Instance;
             OnConfigUpdatedEvent.Unregister(game.ReloadConfig);
             Command.Unregister(cmdLS);

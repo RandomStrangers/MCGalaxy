@@ -15,23 +15,25 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System.Collections.Generic;
 using MCGalaxy.Commands.Moderation;
+using System.Collections.Generic;
 
-namespace MCGalaxy.Commands.Info 
+namespace MCGalaxy.Commands.Info
 {
-    public sealed class CmdClones : Command2 
+    public sealed class CmdClones : Command2
     {
         public override string name { get { return "Clones"; } }
         public override string shortcut { get { return "Alts"; } }
         public override string type { get { return CommandTypes.Information; } }
         public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
         public override bool UseableWhenFrozen { get { return true; } }
-        public override CommandAlias[] Aliases {
+        public override CommandAlias[] Aliases
+        {
             get { return new[] { new CommandAlias("WhoIP") }; }
         }
 
-        public override void Use(Player p, string message, CommandData data) {
+        public override void Use(Player p, string message, CommandData data)
+        {
             if (message.Length == 0)
             {
                 if (p.IsSuper) { SuperRequiresArgs(p, "IP address"); return; }
@@ -44,15 +46,19 @@ namespace MCGalaxy.Commands.Info
             }
 
             List<string> accounts = PlayerInfo.FindAccounts(message);
-            if (accounts.Count == 0) {
+            if (accounts.Count == 0)
+            {
                 p.Message("No players last played with the given IP.");
-            } else {
+            }
+            else
+            {
                 p.Message("These players have the same IP:");
                 p.Message(accounts.Join(alt => p.FormatNick(alt)));
             }
         }
 
-        public override void Help(Player p) {
+        public override void Help(Player p)
+        {
             p.Message("&T/Clones [name]");
             p.Message("&HFinds everyone with the same IP as [name]");
             p.Message("&T/Clones [ip address]");

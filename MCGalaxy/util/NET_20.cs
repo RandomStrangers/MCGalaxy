@@ -20,54 +20,67 @@ using System;
 using System.Threading;
 
 
-namespace System.Runtime.CompilerServices 
+namespace System.Runtime.CompilerServices
 {
     [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Method)]
-    public sealed class ExtensionAttribute : Attribute {}
+    public sealed class ExtensionAttribute : Attribute { }
 }
 
-namespace MCGalaxy.Util 
+namespace MCGalaxy.Util
 {
-    public sealed class IReaderWriterLock 
+    public sealed class IReaderWriterLock
     {
-        readonly ReaderWriterLock locker = new ReaderWriterLock();
+        readonly ReaderWriterLock locker = new();
 
         public IDisposable AccquireRead() { return AccquireRead(int.MaxValue); }
         public IDisposable AccquireWrite() { return AccquireWrite(int.MaxValue); }
-        
-        public IDisposable AccquireRead(int msTimeout) {
-            try {
+
+        public IDisposable AccquireRead(int msTimeout)
+        {
+            try
+            {
                 locker.AcquireReaderLock(msTimeout);
-            } catch (ApplicationException) {
+            }
+            catch (ApplicationException)
+            {
                 return null;
             }
             return new SlimLock(locker, false);
         }
 
-        public IDisposable AccquireWrite(int msTimeout) {
-            try {
+        public IDisposable AccquireWrite(int msTimeout)
+        {
+            try
+            {
                 locker.AcquireWriterLock(msTimeout);
-            } catch (ApplicationException) {
+            }
+            catch (ApplicationException)
+            {
                 return null;
             }
             return new SlimLock(locker, true);
         }
-        
-        
-        class SlimLock : IDisposable 
+
+
+        class SlimLock : IDisposable
         {
             ReaderWriterLock locker;
             readonly bool writeMode;
-            
-            public SlimLock(ReaderWriterLock locker, bool writeMode) {
+
+            public SlimLock(ReaderWriterLock locker, bool writeMode)
+            {
                 this.locker = locker;
                 this.writeMode = writeMode;
             }
-            
-            public void Dispose() {
-                if (writeMode) {
+
+            public void Dispose()
+            {
+                if (writeMode)
+                {
                     locker.ReleaseWriterLock();
-                } else {
+                }
+                else
+                {
                     locker.ReleaseReaderLock();
                 }
                 locker = null;

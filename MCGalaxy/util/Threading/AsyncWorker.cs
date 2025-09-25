@@ -20,63 +20,78 @@ using System.Collections.Generic;
 using System.Threading;
 
 namespace MCGalaxy
-{ 
+{
     /// <summary> Asynchronously performs work on a background thread </summary>
-    public abstract class AsyncWorker<T> 
+    public abstract class AsyncWorker<T>
     {
-        readonly AutoResetEvent handle = new AutoResetEvent(false);
+        readonly AutoResetEvent handle = new(false);
         volatile bool terminating;
-        
-        protected Queue<T> queue = new Queue<T>();
-        protected readonly object queueLock = new object();
-        
+
+        protected Queue<T> queue = new();
+        protected readonly object queueLock = new();
+
         protected abstract void HandleNext();
         /// <summary> Name to assign the worker thread </summary>
         protected abstract string ThreadName { get; }
-        
-        void SendLoop() {
-            for (;;) {
+
+        void SendLoop()
+        {
+            for (; ; )
+            {
                 if (terminating) break;
-                
-                try {
+
+                try
+                {
                     HandleNext();
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     Logger.LogError(ex);
                 }
             }
-            
+
             // cleanup state
-            try {
+            try
+            {
                 lock (queueLock) queue.Clear();
                 handle.Close();
-            } catch {
             }
-        }      
-        
-        void WakeupWorker() {
-            try {
+            catch
+            {
+            }
+        }
+
+        void WakeupWorker()
+        {
+            try
+            {
                 handle.Set();
-            } catch (ObjectDisposedException) {
+            }
+            catch (ObjectDisposedException)
+            {
                 // for very rare case where handle's already been destroyed
             }
         }
-        
+
         protected void WaitForWork() { handle.WaitOne(); }
-        
-        
+
+
         /// <summary> Starts the background worker thread </summary>
-        public void RunAsync() {
+        public void RunAsync()
+        {
             Server.StartThread(out Thread worker, ThreadName, SendLoop);
             Utils.SetBackgroundMode(worker);
         }
-        
-        public void StopAsync() {
+
+        public void StopAsync()
+        {
             terminating = true;
             WakeupWorker();
         }
-        
+
         /// <summary> Enqueues work to be performed asynchronously </summary>
-        public void QueueAsync(T msg) {
+        public void QueueAsync(T msg)
+        {
             lock (queueLock) queue.Enqueue(msg);
             WakeupWorker();
         }

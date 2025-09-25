@@ -15,22 +15,24 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
 */
+using MCGalaxy.Tasks;
 using System;
 using System.Collections.Generic;
-using MCGalaxy.Tasks;
 
-namespace MCGalaxy.Util 
+namespace MCGalaxy.Util
 {
-    public sealed class ThreadSafeCache 
+    public sealed class ThreadSafeCache
     {
-        public static ThreadSafeCache DBCache = new ThreadSafeCache();
-            
-        readonly object locker = new object();
-        readonly Dictionary<string, object> items    = new Dictionary<string, object>();
-        readonly Dictionary<string, DateTime> access = new Dictionary<string, DateTime>();
-        
-        public object GetLocker(string key) {
-            lock (locker) {
+        public static ThreadSafeCache DBCache = new();
+
+        readonly object locker = new();
+        readonly Dictionary<string, object> items = new();
+        readonly Dictionary<string, DateTime> access = new();
+
+        public object GetLocker(string key)
+        {
+            lock (locker)
+            {
                 if (!items.TryGetValue(key, out object value))
                 {
                     value = new object();
@@ -41,23 +43,27 @@ namespace MCGalaxy.Util
                 return value;
             }
         }
-        
-        
-        public void CleanupTask(SchedulerTask _) {
+
+
+        public void CleanupTask(SchedulerTask _)
+        {
             List<string> free = null;
             DateTime now = DateTime.UtcNow;
-            
-            lock (locker) {
-                foreach (KeyValuePair<string, DateTime> kvp in access) {
+
+            lock (locker)
+            {
+                foreach (KeyValuePair<string, DateTime> kvp in access)
+                {
                     // Has the cached item last been accessed in 5 minutes?
                     if ((now - kvp.Value).TotalMinutes <= 5) continue;
-                    
-                    if (free == null) free = new List<string>();
+
+                    free ??= new List<string>();
                     free.Add(kvp.Key);
                 }
-                
+
                 if (free == null) return;
-                foreach (string key in free) {
+                foreach (string key in free)
+                {
                     items.Remove(key);
                     access.Remove(key);
                 }

@@ -19,128 +19,149 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace MCGalaxy.Commands 
-{    
+namespace MCGalaxy.Commands
+{
     /// <summary> Represents additional permissions required to perform a special action in a command. </summary>
     /// <remarks> For example, /color command has an extra permission for changing the color of other players. </remarks>
-    public class CommandExtraPerms : ItemPerms 
+    public class CommandExtraPerms : ItemPerms
     {
         public string CmdName, Desc = "";
         public int Num;
         public override string ItemName { get { return CmdName + ":" + Num; } }
-        
-        static readonly List<CommandExtraPerms> list = new List<CommandExtraPerms>();
-        
-        
-        public CommandExtraPerms(string cmd, int num, string desc, LevelPermission min) : base(min) {
+
+        static readonly List<CommandExtraPerms> list = new();
+
+
+        public CommandExtraPerms(string cmd, int num, string desc, LevelPermission min) : base(min)
+        {
             CmdName = cmd; Num = num; Desc = desc;
         }
-        
-        public CommandExtraPerms Copy() {
-            CommandExtraPerms copy = new CommandExtraPerms(CmdName, Num, Desc, 0);
+
+        public CommandExtraPerms Copy()
+        {
+            CommandExtraPerms copy = new(CmdName, Num, Desc, 0);
             CopyPermissionsTo(copy); return copy;
         }
-        
-        
-        public static CommandExtraPerms Find(string cmd, int num) {
-            foreach (CommandExtraPerms perms in list) 
+
+
+        public static CommandExtraPerms Find(string cmd, int num)
+        {
+            foreach (CommandExtraPerms perms in list)
             {
                 if (perms.CmdName.CaselessEq(cmd) && perms.Num == num) return perms;
             }
             return null;
         }
-        
-        public static List<CommandExtraPerms> FindAll(string cmd) {
-            List<CommandExtraPerms> all = new List<CommandExtraPerms>();
-            foreach (CommandExtraPerms perms in list) 
+
+        public static List<CommandExtraPerms> FindAll(string cmd)
+        {
+            List<CommandExtraPerms> all = new();
+            foreach (CommandExtraPerms perms in list)
             {
                 if (perms.CmdName.CaselessEq(cmd) && perms.Desc.Length > 0) all.Add(perms);
             }
             return all;
         }
-        
-        
+
+
         /// <summary> Gets or adds the nth extra permission for the given command. </summary>
-        public static CommandExtraPerms GetOrAdd(string cmd, int num, LevelPermission min) {
+        public static CommandExtraPerms GetOrAdd(string cmd, int num, LevelPermission min)
+        {
             CommandExtraPerms perms = Find(cmd, num);
             if (perms != null) return perms;
-            
+
             perms = new CommandExtraPerms(cmd, num, "", min);
             list.Add(perms);
             return perms;
         }
-              
-        public void MessageCannotUse(Player p) {
+
+        public void MessageCannotUse(Player p)
+        {
             p.Message("Only {0} {1}", Describe(), Desc);
         }
-        
 
-        static readonly object ioLock = new object();      
+
+        static readonly object ioLock = new();
         /// <summary> Saves list of extra permissions to disc. </summary>
-        public static void Save() {
-            try {
+        public static void Save()
+        {
+            try
+            {
                 lock (ioLock) SaveCore();
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Logger.LogError("Error saving " + Paths.CmdExtraPermsFile, ex);
             }
-        }        
-        
-        static void SaveCore() {
-            using (StreamWriter w = FileIO.CreateGuarded(Paths.CmdExtraPermsFile)) {
-                WriteHeader(w, "extra command permissions", "extra permissions in some commands",
-                            "CommandName:ExtraPermissionNumber", "countdown:1", "use");
-                
-                foreach (CommandExtraPerms perms in list) {
-                    w.WriteLine(perms.Serialise());
-                }
+        }
+
+        static void SaveCore()
+        {
+            using StreamWriter w = FileIO.CreateGuarded(Paths.CmdExtraPermsFile);
+            WriteHeader(w, "extra command permissions", "extra permissions in some commands",
+                        "CommandName:ExtraPermissionNumber", "countdown:1", "use");
+
+            foreach (CommandExtraPerms perms in list)
+            {
+                w.WriteLine(perms.Serialise());
             }
         }
-        
+
 
         /// <summary> Loads list of extra permissions to disc. </summary>
-        public static void Load() {
-            lock (ioLock) {
+        public static void Load()
+        {
+            lock (ioLock)
+            {
                 if (!File.Exists(Paths.CmdExtraPermsFile)) Save();
-                
-                using (StreamReader r = new StreamReader(Paths.CmdExtraPermsFile)) {
-                    ProcessLines(r);
-                }
+
+                using StreamReader r = new(Paths.CmdExtraPermsFile);
+                ProcessLines(r);
             }
         }
-        
-        static void ProcessLines(StreamReader r) {
+
+        static void ProcessLines(StreamReader r)
+        {
             string[] args = new string[5];
             CommandExtraPerms perms;
             string line;
-            
-            while ((line = r.ReadLine()) != null) {
+
+            while ((line = r.ReadLine()) != null)
+            {
                 if (line.IsCommentLine() || line.IndexOf(':') == -1) continue;
                 // Format - Name:Num : Lowest : Disallow : Allow
                 line.Replace(" ", "").FixedSplit(args, ':');
-                
-                try {
+
+                try
+                {
                     LevelPermission min;
                     List<LevelPermission> allowed, disallowed;
-                    
+
                     // Old format - Name:Num : Lowest : Description
-                    if (IsDescription(args[3])) {
+                    if (IsDescription(args[3]))
+                    {
                         min = (LevelPermission)NumberUtils.ParseInt32(args[2]);
                         allowed = null; disallowed = null;
-                    } else {
+                    }
+                    else
+                    {
                         Deserialise(args, 2, out min, out allowed, out disallowed);
                     }
-                    
+
                     perms = GetOrAdd(args[0], NumberUtils.ParseInt32(args[1]), min);
                     perms.Init(min, allowed, disallowed);
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     Logger.Log(LogType.Warning, "Hit an error on the extra command perms " + line);
                     Logger.LogError(ex);
                 }
             }
         }
-        
-        static bool IsDescription(string arg) {
-            foreach (char c in arg) 
+
+        static bool IsDescription(string arg)
+        {
+            foreach (char c in arg)
             {
                 if (c >= 'a' && c <= 'z') return true;
             }

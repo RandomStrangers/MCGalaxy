@@ -14,15 +14,15 @@ namespace NotAwesomeSurvival
         public static DayCycles globalCurrentDayCycle;
         public static int gameday = 0;
         public static string TimeFilePath = Nas.CoreSavePath + "time.json";
-        public static JsonSerializer serializer = new JsonSerializer();
+        public static JsonSerializer serializer = new();
         public static Scheduler weatherScheduler;
         public static SchedulerTask task;
-        public static string globalSkyColor, globalCloudColor, 
+        public static string globalSkyColor, globalCloudColor,
             globalSunColor, globalShadowColor; // self explanatory
         // Cycle Settings
         public static DayCycles dayCycle = DayCycles.Sunrise; // default cycle
         public static int cycleCurrentTime = 0, /* current cycle time (must be zero to start)*/
-            cycleMaxTime = 14400, /* duration a whole day*/ 
+            cycleMaxTime = 14400, /* duration a whole day*/
             hourMinutes = 600; //seconds in an hour
         public enum DayCycles // Enum with day and night cycles
         {
@@ -30,10 +30,7 @@ namespace NotAwesomeSurvival
         }
         public static void Setup()
         {
-            if (weatherScheduler == null)
-            {
-                weatherScheduler = new Scheduler("WeatherScheduler");
-            }
+            weatherScheduler ??= new Scheduler("WeatherScheduler");
             task = weatherScheduler.QueueRepeat(Update, null, new TimeSpan(0, 0, 7));
             dayCycle = DayCycles.Sunrise; // start with sunrise state
             // Static variables to keep time after switching scenes
@@ -41,13 +38,11 @@ namespace NotAwesomeSurvival
             {
                 File.Create(TimeFilePath).Dispose();
                 Log("Created new json time file {0}!", TimeFilePath);
-                using (StreamWriter sw = new StreamWriter(TimeFilePath))
-                { // To help you better understand, this is the stream writer
-                    using (JsonWriter writer = new JsonTextWriter(sw))
-                    { // this is the json writer that will help me to serialize and deserialize items in the file
-                        serializer.Serialize(writer, cyc);
-                    }
-                }
+                using StreamWriter sw = new(TimeFilePath);
+                // To help you better understand, this is the stream writer
+                using JsonWriter writer = new JsonTextWriter(sw);
+                // this is the json writer that will help me to serialize and deserialize items in the file
+                serializer.Serialize(writer, cyc);
             }
             //string jsonString = File.ReadAllText(TimeFilePath);
             string jsonString = FileIO.TryReadAllText(TimeFilePath);
@@ -78,25 +73,25 @@ namespace NotAwesomeSurvival
                 dayCycle++; // change cycle state
             }
             //when to change cycles
-            if (cycleCurrentTime >= 7 * hourMinutes & cycleCurrentTime < 8 * hourMinutes) 
-            { 
-                dayCycle = DayCycles.Sunrise; 
+            if (cycleCurrentTime >= 7 * hourMinutes & cycleCurrentTime < 8 * hourMinutes)
+            {
+                dayCycle = DayCycles.Sunrise;
             } // 7am
-            if (cycleCurrentTime >= 8 * hourMinutes & cycleCurrentTime < 19 * hourMinutes) 
-            { 
-                dayCycle = DayCycles.Day; 
+            if (cycleCurrentTime >= 8 * hourMinutes & cycleCurrentTime < 19 * hourMinutes)
+            {
+                dayCycle = DayCycles.Day;
             } // 8am
-            if (cycleCurrentTime >= 19 * hourMinutes & cycleCurrentTime < 20 * hourMinutes) 
-            { 
-                dayCycle = DayCycles.Sunset; 
+            if (cycleCurrentTime >= 19 * hourMinutes & cycleCurrentTime < 20 * hourMinutes)
+            {
+                dayCycle = DayCycles.Sunset;
             } // 6pm
-            if (cycleCurrentTime >= 20 * hourMinutes & cycleCurrentTime < 24 * hourMinutes) 
-            { 
-                dayCycle = DayCycles.Night; 
+            if (cycleCurrentTime >= 20 * hourMinutes & cycleCurrentTime < 24 * hourMinutes)
+            {
+                dayCycle = DayCycles.Night;
             } // 8pm
-            if (cycleCurrentTime == 24 * hourMinutes | cycleCurrentTime == 0 | cycleCurrentTime < 7 * hourMinutes) 
-            { 
-                dayCycle = DayCycles.Midnight; 
+            if (cycleCurrentTime == 24 * hourMinutes | cycleCurrentTime == 0 | cycleCurrentTime < 7 * hourMinutes)
+            {
+                dayCycle = DayCycles.Midnight;
             } // 0 am
             switch (dayCycle)
             {
@@ -144,7 +139,7 @@ namespace NotAwesomeSurvival
             bool changed = false;
             foreach (Level lvl in LevelInfo.Loaded.Items)
             {
-                if (NasLevel.Get(lvl.name).biome >= 0) 
+                if (NasLevel.Get(lvl.name).biome >= 0)
                 {
                     if (lvl.Config.LightColor != sun)
                     {
@@ -174,7 +169,7 @@ namespace NotAwesomeSurvival
             }
             foreach (Player p in PlayerInfo.Online.Items)
             {
-                if (NasLevel.Get(p.level.name).biome >= 0) 
+                if (NasLevel.Get(p.level.name).biome >= 0)
                 {
                     if (changed)
                     {

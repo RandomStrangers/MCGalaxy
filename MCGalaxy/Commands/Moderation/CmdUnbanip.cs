@@ -15,37 +15,42 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System.Net;
 using MCGalaxy.Events;
+using System.Net;
 
-namespace MCGalaxy.Commands.Moderation {
-    public sealed class CmdUnbanip : Command2 {
+namespace MCGalaxy.Commands.Moderation
+{
+    public sealed class CmdUnbanip : Command2
+    {
         public override string name { get { return "UnbanIP"; } }
         public override string type { get { return CommandTypes.Moderation; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override CommandAlias[] Aliases {
-            get { return new CommandAlias[] { new CommandAlias("UnIPBan") }; }
+        public override CommandAlias[] Aliases
+        {
+            get { return new CommandAlias[] { new("UnIPBan") }; }
         }
 
-        public override void Use(Player p, string message, CommandData data) {
+        public override void Use(Player p, string message, CommandData data)
+        {
             if (message.Length == 0) { Help(p); return; }
             string[] args = message.SplitSpaces(2);
             string addr = ModActionCmd.FindIP(p, args[0], "UnbanIP", out _);
             if (addr == null) return;
 
             if (!IPAddress.TryParse(addr, out IPAddress ip)) { p.Message("\"{0}\" is not a valid IP.", addr); return; }
-            if (ip.Equals(p.IP))                   { p.Message("You cannot un-IP ban yourself."); return; }
-            if (!Server.bannedIP.Contains(addr))   { p.Message(addr + " is not a banned IP."); return; }
-            
+            if (ip.Equals(p.IP)) { p.Message("You cannot un-IP ban yourself."); return; }
+            if (!Server.bannedIP.Contains(addr)) { p.Message(addr + " is not a banned IP."); return; }
+
             string reason = args.Length > 1 ? args[1] : "";
             reason = ModActionCmd.ExpandReason(p, reason);
             if (reason == null) return;
-            
-            ModAction action = new ModAction(addr, p, ModActionType.UnbanIP, reason);
+
+            ModAction action = new(addr, p, ModActionType.UnbanIP, reason);
             OnModActionEvent.Call(action);
         }
-        
-        public override void Help(Player p)  {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/UnbanIP [ip/player]");
             p.Message("&HUn-bans an IP, or the IP the given player is on.");
         }

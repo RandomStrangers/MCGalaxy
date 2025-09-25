@@ -15,23 +15,25 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using MCGalaxy.Tasks;
+using System;
 
-namespace MCGalaxy.Commands.Chatting 
+namespace MCGalaxy.Commands.Chatting
 {
-    public sealed class CmdVote : Command2 
+    public sealed class CmdVote : Command2
     {
         public override string name { get { return "Vote"; } }
         public override string shortcut { get { return "vo"; } }
         public override string type { get { return CommandTypes.Chat; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
 
-        public override void Use(Player p, string message, CommandData data) {
+        public override void Use(Player p, string message, CommandData data)
+        {
             if (message.Length == 0) { Help(p); return; }
             if (!MessageCmd.CanSpeak(p, name)) return;
-            
-            if (Server.voting) {
+
+            if (Server.voting)
+            {
                 p.Message("A vote is in progress!"); return;
             }
             Server.voting = true;
@@ -39,15 +41,17 @@ namespace MCGalaxy.Commands.Chatting
             Chat.MessageGlobal("&2 VOTE: &S{0} &S(type &2Yes &Sor &cNo &Sin chat)", message);
             Server.MainScheduler.QueueOnce(VoteCallback, null, TimeSpan.FromSeconds(15));
         }
-        
-        void VoteCallback(SchedulerTask task) {
+
+        void VoteCallback(SchedulerTask task)
+        {
             Server.voting = false;
             Chat.MessageGlobal("The votes are in! &2Y: {0} &cN: {1}", Server.YesVotes, Server.NoVotes);
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players) pl.voted = false;
         }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/Vote [message]");
             p.Message("&HStarts a vote for 15 seconds.");
             p.Message("&HType &TY &Hor &TN &Hinto chat to vote.");

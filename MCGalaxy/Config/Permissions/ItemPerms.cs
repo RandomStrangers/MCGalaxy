@@ -19,69 +19,83 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace MCGalaxy 
+namespace MCGalaxy
 {
     /// <summary> Represents which ranks are allowed (and which are disallowed) to use an item. </summary>
-    public class ItemPerms 
+    public class ItemPerms
     {
         public virtual string ItemName { get { return ""; } }
         public LevelPermission MinRank;
         public List<LevelPermission> Allowed, Disallowed;
-        
+
         public ItemPerms(LevelPermission min) { MinRank = min; }
-        
+
         protected void Init(LevelPermission min, List<LevelPermission> allowed,
-                            List<LevelPermission> disallowed) {
+                            List<LevelPermission> disallowed)
+        {
             MinRank = min; Allowed = allowed; Disallowed = disallowed;
         }
-        
-        public void CopyPermissionsTo(ItemPerms dst) {
-            dst.MinRank    = MinRank;
-            dst.Allowed    = Allowed    == null ? null : new List<LevelPermission>(Allowed);
+
+        public void CopyPermissionsTo(ItemPerms dst)
+        {
+            dst.MinRank = MinRank;
+            dst.Allowed = Allowed == null ? null : new List<LevelPermission>(Allowed);
             dst.Disallowed = Disallowed == null ? null : new List<LevelPermission>(Disallowed);
         }
-        
-        public bool UsableBy(LevelPermission perm) {
+
+        public bool UsableBy(LevelPermission perm)
+        {
             return (perm >= MinRank || (Allowed != null && Allowed.Contains(perm)))
                 && (Disallowed == null || !Disallowed.Contains(perm));
         }
-        
+
         public bool UsableBy(Player p) { return UsableBy(p.group.Permission); }
-        
-        
-        public void Allow(LevelPermission rank) {
-            if (Disallowed != null && Disallowed.Contains(rank)) {
+
+
+        public void Allow(LevelPermission rank)
+        {
+            if (Disallowed != null && Disallowed.Contains(rank))
+            {
                 Disallowed.Remove(rank);
-            } else if (Allowed == null || !Allowed.Contains(rank)) {
-                if (Allowed == null) Allowed = new List<LevelPermission>();
+            }
+            else if (Allowed == null || !Allowed.Contains(rank))
+            {
+                Allowed ??= new List<LevelPermission>();
                 Allowed.Add(rank);
             }
         }
-        
-        public void Disallow(LevelPermission rank) {
-            if (Allowed != null && Allowed.Contains(rank)) {
+
+        public void Disallow(LevelPermission rank)
+        {
+            if (Allowed != null && Allowed.Contains(rank))
+            {
                 Allowed.Remove(rank);
-            } else if (Disallowed == null || !Disallowed.Contains(rank)) {
-                if (Disallowed == null) Disallowed = new List<LevelPermission>();
+            }
+            else if (Disallowed == null || !Disallowed.Contains(rank))
+            {
+                Disallowed ??= new List<LevelPermission>();
                 Disallowed.Add(rank);
             }
         }
-        
-        
-        public void Describe(StringBuilder builder) {
+
+
+        public void Describe(StringBuilder builder)
+        {
             builder.Append(Group.GetColoredName(MinRank) + "&S+");
-            
-            if (Allowed != null && Allowed.Count > 0) {
-                foreach (LevelPermission perm in Allowed) 
+
+            if (Allowed != null && Allowed.Count > 0)
+            {
+                foreach (LevelPermission perm in Allowed)
                 {
                     builder.Append(", " + Group.GetColoredName(perm));
                 }
                 builder.Append("&S");
             }
-            
-            if (Disallowed != null && Disallowed.Count > 0) {
-                builder.Append( " (except ");
-                foreach (LevelPermission perm in Disallowed) 
+
+            if (Disallowed != null && Disallowed.Count > 0)
+            {
+                builder.Append(" (except ");
+                foreach (LevelPermission perm in Disallowed)
                 {
                     builder.Append(Group.GetColoredName(perm) + ", ");
                 }
@@ -89,16 +103,18 @@ namespace MCGalaxy
                 builder.Append("&S)");
             }
         }
-        
-        public string Describe() {
-            StringBuilder sb = new StringBuilder();
+
+        public string Describe()
+        {
+            StringBuilder sb = new();
             Describe(sb);
             return sb.ToString();
         }
-        
-        
-        protected static void WriteHeader(StreamWriter w, string itemName, string itemDesc, 
-                                          string headerName, string headerExample, string action) {
+
+
+        protected static void WriteHeader(StreamWriter w, string itemName, string itemDesc,
+                                          string headerName, string headerExample, string action)
+        {
             w.WriteLine("#Version 2");
             w.WriteLine("#   This file contains the permissions to {1} {0}", itemDesc, action);
             w.WriteLine("#   How permissions work:");
@@ -113,9 +129,10 @@ namespace MCGalaxy
             w.WriteLine("#   - Works entirely on rank permission values, not rank names");
             w.WriteLine("");
         }
-        
-        protected string Serialise() {
-            StringBuilder sb = new StringBuilder(); // TODO: cache stringbuilder across calls?            
+
+        protected string Serialise()
+        {
+            StringBuilder sb = new(); // TODO: cache stringbuilder across calls?            
             sb.Append(ItemName);
             sb.Append(" : ");
             sb.Append(NumberUtils.StringifyInt((int)MinRank));
@@ -123,14 +140,15 @@ namespace MCGalaxy
             AppendPerms(sb, Disallowed);
             sb.Append(" : ");
             AppendPerms(sb, Allowed);
-            
+
             return sb.ToString();
         }
-        
-        static void AppendPerms(StringBuilder sb, List<LevelPermission> list) {
+
+        static void AppendPerms(StringBuilder sb, List<LevelPermission> list)
+        {
             if (list == null || list.Count == 0) return;
             string prefix = "";
-            
+
             foreach (LevelPermission perm in list)
             {
                 sb.Append(prefix);
@@ -138,20 +156,22 @@ namespace MCGalaxy
                 prefix = ",";
             }
         }
-        
+
         protected static void Deserialise(string[] args, int idx, out LevelPermission min,
-                                          out List<LevelPermission> allowed, 
-                                          out List<LevelPermission> disallowed) {
+                                          out List<LevelPermission> allowed,
+                                          out List<LevelPermission> disallowed)
+        {
             min = (LevelPermission)NumberUtils.ParseInt32(args[idx]);
             disallowed = ExpandPerms(args[idx + 1]);
             allowed = ExpandPerms(args[idx + 2]);
         }
-        
-        static List<LevelPermission> ExpandPerms(string input) {
+
+        static List<LevelPermission> ExpandPerms(string input)
+        {
             if (input == null || input.Length == 0) return null;
-            
-            List<LevelPermission> perms = new List<LevelPermission>();
-            foreach (string perm in input.SplitComma()) 
+
+            List<LevelPermission> perms = new();
+            foreach (string perm in input.SplitComma())
             {
                 perms.Add((LevelPermission)NumberUtils.ParseInt32(perm));
             }

@@ -12,16 +12,16 @@ BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
  */
-using System;
-using System.Windows.Forms;
 using MCGalaxy.Eco;
 using MCGalaxy.Events.GameEvents;
+using System;
+using System.Windows.Forms;
 
 namespace MCGalaxy.Gui
 {
     public partial class PropertyWindow : Form
     {
-        readonly ZombieProperties zsSettings = new ZombieProperties();
+        readonly ZombieProperties zsSettings = new();
 
         public PropertyWindow()
         {
@@ -125,7 +125,7 @@ namespace MCGalaxy.Gui
 
         void GetHelp(string toHelp)
         {
-            ConsoleHelpPlayer p = new ConsoleHelpPlayer();
+            ConsoleHelpPlayer p = new();
             Command.Find("Help").Use(p, toHelp);
             Popup.Message(Colors.StripUsed(p.Messages), "Help for /" + toHelp);
         }

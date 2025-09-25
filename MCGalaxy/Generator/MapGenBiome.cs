@@ -15,8 +15,8 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System.Collections.Generic;
 using MCGalaxy.Generator.Foliage;
+using System.Collections.Generic;
 
 namespace MCGalaxy.Generator
 {
@@ -31,191 +31,196 @@ namespace MCGalaxy.Generator
         public byte Water;
         public byte Bedrock;
         public byte BeachSandy, BeachRocky;
-        
+
         public string CloudColor;
         public string SkyColor;
         public string FogColor;
         public byte Horizon;
         public byte Border;
         public string TreeType;
-        
+
         public const string FOREST = "Forest";
         public const string ARCTIC = "Arctic";
         public const string DESERT = "Desert";
-        public const string HELL   = "Hell";
-        public const string SWAMP  = "Swamp";
-        public const string MINE   = "Mine";
-        public const string SANDY  = "Sandy";
+        public const string HELL = "Hell";
+        public const string SWAMP = "Swamp";
+        public const string MINE = "Mine";
+        public const string SANDY = "Sandy";
         public const string PLAINS = "Plains";
-        public const string SPACE  = "Space";
-        
-        public void ApplyEnv(EnvConfig env) {
+        public const string SPACE = "Space";
+
+        public void ApplyEnv(EnvConfig env)
+        {
             if (CloudColor != null) env.CloudColor = CloudColor;
-            if (SkyColor != null)   env.SkyColor   = SkyColor;
-            if (FogColor != null)   env.FogColor   = FogColor;
-            if (Horizon != 0)       env.HorizonBlock = Horizon;
-            if (Border  != 0)       env.EdgeBlock    = Border;
+            if (SkyColor != null) env.SkyColor = SkyColor;
+            if (FogColor != null) env.FogColor = FogColor;
+            if (Horizon != 0) env.HorizonBlock = Horizon;
+            if (Border != 0) env.EdgeBlock = Border;
         }
-        
-        public Tree GetTreeGen(string defaultType) {
+
+        public Tree GetTreeGen(string defaultType)
+        {
             if (TreeType == null) return null;
-            
+
             string type = TreeType;
             if (type.Length == 0) type = defaultType;
             return Tree.TreeTypes[type]();
         }
-        
-                
-        static MapGenBiome forest = new MapGenBiome()
+
+
+        static MapGenBiome forest = new()
         {
-            Surface    = Block.Grass,
-            Ground     = Block.Dirt,
-            Cliff      = Block.Stone,
-            Water      = Block.StillWater,
-            Bedrock    = Block.Stone,
+            Surface = Block.Grass,
+            Ground = Block.Dirt,
+            Cliff = Block.Stone,
+            Water = Block.StillWater,
+            Bedrock = Block.Stone,
             BeachSandy = Block.Sand,
             BeachRocky = Block.Gravel,
-            TreeType   = "", // "use default for generator"
+            TreeType = "", // "use default for generator"
         };
-        
-        static MapGenBiome arctic = new MapGenBiome()
+
+        static MapGenBiome arctic = new()
         {
-            Surface    = Block.White,
-            Ground     = Block.White,
-            Cliff      = Block.Stone,
-            Water      = Block.StillWater,
-            Bedrock    = Block.Stone,
+            Surface = Block.White,
+            Ground = Block.White,
+            Cliff = Block.Stone,
+            Water = Block.StillWater,
+            Bedrock = Block.Stone,
             BeachSandy = Block.White,
             BeachRocky = Block.Stone,
             CloudColor = "#8E8E8E",
-            SkyColor   = "#8E8E8E",
-            FogColor   = "#AFAFAF",
+            SkyColor = "#8E8E8E",
+            FogColor = "#AFAFAF",
         };
-        
-        static MapGenBiome desert = new MapGenBiome()
+
+        static MapGenBiome desert = new()
         {
-            Surface    = Block.Sand,
-            Ground     = Block.Sand,
-            Cliff      = Block.Gravel,
-            Water      = Block.Air,
-            Bedrock    = Block.Stone,
+            Surface = Block.Sand,
+            Ground = Block.Sand,
+            Cliff = Block.Gravel,
+            Water = Block.Air,
+            Bedrock = Block.Stone,
             BeachSandy = Block.Sand,
             BeachRocky = Block.Gravel,
             CloudColor = "#FFEE88",
-            SkyColor   = "#FFEE88",
-            FogColor   = "#FFEE88",
-            Horizon    = Block.Sand,
-            Border     = Block.Sandstone,
-            TreeType   = "Cactus",
+            SkyColor = "#FFEE88",
+            FogColor = "#FFEE88",
+            Horizon = Block.Sand,
+            Border = Block.Sandstone,
+            TreeType = "Cactus",
         };
-        
-        static MapGenBiome hell = new MapGenBiome()
+
+        static MapGenBiome hell = new()
         {
-            Surface    = Block.Obsidian,
-            Ground     = Block.Stone,
-            Cliff      = Block.Stone,
-            Water      = Block.StillLava,
-            Bedrock    = Block.Stone,
+            Surface = Block.Obsidian,
+            Ground = Block.Stone,
+            Cliff = Block.Stone,
+            Water = Block.StillLava,
+            Bedrock = Block.Stone,
             BeachSandy = Block.Obsidian,
             BeachRocky = Block.Obsidian,
             CloudColor = "#000000",
-            SkyColor   = "#FFCC00",
-            FogColor   = "#FF6600",
-            Horizon    = Block.StillLava,
+            SkyColor = "#FFCC00",
+            FogColor = "#FF6600",
+            Horizon = Block.StillLava,
         };
-        
-        static MapGenBiome swamp = new MapGenBiome()
+
+        static MapGenBiome swamp = new()
         {
-            Surface    = Block.Dirt,
-            Ground     = Block.Dirt,
-            Cliff      = Block.Stone,
-            Water      = Block.StillWater,
-            Bedrock    = Block.Stone,
+            Surface = Block.Dirt,
+            Ground = Block.Dirt,
+            Cliff = Block.Stone,
+            Water = Block.StillWater,
+            Bedrock = Block.Stone,
             BeachSandy = Block.Leaves,
             BeachRocky = Block.Dirt,
         };
-        
-        static MapGenBiome mine = new MapGenBiome()
+
+        static MapGenBiome mine = new()
         {
-            Surface    = Block.Gravel,
-            Ground     = Block.Cobblestone,
-            Cliff      = Block.Stone,
-            Water      = Block.StillWater,
-            Bedrock    = Block.Bedrock,
+            Surface = Block.Gravel,
+            Ground = Block.Cobblestone,
+            Cliff = Block.Stone,
+            Water = Block.StillWater,
+            Bedrock = Block.Bedrock,
             BeachSandy = Block.Stone,
             BeachRocky = Block.Cobblestone,
             CloudColor = "#444444",
-            SkyColor   = "#444444",
-            FogColor   = "#777777",
+            SkyColor = "#444444",
+            FogColor = "#777777",
         };
-        
-        static MapGenBiome sandy = new MapGenBiome()
+
+        static MapGenBiome sandy = new()
         {
-            Surface    = Block.Sand,
-            Ground     = Block.Sand,
-            Cliff      = Block.Gravel,
-            Water      = Block.StillWater,
-            Bedrock    = Block.Stone,
+            Surface = Block.Sand,
+            Ground = Block.Sand,
+            Cliff = Block.Gravel,
+            Water = Block.StillWater,
+            Bedrock = Block.Stone,
             BeachSandy = Block.Sand,
             BeachRocky = Block.Gravel,
             CloudColor = "#52C6F7",
-            Border     = Block.Sand,
-            TreeType   = "Palm",
+            Border = Block.Sand,
+            TreeType = "Palm",
         };
-                
-        static MapGenBiome plains = new MapGenBiome()
+
+        static MapGenBiome plains = new()
         {
-            Surface    = Block.Grass,
-            Ground     = Block.Dirt,
-            Cliff      = Block.Stone,
-            Water      = Block.Air,
-            Bedrock    = Block.Stone,
+            Surface = Block.Grass,
+            Ground = Block.Dirt,
+            Cliff = Block.Stone,
+            Water = Block.Air,
+            Bedrock = Block.Stone,
             BeachSandy = Block.Grass,
             BeachRocky = Block.Grass,
-            TreeType   = "", // "use default for generator"
-            Horizon    = Block.Grass,
+            TreeType = "", // "use default for generator"
+            Horizon = Block.Grass,
         };
-        
-        static MapGenBiome space = new MapGenBiome()
+
+        static MapGenBiome space = new()
         {
-            Surface    = Block.Obsidian,
-            Ground     = Block.Iron,
-            Cliff      = Block.Iron,
-            Water      = Block.Air,
-            Bedrock    = Block.Bedrock,
+            Surface = Block.Obsidian,
+            Ground = Block.Iron,
+            Cliff = Block.Iron,
+            Water = Block.Air,
+            Bedrock = Block.Bedrock,
             BeachSandy = Block.Obsidian,
             BeachRocky = Block.Obsidian,
-            SkyColor   = "#000000",
-            FogColor   = "#000000",
-            Horizon    = Block.Obsidian,
-            Border     = Block.Obsidian,
+            SkyColor = "#000000",
+            FogColor = "#000000",
+            Horizon = Block.Obsidian,
+            Border = Block.Obsidian,
         };
-        
-        
-        public static MapGenBiome Get(string biome) {
+
+
+        public static MapGenBiome Get(string biome)
+        {
             foreach (KeyValuePair<string, MapGenBiome> kvp in Biomes)
             {
                 if (kvp.Key.CaselessEq(biome)) return kvp.Value;
             }
             return forest;
         }
-        
-        public static string FindMatch(Player p, string biome) {
+
+        public static string FindMatch(Player p, string biome)
+        {
             KeyValuePair<string, MapGenBiome> match = Matcher.Find(p, biome, out int matches, Biomes,
                                         null, b => b.Key, "biomes");
 
             if (match.Key == null && matches == 0) ListBiomes(p);
             return match.Key;
         }
-        
-        public static void ListBiomes(Player p) {
+
+        public static void ListBiomes(Player p)
+        {
             p.Message("&HAvailable biomes: &f" + Biomes.Join(b => b.Key));
         }
-        
-        public static Dictionary<string, MapGenBiome> Biomes = new Dictionary<string, MapGenBiome>()
+
+        public static Dictionary<string, MapGenBiome> Biomes = new()
         {
-            { FOREST, forest }, { ARCTIC, arctic }, { DESERT, desert }, 
-            { HELL,   hell },   { SWAMP,  swamp },  { MINE,   mine },   
+            { FOREST, forest }, { ARCTIC, arctic }, { DESERT, desert },
+            { HELL,   hell },   { SWAMP,  swamp },  { MINE,   mine },
             { PLAINS, plains }, { SANDY,  sandy },  { SPACE,  space },
         };
     }

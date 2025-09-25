@@ -15,200 +15,126 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System.IO;
 using MCGalaxy.Blocks;
 using MCGalaxy.Maths;
-using BlockID = System.UInt16;
+using System.IO;
 
-namespace MCGalaxy 
+
+namespace MCGalaxy
 {
-    public static partial class Block 
+    public static partial class Block
     {
-        public static bool Walkthrough(BlockID block) {
+        public static bool Walkthrough(ushort block)
+        {
             return block == Air || block == Sapling || block == Snow
                 || block == Fire || block == Rope
                 || (block >= Water && block <= StillLava)
                 || (block >= Dandelion && block <= RedMushroom);
         }
 
-        public static bool AllowBreak(BlockID block) {
-            switch (block) {
-                case Portal_Blue:
-                case Portal_Orange:
-
-                case MB_White:
-                case MB_Black:
-
-                case Door_Log:
-                case Door_Obsidian:
-                case Door_Glass:
-                case Door_Stone:
-                case Door_Leaves:
-                case Door_Sand:
-                case Door_Wood:
-                case Door_Green:
-                case Door_TNT:
-                case Door_Slab:
-                case Door_Iron:
-                case Door_Gold:
-                case Door_Dirt:
-                case Door_Grass:
-                case Door_Blue:
-                case Door_Bookshelf:
-                case Door_Cobblestone:
-                case Door_Red:
-
-                case Door_Orange:
-                case Door_Yellow:
-                case Door_Lime:
-                case Door_Teal:
-                case Door_Aqua:
-                case Door_Cyan:
-                case Door_Indigo:
-                case Door_Purple:
-                case Door_Magenta:
-                case Door_Pink:
-                case Door_Black:
-                case Door_Gray:
-                case Door_White:
-
-                case C4:
-                case TNT_Small:
-                case TNT_Big:
-                case TNT_Nuke:
-                case RocketStart:
-                case Fireworks:
-
-                case ZombieBody:
-                case Creeper:
-                case ZombieHead:
-                    return true;
-            }
-            return false;
-        }
-
-        public static bool LightPass(BlockID block) {
-            switch (Convert(block)) {
-                case Air:
-                case Glass:
-                case Leaves:
-                case Rose:
-                case Dandelion:
-                case Mushroom:
-                case RedMushroom:
-                case Sapling:
-                case Rope:
-                    return true;
-            }
-            return false;
-        }
-
-        public static bool NeedRestart(BlockID block) {
-            switch (block)
+        public static bool AllowBreak(ushort block)
+        {
+            return block switch
             {
-                case Train:
-
-                case Snake:
-                case SnakeTail:
-
-                case Air_Flood:
-                case Air_FloodDown:
-                case Air_FloodUp:
-                case Air_FloodLayer:
-                    
-                case LavaFire:
-                case RocketHead:
-                case Fireworks:
-
-                case Creeper:
-                case ZombieBody:
-                case ZombieHead:
-
-                case Bird_Black:
-                case Bird_Blue:
-                case Bird_Killer:
-                case Bird_Lava:
-                case Bird_Red:
-                case Bird_Water:
-                case Bird_White:
-
-                case Fish_Betta:
-                case Fish_Gold:
-                case Fish_Salmon:
-                case Fish_Shark:
-                case Fish_LavaShark:
-                case Fish_Sponge:
-
-                case TNT_Explosion:
-                    return true;
-            }
-            return false;
+                Portal_Blue or Portal_Orange or MB_White or MB_Black or Door_Log or Door_Obsidian or Door_Glass or Door_Stone or Door_Leaves or Door_Sand or Door_Wood or Door_Green or Door_TNT or Door_Slab or Door_Iron or Door_Gold or Door_Dirt or Door_Grass or Door_Blue or Door_Bookshelf or Door_Cobblestone or Door_Red or Door_Orange or Door_Yellow or Door_Lime or Door_Teal or Door_Aqua or Door_Cyan or Door_Indigo or Door_Purple or Door_Magenta or Door_Pink or Door_Black or Door_Gray or Door_White or C4 or TNT_Small or TNT_Big or TNT_Nuke or RocketStart or Fireworks or ZombieBody or Creeper or ZombieHead => true,
+                _ => false,
+            };
         }
-        
-        public static AABB BlockAABB(BlockID block, Level lvl) {
+
+        public static bool LightPass(ushort block)
+        {
+            return Convert(block) switch
+            {
+                Air or Glass or Leaves or Rose or Dandelion or Mushroom or RedMushroom or Sapling or Rope => true,
+                _ => false,
+            };
+        }
+
+        public static bool NeedRestart(ushort block)
+        {
+            return block switch
+            {
+                Train or Snake or SnakeTail or Air_Flood or Air_FloodDown or Air_FloodUp or Air_FloodLayer or LavaFire or RocketHead or Fireworks or Creeper or ZombieBody or ZombieHead or Bird_Black or Bird_Blue or Bird_Killer or Bird_Lava or Bird_Red or Bird_Water or Bird_White or Fish_Betta or Fish_Gold or Fish_Salmon or Fish_Shark or Fish_LavaShark or Fish_Sponge or TNT_Explosion => true,
+                _ => false,
+            };
+        }
+
+        public static AABB BlockAABB(ushort block, Level lvl)
+        {
             BlockDefinition def = lvl.GetBlockDef(block);
-            if (def != null) {
+            if (def != null)
+            {
                 return new AABB(def.MinX * 2, def.MinZ * 2, def.MinY * 2,
                                 def.MaxX * 2, def.MaxZ * 2, def.MaxY * 2);
             }
-            
+
             if (block >= Extended) return new AABB(0, 0, 0, 32, 32, 32);
-            BlockID core = Convert(block);
+            ushort core = Convert(block);
             return new AABB(0, 0, 0, 32, DefaultSet.Height(core) * 2, 32);
-        }        
-        
-        public static void SetBlocks() {
+        }
+
+        public static void SetBlocks()
+        {
             BlockProps[] props = Props;
-            for (int b = 0; b < props.Length; b++) 
+            for (int b = 0; b < props.Length; b++)
             {
-                props[b] = MakeDefaultProps((BlockID)b);
+                props[b] = MakeDefaultProps((ushort)b);
             }
-            
+
             SetDefaultNames();
             string propsPath = Paths.BlockPropsPath("default");
-                
+
             // backwards compatibility with older versions
-            if (!File.Exists(propsPath)) {
-                BlockProps.Load("core",    Props, 1, false);
-                BlockProps.Load("global",  Props, 1, true);
-            } else {
+            if (!File.Exists(propsPath))
+            {
+                BlockProps.Load("core", Props, 1, false);
+                BlockProps.Load("global", Props, 1, true);
+            }
+            else
+            {
                 BlockProps.Load("default", Props, 1, false);
             }
-            
+
             UpdateLoadedLevels();
         }
-        
-        public static void UpdateLoadedLevels() {
+
+        public static void UpdateLoadedLevels()
+        {
             Level[] loaded = LevelInfo.Loaded.Items;
-            foreach (Level lvl in loaded) 
+            foreach (Level lvl in loaded)
             {
                 lvl.UpdateBlockProps();
                 lvl.UpdateAllBlockHandlers();
             }
         }
-        
+
         /// <summary> Converts a raw/client block ID to a server block ID </summary>
-        public static BlockID FromRaw(BlockID raw) {
-            return raw < CPE_COUNT ? raw : (BlockID)(raw + Extended);
+        public static ushort FromRaw(ushort raw)
+        {
+            return raw < CPE_COUNT ? raw : (ushort)(raw + Extended);
         }
-        
+
         /// <summary> Converts a server block ID to a raw/client block ID </summary>
         /// <remarks> Undefined behaviour for physics block IDs </remarks>
-        public static BlockID ToRaw(BlockID raw) {
-            return raw < CPE_COUNT ? raw : (BlockID)(raw - Extended);
+        public static ushort ToRaw(ushort raw)
+        {
+            return raw < CPE_COUNT ? raw : (ushort)(raw - Extended);
         }
-        
-        public static BlockID MapOldRaw(BlockID raw) {
+
+        public static ushort MapOldRaw(ushort raw)
+        {
             // old raw form was: 0 - 65 core block ids, 66 - 255 custom block ids
             // 256+ remain unchanged
-            return IsPhysicsType(raw) ? ((BlockID)(raw + Extended)) : raw;
+            return IsPhysicsType(raw) ? ((ushort)(raw + Extended)) : raw;
         }
-        
-        public static bool IsPhysicsType(BlockID block) {
+
+        public static bool IsPhysicsType(ushort block)
+        {
             return block >= CPE_COUNT && block < Extended;
         }
-        
-        public static bool VisuallyEquals(BlockID a, BlockID b) {
+
+        public static bool VisuallyEquals(ushort a, ushort b)
+        {
             return Convert(a) == Convert(b);
         }
     }

@@ -20,29 +20,33 @@ using MCGalaxy.Commands;
 
 namespace MCGalaxy.Modules.Compiling
 {
-    sealed class CmdCmdCreate : CmdCompile 
+    sealed class CmdCmdCreate : CmdCompile
     {
         public override string name { get { return "CmdCreate"; } }
         public override string shortcut { get { return ""; } }
-        public override CommandAlias[] Aliases {
+        public override CommandAlias[] Aliases
+        {
             get { return new[] { new CommandAlias("PCreate", "plugin") }; }
         }
-        
-        protected override void CompileCommand(Player p, string[] paths, ICompiler compiler) {
+
+        protected override void CompileCommand(Player p, string[] paths, ICompiler compiler)
+        {
             foreach (string cmd in paths)
             {
                 CompilerOperations.CreateCommand(p, cmd, compiler);
             }
         }
-        
-        protected override void CompilePlugin(Player p, string[] paths, ICompiler compiler) {
+
+        protected override void CompilePlugin(Player p, string[] paths, ICompiler compiler)
+        {
             foreach (string cmd in paths)
             {
                 CompilerOperations.CreatePlugin(p, cmd, compiler);
             }
         }
 
-        public override void Help(Player p) {
+        public override void Help(Player p)
+        {
             p.Message("&T/CmdCreate [name]");
             p.Message("&HCreates an example C# command named Cmd[name]");
             p.Message("&H  This can be used as the basis for creating a new command");

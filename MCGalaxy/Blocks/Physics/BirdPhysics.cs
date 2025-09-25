@@ -16,26 +16,32 @@
     permissions and limitations under the Licenses.
  */
 using System;
-using BlockID = System.UInt16;
 
-namespace MCGalaxy.Blocks.Physics {    
-    public static class BirdPhysics {
-        
-        public static void Do(Level lvl, ref PhysInfo C) {
+
+namespace MCGalaxy.Blocks.Physics
+{
+    public static class BirdPhysics
+    {
+
+        public static void Do(Level lvl, ref PhysInfo C)
+        {
             Random rand = lvl.physRandom;
             ushort x = C.X, y = C.Y, z = C.Z;
-            BlockID block = lvl.GetBlock(x, y, z);
+            ushort block = lvl.GetBlock(x, y, z);
             int index;
 
-            switch (rand.Next(1, 15)) {
+            switch (rand.Next(1, 15))
+            {
                 case 1:
-                    if (lvl.IsAirAt(x, (ushort)(y - 1), z, out index)) {
+                    if (lvl.IsAirAt(x, (ushort)(y - 1), z, out index))
+                    {
                         lvl.AddUpdate(index, block);
                     }
                     else goto case 3;
                     break;
                 case 2:
-                    if (lvl.IsAirAt(x, (ushort)(y + 1), z, out index)) {
+                    if (lvl.IsAirAt(x, (ushort)(y + 1), z, out index))
+                    {
                         lvl.AddUpdate(index, block);
                     }
                     else goto case 6;
@@ -62,12 +68,14 @@ namespace MCGalaxy.Blocks.Physics {
             lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
             C.Data.Data = PhysicsArgs.RemoveFromChecks;
         }
-        
-        static void FlyTo(Level lvl, ref PhysInfo C, ushort x, ushort y, ushort z, BlockID block) {
-            BlockID neighbour = lvl.GetBlock(x, y, z, out int index);
+
+        static void FlyTo(Level lvl, ref PhysInfo C, ushort x, ushort y, ushort z, ushort block)
+        {
+            ushort neighbour = lvl.GetBlock(x, y, z, out int index);
             if (neighbour == Block.Invalid) return;
-            
-            switch (neighbour) {
+
+            switch (neighbour)
+            {
                 case Block.Air:
                     lvl.AddUpdate(index, block);
                     break;

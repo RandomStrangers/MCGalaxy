@@ -1,7 +1,7 @@
 ﻿// Part of fCraft | Copyright 2009-2015 Matvei Stefarov <me@matvei.org> | BSD-3 | See LICENSE.txt
-using System.Windows.Forms;
-using System.Drawing;
 using System;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace MCGalaxy.Gui.Popups
 {
@@ -51,7 +51,7 @@ namespace MCGalaxy.Gui.Popups
             int row = index / btnsPerCol, col = index % btnsPerCol;
             index++;
 
-            Button btn = new Button
+            Button btn = new()
             {
                 BackColor = LookupColor(colCode, out Color textCol),
                 ForeColor = textCol,

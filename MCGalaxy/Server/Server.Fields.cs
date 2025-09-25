@@ -15,49 +15,50 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using System.Collections.Generic;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
+using System;
+using System.Collections.Generic;
 
-namespace MCGalaxy 
+namespace MCGalaxy
 {
-    public sealed partial class Server 
+    public sealed partial class Server
     {
-        public static bool cancelcommand;        
+        public static bool cancelcommand;
         public delegate void OnConsoleCommand(string cmd, string message);
         public static event OnConsoleCommand ConsoleCommand;
         public delegate void MessageEventHandler(string message);
         public delegate void VoidHandler();
-        
+
         public static event MessageEventHandler OnURLChange;
         public static event VoidHandler OnSettingsUpdate;
-        public static ServerConfig Config = new ServerConfig();
+        public static ServerConfig Config = new();
         public static DateTime StartTime;
-        
+
         public static PlayerExtList AutoloadMaps;
-        public static PlayerMetaList RankInfo = new PlayerMetaList("text/rankinfo.txt");
-        public static PlayerMetaList Notes = new PlayerMetaList("text/notes.txt");
+        public static PlayerMetaList RankInfo = new("text/rankinfo.txt");
+        public static PlayerMetaList Notes = new("text/notes.txt");
         public const string InternalVersion = "1.9.5.3";
         public static string Ver { get { return InternalVersion; } } //Nas differs.
         /// <summary> *** DO NOT USE THIS! *** Use VersionString, as this field is a constant and is inlined if used. </summary>
 #if NAS && TEN_BIT_BLOCKS
-        public static string SoftwareVersion 
+        public static string SoftwareVersion
         {
-            get 
-            { 
-                return NasVersion; 
+            get
+            {
+                return NasVersion;
             }
         }
         public static string SoftwareName = "MCGalaxy-NAS";
-        public const string NasVersion = "1.0.2.3";
+        public const string NasVersion = "1.0.2.4";
 #else
         public static string SoftwareVersion { get { return InternalVersion; } }
         public static string SoftwareName = "MCGalaxy";
 #endif
         static string fullName;
         public static string Version { get; set; }
-        public static string SoftwareNameVersioned {
+        public static string SoftwareNameVersioned
+        {
             // By default, if SoftwareName gets externally changed, that is reflected in SoftwareNameVersioned too
             get { return fullName ?? SoftwareName + " " + Version; }
             set { fullName = value; }
@@ -67,40 +68,40 @@ namespace MCGalaxy
 
         //Other
         public static bool SetupFinished, CLIMode;
-        
+
         public static PlayerList whiteList, invalidIds;
         public static PlayerList ignored, hidden, agreed, vip, noEmotes, lockdown;
         public static PlayerExtList models, skins, reach, rotations, modelScales;
         public static PlayerExtList bannedIP, frozen, muted, tempBans, tempRanks;
-        
-        public static readonly List<string> Devs = new List<string>() { "Hetal", "UclCommander" };
-        public static readonly List<string> Opstats = new List<string>() { "ban", "tempban", "xban", "banip", "kick", "warn", "mute", "freeze", "setrank" };
+
+        public static readonly List<string> Devs = new() { "Hetal", "UclCommander" };
+        public static readonly List<string> Opstats = new() { "ban", "tempban", "xban", "banip", "kick", "warn", "mute", "freeze", "setrank" };
 
         public static Level mainLevel;
 
-        public static PlayerList reviewlist = new PlayerList();
+        public static PlayerList reviewlist = new();
         static string[] announcements = new string[0];
         public static string RestartPath;
 
         // Extra storage for custom commands
-        public static ExtrasCollection Extras = new ExtrasCollection();
-        
+        public static ExtrasCollection Extras = new();
+
         public static int YesVotes, NoVotes;
         public static bool voting;
         public const int MAX_PLAYERS = 256;
-        
-        public static Scheduler MainScheduler = new Scheduler("MCG_MainScheduler");
-        public static Scheduler Background = new Scheduler("MCG_BackgroundScheduler");
-        public static Scheduler Critical = new Scheduler("MCG_CriticalScheduler");
-        public static Scheduler Heartbeats = new Scheduler("MCG_HeartbeatsScheduler");
-        public static Server s = new Server();
+
+        public static Scheduler MainScheduler = new("MCG_MainScheduler");
+        public static Scheduler Background = new("MCG_BackgroundScheduler");
+        public static Scheduler Critical = new("MCG_CriticalScheduler");
+        public static Scheduler Heartbeats = new("MCG_HeartbeatsScheduler");
+        public static Server s = new();
 
         public const byte VERSION_0016 = 3; // classic 0.0.16
         public const byte VERSION_0017 = 4; // classic 0.0.17 / 0.0.18
         public const byte VERSION_0019 = 5; // classic 0.0.19
         public const byte VERSION_0020 = 6; // classic 0.0.20 / 0.0.21 / 0.0.23
         public const byte VERSION_0030 = 7; // classic 0.30 (final)
-        
+
         public static bool chatmod, flipHead;
         public static bool shuttingDown;
     }

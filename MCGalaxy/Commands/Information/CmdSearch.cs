@@ -12,10 +12,9 @@ BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
  */
-using System;
-using System.Collections.Generic;
 using MCGalaxy.SQL;
-using BlockID = System.UInt16;
+using System.Collections.Generic;
+
 
 namespace MCGalaxy.Commands.Info
 {
@@ -72,10 +71,10 @@ namespace MCGalaxy.Commands.Info
 
         static void SearchBlocks(Player p, string keyword, string modifier)
         {
-            List<BlockID> blocks = new List<BlockID>();
+            List<ushort> blocks = new();
             for (int b = 0; b < Block.SUPPORTED_COUNT; b++)
             {
-                BlockID block = (BlockID)b;
+                ushort block = (ushort)b;
                 if (Block.ExistsFor(p, block)) blocks.Add(block);
             }
 
@@ -148,7 +147,7 @@ namespace MCGalaxy.Commands.Info
 
         static void SearchPlayers(Player p, string keyword, string modifier)
         {
-            List<string> names = new List<string>();
+            List<string> names = new();
             string suffix = Database.Backend.CaselessLikeSuffix;
 
             // TODO supporting more than 100 matches somehow

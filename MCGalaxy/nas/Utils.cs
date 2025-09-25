@@ -1,15 +1,15 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using MCGalaxy.Generator;
 using MCGalaxy;
-using System;
-using System.Globalization;
+using MCGalaxy.Commands;
+using MCGalaxy.DB;
+using MCGalaxy.Generator;
 using MCGalaxy.Maths;
 using MCGalaxy.Network;
+using System;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Threading;
-using MCGalaxy.DB;
-using MCGalaxy.Commands;
 namespace NotAwesomeSurvival
 {
     public partial class Nas
@@ -329,7 +329,7 @@ namespace NotAwesomeSurvival
             {
                 return false;
             }
-            result = value; 
+            result = value;
             return true;
         }
     }

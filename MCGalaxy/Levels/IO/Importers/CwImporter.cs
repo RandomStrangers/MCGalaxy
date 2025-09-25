@@ -15,11 +15,11 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using System.IO;
 using fNbt;
 using MCGalaxy.Maths;
-using BlockID = System.UInt16;
+using System;
+using System.IO;
+
 
 namespace MCGalaxy.Levels.IO
 {
@@ -33,7 +33,7 @@ namespace MCGalaxy.Levels.IO
         }
         public override Level Read(Stream src, string name, bool metadata)
         {
-            NbtFile file = new NbtFile();
+            NbtFile file = new();
             file.LoadFromStream(src);
             ReadData(file.RootTag, name, out Level lvl);
             if (!metadata)
@@ -63,7 +63,7 @@ namespace MCGalaxy.Levels.IO
             // (aka the array containing the lower 8 bits of block ids)
             if (root.Contains("BlockArray2"))
             {
-                ReadExtBlocks(root, lvl); 
+                ReadExtBlocks(root, lvl);
                 return;
             }
 #endif
@@ -82,7 +82,7 @@ namespace MCGalaxy.Levels.IO
                 }
                 lvl.IntToPos(i, out ushort x, out ushort y, out ushort z);
                 int b = ((hi[i] << 8) | lo[i]) + Block.Extended;
-                lvl.SetBlock(x, y, z, (BlockID)b);
+                lvl.SetBlock(x, y, z, (ushort)b);
             }
         }
 #endif
@@ -177,7 +177,7 @@ namespace MCGalaxy.Levels.IO
                     continue;
                 }
                 NbtCompound props = (NbtCompound)tag;
-                BlockDefinition def = new BlockDefinition
+                BlockDefinition def = new()
                 {
                     RawID = props["ID"].ByteValue
                 };
@@ -201,8 +201,8 @@ namespace MCGalaxy.Levels.IO
                 {
                     def.FogDensity = 0;
                 }
-                def.FogR = fog[1]; 
-                def.FogG = fog[2]; 
+                def.FogR = fog[1];
+                def.FogG = fog[2];
                 def.FogB = fog[3];
                 byte[] tex = props["Textures"].ByteArrayValue;
                 ImportTexs(def, tex, 0);
@@ -211,13 +211,13 @@ namespace MCGalaxy.Levels.IO
                     ImportTexs(def, tex, 6);
                 }
                 byte[] coords = props["Coords"].ByteArrayValue;
-                def.MinX = coords[0]; 
-                def.MinZ = coords[1]; 
+                def.MinX = coords[0];
+                def.MinZ = coords[1];
                 def.MinY = coords[2];
-                def.MaxX = coords[3]; 
-                def.MaxZ = coords[4]; 
+                def.MaxX = coords[3];
+                def.MaxZ = coords[4];
                 def.MaxY = coords[5];
-                BlockID block = def.GetBlock();
+                ushort block = def.GetBlock();
                 if (block >= Block.SUPPORTED_COUNT)
                 {
                     Logger.Log(LogType.Warning, "Cannot import custom block {0} (ID {1})",
@@ -250,11 +250,11 @@ namespace MCGalaxy.Levels.IO
         static void ImportTexs(BlockDefinition def, byte[] tex, int i)
         {
             int s = i == 0 ? 0 : 8;
-            def.TopTex |= (ushort)(tex[i + 0] << s); 
+            def.TopTex |= (ushort)(tex[i + 0] << s);
             def.BottomTex |= (ushort)(tex[i + 1] << s);
-            def.LeftTex |= (ushort)(tex[i + 2] << s); 
+            def.LeftTex |= (ushort)(tex[i + 2] << s);
             def.RightTex |= (ushort)(tex[i + 3] << s);
-            def.FrontTex |= (ushort)(tex[i + 4] << s); 
+            def.FrontTex |= (ushort)(tex[i + 4] << s);
             def.BackTex |= (ushort)(tex[i + 5] << s);
         }
         static bool PropsEquals(BlockDefinition a, BlockDefinition b)

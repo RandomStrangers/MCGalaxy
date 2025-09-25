@@ -15,13 +15,13 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.Config;
+using MCGalaxy.Network;
 using System;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
-using MCGalaxy.Config;
-using MCGalaxy.Network;
 
 namespace MCGalaxy.Modules.Relay.Discord
 {
@@ -32,125 +32,144 @@ namespace MCGalaxy.Modules.Relay.Discord
     {
         public string Token;
         public string Host;
-        
-        DiscordApiMessage GetNextRequest() {
+
+        DiscordApiMessage GetNextRequest()
+        {
             if (queue.Count == 0) return null;
             DiscordApiMessage first = queue.Dequeue();
-            
+
             // try to combine messages to minimise API calls
-            while (queue.Count > 0) {
+            while (queue.Count > 0)
+            {
                 DiscordApiMessage next = queue.Peek();
                 if (!next.CombineWith(first)) break;
                 queue.Dequeue();
             }
             return first;
         }
-        
+
         protected override string ThreadName { get { return "Discord-ApiClient"; } }
-        protected override void HandleNext() {
+        protected override void HandleNext()
+        {
             DiscordApiMessage msg = null;
             WebResponse res = null;
-            
+
             lock (queueLock) { msg = GetNextRequest(); }
-            if (msg == null) { WaitForWork(); return;  }
-            
-            for (int retry = 0; retry < 10; retry++) 
+            if (msg == null) { WaitForWork(); return; }
+
+            for (int retry = 0; retry < 10; retry++)
             {
-                try {
+                try
+                {
                     HttpWebRequest req = HttpUtil.CreateRequest(Host + msg.Path);
-                    req.Method         = msg.Method;
+                    req.Method = msg.Method;
                     req.Headers[HttpRequestHeader.Authorization] = "Bot " + Token;
-                    
+
                     JsonObject obj = msg.ToJson();
-                    if (obj != null) {
+                    if (obj != null)
+                    {
                         req.ContentType = "application/json";
                         string data = Json.SerialiseObject(obj);
                         HttpUtil.SetRequestData(req, Encoding.UTF8.GetBytes(data));
                     }
-                    
+
                     msg.OnRequest(req);
                     res = req.GetResponse();
-                    
+
                     string resp = HttpUtil.GetResponseText(res);
                     msg.ProcessResponse(resp);
                     break;
-                } catch (WebException ex) {
+                }
+                catch (WebException ex)
+                {
                     bool canRetry = HandleErrorResponse(ex, msg, retry);
                     HttpUtil.DisposeErrorResponse(ex);
-                    
+
                     if (!canRetry) return;
-                } catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     LogError(ex, msg);
                     return;
                 }
             }
-            
+
             // Avoid triggering HTTP 429 error if possible
             string remaining = res.Headers["X-RateLimit-Remaining"];
             if (remaining == "1") SleepForRetryPeriod(res);
         }
-        
-        static bool HandleErrorResponse(WebException ex, DiscordApiMessage msg, int retry) {
+
+        static bool HandleErrorResponse(WebException ex, DiscordApiMessage msg, int retry)
+        {
             string err = HttpUtil.GetErrorResponse(ex);
             HttpStatusCode status = GetStatus(ex);
-            
+
             // 429 errors simply require retrying after sleeping for a bit
-            if (status == (HttpStatusCode)429) {
+            if (status == (HttpStatusCode)429)
+            {
                 SleepForRetryPeriod(ex.Response);
                 return true;
             }
-            
+
             // 500 errors might be temporary Discord outage, so still retry a few times
-            if (status >= (HttpStatusCode)500 && status <= (HttpStatusCode)504) {
+            if (status >= (HttpStatusCode)500 && status <= (HttpStatusCode)504)
+            {
                 LogWarning(ex);
                 LogResponse(err);
                 return retry < 2;
             }
-            
+
             // If unable to reach Discord at all, immediately give up
-            if (ex.Status == WebExceptionStatus.NameResolutionFailure) {
+            if (ex.Status == WebExceptionStatus.NameResolutionFailure)
+            {
                 LogWarning(ex);
                 return false;
             }
-            
+
             // May be caused by connection dropout/reset, so still retry a few times
-            if (ex.InnerException is IOException) {
+            if (ex.InnerException is IOException)
+            {
                 LogWarning(ex);
                 return retry < 2;
             }
-            
+
             LogError(ex, msg);
             LogResponse(err);
             return false;
         }
-        
-        
-        static HttpStatusCode GetStatus(WebException ex) {
-            if (ex.Response == null) return 0;            
+
+
+        static HttpStatusCode GetStatus(WebException ex)
+        {
+            if (ex.Response == null) return 0;
             return ((HttpWebResponse)ex.Response).StatusCode;
         }
-        
-        static void LogError(Exception ex, DiscordApiMessage msg) {
+
+        static void LogError(Exception ex, DiscordApiMessage msg)
+        {
             string target = "(" + msg.Method + " " + msg.Path + ")";
             Logger.LogError("Error sending request to Discord API " + target, ex);
         }
-        
-        static void LogWarning(Exception ex) {
+
+        static void LogWarning(Exception ex)
+        {
             Logger.Log(LogType.Warning, "Error sending request to Discord API - " + ex.Message);
         }
-        
-        static void LogResponse(string err) {
+
+        static void LogResponse(string err)
+        {
             if (string.IsNullOrEmpty(err)) return;
-            
+
             // Discord sometimes returns <html>..</html> responses for internal server errors
             //  most of this is useless content, so just truncate these particular errors 
             if (err.Length > 200) err = err.Substring(0, 200) + "...";
-            
+
             Logger.Log(LogType.Warning, "Discord API returned: " + err);
         }
-        
-        
-        static void SleepForRetryPeriod(WebResponse res) {
+
+
+        static void SleepForRetryPeriod(WebResponse res)
+        {
             string resetAfter = res.Headers["X-RateLimit-Reset-After"];
             string retryAfter = res.Headers["Retry-After"];
 

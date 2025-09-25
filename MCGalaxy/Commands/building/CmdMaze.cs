@@ -18,23 +18,25 @@
 using MCGalaxy.Drawing.Ops;
 using MCGalaxy.Generator;
 
-namespace MCGalaxy.Commands.Building 
+namespace MCGalaxy.Commands.Building
 {
-    public sealed class CmdMaze : DrawCmd 
+    public sealed class CmdMaze : DrawCmd
     {
         public override string name { get { return "Maze"; } }
 
-        protected override DrawOp GetDrawOp(DrawArgs dArgs) {
-            MazeDrawOp op = new MazeDrawOp
+        protected override DrawOp GetDrawOp(DrawArgs dArgs)
+        {
+            MazeDrawOp op = new()
             {
                 rng = MapGen.MakeRng(dArgs.Message)
             };
             return op;
         }
-        
+
         protected override void GetBrush(DrawArgs dArgs) { dArgs.BrushName = "Normal"; }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/Maze");
             p.Message("&HGenerates a random maze between two points.");
         }

@@ -17,55 +17,62 @@
  */
 using System.Globalization;
 
-namespace MCGalaxy 
+namespace MCGalaxy
 {
-    public static class NumberUtils 
+    public static class NumberUtils
     {
         const NumberStyles DECIMAL_STYLE = NumberStyles.Integer | NumberStyles.AllowDecimalPoint;
         const NumberStyles INTEGER_STYLE = NumberStyles.Integer;
-        
-        
+
+
         // Not all languages use . as their decimal point separator
-        public static bool TryParseSingle(string s, out float result) {
+        public static bool TryParseSingle(string s, out float result)
+        {
             if (s != null && s.IndexOf(',') >= 0) s = s.Replace(',', '.');
-            result = 0; 
+            result = 0;
 
             if (!float.TryParse(s, DECIMAL_STYLE, NumberFormatInfo.InvariantInfo, out float temp)) return false;
             if (float.IsInfinity(temp) || float.IsNaN(temp)) return false;
             result = temp;
             return true;
         }
-        
-        public static bool TryParseDouble(string s, out double result) {
+
+        public static bool TryParseDouble(string s, out double result)
+        {
             if (s != null && s.IndexOf(',') >= 0) s = s.Replace(',', '.');
-            result = 0; 
-            
+            result = 0;
+
             if (!double.TryParse(s, DECIMAL_STYLE, NumberFormatInfo.InvariantInfo, out double temp)) return false;
             if (double.IsInfinity(temp) || double.IsNaN(temp)) return false;
             result = temp;
             return true;
         }
-        
+
         // in JSON we must use . instead of ,
-        public static string StringifyDouble(double value) {
+        public static string StringifyDouble(double value)
+        {
             return value.ToString(CultureInfo.InvariantCulture);
         }
-        
-        public static string StringifyInt(int value) {
+
+        public static string StringifyInt(int value)
+        {
             return value.ToString(CultureInfo.InvariantCulture);
         }
-        
-        
+
+
         // Some languages don't have - as the negative sign symbol
-        public static bool TryParseInt32(string s, out int result) {
+        public static bool TryParseInt32(string s, out int result)
+        {
             return int.TryParse(s, INTEGER_STYLE, NumberFormatInfo.InvariantInfo, out result);
         }
-        
-        public static int ParseInt32(string s) {
+
+        public static int ParseInt32(string s)
+        {
             return int.Parse(s, INTEGER_STYLE, NumberFormatInfo.InvariantInfo);
         }
-        
-        public static bool TryParseInt8(string s, out sbyte result) {
+
+        public static bool TryParseInt8(string s, out sbyte result)
+        {
             return sbyte.TryParse(s, INTEGER_STYLE, NumberFormatInfo.InvariantInfo, out result);
         }
     }

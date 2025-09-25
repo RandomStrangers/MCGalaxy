@@ -18,89 +18,101 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace MCGalaxy.Commands 
-{  
-    public class Alias 
+namespace MCGalaxy.Commands
+{
+    public class Alias
     {
-        public static List<Alias> coreAliases = new List<Alias>();
-        public static List<Alias> aliases = new List<Alias>();
+        public static List<Alias> coreAliases = new();
+        public static List<Alias> aliases = new();
         public string Trigger, Target, Format;
 
-        public Alias(string trigger, string target) {
+        public Alias(string trigger, string target)
+        {
             Trigger = trigger;
             target = target.Trim();
             int space = target.IndexOf(' ');
-            
-            if (space < 0) {
+
+            if (space < 0)
+            {
                 Target = target;
-            } else {
+            }
+            else
+            {
                 Target = target.Substring(0, space);
                 Format = target.Substring(space + 1);
             }
         }
-        
-        public Alias(string trigger, string target, string format) {
+
+        public Alias(string trigger, string target, string format)
+        {
             Trigger = trigger; Target = target; Format = format;
         }
 
-        public static void LoadCustom() {
+        public static void LoadCustom()
+        {
             aliases.Clear();
-            
+
             if (!File.Exists(Paths.AliasesFile)) { SaveCustom(); return; }
             PropertiesFile.Read(Paths.AliasesFile, LineProcessor, ':');
         }
-        
-        static void LineProcessor(string key, string value) {
+
+        static void LineProcessor(string key, string value)
+        {
             aliases.Add(new Alias(key, value));
         }
 
-        public static void SaveCustom() {
-            using (StreamWriter sw = FileIO.CreateGuarded(Paths.AliasesFile)) 
+        public static void SaveCustom()
+        {
+            using StreamWriter sw = FileIO.CreateGuarded(Paths.AliasesFile);
+            sw.WriteLine("# Aliases can be in one of three formats:");
+            sw.WriteLine("# trigger : command");
+            sw.WriteLine("#    e.g. \"xyz : help\" means /xyz is treated as /help <args given by user>");
+            sw.WriteLine("# trigger : command [prefix]");
+            sw.WriteLine("#    e.g. \"xyz : help me\" means /xyz is treated as /help me <args given by user>");
+            sw.WriteLine("# trigger : command <prefix> {args} <suffix>");
+            sw.WriteLine("#    e.g. \"mod : setrank {args} mod\" means /mod is treated as /setrank <args given by user> mod");
+
+            foreach (Alias a in aliases)
             {
-                sw.WriteLine("# Aliases can be in one of three formats:");
-                sw.WriteLine("# trigger : command");
-                sw.WriteLine("#    e.g. \"xyz : help\" means /xyz is treated as /help <args given by user>");
-                sw.WriteLine("# trigger : command [prefix]");
-                sw.WriteLine("#    e.g. \"xyz : help me\" means /xyz is treated as /help me <args given by user>");
-                sw.WriteLine("# trigger : command <prefix> {args} <suffix>");
-                sw.WriteLine("#    e.g. \"mod : setrank {args} mod\" means /mod is treated as /setrank <args given by user> mod");
-                
-                foreach (Alias a in aliases) 
+                if (a.Format == null)
                 {
-                    if (a.Format == null) {
-                        sw.WriteLine(a.Trigger + " : " + a.Target);
-                    } else {
-                        sw.WriteLine(a.Trigger + " : " + a.Target + " " + a.Format);
-                    }
+                    sw.WriteLine(a.Trigger + " : " + a.Target);
+                }
+                else
+                {
+                    sw.WriteLine(a.Trigger + " : " + a.Target + " " + a.Format);
                 }
             }
         }
 
-        public static Alias Find(string cmd) {
-            foreach (Alias alias in aliases) 
+        public static Alias Find(string cmd)
+        {
+            foreach (Alias alias in aliases)
             {
                 if (alias.Trigger.CaselessEq(cmd)) return alias;
             }
-            foreach (Alias alias in coreAliases) 
+            foreach (Alias alias in coreAliases)
             {
                 if (alias.Trigger.CaselessEq(cmd)) return alias;
             }
             return null;
         }
-        
+
         /// <summary> Registers default aliases specified by a command. </summary>
-        internal static void RegisterDefaults(Command cmd) {
+        internal static void RegisterDefaults(Command cmd)
+        {
             CommandAlias[] aliases = cmd.Aliases;
             if (aliases == null) return;
-            
-            foreach (CommandAlias a in aliases) 
+
+            foreach (CommandAlias a in aliases)
             {
-                Alias alias = new Alias(a.Trigger, cmd.name, a.Format);
+                Alias alias = new(a.Trigger, cmd.name, a.Format);
                 coreAliases.Add(alias);
             }
         }
-        
-        internal static void UnregisterDefaults(Command cmd) {
+
+        internal static void UnregisterDefaults(Command cmd)
+        {
             if (cmd.Aliases == null) return;
             coreAliases.RemoveAll(a => a.Target == cmd.name);
         }

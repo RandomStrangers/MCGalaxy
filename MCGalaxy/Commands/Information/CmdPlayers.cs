@@ -18,56 +18,65 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MCGalaxy.Commands.Info 
+namespace MCGalaxy.Commands.Info
 {
-    public sealed class CmdPlayers : Command2 
+    public sealed class CmdPlayers : Command2
     {
         public override string name { get { return "Players"; } }
         public override string shortcut { get { return "Who"; } }
         public override string type { get { return CommandTypes.Information; } }
 
-        public override void Use(Player p, string message, CommandData data) {
+        public override void Use(Player p, string message, CommandData data)
+        {
             List<OnlineListEntry> all = PlayerInfo.GetOnlineList(p, data.Rank, out int total);
             if (message.Length > 0) { ListOfRank(p, message, all); return; }
-            
+
             p.Message("There {0} &a{1} &Splayer{2} online.",
                       total == 1 ? "is" : "are",
                       total, total.Plural());
-            
-            foreach (OnlineListEntry e in all) {
+
+            foreach (OnlineListEntry e in all)
+            {
                 Output(e, p, Server.Config.ListEmptyRanks);
             }
         }
-        
-        static void ListOfRank(Player p, string name, List<OnlineListEntry> all) {
+
+        static void ListOfRank(Player p, string name, List<OnlineListEntry> all)
+        {
             Group grp = Matcher.FindRanks(p, name);
             if (grp == null) return;
             OnlineListEntry rank = all.Find(e => e.group == grp);
-            
-            if (rank == null || rank.players.Count == 0) {
-                p.Message("There are no {0} &Sonline.", 
+
+            if (rank == null || rank.players.Count == 0)
+            {
+                p.Message("There are no {0} &Sonline.",
                           rank.group.GetFormattedName());
-            } else {
+            }
+            else
+            {
                 Output(rank, p, false);
             }
             return;
         }
-        
-        static void Append(Player target, StringBuilder data, Player p, Group group) {
+
+        static void Append(Player target, StringBuilder data, Player p, Group group)
+        {
             data.Append(' ');
             if (p.voice) { data.Append("&f+").Append(group.Color); }
             data.Append(Colors.StripUsed(target.FormatNick(p)));
             data.Append(OnlineListEntry.GetFlags(p));
-            
+
             string lvl = Colors.Strip(p.level.name); // for museums
             data.Append(" (").Append(lvl).Append("),");
         }
-        
-        static void Output(OnlineListEntry e, Player p, bool showWhenEmpty) {            
+
+        static void Output(OnlineListEntry e, Player p, bool showWhenEmpty)
+        {
             if (e.players.Count == 0 && !showWhenEmpty) return;
-            StringBuilder data = new StringBuilder();
-            
-            foreach (Player pl in e.players) {
+            StringBuilder data = new();
+
+            foreach (Player pl in e.players)
+            {
                 Append(p, data, pl, e.group);
             }
 
@@ -75,8 +84,9 @@ namespace MCGalaxy.Commands.Info
             if (data.Length > 0) { data.Remove(data.Length - 1, 1); }
             p.Message(":{0}:{1}", e.group.GetFormattedName(), data);
         }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/Players");
             p.Message("&HLists name and rank of all online players");
             p.Message("&T/Players [rank]");

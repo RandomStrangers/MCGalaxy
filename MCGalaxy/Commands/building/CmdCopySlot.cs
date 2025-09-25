@@ -15,9 +15,9 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.Drawing;
 using System;
 using System.Collections.Generic;
-using MCGalaxy.Drawing;
 
 namespace MCGalaxy.Commands.Building
 {
@@ -80,7 +80,7 @@ namespace MCGalaxy.Commands.Building
         static void SetRandomCopySlot(Player p)
         {
             List<CopyState> copySlots = p.CopySlots;
-            List<int> slots = new List<int>();
+            List<int> slots = new();
 
             for (int i = 0; i < copySlots.Count; i++)
             {

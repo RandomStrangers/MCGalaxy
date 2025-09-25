@@ -12,10 +12,10 @@ BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
  */
-using System;
-using System.Windows.Forms;
 using MCGalaxy.Modules.Relay.Discord;
 using MCGalaxy.Modules.Relay.IRC;
+using System;
+using System.Windows.Forms;
 
 namespace MCGalaxy.Gui
 {

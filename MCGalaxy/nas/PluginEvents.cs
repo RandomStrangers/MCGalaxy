@@ -6,10 +6,9 @@ using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using Newtonsoft.Json;
 using System;
-using System.IO;
 namespace NotAwesomeSurvival
 {
-    public partial class Nas 
+    public partial class Nas
     {
         public static void OnPlayerCommand(Player p, string cmd, string message, CommandData data)
         {
@@ -459,7 +458,7 @@ namespace NotAwesomeSurvival
             if (!Load(p, path, out NasPlayer np) && !Load(p, pathText, out np))
             {
                 np = new NasPlayer(p);
-                Orientation rot = new Orientation(Server.mainLevel.rotx, Server.mainLevel.roty);
+                Orientation rot = new(Server.mainLevel.rotx, Server.mainLevel.roty);
                 NasEntity.SetLocation(np, Server.mainLevel.name, Server.mainLevel.SpawnPos, rot);
                 p.Extras[PlayerKey] = np;
                 Log("Created new save file for {0}!", p.name);
@@ -490,10 +489,7 @@ namespace NotAwesomeSurvival
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar delete◙", 45, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar confirmdelete◙", 25, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar toolinfo◙", 23, 0, true));
-            if (np.PlayerSavingScheduler == null)
-            {
-                np.PlayerSavingScheduler = new Scheduler("SavingScheduler" + p.name);
-            }
+            np.PlayerSavingScheduler ??= new Scheduler("SavingScheduler" + p.name);
             np.PlayerSaveTask = np.PlayerSavingScheduler.QueueRepeat(np.SaveStatsTask, null, TimeSpan.FromSeconds(5));
         }
         public static void OnShutdown(bool restarting, string reason)
@@ -505,10 +501,7 @@ namespace NotAwesomeSurvival
             NasPlayer np = NasPlayer.GetNasPlayer(p);
             if (np != null)
             {
-                if (np.PlayerSavingScheduler == null)
-                {
-                    np.PlayerSavingScheduler = new Scheduler("SavingScheduler" + p.name);
-                }
+                np.PlayerSavingScheduler ??= new Scheduler("SavingScheduler" + p.name);
                 np.PlayerSavingScheduler.Cancel(np.PlayerSaveTask);
                 np.Save();
             }

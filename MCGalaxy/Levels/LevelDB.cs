@@ -15,23 +15,26 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using System.Collections.Generic;
 using MCGalaxy.Blocks.Extended;
 using MCGalaxy.Maths;
 using MCGalaxy.SQL;
-using BlockID = System.UInt16;
+using System;
+using System.Collections.Generic;
 
-namespace MCGalaxy 
+
+namespace MCGalaxy
 {
-    public static class LevelDB 
+    public static class LevelDB
     {
-        internal static void SaveBlockDB(Level lvl) {
+        internal static void SaveBlockDB(Level lvl)
+        {
             if (lvl.BlockDB.Cache.Head == null) return;
             if (!lvl.Config.UseBlockDB) { lvl.BlockDB.Cache.Clear(); return; }
 
-            using (IDisposable wLock = lvl.BlockDB.Locker.AccquireWrite(60 * 1000)) {
-                if (wLock == null) {
+            using (IDisposable wLock = lvl.BlockDB.Locker.AccquireWrite(60 * 1000))
+            {
+                if (wLock == null)
+                {
                     Logger.Log(LogType.Warning, "&WCouldn't accquire BlockDB write lock on {0}, skipping save", lvl.name);
                     return;
                 }
@@ -40,8 +43,9 @@ namespace MCGalaxy
             Logger.Log(LogType.BackgroundActivity, "Saved BlockDB changes for: {0}", lvl.name);
         }
 
-        static Zone ParseZone(ISqlRecord record) {
-            Zone z = new Zone
+        static Zone ParseZone(ISqlRecord record)
+        {
+            Zone z = new()
             {
                 MinX = (ushort)record.GetInt("SmallX"),
                 MinY = (ushort)record.GetInt("SmallY"),
@@ -54,95 +58,104 @@ namespace MCGalaxy
             z.Config.Name = record.GetText("Owner");
             return z;
         }
-        
-        internal static void LoadZones(Level level, string map) {
+
+        internal static void LoadZones(Level level, string map)
+        {
             if (!Database.TableExists("Zone" + map)) return;
-            
-            List<Zone> zones = new List<Zone>();
+
+            List<Zone> zones = new();
             Database.ReadRows("Zone" + map, "*",
                                 record => zones.Add(ParseZone(record)));
-            
+
             bool changedPerbuild = false;
-            for (int i = 0; i < zones.Count; i++) {
+            for (int i = 0; i < zones.Count; i++)
+            {
                 Zone z = zones[i];
                 string owner = z.Config.Name;
-                
-                if (owner.StartsWith("grp")) {
+
+                if (owner.StartsWith("grp"))
+                {
                     Group grp = Group.Find(owner.Substring(3));
                     if (grp != null) z.Access.Min = grp.Permission;
-                } else if (z.CoversMap(level)) {
+                }
+                else if (z.CoversMap(level))
+                {
                     level.BuildAccess.Whitelisted.Add(owner);
                     changedPerbuild = true;
                     continue;
-                } else {
+                }
+                else
+                {
                     z.Access.Whitelisted.Add(owner);
                     z.Access.Min = LevelPermission.Admin;
                 }
-                
+
                 z.Config.Name = "Zone" + i;
                 z.AddTo(level);
             }
-            
+
             if (changedPerbuild) level.SaveSettings();
             if (level.Zones.Count > 0 && !level.Save(true)) return;
-            
+
             Database.DeleteTable("Zone" + map);
             Logger.Log(LogType.SystemActivity, "Upgraded zones for map " + map);
         }
-        
-        internal static void LoadPortals(Level level, string map) {
+
+        internal static void LoadPortals(Level level, string map)
+        {
             List<Vec3U16> coords = Portal.GetAllCoords(map);
-            level.hasPortals     = coords.Count > 0;
+            level.hasPortals = coords.Count > 0;
             if (!level.hasPortals) return;
-            
+
             int deleted = 0;
-            foreach (Vec3U16 p in coords) 
+            foreach (Vec3U16 p in coords)
             {
-                BlockID block = level.GetBlock(p.X, p.Y, p.Z);
+                ushort block = level.GetBlock(p.X, p.Y, p.Z);
                 if (level.Props[block].IsPortal) continue;
-                
+
                 Portal.Delete(map, p.X, p.Y, p.Z);
                 deleted++;
             }
-            
+
             if (deleted == 0) return;
             Logger.Log(LogType.BackgroundActivity, "Autodeleted {0} non-existent portals in {1}", deleted, level.name);
         }
-        
-        internal static void LoadMessages(Level level, string map) {
-            List<Vec3U16> coords   = MessageBlock.GetAllCoords(map);
+
+        internal static void LoadMessages(Level level, string map)
+        {
+            List<Vec3U16> coords = MessageBlock.GetAllCoords(map);
             level.hasMessageBlocks = coords.Count > 0;
             if (!level.hasMessageBlocks) return;
-            
+
             int deleted = 0;
-            foreach (Vec3U16 p in coords) 
+            foreach (Vec3U16 p in coords)
             {
-                BlockID block = level.GetBlock(p.X, p.Y, p.Z);
+                ushort block = level.GetBlock(p.X, p.Y, p.Z);
                 if (level.Props[block].IsMessageBlock) continue;
-                
+
                 MessageBlock.Delete(map, p.X, p.Y, p.Z);
                 deleted++;
             }
-            
+
             if (deleted == 0) return;
             Logger.Log(LogType.BackgroundActivity, "Autodeleted {0} non-existent message blocks in {1}", deleted, level.name);
         }
-        
+
         internal static ColumnDesc[] createPortals = new ColumnDesc[] {
-            new ColumnDesc("EntryX", ColumnType.UInt16),
-            new ColumnDesc("EntryY", ColumnType.UInt16),
-            new ColumnDesc("EntryZ", ColumnType.UInt16),
-            new ColumnDesc("ExitMap", ColumnType.Char, 20),
-            new ColumnDesc("ExitX", ColumnType.UInt16),
-            new ColumnDesc("ExitY", ColumnType.UInt16),
-            new ColumnDesc("ExitZ", ColumnType.UInt16),
+            new("EntryX", ColumnType.UInt16),
+            new("EntryY", ColumnType.UInt16),
+            new("EntryZ", ColumnType.UInt16),
+            new("ExitMap", ColumnType.Char, 20),
+            new("ExitX", ColumnType.UInt16),
+            new("ExitY", ColumnType.UInt16),
+            new("ExitZ", ColumnType.UInt16),
         };
-        
+
         internal static ColumnDesc[] createMessages = new ColumnDesc[] {
-            new ColumnDesc("X", ColumnType.UInt16),
-            new ColumnDesc("Y", ColumnType.UInt16),
-            new ColumnDesc("Z", ColumnType.UInt16),
-            new ColumnDesc("Message", ColumnType.Char, 255),
+            new("X", ColumnType.UInt16),
+            new("Y", ColumnType.UInt16),
+            new("Z", ColumnType.UInt16),
+            new("Message", ColumnType.Char, 255),
         };
     }
 }

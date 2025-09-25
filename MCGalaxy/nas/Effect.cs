@@ -1,9 +1,9 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using System.Drawing;
-using System.IO;
 using MCGalaxy;
 using MCGalaxy.Config;
 using MCGalaxy.Network;
+using System.Drawing;
+using System.IO;
 namespace NotAwesomeSurvival
 {
     public class NasEffect
@@ -14,19 +14,19 @@ namespace NotAwesomeSurvival
         public static bool Setup()
         {
             breakMeter = new Effect();
-            if (!breakMeter.Load("breakmeter")) 
-            { 
+            if (!breakMeter.Load("breakmeter"))
+            {
                 return false;
             }
             breakEarth = new Effect();
-            if (!breakEarth.Load("breakdust")) 
-            { 
-                return false; 
+            if (!breakEarth.Load("breakdust"))
+            {
+                return false;
             }
             breakLeaves = new Effect();
-            if (!breakLeaves.Load("breakleaf")) 
-            { 
-                return false; 
+            if (!breakLeaves.Load("breakleaf"))
+            {
+                return false;
             }
             //set default effect for all types
             for (int i = 0; i < (int)NasBlock.Material.Count; i++)
@@ -94,10 +94,7 @@ namespace NotAwesomeSurvival
                 {
                     FileIO.TryMove(fileNameInPluginsDir, fileName);
                 }
-                if (cfg == null)
-                {
-                    cfg = ConfigElement.GetAll(typeof(Effect));
-                }
+                cfg ??= ConfigElement.GetAll(typeof(Effect));
                 if (!ConfigElement.ParseFile(cfg, fileName, this))
                 {
                     Log("NAS: Could not find required effect file {0}", effectName);
@@ -170,7 +167,7 @@ namespace NotAwesomeSurvival
         {
             if (!p.Supports(CpeExt.CustomParticles))
             {
-                return; 
+                return;
             }
             x += 0.5f;
             y += 0.5f;

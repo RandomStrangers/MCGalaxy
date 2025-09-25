@@ -29,12 +29,14 @@ namespace MCGalaxy.Platform
     public static class DotNetBackend
     {
         public static void Init() { }
-        
-        public static string GetExePath(string path) {
+
+        public static string GetExePath(string path)
+        {
             return path;
         }
-        
-        public static Assembly ResolvePluginReference(string _) {
+
+        public static Assembly ResolvePluginReference(string _)
+        {
             return null;
         }
     }

@@ -15,11 +15,11 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
 */
+using MCGalaxy.UI;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using MCGalaxy.UI;
 
 namespace MCGalaxy.Gui
 {
@@ -92,7 +92,7 @@ namespace MCGalaxy.Gui
 
 
 
-        readonly List<string> inputLog = new List<string>(21);
+        readonly List<string> inputLog = new(21);
         int inputIndex = -1;
 
         void main_TxtInput_KeyDown(object sender, KeyEventArgs e)

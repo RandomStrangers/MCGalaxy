@@ -15,8 +15,8 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System.Threading;
 using MCGalaxy.Events.PlayerEvents;
+using System.Threading;
 
 namespace MCGalaxy
 {
@@ -102,7 +102,7 @@ namespace MCGalaxy
         static bool LoadOfflineLevel(Player p, string map)
         {
             string propsPath = LevelInfo.PropsPath(map);
-            LevelConfig cfg = new LevelConfig();
+            LevelConfig cfg = new();
             cfg.Load(propsPath);
 
             if (!cfg.LoadOnGoto)

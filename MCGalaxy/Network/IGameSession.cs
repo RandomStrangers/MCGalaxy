@@ -15,9 +15,9 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using MCGalaxy.Maths;
-using BlockID = System.UInt16;
+using System;
+
 
 namespace MCGalaxy.Network
 {
@@ -28,7 +28,7 @@ namespace MCGalaxy.Network
     {
         public byte ProtocolVersion;
         public byte[] fallback = new byte[256]; // fallback for classic+CPE block IDs
-        public BlockID MaxRawBlock = Block.CLASSIC_MAX_BLOCK;
+        public ushort MaxRawBlock = Block.CLASSIC_MAX_BLOCK;
         public bool hasCpe;
         public string appName;
 
@@ -39,20 +39,25 @@ namespace MCGalaxy.Network
         /// <summary> Temporary unique ID for this network session </summary>
         public int ID;
 
-        public PingList Ping = new PingList();
+        public PingList Ping = new();
 
-        public int ProcessReceived(byte[] buffer, int bufferLen) {
+        public int ProcessReceived(byte[] buffer, int bufferLen)
+        {
             int read = 0;
-            try {
-                while (read < bufferLen) {
+            try
+            {
+                while (read < bufferLen)
+                {
                     int packetLen = HandlePacket(buffer, read, bufferLen - read);
                     // Partial packet received
                     if (packetLen == 0) break;
-                    
+
                     // Packet processed, onto next
                     read += packetLen;
                 }
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Logger.LogError(ex);
             }
             return read;
@@ -69,7 +74,7 @@ namespace MCGalaxy.Network
         /// <returns> 0 if insufficient data left to fully process the next packet,
         /// otherwise returns the number of bytes processed </returns>
         protected abstract int HandlePacket(byte[] buffer, int offset, int left);
-        
+
         /// <summary> Sends a ping packet to the client </summary>
         public abstract void SendPing();
         public abstract void SendMotd(string motd);
@@ -81,24 +86,25 @@ namespace MCGalaxy.Network
         /// <summary> Sends a kick/disconnect packet with the given reason </summary>
         public abstract void SendKick(string reason, bool sync);
         public abstract bool SendSetUserType(byte type);
-        
+
         /// <summary> Sends an entity teleport (absolute location update) packet to the client </summary>
         public abstract void SendTeleport(byte id, Position pos, Orientation rot);
         /// <summary> Sends an ext entity teleport with more control over behavior </summary>
         public virtual bool SendTeleport(byte id, Position pos, Orientation rot,
-                                         Packet.TeleportMoveMode moveMode, bool usePos = true, bool interpolateOri = false, bool useOri = true) { return false; }
+                                         Packet.TeleportMoveMode moveMode, bool usePos = true, bool interpolateOri = false, bool useOri = true)
+        { return false; }
         /// <summary> Sends a spawn/add entity packet to the client </summary>
         public abstract void SendSpawnEntity(byte id, string name, string skin, Position pos, Orientation rot);
         /// <summary> Sends a despawn/remove entity to the client </summary>
         public abstract void SendRemoveEntity(byte id);
         public abstract void SendSetSpawnpoint(Position pos, Orientation rot);
-        
+
         public abstract void SendAddTabEntry(byte id, string name, string nick, string group, byte groupRank);
         public abstract void SendRemoveTabEntry(byte id);
         /// <summary> Sends a set reach/click distance packet to the client </summary>
         public abstract bool SendSetReach(float reach);
         /// <summary> Sends a set held block packet to the client </summary>
-        public abstract bool SendHoldThis(BlockID block, bool locked);
+        public abstract bool SendHoldThis(ushort block, bool locked);
         /// <summary> Sends an update environment color packet to the client </summary>
         public abstract bool SendSetEnvColor(byte type, string hex);
         public abstract void SendChangeModel(byte id, string model);
@@ -121,8 +127,8 @@ namespace MCGalaxy.Network
         /// <summary> Sends a level to the client </summary>
         public abstract void SendLevel(Level prev, Level level);
         /// <summary> Sends a block change/update packet to the client </summary>
-        public abstract void SendBlockchange(ushort x, ushort y, ushort z, BlockID block);
-        
+        public abstract void SendBlockchange(ushort x, ushort y, ushort z, ushort block);
+
         public abstract byte[] MakeBulkBlockchange(BufferedBlockSender buffer);
         /// <summary> Gets the name of the software the client is using </summary>
         /// <example> ClassiCube, Classic 0.0.16, etc </example>
@@ -130,26 +136,31 @@ namespace MCGalaxy.Network
         public abstract unsafe void GetPositionPacket(ref byte* ptr, byte id, bool srcExtPos, bool extPos,
                                                             Position pos, Position oldPos, Orientation rot, Orientation oldRot);
         /// <summary> Converts the given block ID into a raw block ID that the client supports </summary>
-        public virtual BlockID ConvertBlock(BlockID block) {
-            BlockID raw;
+        public virtual ushort ConvertBlock(ushort block)
+        {
+            ushort raw;
             Player p = player;
 
-            if (block >= Block.Extended) {
+            if (block >= Block.Extended)
+            {
                 raw = Block.ToRaw(block);
-            } else {
+            }
+            else
+            {
                 raw = Block.Convert(block);
                 // show invalid physics blocks as Orange
                 if (raw >= Block.CPE_COUNT) raw = Block.Orange;
             }
             if (raw > MaxRawBlock) raw = p.level.GetFallback(block);
-            
+
             // Check if a custom block replaced a core block
             //  If so, assume fallback is the better block to display
-            if (!hasBlockDefs && raw < Block.CPE_COUNT) {
+            if (!hasBlockDefs && raw < Block.CPE_COUNT)
+            {
                 BlockDefinition def = p.level.CustomBlockDefs[raw];
                 if (def != null) raw = def.FallBack;
             }
-            
+
             if (!hasCustomBlocks) raw = fallback[(byte)raw];
             return raw;
         }

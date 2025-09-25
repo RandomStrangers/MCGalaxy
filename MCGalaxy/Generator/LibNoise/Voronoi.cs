@@ -87,8 +87,8 @@ namespace LibNoise
             // Return the calculated distance with the displacement value applied.
             return Displacement * ValueNoise(x0, y0, z0, 0);
         }
-        
-        
+
+
         const int X_NOISE_GEN = 1619;
         const int Y_NOISE_GEN = 31337;
         const int Z_NOISE_GEN = 6971;

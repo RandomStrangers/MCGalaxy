@@ -15,9 +15,9 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System.Collections.Generic;
 using MCGalaxy.Commands;
 using MCGalaxy.Generator.Foliage;
+using System.Collections.Generic;
 
 namespace MCGalaxy
 {
@@ -43,7 +43,7 @@ namespace MCGalaxy
         public const string Chat = "Chat", Guns = "Guns", Buildable = "Buildable", Deletable = "Deletable";
         public const string LoadDelay = "LoadDelay", Drawing = "Drawing", Authors = "Authors";
 
-        public static List<LevelOption> Options = new List<LevelOption>() {
+        public static List<LevelOption> Options = new() {
              new LevelOption(MOTD,       SetMotd,  "&HSets the motd for this map. (leave blank to use default motd)"),
              new LevelOption(RealmOwner, SetOwner, "&HSets the players allowed to use /realm on this map."),
              new LevelOption(TreeType,   SetTree,  "&HSets the type of trees saplings grow into."),

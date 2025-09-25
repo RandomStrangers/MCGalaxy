@@ -15,24 +15,23 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.Blocks;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using MCGalaxy.Blocks;
-using BlockID = System.UInt16;
 
 namespace MCGalaxy.Gui
 {
     public partial class PropertyWindow : Form
     {
-        BlockID curBlock;
-        List<BlockID> blockIDMap;
-        readonly ItemPermsHelper blockItems = new ItemPermsHelper();
+        ushort curBlock;
+        List<ushort> blockIDMap;
+        readonly ItemPermsHelper blockItems = new();
 
         // need to keep a list of changed block perms, because we don't want
         // to modify the server's live permissions if user clicks 'discard'
         BlockPerms placePermsOrig, placePermsCopy;
-        readonly List<BlockPerms> placePermsChanged = new List<BlockPerms>();
+        readonly List<BlockPerms> placePermsChanged = new();
         readonly BlockProps[] blockPropsChanged = new BlockProps[Block.Props.Length];
         // TODO delete permissions too
 
@@ -40,14 +39,14 @@ namespace MCGalaxy.Gui
         {
             blk_list.Items.Clear();
             placePermsChanged.Clear();
-            blockIDMap = new List<BlockID>();
+            blockIDMap = new List<ushort>();
 
             for (int b = 0; b < blockPropsChanged.Length; b++)
             {
                 blockPropsChanged[b] = Block.Props[b];
                 blockPropsChanged[b].ChangedScope = 0;
 
-                BlockID block = (BlockID)b;
+                ushort block = (ushort)b;
                 if (!Block.ExistsGlobal(block)) continue;
 
                 string name = Block.GetName(Player.Console, block);

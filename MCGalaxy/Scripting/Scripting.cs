@@ -21,9 +21,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Security.Cryptography;
+#if !NET_20
 using MCGalaxy.Platform;
-
+#endif
 namespace MCGalaxy.Scripting
 {
     /// <summary> Exception raised when attempting to load a new command/plugin 
@@ -86,7 +86,7 @@ namespace MCGalaxy.Scripting
         /// <returns> The list of constructed instances. </returns>
         public static List<T> LoadTypes<T>(Assembly lib)
         {
-            List<T> instances = new List<T>();
+            List<T> instances = new();
 
             foreach (Type t in lib.GetTypes())
             {

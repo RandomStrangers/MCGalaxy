@@ -1,8 +1,8 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using System;
-using System.Collections.Generic;
 using MCGalaxy;
 using MCGalaxy.Maths;
+using System;
+using System.Collections.Generic;
 using NasBlockAction = NotAwesomeSurvival.Action<NotAwesomeSurvival.NasLevel, NotAwesomeSurvival.NasBlock, int, int, int>;
 namespace NotAwesomeSurvival
 {
@@ -10,7 +10,8 @@ namespace NotAwesomeSurvival
     {
         public static NasBlockAction FloodAction(ushort[] set)
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 if (CanInfiniteFloodKillThis(nl, x, y - 1, z, set))
                 {
                     nl.SetBlock(x, y - 1, z, set[LiquidInfiniteIndex]);
@@ -37,13 +38,13 @@ namespace NotAwesomeSurvival
         public static bool CanInfiniteFloodKillThis(NasLevel nl, int x, int y, int z, ushort[] set)
         {
             ushort here = nl.GetBlock(x, y, z);
-            if (CanPhysicsKillThis(here) || IsPartOfSet(set, here) > LiquidInfiniteIndex) 
-            { 
-                return true; 
+            if (CanPhysicsKillThis(here) || IsPartOfSet(set, here) > LiquidInfiniteIndex)
+            {
+                return true;
             }
             return false;
         }
-        public static ushort[] blocksPhysicsCanKill = new ushort[] 
+        public static ushort[] blocksPhysicsCanKill = new ushort[]
         {
             0,
             37,
@@ -64,18 +65,18 @@ namespace NotAwesomeSurvival
         {
             for (int i = 0; i < blocksPhysicsCanKill.Length; i++)
             {
-                if (block == blocksPhysicsCanKill[i]) 
+                if (block == blocksPhysicsCanKill[i])
                 {
-                    return true; 
+                    return true;
                 }
             }
             return false;
         }
         public static bool IsThisLiquid(ushort block)
         {
-            if (IsPartOfSet(waterSet, block) != -1) 
-            { 
-                return true; 
+            if (IsPartOfSet(waterSet, block) != -1)
+            {
+                return true;
             }
             return false;
         }
@@ -85,9 +86,9 @@ namespace NotAwesomeSurvival
         /// <summary>
         /// First ID is the infinite-flood version of the liquid, second is the source, third is waterfall, the rest are heights from tallest to shortest
         /// </summary>
-        public static ushort[] waterSet = new ushort[] 
-        { 
-            8, 9, 
+        public static ushort[] waterSet = new ushort[]
+        {
+            8, 9,
             Block.Extended|639,
             Block.Extended|632,
             Block.Extended|633,
@@ -95,16 +96,16 @@ namespace NotAwesomeSurvival
             Block.Extended|635,
             Block.Extended|636,
             Block.Extended|637,
-            Block.Extended|638 
+            Block.Extended|638
         };
-        public static ushort[] lavaSet = new ushort[] 
-        { 
-            11, 10, 
+        public static ushort[] lavaSet = new ushort[]
+        {
+            11, 10,
             Block.Extended|695,
             Block.Extended|691,
             Block.Extended|692,
             Block.Extended|693,
-            Block.Extended|694 
+            Block.Extended|694
         };
         /// <summary>
         /// Check if the given block exists within the given set.
@@ -116,9 +117,9 @@ namespace NotAwesomeSurvival
         {
             for (int i = 0; i < set.Length; i++)
             {
-                if (set[i] == block) 
-                { 
-                    return i; 
+                if (set[i] == block)
+                {
+                    return i;
                 }
             }
             return -1;
@@ -129,13 +130,13 @@ namespace NotAwesomeSurvival
         public static int CanReplaceBlockAt(NasLevel nl, int x, int y, int z, ushort[] set, int spreadIndex)
         {
             ushort hereBlock = nl.GetBlock(x, y, z);
-            if (nl.GetBlock(x, y - 1, z) == Block.FromRaw(703)) 
-            { 
-                return -1; 
+            if (nl.GetBlock(x, y - 1, z) == Block.FromRaw(703))
+            {
+                return -1;
             }
-            if (CanPhysicsKillThis(hereBlock)) 
-            { 
-                return spreadIndex + 1; 
+            if (CanPhysicsKillThis(hereBlock))
+            {
+                return spreadIndex + 1;
             }
             int hereIndex = IsPartOfSet(set, hereBlock);
             return hereIndex;
@@ -154,16 +155,17 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction LimitedFloodAction(ushort[] set, int index)
         {
-            return (nl, nasBlock, x, y, z) => {
-                if (y >= 200 && set == waterSet) 
-                { 
-                    nl.SetBlock(x, y, z, Block.Ice); 
-                    return; 
+            return (nl, nasBlock, x, y, z) =>
+            {
+                if (y >= 200 && set == waterSet)
+                {
+                    nl.SetBlock(x, y, z, Block.Ice);
+                    return;
                 }
-                if (nl.biome < 0 && set == waterSet) 
-                { 
-                    nl.SetBlock(x, y, z, Block.Air); 
-                    return; 
+                if (nl.biome < 0 && set == waterSet)
+                {
+                    nl.SetBlock(x, y, z, Block.Air);
+                    return;
                 }
                 ushort hereBlock = nl.GetBlock(x, y, z);
                 ushort[] aboveHere = { nl.GetBlock(x, y + 1, z), nl.GetBlock(x + 1, y, z), nl.GetBlock(x - 1, y, z), nl.GetBlock(x, y, z + 1), nl.GetBlock(x, y, z - 1) };
@@ -214,25 +216,25 @@ namespace NotAwesomeSurvival
                 if (set == waterSet && hereBlock == set[3])
                 {
                     int borders = 0;
-                    if (nl.GetBlock(x + 1, y, z) == set[LiquidSourceIndex]) 
-                    { 
-                        borders++; 
-                    }
-                    if (nl.GetBlock(x - 1, y, z) == set[LiquidSourceIndex]) 
-                    { 
+                    if (nl.GetBlock(x + 1, y, z) == set[LiquidSourceIndex])
+                    {
                         borders++;
                     }
-                    if (nl.GetBlock(x, y, z + 1) == set[LiquidSourceIndex]) 
+                    if (nl.GetBlock(x - 1, y, z) == set[LiquidSourceIndex])
                     {
-                        borders++; 
+                        borders++;
                     }
-                    if (nl.GetBlock(x, y, z - 1) == set[LiquidSourceIndex]) 
-                    { 
-                        borders++; 
+                    if (nl.GetBlock(x, y, z + 1) == set[LiquidSourceIndex])
+                    {
+                        borders++;
                     }
-                    if (borders > 1) 
-                    { 
-                        nl.SetBlock(x, y, z, set[LiquidSourceIndex]); 
+                    if (nl.GetBlock(x, y, z - 1) == set[LiquidSourceIndex])
+                    {
+                        borders++;
+                    }
+                    if (borders > 1)
+                    {
+                        nl.SetBlock(x, y, z, set[LiquidSourceIndex]);
                         return;
                     }
                 }
@@ -241,9 +243,9 @@ namespace NotAwesomeSurvival
                 if (CanPhysicsKillThis(below) || belowIndex != -1)
                 {
                     //don't override infinite source, source, or waterfall with a waterfall
-                    if (!CanPhysicsKillThis(below) && belowIndex <= LiquidWaterfallIndex) 
-                    { 
-                        return; 
+                    if (!CanPhysicsKillThis(below) && belowIndex <= LiquidWaterfallIndex)
+                    {
+                        return;
                     }
                     nl.SetBlock(x, y - 1, z, set[LiquidWaterfallIndex]);
                     return;
@@ -349,7 +351,7 @@ namespace NotAwesomeSurvival
                 int dist = Math.Abs(x - hole.X) + Math.Abs(z - hole.Z);
                 if (dist < originalHoleDistance)
                 {
-                    canFlowDir = true; 
+                    canFlowDir = true;
                     return;
                 }
             }
@@ -460,16 +462,17 @@ namespace NotAwesomeSurvival
         }
         public static List<Vec3S32> HolesInRange(NasLevel nl, int x, int y, int z, int totalDistance, ushort[] set, out int distance)
         {
-            FloodSim sim = new FloodSim(nl, x, y, z, totalDistance, set);
+            FloodSim sim = new(nl, x, y, z, totalDistance, set);
             return sim.GetHoles(out distance);
         }
         public static NasBlockAction FallingBlockAction(ushort serverushort)
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 ushort blockUnder = nl.GetBlock(x, y - 1, z);
-                if (nl.GetBlock(x, y - 2, z) == Block.FromRaw(703)) 
-                { 
-                    return; 
+                if (nl.GetBlock(x, y - 2, z) == Block.FromRaw(703))
+                {
+                    return;
                 }
                 if (CanPhysicsKillThis(blockUnder) || IsPartOfSet(waterSet, blockUnder) != -1)
                 {
@@ -480,10 +483,11 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction GrassBlockAction(ushort grass, ushort dirt)
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 if (grass == Block.FromRaw(139) && nl.biome != 2)
-                { 
-                    nl.SetBlock(x, y, z, Block.FromRaw(129)); 
+                {
+                    nl.SetBlock(x, y, z, Block.FromRaw(129));
                 }
                 ushort aboveHere = nl.GetBlock(x, y + 1, z);
                 if (!nl.lvl.LightPasses(aboveHere))
@@ -492,19 +496,19 @@ namespace NotAwesomeSurvival
                 }
             };
         }
-        public static ushort[] grassSet = new ushort[] 
-        { 
-            Block.Grass, 
-            Block.Extended|119, 
-            Block.Extended|129, 
-            Block.Extended|139 
+        public static ushort[] grassSet = new ushort[]
+        {
+            Block.Grass,
+            Block.Extended|119,
+            Block.Extended|129,
+            Block.Extended|139
         };
-        public static ushort[] tallGrassSet = new ushort[] 
-        { 
-            40, 
-            Block.Extended|120, 
-            Block.Extended|130, 
-            Block.Extended|130 
+        public static ushort[] tallGrassSet = new ushort[]
+        {
+            40,
+            Block.Extended|120,
+            Block.Extended|130,
+            Block.Extended|130
         };
         public static NasBlockAction DirtBlockAction(ushort[] grassSet, ushort dirt)
         {
@@ -515,83 +519,83 @@ namespace NotAwesomeSurvival
                 {
                     return;
                 }
-                for (int xOff = -1; xOff <= 1; xOff++) 
-                { 
-                    for (int yOff = -1; yOff <= 1; yOff++) 
-                    { 
+                for (int xOff = -1; xOff <= 1; xOff++)
+                {
+                    for (int yOff = -1; yOff <= 1; yOff++)
+                    {
                         for (int zOff = -1; zOff <= 1; zOff++)
                         {
-                            if (xOff == 0 && yOff == -1 && zOff == 0) 
-                            { 
-                                continue; 
+                            if (xOff == 0 && yOff == -1 && zOff == 0)
+                            {
+                                continue;
                             }
                             ushort neighbor = nl.GetBlock(x + xOff, y + yOff, z + zOff);
                             int setIndex = IsPartOfSet(grassSet, neighbor);
-                            if (setIndex == 3 && nl.biome != 2) 
+                            if (setIndex == 3 && nl.biome != 2)
                             {
-                                setIndex = 2; 
+                                setIndex = 2;
                             }
-                            if (setIndex != 3 && nl.biome == 2 && setIndex != -1) 
-                            { 
-                                setIndex = 3; 
+                            if (setIndex != 3 && nl.biome == 2 && setIndex != -1)
+                            {
+                                setIndex = 3;
                             }
-                            if (setIndex == -1) 
-                            { 
+                            if (setIndex == -1)
+                            {
                                 continue;
                             }
                             nl.SetBlock(x, y, z, grassSet[setIndex], true);
                             if (nl.GetBlock(x, y + 1, z) == Block.Air)
                             {
-                                if (r.Next(0, 20) == 0) 
-                                { 
-                                    nl.SetBlock((ushort)x, (ushort)(y + 1), (ushort)z, Block.Extended|130); 
+                                if (r.Next(0, 20) == 0)
+                                {
+                                    nl.SetBlock((ushort)x, (ushort)(y + 1), (ushort)z, Block.Extended | 130);
                                 }
                                 else
                                 {
                                     int flowerChance = r.Next(0, 100);
-                                    if (flowerChance == 0) 
-                                    { 
-                                        nl.SetBlock(x, y + 1, z, Block.Extended|96); 
+                                    if (flowerChance == 0)
+                                    {
+                                        nl.SetBlock(x, y + 1, z, Block.Extended | 96);
                                     }
                                     else
                                     {
-                                        if (flowerChance == 1) 
-                                        { 
-                                            nl.SetBlock(x, y + 1, z, 37); 
+                                        if (flowerChance == 1)
+                                        {
+                                            nl.SetBlock(x, y + 1, z, 37);
                                         }
                                         else
                                         {
-                                            if (flowerChance == 2) 
-                                            { 
-                                                nl.SetBlock(x, y + 1, z, 38); 
+                                            if (flowerChance == 2)
+                                            {
+                                                nl.SetBlock(x, y + 1, z, 38);
                                             }
                                             else
                                             {
-                                                if (flowerChance == 3) 
-                                                { 
-                                                    nl.SetBlock(x, y + 1, z, Block.Extended|651); 
+                                                if (flowerChance == 3)
+                                                {
+                                                    nl.SetBlock(x, y + 1, z, Block.Extended | 651);
                                                 }
                                                 else
                                                 {
-                                                    if (flowerChance == 4) 
+                                                    if (flowerChance == 4)
                                                     {
-                                                        if (r.Next(0, 20) == 0) 
-                                                        { 
-                                                            nl.SetBlock(x, y + 1, z, Block.Extended|604); 
-                                                        } 
+                                                        if (r.Next(0, 20) == 0)
+                                                        {
+                                                            nl.SetBlock(x, y + 1, z, Block.Extended | 604);
+                                                        }
                                                     }
                                                     else
                                                     {
-                                                        if (flowerChance == 5) 
+                                                        if (flowerChance == 5)
                                                         {
-                                                            nl.SetBlock(x, y + 1, z, Block.Extended|201); 
+                                                            nl.SetBlock(x, y + 1, z, Block.Extended | 201);
                                                         }
                                                         else
-                                                        { 
-                                                            if (nl.biome == 2) 
-                                                            { 
-                                                                nl.SetBlock(x, y + 1, z, Block.Snow); 
-                                                            } 
+                                                        {
+                                                            if (nl.biome == 2)
+                                                            {
+                                                                nl.SetBlock(x, y + 1, z, Block.Snow);
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -613,7 +617,8 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction ObserverActivateAction(int type)
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {
                     nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
@@ -625,7 +630,8 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction ObserverDeactivateAction(int type)
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {
                     nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
@@ -635,22 +641,23 @@ namespace NotAwesomeSurvival
                 nl.SetBlock(x, y, z, (ushort)(nl.lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z) - 6));
             };
         }
-        public static ushort[] logSet = new ushort[] 
-        { 
-            15, 16, 17, 
-            Block.Extended|144, 
-            Block.Extended|242, 
-            Block.Extended|656, 
-            Block.Extended|657, 
-            Block.Extended|240, 
-            Block.Extended|241, 
-            Block.Extended|248, 
-            Block.Extended|249, 
+        public static ushort[] logSet = new ushort[]
+        {
+            15, 16, 17,
+            Block.Extended|144,
+            Block.Extended|242,
+            Block.Extended|656,
+            Block.Extended|657,
+            Block.Extended|240,
+            Block.Extended|241,
+            Block.Extended|248,
+            Block.Extended|249,
             Block.Extended|250,
         };
         public static NasBlockAction LeafBlockAction(ushort[] logSet, ushort leaf)
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 bool canLive = false;
                 int iteration = 1;
                 IsThereLog(nl, x + 1, y, z, leaf, iteration, ref canLive);
@@ -666,20 +673,21 @@ namespace NotAwesomeSurvival
                 nl.SetBlock(x, y, z, Block.Air);
                 if (r.Next(0, 384) == 0 && CanPhysicsKillThis(nl.GetBlock(x, y - 1, z)))
                 {
-                    if (leaf == Block.Leaves) 
-                    { 
-                        nl.SetBlock(x, y - 1, z, Block.FromRaw(648)); 
+                    if (leaf == Block.Leaves)
+                    {
+                        nl.SetBlock(x, y - 1, z, Block.FromRaw(648));
                     }
-                    if (leaf == Block.FromRaw(103)) 
-                    { 
-                        nl.SetBlock(x, y - 1, z, Block.FromRaw(702)); 
+                    if (leaf == Block.FromRaw(103))
+                    {
+                        nl.SetBlock(x, y - 1, z, Block.FromRaw(702));
                     }
                 }
             };
         }
         public static NasBlockAction GrowAction(ushort grow)
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 if (grow == Block.FromRaw(667))
                 {
                     if (Block.Sand == nl.GetBlock(x, y - 1, z))
@@ -692,8 +700,8 @@ namespace NotAwesomeSurvival
                               (nl.GetBlock(x + 1, y - 1, z) == 9) ||
                               (nl.GetBlock(x, y - 1, z + 1) == 9) ||
                               (nl.GetBlock(x, y - 1, z - 1) == 9)))
-                        { 
-                            return; 
+                        {
+                            return;
                         }
                     }
                     else
@@ -707,16 +715,16 @@ namespace NotAwesomeSurvival
                               (nl.GetBlock(x, y - 2, z + 1) == 9) ||
                               (nl.GetBlock(x, y - 2, z - 1) == 9)))
                         {
-                            return; 
+                            return;
                         }
                     }
                 }
                 if (!((grow == nl.GetBlock(x, y - 1, z) && nl.GetBlock(x, y - 2, z) == Block.Sand) || nl.GetBlock(x, y - 1, z) == Block.Sand))
-                { 
-                    return; 
+                {
+                    return;
                 }
-                if (((nl.GetBlock(x, y - 1, z) == grow) && (nl.GetBlock(x, y - 2, z) == grow)) | (nl.GetBlock(x, y + 1, z) != Block.Air)) 
-                { 
+                if (((nl.GetBlock(x, y - 1, z) == grow) && (nl.GetBlock(x, y - 2, z) == grow)) | (nl.GetBlock(x, y + 1, z) != Block.Air))
+                {
                     return;
                 }
                 nl.SetBlock(x, y + 1, z, grow);
@@ -724,7 +732,8 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction VineGrowAction(ushort grow)
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 if (nl.GetBlock(x, y + 1, z) == grow && nl.GetBlock(x, y + 2, z) == grow)
                 {
                     return;
@@ -737,7 +746,8 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction VineDeathAction()
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 if (IsPartOfSet(blocksPhysicsCanKill, nl.GetBlock(x, y + 1, z)) != -1)
                 {
                     nl.SetBlock(x, y, z, Block.Air);
@@ -746,7 +756,8 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction LilyAction()
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 if (IsPartOfSet(waterSet, nl.GetBlock(x, y - 1, z)) == -1)
                 {
                     nl.SetBlock(x, y, z, Block.Air);
@@ -755,9 +766,9 @@ namespace NotAwesomeSurvival
         }
         public static void IsThereLog(NasLevel nl, int x, int y, int z, ushort leaf, int iteration, ref bool canLive)
         {
-            if (canLive) 
-            { 
-                return; 
+            if (canLive)
+            {
+                return;
             }
             ushort hereBlock = nl.GetBlock(x, y, z);
             if (IsPartOfSet(logSet, hereBlock) != -1)
@@ -765,13 +776,13 @@ namespace NotAwesomeSurvival
                 canLive = true;
                 return;
             }
-            if (hereBlock != leaf) 
+            if (hereBlock != leaf)
             {
-                return; 
+                return;
             }
-            if ((iteration >= 10 && leaf == Block.FromRaw(104)) || (iteration >= 5 && leaf != Block.FromRaw(104))) 
+            if ((iteration >= 10 && leaf == Block.FromRaw(104)) || (iteration >= 5 && leaf != Block.FromRaw(104)))
             {
-                return; 
+                return;
             }
             iteration++;
             IsThereLog(nl, x + 1, y, z, leaf, iteration, ref canLive);
@@ -781,7 +792,7 @@ namespace NotAwesomeSurvival
             IsThereLog(nl, x, y - 1, z, leaf, iteration, ref canLive);
             IsThereLog(nl, x, y, z - 1, leaf, iteration, ref canLive);
         }
-        public static ushort[] infinifire = new ushort[] 
+        public static ushort[] infinifire = new ushort[]
         {
             Block.Extended|647,
             Block.Extended|690,
@@ -789,47 +800,49 @@ namespace NotAwesomeSurvival
         };
         public static NasBlockAction FireAction()
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 if (IsPartOfSet(infinifire, nl.GetBlock(x, y - 1, z)) == -1)
                 {
-                    if (r.Next(0, 8) == 0) 
+                    if (r.Next(0, 8) == 0)
                     {
-                        nl.SetBlock(x, y, z, Block.FromRaw(131)); 
+                        nl.SetBlock(x, y, z, Block.FromRaw(131));
                     }
-                    else 
-                    { 
-                        nl.SetBlock(x, y, z, Block.Air); 
+                    else
+                    {
+                        nl.SetBlock(x, y, z, Block.Air);
                     }
                 }
             };
         }
         public static NasBlockAction LampAction(ushort on, ushort off, ushort me)
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 Entity[] b = new Entity[6];
                 if (nl.blockEntities.ContainsKey(x + " " + (y - 1) + " " + z))
                 {
-                    b[0] = nl.blockEntities[x + " " + (y - 1) + " " + z]; 
+                    b[0] = nl.blockEntities[x + " " + (y - 1) + " " + z];
                 }
                 if (nl.blockEntities.ContainsKey(x + 1 + " " + y + " " + z))
                 {
-                    b[1] = nl.blockEntities[x + 1 + " " + y + " " + z]; 
+                    b[1] = nl.blockEntities[x + 1 + " " + y + " " + z];
                 }
                 if (nl.blockEntities.ContainsKey(x - 1 + " " + y + " " + z))
                 {
-                    b[2] = nl.blockEntities[x - 1 + " " + y + " " + z]; 
+                    b[2] = nl.blockEntities[x - 1 + " " + y + " " + z];
                 }
                 if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z + 1)))
                 {
-                    b[3] = nl.blockEntities[x + " " + y + " " + (z + 1)]; 
+                    b[3] = nl.blockEntities[x + " " + y + " " + (z + 1)];
                 }
                 if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z - 1)))
-                { 
-                    b[4] = nl.blockEntities[x + " " + y + " " + (z - 1)]; 
+                {
+                    b[4] = nl.blockEntities[x + " " + y + " " + (z - 1)];
                 }
                 if (nl.blockEntities.ContainsKey(x + " " + (y + 1) + " " + z))
-                { 
-                    b[5] = nl.blockEntities[x + " " + (y + 1) + " " + z]; 
+                {
+                    b[5] = nl.blockEntities[x + " " + (y + 1) + " " + z];
                 }
                 bool powered =
                         ((b[5] != null) && b[5].strength > 0 && (b[5].type == 1 || b[5].type == 4 || b[5].type == 5 || b[5].type == 12)) ||
@@ -841,46 +854,47 @@ namespace NotAwesomeSurvival
                 if (powered)
                 {
                     if (off == me)
-                    { 
-                        nl.SetBlock(x, y, z, on); 
+                    {
+                        nl.SetBlock(x, y, z, on);
                     }
                 }
                 else
                 {
                     if (on == me)
-                    { 
-                        nl.SetBlock(x, y, z, off); 
+                    {
+                        nl.SetBlock(x, y, z, off);
                     }
                 }
             };
         }
         public static NasBlockAction UnrefinedGoldAction(ushort on, ushort off, ushort me)
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 Entity[] b = new Entity[6];
                 if (nl.blockEntities.ContainsKey(x + " " + (y - 1) + " " + z))
                 {
-                    b[0] = nl.blockEntities[x + " " + (y - 1) + " " + z]; 
+                    b[0] = nl.blockEntities[x + " " + (y - 1) + " " + z];
                 }
                 if (nl.blockEntities.ContainsKey(x + 1 + " " + y + " " + z))
                 {
-                    b[1] = nl.blockEntities[x + 1 + " " + y + " " + z]; 
+                    b[1] = nl.blockEntities[x + 1 + " " + y + " " + z];
                 }
                 if (nl.blockEntities.ContainsKey(x - 1 + " " + y + " " + z))
                 {
-                    b[2] = nl.blockEntities[x - 1 + " " + y + " " + z]; 
+                    b[2] = nl.blockEntities[x - 1 + " " + y + " " + z];
                 }
                 if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z + 1)))
                 {
-                    b[3] = nl.blockEntities[x + " " + y + " " + (z + 1)]; 
+                    b[3] = nl.blockEntities[x + " " + y + " " + (z + 1)];
                 }
                 if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z - 1)))
                 {
-                    b[4] = nl.blockEntities[x + " " + y + " " + (z - 1)]; 
+                    b[4] = nl.blockEntities[x + " " + y + " " + (z - 1)];
                 }
                 if (nl.blockEntities.ContainsKey(x + " " + (y + 1) + " " + z))
-                { 
-                    b[5] = nl.blockEntities[x + " " + (y + 1) + " " + z]; 
+                {
+                    b[5] = nl.blockEntities[x + " " + (y + 1) + " " + z];
                 }
                 bool powered =
                         ((b[5] != null) && b[5].strength > 0 && (b[5].type == 5)) ||
@@ -917,17 +931,18 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction SidewaysPistonAction(string type, string axis, int dir, ushort[] pistonSet, bool sticky = false)
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 int changeX = 0,
                 changeZ = 0,
                 changeY = 0;
-                ushort[] dontpush = 
-                { 
-                    0, 0, 0, 0, 
-                    Block.FromRaw(680), 
-                    Block.FromRaw(706), 
-                    Block.FromRaw(709), 
-                    Block.FromRaw(712) 
+                ushort[] dontpush =
+                {
+                    0, 0, 0, 0,
+                    Block.FromRaw(680),
+                    Block.FromRaw(706),
+                    Block.FromRaw(709),
+                    Block.FromRaw(712)
                 };
                 if (axis.CaselessEq("x"))
                 {
@@ -952,26 +967,27 @@ namespace NotAwesomeSurvival
                     Entity[] b = new Entity[6];
                     if (nl.blockEntities.ContainsKey(x + " " + (y + 1) + " " + z))
                     {
-                        b[0] = nl.blockEntities[x + " " + (y + 1) + " " + z]; 
+                        b[0] = nl.blockEntities[x + " " + (y + 1) + " " + z];
                     }
                     if (nl.blockEntities.ContainsKey(x + " " + (y - 1) + " " + z))
                     {
-                        b[1] = nl.blockEntities[x + " " + (y - 1) + " " + z]; 
+                        b[1] = nl.blockEntities[x + " " + (y - 1) + " " + z];
                     }
                     if (nl.blockEntities.ContainsKey(x + 1 + " " + y + " " + z) && (changeX != 1))
                     {
-                        b[2] = nl.blockEntities[x + 1 + " " + y + " " + z]; 
+                        b[2] = nl.blockEntities[x + 1 + " " + y + " " + z];
                     }
                     if (nl.blockEntities.ContainsKey(x - 1 + " " + y + " " + z) && (changeX != -1))
-                    { 
-                        b[3] = nl.blockEntities[x - 1 + " " + y + " " + z]; 
+                    {
+                        b[3] = nl.blockEntities[x - 1 + " " + y + " " + z];
                     }
                     if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z + 1)) && (changeZ != 1))
                     {
-                        b[4] = nl.blockEntities[x + " " + y + " " + (z + 1)]; 
+                        b[4] = nl.blockEntities[x + " " + y + " " + (z + 1)];
                     }
                     if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z - 1)) && (changeZ != -1))
-                    { b[5] = nl.blockEntities[x + " " + y + " " + (z - 1)]; 
+                    {
+                        b[5] = nl.blockEntities[x + " " + y + " " + (z - 1)];
                     }
                     if (
                             ((b[0] != null) && b[0].strength > 0 && (b[0].type == 1 || b[0].type == 4 || b[0].type == 5 || b[0].type == 12)) ||
@@ -982,85 +998,85 @@ namespace NotAwesomeSurvival
                             ((b[5] != null) && b[5].strength > 0 && (b[5].type == 2 || b[5].type == 4 || b[5].type == 9 || b[5].type == 13))
                         )
                     {
-                        ushort[] above = 
+                        ushort[] above =
                         {
                             TurnValid(nl.GetBlock(x+changeX, y+changeY, z+changeZ)),
                             0, 0, 0, 0, 0, 0
                         };
                         int push = 0;
-                        if (above[0] == Block.Air || above[0] == 8) 
-                        { 
-                            push = 0; 
+                        if (above[0] == Block.Air || above[0] == 8)
+                        {
+                            push = 0;
                         }
                         else
                         {
-                            if (IsPartOfSet(unpushable, above[0]) != -1 || IsPartOfSet(dontpush, above[0]) != -1) 
-                            { 
-                                return; 
+                            if (IsPartOfSet(unpushable, above[0]) != -1 || IsPartOfSet(dontpush, above[0]) != -1)
+                            {
+                                return;
                             }
                             above[1] = TurnValid(nl.GetBlock(x + 2 * changeX, y + 2 * changeY, z + 2 * changeZ));
-                            if (above[1] == Block.Air || above[1] == 8) 
-                            { 
-                                push = 1; 
+                            if (above[1] == Block.Air || above[1] == 8)
+                            {
+                                push = 1;
                             }
                             else
                             {
-                                if (IsPartOfSet(unpushable, above[1]) != -1 || IsPartOfSet(dontpush, above[1]) != -1) 
-                                { 
-                                    return; 
+                                if (IsPartOfSet(unpushable, above[1]) != -1 || IsPartOfSet(dontpush, above[1]) != -1)
+                                {
+                                    return;
                                 }
                                 above[2] = TurnValid(nl.GetBlock(x + 3 * changeX, y + 3 * changeY, z + 3 * changeZ));
-                                if (above[2] == Block.Air || above[2] == 8) 
-                                { 
-                                    push = 2; 
+                                if (above[2] == Block.Air || above[2] == 8)
+                                {
+                                    push = 2;
                                 }
                                 else
                                 {
-                                    if (IsPartOfSet(unpushable, above[2]) != -1 || IsPartOfSet(dontpush, above[2]) != -1) 
-                                    { 
-                                        return; 
+                                    if (IsPartOfSet(unpushable, above[2]) != -1 || IsPartOfSet(dontpush, above[2]) != -1)
+                                    {
+                                        return;
                                     }
                                     above[3] = TurnValid(nl.GetBlock(x + 4 * changeX, y + 4 * changeY, z + 4 * changeZ));
-                                    if (above[3] == Block.Air || above[3] == 8) 
-                                    { 
-                                        push = 3; 
+                                    if (above[3] == Block.Air || above[3] == 8)
+                                    {
+                                        push = 3;
                                     }
                                     else
                                     {
-                                        if (IsPartOfSet(unpushable, above[3]) != -1 || IsPartOfSet(dontpush, above[3]) != -1) 
-                                        { 
-                                            return; 
+                                        if (IsPartOfSet(unpushable, above[3]) != -1 || IsPartOfSet(dontpush, above[3]) != -1)
+                                        {
+                                            return;
                                         }
                                         above[4] = TurnValid(nl.GetBlock(x + 5 * changeX, y + 5 * changeY, z + 5 * changeZ));
-                                        if (above[4] == Block.Air || above[4] == 8) 
-                                        { 
-                                            push = 4; 
+                                        if (above[4] == Block.Air || above[4] == 8)
+                                        {
+                                            push = 4;
                                         }
                                         else
                                         {
-                                            if (IsPartOfSet(unpushable, above[4]) != -1 || IsPartOfSet(dontpush, above[4]) != -1) 
-                                            { 
-                                                return; 
+                                            if (IsPartOfSet(unpushable, above[4]) != -1 || IsPartOfSet(dontpush, above[4]) != -1)
+                                            {
+                                                return;
                                             }
                                             above[5] = TurnValid(nl.GetBlock(x + 6 * changeX, y + 6 * changeY, z + 6 * changeZ));
-                                            if (above[5] == Block.Air || above[5] == 8) 
-                                            { 
-                                                push = 5; 
+                                            if (above[5] == Block.Air || above[5] == 8)
+                                            {
+                                                push = 5;
                                             }
                                             else
                                             {
-                                                if (IsPartOfSet(unpushable, above[5]) != -1 || IsPartOfSet(dontpush, above[5]) != -1) 
-                                                { 
-                                                    return; 
+                                                if (IsPartOfSet(unpushable, above[5]) != -1 || IsPartOfSet(dontpush, above[5]) != -1)
+                                                {
+                                                    return;
                                                 }
                                                 above[6] = TurnValid(nl.GetBlock(x + 7 * changeX, y + 7 * changeY, z + 7 * changeZ));
-                                                if (above[6] == Block.Air || above[6] == 8) 
-                                                { 
-                                                    push = 6; 
+                                                if (above[6] == Block.Air || above[6] == 8)
+                                                {
+                                                    push = 6;
                                                 }
-                                                else 
-                                                { 
-                                                    return; 
+                                                else
+                                                {
+                                                    return;
                                                 }
                                             }
                                         }
@@ -1072,48 +1088,48 @@ namespace NotAwesomeSurvival
                         {
                             nl.SetBlock(x + (7 * changeX), y + (7 * changeY), z + (7 * changeZ), above[5]);
                             if (nl.blockEntities.ContainsKey(x + (6 * changeX) + " " + (y + (6 * changeY)) + " " + (z + (6 * changeZ))))
-                            { 
-                                nl.blockEntities.Remove(x + (6 * changeX) + " " + (y + (6 * changeY)) + " " + (z + (6 * changeZ))); 
+                            {
+                                nl.blockEntities.Remove(x + (6 * changeX) + " " + (y + (6 * changeY)) + " " + (z + (6 * changeZ)));
                             }
                         }
                         if (push >= 5)
                         {
                             nl.SetBlock(x + (6 * changeX), y + (6 * changeY), z + (6 * changeZ), above[4]);
                             if (nl.blockEntities.ContainsKey(x + (5 * changeX) + " " + (y + (5 * changeY)) + " " + (z + (5 * changeZ))))
-                            { 
-                                nl.blockEntities.Remove(x + (5 * changeX) + " " + (y + (5 * changeY)) + " " + (z + (5 * changeZ))); 
+                            {
+                                nl.blockEntities.Remove(x + (5 * changeX) + " " + (y + (5 * changeY)) + " " + (z + (5 * changeZ)));
                             }
                         }
                         if (push >= 4)
                         {
                             nl.SetBlock(x + (5 * changeX), y + (5 * changeY), z + (5 * changeZ), above[3]);
                             if (nl.blockEntities.ContainsKey(x + (4 * changeX) + " " + (y + (4 * changeY)) + " " + (z + (4 * changeZ))))
-                            { 
-                                nl.blockEntities.Remove(x + (4 * changeX) + " " + (y + (4 * changeY)) + " " + (z + (4 * changeZ))); 
+                            {
+                                nl.blockEntities.Remove(x + (4 * changeX) + " " + (y + (4 * changeY)) + " " + (z + (4 * changeZ)));
                             }
                         }
                         if (push >= 3)
                         {
                             nl.SetBlock(x + (4 * changeX), y + (4 * changeY), z + (4 * changeZ), above[2]);
                             if (nl.blockEntities.ContainsKey(x + (3 * changeX) + " " + (y + (3 * changeY)) + " " + (z + (3 * changeZ))))
-                            { 
-                                nl.blockEntities.Remove(x + (3 * changeX) + " " + (y + (3 * changeY)) + " " + (z + (3 * changeZ))); 
+                            {
+                                nl.blockEntities.Remove(x + (3 * changeX) + " " + (y + (3 * changeY)) + " " + (z + (3 * changeZ)));
                             }
                         }
                         if (push >= 2)
                         {
                             nl.SetBlock(x + (3 * changeX), y + (3 * changeY), z + (3 * changeZ), above[1]);
                             if (nl.blockEntities.ContainsKey(x + (2 * changeX) + " " + (y + (2 * changeY)) + " " + (z + (2 * changeZ))))
-                            { 
-                                nl.blockEntities.Remove(x + (2 * changeX) + " " + (y + (2 * changeY)) + " " + (z + (2 * changeZ))); 
+                            {
+                                nl.blockEntities.Remove(x + (2 * changeX) + " " + (y + (2 * changeY)) + " " + (z + (2 * changeZ)));
                             }
                         }
                         if (push >= 1)
                         {
                             nl.SetBlock(x + (2 * changeX), y + (2 * changeY), z + (2 * changeZ), above[0]);
                             if (nl.blockEntities.ContainsKey(x + changeX + " " + (y + changeY) + " " + (z + changeZ)))
-                            { 
-                                nl.blockEntities.Remove(x + changeX + " " + (y + changeY) + " " + (z + changeZ)); 
+                            {
+                                nl.blockEntities.Remove(x + changeX + " " + (y + changeY) + " " + (z + changeZ));
                             }
                         }
                         nl.SetBlock(x + changeX, y + changeY, z + changeZ, pistonSet[2]);
@@ -1142,27 +1158,27 @@ namespace NotAwesomeSurvival
                     Entity[] b = new Entity[6];
                     if (nl.blockEntities.ContainsKey(x + " " + (y + 1) + " " + z))
                     {
-                        b[0] = nl.blockEntities[x + " " + (y + 1) + " " + z]; 
+                        b[0] = nl.blockEntities[x + " " + (y + 1) + " " + z];
                     }
                     if (nl.blockEntities.ContainsKey(x + " " + (y - 1) + " " + z))
                     {
-                        b[1] = nl.blockEntities[x + " " + (y - 1) + " " + z]; 
+                        b[1] = nl.blockEntities[x + " " + (y - 1) + " " + z];
                     }
                     if (nl.blockEntities.ContainsKey(x + 1 + " " + y + " " + z) && (changeX != 1))
                     {
-                        b[2] = nl.blockEntities[x + 1 + " " + y + " " + z]; 
+                        b[2] = nl.blockEntities[x + 1 + " " + y + " " + z];
                     }
                     if (nl.blockEntities.ContainsKey(x - 1 + " " + y + " " + z) && (changeX != -1))
                     {
-                        b[3] = nl.blockEntities[x - 1 + " " + y + " " + z]; 
+                        b[3] = nl.blockEntities[x - 1 + " " + y + " " + z];
                     }
                     if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z + 1)) && (changeZ != 1))
                     {
-                        b[4] = nl.blockEntities[x + " " + y + " " + (z + 1)]; 
+                        b[4] = nl.blockEntities[x + " " + y + " " + (z + 1)];
                     }
                     if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z - 1)) && (changeZ != -1))
-                    { 
-                        b[5] = nl.blockEntities[x + " " + y + " " + (z - 1)]; 
+                    {
+                        b[5] = nl.blockEntities[x + " " + y + " " + (z - 1)];
                     }
                     if (!(
                             ((b[0] != null) && b[0].strength > 0 && (b[0].type == 1 || b[0].type == 4 || b[0].type == 5 || b[0].type == 12)) ||
@@ -1188,8 +1204,8 @@ namespace NotAwesomeSurvival
                                 nl.SetBlock(x + (1 * changeX), y + (1 * changeY), z + (1 * changeZ), pullback);
                                 nl.SetBlock(x + (2 * changeX), y + (2 * changeY), z + (2 * changeZ), Block.Air);
                                 if (nl.blockEntities.ContainsKey(x + (2 * changeX) + " " + (y + (2 * changeY)) + " " + (z + (2 * changeZ))))
-                                { 
-                                    nl.blockEntities.Remove(x + (2 * changeX) + " " + (y + (2 * changeY)) + " " + (z + (2 * changeZ))); 
+                                {
+                                    nl.blockEntities.Remove(x + (2 * changeX) + " " + (y + (2 * changeY)) + " " + (z + (2 * changeZ)));
                                 }
                                 return;
                             }
@@ -1197,23 +1213,24 @@ namespace NotAwesomeSurvival
                         }
                     }
                     if (nl.GetBlock(x + changeX, y + changeY, z + changeZ) != pistonSet[2])
-                    { 
-                        nl.SetBlock(x + changeX, y + changeY, z + changeZ, pistonSet[2]); 
+                    {
+                        nl.SetBlock(x + changeX, y + changeY, z + changeZ, pistonSet[2]);
                     }
                 }
                 if (type.CaselessEq("head"))
                 {
                     if (nl.GetBlock(x - changeX, y - changeY, z - changeZ) != pistonSet[1])
-                    { 
-                        nl.SetBlock(x, y, z, Block.Air); 
+                    {
+                        nl.SetBlock(x, y, z, Block.Air);
                     }
                 }
             };
         }
         public static NasBlockAction PistonAction(string type, int changeX, int changeY, int changeZ, ushort[] pistonSet)
         {
-            return (nl, nasBlock, x, y, z) => {
-                ushort[] dontpush = 
+            return (nl, nasBlock, x, y, z) =>
+            {
+                ushort[] dontpush =
                 {
                     Block.FromRaw(391),
                     Block.FromRaw(397),
@@ -1228,24 +1245,24 @@ namespace NotAwesomeSurvival
                 {
                     Entity[] b = new Entity[5];
                     if (nl.blockEntities.ContainsKey(x + " " + (y - changeY) + " " + z))
-                    { 
-                        b[0] = nl.blockEntities[x + " " + (y - changeY) + " " + z]; 
+                    {
+                        b[0] = nl.blockEntities[x + " " + (y - changeY) + " " + z];
                     }
                     if (nl.blockEntities.ContainsKey(x + 1 + " " + y + " " + z))
                     {
-                        b[1] = nl.blockEntities[x + 1 + " " + y + " " + z]; 
+                        b[1] = nl.blockEntities[x + 1 + " " + y + " " + z];
                     }
                     if (nl.blockEntities.ContainsKey(x - 1 + " " + y + " " + z))
                     {
-                        b[2] = nl.blockEntities[x - 1 + " " + y + " " + z]; 
+                        b[2] = nl.blockEntities[x - 1 + " " + y + " " + z];
                     }
                     if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z + 1)))
-                    { 
-                        b[3] = nl.blockEntities[x + " " + y + " " + (z + 1)]; 
+                    {
+                        b[3] = nl.blockEntities[x + " " + y + " " + (z + 1)];
                     }
                     if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z - 1)))
-                    { 
-                        b[4] = nl.blockEntities[x + " " + y + " " + (z - 1)]; 
+                    {
+                        b[4] = nl.blockEntities[x + " " + y + " " + (z - 1)];
                     }
                     if (
                             ((b[0] != null) && b[0].strength > 0 && (b[0].type == 1 || b[0].type == 4 || b[0].type == 12 || (changeY == 1 && b[0].type == 6) || (changeY == -1 && b[0].type == 5))) ||
@@ -1255,85 +1272,85 @@ namespace NotAwesomeSurvival
                             ((b[4] != null) && b[4].strength > 0 && (b[4].type == 2 || b[4].type == 4 || b[4].type == 9 || b[4].type == 13))
                         )
                     {
-                        ushort[] above = 
+                        ushort[] above =
                         {
                             TurnValid(nl.GetBlock(x+changeX, y+changeY, z+changeZ)),
                             0, 0, 0, 0, 0, 0
                         };
                         int push = 0;
-                        if (above[0] == Block.Air || above[0] == 8) 
-                        { 
-                            push = 0; 
+                        if (above[0] == Block.Air || above[0] == 8)
+                        {
+                            push = 0;
                         }
                         else
                         {
-                            if (IsPartOfSet(unpushable, above[0]) != -1 || IsPartOfSet(dontpush, above[0]) != -1) 
-                            { 
-                                return; 
+                            if (IsPartOfSet(unpushable, above[0]) != -1 || IsPartOfSet(dontpush, above[0]) != -1)
+                            {
+                                return;
                             }
                             above[1] = TurnValid(nl.GetBlock(x + 2 * changeX, y + 2 * changeY, z + 2 * changeZ));
-                            if (above[1] == Block.Air || above[1] == 8) 
-                            { 
+                            if (above[1] == Block.Air || above[1] == 8)
+                            {
                                 push = 1;
                             }
                             else
                             {
-                                if (IsPartOfSet(unpushable, above[1]) != -1 || IsPartOfSet(dontpush, above[1]) != -1) 
-                                { 
-                                    return; 
+                                if (IsPartOfSet(unpushable, above[1]) != -1 || IsPartOfSet(dontpush, above[1]) != -1)
+                                {
+                                    return;
                                 }
                                 above[2] = TurnValid(nl.GetBlock(x + 3 * changeX, y + 3 * changeY, z + 3 * changeZ));
-                                if (above[2] == Block.Air || above[2] == 8) 
-                                { 
-                                    push = 2; 
+                                if (above[2] == Block.Air || above[2] == 8)
+                                {
+                                    push = 2;
                                 }
                                 else
                                 {
-                                    if (IsPartOfSet(unpushable, above[2]) != -1 || IsPartOfSet(dontpush, above[2]) != -1) 
+                                    if (IsPartOfSet(unpushable, above[2]) != -1 || IsPartOfSet(dontpush, above[2]) != -1)
                                     {
-                                        return; 
+                                        return;
                                     }
                                     above[3] = TurnValid(nl.GetBlock(x + 4 * changeX, y + 4 * changeY, z + 4 * changeZ));
-                                    if (above[3] == Block.Air || above[3] == 8) 
-                                    { 
+                                    if (above[3] == Block.Air || above[3] == 8)
+                                    {
                                         push = 3;
                                     }
                                     else
                                     {
-                                        if (IsPartOfSet(unpushable, above[3]) != -1 || IsPartOfSet(dontpush, above[3]) != -1) 
+                                        if (IsPartOfSet(unpushable, above[3]) != -1 || IsPartOfSet(dontpush, above[3]) != -1)
                                         {
-                                            return; 
+                                            return;
                                         }
                                         above[4] = TurnValid(nl.GetBlock(x + 5 * changeX, y + 5 * changeY, z + 5 * changeZ));
-                                        if (above[4] == Block.Air || above[4] == 8) 
+                                        if (above[4] == Block.Air || above[4] == 8)
                                         {
                                             push = 4;
                                         }
                                         else
                                         {
-                                            if (IsPartOfSet(unpushable, above[4]) != -1 || IsPartOfSet(dontpush, above[4]) != -1) 
-                                            { 
-                                                return; 
+                                            if (IsPartOfSet(unpushable, above[4]) != -1 || IsPartOfSet(dontpush, above[4]) != -1)
+                                            {
+                                                return;
                                             }
                                             above[5] = TurnValid(nl.GetBlock(x + 6 * changeX, y + 6 * changeY, z + 6 * changeZ));
-                                            if (above[5] == Block.Air || above[5] == 8) 
-                                            { 
-                                                push = 5; 
+                                            if (above[5] == Block.Air || above[5] == 8)
+                                            {
+                                                push = 5;
                                             }
                                             else
                                             {
-                                                if (IsPartOfSet(unpushable, above[5]) != -1 || IsPartOfSet(dontpush, above[5]) != -1) 
-                                                { 
-                                                    return; 
+                                                if (IsPartOfSet(unpushable, above[5]) != -1 || IsPartOfSet(dontpush, above[5]) != -1)
+                                                {
+                                                    return;
                                                 }
                                                 above[6] = TurnValid(nl.GetBlock(x + 7 * changeX, y + 7 * changeY, z + 7 * changeZ));
-                                                if (above[6] == Block.Air || above[6] == 8) 
-                                                { 
-                                                    push = 6; 
+                                                if (above[6] == Block.Air || above[6] == 8)
+                                                {
+                                                    push = 6;
                                                 }
-                                                else 
-                                                { 
-                                                    return; 
+                                                else
+                                                {
+                                                    return;
                                                 }
                                             }
                                         }
@@ -1345,48 +1362,48 @@ namespace NotAwesomeSurvival
                         {
                             nl.SetBlock(x, y + (7 * changeY), z, above[5]);
                             if (nl.blockEntities.ContainsKey(x + " " + (y + (6 * changeY)) + " " + z))
-                            { 
-                                nl.blockEntities.Remove(x + " " + (y + (6 * changeY)) + " " + z); 
+                            {
+                                nl.blockEntities.Remove(x + " " + (y + (6 * changeY)) + " " + z);
                             }
                         }
                         if (push >= 5)
                         {
                             nl.SetBlock(x, y + (6 * changeY), z, above[4]);
                             if (nl.blockEntities.ContainsKey(x + " " + (y + (5 * changeY)) + " " + z))
-                            { 
-                                nl.blockEntities.Remove(x + " " + (y + (5 * changeY)) + " " + z); 
+                            {
+                                nl.blockEntities.Remove(x + " " + (y + (5 * changeY)) + " " + z);
                             }
                         }
                         if (push >= 4)
                         {
                             nl.SetBlock(x, y + (5 * changeY), z, above[3]);
                             if (nl.blockEntities.ContainsKey(x + " " + (y + (4 * changeY)) + " " + z))
-                            { 
-                                nl.blockEntities.Remove(x + " " + (y + (4 * changeY)) + " " + z); 
+                            {
+                                nl.blockEntities.Remove(x + " " + (y + (4 * changeY)) + " " + z);
                             }
                         }
                         if (push >= 3)
                         {
                             nl.SetBlock(x, y + (4 * changeY), z, above[2]);
                             if (nl.blockEntities.ContainsKey(x + " " + (y + (3 * changeY)) + " " + z))
-                            { 
-                                nl.blockEntities.Remove(x + " " + (y + (3 * changeY)) + " " + z); 
+                            {
+                                nl.blockEntities.Remove(x + " " + (y + (3 * changeY)) + " " + z);
                             }
                         }
                         if (push >= 2)
                         {
                             nl.SetBlock(x, y + (3 * changeY), z, above[1]);
                             if (nl.blockEntities.ContainsKey(x + " " + (y + (2 * changeY)) + " " + z))
-                            { 
-                                nl.blockEntities.Remove(x + " " + (y + (2 * changeY)) + " " + z); 
+                            {
+                                nl.blockEntities.Remove(x + " " + (y + (2 * changeY)) + " " + z);
                             }
                         }
                         if (push >= 1)
                         {
                             nl.SetBlock(x, y + (2 * changeY), z, above[0]);
                             if (nl.blockEntities.ContainsKey(x + " " + (y + (1 * changeY)) + " " + z))
-                            { 
-                                nl.blockEntities.Remove(x + " " + (y + (1 * changeY)) + " " + z); 
+                            {
+                                nl.blockEntities.Remove(x + " " + (y + (1 * changeY)) + " " + z);
                             }
                         }
                         nl.SetBlock(x, y + changeY, z, pistonSet[2]);
@@ -1414,24 +1431,24 @@ namespace NotAwesomeSurvival
                 {
                     Entity[] b = new Entity[5];
                     if (nl.blockEntities.ContainsKey(x + " " + (y - changeY) + " " + z))
-                    { 
-                        b[0] = nl.blockEntities[x + " " + (y - changeY) + " " + z]; 
+                    {
+                        b[0] = nl.blockEntities[x + " " + (y - changeY) + " " + z];
                     }
                     if (nl.blockEntities.ContainsKey(x + 1 + " " + y + " " + z))
-                    { 
-                        b[1] = nl.blockEntities[x + 1 + " " + y + " " + z]; 
+                    {
+                        b[1] = nl.blockEntities[x + 1 + " " + y + " " + z];
                     }
                     if (nl.blockEntities.ContainsKey(x - 1 + " " + y + " " + z))
                     {
-                        b[2] = nl.blockEntities[x - 1 + " " + y + " " + z]; 
+                        b[2] = nl.blockEntities[x - 1 + " " + y + " " + z];
                     }
                     if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z + 1)))
-                    { 
-                        b[3] = nl.blockEntities[x + " " + y + " " + (z + 1)]; 
+                    {
+                        b[3] = nl.blockEntities[x + " " + y + " " + (z + 1)];
                     }
                     if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z - 1)))
                     {
-                        b[4] = nl.blockEntities[x + " " + y + " " + (z - 1)]; 
+                        b[4] = nl.blockEntities[x + " " + y + " " + (z - 1)];
                     }
                     if (!(
                             ((b[0] != null) && b[0].strength > 0 && (b[0].type == 1 || b[0].type == 4 || b[0].type == 12 || (changeY == 1 && b[0].type == 6) || (changeY == -1 && b[0].type == 5))) ||
@@ -1445,74 +1462,74 @@ namespace NotAwesomeSurvival
                         return;
                     }
                     if (nl.GetBlock(x, y + changeY, z) != pistonSet[2])
-                    { 
-                        nl.SetBlock(x, y + changeY, z, pistonSet[2]); 
+                    {
+                        nl.SetBlock(x, y + changeY, z, pistonSet[2]);
                     }
                 }
                 if (type.CaselessEq("head"))
                 {
                     if (nl.GetBlock(x, y - changeY, z) != pistonSet[1])
-                    { 
-                        nl.SetBlock(x, y, z, Block.Air); 
+                    {
+                        nl.SetBlock(x, y, z, Block.Air);
                     }
                 }
             };
         }
-        public static ushort[] pistonUp = 
+        public static ushort[] pistonUp =
         {
             Block.FromRaw(704),
             Block.FromRaw(705),
             Block.FromRaw(706)
         };
-        public static ushort[] stickyPistonUp = 
+        public static ushort[] stickyPistonUp =
         {
             Block.FromRaw(678),
             Block.FromRaw(679),
             Block.FromRaw(680)
         };
-        public static ushort[] pistonDown = 
+        public static ushort[] pistonDown =
         {
             Block.FromRaw(707),
             Block.FromRaw(708),
             Block.FromRaw(709)
         };
-        public static ushort[] stickyPistonDown = 
+        public static ushort[] stickyPistonDown =
         {
             Block.FromRaw(710),
             Block.FromRaw(711),
             Block.FromRaw(712)
         };
-        public static ushort[] pistonNorth = 
+        public static ushort[] pistonNorth =
         {
             Block.FromRaw(389),
             Block.FromRaw(390),
             Block.FromRaw(391)
         };
-        public static ushort[] pistonEast = 
+        public static ushort[] pistonEast =
         {
             Block.FromRaw(392),
             Block.FromRaw(393),
             Block.FromRaw(394)
         };
-        public static ushort[] pistonSouth = 
+        public static ushort[] pistonSouth =
         {
             Block.FromRaw(395),
             Block.FromRaw(396),
             Block.FromRaw(397)
         };
-        public static ushort[] pistonWest = 
+        public static ushort[] pistonWest =
         {
             Block.FromRaw(398),
             Block.FromRaw(399),
             Block.FromRaw(400)
         };
-        public static ushort[] stickyPistonNorth = 
+        public static ushort[] stickyPistonNorth =
         {
             Block.FromRaw(401),
             Block.FromRaw(402),
             Block.FromRaw(403)
         };
-        public static ushort[] stickyPistonEast = 
+        public static ushort[] stickyPistonEast =
         {
             Block.FromRaw(404),
             Block.FromRaw(405),
@@ -1524,7 +1541,7 @@ namespace NotAwesomeSurvival
             Block.FromRaw(408),
             Block.FromRaw(409)
         };
-        public static ushort[] stickyPistonWest = 
+        public static ushort[] stickyPistonWest =
         {
             Block.FromRaw(410),
             Block.FromRaw(411),
@@ -1532,8 +1549,9 @@ namespace NotAwesomeSurvival
         };
         public static NasBlockAction StickyPistonAction(string type, int changeX, int changeY, int changeZ, ushort[] pistonSet)
         {
-            return (nl, nasBlock, x, y, z) => {
-                ushort[] dontpush = 
+            return (nl, nasBlock, x, y, z) =>
+            {
+                ushort[] dontpush =
                 {
                     Block.FromRaw(391),
                     Block.FromRaw(397),
@@ -1546,24 +1564,24 @@ namespace NotAwesomeSurvival
                 };
                 Entity[] b = new Entity[5];
                 if (nl.blockEntities.ContainsKey(x + " " + (y - changeY) + " " + z))
-                { 
-                    b[0] = nl.blockEntities[x + " " + (y - changeY) + " " + z]; 
+                {
+                    b[0] = nl.blockEntities[x + " " + (y - changeY) + " " + z];
                 }
                 if (nl.blockEntities.ContainsKey(x + 1 + " " + y + " " + z))
                 {
                     b[1] = nl.blockEntities[x + 1 + " " + y + " " + z];
                 }
                 if (nl.blockEntities.ContainsKey(x - 1 + " " + y + " " + z))
-                { 
-                    b[2] = nl.blockEntities[x - 1 + " " + y + " " + z]; 
+                {
+                    b[2] = nl.blockEntities[x - 1 + " " + y + " " + z];
                 }
                 if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z + 1)))
                 {
-                    b[3] = nl.blockEntities[x + " " + y + " " + (z + 1)]; 
+                    b[3] = nl.blockEntities[x + " " + y + " " + (z + 1)];
                 }
                 if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z - 1)))
                 {
-                    b[4] = nl.blockEntities[x + " " + y + " " + (z - 1)]; 
+                    b[4] = nl.blockEntities[x + " " + y + " " + (z - 1)];
                 }
                 if (type.CaselessEq("off"))
                 {
@@ -1575,83 +1593,83 @@ namespace NotAwesomeSurvival
                             ((b[4] != null) && b[4].strength > 0 && (b[4].type == 2 || b[4].type == 4 || b[4].type == 9 || b[4].type == 13))
                         )
                     {
-                        ushort[] above = 
+                        ushort[] above =
                         {
-                            TurnValid(nl.GetBlock(x+changeX, y+changeY, z+changeZ)), 
+                            TurnValid(nl.GetBlock(x+changeX, y+changeY, z+changeZ)),
                             0, 0, 0, 0, 0, 0
                         };
                         int push = 0;
-                        if (above[0] == Block.Air || above[0] == 8) 
-                        { 
-                            push = 0; 
+                        if (above[0] == Block.Air || above[0] == 8)
+                        {
+                            push = 0;
                         }
                         else
                         {
-                            if (IsPartOfSet(unpushable, above[0]) != -1 || IsPartOfSet(dontpush, above[0]) != -1) 
-                            { 
-                                return; 
+                            if (IsPartOfSet(unpushable, above[0]) != -1 || IsPartOfSet(dontpush, above[0]) != -1)
+                            {
+                                return;
                             }
                             above[1] = TurnValid(nl.GetBlock(x + 2 * changeX, y + 2 * changeY, z + 2 * changeZ));
-                            if (above[1] == Block.Air || above[1] == 8) 
-                            { 
-                                push = 1; 
+                            if (above[1] == Block.Air || above[1] == 8)
+                            {
+                                push = 1;
                             }
                             else
                             {
-                                if (IsPartOfSet(unpushable, above[1]) != -1 || IsPartOfSet(dontpush, above[1]) != -1) 
+                                if (IsPartOfSet(unpushable, above[1]) != -1 || IsPartOfSet(dontpush, above[1]) != -1)
                                 {
-                                    return; 
+                                    return;
                                 }
                                 above[2] = TurnValid(nl.GetBlock(x + 3 * changeX, y + 3 * changeY, z + 3 * changeZ));
-                                if (above[2] == Block.Air || above[2] == 8) 
-                                { 
-                                    push = 2; 
+                                if (above[2] == Block.Air || above[2] == 8)
+                                {
+                                    push = 2;
                                 }
                                 else
                                 {
-                                    if (IsPartOfSet(unpushable, above[2]) != -1 || IsPartOfSet(dontpush, above[2]) != -1) 
-                                    { 
-                                        return; 
+                                    if (IsPartOfSet(unpushable, above[2]) != -1 || IsPartOfSet(dontpush, above[2]) != -1)
+                                    {
+                                        return;
                                     }
                                     above[3] = TurnValid(nl.GetBlock(x + 4 * changeX, y + 4 * changeY, z + 4 * changeZ));
-                                    if (above[3] == Block.Air || above[3] == 8) 
-                                    { 
-                                        push = 3; 
+                                    if (above[3] == Block.Air || above[3] == 8)
+                                    {
+                                        push = 3;
                                     }
                                     else
                                     {
-                                        if (IsPartOfSet(unpushable, above[3]) != -1 || IsPartOfSet(dontpush, above[3]) != -1) 
+                                        if (IsPartOfSet(unpushable, above[3]) != -1 || IsPartOfSet(dontpush, above[3]) != -1)
                                         { return; }
                                         above[4] = TurnValid(nl.GetBlock(x + 5 * changeX, y + 5 * changeY, z + 5 * changeZ));
-                                        if (above[4] == Block.Air || above[4] == 8) 
-                                        { 
-                                            push = 4; 
+                                        if (above[4] == Block.Air || above[4] == 8)
+                                        {
+                                            push = 4;
                                         }
                                         else
                                         {
-                                            if (IsPartOfSet(unpushable, above[4]) != -1 || IsPartOfSet(dontpush, above[4]) != -1) 
-                                            { 
-                                                return; 
+                                            if (IsPartOfSet(unpushable, above[4]) != -1 || IsPartOfSet(dontpush, above[4]) != -1)
+                                            {
+                                                return;
                                             }
                                             above[5] = TurnValid(nl.GetBlock(x + 6 * changeX, y + 6 * changeY, z + 6 * changeZ));
-                                            if (above[5] == Block.Air || above[5] == 8) 
-                                            { 
-                                                push = 5; 
+                                            if (above[5] == Block.Air || above[5] == 8)
+                                            {
+                                                push = 5;
                                             }
                                             else
                                             {
-                                                if (IsPartOfSet(unpushable, above[5]) != -1 || IsPartOfSet(dontpush, above[5]) != -1) 
-                                                { 
-                                                    return; 
+                                                if (IsPartOfSet(unpushable, above[5]) != -1 || IsPartOfSet(dontpush, above[5]) != -1)
+                                                {
+                                                    return;
                                                 }
                                                 above[6] = TurnValid(nl.GetBlock(x + 7 * changeX, y + 7 * changeY, z + 7 * changeZ));
-                                                if (above[6] == Block.Air || above[6] == 8) 
-                                                { 
-                                                    push = 6; 
+                                                if (above[6] == Block.Air || above[6] == 8)
+                                                {
+                                                    push = 6;
                                                 }
-                                                else 
-                                                { 
-                                                    return; 
+                                                else
+                                                {
+                                                    return;
                                                 }
                                             }
                                         }
@@ -1663,48 +1681,48 @@ namespace NotAwesomeSurvival
                         {
                             nl.SetBlock(x, y + (7 * changeY), z, above[5]);
                             if (nl.blockEntities.ContainsKey(x + " " + (y + (6 * changeY)) + " " + z))
-                            { 
-                                nl.blockEntities.Remove(x + " " + (y + (6 * changeY)) + " " + z); 
+                            {
+                                nl.blockEntities.Remove(x + " " + (y + (6 * changeY)) + " " + z);
                             }
                         }
                         if (push >= 5)
                         {
                             nl.SetBlock(x, y + (6 * changeY), z, above[4]);
                             if (nl.blockEntities.ContainsKey(x + " " + (y + (5 * changeY)) + " " + z))
-                            { 
-                                nl.blockEntities.Remove(x + " " + (y + (5 * changeY)) + " " + z); 
+                            {
+                                nl.blockEntities.Remove(x + " " + (y + (5 * changeY)) + " " + z);
                             }
                         }
                         if (push >= 4)
                         {
                             nl.SetBlock(x, y + (5 * changeY), z, above[3]);
                             if (nl.blockEntities.ContainsKey(x + " " + (y + (4 * changeY)) + " " + z))
-                            { 
-                                nl.blockEntities.Remove(x + " " + (y + (4 * changeY)) + " " + z); 
+                            {
+                                nl.blockEntities.Remove(x + " " + (y + (4 * changeY)) + " " + z);
                             }
                         }
                         if (push >= 3)
                         {
                             nl.SetBlock(x, y + (4 * changeY), z, above[2]);
                             if (nl.blockEntities.ContainsKey(x + " " + (y + (3 * changeY)) + " " + z))
-                            { 
-                                nl.blockEntities.Remove(x + " " + (y + (3 * changeY)) + " " + z); 
+                            {
+                                nl.blockEntities.Remove(x + " " + (y + (3 * changeY)) + " " + z);
                             }
                         }
                         if (push >= 2)
                         {
                             nl.SetBlock(x, y + (3 * changeY), z, above[1]);
                             if (nl.blockEntities.ContainsKey(x + " " + (y + (2 * changeY)) + " " + z))
-                            { 
-                                nl.blockEntities.Remove(x + " " + (y + (2 * changeY)) + " " + z); 
+                            {
+                                nl.blockEntities.Remove(x + " " + (y + (2 * changeY)) + " " + z);
                             }
                         }
                         if (push >= 1)
                         {
                             nl.SetBlock(x, y + (2 * changeY), z, above[0]);
                             if (nl.blockEntities.ContainsKey(x + " " + (y + (1 * changeY)) + " " + z))
-                            { 
-                                nl.blockEntities.Remove(x + " " + (y + (1 * changeY)) + " " + z); 
+                            {
+                                nl.blockEntities.Remove(x + " " + (y + (1 * changeY)) + " " + z);
                             }
                         }
                         nl.SetBlock(x, y + changeY, z, pistonSet[2]);
@@ -1745,23 +1763,23 @@ namespace NotAwesomeSurvival
                             nl.SetBlock(x, y + (1 * changeY), z, pullback);
                             nl.SetBlock(x, y + (2 * changeY), z, Block.Air);
                             if (nl.blockEntities.ContainsKey(x + " " + (y + (2 * changeY)) + " " + z))
-                            { 
-                                nl.blockEntities.Remove(x + " " + (y + (2 * changeY)) + " " + z); 
+                            {
+                                nl.blockEntities.Remove(x + " " + (y + (2 * changeY)) + " " + z);
                             }
 
                         }
                         return;
                     }
                     if (nl.GetBlock(x, y + changeY, z) != pistonSet[2])
-                    { 
-                        nl.SetBlock(x, y + changeY, z, pistonSet[2]); 
+                    {
+                        nl.SetBlock(x, y + changeY, z, pistonSet[2]);
                     }
                 }
                 if (type.CaselessEq("head"))
                 {
                     if (nl.GetBlock(x, y - changeY, z) != pistonSet[1])
-                    { 
-                        nl.SetBlock(x, y, z, Block.Air); 
+                    {
+                        nl.SetBlock(x, y, z, Block.Air);
                     }
                 }
             };
@@ -1828,7 +1846,7 @@ namespace NotAwesomeSurvival
             }
             return returnedBlock;
         }
-        public static ushort[] unpushable = 
+        public static ushort[] unpushable =
         {
             Block.FromRaw(690),
             Block.FromRaw(647),
@@ -1873,61 +1891,61 @@ namespace NotAwesomeSurvival
         };
         public static int CanIPush(NasLevel nl, int x, int y, int z, ushort[] above)
         {
-            if (above[0] == Block.Air || above[0] == 8) 
-            { 
-                return 0; 
+            if (above[0] == Block.Air || above[0] == 8)
+            {
+                return 0;
             }
-            if (IsPartOfSet(unpushable, above[0]) != -1) 
-            { 
-                return -1; 
+            if (IsPartOfSet(unpushable, above[0]) != -1)
+            {
+                return -1;
             }
-            if (above[1] == Block.Air || above[1] == 8) 
-            { 
-                return 1; 
+            if (above[1] == Block.Air || above[1] == 8)
+            {
+                return 1;
             }
-            if (IsPartOfSet(unpushable, above[1]) != -1) 
-            { 
-                return -1; 
+            if (IsPartOfSet(unpushable, above[1]) != -1)
+            {
+                return -1;
             }
-            if (above[2] == Block.Air || above[2] == 8) 
-            { 
+            if (above[2] == Block.Air || above[2] == 8)
+            {
                 return 2;
             }
-            if (IsPartOfSet(unpushable, above[2]) != -1) 
-            { 
-                return -1; 
+            if (IsPartOfSet(unpushable, above[2]) != -1)
+            {
+                return -1;
             }
             if (above[3] == Block.Air || above[3] == 8)
             {
-                return 3; 
+                return 3;
             }
-            if (IsPartOfSet(unpushable, above[3]) != -1) 
+            if (IsPartOfSet(unpushable, above[3]) != -1)
             {
                 return -1;
             }
-            if (above[4] == Block.Air || above[4] == 8) 
-            { 
-                return 4; 
+            if (above[4] == Block.Air || above[4] == 8)
+            {
+                return 4;
             }
-            if (IsPartOfSet(unpushable, above[4]) != -1) 
-            { 
+            if (IsPartOfSet(unpushable, above[4]) != -1)
+            {
                 return -1;
             }
-            if (above[5] == Block.Air || above[5] == 8) 
-            { 
-                return 5; 
-            }
-            if (IsPartOfSet(unpushable, above[5]) != -1) 
-            { 
-                return -1; 
-            }
-            if (above[6] == Block.Air || above[6] == 8) 
+            if (above[5] == Block.Air || above[5] == 8)
             {
-                return 6; 
+                return 5;
             }
-            if (IsPartOfSet(unpushable, above[6]) != -1) 
+            if (IsPartOfSet(unpushable, above[5]) != -1)
             {
-                return -1; 
+                return -1;
+            }
+            if (above[6] == Block.Air || above[6] == 8)
+            {
+                return 6;
+            }
+            if (IsPartOfSet(unpushable, above[6]) != -1)
+            {
+                return -1;
             }
             return -1;
         }
@@ -1937,25 +1955,25 @@ namespace NotAwesomeSurvival
             Block.Extended|682,
             Block.Extended|684
         };
-        public static ushort[] wireSetInactive = 
+        public static ushort[] wireSetInactive =
         {
             Block.Extended|551,
             Block.Extended|550,
             Block.Extended|552
         };
-        public static ushort[] fixedWireSetInactive = 
+        public static ushort[] fixedWireSetInactive =
         {
             Block.Extended|732,
             Block.Extended|733,
             Block.Extended|734
         };
-        public static ushort[] fixedWireSetActive = 
+        public static ushort[] fixedWireSetActive =
         {
             Block.Extended|735,
             Block.Extended|736,
             Block.Extended|737
         };
-        public static ushort[] repeaterSetActive = 
+        public static ushort[] repeaterSetActive =
         {
             Block.Extended|613,
             Block.Extended|614,
@@ -1964,7 +1982,7 @@ namespace NotAwesomeSurvival
             Block.Extended|617,
             Block.Extended|618,
         };
-        public static ushort[] repeaterSetInactive = 
+        public static ushort[] repeaterSetInactive =
         {
             Block.Extended|172,
             Block.Extended|173,
@@ -1975,7 +1993,8 @@ namespace NotAwesomeSurvival
         };
         public static NasBlockAction PowerSourceAction(int direction)
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {
                     nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
@@ -1987,19 +2006,20 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction WireAction(ushort[] actSet, ushort[] inactSet, int direction, ushort hereBlock)
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 int type = 0;
                 if (IsPartOfSet(actSet, hereBlock) != -1)
-                { 
-                    type = IsPartOfSet(actSet, hereBlock); 
+                {
+                    type = IsPartOfSet(actSet, hereBlock);
                 }
-                else 
-                { 
-                    type = IsPartOfSet(inactSet, hereBlock); 
+                else
+                {
+                    type = IsPartOfSet(inactSet, hereBlock);
                 }
-                if (actSet == fixedWireSetActive) 
-                { 
-                    type += 11; 
+                if (actSet == fixedWireSetActive)
+                {
+                    type += 11;
                 }
                 if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {
@@ -2008,8 +2028,8 @@ namespace NotAwesomeSurvival
                     nl.blockEntities[x + " " + y + " " + z].type = type;
                 }
                 Entity b = nl.blockEntities[x + " " + y + " " + z],
-                strength1 = new Entity(),
-                strength2 = new Entity();
+                strength1 = new(),
+                strength2 = new();
                 int strength0 = b.strength;
                 if (direction == 0)
                 {
@@ -2094,7 +2114,7 @@ namespace NotAwesomeSurvival
                     else
                     {
                         if (strength0 != b.strength)
-                        { 
+                        {
                             nl.DisturbBlocks(x, y, z);
                         }
                     }
@@ -2108,7 +2128,7 @@ namespace NotAwesomeSurvival
                     else
                     {
                         if (strength0 != b.strength)
-                        { 
+                        {
                             nl.DisturbBlocks(x, y, z);
                         }
                     }
@@ -2117,7 +2137,8 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction PressurePlateAction()
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 bool stoodOn = false;
                 Player[] players = PlayerInfo.Online.Items;
                 for (int i = 0; i < players.Length; i++)
@@ -2133,23 +2154,24 @@ namespace NotAwesomeSurvival
                     nl.SetBlock(x, y, z, Block.FromRaw(610));
                     nl.blockEntities[x + " " + y + " " + z].strength = 0;
                 }
-                else 
+                else
                 {
-                    nl.SimulateSetBlock(x, y, z); 
+                    nl.SimulateSetBlock(x, y, z);
                 }
             };
         }
         public static NasBlockAction RepeaterAction(int direction, ushort hereBlock)
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 int type = 0;
                 if (IsPartOfSet(repeaterSetActive, hereBlock) != -1)
-                { 
-                    type = 1; 
-                }
-                else 
                 {
-                    type = 0; 
+                    type = 1;
+                }
+                else
+                {
+                    type = 0;
                 }
                 if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {
@@ -2158,7 +2180,7 @@ namespace NotAwesomeSurvival
                     nl.blockEntities[x + " " + y + " " + z].type = direction;
                 }
                 Entity b = nl.blockEntities[x + " " + y + " " + z],
-                strength1 = new Entity();
+                strength1 = new();
                 if (direction == 5)
                 {
                     if (nl.blockEntities.ContainsKey(x + " " + (y + 1) + " " + z))
@@ -2201,7 +2223,7 @@ namespace NotAwesomeSurvival
                         strength1 = nl.blockEntities[x + 1 + " " + y + " " + z];
                     }
                 }
-                NasLevel.QueuedBlockUpdate qb = new NasLevel.QueuedBlockUpdate
+                NasLevel.QueuedBlockUpdate qb = new()
                 {
                     x = x,
                     y = y,
@@ -2217,13 +2239,14 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction ContRepeaterTask(int type, Entity strength1, int direction)
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 Entity b = nl.blockEntities[x + " " + y + " " + z];
                 if (!(strength1.type < 5 || strength1.type == b.type || (strength1.type == 11 && (b.type == 10 || b.type == 8)) ||
                       (strength1.type == 12 && (b.type == 5 || b.type == 6)) ||
-                      (strength1.type == 13 && (b.type == 9 || b.type == 7)))) 
-                { 
-                    strength1.strength = 0; 
+                      (strength1.type == 13 && (b.type == 9 || b.type == 7))))
+                {
+                    strength1.strength = 0;
                 }
                 if (type == 0 && strength1.strength > 0)
                 {
@@ -2239,7 +2262,8 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction TurnOffAction()
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {
                     return;
@@ -2250,31 +2274,32 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction DispenserAction(int changeX, int changeY, int changeZ)
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 Entity[] b = new Entity[6];
                 if (nl.blockEntities.ContainsKey(x + " " + (y + 1) + " " + z) && (changeY != 1))
-                { 
-                    b[0] = nl.blockEntities[x + " " + (y + 1) + " " + z]; 
+                {
+                    b[0] = nl.blockEntities[x + " " + (y + 1) + " " + z];
                 }
                 if (nl.blockEntities.ContainsKey(x + " " + (y - 1) + " " + z) && (changeY != -1))
-                { 
-                    b[1] = nl.blockEntities[x + " " + (y - 1) + " " + z]; 
+                {
+                    b[1] = nl.blockEntities[x + " " + (y - 1) + " " + z];
                 }
                 if (nl.blockEntities.ContainsKey(x + 1 + " " + y + " " + z) && (changeX != 1))
-                { 
-                    b[2] = nl.blockEntities[x + 1 + " " + y + " " + z]; 
+                {
+                    b[2] = nl.blockEntities[x + 1 + " " + y + " " + z];
                 }
                 if (nl.blockEntities.ContainsKey(x - 1 + " " + y + " " + z) && (changeX != -1))
                 {
-                    b[3] = nl.blockEntities[x - 1 + " " + y + " " + z]; 
+                    b[3] = nl.blockEntities[x - 1 + " " + y + " " + z];
                 }
                 if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z + 1)) && (changeZ != 1))
-                { 
-                    b[4] = nl.blockEntities[x + " " + y + " " + (z + 1)]; 
+                {
+                    b[4] = nl.blockEntities[x + " " + y + " " + (z + 1)];
                 }
                 if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z - 1)) && (changeZ != -1))
-                { 
-                    b[5] = nl.blockEntities[x + " " + y + " " + (z - 1)]; 
+                {
+                    b[5] = nl.blockEntities[x + " " + y + " " + (z - 1)];
                 }
                 bool powered =
                     ((b[0] != null) && b[0].strength > 0 && (b[0].type == 1 || b[0].type == 4 || b[0].type == 5 || b[0].type == 12)) ||
@@ -2286,60 +2311,60 @@ namespace NotAwesomeSurvival
                 if (!powered)
                 {
                     if (nl.blockEntities.ContainsKey(x + " " + y + " " + z))
-                    { 
-                        nl.blockEntities[x + " " + y + " " + z].type = 0; 
-                        return; 
+                    {
+                        nl.blockEntities[x + " " + y + " " + z].type = 0;
+                        return;
                     }
                 }
-                if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z) || nl.blockEntities[x + " " + y + " " + z].type == 1) 
-                { 
-                    return; 
+                if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z) || nl.blockEntities[x + " " + y + " " + z].type == 1)
+                {
+                    return;
                 }
                 nl.blockEntities[x + " " + y + " " + z].type = 1;
                 {
                     ushort checkBlock = nl.GetBlock(x + changeX, y + changeY, z + changeZ);
-                    if (!CanPhysicsKillThis(checkBlock) && IsPartOfSet(waterSet, checkBlock) == -1 && IsPartOfSet(lavaSet, checkBlock) == -1) 
-                    { 
-                        return; 
+                    if (!CanPhysicsKillThis(checkBlock) && IsPartOfSet(waterSet, checkBlock) == -1 && IsPartOfSet(lavaSet, checkBlock) == -1)
+                    {
+                        return;
                     }
                     Entity bEntity = nl.blockEntities[x + " " + y + " " + z];
-                    if (bEntity.drop == null || bEntity.drop.blockStacks == null) 
+                    if (bEntity.drop == null || bEntity.drop.blockStacks == null)
                     {
-                        return; 
+                        return;
                     }
                     BlockStack bs = bEntity.drop.blockStacks[bEntity.drop.blockStacks.Count - 1];
-                    if (bs.ID == Block.Bedrock) 
-                    { 
-                        return; 
+                    if (bs.ID == Block.Bedrock)
+                    {
+                        return;
                     }
                     ushort clientushort = bs.ID,
                     addedushort = 0;
-                    if (clientushort == 643) 
-                    { 
-                        clientushort = 9; 
-                        addedushort = 143; 
+                    if (clientushort == 643)
+                    {
+                        clientushort = 9;
+                        addedushort = 143;
                     }
                     else
                     {
-                        if (clientushort == 696) 
-                        { 
-                            clientushort = 10; 
-                            addedushort = 697; 
+                        if (clientushort == 696)
+                        {
+                            clientushort = 10;
+                            addedushort = 697;
                         }
                         else
                         {
-                            if (clientushort == 143 && IsPartOfSet(waterSet, checkBlock) != -1) 
-                            { 
-                                clientushort = 0; 
+                            if (clientushort == 143 && IsPartOfSet(waterSet, checkBlock) != -1)
+                            {
+                                clientushort = 0;
                                 addedushort = 643;
                             }
-                            else 
-                            { 
-                                if (clientushort == 697 && checkBlock == 10) 
-                                { 
-                                    clientushort = 0; 
-                                    addedushort = 696; 
-                                } 
+                            else
+                            {
+                                if (clientushort == 697 && checkBlock == 10)
+                                {
+                                    clientushort = 0;
+                                    addedushort = 696;
+                                }
                             }
                         }
                     }
@@ -2355,9 +2380,9 @@ namespace NotAwesomeSurvival
                     if (addedushort == 0)
                     {
                         nl.SetBlock(x + changeX, y + changeY, z + changeZ, Block.FromRaw(clientushort));
-                        if (Get(bs.ID).container != null) 
-                        { 
-                            nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new Entity()); 
+                        if (Get(bs.ID).container != null)
+                        {
+                            nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new Entity());
                         }
                         return;
                     }
@@ -2376,9 +2401,9 @@ namespace NotAwesomeSurvival
                                 stack.amount += 1;
                             }
                             nl.SetBlock(x + changeX, y + changeY, z + changeZ, Block.FromRaw(clientushort));
-                            if (Get(bs.ID).container != null) 
+                            if (Get(bs.ID).container != null)
                             {
-                                nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new Entity()); 
+                                nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new Entity());
                             }
                             return;
                         }
@@ -2392,16 +2417,17 @@ namespace NotAwesomeSurvival
                         bEntity.drop.blockStacks.Add(new BlockStack(addedushort));
                     }
                     nl.SetBlock(x + changeX, y + changeY, z + changeZ, Block.FromRaw(clientushort));
-                    if (Get(bs.ID).container != null) 
+                    if (Get(bs.ID).container != null)
                     {
-                        nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new Entity()); 
+                        nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new Entity());
                     }
                 }
             };
         }
         public static NasBlockAction SpongeAction()
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 bool absorbed = false;
                 for (int xOff = -3; xOff <= 3; xOff++)
                 {
@@ -2411,41 +2437,44 @@ namespace NotAwesomeSurvival
                         {
                             if (IsPartOfSet(waterSet, nl.GetBlock(x + xOff, y + yOff, z + zOff)) != -1)
                             {
-                                nl.SetBlock(x + xOff, y + yOff, z + zOff, Block.Air); 
+                                nl.SetBlock(x + xOff, y + yOff, z + zOff, Block.Air);
                                 absorbed = true;
                             }
 
                         }
                     }
                 }
-                if (absorbed) 
-                { 
-                    nl.SetBlock(x, y, z, Block.FromRaw(428)); 
+                if (absorbed)
+                {
+                    nl.SetBlock(x, y, z, Block.FromRaw(428));
                 }
             };
         }
         public static NasBlockAction NeedsSupportAction()
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 IsSupported(nl, x, y, z);
             };
         }
         public static NasBlockAction GenericPlantAction()
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 GenericPlantSurvived(nl, x, y, z);
             };
         }
-        public static ushort[] leafSet = new ushort[] 
+        public static ushort[] leafSet = new ushort[]
         {
-            Block.Leaves 
+            Block.Leaves
         };
         public static NasBlockAction OakSaplingAction()
         {
-            return (nl, nasBlock, x, y, z) => {
-                if (!GenericPlantSurvived(nl, x, y, z)) 
-                { 
-                    return; 
+            return (nl, nasBlock, x, y, z) =>
+            {
+                if (!GenericPlantSurvived(nl, x, y, z))
+                {
+                    return;
                 }
                 nl.SetBlock(x, y, z, Block.Air);
                 NasTree.GenOakTree(nl, r, x, y, z, true);
@@ -2453,10 +2482,11 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction BirchSaplingAction()
         {
-            return (nl, nasBlock, x, y, z) => {
-                if (!GenericPlantSurvived(nl, x, y, z)) 
+            return (nl, nasBlock, x, y, z) =>
+            {
+                if (!GenericPlantSurvived(nl, x, y, z))
                 {
-                    return; 
+                    return;
                 }
                 nl.SetBlock(x, y, z, Block.Air);
                 NasTree.GenBirchTree(nl, r, x, y, z, true);
@@ -2464,10 +2494,11 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction SwampSaplingAction()
         {
-            return (nl, nasBlock, x, y, z) => {
-                if (!GenericPlantSurvived(nl, x, y, z)) 
-                { 
-                    return; 
+            return (nl, nasBlock, x, y, z) =>
+            {
+                if (!GenericPlantSurvived(nl, x, y, z))
+                {
+                    return;
                 }
                 nl.SetBlock(x, y, z, Block.Air);
                 NasTree.GenSwampTree(nl, r, x, y, z, true);
@@ -2475,52 +2506,55 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction SpruceSaplingAction()
         {
-            return (nl, nasBlock, x, y, z) => {
-                if (!GenericPlantSurvived(nl, x, y, z)) 
+            return (nl, nasBlock, x, y, z) =>
+            {
+                if (!GenericPlantSurvived(nl, x, y, z))
                 {
-                    return; 
+                    return;
                 }
                 nl.SetBlock(x, y, z, Block.Air);
                 NasTree.GenSpruceTree(nl, r, x, y, z, true);
             };
         }
-        public static ushort[] wheatSet = new ushort[] 
-        { 
-            Block.FromRaw(644), 
-            Block.FromRaw(645), 
-            Block.FromRaw(646), 
-            Block.FromRaw(461) 
-        };
-        public static ushort[] ironSet = new ushort[] 
+        public static ushort[] wheatSet = new ushort[]
         {
-            Block.FromRaw(729), 
-            Block.FromRaw(730), 
-            Block.FromRaw(731), 
-            Block.FromRaw(479) 
+            Block.FromRaw(644),
+            Block.FromRaw(645),
+            Block.FromRaw(646),
+            Block.FromRaw(461)
+        };
+        public static ushort[] ironSet = new ushort[]
+        {
+            Block.FromRaw(729),
+            Block.FromRaw(730),
+            Block.FromRaw(731),
+            Block.FromRaw(479)
         };
         public static NasBlockAction CropAction(ushort[] cropSet, int index)
         {
-            return (nl, nasBlock, x, y, z) => {
-                if (!CropSurvived(nl, x, y, z)) 
+            return (nl, nasBlock, x, y, z) =>
+            {
+                if (!CropSurvived(nl, x, y, z))
                 {
-                    return; 
+                    return;
                 }
-                if (index + 1 >= cropSet.Length) 
-                { 
-                    return; 
+                if (index + 1 >= cropSet.Length)
+                {
+                    return;
                 }
                 nl.SetBlock(x, y, z, cropSet[index + 1]);
             };
         }
         public static NasBlockAction IronCropAction(ushort[] cropSet, int index)
         {
-            return (nl, nasBlock, x, y, z) => {
-                if (!IronCropSurvived(nl, x, y, z)) 
+            return (nl, nasBlock, x, y, z) =>
+            {
+                if (!IronCropSurvived(nl, x, y, z))
                 {
-                    return; 
+                    return;
                 }
-                if (index + 1 >= cropSet.Length) 
-                { 
+                if (index + 1 >= cropSet.Length)
+                {
                     return;
                 }
                 nl.SetBlock(x, y, z, cropSet[index + 1]);
@@ -2528,27 +2562,28 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction AutoCraftingAction()
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 Entity[] b = new Entity[5];
                 if (nl.blockEntities.ContainsKey(x + " " + (y - 1) + " " + z))
-                { 
-                    b[0] = nl.blockEntities[x + " " + (y - 1) + " " + z]; 
+                {
+                    b[0] = nl.blockEntities[x + " " + (y - 1) + " " + z];
                 }
                 if (nl.blockEntities.ContainsKey(x + 1 + " " + y + " " + z))
                 {
-                    b[1] = nl.blockEntities[x + 1 + " " + y + " " + z]; 
+                    b[1] = nl.blockEntities[x + 1 + " " + y + " " + z];
                 }
                 if (nl.blockEntities.ContainsKey(x - 1 + " " + y + " " + z))
-                { 
-                    b[2] = nl.blockEntities[x - 1 + " " + y + " " + z]; 
+                {
+                    b[2] = nl.blockEntities[x - 1 + " " + y + " " + z];
                 }
                 if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z + 1)))
-                { 
-                    b[3] = nl.blockEntities[x + " " + y + " " + (z + 1)]; 
+                {
+                    b[3] = nl.blockEntities[x + " " + y + " " + (z + 1)];
                 }
                 if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z - 1)))
-                { 
-                    b[4] = nl.blockEntities[x + " " + y + " " + (z - 1)]; 
+                {
+                    b[4] = nl.blockEntities[x + " " + y + " " + (z - 1)];
                 }
                 bool powered =
                         ((b[0] != null) && b[0].strength > 0 && (b[0].type == 1 || b[0].type == 4 || b[0].type == 6 || b[0].type == 12)) ||
@@ -2557,13 +2592,13 @@ namespace NotAwesomeSurvival
                         ((b[3] != null) && b[3].strength > 0 && (b[3].type == 2 || b[3].type == 4 || b[3].type == 7 || b[3].type == 13)) ||
                         ((b[4] != null) && b[4].strength > 0 && (b[4].type == 2 || b[4].type == 4 || b[4].type == 9 || b[4].type == 13));
                 if (!powered)
-                { 
-                    nl.blockEntities[x + " " + y + " " + z].type = 0; 
-                    return; 
-                }
-                if (nl.blockEntities[x + " " + y + " " + z].type == 1) 
                 {
-                    return; 
+                    nl.blockEntities[x + " " + y + " " + z].type = 0;
+                    return;
+                }
+                if (nl.blockEntities[x + " " + y + " " + z].type == 1)
+                {
+                    return;
                 }
                 nl.blockEntities[x + " " + y + " " + z].type = 1;
                 lock (Crafting.locker)
@@ -2573,7 +2608,7 @@ namespace NotAwesomeSurvival
                     {
                         return;
                     }
-                    Drop dropClone = new Drop(recipe.drop);
+                    Drop dropClone = new(recipe.drop);
                     Crafting.ClearCraftingArea(nl, (ushort)x, (ushort)y, (ushort)z, nasBlock.station.ori);
                     Entity bEntity = nl.blockEntities[x + " " + y + " " + z];
                     if (bEntity.drop == null)
@@ -2602,9 +2637,9 @@ namespace NotAwesomeSurvival
                                     exists = true;
                                 }
                             }
-                            if (!exists) 
-                            { 
-                                bEntity.drop.blockStacks.Add(new BlockStack(stack.ID, stack.amount)); 
+                            if (!exists)
+                            {
+                                bEntity.drop.blockStacks.Add(new BlockStack(stack.ID, stack.amount));
                             }
                         }
                     }
@@ -2624,9 +2659,9 @@ namespace NotAwesomeSurvival
         }
         public static bool GenericPlantSurvived(NasLevel nl, int x, int y, int z)
         {
-            if (!IsSupported(nl, x, y, z)) 
-            { 
-                return false; 
+            if (!IsSupported(nl, x, y, z))
+            {
+                return false;
             }
             if (!CanPlantsLiveOn(nl.GetBlock(x, y - 1, z)))
             {
@@ -2637,13 +2672,13 @@ namespace NotAwesomeSurvival
         }
         public static bool CropSurvived(NasLevel nl, int x, int y, int z)
         {
-            if (!IsSupported(nl, x, y, z)) 
-            { 
-                return false; 
+            if (!IsSupported(nl, x, y, z))
+            {
+                return false;
             }
-            if (nl.biome < 0) 
-            { 
-                return false; 
+            if (nl.biome < 0)
+            {
+                return false;
             }
             if (IsPartOfSet(soilForPlants, nl.GetBlock(x, y - 1, z)) == -1)
             {
@@ -2654,13 +2689,13 @@ namespace NotAwesomeSurvival
         }
         public static bool IronCropSurvived(NasLevel nl, int x, int y, int z)
         {
-            if (!IsSupported(nl, x, y, z)) 
-            { 
-                return false; 
+            if (!IsSupported(nl, x, y, z))
+            {
+                return false;
             }
-            if (nl.biome >= 0) 
-            { 
-                return false; 
+            if (nl.biome >= 0)
+            {
+                return false;
             }
             if (IsPartOfSet(soilForIron, nl.GetBlock(x, y - 1, z)) == -1 || IsPartOfSet(lavaSet, nl.GetBlock(x, y - 2, z)) == -1)
             {
@@ -2669,17 +2704,17 @@ namespace NotAwesomeSurvival
             }
             return true;
         }
-        public static ushort[] soilForPlants = new ushort[] 
-        { 
-            Block.Dirt, 
-            Block.Extended|144, 
-            Block.Extended|685 
+        public static ushort[] soilForPlants = new ushort[]
+        {
+            Block.Dirt,
+            Block.Extended|144,
+            Block.Extended|685
         };
-        public static ushort[] soilForIron = new ushort[] 
-        { 
-            48, 
-            Block.Extended|452, 
-            Block.Extended|451 
+        public static ushort[] soilForIron = new ushort[]
+        {
+            48,
+            Block.Extended|452,
+            Block.Extended|451
         };
         public static bool CanPlantsLiveOn(ushort block)
         {
@@ -2691,10 +2726,11 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockAction OnSoil(ushort soil)
         {
-            return (nl, nasBlock, x, y, z) => {
+            return (nl, nasBlock, x, y, z) =>
+            {
                 if (!((nl.GetBlock(x, y, z) == nl.GetBlock(x, y - 1, z)) | (nl.GetBlock(x, y - 1, z) == soil)))
-                { 
-                    nl.SetBlock(x, y, z, Block.Extended|39); 
+                {
+                    nl.SetBlock(x, y, z, Block.Extended | 39);
                 }
             };
         }

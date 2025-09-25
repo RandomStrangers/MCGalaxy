@@ -46,8 +46,8 @@ namespace MCGalaxy.Modules.Compiling
             string args = GetCommandLineArguments(srcPaths, dstPath, referenced);
             string exe = GetExecutable();
 
-            ICompilerErrors errors = new ICompilerErrors();
-            List<string> output = new List<string>();
+            ICompilerErrors errors = new();
+            List<string> output = new();
             int retValue = Compile(exe, GetCompilerArgs(exe, args), output);
 
             // Only look for errors/warnings if the compile failed
@@ -66,7 +66,7 @@ namespace MCGalaxy.Modules.Compiling
         protected virtual string GetCommandLineArguments(string[] srcPaths, string dstPath,
                                                          List<string> referencedAssemblies)
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             sb.Append("/t:library ");
 
             // /noconfig disables compiler adding a list of default additional system libraries
@@ -113,27 +113,25 @@ namespace MCGalaxy.Modules.Compiling
             // https://stackoverflow.com/questions/285760/how-to-spawn-a-process-and-capture-its-stdout-in-net
             ProcessStartInfo psi = CreateStartInfo(path, args);
 
-            using (Process p = new Process())
-            {
-                p.OutputDataReceived += (s, e) => { if (e.Data != null) output.Add(e.Data); }; // csc errors
-                p.ErrorDataReceived += (s, e) => { if (e.Data != null) output.Add(e.Data); }; // mcs errors
+            using Process p = new();
+            p.OutputDataReceived += (s, e) => { if (e.Data != null) output.Add(e.Data); }; // csc errors
+            p.ErrorDataReceived += (s, e) => { if (e.Data != null) output.Add(e.Data); }; // mcs errors
 
-                p.StartInfo = psi;
-                p.Start();
+            p.StartInfo = psi;
+            p.Start();
 
-                p.BeginOutputReadLine();
-                p.BeginErrorReadLine();
+            p.BeginOutputReadLine();
+            p.BeginErrorReadLine();
 
-                if (!p.WaitForExit(120 * 1000))
-                    throw new InvalidOperationException("C# compiler ran for over two minutes! Giving up..");
+            if (!p.WaitForExit(120 * 1000))
+                throw new InvalidOperationException("C# compiler ran for over two minutes! Giving up..");
 
-                return p.ExitCode;
-            }
+            return p.ExitCode;
         }
 
         protected static ProcessStartInfo CreateStartInfo(string path, string args)
         {
-            ProcessStartInfo psi = new ProcessStartInfo(path, args)
+            ProcessStartInfo psi = new(path, args)
             {
                 WorkingDirectory = Environment.CurrentDirectory,
                 UseShellExecute = false,
@@ -172,7 +170,7 @@ namespace MCGalaxy.Modules.Compiling
             }
 
             if (!m.Success) return;
-            ICompilerError ce = new ICompilerError();
+            ICompilerError ce = new();
 
             if (full)
             {

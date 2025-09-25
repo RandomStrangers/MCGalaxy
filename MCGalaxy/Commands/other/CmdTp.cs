@@ -18,95 +18,116 @@
 using MCGalaxy.Games;
 using MCGalaxy.Maths;
 
-namespace MCGalaxy.Commands.Misc {
-    public sealed class CmdTp : Command2 {
+namespace MCGalaxy.Commands.Misc
+{
+    public sealed class CmdTp : Command2
+    {
         public override string name { get { return "TP"; } }
         public override string shortcut { get { return "Move"; } }
         public override string type { get { return CommandTypes.Other; } }
         public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases {
-            get { return new [] { new CommandAlias("Teleport"), new CommandAlias("TPP", "-precise") }; }
+        public override CommandAlias[] Aliases
+        {
+            get { return new[] { new CommandAlias("Teleport"), new CommandAlias("TPP", "-precise") }; }
         }
-        
+
         const string precisePrefix = "-precise ";
-        public override void Use(Player p, string message, CommandData data) {           
+        public override void Use(Player p, string message, CommandData data)
+        {
             if (message.Length == 0) { Help(p); return; }
-            
-            bool preciseTP = message.CaselessStarts(precisePrefix);        
-            if (preciseTP) {
+
+            bool preciseTP = message.CaselessStarts(precisePrefix);
+            if (preciseTP)
+            {
                 message = message.Substring(precisePrefix.Length);
             }
-            
-            string[] args = message.SplitSpaces();            
+
+            string[] args = message.SplitSpaces();
             if (args.Length >= 3) { TeleportCoords(p, args, preciseTP); return; }
-            
+
             Player target = null;
             PlayerBot bot = null;
-            if (args.Length == 1) {
+            if (args.Length == 1)
+            {
                 target = PlayerInfo.FindMatches(p, args[0]);
                 if (target == null) return;
                 if (!CheckPlayer(p, target, data)) return;
-            } else if (args[0].CaselessEq("bot")) {
+            }
+            else if (args[0].CaselessEq("bot"))
+            {
                 bot = Matcher.FindBots(p, args[1]);
                 if (bot == null) return;
-            } else {
+            }
+            else
+            {
                 Help(p); return;
             }
-            
+
             Entity dst = bot ?? (Entity)target;
             PlayerOperations.TeleportToEntity(p, dst);
         }
-        
-        internal static bool GetTeleportCoords(Player p, Entity ori, string[] args, bool precise, 
-                                               out Position pos, out byte yaw, out byte pitch) {
+
+        internal static bool GetTeleportCoords(Player p, Entity ori, string[] args, bool precise,
+                                               out Position pos, out byte yaw, out byte pitch)
+        {
             Vec3S32 P;
             pos = p.Pos; yaw = ori.Rot.RotY; pitch = ori.Rot.HeadX;
-            
-            if (!precise) {
+
+            if (!precise)
+            {
                 // relative to feet block coordinates
                 P = p.Pos.FeetBlockCoords;
                 if (!CommandParser.GetCoords(p, args, 0, ref P)) return false;
                 pos = Position.FromFeetBlockCoords(P.X, P.Y, P.Z);
-            } else {
+            }
+            else
+            {
                 // relative to feet position exactly
                 P = new Vec3S32(p.Pos.X, p.Pos.Y - Entities.CharacterHeight, p.Pos.Z);
                 if (!CommandParser.GetCoords(p, args, 0, ref P)) return false;
                 pos = new Position(P.X, P.Y + Entities.CharacterHeight, P.Z);
             }
-            
-            int angle = 0;            
-            if (args.Length > 3) {
+
+            int angle = 0;
+            if (args.Length > 3)
+            {
                 if (!CommandParser.GetInt(p, args[3], "Yaw angle", ref angle, -360, 360)) return false;
                 yaw = Orientation.DegreesToPacked(angle);
-            }            
-            if (args.Length > 4) {
+            }
+            if (args.Length > 4)
+            {
                 if (!CommandParser.GetInt(p, args[4], "Pitch angle", ref angle, -360, 360)) return false;
                 pitch = Orientation.DegreesToPacked(angle);
             }
             return true;
         }
-        
-        static void TeleportCoords(Player p, string[] args, bool precise) {
+
+        static void TeleportCoords(Player p, string[] args, bool precise)
+        {
             if (!GetTeleportCoords(p, p, args, precise, out Position pos, out byte yaw, out byte pitch)) return;
 
             PlayerOperations.TeleportToCoords(p, pos, new Orientation(yaw, pitch));
         }
-        
-        static bool CheckPlayer(Player p, Player target, CommandData data) {
-            if (target.level.IsMuseum) {
+
+        static bool CheckPlayer(Player p, Player target, CommandData data)
+        {
+            if (target.level.IsMuseum)
+            {
                 p.Message("{0} &Sis in a museum.", p.FormatNick(target)); return false;
-            }          
+            }
             if (!Server.Config.HigherRankTP && !CheckRank(p, data, target, "teleport to", true)) return false;
-            
+
             IGame game = IGame.GameOn(target.level);
-            if (!p.Game.Referee && game != null) {
+            if (!p.Game.Referee && game != null)
+            {
                 p.Message("You can only teleport to players in " +
                                "a game when you are in referee mode."); return false;
             }
             return true;
         }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&HUse ~ before a coordinate to move relative to current position");
             p.Message("&T/TP [x y z] <yaw> <pitch>");
             p.Message("&HTeleports yourself to the given block coordinates.");

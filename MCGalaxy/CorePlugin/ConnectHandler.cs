@@ -16,17 +16,21 @@
     permissions and limitations under the Licenses.
  */
 
-namespace MCGalaxy.Core {
-    internal static class ConnectHandler {
-        
-        internal static void HandleConnect(Player p) {
+namespace MCGalaxy.Core
+{
+    internal static class ConnectHandler
+    {
+
+        internal static void HandleConnect(Player p)
+        {
             if (p.CanUse("ReachDistance")) LoadReach(p);
-            
+
             p.Ignores.Load(p);
             p.pronounsList = Pronouns.GetFor(p.name);
         }
-        
-        static void LoadReach(Player p) {
+
+        static void LoadReach(Player p)
+        {
             string reach = Server.reach.Get(p.name);
             if (string.IsNullOrEmpty(reach)) return;
 

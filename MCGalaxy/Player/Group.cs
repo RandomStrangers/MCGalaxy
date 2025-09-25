@@ -15,29 +15,29 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using System.Collections.Generic;
-using System.IO;
 using MCGalaxy.Blocks;
 using MCGalaxy.Config;
 using MCGalaxy.Events.GroupEvents;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
-namespace MCGalaxy 
+namespace MCGalaxy
 {
     /// <summary> This is the group object, where ranks and their data are stored </summary>
     public sealed class Group
     {
         public static Group BannedRank { get { return Find(LevelPermission.Banned); } }
-        public static Group GuestRank  { get { return Find(LevelPermission.Guest); } }
+        public static Group GuestRank { get { return Find(LevelPermission.Guest); } }
         public static Group DefaultRank;
-        public static Group ConsoleRank = new Group(LevelPermission.Console, int.MaxValue, 21024000, "Console", "&0", int.MaxValue, 16);
+        public static Group ConsoleRank = new(LevelPermission.Console, int.MaxValue, 21024000, "Console", "&0", int.MaxValue, 16);
 
 
-        public static List<Group> GroupList = new List<Group>();
-        public static List<Group> AllRanks  = new List<Group>();
+        public static List<Group> GroupList = new();
+        public static List<Group> AllRanks = new();
         static bool reloading;
         const int GEN_ADMIN = 225 * 1000 * 1000;
-        const int GEN_LIMIT = 30  * 1000 * 1000;       
+        const int GEN_LIMIT = 30 * 1000 * 1000;
 
         public string Name;
         [ConfigPerm("Permission", null, LevelPermission.Null)]
@@ -45,7 +45,7 @@ namespace MCGalaxy
         [ConfigColor("Color", null, "&f")]
         public string Color;
         public string ColoredName { get { return Color + Name; } }
-        
+
         [ConfigInt("Limit", null, 0, 0)]
         public int DrawLimit;
         [ConfigTimespan("MaxUndo", null, 0, false)]
@@ -66,29 +66,31 @@ namespace MCGalaxy
         public int CopySlots = 1;
         [ConfigString("Filename", null, "", true, ".,_-+=")]
         internal string filename;
-        
+
         public PlayerList Players;
-        public bool[] CanPlace  = new bool[Block.SUPPORTED_COUNT];
+        public bool[] CanPlace = new bool[Block.SUPPORTED_COUNT];
         public bool[] CanDelete = new bool[Block.SUPPORTED_COUNT];
 
         public Group() { }
-        private Group(LevelPermission perm, int drawLimit, int undoMins, string name, string color, int volume, int realms) {
+        private Group(LevelPermission perm, int drawLimit, int undoMins, string name, string color, int volume, int realms)
+        {
             int afkMins = perm <= LevelPermission.AdvBuilder ? 45 : 60;
 
-            Permission   = perm;
-            DrawLimit    = drawLimit;
-            MaxUndo      = TimeSpan.FromMinutes(undoMins);
-            Name         = name;
-            Color        = color;
-            GenVolume    = volume;
-            AfkKickTime  = TimeSpan.FromMinutes(afkMins);
+            Permission = perm;
+            DrawLimit = drawLimit;
+            MaxUndo = TimeSpan.FromMinutes(undoMins);
+            Name = name;
+            Color = color;
+            GenVolume = volume;
+            AfkKickTime = TimeSpan.FromMinutes(afkMins);
             OverseerMaps = realms;
         }
-        
+
 
         /// <summary> Creates a copy of this group, except for members list and usable commands and blocks. </summary>
-        public Group CopyConfig() {
-            Group copy = new Group
+        public Group CopyConfig()
+        {
+            Group copy = new()
             {
                 Name = Name,
                 Color = Color,
@@ -106,55 +108,64 @@ namespace MCGalaxy
             };
             return copy;
         }
-        
-        
-        public static Group Find(string name) {
+
+
+        public static Group Find(string name)
+        {
             MapName(ref name);
-            foreach (Group grp in GroupList) 
+            foreach (Group grp in GroupList)
             {
                 if (grp.Name.CaselessEq(name)) return grp;
             }
             return null;
         }
-        
-        internal static void MapName(ref string name) {
+
+        internal static void MapName(ref string name)
+        {
             if (name.CaselessEq("op")) name = "operator";
         }
 
-        public static Group Find(LevelPermission perm) {
+        public static Group Find(LevelPermission perm)
+        {
             if (perm == LevelPermission.Console) return ConsoleRank;
 
             return GroupList.Find(grp => grp.Permission == perm);
         }
 
-        public static Group GroupIn(string playerName) {
-            foreach (Group grp in GroupList) {
+        public static Group GroupIn(string playerName)
+        {
+            foreach (Group grp in GroupList)
+            {
                 if (grp.Players.Contains(playerName)) return grp;
             }
             return DefaultRank;
         }
-        
-        public static string GetColoredName(LevelPermission perm) {
+
+        public static string GetColoredName(LevelPermission perm)
+        {
             Group grp = Find(perm);
             if (grp != null) return grp.ColoredName;
             return "&f" + NumberUtils.StringifyInt((int)perm);
         }
-        
-        public static string GetColoredName(string rankName) {
+
+        public static string GetColoredName(string rankName)
+        {
             Group grp = Find(rankName);
             if (grp != null) return grp.ColoredName;
             return "&f" + rankName;
         }
-        
+
         /// <summary> Returns the color of the group with the given permission level </summary>
         /// <remarks> Returns white if no such group exists </remarks>
-        public static string GetColor(LevelPermission perm) {
+        public static string GetColor(LevelPermission perm)
+        {
             Group grp = Find(perm);
             if (grp != null) return grp.Color;
             return "&f";
         }
-        
-        public static LevelPermission ParsePermOrName(string value, LevelPermission defPerm) {
+
+        public static LevelPermission ParsePermOrName(string value, LevelPermission defPerm)
+        {
             if (value == null) return defPerm;
 
             if (NumberUtils.TryParseInt8(value, out sbyte perm))
@@ -163,54 +174,62 @@ namespace MCGalaxy
             Group grp = Find(value);
             return grp != null ? grp.Permission : defPerm;
         }
-        
-        static string GetPlural(string name) {
+
+        static string GetPlural(string name)
+        {
             if (name.Length < 2) return name;
-            
+
             string last2 = name.Substring(name.Length - 2).ToLower();
             if ((last2 != "ed" || name.Length <= 3) && last2[1] != 's')
                 return name + "s";
             return name;
         }
-        
+
         public string GetFormattedName() { return Color + GetPlural(Name); }
 
 
-        static void Add(LevelPermission perm, int drawLimit, int undoMins, string name, string color, int volume, int realms) {
+        static void Add(LevelPermission perm, int drawLimit, int undoMins, string name, string color, int volume, int realms)
+        {
             Register(new Group(perm, drawLimit, undoMins, name, color, volume, realms));
         }
 
-        public static void Register(Group grp) {
+        public static void Register(Group grp)
+        {
             GroupList.Add(grp);
             grp.LoadPlayers();
-            
-            if (reloading) {
+
+            if (reloading)
+            {
                 BlockPerms.SetUsable(grp);
             }
             OnGroupLoadedEvent.Call(grp);
         }
-        
-        public static void LoadAll() {
+
+        public static void LoadAll()
+        {
             GroupList = new List<Group>();
-            if (File.Exists(Paths.RankPropsFile)) {
+            if (File.Exists(Paths.RankPropsFile))
+            {
                 LoadFromDisc();
-            } else {
+            }
+            else
+            {
                 // Add some default ranks
-                Add(LevelPermission.Builder,      4096,        5, "Builder",    "&2", GEN_LIMIT,   3); // 16^3 draw volume
-                Add(LevelPermission.AdvBuilder, 262144,       15, "AdvBuilder", "&3", GEN_LIMIT,   5); // 64^3
-                Add(LevelPermission.Operator,  2097152,       90, "Operator",   "&c", GEN_LIMIT,   8); // 128^3
-                Add(LevelPermission.Admin,    16777216, 21024000, "Admin",      "&e", GEN_ADMIN,  32); // 256^3
-                Add(LevelPermission.Owner,   134217728, 21024000, "Owner",      "&4", GEN_ADMIN, 256); // 512^3
+                Add(LevelPermission.Builder, 4096, 5, "Builder", "&2", GEN_LIMIT, 3); // 16^3 draw volume
+                Add(LevelPermission.AdvBuilder, 262144, 15, "AdvBuilder", "&3", GEN_LIMIT, 5); // 64^3
+                Add(LevelPermission.Operator, 2097152, 90, "Operator", "&c", GEN_LIMIT, 8); // 128^3
+                Add(LevelPermission.Admin, 16777216, 21024000, "Admin", "&e", GEN_ADMIN, 32); // 256^3
+                Add(LevelPermission.Owner, 134217728, 21024000, "Owner", "&4", GEN_ADMIN, 256); // 512^3
             }
 
             if (BannedRank == null)
-                Add(LevelPermission.Banned,        1,        0, "Banned", "&8", GEN_LIMIT, 0);
+                Add(LevelPermission.Banned, 1, 0, "Banned", "&8", GEN_LIMIT, 0);
             if (GuestRank == null)
-                Add(LevelPermission.Guest,         1,        2, "Guest",  "&7", GEN_LIMIT, 3);
-            
+                Add(LevelPermission.Guest, 1, 2, "Guest", "&7", GEN_LIMIT, 3);
+
             GroupList.Sort((a, b) => a.Permission.CompareTo(b.Permission));
             DefaultRank = Find(Server.Config.DefaultRankName);
-            if (DefaultRank == null) DefaultRank = GuestRank;
+            DefaultRank ??= GuestRank;
 
             AllRanks.Clear();
             AllRanks.AddRange(GroupList);
@@ -219,62 +238,78 @@ namespace MCGalaxy
             OnGroupLoadEvent.Call();
             reloading = true;
             SaveAll(GroupList);
-            
+
             Player[] players = PlayerInfo.Online.Items;
-            foreach (Player p in players) {
+            foreach (Player p in players)
+            {
                 UpdateGroup(p);
             }
         }
-        
-        static void UpdateGroup(Player p) {
+
+        static void UpdateGroup(Player p)
+        {
             Group grp = Find(p.group.Permission) ?? DefaultRank;
             p.group = grp;
-            
+
             p.UpdateColor(PlayerInfo.DefaultColor(p));
         }
 
-        static readonly object saveLock = new object();
-        public static void SaveAll(List<Group> givenList) {
-            lock (saveLock) {
+        static readonly object saveLock = new();
+        public static void SaveAll(List<Group> givenList)
+        {
+            lock (saveLock)
+            {
                 SaveGroups(givenList);
             }
             OnGroupSaveEvent.Call();
         }
-        
-        
-        void LoadPlayers() {
+
+
+        void LoadPlayers()
+        {
             string desired = NumberUtils.StringifyInt((int)Permission) + "_rank";
             // Try to use the auto filename format
             if (filename == null || !filename.StartsWith(desired))
                 MoveToDesired(desired);
-            
+
             Players = PlayerList.Load("ranks/" + filename);
         }
-        
-        void MoveToDesired(string desired) {
+
+        void MoveToDesired(string desired)
+        {
             // rank doesn't exist to begin with
-            if (filename == null || !File.Exists("ranks/" + filename)) {
+            if (filename == null || !File.Exists("ranks/" + filename))
+            {
                 filename = desired + ".txt";
                 // TODO: should start backwards from z to a
-            } else if (MoveToFile(desired + ".txt")) {
-            } else {
+            }
+            else if (MoveToFile(desired + ".txt"))
+            {
+            }
+            else
+            {
                 // try appending a and z if duplicate file
-                for (char c = 'a'; c <= 'z'; c++) {
+                for (char c = 'a'; c <= 'z'; c++)
+                {
                     string newFile = desired + c + ".txt";
                     if (MoveToFile(newFile)) return;
                 }
             }
         }
-        
-        bool MoveToFile(string newFile) {
+
+        bool MoveToFile(string newFile)
+        {
             if (File.Exists("ranks/" + newFile)) return false;
-            
-            try {
+
+            try
+            {
                 //File.Move("ranks/" + filename, "ranks/" + newFile);
                 FileIO.TryMove("ranks/" + filename, "ranks/" + newFile);
                 filename = newFile;
                 return true;
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 Logger.LogError(ex);
                 return false;
             }
@@ -282,102 +317,120 @@ namespace MCGalaxy
 
 
         static ConfigElement[] cfg;
-        static void LoadFromDisc() {
+        static void LoadFromDisc()
+        {
             Group temp = null;
-            if (cfg == null) cfg = ConfigElement.GetAll(typeof(Group));
-            
+            cfg ??= ConfigElement.GetAll(typeof(Group));
+
             PropertiesFile.Read(Paths.RankPropsFile, ref temp, ParseProperty, '=', false);
             if (temp != null) AddGroup(temp);
         }
-        
-        static void ParseProperty(string key, string value, ref Group temp) {
-            if (key.CaselessEq("RankName")) {
+
+        static void ParseProperty(string key, string value, ref Group temp)
+        {
+            if (key.CaselessEq("RankName"))
+            {
                 if (temp != null) AddGroup(temp);
 
                 temp = new Group
                 {
                     Name = value.Replace(" ", "")
                 };
-            } else {
+            }
+            else
+            {
                 if (temp == null) return;
                 // for prefix we need to keep space at end
-                if (!key.CaselessEq("Prefix")) {
+                if (!key.CaselessEq("Prefix"))
+                {
                     value = value.Trim();
-                } else {
+                }
+                else
+                {
                     value = value.TrimStart();
                 }
-                
+
                 ConfigElement.Parse(cfg, temp, key, value);
             }
         }
-        
-        static void AddGroup(Group temp) {
+
+        static void AddGroup(Group temp)
+        {
             string name = temp.Name;
             // Try to rename conflicing ranks first
-            if (name.CaselessEq("op") || name.CaselessEq("Console")) {
+            if (name.CaselessEq("op") || name.CaselessEq("Console"))
+            {
                 Logger.Log(LogType.Warning, "Cannot have a rank named 'op' or 'console'", name);
                 temp.Name = "RENAMED_" + name;
-            } else if (Find(name) != null) {
+            }
+            else if (Find(name) != null)
+            {
                 Logger.Log(LogType.Warning, "Cannot add the rank {0} twice", name);
                 temp.Name = "RENAMED_" + name;
-            } 
+            }
 
-            if (Find(temp.Name) != null) {
+            if (Find(temp.Name) != null)
+            {
                 Logger.Log(LogType.Warning, "Cannot add the rank {0} twice", temp.Name);
-            } else if (Find(temp.Permission) != null) {
+            }
+            else if (Find(temp.Permission) != null)
+            {
                 Logger.Log(LogType.Warning, "Cannot have 2 ranks set at permission level " + (int)temp.Permission);
-            } else if (temp.Permission > LevelPermission.Owner) { // also handles LevelPermission.Null
+            }
+            else if (temp.Permission > LevelPermission.Owner)
+            { // also handles LevelPermission.Null
                 Logger.Log(LogType.Warning, "Invalid permission level for rank {0}", temp.Name);
-            } else {
+            }
+            else
+            {
                 Register(temp);
             }
         }
-        
-        static void SaveGroups(List<Group> givenList) {
-            if (cfg == null) cfg = ConfigElement.GetAll(typeof(Group));
-            
-            using (StreamWriter w = FileIO.CreateGuarded(Paths.RankPropsFile)) 
+
+        static void SaveGroups(List<Group> givenList)
+        {
+            cfg ??= ConfigElement.GetAll(typeof(Group));
+
+            using StreamWriter w = FileIO.CreateGuarded(Paths.RankPropsFile);
+            w.WriteLine("#Version 3");
+            w.WriteLine("#RankName = string");
+            w.WriteLine("#\tThe name of the rank (e.g. Guest)");
+            w.WriteLine("#Permission = number");
+            w.WriteLine("#\tThe \"permission\" level number of the rank.");
+            w.WriteLine("#\tPermission level numbers must be between -20 and 120");
+            w.WriteLine("#\tThe higher the number, the more commands and blocks are available");
+            w.WriteLine("#");
+            w.WriteLine("#\tFor example, the default ranks use the following permission levels:");
+            w.WriteLine("#\t\tBanned = -20, Guest = 0, Builder = 30, AdvBuilder = 50");
+            w.WriteLine("#\t\tOperator = 80, Admin = 100, Owner = 120");
+            w.WriteLine("#Limit = number");
+            w.WriteLine("#\tThe draw command limit for the rank (can be changed in-game with /limit)");
+            w.WriteLine("#\tMust be greater than 0");
+            w.WriteLine("#MaxUndo = number of seconds");
+            w.WriteLine("#\tThe undo limit for players of the rank when undoing others. (/undoplayer)");
+            w.WriteLine("#Color = color");
+            w.WriteLine("#\tThe default color shown in tab and chat for players of the rank (e.g. &f)");
+            w.WriteLine("#MOTD = string");
+            w.WriteLine("#\tThe default MOTD players of the rank will see when joining levels.");
+            w.WriteLine("#\tLeave blank to use the server MOTD.");
+            w.WriteLine("#OSMaps = number");
+            w.WriteLine("#\tThe maximum number of maps players of the rank can have in /os");
+            w.WriteLine("#Prefix = string");
+            w.WriteLine("#\tCharacters that always appear before names of players of the rank in chat.");
+            w.WriteLine("#\tLeave blank to have no characters before the names of players.");
+            w.WriteLine("#GenVolume = number");
+            w.WriteLine("#\tThe maximum volume of a map that can be generated by players of the rank.");
+            w.WriteLine("#\t(e.g. 512 x 256 x 512 map = 67108864 volume)");
+            w.WriteLine("#AfkKickMinutes = number of minutes");
+            w.WriteLine("#\tNumber of minutes a player of the rank can be AFK for before they are automatically AFK kicked.");
+            w.WriteLine();
+            w.WriteLine();
+
+            foreach (Group group in givenList)
             {
-                w.WriteLine("#Version 3");
-                w.WriteLine("#RankName = string");
-                w.WriteLine("#\tThe name of the rank (e.g. Guest)");
-                w.WriteLine("#Permission = number");
-                w.WriteLine("#\tThe \"permission\" level number of the rank.");
-                w.WriteLine("#\tPermission level numbers must be between -20 and 120");
-                w.WriteLine("#\tThe higher the number, the more commands and blocks are available");
-                w.WriteLine("#");
-                w.WriteLine("#\tFor example, the default ranks use the following permission levels:");
-                w.WriteLine("#\t\tBanned = -20, Guest = 0, Builder = 30, AdvBuilder = 50");
-                w.WriteLine("#\t\tOperator = 80, Admin = 100, Owner = 120");
-                w.WriteLine("#Limit = number");
-                w.WriteLine("#\tThe draw command limit for the rank (can be changed in-game with /limit)");
-                w.WriteLine("#\tMust be greater than 0");
-                w.WriteLine("#MaxUndo = number of seconds");
-                w.WriteLine("#\tThe undo limit for players of the rank when undoing others. (/undoplayer)");
-                w.WriteLine("#Color = color");
-                w.WriteLine("#\tThe default color shown in tab and chat for players of the rank (e.g. &f)");
-                w.WriteLine("#MOTD = string");
-                w.WriteLine("#\tThe default MOTD players of the rank will see when joining levels.");
-                w.WriteLine("#\tLeave blank to use the server MOTD.");
-                w.WriteLine("#OSMaps = number");
-                w.WriteLine("#\tThe maximum number of maps players of the rank can have in /os");
-                w.WriteLine("#Prefix = string");
-                w.WriteLine("#\tCharacters that always appear before names of players of the rank in chat.");
-                w.WriteLine("#\tLeave blank to have no characters before the names of players.");
-                w.WriteLine("#GenVolume = number");
-                w.WriteLine("#\tThe maximum volume of a map that can be generated by players of the rank.");
-                w.WriteLine("#\t(e.g. 512 x 256 x 512 map = 67108864 volume)");
-                w.WriteLine("#AfkKickMinutes = number of minutes");
-                w.WriteLine("#\tNumber of minutes a player of the rank can be AFK for before they are automatically AFK kicked.");
+                w.WriteLine("RankName = " + group.Name);
+                ConfigElement.SerialiseElements(cfg, w, group);
                 w.WriteLine();
-                w.WriteLine();
-                
-                foreach (Group group in givenList) 
-                {
-                    w.WriteLine("RankName = " + group.Name);
-                    ConfigElement.SerialiseElements(cfg, w, group);
-                    w.WriteLine();
-                }
             }
         }
     }

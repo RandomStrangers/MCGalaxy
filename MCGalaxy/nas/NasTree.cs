@@ -1,7 +1,7 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using System;
 using MCGalaxy;
 using MCGalaxy.Generator.Foliage;
+using System;
 namespace NotAwesomeSurvival
 {
     public static class NasTree

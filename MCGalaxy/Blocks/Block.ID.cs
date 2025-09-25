@@ -15,18 +15,18 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
 */
-namespace MCGalaxy 
+namespace MCGalaxy
 {
-    public static partial class Block 
+    public static partial class Block
     {
         /// <summary> Highest block ID supported in Classic </summary>
         public const byte CLASSIC_MAX_BLOCK = Obsidian;
         /// <summary> Highest block ID supported in Classic + CPE CustomBlocks </summary>
-        public const byte CPE_MAX_BLOCK     = StoneBrick;
+        public const byte CPE_MAX_BLOCK = StoneBrick;
         /// <summary> Total number of blocks in Classic + CPE CustomBlocks </summary>
-        public const byte CPE_COUNT         = CPE_MAX_BLOCK + 1;
+        public const byte CPE_COUNT = CPE_MAX_BLOCK + 1;
         /// <summary> Total number of blocks in Classic + CPE CustomBlocks + physics blocks </summary>
-        public const int  CORE_COUNT = 256;
+        public const int CORE_COUNT = 256;
 
         // 10 bit block ids are broken down into: 2 bits of class/type, 8 bits value
         // class | value meaning
@@ -44,31 +44,32 @@ namespace MCGalaxy
         //
         // E.g. 0x080 = class 00, value 128 = physics block 128
         // E.g. 0x180 = class 01, value 128 =  custom block 128
-        
-        #if TEN_BIT_BLOCKS
+
+#if TEN_BIT_BLOCKS
         public const ushort MaxRaw = 767;
         internal const int SUPPORTED_COUNT = 256 * 4;
         internal static ushort[] ExtendedBase = new ushort[CORE_COUNT];
-        internal static byte[] ExtendedClass  = new byte[4];
-        
-        static Block() {
-            ExtendedBase[custom_block]   = Extended;
+        internal static byte[] ExtendedClass = new byte[4];
+
+        static Block()
+        {
+            ExtendedBase[custom_block] = Extended;
             ExtendedBase[custom_block_2] = Extended * 2;
             ExtendedBase[custom_block_3] = Extended * 3;
-            
+
             ExtendedClass[0] = Air;
             ExtendedClass[1] = custom_block;
             ExtendedClass[2] = custom_block_2;
             ExtendedClass[3] = custom_block_3;
         }
-        #else
+#else
         public const ushort MaxRaw = 255;
         internal const int SUPPORTED_COUNT = 256 * 2;
-        #endif
+#endif
 
         // non-const for external code (SUPPORTED_COUNT value differs when TEN_BIT_BLOCKS)
         public static readonly int ExtendedCount = SUPPORTED_COUNT;
-        
+
         // Original blocks
         public const byte Air = 0;
         public const byte Stone = 1;
@@ -120,7 +121,7 @@ namespace MCGalaxy
         public const byte Bookshelf = 47;
         public const byte MossyRocks = 48;
         public const byte Obsidian = 49;
-        
+
         // CPE blocks
         public const byte CobblestoneSlab = 50;
         public const byte Rope = 51;
@@ -254,7 +255,7 @@ namespace MCGalaxy
 
         // BlockDefinitions
         public const byte custom_block = 163;
-        
+
         // Movement doors
         public const byte Door_Air = 164;
         public const byte Door_AirActivatable = 165; // air_switch
@@ -285,7 +286,7 @@ namespace MCGalaxy
         public const byte TNT_Small = 182;
         public const byte TNT_Big = 183;
         public const byte TNT_Explosion = 184;
-        public const byte LavaFire = 185;        
+        public const byte LavaFire = 185;
         public const byte TNT_Nuke = 186;
         public const byte RocketStart = 187;
         public const byte RocketHead = 188;
@@ -301,13 +302,13 @@ namespace MCGalaxy
         // Special liquid blocks
         public const byte Magma = 195;
         public const byte Geyser = 196;
-        
+
         public const byte Checkpoint = 197;
-        #if TEN_BIT_BLOCKS
+#if TEN_BIT_BLOCKS
         public const byte custom_block_2 = 198;
         public const byte custom_block_3 = 199;
-        #endif
-        
+#endif
+
         // Air type blocks
         public const byte Air_Flood = 200;
         public const byte Door_Log_air = 201;
@@ -344,7 +345,7 @@ namespace MCGalaxy
 
         public const byte Creeper = 231;
         public const byte ZombieBody = 232;
-        public const byte ZombieHead = 233;        
+        public const byte ZombieHead = 233;
         // 234 free
 
         // Bird blocks
@@ -356,7 +357,7 @@ namespace MCGalaxy
         public const byte Bird_Blue = 240;
         public const byte Bird_Killer = 242;
         // 243, 244 free
-        
+
         // Fish/Shark blocks
         public const byte Fish_Gold = 245;
         public const byte Fish_Sponge = 246;
@@ -367,12 +368,12 @@ namespace MCGalaxy
 
         public const byte Snake = 251;
         public const byte SnakeTail = 252;
-        
+
         public const byte Door_Gold = 253;
         //public const byte Door_Gold_air = 254;       // unused in core
-        
+
         public const byte Invalid = 0xff;
-        
+
         public const ushort Extended = 256;
         public const int ExtendedShift = 8;
     }

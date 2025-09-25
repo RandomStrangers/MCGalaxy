@@ -15,10 +15,10 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System.Collections.Generic;
-using System.Text;
 using MCGalaxy.Authentication;
 using MCGalaxy.Commands;
+using System.Collections.Generic;
+using System.Text;
 
 namespace MCGalaxy
 {
@@ -42,7 +42,7 @@ namespace MCGalaxy
 
         static void PrintAliases(Player p, Command cmd)
         {
-            StringBuilder dst = new StringBuilder("Shortcuts: &T");
+            StringBuilder dst = new("Shortcuts: &T");
             if (!string.IsNullOrEmpty(cmd.shortcut))
             {
                 dst.Append('/').Append(cmd.shortcut).Append(", ");

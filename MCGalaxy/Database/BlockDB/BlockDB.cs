@@ -15,89 +15,93 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.Events.BlockDBEvents;
+using MCGalaxy.Maths;
+using MCGalaxy.Util;
 using System;
 using System.IO;
-using MCGalaxy.Events.BlockDBEvents;
-using MCGalaxy.Util;
-using MCGalaxy.Maths;
 
-namespace MCGalaxy.DB 
+namespace MCGalaxy.DB
 {
-    public unsafe sealed class BlockDB 
-    {   
+    public sealed unsafe class BlockDB
+    {
         /// <summary> Dimensions used to pack coordinates into an index. </summary>
         /// <remarks> May be different from actual level's dimensions, such as when the level has been resized. </remarks>
         public Vec3U16 Dims;
-        
+
         /// <summary> The map/level name associated with this BlockDB. </summary>
         public string MapName;
-        
+
         /// <summary> Base point in time that all time deltas are offset from.</summary>
-        public static DateTime Epoch = new DateTime(2010, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        public static DateTime Epoch = new(2010, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary> The path of this BlockDB's backing file on disc. </summary>
         public string FilePath { get { return BlockDBFile.FilePath(MapName); } }
-        
+
         /// <summary> In-memory list of recent BlockDB changes. </summary>
-        public BlockDBCache Cache = new BlockDBCache();
-        
+        public BlockDBCache Cache = new();
+
         /// <summary> Used to synchronise access to the in-memory and on-disc BlockDB entries. </summary>
         public readonly IReaderWriterLock Locker;
-        
-        public BlockDB(Level lvl) {
-            MapName       = lvl.name;
-            Cache.Enabled = lvl.Config.UseBlockDB; 
+
+        public BlockDB(Level lvl)
+        {
+            MapName = lvl.name;
+            Cache.Enabled = lvl.Config.UseBlockDB;
             ReadDimensions();
             Locker = new IReaderWriterLock();
-            
-            if (Dims.X < lvl.Width)  Dims.X = lvl.Width;
+
+            if (Dims.X < lvl.Width) Dims.X = lvl.Width;
             if (Dims.Y < lvl.Height) Dims.Y = lvl.Height;
             if (Dims.Z < lvl.Length) Dims.Z = lvl.Length;
             Cache.Dims = Dims;
         }
-        
-        void ReadDimensions() {
+
+        void ReadDimensions()
+        {
             string path = FilePath;
             if (!File.Exists(path)) return;
-            
-            using (Stream s = OpenRead(path))
-                BlockDBFile.ReadHeader(s, out Dims);
+
+            using Stream s = OpenRead(path);
+            BlockDBFile.ReadHeader(s, out Dims);
         }
 
         /// <summary> Flushes the entries from the in-memory cache to disc. </summary>
         /// <remarks> You must lock using Locker.AccquireWrite() **before** entering this method. </remarks>
-        public void FlushCache() {
+        public void FlushCache()
+        {
             if (Cache.Head == null) return;
-            
+
             string path = FilePath;
             bool cancel = false;
             OnBlockDBSaveEvent.Call(this, ref path, ref cancel);
             if (cancel) return;
-            
+
             BlockDBFile format = ValidateBackingFile(path);
-            using (Stream s = OpenWrite(path)) {
-                // This truncates the lower 4 bits off - so e.g. if a power off occurred
-                // and 21 bytes were in the file, this sets the position to byte 16
-                s.Position = s.Length & ~0x0F;
-                format.WriteEntries(s, Cache);
-                Cache.Clear();
-            }
-        }
-        
-        /// <summary> Counts the total number of entries of BlockDB entries in memory and on disc. </summary>
-        public long TotalEntries() {
-            using (IDisposable rLock = Locker.AccquireRead(5 * 1000)) {
-                if (rLock != null) {
-                    return Cache.Count + BlockDBFile.CountEntries(MapName);
-                }
-                return -1;
-            }
+            using Stream s = OpenWrite(path);
+            // This truncates the lower 4 bits off - so e.g. if a power off occurred
+            // and 21 bytes were in the file, this sets the position to byte 16
+            s.Position = s.Length & ~0x0F;
+            format.WriteEntries(s, Cache);
+            Cache.Clear();
         }
 
-        
+        /// <summary> Counts the total number of entries of BlockDB entries in memory and on disc. </summary>
+        public long TotalEntries()
+        {
+            using IDisposable rLock = Locker.AccquireRead(5 * 1000);
+            if (rLock != null)
+            {
+                return Cache.Count + BlockDBFile.CountEntries(MapName);
+            }
+            return -1;
+        }
+
+
         /// <summary> Outputs all block changes which affect the given coordinates. </summary>
         /// <remarks> You must lock using Locker.AccquireRead() **before** entering this method. </remarks>
-        public void FindChangesAt(ushort x, ushort y, ushort z, Action<BlockDBEntry> output) {
+        public void FindChangesAt(ushort x, ushort y, ushort z, Action<BlockDBEntry> output)
+        {
             string path = FilePath;
             if (!File.Exists(path)) { FindInMemoryAt(x, y, z, output); return; }
 
@@ -111,15 +115,17 @@ namespace MCGalaxy.DB
             }
             FindInMemoryAt(x, y, z, output);
         }
-        
-        void FindInMemoryAt(ushort x, ushort y, ushort z, Action<BlockDBEntry> output) {
+
+        void FindInMemoryAt(ushort x, ushort y, ushort z, Action<BlockDBEntry> output)
+        {
             int index = (y * Dims.Z + z) * Dims.X + x;
             BlockDBCacheNode node = Cache.Tail;
-            while (node != null) {
+            while (node != null)
+            {
                 BlockDBCacheEntry[] entries = node.Entries;
                 int count = node.Count;
-                
-                for (int i = 0; i < count; i++) 
+
+                for (int i = 0; i < count; i++)
                 {
                     if (entries[i].Index != index) continue;
                     BlockDBEntry entry = node.Unpack(entries[i]);
@@ -128,39 +134,41 @@ namespace MCGalaxy.DB
                 lock (Cache.Locker) node = node.Next;
             }
         }
-        
+
         /// <summary> Outputs all block changes by the given players. </summary>
         /// <remarks> You must lock using Locker.AccquireRead() **before** entering this method. </remarks>
         /// <returns> whether an entry before start time was reached. </returns>
         public bool FindChangesBy(int[] ids, DateTime start, DateTime end,
-                                  out Vec3U16 dims, Action<BlockDBEntry> output) {
+                                  out Vec3U16 dims, Action<BlockDBEntry> output)
+        {
             int startDelta = ClampDelta(start.Subtract(Epoch));
-            int endDelta   = ClampDelta(end.Subtract(Epoch));
-            
+            int endDelta = ClampDelta(end.Subtract(Epoch));
+
             dims = Dims;
             if (FindInMemoryBy(ids, startDelta, endDelta, output)) return true;
             string path = FilePath;
-            
+
             if (!File.Exists(path)) return false;
-            using (Stream s = OpenRead(path)) {
-                BlockDBFile format = BlockDBFile.ReadHeader(s, out dims);
-                return format.FindChangesBy(s, ids, startDelta, endDelta, output);
-            }
+            using Stream s = OpenRead(path);
+            BlockDBFile format = BlockDBFile.ReadHeader(s, out dims);
+            return format.FindChangesBy(s, ids, startDelta, endDelta, output);
         }
-        
-        bool FindInMemoryBy(int[] ids, int startDelta, int endDelta, Action<BlockDBEntry> output) {
+
+        bool FindInMemoryBy(int[] ids, int startDelta, int endDelta, Action<BlockDBEntry> output)
+        {
             BlockDBCacheNode node = Cache.Head;
-            while (node != null) {
+            while (node != null)
+            {
                 int count = node.Count;
                 BlockDBCacheEntry[] entries = node.Entries;
-                
-                for (int i = count - 1; i >= 0; i--) 
+
+                for (int i = count - 1; i >= 0; i--)
                 {
                     BlockDBEntry entry = node.Unpack(entries[i]);
                     if (entry.TimeDelta < startDelta) return true;
                     if (entry.TimeDelta > endDelta) continue;
-                    
-                    for (int j = 0; j < ids.Length; j++) 
+
+                    for (int j = 0; j < ids.Length; j++)
                     {
                         if (entry.PlayerID != ids[j]) continue;
                         output(entry); break;
@@ -170,55 +178,63 @@ namespace MCGalaxy.DB
             }
             return false;
         }
-        
-        static int ClampDelta(TimeSpan delta) {
+
+        static int ClampDelta(TimeSpan delta)
+        {
             long secs = (long)delta.TotalSeconds;
             if (secs < int.MinValue) return int.MinValue;
             if (secs > int.MaxValue) return int.MaxValue;
             return (int)secs;
         }
-        
-        
+
+
         /// <summary> Deletes the backing file on disc if it exists. </summary>
-        public void DeleteBackingFile() {
+        public void DeleteBackingFile()
+        {
             string path = FilePath;
-            
-            using (IDisposable writeLock = Locker.AccquireWrite()) {
-                //if (!File.Exists(path)) return;
-                //File.Delete(path);
-                FileIO.TryDelete(path);
-            }
+
+            using IDisposable writeLock = Locker.AccquireWrite();
+            //if (!File.Exists(path)) return;
+            //File.Delete(path);
+            FileIO.TryDelete(path);
         }
 
         /// <summary> Checks if the backing file exists on disc, and if not, creates it.
         /// Also recreates the backing file if dimensions on disc are less than those in memory. </summary>
-        BlockDBFile ValidateBackingFile(string path) {
+        BlockDBFile ValidateBackingFile(string path)
+        {
             BlockDBFile format = BlockDBFile.V1;
             Vec3U16 fileDims;
 
-            if (!File.Exists(path)) {
-                using (Stream s = OpenWrite(path)) {
-                    fileDims = Dims;
-                    BlockDBFile.WriteHeader(s, fileDims);
-                }
-            } else {
-                using (Stream s = OpenRead(path)) {
+            if (!File.Exists(path))
+            {
+                using Stream s = OpenWrite(path);
+                fileDims = Dims;
+                BlockDBFile.WriteHeader(s, fileDims);
+            }
+            else
+            {
+                using (Stream s = OpenRead(path))
+                {
                     format = BlockDBFile.ReadHeader(s, out fileDims);
                 }
-                if (fileDims.X < Dims.X || fileDims.Y < Dims.Y || fileDims.Z < Dims.Z) {
+                if (fileDims.X < Dims.X || fileDims.Y < Dims.Y || fileDims.Z < Dims.Z)
+                {
                     BlockDBFile.ResizeBackingFile(this, path);
                 }
             }
             return format;
         }
-        
-                
-        static FileStream OpenWrite(string path) { 
-            return new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite); 
+
+
+        static FileStream OpenWrite(string path)
+        {
+            return new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
         }
-        
-        static FileStream OpenRead(string path) {
-            return new FileStream(path, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite); 
+
+        static FileStream OpenRead(string path)
+        {
+            return new FileStream(path, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
         }
     }
 }

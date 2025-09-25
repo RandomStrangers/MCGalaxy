@@ -15,33 +15,35 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System.Collections.Generic;
 using MCGalaxy.Commands;
-using BlockID = System.UInt16;
+using System.Collections.Generic;
 
-namespace MCGalaxy.Drawing.Brushes 
+
+namespace MCGalaxy.Drawing.Brushes
 {
-    public sealed class ReplaceBrushFactory : BrushFactory 
+    public sealed class ReplaceBrushFactory : BrushFactory
     {
-        public override string Name { get { return "Replace"; } }       
+        public override string Name { get { return "Replace"; } }
         public override string[] Help { get { return HelpString; } }
-        
+
         static readonly string[] HelpString = new string[] {
             "&TArguments: [block1] [block2].. [new]",
             "&HDraws by replacing existing blocks that are in the given [blocks] with [new]",
             "&H  If only [block] is given, replaces with your held block.",
         };
-        
+
         public override Brush Construct(BrushArgs args) { return ProcessReplace(args, false); }
-        
-        internal static Brush ProcessReplace(BrushArgs args, bool not) {
+
+        internal static Brush ProcessReplace(BrushArgs args, bool not)
+        {
             string[] parts = args.Message.SplitSpaces();
-            if (args.Message.Length == 0) {
+            if (args.Message.Length == 0)
+            {
                 args.Player.Message("You need at least one block to replace."); return null;
             }
-            
+
             int count = parts.Length == 1 ? 1 : parts.Length - 1;
-            BlockID[] toAffect = GetBlocks(args.Player, 0, count, parts);
+            ushort[] toAffect = GetBlocks(args.Player, 0, count, parts);
             if (toAffect == null) return null;
 
             if (!GetTargetBlock(args, parts, out ushort target)) return null;
@@ -49,48 +51,51 @@ namespace MCGalaxy.Drawing.Brushes
             if (not) return new ReplaceNotBrush(toAffect, target);
             return new ReplaceBrush(toAffect, target);
         }
-        
-        internal static BlockID[] GetBlocks(Player p, int start, int max, string[] parts) {
-            List<BlockID> blocks = new List<BlockID>(max - start);
-            
-            for (int i = 0; start < max; start++, i++) 
+
+        internal static ushort[] GetBlocks(Player p, int start, int max, string[] parts)
+        {
+            List<ushort> blocks = new(max - start);
+
+            for (int i = 0; start < max; start++, i++)
             {
                 int count = CommandParser.GetBlocks(p, parts[start], blocks, false);
                 if (count == 0) return null;
             }
-            
-            foreach (BlockID b in blocks)
+
+            foreach (ushort b in blocks)
             {
                 if (b == Block.Invalid) continue; // "Skip" block
                 if (!CommandParser.IsBlockAllowed(p, "replace", b)) return null;
             }
             return blocks.ToArray();
         }
-        
-        static bool GetTargetBlock(BrushArgs args, string[] parts, out BlockID target) {
+
+        static bool GetTargetBlock(BrushArgs args, string[] parts, out ushort target)
+        {
             Player p = args.Player;
             target = 0;
-            
-            if (parts.Length == 1) {
+
+            if (parts.Length == 1)
+            {
                 if (!CommandParser.IsBlockAllowed(p, "draw with", args.Block)) return false;
-                
+
                 target = args.Block; return true;
-            }            
+            }
             return CommandParser.GetBlockIfAllowed(p, parts[parts.Length - 1], "draw with", out target);
         }
     }
-    
-    public sealed class ReplaceNotBrushFactory : BrushFactory 
+
+    public sealed class ReplaceNotBrushFactory : BrushFactory
     {
-        public override string Name { get { return "ReplaceNot"; } }        
+        public override string Name { get { return "ReplaceNot"; } }
         public override string[] Help { get { return HelpString; } }
-        
+
         static readonly string[] HelpString = new string[] {
             "&TArguments: [block1] [block2].. [new]",
             "&HDraws by replacing existing blocks that not are in the given [blocks] with [new]",
             "&H  If only [block] is given, replaces with your held block.",
         };
-        
+
         public override Brush Construct(BrushArgs args) { return ReplaceBrushFactory.ProcessReplace(args, true); }
     }
 }

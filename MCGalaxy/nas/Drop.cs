@@ -18,7 +18,7 @@ namespace NotAwesomeSurvival
                 blockStacks = new List<BlockStack>();
                 foreach (BlockStack bs in parent.blockStacks)
                 {
-                    BlockStack bsClone = new BlockStack(bs.ID, bs.amount);
+                    BlockStack bsClone = new(bs.ID, bs.amount);
                     blockStacks.Add(bsClone);
                 }
             }
@@ -27,14 +27,14 @@ namespace NotAwesomeSurvival
                 items = new List<Item>();
                 foreach (Item item in parent.items)
                 {
-                    Item itemClone = new Item(item.name);
+                    Item itemClone = new(item.name);
                     items.Add(itemClone);
                 }
             }
         }
         public Drop(ushort clientushort, int amount = 1)
         {
-            BlockStack bs = new BlockStack(clientushort, amount);
+            BlockStack bs = new(clientushort, amount);
             blockStacks = new List<BlockStack>
             {
                 bs
@@ -56,28 +56,28 @@ namespace NotAwesomeSurvival
             blockStacks = new List<BlockStack>();
             for (int i = 0; i < inv.blocks.Length; i++)
             {
-                if (inv.blocks[i] == 0) 
-                { 
-                    continue; 
+                if (inv.blocks[i] == 0)
+                {
+                    continue;
                 }
                 blockStacks.Add(new BlockStack((ushort)i, inv.blocks[i]));
             }
-            if (blockStacks.Count == 0) 
-            { 
-                blockStacks = null; 
+            if (blockStacks.Count == 0)
+            {
+                blockStacks = null;
             }
             items = new List<Item>();
             foreach (Item item in inv.items)
             {
-                if (item == null) 
+                if (item == null)
                 {
-                    continue; 
+                    continue;
                 }
                 items.Add(item);
             }
-            if (items.Count == 0) 
+            if (items.Count == 0)
             {
-                items = null; 
+                items = null;
             }
         }
     }
@@ -87,7 +87,7 @@ namespace NotAwesomeSurvival
         public ushort ID;
         public BlockStack(ushort ID, int amount = 1)
         {
-            this.ID = ID; 
+            this.ID = ID;
             this.amount = amount;
         }
     }

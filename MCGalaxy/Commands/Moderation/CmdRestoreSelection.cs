@@ -15,50 +15,58 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System.IO;
 using MCGalaxy.Drawing.Ops;
 using MCGalaxy.Levels.IO;
 using MCGalaxy.Maths;
-using BlockID = System.UInt16;
+using System.IO;
 
-namespace MCGalaxy.Commands.Moderation {    
-    public sealed class CmdRestoreSelection : Command2 {        
+
+namespace MCGalaxy.Commands.Moderation
+{
+    public sealed class CmdRestoreSelection : Command2
+    {
         public override string name { get { return "RS"; } }
         public override string shortcut { get { return "RestoreSelection"; } }
         public override string type { get { return CommandTypes.Moderation; } }
         public override bool museumUsable { get { return false; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
 
-        public override void Use(Player p, string message, CommandData data) {
+        public override void Use(Player p, string message, CommandData data)
+        {
             if (message.Length == 0) { Help(p); return; }
             if (!Formatter.ValidMapName(p, message)) return;
-            
+
             string path = LevelInfo.BackupFilePath(p.level.name, message);
-            if (File.Exists(path)) {
+            if (File.Exists(path))
+            {
                 p.Message("Select two corners for restore.");
                 p.MakeSelection(2, "Selecting region for &SRestore", path, DoRestore);
-            } else {
+            }
+            else
+            {
                 p.Message("Backup {0} does not exist.", message);
                 LevelOperations.OutputBackups(p, p.level);
             }
         }
-        
-        bool DoRestore(Player p, Vec3S32[] marks, object state, BlockID block) {
-            string path  = (string)state;
+
+        bool DoRestore(Player p, Vec3S32[] marks, object state, ushort block)
+        {
+            string path = (string)state;
             Level source = IMapImporter.Decode(path, "templevel", false);
 
-            RestoreSelectionDrawOp op = new RestoreSelectionDrawOp
+            RestoreSelectionDrawOp op = new()
             {
                 Source = source
             };
             if (DrawOpPerformer.Do(op, null, p, marks)) return false;
-            
+
             // Not high enough draw limit
             source.Dispose();
             return false;
         }
 
-        public override void Help(Player p) {
+        public override void Help(Player p)
+        {
             p.Message("&T/RestoreSelection [backup name]");
             p.Message("&HRestores a previous backup of the current selection");
         }

@@ -15,12 +15,12 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.Eco;
+using MCGalaxy.Generator;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
-using MCGalaxy.Eco;
-using MCGalaxy.Generator;
 
 namespace MCGalaxy.Gui
 {
@@ -262,10 +262,10 @@ namespace MCGalaxy.Gui
 
         void eco_dgvMaps_Apply()
         {
-            List<LevelItem.LevelPreset> presets = new List<LevelItem.LevelPreset>();
+            List<LevelItem.LevelPreset> presets = new();
             foreach (DataGridViewRow row in eco_dgvMaps.Rows)
             {
-                LevelItem.LevelPreset p = new LevelItem.LevelPreset
+                LevelItem.LevelPreset p = new()
                 {
                     name = row.Cells[0].Value.ToString(),
                     price = int.Parse(row.Cells[1].Value.ToString()),

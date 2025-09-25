@@ -15,20 +15,21 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using MCGalaxy.DB;
+using System;
 
-namespace MCGalaxy.Events.BlockDBEvents 
-{    
+namespace MCGalaxy.Events.BlockDBEvents
+{
     public delegate void OnBlockDBSave(BlockDB db, ref string path, ref bool cancel);
     /// <summary> Called whenever a BlockDB is being flushed from memory to disc </summary>
-    public sealed class OnBlockDBSaveEvent : IEvent<OnBlockDBSave> 
-    {       
-        public static void Call(BlockDB db, ref string path, ref bool cancel) {
+    public sealed class OnBlockDBSaveEvent : IEvent<OnBlockDBSave>
+    {
+        public static void Call(BlockDB db, ref string path, ref bool cancel)
+        {
             IEvent<OnBlockDBSave>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++) 
+            for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(db, ref path, ref cancel); } 
+                try { items[i].method(db, ref path, ref cancel); }
                 catch (Exception ex) { LogHandlerException(ex, items[i]); }
             }
         }

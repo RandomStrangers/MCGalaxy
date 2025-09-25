@@ -16,28 +16,33 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Drawing.Ops;
-using BlockID = System.UInt16;
 
-namespace MCGalaxy.Commands.Building {
-    public sealed class CmdHollow : DrawCmd {
+
+namespace MCGalaxy.Commands.Building
+{
+    public sealed class CmdHollow : DrawCmd
+    {
         public override string name { get { return "Hollow"; } }
 
-        protected override DrawOp GetDrawOp(DrawArgs dArgs) {
-            BlockID skip = Block.Invalid;
-            if (dArgs.Message.Length > 0) {
+        protected override DrawOp GetDrawOp(DrawArgs dArgs)
+        {
+            ushort skip = Block.Invalid;
+            if (dArgs.Message.Length > 0)
+            {
                 if (!CommandParser.GetBlock(dArgs.Player, dArgs.Message, out skip)) return null;
             }
 
-            HollowDrawOp op = new HollowDrawOp
+            HollowDrawOp op = new()
             {
                 Skip = skip
             };
             return op;
         }
-        
+
         protected override void GetBrush(DrawArgs dArgs) { dArgs.BrushName = "Normal"; }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/Hollow");
             p.Message("&HHollows out an area without flooding it");
             p.Message("&T/Hollow [block]");

@@ -15,9 +15,9 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.Util;
 using System;
 using System.Windows.Forms;
-using MCGalaxy.Util;
 
 namespace MCGalaxy.Gui.Popups
 {
@@ -98,22 +98,18 @@ namespace MCGalaxy.Gui.Popups
 
         void btnColor_Click(object sender, EventArgs e)
         {
-            using (ColorSelector sel = new ColorSelector("Insert color", '\0'))
-            {
-                DialogResult result = sel.ShowDialog();
-                if (result == DialogResult.Cancel) return;
-                InsertText("&" + sel.ColorCode);
-            }
+            using ColorSelector sel = new("Insert color", '\0');
+            DialogResult result = sel.ShowDialog();
+            if (result == DialogResult.Cancel) return;
+            InsertText("&" + sel.ColorCode);
         }
 
         void btnToken_Click(object sender, EventArgs e)
         {
-            using (TokenSelector sel = new TokenSelector("Insert token"))
-            {
-                DialogResult result = sel.ShowDialog();
-                if (result == DialogResult.Cancel || sel.Token == null) return;
-                InsertText(sel.Token);
-            }
+            using TokenSelector sel = new("Insert token");
+            DialogResult result = sel.ShowDialog();
+            if (result == DialogResult.Cancel || sel.Token == null) return;
+            InsertText(sel.Token);
         }
 
         void InsertText(string text)

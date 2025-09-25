@@ -18,20 +18,20 @@
     permissions and limitations under the Licenses.
  */
 #if !MCG_STANDALONE
+using MCGalaxy.Scripting;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using MCGalaxy.Scripting;
 
-namespace MCGalaxy.Modules.Compiling 
+namespace MCGalaxy.Modules.Compiling
 {
     /// <summary> Compiles source code files for a particular programming language into a .dll </summary>
-    public abstract class ICompiler 
-    {   
+    public abstract class ICompiler
+    {
         public const string COMMANDS_SOURCE_DIR = "extra/commands/source/";
-        public const string PLUGINS_SOURCE_DIR  = "plugins/";
-        public const string ERROR_LOG_PATH      = "logs/errors/compiler.log";
-        
+        public const string PLUGINS_SOURCE_DIR = "plugins/";
+        public const string ERROR_LOG_PATH = "logs/errors/compiler.log";
+
         /// <summary> Default file extension used for source code files </summary>
         /// <example> .cs, .vb </example>
         public abstract string FileExtension { get; }
@@ -45,94 +45,101 @@ namespace MCGalaxy.Modules.Compiling
         public abstract string CommandSkeleton { get; }
         /// <summary> Returns source code for an example Plugin </summary>
         public abstract string PluginSkeleton { get; }
-        
+
         public string CommandPath(string name) { return COMMANDS_SOURCE_DIR + "Cmd" + name + FileExtension; }
-        public string PluginPath(string name)  { return PLUGINS_SOURCE_DIR  + name + FileExtension; }
-        
-        public static List<ICompiler> Compilers = new List<ICompiler>() { 
+        public string PluginPath(string name) { return PLUGINS_SOURCE_DIR + name + FileExtension; }
+
+        public static List<ICompiler> Compilers = new() {
             new CSCompiler()
         };
 
 
-        static string FormatSource(string source, params string[] args) {
+        static string FormatSource(string source, params string[] args)
+        {
             // Always use \r\n line endings so it looks correct in Notepad
             source = source.Replace(@"\t", "\t");
             source = source.Replace("\n", "\r\n");
             return string.Format(source, args);
         }
-        
+
         /// <summary> Generates source code for an example command, 
         /// preformatted with the given command name </summary>
-        public string GenExampleCommand(string cmdName) {
+        public string GenExampleCommand(string cmdName)
+        {
             cmdName = cmdName.ToLower().Capitalize();
             return FormatSource(CommandSkeleton, cmdName);
         }
-        
+
         /// <summary> Generates source code for an example plugin, 
         /// preformatted with the given name and creator </summary>
-        public string GenExamplePlugin(string plugin, string creator) {
+        public string GenExamplePlugin(string plugin, string creator)
+        {
             return FormatSource(PluginSkeleton, plugin, creator, Server.InternalVersion);
         }
 
 
         /// <summary> Attempts to compile the given source code files to a .dll file. </summary>
         /// <param name="logErrors"> Whether to log compile errors to ERROR_LOG_PATH </param>
-        public ICompilerErrors Compile(string[] srcPaths, string dstPath, bool logErrors) {
+        public ICompilerErrors Compile(string[] srcPaths, string dstPath, bool logErrors)
+        {
             ICompilerErrors errors = DoCompile(srcPaths, dstPath);
             if (!errors.HasErrors || !logErrors) return errors;
-            
-            SourceMap sources = new SourceMap(srcPaths);
-            StringBuilder sb  = new StringBuilder();
+
+            SourceMap sources = new(srcPaths);
+            StringBuilder sb = new();
             sb.AppendLine("############################################################");
             sb.AppendLine("Errors when compiling " + srcPaths.Join());
             sb.AppendLine("############################################################");
             sb.AppendLine();
-            
-            foreach (ICompilerError err in errors) 
+
+            foreach (ICompilerError err in errors)
             {
                 string type = err.IsWarning ? "Warning" : "Error";
                 sb.AppendLine(DescribeError(err, srcPaths, "") + ":");
-                
+
                 if (err.Line > 0) sb.AppendLine(sources.Get(err.FileName, err.Line - 1));
                 if (err.Column > 0) sb.Append(' ', err.Column - 1);
                 sb.AppendLine("^-- " + type + " #" + err.ErrorNumber + " - " + err.ErrorText);
-                
+
                 sb.AppendLine();
                 sb.AppendLine("-------------------------");
                 sb.AppendLine();
             }
-            
-            using (StreamWriter w = new StreamWriter(ERROR_LOG_PATH, true)) {
+
+            using (StreamWriter w = new(ERROR_LOG_PATH, true))
+            {
                 w.Write(sb.ToString());
             }
             return errors;
         }
 
-        public static string DescribeError(ICompilerError err, string[] srcs, string text) {
+        public static string DescribeError(ICompilerError err, string[] srcs, string text)
+        {
             string type = err.IsWarning ? "Warning" : "Error";
             string file = Path.GetFileName(err.FileName);
-            
+
             // Include filename if compiling multiple source code files
             return string.Format("{0}{1}{2}{3}", type, text,
-                                 err.Line    > 0 ? " on line " + err.Line : "",
-                                 srcs.Length > 1 ? " in " + file          : "");
+                                 err.Line > 0 ? " on line " + err.Line : "",
+                                 srcs.Length > 1 ? " in " + file : "");
         }
 
-        
+
         /// <summary> Compiles the given source code. </summary>
         protected abstract ICompilerErrors DoCompile(string[] srcPaths, string dstPath);
 
 
         /// <summary> Converts source file paths to full paths, 
         /// then returns list of parsed referenced assemblies </summary>
-        protected List<string> ProcessInput(string[] srcPaths, string commentPrefix) {
-            List<string> referenced = new List<string>();
-            
-            for (int i = 0; i < srcPaths.Length; i++) 
+        protected List<string> ProcessInput(string[] srcPaths, string commentPrefix)
+        {
+            List<string> referenced = new();
+
+            for (int i = 0; i < srcPaths.Length; i++)
             {
                 // CodeDomProvider doesn't work properly with relative paths
                 string path = Path.GetFullPath(srcPaths[i]);
-                
+
                 AddReferences(path, commentPrefix, referenced);
                 srcPaths[i] = path;
             }
@@ -141,30 +148,36 @@ namespace MCGalaxy.Modules.Compiling
             return referenced;
         }
 
-        void AddReferences(string path, string commentPrefix, List<string> referenced) {
+        void AddReferences(string path, string commentPrefix, List<string> referenced)
+        {
             // Allow referencing other assemblies using '//reference [assembly name]' at top of the file
-            using (StreamReader r = new StreamReader(path)) {
-                string refPrefix = commentPrefix + "reference ";
-                string plgPrefix = commentPrefix + "pluginref ";
-                string line;
-                
-                while ((line = r.ReadLine()) != null) 
+            using StreamReader r = new(path);
+            string refPrefix = commentPrefix + "reference ";
+            string plgPrefix = commentPrefix + "pluginref ";
+            string line;
+
+            while ((line = r.ReadLine()) != null)
+            {
+                if (line.CaselessStarts(refPrefix))
                 {
-                    if (line.CaselessStarts(refPrefix)) {
-                        referenced.Add(GetDLL(line));
-                    } else if (line.CaselessStarts(plgPrefix)) {
-                        path = Path.Combine(IScripting.PLUGINS_DLL_DIR, GetDLL(line));
-                        referenced.Add(Path.GetFullPath(path));
-                    } else {
-                        ProcessInputLine(line, referenced);
-                    }
+                    referenced.Add(GetDLL(line));
+                }
+                else if (line.CaselessStarts(plgPrefix))
+                {
+                    path = Path.Combine(IScripting.PLUGINS_DLL_DIR, GetDLL(line));
+                    referenced.Add(Path.GetFullPath(path));
+                }
+                else
+                {
+                    ProcessInputLine(line, referenced);
                 }
             }
         }
 
         protected virtual void ProcessInputLine(string line, List<string> referenced) { }
 
-        protected static string GetDLL(string line) {
+        protected static string GetDLL(string line)
+        {
             int index = line.IndexOf(' ') + 1;
             // For consistency with C#, treat '//reference X.dll;' as '//reference X.dll'
             return line.Substring(index).Replace(";", "");
@@ -173,7 +186,8 @@ namespace MCGalaxy.Modules.Compiling
 
     public class ICompilerErrors : List<ICompilerError>
     {
-        public bool HasErrors {
+        public bool HasErrors
+        {
             get { return FindIndex(ce => !ce.IsWarning) >= 0; }
         }
     }
@@ -186,39 +200,46 @@ namespace MCGalaxy.Modules.Compiling
         public string FileName;
     }
 
-    
-    class SourceMap 
+
+    class SourceMap
     {
         readonly string[] files;
         readonly List<string>[] sources;
-        
-        public SourceMap(string[] paths) {
-            files   = paths;
+
+        public SourceMap(string[] paths)
+        {
+            files = paths;
             sources = new List<string>[paths.Length];
         }
-        
-        int FindFile(string file) {
-            for (int i = 0; i < files.Length; i++) 
+
+        int FindFile(string file)
+        {
+            for (int i = 0; i < files.Length; i++)
             {
                 if (file.CaselessEq(files[i])) return i;
             }
             return -1;
         }
-        
+
         /// <summary> Returns the given line in the given source code file </summary>
-        public string Get(string file, int line) {
+        public string Get(string file, int line)
+        {
             int i = FindFile(file);
             if (i == -1) return "";
-            
+
             List<string> source = sources[i];
-            if (source == null) {
-                try {
+            if (source == null)
+            {
+                try
+                {
                     source = Utils.ReadAllLinesList(file);
-                } catch {
+                }
+                catch
+                {
                     source = new List<string>();
                 }
                 sources[i] = source;
-            }            
+            }
             return line < source.Count ? source[line] : "";
         }
     }

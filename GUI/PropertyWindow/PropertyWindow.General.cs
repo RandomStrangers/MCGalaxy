@@ -12,9 +12,9 @@ BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
  */
+using MCGalaxy.Gui.Popups;
 using System;
 using System.Windows.Forms;
-using MCGalaxy.Gui.Popups;
 
 namespace MCGalaxy.Gui
 {
@@ -92,10 +92,8 @@ namespace MCGalaxy.Gui
         void ChkPort_Click(object sender, EventArgs e)
         {
             int port = (int)srv_numPort.Value;
-            using (PortTools form = new PortTools(port))
-            {
-                form.ShowDialog();
-            }
+            using PortTools form = new(port);
+            form.ShowDialog();
         }
 
         void forceUpdateBtn_Click(object sender, EventArgs e)

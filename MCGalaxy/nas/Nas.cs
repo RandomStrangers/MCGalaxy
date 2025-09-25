@@ -1,12 +1,12 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using System;
-using System.IO;
 using MCGalaxy;
 using MCGalaxy.DB;
 using MCGalaxy.Events.PlayerEvents;
-using System.Reflection;
 using MCGalaxy.Events.ServerEvents;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 //unknownshadow200: well player ids go from 0 up to 255. normal bots go from 127 down to 64, then 254 down to 127, then finally 63 down to 0.
 //UnknownShadow200: FromRaw adds 256 if the block id is >= 66, and ToRaw subtracts 256 if the block id is >= 66
 //"raw" is MCGalaxy's name for clientushort
@@ -50,7 +50,7 @@ namespace NotAwesomeSurvival
                 return "HarmonyNetwork"; //Goodly/Zoey no longer supports NAS. 
             }
         }
-        public static List<string> Devs = new List<string>
+        public static List<string> Devs = new()
         {
             //"goodlyay", //No longer supports.
             //"zoeyvidae", //No longer supports.
@@ -252,7 +252,7 @@ namespace NotAwesomeSurvival
             Chat.MessageAll("Attempting to unload NAS.");
             if (!shutdown && LoadedOnStartup)
             {
-                InvalidOperationException ioex = new InvalidOperationException("You cannot unload NAS manually, it can only be unloaded on server shutdown.");
+                InvalidOperationException ioex = new("You cannot unload NAS manually, it can only be unloaded on server shutdown.");
                 throw ioex;
             }
             NasPlayer.Unregister();

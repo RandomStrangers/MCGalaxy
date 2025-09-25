@@ -15,95 +15,104 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System.Collections.Generic;
 using MCGalaxy.DB;
 using MCGalaxy.SQL;
+using System.Collections.Generic;
 
-namespace MCGalaxy.Eco 
+namespace MCGalaxy.Eco
 {
-    public static partial class Economy 
+    public static partial class Economy
     {
         static readonly ColumnDesc[] ecoTable = new ColumnDesc[] {
-            new ColumnDesc("player", ColumnType.VarChar, 20, priKey: true),
-            new ColumnDesc("money", ColumnType.Int32),
-            new ColumnDesc("total", ColumnType.Int32),
-            new ColumnDesc("purchase", ColumnType.VarChar, 255),
-            new ColumnDesc("payment", ColumnType.VarChar, 255),
-            new ColumnDesc("salary", ColumnType.VarChar, 255),
-            new ColumnDesc("fine", ColumnType.VarChar, 255),
+            new("player", ColumnType.VarChar, 20, priKey: true),
+            new("money", ColumnType.Int32),
+            new("total", ColumnType.Int32),
+            new("purchase", ColumnType.VarChar, 255),
+            new("payment", ColumnType.VarChar, 255),
+            new("salary", ColumnType.VarChar, 255),
+            new("fine", ColumnType.VarChar, 255),
         };
-        
-        static EcoStats ParseOld(ISqlRecord record) {
+
+        static EcoStats ParseOld(ISqlRecord record)
+        {
             EcoStats stats = ParseStats(record);
             stats.__unused = record.GetInt("money");
             return stats;
         }
-        
-        public static void LoadDatabase() {
+
+        public static void LoadDatabase()
+        {
             Database.CreateTable("Economy", ecoTable);
-            
+
             // money used to be in the Economy table, move it back to the Players table
-            List<EcoStats> outdated = new List<EcoStats>();
-            Database.ReadRows("Economy", "*", 
-                                record => outdated.Add(ParseOld(record)), 
+            List<EcoStats> outdated = new();
+            Database.ReadRows("Economy", "*",
+                                record => outdated.Add(ParseOld(record)),
                                 "WHERE money > 0");
-            
-            if (outdated.Count == 0) return;            
-            Logger.Log(LogType.SystemActivity, "Upgrading economy stats..");   
-            
-            foreach (EcoStats stats in outdated) {
+
+            if (outdated.Count == 0) return;
+            Logger.Log(LogType.SystemActivity, "Upgrading economy stats..");
+
+            foreach (EcoStats stats in outdated)
+            {
                 UpdateMoney(stats.Player, stats.__unused);
                 UpdateStats(stats);
             }
         }
-        
-        public static string FindMatches(Player p, string name, out int money) {
-            string[] match = PlayerDB.MatchValues(p, name, "Name,Money");
-            money = match == null ? 0    : NumberUtils.ParseInt32(match[1]);
-            return  match?[0];
-        }
-        
-        public static void UpdateMoney(string name, int money) {
-    	    PlayerDB.Update(name, PlayerData.ColumnMoney, 
-    		                NumberUtils.StringifyInt(money));
-        }
-        
 
-        public struct EcoStats 
+        public static string FindMatches(Player p, string name, out int money)
+        {
+            string[] match = PlayerDB.MatchValues(p, name, "Name,Money");
+            money = match == null ? 0 : NumberUtils.ParseInt32(match[1]);
+            return match?[0];
+        }
+
+        public static void UpdateMoney(string name, int money)
+        {
+            PlayerDB.Update(name, PlayerData.ColumnMoney,
+                            NumberUtils.StringifyInt(money));
+        }
+
+
+        public struct EcoStats
         {
             public string Player;
             public string Purchase, Payment, Salary, Fine;
             public int TotalSpent, __unused;
         }
-        
-        public static void UpdateStats(EcoStats stats) {
+
+        public static void UpdateStats(EcoStats stats)
+        {
             Database.AddOrReplaceRow("Economy", "player, money, total, purchase, payment, salary, fine",
                                      stats.Player, 0, stats.TotalSpent, stats.Purchase,
                                      stats.Payment, stats.Salary, stats.Fine);
         }
-        
-        static EcoStats ParseStats(ISqlRecord record) {
+
+        static EcoStats ParseStats(ISqlRecord record)
+        {
             EcoStats stats;
-            stats.Player   = record.GetText("player");
-            stats.Payment  = Parse(record.GetText("payment"));
+            stats.Player = record.GetText("player");
+            stats.Payment = Parse(record.GetText("payment"));
             stats.Purchase = Parse(record.GetText("purchase"));
-            stats.Salary   = Parse(record.GetText("salary"));
-            stats.Fine     = Parse(record.GetText("fine"));
-            
+            stats.Salary = Parse(record.GetText("salary"));
+            stats.Fine = Parse(record.GetText("fine"));
+
             stats.TotalSpent = record.GetInt("total");
-            stats.__unused   = 0;
+            stats.__unused = 0;
             return stats;
         }
-        
-        static string Parse(string raw) {
-            if (raw == null || raw.Length == 0 || raw.CaselessEq("NULL")) return null;           
+
+        static string Parse(string raw)
+        {
+            if (raw == null || raw.Length == 0 || raw.CaselessEq("NULL")) return null;
             return raw.CaselessEq("%cNone") ? null : raw;
         }
-        
-        public static EcoStats RetrieveStats(string name) {
+
+        public static EcoStats RetrieveStats(string name)
+        {
             EcoStats stats = default;
-            stats.Player   = name;
-            Database.ReadRows("Economy", "*", 
+            stats.Player = name;
+            Database.ReadRows("Economy", "*",
                                 record => stats = ParseStats(record),
                                 "WHERE player=@0", name);
             return stats;

@@ -19,23 +19,25 @@ using MCGalaxy.Events.ServerEvents;
 
 namespace MCGalaxy.Modules.Games.ZS
 {
-    public sealed class ZSPlugin : Plugin 
+    public sealed class ZSPlugin : Plugin
     {
         public override string name { get { return "ZS"; } }
         static readonly Command cmdZS = new CmdZombieSurvival();
-        
-        public override void Load(bool startup) {
+
+        public override void Load(bool startup)
+        {
             Command.Register(cmdZS);
-            
-            ZSGame game      = ZSGame.Instance;
+
+            ZSGame game = ZSGame.Instance;
             game.Config.Path = "props/zombiesurvival.properties";
             game.ReloadConfig();
             game.AutoStart();
-            
+
             OnConfigUpdatedEvent.Register(game.ReloadConfig, Priority.Low);
         }
-        
-        public override void Unload(bool shutdown) {
+
+        public override void Unload(bool shutdown)
+        {
             ZSGame game = ZSGame.Instance;
             OnConfigUpdatedEvent.Unregister(game.ReloadConfig);
             Command.Unregister(cmdZS);

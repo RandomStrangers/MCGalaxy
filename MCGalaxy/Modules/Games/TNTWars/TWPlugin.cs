@@ -19,23 +19,25 @@ using MCGalaxy.Events.ServerEvents;
 
 namespace MCGalaxy.Modules.Games.TW
 {
-    public sealed class TWPlugin : Plugin 
+    public sealed class TWPlugin : Plugin
     {
         public override string name { get { return "TW"; } }
         static readonly Command cmdTW = new CmdTntWars();
-        
-        public override void Load(bool startup) {
+
+        public override void Load(bool startup)
+        {
             Command.Register(cmdTW);
-            
-            TWGame game      = TWGame.Instance;
+
+            TWGame game = TWGame.Instance;
             game.Config.Path = "props/tntwars.properties";
             game.ReloadConfig();
             game.AutoStart();
-            
+
             OnConfigUpdatedEvent.Register(game.ReloadConfig, Priority.Low);
         }
-        
-        public override void Unload(bool shutdown) {
+
+        public override void Unload(bool shutdown)
+        {
             TWGame game = TWGame.Instance;
             OnConfigUpdatedEvent.Unregister(game.ReloadConfig);
             Command.Unregister(cmdTW);

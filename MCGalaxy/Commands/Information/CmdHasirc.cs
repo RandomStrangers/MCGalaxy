@@ -15,26 +15,31 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-namespace MCGalaxy.Commands.Info 
+namespace MCGalaxy.Commands.Info
 {
-    public sealed class CmdHasirc : Command2 
+    public sealed class CmdHasirc : Command2
     {
         public override string name { get { return "HasIRC"; } }
         public override string shortcut { get { return "IRC"; } }
         public override string type { get { return CommandTypes.Information; } }
 
-        public override void Use(Player p, string message, CommandData data) {
+        public override void Use(Player p, string message, CommandData data)
+        {
             if (message.Length > 0) { Help(p); return; }
 
-            if (Server.Config.UseIRC) {
+            if (Server.Config.UseIRC)
+            {
                 p.Message("IRC is &aEnabled&S.");
                 p.Message("Location: " + Server.Config.IRCServer + " > " + Server.Config.IRCChannels);
-            } else {
+            }
+            else
+            {
                 p.Message("IRC is &cDisabled&S.");
             }
         }
 
-        public override void Help(Player p) {
+        public override void Help(Player p)
+        {
             p.Message("&T/HasIRC");
             p.Message("&HOutputs whether the server has IRC enabled or not.");
             p.Message("&HIf IRC is enabled, server and channel are also displayed.");

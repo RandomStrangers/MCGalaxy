@@ -35,16 +35,16 @@ namespace MCGalaxy.Gui
 
         internal static void UpdateRanks()
         {
-            Ranks = new List<GuiRank>(Group.AllRanks.Count);
+            Ranks = new(Group.AllRanks.Count);
 
             foreach (Group group in Group.AllRanks)
             {
-                Ranks.Add(new GuiRank(group.Name, group.Permission));
+                Ranks.Add(new(group.Name, group.Permission));
             }
 
-            RanksRemove = new List<GuiRank>(Ranks)
+            RanksRemove = new(Ranks)
             {
-                new GuiRank("(remove rank)", LevelPermission.Null)
+                new("(remove rank)", LevelPermission.Null)
             };
         }
 

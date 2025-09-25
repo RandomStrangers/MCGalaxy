@@ -17,56 +17,64 @@
  */
 using MCGalaxy.DB;
 using MCGalaxy.Drawing.Ops;
-using BlockID = System.UInt16;
 
-namespace MCGalaxy.Drawing.Brushes 
+
+namespace MCGalaxy.Drawing.Brushes
 {
-    public sealed class ReplaceBrush : Brush 
+    public sealed class ReplaceBrush : Brush
     {
-        readonly BlockID[] include;
-        readonly BlockID target;
-        
-        public ReplaceBrush(BlockID[] include, BlockID target) {
+        readonly ushort[] include;
+        readonly ushort target;
+
+        public ReplaceBrush(ushort[] include, ushort target)
+        {
             this.include = include; this.target = target;
         }
-        
+
         public override string Name { get { return "Replace"; } }
-        
-        public override void Configure(DrawOp op, Player p) {
+
+        public override void Configure(DrawOp op, Player p)
+        {
             op.Flags = BlockDBFlags.Replaced;
         }
-        
-        public override BlockID NextBlock(DrawOp op) {
+
+        public override ushort NextBlock(DrawOp op)
+        {
             ushort x = op.Coords.X, y = op.Coords.Y, z = op.Coords.Z;
-            BlockID block = op.Level.GetBlock(x, y, z);
-            
-            for (int i = 0; i < include.Length; i++) {
+            ushort block = op.Level.GetBlock(x, y, z);
+
+            for (int i = 0; i < include.Length; i++)
+            {
                 if (block == include[i]) return target;
             }
             return Block.Invalid;
         }
     }
-    
-    public sealed class ReplaceNotBrush : Brush 
+
+    public sealed class ReplaceNotBrush : Brush
     {
-        readonly BlockID[] exclude;
-        readonly BlockID target;
-        
-        public ReplaceNotBrush(BlockID[] exclude, BlockID target) {
+        readonly ushort[] exclude;
+        readonly ushort target;
+
+        public ReplaceNotBrush(ushort[] exclude, ushort target)
+        {
             this.exclude = exclude; this.target = target;
         }
-        
+
         public override string Name { get { return "ReplaceNot"; } }
 
-        public override void Configure(DrawOp op, Player p) {
+        public override void Configure(DrawOp op, Player p)
+        {
             op.Flags = BlockDBFlags.Replaced;
         }
-        
-        public override BlockID NextBlock(DrawOp op) {
+
+        public override ushort NextBlock(DrawOp op)
+        {
             ushort x = op.Coords.X, y = op.Coords.Y, z = op.Coords.Z;
-            BlockID block = op.Level.GetBlock(x, y, z);
-            
-            for (int i = 0; i < exclude.Length; i++) {
+            ushort block = op.Level.GetBlock(x, y, z);
+
+            for (int i = 0; i < exclude.Length; i++)
+            {
                 if (block == exclude[i]) return Block.Invalid;
             }
             return target;

@@ -18,92 +18,109 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace MCGalaxy {
-    
-    public class PlayerIgnores {
-        public List<string> Names = new List<string>(), IRCNicks = new List<string>();
+namespace MCGalaxy
+{
+
+    public class PlayerIgnores
+    {
+        public List<string> Names = new(), IRCNicks = new();
         public bool All, IRC, Titles, Nicks, EightBall, DrawOutput, WorldChanges;
-        
-        public void Load(Player p) {
+
+        public void Load(Player p)
+        {
             string path = "ranks/ignore/" + p.name + ".txt";
             if (!File.Exists(path)) return;
-            
-            try {
+
+            try
+            {
                 //string[] lines = File.ReadAllLines(path);
                 string[] lines = FileIO.TryReadAllLines(path);
 
-                foreach (string line in lines) {
+                foreach (string line in lines)
+                {
                     if (line == "&global") continue; // deprecated /ignore global
                     if (line == "&all") { All = true; continue; }
                     if (line == "&irc") { IRC = true; continue; }
-                    
+
                     if (line == "&titles") { Titles = true; continue; }
                     if (line == "&nicks") { Nicks = true; continue; }
-                    
+
                     if (line == "&8ball") { EightBall = true; continue; }
                     if (line == "&drawoutput") { DrawOutput = true; continue; }
                     if (line == "&worldchanges") { WorldChanges = true; continue; }
-                    
-                    if (line.StartsWith("&irc_")) {
+
+                    if (line.StartsWith("&irc_"))
+                    {
                         IRCNicks.Add(line.Substring("&irc_".Length));
-                    } else {
+                    }
+                    else
+                    {
                         Names.Add(line);
                     }
                 }
-            } catch (IOException ex) {
+            }
+            catch (IOException ex)
+            {
                 Logger.LogError("Error loading ignores for " + p.name, ex);
             }
-            
+
             bool special = All || IRC || Titles || Nicks || EightBall || DrawOutput || WorldChanges;
-            if (special || Names.Count > 0 || IRCNicks.Count > 0) {
+            if (special || Names.Count > 0 || IRCNicks.Count > 0)
+            {
                 p.Message("&cType &a/ignore list &cto see who you are still ignoring");
             }
         }
-        
-        public void Save(Player p) {
+
+        public void Save(Player p)
+        {
             string path = "ranks/ignore/" + p.name + ".txt";
             if (!Directory.Exists("ranks/ignore"))
                 Directory.CreateDirectory("ranks/ignore");
-            
-            try {
-                using (StreamWriter w = new StreamWriter(path)) {
-                    if (All) w.WriteLine("&all");
-                    if (IRC) w.WriteLine("&irc");
-                    
-                    if (Titles) w.WriteLine("&titles");
-                    if (Nicks) w.WriteLine("&nicks");
-                    
-                    if (EightBall) w.WriteLine("&8ball");                    
-                    if (DrawOutput) w.WriteLine("&drawoutput");
-                    if (WorldChanges) w.WriteLine("&worldchanges");
-                    
-                    foreach (string nick in IRCNicks) { w.WriteLine("&irc_" + nick); }
-                    foreach (string name in Names) { w.WriteLine(name); }
-                }
-            } catch (IOException ex) {
+
+            try
+            {
+                using StreamWriter w = new(path);
+                if (All) w.WriteLine("&all");
+                if (IRC) w.WriteLine("&irc");
+
+                if (Titles) w.WriteLine("&titles");
+                if (Nicks) w.WriteLine("&nicks");
+
+                if (EightBall) w.WriteLine("&8ball");
+                if (DrawOutput) w.WriteLine("&drawoutput");
+                if (WorldChanges) w.WriteLine("&worldchanges");
+
+                foreach (string nick in IRCNicks) { w.WriteLine("&irc_" + nick); }
+                foreach (string name in Names) { w.WriteLine(name); }
+            }
+            catch (IOException ex)
+            {
                 Logger.LogError("Error saving ignores for " + p.name, ex);
             }
         }
-        
-        public void Output(Player p) {
+
+        public void Output(Player p)
+        {
             bool any = false;
-            if (Names.Count > 0) {
+            if (Names.Count > 0)
+            {
                 any = true;
                 p.Message("&cCurrently ignoring the following players:");
                 p.Message(Names.Join(n => p.FormatNick(n)));
             }
-            if (IRCNicks.Count > 0) {
+            if (IRCNicks.Count > 0)
+            {
                 any = true;
                 p.Message("&cCurrently ignoring the following IRC nicks:");
                 p.Message(IRCNicks.Join());
             }
-            
-            if (All)          { any = true; p.Message("&cIgnoring all chat"); }
-            if (IRC)          { any = true; p.Message("&cIgnoring IRC chat"); }
-            if (Titles)       { any = true; p.Message("&cPlayer titles do not show before names in chat"); }
-            if (Nicks)        { any = true; p.Message("&cCustom player nicks do not show in chat"); }
-            if (EightBall)    { any = true; p.Message("&cIgnoring &T/8ball"); }
-            if (DrawOutput)   { any = true; p.Message("&cIgnoring draw command output"); }
+
+            if (All) { any = true; p.Message("&cIgnoring all chat"); }
+            if (IRC) { any = true; p.Message("&cIgnoring IRC chat"); }
+            if (Titles) { any = true; p.Message("&cPlayer titles do not show before names in chat"); }
+            if (Nicks) { any = true; p.Message("&cCustom player nicks do not show in chat"); }
+            if (EightBall) { any = true; p.Message("&cIgnoring &T/8ball"); }
+            if (DrawOutput) { any = true; p.Message("&cIgnoring draw command output"); }
             if (WorldChanges) { any = true; p.Message("&cIgnoring world change messages"); }
 
             if (!any) p.Message("You are not ignoring anything.");

@@ -17,9 +17,9 @@
  */
 
 using MCGalaxy.Events.EntityEvents;
+using MCGalaxy.Network;
 using System;
 using System.Collections.Generic;
-using MCGalaxy.Network;
 
 namespace MCGalaxy
 {
@@ -84,8 +84,8 @@ namespace MCGalaxy
 
         readonly Player p;
 
-        readonly Dictionary<Entity, VisibleEntity> visible = new Dictionary<Entity, VisibleEntity>();
-        readonly List<WaitingEntity> invisible = new List<WaitingEntity>();
+        readonly Dictionary<Entity, VisibleEntity> visible = new();
+        readonly List<WaitingEntity> invisible = new();
         WaitingEntity IsWaitingToSpawn(Entity e)
         {
             foreach (WaitingEntity vis in invisible)
@@ -97,11 +97,11 @@ namespace MCGalaxy
 
         //Thanks fCraft
         readonly Stack<byte> freeIDs;
-        readonly object locker = new object();
+        readonly object locker = new();
 
 
         #region TabList
-        readonly Dictionary<object, TabObject> tabObjects = new Dictionary<object, TabObject>();
+        readonly Dictionary<object, TabObject> tabObjects = new();
         readonly bool[] usedTabIDs;
 
         void AddTab(Entity e)
@@ -276,7 +276,7 @@ namespace MCGalaxy
                 //Don't add if it's already queued
                 if (IsWaitingToSpawn(e) == null)
                 {
-                    WaitingEntity waiting = new WaitingEntity(e, 0, name, tabList);
+                    WaitingEntity waiting = new(e, 0, name, tabList);
                     invisible.Add(waiting);
                     //p.Message("Queuing {0} as invisible.", waiting.displayName);
                 }
@@ -302,9 +302,9 @@ namespace MCGalaxy
                     return false;
                 }
 
-                if (visible.TryGetValue(e, out VisibleEntity vis))
+                if (visible.TryGetValue(e, out _))
                 {
-                    vis = visible[e];
+                    VisibleEntity vis = visible[e];
                     if (!self) freeIDs.Push(vis.id);
                     //p.Message("| &c- &S{0}&S with ID {1}", vis.displayName, vis.id);
 
@@ -335,9 +335,9 @@ namespace MCGalaxy
         void Spawn(VisibleEntity vis, Position pos, Orientation rot, string skin, string name, string model)
         {
             p.Session.SendSpawnEntity(vis.id, name, skin, pos, rot);
-            _SendModel(vis, model);
-            _SendRot(vis, rot);
-            _SendScales(vis);
+            SendModel2(vis, model);
+            SendRot2(vis, rot);
+            SendScales2(vis);
         }
         void Despawn(VisibleEntity vis)
         {
@@ -353,17 +353,17 @@ namespace MCGalaxy
             lock (locker)
             {
                 if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
-                _SendModel(vis, model);
+                SendModel2(vis, model);
             }
         }
-        void _SendModel(VisibleEntity vis, string model)
+        void SendModel2(VisibleEntity vis, string model)
         {
             if (p.hasChangeModel)
             {
                 p.Session.SendChangeModel(vis.id, model);
             }
         }
-        void _SendRot(VisibleEntity vis, Orientation rot)
+        void SendRot2(VisibleEntity vis, Orientation rot)
         {
             if (p.Supports(CpeExt.EntityProperty))
             {
@@ -378,19 +378,19 @@ namespace MCGalaxy
             lock (locker)
             {
                 if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
-                _SendScales(vis);
+                SendScales2(vis);
             }
         }
-        void _SendScales(VisibleEntity vis)
+        void SendScales2(VisibleEntity vis)
         {
             if (!p.Supports(CpeExt.EntityProperty)) return;
 
             float max = ModelInfo.MaxScale(vis.e, vis.e.Model);
-            _SendScale(vis, EntityProp.ScaleX, vis.e.ScaleX, max);
-            _SendScale(vis, EntityProp.ScaleY, vis.e.ScaleY, max);
-            _SendScale(vis, EntityProp.ScaleZ, vis.e.ScaleZ, max);
+            SendScale2(vis, EntityProp.ScaleX, vis.e.ScaleX, max);
+            SendScale2(vis, EntityProp.ScaleY, vis.e.ScaleY, max);
+            SendScale2(vis, EntityProp.ScaleZ, vis.e.ScaleZ, max);
         }
-        void _SendScale(VisibleEntity vis, EntityProp axis, float value, float max)
+        void SendScale2(VisibleEntity vis, EntityProp axis, float value, float max)
         {
             if (value == 0) return;
             value = Math.Min(value, max);
@@ -450,7 +450,7 @@ namespace MCGalaxy
             }
         }
 
-        readonly Dictionary<Entity, VisibleEntity> cachedVisible = new Dictionary<Entity, VisibleEntity>(32);
+        readonly Dictionary<Entity, VisibleEntity> cachedVisible = new(32);
         internal unsafe void BroadcastEntityPositions()
         {
 
@@ -484,7 +484,7 @@ namespace MCGalaxy
 
                 if (dst == e || dst.level != e.Level || !dst.CanSeeEntity(e)) continue;
 
-                Orientation rot = e.Rot; 
+                Orientation rot = e.Rot;
                 byte pitch = rot.HeadX;
                 //No pattern matching because we're ancient C#
                 //CODE REVIEW: How should this be done? We could maybe have the visible pitch be a virtual getter in Entity and player implements its own logic
@@ -517,7 +517,7 @@ namespace MCGalaxy
             {
                 if (pair.Key.untracked)
                 {
-                    pair.Key._lastPos = pair.Key._positionUpdatePos; 
+                    pair.Key._lastPos = pair.Key._positionUpdatePos;
                     pair.Key._lastRot = pair.Key.Rot;
                 }
             }

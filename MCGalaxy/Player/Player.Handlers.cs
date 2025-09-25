@@ -12,10 +12,6 @@ BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
  */
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Threading;
 using MCGalaxy.Authentication;
 using MCGalaxy.Blocks;
 using MCGalaxy.Blocks.Physics;
@@ -28,7 +24,10 @@ using MCGalaxy.Maths;
 using MCGalaxy.Network;
 using MCGalaxy.SQL;
 using MCGalaxy.Util;
-using BlockID = System.UInt16;
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace MCGalaxy
 {
@@ -36,10 +35,10 @@ namespace MCGalaxy
     {
         const string mustAgreeMsg = "You must read /rules then agree to them with /agree!";
 
-        readonly object blockchangeLock = new object();
+        readonly object blockchangeLock = new();
         internal bool HasBlockChange() { return Blockchange != null; }
 
-        internal bool DoBlockchangeCallback(ushort x, ushort y, ushort z, BlockID block)
+        internal bool DoBlockchangeCallback(ushort x, ushort y, ushort z, ushort block)
         {
             lock (blockchangeLock)
             {
@@ -52,9 +51,9 @@ namespace MCGalaxy
         }
 
         public void HandleManualChange(ushort x, ushort y, ushort z, bool placing,
-                                       BlockID block, bool checkPlaceDist)
+                                       ushort block, bool checkPlaceDist)
         {
-            BlockID old = level.GetBlock(x, y, z);
+            ushort old = level.GetBlock(x, y, z);
             if (old == Block.Invalid) return;
 
             if (jailed || frozen || possessed) { RevertBlock(x, y, z); return; }
@@ -113,11 +112,11 @@ namespace MCGalaxy
                 RevertBlock(x, y, z); return;
             }
 
-            BlockID raw = placing ? block : Block.Air;
+            ushort raw = placing ? block : Block.Air;
             block = BlockBindings[block];
             if (ModeBlock != Block.Invalid) block = ModeBlock;
 
-            BlockID newB = deletingBlock ? Block.Air : block;
+            ushort newB = deletingBlock ? Block.Air : block;
             ChangeResult result;
 
             if (old == newB)
@@ -148,7 +147,7 @@ namespace MCGalaxy
             OnBlockChangedEvent.Call(this, x, y, z, result);
         }
 
-        internal bool CheckManualChange(BlockID old, bool deleteMode)
+        internal bool CheckManualChange(ushort old, bool deleteMode)
         {
             if (!group.CanDelete[old] && !Block.AllowBreak(old))
             {
@@ -159,7 +158,7 @@ namespace MCGalaxy
             return true;
         }
 
-        ChangeResult DeleteBlock(BlockID old, ushort x, ushort y, ushort z)
+        ChangeResult DeleteBlock(ushort old, ushort x, ushort y, ushort z)
         {
             if (deleteMode) return ChangeBlock(x, y, z, Block.Air);
 
@@ -168,7 +167,7 @@ namespace MCGalaxy
             return ChangeBlock(x, y, z, Block.Air);
         }
 
-        ChangeResult PlaceBlock(BlockID _, ushort x, ushort y, ushort z, BlockID block)
+        ChangeResult PlaceBlock(ushort _, ushort x, ushort y, ushort z, ushort block)
         {
             HandlePlace handler = level.PlaceHandlers[block];
             if (handler != null) return handler(this, block, x, y, z);
@@ -178,9 +177,9 @@ namespace MCGalaxy
         /// <summary> Updates the block at the given position, mainly intended for manual changes by the player. </summary>
         /// <remarks> Adds to the BlockDB. Also turns block below to grass/dirt depending on light. </remarks>
         /// <returns> Return code from DoBlockchange </returns>
-        public ChangeResult ChangeBlock(ushort x, ushort y, ushort z, BlockID block)
+        public ChangeResult ChangeBlock(ushort x, ushort y, ushort z, ushort block)
         {
-            BlockID old = level.GetBlock(x, y, z);
+            ushort old = level.GetBlock(x, y, z);
             ChangeResult result = level.TryChangeBlock(this, x, y, z, block);
 
             if (result == ChangeResult.Unchanged) return result;
@@ -197,15 +196,15 @@ namespace MCGalaxy
 
             bool grow = level.Config.GrassGrow && (level.physics == 0 || level.physics == 5);
             if (!grow || level.CanAffect(this, x, y, z) != null) return result;
-            BlockID below = level.GetBlock(x, y, z);
+            ushort below = level.GetBlock(x, y, z);
 
-            BlockID grass = level.Props[below].GrassBlock;
+            ushort grass = level.Props[below].GrassBlock;
             if (grass != Block.Invalid && block == Block.Air)
             {
                 level.Blockchange(this, x, y, z, grass);
             }
 
-            BlockID dirt = level.Props[below].DirtBlock;
+            ushort dirt = level.Props[below].DirtBlock;
             if (dirt != Block.Invalid && !level.LightPasses(block))
             {
                 level.Blockchange(this, x, y, z, dirt);
@@ -213,7 +212,7 @@ namespace MCGalaxy
             return result;
         }
 
-        public void ProcessBlockchange(ushort x, ushort y, ushort z, byte action, BlockID held)
+        public void ProcessBlockchange(ushort x, ushort y, ushort z, byte action, ushort held)
         {
             try
             {
@@ -257,12 +256,12 @@ namespace MCGalaxy
 
         public void ProcessMovement(int x, int y, int z, byte yaw, byte pitch, int held)
         {
-            if (held >= 0) ClientHeldBlock = (BlockID)held;
+            if (held >= 0) ClientHeldBlock = (ushort)held;
 
             if (Session.Ping.IgnorePosition || Loading) { return; }
             if (trainGrab || following.Length > 0) { CheckBlocks(Pos, Pos); return; } // Doesn't check zones? Potential bug
 
-            Position next = new Position(x, y, z);
+            Position next = new(x, y, z);
             ProcessMovementCore(next, yaw, pitch, true);
         }
 
@@ -335,7 +334,7 @@ namespace MCGalaxy
             }
 
             if (value == default_) value = EnvConfig.DefaultEnvProp(i, level.Height);
-            if (block) value = Session.ConvertBlock((BlockID)value);
+            if (block) value = Session.ConvertBlock((ushort)value);
             return value;
         }
 
@@ -433,7 +432,7 @@ namespace MCGalaxy
             }
         }
 
-        public bool HandleDeath(BlockID block, string customMsg = "", bool explode = false, bool immediate = false)
+        public bool HandleDeath(ushort block, string customMsg = "", bool explode = false, bool immediate = false)
         {
             if (!immediate && DateTime.UtcNow < deathCooldown) return false;
             if (invincible) return false;
@@ -623,7 +622,7 @@ namespace MCGalaxy
             jokerFile.EnsureExists();
 
             string[] lines = jokerFile.GetText();
-            Random rnd = new Random();
+            Random rnd = new();
             return lines.Length > 0 ? lines[rnd.Next(lines.Length)] : text;
         }
 
@@ -663,8 +662,8 @@ namespace MCGalaxy
 
         public void HandleCommands(List<string> cmds, CommandData data)
         {
-            List<string> messages = new List<string>(cmds.Count);
-            List<Command> commands = new List<Command>(cmds.Count);
+            List<string> messages = new(cmds.Count);
+            List<Command> commands = new(cmds.Count);
             if (!Server.Config.CmdSpamCheck && !CheckMBRecursion(data)) return;
 
             try

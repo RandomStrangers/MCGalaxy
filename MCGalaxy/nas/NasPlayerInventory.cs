@@ -3,8 +3,8 @@ using MCGalaxy;
 using MCGalaxy.Blocks;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
-using System;
 using Newtonsoft.Json;
+using System;
 namespace NotAwesomeSurvival
 {
     public partial class Inventory
@@ -12,9 +12,9 @@ namespace NotAwesomeSurvival
         [JsonIgnore] public Player p;
         [JsonIgnore] public CpeMessageType whereHeldBlockIsDisplayed = CpeMessageType.BottomRight3;
         public int[] blocks = new int[Block.MaxRaw + 1];
-        public Inventory(Player p) 
-        { 
-            this.p = p; 
+        public Inventory(Player p)
+        {
+            this.p = p;
         }
         public static void Log(string format, params object[] args)
         {
@@ -24,17 +24,17 @@ namespace NotAwesomeSurvival
         {
             p.Message(string.Format(message, args));
         }
-        public void Send(byte[] buffer) 
-        { 
-            p.Socket.Send(buffer, SendFlags.None); 
+        public void Send(byte[] buffer)
+        {
+            p.Socket.Send(buffer, SendFlags.None);
         }
         public void SendCpeMessage(CpeMessageType type, string message)
         {
             p.SendCpeMessage(type, message);
         }
-        public void SetPlayer(Player p) 
-        { 
-            this.p = p; 
+        public void SetPlayer(Player p)
+        {
+            this.p = p;
         }
         public void Setup()
         {
@@ -77,8 +77,8 @@ namespace NotAwesomeSurvival
         /// </summary>
         public Drop GetDrop(Drop drop, bool showToNormalChat = false, bool overrideBool = false)
         {
-            if (drop == null) 
-            { 
+            if (drop == null)
+            {
                 return null;
             }
             if (drop.exp > 0)
@@ -92,7 +92,7 @@ namespace NotAwesomeSurvival
                 {
                     BlockStack bs = drop.blockStacks[i];
                     SetAmount(bs.ID, bs.amount, false);
-                    DisplayInfo info = new DisplayInfo
+                    DisplayInfo info = new()
                     {
                         inv = this,
                         nasBlock = NasBlock.Get(bs.ID),
@@ -213,13 +213,13 @@ namespace NotAwesomeSurvival
         public void UnhideBlock(ushort clientushort)
         {
             BlockDefinition def = BlockDefinition.GlobalDefs[Block.FromRaw(clientushort)];
-            if (def == null && clientushort < Block.CPE_COUNT) 
-            { 
-                def = DefaultSet.MakeCustomBlock(Block.FromRaw(clientushort)); 
+            if (def == null && clientushort < Block.CPE_COUNT)
+            {
+                def = DefaultSet.MakeCustomBlock(Block.FromRaw(clientushort));
             }
-            if (def == null) 
-            { 
-                return; 
+            if (def == null)
+            {
+                return;
             }
             Send(Packet.BlockPermission(clientushort, true, false, true));
             Send(Packet.SetInventoryOrder(clientushort, (def.InventoryOrder == -1) ? clientushort : (ushort)def.InventoryOrder, true));
@@ -229,13 +229,13 @@ namespace NotAwesomeSurvival
                 foreach (ushort childID in nasBlock.childIDs)
                 {
                     def = BlockDefinition.GlobalDefs[Block.FromRaw(childID)];
-                    if (def == null && childID < Block.CPE_COUNT) 
-                    { 
-                        def = DefaultSet.MakeCustomBlock(Block.FromRaw(childID)); 
+                    if (def == null && childID < Block.CPE_COUNT)
+                    {
+                        def = DefaultSet.MakeCustomBlock(Block.FromRaw(childID));
                     }
-                    if (def == null) 
-                    { 
-                        continue; 
+                    if (def == null)
+                    {
+                        continue;
                     }
                     Send(Packet.BlockPermission(childID, true, false, true));
                     Send(Packet.SetInventoryOrder(childID, (def.InventoryOrder == -1) ? childID : (ushort)def.InventoryOrder, true));

@@ -17,42 +17,47 @@
  */
 using System.Collections.Generic;
 
-namespace MCGalaxy.Drawing.Transforms {
-    public abstract class TransformFactory {
-        
+namespace MCGalaxy.Drawing.Transforms
+{
+    public abstract class TransformFactory
+    {
+
         /// <summary> Human friendly name of this transform. </summary>
         public abstract string Name { get; }
-        
+
         /// <summary> Description of the transform, in addition to its syntax. </summary>
         public abstract string[] Help { get; }
-        
+
         /// <summary> Creates a transform from the given arguments, 
         /// returning null if invalid arguments are specified. </summary>
         public abstract Transform Construct(Player p, string message);
-        
-        public static List<TransformFactory> Transforms = new List<TransformFactory>() {
+
+        public static List<TransformFactory> Transforms = new() {
             new NoTransformFactory(), new ScaleTransformFactory(),
             new RotateTransformFactory(),
         };
-        
-        
-        public static TransformFactory Find(string name) {
-            foreach (TransformFactory entry in Transforms) 
+
+
+        public static TransformFactory Find(string name)
+        {
+            foreach (TransformFactory entry in Transforms)
             {
                 if (entry.Name.CaselessEq(name)) return entry;
             }
             return null;
         }
-        
-        public static TransformFactory FindMatch(Player p, string name) {
+
+        public static TransformFactory FindMatch(Player p, string name)
+        {
             TransformFactory match = Matcher.Find(p, name, out int matches, Transforms,
                                               null, t => t.Name, "transforms");
 
             if (match == null && matches == 0) List(p);
             return match;
         }
-        
-        public static void List(Player p) {
+
+        public static void List(Player p)
+        {
             p.Message("&HAvailable transforms: &f" + Transforms.Join(t => t.Name));
         }
     }

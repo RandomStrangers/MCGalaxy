@@ -15,24 +15,19 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.UI;
 using System;
 using System.IO;
 using System.Reflection;
 using System.Threading;
-using MCGalaxy.UI;
-
 namespace MCGalaxy.Cli
 {
     public static class Program
     {
-
         [STAThread]
-        public static void Main(string[] args)
+        public static void Main(string[] _)
         {
-            Console.WriteLine(args);
-            Console.Clear();
             SetCurrentDirectory();
-
             // If MCGalaxy_.dll is missing, a FileNotFoundException will get thrown for MCGalaxy dll
             try
             {
@@ -40,18 +35,16 @@ namespace MCGalaxy.Cli
             }
             catch (FileNotFoundException ex)
             {
-                Console.WriteLine("Cannot start server as {0} is missing from {1}",
+                Console.Out.WriteLine("Cannot start server as {0} is missing from {1}",
                                   GetFilename(ex.FileName), Environment.CurrentDirectory);
-                Console.WriteLine("Download from " + Updater.UploadsURL);
-                Console.WriteLine("Press any key to exit...");
+                Console.Out.WriteLine("Download from " + Updater.UploadsURL);
+                Console.Out.WriteLine("Press any key to exit...");
                 Console.ReadKey(true);
                 return;
             }
-
             // separate method, in case MCGalaxy_.dll is missing
             StartCLI();
         }
-
         static string GetFilename(string rawName)
         {
             try
@@ -63,7 +56,6 @@ namespace MCGalaxy.Cli
                 return rawName;
             }
         }
-
         static void SetCurrentDirectory()
         {
 #if !MCG_STANDALONE
@@ -79,11 +71,10 @@ namespace MCGalaxy.Cli
                 //   https://stackoverflow.com/questions/57648241/reliably-get-location-of-bundled-executable-on-linux
                 // Rather than trying to guess when this issue happens, just don't bother at all
                 //  (since most users will not be trying to run .exe from a different folder anyways)
-                Console.WriteLine("Failed to set working directory to '{0}', running in current directory..", path);
+                Console.Out.WriteLine("Failed to set working directory to '{0}', running in current directory..", path);
             }
 #endif
         }
-
         static void EnableCLIMode()
         {
             try
@@ -94,28 +85,22 @@ namespace MCGalaxy.Cli
             {
                 // in case user is running CLI with older MCGalaxy dll which lacked CLIMode field
             }
-
 #if !MCG_STANDALONE
             Server.RestartPath = Assembly.GetEntryAssembly().Location;
 #endif
         }
-
-
         static void StartCLI()
         {
             FileLogger.Init();
             AppDomain.CurrentDomain.UnhandledException += GlobalExHandler;
-
             try
             {
                 Logger.LogHandler += LogMessage;
                 Updater.NewerVersionDetected += LogNewerVersionDetected;
-
                 EnableCLIMode();
                 Server.Start();
                 Console.Title = Server.Config.Name + " - " + Server.SoftwareNameVersioned;
                 Console.CancelKeyPress += OnCancelKeyPress;
-
                 CheckNameVerification();
                 ConsoleLoop();
             }
@@ -125,7 +110,6 @@ namespace MCGalaxy.Cli
                 FileLogger.Flush(null);
             }
         }
-
         static void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
             switch (e.SpecialKey)
@@ -136,7 +120,6 @@ namespace MCGalaxy.Cli
                     Thread stopThread = Server.Stop(false, Server.Config.DefaultShutdownMessage);
                     stopThread.Join();
                     break;
-
                 case ConsoleSpecialKey.ControlC:
                     e.Cancel = true;
                     Write("&e-- Server shutdown (Ctrl+C) --");
@@ -144,12 +127,10 @@ namespace MCGalaxy.Cli
                     break;
             }
         }
-
         static void LogAndRestart(Exception ex)
         {
             Logger.LogError(ex);
             FileLogger.Flush(null);
-
             Thread.Sleep(500);
             if (Server.Config.restartOnError)
             {
@@ -157,19 +138,17 @@ namespace MCGalaxy.Cli
                 stopThread.Join();
             }
         }
-
         static void GlobalExHandler(object sender, UnhandledExceptionEventArgs e)
         {
             LogAndRestart((Exception)e.ExceptionObject);
         }
-
-
         static string CurrentDate() { return DateTime.Now.ToString("(HH:mm:ss) "); }
-
         static void LogMessage(LogType type, string message)
         {
-            if (!Server.Config.ConsoleLogging[(int)type]) return;
-
+            if (!Server.Config.ConsoleLogging[(int)type])
+            {
+                return;
+            }
             switch (type)
             {
                 case LogType.Error:
@@ -187,7 +166,6 @@ namespace MCGalaxy.Cli
                     break;
             }
         }
-
         static readonly string msgPrefix = Environment.NewLine + "Message: ";
         static string ExtractErrorMessage(string raw)
         {
@@ -197,30 +175,33 @@ namespace MCGalaxy.Cli
             //   Something: whatever
             // this code extracts the Message line from the raw message
             int beg = raw.IndexOf(msgPrefix);
-            if (beg == -1) return "";
-
+            if (beg == -1)
+            {
+                return "";
+            }
             beg += msgPrefix.Length;
             int end = raw.IndexOf(Environment.NewLine, beg);
-            if (end == -1) return "";
-
+            if (end == -1)
+            {
+                return "";
+            }
             return " (" + raw.Substring(beg, end - beg) + ")";
         }
-
-
         static void CheckNameVerification()
         {
-            if (Server.Config.VerifyNames) return;
+            if (Server.Config.VerifyNames)
+            {
+                return;
+            }
             Write("&e==============================================");
             Write("&eWARNING: Name verification is disabled! This means players can login as anyone, including YOU");
             Write("&eUnless you know EXACTLY what you are doing, you should change verify-names to true in server.properties");
             Write("&e==============================================");
         }
-
         static void LogNewerVersionDetected(object sender, EventArgs e)
         {
             Write("&cMCGalaxy update available! Update by replacing with the files from " + Updater.UploadsURL);
         }
-
         static void ConsoleLoop()
         {
             int eofs = 0;
@@ -237,10 +218,13 @@ namespace MCGalaxy.Cli
                     if (msg == null)
                     {
                         eofs++;
-                        if (eofs >= 15) { Write("&e** EOF, console no longer accepts input **"); break; }
+                        if (eofs >= 15)
+                        {
+                            Write("&e** EOF, console no longer accepts input **");
+                            break;
+                        }
                         continue;
                     }
-
                     msg = msg.Trim();
                     if (msg == "/")
                     {
@@ -273,21 +257,20 @@ namespace MCGalaxy.Cli
                 }
             }
         }
-
         static void Write(string message)
         {
             int index = 0;
             char col = 'S';
             message = UIHelpers.Format(message);
-
             while (index < message.Length)
             {
                 char curCol = col;
                 string part = UIHelpers.OutputPart(ref col, ref index, message);
-
-                if (part.Length == 0) continue;
+                if (part.Length == 0)
+                {
+                    continue;
+                }
                 ConsoleColor color = GetConsoleColor(curCol);
-
                 if (color == ConsoleColor.White)
                 {
                     // show in user's preferred console text color
@@ -297,18 +280,18 @@ namespace MCGalaxy.Cli
                 {
                     Console.ForegroundColor = color;
                 }
-                Console.Write(part);
+                Console.Out.Write(part);
             }
-
             Console.ResetColor();
-            Console.WriteLine();
+            Console.Out.WriteLine();
         }
-
         static ConsoleColor GetConsoleColor(char c)
         {
-            if (c == 'S') return ConsoleColor.White;
+            if (c == 'S')
+            {
+                return ConsoleColor.White;
+            }
             Colors.Map(ref c);
-
             switch (c)
             {
                 case '0': return ConsoleColor.DarkGray; // black text on black background is unreadable
@@ -327,9 +310,11 @@ namespace MCGalaxy.Cli
                 case 'd': return ConsoleColor.Magenta;
                 case 'e': return ConsoleColor.Yellow;
                 case 'f': return ConsoleColor.White;
-
                 default:
-                    if (!Colors.IsDefined(c)) return ConsoleColor.White;
+                    if (!Colors.IsDefined(c))
+                    {
+                        return ConsoleColor.White;
+                    }
                     return GetConsoleColor(Colors.Get(c).Fallback);
             }
         }

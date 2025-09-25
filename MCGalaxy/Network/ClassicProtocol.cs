@@ -12,13 +12,13 @@ BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
  */
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Events.ServerEvents;
 using MCGalaxy.Maths;
-using BlockID = System.UInt16;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+
 
 namespace MCGalaxy.Network
 {
@@ -67,9 +67,9 @@ namespace MCGalaxy.Network
         }
 
 #if TEN_BIT_BLOCKS
-        BlockID ReadBlock(byte[] buffer, int offset)
+        ushort ReadBlock(byte[] buffer, int offset)
         {
-            BlockID block;
+            ushort block;
             if (hasExtBlocks)
             {
                 block = NetUtils.ReadU16(buffer, offset);
@@ -83,7 +83,7 @@ namespace MCGalaxy.Network
             return Block.FromRaw(block);
         }
 #else
-        BlockID ReadBlock(byte[] buffer, int offset) { return Block.FromRaw(buffer[offset]); }
+        ushort ReadBlock(byte[] buffer, int offset) { return Block.FromRaw(buffer[offset]); }
 #endif
 
 
@@ -138,7 +138,7 @@ namespace MCGalaxy.Network
                 player.Leave("Unknown block action!", true); return left;
             }
 
-            BlockID held = ReadBlock(buffer, offset + 8);
+            ushort held = ReadBlock(buffer, offset + 8);
             player.ProcessBlockchange(x, y, z, action, held);
             return size;
         }
@@ -564,11 +564,11 @@ namespace MCGalaxy.Network
             return true;
         }
 
-        public override bool SendHoldThis(BlockID block, bool locked)
+        public override bool SendHoldThis(ushort block, bool locked)
         {
             if (!hasHeldBlock) return false;
 
-            BlockID raw = ConvertBlock(block);
+            ushort raw = ConvertBlock(block);
             Send(Packet.HoldThis(raw, locked, hasExtBlocks));
             return true;
         }
@@ -590,9 +590,9 @@ namespace MCGalaxy.Network
 
         public override void SendChangeModel(byte id, string model)
         {
-            if (BlockID.TryParse(model, out ushort raw) && raw > MaxRawBlock)
+            if (ushort.TryParse(model, out ushort raw) && raw > MaxRawBlock)
             {
-                BlockID block = Block.FromRaw(raw);
+                ushort block = Block.FromRaw(raw);
                 if (block >= Block.SUPPORTED_COUNT)
                 {
                     model = "humanoid"; // invalid block ids
@@ -817,7 +817,7 @@ namespace MCGalaxy.Network
         #endregion
 
 
-        public override void SendBlockchange(ushort x, ushort y, ushort z, BlockID block)
+        public override void SendBlockchange(ushort x, ushort y, ushort z, ushort block)
         {
             byte[] buffer = new byte[hasExtBlocks ? 9 : 8];
             buffer[0] = Opcode.SetBlock;
@@ -825,7 +825,7 @@ namespace MCGalaxy.Network
             NetUtils.WriteU16(y, buffer, 3);
             NetUtils.WriteU16(z, buffer, 5);
 
-            BlockID raw = ConvertBlock(block);
+            ushort raw = ConvertBlock(block);
             NetUtils.WriteBlock(raw, buffer, 7, hasExtBlocks);
             socket.Send(buffer, SendFlags.LowPriority);
         }
@@ -913,20 +913,20 @@ namespace MCGalaxy.Network
             }
         }
 
-        unsafe static void WriteI32(ref byte* ptr, int value)
+        static unsafe void WriteI32(ref byte* ptr, int value)
         {
             *ptr = (byte)(value >> 24); ptr++; *ptr = (byte)(value >> 16); ptr++;
             *ptr = (byte)(value >> 8); ptr++; *ptr = (byte)value; ptr++;
         }
 
-        unsafe static void WriteI16(ref byte* ptr, short value)
+        static unsafe void WriteI16(ref byte* ptr, short value)
         {
             *ptr = (byte)(value >> 8); ptr++; *ptr = (byte)value; ptr++;
         }
 
         static Position GetDelta(Position pos, Position old, bool extPositions)
         {
-            Position delta = new Position(pos.X - old.X, pos.Y - old.Y, pos.Z - old.Z);
+            Position delta = new(pos.X - old.X, pos.Y - old.Y, pos.Z - old.Z);
             if (extPositions) return delta;
 
             delta.X = (short)delta.X; delta.Y = (short)delta.Y; delta.Z = (short)delta.Z;

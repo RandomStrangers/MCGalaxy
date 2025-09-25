@@ -17,38 +17,43 @@
  */
 using MCGalaxy.Drawing.Brushes;
 
-namespace MCGalaxy.Commands.Building 
+namespace MCGalaxy.Commands.Building
 {
-    public sealed class CmdBrush : Command2 
+    public sealed class CmdBrush : Command2
     {
         public override string name { get { return "Brush"; } }
         public override string shortcut { get { return "br"; } }
         public override string type { get { return CommandTypes.Building; } }
         public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
         public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases {
-            get { return new CommandAlias[] { new CommandAlias("Brushes", "list") }; }
+        public override CommandAlias[] Aliases
+        {
+            get { return new CommandAlias[] { new("Brushes", "list") }; }
         }
 
-        public override void Use(Player p, string message, CommandData data) {
-            if (message.Length == 0) {
+        public override void Use(Player p, string message, CommandData data)
+        {
+            if (message.Length == 0)
+            {
                 p.Message("Your current brush is: " + p.BrushName); return;
             }
-        	
+
             string[] args = message.SplitSpaces(2);
-            if (IsListAction(args[0])) {
+            if (IsListAction(args[0]))
+            {
                 BrushFactory.List(p); return;
             }
-            
+
             BrushFactory brush = BrushFactory.FindMatch(p, args[0]);
             if (brush == null) return;
-            
+
             p.Message("Set your brush to: " + brush.Name);
             p.BrushName = brush.Name;
             p.DefaultBrushArgs = args.Length > 1 ? args[1] : "";
         }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/Brush [name] <default brush args>");
             p.Message("&HSets your current brush to the brush with that name.");
             p.Message("&T/Help Brush [name]");
@@ -58,10 +63,11 @@ namespace MCGalaxy.Commands.Building
                       "existing blocks in the map will not be replaced by this block.");
         }
 
-        public override void Help(Player p, string message) {
+        public override void Help(Player p, string message)
+        {
             BrushFactory brush = BrushFactory.FindMatch(p, message);
             if (brush == null) return;
-            
+
             p.MessageLines(brush.Help);
         }
     }

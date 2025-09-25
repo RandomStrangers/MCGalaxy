@@ -17,48 +17,56 @@
  */
 using MCGalaxy.Drawing.Transforms;
 
-namespace MCGalaxy.Commands.Building {  
-    public sealed class CmdTransform : Command2 {
+namespace MCGalaxy.Commands.Building
+{
+    public sealed class CmdTransform : Command2
+    {
         public override string name { get { return "Transform"; } }
         public override string type { get { return CommandTypes.Building; } }
         public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
         public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases {
+        public override CommandAlias[] Aliases
+        {
             get { return new[] { new CommandAlias("Transforms", "list"), new CommandAlias("Scale", "scale") }; }
         }
 
-        public override void Use(Player p, string message, CommandData data) {
-            if (message.Length == 0) {
+        public override void Use(Player p, string message, CommandData data)
+        {
+            if (message.Length == 0)
+            {
                 p.Message("Your current transform is: " + p.Transform.Name); return;
             }
-        	
+
             string[] args = message.SplitSpaces(2);
-            if (IsListAction(args[0])) {
+            if (IsListAction(args[0]))
+            {
                 TransformFactory.List(p); return;
             }
-            
+
             TransformFactory transform = TransformFactory.FindMatch(p, args[0]);
             if (transform == null) return;
 
             Transform instance = transform.Construct(p, args.Length == 1 ? "" : args[1]);
             if (instance == null) return;
-            
+
             p.Message("Set your transform to: " + transform.Name);
             p.Transform = instance;
         }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/Transform [name] <transform args>");
             p.Message("&HSets your current transform to the transform with that name.");
             p.Message("&T/Help Transform [name]");
             p.Message("&HOutputs the help for the transform with that name.");
             TransformFactory.List(p);
         }
-        
-        public override void Help(Player p, string message) {
+
+        public override void Help(Player p, string message)
+        {
             TransformFactory transform = TransformFactory.FindMatch(p, message);
             if (transform == null) return;
-            
+
             p.MessageLines(transform.Help);
         }
     }

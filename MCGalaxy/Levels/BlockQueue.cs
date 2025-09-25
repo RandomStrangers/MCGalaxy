@@ -15,70 +15,81 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using System.Collections.Generic;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
-using BlockID = System.UInt16;
+using System;
+using System.Collections.Generic;
 
-namespace MCGalaxy {    
+
+namespace MCGalaxy
+{
     /// <summary> Manages a list of block updates to periodically broadcast to players. </summary>
-    public sealed class BlockQueue : List<ulong> {
-        
+    public sealed class BlockQueue : List<ulong>
+    {
+
         /// <summary> Time in milliseconds between ticks. </summary>
         public static int Interval = 100;
         /// <summary> Maximum number of block updates broadcasted in one tick. </summary>
         public static int UpdatesPerTick = 750;
-        static readonly BufferedBlockSender bulkSender = new BufferedBlockSender();
-        
+        static readonly BufferedBlockSender bulkSender = new();
+
         const int posShift = 32;
-        readonly object locker = new object();
+        readonly object locker = new();
 
         /// <summary> Flushes the block updates queue for each loaded level. </summary>
-        public static void Loop(SchedulerTask task) {
+        public static void Loop(SchedulerTask task)
+        {
             Level[] loaded = LevelInfo.Loaded.Items;
-            foreach (Level lvl in loaded) {
-                lock (lvl.blockqueue.locker) {
+            foreach (Level lvl in loaded)
+            {
+                lock (lvl.blockqueue.locker)
+                {
                     lvl.blockqueue.Process(lvl);
                 }
             }
-            
+
             bulkSender.level = null;
             task.Delay = TimeSpan.FromMilliseconds(Interval);
         }
 
         /// <summary> Adds a block update to the end of the queue. </summary>
-        public void Add(int index, BlockID block) {
+        public void Add(int index, ushort block)
+        {
             // Bit packing format
             // 32-63: index
             // 0-31 : block type
             ulong flags = (ulong)index << posShift;
             flags |= block;
-            
+
             lock (locker) Add(flags);
         }
-        
+
         /// <summary> Removes all block updates from the queue. </summary>
         public void ClearAll() { lock (locker) Clear(); }
-        
-        void Process(Level lvl) {
-            try {
+
+        void Process(Level lvl)
+        {
+            try
+            {
                 if (Count == 0) return;
                 if (!lvl.HasPlayers()) { Clear(); return; }
-                    
+
                 bulkSender.level = lvl;
                 int count = Count;
                 if (count > UpdatesPerTick) count = UpdatesPerTick;
 
-                for (int i = 0; i < count; i++) {
-                    ulong flags   = this[i];
-                    int index     = (int)(flags >> posShift);
-                    BlockID block = (BlockID)flags;
+                for (int i = 0; i < count; i++)
+                {
+                    ulong flags = this[i];
+                    int index = (int)(flags >> posShift);
+                    ushort block = (ushort)flags;
                     bulkSender.Add(index, block);
                 }
                 bulkSender.Flush();
                 RemoveRange(0, count);
-            } catch (Exception e)  {
+            }
+            catch (Exception e)
+            {
                 Logger.LogError(e);
                 Logger.Log(LogType.Warning, "Failed to flush block queue on {0}. {1} lost.", lvl.name, Count);
                 Clear();

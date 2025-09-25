@@ -16,58 +16,67 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using MCGalaxy.Commands;
 using MCGalaxy.Commands.Moderation;
 using MCGalaxy.DB;
 using MCGalaxy.Events;
 using MCGalaxy.Tasks;
+using System;
 
-namespace MCGalaxy.Core {
-    internal static class ModActionHandler {
-        
-        internal static void HandleModAction(ModAction action) {
-            switch (action.Type) {
-                    case ModActionType.Frozen: DoFreeze(action); break;
-                    case ModActionType.Unfrozen: DoUnfreeze(action); break;
-                    case ModActionType.Muted: DoMute(action); break;
-                    case ModActionType.Unmuted: DoUnmute(action); break;
-                    case ModActionType.Ban: DoBan(action); break;
-                    case ModActionType.Unban: DoUnban(action); break;
-                    case ModActionType.BanIP: DoBanIP(action); break;
-                    case ModActionType.UnbanIP: DoUnbanIP(action); break;
-                    case ModActionType.Warned: DoWarn(action); break;
-                    case ModActionType.Rank: DoRank(action); break;
-                    case ModActionType.Noted: DoNote(action); break;
-                    case ModActionType.OpNoted: DoNote(action); break;
+namespace MCGalaxy.Core
+{
+    internal static class ModActionHandler
+    {
+
+        internal static void HandleModAction(ModAction action)
+        {
+            switch (action.Type)
+            {
+                case ModActionType.Frozen: DoFreeze(action); break;
+                case ModActionType.Unfrozen: DoUnfreeze(action); break;
+                case ModActionType.Muted: DoMute(action); break;
+                case ModActionType.Unmuted: DoUnmute(action); break;
+                case ModActionType.Ban: DoBan(action); break;
+                case ModActionType.Unban: DoUnban(action); break;
+                case ModActionType.BanIP: DoBanIP(action); break;
+                case ModActionType.UnbanIP: DoUnbanIP(action); break;
+                case ModActionType.Warned: DoWarn(action); break;
+                case ModActionType.Rank: DoRank(action); break;
+                case ModActionType.Noted: DoNote(action); break;
+                case ModActionType.OpNoted: DoNote(action); break;
             }
         }
-        
-        static void LogAction(ModAction e, Player _, string action) {
+
+        static void LogAction(ModAction e, Player _, string action)
+        {
             // TODO should use per-player nick settings
             string targetNick = e.Actor.FormatNick(e.Target);
 
-            if (e.Announce) {
+            if (e.Announce)
+            {
                 // TODO: Chat.MessageFrom if target is online?
                 Player who = PlayerInfo.FindExact(e.Target);
                 // TODO: who.SharesChatWith
                 Chat.Message(ChatScope.Global, e.FormatMessage(targetNick, action),
                              null, null, true);
-            } else {
-                Chat.Message(ChatScope.Perms, "To Ops: " + e.FormatMessage(targetNick, action),
-            	             Chat.OpchatPerms, null, true);
             }
-            
+            else
+            {
+                Chat.Message(ChatScope.Perms, "To Ops: " + e.FormatMessage(targetNick, action),
+                             Chat.OpchatPerms, null, true);
+            }
+
             action = Colors.StripUsed(action);
             string suffix = "";
             if (e.Duration.Ticks != 0) suffix = " &Sfor " + e.Duration.Shorten();
-            
+
             Logger.Log(LogType.UserActivity, "{0} was {1} by {2}",
                        e.Target, action, e.Actor.name + suffix);
         }
 
-        
-        static void DoFreeze(ModAction e) {
+
+        static void DoFreeze(ModAction e)
+        {
             Player who = PlayerInfo.FindExact(e.Target);
             if (who != null) who.frozen = true;
             LogAction(e, who, "&bfrozen");
@@ -76,157 +85,186 @@ namespace MCGalaxy.Core {
             ModerationTasks.FreezeCalcNextRun();
             Server.frozen.Save();
         }
-        
-        static void DoUnfreeze(ModAction e) {
+
+        static void DoUnfreeze(ModAction e)
+        {
             Player who = PlayerInfo.FindExact(e.Target);
             if (who != null) who.frozen = false;
             LogAction(e, who, "&adefrosted");
-            
+
             Server.frozen.Remove(e.Target);
             ModerationTasks.FreezeCalcNextRun();
             Server.frozen.Save();
         }
-        
-        
-        static void DoMute(ModAction e) {
+
+
+        static void DoMute(ModAction e)
+        {
             Player who = PlayerInfo.FindExact(e.Target);
             if (who != null) who.muted = true;
             LogAction(e, who, "&8muted");
-            
+
             Server.muted.Update(e.Target, FormatModTaskData(e));
             ModerationTasks.MuteCalcNextRun();
             Server.muted.Save();
         }
-        
-        static void DoUnmute(ModAction e) {
+
+        static void DoUnmute(ModAction e)
+        {
             Player who = PlayerInfo.FindExact(e.Target);
             if (who != null) who.muted = false;
             LogAction(e, who, "&aun-muted");
-            
+
             Server.muted.Remove(e.Target);
             ModerationTasks.MuteCalcNextRun();
             Server.muted.Save();
         }
-        
-        
-        static void DoBan(ModAction e) {
+
+
+        static void DoBan(ModAction e)
+        {
             Player who = PlayerInfo.FindExact(e.Target);
             LogAction(e, who, "&8banned");
-            
-            if (e.Duration.Ticks != 0) {
+
+            if (e.Duration.Ticks != 0)
+            {
                 DateTime end = DateTime.UtcNow.Add(e.Duration);
-                string data  = Ban.PackTempBanData(e.Reason, e.Actor.name, end);
-                
+                string data = Ban.PackTempBanData(e.Reason, e.Actor.name, end);
+
                 Server.tempBans.Update(e.Target, data);
                 Server.tempBans.Save();
 
                 who?.Kick("Banned for " + e.Duration.Shorten(true) + "." + e.ReasonSuffixed);
-            } else {
+            }
+            else
+            {
                 Ban.DeleteBan(e.Target);
                 Ban.BanPlayer(e.Actor, e.Target, e.Reason, !e.Announce, e.TargetGroup.Name);
                 ModActionCmd.ChangeRank(e.Target, e.targetGroup, Group.BannedRank, who);
-                
-                if (who != null) {
+
+                if (who != null)
+                {
                     string msg = e.Reason.Length == 0 ? Server.Config.DefaultBanMessage : e.Reason;
                     who.Kick("Banned by " + e.Actor.ColoredName + ": &S" + msg,
                              "Banned by " + e.Actor.ColoredName + ": &f" + msg);
                 }
             }
         }
-        
-        static void DoUnban(ModAction e) {
+
+        static void DoUnban(ModAction e)
+        {
             Player who = PlayerInfo.FindExact(e.Target);
             LogAction(e, who, "&8unbanned");
-            
-            if (Server.tempBans.Remove(e.Target)) {
+
+            if (Server.tempBans.Remove(e.Target))
+            {
                 Server.tempBans.Save();
             }
             if (!Group.BannedRank.Players.Contains(e.Target)) return;
-            
+
             Ban.DeleteUnban(e.Target);
             Ban.UnbanPlayer(e.Actor, e.Target, e.Reason);
             ModActionCmd.ChangeRank(e.Target, Group.BannedRank, Group.DefaultRank, who, false);
-            
+
             string ip = PlayerDB.FindIP(e.Target);
-            if (ip != null && Server.bannedIP.Contains(ip)) {
+            if (ip != null && Server.bannedIP.Contains(ip))
+            {
                 e.Actor.Message("NOTE: {0} IP is still banned.", Pronouns.GetFor(e.Target)[0].Object);
             }
         }
-        
-        
-        static void LogIPAction(ModAction e, string type) {
+
+
+        static void LogIPAction(ModAction e, string type)
+        {
             ItemPerms perms = CommandExtraPerms.Find("WhoIs", 1);
             Chat.Message(ChatScope.Global, e.FormatMessage("An IP", type), perms,
                          FilterNotItemPerms, true);
             Chat.Message(ChatScope.Global, e.FormatMessage(e.Target, type), perms,
                          Chat.FilterPerms, true);
         }
-        
-        static bool FilterNotItemPerms(Player pl, object arg) {
+
+        static bool FilterNotItemPerms(Player pl, object arg)
+        {
             return !Chat.FilterPerms(pl, arg);
         }
-        
-        static void DoBanIP(ModAction e) {
+
+        static void DoBanIP(ModAction e)
+        {
             LogIPAction(e, "&8IP banned");
-            Logger.Log(LogType.UserActivity, "IP-BANNED: {0} by {1}.{2}", 
+            Logger.Log(LogType.UserActivity, "IP-BANNED: {0} by {1}.{2}",
                        e.Target, e.Actor.name, e.ReasonSuffixed);
             Server.bannedIP.Update(e.Target, e.Reason);
             Server.bannedIP.Save();
         }
-        
-        static void DoUnbanIP(ModAction e) {
+
+        static void DoUnbanIP(ModAction e)
+        {
             LogIPAction(e, "&8IP unbanned");
-            Logger.Log(LogType.UserActivity, "IP-UNBANNED: {0} by {1}.", 
+            Logger.Log(LogType.UserActivity, "IP-UNBANNED: {0} by {1}.",
                        e.Target, e.Actor.name);
             Server.bannedIP.Remove(e.Target);
             Server.bannedIP.Save();
         }
 
-        
-        static void DoWarn(ModAction e) {
+
+        static void DoWarn(ModAction e)
+        {
             Player who = PlayerInfo.FindExact(e.Target);
-            if (who != null) {
+            if (who != null)
+            {
                 LogAction(e, who, "&ewarned");
-                if (who.warn == 0) {
+                if (who.warn == 0)
+                {
                     who.Message("Do it again twice and you will get kicked!");
-                } else if (who.warn == 1) {
+                }
+                else if (who.warn == 1)
+                {
                     who.Message("Do it one more time and you will get kicked!");
-                } else if (who.warn == 2) {
+                }
+                else if (who.warn == 2)
+                {
                     Chat.MessageGlobal("{0} &Swas warn-kicked by {1}", who.ColoredName, e.Actor.ColoredName);
                     string chatMsg = "by " + e.Actor.ColoredName + "&S: " + e.Reason;
                     string kickMsg = "Kicked by " + e.Actor.ColoredName + ": &f" + e.Reason;
                     who.Kick(chatMsg, kickMsg);
                 }
                 who.warn++;
-            } else {
-                if (!Server.Config.LogNotes) {
+            }
+            else
+            {
+                if (!Server.Config.LogNotes)
+                {
                     e.Actor.Message("Notes logging must be enabled to warn offline players."); return;
                 }
                 LogAction(e, who, "&ewarned");
             }
         }
-        
-        
-        static void DoRank(ModAction e) {
+
+
+        static void DoRank(ModAction e)
+        {
             Player who = PlayerInfo.FindExact(e.Target);
             Group newRank = (Group)e.Metadata;
             string action = newRank.Permission >= e.TargetGroup.Permission ? "promoted to " : "demoted to ";
             LogAction(e, who, action + newRank.ColoredName);
-            
-            if (who != null && e.Announce) {
+
+            if (who != null && e.Announce)
+            {
                 who.Message("You are now ranked " + newRank.ColoredName + "&S, type /Help for your new set of commands.");
             }
-            if (Server.tempRanks.Remove(e.Target)) {
+            if (Server.tempRanks.Remove(e.Target))
+            {
                 ModerationTasks.TemprankCalcNextRun();
                 Server.tempRanks.Save();
             }
-            
+
             WriteRankInfo(e, newRank);
             if (e.Duration != TimeSpan.Zero) AddTempRank(e, newRank);
             ModActionCmd.ChangeRank(e.Target, e.TargetGroup, newRank, who);
         }
-        
-        static void WriteRankInfo(ModAction e, Group newRank) {
+
+        static void WriteRankInfo(ModAction e, Group newRank)
+        {
             string assigner = e.Actor.name;
             long time = DateTime.UtcNow.ToUnixTime();
 
@@ -234,33 +272,41 @@ namespace MCGalaxy.Core {
                 + " " + e.TargetGroup.Name + " " + e.Reason.Replace(" ", "%20");
             Server.RankInfo.Append(line);
         }
-        
-        static void AddTempRank(ModAction e, Group newRank) {
+
+        static void AddTempRank(ModAction e, Group newRank)
+        {
             string data = FormatModTaskData(e) + " " + e.TargetGroup.Name + " " + newRank.Name;
             Server.tempRanks.Update(e.Target, data);
             ModerationTasks.TemprankCalcNextRun();
             Server.tempRanks.Save();
         }
-        
-        static string FormatModTaskData(ModAction e) {
-            long assign  = DateTime.UtcNow.ToUnixTime();
+
+        static string FormatModTaskData(ModAction e)
+        {
+            long assign = DateTime.UtcNow.ToUnixTime();
             DateTime end = DateTime.MaxValue.AddYears(-1);
-            
-            if (e.Duration != TimeSpan.Zero) {
-                try {
+
+            if (e.Duration != TimeSpan.Zero)
+            {
+                try
+                {
                     end = DateTime.UtcNow.Add(e.Duration);
-                } catch (ArgumentOutOfRangeException) {
+                }
+                catch (ArgumentOutOfRangeException)
+                {
                     // user provided extreme expiry time, ignore it
                 }
             }
-            
+
             long expiry = end.ToUnixTime();
             string assigner = e.Actor.name;
             return assigner + " " + assign + " " + expiry;
         }
 
-        static void DoNote(ModAction e) {
-            if (!Server.Config.LogNotes) {
+        static void DoNote(ModAction e)
+        {
+            if (!Server.Config.LogNotes)
+            {
                 e.Actor.Message("Notes logging must be enabled to note players."); return;
             }
 

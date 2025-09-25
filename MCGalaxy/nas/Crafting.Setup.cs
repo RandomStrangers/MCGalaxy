@@ -30,14 +30,14 @@ namespace NotAwesomeSurvival
 
             //Recipes that don't fill up all 9 slots and are NOT shapeless just mean that smaller pattern can be
             //anywhere on the crafting table, just in the same spot relative to each other.
-            Recipe wood = new Recipe(5, 4)
+            Recipe wood = new(5, 4)
             {
                 usesParentID = true,
                 pattern = new ushort[,] {
                     {  17 }
                 }
             };
-            Recipe woodFall = new Recipe(657, 4)
+            Recipe woodFall = new(657, 4)
             {
                 usesParentID = true,
                 shapeless = true,
@@ -47,7 +47,7 @@ namespace NotAwesomeSurvival
                     {  12, 12, 12 }
                 }
             };
-            Recipe fakeDirt = new Recipe(685, 4)
+            Recipe fakeDirt = new(685, 4)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -56,7 +56,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe fakeDirt2 = new Recipe(685, 4)
+            Recipe fakeDirt2 = new(685, 4)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -65,7 +65,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe woodFall2 = new Recipe(656, 2)
+            Recipe woodFall2 = new(656, 2)
             {
                 usesParentID = true,
                 shapeless = true,
@@ -75,7 +75,7 @@ namespace NotAwesomeSurvival
                     {  12, 12, 12 }
                 }
             };
-            Recipe glassFall = new Recipe(655, 4)
+            Recipe glassFall = new(655, 4)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -84,7 +84,7 @@ namespace NotAwesomeSurvival
                     {  12, 12, 12 }
                 }
             };
-            Recipe trapdoor = new Recipe(659, 3)
+            Recipe trapdoor = new(659, 3)
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -92,13 +92,13 @@ namespace NotAwesomeSurvival
                     {  5, 5, 5 }
                 }
             };
-            Recipe woodSlab = new Recipe(56, 6)
+            Recipe woodSlab = new(56, 6)
             {
                 pattern = new ushort[,] {
                     {  5, 5, 5 }
                 }
             };
-            Recipe woodWall = new Recipe(182, 6)
+            Recipe woodWall = new(182, 6)
             {
                 pattern = new ushort[,] {
                     {  5 },
@@ -106,7 +106,7 @@ namespace NotAwesomeSurvival
                     {  5 }
                 }
             };
-            Recipe woodStair = new Recipe(66, 6)
+            Recipe woodStair = new(66, 6)
             {
                 pattern = new ushort[,] {
                     {  5, 0, 0 },
@@ -114,28 +114,28 @@ namespace NotAwesomeSurvival
                     {  5, 5, 5 }
                 }
             };
-            Recipe woodPole = new Recipe(78, 4)
+            Recipe woodPole = new(78, 4)
             {
                 pattern = new ushort[,] {
                     {  5 },
                     {  5 }
                 }
             };
-            Recipe fenceWE = new Recipe(94, 4)
+            Recipe fenceWE = new(94, 4)
             {
                 pattern = new ushort[,] {
                     {  78, 79, 78 },
                     {  78, 79, 78 }
                 }
             };
-            Recipe fenceNS = new Recipe(94, 4)
+            Recipe fenceNS = new(94, 4)
             {
                 pattern = new ushort[,] {
                     {  78, 80, 78 },
                     {  78, 80, 78 }
                 }
             };
-            Recipe darkDoor = new Recipe(55, 2)
+            Recipe darkDoor = new(55, 2)
             {
                 pattern = new ushort[,] {
                     { 5, 5 },
@@ -143,14 +143,14 @@ namespace NotAwesomeSurvival
                     { 5, 5 }
                 }
             };
-            Recipe board = new Recipe(168, 6)
+            Recipe board = new(168, 6)
             {
                 usesParentID = true,
                 pattern = new ushort[,] {
                     {  56, 56, 56 }
                 }
             };
-            Recipe boardSideways = new Recipe(524, 6)
+            Recipe boardSideways = new(524, 6)
             {
                 usesParentID = true,
                 pattern = new ushort[,] {
@@ -160,20 +160,20 @@ namespace NotAwesomeSurvival
                 }
             };
             //spruce wood stuff ------------------------------------------------------
-            Recipe sprucewood = new Recipe(97, 4)
+            Recipe sprucewood = new(97, 4)
             {
                 usesParentID = true,
                 pattern = new ushort[,] {
                     {  250 }
                 }
             };
-            Recipe sprucewoodSlab = new Recipe(99, 6)
+            Recipe sprucewoodSlab = new(99, 6)
             {
                 pattern = new ushort[,] {
                     {  97, 97, 97 }
                 }
             };
-            Recipe sprucewoodWall = new Recipe(190, 6)
+            Recipe sprucewoodWall = new(190, 6)
             {
                 pattern = new ushort[,] {
                     {  97 },
@@ -181,7 +181,7 @@ namespace NotAwesomeSurvival
                     {  97 }
                 }
             };
-            Recipe sprucewoodStair = new Recipe(266, 6)
+            Recipe sprucewoodStair = new(266, 6)
             {
                 pattern = new ushort[,] {
                     {  97, 0, 0 },
@@ -189,21 +189,21 @@ namespace NotAwesomeSurvival
                     {  97, 97, 97 }
                 }
             };
-            Recipe sprucewoodPole = new Recipe(252, 4)
+            Recipe sprucewoodPole = new(252, 4)
             {
                 pattern = new ushort[,] {
                     {  97 },
                     {  97 }
                 }
             };
-            Recipe sprucefenceWE = new Recipe(258, 4)
+            Recipe sprucefenceWE = new(258, 4)
             {
                 pattern = new ushort[,] {
                     {  252, 253, 252 },
                     {  252, 253, 252 }
                 }
             };
-            Recipe sprucefenceNS = new Recipe(258, 4)
+            Recipe sprucefenceNS = new(258, 4)
             {
                 pattern = new ushort[,] {
                     {  252, 254, 252 },
@@ -219,20 +219,20 @@ namespace NotAwesomeSurvival
             //  }
             //};
             //birch wood stuff ------------------------------------------------------
-            Recipe birchwood = new Recipe(98, 4)
+            Recipe birchwood = new(98, 4)
             {
                 usesParentID = true,
                 pattern = new ushort[,] {
                     {  242 }
                 }
             };
-            Recipe birchwoodSlab = new Recipe(101, 6)
+            Recipe birchwoodSlab = new(101, 6)
             {
                 pattern = new ushort[,] {
                     {  98, 98, 98 }
                 }
             };
-            Recipe birchwoodWall = new Recipe(186, 6)
+            Recipe birchwoodWall = new(186, 6)
             {
                 pattern = new ushort[,] {
                     {  98 },
@@ -240,7 +240,7 @@ namespace NotAwesomeSurvival
                     {  98 }
                 }
             };
-            Recipe birchwoodStair = new Recipe(262, 6)
+            Recipe birchwoodStair = new(262, 6)
             {
                 pattern = new ushort[,] {
                     {  98, 0, 0 },
@@ -248,28 +248,28 @@ namespace NotAwesomeSurvival
                     {  98, 98, 98 }
                 }
             };
-            Recipe birchwoodPole = new Recipe(255, 4)
+            Recipe birchwoodPole = new(255, 4)
             {
                 pattern = new ushort[,] {
                     {  98 },
                     {  98 }
                 }
             };
-            Recipe birchfenceWE = new Recipe(260, 4)
+            Recipe birchfenceWE = new(260, 4)
             {
                 pattern = new ushort[,] {
                     {  255, 256, 255 },
                     {  255, 256, 255 }
                 }
             };
-            Recipe birchfenceNS = new Recipe(260, 4)
+            Recipe birchfenceNS = new(260, 4)
             {
                 pattern = new ushort[,] {
                     {  255, 257, 255 },
                     {  255, 257, 255 }
                 }
             };
-            Recipe lightDoor = new Recipe(470, 2)
+            Recipe lightDoor = new(470, 2)
             {
                 pattern = new ushort[,] {
                     { 98, 98 },
@@ -278,7 +278,7 @@ namespace NotAwesomeSurvival
                 }
             };
             //chest
-            Recipe chest = new Recipe(216, 1)
+            Recipe chest = new(216, 1)
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -287,7 +287,7 @@ namespace NotAwesomeSurvival
                     {  5,  5,  5 }
                 }
             };
-            Recipe barrel = new Recipe(143, 1)
+            Recipe barrel = new(143, 1)
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -296,14 +296,14 @@ namespace NotAwesomeSurvival
                     { 5, 57, 5 },
                 }
             };
-            Recipe barrel2 = new Recipe(143, 1);
+            Recipe barrel2 = new(143, 1);
             barrel.usesAlternateID = true;
             barrel2.pattern = new ushort[,] {
                 { 150 },
                 {  17 },
                 { 149 }
             };
-            Recipe auto = new Recipe(413, 1)
+            Recipe auto = new(413, 1)
             {
                 shapeless = true,
                 usesAlternateID = true,
@@ -314,7 +314,7 @@ namespace NotAwesomeSurvival
                     { 672, 1, 672 }
                 }
             };
-            Recipe bedbeacon = new Recipe(612, 1)
+            Recipe bedbeacon = new(612, 1)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -323,7 +323,7 @@ namespace NotAwesomeSurvival
                     { 20, 23, 20 }
                 }
             };
-            Recipe smith = new Recipe(676, 1)
+            Recipe smith = new(676, 1)
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -332,7 +332,7 @@ namespace NotAwesomeSurvival
                     { 5, 5 }
                 }
             };
-            Recipe tank = new Recipe(697, 1)
+            Recipe tank = new(697, 1)
             {
                 pattern = new ushort[,] {
                     { 690, 149, 690 },
@@ -340,7 +340,7 @@ namespace NotAwesomeSurvival
                     { 690, 690, 690 },
                 }
             };
-            Recipe crate = new Recipe(142, 1)
+            Recipe crate = new(142, 1)
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -348,7 +348,7 @@ namespace NotAwesomeSurvival
                     { 5, 5 }
                 }
             };
-            Recipe cryingObs = new Recipe(457, 1)
+            Recipe cryingObs = new(457, 1)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -358,13 +358,13 @@ namespace NotAwesomeSurvival
                 }
             };
             //stone stuff ------------------------------------------------------
-            Recipe stoneSlab = new Recipe(596, 6)
+            Recipe stoneSlab = new(596, 6)
             {
                 pattern = new ushort[,] {
                     {  1, 1, 1 }
                 }
             };
-            Recipe stoneWall = new Recipe(598, 6)
+            Recipe stoneWall = new(598, 6)
             {
                 pattern = new ushort[,] {
                     {  1 },
@@ -372,7 +372,7 @@ namespace NotAwesomeSurvival
                     {  1 }
                 }
             };
-            Recipe stoneStair = new Recipe(70, 6)
+            Recipe stoneStair = new(70, 6)
             {
                 pattern = new ushort[,] {
                     {  1, 0, 0 },
@@ -381,7 +381,7 @@ namespace NotAwesomeSurvival
                 }
             };
             //stonebrick
-            Recipe marker = new Recipe(64, 1)
+            Recipe marker = new(64, 1)
             {
                 pattern = new ushort[,] {
                     {  65, 65, 65 },
@@ -389,7 +389,7 @@ namespace NotAwesomeSurvival
                     {  65, 65, 65 }
                 }
             };
-            Recipe stoneBrick = new Recipe(65, 6)
+            Recipe stoneBrick = new(65, 6)
             {
                 pattern = new ushort[,] {
                     {  1, 1, 0 },
@@ -397,13 +397,13 @@ namespace NotAwesomeSurvival
                     {  1, 1, 0 }
                 }
             };
-            Recipe stoneBrickSlab = new Recipe(86, 6)
+            Recipe stoneBrickSlab = new(86, 6)
             {
                 pattern = new ushort[,] {
                     {  65, 65, 65 }
                 }
             };
-            Recipe stoneBrickWall = new Recipe(278, 6)
+            Recipe stoneBrickWall = new(278, 6)
             {
                 pattern = new ushort[,] {
                     {  65 },
@@ -411,94 +411,94 @@ namespace NotAwesomeSurvival
                     {  65 }
                 }
             };
-            Recipe stonePole = new Recipe(75, 4)
+            Recipe stonePole = new(75, 4)
             {
                 pattern = new ushort[,] {
                     {  65 },
                     {  65 }
                 }
             };
-            Recipe thinPole = new Recipe(211, 4)
+            Recipe thinPole = new(211, 4)
             {
                 pattern = new ushort[,] {
                     {  75 },
                     {  75 }
                 }
             };
-            Recipe linedStone = new Recipe(477, 4)
+            Recipe linedStone = new(477, 4)
             {
                 pattern = new ushort[,] {
                     {  65, 65 },
                     {  65, 65 }
                 }
             };
-            Recipe mossyCobble = new Recipe(181, 4)
+            Recipe mossyCobble = new(181, 4)
             {
                 pattern = new ushort[,] {
                     {  18, 162 },
                     {  162, 18 }
                 }
             };
-            Recipe mossyBricks = new Recipe(180, 4)
+            Recipe mossyBricks = new(180, 4)
             {
                 pattern = new ushort[,] {
                     {  181, 181 },
                     {  181, 181 }
                 }
             };
-            Recipe boulder = new Recipe(214, 4)
+            Recipe boulder = new(214, 4)
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
                     {  1 }
                 }
             };
-            Recipe nub = new Recipe(194, 4)
+            Recipe nub = new(194, 4)
             {
                 pattern = new ushort[,] {
                     {  214 }
                 }
             };
-            Recipe cobbleBrick = new Recipe(4, 4)
+            Recipe cobbleBrick = new(4, 4)
             {
                 pattern = new ushort[,] {
                     {  162, 162 },
                     {  162, 162 }
                 }
             };
-            Recipe cobbleBrickSlab = new Recipe(50, 6)
+            Recipe cobbleBrickSlab = new(50, 6)
             {
                 pattern = new ushort[,] {
                     {  4, 4, 4 }
                 }
             };
-            Recipe cobbleBrickWall = new Recipe(133, 6)
+            Recipe cobbleBrickWall = new(133, 6)
             {
                 pattern = new ushort[,] {
                     {  4, 4, 4 },
                     {  4, 4, 4 }
                 }
             };
-            Recipe cobblestone = new Recipe(162, 4)
+            Recipe cobblestone = new(162, 4)
             {
                 pattern = new ushort[,] {
                     {  1, 1 },
                     {  1, 1 }
                 }
             };
-            Recipe cobblestoneSlab = new Recipe(163, 6)
+            Recipe cobblestoneSlab = new(163, 6)
             {
                 pattern = new ushort[,] {
                     {  162, 162, 162 }
                 }
             };
-            Recipe sandstoneSlab = new Recipe(299, 6)
+            Recipe sandstoneSlab = new(299, 6)
             {
                 pattern = new ushort[,] {
                     {  52, 52, 52 }
                 }
             };
-            Recipe furnace = new Recipe(625, 1)
+            Recipe furnace = new(625, 1)
             {
                 usesAlternateID = true,
                 usesParentID = true,
@@ -508,20 +508,20 @@ namespace NotAwesomeSurvival
                     {  1,  1, 1 }
                 }
             };
-            Recipe concreteBlock = new Recipe(45, 4)
+            Recipe concreteBlock = new(45, 4)
             {
                 pattern = new ushort[,] {
                     {  4, 4 },
                     {  4, 4 }
                 }
             };
-            Recipe concreteSlab = new Recipe(44, 6)
+            Recipe concreteSlab = new(44, 6)
             {
                 pattern = new ushort[,] {
                     {  45, 45, 45 }
                 }
             };
-            Recipe concreteWall = new Recipe(282, 6)
+            Recipe concreteWall = new(282, 6)
             {
                 pattern = new ushort[,] {
                     { 45 },
@@ -529,34 +529,34 @@ namespace NotAwesomeSurvival
                     { 45 }
                 }
             };
-            Recipe concreteBrick = new Recipe(549, 4)
+            Recipe concreteBrick = new(549, 4)
             {
                 pattern = new ushort[,] {
                     {  45, 45 },
                     {  45, 45 }
                 }
             };
-            Recipe sandstone = new Recipe(52, 1)
+            Recipe sandstone = new(52, 1)
             {
                 pattern = new ushort[,] {
                     {  12, 12 },
                     {  12, 12 }
                 }
             };
-            Recipe stonePlate = new Recipe(135, 6)
+            Recipe stonePlate = new(135, 6)
             {
                 pattern = new ushort[,] {
                     {  44, 44, 44 }
                 }
             };
-            Recipe quartzPillar = new Recipe(63, 2)
+            Recipe quartzPillar = new(63, 2)
             {
                 pattern = new ushort[,] {
                     {  61 },
                     {  61 }
                 }
             };
-            Recipe quartzWall = new Recipe(286, 6)
+            Recipe quartzWall = new(286, 6)
             {
                 pattern = new ushort[,] {
                     {  61 },
@@ -564,13 +564,13 @@ namespace NotAwesomeSurvival
                     {  61 }
                 }
             };
-            Recipe quartzSlab = new Recipe(84, 6)
+            Recipe quartzSlab = new(84, 6)
             {
                 pattern = new ushort[,] {
                     {  61, 61, 61 },
                 }
             };
-            Recipe quartzChis = new Recipe(235, 1)
+            Recipe quartzChis = new(235, 1)
             {
                 usesParentID = true,
                 pattern = new ushort[,] {
@@ -578,7 +578,7 @@ namespace NotAwesomeSurvival
                      {  84 }
                 }
             };
-            Recipe quartzStair = new Recipe(274, 6)
+            Recipe quartzStair = new(274, 6)
             {
                 pattern = new ushort[,] {
                     {  61,  0,  0 },
@@ -587,13 +587,13 @@ namespace NotAwesomeSurvival
                 }
             };
             //upside down slab recipe
-            Recipe stonePlate2 = new Recipe(135, 6)
+            Recipe stonePlate2 = new(135, 6)
             {
                 pattern = new ushort[,] {
                     {  58, 58, 58 }
                 }
             };
-            Recipe concreteStair = new Recipe(270, 6)
+            Recipe concreteStair = new(270, 6)
             {
                 pattern = new ushort[,] {
                     {  45,  0,  0 },
@@ -601,7 +601,7 @@ namespace NotAwesomeSurvival
                     {  45, 45, 45 }
                 }
             };
-            Recipe concreteCorner = new Recipe(480, 4)
+            Recipe concreteCorner = new(480, 4)
             {
                 pattern = new ushort[,] {
                     { 45 },
@@ -609,7 +609,7 @@ namespace NotAwesomeSurvival
                 }
             };
             //ore stuff
-            Recipe charcoal = new Recipe(49, 2)
+            Recipe charcoal = new(49, 2)
             {
                 stationType = Station.Type.Furnace,
                 shapeless = true,
@@ -621,7 +621,7 @@ namespace NotAwesomeSurvival
                     {  17, 17, 17 }
                 }
             };
-            Recipe coalBlock = new Recipe(49, 1)
+            Recipe coalBlock = new(49, 1)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -630,7 +630,7 @@ namespace NotAwesomeSurvival
                     {  0, 0, 0 },
                 }
             };
-            Recipe hotCoals = new Recipe(239, 1)
+            Recipe hotCoals = new(239, 1)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -639,7 +639,7 @@ namespace NotAwesomeSurvival
                     {  0, 0, 0 },
                 }
             };
-            Recipe iron = new Recipe(42, 1)
+            Recipe iron = new(42, 1)
             {
                 stationType = Station.Type.Furnace,
                 expGiven = 4,
@@ -650,7 +650,7 @@ namespace NotAwesomeSurvival
                     {  197, 197, 197 },
                 }
             };
-            Recipe nugIron = new Recipe(42, 1)
+            Recipe nugIron = new(42, 1)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -659,13 +659,13 @@ namespace NotAwesomeSurvival
                     {  624, 624, 624 },
                 }
             };
-            Recipe ironNug = new Recipe(624, 9)
+            Recipe ironNug = new(624, 9)
             {
                 pattern = new ushort[,] {
                     {  42 },
                 }
             };
-            Recipe ironRefine = new Recipe(42, 1)
+            Recipe ironRefine = new(42, 1)
             {
                 stationType = Station.Type.Furnace,
                 expGiven = 2,
@@ -676,7 +676,7 @@ namespace NotAwesomeSurvival
                     {  197, 197, 197 },
                 }
             };
-            Recipe goldRefine = new Recipe(41, 1)
+            Recipe goldRefine = new(41, 1)
             {
                 stationType = Station.Type.Furnace,
                 expGiven = 3,
@@ -688,7 +688,7 @@ namespace NotAwesomeSurvival
                 }
             };
             //old iron
-            Recipe oldIron = new Recipe(148, 3)
+            Recipe oldIron = new(148, 3)
             {
                 stationType = Station.Type.Furnace,
                 expGiven = 2,
@@ -699,7 +699,7 @@ namespace NotAwesomeSurvival
                     {  0, 0, 0 },
                 }
             };
-            Recipe oldgold = new Recipe(672, 3)
+            Recipe oldgold = new(672, 3)
             {
                 stationType = Station.Type.Furnace,
                 expGiven = 3,
@@ -710,19 +710,19 @@ namespace NotAwesomeSurvival
                     {  0, 0, 0 },
                 }
             };
-            Recipe goldWire = new Recipe(550, 32)
+            Recipe goldWire = new(550, 32)
             {
                 pattern = new ushort[,] {
                     { 672, 672, 672 }
                 }
             };
-            Recipe oldIronSlab = new Recipe(149, 6)
+            Recipe oldIronSlab = new(149, 6)
             {
                 pattern = new ushort[,] {
                     {  148, 148, 148 }
                 }
             };
-            Recipe oldIronWall = new Recipe(294, 6)
+            Recipe oldIronWall = new(294, 6)
             {
                 pattern = new ushort[,] {
                     {  148 },
@@ -730,7 +730,7 @@ namespace NotAwesomeSurvival
                     {  148 }
                 }
             };
-            Recipe tile = new Recipe(208, 4)
+            Recipe tile = new(208, 4)
             {
                 pattern = new ushort[,] {
                     { 21, 148 },
@@ -738,7 +738,7 @@ namespace NotAwesomeSurvival
                 }
             };
             //i = 159; //Iron fence-WE
-            Recipe ironFence = new Recipe(159, 12)
+            Recipe ironFence = new(159, 12)
             {
                 pattern = new ushort[,] {
                     {  148, 148, 148 },
@@ -746,7 +746,7 @@ namespace NotAwesomeSurvival
                 }
             };
             //i = 161; //Iron cage
-            Recipe ironCage = new Recipe(161, 4)
+            Recipe ironCage = new(161, 4)
             {
                 usesParentID = true,
                 pattern = new ushort[,] {
@@ -755,7 +755,7 @@ namespace NotAwesomeSurvival
                     {    0, 159,   0 }
                 }
             };
-            Recipe gold = new Recipe(41, 1)
+            Recipe gold = new(41, 1)
             {
                 stationType = Station.Type.Furnace,
                 expGiven = 6,
@@ -766,7 +766,7 @@ namespace NotAwesomeSurvival
                     {   49, 49, 49 },
                 }
             };
-            Recipe diamond = new Recipe(631, 1)
+            Recipe diamond = new(631, 1)
             {
                 stationType = Station.Type.Furnace,
                 expGiven = 10,
@@ -777,7 +777,7 @@ namespace NotAwesomeSurvival
                     {  49, 49, 49 },
                 }
             };
-            Recipe emerald = new Recipe(650, 1)
+            Recipe emerald = new(650, 1)
             {
                 stationType = Station.Type.Furnace,
                 expGiven = 15,
@@ -789,49 +789,49 @@ namespace NotAwesomeSurvival
                 }
             };
             //glass
-            Recipe glass = new Recipe(20, 1)
+            Recipe glass = new(20, 1)
             {
                 stationType = Station.Type.Furnace,
                 pattern = new ushort[,] {
                     { 12 }
                 }
             };
-            Recipe glassPane = new Recipe(136, 6)
+            Recipe glassPane = new(136, 6)
             {
                 pattern = new ushort[,] {
                     {  20, 20, 20 },
                     {  20, 20, 20 }
                 }
             };
-            Recipe oldGlass = new Recipe(203, 1)
+            Recipe oldGlass = new(203, 1)
             {
                 pattern = new ushort[,] {
                     { 57 },
                     { 20 }
                 }
             };
-            Recipe oldGlassPane = new Recipe(209, 6)
+            Recipe oldGlassPane = new(209, 6)
             {
                 pattern = new ushort[,] {
                     {  203, 203, 203 },
                     {  203, 203, 203 }
                 }
             };
-            Recipe newGlass = new Recipe(471, 1)
+            Recipe newGlass = new(471, 1)
             {
                 pattern = new ushort[,] {
                     { 150 },
                     {  20 }
                 }
             };
-            Recipe newGlassPane = new Recipe(472, 6)
+            Recipe newGlassPane = new(472, 6)
             {
                 pattern = new ushort[,] {
                     {  471, 471, 471 },
                     {  471, 471, 471 }
                 }
             };
-            Recipe rope = new Recipe(51, 3)
+            Recipe rope = new(51, 3)
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -841,7 +841,7 @@ namespace NotAwesomeSurvival
                 }
             };
             //bread
-            Recipe bread = new Recipe(640, 1)
+            Recipe bread = new(640, 1)
             {
                 stationType = Station.Type.Furnace,
                 expGiven = 4,
@@ -853,7 +853,7 @@ namespace NotAwesomeSurvival
                     {  0, 0, 0 },
                 }
             };
-            Recipe waffle = new Recipe(542, 1)
+            Recipe waffle = new(542, 1)
             {
                 stationType = Station.Type.Furnace,
                 expGiven = 4,
@@ -865,21 +865,21 @@ namespace NotAwesomeSurvival
                     { 145, 145, 145 },
                 }
             };
-            Recipe leavesDense = new Recipe(666, 2)
+            Recipe leavesDense = new(666, 2)
             {
                 pattern = new ushort[,] {
                     {  18, 18 },
                     {  18, 18 },
                 }
             };
-            Recipe pinkLeavesDense = new Recipe(686, 2)
+            Recipe pinkLeavesDense = new(686, 2)
             {
                 pattern = new ushort[,] {
                     {  103, 103 },
                     {  103, 103 }
                 }
             };
-            Recipe leavesDry = new Recipe(104, 12)
+            Recipe leavesDry = new(104, 12)
             {
                 pattern = new ushort[,] {
                     {  18, 18, 18 },
@@ -887,19 +887,19 @@ namespace NotAwesomeSurvival
                     {  18, 18, 18 }
                 }
             };
-            Recipe leavesSlab = new Recipe(105, 6)
+            Recipe leavesSlab = new(105, 6)
             {
                 pattern = new ushort[,] {
                     {  18, 18, 18 }
                 }
             };
-            Recipe pinkLeavesSlab = new Recipe(246, 6)
+            Recipe pinkLeavesSlab = new(246, 6)
             {
                 pattern = new ushort[,] {
                     {  103, 103, 103 }
                 }
             };
-            Recipe orange = new Recipe(30, 2)
+            Recipe orange = new(30, 2)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -908,7 +908,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe pink = new Recipe(138, 2)
+            Recipe pink = new(138, 2)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -917,7 +917,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe green = new Recipe(26, 2)
+            Recipe green = new(26, 2)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -926,7 +926,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe lime = new Recipe(32, 2)
+            Recipe lime = new(32, 2)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -935,7 +935,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe cyan = new Recipe(29, 2)
+            Recipe cyan = new(29, 2)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -944,7 +944,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe lightblue = new Recipe(34, 2)
+            Recipe lightblue = new(34, 2)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -953,7 +953,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe purple = new Recipe(22, 2)
+            Recipe purple = new(22, 2)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -962,7 +962,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe brown = new Recipe(25, 2)
+            Recipe brown = new(25, 2)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -971,7 +971,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe black = new Recipe(21, 2)
+            Recipe black = new(21, 2)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -980,7 +980,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe magenta = new Recipe(200, 2)
+            Recipe magenta = new(200, 2)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -989,7 +989,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe gray = new Recipe(28, 2)
+            Recipe gray = new(28, 2)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -998,7 +998,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe lightgray = new Recipe(31, 2)
+            Recipe lightgray = new(31, 2)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -1007,7 +1007,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe poisonBread = new Recipe(652, 1)
+            Recipe poisonBread = new(652, 1)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -1016,7 +1016,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe poisonMushroom = new Recipe(653, 1)
+            Recipe poisonMushroom = new(653, 1)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -1025,7 +1025,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe poisonPie = new Recipe(654, 1)
+            Recipe poisonPie = new(654, 1)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -1034,7 +1034,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe fire = new Recipe(54, 32)
+            Recipe fire = new(54, 32)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -1043,7 +1043,7 @@ namespace NotAwesomeSurvival
                     { 0, 0, 0 },
                 }
             };
-            Recipe die = new Recipe(236, 4)
+            Recipe die = new(236, 4)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -1052,7 +1052,7 @@ namespace NotAwesomeSurvival
                     { 488, 489, 490 }
                 }
             };
-            Recipe zero = new Recipe(484, 8)
+            Recipe zero = new(484, 8)
             {
                 pattern = new ushort[,] {
                     { 45, 27, 45 },
@@ -1060,7 +1060,7 @@ namespace NotAwesomeSurvival
                     { 45, 27, 45 }
                 }
             };
-            Recipe one = new Recipe(485, 8)
+            Recipe one = new(485, 8)
             {
                 pattern = new ushort[,] {
                     { 27, 27, 45 },
@@ -1068,7 +1068,7 @@ namespace NotAwesomeSurvival
                     { 27, 27, 27 }
                 }
             };
-            Recipe two = new Recipe(486, 8)
+            Recipe two = new(486, 8)
             {
                 pattern = new ushort[,] {
                     { 27, 27, 45 },
@@ -1076,7 +1076,7 @@ namespace NotAwesomeSurvival
                     { 27, 27, 45 }
                 }
             };
-            Recipe three = new Recipe(487, 8)
+            Recipe three = new(487, 8)
             {
                 pattern = new ushort[,] {
                     { 27, 27, 27 },
@@ -1084,7 +1084,7 @@ namespace NotAwesomeSurvival
                     { 27, 27, 27 }
                 }
             };
-            Recipe four = new Recipe(488, 8)
+            Recipe four = new(488, 8)
             {
                 pattern = new ushort[,] {
                     { 27, 45, 27 },
@@ -1092,7 +1092,7 @@ namespace NotAwesomeSurvival
                     { 45, 45, 27 }
                 }
             };
-            Recipe five = new Recipe(489, 8)
+            Recipe five = new(489, 8)
             {
                 pattern = new ushort[,] {
                     { 45, 27, 27 },
@@ -1100,7 +1100,7 @@ namespace NotAwesomeSurvival
                     { 27, 27, 45 }
                 }
             };
-            Recipe six = new Recipe(490, 8)
+            Recipe six = new(490, 8)
             {
                 pattern = new ushort[,] {
                     { 27, 45, 45 },
@@ -1108,7 +1108,7 @@ namespace NotAwesomeSurvival
                     { 27, 27, 27 }
                 }
             };
-            Recipe seven = new Recipe(491, 8)
+            Recipe seven = new(491, 8)
             {
                 pattern = new ushort[,] {
                     { 27, 27, 27 },
@@ -1116,7 +1116,7 @@ namespace NotAwesomeSurvival
                     { 45, 45, 27 }
                 }
             };
-            Recipe eight = new Recipe(492, 8)
+            Recipe eight = new(492, 8)
             {
                 pattern = new ushort[,] {
                     { 45, 27, 27 },
@@ -1124,7 +1124,7 @@ namespace NotAwesomeSurvival
                     { 27, 27, 45 }
                 }
             };
-            Recipe nine = new Recipe(493, 8)
+            Recipe nine = new(493, 8)
             {
                 pattern = new ushort[,] {
                     { 27, 27, 27 },
@@ -1132,7 +1132,7 @@ namespace NotAwesomeSurvival
                     { 45, 45, 27 }
                 }
             };
-            Recipe a = new Recipe(494, 8)
+            Recipe a = new(494, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 21, 21 },
@@ -1140,7 +1140,7 @@ namespace NotAwesomeSurvival
                     { 21, 45, 21 }
                 }
             };
-            Recipe b = new Recipe(495, 8)
+            Recipe b = new(495, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 21, 45 },
@@ -1148,7 +1148,7 @@ namespace NotAwesomeSurvival
                     { 21, 21, 45 }
                 }
             };
-            Recipe c = new Recipe(496, 8)
+            Recipe c = new(496, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 21, 21 },
@@ -1156,7 +1156,7 @@ namespace NotAwesomeSurvival
                     { 21, 21, 21 }
                 }
             };
-            Recipe d = new Recipe(497, 8)
+            Recipe d = new(497, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 21, 45 },
@@ -1164,7 +1164,7 @@ namespace NotAwesomeSurvival
                     { 21, 21, 45 }
                 }
             };
-            Recipe e = new Recipe(498, 8)
+            Recipe e = new(498, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 21, 21 },
@@ -1172,7 +1172,7 @@ namespace NotAwesomeSurvival
                     { 21, 21, 21 }
                 }
             };
-            Recipe f = new Recipe(499, 8)
+            Recipe f = new(499, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 21, 21 },
@@ -1180,7 +1180,7 @@ namespace NotAwesomeSurvival
                     { 21, 45, 45 }
                 }
             };
-            Recipe g = new Recipe(500, 8)
+            Recipe g = new(500, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 21, 21 },
@@ -1188,7 +1188,7 @@ namespace NotAwesomeSurvival
                     { 21, 21, 45 }
                 }
             };
-            Recipe h = new Recipe(501, 8)
+            Recipe h = new(501, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 45, 21 },
@@ -1196,7 +1196,7 @@ namespace NotAwesomeSurvival
                     { 21, 45, 21 }
                 }
             };
-            Recipe i = new Recipe(502, 8)
+            Recipe i = new(502, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 21, 21 },
@@ -1204,7 +1204,7 @@ namespace NotAwesomeSurvival
                     { 21, 21, 21 }
                 }
             };
-            Recipe j = new Recipe(503, 8)
+            Recipe j = new(503, 8)
             {
                 pattern = new ushort[,] {
                     { 45, 45, 21 },
@@ -1212,7 +1212,7 @@ namespace NotAwesomeSurvival
                     { 21, 21, 21 }
                 }
             };
-            Recipe k = new Recipe(504, 8)
+            Recipe k = new(504, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 45, 21 },
@@ -1220,7 +1220,7 @@ namespace NotAwesomeSurvival
                     { 21, 45, 21 }
                 }
             };
-            Recipe l = new Recipe(505, 8)
+            Recipe l = new(505, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 45, 45 },
@@ -1228,7 +1228,7 @@ namespace NotAwesomeSurvival
                     { 21, 21, 21 }
                 }
             };
-            Recipe m = new Recipe(506, 8)
+            Recipe m = new(506, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 45, 21 },
@@ -1236,7 +1236,7 @@ namespace NotAwesomeSurvival
                     { 21, 21, 21 }
                 }
             };
-            Recipe n = new Recipe(507, 8)
+            Recipe n = new(507, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 21, 21 },
@@ -1244,7 +1244,7 @@ namespace NotAwesomeSurvival
                     { 21, 45, 21 }
                 }
             };
-            Recipe o = new Recipe(508, 8)
+            Recipe o = new(508, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 21, 21 },
@@ -1252,7 +1252,7 @@ namespace NotAwesomeSurvival
                     { 21, 21, 21 }
                 }
             };
-            Recipe p = new Recipe(509, 8)
+            Recipe p = new(509, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 21, 21 },
@@ -1260,7 +1260,7 @@ namespace NotAwesomeSurvival
                     { 21, 45, 45 }
                 }
             };
-            Recipe q = new Recipe(510, 8)
+            Recipe q = new(510, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 21, 21 },
@@ -1268,7 +1268,7 @@ namespace NotAwesomeSurvival
                     { 21, 21, 45 }
                 }
             };
-            Recipe r = new Recipe(511, 8)
+            Recipe r = new(511, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 21, 21 },
@@ -1276,7 +1276,7 @@ namespace NotAwesomeSurvival
                     { 21, 45, 21 }
                 }
             };
-            Recipe s = new Recipe(512, 8)
+            Recipe s = new(512, 8)
             {
                 pattern = new ushort[,] {
                     { 45, 21, 21 },
@@ -1284,7 +1284,7 @@ namespace NotAwesomeSurvival
                     { 45, 21, 21 }
                 }
             };
-            Recipe t = new Recipe(513, 8)
+            Recipe t = new(513, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 21, 21 },
@@ -1292,7 +1292,7 @@ namespace NotAwesomeSurvival
                     { 45, 21, 45 }
                 }
             };
-            Recipe u = new Recipe(514, 8)
+            Recipe u = new(514, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 45, 21 },
@@ -1300,7 +1300,7 @@ namespace NotAwesomeSurvival
                     { 21, 21, 21 }
                 }
             };
-            Recipe v = new Recipe(515, 8)
+            Recipe v = new(515, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 45, 21 },
@@ -1308,7 +1308,7 @@ namespace NotAwesomeSurvival
                     { 45, 21, 45 }
                 }
             };
-            Recipe w = new Recipe(516, 8)
+            Recipe w = new(516, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 45, 21 },
@@ -1316,7 +1316,7 @@ namespace NotAwesomeSurvival
                     { 45, 21, 45 }
                 }
             };
-            Recipe x = new Recipe(517, 8)
+            Recipe x = new(517, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 45, 21 },
@@ -1324,7 +1324,7 @@ namespace NotAwesomeSurvival
                     { 21, 45, 21 }
                 }
             };
-            Recipe y = new Recipe(518, 8)
+            Recipe y = new(518, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 45, 21 },
@@ -1332,7 +1332,7 @@ namespace NotAwesomeSurvival
                     { 45, 21, 45 }
                 }
             };
-            Recipe z = new Recipe(519, 8)
+            Recipe z = new(519, 8)
             {
                 pattern = new ushort[,] {
                     { 21, 21, 45 },
@@ -1340,7 +1340,7 @@ namespace NotAwesomeSurvival
                     { 45, 21, 21 }
                 }
             };
-            Recipe period = new Recipe(520, 8)
+            Recipe period = new(520, 8)
             {
                 pattern = new ushort[,] {
                     { 45, 45, 45 },
@@ -1348,7 +1348,7 @@ namespace NotAwesomeSurvival
                     { 45, 45, 45 }
                 }
             };
-            Recipe exc = new Recipe(521, 8)
+            Recipe exc = new(521, 8)
             {
                 pattern = new ushort[,] {
                     { 45, 21, 45 },
@@ -1356,7 +1356,7 @@ namespace NotAwesomeSurvival
                     { 45, 21, 45 }
                 }
             };
-            Recipe slash = new Recipe(522, 8)
+            Recipe slash = new(522, 8)
             {
                 pattern = new ushort[,] {
                     { 45, 45, 21 },
@@ -1364,7 +1364,7 @@ namespace NotAwesomeSurvival
                     { 21, 45, 45 }
                 }
             };
-            Recipe que = new Recipe(523, 8)
+            Recipe que = new(523, 8)
             {
                 pattern = new ushort[,] {
                     { 45, 21, 21 },
@@ -1372,7 +1372,7 @@ namespace NotAwesomeSurvival
                     { 45, 21, 45 }
                 }
             };
-            Recipe sign = new Recipe(171, 3)
+            Recipe sign = new(171, 3)
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -1381,7 +1381,7 @@ namespace NotAwesomeSurvival
                     {  0, 78, 0 }
                 }
             };
-            Recipe bookshelf = new Recipe(132, 3)
+            Recipe bookshelf = new(132, 3)
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -1390,7 +1390,7 @@ namespace NotAwesomeSurvival
                     {  5, 5, 5 }
                 }
             };
-            Recipe bed = new Recipe(703, 1)
+            Recipe bed = new(703, 1)
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -1398,7 +1398,7 @@ namespace NotAwesomeSurvival
                     {  5, 5, 5 }
                 }
             };
-            Recipe pie = new Recipe(668, 1)
+            Recipe pie = new(668, 1)
             {
                 shapeless = true,
                 expGiven = 8,
@@ -1410,7 +1410,7 @@ namespace NotAwesomeSurvival
                     {  145, 145, 0 }
                 }
             };
-            Recipe peachPie = new Recipe(698, 1)
+            Recipe peachPie = new(698, 1)
             {
                 shapeless = true,
                 expGiven = 8,
@@ -1422,7 +1422,7 @@ namespace NotAwesomeSurvival
                     {  145, 145, 0 }
                 }
             };
-            Recipe powerSource = new Recipe(74, 1)
+            Recipe powerSource = new(74, 1)
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -1431,7 +1431,7 @@ namespace NotAwesomeSurvival
                     {  1, 1, 1 },
                 }
             };
-            Recipe lever = new Recipe(674, 1)
+            Recipe lever = new(674, 1)
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -1440,14 +1440,14 @@ namespace NotAwesomeSurvival
                     {  1, 1, 1 },
                 }
             };
-            Recipe pressure = new Recipe(610, 1)
+            Recipe pressure = new(610, 1)
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
                     {  1, 1 }
                 }
             };
-            Recipe spikes = new Recipe(178, 1)
+            Recipe spikes = new(178, 1)
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -1455,14 +1455,14 @@ namespace NotAwesomeSurvival
                     {  1, 1, 1 },
                 }
             };
-            Recipe obSpikes = new Recipe(476, 1)
+            Recipe obSpikes = new(476, 1)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
                     { 690, 178 },
                 }
             };
-            Recipe lamp = new Recipe(687, 4)
+            Recipe lamp = new(687, 4)
             {
                 usesParentID = true,
                 pattern = new ushort[,] {
@@ -1471,7 +1471,7 @@ namespace NotAwesomeSurvival
                     {  20, 20, 20 },
                 }
             };
-            Recipe button = new Recipe(195, 1)
+            Recipe button = new(195, 1)
             {
                 usesParentID = true,
                 usesAlternateID = true,
@@ -1481,7 +1481,7 @@ namespace NotAwesomeSurvival
                     { 550, 550, 550 },
                 }
             };
-            Recipe piston = new Recipe(704, 1)
+            Recipe piston = new(704, 1)
             {
                 usesParentID = true,
                 usesAlternateID = true,
@@ -1491,7 +1491,7 @@ namespace NotAwesomeSurvival
                     {  1, 550, 1 },
                 }
             };
-            Recipe dispenser = new Recipe(439, 1)
+            Recipe dispenser = new(439, 1)
             {
                 usesParentID = true,
                 usesAlternateID = true,
@@ -1501,7 +1501,7 @@ namespace NotAwesomeSurvival
                     {  1, 550, 1 },
                 }
             };
-            Recipe observer = new Recipe(415, 1)
+            Recipe observer = new(415, 1)
             {
                 usesParentID = true,
                 usesAlternateID = true,
@@ -1511,7 +1511,7 @@ namespace NotAwesomeSurvival
                     {  1, 1, 1 },
                 }
             };
-            Recipe repeater = new Recipe(172, 1)
+            Recipe repeater = new(172, 1)
             {
                 usesParentID = true,
                 usesAlternateID = true,
@@ -1521,7 +1521,7 @@ namespace NotAwesomeSurvival
                     {  1, 1, 1 },
                 }
             };
-            Recipe strongWire = new Recipe(732, 5)
+            Recipe strongWire = new(732, 5)
             {
                 usesParentID = true,
                 usesAlternateID = true,
@@ -1532,130 +1532,130 @@ namespace NotAwesomeSurvival
                     {  1, 550, 1 },
                 }
             };
-            Recipe stickyPiston = new Recipe(678, 1)
+            Recipe stickyPiston = new(678, 1)
             {
                 pattern = new ushort[,] {
                     {  677 },
                     {  704 },
                 }
             };
-            Recipe sticky = new Recipe(677, 1)
+            Recipe sticky = new(677, 1)
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
                     {  6 },
                 }
             };
-            Recipe packed = new Recipe(681, 1)
+            Recipe packed = new(681, 1)
             {
                 pattern = new ushort[,] {
                     {  60, 60 },
                     {  60, 60 }
                 }
             };
-            Recipe redCarpet = new Recipe(713, 3)
+            Recipe redCarpet = new(713, 3)
             {
                 pattern = new ushort[,] {
                     {  27, 27 }
                 }
             };
-            Recipe orangeCarpet = new Recipe(714, 3)
+            Recipe orangeCarpet = new(714, 3)
             {
                 pattern = new ushort[,] {
                     {  30, 30 }
                 }
             };
-            Recipe yellowCarpet = new Recipe(715, 3)
+            Recipe yellowCarpet = new(715, 3)
             {
                 pattern = new ushort[,] {
                     {  35, 35 }
                 }
             };
-            Recipe limeCarpet = new Recipe(716, 3)
+            Recipe limeCarpet = new(716, 3)
             {
                 pattern = new ushort[,] {
                     {  32, 32 }
                 }
             };
-            Recipe greenCarpet = new Recipe(717, 3)
+            Recipe greenCarpet = new(717, 3)
             {
                 pattern = new ushort[,] {
                     {  26, 26 }
                 }
             };
-            Recipe lightblueCarpet = new Recipe(718, 3)
+            Recipe lightblueCarpet = new(718, 3)
             {
                 pattern = new ushort[,] {
                     {  34, 34 }
                 }
             };
-            Recipe cyanCarpet = new Recipe(719, 3)
+            Recipe cyanCarpet = new(719, 3)
             {
                 pattern = new ushort[,] {
                     {  29, 29 }
                 }
             };
-            Recipe blueCarpet = new Recipe(720, 3)
+            Recipe blueCarpet = new(720, 3)
             {
                 pattern = new ushort[,] {
                     {  23, 23 }
                 }
             };
-            Recipe magentaCarpet = new Recipe(721, 3)
+            Recipe magentaCarpet = new(721, 3)
             {
                 pattern = new ushort[,] {
                     {  200, 200 }
                 }
             };
-            Recipe pinkCarpet = new Recipe(722, 3)
+            Recipe pinkCarpet = new(722, 3)
             {
                 pattern = new ushort[,] {
                     {  138, 138 }
                 }
             };
-            Recipe blackCarpet = new Recipe(723, 3)
+            Recipe blackCarpet = new(723, 3)
             {
                 pattern = new ushort[,] {
                     {  21, 21 }
                 }
             };
-            Recipe purpleCarpet = new Recipe(724, 3)
+            Recipe purpleCarpet = new(724, 3)
             {
                 pattern = new ushort[,] {
                     {  22, 22 }
                 }
             };
-            Recipe grayCarpet = new Recipe(725, 3)
+            Recipe grayCarpet = new(725, 3)
             {
                 pattern = new ushort[,] {
                     {  28, 28 }
                 }
             };
-            Recipe lightgrayCarpet = new Recipe(726, 3)
+            Recipe lightgrayCarpet = new(726, 3)
             {
                 pattern = new ushort[,] {
                     {  31, 31 }
                 }
             };
-            Recipe whiteCarpet = new Recipe(727, 3)
+            Recipe whiteCarpet = new(727, 3)
             {
                 pattern = new ushort[,] {
                     {  36, 36 }
                 }
             };
-            Recipe brownCarpet = new Recipe(728, 3)
+            Recipe brownCarpet = new(728, 3)
             {
                 pattern = new ushort[,] {
                     {  25, 25 }
                 }
             };
-            Recipe snowBlock = new Recipe(140, 1)
+            Recipe snowBlock = new(140, 1)
             {
                 pattern = new ushort[,] {
                     {  53, 53 }
                 }
             };
-            Recipe sponge = new Recipe(427, 3)
+            Recipe sponge = new(427, 3)
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -1664,7 +1664,7 @@ namespace NotAwesomeSurvival
                     {  36, 36, 36 },
                 }
             };
-            Recipe drysponge = new Recipe(427, 1)
+            Recipe drysponge = new(427, 1)
             {
                 stationType = Station.Type.Furnace,
                 shapeless = true,
@@ -1672,47 +1672,47 @@ namespace NotAwesomeSurvival
                     {  428, 49 }
                 }
             };
-            Recipe cobbledDeep = new Recipe(429, 1)
+            Recipe cobbledDeep = new(429, 1)
             {
                 stationType = Station.Type.Furnace,
                 pattern = new ushort[,] {
                     {  430 }
                 }
             };
-            Recipe polishedDeep = new Recipe(433, 4)
+            Recipe polishedDeep = new(433, 4)
             {
                 pattern = new ushort[,] {
                     {  430, 430 },
                     {  430, 430 }
                 }
             };
-            Recipe bricksDeep = new Recipe(436, 4)
+            Recipe bricksDeep = new(436, 4)
             {
                 pattern = new ushort[,] {
                     {  433, 433 },
                     {  433, 433 }
                 }
             };
-            Recipe tilesDeep = new Recipe(435, 4)
+            Recipe tilesDeep = new(435, 4)
             {
                 pattern = new ushort[,] {
                     {  436, 436 },
                     {  436, 436 }
                 }
             };
-            Recipe slabCobbleDeep = new Recipe(431, 6)
+            Recipe slabCobbleDeep = new(431, 6)
             {
                 pattern = new ushort[,] {
                     {  430, 430, 430 },
                 }
             };
-            Recipe slabBrickDeep = new Recipe(437, 6)
+            Recipe slabBrickDeep = new(437, 6)
             {
                 pattern = new ushort[,] {
                     {  436, 436, 436 },
                 }
             };
-            Recipe chiseledDeep = new Recipe(434, 1)
+            Recipe chiseledDeep = new(434, 1)
             {
                 shapeless = true,
                 usesParentID = true,
@@ -1720,46 +1720,46 @@ namespace NotAwesomeSurvival
                     {  431, 431 },
                 }
             };
-            Recipe bricksNether = new Recipe(155, 4)
+            Recipe bricksNether = new(155, 4)
             {
                 pattern = new ushort[,] {
                     {  48, 48 },
                     {  48, 48 },
                 }
             };
-            Recipe bricksNetherSlab = new Recipe(157, 6)
+            Recipe bricksNetherSlab = new(157, 6)
             {
                 pattern = new ushort[,] {
                     {  155, 155, 155 },
                 }
             };
-            Recipe polishedBlack = new Recipe(458, 4)
+            Recipe polishedBlack = new(458, 4)
             {
                 pattern = new ushort[,] {
                     {  452, 452 },
                     {  452, 452 },
                 }
             };
-            Recipe polishedBlackSlab = new Recipe(460, 6)
+            Recipe polishedBlackSlab = new(460, 6)
             {
                 pattern = new ushort[,] {
                     {  458, 458, 458 },
                 }
             };
-            Recipe brickBlack = new Recipe(466, 4)
+            Recipe brickBlack = new(466, 4)
             {
                 pattern = new ushort[,] {
                     {  458, 458 },
                     {  458, 458 },
                 }
             };
-            Recipe brickBlackSlab = new Recipe(468, 6)
+            Recipe brickBlackSlab = new(468, 6)
             {
                 pattern = new ushort[,] {
                     {  466, 466, 466 },
                 }
             };
-            Recipe gilded = new Recipe(469, 8)
+            Recipe gilded = new(469, 8)
             {
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -1768,14 +1768,14 @@ namespace NotAwesomeSurvival
                     {  452, 452, 672 },
                 }
             };
-            Recipe crackedBlack = new Recipe(474, 1)
+            Recipe crackedBlack = new(474, 1)
             {
                 stationType = Station.Type.Furnace,
                 pattern = new ushort[,] {
                     { 466 },
                 }
             };
-            Recipe chiseledBlack = new Recipe(475, 1)
+            Recipe chiseledBlack = new(475, 1)
             {
                 shapeless = true,
                 usesParentID = true,
@@ -1783,7 +1783,7 @@ namespace NotAwesomeSurvival
                     {  460, 460 },
                 }
             };
-            Recipe barrier = new Recipe(767, 9)
+            Recipe barrier = new(767, 9)
             {
                 pattern = new ushort[,] {
                     {  7, 7, 7 },

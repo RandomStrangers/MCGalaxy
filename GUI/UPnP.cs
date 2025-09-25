@@ -12,13 +12,13 @@ BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
 */
+using MCGalaxy.Network;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Xml;
-using MCGalaxy.Network;
 //This upnp class comes from http://www.codeproject.com/Articles/27992/NAT-Traversal-with-UPnP-in-C, Modified for use with MCForge
 // Some relatively straightforward documentation on how UPnP works:
 //  http://www.upnp-hacks.org/upnp.html
@@ -42,16 +42,16 @@ namespace MCGalaxy
             "\r\n";
 
         string _serviceUrl;
-        readonly List<string> visitedLocations = new List<string>();
+        readonly List<string> visitedLocations = new();
 
 
         public bool Discover()
         {
-            Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            Socket s = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             s.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, 1);
 
             byte[] data = Encoding.ASCII.GetBytes(SEARCH_REQUEST);
-            IPEndPoint ep = new IPEndPoint(IPAddress.Broadcast, 1900);
+            IPEndPoint ep = new(IPAddress.Broadcast, 1900);
             byte[] buffer = new byte[0x1000];
 
             s.ReceiveTimeout = 3000;
@@ -141,11 +141,11 @@ namespace MCGalaxy
         {
             try
             {
-                XmlDocument doc = new XmlDocument();
+                XmlDocument doc = new();
                 WebRequest request = WebRequest.Create(location);
                 doc.Load(request.GetResponse().GetResponseStream());
 
-                XmlNamespaceManager nsMgr = new XmlNamespaceManager(doc.NameTable);
+                XmlNamespaceManager nsMgr = new(doc.NameTable);
                 nsMgr.AddNamespace("tns", "urn:schemas-upnp-org:device-1-0");
                 XmlNode node;
 

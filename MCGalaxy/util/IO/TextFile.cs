@@ -18,36 +18,39 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace MCGalaxy.Util 
+namespace MCGalaxy.Util
 {
     public delegate void TextFileChanged();
-    
+
     /// <summary> Represents a text file and associated data for it </summary>
-    public sealed class TextFile 
+    public sealed class TextFile
     {
         public readonly string Filename;
-        public readonly string[] DefaultText;        
+        public readonly string[] DefaultText;
         public TextFileChanged OnTextChanged;
-        
-        public TextFile(string filename, params string[] defaultText) {
-            Filename    = filename;
+
+        public TextFile(string filename, params string[] defaultText)
+        {
+            Filename = filename;
             DefaultText = defaultText;
         }
-        
-        public void EnsureExists() {
-            if (File.Exists(Filename)) return;
-            
-            Logger.Log(LogType.SystemActivity, Filename + " does not exist, creating");
-            using (StreamWriter w = new StreamWriter(Filename)) {
-                if (DefaultText == null) return;
 
-                for (int i = 0; i < DefaultText.Length; i++) {
-                    w.WriteLine(DefaultText[i]);
-                }
+        public void EnsureExists()
+        {
+            if (File.Exists(Filename)) return;
+
+            Logger.Log(LogType.SystemActivity, Filename + " does not exist, creating");
+            using StreamWriter w = new(Filename);
+            if (DefaultText == null) return;
+
+            for (int i = 0; i < DefaultText.Length; i++)
+            {
+                w.WriteLine(DefaultText[i]);
             }
         }
-        
-        public string[] GetText() {
+
+        public string[] GetText()
+        {
             //return File.ReadAllLines(Filename);
             return FileIO.TryReadAllLines(Filename);
 
@@ -56,26 +59,29 @@ namespace MCGalaxy.Util
         /// Returns all text lines in the file that do not begin with # and are not empty.
         /// </summary>
         /// <returns></returns>
-        public List<string> GetTextWithoutComments() {
+        public List<string> GetTextWithoutComments()
+        {
             string[] lines = GetText();
-            List<string> text = new List<string>();
-            foreach (string line in lines) {
+            List<string> text = new();
+            foreach (string line in lines)
+            {
                 if (line.StartsWith("#") || line.Trim().Length == 0) continue;
                 text.Add(line);
             }
             return text;
         }
-        
-        public void SetText(string[] text) {
+
+        public void SetText(string[] text)
+        {
             //File.WriteAllLines(Filename, text);
             FileIO.TryWriteAllLines(Filename, text);
             OnTextChanged?.Invoke();
         }
-        
 
-        public static Dictionary<string, TextFile> Files = new Dictionary<string, TextFile>() {
+
+        public static Dictionary<string, TextFile> Files = new() {
             { "News", new TextFile(Paths.NewsFile, "News have not been created. Put News in '" + Paths.NewsFile + "'.") },
-            { "FAQ", new TextFile(Paths.FaqFile, 
+            { "FAQ", new TextFile(Paths.FaqFile,
                                   "Example: What does this server run on? This server runs on &b" + Server.SoftwareName) },
             { "Rules", new TextFile(Paths.RulesFile, "No rules entered yet!") },
             { "OpRules", new TextFile(Paths.OprulesFile, "No oprules entered yet!") },
@@ -98,8 +104,8 @@ namespace MCGalaxy.Util
                                                "# Each word to allow must be on an individual line") },
             { "Announcements", new TextFile(Paths.AnnouncementsFile, null) },
             { "Joker", new TextFile(Paths.JokerFile, null) },
-            { "8ball", new TextFile(Paths.EightBallFile, 
-                                    "Not likely.", "Very likely.", "Impossible!", "No.", 
+            { "8ball", new TextFile(Paths.EightBallFile,
+                                    "Not likely.", "Very likely.", "Impossible!", "No.",
                                     "Yes.", "Definitely!", "Do some more thinking.") },
         };
     }

@@ -12,35 +12,40 @@ BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
  */
+using MCGalaxy.Events;
 using System;
 using System.Collections.Generic;
-using MCGalaxy.Events;
 
-namespace MCGalaxy {
-    internal sealed class SpamChecker {
-        
-        public SpamChecker(Player p) {
+namespace MCGalaxy
+{
+    internal sealed class SpamChecker
+    {
+
+        public SpamChecker(Player p)
+        {
             this.p = p;
             blockLog = new List<DateTime>(Server.Config.BlockSpamCount);
-            chatLog  = new List<DateTime>(Server.Config.ChatSpamCount);
-            cmdLog   = new List<DateTime>(Server.Config.CmdSpamCount);
+            chatLog = new List<DateTime>(Server.Config.ChatSpamCount);
+            cmdLog = new List<DateTime>(Server.Config.CmdSpamCount);
         }
 
         readonly Player p;
-        readonly object chatLock = new object(), cmdLock = new object();
+        readonly object chatLock = new(), cmdLock = new();
         readonly List<DateTime> blockLog, chatLog, cmdLog;
-        
-        public void Clear() {
+
+        public void Clear()
+        {
             blockLog.Clear();
             lock (chatLock)
                 chatLog.Clear();
             lock (cmdLock)
                 cmdLog.Clear();
         }
-        
-        public bool CheckBlockSpam() {
+
+        public bool CheckBlockSpam()
+        {
             if (p.ignoreGrief || !Server.Config.BlockSpamCheck) return false;
-            if (blockLog.AddSpamEntry(Server.Config.BlockSpamCount, Server.Config.BlockSpamInterval)) 
+            if (blockLog.AddSpamEntry(Server.Config.BlockSpamCount, Server.Config.BlockSpamInterval))
                 return false;
 
             TimeSpan oldestDelta = DateTime.UtcNow - blockLog[0];
@@ -50,31 +55,35 @@ namespace MCGalaxy {
                        "{0} was kicked from {1} for block spam ({2} blocks in {3} seconds)",
                        p.name, p.level.name, blockLog.Count, oldestDelta);
             p.Kick("You were kicked by antigrief system. Slow down.");
-            return true;            
+            return true;
         }
-        
-        public bool CheckChatSpam() {
+
+        public bool CheckChatSpam()
+        {
             Player.lastMSG = p.name;
             if (!Server.Config.ChatSpamCheck || p.IsSuper) return false;
-            
-            lock (chatLock) {
-                if (chatLog.AddSpamEntry(Server.Config.ChatSpamCount, Server.Config.ChatSpamInterval)) 
+
+            lock (chatLock)
+            {
+                if (chatLog.AddSpamEntry(Server.Config.ChatSpamCount, Server.Config.ChatSpamInterval))
                     return false;
-                
+
                 TimeSpan duration = Server.Config.ChatSpamMuteTime;
-                ModAction action = new ModAction(p.name, Player.Console, ModActionType.Muted, "&0Auto mute for spamming", duration);
+                ModAction action = new(p.name, Player.Console, ModActionType.Muted, "&0Auto mute for spamming", duration);
                 OnModActionEvent.Call(action);
                 return true;
             }
         }
-        
-        public bool CheckCommandSpam() {
+
+        public bool CheckCommandSpam()
+        {
             if (!Server.Config.CmdSpamCheck || p.IsSuper) return false;
-            
-            lock (cmdLock) {
-                if (cmdLog.AddSpamEntry(Server.Config.CmdSpamCount, Server.Config.CmdSpamInterval)) 
+
+            lock (cmdLock)
+            {
+                if (cmdLog.AddSpamEntry(Server.Config.CmdSpamCount, Server.Config.CmdSpamInterval))
                     return false;
-                
+
                 string blockTime = Server.Config.CmdSpamBlockTime.Shorten(true, true);
                 p.Message("You have been blocked from using commands for "
                           + blockTime + " due to spamming");

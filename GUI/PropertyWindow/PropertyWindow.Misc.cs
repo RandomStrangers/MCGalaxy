@@ -12,10 +12,10 @@ BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
  */
-using System;
-using System.Windows.Forms;
 using MCGalaxy.Gui.Popups;
 using MCGalaxy.SQL;
+using System;
+using System.Windows.Forms;
 
 namespace MCGalaxy.Gui
 {
@@ -67,10 +67,8 @@ namespace MCGalaxy.Gui
 
         void adv_btnEditTexts_Click(object sender, EventArgs e)
         {
-            using (Form form = new EditText())
-            {
-                form.ShowDialog();
-            }
+            using Form form = new EditText();
+            form.ShowDialog();
         }
 
 

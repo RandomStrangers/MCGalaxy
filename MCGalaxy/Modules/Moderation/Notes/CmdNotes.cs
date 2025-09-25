@@ -26,33 +26,40 @@ namespace MCGalaxy.Modules.Moderation.Notes
         public override string type { get { return CommandTypes.Moderation; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
 
-        public override void Use(Player p, string message, CommandData data) {
+        public override void Use(Player p, string message, CommandData data)
+        {
             string[] args = message.SplitSpaces();
-            string name   = args[0];
-            
+            string name = args[0];
+
             if (CheckSuper(p, name, "player name")) return;
             if (name.Length == 0) name = p.name;
-            
+
             name = PlayerInfo.FindMatchesPreferOnline(p, name);
             if (name == null) return;
-            
+
             string modifier = args.Length > 1 ? args[1] : "";
             PrintNotes(p, "Notes " + name, name, modifier);
         }
-        
-        protected static void PrintNotes(Player p, string cmd, string name, string modifier) {
-            if (!Server.Config.LogNotes) {
+
+        protected static void PrintNotes(Player p, string cmd, string name, string modifier)
+        {
+            if (!Server.Config.LogNotes)
+            {
                 p.Message("The server does not have notes logging enabled."); return;
             }
-            
+
             List<string> allNotes = Server.Notes.FindAllExact(name);
             List<string> visibleNotes;
-            if (p.group.Permission >= Chat.OpchatPerms.MinRank) {
+            if (p.group.Permission >= Chat.OpchatPerms.MinRank)
+            {
                 visibleNotes = allNotes;
-            } else {
+            }
+            else
+            {
                 visibleNotes = new List<string>();
 
-                foreach (string note in allNotes) {
+                foreach (string note in allNotes)
+                {
                     string[] sections = note.SplitSpaces();
                     if (sections.Length <= 3) continue; // Malformed note, don't include
                     if (sections[1] == NoteAcronym.OpNoted.Acronym) continue; // Only Ops may see this note, don't include
@@ -61,57 +68,65 @@ namespace MCGalaxy.Modules.Moderation.Notes
             }
 
             string nick = p.FormatNick(name);
-            
-            if (visibleNotes.Count == 0) {
+
+            if (visibleNotes.Count == 0)
+            {
                 p.Message("{0} &Shas no notes.", nick); return;
-            } else {
+            }
+            else
+            {
                 p.Message("  Notes for {0}:", nick);
             }
-            
+
             // special case "/Notes" to show latest notes by default
-            if (modifier.Length == 0) {
-                Paginator.Output(p, visibleNotes, PrintNote, cmd, "Notes", 
+            if (modifier.Length == 0)
+            {
+                Paginator.Output(p, visibleNotes, PrintNote, cmd, "Notes",
                                  (1 + (visibleNotes.Count - 8)).ToString());
                 p.Message("To see all Notes, use &T/{0} all", cmd);
                 return;
             }
-            
+
             Paginator.Output(p, visibleNotes, PrintNote,
                              cmd, "Notes", modifier);
         }
-        
-        static void PrintNote(Player p, string line) {
+
+        static void PrintNote(Player p, string line)
+        {
             string[] args = line.SplitSpaces();
             if (args.Length <= 3) return;
-            
+
             string reason = args.Length > 4 ? args[4] : "";
             long duration = 0;
             if (args.Length > 5) long.TryParse(args[5], out duration);
-            
+
             p.Message("{0} by {1} &Son {2}{3}{4}",
                       NoteAcronym.GetAction(args[1]), p.FormatNick(args[2]), args[3],
-                      duration      == 0 ? "" : " for " + TimeSpan.FromTicks(duration).Shorten(true),
-                      reason.Length == 0 ? "" : " - "   + reason.Replace("%20", " "));
+                      duration == 0 ? "" : " for " + TimeSpan.FromTicks(duration).Shorten(true),
+                      reason.Length == 0 ? "" : " - " + reason.Replace("%20", " "));
         }
 
-        public override void Help(Player p) {
+        public override void Help(Player p)
+        {
             p.Message("&T/Notes [name] &H- views that player's notes.");
             p.Message("&HNotes are things such as bans, kicks, warns, mutes.");
         }
     }
-    
+
     sealed class CmdMyNotes : CmdNotes
     {
         public override string name { get { return "MyNotes"; } }
         public override string type { get { return CommandTypes.Other; } }
         public override bool SuperUseable { get { return false; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Guest; } }
-        
-        public override void Use(Player p, string message, CommandData data) {
+
+        public override void Use(Player p, string message, CommandData data)
+        {
             PrintNotes(p, "MyNotes", p.name, message);
         }
 
-        public override void Help(Player p) {
+        public override void Help(Player p)
+        {
             p.Message("&T/MyNotes &H- views your own notes.");
             p.Message("&HNotes are things such as bans, kicks, warns, mutes.");
         }

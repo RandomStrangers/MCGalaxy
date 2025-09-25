@@ -15,20 +15,23 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using BlockID = System.UInt16;
-using BlockRaw = System.Byte;
 
-namespace MCGalaxy.Blocks.Physics {
-    public static class ActivateablePhysics {
-        
+
+
+namespace MCGalaxy.Blocks.Physics
+{
+    public static class ActivateablePhysics
+    {
+
         /// <summary> Activates fireworks, rockets, and TNT in 1 block radius around (x, y, z) </summary>
-        public static void DoNeighbours(Level lvl, ushort x, ushort y, ushort z) {
+        public static void DoNeighbours(Level lvl, ushort x, ushort y, ushort z)
+        {
             int bHead = 0;
             for (int dy = -1; dy <= 1; dy++)
                 for (int dz = -1; dz <= 1; dz++)
                     for (int dx = -1; dx <= 1; dx++)
-            {
-                BlockID block = lvl.GetBlock((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz));
+                    {
+                        ushort block = lvl.GetBlock((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz));
                         int bTail;
                         if (block == Block.RocketStart)
                         {
@@ -68,52 +71,66 @@ namespace MCGalaxy.Blocks.Physics {
         }
 
         /// <summary> Activates doors, tdoors and toggles odoors at (x, y, z) </summary>
-        public static void DoDoors(Level lvl, ushort x, ushort y, ushort z, bool instant) {
-            BlockID block = lvl.GetBlock(x, y, z, out int index);
+        public static void DoDoors(Level lvl, ushort x, ushort y, ushort z, bool instant)
+        {
+            ushort block = lvl.GetBlock(x, y, z, out int index);
             if (index == -1) return;
-            
-            if (lvl.Props[block].IsDoor) {
+
+            if (lvl.Props[block].IsDoor)
+            {
                 PhysicsArgs args = GetDoorArgs(block, out ushort physForm);
                 if (!instant) lvl.AddUpdate(index, physForm, args);
                 else lvl.Blockchange(index, physForm, false, args);
-            } else if (lvl.Props[block].IsTDoor) {
+            }
+            else if (lvl.Props[block].IsTDoor)
+            {
                 PhysicsArgs args = GetTDoorArgs(block);
                 lvl.AddUpdate(index, Block.Air, args);
-            } else {
-                BlockID oDoor = lvl.Props[block].oDoorBlock;
+            }
+            else
+            {
+                ushort oDoor = lvl.Props[block].oDoorBlock;
                 if (oDoor == Block.Invalid) return;
                 lvl.AddUpdate(index, oDoor, true);
             }
         }
-        
-        
-        internal static PhysicsArgs GetDoorArgs(BlockID block, out BlockID physForm) {
+
+
+        internal static PhysicsArgs GetDoorArgs(ushort block, out ushort physForm)
+        {
             PhysicsArgs args = default;
             args.Type1 = PhysicsArgs.Custom; args.Value1 = 16 - 1;
-            args.Type2 = PhysicsArgs.Revert; args.Value2 = (BlockRaw)block;
+            args.Type2 = PhysicsArgs.Revert; args.Value2 = (byte)block;
             args.ExtBlock = (byte)(block >> Block.ExtendedShift);
-            
+
             physForm = Block.Door_Log_air; // air
-            if (block == Block.Door_Air || block == Block.Door_AirActivatable) {
+            if (block == Block.Door_Air || block == Block.Door_AirActivatable)
+            {
                 args.Value1 = 4 - 1;
-            } else if (block == Block.Door_Green) {
+            }
+            else if (block == Block.Door_Green)
+            {
                 physForm = Block.Door_Green_air; // red wool
-            } else if (block == Block.Door_TNT) {
+            }
+            else if (block == Block.Door_TNT)
+            {
                 args.Value1 = 4 - 1; physForm = Block.Door_TNT_air; // lava
             }
             return args;
         }
-        
-        internal static PhysicsArgs GetTDoorArgs(BlockID block) {
+
+        internal static PhysicsArgs GetTDoorArgs(ushort block)
+        {
             PhysicsArgs args = default;
             args.Type1 = PhysicsArgs.Custom; args.Value1 = 16;
-            args.Type2 = PhysicsArgs.Revert; args.Value2 = (BlockRaw)block;
+            args.Type2 = PhysicsArgs.Revert; args.Value2 = (byte)block;
             args.ExtBlock = (byte)(block >> Block.ExtendedShift);
             return args;
         }
-        
-        
-        internal static void CheckNeighbours(Level lvl, ushort x, ushort y, ushort z) {
+
+
+        internal static void CheckNeighbours(Level lvl, ushort x, ushort y, ushort z)
+        {
             CheckAt(lvl, (ushort)(x + 1), y, z);
             CheckAt(lvl, (ushort)(x - 1), y, z);
             CheckAt(lvl, x, y, (ushort)(z + 1));
@@ -121,14 +138,16 @@ namespace MCGalaxy.Blocks.Physics {
             CheckAt(lvl, x, (ushort)(y + 1), z);
             // NOTE: omission of y-1 to match original behaviour
         }
-        
-        // TODO: Stop checking block type and just always call lvl.AddCheck
-        internal static void CheckAt(Level lvl, ushort x, ushort y, ushort z) {
-            BlockID block = lvl.GetBlock(x, y, z, out int index);
 
-            switch (block) {
-                    //case Block.water:
-                    //case Block.lava:
+        // TODO: Stop checking block type and just always call lvl.AddCheck
+        internal static void CheckAt(Level lvl, ushort x, ushort y, ushort z)
+        {
+            ushort block = lvl.GetBlock(x, y, z, out int index);
+
+            switch (block)
+            {
+                //case Block.water:
+                //case Block.lava:
                 case Block.Sapling:
                 case Block.Sand:
                 case Block.Gravel:
@@ -146,7 +165,8 @@ namespace MCGalaxy.Blocks.Physics {
                     break;
                 default:
                     block = Block.Convert(block);
-                    if (block == Block.Water || block == Block.Lava || (block >= Block.Red && block <= Block.White)) {
+                    if (block == Block.Water || block == Block.Lava || (block >= Block.Red && block <= Block.White))
+                    {
                         lvl.AddCheck(index);
                     }
                     break;

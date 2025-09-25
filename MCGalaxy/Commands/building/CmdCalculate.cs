@@ -17,22 +17,24 @@
  */
 using System;
 
-namespace MCGalaxy.Commands.Building 
+namespace MCGalaxy.Commands.Building
 {
-    public sealed class CmdCalculate : Command2 
+    public sealed class CmdCalculate : Command2
     {
         public override string name { get { return "Calculate"; } }
         public override string shortcut { get { return "Calc"; } }
         public override string type { get { return CommandTypes.Building; } }
-        
-        public override void Use(Player p, string message, CommandData data) {
+
+        public override void Use(Player p, string message, CommandData data)
+        {
             string[] args = message.SplitSpaces();
             if (args.Length < 2) { Help(p); return; }
 
             double result = 0;
             string r1 = args[0], op = args[1], r2 = null;
 
-            if (!NumberUtils.TryParseDouble(r1, out double n1)) {
+            if (!NumberUtils.TryParseDouble(r1, out double n1))
+            {
                 p.Message("&W\"{0}\" is not a valid number.", r1); return;
             }
 
@@ -78,8 +80,9 @@ namespace MCGalaxy.Commands.Building
 
             p.Message(format, r1, op, r2, result);
         }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/Calculate [num1] [operation] [num2]");
             p.Message("&H[operation] can be +, -, /, or *");
             p.Message("&T/Calculate [num1] [operation]");

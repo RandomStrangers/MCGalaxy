@@ -16,29 +16,38 @@
     permissions and limitations under the Licenses.
  */
 
-namespace MCGalaxy.Commands.Maintenance 
+namespace MCGalaxy.Commands.Maintenance
 {
-    public sealed class CmdUpdate : Command2 
+    public sealed class CmdUpdate : Command2
     {
         public override string name { get { return "Update"; } }
         public override string type { get { return CommandTypes.Moderation; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Owner; } }
 
-        public override void Use(Player p, string message, CommandData data) {
-            if (message.CaselessEq("check")) {
+        public override void Use(Player p, string message, CommandData data)
+        {
+            if (message.CaselessEq("check"))
+            {
                 p.Message("Checking for updates..");
                 bool needsUpdating = Updater.NeedsUpdating();
                 p.Message("Server {0}", needsUpdating ? "&cneeds updating" : "&ais up to date");
-            } else if (message.CaselessEq("latest")) {
+            }
+            else if (message.CaselessEq("latest"))
+            {
                 Updater.PerformUpdate(false);
-            }  else if (message.Length == 0) {
+            }
+            else if (message.Length == 0)
+            {
                 Updater.PerformUpdate(true);
-            } else {
+            }
+            else
+            {
                 Help(p);
             }
         }
 
-        public override void Help(Player p) {
+        public override void Help(Player p)
+        {
             p.Message("&T/Update check");
             p.Message("&HChecks whether the server needs updating");
             p.Message("&T/Update latest");

@@ -15,49 +15,53 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.SQL;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using MCGalaxy.SQL;
 
 namespace MCGalaxy
 {
     public sealed partial class Server
     {
         static readonly ColumnDesc[] playersTable = new ColumnDesc[] {
-            new ColumnDesc("ID", ColumnType.Integer, priKey: true, autoInc: true, notNull: true),
-            new ColumnDesc("Name", ColumnType.VarChar, 17),
-            new ColumnDesc("IP", ColumnType.Char, 15),
-            new ColumnDesc("FirstLogin", ColumnType.DateTime),
-            new ColumnDesc("LastLogin", ColumnType.DateTime),
-            new ColumnDesc("totalLogin", ColumnType.Int24),
-            new ColumnDesc("Title", ColumnType.Char, 20),
-            new ColumnDesc("TotalDeaths", ColumnType.Int16),
-            new ColumnDesc("Money", ColumnType.UInt24),
-            new ColumnDesc("totalBlocks", ColumnType.Int64),
-            new ColumnDesc("totalCuboided", ColumnType.Int64),
-            new ColumnDesc("totalKicked", ColumnType.Int24),
-            new ColumnDesc("TimeSpent", ColumnType.VarChar, 20),
-            new ColumnDesc("color", ColumnType.VarChar, 6),
-            new ColumnDesc("title_color", ColumnType.VarChar, 6),
-            new ColumnDesc("Messages", ColumnType.UInt24),
+            new("ID", ColumnType.Integer, priKey: true, autoInc: true, notNull: true),
+            new("Name", ColumnType.VarChar, 17),
+            new("IP", ColumnType.Char, 15),
+            new("FirstLogin", ColumnType.DateTime),
+            new("LastLogin", ColumnType.DateTime),
+            new("totalLogin", ColumnType.Int24),
+            new("Title", ColumnType.Char, 20),
+            new("TotalDeaths", ColumnType.Int16),
+            new("Money", ColumnType.UInt24),
+            new("totalBlocks", ColumnType.Int64),
+            new("totalCuboided", ColumnType.Int64),
+            new("totalKicked", ColumnType.Int24),
+            new("TimeSpent", ColumnType.VarChar, 20),
+            new("color", ColumnType.VarChar, 6),
+            new("title_color", ColumnType.VarChar, 6),
+            new("Messages", ColumnType.UInt24),
         };
-        
+
         static readonly ColumnDesc[] opstatsTable = new ColumnDesc[] {
-            new ColumnDesc("ID", ColumnType.Integer, priKey: true, autoInc: true, notNull: true),
-            new ColumnDesc("Time", ColumnType.DateTime),
-            new ColumnDesc("Name", ColumnType.VarChar, 17),
-            new ColumnDesc("Cmd", ColumnType.VarChar, 40),
-            new ColumnDesc("Cmdmsg", ColumnType.VarChar, 40),
+            new("ID", ColumnType.Integer, priKey: true, autoInc: true, notNull: true),
+            new("Time", ColumnType.DateTime),
+            new("Name", ColumnType.VarChar, 17),
+            new("Cmd", ColumnType.VarChar, 40),
+            new("Cmdmsg", ColumnType.VarChar, 40),
         };
-                
-        static void InitDatabase() {
+
+        static void InitDatabase()
+        {
             if (!Directory.Exists("blockdb")) Directory.CreateDirectory("blockdb");
 
             Logger.Log(LogType.SystemActivity, "Using {0} for database backend", Database.Backend.EngineName);
-            try {
+            try
+            {
                 Database.Backend.CreateDatabase();
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Logger.LogError(e);
                 Logger.Log(LogType.Warning, "MySQL settings have not been set! Please Setup using the properties window.");
                 return;
@@ -65,10 +69,11 @@ namespace MCGalaxy
 
             Database.CreateTable("Opstats", opstatsTable);
             Database.CreateTable("Players", playersTable);
-            
+
             //since 5.5.11 we are cleaning up the table Playercmds
             //if Playercmds exists copy-filter to Opstats and remove Playercmds
-            if (Database.TableExists("Playercmds")) {
+            if (Database.TableExists("Playercmds"))
+            {
                 const string sql = "INSERT INTO Opstats (Time, Name, Cmd, Cmdmsg) SELECT Time, Name, Cmd, Cmdmsg FROM Playercmds WHERE {0};";
                 foreach (string cmd in Opstats)
                     Database.Execute(string.Format(sql, "cmd = '" + cmd + "'"));
@@ -78,20 +83,25 @@ namespace MCGalaxy
 
             List<string> columns = Database.Backend.ColumnNames("Players");
             if (columns.Count == 0) return;
-            
-            if (!columns.CaselessContains("Color")) {
+
+            if (!columns.CaselessContains("Color"))
+            {
                 Database.AddColumn("Players", new ColumnDesc("color", ColumnType.VarChar, 6), "totalKicked");
             }
-            if (!columns.CaselessContains("Title_Color")) {
+            if (!columns.CaselessContains("Title_Color"))
+            {
                 Database.AddColumn("Players", new ColumnDesc("title_color", ColumnType.VarChar, 6), "color");
             }
-            if (!columns.CaselessContains("TimeSpent")) {
+            if (!columns.CaselessContains("TimeSpent"))
+            {
                 Database.AddColumn("Players", new ColumnDesc("TimeSpent", ColumnType.VarChar, 20), "totalKicked");
             }
-            if (!columns.CaselessContains("TotalCuboided")) {
+            if (!columns.CaselessContains("TotalCuboided"))
+            {
                 Database.AddColumn("Players", new ColumnDesc("totalCuboided", ColumnType.Int64), "totalBlocks");
             }
-            if (!columns.CaselessContains("Messages")) {
+            if (!columns.CaselessContains("Messages"))
+            {
                 Database.AddColumn("Players", new ColumnDesc("Messages", ColumnType.UInt24), "title_color");
             }
         }

@@ -41,7 +41,7 @@ namespace MCGalaxy.Gui.Popups
             int row = index / btnsPerCol, col = index % btnsPerCol;
             index++;
 
-            Button btn = new Button
+            Button btn = new()
             {
                 Location = new Point(9 + row * btnWidth, 7 + col * btnHeight),
                 Size = new Size(btnWidth, btnHeight),

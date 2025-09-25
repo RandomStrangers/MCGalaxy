@@ -15,10 +15,10 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.Games;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using MCGalaxy.Games;
 
 namespace MCGalaxy.Gui
 {
@@ -174,7 +174,7 @@ namespace MCGalaxy.Gui
             lbNotUsed.Items.Clear();
 
             // relatively expensive, so avoid if possible
-            if (allMaps == null) allMaps = LevelInfo.AllMapNames();
+            allMaps ??= LevelInfo.AllMapNames();
             List<string> maps = game.GetConfig().Maps;
             foreach (string map in allMaps)
             {

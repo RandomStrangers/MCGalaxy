@@ -1,10 +1,10 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using System;
 using MCGalaxy;
-using MCGalaxy.Generator.Foliage;
 using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Drawing.Ops;
+using MCGalaxy.Generator.Foliage;
 using MCGalaxy.Maths;
+using System;
 using System.Collections.Generic;
 namespace NotAwesomeSurvival
 {
@@ -25,9 +25,9 @@ namespace NotAwesomeSurvival
                 output(x, (ushort)(y + dy), z, Block.FromRaw(242));
             }
             for (int dy = -size; dy <= size; ++dy)
-            { 
+            {
                 for (int dz = -size; dz <= size; ++dz)
-                { 
+                {
                     for (int dx = -size; dx <= size; ++dx)
                     {
                         int dist = (int)Math.Sqrt(dx * dx + dy * dy + dz * dz);
@@ -112,7 +112,7 @@ namespace MCGalaxy.Generator.Foliage
         public const int maxExtent = 5,
             maxBranchHeight = 8,
             maxCluster = 2;
-        public List<Vec3S32> branch = new List<Vec3S32>();
+        public List<Vec3S32> branch = new();
         public override long EstimateBlocksAffected()
         {
             return height * (long)height * height;
@@ -131,8 +131,8 @@ namespace MCGalaxy.Generator.Foliage
         }
         public override void Generate(ushort x, ushort y, ushort z, TreeOutput output)
         {
-            Vec3S32 p = new Vec3S32(x, y, z),
-                p2 = new Vec3S32(x, y + height, z);
+            Vec3S32 p = new(x, y, z),
+                p2 = new(x, y + height, z);
             Line(p, p2, output);
             for (int i = 0; i < branchAmount; i++)
             {
@@ -144,20 +144,21 @@ namespace MCGalaxy.Generator.Foliage
             int num = rnd.Next(-5, 5),
                 num2 = rnd.Next(-5, 5),
                 num3 = rnd.Next(1, 3),
-                num4 = rnd.Next(branchBaseHeight, height), 
+                num4 = rnd.Next(branchBaseHeight, height),
                 num5 = num4 + rnd.Next(3, 10);
-            Vec3S32 p = new Vec3S32(x, y + num4, z),
-                p2 = new Vec3S32(x + num, y + num5, z + num2);
+            Vec3S32 p = new(x, y + num4, z),
+                p2 = new(x + num, y + num5, z + num2);
             Line(p, p2, output);
             int num6 = num3;
             Vec3S32[] marks = new Vec3S32[] {
-                new Vec3S32(x + num - num6, y + num5 - num6, z + num2 - num6),
-                new Vec3S32(x + num + num6, y + num5 + num6, z + num2 + num6)
+                new(x + num - num6, y + num5 - num6, z + num2 - num6),
+                new(x + num + num6, y + num5 + num6, z + num2 + num6)
             };
             DrawOp drawOp = new EllipsoidDrawOp();
             Brush brush = new SolidBrush(19);
             drawOp.SetMarks(marks);
-            drawOp.Perform(marks, brush, delegate (DrawOpBlock b) {
+            drawOp.Perform(marks, brush, delegate (DrawOpBlock b)
+            {
                 output(b.X, b.Y, b.Z, (byte)b.Block);
             });
         }
@@ -193,7 +194,7 @@ namespace MCGalaxy.Drawing.Ops
         {
             Vec3U16 vec3U = Clamp(marks[0]),
                 vec3U2 = Clamp(marks[1]);
-            List<Vec3S32> list = new List<Vec3S32>();
+            List<Vec3S32> list = new();
             DrawLine(vec3U.X, vec3U.Y, vec3U.Z, MaxLength, vec3U2.X, vec3U2.Y, vec3U2.Z, list);
             if (WallsMode)
             {
@@ -235,7 +236,7 @@ namespace MCGalaxy.Drawing.Ops
         }
         public static void DrawLine(int x1, int y1, int z1, int maxLen, int x2, int y2, int z2, List<Vec3S32> buffer)
         {
-            int[] array = new int[] 
+            int[] array = new int[]
             {
                 x1,
                 y1,

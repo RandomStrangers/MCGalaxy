@@ -1,11 +1,11 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
+using LibNoise;
+using MCGalaxy;
+using MCGalaxy.Generator;
+using MCGalaxy.Tasks;
 using System;
 using System.Drawing;
 using System.IO;
-using LibNoise;
-using MCGalaxy;
-using MCGalaxy.Tasks;
-using MCGalaxy.Generator;
 namespace NotAwesomeSurvival
 {
     public static class NasGen
@@ -31,11 +31,11 @@ namespace NotAwesomeSurvival
             diamondFogColor,
             emeraldFogColor;
         public static Scheduler genScheduler;
-        public static ushort[] stoneTypes = 
-        { 
-            Block.Sandstone, 
-            Block.Stone, 
-            48 
+        public static ushort[] stoneTypes =
+        {
+            Block.Sandstone,
+            Block.Stone,
+            48
         };
         public static void Log(string format, params object[] args)
         {
@@ -43,10 +43,7 @@ namespace NotAwesomeSurvival
         }
         public static void Setup()
         {
-            if (genScheduler == null)
-            {
-                genScheduler = new Scheduler("MapGenScheduler");
-            }
+            genScheduler ??= new Scheduler("MapGenScheduler");
             MapGen.Register("NASGen", GenType.Advanced, Gen, "hello?");
             coalFogColor = ColorTranslator.FromHtml("#BCC9E8");
             ironFogColor = ColorTranslator.FromHtml("#A1A3A8");
@@ -80,23 +77,23 @@ namespace NotAwesomeSurvival
         public static bool GetSeedAndChunkOffset(string mapName, ref string seed, ref int chunkOffsetX, ref int chunkOffsetZ)
         {
             string[] bits = mapName.Split('_');
-            if (bits.Length <= 1) 
-            { 
-                return false; 
+            if (bits.Length <= 1)
+            {
+                return false;
             }
             seed = bits[0];
             string[] chunks = bits[1].Split(',');
-            if (chunks.Length <= 1) 
-            { 
-                return false; 
-            }
-            if (!int.TryParse(chunks[0], out chunkOffsetX)) 
+            if (chunks.Length <= 1)
             {
-                return false; 
+                return false;
             }
-            if (!int.TryParse(chunks[1], out chunkOffsetZ)) 
-            { 
-                return false; 
+            if (!int.TryParse(chunks[0], out chunkOffsetX))
+            {
+                return false;
+            }
+            if (!int.TryParse(chunks[1], out chunkOffsetZ))
+            {
+                return false;
             }
             return true;
         }
@@ -120,13 +117,13 @@ namespace NotAwesomeSurvival
             offsetZ = chunkOffsetZ * mapWideness;
             offsetX -= chunkOffsetX;
             offsetZ -= chunkOffsetZ;
-            Perlin adjNoise = new Perlin
+            Perlin adjNoise = new()
             {
                 Seed = MakeInt(seed)
             };
-            Random r = new Random(adjNoise.Seed);
+            Random r = new(adjNoise.Seed);
             DateTime dateStart = DateTime.UtcNow;
-            GenInstance instance = new GenInstance
+            GenInstance instance = new()
             {
                 p = p,
                 lvl = lvl,
@@ -205,9 +202,9 @@ namespace NotAwesomeSurvival
                     lvl.Config.CloudsHeight = 300;
                 }
                 lvl.SaveSettings();
-                if (biome < 0) 
-                { 
-                    return; 
+                if (biome < 0)
+                {
+                    return;
                 }
                 p.Message("Calculating temperatures");
                 temps = new float[lvl.Width, lvl.Length];
@@ -217,7 +214,7 @@ namespace NotAwesomeSurvival
                     {
                         //divide by more for bigger scale
                         double scale = 150,
-                            xVal = (x + offsetX) / scale, 
+                            xVal = (x + offsetX) / scale,
                             zVal = (z + offsetZ) / scale;
                         const double adj = 1;
                         xVal += adj;
@@ -242,7 +239,7 @@ namespace NotAwesomeSurvival
                 for (double y = 0; y < height; y++)
                 {
                     for (double z = 0; z < length; ++z)
-                    { 
+                    {
                         for (double x = 0; x < width; ++x)
                         {
                             if (y == 0 || (y == height - 1 && biome < 0))
@@ -260,13 +257,13 @@ namespace NotAwesomeSurvival
                             {
                                 threshDiv = temps[(int)x, (int)z];
                                 threshDiv *= 1.5;
-                                if (threshDiv <= 0) 
+                                if (threshDiv <= 0)
                                 {
-                                    threshDiv = 0; 
+                                    threshDiv = 0;
                                 }
-                                if (threshDiv > 1) 
+                                if (threshDiv > 1)
                                 {
-                                    threshDiv = 1; 
+                                    threshDiv = 1;
                                 }
                             }
                             double averageLandHeightAboveSeaLevel = biome == -1 ? 10 : 1,/* - (6*tallRandom);*/
@@ -288,14 +285,14 @@ namespace NotAwesomeSurvival
                                     {
                                         lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 48);
                                     }
-                                    else 
-                                    { 
+                                    else
+                                    {
                                         lvl.SetTile((ushort)x, (ushort)y, (ushort)z, Block.Stone);
                                     }
                                     continue;
                                 }
                             }
-                            if (threshold > 1.5) 
+                            if (threshold > 1.5)
                             {
                                 continue;
                             }
@@ -312,15 +309,15 @@ namespace NotAwesomeSurvival
                             double value = adjNoise.GetValue(xVal, yVal, zVal);
                             if (value > threshold || (biome == 6 && y < oceanHeight - 10))
                             {
-                                if (biome == 1) 
-                                { 
-                                    lvl.SetTile((ushort)x, (ushort)y, (ushort)z, Block.Sandstone); 
+                                if (biome == 1)
+                                {
+                                    lvl.SetTile((ushort)x, (ushort)y, (ushort)z, Block.Sandstone);
                                 }
                                 else
                                 {
-                                    if (biome < 0) 
-                                    { 
-                                        lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 48); 
+                                    if (biome < 0)
+                                    {
+                                        lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 48);
                                     }
                                     else
                                     {
@@ -330,15 +327,15 @@ namespace NotAwesomeSurvival
                             }
                             else if (y < oceanHeight)
                             {
-                                if (biome == 1) 
-                                { 
-                                    lvl.SetTile((ushort)x, (ushort)y, (ushort)z, Block.Sand); 
+                                if (biome == 1)
+                                {
+                                    lvl.SetTile((ushort)x, (ushort)y, (ushort)z, Block.Sand);
                                 }
                                 else
                                 {
-                                    if (y == (oceanHeight - 1) && biome == 2) 
-                                    { 
-                                        lvl.SetTile((ushort)x, (ushort)y, (ushort)z, Block.Ice); 
+                                    if (y == (oceanHeight - 1) && biome == 2)
+                                    {
+                                        lvl.SetTile((ushort)x, (ushort)y, (ushort)z, Block.Ice);
                                     }
                                     else
                                     {
@@ -378,7 +375,7 @@ namespace NotAwesomeSurvival
                     height = lvl.Height
                 };
                 for (ushort z = 0; z < lvl.Length; ++z)
-                { 
+                {
                     for (ushort x = 0; x < lvl.Width; ++x)
                     {
                         //         skip bedrock
@@ -407,17 +404,17 @@ namespace NotAwesomeSurvival
                 //counter = 0;
                 dateStartLayer = DateTime.UtcNow;
                 for (double y = 0; y < height - 1; y++)
-                { 
+                {
                     for (double z = 0; z < length; ++z)
-                    { 
+                    {
                         for (double x = 0; x < width; ++x)
                         {
-                            if (biome == 1) 
+                            if (biome == 1)
                             {
-                                soil = Block.Sand; 
+                                soil = Block.Sand;
                             }
-                            else 
-                            { 
+                            else
+                            {
                                 soil = Block.Dirt;
                             }
                             if (NasBlock.IsPartOfSet(stoneTypes, lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z)) != -1 && (
@@ -436,9 +433,9 @@ namespace NotAwesomeSurvival
                                 int startY = (int)y;
                                 for (int yCol = startY; yCol > startY - 2 - r.Next(0, 2); yCol--)
                                 {
-                                    if (yCol < 0) 
-                                    { 
-                                        break; 
+                                    if (yCol < 0)
+                                    {
+                                        break;
                                     }
                                     if (lvl.FastGetBlock((ushort)x, (ushort)yCol, (ushort)z) == Block.Stone || lvl.FastGetBlock((ushort)x, (ushort)yCol, (ushort)z) == Block.Sandstone)
                                     {
@@ -481,9 +478,9 @@ namespace NotAwesomeSurvival
                 int neighborX = x + offX,
                     neighborZ = z + offZ;
                 if (neighborX >= lvl.Width || neighborX < 0 ||
-                    neighborZ >= lvl.Length || neighborZ < 0) 
-                { 
-                    return false; 
+                    neighborZ >= lvl.Length || neighborZ < 0)
+                {
+                    return false;
                 }
                 for (int i = 0; i < 4; i++)
                 {
@@ -515,15 +512,15 @@ namespace NotAwesomeSurvival
                             {
                                 threshold += 0.05 * (y - caveHeight);
                             }
-                            if (threshold > 1.5) 
-                            { 
-                                continue; 
+                            if (threshold > 1.5)
+                            {
+                                continue;
                             }
                             bool tryCave = false;
                             ushort thisBlock = lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z);
-                            if (thisBlock == Block.Stone || thisBlock == Block.Dirt || thisBlock == Block.Sandstone || thisBlock == 48) 
-                            { 
-                                tryCave = true; 
+                            if (thisBlock == Block.Stone || thisBlock == Block.Dirt || thisBlock == Block.Sandstone || thisBlock == 48)
+                            {
+                                tryCave = true;
                             }
                             if (!tryCave)
                             {
@@ -576,7 +573,7 @@ namespace NotAwesomeSurvival
                 for (double y = 0; y < height; y++)
                 {
                     for (double z = 0; z < length; ++z)
-                    { 
+                    {
                         for (double x = 0; x < width; ++x)
                         {
                             double threshold = 0.7;
@@ -867,9 +864,9 @@ namespace NotAwesomeSurvival
                         for (int x = 0; x < lvl.Width; ++x)
                         {
                             ushort curBlock = lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z);
-                            if (NasBlock.IsPartOfSet(stoneTypes, curBlock) == -1) 
-                            { 
-                                continue; 
+                            if (NasBlock.IsPartOfSet(stoneTypes, curBlock) == -1)
+                            {
+                                continue;
                             }
                             if (biome >= 0)
                             {
@@ -879,9 +876,9 @@ namespace NotAwesomeSurvival
                                 TryGenEmerald(x, y, z, emeraldDepth, emeraldChance, 649, 1);
                                 TryGenOre(x, y, z, coalDepth, coalChance, 627, r.Next(3, 4), 0.5);
                             }
-                            if (biome == 1) 
-                            { 
-                                TryGenOre(x, y, z, coalDepth, quartzChance, 586, 3); 
+                            if (biome == 1)
+                            {
+                                TryGenOre(x, y, z, coalDepth, quartzChance, 586, 3);
                             }
                             if (biome < 0)
                             {
@@ -912,19 +909,19 @@ namespace NotAwesomeSurvival
             {
                 double chance = (double)(oreChance / 100);
                 int height = nl.heightmap[x, z];
-                if (height < oceanHeight) 
-                { 
-                    height = oceanHeight; 
+                if (height < oceanHeight)
+                {
+                    height = oceanHeight;
                 }
                 int hmbyhttdfttrh = lvl.Height - height;
                 hmbyhttdfttrh += oreDepth;
                 if (y <= lvl.Height - hmbyhttdfttrh && r.NextDouble() <= chance)
                 {
-                    if (r.NextDouble() > 0.5) 
+                    if (r.NextDouble() > 0.5)
                     {
-                        if (BlockExposed(x, y, z)) 
-                        { 
-                            return false; 
+                        if (BlockExposed(x, y, z))
+                        {
+                            return false;
                         }
                     }
                     GenerateOreCluster(x, y, z, oreID, size, vsf);
@@ -936,10 +933,10 @@ namespace NotAwesomeSurvival
             {
                 double chance = (double)(oreChance / 100);
                 int height = nl.heightmap[x, z];
-                Random rng = new Random();
+                Random rng = new();
                 int genY = rng.Next(0, 20);
-                if (height < oceanHeight) 
-                { 
+                if (height < oceanHeight)
+                {
                     height = oceanHeight;
                 }
                 int hmbyhttdfttrh = lvl.Height - height;
@@ -948,9 +945,9 @@ namespace NotAwesomeSurvival
                 {
                     if (r.NextDouble() > 0.5)
                     {
-                        if (BlockExposed(x, y, z)) 
-                        { 
-                            return false; 
+                        if (BlockExposed(x, y, z))
+                        {
+                            return false;
                         }
                     }
                     GenerateOreCluster(x, genY, z, oreID, size, vsf);
@@ -962,10 +959,10 @@ namespace NotAwesomeSurvival
             {
                 double chance = (double)(oreChance / 100);
                 int height = nl.heightmap[x, z];
-                Random rng = new Random();
+                Random rng = new();
                 int genY = rng.Next(0, 15);
-                if (height < oceanHeight) 
-                { 
+                if (height < oceanHeight)
+                {
                     height = oceanHeight;
                 }
                 int hmbyhttdfttrh = lvl.Height - height;
@@ -974,9 +971,9 @@ namespace NotAwesomeSurvival
                 {
                     if (r.NextDouble() > 0.5)
                     {
-                        if (BlockExposed(x, y, z)) 
-                        { 
-                            return false; 
+                        if (BlockExposed(x, y, z))
+                        {
+                            return false;
                         }
                     }
                     GenerateOreCluster(x, genY, z, oreID, size, vsf);
@@ -987,47 +984,47 @@ namespace NotAwesomeSurvival
             public void GenerateOreCluster(int x, int y, int z, ushort oreID, int iteration, double chance = 0.4)
             {
                 if (x < 0 || y < 0 || z < 0 || x > mapWideness - 1 || z > mapWideness - 1 || y > mapTallness - 1)
-                { 
-                    return; 
+                {
+                    return;
                 }
                 ushort hereBlock = lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z);
                 if (hereBlock == Block.Stone || hereBlock == Block.Sandstone || hereBlock == 48)
                 {
                     lvl.SetBlock((ushort)x, (ushort)y, (ushort)z, Block.FromRaw(oreID));
                 }
-                else 
-                { 
-                    return; 
+                else
+                {
+                    return;
                 }
                 iteration--;
-                if (iteration == 0) 
+                if (iteration == 0)
                 {
-                    return; 
+                    return;
                 }
-                Random rng = new Random();
-                if (rng.NextDouble() <= chance) 
-                { 
-                    GenerateOreCluster(x + 1, y, z, oreID, iteration); 
+                Random rng = new();
+                if (rng.NextDouble() <= chance)
+                {
+                    GenerateOreCluster(x + 1, y, z, oreID, iteration);
                 }
-                if (rng.NextDouble() <= chance) 
-                { 
-                    GenerateOreCluster(x - 1, y, z, oreID, iteration); 
+                if (rng.NextDouble() <= chance)
+                {
+                    GenerateOreCluster(x - 1, y, z, oreID, iteration);
                 }
-                if (rng.NextDouble() <= chance) 
-                { 
-                    GenerateOreCluster(x, y + 1, z, oreID, iteration); 
+                if (rng.NextDouble() <= chance)
+                {
+                    GenerateOreCluster(x, y + 1, z, oreID, iteration);
                 }
-                if (rng.NextDouble() <= chance) 
-                { 
-                    GenerateOreCluster(x, y - 1, z, oreID, iteration); 
+                if (rng.NextDouble() <= chance)
+                {
+                    GenerateOreCluster(x, y - 1, z, oreID, iteration);
                 }
-                if (rng.NextDouble() <= chance) 
-                { 
-                    GenerateOreCluster(x, y, z + 1, oreID, iteration); 
+                if (rng.NextDouble() <= chance)
+                {
+                    GenerateOreCluster(x, y, z + 1, oreID, iteration);
                 }
-                if (rng.NextDouble() <= chance) 
-                { 
-                    GenerateOreCluster(x, y, z - 1, oreID, iteration); 
+                if (rng.NextDouble() <= chance)
+                {
+                    GenerateOreCluster(x, y, z - 1, oreID, iteration);
                 }
             }
             public void GenWaterSources()
@@ -1059,7 +1056,7 @@ namespace NotAwesomeSurvival
                 for (int y = 0; y < lvl.Height - 1; y++)
                 {
                     for (int z = 0; z < lvl.Length; ++z)
-                    { 
+                    {
                         for (int x = 0; x < lvl.Width; ++x)
                         {
                             ushort curBlock = lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z);
@@ -1070,16 +1067,16 @@ namespace NotAwesomeSurvival
                                     nl.blocksThatMustBeDisturbed.Add(new NasLevel.BlockLocation(x, y, z));
                                 }
                             }
-                            if (NasBlock.IsPartOfSet(stoneTypes, curBlock) == -1) 
-                            { 
-                                continue; 
+                            if (NasBlock.IsPartOfSet(stoneTypes, curBlock) == -1)
+                            {
+                                continue;
                             }
                             if (r.NextDouble() < 0.00025)
                             {
                                 if (BlockExposed(x, y, z))
                                 {
-                                    if (NasBlock.IsPartOfSet(stoneTypes, lvl.FastGetBlock((ushort)x, (ushort)(y + 1), (ushort)z)) == -1) 
-                                    { 
+                                    if (NasBlock.IsPartOfSet(stoneTypes, lvl.FastGetBlock((ushort)x, (ushort)(y + 1), (ushort)z)) == -1)
+                                    {
                                         continue;
                                     }
                                     lvl.SetTile((ushort)x, (ushort)y, (ushort)z, (byte)(biome < 0 ? 10 : 9));
@@ -1092,49 +1089,49 @@ namespace NotAwesomeSurvival
             }
             public bool BlockExposed(int x, int y, int z)
             {
-                if (lvl.IsAirAt((ushort)(x + 1), (ushort)y, (ushort)z)) 
-                { 
-                    return true; 
-                }
-                if (lvl.IsAirAt((ushort)(x - 1), (ushort)y, (ushort)z)) 
+                if (lvl.IsAirAt((ushort)(x + 1), (ushort)y, (ushort)z))
                 {
-                    return true; 
+                    return true;
                 }
-                if (lvl.IsAirAt((ushort)x, (ushort)(y + 1), (ushort)z)) 
+                if (lvl.IsAirAt((ushort)(x - 1), (ushort)y, (ushort)z))
                 {
-                    return true; 
+                    return true;
                 }
-                if (lvl.IsAirAt((ushort)x, (ushort)(y - 1), (ushort)z)) 
-                { 
-                    return true; 
+                if (lvl.IsAirAt((ushort)x, (ushort)(y + 1), (ushort)z))
+                {
+                    return true;
                 }
-                if (lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z + 1))) 
-                { 
-                    return true; 
+                if (lvl.IsAirAt((ushort)x, (ushort)(y - 1), (ushort)z))
+                {
+                    return true;
                 }
-                if (lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1))) 
-                { 
-                    return true; 
+                if (lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z + 1)))
+                {
+                    return true;
+                }
+                if (lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1)))
+                {
+                    return true;
                 }
                 return false;
             }
             public bool BlockExposed2(int x, int y, int z)
             {
-                if (lvl.IsAirAt((ushort)(x + 1), (ushort)y, (ushort)z)) 
-                { 
-                    return true; 
+                if (lvl.IsAirAt((ushort)(x + 1), (ushort)y, (ushort)z))
+                {
+                    return true;
                 }
-                if (lvl.IsAirAt((ushort)(x - 1), (ushort)y, (ushort)z)) 
-                { 
-                    return true; 
+                if (lvl.IsAirAt((ushort)(x - 1), (ushort)y, (ushort)z))
+                {
+                    return true;
                 }
-                if (lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z + 1))) 
-                { 
-                    return true; 
+                if (lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z + 1)))
+                {
+                    return true;
                 }
-                if (lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1))) 
-                { 
-                    return true; 
+                if (lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1)))
+                {
+                    return true;
                 }
                 return false;
             }
@@ -1153,7 +1150,7 @@ namespace NotAwesomeSurvival
             }
             public static void GenerateDungeon(Player p, int x, int y, int z, Level level, NasLevel nsl)
             {
-                Random rng = new Random(MakeInt(level.name));
+                Random rng = new(MakeInt(level.name));
                 if (p != null)
                 {
                     GenerateDungeon(rng, x + 2, y, z + 2, level, nsl, true, p);
@@ -1295,7 +1292,7 @@ namespace NotAwesomeSurvival
                         }
                     }
                     level.SetBlock((ushort)(x + 4), (ushort)(y + 3), (ushort)(z + 4), Block.FromRaw(171));
-                    NasBlock.Entity bEntity = new NasBlock.Entity
+                    NasBlock.Entity bEntity = new()
                     {
                         blockText = "&mCongratulations. You touched grass."
                     };
@@ -1312,7 +1309,7 @@ namespace NotAwesomeSurvival
                 int genX = rng.Next(10, mapWideness - 10),
                     genZ = rng.Next(10, mapWideness - 10),
                     genY = rng.Next(0, 15);
-                GenerateDungeon(rng, genX , genY, genZ, level, nsl, false, Player.Console);
+                GenerateDungeon(rng, genX, genY, genZ, level, nsl, false, Player.Console);
             }
             public static void GenLoot(int x, int y, int z, Level level, Random rng, NasLevel nsl, bool forced)
             {
@@ -1321,7 +1318,7 @@ namespace NotAwesomeSurvival
             public static void GenLoot(int x, int y, int z, Level level, Random rng, NasLevel nsl, bool forced, Player p)
             {
                 level.SetBlock((ushort)x, (ushort)y, (ushort)z, Block.FromRaw(647));
-                NasBlock.Entity bEntity = new NasBlock.Entity
+                NasBlock.Entity bEntity = new()
                 {
                     drop = new Drop(41, rng.Next(1, 5)) //gold
                 };

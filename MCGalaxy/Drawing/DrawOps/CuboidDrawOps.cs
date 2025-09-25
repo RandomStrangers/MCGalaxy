@@ -15,19 +15,19 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Maths;
-using BlockID = System.UInt16;
+using System;
+
 
 namespace MCGalaxy.Drawing.Ops
 {
     public class HollowDrawOp : CuboidDrawOp
     {
         public override string Name { get { return "Hollow"; } }
-        public BlockID Skip;
+        public ushort Skip;
 
-        static bool CanHollow(BlockID block, bool andAir = false)
+        static bool CanHollow(ushort block, bool andAir = false)
         {
             block = Block.Convert(block);
             if (andAir && block == Block.Air) return true;
@@ -43,7 +43,7 @@ namespace MCGalaxy.Drawing.Ops
                     for (ushort x = p1.X; x <= p2.X; x++)
                     {
                         bool hollow = true;
-                        BlockID block = Level.GetBlock(x, y, z);
+                        ushort block = Level.GetBlock(x, y, z);
                         if (!CanHollow(block, true) && block != Skip)
                         {
                             CheckTile(x - 1, y, z, ref hollow);
@@ -64,7 +64,7 @@ namespace MCGalaxy.Drawing.Ops
 
         void CheckTile(int x, int y, int z, ref bool hollow)
         {
-            BlockID block = Level.GetBlock((ushort)x, (ushort)y, (ushort)z);
+            ushort block = Level.GetBlock((ushort)x, (ushort)y, (ushort)z);
             if (CanHollow(block) || block == Skip) hollow = false;
         }
     }
@@ -87,7 +87,7 @@ namespace MCGalaxy.Drawing.Ops
         }
 
         public override string Name { get { return "Outline"; } }
-        public BlockID Target;
+        public ushort Target;
         public Side side;
 
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
@@ -154,7 +154,7 @@ namespace MCGalaxy.Drawing.Ops
                         {
                             // Need this because RainbowBrush works on world coords
                             Coords.X = (ushort)i; Coords.Y = 0; Coords.Z = 0;
-                            BlockID block = brush.NextBlock(this);
+                            ushort block = brush.NextBlock(this);
                             output(Place(x, y, z, block));
                         }
                     }

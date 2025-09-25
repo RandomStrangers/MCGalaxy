@@ -18,40 +18,49 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace MCGalaxy {
-    
+namespace MCGalaxy
+{
+
     /// <summary> Represents a list of metadata about players. (such as rank info, ban info, notes). </summary>
     /// <remarks> Unlike other player lists, this list is NOT kept in memory. </remarks>
-    public sealed class PlayerMetaList {
-        
+    public sealed class PlayerMetaList
+    {
+
         public readonly string file;
         readonly object locker;
-        
-        public PlayerMetaList(string file) {
+
+        public PlayerMetaList(string file)
+        {
             this.file = file;
             locker = new object();
         }
-        
-        public void EnsureExists() {
+
+        public void EnsureExists()
+        {
             if (!File.Exists(file))
                 File.Create(file).Dispose();
         }
 
-        public void Append(string data) {
-            lock (locker) {
-                using (StreamWriter w = new StreamWriter(file, true))
-                    w.WriteLine(data);
+        public void Append(string data)
+        {
+            lock (locker)
+            {
+                using StreamWriter w = new(file, true);
+                w.WriteLine(data);
             }
         }
-        
-        public List<string> FindAllExact(string name) {
-            List<string> entries = new List<string>();
+
+        public List<string> FindAllExact(string name)
+        {
+            List<string> entries = new();
             if (!File.Exists(file)) return entries;
             name += " ";
-            
-            using (StreamReader r = new StreamReader(file)) {
+
+            using (StreamReader r = new(file))
+            {
                 string line;
-                while ((line = r.ReadLine()) != null) {
+                while ((line = r.ReadLine()) != null)
+                {
                     if (line.CaselessStarts(name)) entries.Add(line);
                 }
             }

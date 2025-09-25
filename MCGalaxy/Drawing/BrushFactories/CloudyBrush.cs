@@ -15,16 +15,16 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System.Collections.Generic;
 using MCGalaxy.Commands;
+using System.Collections.Generic;
 
-namespace MCGalaxy.Drawing.Brushes 
+namespace MCGalaxy.Drawing.Brushes
 {
-    public sealed class CloudyBrushFactory : BrushFactory 
+    public sealed class CloudyBrushFactory : BrushFactory
     {
-        public override string Name { get { return "Cloudy"; } }        
+        public override string Name { get { return "Cloudy"; } }
         public override string[] Help { get { return HelpString; } }
-        
+
         static readonly string[] HelpString = new string[] {
             "&TArguments: [block1/frequency] [block2] <args>..",
             "&HDraws by selecting blocks from the given [blocks] using perlin noise.",
@@ -34,8 +34,9 @@ namespace MCGalaxy.Drawing.Brushes
             "&HArguments: &Ta&Hmplitude, &Tf&Hrequency (scale), &Ts&Heed, " +
             "&To&Hctaves, &Tp&Hersistence (turbulence), &Tl&Hacunarity",
         };
-        
-        public override Brush Construct(BrushArgs args) {
+
+        public override Brush Construct(BrushArgs args)
+        {
             NoiseArgs n = default;
             // Constants borrowed from fCraft to match it
             n.Amplitude = 1;
@@ -49,40 +50,47 @@ namespace MCGalaxy.Drawing.Brushes
             bool ok = FrequencyBrush.GetBlocks(args, out List<ushort> toAffect, out List<int> freqs,
                                                Filter, arg => Handler(arg, args.Player, ref n));
             if (!ok) return null;
-            
+
             return new CloudyBrush(toAffect, freqs, n);
         }
-        
+
         // Only want to handle non block options.
         static bool Filter(string arg) { return arg.Length >= 2 && (arg[1] == '_' || arg[1] == '='); }
-        
-        static bool Handler(string arg, Player p, ref NoiseArgs args) {
+
+        static bool Handler(string arg, Player p, ref NoiseArgs args)
+        {
             char opt = arg[0];
             arg = arg.Substring(2); // get part after _ or =
-            
-            if (opt == 'l') return ParseDecimal(p, arg, ref args.Lacunarity , 2.00f);
-            if (opt == 'a') return ParseDecimal(p, arg, ref args.Amplitude,   1.00f);
-            if (opt == 'f') return ParseDecimal(p, arg, ref args.Frequency,   0.08f);
+
+            if (opt == 'l') return ParseDecimal(p, arg, ref args.Lacunarity, 2.00f);
+            if (opt == 'a') return ParseDecimal(p, arg, ref args.Amplitude, 1.00f);
+            if (opt == 'f') return ParseDecimal(p, arg, ref args.Frequency, 0.08f);
             if (opt == 'p') return ParseDecimal(p, arg, ref args.Persistence, 0.75f);
-            
-            if (opt == 'o') {
+
+            if (opt == 'o')
+            {
                 if (!CommandParser.GetInt(p, arg, "Octaves", ref args.Octaves, 1, 16)) return false;
-            } else if (opt == 's') {
+            }
+            else if (opt == 's')
+            {
                 if (!CommandParser.GetInt(p, arg, "Seed", ref args.Seed)) return false;
-            } else {
+            }
+            else
+            {
                 p.Message("\"{0}\" was not a valid argument name.", opt);
                 return false;
             }
             return true;
         }
-        
-        static bool ParseDecimal(Player p, string arg, ref float target, float scale) {
-            if (!CommandParser.GetReal(p, arg, "Value", ref target)) return false;           
+
+        static bool ParseDecimal(Player p, string arg, ref float target, float scale)
+        {
+            if (!CommandParser.GetReal(p, arg, "Value", ref target)) return false;
             target *= scale; return true;
         }
     }
-    
-    public struct NoiseArgs 
+
+    public struct NoiseArgs
     {
         public int Octaves, Seed;
         public float Frequency, Amplitude, Persistence, Lacunarity;

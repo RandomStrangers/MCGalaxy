@@ -1,8 +1,8 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using System;
-using Newtonsoft.Json;
 using MCGalaxy;
 using MCGalaxy.Maths;
+using Newtonsoft.Json;
+using System;
 namespace NotAwesomeSurvival
 {
     public partial class NasEntity
@@ -58,9 +58,9 @@ namespace NotAwesomeSurvival
         {
             //TODO threadsafe
             HP += diff;
-            if (HP < 0) 
-            { 
-                HP = 0; 
+            if (HP < 0)
+            {
+                HP = 0;
             }
         }
         public virtual bool CanTakeDamage(DamageSource source)
@@ -70,7 +70,7 @@ namespace NotAwesomeSurvival
         public virtual bool TakeDamage(float damage, DamageSource source, string customDeathReason = "")
         {
             if (!CanTakeDamage(source))
-            { 
+            {
                 return false;
             }
             return false;
@@ -84,17 +84,17 @@ namespace NotAwesomeSurvival
             if (holdingBreath)
             {
                 Air -= 0.03125f;
-                if (Air < 0) 
-                { 
-                    Air = 0; 
+                if (Air < 0)
+                {
+                    Air = 0;
                 }
             }
             else
             {
                 Air += 0.03125f;
-                if (Air > maxAir) 
-                { 
-                    Air = maxAir; 
+                if (Air > maxAir)
+                {
+                    Air = maxAir;
                 }
             }
             if (Air == 0)
@@ -121,18 +121,15 @@ namespace NotAwesomeSurvival
             worldAABB = worldAABB.Expand(-1);
             Vec3S32 min = worldAABB.BlockMin, max = worldAABB.BlockMax;
             for (int y = min.Y; y <= max.Y; y++)
-            { 
+            {
                 for (int z = min.Z; z <= max.Z; z++)
-                { 
+                {
                     for (int x = min.X; x <= max.X; x++)
                     {
                         foreach (Player pl in PlayerInfo.Online.Items)
                         {
                             ushort xP = (ushort)x, yP = (ushort)y, zP = (ushort)z;
-                            if (nl.lvl == null)
-                            {
-                                nl.lvl = pl.Level;
-                            }
+                            nl.lvl ??= pl.Level;
                             ushort block = nl.lvl.GetBlock(xP, yP, zP);
                             if (block == 0)
                             {
@@ -148,9 +145,9 @@ namespace NotAwesomeSurvival
                             {
                                 continue;
                             }
-                            if (nb == null || nb.collideAction == null) 
-                            { 
-                                continue; 
+                            if (nb == null || nb.collideAction == null)
+                            {
+                                continue;
                             }
                             bool surroundsHead = AABB.Intersects(ref eyeAABB, ref blockBB);
                             nb.collideAction(this, nb, surroundsHead, xP, yP, zP);

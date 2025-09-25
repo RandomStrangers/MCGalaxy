@@ -1,6 +1,6 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using Newtonsoft.Json;
 using MCGalaxy;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 namespace NotAwesomeSurvival
 {
@@ -44,7 +44,7 @@ namespace NotAwesomeSurvival
         public float HP,
             armor;
         public string displayName = null;
-        public Dictionary<string, int> enchants = new Dictionary<string, int>(){
+        public Dictionary<string, int> enchants = new(){
                 {"Aqua Affinity",0},
                 {"Efficiency",0},
                 {"Feather Falling",0},
@@ -65,10 +65,7 @@ namespace NotAwesomeSurvival
             this.name = prop.name;
             HP = prop.baseHP;
             armor = prop.armor;
-            if (displayName == null)
-            {
-                displayName = ColoredName;
-            }
+            displayName ??= ColoredName;
         }
         /// <summary>
         /// Call to take damage
@@ -77,9 +74,9 @@ namespace NotAwesomeSurvival
         /// <returns>true if the item should break</returns>
         public bool TakeDamage(float amount = 1)
         {
-            if (HP == int.MaxValue) 
-            { 
-                return false; 
+            if (HP == int.MaxValue)
+            {
+                return false;
             }
             HP -= amount;
             if (HP <= 0)
@@ -101,9 +98,9 @@ namespace NotAwesomeSurvival
                 }
                 return false;
             }
-            catch 
-            { 
-                return false; 
+            catch
+            {
+                return false;
             }
         }
         public int Enchant(string s)

@@ -18,23 +18,26 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace MCGalaxy {
-    public sealed class EnvPreset {
+namespace MCGalaxy
+{
+    public sealed class EnvPreset
+    {
 
         const string FOLDER = "presets";
         const string FILE_EXTENSION = ".env";
 
         public readonly string Fog, Sky, Clouds, Sun, Shadow;
         public readonly string LavaLight = "", LampLight = "";
-        
-        public EnvPreset(string raw) {
+
+        public EnvPreset(string raw)
+        {
             string[] args = raw.SplitSpaces();
             Fog = args[0]; Sky = args[1]; Clouds = args[2]; Sun = args[3]; Shadow = args[4];
             LavaLight = args.Length > 5 ? args[5] : "";
             LampLight = args.Length > 6 ? args[6] : "";
         }
-            
-        static readonly Dictionary<string, string> Presets = new Dictionary<string, string>() {
+
+        static readonly Dictionary<string, string> Presets = new() {
                         //   fog   sky   clouds   sun   shadow
             { "Cartoon",  "00FFFF 1E90FF 00BFFF F5DEB3 F4A460" },
             { "Noir",     "000000 1F1F1F 000000 696969 1F1F1F" },
@@ -48,11 +51,13 @@ namespace MCGalaxy {
             { "Normal",   "    " },
         };
 
-        public static EnvPreset Find(string value) {
+        public static EnvPreset Find(string value)
+        {
             EnvPreset preset = FindDefault(value);
             if (preset != null) return preset;
 
-            if (File.Exists(FOLDER + "/" + value.ToLower() + FILE_EXTENSION)) {
+            if (File.Exists(FOLDER + "/" + value.ToLower() + FILE_EXTENSION))
+            {
                 //string text = File.ReadAllText(FOLDER + "/" + value.ToLower() + FILE_EXTENSION);
                 string text = FileIO.TryReadAllText(FOLDER + "/" + value.ToLower() + FILE_EXTENSION);
                 return new EnvPreset(text);
@@ -60,14 +65,17 @@ namespace MCGalaxy {
             return null;
         }
 
-        static EnvPreset FindDefault(string name) {
-            foreach (KeyValuePair<string, string> kvp in Presets) {
+        static EnvPreset FindDefault(string name)
+        {
+            foreach (KeyValuePair<string, string> kvp in Presets)
+            {
                 if (kvp.Key.CaselessEq(name)) return new EnvPreset(kvp.Value);
             }
             return null;
         }
 
-        public static void ListFor(Player p) {
+        public static void ListFor(Player p)
+        {
             p.Message("&HPresets: &f{0}", Presets.Join(pr => pr.Key));
 
             string[] files = FileIO.TryGetFiles(FOLDER, "*" + FILE_EXTENSION);

@@ -21,18 +21,19 @@ using System.IO;
 namespace MCGalaxy.Modules.Awards
 {
     public class Award { public string Name, Description; }
-    
+
     /// <summary> Manages the awards the server has </summary>
     public static class AwardsList
-    {  
+    {
         /// <summary> List of currently defined awards </summary>
-        public static List<Award> Awards = new List<Award>();
-        
-        
-        public static bool Add(string name, string desc) {
+        public static List<Award> Awards = new();
+
+
+        public static bool Add(string name, string desc)
+        {
             if (Exists(name)) return false;
 
-            Award award = new Award
+            Award award = new()
             {
                 Name = name,
                 Description = desc
@@ -41,65 +42,73 @@ namespace MCGalaxy.Modules.Awards
             return true;
         }
 
-        public static bool Remove(string name) {
+        public static bool Remove(string name)
+        {
             Award award = FindExact(name);
             if (award == null) return false;
-            
+
             Awards.Remove(award);
             return true;
         }
 
         public static bool Exists(string name) { return FindExact(name) != null; }
-        
-        public static Award FindExact(string name) {
-            foreach (Award award in Awards) {
+
+        public static Award FindExact(string name)
+        {
+            foreach (Award award in Awards)
+            {
                 if (award.Name.CaselessEq(name)) return award;
             }
             return null;
         }
-        
-        
+
+
         /// <summary> Finds partial matches of 'name' against the list of all awards </summary>
-        public static string FindMatch(Player p, string name) {
+        public static string FindMatch(Player p, string name)
+        {
             Award award = Matcher.Find(p, name, out int matches, Awards,
                                        null, a => a.Name, "awards");
             return award?.Name;
         }
-        
-        
-        static readonly object saveLock = new object();
-        public static void Save() {
+
+
+        static readonly object saveLock = new();
+        public static void Save()
+        {
             lock (saveLock)
                 using (StreamWriter w = FileIO.CreateGuarded("text/awardsList.txt"))
-            {
-                WriteHeader(w);
-                foreach (Award a in Awards) {
-                    w.WriteLine(a.Name + " : " + a.Description);
-                }
-            }
-        }
-        
-        public static void Load() {
-            if (!File.Exists("text/awardsList.txt")) {
-                using (StreamWriter w = FileIO.CreateGuarded("text/awardsList.txt")) 
                 {
                     WriteHeader(w);
-                    w.WriteLine("Gotta start somewhere : Built your first house");
-                    w.WriteLine("Climbing the ladder : Earned a rank advancement");
-                    w.WriteLine("Do you live here? : Joined the server a huge bunch of times");
+                    foreach (Award a in Awards)
+                    {
+                        w.WriteLine(a.Name + " : " + a.Description);
+                    }
                 }
+        }
+
+        public static void Load()
+        {
+            if (!File.Exists("text/awardsList.txt"))
+            {
+                using StreamWriter w = FileIO.CreateGuarded("text/awardsList.txt");
+                WriteHeader(w);
+                w.WriteLine("Gotta start somewhere : Built your first house");
+                w.WriteLine("Climbing the ladder : Earned a rank advancement");
+                w.WriteLine("Do you live here? : Joined the server a huge bunch of times");
             }
 
             Awards = new List<Award>();
             PropertiesFile.Read("text/awardsList.txt", ProcessLine, ':');
         }
-        
-        static void ProcessLine(string award, string desc) {
+
+        static void ProcessLine(string award, string desc)
+        {
             if (desc.Length == 0) return;
             Add(award, desc);
         }
-        
-        static void WriteHeader(StreamWriter w) {
+
+        static void WriteHeader(StreamWriter w)
+        {
             w.WriteLine("#This is a full list of awards. The server will load these and they can be awarded as you please");
             w.WriteLine("#Format is:");
             w.WriteLine("# AwardName : Description of award goes after the colon");

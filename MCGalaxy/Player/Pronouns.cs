@@ -16,39 +16,45 @@
     permissions and limitations under the Licenses.
  */
 
+using MCGalaxy.Tasks;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using MCGalaxy.Tasks;
 
-namespace MCGalaxy {
+namespace MCGalaxy
+{
 
-    public class Pronouns {
+    public class Pronouns
+    {
         const string CONFIG_FILE = "props/pronouns.properties";
         const string PLAYER_PATH = "text/pronouns/";
 
-        static readonly object locker = new object();
-        static readonly List<Pronouns> Loaded = new List<Pronouns>();
+        static readonly object locker = new();
+        static readonly List<Pronouns> Loaded = new();
 
         public static Pronouns Default;
         /// <summary>
         /// Called once to initialize the defaults and write/read the config file as necessary.
         /// </summary>
-        public static void Init(SchedulerTask _) {
+        public static void Init(SchedulerTask _)
+        {
 
-            if (!Directory.Exists(PLAYER_PATH)) {
+            if (!Directory.Exists(PLAYER_PATH))
+            {
                 Directory.CreateDirectory(PLAYER_PATH);
             }
 
             Default = new Pronouns("default", "they", "their", "themselves", true, "them");
 
-            if (!File.Exists(CONFIG_FILE)) {
+            if (!File.Exists(CONFIG_FILE))
+            {
 
                 Loaded.Add(new Pronouns("they/them", "they", "their", "themselves", true, "them"));
                 Loaded.Add(new Pronouns("he/him", "he", "his", "himself", false, "him"));
                 Loaded.Add(new Pronouns("she/her", "she", "her", "herself", false, "her"));
 
-                using (StreamWriter w = new StreamWriter(CONFIG_FILE)) {
+                using (StreamWriter w = new(CONFIG_FILE))
+                {
                     w.WriteLine("# Below are the pronouns that players may choose from by using /pronouns");
                     w.WriteLine("# Lines starting with # are ignored");
                     w.WriteLine("# Each pronouns is on its own line, and is formatted like so:");
@@ -59,7 +65,8 @@ namespace MCGalaxy {
                     w.WriteLine("# For instance, \"and he has captured the flag\" vs \"and they have captured the flag\".");
 
                     w.WriteLine();
-                    foreach (Pronouns p in Loaded) {
+                    foreach (Pronouns p in Loaded)
+                    {
                         p.Write(w);
                     }
                 }
@@ -69,33 +76,41 @@ namespace MCGalaxy {
 
             OnConfigUpdated();
         }
-        static void OnConfigUpdated() {
-            lock (locker) {
+        static void OnConfigUpdated()
+        {
+            lock (locker)
+            {
                 Loaded.Clear();
                 Loaded.Add(Default);
 
-                try {
-                    using (StreamReader r = new StreamReader(CONFIG_FILE)) {
-                        while (!r.EndOfStream) {
-                            string line = r.ReadLine();
-                            if (string.IsNullOrEmpty(line) || line.StartsWith("#")) { continue; }
-                            LoadFrom(line);
-                        }
+                try
+                {
+                    using StreamReader r = new(CONFIG_FILE);
+                    while (!r.EndOfStream)
+                    {
+                        string line = r.ReadLine();
+                        if (string.IsNullOrEmpty(line) || line.StartsWith("#")) { continue; }
+                        LoadFrom(line);
                     }
-                } catch (Exception e) {
+                }
+                catch (Exception e)
+                {
                     Logger.LogError(e);
                 }
             }
 
             //In case any were deleted or changed
-            foreach (Player p in PlayerInfo.Online.Items) {
+            foreach (Player p in PlayerInfo.Online.Items)
+            {
                 p.pronounsList = GetFor(p.name);
             }
         }
-        static void LoadFrom(string line) {
+        static void LoadFrom(string line)
+        {
             string[] words = line.ToLower().SplitSpaces();
             const int minWordCount = 5;
-            if (words.Length < minWordCount) {
+            if (words.Length < minWordCount)
+            {
                 Logger.Log(LogType.Warning,
                     "Failed to load malformed pronouns \"{0}\" from config (expected at least {1} arguments, got {2}).",
                     line, minWordCount, words.Length);
@@ -108,12 +123,14 @@ namespace MCGalaxy {
             bool plural;
             if (words[4].CaselessEq("singular")) { plural = false; }
             else if (words[4].CaselessEq("plural")) { plural = true; }
-            else {
+            else
+            {
                 Logger.Log(LogType.Warning, "Failed to load the pronouns \"{0}\" because the 5th argument was not \"singular\" or \"plural\"", name);
                 return;
             }
 
-            if (FindExact(name) != null) {
+            if (FindExact(name) != null)
+            {
                 Logger.Log(LogType.Warning, "Cannot load pronouns \"{0}\" because it is already defined.", name);
                 return;
             }
@@ -121,13 +138,20 @@ namespace MCGalaxy {
             string tpos; //ThirdPersonObjectiveSingular
 
             //Older config files do not contain this argument, thus we need to guess or provide a fallback
-            if (words.Length > minWordCount) {
+            if (words.Length > minWordCount)
+            {
                 tpos = words[5];
-            } else if (name.CaselessContains("him")) {
+            }
+            else if (name.CaselessContains("him"))
+            {
                 tpos = "him";
-            } else if (name.CaselessContains("her")) {
+            }
+            else if (name.CaselessContains("her"))
+            {
                 tpos = "her";
-            } else {
+            }
+            else
+            {
                 tpos = Default.ThirdPersonObjectiveSingular;
             }
 
@@ -138,22 +162,26 @@ namespace MCGalaxy {
         /// <summary>
         /// Find the pronouns associated with the playerName. Returns Default pronouns if none were specified.
         /// </summary>
-        public static List<Pronouns> GetFor(string playerName) {
+        public static List<Pronouns> GetFor(string playerName)
+        {
             string myPath = PlayerPath(playerName);
-            try {
+            try
+            {
 
                 string data;
-                lock (locker) {
+                lock (locker)
+                {
                     if (!File.Exists(myPath)) { return new List<Pronouns> { Default }; }
                     //data = File.ReadAllText(myPath);
                     data = FileIO.TryReadAllText(myPath);
                 }
-                data = data.Trim();		
+                data = data.Trim();
                 if (data.Length == 0) return new List<Pronouns> { Default };
 
-                List<Pronouns> pros = new List<Pronouns>();
+                List<Pronouns> pros = new();
                 string[] names = data.SplitSpaces();
-                foreach (string name in names) {
+                foreach (string name in names)
+                {
                     Pronouns p = FindExact(name);
                     if (p == null) continue;
                     pros.Add(p);
@@ -162,7 +190,9 @@ namespace MCGalaxy {
 
                 return new List<Pronouns> { Default };
 
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Logger.LogError(e);
                 return new List<Pronouns> { Default };
             }
@@ -171,16 +201,20 @@ namespace MCGalaxy {
         /// <summary>
         /// Returns the Pronoun with a name that caselessly matches the input. Returns null if no matches found.
         /// </summary>
-        public static Pronouns FindExact(string name) {
-            lock (locker) {
-                foreach (Pronouns p in Loaded) {
+        public static Pronouns FindExact(string name)
+        {
+            lock (locker)
+            {
+                foreach (Pronouns p in Loaded)
+                {
                     if (name.CaselessEq(p.Name)) { return p; }
                 }
             }
             return null;
         }
         /// <summary> Finds partial matches of 'name' against the list of all pronouns </summary>
-        public static Pronouns FindMatch(Player p, string name) {
+        public static Pronouns FindMatch(Player p, string name)
+        {
             lock (locker)
             {
                 Pronouns pronouns = Matcher.Find(p, name, out int matches, Loaded,
@@ -192,16 +226,20 @@ namespace MCGalaxy {
         /// <summary>
         /// Returns a list of the names of all currently available pronouns.
         /// </summary>
-        public static List<string> GetNames() {
-            List<string> names = new List<string>();
-            lock (locker) {
-                foreach (Pronouns p in Loaded) {
+        public static List<string> GetNames()
+        {
+            List<string> names = new();
+            lock (locker)
+            {
+                foreach (Pronouns p in Loaded)
+                {
                     names.Add(p.Name);
                 }
             }
             return names;
         }
-        public static string ListFor(Player p, string separator) {
+        public static string ListFor(Player p, string separator)
+        {
             return p.pronounsList.Join((pro) => pro.Name, separator);
         }
 
@@ -243,7 +281,8 @@ namespace MCGalaxy {
         /// </summary>
         public readonly string PresentPerfectVerb;
 
-        private Pronouns(string name, string subject, string @object, string reflexive, bool plural, string thirdPersonObjectiveSingular) {
+        private Pronouns(string name, string subject, string @object, string reflexive, bool plural, string thirdPersonObjectiveSingular)
+        {
             Name = name;
             Subject = subject;
             Object = @object;
@@ -255,27 +294,31 @@ namespace MCGalaxy {
             PastVerb = Plural ? "were" : "was";
             PresentPerfectVerb = Plural ? "have" : "has";
         }
-        void Write(StreamWriter w) {
+        void Write(StreamWriter w)
+        {
             w.WriteLine(string.Format("{0} {1} {2} {3} {4} {5}",
                 Name, Subject, Object, Reflexive, Plural ? "plural" : "singular", ThirdPersonObjectiveSingular));
             w.WriteLine();
         }
-        public static void SaveFor(Player p) {
+        public static void SaveFor(Player p)
+        {
             string path = PlayerPath(p.name);
-            try {
+            try
+            {
                 //Reduce clutter by simply erasing the file if it's default
-                if (p.pronounsList.Count == 1 && p.pronounsList[0] == Default) 
-                { 
+                if (p.pronounsList.Count == 1 && p.pronounsList[0] == Default)
+                {
                     //File.Delete(path); 
                     FileIO.TryDelete(path);
-                    return; 
+                    return;
                 }
 
                 //File.WriteAllText(path, ListFor(p, " "));
                 FileIO.TryWriteAllText(path, ListFor(p, " "));
 
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 Logger.LogError(e);
                 p.Message("&WThere was an error when saving your pronouns: &S{0}", e.Message);
             }

@@ -15,12 +15,12 @@ https://www.gnu.org/licenses/gpl-3.0.html
     permissions and limitations under the Licenses.
  */
 
+using MCGalaxy.UI;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using MCGalaxy.UI;
 
 namespace MCGalaxy.Gui.Components
 {
@@ -189,7 +189,7 @@ namespace MCGalaxy.Gui.Components
             }
         }
 
-        static readonly Dictionary<int, Color> color_cache = new Dictionary<int, Color>();
+        static readonly Dictionary<int, Color> color_cache = new();
         static Color GetColor(char c, Color foreCol, bool nightMode)
         {
             if (c == 'S' || c == 'f' || c == 'F') return foreCol;

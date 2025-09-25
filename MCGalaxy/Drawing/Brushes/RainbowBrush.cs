@@ -15,46 +15,47 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using MCGalaxy.Drawing.Ops;
-using BlockID = System.UInt16;
+using System;
 
-namespace MCGalaxy.Drawing.Brushes 
-{ 
-    public sealed class RainbowBrush : CheckeredPaletteBrush 
+
+namespace MCGalaxy.Drawing.Brushes
+{
+    public sealed class RainbowBrush : CheckeredPaletteBrush
     {
         public override string Name { get { return "Rainbow"; } }
-        public RainbowBrush() : base(blocks) {}
-        
-        internal static BlockID[] blocks = new BlockID[] { 
+        public RainbowBrush() : base(blocks) { }
+
+        internal static ushort[] blocks = new ushort[] {
             Block.Red,   Block.Orange,  Block.Yellow,
             Block.Lime,  Block.Green,   Block.Teal,
             Block.Aqua,  Block.Cyan,    Block.Blue,
             Block.Indigo, Block.Violet, Block.Magenta,
             Block.Pink };
     }
-    
-    public sealed class BWRainbowBrush : CheckeredPaletteBrush 
-    {        
+
+    public sealed class BWRainbowBrush : CheckeredPaletteBrush
+    {
         public override string Name { get { return "BWRainbow"; } }
-        public BWRainbowBrush() : base(blocks) {}
-        
-        internal static BlockID[] blocks = new BlockID[] { 
+        public BWRainbowBrush() : base(blocks) { }
+
+        internal static ushort[] blocks = new ushort[] {
             Block.Iron,  Block.White,    Block.Gray,
-            Block.Black, Block.Obsidian, Block.Black, 
+            Block.Black, Block.Obsidian, Block.Black,
             Block.Gray,  Block.White };
     }
-    
-    public sealed class RandomRainbowBrush : Brush 
+
+    public sealed class RandomRainbowBrush : Brush
     {
-        readonly Random rnd = new Random();
-        readonly BlockID[] blocks;
+        readonly Random rnd = new();
+        readonly ushort[] blocks;
 
         public override string Name { get { return "RandomRainbow"; } }
-        
-        public RandomRainbowBrush(BlockID[] list) { blocks = list; }      
-        
-        public override BlockID NextBlock(DrawOp op) {
+
+        public RandomRainbowBrush(ushort[] list) { blocks = list; }
+
+        public override ushort NextBlock(DrawOp op)
+        {
             return blocks[rnd.Next(blocks.Length)];
         }
     }

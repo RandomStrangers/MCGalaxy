@@ -15,73 +15,79 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.Tasks;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using MCGalaxy.Tasks;
 
-namespace MCGalaxy 
+namespace MCGalaxy
 {
-    public static class FileLogger 
-    {       
-        public static string LogPath      { get { return msg.Path; } }
+    public static class FileLogger
+    {
+        public static string LogPath { get { return msg.Path; } }
         public static string ErrorLogPath { get { return err.Path; } }
 
         static bool disposed;
         static DateTime last;
 
-        static readonly object logLock = new object();
-        static readonly FileLogGroup err = new FileLogGroup();
-        static readonly FileLogGroup msg = new FileLogGroup();
+        static readonly object logLock = new();
+        static readonly FileLogGroup err = new();
+        static readonly FileLogGroup msg = new();
         static SchedulerTask logTask;
 
-        public static void Init() {
+        public static void Init()
+        {
             Server.EnsureDirectoryExists("logs");
             Server.EnsureDirectoryExists("logs/errors");
             UpdatePaths();
             Logger.LogHandler += LogMessage;
-            
+
             logTask = Server.MainScheduler.QueueRepeat(Flush, null,
                                                        TimeSpan.FromMilliseconds(500));
         }
-        
+
         // Update paths only if a new date
-        static void UpdatePaths() {
+        static void UpdatePaths()
+        {
             DateTime now = DateTime.Now;
             if (now.Year == last.Year && now.Month == last.Month && now.Day == last.Day) return;
-            
+
             last = now;
-            msg.Path = "logs/"        + now.ToString("yyyy-MM-dd") + ".txt";
+            msg.Path = "logs/" + now.ToString("yyyy-MM-dd") + ".txt";
             err.Path = "logs/errors/" + now.ToString("yyyy-MM-dd") + "error.log";
 
             err.Close();
             msg.Close();
         }
-        
-        static void LogMessage(LogType type, string message) {
+
+        static void LogMessage(LogType type, string message)
+        {
             if (string.IsNullOrEmpty(message)) return;
             if (!Server.Config.FileLogging[(int)type]) return;
-            
-            if (type == LogType.Error) {
-                StringBuilder sb = new StringBuilder();
+
+            if (type == LogType.Error)
+            {
+                StringBuilder sb = new();
                 sb.AppendLine("----" + DateTime.Now + " ----");
                 sb.AppendLine(message);
                 sb.Append('-', 25);
-                
+
                 string output = sb.ToString();
                 lock (logLock) err.Cache.Enqueue(output);
-                
+
                 message = "!!!Error! See " + ErrorLogPath + " for more information.";
             }
-            
+
             string now = DateTime.Now.ToString("(HH:mm:ss) ");
             lock (logLock) msg.Cache.Enqueue(now + message);
         }
-        
 
-        public static void Flush(SchedulerTask task) {
-            lock (logLock) {
+
+        public static void Flush(SchedulerTask task)
+        {
+            lock (logLock)
+            {
                 int errsCount = err.Cache.Count;
                 int msgsCount = msg.Cache.Count;
 
@@ -92,12 +98,14 @@ namespace MCGalaxy
             }
         }
 
-        public static void Dispose() {
+        public static void Dispose()
+        {
             if (disposed) return;
             disposed = true;
             Server.MainScheduler.Cancel(logTask);
-            
-            lock (logLock) {
+
+            lock (logLock)
+            {
                 if (err.Cache.Count > 0) err.FlushCache();
                 msg.Cache.Clear();
             }
@@ -107,20 +115,23 @@ namespace MCGalaxy
     class FileLogGroup
     {
         public string Path;
-        public Queue<string> Cache = new Queue<string>();
+        public Queue<string> Cache = new();
         Stream stream;
         StreamWriter writer;
 
         const int MAX_LOG_SIZE = 1024 * 1024 * 1024; // 1 GB
 
-        public void FlushCache() {
-            if (stream == null) {
-                stream = new FileStream(Path, FileMode.Append, FileAccess.Write, 
+        public void FlushCache()
+        {
+            if (stream == null)
+            {
+                stream = new FileStream(Path, FileMode.Append, FileAccess.Write,
                                         FileShare.ReadWrite, 4096, FileOptions.SequentialScan);
                 writer = new StreamWriter(stream);
             }
 
-            try {
+            try
+            {
                 // Failsafe in case something has gone catastrophically wrong
                 if (stream.Length > MAX_LOG_SIZE) { Cache.Clear(); return; }
 
@@ -131,13 +142,16 @@ namespace MCGalaxy
                     writer.WriteLine(item);
                 }
                 writer.Flush();
-            } catch {
+            }
+            catch
+            {
                 Close();
                 throw;
             }
         }
 
-        public void Close() {
+        public void Close()
+        {
             if (stream == null) return;
 
             stream.Dispose();

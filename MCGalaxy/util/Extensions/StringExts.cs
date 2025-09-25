@@ -16,47 +16,52 @@
     permissions and limitations under the Licenses.
  */
 
-namespace MCGalaxy 
+namespace MCGalaxy
 {
     /// <summary> Extension methods relating to strings. </summary>
-    public static class StringExts 
+    public static class StringExts
     {
         /// <summary> Sets the first character of the input string to uppercase. </summary>
-        public static string Capitalize(this string str) {
+        public static string Capitalize(this string str)
+        {
             if (string.IsNullOrEmpty(str)) return str;
-            
+
             char[] a = str.ToCharArray();
             a[0] = char.ToUpper(a[0]);
             return new string(a);
         }
-        
+
         /// <summary> Removes an ending + from a username. </summary>
-        public static string RemoveLastPlus(this string str) {
+        public static string RemoveLastPlus(this string str)
+        {
             if (string.IsNullOrEmpty(str)) return str;
-            
+
             if (str[str.Length - 1] != '+') return str;
             return str.Substring(0, str.Length - 1);
         }
 
         /// <summary> Returns whether line is empty or starts with a #. </summary>
-        public static bool IsCommentLine(this string line) {
+        public static bool IsCommentLine(this string line)
+        {
             return line.Length == 0 || line[0] == '#';
         }
-        
+
         /// <summary> Returns whether all characters in the given string are also in the given alphabet </summary>
-        public static bool ContainsAllIn(this string str, string alphabet) {
-            foreach (char c in str) 
+        public static bool ContainsAllIn(this string str, string alphabet)
+        {
+            foreach (char c in str)
             {
                 if (alphabet.IndexOf(c) == -1) return false;
             }
             return true;
         }
-        
-        
+
+
         /// <summary> Converts a string consisting of code page 437 indices into unicode. </summary>
-        public static string Cp437ToUnicode(this string str) {
+        public static string Cp437ToUnicode(this string str)
+        {
             if (!HasSpecial(str)) return str;
-            
+
             char[] c = str.ToCharArray();
             for (int i = 0; i < str.Length; i++)
             {
@@ -67,9 +72,10 @@ namespace MCGalaxy
 
         /// <summary> Converts a unicode string into a string consisting of code page 437 indices. </summary>
         /// <remarks> Unicode characters not in code page 437 are converted to '?'. </remarks> 
-        public static string UnicodeToCp437(this string str) {
+        public static string UnicodeToCp437(this string str)
+        {
             if (!HasSpecial(str)) return str;
-            
+
             char[] c = str.ToCharArray();
             for (int i = 0; i < str.Length; i++)
             {
@@ -77,49 +83,63 @@ namespace MCGalaxy
             }
             return new string(c);
         }
-        
-        
+
+
         /// <summary> Converts a code page 437 indice into unicode. </summary>
-        public static char Cp437ToUnicode(this char c) {
-            if (c < 0x20) {
+        public static char Cp437ToUnicode(this char c)
+        {
+            if (c < 0x20)
+            {
                 return EmotesHandler.ControlCharReplacements[c];
-            } else if (c < 0x7F) {
+            }
+            else if (c < 0x7F)
+            {
                 return c;
-            } else if (c <= 0xFF) {
+            }
+            else if (c <= 0xFF)
+            {
                 return EmotesHandler.ExtendedCharReplacements[c - 0x7F];
             }
             return '?';
         }
 
         /// <summary> Converts a unicode character into a code page 437 indice. </summary>        
-        public static char UnicodeToCp437(this char c) {
+        public static char UnicodeToCp437(this char c)
+        {
             int cpIndex;
-            if (c >= ' ' && c <= '~') {
+            if (c >= ' ' && c <= '~')
+            {
                 return c;
-            } else if ((cpIndex = EmotesHandler.ControlCharReplacements.IndexOf(c)) >= 0 ) {
+            }
+            else if ((cpIndex = EmotesHandler.ControlCharReplacements.IndexOf(c)) >= 0)
+            {
                 return (char)cpIndex;
-            } else if ((cpIndex = EmotesHandler.ExtendedCharReplacements.IndexOf(c)) >= 0 ) {
+            }
+            else if ((cpIndex = EmotesHandler.ExtendedCharReplacements.IndexOf(c)) >= 0)
+            {
                 return (char)(cpIndex + 127);
             }
             return '?';
         }
-        
-        static bool HasSpecial(string str) {
+
+        static bool HasSpecial(string str)
+        {
             if (string.IsNullOrEmpty(str)) return false;
-            
-            for (int i = 0; i < str.Length; i++) 
+
+            for (int i = 0; i < str.Length; i++)
             {
                 if (str[i] < ' ' || str[i] > '~') return true;
             }
             return false;
         }
-        
-        
-        public static string[] SplitExact(this string str, int maxArgs) {
-            string[] output = new string[maxArgs];
-            string[] input  = string.IsNullOrEmpty(str) ? new string[0] : str.SplitSpaces(maxArgs);
 
-            for (int i = 0; i < output.Length; i++) 
+
+        public static string[] SplitExact(this string str, int maxArgs)
+        {
+            string[] output = new string[maxArgs];
+            string[] input = string.IsNullOrEmpty(str) ? new string[0] : str.SplitSpaces(maxArgs);
+
+            for (int i = 0; i < output.Length; i++)
             {
                 output[i] = i < input.Length ? input[i] : "";
             }

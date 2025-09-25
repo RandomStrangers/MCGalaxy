@@ -18,15 +18,18 @@
 using System.IO;
 using System.Threading;
 
-namespace MCGalaxy.Commands.World {
-    public sealed class CmdMuseum : Command2 {
+namespace MCGalaxy.Commands.World
+{
+    public sealed class CmdMuseum : Command2
+    {
         public override string name { get { return "Museum"; } }
         public override string type { get { return CommandTypes.World; } }
         public override bool SuperUseable { get { return false; } }
 
         const string CURRENT_FLAG = "*current";
 
-        public override void Use(Player p, string message, CommandData data) {
+        public override void Use(Player p, string message, CommandData data)
+        {
             if (message.Length == 0) { LevelOperations.OutputBackups(p, p.level); return; }
 
             string[] args = message.ToLower().SplitSpaces();
@@ -34,44 +37,60 @@ namespace MCGalaxy.Commands.World {
             string backupArg = args.Length > 1 ? args[1] : args[0];
 
             string path;
-            if (backupArg == CURRENT_FLAG) {
+            if (backupArg == CURRENT_FLAG)
+            {
                 path = LevelInfo.MapPath(mapArg);
-                if (!LevelInfo.MapExists(mapArg)) {
-                    if (Directory.Exists(LevelInfo.BackupBasePath(mapArg))) {
+                if (!LevelInfo.MapExists(mapArg))
+                {
+                    if (Directory.Exists(LevelInfo.BackupBasePath(mapArg)))
+                    {
                         p.Message("&WLevel \"{0}\" does not currently exist, &Showever:", mapArg);
                         LevelOperations.OutputBackups(p, mapArg, LevelInfo.GetConfig(mapArg));
-                    } else {
+                    }
+                    else
+                    {
                         p.Message("&WLevel \"{0}\" does not exist and no backups could be found.", mapArg);
                     }
                     return;
                 }
-            } else {
+            }
+            else
+            {
                 if (!LevelInfo.GetBackupPath(p, mapArg, backupArg, out path)) return;
             }
 
             string formattedMuseumName;
-            if (backupArg == CURRENT_FLAG) {
+            if (backupArg == CURRENT_FLAG)
+            {
                 formattedMuseumName = "&cMuseum &S(" + mapArg + ")";
-            } else {
+            }
+            else
+            {
                 formattedMuseumName = "&cMuseum &S(" + mapArg + " " + backupArg + ")";
             }
-            
-            if (p.level.name.CaselessEq(formattedMuseumName)) {
+
+            if (p.level.name.CaselessEq(formattedMuseumName))
+            {
                 p.Message("You are already in this museum."); return;
             }
-            if (Interlocked.CompareExchange(ref p.LoadingMuseum, 1, 0) == 1) {
+            if (Interlocked.CompareExchange(ref p.LoadingMuseum, 1, 0) == 1)
+            {
                 p.Message("You are already loading a museum level."); return;
             }
-            
-            try {
+
+            try
+            {
                 Level lvl = LevelActions.LoadMuseum(p, formattedMuseumName, mapArg, path);
                 PlayerActions.ChangeMap(p, lvl);
-            } finally {
+            }
+            finally
+            {
                 Interlocked.Exchange(ref p.LoadingMuseum, 0);
             }
         }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/Museum <level> [backup]");
             p.Message("&HVisits the [backup] of <level>");
             p.Message("&T/Museum <level> {0}", LevelInfo.LATEST_MUSEUM_FLAG);

@@ -18,18 +18,19 @@
 using MCGalaxy.Commands;
 using MCGalaxy.Events.ServerEvents;
 
-namespace MCGalaxy.Modules.Relay.IRC 
-{   
-    public sealed class IRCPlugin : Plugin 
+namespace MCGalaxy.Modules.Relay.IRC
+{
+    public sealed class IRCPlugin : Plugin
     {
         public override string name { get { return "IRCRelay"; } }
 
-        public static IRCBot Bot = new IRCBot();
-        
-        static readonly Command cmdIrcBot   = new CmdIRCBot();
+        public static IRCBot Bot = new();
+
+        static readonly Command cmdIrcBot = new CmdIRCBot();
         static readonly Command cmdIrcCtrls = new CmdIrcControllers();
-        
-        public override void Load(bool startup) {
+
+        public override void Load(bool startup)
+        {
             Command.Register(cmdIrcBot);
             Command.Register(cmdIrcCtrls);
 
@@ -37,27 +38,29 @@ namespace MCGalaxy.Modules.Relay.IRC
             Bot.Connect();
             OnConfigUpdatedEvent.Register(OnConfigUpdated, Priority.Low);
         }
-        
-        public override void Unload(bool shutdown) {
+
+        public override void Unload(bool shutdown)
+        {
             Command.Unregister(cmdIrcBot, cmdIrcCtrls);
-            
+
             OnConfigUpdatedEvent.Unregister(OnConfigUpdated);
             Bot.Disconnect("Disconnecting IRC bot");
         }
-        
+
         void OnConfigUpdated() { Bot.ReloadConfig(); }
     }
-    
-    sealed class CmdIRCBot : RelayBotCmd 
+
+    sealed class CmdIRCBot : RelayBotCmd
     {
         public override string name { get { return "IRCBot"; } }
-        public override CommandAlias[] Aliases {
+        public override CommandAlias[] Aliases
+        {
             get { return new[] { new CommandAlias("ResetBot", "reset"), new CommandAlias("ResetIRC", "reset") }; }
         }
         protected override RelayBot Bot { get { return IRCPlugin.Bot; } }
     }
-    
-    sealed class CmdIrcControllers : BotControllersCmd 
+
+    sealed class CmdIrcControllers : BotControllersCmd
     {
         public override string name { get { return "IRCControllers"; } }
         public override string shortcut { get { return "IRCCtrl"; } }

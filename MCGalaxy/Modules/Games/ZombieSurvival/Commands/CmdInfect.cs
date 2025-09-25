@@ -16,27 +16,32 @@
     permissions and limitations under the Licenses.
 */
 
-namespace MCGalaxy.Modules.Games.ZS 
+namespace MCGalaxy.Modules.Games.ZS
 {
-    sealed class CmdInfect : Command2 
+    sealed class CmdInfect : Command2
     {
         public override string name { get { return "Infect"; } }
         public override string type { get { return CommandTypes.Games; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        
-        public override void Use(Player p, string message, CommandData data) {
+
+        public override void Use(Player p, string message, CommandData data)
+        {
             Player who = message.Length == 0 ? p : PlayerInfo.FindMatches(p, message);
             if (who == null) return;
-            
-            if (!ZSGame.Instance.RoundInProgress || ZSGame.IsInfected(who)) {
+
+            if (!ZSGame.Instance.RoundInProgress || ZSGame.IsInfected(who))
+            {
                 p.Message("Cannot infect player");
-            } else if (!who.Game.Referee) {
+            }
+            else if (!who.Game.Referee)
+            {
                 ZSGame.Instance.InfectPlayer(who, p);
                 Chat.MessageFrom(who, "λNICK &Swas infected.");
             }
         }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/Infect [name]");
             p.Message("&HTurns [name] into a zombie");
         }

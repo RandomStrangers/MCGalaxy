@@ -16,113 +16,140 @@
     permissions and limitations under the Licenses.
  */
 
-namespace MCGalaxy.Commands.CPE 
+namespace MCGalaxy.Commands.CPE
 {
-    public sealed class CmdEnvironment : Command2 
+    public sealed class CmdEnvironment : Command2
     {
         public override string name { get { return "Environment"; } }
         public override string shortcut { get { return "Env"; } }
         public override string type { get { return CommandTypes.World; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
 
-        public override void Use(Player p, string message, CommandData data) {
-            if (message.CaselessEq("preset")) {
+        public override void Use(Player p, string message, CommandData data)
+        {
+            if (message.CaselessEq("preset"))
+            {
                 ExplainPresets(p); return;
             }
-            
-            Level lvl     = null;
+
+            Level lvl = null;
             EnvConfig cfg = null;
-            string area   = "server";
-            
-            if (message.CaselessStarts("global ")) {
+            string area = "server";
+
+            if (message.CaselessStarts("global "))
+            {
                 message = message.Substring("global ".Length);
                 cfg = Server.Config;
-            } else if (message.CaselessStarts("level ")) {
+            }
+            else if (message.CaselessStarts("level "))
+            {
                 message = message.Substring("level ".Length);
             }
-            
+
             // Work on current level by default
-            if (cfg == null) {
+            if (cfg == null)
+            {
                 if (p.IsSuper) { p.Message("&WWhen using &T/Env &Wfrom {0}, only &T/Env Global &Wis supported", p.SuperName); return; }
-                
+
                 lvl = p.level; cfg = lvl.Config;
                 area = lvl.ColoredName;
                 if (!LevelInfo.Check(p, data.Rank, lvl, "set env settings of this level")) return;
             }
-            
+
             string[] args = message.SplitSpaces(2);
             string opt = args[0], value = args.Length > 1 ? args[1] : "";
             if (!Handle(p, lvl, opt, value, cfg, area)) { Help(p); }
         }
-        
-        internal static bool Handle(Player p, Level lvl, string type, string value, EnvConfig cfg, string area) {
-            if (type.CaselessEq("preset")) {
+
+        internal static bool Handle(Player p, Level lvl, string type, string value, EnvConfig cfg, string area)
+        {
+            if (type.CaselessEq("preset"))
+            {
                 EnvPreset preset = EnvPreset.Find(value);
                 if (preset == null) { ExplainPresets(p); return false; }
-                
-                cfg.SkyColor    = preset.Sky;
-                cfg.CloudColor  = preset.Clouds;
-                cfg.FogColor    = preset.Fog;
+
+                cfg.SkyColor = preset.Sky;
+                cfg.CloudColor = preset.Clouds;
+                cfg.FogColor = preset.Fog;
                 cfg.ShadowColor = preset.Shadow;
-                cfg.LightColor  = preset.Sun;
-            } else if (type.CaselessEq("normal")) {
+                cfg.LightColor = preset.Sun;
+            }
+            else if (type.CaselessEq("normal"))
+            {
                 cfg.ResetEnv();
                 p.Message("Reset environment for {0} &Sto normal", area);
-            } else {
+            }
+            else
+            {
                 EnvOption opt = EnvOptions.Find(type);
                 if (opt == null) return false;
                 opt.SetFunc(p, area, cfg, value);
             }
-            
-            if (lvl == null) {
+
+            if (lvl == null)
+            {
                 Player[] players = PlayerInfo.Online.Items;
-                foreach (Player pl in players) {
+                foreach (Player pl in players)
+                {
                     pl.SendCurrentEnv();
                 }
                 SrvProperties.Save();
-            } else {
+            }
+            else
+            {
                 SendEnv(lvl);
                 lvl.SaveSettings();
             }
             return true;
         }
-        
-        static void SendEnv(Level lvl) {
+
+        static void SendEnv(Level lvl)
+        {
             Player[] players = PlayerInfo.Online.Items;
-            foreach (Player pl in players) {
+            foreach (Player pl in players)
+            {
                 if (pl.level != lvl) continue;
                 pl.SendCurrentEnv();
             }
         }
 
-        static void ExplainPresets(Player p) {
+        static void ExplainPresets(Player p)
+        {
             p.Message("&T/Env preset [type] &H- Applies an env preset on the map");
             EnvPreset.ListFor(p);
         }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/Environment global/level [variable] [value]");
             p.Message("&HChanges server default or current level's environment.");
             p.Message("&HSee &T/Help env variables &Hfor list of variables");
             p.Message("&T/Environment global/level normal");
             p.Message("&HResets all environment variables to default");
         }
-        
-        public override void Help(Player p, string message) {
-            if (message.CaselessEq("variable") || message.CaselessEq("variables")) {
+
+        public override void Help(Player p, string message)
+        {
+            if (message.CaselessEq("variable") || message.CaselessEq("variables"))
+            {
                 p.Message("&HVariables: &f{0}", EnvOptions.Options.Join(o => o.Name));
                 p.Message("&HUse &T/Help env [variable] &Hto see details for that variable");
                 return;
-            } else if (message.CaselessEq("presets")) {
+            }
+            else if (message.CaselessEq("presets"))
+            {
                 ExplainPresets(p); return;
             }
-            
+
             EnvOption opt = EnvOptions.Find(message);
-            if (opt != null) {
+            if (opt != null)
+            {
                 p.Message("&T/Env {0} [value]", opt.Name);
                 p.Message(opt.Help);
                 p.Message("&HUse 'normal' for [value] to reset to default");
-            } else {
+            }
+            else
+            {
                 p.Message("&WUnrecognised property \"{0}\"", message);
             }
         }

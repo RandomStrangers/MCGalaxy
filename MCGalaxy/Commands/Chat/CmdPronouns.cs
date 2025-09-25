@@ -18,29 +18,35 @@
 
 using System.Collections.Generic;
 
-namespace MCGalaxy.Commands.Chatting {
-    public class CmdPronouns : Command2 {
+namespace MCGalaxy.Commands.Chatting
+{
+    public class CmdPronouns : Command2
+    {
         public override string name { get { return "Pronouns"; } }
         public override string type { get { return CommandTypes.Chat; } }
-        public override void Use(Player p, string message, CommandData data) {
+        public override void Use(Player p, string message, CommandData data)
+        {
             if (message.Length == 0) { Help(p); return; }
 
             string[] names = message.SplitSpaces();
-            Dictionary<string, Pronouns> pros = new Dictionary<string, Pronouns>();
+            Dictionary<string, Pronouns> pros = new();
 
-            foreach (string name in names) {
+            foreach (string name in names)
+            {
                 Pronouns pro = Pronouns.FindMatch(p, name);
                 if (pro == null) { HelpList(p); return; }
                 pros[pro.Name] = pro;
             }
-            
+
             // Disallow using default pronouns along with other pronouns (it's weird..?)
-            if (pros.Count > 1 && pros.ContainsKey(Pronouns.Default.Name)) {
+            if (pros.Count > 1 && pros.ContainsKey(Pronouns.Default.Name))
+            {
                 pros.Remove(Pronouns.Default.Name);
             }
 
-            List<Pronouns> final = new List<Pronouns>();
-            foreach (KeyValuePair<string, Pronouns> pair in pros) {
+            List<Pronouns> final = new();
+            foreach (KeyValuePair<string, Pronouns> pair in pros)
+            {
                 final.Add(pair.Value);
             }
 
@@ -49,14 +55,16 @@ namespace MCGalaxy.Commands.Chatting {
             Pronouns.SaveFor(p);
         }
 
-        public override void Help(Player p) {
+        public override void Help(Player p)
+        {
             p.Message("&T/Pronouns [pronouns1] <pronouns2> <etc>");
             p.Message("&H[pronouns1] will be used to refer to you in server messages.");
             p.Message("&HThe list of pronouns you select will appear in &T/whois");
             HelpList(p);
             p.Message("&HYour pronouns are currently: &T{0}", Pronouns.ListFor(p, ", "));
         }
-        static void HelpList(Player p) {
+        static void HelpList(Player p)
+        {
             p.Message("&HThe following pronouns are currently available:");
             p.Message("&H  &T{0}", Pronouns.GetNames().Join("&H, &T"));
         }

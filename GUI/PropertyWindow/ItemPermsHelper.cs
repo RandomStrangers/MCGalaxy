@@ -65,8 +65,7 @@ namespace MCGalaxy.Gui
 
             if (boxIdx == -1)
             {
-                if (curPerms.Disallowed == null)
-                    curPerms.Disallowed = new List<LevelPermission>();
+                curPerms.Disallowed ??= new List<LevelPermission>();
 
                 perms = curPerms.Disallowed;
                 boxes = DisallowBoxes;
@@ -74,8 +73,7 @@ namespace MCGalaxy.Gui
             }
             else
             {
-                if (curPerms.Allowed == null)
-                    curPerms.Allowed = new List<LevelPermission>();
+                curPerms.Allowed ??= new List<LevelPermission>();
 
                 perms = curPerms.Allowed;
                 boxes = AllowBoxes;

@@ -199,7 +199,7 @@ namespace Priority_Queue
         /// <returns></returns>
         public SimpleNode EnqueueNoLockOrCache(TItem item, TPriority priority)
         {
-            SimpleNode node = new SimpleNode(item);
+            SimpleNode node = new(item);
             if (_queue.Count == _queue.MaxSize)
             {
                 _queue.Resize(_queue.MaxSize * 2 + 1);
@@ -465,7 +465,7 @@ namespace Priority_Queue
         #endregion
         public IEnumerator<TItem> GetEnumerator()
         {
-            List<TItem> queueData = new List<TItem>();
+            List<TItem> queueData = new();
             lock (_queue)
             {
                 //Copy to a separate list because we don't want to 'yield return' inside a lock

@@ -32,12 +32,12 @@ namespace MCGalaxy.Commands.Moderation
         }
         public override CommandAlias[] Aliases
         {
-            get { return new CommandAlias[] { new CommandAlias("XHide", "silent") }; }
+            get { return new CommandAlias[] { new("XHide", "silent") }; }
         }
 
         static void AnnounceOps(Player p, string msg)
         {
-            ItemPerms perms = new ItemPerms(p.hideRank);
+            ItemPerms perms = new(p.hideRank);
             Chat.MessageFrom(ChatScope.Perms, p, msg, perms, null, true);
         }
 

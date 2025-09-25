@@ -28,7 +28,7 @@ namespace MCGalaxy.Gui
 
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            List<string> colors = new List<string>();
+            List<string> colors = new();
             for (int i = 0; i < Colors.List.Length; i++)
             {
                 if (Colors.List[i].Undefined) continue;
@@ -45,7 +45,7 @@ namespace MCGalaxy.Gui
 
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            List<string> ranks = new List<string>();
+            List<string> ranks = new();
             foreach (Group g in Group.GroupList)
             {
                 if (g.Permission <= LevelPermission.Banned) continue;
@@ -62,7 +62,7 @@ namespace MCGalaxy.Gui
 
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            List<string> levels = new List<string>();
+            List<string> levels = new();
             Level[] loaded = LevelInfo.Loaded.Items;
             foreach (Level lvl in loaded)
                 levels.Add(lvl.name);

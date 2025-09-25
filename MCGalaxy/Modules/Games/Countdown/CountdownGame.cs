@@ -15,59 +15,68 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System.Collections.Generic;
 using MCGalaxy.Games;
+using System.Collections.Generic;
 
 namespace MCGalaxy.Modules.Games.Countdown
 {
-    public partial class CountdownGame : RoundsGame 
+    public partial class CountdownGame : RoundsGame
     {
-        public VolatileArray<Player> Players = new VolatileArray<Player>();
-        public VolatileArray<Player> Remaining = new VolatileArray<Player>();
-        
-        public CountdownConfig Config = new CountdownConfig();
+        public VolatileArray<Player> Players = new();
+        public VolatileArray<Player> Remaining = new();
+
+        public CountdownConfig Config = new();
         public override string GameName { get { return "Countdown"; } }
         public override RoundsGameConfig GetConfig() { return Config; }
-        
-        protected override string WelcomeMessage {
+
+        protected override string WelcomeMessage
+        {
             get { return "&aCountdown &Sis running! Type &T/CD join &Sto join"; }
         }
-                
+
         public bool FreezeMode;
         public int Interval;
         public CountdownSpeed SpeedType;
-        
-        public static CountdownGame Instance = new CountdownGame();
+
+        public static CountdownGame Instance = new();
         public CountdownGame() { Picker = new SimpleLevelPicker(); }
-        
+
         public override void UpdateMapConfig() { }
-        
-        protected override List<Player> GetPlayers() {
-            List<Player> playing = new List<Player>();
+
+        protected override List<Player> GetPlayers()
+        {
+            List<Player> playing = new();
             playing.AddRange(Players.Items);
             return playing;
         }
-        
-        public override void OutputStatus(Player p) {
-            Player[] players = Players.Items;            
+
+        public override void OutputStatus(Player p)
+        {
+            Player[] players = Players.Items;
             p.Message("Players in countdown:");
-            
-            if (RoundInProgress) {               
+
+            if (RoundInProgress)
+            {
                 p.Message(players.Join(pl => FormatPlayer(pl)));
-            } else {
+            }
+            else
+            {
                 p.Message(players.Join(pl => pl.ColoredName));
             }
-            
+
             p.Message(squaresLeft.Count + " squares left");
         }
-        
-        string FormatPlayer(Player pl) {
+
+        string FormatPlayer(Player pl)
+        {
             string suffix = Remaining.Contains(pl) ? " &a[IN]" : " &c[OUT]";
             return pl.ColoredName + suffix;
         }
-        
-        protected override string GetStartMap(Player p, string forcedMap) {
-            if (!LevelInfo.MapExists("countdown")) {
+
+        protected override string GetStartMap(Player p, string forcedMap)
+        {
+            if (!LevelInfo.MapExists("countdown"))
+            {
                 p.Message("Countdown level not found, generating..");
                 GenerateMap(p, 32, 32, 32);
             }
@@ -75,56 +84,67 @@ namespace MCGalaxy.Modules.Games.Countdown
         }
 
         protected override void StartGame() { }
-        protected override void EndGame() {
+        protected override void EndGame()
+        {
             Players.Clear();
             Remaining.Clear();
             squaresLeft.Clear();
         }
-        
-        public void GenerateMap(Player p, int width, int height, int length) {
+
+        public void GenerateMap(Player p, int width, int height, int length)
+        {
             Level lvl = CountdownMapGen.Generate(width, height, length);
             Level cur = LevelInfo.FindExact("countdown");
             if (cur != null) LevelActions.Replace(cur, lvl);
             else LevelInfo.Add(lvl);
-            
+
             lvl.Save();
             Map = lvl;
-            
+
             const string format = "Generated map ({0}x{1}x{2}), sending you to it..";
             p.Message(format, width, height, length);
             PlayerActions.ChangeMap(p, "countdown");
         }
-        
-        public override void PlayerJoinedGame(Player p) {
-            if (!Players.Contains(p)) {
+
+        public override void PlayerJoinedGame(Player p)
+        {
+            if (!Players.Contains(p))
+            {
                 if (p.level != Map && !PlayerActions.ChangeMap(p, "countdown")) return;
                 Players.Add(p);
                 p.Message("You've joined countdown!");
-                Chat.MessageFrom(p, "λNICK &Sjoined countdown!");              
-            } else {
+                Chat.MessageFrom(p, "λNICK &Sjoined countdown!");
+            }
+            else
+            {
                 p.Message("You've already joined countdown. To leave, go to another map.");
             }
         }
-        
-        public override void PlayerLeftGame(Player p) {
+
+        public override void PlayerLeftGame(Player p)
+        {
             Players.Remove(p);
             OnPlayerDied(p);
         }
-        
-        protected override string FormatStatus1(Player p) {
+
+        protected override string FormatStatus1(Player p)
+        {
             return RoundInProgress ? squaresLeft.Count + " squares left" : "";
         }
-        
-        protected override string FormatStatus2(Player p) {
+
+        protected override string FormatStatus2(Player p)
+        {
             return RoundInProgress ? Remaining.Count + " players left" : "";
         }
-        
-        public void SetSpeed(CountdownSpeed speed) {
-            switch (speed) {
-                case CountdownSpeed.Slow:     Interval = 800; break;
-                case CountdownSpeed.Normal:   Interval = 650; break;
-                case CountdownSpeed.Fast:     Interval = 500; break;
-                case CountdownSpeed.Extreme:  Interval = 300; break;
+
+        public void SetSpeed(CountdownSpeed speed)
+        {
+            switch (speed)
+            {
+                case CountdownSpeed.Slow: Interval = 800; break;
+                case CountdownSpeed.Normal: Interval = 650; break;
+                case CountdownSpeed.Fast: Interval = 500; break;
+                case CountdownSpeed.Extreme: Interval = 300; break;
                 case CountdownSpeed.Ultimate: Interval = 150; break;
             }
             SpeedType = speed;

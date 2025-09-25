@@ -22,46 +22,50 @@ using MCGalaxy.SQL;
 
 namespace MCGalaxy.Modules.Games.CTF
 {
-    public partial class CTFGame : RoundsGame 
+    public partial class CTFGame : RoundsGame
     {
         struct CtfStats { public int Points, Captures, Tags; }
-        
+
         static readonly ColumnDesc[] ctfTable = new ColumnDesc[] {
-            new ColumnDesc("ID", ColumnType.Integer, priKey: true, autoInc: true, notNull: true),
-            new ColumnDesc("Name", ColumnType.VarChar, 20),
-            new ColumnDesc("Points", ColumnType.UInt24),
-            new ColumnDesc("Captures", ColumnType.UInt24),
-            new ColumnDesc("tags", ColumnType.UInt24),
+            new("ID", ColumnType.Integer, priKey: true, autoInc: true, notNull: true),
+            new("Name", ColumnType.VarChar, 20),
+            new("Points", ColumnType.UInt24),
+            new("Captures", ColumnType.UInt24),
+            new("tags", ColumnType.UInt24),
         };
-        
-        static CtfStats ParseStats(ISqlRecord record) {
+
+        static CtfStats ParseStats(ISqlRecord record)
+        {
             CtfStats stats;
-            stats.Points   = record.GetInt("Points");
+            stats.Points = record.GetInt("Points");
             stats.Captures = record.GetInt("Captures");
-            stats.Tags     = record.GetInt("Tags");
+            stats.Tags = record.GetInt("Tags");
             return stats;
         }
-        
-        static CtfStats LoadStats(string name) {
+
+        static CtfStats LoadStats(string name)
+        {
             CtfStats stats = default;
             Database.ReadRows("CTF", "*",
                                 record => stats = ParseStats(record),
                                 "WHERE Name=@0", name);
             return stats;
         }
-        
-        protected override void SaveStats(Player p) {
+
+        protected override void SaveStats(Player p)
+        {
             CtfData data = TryGet(p);
             if (data == null || data.Points == 0 && data.Captures == 0 && data.Tags == 0) return;
-            
+
             object[] args = new object[] {
-                 data.Points, data.Captures, data.Tags, 
+                 data.Points, data.Captures, data.Tags,
                  p.name
             };
-            
-            int changed = Database.UpdateRows("CTF", "Points=@0, Captures=@1, tags=@2", 
+
+            int changed = Database.UpdateRows("CTF", "Points=@0, Captures=@1, tags=@2",
                                               "WHERE Name=@3", args);
-            if (changed == 0) {
+            if (changed == 0)
+            {
                 Database.AddRow("CTF", "Points, Captures, tags, Name", args);
             }
         }

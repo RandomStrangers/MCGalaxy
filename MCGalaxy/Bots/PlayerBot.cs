@@ -15,11 +15,11 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.Bots;
+using MCGalaxy.Commands;
+using MCGalaxy.Maths;
 using System;
 using System.Collections.Generic;
-using MCGalaxy.Bots;
-using MCGalaxy.Maths;
-using MCGalaxy.Commands;
 
 namespace MCGalaxy
 {
@@ -40,7 +40,7 @@ namespace MCGalaxy
         public int cur = 0;
         public int countdown = 0;
         public bool nodUp = false;
-        public List<InstructionData> Instructions = new List<InstructionData>();
+        public List<InstructionData> Instructions = new();
 
         public Position TargetPos;
         public bool movement = false;

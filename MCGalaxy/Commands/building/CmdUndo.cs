@@ -15,53 +15,61 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using MCGalaxy.Commands.World;
 using MCGalaxy.DB;
 using MCGalaxy.Drawing.Ops;
-using MCGalaxy.Undo;
 using MCGalaxy.Maths;
+using MCGalaxy.Undo;
+using System;
 
-namespace MCGalaxy.Commands.Building {
-    public class CmdUndo : Command2 {
+namespace MCGalaxy.Commands.Building
+{
+    public class CmdUndo : Command2
+    {
         public override string name { get { return "Undo"; } }
         public override string shortcut { get { return "u"; } }
         public override string type { get { return CommandTypes.Building; } }
-        public override CommandPerm[] ExtraPerms {
+        public override CommandPerm[] ExtraPerms
+        {
             get { return new[] { new CommandPerm(LevelPermission.Operator, "can undo physics") }; }
         }
         public override bool MessageBlockRestricted { get { return true; } }
 
 
-        public override void Use(Player p, string message, CommandData data) {
+        public override void Use(Player p, string message, CommandData data)
+        {
             if (message.Length == 0) { UndoLastDrawOp(p); return; }
             string[] parts = message.SplitSpaces();
             bool undoPhysics = parts[0].CaselessEq("physics");
-            
+
             TimeSpan delta = GetDelta(p, p.name, parts, undoPhysics ? 1 : 0);
-            if (delta == TimeSpan.MinValue || (!undoPhysics && parts.Length > 1)) {
+            if (delta == TimeSpan.MinValue || (!undoPhysics && parts.Length > 1))
+            {
                 p.Message("If you are trying to undo another player, use &T/UndoPlayer");
                 return;
             }
-            
+
             if (undoPhysics) { UndoPhysics(p, data, delta); }
             else { UndoSelf(p, delta); }
         }
-        
-        void UndoLastDrawOp(Player p) {
+
+        void UndoLastDrawOp(Player p)
+        {
             UndoDrawOpEntry[] entries = p.DrawOps.Items;
-            if (entries.Length == 0) {
+            if (entries.Length == 0)
+            {
                 p.Message("You have no draw operations to undo.");
                 p.Message("Try using &T/Undo [timespan] &Sinstead.");
                 return;
             }
-            
-            for (int i = entries.Length - 1; i >= 0; i--) {
+
+            for (int i = entries.Length - 1; i >= 0; i--)
+            {
                 UndoDrawOpEntry entry = entries[i];
                 if (entry.DrawOpName == "UndoSelf") continue;
                 p.DrawOps.Remove(entry);
 
-                UndoSelfDrawOp op = new UndoSelfDrawOp
+                UndoSelfDrawOp op = new()
                 {
                     who = p.name,
                     ids = NameConverter.FindIds(p.name),
@@ -69,35 +77,38 @@ namespace MCGalaxy.Commands.Building {
                     Start = entry.Start,
                     End = entry.End
                 };
-                DrawOpPerformer.Do(op, null, p, new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal } );
+                DrawOpPerformer.Do(op, null, p, new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal });
                 p.Message("Undo performed.");
                 return;
             }
-            
+
             p.Message("Unable to undo any draw operations, as all of the " +
                                "past 50 draw operations are &T/Undo &Sor &T/Undo [timespan]");
             p.Message("Try using &T/Undo [timespan] &Sinstead");
         }
-        
-        void UndoPhysics(Player p, CommandData data, TimeSpan delta) {
+
+        void UndoPhysics(Player p, CommandData data, TimeSpan delta)
+        {
             if (!CheckExtraPerm(p, data, 1)) return;
-            if (!p.CanUse("Physics")) {
+            if (!p.CanUse("Physics"))
+            {
                 p.Message("&WYou can only undo physics if you can use &T/Physics"); return;
             }
-            
+
             CmdPhysics.SetPhysics(p.level, 0);
-            UndoPhysicsDrawOp op = new UndoPhysicsDrawOp
+            UndoPhysicsDrawOp op = new()
             {
                 Start = DateTime.UtcNow.Subtract(delta)
             };
-            DrawOpPerformer.Do(op, null, p, new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal } );
-            
+            DrawOpPerformer.Do(op, null, p, new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal });
+
             p.level.Message("Physics were undone &b" + delta.Shorten());
             Logger.Log(LogType.UserActivity, "Physics were undone &b" + delta.Shorten());
             p.level.Save(true);
         }
-        
-        void UndoSelf(Player p, TimeSpan delta) {
+
+        void UndoSelf(Player p, TimeSpan delta)
+        {
             UndoDrawOp op = new UndoSelfDrawOp
             {
                 Start = DateTime.UtcNow.Subtract(delta),
@@ -106,30 +117,38 @@ namespace MCGalaxy.Commands.Building {
             };
 
             DrawOpPerformer.Do(op, null, p, new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal });
-            if (op.found) {
+            if (op.found)
+            {
                 p.Message("Undid your changes for the past &b{0}", delta.Shorten(true));
-                Logger.Log(LogType.UserActivity, "{0} undid their own actions for the past {1}", 
+                Logger.Log(LogType.UserActivity, "{0} undid their own actions for the past {1}",
                            p.name, delta.Shorten(true));
-            } else {
+            }
+            else
+            {
                 p.Message("No changes found by you in the past &b{0}", delta.Shorten(true));
             }
         }
-        
-                
-        internal static TimeSpan GetDelta(Player p, string name, string[] parts, int offset) {
+
+
+        internal static TimeSpan GetDelta(Player p, string name, string[] parts, int offset)
+        {
             TimeSpan delta = TimeSpan.Zero;
             string timespan = parts.Length > offset ? parts[parts.Length - 1] : "30m";
             bool self = p.name.CaselessEq(name);
-            
-            if (timespan.CaselessEq("all")) {
+
+            if (timespan.CaselessEq("all"))
+            {
                 return self ? TimeSpan.FromSeconds(int.MaxValue) : p.group.MaxUndo;
-            } else if (!CommandParser.GetTimespan(p, timespan, ref delta, "undo the past", "s")) {
+            }
+            else if (!CommandParser.GetTimespan(p, timespan, ref delta, "undo the past", "s"))
+            {
                 return TimeSpan.MinValue;
             }
 
-            if (delta.TotalSeconds == 0) 
+            if (delta.TotalSeconds == 0)
                 delta = TimeSpan.FromMinutes(90);
-            if (!self && delta > p.group.MaxUndo) {
+            if (!self && delta > p.group.MaxUndo)
+            {
                 p.Message("{0}&Ss may only undo up to {1}",
                           p.group.ColoredName, p.group.MaxUndo.Shorten(true, true));
                 return p.group.MaxUndo;
@@ -137,7 +156,8 @@ namespace MCGalaxy.Commands.Building {
             return delta;
         }
 
-        public override void Help(Player p) {
+        public override void Help(Player p)
+        {
             p.Message("&T/Undo &H- Undoes your last draw operation");
             p.Message("&T/Undo [timespan]");
             p.Message("&HUndoes your blockchanges in the past [timespan]");

@@ -73,7 +73,7 @@ namespace MCGalaxy.Levels.IO
     public sealed class JavaReader
     {
         public BinaryReader src;
-        public List<object> handles = new List<object>();
+        public List<object> handles = new();
         public byte[] ReadBytes(int count) { return src.ReadBytes(count); }
 
         public byte ReadUInt8() { return src.ReadByte(); }
@@ -109,17 +109,17 @@ namespace MCGalaxy.Levels.IO
 
         object ReadObject(byte typeCode)
         {
-            switch (typeCode)
+            return typeCode switch
             {
-                case TC_STRING: return NewString();
-                case TC_NULL: return null;
-                case TC_REFERENCE: return PrevObject();
-                case TC_OBJECT: return NewObject();
-                case TC_ARRAY: return NewArray();
-                case TC_ENUM: return NewEnum();
-                case TC_CLASS: return NewClass();
-            }
-            throw new InvalidDataException("Invalid typecode: " + typeCode);
+                TC_STRING => NewString(),
+                TC_NULL => null,
+                TC_REFERENCE => PrevObject(),
+                TC_OBJECT => NewObject(),
+                TC_ARRAY => NewArray(),
+                TC_ENUM => NewEnum(),
+                TC_CLASS => NewClass(),
+                _ => throw new InvalidDataException("Invalid typecode: " + typeCode),
+            };
         }
 
         string NewString()
@@ -138,13 +138,13 @@ namespace MCGalaxy.Levels.IO
 
         JObject NewObject()
         {
-            JObject obj = new JObject
+            JObject obj = new()
             {
                 Desc = ClassDesc()
             };
             handles.Add(obj);
 
-            List<JClassDesc> descs = new List<JClassDesc>();
+            List<JClassDesc> descs = new();
             JClassDesc tmp = obj.Desc;
 
             // most superclass data is first
@@ -164,7 +164,7 @@ namespace MCGalaxy.Levels.IO
 
         JArray NewArray()
         {
-            JArray array = new JArray
+            JArray array = new()
             {
                 Desc = ClassDesc()
             };
@@ -190,7 +190,7 @@ namespace MCGalaxy.Levels.IO
 
         JClassDesc NewClassDesc()
         {
-            JClassDesc desc = new JClassDesc
+            JClassDesc desc = new()
             {
                 Name = ReadUtf8()
             };
@@ -212,7 +212,7 @@ namespace MCGalaxy.Levels.IO
 
         JEnum NewEnum()
         { // TC_ENUM classDesc newHandle enumConstantName
-            JEnum je = new JEnum
+            JEnum je = new()
             {
                 Desc = ClassDesc()  // classDesc
             };
@@ -223,7 +223,7 @@ namespace MCGalaxy.Levels.IO
 
         JClass NewClass()
         { // TC_CLASS classDesc newHandle
-            JClass jc = new JClass
+            JClass jc = new()
             {
                 Desc = ClassDesc() // classDesc
             };
@@ -248,7 +248,7 @@ namespace MCGalaxy.Levels.IO
                 throw new InvalidDataException("Invalid class data flags: " + desc.Flags);
             }
 
-            JClassData data = new JClassData
+            JClassData data = new()
             {
                 Values = new object[desc.Fields.Length]
             };
@@ -282,7 +282,7 @@ namespace MCGalaxy.Levels.IO
 
         JFieldDesc FieldDesc()
         {
-            JFieldDesc desc = new JFieldDesc();
+            JFieldDesc desc = new();
             byte type = ReadUInt8();
             desc.Type = (char)type;
 

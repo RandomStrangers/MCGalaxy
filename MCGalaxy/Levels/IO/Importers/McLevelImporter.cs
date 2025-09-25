@@ -15,54 +15,60 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using System.IO;
 using fNbt;
 using MCGalaxy.Maths;
+using System;
+using System.IO;
 
-namespace MCGalaxy.Levels.IO {
-    public sealed class McLevelImporter : IMapImporter {
+namespace MCGalaxy.Levels.IO
+{
+    public sealed class McLevelImporter : IMapImporter
+    {
 
         public override string Extension { get { return ".mclevel"; } }
         public override string Description { get { return "Minecraft Indev map"; } }
 
-        public override Vec3U16 ReadDimensions(Stream src) {
+        public override Vec3U16 ReadDimensions(Stream src)
+        {
             throw new NotSupportedException();
         }
-        
-        public override Level Read(Stream src, string name, bool metadata) {
-            NbtFile file = new NbtFile();
+
+        public override Level Read(Stream src, string name, bool metadata)
+        {
+            NbtFile file = new();
             file.LoadFromStream(src);
 
             ReadData(file.RootTag, name, out Level lvl);
             if (!metadata) return lvl;
-            
+
             ReadMetadata(file.RootTag, lvl);
             return lvl;
         }
-        
-        void ReadData(NbtCompound root, string name, out Level lvl) {
+
+        void ReadData(NbtCompound root, string name, out Level lvl)
+        {
             NbtCompound map = (NbtCompound)root["Map"];
-            ushort width  = (ushort)map["Width" ].ShortValue;
+            ushort width = (ushort)map["Width"].ShortValue;
             ushort height = (ushort)map["Height"].ShortValue;
             ushort length = (ushort)map["Length"].ShortValue;
-            byte[] blocks = map["Blocks"].ByteArrayValue;            
+            byte[] blocks = map["Blocks"].ByteArrayValue;
             lvl = new Level(name, width, height, length, blocks);
-            
+
             NbtList spawn = (NbtList)map["Spawn"];
             lvl.spawnx = (ushort)spawn.Tags[0].ShortValue;
             lvl.spawny = (ushort)spawn.Tags[1].ShortValue;
             lvl.spawnz = (ushort)spawn.Tags[2].ShortValue;
         }
-        
-        void ReadMetadata(NbtCompound root, Level lvl) {
+
+        void ReadMetadata(NbtCompound root, Level lvl)
+        {
             NbtCompound env = (NbtCompound)root["Environment"];
             // TODO: Work out sun/shadow color from Skylight and TimeOfDay
             lvl.Config.SkyColor = env["SkyColor"].IntValue.ToString("X6");
             lvl.Config.FogColor = env["FogColor"].IntValue.ToString("X6");
-            lvl.Config.CloudColor = env["CloudColor"].IntValue.ToString("X6");            
+            lvl.Config.CloudColor = env["CloudColor"].IntValue.ToString("X6");
             lvl.Config.CloudsHeight = env["CloudHeight"].ShortValue;
-            
+
             // TODO: These don't seem right still. do more testing.
             lvl.Config.HorizonBlock = env["SurroundingWaterType"].ByteValue;
             lvl.Config.EdgeLevel = env["SurroundingWaterHeight"].ShortValue;

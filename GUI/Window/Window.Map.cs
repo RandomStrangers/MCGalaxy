@@ -15,10 +15,10 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
 */
+using MCGalaxy.UI;
 using System;
 using System.Threading;
 using System.Windows.Forms;
-using MCGalaxy.UI;
 
 namespace MCGalaxy.Gui
 {
@@ -45,7 +45,7 @@ namespace MCGalaxy.Gui
             string args = name + " " + x + " " + y + " " + z + " " + type;
             if (!string.IsNullOrEmpty(seed)) args += " " + seed;
 
-            Thread genThread = new Thread(() => DoGen(name, args))
+            Thread genThread = new(() => DoGen(name, args))
             {
                 Name = "GuiGenMap"
             };
@@ -70,7 +70,8 @@ namespace MCGalaxy.Gui
             if (LevelInfo.MapExists(name))
             {
                 Popup.Message("Level successfully generated.");
-                RunOnUI_Async(() => {
+                RunOnUI_Async(() =>
+                {
                     Map_UpdateUnloadedList();
                     Map_UpdateLoadedList();
                     Main_UpdateMapList();
@@ -143,7 +144,7 @@ namespace MCGalaxy.Gui
 
             if (name == last) return;
             last = name;
-            LevelProperties settings = new LevelProperties(lvl);
+            LevelProperties settings = new(lvl);
             map_pgProps.SelectedObject = settings;
             map_gbProps.Text = "Properties for " + name;
         }

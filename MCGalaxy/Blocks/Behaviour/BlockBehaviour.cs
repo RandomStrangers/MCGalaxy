@@ -16,96 +16,105 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Blocks.Physics;
-using BlockID = System.UInt16;
 
-namespace MCGalaxy.Blocks {
+namespace MCGalaxy.Blocks
+{
 
     /// <summary> Handles the player deleting a block at the given coordinates. </summary>
     /// <remarks> Use p.ChangeBlock to do a normal player block change (adds to BlockDB, updates dirt/grass beneath) </remarks>
-    public delegate ChangeResult HandleDelete(Player p, BlockID oldBlock, ushort x, ushort y, ushort z);
+    public delegate ChangeResult HandleDelete(Player p, ushort oldBlock, ushort x, ushort y, ushort z);
 
     /// <summary> Handles the player placing a block at the given coordinates. </summary>
     /// <remarks> Use p.ChangeBlock to do a normal player block change (adds to BlockDB, updates dirt/grass beneath) </remarks>
-    public delegate ChangeResult HandlePlace(Player p, BlockID newBlock, ushort x, ushort y, ushort z);
+    public delegate ChangeResult HandlePlace(Player p, ushort newBlock, ushort x, ushort y, ushort z);
 
     /// <summary> Returns whether this block handles the player walking through this block at the given coordinates. </summary>
     /// <remarks> If this returns false, continues trying other walkthrough blocks the player is touching. </remarks>
-    public delegate bool HandleWalkthrough(Player p, BlockID block, ushort x, ushort y, ushort z);
+    public delegate bool HandleWalkthrough(Player p, ushort block, ushort x, ushort y, ushort z);
 
     /// <summary> Called to handle the physics for this particular block. </summary>
     public delegate void HandlePhysics(Level lvl, ref PhysInfo C);
-    
-    public static class BlockBehaviour {
+
+    public static class BlockBehaviour
+    {
 
         /// <summary> Retrieves the default place block handler for the given block. </summary>
-        internal static HandlePlace GetPlaceHandler(BlockID block, BlockProps[] props) {
-            switch (block) {
-                case Block.C4:          return PlaceBehaviour.C4;
+        internal static HandlePlace GetPlaceHandler(ushort block, BlockProps[] props)
+        {
+            switch (block)
+            {
+                case Block.C4: return PlaceBehaviour.C4;
                 case Block.C4Detonator: return PlaceBehaviour.C4Det;
             }
-            
+
             if (props[block].GrassBlock != Block.Invalid) return PlaceBehaviour.DirtGrow;
-            if (props[block].DirtBlock  != Block.Invalid) return PlaceBehaviour.GrassDie;
-            if (props[block].StackBlock != Block.Air)     return PlaceBehaviour.Stack;
+            if (props[block].DirtBlock != Block.Invalid) return PlaceBehaviour.GrassDie;
+            if (props[block].StackBlock != Block.Air) return PlaceBehaviour.Stack;
             return null;
         }
-        
+
         // NOTE: These static declarations are just to save a few memory allocations
         //  Behind the scenes, 'return XYZ;' is actually compiled into 'return new HandleDelete(XYZ);'
         //  So by declaring a static variable, 'new HandleDelete(XYZ)' is only ever called once
         //   instead of over and over - thereby slightly reducing memory usage by a few KB per Level
         static readonly HandleDelete DB_revert = DeleteBehaviour.RevertDoor;
-        static readonly HandleDelete DB_oDoor  = DeleteBehaviour.oDoor;
-        static readonly HandleDelete DB_Door   = DeleteBehaviour.Door;
-        
+        static readonly HandleDelete DB_oDoor = DeleteBehaviour.oDoor;
+        static readonly HandleDelete DB_Door = DeleteBehaviour.Door;
+
         /// <summary> Retrieves the default delete block handler for the given block. </summary>
-        internal static HandleDelete GetDeleteHandler(BlockID block, BlockProps[] props) {
-            switch (block) {
-                case Block.RocketStart:    return DeleteBehaviour.RocketStart;
-                case Block.Fireworks:      return DeleteBehaviour.Firework;
-                case Block.C4Detonator:    return DeleteBehaviour.C4Det;
-                case Block.Door_Log_air:   return DB_revert;
-                case Block.Door_TNT_air:   return DB_revert;
+        internal static HandleDelete GetDeleteHandler(ushort block, BlockProps[] props)
+        {
+            switch (block)
+            {
+                case Block.RocketStart: return DeleteBehaviour.RocketStart;
+                case Block.Fireworks: return DeleteBehaviour.Firework;
+                case Block.C4Detonator: return DeleteBehaviour.C4Det;
+                case Block.Door_Log_air: return DB_revert;
+                case Block.Door_TNT_air: return DB_revert;
                 case Block.Door_Green_air: return DB_revert;
             }
-            
+
             // NOTE: If this gets changed, make sure to change BlockOptions.cs too
-            if (props[block].IsMessageBlock)              return DeleteBehaviour.DoMessageBlock;
-            if (props[block].IsPortal)                    return DeleteBehaviour.DoPortal;            
-            if (props[block].IsTDoor)                     return DB_revert;
+            if (props[block].IsMessageBlock) return DeleteBehaviour.DoMessageBlock;
+            if (props[block].IsPortal) return DeleteBehaviour.DoPortal;
+            if (props[block].IsTDoor) return DB_revert;
             if (props[block].oDoorBlock != Block.Invalid) return DB_oDoor;
-            if (props[block].IsDoor)                      return DB_Door;
+            if (props[block].IsDoor) return DB_Door;
             return null;
         }
 
         /// <summary> Retrieves the default walkthrough block handler for the given block. </summary>
-        internal static HandleWalkthrough GetWalkthroughHandler(BlockID block, BlockProps[] props, bool nonSolid) {
-            switch (block) {
-                case Block.Checkpoint:          return WalkthroughBehaviour.Checkpoint;
+        internal static HandleWalkthrough GetWalkthroughHandler(ushort block, BlockProps[] props, bool nonSolid)
+        {
+            switch (block)
+            {
+                case Block.Checkpoint: return WalkthroughBehaviour.Checkpoint;
                 case Block.Door_AirActivatable: return WalkthroughBehaviour.Door;
-                case Block.Door_Water:          return WalkthroughBehaviour.Door;
-                case Block.Door_Lava:           return WalkthroughBehaviour.Door;
-                case Block.Train:               return WalkthroughBehaviour.Train;
+                case Block.Door_Water: return WalkthroughBehaviour.Door;
+                case Block.Door_Lava: return WalkthroughBehaviour.Door;
+                case Block.Train: return WalkthroughBehaviour.Train;
             }
-            
+
             if (props[block].IsMessageBlock && nonSolid) return WalkthroughBehaviour.DoMessageBlock;
-            if (props[block].IsPortal && nonSolid)       return WalkthroughBehaviour.DoPortal;
+            if (props[block].IsPortal && nonSolid) return WalkthroughBehaviour.DoPortal;
             return null;
         }
 
-        
+
         // See comments noted above for reasoning behind static declaration of some HandleDelete handlers
-        static readonly HandlePhysics PH_do_Door  = DoorPhysics.Do;
+        static readonly HandlePhysics PH_do_Door = DoorPhysics.Do;
         static readonly HandlePhysics PH_do_oDoor = DoorPhysics.oDoor;
         static readonly HandlePhysics PH_do_Other = OtherPhysics.DoOther;
-        
+
         /// <summary> Retrieves the default physics block handler for the given block. </summary>
-        internal static HandlePhysics GetPhysicsHandler(BlockID block, BlockProps[] props) {
-            switch (block) {
-                case Block.Door_Log_air:   return PH_do_Door;
-                case Block.Door_TNT_air:   return PH_do_Door;
+        internal static HandlePhysics GetPhysicsHandler(ushort block, BlockProps[] props)
+        {
+            switch (block)
+            {
+                case Block.Door_Log_air: return PH_do_Door;
+                case Block.Door_TNT_air: return PH_do_Door;
                 case Block.Door_Green_air: return PH_do_Door;
-                
+
                 case Block.SnakeTail: return SnakePhysics.DoTail;
                 case Block.Snake: return SnakePhysics.Do;
                 case Block.RocketHead: return RocketPhysics.Do;
@@ -113,19 +122,21 @@ namespace MCGalaxy.Blocks {
                 case Block.ZombieBody: return ZombiePhysics.Do;
                 case Block.ZombieHead: return ZombiePhysics.DoHead;
                 case Block.Creeper: return ZombiePhysics.Do;
-                    
+
                 case Block.Water: return SimpleLiquidPhysics.DoWater;
                 case Block.Deadly_ActiveWater: return SimpleLiquidPhysics.DoWater;
                 case Block.Lava: return SimpleLiquidPhysics.DoLava;
                 case Block.Deadly_ActiveLava: return SimpleLiquidPhysics.DoLava;
                 case Block.WaterDown: return ExtLiquidPhysics.DoWaterfall;
                 case Block.LavaDown: return ExtLiquidPhysics.DoLavafall;
-                
-                case Block.WaterFaucet: return (Level lvl, ref PhysInfo C) =>
+
+                case Block.WaterFaucet:
+                    return (Level lvl, ref PhysInfo C) =>
                     ExtLiquidPhysics.DoFaucet(lvl, ref C, Block.WaterDown);
-                case Block.LavaFaucet: return (Level lvl, ref PhysInfo C) =>
+                case Block.LavaFaucet:
+                    return (Level lvl, ref PhysInfo C) =>
                     ExtLiquidPhysics.DoFaucet(lvl, ref C, Block.LavaDown);
-                    
+
                 case Block.FiniteWater: return FinitePhysics.DoWaterOrLava;
                 case Block.FiniteLava: return FinitePhysics.DoWaterOrLava;
                 case Block.FiniteFaucet: return FinitePhysics.DoFaucet;
@@ -133,7 +144,7 @@ namespace MCGalaxy.Blocks {
                 case Block.Geyser: return ExtLiquidPhysics.DoGeyser;
                 case Block.FastLava: return SimpleLiquidPhysics.DoFastLava;
                 case Block.Deadly_FastLava: return SimpleLiquidPhysics.DoFastLava;
-                    
+
                 case Block.Air: return AirPhysics.DoAir;
                 case Block.Leaves: return LeafPhysics.DoLeaf;
                 case Block.Log: return LeafPhysics.DoLog;
@@ -144,21 +155,27 @@ namespace MCGalaxy.Blocks {
                 case Block.Gravel: return OtherPhysics.DoFalling;
                 case Block.FloatWood: return OtherPhysics.DoFloatwood;
 
-                case Block.Sponge: return (Level lvl, ref PhysInfo C) => 
+                case Block.Sponge:
+                    return (Level lvl, ref PhysInfo C) =>
                     OtherPhysics.DoSponge(lvl, ref C, false);
-                case Block.LavaSponge: return (Level lvl, ref PhysInfo C) => 
+                case Block.LavaSponge:
+                    return (Level lvl, ref PhysInfo C) =>
                     OtherPhysics.DoSponge(lvl, ref C, true);
 
                 // Special blocks that are not saved
-                case Block.Air_Flood: return (Level lvl, ref PhysInfo C) =>
+                case Block.Air_Flood:
+                    return (Level lvl, ref PhysInfo C) =>
                     AirPhysics.DoFlood(lvl, ref C, AirFlood.Full, Block.Air_Flood);
-                case Block.Air_FloodLayer: return (Level lvl, ref PhysInfo C) =>
+                case Block.Air_FloodLayer:
+                    return (Level lvl, ref PhysInfo C) =>
                     AirPhysics.DoFlood(lvl, ref C, AirFlood.Layer, Block.Air_FloodLayer);
-                case Block.Air_FloodDown: return (Level lvl, ref PhysInfo C) =>
+                case Block.Air_FloodDown:
+                    return (Level lvl, ref PhysInfo C) =>
                     AirPhysics.DoFlood(lvl, ref C, AirFlood.Down, Block.Air_FloodDown);
-                case Block.Air_FloodUp: return (Level lvl, ref PhysInfo C) =>
+                case Block.Air_FloodUp:
+                    return (Level lvl, ref PhysInfo C) =>
                     AirPhysics.DoFlood(lvl, ref C, AirFlood.Up, Block.Air_FloodUp);
-                    
+
                 case Block.TNT_Small: return TntPhysics.DoSmallTnt;
                 case Block.TNT_Big: return TntPhysics.DoBigTnt;
                 case Block.TNT_Nuke: return TntPhysics.DoNukeTnt;
@@ -170,42 +187,55 @@ namespace MCGalaxy.Blocks {
             if (animalAI != null) return animalAI;
             if (props[block].oDoorBlock != Block.Invalid) return PH_do_oDoor;
             if (props[block].GrassBlock != Block.Invalid) return OtherPhysics.DoDirtGrow;
-            if (props[block].DirtBlock  != Block.Invalid) return OtherPhysics.DoGrassDie;
-            
+            if (props[block].DirtBlock != Block.Invalid) return OtherPhysics.DoGrassDie;
+
             // TODO: should this be checking WaterKills/LavaKills
             // Adv physics updating anything placed next to water or lava
-            if ((block >= Block.Red && block <= Block.RedMushroom) || block == Block.Wood || block == Block.Log || block == Block.Bookshelf) {
+            if ((block >= Block.Red && block <= Block.RedMushroom) || block == Block.Wood || block == Block.Log || block == Block.Bookshelf)
+            {
                 return PH_do_Other;
             }
             return null;
         }
-        
+
         /// <summary> Retrieves the default physics block handler for the given block. </summary>
-        internal static HandlePhysics GetPhysicsDoorsHandler(BlockID block, BlockProps[] props) {
-            if (block == Block.Air)            return PH_do_Door;
-            if (block == Block.Door_Log_air)   return PH_do_Door;
-            if (block == Block.Door_TNT_air)   return PH_do_Door;
+        internal static HandlePhysics GetPhysicsDoorsHandler(ushort block, BlockProps[] props)
+        {
+            if (block == Block.Air) return PH_do_Door;
+            if (block == Block.Door_Log_air) return PH_do_Door;
+            if (block == Block.Door_TNT_air) return PH_do_Door;
             if (block == Block.Door_Green_air) return PH_do_Door;
             if (props[block].oDoorBlock != Block.Invalid) return PH_do_oDoor;
             return null;
         }
-        
-        static HandlePhysics AnimalAIHandler(AnimalAI ai) {
+
+        static HandlePhysics AnimalAIHandler(AnimalAI ai)
+        {
             if (ai == AnimalAI.Fly) return BirdPhysics.Do;
 
-            if (ai == AnimalAI.FleeAir) {
+            if (ai == AnimalAI.FleeAir)
+            {
                 return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, Block.Air, -1);
-            } else if (ai == AnimalAI.FleeWater) {
+            }
+            else if (ai == AnimalAI.FleeWater)
+            {
                 return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, Block.Water, -1);
-            } else if (ai == AnimalAI.FleeLava) {
+            }
+            else if (ai == AnimalAI.FleeLava)
+            {
                 return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, Block.Lava, -1);
             }
-            
-            if (ai == AnimalAI.KillerAir) {
+
+            if (ai == AnimalAI.KillerAir)
+            {
                 return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, Block.Air, 1);
-            } else if (ai == AnimalAI.KillerWater) {
+            }
+            else if (ai == AnimalAI.KillerWater)
+            {
                 return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, Block.Water, 1);
-            } else if (ai == AnimalAI.KillerLava) {
+            }
+            else if (ai == AnimalAI.KillerLava)
+            {
                 return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, Block.Lava, 1);
             }
             return null;

@@ -28,8 +28,8 @@ namespace NotAwesomeSurvival
             {
                 File.Create(path).Dispose();
             }
-            List<string> lines = new List<string>();
-            using (StreamReader r = new StreamReader(path, Encoding.UTF8))
+            List<string> lines = new();
+            using (StreamReader r = new(path, Encoding.UTF8))
             {
                 string line;
                 while ((line = r.ReadLine()) != null)
@@ -74,7 +74,7 @@ namespace NotAwesomeSurvival
         {
             public const int ToolLimit = 15,
                 BlockStackLimit = 15;
-            public static object locker = new object();
+            public static object locker = new();
             public enum Type { Chest, Barrel, Crate, Gravestone, AutoCraft, Dispenser }
             public Type type;
             public string name { get { return Enum.GetName(typeof(Type), type); } }
@@ -83,19 +83,12 @@ namespace NotAwesomeSurvival
                 get
                 {
                     string desc = "&s";
-                    switch (type)
+                    desc += type switch
                     {
-                        case Type.Chest:
-                            desc += name + "s&S can store &btools&S, with a limit of " + ToolLimit + ".";
-                            break;
-                        case Type.Barrel:
-                        case Type.Crate:
-                        case Type.Dispenser:
-                            desc += name + "s&S can store &bblock&S stacks, with a limit of " + BlockStackLimit + ".";
-                            break;
-                        default:
-                            throw new Exception("Invalid value for Type");
-                    }
+                        Type.Chest => name + "s&S can store &btools&S, with a limit of " + ToolLimit + ".",
+                        Type.Barrel or Type.Crate or Type.Dispenser => name + "s&S can store &bblock&S stacks, with a limit of " + BlockStackLimit + ".",
+                        _ => throw new Exception("Invalid value for Type"),
+                    };
                     return desc;
                 }
             }
@@ -107,7 +100,8 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockExistAction WaterExistAction()
         {
-            return (np, nasBlock, exists, x, y, z) => {
+            return (np, nasBlock, exists, x, y, z) =>
+            {
                 if (exists)
                 {
                     //give back barrel
@@ -117,7 +111,8 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockExistAction LavaExistAction()
         {
-            return (np, nasBlock, exists, x, y, z) => {
+            return (np, nasBlock, exists, x, y, z) =>
+            {
                 if (exists)
                 {
                     //give back barrel
@@ -129,36 +124,39 @@ namespace NotAwesomeSurvival
             authors = ReadAllLinesList("text/BookAuthors.txt");
         public static NasBlockInteraction BookshelfInteraction()
         {
-            return (np, button, action, nasBlock, x, y, z) => {
-                if (action == MouseAction.Pressed) 
+            return (np, button, action, nasBlock, x, y, z) =>
+            {
+                if (action == MouseAction.Pressed)
                 {
-                    return; 
+                    return;
                 }
                 np.Message(books[r.Next(0, 99)] + " by " + authors[r.Next(0, 74)]);
             };
         }
         public static NasBlockInteraction CrateInteraction(string text)
         {
-            return (np, button, action, nasBlock, x, y, z) => {
-                if (action == MouseAction.Pressed) 
+            return (np, button, action, nasBlock, x, y, z) =>
+            {
+                if (action == MouseAction.Pressed)
                 {
-                    return; 
+                    return;
                 }
                 np.Message(text);
             };
         }
         public static NasBlockInteraction BedInteraction()
         {
-            return (np, button, action, nasBlock, x, y, z) => {
-                if (action == MouseAction.Pressed || button != MouseButton.Right) 
+            return (np, button, action, nasBlock, x, y, z) =>
+            {
+                if (action == MouseAction.Pressed || button != MouseButton.Right)
                 {
-                    return; 
+                    return;
                 }
                 np.Message("Spawnpoint set");
                 Position coords = np.p.Pos;
                 np.Teleport(x + " " + y + " " + z);
                 np.spawnCoords = np.p.Pos;
-                WarpList list = new WarpList
+                WarpList list = new()
                 {
                     Filename = "extra/Waypoints/" + np.p.name + "_nas.txt"
                 };
@@ -167,16 +165,16 @@ namespace NotAwesomeSurvival
                     np.p.Extras["NAS_WAYPOINTS"] = list;
                 }
                 WarpList waypoints = (WarpList)np.p.Extras["NAS_WAYPOINTS"];
-                if (!waypoints.Exists("Bed")) 
-                { 
-                    waypoints.Create("Bed", np.p); 
+                if (!waypoints.Exists("Bed"))
+                {
+                    waypoints.Create("Bed", np.p);
                 }
                 waypoints.Update(waypoints.Find("Bed"), np.p);
                 np.Teleport("-precise " + coords.X + " " + (coords.Y - 50) + " " + coords.Z);
                 np.spawnMap = np.p.level.name;
-                np.bedCoords = new int[] 
-                { 
-                    x, y, z 
+                np.bedCoords = new int[]
+                {
+                    x, y, z
                 };
                 if (!(NasTimeCycle.cycleCurrentTime < 20 * NasTimeCycle.hourMinutes &&
                     NasTimeCycle.cycleCurrentTime >= 7 * NasTimeCycle.hourMinutes))
@@ -188,19 +186,20 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockInteraction SmithingTableAction()
         {
-            return (np, button, action, nasBlock, x, y, z) => {
-                if (action == MouseAction.Pressed || button != MouseButton.Right) 
+            return (np, button, action, nasBlock, x, y, z) =>
+            {
+                if (action == MouseAction.Pressed || button != MouseButton.Right)
                 {
-                    return; 
+                    return;
                 }
                 ushort aboveHere = np.nl.GetBlock(x, y + 1, z);
                 float maxHP = np.inventory.HeldItem.Prop.baseHP;
                 if (np.inventory.HeldItem.name.CaselessContains("emerald") && aboveHere == Block.FromRaw(650))
                 {
                     np.inventory.HeldItem.HP = np.inventory.HeldItem.HP + (0.4f * maxHP);
-                    if (np.inventory.HeldItem.HP > maxHP) 
+                    if (np.inventory.HeldItem.HP > maxHP)
                     {
-                        np.inventory.HeldItem.HP = maxHP; 
+                        np.inventory.HeldItem.HP = maxHP;
                     }
                     np.nl.SetBlock(x, y + 1, z, Block.Air);
                     np.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
@@ -209,9 +208,9 @@ namespace NotAwesomeSurvival
                 if (np.inventory.HeldItem.name.CaselessContains("diamond") && aboveHere == Block.FromRaw(631))
                 {
                     np.inventory.HeldItem.HP = np.inventory.HeldItem.HP + (0.4f * maxHP);
-                    if (np.inventory.HeldItem.HP > maxHP) 
-                    { 
-                        np.inventory.HeldItem.HP = maxHP; 
+                    if (np.inventory.HeldItem.HP > maxHP)
+                    {
+                        np.inventory.HeldItem.HP = maxHP;
                     }
                     np.nl.SetBlock(x, y + 1, z, Block.Air);
                     np.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
@@ -220,9 +219,9 @@ namespace NotAwesomeSurvival
                 if (np.inventory.HeldItem.name.CaselessContains("gold") && aboveHere == Block.FromRaw(41))
                 {
                     np.inventory.HeldItem.HP = np.inventory.HeldItem.HP + (0.4f * maxHP);
-                    if (np.inventory.HeldItem.HP > maxHP) 
-                    { 
-                        np.inventory.HeldItem.HP = maxHP; 
+                    if (np.inventory.HeldItem.HP > maxHP)
+                    {
+                        np.inventory.HeldItem.HP = maxHP;
                     }
                     np.nl.SetBlock(x, y + 1, z, Block.Air);
                     np.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
@@ -231,9 +230,9 @@ namespace NotAwesomeSurvival
                 if (np.inventory.HeldItem.name.CaselessContains("iron") && aboveHere == Block.FromRaw(42))
                 {
                     np.inventory.HeldItem.HP = np.inventory.HeldItem.HP + (0.4f * maxHP);
-                    if (np.inventory.HeldItem.HP > maxHP) 
-                    { 
-                        np.inventory.HeldItem.HP = maxHP; 
+                    if (np.inventory.HeldItem.HP > maxHP)
+                    {
+                        np.inventory.HeldItem.HP = maxHP;
                     }
                     np.nl.SetBlock(x, y + 1, z, Block.Air);
                     np.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
@@ -253,19 +252,20 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockExistAction BeaconInteractAction()
         {
-            return (np, nasBlock, exists, x, y, z) => {
+            return (np, nasBlock, exists, x, y, z) =>
+            {
                 if (exists)
                 {
                     np.inventory.SetAmount(1, 1, true, true);
                     np.nl.SetBlock(x, y, z, Block.Air);
                     bool inv = np.p.invincible;
-                    if (!inv) 
-                    { 
-                        np.p.invincible = true; 
+                    if (!inv)
+                    {
+                        np.p.invincible = true;
                     }
                     np.SendToMain();
                     np.lastGroundedLocation = new Vec3S32(Server.mainLevel.SpawnPos.X, Server.mainLevel.SpawnPos.Y, Server.mainLevel.SpawnPos.Z);
-                    NasBlockChange.InvInfo invInfo = new NasBlockChange.InvInfo
+                    NasBlockChange.InvInfo invInfo = new()
                     {
                         np = np,
                         inv = inv
@@ -276,19 +276,20 @@ namespace NotAwesomeSurvival
         }
         public static void InvTask(SchedulerTask task)
         {
-            if (!((NasBlockChange.InvInfo)task.State).inv) 
-            { 
-                ((NasBlockChange.InvInfo)task.State).np.p.invincible = false; 
+            if (!((NasBlockChange.InvInfo)task.State).inv)
+            {
+                ((NasBlockChange.InvInfo)task.State).np.p.invincible = false;
             }
         }
         public static NasBlockExistAction BedBeaconAction()
         {
-            return (np, nasBlock, exists, x, y, z) => {
+            return (np, nasBlock, exists, x, y, z) =>
+            {
                 if (exists)
                 {
-                    if (np.isDead) 
-                    { 
-                        return; 
+                    if (np.isDead)
+                    {
+                        return;
                     }
                     np.headingToBed = true;
                     np.isDead = true;
@@ -300,7 +301,8 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockExistAction MessageExistAction()
         {
-            return (np, nasBlock, exists, x, y, z) => {
+            return (np, nasBlock, exists, x, y, z) =>
+            {
                 //you can never have enough voodoo
                 lock (Container.locker)
                 {
@@ -322,10 +324,11 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockInteraction StripInteraction(ushort toThis, string checkString = "Axe")
         {
-            return (np, button, action, nasBlock, x, y, z) => {
-                if (action == MouseAction.Pressed || button != MouseButton.Right) 
-                { 
-                    return; 
+            return (np, button, action, nasBlock, x, y, z) =>
+            {
+                if (action == MouseAction.Pressed || button != MouseButton.Right)
+                {
+                    return;
                 }
                 if (np.inventory.HeldItem.name.Contains(checkString))
                 {
@@ -341,7 +344,8 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockInteraction MessageInteraction()
         {
-            return (np, button, action, nasBlock, x, y, z) => {
+            return (np, button, action, nasBlock, x, y, z) =>
+            {
                 string file = GetTextPath(np.p);
                 if (!File.Exists(file))
                 {
@@ -356,19 +360,19 @@ namespace NotAwesomeSurvival
                     np.Message("This sign's data got deleted. Now, it's a public sign!");
                 }
                 Entity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
-                if (action == MouseAction.Pressed | button == MouseButton.Left) 
-                { 
-                    return; 
+                if (action == MouseAction.Pressed | button == MouseButton.Left)
+                {
+                    return;
                 }
-                if (button == MouseButton.Right) 
-                { 
-                    np.Message(bEntity.blockText); 
+                if (button == MouseButton.Right)
+                {
+                    np.Message(bEntity.blockText);
                 }
                 if ((button == MouseButton.Middle) && (myText != ""))
                 {
-                    if (!bEntity.CanAccess(np)) 
-                    { 
-                        return; 
+                    if (!bEntity.CanAccess(np))
+                    {
+                        return;
                     }
                     bEntity.blockText = np.p.ColoredName + " &Ssays: " + myText;
                     //File.WriteAllText(file, string.Empty);
@@ -379,57 +383,58 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockExistAction LavaBarrelAction()
         {
-            return (np, nasBlock, exists, x, y, z) => {
+            return (np, nasBlock, exists, x, y, z) =>
+            {
                 if (exists)
                 {
-                    if (np.inventory.GetAmount(696) >= 5) 
+                    if (np.inventory.GetAmount(696) >= 5)
                     {
                         np.Message("&mYou have too many lava barrels!");
-                        return; 
+                        return;
                     }
                     bool[] isLava = { false, false, false, false, false, false };
-                    if (np.nl.GetBlock(x, y + 1, z) == 10) 
-                    { 
-                        isLava[0] = true; 
+                    if (np.nl.GetBlock(x, y + 1, z) == 10)
+                    {
+                        isLava[0] = true;
                     }
-                    if (np.nl.GetBlock(x + 1, y, z) == 10) 
-                    { 
-                        isLava[1] = true; 
+                    if (np.nl.GetBlock(x + 1, y, z) == 10)
+                    {
+                        isLava[1] = true;
                     }
-                    if (np.nl.GetBlock(x - 1, y, z) == 10) 
-                    { 
-                        isLava[2] = true; 
+                    if (np.nl.GetBlock(x - 1, y, z) == 10)
+                    {
+                        isLava[2] = true;
                     }
-                    if (np.nl.GetBlock(x, y, z - 1) == 10) 
-                    { 
-                        isLava[3] = true; 
+                    if (np.nl.GetBlock(x, y, z - 1) == 10)
+                    {
+                        isLava[3] = true;
                     }
-                    if (np.nl.GetBlock(x, y, z + 1) == 10) 
-                    { 
-                        isLava[4] = true; 
+                    if (np.nl.GetBlock(x, y, z + 1) == 10)
+                    {
+                        isLava[4] = true;
                     }
                     if (isLava[0] || isLava[1] || isLava[2] || isLava[3] || isLava[4] || isLava[5])
                     {
                         np.nl.SetBlock(x, y, z, Block.Air);
-                        if ((isLava[0] || isLava[5]) && IsPartOfSet(lavaSet, np.nl.GetBlock(x, y + 1, z)) != -1) 
-                        { 
-                            np.nl.SetBlock(x, y + 1, z, Block.Air); 
+                        if ((isLava[0] || isLava[5]) && IsPartOfSet(lavaSet, np.nl.GetBlock(x, y + 1, z)) != -1)
+                        {
+                            np.nl.SetBlock(x, y + 1, z, Block.Air);
                         }
-                        if ((isLava[1] || isLava[5]) && IsPartOfSet(lavaSet, np.nl.GetBlock(x + 1, y, z)) != -1) 
-                        { 
-                            np.nl.SetBlock(x + 1, y, z, Block.Air); 
+                        if ((isLava[1] || isLava[5]) && IsPartOfSet(lavaSet, np.nl.GetBlock(x + 1, y, z)) != -1)
+                        {
+                            np.nl.SetBlock(x + 1, y, z, Block.Air);
                         }
-                        if ((isLava[2] || isLava[5]) && IsPartOfSet(lavaSet, np.nl.GetBlock(x - 1, y, z)) != -1) 
-                        { 
-                            np.nl.SetBlock(x - 1, y, z, Block.Air); 
+                        if ((isLava[2] || isLava[5]) && IsPartOfSet(lavaSet, np.nl.GetBlock(x - 1, y, z)) != -1)
+                        {
+                            np.nl.SetBlock(x - 1, y, z, Block.Air);
                         }
-                        if ((isLava[3] || isLava[5]) && IsPartOfSet(lavaSet, np.nl.GetBlock(x, y, z - 1)) != -1) 
-                        { 
-                            np.nl.SetBlock(x, y, z - 1, Block.Air); 
+                        if ((isLava[3] || isLava[5]) && IsPartOfSet(lavaSet, np.nl.GetBlock(x, y, z - 1)) != -1)
+                        {
+                            np.nl.SetBlock(x, y, z - 1, Block.Air);
                         }
                         if ((isLava[4] || isLava[5]) && IsPartOfSet(lavaSet, np.nl.GetBlock(x, y, z + 1)) != -1)
-                        { 
-                            np.nl.SetBlock(x, y, z + 1, Block.Air); 
+                        {
+                            np.nl.SetBlock(x, y, z + 1, Block.Air);
                         }
                         //lava barrel
                         np.inventory.SetAmount(696, 1, true, true);
@@ -441,7 +446,8 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockExistAction SmithingAction()
         {
-            return (np, nasBlock, exists, x, y, z) => {
+            return (np, nasBlock, exists, x, y, z) =>
+            {
                 if (exists)
                 {
                     np.Message("You placed a &bSmithing table&S!");
@@ -452,10 +458,11 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockInteraction PortalInteraction()
         {
-            return (np, button, action, nasBlock, x, y, z) => {
-                if (button != MouseButton.Right || action == MouseAction.Pressed) 
-                { 
-                    return; 
+            return (np, button, action, nasBlock, x, y, z) =>
+            {
+                if (button != MouseButton.Right || action == MouseAction.Pressed)
+                {
+                    return;
                 }
                 int absoluteX, absoluteZ, lvlX = 0, lvlZ = 0;
                 string seed = "";
@@ -487,10 +494,10 @@ namespace NotAwesomeSurvival
                 bool worked = false;
                 if (grab != null)
                 {
-                    for (int offX = nether ? -32 : -8; offX <= (nether ? 32 : 8); offX++) 
-                    { 
-                        for (int offZ = nether ? -32 : -8; offZ <= (nether ? 32 : 8); offZ++) 
-                        { 
+                    for (int offX = nether ? -32 : -8; offX <= (nether ? 32 : 8); offX++)
+                    {
+                        for (int offZ = nether ? -32 : -8; offZ <= (nether ? 32 : 8); offZ++)
+                        {
                             for (int offY = 2 - withY; offY + withY <= 245; offY++)
                             {
                                 if (grab.GetBlock((ushort)(offX + withX), (ushort)(offY + withY), (ushort)(offZ + withZ)) == Block.FromRaw(457))
@@ -533,7 +540,8 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockExistAction ContainerExistAction()
         {
-            return (np, nasBlock, exists, x, y, z) => {
+            return (np, nasBlock, exists, x, y, z) =>
+            {
                 //this is voodoo -- the question is, is it too much voodoo for the next 10 centuries for god's official temple?
                 if (exists && nasBlock.container.type == Container.Type.Barrel)
                 {
@@ -577,36 +585,38 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockInteraction ChangeInteraction(ushort toggle)
         {
-            return (np, button, action, nasBlock, x, y, z) => {
+            return (np, button, action, nasBlock, x, y, z) =>
+            {
                 if (!np.nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {
                     np.nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
                 }
-                if (action == MouseAction.Pressed) 
-                { 
-                    return; 
+                if (action == MouseAction.Pressed)
+                {
+                    return;
                 }
                 if (button == MouseButton.Right)
                 {
                     if (toggle == Block.FromRaw(675) || toggle == Block.FromRaw(196))
-                    { 
-                        np.nl.blockEntities[x + " " + y + " " + z].strength = 15; 
+                    {
+                        np.nl.blockEntities[x + " " + y + " " + z].strength = 15;
                     }
                     if (toggle == Block.FromRaw(674))
                     {
-                        np.nl.blockEntities[x + " " + y + " " + z].strength = 0; 
+                        np.nl.blockEntities[x + " " + y + " " + z].strength = 0;
                     }
-                    np.nl.SetBlock(x, y, z, toggle); 
+                    np.nl.SetBlock(x, y, z, toggle);
                     return;
                 }
             };
         }
         public static NasBlockInteraction AutoCraftInteraction()
         {
-            return (np, button, action, nasBlock, x, y, z) => {
-                if (action == MouseAction.Pressed) 
-                { 
-                    return; 
+            return (np, button, action, nasBlock, x, y, z) =>
+            {
+                if (action == MouseAction.Pressed)
+                {
+                    return;
                 }
                 Entity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
                 if (button == MouseButton.Middle)
@@ -632,10 +642,11 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockInteraction ContainerInteraction()
         {
-            return (np, button, action, nasBlock, x, y, z) => {
-                if (action == MouseAction.Pressed) 
-                { 
-                    return; 
+            return (np, button, action, nasBlock, x, y, z) =>
+            {
+                if (action == MouseAction.Pressed)
+                {
+                    return;
                 }
                 lock (Container.locker)
                 {
@@ -769,7 +780,7 @@ namespace NotAwesomeSurvival
                 np.Message("There's no tools to extract.");
                 return;
             }
-            Drop taken = new Drop(bEntity.drop.items[bEntity.drop.items.Count - 1]);
+            Drop taken = new(bEntity.drop.items[bEntity.drop.items.Count - 1]);
             bool fullInv = true;
             for (int i = 0; i < Inventory.maxItems; i++)
             {
@@ -811,9 +822,9 @@ namespace NotAwesomeSurvival
                     np.Message("You don't have any {0} to store.", nasBlock.GetName(np));
                     return;
                 }
-                if (amount > 3) 
-                { 
-                    amount /= 2; 
+                if (amount > 3)
+                {
+                    amount /= 2;
                 }
                 if (bEntity.drop == null)
                 {
@@ -861,14 +872,11 @@ namespace NotAwesomeSurvival
                         break;
                     }
                 }
-                if (bs == null)
-                {
-                    bs = bEntity.drop.blockStacks[bEntity.drop.blockStacks.Count - 1];
-                }
+                bs ??= bEntity.drop.blockStacks[bEntity.drop.blockStacks.Count - 1];
                 int amount = bs.amount;
-                if ((np.inventory.GetAmount(696) + amount) > 5 && bs.ID == 696) 
-                { 
-                    amount = 5 - np.inventory.GetAmount(696); 
+                if ((np.inventory.GetAmount(696) + amount) > 5 && bs.ID == 696)
+                {
+                    amount = 5 - np.inventory.GetAmount(696);
                 }
                 np.inventory.SetAmount(bs.ID, amount, true, true);
                 if (amount >= bs.amount)
@@ -916,15 +924,16 @@ namespace NotAwesomeSurvival
                     }
                 }
             }
-            if (nb.container.type == Container.Type.Gravestone) 
-            { 
-                return; 
+            if (nb.container.type == Container.Type.Gravestone)
+            {
+                return;
             }
             np.Message("&r(&fi&r)&S This {0} is &f{1}&S", nb.container.name.ToLower(), blockEntity.lockedBy.Length > 0 ? "locked" : "not locked");
         }
         public static NasBlockExistAction CraftingExistAction()
         {
-            return (np, nasBlock, exists, x, y, z) => {
+            return (np, nasBlock, exists, x, y, z) =>
+            {
                 if (exists)
                 {
                     np.Message("You placed a &b{0}&S!", nasBlock.station.name);
@@ -938,7 +947,8 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockExistAction WireExistAction(int strength, int type)
         {
-            return (np, nasBlock, exists, x, y, z) => {
+            return (np, nasBlock, exists, x, y, z) =>
+            {
                 lock (Container.locker)
                 {
                     if (exists)
@@ -959,7 +969,8 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockExistAction WireBreakAction()
         {
-            return (np, nasBlock, exists, x, y, z) => {
+            return (np, nasBlock, exists, x, y, z) =>
+            {
                 lock (Container.locker)
                 {
                     if (!exists)
@@ -972,7 +983,8 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockExistAction AutoCraftExistAction()
         {
-            return (np, nasBlock, exists, x, y, z) => {
+            return (np, nasBlock, exists, x, y, z) =>
+            {
                 lock (Container.locker)
                 {
                     if (exists)
@@ -996,10 +1008,11 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockInteraction CraftingInteraction()
         {
-            return (np, button, action, nasBlock, x, y, z) => {
-                if (action == MouseAction.Pressed) 
-                { 
-                    return; 
+            return (np, button, action, nasBlock, x, y, z) =>
+            {
+                if (action == MouseAction.Pressed)
+                {
+                    return;
                 }
                 lock (Crafting.locker)
                 {
@@ -1009,7 +1022,7 @@ namespace NotAwesomeSurvival
                         nasBlock.station.ShowArea(np, x, y, z, Color.Red, 500, 127);
                         return;
                     }
-                    Drop dropClone = new Drop(recipe.drop);
+                    Drop dropClone = new(recipe.drop);
                     if (np.inventory.GetDrop(dropClone, true) != null)
                     {
                         //non null means the player couldn't fit this drop in their inventory
@@ -1023,11 +1036,11 @@ namespace NotAwesomeSurvival
                     {
                         if (np.inventory.GetAmount(pair.Key) < pair.Value)
                         {
-                            if (pair.Key == 0) 
-                            { 
-                                continue; 
+                            if (pair.Key == 0)
+                            {
+                                continue;
                             }
-                            clearCraftingArea = true; 
+                            clearCraftingArea = true;
                             break;
                         }
                     }
@@ -1039,9 +1052,9 @@ namespace NotAwesomeSurvival
                     {
                         foreach (KeyValuePair<ushort, int> pair in patternCost)
                         {
-                            if (pair.Key != Block.Air) 
+                            if (pair.Key != Block.Air)
                             {
-                                np.inventory.SetAmount(pair.Key, -pair.Value, false); 
+                                np.inventory.SetAmount(pair.Key, -pair.Value, false);
                             }
                         }
                     }
@@ -1050,7 +1063,8 @@ namespace NotAwesomeSurvival
         }
         public static NasBlockExistAction PlantExistAction()
         {
-            return (np, nasBlock, exists, x, y, z) => {
+            return (np, nasBlock, exists, x, y, z) =>
+            {
                 return;
             };
         }
@@ -1060,10 +1074,11 @@ namespace NotAwesomeSurvival
             peachPieSet = new ushort[] { Block.Extended | 698, Block.Extended | 699, Block.Extended | 700, Block.Extended | 701 };
         public static NasBlockInteraction EatInteraction(ushort[] set, int index, float healthRestored, float chewSeconds = 2)
         {
-            return (np, button, action, nasBlock, x, y, z) => {
-                if (action == MouseAction.Pressed) 
+            return (np, button, action, nasBlock, x, y, z) =>
+            {
+                if (action == MouseAction.Pressed)
                 {
-                    return; 
+                    return;
                 }
                 lock (Container.locker)
                 {
@@ -1073,7 +1088,7 @@ namespace NotAwesomeSurvival
                     }
                     np.isChewing = true;
                     SchedulerTask taskChew;
-                    EatInfo eatInfo = new EatInfo
+                    EatInfo eatInfo = new()
                     {
                         np = np,
                         healthRestored = healthRestored
@@ -1107,13 +1122,13 @@ namespace NotAwesomeSurvival
             {
                 healthRestored = NasEntity.maxHP - np.HP;
             }
-            if (healthRestored < 0) 
-            { 
+            if (healthRestored < 0)
+            {
                 np.TakeDamage(-healthRestored, NasEntity.DamageSource.None);
             }
-            else 
-            { 
-                np.ChangeHealth(healthRestored); 
+            else
+            {
+                np.ChangeHealth(healthRestored);
             }
             np.isChewing = false;
             np.Message("*gulp*");
@@ -1122,9 +1137,9 @@ namespace NotAwesomeSurvival
                 np.Message("Oh no! It was &mPOISON! &7It tastes super good though..");
                 np.Message("&c{0} &f[{1}] HP ╝", healthRestored, np.HP);
             }
-            else 
-            { 
-                np.Message("&a+{0} &f[{1}] HP ♥", healthRestored, np.HP); 
+            else
+            {
+                np.Message("&a+{0} &f[{1}] HP ♥", healthRestored, np.HP);
             }
         }
     }

@@ -19,21 +19,23 @@ using MCGalaxy.Commands;
 
 namespace MCGalaxy.Modules.Warps
 {
-    class CmdWarp : WarpCommand 
+    class CmdWarp : WarpCommand
     {
         public override string name { get { return "Warp"; } }
-        public override CommandPerm[] ExtraPerms {
+        public override CommandPerm[] ExtraPerms
+        {
             get { return new[] { new CommandPerm(LevelPermission.Operator, "can manage warps") }; }
         }
-        
-        public override void Use(Player p, string message, CommandData data) {
-            if (WarpList.Global == null)
-                WarpList.Global = LoadList("extra/warps.save");
+
+        public override void Use(Player p, string message, CommandData data)
+        {
+            WarpList.Global ??= LoadList("extra/warps.save");
 
             UseCore(p, message, data, WarpList.Global, "Warp");
         }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/Warp [name] &H- Move to that warp");
             p.Message("&T/Warp list &H- List all the warps");
             p.Message("&T/Warp create [name] &H- Create a warp at your position");

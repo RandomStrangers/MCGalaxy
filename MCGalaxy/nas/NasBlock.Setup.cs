@@ -1,12 +1,12 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
+using MCGalaxy;
 using System;
 using System.Collections.Generic;
-using MCGalaxy;
 namespace NotAwesomeSurvival
 {
     public partial class NasBlock
     {
-        public static Random r = new Random();
+        public static Random r = new();
         public static void Setup()
         {
             DefaultDurabilities[(int)Material.None] = 1;
@@ -273,7 +273,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = GrassBlockAction(Block.Grass, Block.Dirt),
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    Drop grassDrop = new Drop
+                    Drop grassDrop = new()
                     {
                         blockStacks = new List<BlockStack>()
                     };
@@ -710,7 +710,7 @@ namespace NotAwesomeSurvival
                 disturbDelayMax = leafShrivelDelayMax,
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    Drop drop = new Drop(18, 1);
+                    Drop drop = new(18, 1);
                     int rand = r.Next(0, 8);
                     if (rand == 0)
                     { //16 in 128 chance (1 in 8 chance) of sapling
@@ -731,7 +731,7 @@ namespace NotAwesomeSurvival
                 disturbDelayMax = leafShrivelDelayMax,
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    Drop drop = new Drop(103, 1);
+                    Drop drop = new(103, 1);
                     int rand = r.Next(0, 8);
                     if (rand == 0)
                     {
@@ -771,7 +771,7 @@ namespace NotAwesomeSurvival
                 disturbDelayMax = leafShrivelDelayMax,
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    Drop drop = new Drop(19, 1);
+                    Drop drop = new(19, 1);
                     int rand = r.Next(0, 8);
                     if (rand == 0)
                     {
@@ -838,7 +838,7 @@ namespace NotAwesomeSurvival
                     }
                     else
                     {
-                        Drop yellowDrop = new Drop(35, 1);
+                        Drop yellowDrop = new(35, 1);
                         return (r.Next(0, 2) == 0) ? yellowDrop : null;
                     }
                 },
@@ -855,7 +855,7 @@ namespace NotAwesomeSurvival
                     }
                     else
                     {
-                        Drop redDrop = new Drop(27, 1);
+                        Drop redDrop = new(27, 1);
                         return (r.Next(0, 2) == 0) ? redDrop : null;
                     }
                 },
@@ -882,7 +882,7 @@ namespace NotAwesomeSurvival
                     }
                     else
                     {
-                        Drop wheatDrop = new Drop(644, 1);
+                        Drop wheatDrop = new(644, 1);
                         return (r.Next(0, 8) == 0) ? wheatDrop : null;
                     }
                 },
@@ -994,7 +994,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = FireAction(),
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    Drop fireDrop = new Drop(131, 1);
+                    Drop fireDrop = new(131, 1);
                     return (r.Next(0, 100) == 0) ? fireDrop : null;
                 },
                 collideAction = FireCollideAction()
@@ -1325,7 +1325,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = IronCropAction(ironSet, 3),
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    Drop finalDrop = new Drop(729, r.Next(1, 4));
+                    Drop finalDrop = new(729, r.Next(1, 4));
                     if (r.Next(0, 2) == 0)
                     {
                         finalDrop.blockStacks.Add(new BlockStack(624, 1));
@@ -1367,7 +1367,7 @@ namespace NotAwesomeSurvival
                 disturbDelayMax = leafShrivelDelayMax,
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    Drop drop = new Drop(146, 1);
+                    Drop drop = new(146, 1);
                     int rand = r.Next(0, 8);
                     if (rand == 0)
                     { //16 in 128 chance (1 in 8 chance) of sapling
@@ -1603,7 +1603,7 @@ namespace NotAwesomeSurvival
                     }
                     else
                     {
-                        Drop whiteDrop = new Drop(36, 1);
+                        Drop whiteDrop = new(36, 1);
                         return (r.Next(0, 2) == 0) ? whiteDrop : null;
                     }
                 },
@@ -1620,7 +1620,7 @@ namespace NotAwesomeSurvival
                     }
                     else
                     {
-                        Drop blueDrop = new Drop(23, 1);
+                        Drop blueDrop = new(23, 1);
                         return (r.Next(0, 3) == 0) ? blueDrop : null;
                     }
                 },
@@ -1637,7 +1637,7 @@ namespace NotAwesomeSurvival
                     }
                     else
                     {
-                        Drop pinkDrop = new Drop(138, 1);
+                        Drop pinkDrop = new(138, 1);
                         return (r.Next(0, 2) == 0) ? pinkDrop : null;
                     }
                 },
@@ -1757,7 +1757,7 @@ namespace NotAwesomeSurvival
             blocks[i].dropHandler = (NasPlayer, dropID) =>
             {
                 blocks[i].collideAction = AirCollideAction();
-                Drop pistonDrop = new Drop(1, 1);
+                Drop pistonDrop = new(1, 1);
                 return (1 == 0) ? pistonDrop : null;
             };
             i = 707; //piston
@@ -1781,7 +1781,7 @@ namespace NotAwesomeSurvival
             blocks[i].dropHandler = (NasPlayer, dropID) =>
             {
                 blocks[i].collideAction = AirCollideAction();
-                Drop pistonDrop = new Drop(1, 1);
+                Drop pistonDrop = new(1, 1);
                 return (1 == 0) ? pistonDrop : null;
             };
             i = 678; //Spiston
@@ -1807,7 +1807,7 @@ namespace NotAwesomeSurvival
             blocks[i].dropHandler = (NasPlayer, dropID) =>
             {
                 blocks[i].collideAction = AirCollideAction();
-                Drop pistonDrop = new Drop(1, 1);
+                Drop pistonDrop = new(1, 1);
                 return (1 == 0) ? pistonDrop : null;
             };
             i = 710; //Spiston
@@ -1831,7 +1831,7 @@ namespace NotAwesomeSurvival
             blocks[i].dropHandler = (NasPlayer, dropID) =>
             {
                 blocks[i].collideAction = AirCollideAction();
-                Drop pistonDrop = new Drop(1, 1);
+                Drop pistonDrop = new(1, 1);
                 return (1 == 0) ? pistonDrop : null;
             };
             DefinePiston(389, pistonNorth, "z", 1, 704);
@@ -2241,7 +2241,7 @@ namespace NotAwesomeSurvival
                 collideAction = AirCollideAction(),
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    Drop pistonDrop = new Drop(1, 1);
+                    Drop pistonDrop = new(1, 1);
                     return (1 == 0) ? pistonDrop : null;
                 }
             };

@@ -18,13 +18,16 @@
 
 using System.Collections.Generic;
 
-namespace MCGalaxy.Util {
-    public static class CountryUtils {
+namespace MCGalaxy.Util
+{
+    public static class CountryUtils
+    {
 
         /// <summary>
         /// Returns the full country name based on the ISO 3166 two-letter country code, or null if code does not exist in the standard.
         /// </summary>
-        public static string GetName(string twoLetterCode) {
+        public static string GetName(string twoLetterCode)
+        {
             twoLetterCode = twoLetterCode.ToUpperInvariant();
             if (!CodesToNames.ContainsKey(twoLetterCode)) { return null; }
             return CodesToNames[twoLetterCode];
@@ -33,7 +36,7 @@ namespace MCGalaxy.Util {
         /// <summary>
         /// Based on https://www.iban.com/country-codes
         /// </summary>
-        static readonly Dictionary<string, string> CodesToNames = new Dictionary<string, string>() {
+        static readonly Dictionary<string, string> CodesToNames = new() {
             { "AF", "Afghanistan" },
             { "AL", "Albania" },
             { "DZ", "Algeria" },

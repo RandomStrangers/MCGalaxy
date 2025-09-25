@@ -17,17 +17,18 @@
 */
 #if !MCG_STANDALONE
 
-namespace MCGalaxy.Modules.Compiling 
+namespace MCGalaxy.Modules.Compiling
 {
-    public sealed class CompilerPlugin : Plugin 
+    public sealed class CompilerPlugin : Plugin
     {
         public override string name { get { return "Compiler"; } }
 
-        readonly Command cmdCreate   = new CmdCmdCreate();
-        readonly Command cmdCompile  = new CmdCompile();
+        readonly Command cmdCreate = new CmdCmdCreate();
+        readonly Command cmdCompile = new CmdCompile();
         readonly Command cmdCompLoad = new CmdCompLoad();
 
-        public override void Load(bool startup) {
+        public override void Load(bool startup)
+        {
             Server.EnsureDirectoryExists(ICompiler.COMMANDS_SOURCE_DIR);
 
             Command.Register(cmdCreate);
@@ -35,7 +36,8 @@ namespace MCGalaxy.Modules.Compiling
             Command.Register(cmdCompLoad);
         }
 
-        public override void Unload(bool shutdown) {
+        public override void Unload(bool shutdown)
+        {
             Command.Unregister(cmdCreate, cmdCompile, cmdCompLoad);
         }
     }

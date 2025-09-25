@@ -15,12 +15,12 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using System.Collections.Generic;
-using System.IO;
 using MCGalaxy.DB;
 using MCGalaxy.Events.LevelEvents;
 using MCGalaxy.SQL;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace MCGalaxy
 {
@@ -30,7 +30,7 @@ namespace MCGalaxy
 
         /// <summary> Array of all current loaded levels. </summary>
         /// <remarks> Note this field is highly volatile, you should cache references to the items array. </remarks>
-        public static VolatileArray<Level> Loaded = new VolatileArray<Level>();
+        public static VolatileArray<Level> Loaded = new();
 
         public static Level FindExact(string name)
         {
@@ -186,7 +186,7 @@ namespace MCGalaxy
             if (lvl != null) return lvl.Config;
 
             string propsPath = PropsPath(map);
-            LevelConfig cfg = new LevelConfig();
+            LevelConfig cfg = new();
             cfg.Load(propsPath);
             return cfg;
         }
@@ -292,7 +292,7 @@ namespace MCGalaxy
         {
             //TODO public after refactor into new class
             string[] allMaps = AllMapNames();
-            List<string> owned = new List<string>();
+            List<string> owned = new();
             foreach (string lvlName in allMaps)
             {
                 if (IsPersonalRealmOwner(playerName, lvlName)) owned.Add(lvlName);
@@ -334,7 +334,7 @@ namespace MCGalaxy
             loadOnGoto = true;
 
             string propsPath = PropsPath(level);
-            SearchArgs args = new SearchArgs();
+            SearchArgs args = new();
             if (!PropertiesFile.Read(propsPath, ref args, ProcessLine)) return;
 
             visit = Group.ParsePermOrName(args.Visit, visit);

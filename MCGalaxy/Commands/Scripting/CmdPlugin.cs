@@ -17,65 +17,82 @@
  */
 using MCGalaxy.Scripting;
 
-namespace MCGalaxy.Commands.Scripting 
+namespace MCGalaxy.Commands.Scripting
 {
-    public sealed class CmdPlugin : Command2 
+    public sealed class CmdPlugin : Command2
     {
         public override string name { get { return "Plugin"; } }
         public override string type { get { return CommandTypes.Other; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Owner; } }
-        public override CommandAlias[] Aliases {
-            get { return new[] { new CommandAlias("PLoad", "load"), new CommandAlias("PUnload", "unload"),
-                    new CommandAlias("Plugins", "list") }; }
+        public override CommandAlias[] Aliases
+        {
+            get
+            {
+                return new[] { new CommandAlias("PLoad", "load"), new CommandAlias("PUnload", "unload"),
+                    new CommandAlias("Plugins", "list") };
+            }
         }
         public override bool MessageBlockRestricted { get { return true; } }
-        
-        public override void Use(Player p, string message, CommandData data) {
+
+        public override void Use(Player p, string message, CommandData data)
+        {
             string[] args = message.SplitSpaces(2);
-            if (IsListAction(args[0])) {
+            if (IsListAction(args[0]))
+            {
                 string modifier = args.Length > 1 ? args[1] : "";
-                
+
                 p.Message("Loaded plugins:");
                 Paginator.Output(p, Plugin.custom, pl => pl.name,
                                  "Plugins", "plugins", modifier);
                 return;
             }
             if (args.Length == 1) { Help(p); return; }
-            
+
             string cmd = args[0], name = args[1];
             if (!Formatter.ValidFilename(p, name)) return;
-            
-            if (cmd.CaselessEq("load")) {
+
+            if (cmd.CaselessEq("load"))
+            {
                 string path = IScripting.PluginPath(name);
                 ScriptingOperations.LoadPlugins(p, path);
-            } else if (cmd.CaselessEq("unload")) {
+            }
+            else if (cmd.CaselessEq("unload"))
+            {
                 UnloadPlugin(p, name);
-            } else if (cmd.CaselessEq("create")) {
+            }
+            else if (cmd.CaselessEq("create"))
+            {
 #if !MCG_STANDALONE
                 Find("CmdCreate").Use(p, "plugin " + name, data);
 #else
                 p.Message("Use &T/PCreate &Sinstead");
 #endif
-            } else if (cmd.CaselessEq("compile")) {
+            }
+            else if (cmd.CaselessEq("compile"))
+            {
 #if !MCG_STANDALONE
                 Find("Compile").Use(p, "plugin " + name, data);
 #else
                 p.Message("Use &T/PCompile &Sinstead");
 #endif
-            } else {
+            }
+            else
+            {
                 Help(p);
             }
         }
-        
-        static void UnloadPlugin(Player p, string name) {
+
+        static void UnloadPlugin(Player p, string name)
+        {
             Plugin plugin = Matcher.Find(p, name, out int matches, Plugin.custom,
                                          null, pln => pln.name, "plugins");
 
             if (plugin == null) return;
             ScriptingOperations.UnloadPlugin(p, plugin);
         }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/Plugin load [filename]");
             p.Message("&HLoad a compiled plugin from the &fplugins &Hfolder");
             p.Message("&T/Plugin unload [name]");

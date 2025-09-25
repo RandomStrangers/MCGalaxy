@@ -15,28 +15,29 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using System.Threading;
 using MCGalaxy.Games;
 using MCGalaxy.Maths;
+using System;
+using System.Threading;
 
 namespace MCGalaxy.Modules.Games.LS
 {
-    public partial class LSGame : RoundsGame 
+    public partial class LSGame : RoundsGame
     {
         int roundSecs, layerSecs;
-        
-        protected override void DoRound() {
+
+        protected override void DoRound()
+        {
             if (!Running) return;
             roundSecs = 0;
             layerSecs = 0;
-            curLayer  = 1;
+            curLayer = 1;
 
             Player[] players = PlayerInfo.Online.Items;
-            foreach (Player p in players) 
+            foreach (Player p in players)
             {
                 if (p.level != Map) continue;
-                
+
                 ResetRoundState(p, Get(p));
                 OutputRoundInfo(p);
             }
@@ -47,122 +48,146 @@ namespace MCGalaxy.Modules.Games.LS
             UpdateBlockHandlers();
             UpdatePhysicsLevel();
 
-            while (RoundInProgress && roundSecs < roundTotalSecs) {
+            while (RoundInProgress && roundSecs < roundTotalSecs)
+            {
                 if (!Running) return;
                 if (!flooded) AnnounceFloodTime();
-                
-                if (roundSecs >= floodDelaySecs) {
-                    if (!layerMode && roundSecs == floodDelaySecs) {
+
+                if (roundSecs >= floodDelaySecs)
+                {
+                    if (!layerMode && roundSecs == floodDelaySecs)
+                    {
                         FloodFrom(cfg.FloodPos);
-                    } else if (layerMode && (layerSecs % layerIntervalSecs) == 0 && curLayer <= cfg.LayerCount) {
+                    }
+                    else if (layerMode && (layerSecs % layerIntervalSecs) == 0 && curLayer <= cfg.LayerCount)
+                    {
                         FloodFrom(CurrentLayerPos());
                         curLayer++;
                     }
-                    
+
                     layerSecs++;
                 }
-                
-                roundSecs++; 
+
+                roundSecs++;
                 Thread.Sleep(1000);
             }
         }
-        
-        void FloodFrom(Vec3U16 pos) {
+
+        void FloodFrom(Vec3U16 pos)
+        {
             Map.Blockchange(pos.X, pos.Y, pos.Z, floodBlock, true);
             if (flooded) return;
-            
+
             Map.Message("&4Look out, here comes the flood!");
             Logger.Log(LogType.GameActivity, "[Lava Survival] Starting map flood.");
             flooded = true;
         }
-        
-        void RewardPlayer(Player p, Random rnd) {
+
+        void RewardPlayer(Player p, Random rnd)
+        {
             if (IsPlayerDead(p)) return;
-            
-            if (p.Pos.FeetBlockCoords.Y >= Map.GetEdgeLevel()) {
-                AwardMoney(p, Config.ASL_RewardMin, Config.ASL_RewardMax, 
+
+            if (p.Pos.FeetBlockCoords.Y >= Map.GetEdgeLevel())
+            {
+                AwardMoney(p, Config.ASL_RewardMin, Config.ASL_RewardMax,
                            rnd, 0);
-            } else {
-                AwardMoney(p, Config.BSL_RewardMin, Config.BSL_RewardMax, 
-                           rnd, 0);                
+            }
+            else
+            {
+                AwardMoney(p, Config.BSL_RewardMin, Config.BSL_RewardMax,
+                           rnd, 0);
             }
         }
 
-        void AnnounceFloodTime() {
+        void AnnounceFloodTime()
+        {
             int left = floodDelaySecs - roundSecs;
 
-            if (left == 0) {
+            if (left == 0)
+            {
                 MessageMap(CpeMessageType.Announcement, "");
-            } else if (left <= 10) {
+            }
+            else if (left <= 10)
+            {
                 MessageCountdown("&3{0} &Sseconds until the flood", left, 10);
-            } else if ((roundSecs % 60) == 0) { 
-                Map.Message(FloodTimeLeftMessage()); 
+            }
+            else if ((roundSecs % 60) == 0)
+            {
+                Map.Message(FloodTimeLeftMessage());
             }
         }
 
-        public override void EndRound() {
+        public override void EndRound()
+        {
             if (!RoundInProgress) return;
             RoundInProgress = false;
             flooded = false;
-            
+
             Map.SetPhysics(0);
             Map.Message("The round has ended!");
-            
-            Random rnd = new Random();
+
+            Random rnd = new();
             Player[] players = PlayerInfo.Online.Items;
-            foreach (Player p in players) 
+            foreach (Player p in players)
             {
                 if (p.level == Map) RewardPlayer(p, rnd);
             }
         }
-        
 
-        string FloodTimeLeftMessage() {
+
+        string FloodTimeLeftMessage()
+        {
             TimeSpan left = TimeSpan.FromSeconds(floodDelaySecs - roundSecs);
             return "&3" + left.Shorten(true) + " &Suntil the flood starts";
         }
-        
-        string RoundTimeLeftMessage() {
+
+        string RoundTimeLeftMessage()
+        {
             TimeSpan left = TimeSpan.FromSeconds(roundTotalSecs - roundSecs);
             return "&3" + left.Shorten(true) + " &Suntil the round ends";
         }
-        
-        string ModeMessage(string block) {
+
+        string ModeMessage(string block)
+        {
             LSFloodMode mode = floodMode;
-            
+
             return block.Capitalize() + " will be &c" + mode + " &Sthis round";
         }
 
-        public override void OutputStatus(Player p) {
+        public override void OutputStatus(Player p)
+        {
             // TODO: send these messages if player is op
             //if (data.layer) {
             //    Map.ChatLevelOps("There will be " + mapSettings.LayerCount + " layers, each " + mapSettings.LayerHeight + " blocks high.");
             //    Map.ChatLevelOps("There will be another layer every " + mapSettings.layerInterval + " minutes.");
             //}
-            
+
             OutputRoundInfo(p);
             OutputTimeInfo(p);
         }
-        
-        void OutputRoundInfo(Player p) {
+
+        void OutputRoundInfo(Player p)
+        {
             string block = FloodBlockName();
             if (waterMode) p.Message("The map will be flooded with &9water &Sthis round!");
             if (layerMode) p.Message("The {0} will &aflood in layers &Sthis round!", block);
-            
+
             if (fastMode) p.Message("The {0} will be &cfast &Sthis round!", block);
             if (floodUp) p.Message("The {0} will &cflood upwards &Sthis round!", block);
             p.Message(ModeMessage(block));
         }
 
-        public override void OutputTimeInfo(Player p) {
+        public override void OutputTimeInfo(Player p)
+        {
             if (!flooded) p.Message(FloodTimeLeftMessage());
             p.Message(RoundTimeLeftMessage());
         }
-        
 
-        protected override bool SetMap(string map) {
+
+        protected override bool SetMap(string map)
+        {
             if (!base.SetMap(map)) return false;
-            
+
             Map.Config.PhysicsOverload = 1000000;
             return true;
         }

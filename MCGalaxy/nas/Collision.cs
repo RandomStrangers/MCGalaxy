@@ -66,10 +66,7 @@ namespace NotAwesomeSurvival
                 nb.collides = collides;
                 nb.bounds = bounds;
                 nb.fallDamageMultiplier = fallDamageMultiplier;
-                if (nb.collideAction == null)
-                {
-                    nb.collideAction = collideAction;
-                }
+                nb.collideAction ??= collideAction;
             }
             return nb;
         }
@@ -98,24 +95,24 @@ namespace NotAwesomeSurvival
             worldAABB.Min.Z++;
             entityPos.X += entityAABB.Max.X;
             entityPos.Z += entityAABB.Max.Z;
-            if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier)) 
+            if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier))
             {
-                return true; 
+                return true;
             }
             entityPos.X += entityAABB.Min.X * 2;
-            if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier)) 
-            { 
-                return true; 
+            if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier))
+            {
+                return true;
             }
             entityPos.Z += entityAABB.Min.Z * 2;
-            if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier)) 
+            if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier))
             {
-                return true; 
+                return true;
             }
             entityPos.X += entityAABB.Max.X * 2;
-            if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier)) 
+            if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier))
             {
-                return true; 
+                return true;
             }
             return false;
         }
@@ -128,14 +125,14 @@ namespace NotAwesomeSurvival
             ushort serverushort = lvl.GetBlock((ushort)x,
                                                  (ushort)y,
                                                  (ushort)z);
-            if (serverushort == Block.Air) 
-            { 
-                return false; 
+            if (serverushort == Block.Air)
+            {
+                return false;
             }
             NasBlock nasBlock = NasBlock.blocksIndexedByServerushort[serverushort];
-            if (!nasBlock.collides) 
-            { 
-                return false; 
+            if (!nasBlock.collides)
+            {
+                return false;
             }
             fallDamageMultiplier = nasBlock.fallDamageMultiplier;
             AABB blockAABB = nasBlock.bounds;

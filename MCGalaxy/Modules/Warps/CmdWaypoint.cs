@@ -18,23 +18,26 @@
 
 namespace MCGalaxy.Modules.Warps
 {
-    sealed class CmdWaypoint : WarpCommand 
+    sealed class CmdWaypoint : WarpCommand
     {
         public override string name { get { return "Waypoint"; } }
         public override string shortcut { get { return "wp"; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Builder; } }
-                
-        public override void Use(Player p, string message, CommandData data) {            
-            if (!p.Extras.Contains("MCG_WAYPOINTS")) {
+
+        public override void Use(Player p, string message, CommandData data)
+        {
+            if (!p.Extras.Contains("MCG_WAYPOINTS"))
+            {
                 p.Extras["MCG_WAYPOINTS"] = LoadList(Paths.WAYPOINTS_DIR + p.name + ".save");
-            } 
-            
+            }
+
             // TODO: Better thread safety
             WarpList waypoints = (WarpList)p.Extras["MCG_WAYPOINTS"];
             UseCore(p, message, data, waypoints, "Waypoint");
         }
 
-        public override void Help(Player p) {
+        public override void Help(Player p)
+        {
             p.Message("&HWaypoints are warps only usable by you.");
             p.Message("&T/Waypoint create [name] &H- Create a new waypoint");
             p.Message("&T/Waypoint update [name] &H- Update a waypoint");

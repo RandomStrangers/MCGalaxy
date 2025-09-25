@@ -16,22 +16,24 @@
     permissions and limitations under the Licenses.
  */
 
-namespace MCGalaxy.Games {
+namespace MCGalaxy.Games
+{
 
-    public class GameProps {
-        
+    public class GameProps
+    {
+
         /// <summary> Team the player is currently in. </summary>
         public Team Team;
-        
+
         /// <summary> Last team the player was invited to. </summary>
-        public string TeamInvite; 
-        
+        public string TeamInvite;
+
         /// <summary> Whether the player has liked or disliked the map in this round. </summary>
         internal bool RatedMap = false, LikedMap = false;
 
         //Zombie
         public bool Referee = false;
-        
+
         public NoclipDetector Noclip;
         public SpeedhackDetector Speed;
     }

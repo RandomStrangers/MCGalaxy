@@ -15,66 +15,90 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System.Collections.Generic;
 using MCGalaxy.Drawing;
-using BlockID = System.UInt16;
+using System.Collections.Generic;
 
-namespace MCGalaxy.Commands.Building {
-    public sealed class CmdPalette : Command2 {
+
+namespace MCGalaxy.Commands.Building
+{
+    public sealed class CmdPalette : Command2
+    {
         public override string name { get { return "Palette"; } }
         public override string shortcut { get { return "ImgPalette"; } }
         public override string type { get { return CommandTypes.Building; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
 
-        public override void Use(Player p, string message, CommandData data) {
+        public override void Use(Player p, string message, CommandData data)
+        {
             string[] args = message.SplitSpaces(5);
             if (message.Length == 0) { Help(p); return; }
-            
-            if (args[0].CaselessEq("create")) {
+
+            if (args[0].CaselessEq("create"))
+            {
                 HandleCreate(p, args);
-            } else if (args[0].CaselessEq("delete")) {
+            }
+            else if (args[0].CaselessEq("delete"))
+            {
                 HandleDelete(p, args);
-            } else if (args[0].CaselessEq("add")) {
+            }
+            else if (args[0].CaselessEq("add"))
+            {
                 HandleAdd(p, args);
-            } else if (args[0].CaselessEq("remove")) {
+            }
+            else if (args[0].CaselessEq("remove"))
+            {
                 HandleRemove(p, args);
-            } else if (args[0].CaselessEq("entries")) {
+            }
+            else if (args[0].CaselessEq("entries"))
+            {
                 HandleEntries(p, args);
-            } else {
+            }
+            else
+            {
                 Help(p);
             }
         }
-        
-        void HandleCreate(Player p, string[] args) {
+
+        void HandleCreate(Player p, string[] args)
+        {
             if (args.Length != 2) { Help(p); return; }
             if (!Formatter.ValidFilename(p, args[1])) return;
-            
+
             ImagePalette palette = ImagePalette.Find(args[1]);
-            if (palette != null) {
+            if (palette != null)
+            {
                 p.Message("Palette {0} already exists.", args[1]);
-            } else {
+            }
+            else
+            {
                 ImagePalette.Add(args[1]);
                 p.Message("Created palette {0}", args[1]);
             }
         }
-        
-        void HandleDelete(Player p, string[] args) {
+
+        void HandleDelete(Player p, string[] args)
+        {
             if (args.Length != 2) { Help(p); return; }
-            
+
             ImagePalette palette = ImagePalette.Find(args[1]);
-            if (palette == null) {
+            if (palette == null)
+            {
                 p.Message("Palette {0} does not exist.", args[1]);
-            } else {
+            }
+            else
+            {
                 ImagePalette.Remove(palette);
                 p.Message("Removed palette {0}", args[1]);
             }
         }
-        
-        void HandleAdd(Player p, string[] args) {
+
+        void HandleAdd(Player p, string[] args)
+        {
             if (args.Length != 4) { Help(p); return; }
-            
+
             ImagePalette palette = ImagePalette.Find(args[1]);
-            if (palette == null) {
+            if (palette == null)
+            {
                 p.Message("Palette {0} does not exist.", args[1]); return;
             }
 
@@ -82,73 +106,84 @@ namespace MCGalaxy.Commands.Building {
 
             ColorDesc rgb = default;
             if (!CommandParser.GetHex(p, args[3], ref rgb)) return;
-            PaletteEntry entry = new PaletteEntry(rgb.R, rgb.G, rgb.B, block);
+            PaletteEntry entry = new(rgb.R, rgb.G, rgb.B, block);
             AddEntry(p, palette, entry);
         }
-        
-        static void AddEntry(Player p, ImagePalette palette, PaletteEntry entry) {
+
+        static void AddEntry(Player p, ImagePalette palette, PaletteEntry entry)
+        {
             PaletteEntry[] entries = palette.Entries;
-            List<PaletteEntry> newEntries = new List<PaletteEntry>();
+            List<PaletteEntry> newEntries = new();
             if (entries != null) newEntries.AddRange(entries);
-            
+
             newEntries.Add(entry);
             palette.Entries = newEntries.ToArray();
             palette.Save();
             p.Message("Added block to entries of palette {0}", palette.Name);
         }
-        
-        void HandleRemove(Player p, string[] args) {
+
+        void HandleRemove(Player p, string[] args)
+        {
             if (args.Length != 3) { Help(p); return; }
-            
+
             ImagePalette palette = ImagePalette.Find(args[1]);
-            if (palette == null) {
+            if (palette == null)
+            {
                 p.Message("Palette {0} does not exist.", args[1]); return;
             }
 
             if (!CommandParser.GetBlock(p, args[2], out ushort block)) return;
             RemoveEntry(p, palette, block);
         }
-        
-        
-        static void RemoveEntry(Player p, ImagePalette palette, BlockID block) {
+
+
+        static void RemoveEntry(Player p, ImagePalette palette, ushort block)
+        {
             PaletteEntry[] entries = palette.Entries;
-            if (entries == null) {
+            if (entries == null)
+            {
                 p.Message("Block not found in entries of palette {0}", palette.Name);
             }
-            
-            List<PaletteEntry> newEntries = new List<PaletteEntry>();
-            foreach (PaletteEntry entry in entries) {
+
+            List<PaletteEntry> newEntries = new();
+            foreach (PaletteEntry entry in entries)
+            {
                 if (entry.Block == block) continue;
                 newEntries.Add(entry);
             }
-            
-            if (newEntries.Count == entries.Length) {
+
+            if (newEntries.Count == entries.Length)
+            {
                 p.Message("Block not found in entries of palette {0}", palette.Name); return;
             }
-            
+
             palette.Entries = newEntries.ToArray();
             palette.Save();
             p.Message("Removed block from entries of palette {0}", palette.Name);
         }
-        
-        void HandleEntries(Player p, string[] args) {
+
+        void HandleEntries(Player p, string[] args)
+        {
             if (args.Length < 2 || args.Length > 3) { Help(p); return; }
-            
+
             ImagePalette palette = ImagePalette.Find(args[1]);
-            if (palette == null) {
+            if (palette == null)
+            {
                 p.Message("Palette {0} does not exist.", args[1]); return;
             }
-            
+
             string modifer = args.Length > 2 ? args[2] : "";
-            Paginator.Output(p, palette.Entries, PrintEntry, 
+            Paginator.Output(p, palette.Entries, PrintEntry,
                              "Palette entries", "entries", modifer);
         }
-        
-        static void PrintEntry(Player p, PaletteEntry e) {
+
+        static void PrintEntry(Player p, PaletteEntry e)
+        {
             p.Message("{0} - {1}", Block.GetName(p, e.Block), Utils.Hex(e.R, e.G, e.B));
         }
 
-        public override void Help(Player p) {
+        public override void Help(Player p)
+        {
             p.Message("&T/Palette create/delete [name]");
             p.Message("&HCreates or deletes a palette for &T/ImagePrint");
             p.Message("&T/Palette add [name] [block] [hex color]");

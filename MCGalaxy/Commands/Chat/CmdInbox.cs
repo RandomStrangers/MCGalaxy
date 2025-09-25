@@ -15,11 +15,11 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.SQL;
 using System;
 using System.Collections.Generic;
-using MCGalaxy.SQL;
 
-namespace MCGalaxy.Commands.Chatting 
+namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdInbox : Command2
     {
@@ -28,75 +28,98 @@ namespace MCGalaxy.Commands.Chatting
         public override bool SuperUseable { get { return false; } }
         public override bool UseableWhenFrozen { get { return true; } }
         public override CommandParallelism Parallelism { get { return CommandParallelism.NoAndWarn; } }
-        
+
         const int i_text = 0, i_sent = 1, i_from = 2;
-        
-        public override void Use(Player p, string message, CommandData data) {
-            if (!Database.TableExists("Inbox" + p.name)) {
+
+        public override void Use(Player p, string message, CommandData data)
+        {
+            if (!Database.TableExists("Inbox" + p.name))
+            {
                 p.Message("Your inbox is empty."); return;
             }
-            
-            List<string[]> entries = Database.GetRows("Inbox" + p.name, "Contents,TimeSent,PlayerFrom", 
+
+            List<string[]> entries = Database.GetRows("Inbox" + p.name, "Contents,TimeSent,PlayerFrom",
                                                       "ORDER BY TimeSent");
-            if (entries.Count == 0) {
+            if (entries.Count == 0)
+            {
                 p.Message("Your inbox is empty."); return;
             }
 
             string[] args = message.SplitSpaces(2);
-            if (message.Length == 0) {
+            if (message.Length == 0)
+            {
                 for (int i = 0; i < entries.Count; i++)
                 {
                     Output(p, i + 1, entries[i]);
                 }
-            } else if (IsDeleteAction(args[0])) {
-                if (args.Length == 1) {
+            }
+            else if (IsDeleteAction(args[0]))
+            {
+                if (args.Length == 1)
+                {
                     p.Message("You need to provide either \"all\" or a number."); return;
-                } else if (args[1].CaselessEq("all")) {
+                }
+                else if (args[1].CaselessEq("all"))
+                {
                     int count = Database.DeleteRows("Inbox" + p.name, "");
                     p.Message("Deleted all {0} messages.", count);
-                } else {
+                }
+                else
+                {
                     DeleteByID(p, args[1], entries);
                 }
-            } else {
+            }
+            else
+            {
                 OutputByID(p, message, entries);
             }
         }
-        
-        static void DeleteByID(Player p, string value, List<string[]> entries) {
+
+        static void DeleteByID(Player p, string value, List<string[]> entries)
+        {
             int num = 1;
             if (!CommandParser.GetInt(p, value, "Message number", ref num, 1)) return;
-            
-            if (num > entries.Count) {
+
+            if (num > entries.Count)
+            {
                 p.Message("Message #{0} does not exist.", num);
-            } else {
+            }
+            else
+            {
                 string[] entry = entries[num - 1];
                 Database.DeleteRows("Inbox" + p.name,
                                     "WHERE PlayerFrom=@0 AND TimeSent=@1", entry[i_from], entry[i_sent]);
                 p.Message("Deleted message #{0}", num);
             }
         }
-        
-        static void OutputByID(Player p, string value, List<string[]> entries) {
+
+        static void OutputByID(Player p, string value, List<string[]> entries)
+        {
             int num = 1;
             if (!CommandParser.GetInt(p, value, "Message number", ref num, 1)) return;
-            
-            if (num > entries.Count) {
+
+            if (num > entries.Count)
+            {
                 p.Message("Message #{0} does not exist.", num);
-            } else {
+            }
+            else
+            {
                 Output(p, num, entries[num - 1]);
             }
         }
-        
-        static void Output(Player p, int num, string[] entry) {
-            DateTime time  = Database.ParseDBDate(entry[i_sent]);
+
+        static void Output(Player p, int num, string[] entry)
+        {
+            DateTime time = Database.ParseDBDate(entry[i_sent]);
             TimeSpan delta = DateTime.Now - time;
-            string sender  = p.FormatNick(entry[i_from]);
-            
+            string sender = p.FormatNick(entry[i_from]);
+
             p.Message("{0}) From {1} &a{2} ago:", num, sender, delta.Shorten());
             p.Message("  {0}", entry[i_text]);
         }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/Inbox");
             p.Message("&HDisplays all your messages.");
             p.Message("&T/Inbox [num]");

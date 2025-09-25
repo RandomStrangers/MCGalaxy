@@ -16,7 +16,7 @@
     permissions and limitations under the Licenses.
  */
 
-namespace MCGalaxy.Commands.Chatting 
+namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdLoginMessage : EntityPropertyCmd
     {
@@ -24,19 +24,23 @@ namespace MCGalaxy.Commands.Chatting
         public override string shortcut { get { return "LoginMsg"; } }
         public override string type { get { return CommandTypes.Chat; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override CommandPerm[] ExtraPerms {
+        public override CommandPerm[] ExtraPerms
+        {
             get { return new[] { new CommandPerm(LevelPermission.Operator, "can change the login message of others") }; }
         }
-        
-        public override void Use(Player p, string message, CommandData data) {
+
+        public override void Use(Player p, string message, CommandData data)
+        {
             UsePlayer(p, data, message, "login message");
         }
-        
-        protected override void SetPlayerData(Player p, string target, string msg) {
+
+        protected override void SetPlayerData(Player p, string target, string msg)
+        {
             PlayerOperations.SetLoginMessage(p, target, msg);
         }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/LoginMessage [player] [message]");
             p.Message("&HSets the login message shown for that player.");
             p.Message("&HYour login message is currently: &S{0}", PlayerInfo.GetLoginMessage(p));

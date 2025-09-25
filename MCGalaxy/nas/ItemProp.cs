@@ -16,8 +16,8 @@ namespace NotAwesomeSurvival
         public int recharge;
         public float armor,
             knockback;
-        public Dictionary<string, bool> allowedEnchants = new Dictionary<string, bool>();
-        public static Dictionary<string, ItemProp> props = new Dictionary<string, ItemProp>();
+        public Dictionary<string, bool> allowedEnchants = new();
+        public static Dictionary<string, ItemProp> props = new();
         public ItemProp(string description, Dictionary<string, bool> enchants = null, NasBlock.Material effectiveAgainst = NasBlock.Material.None, float percentageOfTimeSaved = 0, int tier = 1)
         {
             string[] descriptionBits = description.Split('|');

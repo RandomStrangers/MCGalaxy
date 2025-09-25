@@ -15,11 +15,11 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using System.Collections.Generic;
 using MCGalaxy.Config;
 using MCGalaxy.Generator;
 using MCGalaxy.Modules.Relay.IRC;
+using System;
+using System.Collections.Generic;
 
 namespace MCGalaxy
 {
@@ -157,9 +157,9 @@ namespace MCGalaxy
         [ConfigString("listen-ip", "Other", "0.0.0.0")]
         public string ListenIP = "0.0.0.0";
         [ConfigStringList("disabled-commands", "Other")]
-        public List<string> DisabledCommands = new List<string>();
+        public List<string> DisabledCommands = new();
         [ConfigStringList("disabled-modules", "Other")]
-        public List<string> DisabledModules = new List<string>();
+        public List<string> DisabledModules = new();
         [ConfigTimespan("death-invulnerability-cooldown", "Other", 2, false)]
         public TimeSpan DeathCooldown = TimeSpan.FromSeconds(2);
         [ConfigBool("verify-lan-ips", "Other", false)]
@@ -228,7 +228,7 @@ namespace MCGalaxy
         [ConfigBool("dollar-before-dollar", "Chat", true)]
         public bool DollarNames = true;
         [ConfigStringList("disabledstandardtokens", "Chat")]
-        public List<string> DisabledChatTokens = new List<string>();
+        public List<string> DisabledChatTokens = new();
         [ConfigBool("profanity-filter", "Chat", false)]
         public bool ProfanityFiltering = false;
         [ConfigString("profanity-replacement", "Chat", "*")]

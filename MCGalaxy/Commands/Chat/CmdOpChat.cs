@@ -15,28 +15,31 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-namespace MCGalaxy.Commands.Chatting 
+namespace MCGalaxy.Commands.Chatting
 {
-    public sealed class CmdOpChat : Command2 
+    public sealed class CmdOpChat : Command2
     {
         public override string name { get { return "OpChat"; } }
         public override string shortcut { get { return "Op"; } }
         public override string type { get { return CommandTypes.Chat; } }
         public override bool UseableWhenFrozen { get { return true; } }
         public override bool UpdatesLastCmd { get { return false; } }
-        public override CommandPerm[] ExtraPerms {
+        public override CommandPerm[] ExtraPerms
+        {
             get { return new[] { new CommandPerm(LevelPermission.Operator, "can read opchat messages") }; }
         }
 
-        public override void Use(Player p, string message, CommandData data) {
+        public override void Use(Player p, string message, CommandData data)
+        {
             if (message.Length > 0) { ChatModes.MessageOps(p, message); return; }
-            
+
             p.opchat = !p.opchat;
             if (p.opchat) p.Message("All messages will now be sent to OPs only");
             else p.Message("OP chat turned off");
         }
-        
-        public override void Help(Player p) {
+
+        public override void Help(Player p)
+        {
             p.Message("&T/OpChat [message]");
             p.Message("&HSends a message to online OPs");
             p.Message("&T/OpChat");

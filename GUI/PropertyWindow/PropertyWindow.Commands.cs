@@ -12,18 +12,18 @@ BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
  */
+using MCGalaxy.Commands;
+using MCGalaxy.Gui.Popups;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using MCGalaxy.Commands;
-using MCGalaxy.Gui.Popups;
 
 namespace MCGalaxy.Gui
 {
     public partial class PropertyWindow : Form
     {
 
-        readonly ItemPermsHelper commandItems = new ItemPermsHelper();
+        readonly ItemPermsHelper commandItems = new();
         ComboBox[] commandExtraBoxes;
         Label[] commandExtraLabels;
         Command cmd;
@@ -32,8 +32,8 @@ namespace MCGalaxy.Gui
         // to modify the server's live permissions if user clicks 'discard'
         CommandPerms commandPermsOrig, commandPermsCopy;
         List<CommandExtraPerms> extraPermsList;
-        readonly List<CommandPerms> commandPermsChanged = new List<CommandPerms>();
-        readonly List<CommandExtraPerms> commandExtraPermsChanged = new List<CommandExtraPerms>();
+        readonly List<CommandPerms> commandPermsChanged = new();
+        readonly List<CommandExtraPerms> commandExtraPermsChanged = new();
 
         void LoadCommands()
         {
@@ -142,10 +142,8 @@ namespace MCGalaxy.Gui
 
         void cmd_btnCustom_Click(object sender, EventArgs e)
         {
-            using (CustomCommands form = new CustomCommands())
-            {
-                form.ShowDialog();
-            }
+            using CustomCommands form = new();
+            form.ShowDialog();
         }
 
 

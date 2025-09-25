@@ -22,16 +22,17 @@ using System.Collections.Generic;
 
 namespace MCGalaxy.Modules.Compiling
 {
-    public sealed class CSCompiler : ICompiler 
+    public sealed class CSCompiler : ICompiler
     {
         public override string FileExtension { get { return ".cs"; } }
-        public override string ShortName     { get { return "C#"; } }  
-        public override string FullName      { get { return "CSharp"; } }
+        public override string ShortName { get { return "C#"; } }
+        public override string FullName { get { return "CSharp"; } }
 
 #if !MCG_DOTNET
-        protected override ICompilerErrors DoCompile(string[] srcPaths, string dstPath) {
+        protected override ICompilerErrors DoCompile(string[] srcPaths, string dstPath)
+        {
             List<string> referenced = ProcessInput(srcPaths, "//");
-            
+
             CommandLineCompiler compiler = new ClassicCSharpCompiler();
             return compiler.Compile(srcPaths, dstPath, referenced);
         }
@@ -53,8 +54,10 @@ namespace MCGalaxy.Modules.Compiling
         }
 #endif
 
-        public override string CommandSkeleton {
-            get {
+        public override string CommandSkeleton
+        {
+            get
+            {
                 return @"//\tAuto-generated command skeleton class
 //\tUse this as a basis for custom MCGalaxy commands
 //\tNaming should be kept consistent (e.g. /update command should have a class name of 'CmdUpdate' and a filename of 'CmdUpdate.cs')
@@ -102,9 +105,11 @@ public class Cmd{0} : Command
 }}";
             }
         }
-        
-        public override string PluginSkeleton {
-            get {
+
+        public override string PluginSkeleton
+        {
+            get
+            {
                 return @"//\tAuto-generated plugin skeleton class
 //\tUse this as a basis for custom MCGalaxy plugins
 

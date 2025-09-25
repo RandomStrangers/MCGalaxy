@@ -17,45 +17,56 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
 */
-using System.Collections.Generic;
 using MCGalaxy.Util;
+using System.Collections.Generic;
 
-namespace MCGalaxy {
-    public static class ProfanityFilter {
+namespace MCGalaxy
+{
+    public static class ProfanityFilter
+    {
         static string[] reduceKeys, reduceValues;
         static List<string> goodWords;
         static List<string> badWords;
         static bool hookedFilter;
-        
-        public static void Init() {
+
+        public static void Init()
+        {
             InitReduceTable();
             LoadBadWords();
         }
 
         // Replace any words containing a bad word inside it (including partial bad word matches)
-        public static string Parse(string text) {
-            string[] words   = text.SplitSpaces();
+        public static string Parse(string text)
+        {
+            string[] words = text.SplitSpaces();
             string[] reduced = Reduce(text).SplitSpaces();
 
-            for (int i = 0; i < reduced.Length; i++)  {
+            for (int i = 0; i < reduced.Length; i++)
+            {
                 if (IsGoodWord(words[i])) continue;
                 FilterBadWord(i, words, reduced);
-            }          
+            }
             return string.Join(" ", words);
         }
 
-        static bool IsGoodWord(string word) {
-            foreach (string goodWord in goodWords) {
-                if (Colors.Strip(word).CaselessEq(goodWord)) {
+        static bool IsGoodWord(string word)
+        {
+            foreach (string goodWord in goodWords)
+            {
+                if (Colors.Strip(word).CaselessEq(goodWord))
+                {
                     return true;
                 }
             }
             return false;
         }
 
-        static void FilterBadWord(int i, string[] words, string[] reduced) {
-            foreach (string badWord in badWords)  {
-                if (reduced[i].Contains(badWord)) {
+        static void FilterBadWord(int i, string[] words, string[] reduced)
+        {
+            foreach (string badWord in badWords)
+            {
+                if (reduced[i].Contains(badWord))
+                {
                     // If a bad word is found anywhere in the word, replace the word            
                     words[i] = Censor(Colors.Strip(words[i]).Length);
                     return;
@@ -63,45 +74,51 @@ namespace MCGalaxy {
             }
         }
 
-        static string Censor(int badWordLength) {
+        static string Censor(int badWordLength)
+        {
             string replacement = Server.Config.ProfanityReplacement;
             // for * repeat to ****
             return replacement.Length == 1 ? new string(replacement[0], badWordLength) : replacement;
         }
-        
-        static void InitReduceTable() {
+
+        static void InitReduceTable()
+        {
             if (reduceKeys != null) return;
             // Because some letters are similar (Like i and l), they are reduced to the same form.
             // For example, the word "@t3$5t ll" is reduced to "atesst ii";
             reduceKeys = "@|i3|l3|(|3|ph|6|#|l|!|1|0|9|$|5|vv|2".Split('|');
-            reduceValues= "a|b|b|c|e|f|g|h|i|i|i|o|q|s|s|w|z".Split('|');
+            reduceValues = "a|b|b|c|e|f|g|h|i|i|i|o|q|s|s|w|z".Split('|');
         }
-        
-        static void LoadBadWords() {
+
+        static void LoadBadWords()
+        {
             // Duplicated literal const values? tsk x1000
             TextFile goodWordsFile = TextFile.Files["Profanity filter exceptions"];
-            TextFile badWordsFile  = TextFile.Files["Profanity filter"];
+            TextFile badWordsFile = TextFile.Files["Profanity filter"];
             goodWordsFile.EnsureExists();
             badWordsFile.EnsureExists();
-            
-            if (!hookedFilter) {
+
+            if (!hookedFilter)
+            {
                 hookedFilter = true;
                 badWordsFile.OnTextChanged += LoadBadWords;
                 goodWordsFile.OnTextChanged += LoadBadWords;
             }
 
             goodWords = goodWordsFile.GetTextWithoutComments();
-            badWords  =  badWordsFile.GetTextWithoutComments();
+            badWords = badWordsFile.GetTextWithoutComments();
             // Run the badwords through the reducer to ensure things like Ls become Is and everything is lowercase
-            for (int i = 0; i < badWords.Count; i++)  {
+            for (int i = 0; i < badWords.Count; i++)
+            {
                 badWords[i] = Reduce(badWords[i]);
             }
         }
 
-        static string Reduce(string text) {
+        static string Reduce(string text)
+        {
             text = text.ToLower();
             text = Colors.Strip(text);
-            
+
             for (int i = 0; i < reduceKeys.Length; i++)
                 text = text.Replace(reduceKeys[i], reduceValues[i]);
             return text;

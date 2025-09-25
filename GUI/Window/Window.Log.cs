@@ -51,10 +51,8 @@ namespace MCGalaxy.Gui
             // can't just use File.ReadAllText, because it'll fail with sharing violation
             //  (due to FileLogger using FileShare.ReadWrite, while File.ReadAllText uses FileShare.Read)
             // so try with just FileShare.Read first, then fall back onto FileShare.ReadWrite
-            using (Stream stream = OpenFile(path))
-            {
-                return new StreamReader(stream).ReadToEnd();
-            }
+            using Stream stream = OpenFile(path);
+            return new StreamReader(stream).ReadToEnd();
         }
 
         static Stream OpenFile(string path)

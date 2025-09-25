@@ -15,63 +15,67 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.Network;
+using MCGalaxy.Util;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
-using MCGalaxy.Network;
-using MCGalaxy.Util;
 
 namespace MCGalaxy.Authentication
 {
     /// <summary> Authenticates a player logging in </summary>
-    public abstract class LoginAuthenticator 
-    {        
-        public static List<LoginAuthenticator> Authenticators = new List<LoginAuthenticator>()
+    public abstract class LoginAuthenticator
+    {
+        public static List<LoginAuthenticator> Authenticators = new()
         {
             new MppassAuthenticator(), new MojangAuthenticator()
         };
-        
+
         public abstract bool Verify(Player p, string mppass);
-        
-        
+
+
         /// <summary> Checks if the given player is allowed to login </summary>
-        public static bool VerifyLogin(Player p, string mppass) {
+        public static bool VerifyLogin(Player p, string mppass)
+        {
             foreach (LoginAuthenticator auth in Authenticators)
             {
                 if (auth.Verify(p, mppass)) return true;
             }
-            
+
             return !Server.Config.VerifyNames || (IPUtil.IsPrivate(p.IP) && !Server.Config.VerifyLanIPs);
         }
     }
-    
+
     /// <summary> Authenticates a player using the provided mppass </summary>
-    public class MppassAuthenticator : LoginAuthenticator 
+    public class MppassAuthenticator : LoginAuthenticator
     {
-        public override bool Verify(Player p, string mppass) {
+        public override bool Verify(Player p, string mppass)
+        {
             foreach (AuthService auth in AuthService.Services)
             {
                 if (Authenticate(auth, p, mppass)) return true;
             }
             return false;
         }
-        
-        static bool Authenticate(AuthService auth, Player p, string mppass) {
+
+        static bool Authenticate(AuthService auth, Player p, string mppass)
+        {
             string calc = Server.CalcMppass(p.truename, auth.Salt);
             if (!mppass.CaselessEq(calc)) return false;
 
             auth.AcceptPlayer(p);
             return true;
         }
-    }   
-    
+    }
+
     /// <summary> Authenticates a player using the Mojang session verification API </summary>
-    public class MojangAuthenticator : LoginAuthenticator 
+    public class MojangAuthenticator : LoginAuthenticator
     {
-        static readonly ThreadSafeCache ip_cache = new ThreadSafeCache();
-        public override bool Verify(Player p, string mppass) {
+        static readonly ThreadSafeCache ip_cache = new();
+        public override bool Verify(Player p, string mppass)
+        {
             foreach (AuthService auth in AuthService.Services)
             {
                 if (!auth.MojangAuth) continue;
@@ -79,34 +83,37 @@ namespace MCGalaxy.Authentication
             }
             return false;
         }
-        
-        static bool Authenticate(AuthService auth, Player p) {
+
+        static bool Authenticate(AuthService auth, Player p)
+        {
             object locker = ip_cache.GetLocker(p.ip);
             // if a player from an IP is spamming login attempts,
             //  prevent that from spamming Mojang's authentication servers too
-            lock (locker) {
+            lock (locker)
+            {
                 if (!HasJoined(p)) return false;
             }
-                
+
             auth.AcceptPlayer(p);
             return true;
         }
-        
-        
+
+
         const string HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?username={0}&serverId={1}";
-        public static bool HasJoined(Player p) {
+        public static bool HasJoined(Player p)
+        {
             string url = string.Format(HAS_JOINED_URL, p.truename, GetServerID(p));
             try
             {
-                HttpWebRequest req   = HttpUtil.CreateRequest(url);
-                req.Timeout          = 5 * 1000;
+                HttpWebRequest req = HttpUtil.CreateRequest(url);
+                req.Timeout = 5 * 1000;
                 req.ReadWriteTimeout = 5 * 1000;
 
-                using (HttpWebResponse response = (HttpWebResponse)req.GetResponse())
-                {
-                    return response.StatusCode == HttpStatusCode.OK;
-                }
-            } catch (Exception ex) {
+                using HttpWebResponse response = (HttpWebResponse)req.GetResponse();
+                return response.StatusCode == HttpStatusCode.OK;
+            }
+            catch (Exception ex)
+            {
                 HttpUtil.DisposeErrorResponse(ex);
                 Logger.LogError("Verifying Mojang session for " + p.truename, ex);
             }
@@ -116,7 +123,8 @@ namespace MCGalaxy.Authentication
 #if MCG_DOTNET
 #pragma warning disable SYSLIB0021
 #endif
-        static string GetServerID(Player p) {
+        static string GetServerID(Player p)
+        {
             byte[] data = Encoding.UTF8.GetBytes(p.ip);
             byte[] hash = new SHA1Managed().ComputeHash(data);
             return Utils.ToHexString(hash);

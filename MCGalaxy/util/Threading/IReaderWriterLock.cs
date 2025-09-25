@@ -22,7 +22,7 @@ namespace MCGalaxy.Util
 {
     public sealed class IReaderWriterLock 
     {
-        readonly ReaderWriterLockSlim locker = new ReaderWriterLockSlim();
+        readonly ReaderWriterLockSlim locker = new();
 
         public IDisposable AccquireRead() { return AccquireRead(-1); }
         public IDisposable AccquireWrite() { return AccquireWrite(-1); }

@@ -12,14 +12,14 @@ BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
  */
+using MCGalaxy.Modules.Compiling;
+using MCGalaxy.Scripting;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
-using MCGalaxy.Scripting;
-using MCGalaxy.Modules.Compiling;
 
 namespace MCGalaxy.Gui.Popups
 {
@@ -169,7 +169,7 @@ namespace MCGalaxy.Gui.Popups
             }
 
             string tmp = "extra/commands/TMP_" + Path.GetRandomFileName() + ".dll";
-            ConsoleHelpPlayer p = new ConsoleHelpPlayer();
+            ConsoleHelpPlayer p = new();
             if (CompilerOperations.Compile(p, compiler, "Command", new[] { path }, tmp))
                 return tmp;
 
@@ -202,7 +202,7 @@ namespace MCGalaxy.Gui.Popups
 
         static string GetFilterText()
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new();
             // Returns e.g. "Accepted File Types (*.cs, *.dll)|*.cs;*.dll|C# Source (*.cs)|*.cs|.NET Assemblies (*.dll)|*.dll";
 
             sb.AppendFormat("Accepted File Types ({0}*.dll)|",

@@ -15,10 +15,7 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
-using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Drawing.Ops;
-using BlockID = System.UInt16;
 
 namespace MCGalaxy.Commands.Building
 {
@@ -35,14 +32,15 @@ namespace MCGalaxy.Commands.Building
                 p.Message("Block name is required."); return null;
             }
 
-            BlockID target;
             string[] parts = dArgs.Message.SplitSpaces(2);
             // NOTE: Don't need to check if allowed to use block here
             // (OutlineDrawOp skips all blocks that are equal to target)
-            if (!CommandParser.GetBlock(p, parts[0], out target)) return null;
+            if (!CommandParser.GetBlock(p, parts[0], out ushort target)) return null;
 
-            OutlineDrawOp op = new OutlineDrawOp();
-            op.side = GetSides(dArgs.Message.SplitSpaces());
+            OutlineDrawOp op = new()
+            {
+                side = GetSides(dArgs.Message.SplitSpaces())
+            };
             if (op.side == OutlineDrawOp.Side.Unspecified) op.side = OutlineDrawOp.Side.All;
             op.Target = target;
             return op;

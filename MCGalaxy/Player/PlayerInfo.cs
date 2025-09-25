@@ -13,10 +13,9 @@ or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
  */
 
-using System;
-using System.Collections.Generic;
 using MCGalaxy.DB;
 using MCGalaxy.SQL;
+using System.Collections.Generic;
 
 namespace MCGalaxy
 {
@@ -24,7 +23,7 @@ namespace MCGalaxy
     {
         /// <summary> Array of all currently online players. </summary>
         /// <remarks> Note this field is highly volatile, you should cache references to the items array. </remarks>
-        public static VolatileArray<Player> Online = new VolatileArray<Player>();
+        public static VolatileArray<Player> Online = new();
 
         public static Group GetGroup(string name)
         {
@@ -42,7 +41,7 @@ namespace MCGalaxy
         public static int NonHiddenUniqueIPCount()
         {
             Player[] players = Online.Items;
-            Dictionary<string, bool> uniqueIPs = new Dictionary<string, bool>();
+            Dictionary<string, bool> uniqueIPs = new();
 
             foreach (Player p in players)
             {
@@ -115,7 +114,7 @@ namespace MCGalaxy
         /// <remarks> This is current IP for online players, last IP for offline players from the database. </remarks>
         public static List<string> FindAccounts(string ip)
         {
-            List<string> names = new List<string>();
+            List<string> names = new();
             Database.ReadRows("Players", "Name",
                                 record => ReadAccounts(record, names),
                                 "WHERE IP=@0", ip);
@@ -135,7 +134,7 @@ namespace MCGalaxy
         public static List<Player> OnlyCanSee(Player p, LevelPermission plRank,
                                                 IEnumerable<Player> players)
         {
-            List<Player> list = new List<Player>();
+            List<Player> list = new();
             foreach (Player pl in players)
             {
                 if (p.CanSee(pl, plRank)) list.Add(pl);
@@ -152,7 +151,7 @@ namespace MCGalaxy
         /// <summary> Returns all online players that the given player can see, ordered by rank </summary>
         public static List<OnlineListEntry> GetOnlineList(Player p, LevelPermission plRank, out int total)
         {
-            List<OnlineListEntry> all = new List<OnlineListEntry>();
+            List<OnlineListEntry> all = new();
             total = 0;
 
             foreach (Group group in Group.GroupList)
@@ -169,7 +168,7 @@ namespace MCGalaxy
 
         static OnlineListEntry OnlineOfRank(Player p, LevelPermission plRank, Group group)
         {
-            OnlineListEntry entry = new OnlineListEntry
+            OnlineListEntry entry = new()
             {
                 group = group,
                 players = new List<Player>()

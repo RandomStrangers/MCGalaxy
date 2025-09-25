@@ -17,16 +17,17 @@
 */
 using MCGalaxy.Events.ServerEvents;
 
-namespace MCGalaxy.Modules.Warps 
+namespace MCGalaxy.Modules.Warps
 {
-    public sealed class WarpsPlugin : Plugin 
+    public sealed class WarpsPlugin : Plugin
     {
         public override string name { get { return "Warps"; } }
 
-        readonly Command cmdWarps     = new CmdWarp();
+        readonly Command cmdWarps = new CmdWarp();
         readonly Command cmdWaypoints = new CmdWaypoint();
 
-        public override void Load(bool startup) {
+        public override void Load(bool startup)
+        {
             Server.EnsureDirectoryExists(Paths.WAYPOINTS_DIR);
             OnConfigUpdatedEvent.Register(OnConfigUpdated, Priority.Low);
 
@@ -34,12 +35,14 @@ namespace MCGalaxy.Modules.Warps
             Command.Register(cmdWaypoints);
         }
 
-        public override void Unload(bool shutdown) {
+        public override void Unload(bool shutdown)
+        {
             OnConfigUpdatedEvent.Unregister(OnConfigUpdated);
             Command.Unregister(cmdWarps, cmdWaypoints);
         }
-        
-        static void OnConfigUpdated() { 
+
+        static void OnConfigUpdated()
+        {
             if (WarpList.Global == null) return;
             WarpList.Global.Load();
         }

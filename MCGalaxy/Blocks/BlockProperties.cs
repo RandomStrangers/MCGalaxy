@@ -16,7 +16,7 @@
     permissions and limitations under the Licenses.
  */
 using System.IO;
-using BlockID = System.UInt16;
+
 
 namespace MCGalaxy.Blocks
 {
@@ -42,7 +42,7 @@ namespace MCGalaxy.Blocks
         /// <summary> Whether this block is considered a door. </summary>
         public bool IsDoor;
         /// <summary> Block ID of the block this is converted to when toggled by a neighbouring door. </summary>
-        public BlockID oDoorBlock;
+        public ushort oDoorBlock;
 
         /// <summary> Whether this block is considered a message block. </summary>
         public bool IsMessageBlock;
@@ -65,16 +65,16 @@ namespace MCGalaxy.Blocks
 
         /// <summary> Block ID that is placed when two of this block are placed on top of each other. </summary>
         /// <remarks> e.g. slabs and cobblestone slabs. </remarks>
-        public BlockID StackBlock;
+        public ushort StackBlock;
 
         /// <summary> Whether players can drown inside this block (e.g. water). </summary>
         public bool Drownable;
 
         /// <summary> Block ID this is changed into when exposed to sunlight. </summary>
-        public BlockID GrassBlock;
+        public ushort GrassBlock;
 
         /// <summary> Block ID this is changed into when no longer exposed to sunlight. </summary>
-        public BlockID DirtBlock;
+        public ushort DirtBlock;
 
 
         /// <summary> Whether the properties for this block have been modified and hence require saving. </summary>
@@ -108,26 +108,24 @@ namespace MCGalaxy.Blocks
 
         static void SaveCore(string group, BlockProps[] list, byte scope)
         {
-            using (StreamWriter w = FileIO.CreateGuarded("blockprops/" + group + ".txt"))
+            using StreamWriter w = FileIO.CreateGuarded("blockprops/" + group + ".txt");
+            w.WriteLine("# This represents the physics properties for blocks, in the format of:");
+            w.WriteLine("# id : Is rails : Is tdoor : Is door : Is message block : Is portal : " +
+                        "Killed by water : Killed by lava : Kills players : death message : " +
+                        "Animal AI type : Stack block : Is OP block : oDoor block : Drownable : " +
+                        "Grass block : Dirt block");
+            for (int b = 0; b < list.Length; b++)
             {
-                w.WriteLine("# This represents the physics properties for blocks, in the format of:");
-                w.WriteLine("# id : Is rails : Is tdoor : Is door : Is message block : Is portal : " +
-                            "Killed by water : Killed by lava : Kills players : death message : " +
-                            "Animal AI type : Stack block : Is OP block : oDoor block : Drownable : " +
-                            "Grass block : Dirt block");
-                for (int b = 0; b < list.Length; b++)
-                {
-                    if ((list[b].ChangedScope & scope) == 0) continue;
-                    BlockProps props = list[b];
+                if ((list[b].ChangedScope & scope) == 0) continue;
+                BlockProps props = list[b];
 
-                    string deathMsg = props.DeathMessage == null ? "" : props.DeathMessage.Replace(":", "\\;");
-                    w.WriteLine(b + ":" + props.IsRails + ":" + props.IsTDoor + ":" + props.IsDoor + ":"
-                                + props.IsMessageBlock + ":" + props.IsPortal + ":" + props.WaterKills + ":"
-                                + props.LavaKills + ":" + props.KillerBlock + ":" + deathMsg + ":"
-                                + (byte)props.AnimalAI + ":" + props.StackBlock + ":" + props.OPBlock + ":"
-                                + props.oDoorBlock + ":" + props.Drownable + ":" + props.GrassBlock + ":"
-                                + props.DirtBlock);
-                }
+                string deathMsg = props.DeathMessage == null ? "" : props.DeathMessage.Replace(":", "\\;");
+                w.WriteLine(b + ":" + props.IsRails + ":" + props.IsTDoor + ":" + props.IsDoor + ":"
+                            + props.IsMessageBlock + ":" + props.IsPortal + ":" + props.WaterKills + ":"
+                            + props.LavaKills + ":" + props.KillerBlock + ":" + deathMsg + ":"
+                            + (byte)props.AnimalAI + ":" + props.StackBlock + ":" + props.OPBlock + ":"
+                            + props.oDoorBlock + ":" + props.Drownable + ":" + props.GrassBlock + ":"
+                            + props.DirtBlock);
             }
         }
 
@@ -157,7 +155,7 @@ namespace MCGalaxy.Blocks
                     continue;
                 }
 
-                if (!BlockID.TryParse(parts[0], out ushort b))
+                if (!ushort.TryParse(parts[0], out ushort b))
                 {
                     Logger.Log(LogType.Warning, "Invalid line \"{0}\" in {1}", line, path);
                     continue;
@@ -191,7 +189,7 @@ namespace MCGalaxy.Blocks
                 }
                 if (parts.Length > 11)
                 {
-                    BlockID.TryParse(parts[11], out list[b].StackBlock);
+                    ushort.TryParse(parts[11], out list[b].StackBlock);
                     list[b].StackBlock = Block.MapOldRaw(list[b].StackBlock);
                 }
                 if (parts.Length > 12)
@@ -200,7 +198,7 @@ namespace MCGalaxy.Blocks
                 }
                 if (parts.Length > 13)
                 {
-                    BlockID.TryParse(parts[13], out list[b].oDoorBlock);
+                    ushort.TryParse(parts[13], out list[b].oDoorBlock);
                 }
                 if (parts.Length > 14)
                 {
@@ -208,28 +206,28 @@ namespace MCGalaxy.Blocks
                 }
                 if (parts.Length > 15)
                 {
-                    BlockID.TryParse(parts[15], out list[b].GrassBlock);
+                    ushort.TryParse(parts[15], out list[b].GrassBlock);
                 }
                 if (parts.Length > 16)
                 {
-                    BlockID.TryParse(parts[16], out list[b].DirtBlock);
+                    ushort.TryParse(parts[16], out list[b].DirtBlock);
                 }
             }
         }
 
 
-        public static BlockProps MakeDefault(BlockProps[] scope, Level lvl, BlockID block)
+        public static BlockProps MakeDefault(BlockProps[] scope, Level lvl, ushort block)
         {
             if (scope == Block.Props) return Block.MakeDefaultProps(block);
             return IsDefaultBlock(lvl, block) ? Block.Props[block] : MakeEmpty();
         }
 
-        static bool IsDefaultBlock(Level lvl, BlockID b)
+        static bool IsDefaultBlock(Level lvl, ushort b)
         {
             return Block.IsPhysicsType(b) || lvl.CustomBlockDefs[b] == BlockDefinition.GlobalDefs[b];
         }
 
-        public static void ApplyChanges(BlockProps[] scope, Level lvl_, BlockID block, bool save)
+        public static void ApplyChanges(BlockProps[] scope, Level lvl_, ushort block, bool save)
         {
             byte scopeId = ScopeId(scope);
             string path;
@@ -259,7 +257,7 @@ namespace MCGalaxy.Blocks
 
         internal static byte ScopeId(BlockProps[] scope) { return scope == Block.Props ? (byte)1 : (byte)2; }
 
-        public static string ScopedName(BlockProps[] scope, Player p, BlockID block)
+        public static string ScopedName(BlockProps[] scope, Player p, ushort block)
         {
             return scope == Block.Props ? Block.GetName(Player.Console, block) : Block.GetName(p, block);
         }
