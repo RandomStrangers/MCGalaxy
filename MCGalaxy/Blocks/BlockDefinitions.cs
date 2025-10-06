@@ -26,7 +26,7 @@ namespace MCGalaxy
     public sealed class BlockDefinition
     {
 
-        [ConfigUShort("ushort", null)]
+        [ConfigUShort("BlockID", null)]
         public ushort RawID;
         [ConfigString] public string Name;
         [ConfigFloat] public float Speed;
