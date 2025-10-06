@@ -31,8 +31,7 @@ namespace MCGalaxy.Modules.Warps
             Server.EnsureDirectoryExists(Paths.WAYPOINTS_DIR);
             OnConfigUpdatedEvent.Register(OnConfigUpdated, Priority.Low);
 
-            Command.Register(cmdWarps);
-            Command.Register(cmdWaypoints);
+            Command.Register(cmdWarps, cmdWaypoints);
         }
 
         public override void Unload(bool shutdown)

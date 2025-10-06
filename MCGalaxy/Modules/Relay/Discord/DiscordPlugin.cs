@@ -86,7 +86,7 @@ namespace MCGalaxy.Modules.Relay.Discord
     }
 
     public enum PresenceStatus { online, dnd, idle, invisible }
-    public enum PresenceActivity { Playing = 0, Listening = 2, Watching = 3, Competing = 5 }
+    public enum PresenceActivity { Playing = 0, Listening = 2, Watching = 3, Custom = 4, Competing = 5 }
 
     public sealed class DiscordPlugin : Plugin
     {
@@ -101,8 +101,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         public override void Load(bool startup)
         {
             Server.EnsureDirectoryExists("text/discord");
-            Command.Register(cmdDiscordBot);
-            Command.Register(cmdDiscordCtrls);
+            Command.Register(cmdDiscordBot, cmdDiscordCtrls);
 
             Bot.Config = Config;
             Bot.ReloadConfig();

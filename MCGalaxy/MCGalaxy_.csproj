@@ -622,10 +622,6 @@
     <Compile Include="Modules\Warps\Warp.cs" />
     <Compile Include="Modules\Warps\WarpCommand.cs" />
     <Compile Include="Modules\Warps\WarpPlugin.cs" />
-    <Compile Include="nas\Crafting.Items.cs" />
-    <Compile Include="nas\NameGenerator.cs" />
-    <Compile Include="nas\PluginEvents.cs" />
-    <Compile Include="nas\Utils.cs" />
     <Compile Include="Network\BaseWebSocket.cs" />
     <Compile Include="Network\ClassicProtocol.cs" />
     <Compile Include="Network\CPESupport.cs" />
@@ -680,8 +676,9 @@
     <Compile Include="Server\Maintenance\ZipWriter.cs" />
     <Compile Include="util\CountryUtils.cs" />
     <Compile Include="util\Formatting\Wildcard.cs" />
-    <Compile Include="util\ImageUtils.cs" />
     <Compile Include="util\DotnetBackend.cs" />
+    <Compile Include="util\Imaging\Bitmap2D.cs" />
+    <Compile Include="util\Imaging\ImageUtils.cs" />
     <Compile Include="util\NumberUtils.cs" />
     <Compile Include="util\OperatingSystem.cs" />
     <Compile Include="Server\Server.cs" />
@@ -721,6 +718,10 @@
     <Compile Include="util\ExtrasCollection.cs" />
     <Compile Include="properties\AssemblyInfo.cs" />
     <Compile Include="Database\PlayerDB.cs" />
+    <Compile Include="nas\Crafting.Items.cs" />
+    <Compile Include="nas\NameGenerator.cs" />
+    <Compile Include="nas\PluginEvents.cs" />
+    <Compile Include="nas\Utils.cs" />
     <Compile Include="nas\Collision.cs" />
     <Compile Include="nas\Crafting.Setup.cs" />
     <Compile Include="nas\Drop.cs" />
@@ -776,7 +777,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <MonoDevelop>

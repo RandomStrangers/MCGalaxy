@@ -184,7 +184,13 @@ namespace MCGalaxy
                 Register(cmd);
             }
         }
-
+        public static void Register(params Command[] commands)
+        {
+            foreach(Command cmd in commands)
+            {
+                Register(cmd);
+            }
+        }
         public static void Register(Command cmd)
         {
             allCmds.Add(cmd);

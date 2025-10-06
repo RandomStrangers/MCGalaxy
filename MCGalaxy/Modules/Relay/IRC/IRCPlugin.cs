@@ -31,8 +31,7 @@ namespace MCGalaxy.Modules.Relay.IRC
 
         public override void Load(bool startup)
         {
-            Command.Register(cmdIrcBot);
-            Command.Register(cmdIrcCtrls);
+            Command.Register(cmdIrcBot, cmdIrcCtrls);
 
             Bot.ReloadConfig();
             Bot.Connect();

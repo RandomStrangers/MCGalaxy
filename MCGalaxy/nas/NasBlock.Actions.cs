@@ -342,7 +342,7 @@ namespace NotAwesomeSurvival
             zPos = zPos && neighborIndex3 > spreadIndex;
             zNeg = zNeg && neighborIndex4 > spreadIndex;
         }
-        public static void CloserToAHole(int x, int y, int z, int xDiff, int zDiff, int originalHoleDistance, List<Vec3S32> holes, ref bool canFlowDir)
+        public static void CloserToAHole(int x, int _, int z, int xDiff, int zDiff, int originalHoleDistance, List<Vec3S32> holes, ref bool canFlowDir)
         {
             x += xDiff;
             z += zDiff;
@@ -510,7 +510,7 @@ namespace NotAwesomeSurvival
             Block.Extended|130,
             Block.Extended|130
         };
-        public static NasBlockAction DirtBlockAction(ushort[] grassSet, ushort dirt)
+        public static NasBlockAction DirtBlockAction(ushort[] grassSet, ushort _)
         {
             return (nl, nasBlock, x, y, z) =>
             {
@@ -654,7 +654,7 @@ namespace NotAwesomeSurvival
             Block.Extended|249,
             Block.Extended|250,
         };
-        public static NasBlockAction LeafBlockAction(ushort[] logSet, ushort leaf)
+        public static NasBlockAction LeafBlockAction(ushort[] _, ushort leaf)
         {
             return (nl, nasBlock, x, y, z) =>
             {
@@ -1889,7 +1889,7 @@ namespace NotAwesomeSurvival
             Block.FromRaw(673),
             Block.FromRaw(457),
         };
-        public static int CanIPush(NasLevel nl, int x, int y, int z, ushort[] above)
+        public static int CanIPush(NasLevel _, int __, int ___, int ____, ushort[] above)
         {
             if (above[0] == Block.Air || above[0] == 8)
             {

@@ -21,9 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-#if !NET_20
 using MCGalaxy.Platform;
-#endif
 namespace MCGalaxy.Scripting
 {
     /// <summary> Exception raised when attempting to load a new command/plugin 
@@ -49,34 +47,37 @@ namespace MCGalaxy.Scripting
         {
             Directory.CreateDirectory(COMMANDS_DLL_DIR);
             Directory.CreateDirectory(PLUGINS_DLL_DIR);
-            AppDomain.CurrentDomain.AssemblyResolve += ResolvePluginAssembly;
+            AppDomain.CurrentDomain.AssemblyResolve += ResolveMissingAssembly;
         }
-
-        // only used for resolving plugin DLLs depending on other plugin DLLs
-        static Assembly ResolvePluginAssembly(object sender, ResolveEventArgs args)
+         static Assembly ResolveMissingAssembly(object sender, ResolveEventArgs args) 
         {
+            Assembly source = null;
 #if !NET_20
             // This property only exists in .NET framework 4.0 and later
-            Assembly requestingAssembly = args.RequestingAssembly;
-
-            if (requestingAssembly == null) return null;
-            if (!IsPluginDLL(requestingAssembly)) return null;
+            source = args.RequestingAssembly;
+#endif
+            Assembly match = ResolvePluginAssembly(source, args.Name);
+            if (match != null) return match;
+            Logger.Log(LogType.Warning, "{0} [{1}] tried to load [{2}], but it could not be found",
+                       IsPluginDLL(source) ? "Custom command/plugin" : "Assembly",
+                       source == null ? "(unknown)" : source.FullName,
+                       args.Name);
+            return null;
+        }
+        static Assembly ResolvePluginAssembly(Assembly source, string target)
+        {
+            if (source == null) return null;
+            if (!IsPluginDLL(source)) return null;
 
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (Assembly assem in assemblies)
             {
                 if (!IsPluginDLL(assem)) continue;
-
-                if (args.Name == assem.FullName) return assem;
-            }
-
-            Assembly coreRef = DotNetBackend.ResolvePluginReference(args.Name);
-            if (coreRef != null) return coreRef;
-
-            Logger.Log(LogType.Warning, "Custom command/plugin [{0}] tried to load [{1}], but it could not be found",
-                       requestingAssembly.FullName, args.Name);
-#endif
-            return null;
+                if (target == assem.FullName) return assem;
+            } 
+            // In modern dotnet, also try resolving to a core assembly
+            Assembly coreRef = DotNetBackend.ResolvePluginReference(target);
+            return coreRef ?? null;
         }
 
         static bool IsPluginDLL(Assembly a) { return string.IsNullOrEmpty(a.Location); }

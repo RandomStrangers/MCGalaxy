@@ -31,9 +31,7 @@ namespace MCGalaxy.Modules.Compiling
         {
             Server.EnsureDirectoryExists(ICompiler.COMMANDS_SOURCE_DIR);
 
-            Command.Register(cmdCreate);
-            Command.Register(cmdCompile);
-            Command.Register(cmdCompLoad);
+            Command.Register(cmdCreate, cmdCompile, cmdCompLoad);
         }
 
         public override void Unload(bool shutdown)

@@ -472,7 +472,7 @@ namespace MCGalaxy
             if (TimesDied > short.MaxValue && Database.Backend.EnforcesIntegerLimits)
                 TimesDied = short.MaxValue;
 
-            if (Server.Config.AnnounceDeathCount && (TimesDied > 0 && TimesDied % 10 == 0))
+            if (Server.Config.AnnounceDeathCount && TimesDied > 0 && TimesDied % 10 == 0)
             {
                 AnnounceDeath("@p &Shas died &3" + TimesDied + " times");
             }

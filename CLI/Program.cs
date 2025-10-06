@@ -45,7 +45,7 @@ namespace MCGalaxy.Cli
             // separate method, in case MCGalaxy_.dll is missing
             StartCLI();
         }
-        static string GetFilename(string rawName)
+        public static string GetFilename(string rawName)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace MCGalaxy.Cli
                 return rawName;
             }
         }
-        static void SetCurrentDirectory()
+        public static void SetCurrentDirectory()
         {
 #if !MCG_STANDALONE
             string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -75,7 +75,7 @@ namespace MCGalaxy.Cli
             }
 #endif
         }
-        static void EnableCLIMode()
+        public static void EnableCLIMode()
         {
             try
             {
@@ -89,7 +89,7 @@ namespace MCGalaxy.Cli
             Server.RestartPath = Assembly.GetEntryAssembly().Location;
 #endif
         }
-        static void StartCLI()
+        public static void StartCLI()
         {
             FileLogger.Init();
             AppDomain.CurrentDomain.UnhandledException += GlobalExHandler;
@@ -110,7 +110,7 @@ namespace MCGalaxy.Cli
                 FileLogger.Flush(null);
             }
         }
-        static void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        public static void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
             switch (e.SpecialKey)
             {
@@ -127,7 +127,7 @@ namespace MCGalaxy.Cli
                     break;
             }
         }
-        static void LogAndRestart(Exception ex)
+        public static void LogAndRestart(Exception ex)
         {
             Logger.LogError(ex);
             FileLogger.Flush(null);
@@ -138,12 +138,12 @@ namespace MCGalaxy.Cli
                 stopThread.Join();
             }
         }
-        static void GlobalExHandler(object sender, UnhandledExceptionEventArgs e)
+        public static void GlobalExHandler(object sender, UnhandledExceptionEventArgs e)
         {
             LogAndRestart((Exception)e.ExceptionObject);
         }
-        static string CurrentDate() { return DateTime.Now.ToString("(HH:mm:ss) "); }
-        static void LogMessage(LogType type, string message)
+        public static string CurrentDate() { return DateTime.Now.ToString("(HH:mm:ss) "); }
+        public static void LogMessage(LogType type, string message)
         {
             if (!Server.Config.ConsoleLogging[(int)type])
             {
@@ -166,8 +166,8 @@ namespace MCGalaxy.Cli
                     break;
             }
         }
-        static readonly string msgPrefix = Environment.NewLine + "Message: ";
-        static string ExtractErrorMessage(string raw)
+        public static readonly string msgPrefix = Environment.NewLine + "Message: ";
+        public static string ExtractErrorMessage(string raw)
         {
             // Error messages are usually structured like so:
             //   Type: whatever
@@ -187,7 +187,7 @@ namespace MCGalaxy.Cli
             }
             return " (" + raw.Substring(beg, end - beg) + ")";
         }
-        static void CheckNameVerification()
+        public static void CheckNameVerification()
         {
             if (Server.Config.VerifyNames)
             {
@@ -198,11 +198,11 @@ namespace MCGalaxy.Cli
             Write("&eUnless you know EXACTLY what you are doing, you should change verify-names to true in server.properties");
             Write("&e==============================================");
         }
-        static void LogNewerVersionDetected(object sender, EventArgs e)
+        public static void LogNewerVersionDetected(object sender, EventArgs e)
         {
             Write("&cMCGalaxy update available! Update by replacing with the files from " + Updater.UploadsURL);
         }
-        static void ConsoleLoop()
+        public static void ConsoleLoop()
         {
             int eofs = 0;
             while (true)
@@ -257,7 +257,7 @@ namespace MCGalaxy.Cli
                 }
             }
         }
-        static void Write(string message)
+        public static void Write(string message)
         {
             int index = 0;
             char col = 'S';
@@ -285,7 +285,7 @@ namespace MCGalaxy.Cli
             Console.ResetColor();
             Console.Out.WriteLine();
         }
-        static ConsoleColor GetConsoleColor(char c)
+        public static ConsoleColor GetConsoleColor(char c)
         {
             if (c == 'S')
             {

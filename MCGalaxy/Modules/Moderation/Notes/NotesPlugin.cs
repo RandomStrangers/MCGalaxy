@@ -30,7 +30,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
         public override void Load(bool startup)
         {
             OnModActionEvent.Register(HandleModerationAction, Priority.Low);
-            foreach (Command cmd in cmds) { Command.Register(cmd); }
+            Command.Register(cmds);
             NoteAcronym.Init();
         }
 

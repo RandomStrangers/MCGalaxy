@@ -97,7 +97,7 @@ namespace MCGalaxy.DB
 
             if (count > 0)
             {
-                ReadFully(s, bulk, 0, count * EntrySize);
+                StreamUtils.ReadFully(s, bulk, 0, count * EntrySize);
             }
             return count;
         }
@@ -112,7 +112,7 @@ namespace MCGalaxy.DB
             {
                 pos -= count * EntrySize;
                 s.Position = pos;
-                ReadFully(s, bulk, 0, count * EntrySize);
+                StreamUtils.ReadFully(s, bulk, 0, count * EntrySize);
                 s.Position = pos; // set correct position for next backward read
             }
             return count;
