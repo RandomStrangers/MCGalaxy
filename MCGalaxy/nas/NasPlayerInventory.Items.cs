@@ -186,7 +186,13 @@ namespace NotAwesomeSurvival
                     }
                     else
                     {
-                        builder.Append("&hƒ");
+                        Item item2 = items[itemIndex];
+                        if (item2 != null && item2.Prop.color == "`")
+                        {
+                            builder.Append("&`ƒ");
+                        }
+                        else
+                            builder.Append("&hƒ");
                     }
                 }
                 else if (i == offset)
@@ -236,7 +242,14 @@ namespace NotAwesomeSurvival
                     }
                     else
                     {
-                        builder.Append((item != null && item.Enchanted() ? "&5" : "&h") + "½");
+                        if (item != null && item.Prop.color == "`")
+                        {
+                            builder.Append("&`" + "½");
+                        }
+                        else
+                        {
+                            builder.Append((item != null && item.Enchanted() ? "&5" : "&h") + "½");
+                        }
                     }
                 }
                 else if (!selectionNext || i == itemBarLength + offset - 1)
@@ -304,6 +317,11 @@ namespace NotAwesomeSurvival
                 {3,"III"},
                 {4,"IV"},
                 {5,"V"},
+                {6,"VI"},
+                {7,"VII"},
+                {8,"VIII"},
+                {9,"IX"},
+                {10,"X"},
             };
             Item item = items[selectedItemIndex];
             if (item == null)

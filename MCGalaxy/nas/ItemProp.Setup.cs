@@ -4,43 +4,99 @@ namespace NotAwesomeSurvival
 {
     public partial class ItemProp
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0079:Unnecessary suppression", Justification = "<Pending>")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification = "<Pending>")]
-        public static void Setup()
-        {
-            Dictionary<string, bool> nothing = new(),
+        public static Dictionary<string, bool> nothing = new(),
                 toolEnchants = new(){
                 {"Efficiency",true},
                 {"Fortune",true},
                 {"Mending",true},
                 {"Silk Touch",true},
                 {"Unbreaking",true},
-            };
-            Dictionary<string, bool> swordEnchants = new(){
+            },
+            swordEnchants = new(){
                 {"Knockback",true},
                 {"Mending",true},
                 {"Sharpness",true},
                 {"Unbreaking",true},
-            };
-            Dictionary<string, bool> bootEnchants = new(){
+            },
+            bootEnchants = new(){
                 {"Feather Falling",true},
                 {"Mending",true},
                 {"Protection",true},
                 {"Thorns",true},
                 {"Unbreaking",true},
-            };
-            Dictionary<string, bool> helmetEnchants = new(){
+            }, 
+            helmetEnchants = new(){
                 {"Aqua Affinity",true},
                 {"Mending",true},
                 {"Protection",true},
                 {"Respiration",true},
                 {"Thorns",true},
                 {"Unbreaking",true},
-            };
-            Dictionary<string, bool> armorEnchants = new(){
+            },
+            armorEnchants = new(){
                 {"Mending",true},
                 {"Protection",true},
                 {"Thorns",true},
                 {"Unbreaking",true},
+            };
+        public static ItemProp bedrockPick,etheriumPick,
+            bedrockSword, etheriumHelmet, etheriumChest, 
+            etheriumLegs, etheriumBoots, etheriumSword;
+        public static void Setup()
+        {
+            bedrockPick = new("Bedrock Pickaxe|m|╟", nothing, NasBlock.Material.None, -1f, 5)
+            {
+                baseHP = int.MaxValue
+            };
+            bedrockSword = new("Bedrock Sword|0|α", swordEnchants, NasBlock.Material.Leaves, 1f, 6)
+            {
+                damage = 50f,
+                knockback = 2f,
+                recharge = 1,
+                baseHP = int.MaxValue
+            };
+            etheriumSword = new("Etherium Sword|`|α", swordEnchants, NasBlock.Material.Leaves, 1f, 6)
+            {
+                damage = int.MaxValue,
+                knockback = 0f,
+                recharge = 0,
+                baseHP = int.MaxValue
+            };
+            etheriumPick = new("Etherium Pickaxe|`|ß", toolEnchants, NasBlock.Material.Stone, 1f, 6)
+            {
+                baseHP = int.MaxValue
+            };
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Stone);
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Earth);
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Wood);
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Plant);
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Leaves);
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Organic);
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Glass);
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Metal);
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Liquid);
+            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Lava);
+            etheriumChest = new("Etherium Chestplate|`|Φ", armorEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = int.MaxValue,
+                armor = int.MaxValue
+            };
+            etheriumHelmet = new("Etherium Helmet|`|τ", helmetEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = int.MaxValue,
+                armor = int.MaxValue
+            };
+            etheriumLegs = new("Etherium Leggings|`|Θ", armorEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = int.MaxValue,
+                armor = int.MaxValue
+            };
+            etheriumBoots = new("Etherium Boots|`|Ω", bootEnchants, NasBlock.Material.None, 0, 0)
+            {
+                baseHP = int.MaxValue,
+                armor = int.MaxValue
             };
             ItemProp fist = new("Fist|f|¬", nothing, NasBlock.Material.None, 0, 0)
             {
@@ -158,31 +214,6 @@ namespace NotAwesomeSurvival
                 recharge = 750,
                 knockback = 1.25f,
                 baseHP = emeraldBaseHP
-            };
-            ItemProp bedrockPick = new("Bedrock Pickaxe|m|╟", nothing, NasBlock.Material.None, -1f, 5)
-            {
-                baseHP = int.MaxValue
-            };
-            ItemProp etheriumPick = new("Etherium Pickaxe|h|ß", toolEnchants, NasBlock.Material.Stone, 1f, 6)
-            {
-                baseHP = int.MaxValue
-            };
-            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Stone);
-            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Earth);
-            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Wood);
-            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Plant);
-            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Leaves);
-            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Organic);
-            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Glass);
-            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Metal);
-            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Liquid);
-            etheriumPick.materialsEffectiveAgainst.Add(NasBlock.Material.Lava);
-            ItemProp bedrockSword = new("Bedrock Sword|0|α", swordEnchants, NasBlock.Material.Leaves, 1f, 6)
-            {
-                damage = 50f,
-                knockback = 2f,
-                recharge = 1,
-                baseHP = int.MaxValue
             };
             ItemProp ironHelmet = new("Iron Helmet|f|τ", helmetEnchants, NasBlock.Material.None, 0, 0)
             {
