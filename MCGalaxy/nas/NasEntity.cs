@@ -62,6 +62,10 @@ namespace NotAwesomeSurvival
             {
                 HP = 0;
             }
+            if (HP > maxHP)
+            {
+                HP = maxHP;
+            }
         }
         public virtual bool CanTakeDamage(DamageSource source)
         {

@@ -589,6 +589,10 @@ namespace NotAwesomeSurvival
         /// </summary>
         public override bool TakeDamage(float damage, DamageSource source, string customDeathReason = "")
         {
+            if (HP > maxHP)
+            {
+                HP = maxHP;
+            }
             if (!CanTakeDamage(source))
             {
                 return false;
@@ -748,6 +752,10 @@ namespace NotAwesomeSurvival
         }
         public string HealthString(string healthColor)
         {
+            if (HP > maxHP)
+            {
+                HP = maxHP;
+            }
             StringBuilder builder = new("&8", (int)maxHP + 6);
             string final;
             float totalLostHealth = maxHP - HP,
