@@ -47,7 +47,7 @@ namespace NotAwesomeSurvival
         {
             get
             {
-                return "HarmonyNetwork"; //Goodly/Zoey no longer supports NAS. 
+                return "JuneSolis"; //Goodly/Zoey no longer supports NAS. 
             }
         }
         public static List<string> Devs = new()
@@ -55,6 +55,7 @@ namespace NotAwesomeSurvival
             //"goodlyay", //No longer supports.
             //"zoeyvidae", //No longer supports.
             //"UnseenServant", //No longer involved.
+            "JuneSolis",
             "HarmonyNetwork"
         };
         public const string textureURL = "https://dl.dropboxusercontent.com/s/2x5oxffkgpcyj16/nas.zip?dl=0",
