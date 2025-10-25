@@ -15,53 +15,72 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using MCGalaxy.Commands;
+using System;
 using System.IO;
+using MCGalaxy.Commands;
 
 namespace MCGalaxy.Bots
 {
     public static class ScriptFile
     {
-
         public static bool Parse(Player p, PlayerBot bot, string ai)
         {
             string path = "bots/" + ai;
             if (!File.Exists(path))
             {
-                p.Message("Could not find specified AI."); return false;
+                p.Message("Could not find specified AI.");
+                return false;
             }
 
-            //string[] instructions = File.ReadAllLines(path);
-            string[] instructions = FileIO.TryReadAllLines(path);
-            if (instructions.Length == 0)
+            bool readAnyLines;
+            using (StreamReader r = new(path))
             {
-                p.Message("No instructions in the AI."); return false;
+                try
+                {
+                    readAnyLines = ProcessLines(bot, r, ai);
+                }
+                catch (Exception ex)
+                {
+                    p.Message("AI file corrupt.");
+                    Logger.LogError("reading bot AI", ex);
+                    return false;
+                }
             }
 
+            if (!readAnyLines)
+            {
+                p.Message("No instructions in the AI.");
+                return false;
+            }
+            return true;
+        }
+        static bool ProcessLines(PlayerBot bot, StreamReader r, string ai)
+        {
+            bool readAnyLines = false;
+            string line;
+
+            while ((line = r.ReadLine()) != null)
+            {
+                if (!readAnyLines)
+                {
+                    ResetState(bot, ai);
+                    readAnyLines = true;
+                }
+                if (line.IsCommentLine()) continue;
+                string[] args = line.SplitSpaces();
+                BotInstruction ins = BotInstruction.Find(args[0]);
+                if (ins == null) continue;
+                InstructionData data = ins.Parse(args);
+                data.Name = args[0];
+                bot.Instructions.Add(data);
+            }
+            return readAnyLines;
+        }
+        static void ResetState(PlayerBot bot, string ai)
+        {
             bot.AIName = ai;
             bot.Instructions.Clear();
             bot.cur = 0; bot.countdown = 0; bot.movementSpeed = 3;
-
-            foreach (string line in instructions)
-            {
-                if (line.IsCommentLine()) continue;
-                string[] args = line.SplitSpaces();
-
-                try
-                {
-                    BotInstruction ins = BotInstruction.Find(args[0]);
-                    if (ins == null) continue;
-
-                    InstructionData data = ins.Parse(args);
-                    data.Name = args[0];
-                    bot.Instructions.Add(data);
-                }
-                catch
-                {
-                    p.Message("AI file corrupt."); return false;
-                }
-            }
-            return true;
         }
 
         public static string Append(Player p, string ai, string cmd, string[] args)
