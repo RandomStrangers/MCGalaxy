@@ -37,76 +37,12 @@ namespace NotAwesomeSurvival
                 }
             }
         }
-        /*
-        [JsonIgnore] public SchedulerTask SetPrefixTask;
-        [JsonIgnore] public Scheduler SetPrefixScheduler;
-        public void SetPrefix(SchedulerTask task)
-        {
-            SetPrefix(p);
-        }
-        public static void SetPrefix(Player p)
-        {
-            System.Collections.Generic.List<string> prefixes = new System.Collections.Generic.List<string>();
-            MCGalaxy.Games.Team team = p.Game.Team;
-            MCGalaxy.Games.IGame game = MCGalaxy.Games.IGame.GameOn(p.level);
-            prefixes.Add(p.Game.Referee ? "&2[Ref] " : "");
-            prefixes.Add(p.GroupPrefix.Length > 0 ? p.GroupPrefix + p.color : "");
-            prefixes.Add(team == null ? "" : "<" + team.Color + team.Name + p.color + "> ");
-            prefixes.Add(game == null ? "" : game.GetPrefix(p));
-            bool devPrefix = Server.Config.SoftwareStaffPrefixes &&
-                             Server.Devs.CaselessContains(p.truename);
-            prefixes.Add(devPrefix ? MakeTitle(p, "Dev", "&9") : "");
-            prefixes.Add(p.title.Length > 0 ? MakeTitle(p, p.title, p.titlecolor) : "");
-            bool NASDevPrefix = Server.Config.SoftwareStaffPrefixes &&
-                             Nas.Devs.CaselessContains(p.truename);
-            prefixes.Add(NASDevPrefix ? MakeTitle(p, "NASDev", "&a") : "");
-            p.prefix = prefixes.Join("");
-            OnSettingPrefixEvent.Call(p, prefixes);
-        }
-        public static string MakeTitle(Player p, string title, string titleCol)
-        {
-            return p.color + "[" + titleCol + title + p.color + "] ";
-        }
-        public static Scheduler savingScheduler;
-        public static SchedulerTask SaveTask;
-        public static void Setup()
-        {
-            if (savingScheduler == null)
-            {
-                savingScheduler = new Scheduler("SavingScheduler");
-            }
-            SaveTask = savingScheduler.QueueRepeat(SaveAll, null, TimeSpan.FromSeconds(5));
-        }
-        public static void TakeDown()
-        {
-            savingScheduler.Cancel(SaveTask);
-        }
-        public static void SaveAll(SchedulerTask task)
-        {
-            Player[] players = PlayerInfo.Online.Items;
-            foreach (Player player in players)
-            {
-                SaveAction(player);
-            }
-        }
-        public static void SaveAction(Player p)
-        {
-            NasPlayer np = GetNasPlayer(p);
-            if (np != null)
-            {
-                string jsonString = JsonConvert.SerializeObject(np, Formatting.Indented);
-                File.WriteAllText(Nas.GetSavePath(p), jsonString);
-                File.WriteAllText(Nas.GetTextPath(p), jsonString);
-            }
-        }*/
         public static void Register()
         {
-            //Setup();
             OnPlayerSpawningEvent.Register(OnPlayerSpawning, Priority.High);
         }
         public static void Unregister()
         {
-            //TakeDown();
             OnPlayerSpawningEvent.Unregister(OnPlayerSpawning);
         }
         public static void OnPlayerSpawning(Player p, ref Position pos, ref byte yaw, ref byte pitch, bool respawning)
@@ -161,10 +97,8 @@ namespace NotAwesomeSurvival
             if (this != null)
             {
                 string jsonString = JsonConvert.SerializeObject(this, Formatting.Indented);
-                //File.WriteAllText(Nas.GetSavePath(p), jsonString);
-                FileIO.TryWriteAllText(Nas.GetSavePath(p), jsonString);
-                //File.WriteAllText(Nas.GetTextPath(p), jsonString);
-                FileIO.TryWriteAllText(Nas.GetTextPath(p), jsonString);
+                FileUtils.TryWriteAllText(Nas.GetSavePath(p), jsonString);
+                FileUtils.TryWriteAllText(Nas.GetTextPath(p), jsonString);
             }
         }
         public void SpawnPlayer(Level level, ref Position spawnPos, ref byte yaw, ref byte pitch)
@@ -297,12 +231,6 @@ namespace NotAwesomeSurvival
             }
             hasBeenSpawned = true;
             Log("{0}: hasBeenSpawned set to {1}", p.truename, hasBeenSpawned);
-        }
-        public void UpdateEnv()
-        {
-            p.level.Config.SkyColor = NasTimeCycle.globalSkyColor;
-            p.level.Config.CloudColor = NasTimeCycle.globalCloudColor;
-            p.level.Config.LightColor = NasTimeCycle.globalSunColor;
         }
         public void DoMovement(Position next, byte _, byte __)
         {
@@ -505,17 +433,6 @@ namespace NotAwesomeSurvival
             [JsonIgnore]
             public int chunkOffsetX, chunkOffsetZ,
                 travelX = -1, travelY = -1, travelZ = -1;
-            public TransferInfo(Player p, int chunkOffsetX, int chunkOffsetZ)
-            {
-                posBeforeMapChange = p.Pos;
-                yawBeforeMapChange = p.Rot.RotY;
-                pitchBeforeMapChange = p.Rot.HeadX;
-                this.chunkOffsetX = chunkOffsetX;
-                this.chunkOffsetZ = chunkOffsetZ;
-                travelX = -1;
-                travelY = -1;
-                travelZ = -1;
-            }
             public TransferInfo(Player p, int chunkOffsetX, int chunkOffsetZ, int x, int y, int z)
             {
                 posBeforeMapChange = p.Pos;

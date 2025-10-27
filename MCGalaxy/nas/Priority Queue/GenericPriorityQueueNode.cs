@@ -16,12 +16,10 @@ namespace Priority_Queue
         /// Represents the order the node was inserted in
         /// </summary>
         public long InsertionIndex { get; set; }
-#if DEBUG
         /// <summary>
         /// The queue this node is tied to. Used only for debug builds.
         /// </summary>
         public object Queue { get; set; }
-#endif
     }
 }
 #endif

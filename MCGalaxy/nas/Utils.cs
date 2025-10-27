@@ -12,6 +12,91 @@ using System.Net;
 using System.Threading;
 namespace NotAwesomeSurvival
 {
+    public static class FileUtils
+    {
+        public static bool TryDeleteDirectory(string path, bool recursive = false)
+        {
+            try
+            {
+                Directory.Delete(path, recursive);
+                return true;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                return false;
+            }
+        }
+        public static string TryReadAllText(string path)
+        {
+            try
+            {
+                return File.ReadAllText(path);
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
+            }
+        }
+        public static string[] TryGetFiles(string directory, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly)
+        {
+            try
+            {
+                return Directory.GetFiles(directory, searchPattern, searchOption);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                return null;
+            }
+        }
+        public static string[] TryReadAllLines(string path)
+        {
+            try
+            {
+                return File.ReadAllLines(path);
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
+            }
+        }
+        public static bool TryWriteAllText(string path, string contents)
+        {
+            try
+            {
+                File.WriteAllText(path, contents);
+                return true;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
+        }
+        public static bool TryAppendAllText(string path, string contents)
+        {
+            try
+            {
+                File.AppendAllText(path, contents);
+                return true;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
+        }
+        public static bool TryWriteAllLines(string path, string[] contents)
+        {
+            try
+            {
+                File.WriteAllLines(path, contents);
+                return true;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
+        }
+    }
+
     public partial class Nas
     {
         public static bool HasExtraPerm(NasPlayer np, string cmd, int num)
@@ -52,9 +137,9 @@ namespace NotAwesomeSurvival
                 string mapName = seed + "_0,0";
                 NasLevel.GenerateMap(Player.Console,
                                            mapName,
-                                           NasGen.mapWideness,
-                                           NasGen.mapTallness,
-                                           NasGen.mapWideness,
+                                           NasGen.mapWideness.ToString(),
+                                           NasGen.mapTallness.ToString(),
+                                           NasGen.mapWideness.ToString(),
                                            seed);
                 Server.Config.MainLevel = mapName;
                 SrvProperties.Save();
@@ -76,11 +161,14 @@ namespace NotAwesomeSurvival
             Server.Config.ShadowColor = "#888899";
             SrvProperties.Save();
         }
-        public static void EnsureDirectoryExists(string path)
+        public static void EnsureDirectoriesExists(params string[] paths)
         {
-            if (!Directory.Exists(path))
+            foreach (string path in paths)
             {
-                Directory.CreateDirectory(path);
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
             }
         }
         public static void MoveFile(string file, string destFile)
@@ -92,9 +180,6 @@ namespace NotAwesomeSurvival
                     FileIO.TryDelete(destFile);
                 }
                 FileIO.TryMove(file, destFile);
-            }
-            else
-            {
             }
         }
         public static string GetSavePath(Player p)
@@ -335,10 +420,6 @@ namespace NotAwesomeSurvival
     }
     public partial class NasLevel
     {
-        public static Level GenerateMap(Player p, string mapName, int width, int height, int length, string seed)
-        {
-            return GenerateMap(p, mapName, width.ToString(), height.ToString(), length.ToString(), seed);
-        }
         public static Level GenerateMap(Player p, string mapName, string width, string height, string length, string seed)
         {
             string[] args = new string[] { mapName, width, height, length, seed };
@@ -351,16 +432,13 @@ namespace NotAwesomeSurvival
             return MapGen.Generate(p, gen, mapName, x, y, z, seed);
         }
     }
-    public static class DateExtensions
+    public static class Extensions
     {
         public static DateTime Floor(this DateTime date, TimeSpan span)
         {
             long ticks = date.Ticks / span.Ticks;
             return new DateTime(ticks * span.Ticks);
         }
-    }
-    public static class Extensions
-    {
         public static bool IsNullOrWhiteSpace(this string value)
         {
             if (value as object == null)

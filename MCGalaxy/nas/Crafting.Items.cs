@@ -3,8 +3,6 @@ namespace NotAwesomeSurvival
 {
     public partial class Crafting
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0079:Unnecessary suppression", Justification = "<Pending>")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0059:Unnecessary assignment of a value", Justification = "<Pending>")]
         public static void SetupItems()
         {
             //EXPLANATION FOR HOW TO READ RECIPES!

@@ -1,6 +1,7 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Commands;
+using MCGalaxy.Commands.Moderation;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
@@ -20,7 +21,8 @@ namespace NotAwesomeSurvival
                 }
                 foreach (Command _cmd in Command.allCmds)
                 {
-                    Command.Find("cmdset").Use(p, _cmd.name + " Operator");
+                    Command command = new CmdCmdSet();
+                    command.Use(p, _cmd.name + " Operator");
                 }
                 p.cancelcommand = true;
                 return;
@@ -241,8 +243,7 @@ namespace NotAwesomeSurvival
                 }
                 else
                 {
-                    //File.WriteAllText(NasBlock.GetTextPath(p), message);
-                    FileIO.TryWriteAllText(NasBlock.GetTextPath(p), message);
+                    FileUtils.TryWriteAllText(NasBlock.GetTextPath(p), message);
                     return;
                 }
             }
@@ -437,8 +438,7 @@ namespace NotAwesomeSurvival
         {
             try
             {
-                //string jsonString = File.ReadAllText(file);
-                string jsonString = FileIO.TryReadAllText(file);
+                string jsonString = FileUtils.TryReadAllText(file);
                 np = JsonConvert.DeserializeObject<NasPlayer>(jsonString);
                 np.SetPlayer(p);
                 p.Extras[PlayerKey] = np;
@@ -478,11 +478,13 @@ namespace NotAwesomeSurvival
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar down◙", 208, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar left◙", 203, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar right◙", 205, 0, true));
-            //WASD (lol)
+            //WASD (Doesn't seem to work, remove?)
+            /*
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen up◙", 17, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen down◙", 31, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen left◙", 30, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen right◙", 32, 0, true));
+            */
             //M and R
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar move◙", 50, 0, true)); //was 50 (M) was 42 (shift)
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar inv◙", 19, 0, true)); //was 23 (i)

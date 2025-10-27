@@ -364,7 +364,6 @@ namespace NotAwesomeSurvival
                     }
                 }
                 p.Message("Initial gen 100% complete.");
-
             }
             public void CalcHeightmap()
             {
@@ -403,11 +402,11 @@ namespace NotAwesomeSurvival
                 DateTime dateStartLayer;
                 //counter = 0;
                 dateStartLayer = DateTime.UtcNow;
-                for (double y = 0; y < height - 1; y++)
+                for (int y = 0; y < height - 1; y++)
                 {
-                    for (double z = 0; z < length; ++z)
+                    for (int z = 0; z < length; ++z)
                     {
-                        for (double x = 0; x < width; ++x)
+                        for (int x = 0; x < width; ++x)
                         {
                             if (biome == 1)
                             {
@@ -456,10 +455,6 @@ namespace NotAwesomeSurvival
                         dateStartLayer = DateTime.UtcNow;
                     }
                 }
-            }
-            public bool ShouldThereBeSoil(double x, double y, double z)
-            {
-                return ShouldThereBeSoil((int)x, (int)y, (int)z);
             }
             public bool ShouldThereBeSoil(int x, int y, int z)
             {
@@ -648,11 +643,11 @@ namespace NotAwesomeSurvival
                 //counter = 0;
                 dateStartLayer = DateTime.UtcNow;
                 int height = lvl.Height - 1, width = lvl.Width, length = lvl.Length;
-                for (double y = 0; y < (ushort)height; y++)
+                for (int y = 0; y < (ushort)height; y++)
                 {
-                    for (double z = 0; z < length; ++z)
+                    for (int z = 0; z < length; ++z)
                     {
-                        for (double x = 0; x < width; ++x)
+                        for (int x = 0; x < width; ++x)
                         {
                             topSoil = Block.Extended | 129; //Block.Grass;
                             if (biome == 1)
@@ -1310,10 +1305,6 @@ namespace NotAwesomeSurvival
                     genZ = rng.Next(10, mapWideness - 10),
                     genY = rng.Next(0, 15);
                 GenerateDungeon(rng, genX, genY, genZ, level, nsl, false, Player.Console);
-            }
-            public static void GenLoot(int x, int y, int z, Level level, Random rng, NasLevel nsl, bool forced)
-            {
-                GenLoot(x, y, z, level, rng, nsl, forced, Player.Console);
             }
             public static void GenLoot(int x, int y, int z, Level level, Random rng, NasLevel nsl, bool forced, Player p)
             {

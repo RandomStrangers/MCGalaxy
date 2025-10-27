@@ -33,9 +33,9 @@ namespace MCGalaxy.Commands.Maintenance
             string[] args = message.SplitSpaces();
             switch (args[0].ToLower())
             {
-                case "public": SetPublic(p, args); break;
-                case "private": SetPrivate(p, args); break;
-                case "reload": DoReload(p, args); break;
+                case "public": SetPublic(p); break;
+                case "private": SetPrivate(p); break;
+                case "reload": DoReload(p); break;
                 case "backup": DoBackup(p, args); break;
                 case "restore": DoRestore(p); break;
                 case "import": DoImport(p, args); break;
@@ -45,7 +45,7 @@ namespace MCGalaxy.Commands.Maintenance
             }
         }
 
-        void SetPublic(Player p, string[] _)
+        void SetPublic(Player p)
         {
             Server.Config.Public = true;
             p.Message("Server is now public!");
@@ -53,7 +53,7 @@ namespace MCGalaxy.Commands.Maintenance
             SrvProperties.Save();
         }
 
-        void SetPrivate(Player p, string[] _)
+        void SetPrivate(Player p)
         {
             Server.Config.Public = false;
             p.Message("Server is now private!");
@@ -61,7 +61,7 @@ namespace MCGalaxy.Commands.Maintenance
             SrvProperties.Save();
         }
 
-        void DoReload(Player p, string[] _)
+        void DoReload(Player p)
         {
             p.Message("Reloading settings...");
             Server.LoadAllSettings();

@@ -20,12 +20,10 @@ namespace Priority_Queue
         /// <param name="maxNodes">The max nodes ever allowed to be enqueued (going over this will cause undefined behavior)</param>
         public FastPriorityQueue(int maxNodes)
         {
-#if DEBUG
             if (maxNodes <= 0)
             {
                 throw new InvalidOperationException("New queue size cannot be smaller than 1");
             }
-#endif
             _numNodes = 0;
             _nodes = new T[maxNodes + 1];
         }
@@ -55,9 +53,6 @@ namespace Priority_Queue
         /// Removes every node from the queue.
         /// O(n) (So, don't do this often!)
         /// </summary>
-#if NET_VERSION_4_5
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void Clear()
         {
             Array.Clear(_nodes, 1, _numNodes);
@@ -68,12 +63,8 @@ namespace Priority_Queue
         /// If node is or has been previously added to another queue, the result is undefined unless oldQueue.ResetNode(node) has been called
         /// O(1)
         /// </summary>
-#if NET_VERSION_4_5
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public bool Contains(T node)
         {
-#if DEBUG
             if (node == null)
             {
                 throw new ArgumentNullException("node");
@@ -86,7 +77,6 @@ namespace Priority_Queue
             {
                 throw new InvalidOperationException("node.QueueIndex has been corrupted. Did you change it manually? Or add this node to another queue?");
             }
-#endif
             return _nodes[node.QueueIndex] == node;
         }
         /// <summary>
@@ -96,12 +86,8 @@ namespace Priority_Queue
         /// If node is or has been previously added to another queue, the result is undefined unless oldQueue.ResetNode(node) has been called
         /// O(log n)
         /// </summary>
-#if NET_VERSION_4_5
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void Enqueue(T node, float priority)
         {
-#if DEBUG
             if (node == null)
             {
                 throw new ArgumentNullException("node");
@@ -119,16 +105,12 @@ namespace Priority_Queue
                 throw new InvalidOperationException("Node is already enqueued: " + node);
             }
             node.Queue = this;
-#endif
             node.Priority = priority;
             _numNodes++;
             _nodes[_numNodes] = node;
             node.QueueIndex = _numNodes;
             CascadeUp(node);
         }
-#if NET_VERSION_4_5
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void CascadeUp(T node)
         {
             //aka Heapify-up
@@ -165,9 +147,6 @@ namespace Priority_Queue
             }
             _nodes[node.QueueIndex] = node;
         }
-#if NET_VERSION_4_5
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void CascadeDown(T node)
         {
             //aka Heapify-down
@@ -302,9 +281,6 @@ namespace Priority_Queue
         /// Returns true if 'higher' has higher priority than 'lower', false otherwise.
         /// Note that calling HasHigherPriority(node, node) (ie. both arguments the same node) will return false
         /// </summary>
-#if NET_VERSION_4_5
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public bool HasHigherPriority(T higher, T lower)
         {
             return higher.Priority < lower.Priority;
@@ -313,9 +289,6 @@ namespace Priority_Queue
         /// Returns true if 'higher' has higher priority than 'lower', false otherwise.
         /// Note that calling HasHigherOrEqualPriority(node, node) (ie. both arguments the same node) will return true
         /// </summary>
-#if NET_VERSION_4_5
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public bool HasHigherOrEqualPriority(T higher, T lower)
         {
             return higher.Priority <= lower.Priority;
@@ -325,12 +298,8 @@ namespace Priority_Queue
         /// If queue is empty, result is undefined
         /// O(log n)
         /// </summary>
-#if NET_VERSION_4_5
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public T Dequeue()
         {
-#if DEBUG
             if (_numNodes <= 0)
             {
                 throw new InvalidOperationException("Cannot call Dequeue() on an empty queue");
@@ -340,7 +309,6 @@ namespace Priority_Queue
                 throw new InvalidOperationException("Queue has been corrupted (Did you update a node priority manually instead of calling UpdatePriority()?" +
                                                     "Or add the same node to two different queues?)");
             }
-#endif
             T returnMe = _nodes[1];
             //If the node is already the last node, we can remove it immediately
             if (_numNodes == 1)
@@ -366,7 +334,6 @@ namespace Priority_Queue
         /// </summary>
         public void Resize(int maxNodes)
         {
-#if DEBUG
             if (maxNodes <= 0)
             {
                 throw new InvalidOperationException("Queue size cannot be smaller than 1");
@@ -375,7 +342,6 @@ namespace Priority_Queue
             {
                 throw new InvalidOperationException("Called Resize(" + maxNodes + "), but current queue contains " + _numNodes + " nodes");
             }
-#endif
             T[] newArray = new T[maxNodes + 1];
             int highestIndexToCopy = Math.Min(maxNodes, _numNodes);
             Array.Copy(_nodes, newArray, highestIndexToCopy + 1);
@@ -390,12 +356,10 @@ namespace Priority_Queue
         {
             get
             {
-#if DEBUG
                 if (_numNodes <= 0)
                 {
                     throw new InvalidOperationException("Cannot call .First on an empty queue");
                 }
-#endif
                 return _nodes[1];
             }
         }
@@ -405,12 +369,8 @@ namespace Priority_Queue
         /// Calling this method on a node not in the queue results in undefined behavior
         /// O(log n)
         /// </summary>
-#if NET_VERSION_4_5
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void UpdatePriority(T node, float priority)
         {
-#if DEBUG
             if (node == null)
             {
                 throw new ArgumentNullException("node");
@@ -423,13 +383,9 @@ namespace Priority_Queue
             {
                 throw new InvalidOperationException("Cannot call UpdatePriority() on a node which is not enqueued: " + node);
             }
-#endif
             node.Priority = priority;
             OnNodeUpdated(node);
         }
-#if NET_VERSION_4_5
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void OnNodeUpdated(T node)
         {
             //Bubble the updated node up or down as appropriate
@@ -449,12 +405,8 @@ namespace Priority_Queue
         /// If the node is not in the queue, the result is undefined.  If unsure, check Contains() first
         /// O(log n)
         /// </summary>
-#if NET_VERSION_4_5
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void Remove(T node)
         {
-#if DEBUG
             if (node == null)
             {
                 throw new ArgumentNullException("node");
@@ -467,7 +419,6 @@ namespace Priority_Queue
             {
                 throw new InvalidOperationException("Cannot call Remove() on a node which is not enqueued: " + node);
             }
-#endif
             //If the node is already the last node, we can remove it immediately
             if (node.QueueIndex == _numNodes)
             {
@@ -489,12 +440,8 @@ namespace Priority_Queue
         /// If you need to do this, please call originalQueue.ResetNode(node) before attempting to add it in the new queue
         /// If the node is currently in the queue or belongs to another queue, the result is undefined
         /// </summary>
-#if NET_VERSION_4_5
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public void ResetNode(T node)
         {
-#if DEBUG
             if (node == null)
             {
                 throw new ArgumentNullException("node");
@@ -508,20 +455,14 @@ namespace Priority_Queue
                 throw new InvalidOperationException("node.ResetNode was called on a node that is still in the queue");
             }
             node.Queue = null;
-#endif
             node.QueueIndex = 0;
         }
         public IEnumerator<T> GetEnumerator()
         {
-#if NET_VERSION_4_5 // ArraySegment does not implement IEnumerable before 4.5
-            IEnumerable<T> e = new ArraySegment<T>(_nodes, 1, _numNodes);
-            return e.GetEnumerator();
-#else
             for (int i = 1; i <= _numNodes; i++)
             {
                 yield return _nodes[i];
             }
-#endif
         }
         IEnumerator IEnumerable.GetEnumerator()
         {

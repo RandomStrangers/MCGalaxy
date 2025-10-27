@@ -610,11 +610,6 @@ namespace NotAwesomeSurvival
                 return;
             };
         }
-        public static Random CoordRandom(int x, int y, int z)
-        {
-            string rndString = x + " " + y + " " + z;
-            return new Random(rndString.GetHashCode());
-        }
         public static NasBlockAction ObserverActivateAction(int type)
         {
             return (nl, nasBlock, x, y, z) =>
@@ -1889,66 +1884,6 @@ namespace NotAwesomeSurvival
             Block.FromRaw(673),
             Block.FromRaw(457),
         };
-        public static int CanIPush(NasLevel _, int __, int ___, int ____, ushort[] above)
-        {
-            if (above[0] == Block.Air || above[0] == 8)
-            {
-                return 0;
-            }
-            if (IsPartOfSet(unpushable, above[0]) != -1)
-            {
-                return -1;
-            }
-            if (above[1] == Block.Air || above[1] == 8)
-            {
-                return 1;
-            }
-            if (IsPartOfSet(unpushable, above[1]) != -1)
-            {
-                return -1;
-            }
-            if (above[2] == Block.Air || above[2] == 8)
-            {
-                return 2;
-            }
-            if (IsPartOfSet(unpushable, above[2]) != -1)
-            {
-                return -1;
-            }
-            if (above[3] == Block.Air || above[3] == 8)
-            {
-                return 3;
-            }
-            if (IsPartOfSet(unpushable, above[3]) != -1)
-            {
-                return -1;
-            }
-            if (above[4] == Block.Air || above[4] == 8)
-            {
-                return 4;
-            }
-            if (IsPartOfSet(unpushable, above[4]) != -1)
-            {
-                return -1;
-            }
-            if (above[5] == Block.Air || above[5] == 8)
-            {
-                return 5;
-            }
-            if (IsPartOfSet(unpushable, above[5]) != -1)
-            {
-                return -1;
-            }
-            if (above[6] == Block.Air || above[6] == 8)
-            {
-                return 6;
-            }
-            if (IsPartOfSet(unpushable, above[6]) != -1)
-            {
-                return -1;
-            }
-            return -1;
-        }
         public static ushort[] wireSetActive =
         {
             Block.Extended|683,
@@ -2109,7 +2044,6 @@ namespace NotAwesomeSurvival
                     if (IsPartOfSet(actSet, hereBlock) != -1)
                     {
                         nl.FastSetBlock(x, y, z, inactSet[IsPartOfSet(actSet, hereBlock)]);
-
                     }
                     else
                     {
@@ -2724,17 +2658,6 @@ namespace NotAwesomeSurvival
             }
             return false;
         }
-        public static NasBlockAction OnSoil(ushort soil)
-        {
-            return (nl, nasBlock, x, y, z) =>
-            {
-                if (!((nl.GetBlock(x, y, z) == nl.GetBlock(x, y - 1, z)) | (nl.GetBlock(x, y - 1, z) == soil)))
-                {
-                    nl.SetBlock(x, y, z, Block.Extended | 39);
-                }
-            };
-        }
-
     }
 }
 #endif

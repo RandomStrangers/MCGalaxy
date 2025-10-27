@@ -66,22 +66,6 @@ namespace NotAwesomeSurvival
         public const byte BreakMeterID = byte.MaxValue - BreakEffectIDcount;
         public const int BreakMeterSpawnDelay = 100;
         public static object breakIDLocker = new();
-        public static string LastClickedCoords(Player p)
-        {
-            return p.Extras.GetString(LastClickedCoordsKey, "-1 -1 -1");
-        }
-        public static void SetLastClickedCoords(Player p, ushort x, ushort y, ushort z)
-        {
-            p.Extras[LastClickedCoordsKey] = x + " " + y + " " + z;
-        }
-        public static int BreakAmount(Player p)
-        {
-            return p.Extras.GetInt(BreakAmountKey, 0);
-        }
-        public static void SetBreakAmount(Player p, int amount)
-        {
-            p.Extras[BreakAmountKey] = amount;
-        }
         public static byte GetBreakID()
         {
             lock (breakIDLocker)
@@ -204,14 +188,14 @@ namespace NotAwesomeSurvival
             int amount = np.inventory.GetAmount(nasBlock.parentID);
             if (amount < 1)
             {
-                np.Message("&cYou don't have any {0}.", nasBlock.GetName(p));
+                np.Message("&cYou don't have any {0}.", nasBlock.GetName(np));
                 CancelPlacedBlock(p, x, y, z, np, ref cancel);
                 return;
             }
             if (amount < nasBlock.resourceCost)
             {
                 np.Message("&cYou need at least {0} {1} to place {2}.",
-                          nasBlock.resourceCost, nasBlock.GetName(p), nasBlock.GetName(p, clientushort));
+                          nasBlock.resourceCost, nasBlock.GetName(np), nasBlock.GetName(np, clientushort));
                 CancelPlacedBlock(p, x, y, z, np, ref cancel);
                 return;
             }
@@ -283,15 +267,6 @@ namespace NotAwesomeSurvival
             public NasBlock nasBlock;
             public int breakAttempt;
             public Item toolUsed;
-        }
-        public class RepeaterInfo
-        {
-            public NasLevel nl;
-            public int x, y, z;
-            public NasBlock.Entity b, strength1;
-            public int type,
-                direction;
-            public ushort oldBlock;
         }
         public class FishingInfo
         {

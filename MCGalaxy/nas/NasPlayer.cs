@@ -282,48 +282,6 @@ namespace NotAwesomeSurvival
             }
             return exp + (int)(4.5 * Math.Pow(levels, 2) - 162.5 * levels + 2220);
         }
-        public bool TakeLevels(int amount)
-        {
-            int expRequired;
-            if (levels <= 16)
-            {
-                expRequired = 2 * levels + 7;
-            }
-            else
-            {
-                if (levels <= 31)
-                {
-                    expRequired = 5 * levels - 38;
-                }
-                else
-                {
-                    expRequired = 9 * levels - 158;
-                }
-            }
-            if (amount > levels)
-            {
-                return false;
-            }
-            double percentage = (double)exp / expRequired;
-            levels -= amount;
-            if (levels <= 16)
-            {
-                expRequired = 2 * levels + 7;
-            }
-            else
-            {
-                if (levels <= 31)
-                {
-                    expRequired = 5 * levels - 38;
-                }
-                else
-                {
-                    expRequired = 9 * levels - 158;
-                }
-            }
-            exp = (int)Math.Floor(percentage * expRequired);
-            return true;
-        }
         public static void ClickOnPlayer(Player p, byte entity, MouseButton button, MouseAction action)
         {
             NasPlayer np = GetNasPlayer(p);
@@ -366,6 +324,10 @@ namespace NotAwesomeSurvival
                     if (!np.pvpEnabled)
                     {
                         reason = "do not have PVP enabled";
+                    }
+                    if (!np.hasBeenSpawned)
+                    {
+                        reason = "are not spawned";
                     }
                     np.Message("&SYou cannot damage {0} &Sbecause you currently {1}.", who.DisplayName, reason);
                     return;
@@ -433,6 +395,10 @@ namespace NotAwesomeSurvival
                         {
                             reason = "does not have PVP enabled";
                         }
+                    }
+                    if (!w.hasBeenSpawned)
+                    {
+                        reason = w.p.pronouns.PresentVerb + " not spawned";
                     }
                     np.Message("&SYou cannot damage {0} &Sbecause " + who.pronouns.Subject + " currently {1}.", who.DisplayName, reason);
                     return;
@@ -731,8 +697,7 @@ namespace NotAwesomeSurvival
                 };
                 nl.blockEntities.Add(x + " " + y + " " + z, blockEntity);
                 Message("You dropped a gravestone at {0} {1} {2} in {3}", x, y, z, p.level.name);
-                //File.AppendAllText(Nas.GetDeathPath(p.name), x + " " + y + " " + z + " in " + p.level.name);
-                FileIO.TryAppendAllText(Nas.GetDeathPath(p.name), x + " " + y + " " + z + " in " + p.level.name);
+                FileUtils.TryAppendAllText(Nas.GetDeathPath(p.name), x + " " + y + " " + z + " in " + p.level.name);
                 nl.blockEntities[x + " " + y + " " + z].lockedBy = p.name;
                 nl.blockEntities[x + " " + y + " " + z].drop.exp = GetExp();
             }
@@ -941,14 +906,16 @@ namespace NotAwesomeSurvival
             public abstract string Name { get; }
             public override string name { get { return Name; } }
             public override string type { get { return "NAS"; } }
+            public override bool SuperUseable { get { return false; } }
+            public override bool museumUsable { get { return false; } }
+            public override bool MessageBlockRestricted { get { return true; } }
+            public override LevelPermission defaultRank { get { return LevelPermission.Guest; } }
             public override void Use(Player p, string message)
             {
                 NasPlayer np = GetNasPlayer(p);
                 Use(np, message);
             }
             public abstract void Use(NasPlayer np, string message);
-            public override bool SuperUseable { get { return false; } }
-            public override bool MessageBlockRestricted { get { return true; } }
         }
         public abstract class NASCommand2 : NASCommand
         {
@@ -965,7 +932,10 @@ namespace NotAwesomeSurvival
             public override bool SuperUseable { get { return true; } }
             public bool IsSuper(Player p, string message, string type)
             {
-                if (message.Length > 0 || !p.IsSuper) return false;
+                if (message.Length > 0 || !p.IsSuper)
+                {
+                    return false;
+                }
                 SuperNeedsArgs(p, type);
                 return true;
             }
@@ -1004,9 +974,8 @@ namespace NotAwesomeSurvival
                     return;
                 }
                 //TODO: Simplify this, shouldn't copy deaths
-                //string[] deaths = File.ReadAllLines(file), deaths2 = File.ReadAllLines(file);
-                string[] deaths = FileIO.TryReadAllLines(file),
-                    deaths2 = FileIO.TryReadAllLines(file);
+                string[] deaths = FileUtils.TryReadAllLines(file),
+                    deaths2 = FileUtils.TryReadAllLines(file);
                 int count = deaths2.Length;
                 for (int i = 0; i < deaths2.Length; i++)
                 {
@@ -1043,7 +1012,6 @@ namespace NotAwesomeSurvival
         public class CmdMyGravestones : NASCommand
         {
             public override string Name { get { return "MyGravestones"; } }
-            public override LevelPermission defaultRank { get { return LevelPermission.Guest; } }
             public override void Use(NasPlayer np, string message)
             {
                 //TODO: Simplify this, shouldn't copy deaths
@@ -1053,9 +1021,8 @@ namespace NotAwesomeSurvival
                     np.Message("You have no gravestones recorded!");
                     return;
                 }
-                //string[] deaths = File.ReadAllLines(file), deaths2 = File.ReadAllLines(file);
-                string[] deaths = FileIO.TryReadAllLines(file),
-                    deaths2 = FileIO.TryReadAllLines(file);
+                string[] deaths = FileUtils.TryReadAllLines(file),
+                    deaths2 = FileUtils.TryReadAllLines(file);
                 int count = deaths2.Length;
                 for (int i = 0; i < deaths2.Length; i++)
                 {
@@ -1168,7 +1135,6 @@ namespace NotAwesomeSurvival
         {
             public override string Name { get { return "SpawnDungeon"; } }
             public override string shortcut { get { return "GenerateDungeon"; } }
-            public override bool museumUsable { get { return false; } }
             public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
             public override void Use(NasPlayer np, string message)
             {

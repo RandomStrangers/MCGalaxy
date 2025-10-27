@@ -25,34 +25,22 @@ namespace NotAwesomeSurvival
                 return "NAS";
             }
         }
-        public static string GetVersion()
-        {
-            if (!Server.NasVersion.IsNullOrEmpty())
-            {
-                return Server.NasVersion;
-            }
-            else
-            {
-                return "1.9.5.3";
-            }
-        }
         public override string MCGalaxy_Version
         {
             get
             {
-                return GetVersion();
+                return "1.9.5.3";
             }
         }
         public override string creator
         {
             get
             {
-                return "JuneSolis"; //Goodly/Zoey no longer supports NAS. 
+                return "JuneSolis"; //Zoey no longer supports NAS. 
             }
         }
         public static List<string> Devs = new()
         {
-            //"goodlyay", //No longer supports.
             //"zoeyvidae", //No longer supports.
             //"UnseenServant", //No longer involved.
             "JuneSolis",
@@ -83,21 +71,8 @@ namespace NotAwesomeSurvival
             EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/nas-rework/Uploads/nas/effects/breakdust.properties", EffectsPath + "breakdust.properties");
             EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/nas-rework/Uploads/nas/effects/breakleaf.properties", EffectsPath + "breakleaf.properties");
             EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/nas-rework/Uploads/nas/effects/breakmeter.properties", EffectsPath + "breakmeter.properties");
-            EnsureFileExists("https://github.com/cloverpepsi/place.cs/raw/main/global.json", "blockdefs/global.json");
+            EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/nas-rework/Uploads/nas/global.json", "blockdefs/global.json");
             EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/nas-rework/Newtonsoft.Json.dll", "Newtonsoft.Json.dll");
-        }
-        public static void EnsureDirectoriesExist()
-        {
-            EnsureDirectoryExists(Path);
-            EnsureDirectoryExists(SavePath);
-            EnsureDirectoryExists(CoreSavePath);
-            EnsureDirectoryExists(EffectsPath);
-            EnsureDirectoryExists(NasLevel.Path);
-            EnsureDirectoryExists(NasBlock.Path);
-            EnsureDirectoryExists(NasPlayer.DeathsPath);
-            EnsureDirectoryExists("blockprops");
-            EnsureDirectoryExists("blockdefs");
-            EnsureDirectoryExists("text");
         }
         public override void Load(bool startup)
         {
@@ -105,15 +80,17 @@ namespace NotAwesomeSurvival
             {
                 LoadedOnStartup = true;
             }
-            EnsureDirectoriesExist();
+            EnsureDirectoriesExists(Path, SavePath,
+                CoreSavePath, EffectsPath,
+                NasLevel.Path, NasBlock.Path,
+                NasPlayer.DeathsPath, "blockprops",
+                "blockdefs", "text");
             if (Directory.Exists("plugins/nas"))
             {
-                //string[] pluginfiles = Directory.GetFiles("plugins/nas");
-                string[] pluginfiles = FileIO.TryGetFiles("plugins/nas");
+                string[] pluginfiles = FileUtils.TryGetFiles("plugins/nas");
                 foreach (string pluginfile in pluginfiles)
                 {
-                    //string[] files = Directory.GetFiles(Path);
-                    string[] files = FileIO.TryGetFiles(Path);
+                    string[] files = FileUtils.TryGetFiles(Path);
                     foreach (string file in files)
                     {
                         if (!File.Exists(file))
@@ -127,8 +104,7 @@ namespace NotAwesomeSurvival
                         }
                     }
                 }
-                //Directory.Delete("plugins/nas", true);
-                FileIO.TryDeleteDirectory("plugins/nas", true);
+                FileUtils.TryDeleteDirectory("plugins/nas", true);
             }
             EnsureNasFilesExist();
             /*if (Block.Props.Length != 1024)
@@ -163,8 +139,7 @@ namespace NotAwesomeSurvival
             else
             {
                 firstEverPluginLoad = true;
-                //File.WriteAllText(loadFile, message);
-                FileIO.TryWriteAllText(loadFile, message);
+                FileUtils.TryWriteAllText(loadFile, message);
             }
             if (firstEverPluginLoad)
             {

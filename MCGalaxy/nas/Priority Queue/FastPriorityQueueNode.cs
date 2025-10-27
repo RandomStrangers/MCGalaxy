@@ -12,12 +12,10 @@ namespace Priority_Queue
         /// Represents the current position in the queue
         /// </summary>
         public int QueueIndex { get; set; }
-#if DEBUG
         /// <summary>
         /// The queue this node is tied to. Used only for debug builds.
         /// </summary>
         public object Queue { get; set; }
-#endif
     }
 }
 #endif

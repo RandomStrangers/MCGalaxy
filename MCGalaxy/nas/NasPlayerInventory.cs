@@ -176,13 +176,14 @@ namespace NotAwesomeSurvival
         }
         public string DisplayedBlockString(NasBlock nasBlock)
         {
+            NasPlayer np = NasPlayer.GetNasPlayer(p);
             if (nasBlock.parentID == 0)
             {
                 return "┤";
             }
             int amount = GetAmount(nasBlock.parentID);
             string hand = amount <= 0 ? "┤" : "╕¼";
-            return "[" + amount + "] " + nasBlock.GetName(p) + " " + hand;
+            return "[" + amount + "] " + nasBlock.GetName(np) + " " + hand;
         }
         public class DisplayInfo
         {

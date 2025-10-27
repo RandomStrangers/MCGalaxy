@@ -152,10 +152,6 @@ namespace NotAwesomeSurvival
                 }
             }
         }
-        public void SetBlock(double x, double y, double z, ushort serverushort, bool disturbDiagonals = false)
-        {
-            SetBlock((int)x, (int)y, (int)z, serverushort, disturbDiagonals);
-        }
         public void SetBlock(int x, int y, int z, ushort serverushort, bool disturbDiagonals = false)
         {
             if (
@@ -251,7 +247,6 @@ namespace NotAwesomeSurvival
         };
         public void DisturbBlock(int x, int y, int z, int changeX = 0, int changeY = 0, int changeZ = 0)
         {
-
             if (
                 x + changeX >= lvl.Width ||
                 x + changeX < 0 ||

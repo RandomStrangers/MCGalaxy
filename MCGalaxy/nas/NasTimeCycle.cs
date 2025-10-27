@@ -44,8 +44,7 @@ namespace NotAwesomeSurvival
                 // this is the json writer that will help me to serialize and deserialize items in the file
                 serializer.Serialize(writer, cyc);
             }
-            //string jsonString = File.ReadAllText(TimeFilePath);
-            string jsonString = FileIO.TryReadAllText(TimeFilePath);
+            string jsonString = FileUtils.TryReadAllText(TimeFilePath);
             NasTimeCycle ntc = JsonConvert.DeserializeObject<NasTimeCycle>(jsonString);
             dayCycle = ntc.cycle;
             gameday = ntc.day;
@@ -192,7 +191,6 @@ namespace NotAwesomeSurvival
                                 p.Send(Packet.EnvColor(4, c.R, c.G, c.B));
                             }
                         }
-                        //p.SendCurrentEnv();
                     }
                 }
             }

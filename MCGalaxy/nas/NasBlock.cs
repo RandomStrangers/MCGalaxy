@@ -28,28 +28,24 @@ namespace NotAwesomeSurvival
         /// <summary>
         /// Leave id arg blank to use parent's name
         /// </summary>
-        public string GetName(Player p, ushort id = ushort.MaxValue)
+        public string GetName(NasPlayer np, ushort id = ushort.MaxValue)
         {
             if (id == ushort.MaxValue)
             {
                 id = parentID;
             }
-            return GetBlockName(p, Block.FromRaw(id)).Split('-')[0];
+            return GetBlockName(np, Block.FromRaw(id)).Split('-')[0];
         }
-        public string GetName(NasPlayer np, ushort id = ushort.MaxValue)
-        {
-            return GetName(np.p, id);
-        }
-        public static string GetBlockName(Player p, ushort block)
+        public static string GetBlockName(NasPlayer np, ushort block)
         {
             if (Block.IsPhysicsType(block))
             {
                 return "Physics block";
             }
             BlockDefinition def;
-            if (!p.IsSuper)
+            if (!np.p.IsSuper)
             {
-                def = p.level.GetBlockDef(block);
+                def = np.p.level.GetBlockDef(block);
                 def ??= BlockDefinition.GlobalDefs[block];
             }
             else

@@ -6,9 +6,6 @@ namespace NotAwesomeSurvival
 {
     public static class NasTree
     {
-        public static void Setup()
-        {
-        }
         public static void GenOakTree(NasLevel nl, Random r, int x, int y, int z, bool broadcastChange = false)
         {
             Level lvl = nl.lvl;
