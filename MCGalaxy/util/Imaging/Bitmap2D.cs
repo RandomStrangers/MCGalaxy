@@ -28,11 +28,20 @@ using SixLabors.ImageSharp.Processing.Processors.Transforms;
 #endif
 using System.IO;
 
-namespace MCGalaxy.Util
+namespace MCGalaxy.Util 
 {
     public delegate Pixel PixelGet(int x, int y);
-    public delegate void PixelSet(int x, int y, Pixel pixel);
-    public struct Pixel { public byte A, R, G, B; }
+    public delegate void  PixelSet(int x, int y, Pixel pixel);
+    
+    public struct Pixel 
+    { 
+        public byte A, R, G, B;
+        
+        public Pixel(byte r, byte g, byte b, byte a)
+        {
+            R = r; G = g; B = b; A = a;
+        }
+    }
 
     /// <summary> Represents a 2D image </summary>
     /// <remarks> Backing implementation depends on whether running on dotnet or .NET </remarks>
@@ -42,7 +51,7 @@ namespace MCGalaxy.Util
         public int Height;
         public PixelGet Get;
         public PixelSet Set;
-
+        
         /// <summary> Retrieves the raw underlying image representation </summary>
         public abstract object RawImage { get; }
 
@@ -71,23 +80,20 @@ namespace MCGalaxy.Util
         BitmapData data;
         byte* scan0;
         int stride;
-
+        
         public override object RawImage { get { return bmp; } }
 
-        public override void Decode(byte[] data)
-        {
+        public override void Decode(byte[] data) {
             Image tmp = Image.FromStream(new MemoryStream(data));
             SetBitmap(tmp);
         }
 
-        public override void Resize(int width, int height, bool hq)
-        {
-            Bitmap resized = new(width, height);
+        public override void Resize(int width, int height, bool hq) {
+            Bitmap resized = new Bitmap(width, height);
             // https://photosauce.net/blog/post/image-scaling-with-gdi-part-3-drawimage-and-the-settings-that-affect-it
-            using (Graphics g = Graphics.FromImage(resized))
-            {
+            using (Graphics g = Graphics.FromImage(resized)) {
                 g.InterpolationMode = hq ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
-                g.PixelOffsetMode = hq ? PixelOffsetMode.HighQuality : PixelOffsetMode.None;
+                g.PixelOffsetMode   = hq ? PixelOffsetMode.HighQuality          : PixelOffsetMode.None;
                 g.DrawImage(bmp, 0, 0, width, height);
             }
 
@@ -95,90 +101,79 @@ namespace MCGalaxy.Util
             SetBitmap(resized);
         }
 
-        void SetBitmap(Image src)
-        {
+        void SetBitmap(Image src) {
             img = src;
             // although rare, possible src might actually be a Metafile instead
             bmp = (Bitmap)src;
 
             // NOTE: sometimes Mono will return an invalid bitmap instance that
             //  throws ArgumentNullException when trying to access Width/Height
-            Width = src.Width;
+            Width  = src.Width;
             Height = src.Height;
         }
 
-        public override void Dispose()
-        {
+        public override void Dispose() {
             UnlockBits();
-            img?.Dispose();
+            if (img != null) img.Dispose();
 
             img = null;
             bmp = null;
         }
 
 
-        public override void LockBits()
-        {
+        public override void LockBits() {
             bool fastPath = bmp.PixelFormat == PixelFormat.Format32bppRgb
                          || bmp.PixelFormat == PixelFormat.Format32bppArgb
                          || bmp.PixelFormat == PixelFormat.Format24bppRgb;
-
+            
             Get = GetGenericPixel;
             Set = SetGenericPixel;
             if (!fastPath) return;
             // We can only use the fast path for 24bpp or 32bpp bitmaps
-
-            Rectangle r = new(0, 0, bmp.Width, bmp.Height);
-            data = bmp.LockBits(r, ImageLockMode.ReadOnly, bmp.PixelFormat);
-            scan0 = (byte*)data.Scan0;
+            
+            Rectangle r = new Rectangle(0, 0, bmp.Width, bmp.Height);
+            data   = bmp.LockBits(r, ImageLockMode.ReadOnly, bmp.PixelFormat);
+            scan0  = (byte*)data.Scan0;
             stride = data.Stride;
-
-            if (bmp.PixelFormat == PixelFormat.Format24bppRgb)
-            {
+            
+            if (bmp.PixelFormat == PixelFormat.Format24bppRgb) {
                 Get = Get24BppPixel;
-            }
-            else
-            {
+            } else {
                 Get = Get32BppPixel;
             }
         }
 
-        public override void UnlockBits()
-        {
+        public override void UnlockBits() {
             if (data != null) bmp.UnlockBits(data);
             data = null;
         }
-
-
-        Pixel GetGenericPixel(int x, int y)
-        {
+        
+        
+        Pixel GetGenericPixel(int x, int y) {
             Pixel p;
             int argb = bmp.GetPixel(x, y).ToArgb(); // R/G/B properties incur overhead  
-
+            
             p.A = (byte)(argb >> 24);
             p.R = (byte)(argb >> 16);
             p.G = (byte)(argb >> 8);
             p.B = (byte)argb;
             return p;
         }
-
-        void SetGenericPixel(int x, int y, Pixel p)
-        {
+        
+        void SetGenericPixel(int x, int y, Pixel p) {
             bmp.SetPixel(x, y, Color.FromArgb(p.A, p.R, p.G, p.B));
         }
-
-        Pixel Get24BppPixel(int x, int y)
-        {
+        
+        Pixel Get24BppPixel(int x, int y) {
             Pixel p;
-            byte* ptr = scan0 + y * stride + (x * 3);
+            byte* ptr = (scan0 + y * stride) + (x * 3);
             p.B = ptr[0]; p.G = ptr[1]; p.R = ptr[2]; p.A = 255;
             return p;
         }
-
-        Pixel Get32BppPixel(int x, int y)
-        {
+        
+        Pixel Get32BppPixel(int x, int y) {
             Pixel p;
-            byte* ptr = scan0 + y * stride + (x * 4);
+            byte* ptr = (scan0 + y * stride) + (x * 4);            
             p.B = ptr[0]; p.G = ptr[1]; p.R = ptr[2]; p.A = ptr[3];
             return p;
         }
@@ -190,8 +185,7 @@ namespace MCGalaxy.Util
         
         public override object RawImage { get { return img; } }
 
-        public override void Decode(byte[] data) 
-        {
+        public override void Decode(byte[] data) {
             img = Image.Load<Rgba32>(data);
             UpdateDimensions();
             
@@ -199,21 +193,18 @@ namespace MCGalaxy.Util
             Set = SetPixel;
         }
 
-        public override void Resize(int width, int height, bool hq) 
-        {
+        public override void Resize(int width, int height, bool hq) {
             IResampler resampler = hq ? KnownResamplers.Bicubic : KnownResamplers.NearestNeighbor;
             img.Mutate(x => x.Resize(width, height, resampler));
             UpdateDimensions();
         }
 
-        void UpdateDimensions() 
-        {
+        void UpdateDimensions() {
             Width  = img.Width;
             Height = img.Height;
         }
 
-        Pixel GetPixel(int x, int y) 
-        {
+        Pixel GetPixel(int x, int y) {
             Pixel p;
             Rgba32 src = img[x, y];
             
@@ -224,8 +215,7 @@ namespace MCGalaxy.Util
             return p;
         }
 
-        void SetPixel(int x, int y, Pixel p) 
-        {
+        void SetPixel(int x, int y, Pixel p) {
             Rgba32 dst;
             
             dst.A = p.A;
@@ -235,9 +225,8 @@ namespace MCGalaxy.Util
             img[x, y] = dst;
         }
 
-        public override void Dispose()
-        {
-            img?.Dispose();
+        public override void Dispose() {
+            if (img != null) img.Dispose();
             img = null;
         }
 

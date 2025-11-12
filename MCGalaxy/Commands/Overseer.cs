@@ -15,10 +15,10 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using MCGalaxy.Commands.CPE;
-using MCGalaxy.Generator;
 using System;
 using System.Collections.Generic;
+using MCGalaxy.Commands.CPE;
+using MCGalaxy.Generator;
 
 namespace MCGalaxy.Commands.World
 {
@@ -168,7 +168,7 @@ namespace MCGalaxy.Commands.World
         };
         static void HandleAllow(Player p, string message)
         {
-            HandlePerm2(p, message, "allow", "perbuild", "+");
+            HandlePerm(p, message, "allow", "perbuild", "+");
         }
         static readonly string[] disallowHelp = new string[] {
             "&T/os disallow [player]",
@@ -176,7 +176,7 @@ namespace MCGalaxy.Commands.World
         };
         static void HandleDisallow(Player p, string message)
         {
-            HandlePerm2(p, message, "disallow", "perbuild", "-");
+            HandlePerm(p, message, "disallow", "perbuild", "-");
         }
         static readonly string[] banHelp = new string[] {
             "&T/os ban [player]",
@@ -184,7 +184,7 @@ namespace MCGalaxy.Commands.World
         };
         static void HandleBan(Player p, string message)
         {
-            HandlePerm2(p, message, "ban", "pervisit", "-");
+            HandlePerm(p, message, "ban", "pervisit", "-");
         }
         static readonly string[] unbanHelp = new string[] {
             "&T/os unban [player]",
@@ -192,9 +192,9 @@ namespace MCGalaxy.Commands.World
         };
         static void HandleUnban(Player p, string message)
         {
-            HandlePerm2(p, message, "unban", "pervisit", "+");
+            HandlePerm(p, message, "unban", "pervisit", "+");
         }
-        static void HandlePerm2(Player p, string message, string action, string cmd, string prefix)
+        static void HandlePerm(Player p, string message, string action, string cmd, string prefix)
         {
             if (message.Length == 0) { p.Message("&WYou need to type a player name to {0}.", action); return; }
             UseCommand(p, cmd, prefix + message);
@@ -243,7 +243,7 @@ namespace MCGalaxy.Commands.World
                 GotoExact(p, map); return;
             }
 
-            if (NumberUtils.TryParseInt32(message, out _))
+            if (NumberUtils.TryParseInt32(message, out int mapNumber))
             {
                 //If it's a number, use exact goto logic like before
                 GotoExact(p, map); return;
@@ -489,14 +489,19 @@ namespace MCGalaxy.Commands.World
             "&H  Plots are zones that can change permissions and environment." +
             "&H  See &T/Help zone &Hto learn what args you can use.",
         };
+        static void HandlePlotHelp(Player p, string message)
+        {
+            Moderation.CmdZone.HelpName(p, "os plot", message);
+        }
         static void HandlePlot(Player p, string raw)
         {
             string[] args = raw.SplitSpaces(2);
 
             if (args.Length == 1)
             {
-                p.Message("This command is the &T/{0} &Sversion of &T/zone&S.", commandShortcut);
-                p.Message("To learn how to use it, read &T/help zone&S");
+                HandlePlotHelp(p, raw);
+                //p.Message("This command is the &T/{0} &Sversion of &T/zone&S.", commandShortcut);
+                //p.Message("To learn how to use it, read &T/help zone&S");
             }
             else
             {
@@ -619,7 +624,7 @@ namespace MCGalaxy.Commands.World
             if (curIndex == -1)
             {
                 throw new InvalidOperationException(
-                    String.Format("Guessed \"{0}\" as the realm owner of \"{1}\", but \"{2}\" does not actually own the level \"{3}\"",
+                    string.Format("Guessed \"{0}\" as the realm owner of \"{1}\", but \"{2}\" does not actually own the level \"{3}\"",
                     curLevelOwner, curLevel.name, curLevelOwner, curLevel.name));
             }
 
@@ -629,7 +634,6 @@ namespace MCGalaxy.Commands.World
             if (curIndex >= realms.Count || curIndex < 0)
             {
                 string who = curLevelOwner == p.name ? "your" : p.FormatNick(curLevelOwner) + "&S's";
-
                 p.Message("You are in {0} {1} {2}realm.",
                     who,
                     direction == 1 ? "last" : "first",
@@ -643,7 +647,6 @@ namespace MCGalaxy.Commands.World
                 goto tryAgain;
             }
         }
-
         //Placed at the end so that the help arrays aren't null
         internal static SubCommandGroup subCommandGroup = new(commandShortcut,
                 new List<SubCommand>() {
@@ -657,18 +660,15 @@ namespace MCGalaxy.Commands.World
                     new("Env",        HandleEnv,        envHelp),
                     new("Preset",     HandlePreset,     presetHelp),
                     new("Map",        HandleMap,        mapHelp, false),
-
-                    new("Plot",       HandlePlot,       plotHelp, true, new string[] { "plots" }),
+                    new("Plot",       HandlePlot,       HandlePlotHelp, true, new string[] { "plots" }),
                     new("PerBuild",   HandlePerbuild,   perbuildHelp),
                     new("PerVisit",   HandlePervisit,   pervisitHelp),
                     new("Physics",    HandlePhysics,    physicsHelp),
-
                     new("LB",         HandleLevelBlock, levelBlockHelp, true, new string[] {"LevelBlock" }),
                     new("BlockProps", HandleBlockProps, blockPropsHelp, true, new string[] { "BlockProperties" }),
                     new("Texture",    HandleTexture,    textureHelp,    true, new string[] { "texturezip", "texturepack" }),
                     new("Kick",       HandleKick,       kickHelp),
                     new("KickAll",    HandleKickAll,    kickAllHelp),
-
                     new("Resize",     HandleResize,     resizeHelp),
                     new("Save",       HandleSave,       saveHelp),
                     new("Delete",     HandleDelete,     deleteHelp, true, new string[] { "del", "remove" } ),
@@ -678,14 +678,12 @@ namespace MCGalaxy.Commands.World
                     new("Tour",       HandleTour,       tourHelp, false),
                 }
             );
-
-
         static void HandleZone(Player p, string raw)
         {
             string[] args = raw.SplitExact(2);
-            string cmd = args[0];
-            string name = args[1];
-            string old = "zone " + cmd;
+            string cmd = args[0],
+                name = args[1],
+                old = "zone " + cmd;
             cmd = cmd.ToUpper();
 
             if (cmd == "ADD")
