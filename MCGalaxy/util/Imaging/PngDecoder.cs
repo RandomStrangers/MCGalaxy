@@ -114,8 +114,7 @@ namespace MCGalaxy.Util.Imaging
 
                             bytesPerPixel = ((samplesPerPixel[colorspace] * bitsPerSample) + 7) >> 3;
                             scanline_size = ((samplesPerPixel[colorspace] * bitsPerSample * bmp.Width) + 7) >> 3;
-
-                            bmp.pixels = new Pixel[bmp.Width * bmp.Height];
+                            bmp.AllocatePixels();
                         }
                         break;
 
@@ -248,7 +247,9 @@ namespace MCGalaxy.Util.Imaging
                     rowExpander(bmp.Width, palette, line, dst + y * bmp.Width);
 
                     // Swap current and prior line
-                    byte[] tmp = line; line = prior; prior = tmp;
+                    byte[] tmp = line; 
+                    line = prior; 
+                    prior = tmp;
                 }
             }
 
