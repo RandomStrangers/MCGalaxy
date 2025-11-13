@@ -65,26 +65,22 @@ namespace MCGalaxy.Util.Imaging
         }
 
         static readonly byte[] samplesPerPixel = new byte[] { 1, 0, 3, 1, 2, 0, 4 };
-        static Pixel BLACK = new(0, 0, 0, 255);
 
         public override SimpleBitmap Decode(byte[] src)
         {
             byte colorspace = 0xFF;
             byte bitsPerSample = 0;
 
-            Pixel trnsColor = BLACK;
+            Pixel trnsColor = Pixel.BLACK;
             Pixel[] palette = null;
 
             SimpleBitmap bmp = new();
             MemoryStream all_idats = new();
+            bool reachedEnd = false;
 
-            buf_data = src;
-            buf_offset = 0;
-            buf_length = src.Length;
-
+            SetBuffer(src);
             if (!DetectHeader(src)) Fail("sig invalid");
             AdvanceOffset(pngSig.Length);
-            bool reachedEnd = false;
 
             while (!reachedEnd)
             {
@@ -224,7 +220,7 @@ namespace MCGalaxy.Util.Imaging
         {
             Pixel[] pal = new Pixel[MAX_PALETTE];
 
-            for (int i = 0; i < pal.Length; i++) pal[i] = BLACK;
+            for (int i = 0; i < pal.Length; i++) pal[i] = Pixel.BLACK;
             return pal;
         }
 
@@ -442,10 +438,7 @@ namespace MCGalaxy.Util.Imaging
 
         static void Expand_INDEXED_8(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
-            for (int i = 0; i < width; i++) 
-            { 
-                dst[i] = palette[src[i]]; 
-            }
+            for (int i = 0; i < width; i++) { dst[i] = palette[src[i]]; }
         }
 
         static void Expand_GRAYSCALE_A_8(int width, Pixel[] palette, byte[] src, Pixel* dst)

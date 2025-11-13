@@ -46,9 +46,9 @@ namespace MCGalaxy.Levels.IO
 
             Level lvl = new(name, dims.X, dims.Y, dims.Z)
             {
-                spawnx = BitConverter.ToUInt16(header, 8),
-                spawnz = BitConverter.ToUInt16(header, 10),
-                spawny = BitConverter.ToUInt16(header, 12),
+                spawnx = MemUtils.ReadU16_LE(header, 8),
+                spawnz = MemUtils.ReadU16_LE(header, 10),
+                spawny = MemUtils.ReadU16_LE(header, 12),
                 rotx = header[14],
                 roty = header[15]
             };
@@ -77,15 +77,14 @@ namespace MCGalaxy.Levels.IO
         static Vec3U16 ReadHeader(Stream gs, byte[] header)
         {
             StreamUtils.ReadFully(gs, header, 0, HEADER_SIZE);
-
-            int signature = BitConverter.ToUInt16(header, 0);
+            int signature = MemUtils.ReadU16_LE(header, 0);
             if (signature != 1874)
                 throw new InvalidDataException("Invalid .lvl map signature");
 
             Vec3U16 dims;
-            dims.X = BitConverter.ToUInt16(header, 2);
-            dims.Z = BitConverter.ToUInt16(header, 4);
-            dims.Y = BitConverter.ToUInt16(header, 6);
+            dims.X = MemUtils.ReadU16_LE(header, 2);
+            dims.Z = MemUtils.ReadU16_LE(header, 4);
+            dims.Y = MemUtils.ReadU16_LE(header, 6);
             return dims;
         }
 

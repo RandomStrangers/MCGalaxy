@@ -54,7 +54,7 @@ namespace MCGalaxy
         public bool CheckAllowed(Player p)
         {
             AccessResult access = Check(p.name, p.Rank);
-            return access == AccessResult.Allowed || access == AccessResult.Whitelisted;
+            return access == AccessResult.Accepted || access == AccessResult.Whitelisted;
         }
 
         public AccessResult Check(string name, LevelPermission rank)
@@ -67,14 +67,14 @@ namespace MCGalaxy
             {
                 return AccessResult.AboveMaxRank;
             }
-            return AccessResult.Allowed;
+            return AccessResult.Accepted;
         }
 
         public bool CheckDetailed(Player p) { return CheckDetailed(p, p.Rank); }
         public bool CheckDetailed(Player p, LevelPermission plRank)
         {
             AccessResult access = Check(p.name, plRank);
-            if (access == AccessResult.Allowed) return true;
+            if (access == AccessResult.Accepted) return true;
             if (access == AccessResult.Whitelisted) return true;
 
             if (access == AccessResult.Blacklisted)
@@ -216,7 +216,7 @@ namespace MCGalaxy
                 p.Message("&WHence you cannot change the {1} {0} rank.", Type, mode); return false;
             }
 
-            if (perm <= plRank || max && perm == LevelPermission.Nobody) return true;
+            if (perm <= plRank || max && perm == LevelPermission.Owner) return true;
             p.Message("&WYou cannot change the {1} {0} rank of {2} &Wto a rank higher than yours.",
                       Type, mode, ColoredName);
             return false;
@@ -343,7 +343,7 @@ namespace MCGalaxy
         /// <summary> The player is blacklisted and never allowed. </summary>
         Blacklisted,
         /// <summary> The player is allowed (by their rank) </summary>
-        Allowed,
+        Accepted,
         /// <summary> The player's rank is below the minimum rank allowed. </summary>
         BelowMinRank,
         /// <summary> The player's rank is above the maximum rank allowed. </summary>

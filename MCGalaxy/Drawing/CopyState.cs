@@ -19,8 +19,6 @@ using MCGalaxy.Maths;
 using System;
 using System.IO;
 
-
-
 namespace MCGalaxy.Drawing
 {
     /// <summary> Represents a copied region/area of blocks plus some additional data </summary>
@@ -263,9 +261,9 @@ namespace MCGalaxy.Drawing
             CalculateBounds(raw);
             for (int i = 0; i < raw.Length; i += 7)
             {
-                ushort x = BitConverter.ToUInt16(raw, i + 0);
-                ushort y = BitConverter.ToUInt16(raw, i + 2);
-                ushort z = BitConverter.ToUInt16(raw, i + 4);
+                ushort x = MemUtils.ReadU16_LE(raw, i + 0);
+                ushort y = MemUtils.ReadU16_LE(raw, i + 2);
+                ushort z = MemUtils.ReadU16_LE(raw, i + 4);
 
                 byte rawBlock = raw[i + 6];
                 Set(rawBlock, x - X, y - Y, z - Z);
@@ -281,9 +279,9 @@ namespace MCGalaxy.Drawing
 
             for (int i = 0; i < raw.Length; i += 7)
             {
-                ushort x = BitConverter.ToUInt16(raw, i + 0);
-                ushort y = BitConverter.ToUInt16(raw, i + 2);
-                ushort z = BitConverter.ToUInt16(raw, i + 4);
+                ushort x = MemUtils.ReadU16_LE(raw, i + 0);
+                ushort y = MemUtils.ReadU16_LE(raw, i + 2);
+                ushort z = MemUtils.ReadU16_LE(raw, i + 4);
 
                 minX = Math.Min(x, minX); maxX = Math.Max(x, maxX);
                 minY = Math.Min(y, minY); maxY = Math.Max(y, maxY);

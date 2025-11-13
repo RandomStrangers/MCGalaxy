@@ -20,7 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
  */
 using MCGalaxy.Maths;
-using System;
 using System.IO;
 using System.IO.Compression;
 
@@ -47,9 +46,9 @@ namespace MCGalaxy.Levels.IO
 
             Level lvl = new(name, dims.X, dims.Y, dims.Z)
             {
-                spawnx = BitConverter.ToUInt16(header, 6),
-                spawnz = BitConverter.ToUInt16(header, 8),
-                spawny = BitConverter.ToUInt16(header, 10),
+                spawnx = MemUtils.ReadU16_LE(header, 6),
+                spawnz = MemUtils.ReadU16_LE(header, 8),
+                spawny = MemUtils.ReadU16_LE(header, 10),
                 rotx = header[12],
                 roty = header[13]
             };
@@ -65,14 +64,14 @@ namespace MCGalaxy.Levels.IO
         static Vec3U16 ReadHeader(byte[] header, Stream gs)
         {
             StreamUtils.ReadFully(gs, header, 0, 2);
-            if (BitConverter.ToUInt16(header, 0) != 1874)
+            if (MemUtils.ReadU16_LE(header, 0) != 1874)
                 throw new InvalidDataException(".mcf files must have a version of 1874");
 
             StreamUtils.ReadFully(gs, header, 0, 16);
             Vec3U16 dims;
-            dims.X = BitConverter.ToUInt16(header, 0);
-            dims.Z = BitConverter.ToUInt16(header, 2);
-            dims.Y = BitConverter.ToUInt16(header, 4);
+            dims.X = MemUtils.ReadU16_LE(header, 0);
+            dims.Z = MemUtils.ReadU16_LE(header, 2);
+            dims.Y = MemUtils.ReadU16_LE(header, 4);
             return dims;
         }
     }
