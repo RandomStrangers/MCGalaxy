@@ -21,12 +21,9 @@ namespace MCGalaxy.Util.Imaging
 {
     public class GifDecoder : ImageDecoder
     {
-        static readonly byte[] gif87Sig = new byte[] { 0x47, 0x49, 0x46, 0x38, 0x37, 0x61 }; // "GIF87a"
-        static readonly byte[] gif89Sig = new byte[] { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61 }; // "GIF89a"
-
+        static readonly byte[] gif87Sig = new byte[] { 0x47, 0x49, 0x46, 0x38, 0x37, 0x61 }, // "GIF87a"
+                gif89Sig = new byte[] { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61 }; // "GIF89a"
         Pixel[] globalPal;
-        //Pixel bgColor;
-
         public static bool DetectHeader(byte[] data)
         {
             return MatchesSignature(data, gif87Sig)
@@ -62,8 +59,8 @@ namespace MCGalaxy.Util.Imaging
             if (hasGlobalPal)
                 globalPal = ReadPalette(src, flags);
             if (hasGlobalPal && bgIndex < globalPal.Length)
-                //bgColor = globalPal[bgIndex];
                 _ = globalPal[bgIndex];
+
             bmp.AllocatePixels();
         }
 
@@ -213,12 +210,13 @@ namespace MCGalaxy.Util.Imaging
             // Spec says clear code _should_ be sent first, but not required
             for (availCode = 0; availCode < (1 << minCodeSize); availCode++)
             {
+                dict[availCode].first = (byte)availCode;
                 dict[availCode].value = (byte)availCode;
                 dict[availCode].prev = -1;
                 dict[availCode].len = 1;
             }
 
-            availCode += 2; // "clear code" and "stop code" entries
+            availCode++; // "clear code" and "stop code" entries
             prevCode = -1;
 
             for (; ; )
@@ -233,7 +231,10 @@ namespace MCGalaxy.Util.Imaging
                         bufLen += 8;
                     }
 
-                    if (bufLen < codeLen) Fail("not enough bits for code");
+                    if (bufLen < codeLen)
+                    {
+                        Fail("not enough bits for code");
+                    }
                 }
 
                 int code = (int)(bufVal & codeMask);
@@ -248,12 +249,13 @@ namespace MCGalaxy.Util.Imaging
                     // Clear dictionary
                     for (availCode = 0; availCode < (1 << minCodeSize); availCode++)
                     {
+                        dict[availCode].first = (byte)availCode;
                         dict[availCode].value = (byte)availCode;
                         dict[availCode].prev = -1;
                         dict[availCode].len = 1;
                     }
 
-                    availCode += 2; // "clear code" and "stop code" entries
+                    availCode++; // "clear code" and "stop code" entries
                     prevCode = -1;
                 }
                 else if (code == stopCode)
@@ -261,33 +263,31 @@ namespace MCGalaxy.Util.Imaging
                     break;
                 }
 
-                if (code > availCode) Fail("invalid code");
+                if (code > availCode)
+                {
+                    Fail("invalid code");
+                }
 
                 // Add new entry to code table unless it's full
                 // GIF spec allows this as per 'deferred clear codes'
                 if (prevCode >= 0 && availCode < MAX_CODES)
                 {
-                    int firstCode = code == availCode ? prevCode : code;
-                    // Follow chain back to find first value
-                    // TODO optimise this...
-                    while (dict[firstCode].prev != -1)
-                    {
-                        firstCode = dict[firstCode].prev;
-                    }
+                    int chainCode = code == availCode ? prevCode : code;
 
-                    dict[availCode].value = dict[firstCode].value;
+                    dict[availCode].first = dict[prevCode].first;
+                    dict[availCode].value = dict[chainCode].first;
                     dict[availCode].prev = (short)prevCode;
                     dict[availCode].len = (short)(dict[prevCode].len + 1);
+                    availCode++;
 
-                    // Check if inserted code in last free entry of table
+                    // Check if inserted code was last free entry of table
                     // If this is the case, then the table is immediately expanded
-                    if (availCode == codeMask && availCode != (MAX_CODES - 1))
+                    if ((availCode & codeMask) == 0 && availCode != (MAX_CODES - 1))
                     {
                         codeLen++;
                         codeMask = (1 << codeLen) - 1;
                         Array.Resize(ref dict, 1 << codeLen);
                     }
-                    availCode++;
                 }
 
                 prevCode = code;
@@ -315,7 +315,7 @@ namespace MCGalaxy.Util.Imaging
 
         struct DictEntry
         {
-            public byte value;
+            public byte first, value;
             public short prev, len;
         }
 
@@ -334,6 +334,7 @@ namespace MCGalaxy.Util.Imaging
                     subBlocksEnd = true;
                     return -1;
                 }
+                AdvanceOffset(curSubBlockLeft);
             }
 
             curSubBlockLeft--;
