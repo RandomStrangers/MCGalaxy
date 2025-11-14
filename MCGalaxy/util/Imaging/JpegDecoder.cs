@@ -26,11 +26,52 @@ namespace MCGalaxy.Util.Imaging
         {
             return MatchesSignature(data, jfifSig);
         }
-
         public override SimpleBitmap Decode(byte[] src)
         {
+            SetBuffer(src);
+            ReadMarkers(src);
             Fail("JPEG decoder unfinished");
             return null;
+        }
+
+        const ushort MARKER_IMAGE_BEG = 0xFFD8,
+            MARKER_IMAGE_END = 0xFFD9,
+            MARKER_APP0 = 0xFFE0,
+            MARKER_TBL_QUANT = 0xFFDB,
+            MARKER_TBL_HUFF = 0xFFC4;
+
+        void ReadMarkers(byte[] src)
+        {
+            for (; ; )
+            {
+                int offset = AdvanceOffset(2);
+                ushort marker = MemUtils.ReadU16_BE(src, offset);
+
+                switch (marker)
+                {
+                    case MARKER_IMAGE_BEG:
+                        break; // Nothing to do
+                    case MARKER_IMAGE_END:
+                        return;
+                    case MARKER_APP0:
+                    case MARKER_TBL_QUANT:
+                    case MARKER_TBL_HUFF:
+                        SkipMarker(src);
+                        break;
+
+                    default:
+                        Fail("unknown marker:" + marker.ToString("X4"));
+                        break;
+                }
+            }
+        }
+
+        void SkipMarker(byte[] src)
+        {
+            int offset = AdvanceOffset(2);
+            ushort len = MemUtils.ReadU16_BE(src, offset);
+            // length *includes* 2 bytes of length
+            AdvanceOffset(len - 2);
         }
     }
 }

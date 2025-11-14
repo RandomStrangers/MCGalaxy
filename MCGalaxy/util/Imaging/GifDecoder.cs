@@ -22,8 +22,10 @@ namespace MCGalaxy.Util.Imaging
     public class GifDecoder : ImageDecoder
     {
         static readonly byte[] gif87Sig = new byte[] { 0x47, 0x49, 0x46, 0x38, 0x37, 0x61 }, // "GIF87a"
-                gif89Sig = new byte[] { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61 }; // "GIF89a"
+            gif89Sig = new byte[] { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61 }; // "GIF89a"
+
         Pixel[] globalPal;
+
         public static bool DetectHeader(byte[] data)
         {
             return MatchesSignature(data, gif87Sig)
@@ -81,9 +83,10 @@ namespace MCGalaxy.Util.Imaging
         }
 
 
-        const byte MARKER_EXTENSION = 0x21;
-        const byte MARKER_IMAGE_END = 0x3B;
-        const byte MARKER_IMAGE_BEG = 0x2C;
+        const byte MARKER_EXTENSION = 0x21,
+            MARKER_IMAGE_END = 0x3B,
+            MARKER_IMAGE_BEG = 0x2C,
+            EXT_GRAPHICS_CONTROL = 0xF9;
 
         void ReadMarkers(byte[] src, SimpleBitmap bmp)
         {
@@ -102,13 +105,12 @@ namespace MCGalaxy.Util.Imaging
                     case MARKER_IMAGE_END:
                         return;
                     default:
-                        Fail("unknown marker");
+                        Fail("unknown marker:" + marker.ToString("X2"));
                         break;
                 }
             }
         }
 
-        const byte EXT_GRAPHICS_CONTROL = 0xF9;
         void ReadExtension(byte[] src)
         {
             int offset = AdvanceOffset(1);
@@ -158,8 +160,8 @@ namespace MCGalaxy.Util.Imaging
             }
         }
 
-        const int MAX_CODE_LEN = 12;
-        const int MAX_CODES = 1 << MAX_CODE_LEN;
+        const int MAX_CODE_LEN = 12,
+            MAX_CODES = 1 << MAX_CODE_LEN;
         byte curSubBlockLeft;
         bool subBlocksEnd;
         int subBlocksOffset;
@@ -263,10 +265,7 @@ namespace MCGalaxy.Util.Imaging
                     break;
                 }
 
-                if (code > availCode)
-                {
-                    Fail("invalid code");
-                }
+                if (code > availCode) Fail("invalid code");
 
                 // Add new entry to code table unless it's full
                 // GIF spec allows this as per 'deferred clear codes'
@@ -282,7 +281,7 @@ namespace MCGalaxy.Util.Imaging
 
                     // Check if inserted code was last free entry of table
                     // If this is the case, then the table is immediately expanded
-                    if ((availCode & codeMask) == 0 && availCode != (MAX_CODES - 1))
+                    if ((availCode & codeMask) == 0 && availCode != MAX_CODES)
                     {
                         codeLen++;
                         codeMask = (1 << codeLen) - 1;
@@ -291,7 +290,6 @@ namespace MCGalaxy.Util.Imaging
                 }
 
                 prevCode = code;
-                // TODO output code
 
                 // "top" entry is actually last entry in chain
                 int chain_len = dict[code].len;
