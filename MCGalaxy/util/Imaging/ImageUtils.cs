@@ -47,7 +47,6 @@ namespace MCGalaxy.Util
                 return null;
             }
         }
-
         static void OnDecodeError(Player p, IBitmap2D bmp)
         {
             bmp?.Dispose();

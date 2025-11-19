@@ -32,29 +32,28 @@ namespace MCGalaxy
                                   col => !col.Undefined, col => col.Name, "colors", 20);
             return desc.Undefined ? null : "&" + desc.Code;
         }
-
         /// <summary> Finds partial matches of 'name' against the list of bots in same level as player. </summary>
         public static PlayerBot FindBots(Player p, string name)
         {
             return Find(p, name, out int matches, p.level.Bots.Items,
                         null, b => b.name, "bots");
         }
-
         /// <summary> Find partial matches of 'name' against the list of loaded maps/levels. </summary>
         public static Level FindLevels(Player p, string name)
         {
             return Find(p, name, out int matches, LevelInfo.Loaded.Items,
                         null, l => l.name, l => l.ColoredName, "loaded levels");
         }
-
         /// <summary> Find partial matches of 'name' against the list of all map files. </summary>
         public static string FindMaps(Player pl, string name)
         {
-            if (!Formatter.ValidMapName(pl, name)) return null;
+            if (!Formatter.ValidMapName(pl, name))
+            {
+                return null;
+            }
             return Find(pl, name, out int matches, LevelInfo.AllMapNames(),
                         null, l => l, "levels", 10);
         }
-
         /// <summary> Find partial matches of 'name' against the list of ranks. </summary>
         public static Group FindRanks(Player p, string name)
         {
@@ -62,15 +61,12 @@ namespace MCGalaxy
             return Find(p, name, out int matches, Group.GroupList,
                         null, g => Colors.Strip(g.Name), g => g.ColoredName, "ranks");
         }
-
         /// <summary> Find partial matches of 'name' against the list of zones in a map. </summary>
         public static Zone FindZones(Player p, Level lvl, string name)
         {
             return Find(p, name, out int matches, lvl.Zones.Items,
                         null, z => z.Config.Name, "zones");
         }
-
-
         /// <summary> Finds partial matches of 'name' against the names of the items in the 'items' enumerable. </summary>
         /// <returns> If exactly one match, the matching item. </returns>
         public static T Find<T>(Player p, string name, out int matches, IEnumerable<T> items,
@@ -78,8 +74,6 @@ namespace MCGalaxy
         {
             return Find(p, name, out matches, items, filter, nameGetter, nameGetter, group, limit);
         }
-
-
         /// <summary> Finds partial matches of 'name' against the names of the items in the 'items' enumerable. </summary>
         /// <returns> If exactly one match, the matching item. </returns>
         public static T Find<T>(Player p, string name, out int matches, IEnumerable<T> items,
@@ -89,14 +83,22 @@ namespace MCGalaxy
             T match = default; matches = 0;
             StringBuilder output = new();
             const StringComparison comp = StringComparison.OrdinalIgnoreCase;
-
             foreach (T item in items)
             {
-                if (filter != null && !filter(item)) continue;
+                if (filter != null && !filter(item))
+                {
+                    continue;
+                }
                 string itemName = nameGetter(item);
-                if (itemName.Equals(name, comp)) { matches = 1; return item; }
-                if (itemName.IndexOf(name, comp) < 0) continue;
-
+                if (itemName.Equals(name, comp)) 
+                {
+                    matches = 1;
+                    return item; 
+                }
+                if (itemName.IndexOf(name, comp) < 0)
+                {
+                    continue;
+                }
                 match = item; matches++;
                 if (matches <= limit)
                 {
@@ -107,16 +109,17 @@ namespace MCGalaxy
                     output.Append("(and more), ");
                 }
             }
-
-            if (matches == 1) return match;
+            if (matches == 1)
+            {
+                return match;
+            }
             if (matches == 0)
             {
-                p.Message("No {0} match \"{1}\".", group, name); return default;
+                p.Message("No {0} match \"{1}\".", group, name); 
+                return default;
             }
-
-            string count = matches > limit ? limit + "+ " : matches + " ";
-            string names = output.ToString(0, output.Length - 2);
-
+            string count = matches > limit ? limit + "+ " : matches + " ",
+                names = output.ToString(0, output.Length - 2);
             p.Message("{0}{1} match \"{2}\":", count, group, name);
             p.Message(names);
             return default;

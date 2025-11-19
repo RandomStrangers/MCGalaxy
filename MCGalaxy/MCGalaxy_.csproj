@@ -623,6 +623,7 @@
     <Compile Include="Modules\Warps\WarpCommand.cs" />
     <Compile Include="Modules\Warps\WarpPlugin.cs" />
     <Compile Include="nas\GlobalSupressions.cs" />
+    <Compile Include="nas\Updater.cs" />
     <Compile Include="Network\BaseWebSocket.cs" />
     <Compile Include="Network\ClassicProtocol.cs" />
     <Compile Include="Network\CPESupport.cs" />

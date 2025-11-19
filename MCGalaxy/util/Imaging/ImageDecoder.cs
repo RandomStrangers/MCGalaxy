@@ -23,37 +23,32 @@ namespace MCGalaxy.Util.Imaging
     {
         public int Width, Height;
         public Pixel[] pixels;
-
         public void AllocatePixels()
         {
             pixels = new Pixel[Width * Height];
         }
     }
-
     public abstract class ImageDecoder
     {
         protected byte[] buf_data;
         protected int buf_offset, buf_length;
-
         /// <summary> Attempts to advance next read offset by 'amount', then returns current read offset </summary>
         protected int AdvanceOffset(int amount)
         {
             int offset = buf_offset;
-
             buf_offset += amount;
             if (buf_offset > buf_length)
+            {
                 throw new EndOfStreamException("End of stream reading data");
+            }
             return offset;
         }
-
         protected void SetBuffer(byte[] src)
         {
             buf_data = src;
             buf_offset = 0;
             buf_length = src.Length;
         }
-
-
         protected static void Fail(string reason)
         {
             throw new InvalidDataException(reason);
@@ -63,33 +58,44 @@ namespace MCGalaxy.Util.Imaging
         /// <remarks> Ignores parts of sig that are &lt; 0 values </remarks>
         protected static bool MatchesSignature(byte[] data, byte[] sig)
         {
-            if (data.Length < sig.Length) return false;
-
+            if (data.Length < sig.Length)
+            {
+                return false;
+            }
             for (int i = 0; i < sig.Length; i++)
             {
-                if (data[i] != sig[i]) return false;
+                if (data[i] != sig[i])
+                {
+                    return false;
+                }
             }
             return true;
         }
-
-
         public static SimpleBitmap DecodeFrom(byte[] src)
         {
             ImageDecoder decoder = DetectFrom(src);
-            if (decoder != null) return decoder.Decode(src);
-
+            if (decoder != null)
+            {
+                return decoder.Decode(src);
+            }
             throw new InvalidDataException("Unsupported or invalid image format");
         }
-
         static ImageDecoder DetectFrom(byte[] src)
         {
-            if (PngDecoder.DetectHeader(src)) return new PngDecoder();
-            if (GifDecoder.DetectHeader(src)) return new GifDecoder();
-            if (JpegDecoder.DetectHeader(src)) return new JpegDecoder();
-
+            if (PngDecoder.DetectHeader(src))
+            {
+                return new PngDecoder();
+            }
+            if (GifDecoder.DetectHeader(src))
+            {
+                return new GifDecoder();
+            }
+            if (JpegDecoder.DetectHeader(src))
+            {
+                return new JpegDecoder();
+            }
             return null;
         }
-
         public abstract SimpleBitmap Decode(byte[] src);
     }
 }

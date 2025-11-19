@@ -32,22 +32,20 @@ namespace MCGalaxy.Authentication
         {
             new MppassAuthenticator(), new MojangAuthenticator()
         };
-
         public abstract bool Verify(Player p, string mppass);
-
-
         /// <summary> Checks if the given player is allowed to login </summary>
         public static bool VerifyLogin(Player p, string mppass)
         {
             foreach (LoginAuthenticator auth in Authenticators)
             {
-                if (auth.Verify(p, mppass)) return true;
+                if (auth.Verify(p, mppass))
+                {
+                    return true;
+                }
             }
-
             return !Server.Config.VerifyNames || (IPUtil.IsPrivate(p.IP) && !Server.Config.VerifyLanIPs);
         }
     }
-
     /// <summary> Authenticates a player using the provided mppass </summary>
     public class MppassAuthenticator : LoginAuthenticator
     {
@@ -55,21 +53,24 @@ namespace MCGalaxy.Authentication
         {
             foreach (AuthService auth in AuthService.Services)
             {
-                if (Authenticate(auth, p, mppass)) return true;
+                if (Authenticate(auth, p, mppass))
+                {
+                    return true;
+                }
             }
             return false;
         }
-
         static bool Authenticate(AuthService auth, Player p, string mppass)
         {
             string calc = Server.CalcMppass(p.truename, auth.Salt);
-            if (!mppass.CaselessEq(calc)) return false;
-
+            if (!mppass.CaselessEq(calc))
+            {
+                return false;
+            }
             auth.AcceptPlayer(p);
             return true;
         }
     }
-
     /// <summary> Authenticates a player using the Mojang session verification API </summary>
     public class MojangAuthenticator : LoginAuthenticator
     {
@@ -78,12 +79,17 @@ namespace MCGalaxy.Authentication
         {
             foreach (AuthService auth in AuthService.Services)
             {
-                if (!auth.MojangAuth) continue;
-                if (Authenticate(auth, p)) return true;
+                if (!auth.MojangAuth)
+                {
+                    continue;
+                }
+                if (Authenticate(auth, p))
+                {
+                    return true;
+                }
             }
             return false;
         }
-
         static bool Authenticate(AuthService auth, Player p)
         {
             object locker = ip_cache.GetLocker(p.ip);
@@ -91,14 +97,14 @@ namespace MCGalaxy.Authentication
             //  prevent that from spamming Mojang's authentication servers too
             lock (locker)
             {
-                if (!HasJoined(p)) return false;
+                if (!HasJoined(p))
+                {
+                    return false;
+                }
             }
-
             auth.AcceptPlayer(p);
             return true;
         }
-
-
         const string HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?username={0}&serverId={1}";
         public static bool HasJoined(Player p)
         {
@@ -108,7 +114,6 @@ namespace MCGalaxy.Authentication
                 HttpWebRequest req = HttpUtil.CreateRequest(url);
                 req.Timeout = 5 * 1000;
                 req.ReadWriteTimeout = 5 * 1000;
-
                 using HttpWebResponse response = (HttpWebResponse)req.GetResponse();
                 return response.StatusCode == HttpStatusCode.OK;
             }
@@ -117,7 +122,6 @@ namespace MCGalaxy.Authentication
                 HttpUtil.DisposeErrorResponse(ex);
                 Logger.LogError("Verifying Mojang session for " + p.truename, ex);
             }
-
             return false;
         }
 #if MCG_DOTNET
@@ -125,8 +129,8 @@ namespace MCGalaxy.Authentication
 #endif
         static string GetServerID(Player p)
         {
-            byte[] data = Encoding.UTF8.GetBytes(p.ip);
-            byte[] hash = new SHA1Managed().ComputeHash(data);
+            byte[] data = Encoding.UTF8.GetBytes(p.ip),
+                hash = new SHA1Managed().ComputeHash(data);
             return Utils.ToHexString(hash);
         }
 #if MCG_DOTNET

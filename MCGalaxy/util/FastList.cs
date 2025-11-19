@@ -24,41 +24,56 @@ namespace MCGalaxy.Util
     {
         public T[] Items;
         public int Count;
-
-        public FastList() { Items = new T[4]; }
-
-        public FastList(int capacity) { Items = new T[capacity]; }
-
+        public FastList() 
+        { 
+            Items = new T[4]; 
+        }
+        public FastList(int capacity) 
+        { 
+            Items = new T[capacity]; 
+        }
         public void Add(T item)
         {
-            if (Count == Items.Length) EnsureCapacity(Count + 1);
+            if (Count == Items.Length)
+            {
+                EnsureCapacity(Count + 1);
+            }
             Items[Count++] = item;
         }
-
         public void Clear()
         {
-            if (Count == 0) return;
+            if (Count == 0)
+            {
+                return;
+            }
             Array.Clear(Items, 0, Count);
             Count = 0;
         }
-
         public void RemoveAt(int index)
         {
             Count--;
             if (index < Count)
+            {
                 Array.Copy(Items, index + 1, Items, index, Count - index);
+            }
             Items[Count] = default;
         }
-
         void EnsureCapacity(int threshold)
         {
-            if (Items.Length >= threshold) return;
+            if (Items.Length >= threshold)
+            {
+                return;
+            }
             int newSize = Items.Length * 2;
-            if (newSize < threshold) newSize = threshold;
-
+            if (newSize < threshold)
+            {
+                newSize = threshold;
+            }
             T[] array = new T[newSize];
             if (Count > 0)
+            {
                 Array.Copy(Items, 0, array, 0, Count);
+            }
             Items = array;
         }
     }

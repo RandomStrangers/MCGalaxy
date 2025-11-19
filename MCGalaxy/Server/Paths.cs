@@ -37,11 +37,9 @@ namespace MCGalaxy
         public const string WelcomeFile = "text/welcome.txt";
         public const string JokerFile = "text/joker.txt";
         public const string EightBallFile = "text/8ball.txt";
-
         public const string BlockPermsFile = "props/block.properties";
         public const string PlacePermsFile = "props/place.properties";
         public const string DeletePermsFile = "props/delete.properties";
-
         public const string CmdPermsFile = "props/command.properties";
         public const string CmdExtraPermsFile = "props/ExtraCommandPermissions.properties";
         public const string EconomyPropsFile = "props/economy.properties";
@@ -49,23 +47,32 @@ namespace MCGalaxy
         public const string RankPropsFile = "props/ranks.properties";
         public const string AuthServicesFile = "props/authservices.properties";
         public const string CPEDisabledFile = "props/cpe.properties";
-
         public const string ImportsDir = "extra/import/";
         public const string WAYPOINTS_DIR = "extra/Waypoints/";
-
         /// <summary> Relative path of the file containing a map's bots. </summary>
-        public static string BotsPath(string map) { return "extra/bots/" + map + ".json"; }
-
+        public static string BotsPath(string map) 
+        { 
+            return "extra/bots/" + map + ".json"; 
+        }
         /// <summary> Relative path of the file containing a map's block definitions. </summary>
-        public static string MapBlockDefs(string map) { return "blockdefs/lvl_" + map + ".json"; }
-
+        public static string MapBlockDefs(string map) 
+        {
+            return "blockdefs/lvl_" + map + ".json"; 
+        }
         /// <summary> Relative path of a deleted level's map file. </summary>
-        public static string DeletedMapFile(string map) { return "levels/deleted/" + map + ".lvl"; }
-
+        public static string DeletedMapFile(string map) 
+        { 
+            return "levels/deleted/" + map + ".lvl"; 
+        }
         /// <summary> Relative path of a level's previous save map file. </summary>
-        public static string PrevMapFile(string map) { return "levels/prev/" + map.ToLower() + ".lvl.prev"; }
-
+        public static string PrevMapFile(string map) 
+        { 
+            return "levels/prev/" + map.ToLower() + ".lvl.prev"; 
+        }
         /// <summary> Relative path of a block properties file. </summary>     
-        public static string BlockPropsPath(string group) { return "blockprops/" + group + ".txt"; }
+        public static string BlockPropsPath(string group) 
+        { 
+            return "blockprops/" + group + ".txt"; 
+        }
     }
 }

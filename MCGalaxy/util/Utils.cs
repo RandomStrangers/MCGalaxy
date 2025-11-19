@@ -29,11 +29,9 @@ namespace MCGalaxy
         {
             return "#" + r.ToString("X2") + g.ToString("X2") + b.ToString("X2");
         }
-
         public static string ToHexString(byte[] data)
         {
             char[] hex = new char[data.Length * 2];
-
             for (int i = 0; i < data.Length; i++)
             {
                 int value = data[i];
@@ -42,42 +40,45 @@ namespace MCGalaxy
             }
             return new string(hex);
         }
-
         static char HexEncode(int i)
         {
             return i < 10 ? (char)(i + '0') : (char)(i - 10 + 'a');
         }
-
-
         public static int Clamp(int value, int lo, int hi)
         {
             return Math.Max(Math.Min(value, hi), lo);
         }
-
         /// <summary> Divides by 16, rounding up if there is a remainder. </summary>
-        public static int CeilDiv16(int x) { return (x + 15) / 16; }
-
-
+        public static int CeilDiv16(int x)
+        {
+            return (x + 15) / 16;
+        }
         public static List<string> ReadAllLinesList(string path)
         {
             List<string> lines = new();
             using (StreamReader r = new(path, Encoding.UTF8))
             {
                 string line;
-                while ((line = r.ReadLine()) != null) { lines.Add(line); }
+                while ((line = r.ReadLine()) != null)
+                {
+                    lines.Add(line);
+                }
             }
             return lines;
         }
-
-
         public static void SetBackgroundMode(Thread thread)
         {
             // Throws an exception when called on a dead thread,
             //  which can very rarely happen
-            try { thread.IsBackground = true; } catch { }
+            try
+            {
+                thread.IsBackground = true;
+            }
+            catch
+            {
+            }
         }
     }
-
     public static class MemUtils
     {
         /// <summary> Reads an unsigned 16 bit little endian integer. </summary>
@@ -85,27 +86,22 @@ namespace MCGalaxy
         {
             return (ushort)(array[offset] | array[offset + 1] << 8);
         }
-
         /// <summary> Reads a signed 16 bit big endian integer. </summary>
         public static short ReadI16_BE(byte[] array, int offset)
         {
             return (short)(array[offset] << 8 | array[offset + 1]);
         }
-
         /// <summary> Reads an unsigned 16 bit big endian integer. </summary>
         public static ushort ReadU16_BE(byte[] array, int offset)
         {
             return (ushort)(array[offset] << 8 | array[offset + 1]);
         }
-
         /// <summary> Reads a signed 32 bit big endian integer. </summary>
         public static int ReadI32_BE(byte[] array, int offset)
         {
             return array[offset] << 24 | array[offset + 1] << 16
                 | array[offset + 2] << 8 | array[offset + 3];
         }
-
-
         public static unsafe void memset(IntPtr srcPtr, byte value, int startIndex, int bytes)
         {
             byte* srcByte = (byte*)srcPtr + startIndex;
@@ -116,7 +112,6 @@ namespace MCGalaxy
                 startIndex++;
             }
             uint valueU32 = (uint)((value << 24) | (value << 16) | (value << 8) | value);
-
             if (IntPtr.Size == 8)
             {
                 ulong valueU64 = ((ulong)valueU32 << 32) | valueU32;
@@ -136,14 +131,12 @@ namespace MCGalaxy
                 }
                 srcByte = (byte*)srcU32;
             }
-
             for (int i = 0; i < bytes; i++)
             {
                 *srcByte = value; srcByte++;
             }
         }
     }
-
     public static class StreamUtils
     {
         /// <summary> Reads the given number of bytes from the given stream </summary>
@@ -153,9 +146,12 @@ namespace MCGalaxy
             while (count > 0)
             {
                 int read = s.Read(data, offset, count);
-
-                if (read == 0) throw new EndOfStreamException("End of stream reading data");
-                offset += read; count -= read;
+                if (read == 0)
+                {
+                    throw new EndOfStreamException("End of stream reading data");
+                }
+                offset += read;
+                count -= read;
             }
         }
     }

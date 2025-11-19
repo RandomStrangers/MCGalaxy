@@ -27,67 +27,90 @@ namespace MCGalaxy
         {
             string time = "";
             bool negate = value.TotalSeconds < 0;
-            if (negate) value = -value;
-
+            if (negate)
+            {
+                value = -value;
+            }
             Add(ref time, value.Days, 'd', spaces);
             Add(ref time, value.Hours, 'h', spaces);
             Add(ref time, value.Minutes, 'm', spaces);
             if (value.TotalMinutes <= 1 || (seconds && value.Days < 1))
+            {
                 Add(ref time, value.Seconds, 's', spaces);
-
-            if (time.Length == 0) time = seconds ? "0s" : "0m";
+            }
+            if (time.Length == 0)
+            {
+                time = seconds ? "0s" : "0m";
+            }
             return negate ? "-" + time : time;
         }
-
         static void Add(ref string time, int amount, char suffix, bool spaces)
         {
-            if (amount == 0) return;
-
+            if (amount == 0)
+            {
+                return;
+            }
             if (time.Length == 0)
+            {
                 time = "" + amount + suffix;
+            }
             else
+            {
                 time = time + (spaces ? " " : "") + amount + suffix;
+            }
         }
-
-
         public static TimeSpan ParseShort(this string value, string defaultUnit)
         {
             int num = 0;
-            long total = 0;
-            long amount;
+            long total = 0, amount;
             for (int i = 0; i < value.Length; i++)
             {
                 char c = value[i];
-                if (c == ' ') continue;
-
+                if (c == ' ')
+                {
+                    continue;
+                }
                 if (c >= '0' && c <= '9')
                 {
                     num = checked(num * 10); num += c - '0';
                     continue;
                 }
-
                 amount = GetTicks(num, GetUnit(value, i));
                 total = checked(total + amount);
                 num = 0;
             }
-
             amount = GetTicks(num, defaultUnit);
             total = checked(total + amount);
             return TimeSpan.FromTicks(total);
         }
-
         static long GetTicks(int num, string unit)
         {
-            if (unit.CaselessEq("s")) return num * TimeSpan.TicksPerSecond;
-            if (unit.CaselessEq("m")) return num * TimeSpan.TicksPerMinute;
-            if (unit.CaselessEq("h")) return num * TimeSpan.TicksPerHour;
-            if (unit.CaselessEq("d")) return num * TimeSpan.TicksPerDay;
-            if (unit.CaselessEq("w")) return num * TimeSpan.TicksPerDay * 7;
-
-            if (unit.CaselessEq("ms")) return num * TimeSpan.TicksPerMillisecond;
+            if (unit.CaselessEq("s"))
+            {
+                return num * TimeSpan.TicksPerSecond;
+            }
+            if (unit.CaselessEq("m"))
+            {
+                return num * TimeSpan.TicksPerMinute;
+            }
+            if (unit.CaselessEq("h"))
+            {
+                return num * TimeSpan.TicksPerHour;
+            }
+            if (unit.CaselessEq("d"))
+            {
+                return num * TimeSpan.TicksPerDay;
+            }
+            if (unit.CaselessEq("w"))
+            {
+                return num * TimeSpan.TicksPerDay * 7;
+            }
+            if (unit.CaselessEq("ms"))
+            {
+                return num * TimeSpan.TicksPerMillisecond;
+            }
             throw new FormatException(unit);
         }
-
         static string GetUnit(string value, int i)
         {
             string unit = "";
@@ -95,9 +118,14 @@ namespace MCGalaxy
             for (; i < value.Length; i++)
             {
                 char c = value[i];
-                if (c == ' ') continue;
-
-                if (c >= '0' && c <= '9') break;
+                if (c == ' ')
+                {
+                    continue;
+                }
+                if (c >= '0' && c <= '9')
+                {
+                    break;
+                }
                 unit += value[i];
             }
             return unit;

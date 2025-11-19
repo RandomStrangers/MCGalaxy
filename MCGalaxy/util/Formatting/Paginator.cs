@@ -21,7 +21,6 @@ using System.Collections.Generic;
 namespace MCGalaxy
 {
     public delegate void ItemPrinter<T>(Player p, T item);
-
     /// <summary> Outputs a large range of values across a number of 'pages' (Pagination) </summary>
     public static class Paginator
     {
@@ -32,7 +31,6 @@ namespace MCGalaxy
         {
             Output(p, items, formatter, null, cmd, type, modifier, 30);
         }
-
         /// <summary> Outputs a large range of values across a number of 'pages' </summary>
         /// <remarks> Each item is printed on a separate line </param>
         public static void Output<T>(Player p, IList<T> items, ItemPrinter<T> printer,
@@ -40,17 +38,18 @@ namespace MCGalaxy
         {
             Output(p, items, null, printer, cmd, type, modifier, 8);
         }
-
         public static void Output<T>(Player p, IList<T> items,
                               StringFormatter<T> formatter, ItemPrinter<T> printer,
                               string cmd, string type, string modifier, int perPage)
         {
             int total = items.Count;
-
             if (modifier.Length == 0)
             {
                 OutputPage(p, items, formatter, printer, cmd, type, 1, perPage);
-                if (total <= perPage) return;
+                if (total <= perPage)
+                {
+                    return;
+                }
                 p.Message("To see all {0}, use &T/{1} all", type, cmd);
             }
             else if (modifier.CaselessEq("all"))
@@ -67,7 +66,6 @@ namespace MCGalaxy
                 OutputPage(p, items, formatter, printer, cmd, type, page, perPage);
             }
         }
-
         static void OutputPage<T>(Player p, IList<T> items,
                                   StringFormatter<T> formatter, ItemPrinter<T> printer,
                                   string cmd, string type, int start, int perPage)
@@ -75,7 +73,6 @@ namespace MCGalaxy
             start = Utils.Clamp(start - 1, 0, items.Count - 1); // want item numbers to start at 1
             int end = Math.Min(start + perPage, items.Count);
             OutputItems(p, items, start, end, formatter, printer);
-
             if (items.Count == 0)
             {
                 p.Message("Showing {0} 0-0 (out of 0)", type);
@@ -91,14 +88,15 @@ namespace MCGalaxy
                           type, start + 1, end, items.Count);
             }
         }
-
         static void OutputItems<T>(Player p, IList<T> items, int beg, int end,
                                    StringFormatter<T> formatter, ItemPrinter<T> printer)
         {
             if (printer != null)
             {
                 for (int i = beg; i < end; i++)
+                {
                     printer(p, items[i]);
+                }
             }
             else
             {
@@ -106,12 +104,13 @@ namespace MCGalaxy
                 p.Message(output.Join());
             }
         }
-
         static IEnumerable<string> Subset<T>(IList<T> items, int start, int end,
                                              StringFormatter<T> formatter)
         {
             for (int i = start; i < end; i++)
+            {
                 yield return formatter(items[i]);
+            }
             yield break;
         }
     }

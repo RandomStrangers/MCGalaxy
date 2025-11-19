@@ -142,7 +142,10 @@ namespace MCGalaxy.Cli
         {
             LogAndRestart((Exception)e.ExceptionObject);
         }
-        public static string CurrentDate() { return DateTime.Now.ToString("(HH:mm:ss) "); }
+        public static string CurrentDate() 
+        { 
+            return DateTime.Now.ToString("(HH:mm:ss) "); 
+        }
         public static void LogMessage(LogType type, string message)
         {
             if (!Server.Config.ConsoleLogging[(int)type])
@@ -153,7 +156,7 @@ namespace MCGalaxy.Cli
             {
                 case LogType.Error:
                     Write("&c!!!Error" + ExtractErrorMessage(message)
-                          + " - See " + FileLogger.ErrorLogPath + " for more details.");
+                          + " - See " + FileLogger.err.Path + " for more details.");
                     break;
                 case LogType.BackgroundActivity:
                     // ignore these messages
@@ -294,22 +297,38 @@ namespace MCGalaxy.Cli
             Colors.Map(ref c);
             switch (c)
             {
-                case '0': return ConsoleColor.DarkGray; // black text on black background is unreadable
-                case '1': return ConsoleColor.DarkBlue;
-                case '2': return ConsoleColor.DarkGreen;
-                case '3': return ConsoleColor.DarkCyan;
-                case '4': return ConsoleColor.DarkRed;
-                case '5': return ConsoleColor.DarkMagenta;
-                case '6': return ConsoleColor.DarkYellow;
-                case '7': return ConsoleColor.Gray;
-                case '8': return ConsoleColor.DarkGray;
-                case '9': return ConsoleColor.Blue;
-                case 'a': return ConsoleColor.Green;
-                case 'b': return ConsoleColor.Cyan;
-                case 'c': return ConsoleColor.Red;
-                case 'd': return ConsoleColor.Magenta;
-                case 'e': return ConsoleColor.Yellow;
-                case 'f': return ConsoleColor.White;
+                case '0': 
+                    return ConsoleColor.DarkGray; // black text on black background is unreadable
+                case '1': 
+                    return ConsoleColor.DarkBlue;
+                case '2': 
+                    return ConsoleColor.DarkGreen;
+                case '3': 
+                    return ConsoleColor.DarkCyan;
+                case '4': 
+                    return ConsoleColor.DarkRed;
+                case '5': 
+                    return ConsoleColor.DarkMagenta;
+                case '6': 
+                    return ConsoleColor.DarkYellow;
+                case '7': 
+                    return ConsoleColor.Gray;
+                case '8': 
+                    return ConsoleColor.DarkGray;
+                case '9': 
+                    return ConsoleColor.Blue;
+                case 'a': 
+                    return ConsoleColor.Green;
+                case 'b': 
+                    return ConsoleColor.Cyan;
+                case 'c': 
+                    return ConsoleColor.Red;
+                case 'd': 
+                    return ConsoleColor.Magenta;
+                case 'e': 
+                    return ConsoleColor.Yellow;
+                case 'f': 
+                    return ConsoleColor.White;
                 default:
                     if (!Colors.IsDefined(c))
                     {

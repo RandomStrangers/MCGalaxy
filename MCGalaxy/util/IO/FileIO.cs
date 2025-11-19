@@ -103,7 +103,6 @@ namespace MCGalaxy
                 return false;
             }
         }
-
         /// <summary> Attempts to move a file on disc, if it exists </summary>
         /// <returns> true if file was successfully moved, false if file did not exist to begin with </returns>
         /// <remarks> See File.Move for exceptions that can be thrown </remarks>
@@ -119,7 +118,6 @@ namespace MCGalaxy
                 return false;
             }
         }
-
         /// <summary> Attempts to retrieve list of files from a directory, if it exists </summary>
         /// <returns> An array of matching files, null if the directory did not exist to begin with </returns>
         public static string[] TryGetFiles(string directory, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly)
@@ -212,8 +210,6 @@ namespace MCGalaxy
         {
             return new GuardedWriter(path);
         }
-
-
         class GuardedWriter : StreamWriter
         {
             readonly string realPath;
@@ -221,20 +217,20 @@ namespace MCGalaxy
             {
                 realPath = path;
             }
-
             protected override void Dispose(bool disposing)
             {
                 base.Dispose(disposing);
-                string src = realPath + ".tmp";
-                string dst = realPath;
-                string old = realPath + ".old";
-
+                string src = realPath + ".tmp",
+                    dst = realPath,
+                    old = realPath + ".old";
                 TryDelete(old);
                 bool didExist = TryMove(dst, old);
                 File.Move(src, dst);
-
                 // Only delete old 'good' file if everything worked
-                if (didExist) TryDelete(old);
+                if (didExist)
+                {
+                    TryDelete(old);
+                }
             }
         }
     }

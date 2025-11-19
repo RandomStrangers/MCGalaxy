@@ -24,20 +24,23 @@ namespace MCGalaxy
 {
     public sealed partial class Server
     {
-        public static bool cancelcommand;
+        public static bool cancelcommand, SetupFinished, CLIMode,
+            chatmod, flipHead, shuttingDown, voting;
         public delegate void OnConsoleCommand(string cmd, string message);
         public static event OnConsoleCommand ConsoleCommand;
         public delegate void MessageEventHandler(string message);
         public delegate void VoidHandler();
-
         public static event MessageEventHandler OnURLChange;
         public static event VoidHandler OnSettingsUpdate;
         public static ServerConfig Config = new();
         public static DateTime StartTime;
-
-        public static PlayerExtList AutoloadMaps;
-        public static PlayerMetaList RankInfo = new("text/rankinfo.txt");
-        public static PlayerMetaList Notes = new("text/notes.txt");
+        public static PlayerExtList AutoloadMaps, models, skins, 
+            reach, rotations, modelScales, bannedIP, 
+            frozen, muted, tempBans, tempRanks;
+        public static PlayerMetaList RankInfo = new("text/rankinfo.txt"),
+            Notes = new("text/notes.txt");
+        public static PlayerList whiteList, invalidIds, ignored, 
+            hidden, agreed, vip, noEmotes, lockdown, reviewlist = new();
         public const string InternalVersion = "1.9.5.3";
         public static string Ver { get { return InternalVersion; } } //Nas differs.
         /// <summary> *** DO NOT USE THIS! *** Use VersionString, as this field is a constant and is inlined if used. </summary>
@@ -50,7 +53,7 @@ namespace MCGalaxy
             }
         }
         public static string SoftwareName = "MCGalaxy-NAS";
-        public const string NasVersion = "1.0.3.8";
+        public const string NasVersion = NotAwesomeSurvival.Nas.NasVersion;
 #else
         public static string SoftwareVersion { get { return InternalVersion; } }
         public static string SoftwareName = "MCGalaxy";
@@ -64,44 +67,32 @@ namespace MCGalaxy
             set { fullName = value; }
         }
         public static INetListen Listener = new TcpListen();
-
         //Other
-        public static bool SetupFinished, CLIMode;
-
-        public static PlayerList whiteList, invalidIds;
-        public static PlayerList ignored, hidden, agreed, vip, noEmotes, lockdown;
-        public static PlayerExtList models, skins, reach, rotations, modelScales;
-        public static PlayerExtList bannedIP, frozen, muted, tempBans, tempRanks;
-
-        public static readonly List<string> Devs = new() { "Hetal", "UclCommander" };
-        public static readonly List<string> Opstats = new() { "ban", "tempban", "xban", "banip", "kick", "warn", "mute", "freeze", "setrank" };
-
+        public static readonly List<string> Devs = new() 
+        { 
+            "Hetal", "UclCommander" 
+        },
+        Opstats = new() 
+        { 
+            "ban", "tempban", "xban", "banip", "kick",
+            "warn", "mute", "freeze", "setrank" 
+        };
         public static Level mainLevel;
-
-        public static PlayerList reviewlist = new();
         static string[] announcements = new string[0];
         public static string RestartPath;
-
         // Extra storage for custom commands
         public static ExtrasCollection Extras = new();
-
         public static int YesVotes, NoVotes;
-        public static bool voting;
         public const int MAX_PLAYERS = 256;
-
-        public static Scheduler MainScheduler = new("MCG_MainScheduler");
-        public static Scheduler Background = new("MCG_BackgroundScheduler");
-        public static Scheduler Critical = new("MCG_CriticalScheduler");
-        public static Scheduler Heartbeats = new("MCG_HeartbeatsScheduler");
+        public static Scheduler MainScheduler = new("MCG_MainScheduler"),
+            Background = new("MCG_BackgroundScheduler"),
+            Critical = new("MCG_CriticalScheduler"),
+            Heartbeats = new("MCG_HeartbeatsScheduler");
         public static Server s = new();
-
-        public const byte VERSION_0016 = 3; // classic 0.0.16
-        public const byte VERSION_0017 = 4; // classic 0.0.17 / 0.0.18
-        public const byte VERSION_0019 = 5; // classic 0.0.19
-        public const byte VERSION_0020 = 6; // classic 0.0.20 / 0.0.21 / 0.0.23
-        public const byte VERSION_0030 = 7; // classic 0.30 (final)
-
-        public static bool chatmod, flipHead;
-        public static bool shuttingDown;
+        public const byte VERSION_0016 = 3, // classic 0.0.16
+            VERSION_0017 = 4, // classic 0.0.17 / 0.0.18
+            VERSION_0019 = 5, // classic 0.0.19
+            VERSION_0020 = 6, // classic 0.0.20 / 0.0.21 / 0.0.23
+            VERSION_0030 = 7; // classic 0.30 (final)
     }
 }

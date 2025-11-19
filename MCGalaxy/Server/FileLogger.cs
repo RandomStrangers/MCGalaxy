@@ -25,102 +25,109 @@ namespace MCGalaxy
 {
     public static class FileLogger
     {
-        public static string LogPath { get { return msg.Path; } }
         public static string ErrorLogPath { get { return err.Path; } }
-
         static bool disposed;
         static DateTime last;
-
         static readonly object logLock = new();
-        static readonly FileLogGroup err = new();
-        static readonly FileLogGroup msg = new();
+        public static readonly FileLogGroup err = new(), msg = new();
         static SchedulerTask logTask;
-
         public static void Init()
         {
             Server.EnsureDirectoryExists("logs");
             Server.EnsureDirectoryExists("logs/errors");
             UpdatePaths();
             Logger.LogHandler += LogMessage;
-
             logTask = Server.MainScheduler.QueueRepeat(Flush, null,
                                                        TimeSpan.FromMilliseconds(500));
         }
-
         // Update paths only if a new date
         static void UpdatePaths()
         {
             DateTime now = DateTime.Now;
-            if (now.Year == last.Year && now.Month == last.Month && now.Day == last.Day) return;
-
+            if (now.Year == last.Year && now.Month == last.Month && now.Day == last.Day)
+            {
+                return;
+            }
             last = now;
             msg.Path = "logs/" + now.ToString("yyyy-MM-dd") + ".txt";
-            err.Path = "logs/errors/" + now.ToString("yyyy-MM-dd") + "error.log";
-
+            err.Path = "logs/errors/" + now.ToString("yyyy-MM-dd") + "error.txt";
             err.Close();
             msg.Close();
         }
-
         static void LogMessage(LogType type, string message)
         {
-            if (string.IsNullOrEmpty(message)) return;
-            if (!Server.Config.FileLogging[(int)type]) return;
-
+            if (string.IsNullOrEmpty(message))
+            {
+                return;
+            }
+            if (!Server.Config.FileLogging[(int)type])
+            {
+                return;
+            }
             if (type == LogType.Error)
             {
                 StringBuilder sb = new();
                 sb.AppendLine("----" + DateTime.Now + " ----");
                 sb.AppendLine(message);
                 sb.Append('-', 25);
-
                 string output = sb.ToString();
-                lock (logLock) err.Cache.Enqueue(output);
-
-                message = "!!!Error! See " + ErrorLogPath + " for more information.";
+                lock (logLock)
+                {
+                    err.Cache.Enqueue(output);
+                }
+                message = "!!!Error! See " + err.Path + " for more information.";
             }
-
             string now = DateTime.Now.ToString("(HH:mm:ss) ");
-            lock (logLock) msg.Cache.Enqueue(now + message);
+            lock (logLock)
+            {
+                msg.Cache.Enqueue(now + message);
+            }
         }
-
-
         public static void Flush(SchedulerTask task)
         {
             lock (logLock)
             {
-                int errsCount = err.Cache.Count;
-                int msgsCount = msg.Cache.Count;
-
-                if (errsCount > 0 || msgsCount > 0) UpdatePaths();
-
-                if (errsCount > 0) err.FlushCache();
-                if (msgsCount > 0) msg.FlushCache();
+                int errsCount = err.Cache.Count,
+                    msgsCount = msg.Cache.Count;
+                if (errsCount > 0 || msgsCount > 0)
+                {
+                    UpdatePaths();
+                }
+                if (errsCount > 0)
+                {
+                    err.FlushCache();
+                }
+                if (msgsCount > 0)
+                {
+                    msg.FlushCache();
+                }
             }
         }
-
         public static void Dispose()
         {
-            if (disposed) return;
+            if (disposed)
+            {
+                return;
+            }
             disposed = true;
             Server.MainScheduler.Cancel(logTask);
-
             lock (logLock)
             {
-                if (err.Cache.Count > 0) err.FlushCache();
+                if (err.Cache.Count > 0)
+                {
+                    err.FlushCache();
+                }
                 msg.Cache.Clear();
             }
         }
     }
-
-    class FileLogGroup
+    public class FileLogGroup
     {
         public string Path;
         public Queue<string> Cache = new();
         Stream stream;
         StreamWriter writer;
-
         const int MAX_LOG_SIZE = 1024 * 1024 * 1024; // 1 GB
-
         public void FlushCache()
         {
             if (stream == null)
@@ -129,12 +136,14 @@ namespace MCGalaxy
                                         FileShare.ReadWrite, 4096, FileOptions.SequentialScan);
                 writer = new StreamWriter(stream);
             }
-
             try
             {
                 // Failsafe in case something has gone catastrophically wrong
-                if (stream.Length > MAX_LOG_SIZE) { Cache.Clear(); return; }
-
+                if (stream.Length > MAX_LOG_SIZE) 
+                { 
+                    Cache.Clear(); 
+                    return; 
+                }
                 while (Cache.Count > 0)
                 {
                     string item = Cache.Dequeue();
@@ -149,11 +158,12 @@ namespace MCGalaxy
                 throw;
             }
         }
-
         public void Close()
         {
-            if (stream == null) return;
-
+            if (stream == null)
+            {
+                return;
+            }
             stream.Dispose();
             stream = null;
             writer = null;

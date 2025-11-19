@@ -23,65 +23,86 @@ namespace MCGalaxy.Maths
     {
         /// <summary> Fixed-point min coordinate of this bounding box. </summary>
         public Vec3S32 Min;
-
         /// <summary> Fixed-point max coordinate of this bounding box. </summary>
         public Vec3S32 Max;
-
         /// <summary> World/block coordinate of the min coordinate of this bounding box. </summary>
-        public Vec3S32 BlockMin { get { return new Vec3S32(Min.X >> 5, Min.Y >> 5, Min.Z >> 5); } }
-
+        public readonly Vec3S32 BlockMin { get { return new(Min.X >> 5, Min.Y >> 5, Min.Z >> 5); } }
         /// <summary> World/block coordinate of the max coordinate of this bounding box. </summary>
-        public Vec3S32 BlockMax { get { return new Vec3S32(Max.X >> 5, Max.Y >> 5, Max.Z >> 5); } }
-
-
+        public readonly Vec3S32 BlockMax { get { return new(Max.X >> 5, Max.Y >> 5, Max.Z >> 5); } }
         public AABB(int x1, int y1, int z1, int x2, int y2, int z2)
         {
-            Min.X = x1; Min.Y = y1; Min.Z = z1;
-            Max.X = x2; Max.Y = y2; Max.Z = z2;
+            Min.X = x1; 
+            Min.Y = y1; 
+            Min.Z = z1;
+            Max.X = x2;
+            Max.Y = y2; 
+            Max.Z = z2;
         }
-
         public AABB(Vec3S32 min, Vec3S32 max)
         {
             Min = min;
             Max = max;
         }
-
         public static AABB Make(Vec3S32 pos, Vec3S32 size)
         {
-            return new AABB(pos.X - size.X / 2, pos.Y, pos.Z - size.Z / 2,
-                            pos.X + size.X / 2, pos.Y + size.Y, pos.Z + size.Z / 2);
+            return new(pos.X - size.X / 2, pos.Y, pos.Z - size.Z / 2,
+                pos.X + size.X / 2, pos.Y + size.Y, pos.Z + size.Z / 2);
         }
-
-        public AABB OffsetPosition(Position pos)
+        public readonly AABB OffsetPosition(Position pos)
         {
             return Offset(pos.X, pos.Y - Entities.CharacterHeight, pos.Z);
         }
-
-        public AABB Offset(int x, int y, int z)
+        public readonly AABB Offset(int x, int y, int z)
         {
             AABB bb = this;
-            bb.Min.X += x; bb.Min.Y += y; bb.Min.Z += z;
-            bb.Max.X += x; bb.Max.Y += y; bb.Max.Z += z;
+            bb.Min.X += x; 
+            bb.Min.Y += y; 
+            bb.Min.Z += z;
+            bb.Max.X += x; 
+            bb.Max.Y += y; 
+            bb.Max.Z += z;
             return bb;
         }
-
-        public AABB Adjust(int x, int y, int z)
+        public readonly AABB Adjust(int x, int y, int z)
         {
             AABB bb = this;
-            if (x >= 0) { bb.Max.X += x; } else { bb.Min.X += x; }
-            if (y >= 0) { bb.Max.Y += y; } else { bb.Min.Y += y; }
-            if (z >= 0) { bb.Max.Z += z; } else { bb.Min.Z += z; }
+            if (x >= 0) 
+            {
+                bb.Max.X += x; 
+            } 
+            else 
+            { 
+                bb.Min.X += x; 
+            }
+            if (y >= 0) 
+            { 
+                bb.Max.Y += y;
+            } 
+            else 
+            { 
+                bb.Min.Y += y; 
+            }
+            if (z >= 0) 
+            { 
+                bb.Max.Z += z; 
+            } 
+            else 
+            { 
+                bb.Min.Z += z; 
+            }
             return bb;
         }
-
-        public AABB Expand(int amount)
+        public readonly AABB Expand(int amount)
         {
             AABB bb = this;
-            bb.Min.X -= amount; bb.Min.Y -= amount; bb.Min.Z -= amount;
-            bb.Max.X += amount; bb.Max.Y += amount; bb.Max.Z += amount;
+            bb.Min.X -= amount; 
+            bb.Min.Y -= amount;
+            bb.Min.Z -= amount;
+            bb.Max.X += amount; 
+            bb.Max.Y += amount; 
+            bb.Max.Z += amount;
             return bb;
         }
-
         /// <summary> Determines whether this bounding box intersects
         /// the given bounding box on any axes. </summary>
         public static bool Intersects(ref AABB a, ref AABB b)
@@ -96,57 +117,76 @@ namespace MCGalaxy.Maths
             }
             return false;
         }
-
-        public override string ToString() { return Min + " : " + Max; }
-
+        public override readonly string ToString() 
+        { 
+            return Min + " : " + Max;
+        }
         public static bool IntersectsSolidBlocks(AABB bb, Level lvl)
         {
             Vec3S32 min = bb.BlockMin, max = bb.BlockMax;
-
             for (int y = min.Y; y <= max.Y; y++)
+            {
                 for (int z = min.Z; z <= max.Z; z++)
+                {
                     for (int x = min.X; x <= max.X; x++)
                     {
                         ushort block = lvl.GetBlock((ushort)x, (ushort)y, (ushort)z);
-
                         AABB blockBB = lvl.blockAABBs[block].Offset(x * 32, y * 32, z * 32);
-                        if (!Intersects(ref bb, ref blockBB)) continue;
-
+                        if (!Intersects(ref bb, ref blockBB))
+                        {
+                            continue;
+                        }
                         BlockDefinition def = lvl.GetBlockDef(block);
                         if (def != null)
                         {
-                            if (CollideType.IsSolid(def.CollideType)) return true;
+                            if (CollideType.IsSolid(def.CollideType))
+                            {
+                                return true;
+                            }
                         }
                         else if (block == Block.Invalid)
                         {
-                            if (y < lvl.Height) return true;
+                            if (y < lvl.Height)
+                            {
+                                return true;
+                            }
                         }
                         else if (!Block.Walkthrough(Block.Convert(block)))
                         {
                             return true;
                         }
                     }
+                }
+            }
             return false;
         }
-
         public static int FindIntersectingSolids(AABB bb, Level lvl, ref AABB[] aabbs)
         {
             Vec3S32 min = bb.BlockMin, max = bb.BlockMax;
             int volume = (max.X - min.X + 1) * (max.Y - min.Y + 1) * (max.Z - min.Z + 1);
-            if (volume > aabbs.Length) aabbs = new AABB[volume];
+            if (volume > aabbs.Length)
+            {
+                aabbs = new AABB[volume];
+            }
             int count = 0;
-
             for (int y = min.Y; y <= max.Y; y++)
+            {
                 for (int z = min.Z; z <= max.Z; z++)
+                {
                     for (int x = min.X; x <= max.X; x++)
                     {
                         ushort block = lvl.GetBlock((ushort)x, (ushort)y, (ushort)z);
                         AABB blockBB = lvl.blockAABBs[block];
-
-                        blockBB.Min.X += x * 32; blockBB.Min.Y += y * 32; blockBB.Min.Z += z * 32;
-                        blockBB.Max.X += x * 32; blockBB.Max.Y += y * 32; blockBB.Max.Z += z * 32;
-                        if (!Intersects(ref bb, ref blockBB)) continue;
-
+                        blockBB.Min.X += x * 32; 
+                        blockBB.Min.Y += y * 32; 
+                        blockBB.Min.Z += z * 32;
+                        blockBB.Max.X += x * 32; 
+                        blockBB.Max.Y += y * 32; 
+                        blockBB.Max.Z += z * 32;
+                        if (!Intersects(ref bb, ref blockBB))
+                        {
+                            continue;
+                        }
                         BlockDefinition def = lvl.GetBlockDef(block);
                         bool solid;
                         if (def != null)
@@ -157,11 +197,15 @@ namespace MCGalaxy.Maths
                         {
                             solid = block == Block.Invalid || !Block.Walkthrough(Block.Convert(block));
                         }
-                        if (!solid) continue;
-
+                        if (!solid)
+                        {
+                            continue;
+                        }
                         aabbs[count] = blockBB;
                         count++;
                     }
+                }
+            }
             return count;
         }
     }

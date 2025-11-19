@@ -25,41 +25,38 @@ namespace MCGalaxy
     {
         /// <summary> Origin point in time for Unix time (Midnight January 1, 1970) </summary>
         public static DateTime UnixEpoch = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
         public static DateTime FromUnixTime(this long offset)
         {
             return UnixEpoch.AddTicks(offset * TimeSpan.TicksPerSecond);
         }
-
         /// <summary> Converts the given DateTime instance to Unix time </summary>
         /// <remarks> Unix time is the number of seconds since Midnight January 1, 1970 </remarks>
         public static long ToUnixTime(this DateTime time)
         {
             return (long)(time.ToUniversalTime() - UnixEpoch).TotalSeconds;
         }
-
         public static bool AddSpamEntry(this List<DateTime> log, int maxEntries, TimeSpan checkInterval)
         {
             DateTime now = DateTime.UtcNow;
             if (log.Count > 0 && log.Count >= maxEntries)
+            {
                 log.RemoveAt(0);
+            }
             log.Add(now);
-
-            if (log.Count < maxEntries) return true;
+            if (log.Count < maxEntries)
+            {
+                return true;
+            }
             TimeSpan oldestDelta = now - log[0];
             return oldestDelta > checkInterval;
         }
-
-
         // Can't just use HH:mm:ss, as e.g. Finnish converts : to .
         //   https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings#timeSeparator
         const string INVARIANT_DATE_FORMAT = "yyyy-MM-dd HH':'mm':'ss";
-
         public static string ToInvariantDateString(this DateTime time)
         {
             return time.ToString(INVARIANT_DATE_FORMAT);
         }
-
         public static bool TryParseInvariantDateString(this string str, out DateTime dt)
         {
             return DateTime.TryParseExact(str, INVARIANT_DATE_FORMAT, null, 0, out dt);

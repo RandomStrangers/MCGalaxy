@@ -26,56 +26,96 @@ namespace MCGalaxy
     {
         readonly Dictionary<string, object> dict = new();
         readonly object locker = new();
-
         public int Count { get { lock (locker) { return dict.Count; } } }
         public object this[string key]
         {
             get { lock (locker) { return dict[key]; } }
             set { lock (locker) { dict[key] = value; } }
         }
-
-        public void Clear() { lock (locker) { dict.Clear(); } }
-        public bool Contains(string key) { lock (locker) { return dict.ContainsKey(key); } }
-        public bool Remove(string key) { lock (locker) { return dict.Remove(key); } }
-
+        public void Clear() 
+        { 
+            lock (locker) 
+            { 
+                dict.Clear(); 
+            } 
+        }
+        public bool Contains(string key) 
+        {
+            lock (locker) 
+            { 
+                return dict.ContainsKey(key); 
+            } 
+        }
+        public bool Remove(string key) 
+        { 
+            lock (locker) 
+            { 
+                return dict.Remove(key); 
+            }
+        }
         public bool TryGet(string key, out object value)
         {
-            lock (locker) { return dict.TryGetValue(key, out value); }
+            lock (locker) 
+            { 
+                return dict.TryGetValue(key, out value); 
+            }
         }
         public object Get(string key)
         {
-            TryGet(key, out object value); return value;
+            TryGet(key, out object value); 
+            return value;
         }
-
-        public bool GetBoolean(string key) { return GetBoolean(key, false); }
+        public bool GetBoolean(string key) 
+        {
+            return GetBoolean(key, false); 
+        }
         public bool GetBoolean(string key, bool defaultValue)
         {
             if (TryGet(key, out object value))
             {
-                try { return Convert.ToBoolean(value); }
-                catch (Exception) { }
+                try 
+                { 
+                    return Convert.ToBoolean(value); 
+                }
+                catch (Exception) 
+                { 
+                }
             }
             return defaultValue;
         }
-
-        public int GetInt(string key) { return GetInt(key, 0); }
+        public int GetInt(string key) 
+        {
+            return GetInt(key, 0); 
+        }
         public int GetInt(string key, int defaultValue)
         {
             if (TryGet(key, out object value))
             {
-                try { return Convert.ToInt32(value); }
-                catch (Exception) { }
+                try 
+                { 
+                    return Convert.ToInt32(value); 
+                }
+                catch (Exception) 
+                {
+                }
             }
             return defaultValue;
         }
-
-        public string GetString(string key) { return GetString(key, null); }
+        public string GetString(string key)
+        { 
+            return GetString(key, null); 
+        }
         public string GetString(string key, string defaultValue)
         {
             if (TryGet(key, out object value))
             {
-                try { return Convert.ToString(value); }
-                catch (Exception) { }
+                try 
+                { 
+                    return Convert.ToString(value); 
+                }
+                catch (Exception) 
+                { 
+                }
             }
             return defaultValue;
         }

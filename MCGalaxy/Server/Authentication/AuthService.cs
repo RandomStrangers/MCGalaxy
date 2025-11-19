@@ -24,42 +24,38 @@ namespace MCGalaxy.Authentication
     public class AuthService
     {
         public static List<AuthService> Services = new();
-
-        public string URL;
-        public string Salt;
-        public string NameSuffix = "";
-        public string SkinPrefix = "";
+        public string URL, Salt, NameSuffix = "", SkinPrefix = "";
         public bool MojangAuth;
-
         public virtual void AcceptPlayer(Player p)
         {
             p.VerifiedVia = URL;
             p.verifiedName = true;
             p.SkinName = SkinPrefix + p.SkinName;
-
             string suffix = NameSuffix;
             p.name += suffix;
             p.truename += suffix;
             p.DisplayName += suffix;
         }
-
-
         public static AuthService GetOrCreate(string url, bool canSave = true)
         {
             foreach (AuthService s in Services)
             {
-                if (s.URL.CaselessEq(url)) return s;
+                if (s.URL.CaselessEq(url))
+                {
+                    return s;
+                }
             }
-
             AuthService service = new()
             {
                 URL = url,
                 Salt = Server.GenerateSalt()
             };
             Services.Add(service);
-
             // TODO: Maybe seperate method instead
-            if (!canSave) return service;
+            if (!canSave)
+            {
+                return service;
+            }
             try
             {
                 SaveServices();
@@ -70,20 +66,16 @@ namespace MCGalaxy.Authentication
             }
             return service;
         }
-
-
         /// <summary> Updates list of authentication services from authservices.properties </summary>
         internal static void UpdateList()
         {
             AuthService cur = null;
             PropertiesFile.Read(Paths.AuthServicesFile, ref cur, ParseProperty, '=', true);
-
             // NOTE: Heartbeat.ReloadDefault will call GetOrCreate for all of the 
             //  URLs specified in the HeartbeatURL server configuration property
             // Therefore it is unnecessary to create default AuthServices here
             //  (e.g. for when authservices.properties is empty or is missing a URL)
         }
-
         static void ParseProperty(string key, string value, ref AuthService cur)
         {
             if (key.CaselessEq("URL"))
@@ -92,21 +84,29 @@ namespace MCGalaxy.Authentication
             }
             else if (key.CaselessEq("name-suffix"))
             {
-                if (cur == null) return;
+                if (cur == null)
+                {
+                    return;
+                }
                 cur.NameSuffix = value;
             }
             else if (key.CaselessEq("skin-prefix"))
             {
-                if (cur == null) return;
+                if (cur == null)
+                {
+                    return;
+                }
                 cur.SkinPrefix = value;
             }
             else if (key.CaselessEq("mojang-auth"))
             {
-                if (cur == null) return;
+                if (cur == null)
+                {
+                    return;
+                }
                 bool.TryParse(value, out cur.MojangAuth);
             }
         }
-
         static void SaveServices()
         {
             using StreamWriter w = FileIO.CreateGuarded(Paths.AuthServicesFile);
@@ -128,7 +128,6 @@ namespace MCGalaxy.Authentication
             w.WriteLine("#   Whether to try verifying users using Mojang's authentication servers if mppass verification fails");
             w.WriteLine("#   NOTE: This should only be used for the Betacraft.uk authentication service");
             w.WriteLine();
-
             foreach (AuthService service in Services)
             {
                 w.WriteLine("URL = " + service.URL);

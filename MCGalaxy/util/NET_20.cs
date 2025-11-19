@@ -19,22 +19,26 @@
 using System;
 using System.Threading;
 
-
 namespace System.Runtime.CompilerServices
 {
     [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Method)]
-    public sealed class ExtensionAttribute : Attribute { }
+    public sealed class ExtensionAttribute : Attribute
+    {
+    }
 }
-
 namespace MCGalaxy.Util
 {
     public sealed class IReaderWriterLock
     {
         readonly ReaderWriterLock locker = new();
-
-        public IDisposable AccquireRead() { return AccquireRead(int.MaxValue); }
-        public IDisposable AccquireWrite() { return AccquireWrite(int.MaxValue); }
-
+        public IDisposable AccquireRead()
+        {
+            return AccquireRead(int.MaxValue);
+        }
+        public IDisposable AccquireWrite()
+        {
+            return AccquireWrite(int.MaxValue);
+        }
         public IDisposable AccquireRead(int msTimeout)
         {
             try
@@ -47,7 +51,6 @@ namespace MCGalaxy.Util
             }
             return new SlimLock(locker, false);
         }
-
         public IDisposable AccquireWrite(int msTimeout)
         {
             try
@@ -60,19 +63,15 @@ namespace MCGalaxy.Util
             }
             return new SlimLock(locker, true);
         }
-
-
         class SlimLock : IDisposable
         {
             ReaderWriterLock locker;
             readonly bool writeMode;
-
             public SlimLock(ReaderWriterLock locker, bool writeMode)
             {
                 this.locker = locker;
                 this.writeMode = writeMode;
             }
-
             public void Dispose()
             {
                 if (writeMode)

@@ -24,11 +24,9 @@ namespace MCGalaxy.Util
     public sealed class ThreadSafeCache
     {
         public static ThreadSafeCache DBCache = new();
-
         readonly object locker = new();
         readonly Dictionary<string, object> items = new();
         readonly Dictionary<string, DateTime> access = new();
-
         public object GetLocker(string key)
         {
             lock (locker)
@@ -38,30 +36,30 @@ namespace MCGalaxy.Util
                     value = new object();
                     items[key] = value;
                 }
-
                 access[key] = DateTime.UtcNow;
                 return value;
             }
         }
-
-
         public void CleanupTask(SchedulerTask _)
         {
             List<string> free = null;
             DateTime now = DateTime.UtcNow;
-
             lock (locker)
             {
                 foreach (KeyValuePair<string, DateTime> kvp in access)
                 {
                     // Has the cached item last been accessed in 5 minutes?
-                    if ((now - kvp.Value).TotalMinutes <= 5) continue;
-
+                    if ((now - kvp.Value).TotalMinutes <= 5)
+                    {
+                        continue;
+                    }
                     free ??= new List<string>();
                     free.Add(kvp.Key);
                 }
-
-                if (free == null) return;
+                if (free == null)
+                {
+                    return;
+                }
                 foreach (string key in free)
                 {
                     items.Remove(key);

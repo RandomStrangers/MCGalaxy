@@ -33,29 +33,42 @@ namespace MCGalaxy
             if (keyword.Contains("*") || keyword.Contains("?"))
             {
                 string pattern = "^" + Regex.Escape(keyword).Replace("\\?", ".").Replace("\\*", ".*") + "$";
-                regex = new Regex(pattern, RegexOptions.IgnoreCase);
+                regex = new(pattern, RegexOptions.IgnoreCase);
             }
-
             foreach (T item in input)
             {
-                if (filter != null && !filter(item)) continue;
+                if (filter != null && !filter(item))
+                {
+                    continue;
+                }
                 string name = nameGetter(item);
-
-                if (regex != null) { if (!regex.IsMatch(name)) continue; }
-                else { if (!name.CaselessContains(keyword)) continue; }
-
+                if (regex != null) 
+                {
+                    if (!regex.IsMatch(name))
+                    {
+                        continue;
+                    }
+                }
+                else 
+                {
+                    if (!name.CaselessContains(keyword))
+                    {
+                        continue;
+                    }
+                }
                 // format this item for display
-                if (listFormatter != null) name = listFormatter(item);
+                if (listFormatter != null)
+                {
+                    name = listFormatter(item);
+                }
                 matches.Add(name);
             }
             return matches;
         }
-
         public static string ToSQLFilter(string filter)
         {
             // player names can include _ in them
             filter = filter.Replace("_", "#_");
-
             filter = filter.Replace('*', '%').Replace('?', '_');
             return "%" + filter + "%";
         }

@@ -52,7 +52,8 @@ namespace NotAwesomeSurvival
             Path = "nas/",
             SavePath = Path + "playerdata/",
             CoreSavePath = Path + "coredata/",
-            EffectsPath = Path + "effects/";
+            EffectsPath = Path + "effects/",
+            NasVersion = "1.0.3.9";
         public static bool LoadedOnStartup = false,
             firstEverPluginLoad = false;
         public static Command[] Commands = new Command[]
@@ -62,8 +63,10 @@ namespace NotAwesomeSurvival
             new NasPlayer.CmdMyGravestones(),
             new NasPlayer.CmdNASSpawn(),
             new NasPlayer.CmdPVP(),
-            new NasPlayer.CmdSpawnDungeon()
+            new NasPlayer.CmdSpawnDungeon(),
+            new CmdServerInfo2(),
         };
+        public static Command ServerInfoCommand;
         public static void EnsureNasFilesExist()
         {
             EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/nas-rework/Uploads/nas/selectorColors.png", Path + "selectorColors.png");
@@ -145,10 +148,13 @@ namespace NotAwesomeSurvival
             {
                 LoadFirstTime();
             }
+            NASUpdater.Setup();
             OnlineStat.Stats.Add(PvP);
             OnlineStat.Stats.Add(Kills);
             OnlineStat.Stats.Add(Dev);
             OfflineStat.Stats.Add(Dev);
+            ServerInfoCommand = Command.Find("ServerInfo");
+            Command.Unregister(ServerInfoCommand);
             Register(Commands);
             NasPlayer.Register();
             NasBlock.Setup();
@@ -231,9 +237,14 @@ namespace NotAwesomeSurvival
                 InvalidOperationException ioex = new("You cannot unload NAS manually, it can only be unloaded on server shutdown.");
                 throw ioex;
             }
+            NASUpdater.TakeDown();
             NasPlayer.Unregister();
             DynamicColor.TakeDown();
             Command.Unregister(Commands);
+            if (ServerInfoCommand != null)
+            {
+                Command.Register(ServerInfoCommand);
+            }
             OnlineStat.Stats.Remove(PvP);
             OnlineStat.Stats.Remove(Kills);
             OnlineStat.Stats.Remove(Dev);

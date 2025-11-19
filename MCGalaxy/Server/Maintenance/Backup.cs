@@ -26,7 +26,6 @@ namespace MCGalaxy
     public static class Backup
     {
         const string zipPath = "MCGalaxy.zip", sqlPath = "SQL.sql";
-
         public static void Perform(Player p, bool files, bool db, bool lite, bool compress)
         {
             if (db)
@@ -36,7 +35,6 @@ namespace MCGalaxy
                     BackupDatabase(sql);
                 Logger.Log(LogType.SystemActivity, "Backed up the database to " + sqlPath);
             }
-
             List<string> filesList = null;
             if (files)
             {
@@ -44,14 +42,18 @@ namespace MCGalaxy
                 filesList = GetAllFiles(lite);
                 Logger.Log(LogType.SystemActivity, "Finished determining included files");
             }
-
             Logger.Log(LogType.SystemActivity, "Creating compressed backup...");
             using (Stream stream = File.Create(zipPath))
             {
                 ZipWriter writer = new(stream);
-                if (files) SaveFiles(writer, filesList, compress);
-                if (db) SaveDatabase(writer, compress);
-
+                if (files)
+                {
+                    SaveFiles(writer, filesList, compress);
+                }
+                if (db)
+                {
+                    SaveDatabase(writer, compress);
+                }
                 writer.FinishEntries();
                 writer.WriteFooter();
                 Logger.Log(LogType.SystemActivity, "Compressed all data!");
@@ -59,35 +61,57 @@ namespace MCGalaxy
             p.Message("Backup of (" + (files ? "everything" + (db ? "" : " but database") : "database") + ") complete!");
             Logger.Log(LogType.SystemActivity, "Server backed up!");
         }
-
         static List<string> GetAllFiles(bool lite)
         {
             //string[] all = Directory.GetFiles("./", "*", SearchOption.AllDirectories);
             string[] all = FileIO.TryGetFiles("./", "*", SearchOption.AllDirectories);
             List<string> paths = new();
-
             for (int i = 0; i < all.Length; i++)
             {
                 string path = all[i];
                 // convert to zip entry form
                 path = path.Replace('\\', '/').Replace("./", "");
-
-                if (lite && path.Contains("extra/undo/")) continue;
-                if (lite && path.Contains("extra/undoPrevious/")) continue;
-                if (lite && path.Contains("levels/prev")) continue;
-                if (lite && path.Contains("levels/backups/")) continue;
-                if (lite && path.Contains("blockdb/")) continue;
-
-                //if (path.Contains(zipPath)) continue;
-                //if (path.Contains(sqlPath)) continue;
-                //if (path.Contains(dbPath))  continue;
+                if (lite && path.Contains("extra/undo/"))
+                {
+                    continue;
+                }
+                if (lite && path.Contains("extra/undoPrevious/"))
+                {
+                    continue;
+                }
+                if (lite && path.Contains("levels/prev"))
+                {
+                    continue;
+                }
+                if (lite && path.Contains("levels/backups/"))
+                {
+                    continue;
+                }
+                if (lite && path.Contains("blockdb/"))
+                {
+                    continue;
+                }
+                /*if (path.Contains(zipPath))
+                {
+                    continue;
+                }
+                if (path.Contains(sqlPath))
+                {
+                    continue;
+                }
+                if (path.Contains(dbPath))
+                {
+                    continue;
+                }*/
                 // ignore files in root folder
-                if (path.IndexOf('/') == -1) continue;
+                if (path.IndexOf('/') == -1)
+                {
+                    continue;
+                }
                 paths.Add(path);
             }
             return paths;
         }
-
         static void SaveFiles(ZipWriter writer, List<string> paths, bool compress)
         {
             Logger.Log(LogType.SystemActivity, "Compressing {0} files...", paths.Count);
@@ -96,10 +120,9 @@ namespace MCGalaxy
                 string path = paths[i];
                 // .lvl contents are already compressed, no point in compressing again
                 bool compressThis = compress && !path.CaselessContains(".lvl");
-
                 try
                 {
-                    //using (Stream src = File.OpenRead(path)) {
+                    //using Stream src = File.OpenRead(path);
                     using Stream src = FileIO.TryOpenRead(path);
                     writer.WriteEntry(src, path, compressThis);
                 }
@@ -107,34 +130,33 @@ namespace MCGalaxy
                 {
                     Logger.LogError("Failed to backup file: " + path, ex);
                 }
-
-                if (i == 0 || (i % 100) != 0) continue;
+                if (i == 0 || (i % 100) != 0)
+                {
+                    continue;
+                }
                 Logger.Log(LogType.SystemActivity, "Backed up {0}/{1} files", i, paths.Count);
             }
         }
-
         static void SaveDatabase(ZipWriter writer, bool compress)
         {
             Logger.Log(LogType.SystemActivity, "Compressing Database...");
-            //using (Stream src = File.OpenRead(sqlPath)) {
+            //using (Stream src = File.OpenRead(sqlPath))
             using (Stream src = FileIO.TryOpenRead(sqlPath))
             {
                 writer.WriteEntry(src, sqlPath, compress);
             }
             Logger.Log(LogType.SystemActivity, "Database compressed");
         }
-
         public static void Extract(Player p)
         {
             int errors = 0;
-            //using (FileStream src = File.OpenRead(zipPath)) {
+            //using (FileStream src = File.OpenRead(zipPath))
             using (FileStream src = FileIO.TryOpenRead(zipPath))
             {
                 ZipReader reader = new(src);
                 reader.FindFooter();
                 int entries = reader.FindEntries();
                 p.Message("Restoring {0} files", entries);
-
                 for (int i = 0; i < entries; i++)
                 {
                     string path = ExtractItem(reader, i, ref errors);
@@ -142,39 +164,39 @@ namespace MCGalaxy
                     {
                         Logger.Log(LogType.SystemActivity, "Restored {0}/{1} files", i, entries);
                     }
-
-                    if (!path.CaselessEq(sqlPath)) continue;
+                    if (!path.CaselessEq(sqlPath))
+                    {
+                        continue;
+                    }
                     // If DB is in there, they backed it up, meaning they want it restored
                     using Stream part = reader.GetEntry(i, out path);
                     ReplaceDatabase(part);
                 }
             }
-
             // To make life easier, we reload settings now, to make it less likely to need restart
             Server.LoadAllSettings();
             p.Message("Server restored" + (errors > 0 ? " with errors. May be a partial restore" : ""));
             p.Message("It is recommended that you restart the server, although this is not required.");
         }
-
         static void Extract(Stream src, string path)
         {
             byte[] buf = new byte[4096];
             int read = 0;
-
             using Stream dst = File.Create(path);
             while ((read = src.Read(buf, 0, buf.Length)) > 0)
+            {
                 dst.Write(buf, 0, read);
+            }
         }
-
         static string ExtractItem(ZipReader reader, int i, ref int errors)
         {
             using Stream part = reader.GetEntry(i, out string path);
             // old server backup used to URI encode files
             path = Uri.UnescapeDataString(path);
-
             try
             {
-                Extract(part, path); return path;
+                Extract(part, path);
+                return path;
             }
             catch
             {
@@ -182,7 +204,8 @@ namespace MCGalaxy
                 {
                     string dir = Path.GetDirectoryName(path);
                     Directory.CreateDirectory(dir);
-                    Extract(part, path); return path;
+                    Extract(part, path);
+                    return path;
                 }
                 catch (IOException e)
                 {
@@ -193,8 +216,6 @@ namespace MCGalaxy
                 }
             }
         }
-
-
         static void BackupDatabase(StreamWriter sql)
         {
             // NOTE: This does NOT account for foreign keys, BLOBs etc. It only works for what we actually put in the DB.
@@ -203,14 +224,12 @@ namespace MCGalaxy
             sql.WriteLine("-- Generated on {0:yyyy-MM-dd} at {0:HH:mm:ss}", DateTime.Now);
             sql.WriteLine();
             sql.WriteLine();
-
             List<string> tables = Database.Backend.AllTables();
             foreach (string name in tables)
             {
                 BackupTable(name, sql);
             }
         }
-
         public static void BackupTable(string tableName, StreamWriter sql)
         {
             sql.WriteLine();
@@ -218,17 +237,14 @@ namespace MCGalaxy
             sql.WriteLine("-- Table structure for table `{0}`", tableName);
             sql.WriteLine();
             Database.Backend.PrintSchema(tableName, sql);
-
             TableDumper dumper = new();
             dumper.DumpTable(sql, tableName);
             dumper.sql = null;
         }
-
         static void ReplaceDatabase(Stream sql)
         {
             using (Stream backup = File.Create("backup.sql"))
                 BackupDatabase(new StreamWriter(backup));
-
             List<string> tables = Database.Backend.AllTables();
             foreach (string table in tables)
             {
@@ -236,27 +252,26 @@ namespace MCGalaxy
             }
             ImportSql(sql);
         }
-
         internal static void ImportSql(Stream sql)
         {
             // Import data (we only have CREATE TABLE and INSERT INTO statements)
             using StreamReader reader = new(sql);
             ImportBulk(reader);
         }
-
         static void ImportBulk(StreamReader reader)
         {
             SqlTransaction bulk = null;
             List<string> buffer = new();
-
             try
             {
                 bulk = new SqlTransaction();
                 while (!reader.EndOfStream)
                 {
                     string cmd = NextStatement(reader, buffer);
-                    if (cmd == null || cmd.Length == 0) continue;
-
+                    if (cmd == null || cmd.Length == 0)
+                    {
+                        continue;
+                    }
                     int index = cmd.ToUpper().IndexOf("CREATE TABLE");
                     if (index >= 0)
                     {
@@ -264,10 +279,11 @@ namespace MCGalaxy
                         cmd = cmd.Replace(" unsigned", " UNSIGNED");
                         Database.Backend.ParseCreate(ref cmd);
                     }
-
                     //Run the command in the transaction.
-                    if (bulk.Execute(cmd, null)) continue;
-
+                    if (bulk.Execute(cmd, null))
+                    {
+                        continue;
+                    }
                     // Something went wrong.. commit what we've imported so far.
                     // We need to recreate connection otherwise every helper.Execute fails
                     bulk.Commit();
@@ -281,19 +297,26 @@ namespace MCGalaxy
                 bulk?.Dispose();
             }
         }
-
         static string NextStatement(StreamReader r, List<string> buffer)
         {
             buffer.Clear();
             string line;
             while ((line = r.ReadLine()) != null)
             {
-                if (line.StartsWith("--")) continue; // comment
+                if (line.StartsWith("--"))
+                {
+                    continue; // comment
+                }
                 line = line.Trim();
-                if (line.Length == 0) continue; // whitespace
-
+                if (line.Length == 0)
+                {
+                    continue; // whitespace
+                }
                 buffer.Add(line);
-                if (line[line.Length - 1] == ';') break;
+                if (line[line.Length - 1] == ';')
+                {
+                    break;
+                }
             }
             return buffer.Join("");
         }

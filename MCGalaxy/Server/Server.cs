@@ -43,21 +43,23 @@ namespace MCGalaxy
 {
     public sealed partial class Server
     {
-        public Server() { s = this; }
-
+        public Server() 
+        { 
+            s = this; 
+        }
         //True = cancel event
-        //Fale = don't cancel event
+        //False = don't cancel event
         public static bool Check(string cmd, string message)
         {
             ConsoleCommand?.Invoke(cmd, message);
             return cancelcommand;
         }
-
-
         public static void CheckFile(string file)
         {
-            if (File.Exists(file)) return;
-
+            if (File.Exists(file))
+            {
+                return;
+            }
             Logger.Log(LogType.SystemActivity, file + " doesn't exist, Downloading..");
             try
             {
@@ -75,7 +77,6 @@ namespace MCGalaxy
                 Logger.LogError("Downloading " + file + " failed, try again later", ex);
             }
         }
-
         internal static ConfigElement[] serverConfig, levelConfig, zoneConfig;
         public static void Start()
         {
@@ -85,25 +86,20 @@ namespace MCGalaxy
             Version = SoftwareVersion;
             DotNetBackend.Init();
             IOperatingSystem.DetectOS().Init();
-
             StartTime = DateTime.UtcNow;
             Logger.Log(LogType.SystemActivity, "Starting Server");
             ServicePointManager.Expect100Continue = false;
             ForceEnableTLS();
             ExtraAuthenticator.SetActive(new DefaultPassAuthenticator());
-
             SQLiteBackend.Instance.LoadDependencies();
 #if !MCG_STANDALONE
             MySQLBackend.Instance.LoadDependencies();
 #endif
-
             EnsureFilesExist();
             IScripting.Init();
-
             LoadAllSettings(true);
             InitDatabase();
             Economy.LoadDatabase();
-
             Background.QueueOnce(LoadMainLevel);
             Background.QueueOnce(LoadAllPlugins);
             Background.QueueOnce(LoadAutoloadMaps);
@@ -111,24 +107,32 @@ namespace MCGalaxy
             Background.QueueOnce(UpgradeTasks.UpgradeDBTimeSpent);
             Background.QueueOnce(InitPlayerLists);
             Background.QueueOnce(Pronouns.Init);
-
             Background.QueueOnce(SetupSocket);
             Background.QueueOnce(InitTimers);
             Background.QueueOnce(InitRest);
             Background.QueueOnce(InitHeartbeat);
-
             ServerTasks.QueueTasks();
             Background.QueueRepeat(ThreadSafeCache.DBCache.CleanupTask,
                                    null, TimeSpan.FromMinutes(5));
         }
-
         static void ForceEnableTLS()
         {
             // Force enable TLS 1.1/1.2, otherwise checking for updates on Github doesn't work
-            try { ServicePointManager.SecurityProtocol |= (SecurityProtocolType)0x300; } catch { }
-            try { ServicePointManager.SecurityProtocol |= (SecurityProtocolType)0xC00; } catch { }
+            try 
+            { 
+                ServicePointManager.SecurityProtocol |= (SecurityProtocolType)0x300; 
+            } 
+            catch 
+            { 
+            }
+            try 
+            {
+                ServicePointManager.SecurityProtocol |= (SecurityProtocolType)0xC00; 
+            } 
+            catch 
+            { 
+            }
         }
-
         static void EnsureFilesExist()
         {
             FileIO.TryDeleteDirectory("properties", true);
@@ -140,27 +144,29 @@ namespace MCGalaxy
             RankInfo.EnsureExists();
             Ban.EnsureExists();
             PlayerDB.EnsureDirectoriesExist();
-
             EnsureDirectoryExists("extra");
             EnsureDirectoryExists("extra/bots");
             EnsureDirectoryExists(Paths.ImportsDir);
             EnsureDirectoryExists("blockdefs");
         }
-
         public static void EnsureDirectoryExists(string dir)
         {
             try
             {
-                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                if (!Directory.Exists(dir))
+                {
+                    Directory.CreateDirectory(dir);
+                }
             }
             catch (Exception ex)
             {
                 Logger.LogError("Creating directory " + dir, ex);
             }
         }
-
-        public static void LoadAllSettings() { LoadAllSettings(false); }
-
+        public static void LoadAllSettings() 
+        { 
+            LoadAllSettings(false); 
+        }
         // TODO rethink this
         static void LoadAllSettings(bool commands)
         {
@@ -168,9 +174,11 @@ namespace MCGalaxy
             Alias.LoadCustom();
             BlockDefinition.LoadGlobal();
             ImagePalette.Load();
-
             SrvProperties.Load();
-            if (commands) Command.InitAll();
+            if (commands)
+            {
+                Command.InitAll();
+            }
             AuthService.UpdateList();
             Heartbeat.ReloadDefault();
             Group.LoadAll();
@@ -186,15 +194,11 @@ namespace MCGalaxy
             ChatTokens.LoadCustom();
             SrvProperties.FixupOldPerms();
             CpeExtension.LoadDisabledList();
-
             TextFile announcementsFile = TextFile.Files["Announcements"];
             announcementsFile.EnsureExists();
             announcements = announcementsFile.GetText();
-
             OnConfigUpdatedEvent.Call();
         }
-
-
         static readonly object stopLock = new();
         static volatile Thread stopThread;
         public static Thread Stop(bool restart, string msg)
@@ -202,41 +206,53 @@ namespace MCGalaxy
             shuttingDown = true;
             lock (stopLock)
             {
-                if (stopThread != null) return stopThread;
-                stopThread = new Thread(() => ShutdownThread(restart, msg));
+                if (stopThread != null)
+                {
+                    return stopThread;
+                }
+                stopThread = new(() => ShutdownThread(restart, msg));
                 stopThread.Start();
                 return stopThread;
             }
         }
-
         static void ShutdownThread(bool restarting, string msg)
         {
             try
             {
                 Logger.Log(LogType.SystemActivity, "Server shutting down ({0})", msg);
             }
-            catch { }
-
+            catch 
+            { 
+            }
             // Stop accepting new connections and disconnect existing sessions
             Listener.Close();
             try
             {
                 Player[] players = PlayerInfo.Online.Items;
-                foreach (Player p in players) { p.Leave(msg); }
+                foreach (Player p in players) 
+                { 
+                    p.Leave(msg); 
+                }
             }
-            catch (Exception ex) { Logger.LogError(ex); }
-
+            catch (Exception ex) 
+            { 
+                Logger.LogError(ex); 
+            }
             byte[] kick = Packet.Kick(msg, false);
             try
             {
                 INetSocket[] pending = INetSocket.pending.Items;
-                foreach (INetSocket p in pending) { p.Send(kick, SendFlags.None); }
+                foreach (INetSocket p in pending) 
+                { 
+                    p.Send(kick, SendFlags.None); 
+                }
             }
-            catch (Exception ex) { Logger.LogError(ex); }
-
+            catch (Exception ex) 
+            { 
+                Logger.LogError(ex); 
+            }
             OnShuttingDownEvent.Call(restarting, msg);
             Plugin.UnloadAll();
-
             try
             {
                 string autoload = SaveAllLevels();
@@ -246,16 +262,24 @@ namespace MCGalaxy
                     FileIO.TryWriteAllText("text/autoload.txt", autoload);
                 }
             }
-            catch (Exception ex) { Logger.LogError(ex); }
-
+            catch (Exception ex) 
+            { 
+                Logger.LogError(ex); 
+            }
             try
             {
                 Logger.Log(LogType.SystemActivity, "Server shutdown completed");
             }
-            catch { }
-
-            try { FileLogger.Flush(null); } catch { }
-
+            catch 
+            { 
+            }
+            try 
+            {
+                FileLogger.Flush(null); 
+            } 
+            catch 
+            { 
+            }
             if (restarting)
             {
                 IOperatingSystem.DetectOS().RestartProcess();
@@ -263,12 +287,10 @@ namespace MCGalaxy
             }
             Environment.Exit(0);
         }
-
         public static string SaveAllLevels()
         {
             string autoload = null;
             Level[] loaded = LevelInfo.Loaded.Items;
-
             foreach (Level lvl in loaded)
             {
                 if (!lvl.SaveChanges)
@@ -276,15 +298,12 @@ namespace MCGalaxy
                     Logger.Log(LogType.SystemActivity, "Skipping save for level {0}", lvl.ColoredName);
                     continue;
                 }
-
                 autoload = autoload + lvl.name + "=" + lvl.physics + Environment.NewLine;
                 lvl.Save();
                 lvl.SaveBlockDBChanges();
             }
             return autoload;
         }
-
-
         /// <summary> Returns the full path to the server core DLL </summary>
         public static string GetServerDLLPath()
         {
@@ -294,7 +313,6 @@ namespace MCGalaxy
             return Assembly.GetExecutingAssembly().Location;
 #endif
         }
-
         /// <summary> Returns the full path to the server executable </summary>
         public static string GetServerExePath()
         {
@@ -304,13 +322,11 @@ namespace MCGalaxy
             return RestartPath;
 #endif
         }
-
         /// <summary> Returns the full path to the runtime executable </summary>
         public static string GetRuntimeExePath()
         {
             return Process.GetCurrentProcess().MainModule.FileName;
         }
-
         static bool checkedOnMono, runningOnMono;
         public static bool RunningOnMono()
         {
@@ -321,13 +337,10 @@ namespace MCGalaxy
             }
             return runningOnMono;
         }
-
-
         public static void UpdateUrl(string url)
         {
             OnURLChange?.Invoke(url);
         }
-
         static void RandomMessage(SchedulerTask task)
         {
             if (PlayerInfo.Online.Count > 0 && announcements.Length > 0)
@@ -335,75 +348,78 @@ namespace MCGalaxy
                 Chat.MessageGlobal(announcements[new Random().Next(0, announcements.Length)]);
             }
         }
-
         internal static void SettingsUpdate()
         {
             OnSettingsUpdate?.Invoke();
         }
-
         public static bool SetMainLevel(string map)
         {
             OnMainLevelChangingEvent.Call(ref map);
             string main = mainLevel != null ? mainLevel.name : Config.MainLevel;
-            if (map.CaselessEq(main)) return false;
-
+            if (map.CaselessEq(main))
+            {
+                return false;
+            }
             Level lvl = LevelInfo.FindExact(map) ?? LevelActions.Load(Player.Console, map, false);
-            if (lvl == null) return false;
-
+            if (lvl == null)
+            {
+                return false;
+            }
             SetMainLevel(lvl);
             return true;
         }
-
         public static void SetMainLevel(Level lvl)
         {
             Level oldMain = mainLevel;
             mainLevel = lvl;
             oldMain.AutoUnload();
         }
-
         public static void DoGC()
         {
             Stopwatch sw = Stopwatch.StartNew();
             long start = GC.GetTotalMemory(false);
             GC.Collect();
             GC.WaitForPendingFinalizers();
-
             long end = GC.GetTotalMemory(false);
             double deltaKB = (start - end) / 1024.0;
-            if (deltaKB < 100.0) return;
-
+            if (deltaKB < 100.0)
+            {
+                return;
+            }
             Logger.Log(LogType.BackgroundActivity, "GC performed in {0:F2} ms (tracking {1:F2} KB, freed {2:F2} KB)",
                        sw.Elapsed.TotalMilliseconds, end / 1024.0, deltaKB);
         }
-
         public static void StartThread(out Thread thread, string name, ThreadStart threadFunc)
         {
-            thread = new Thread(threadFunc);
-
-            try { thread.Name = name; } catch { }
+            thread = new(threadFunc);
+            try 
+            { 
+                thread.Name = name; 
+            } 
+            catch 
+            { 
+            }
             thread.Start();
         }
-
-
         // only want ASCII alphanumerical characters for salt
         static bool AcceptableSaltChar(char c)
         {
             return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
                 || (c >= '0' && c <= '9');
         }
-
         /// <summary> Generates a random salt that is used for calculating mppasses. </summary>
         public static string GenerateSalt()
         {
             RandomNumberGenerator rng = RandomNumberGenerator.Create();
             char[] str = new char[32];
             byte[] one = new byte[1];
-
             for (int i = 0; i < str.Length;)
             {
                 rng.GetBytes(one);
-                if (!AcceptableSaltChar((char)one[0])) continue;
-
+                if (!AcceptableSaltChar((char)one[0]))
+                {
+                    continue;
+                }
                 str[i] = (char)one[0]; i++;
             }
             return new string(str);
@@ -411,7 +427,6 @@ namespace MCGalaxy
 #if MCG_DOTNET
 #pragma warning disable SYSLIB0021
 #endif
-
         static readonly System.Text.ASCIIEncoding enc = new();
         static readonly MD5CryptoServiceProvider md5 = new();
         static readonly object md5Lock = new();
@@ -422,32 +437,40 @@ namespace MCGalaxy
         public static string CalcMppass(string name, string salt)
         {
             byte[] hash = null;
-            lock (md5Lock) hash = md5.ComputeHash(enc.GetBytes(salt + name));
+            lock (md5Lock)
+            {
+                hash = md5.ComputeHash(enc.GetBytes(salt + name));
+            }
             return Utils.ToHexString(hash);
         }
-
         /// <summary> Converts a formatted username into its original username </summary>
         /// <remarks> If ClassiCubeAccountPlus option is set, removes + </remarks>
         public static string ToRawUsername(string name)
         {
             if (Config.ClassicubeAccountPlus)
+            {
                 return name.Replace("+", "");
+            }
             return name;
         }
-
         /// <summary> Converts a username into its formatted username </summary>
         /// <remarks> If ClassiCubeAccountPlus option is set, adds trailing + </remarks>
         public static string FromRawUsername(string name)
         {
-            if (!Config.ClassicubeAccountPlus) return name;
-
+            if (!Config.ClassicubeAccountPlus)
+            {
+                return name;
+            }
             // NOTE:
             // This is technically incorrect when the server has both
             //   classicube-account-plus enabled and is using authentication service suffixes
             // (e.g. ToRawUsername("Test+$") ==> "Test$", so adding + to end is wrong)
             // But since that is an unsupported combination to run the server in anyways,
             //  I decided that it is not worth complicating the implementation for
-            if (!name.Contains("+")) name += "+";
+            if (!name.Contains("+"))
+            {
+                name += "+";
+            }
             return name;
         }
     }

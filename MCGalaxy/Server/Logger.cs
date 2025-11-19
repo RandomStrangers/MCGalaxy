@@ -26,69 +26,46 @@ namespace MCGalaxy
     {
         /// <summary> Background system activity, such as auto-saving maps, performing GC, etc. </summary>
         BackgroundActivity,
-
         /// <summary> Normal system activity, such as loading maps, etc. </summary>
         SystemActivity,
-
         /// <summary> Activity causes by games such as lava survival, TNT wars, etc. </summary>
         GameActivity,
-
         /// <summary> User activity by players or console, such as connecting, banning players, etc. </summary>
         UserActivity,
-
         /// <summary> User performs a suspicious activity, such as triggering block spam kick, noclipping in a game, etc. </summary>
         SuspiciousActivity,
-
         /// <summary> Activity on a relay bot (e.g. IRC or Discord) </summary>
         RelayActivity,
-
-
         /// <summary> Warning message, such as failure to save a file. </summary>
         Warning,
-
         /// <summary> Handled or unhandled exception occurs. </summary>
         Error,
-
         /// <summary> Command used by a player. </summary>
         CommandUsage,
-
-
         /// <summary> Chat globally or only on player's level. </summary>
         PlayerChat,
-
         /// <summary> Chat relayed from an external communication service (e.g. IRC or Discord)  </summary>
         RelayChat,
-
         /// <summary> Chat to all players in a particular chatroom, or across all chatrooms. </summary>
         ChatroomChat,
-
         /// <summary> Chat to all players who have permission to read certain chat group (/opchat, /adminchat). </summary>
         StaffChat,
-
         /// <summary> Chat from one player to another. </summary>
         PrivateChat,
-
         /// <summary> Chat to all players of a rank. </summary>
         RankChat,
-
-
         /// <summary> Debug messages. </summary>
         Debug,
-
         /// <summary> Message shown to console. </summary>
         ConsoleMessage,
     }
-
     public delegate void LogHandler(LogType type, string message);
-
-
     /// <summary> Centralised class for outputting log messages. </summary>
     /// <remarks> Outputs can be a file on disc, GUI, the console, etc subscribed to the LogHandler delegate. </remarks>
     public static class Logger
     {
         public static LogHandler LogHandler;
         static readonly object logLock = new();
-
         public static void Log(LogType type, string message)
         {
             lock (logLock)
@@ -104,7 +81,6 @@ namespace MCGalaxy
                 }
             }
         }
-
         static void LogLoggerError(Exception ex)
         {
             try
@@ -116,40 +92,20 @@ namespace MCGalaxy
                 // give up if the problematic LogHandler still throws an error
             }
         }
-
-        public static void Log(LogType type, string format, object arg0)
-        {
-            Log(type, string.Format(format, arg0));
-        }
-
-        public static void Log(LogType type, string format, object arg0, object arg1)
-        {
-            Log(type, string.Format(format, arg0, arg1));
-        }
-
-        public static void Log(LogType type, string format, object arg0, object arg1, object arg2)
-        {
-            Log(type, string.Format(format, arg0, arg1, arg2));
-        }
-
         public static void Log(LogType type, string format, params object[] args)
         {
             Log(type, string.Format(format, args));
         }
-
-
         public static void LogError(string action, Exception ex)
         {
             Log(LogType.Warning, action);
             Log(LogType.Error, FormatException(ex));
         }
-
         /// <summary> Logs a LogType.Error message consisting of full details for the given Exception. </summary>
         public static void LogError(Exception ex)
         {
             Log(LogType.Error, FormatException(ex));
         }
-
         /// <summary> Returns a string fully describing the given Exception. </summary>
         public static string FormatException(Exception ex)
         {
@@ -161,42 +117,75 @@ namespace MCGalaxy
             }
             return sb.ToString();
         }
-
         static void DescribeError(Exception ex, StringBuilder sb)
         {
             // Attempt to gather this info. Skip anything that you can't read for whatever reason
-            try { sb.AppendLine("Type: " + ex.GetType().Name); } catch { }
-            try { sb.AppendLine("Source: " + ex.Source); } catch { }
-            try { sb.AppendLine("Message: " + ex.Message); } catch { }
-            try { sb.AppendLine("Trace: " + ex.StackTrace); } catch { }
-
+            try 
+            { 
+                sb.AppendLine("Type: " + ex.GetType().Name);
+            } 
+            catch 
+            { 
+            }
+            try 
+            { 
+                sb.AppendLine("Source: " + ex.Source); 
+            } 
+            catch 
+            { 
+            }
+            try 
+            { 
+                sb.AppendLine("Message: " + ex.Message); 
+            } 
+            catch 
+            { 
+            }
+            try 
+            { 
+                sb.AppendLine("Trace: " + ex.StackTrace); 
+            } 
+            catch 
+            { 
+            }
             // Exception-specific extra details
             try
             {
-                if (ex is ReflectionTypeLoadException refEx) LogLoaderErrors(refEx, sb);
+                if (ex is ReflectionTypeLoadException refEx)
+                {
+                    LogLoaderErrors(refEx, sb);
+                }
             }
-            catch { }
-
+            catch 
+            { 
+            }
             try
             {
-                if (ex is SocketException sockEx) sb.AppendLine("Error: " + sockEx.SocketErrorCode);
+                if (ex is SocketException sockEx)
+                {
+                    sb.AppendLine("Error: " + sockEx.SocketErrorCode);
+                }
             }
-            catch { }
-
+            catch 
+            { 
+            }
             try
             {
-                if (ex is TypeLoadException typeEx) sb.AppendLine("Loading type: " + typeEx.TypeName);
+                if (ex is TypeLoadException typeEx)
+                {
+                    sb.AppendLine("Loading type: " + typeEx.TypeName);
+                }
             }
-            catch { }
+            catch 
+            { 
+            }
         }
-
         static void LogLoaderErrors(ReflectionTypeLoadException ex, StringBuilder sb)
         {
             // For errors with loading plugins (e.g. missing dependancy) you get a 
             //   Message: Unable to load one or more of the requested types. Retrieve the LoaderExceptions property for more information.
             // which is pretty useless by itself, so specifically handle this case
             sb.AppendLine("## Loader exceptions ##");
-
             foreach (Exception loadEx in ex.LoaderExceptions)
             {
                 DescribeError(loadEx, sb);

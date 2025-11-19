@@ -26,20 +26,19 @@ namespace MCGalaxy
     {
         readonly AutoResetEvent handle = new(false);
         volatile bool terminating;
-
         protected Queue<T> queue = new();
         protected readonly object queueLock = new();
-
         protected abstract void HandleNext();
         /// <summary> Name to assign the worker thread </summary>
         protected abstract string ThreadName { get; }
-
         void SendLoop()
         {
             for (; ; )
             {
-                if (terminating) break;
-
+                if (terminating)
+                {
+                    break;
+                }
                 try
                 {
                     HandleNext();
@@ -49,18 +48,19 @@ namespace MCGalaxy
                     Logger.LogError(ex);
                 }
             }
-
             // cleanup state
             try
             {
-                lock (queueLock) queue.Clear();
+                lock (queueLock)
+                {
+                    queue.Clear();
+                }
                 handle.Close();
             }
             catch
             {
             }
         }
-
         void WakeupWorker()
         {
             try
@@ -72,27 +72,28 @@ namespace MCGalaxy
                 // for very rare case where handle's already been destroyed
             }
         }
-
-        protected void WaitForWork() { handle.WaitOne(); }
-
-
+        protected void WaitForWork() 
+        {
+            handle.WaitOne(); 
+        }
         /// <summary> Starts the background worker thread </summary>
         public void RunAsync()
         {
             Server.StartThread(out Thread worker, ThreadName, SendLoop);
             Utils.SetBackgroundMode(worker);
         }
-
         public void StopAsync()
         {
             terminating = true;
             WakeupWorker();
         }
-
         /// <summary> Enqueues work to be performed asynchronously </summary>
         public void QueueAsync(T msg)
         {
-            lock (queueLock) queue.Enqueue(msg);
+            lock (queueLock)
+            {
+                queue.Enqueue(msg);
+            }
             WakeupWorker();
         }
     }

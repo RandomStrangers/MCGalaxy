@@ -20,7 +20,6 @@
  * the archive of this library for complete text of license.
 */
 
-
 namespace Sharkbite.Irc
 {
     public delegate void ReplyEventHandler(ReplyCode code, string message);
@@ -44,11 +43,9 @@ namespace Sharkbite.Irc
     public delegate void NamesEventHandler(string channel, string[] nicks, bool last);
     public delegate void ChannelModeChangeEventHandler(string who, string channel);
     public delegate void KillEventHandler(string user, string nick, string reason);
-
     /// <summary>
     /// Numeric message codes taken from RFC 2812
     /// </summary>
-
     public enum ReplyCode : int
     {
         /// <summary>
@@ -56,7 +53,6 @@ namespace Sharkbite.Irc
         /// 
         /// </summary>
         RPL_WELCOME = 001,
-
         /// <summary>
         /// IRC: ( "=" / "*" / "@" ) [channel :[ "@" / "+" ] [nick] *( " " [ "@" / "+" ] [nick] 
         /// 
@@ -65,7 +61,6 @@ namespace Sharkbite.Irc
         /// 
         /// </summary>
         RPL_NAMREPLY = 353,
-
         /// <summary>
         /// IRC: [channel] :End of NAMES list
         /// 
@@ -81,7 +76,6 @@ namespace Sharkbite.Irc
         /// 
         /// </summary>
         RPL_ENDOFNAMES = 366,
-
         /// <summary>
         /// IRC: You are service [servicename]
         /// 
@@ -90,7 +84,6 @@ namespace Sharkbite.Irc
         /// 
         /// </summary>
         RPL_YOURESERVICE = 383,
-
         /// <summary>
         /// IRC: [command] :Please wait a while and try again.
         /// 
@@ -100,7 +93,6 @@ namespace Sharkbite.Irc
         /// 
         /// </summary>
         RPL_TRYAGAIN = 263,
-
         /// <summary>
         /// IRC: [nickname] :No such nick/channel
         /// 
@@ -109,7 +101,6 @@ namespace Sharkbite.Irc
         /// 
         /// </summary>
         ERR_NOSUCHNICK = 401,
-
         /// <summary>
         /// IRC: [nick] :Nickname is already in use
         /// 
@@ -119,7 +110,6 @@ namespace Sharkbite.Irc
         /// 
         /// </summary>
         ERR_NICKNAMEINUSE = 433,
-
         /// <summary>
         /// IRC: [nick] :Nickname collision KILL from [user]@[host]
         /// 
@@ -129,7 +119,6 @@ namespace Sharkbite.Irc
         /// 
         /// </summary>
         ERR_NICKCOLLISION = 436,
-
         /// <summary>
         /// IRC: :Cannot change mode for other users
         /// 
@@ -138,13 +127,11 @@ namespace Sharkbite.Irc
         /// 
         /// </summary>
         ERR_USERSDONTMATCH = 502,
-
         /// <summary>
         /// The IRC server sent an 'ERROR' message for some
         /// reason.
         /// </summary>
         IrcServerError = 1001,
-
         /// <summary>
         /// A message from the IRC server that cannot be parsed. This may be because
         /// the message is intended to cause problems, it may be an unsupported protocol
@@ -152,6 +139,5 @@ namespace Sharkbite.Irc
         /// it.
         /// </summary>
         UnparseableMessage = 1003,
-
     }
 }

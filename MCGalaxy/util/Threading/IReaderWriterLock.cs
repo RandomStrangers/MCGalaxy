@@ -23,34 +23,47 @@ namespace MCGalaxy.Util
     public sealed class IReaderWriterLock 
     {
         readonly ReaderWriterLockSlim locker = new();
-
-        public IDisposable AccquireRead() { return AccquireRead(-1); }
-        public IDisposable AccquireWrite() { return AccquireWrite(-1); }
-        
-        public IDisposable AccquireRead(int msTimeout) {
-            if (!locker.TryEnterReadLock(msTimeout)) return null;
+        public IDisposable AccquireRead() 
+        { 
+            return AccquireRead(-1); 
+        }
+        public IDisposable AccquireWrite() 
+        { 
+            return AccquireWrite(-1); 
+        }
+        public IDisposable AccquireRead(int msTimeout) 
+        {
+            if (!locker.TryEnterReadLock(msTimeout))
+            {
+                return null;
+            }
             return new SlimLock(locker, false);
         }
-
-        public IDisposable AccquireWrite(int msTimeout) {
-            if (!locker.TryEnterWriteLock(msTimeout)) return null;
+        public IDisposable AccquireWrite(int msTimeout) 
+        {
+            if (!locker.TryEnterWriteLock(msTimeout))
+            {
+                return null;
+            }
             return new SlimLock(locker, true);
         }
-                
         class SlimLock : IDisposable 
         {
             ReaderWriterLockSlim locker;
             readonly bool writeMode;
-            
-            public SlimLock(ReaderWriterLockSlim locker, bool writeMode) {
+            public SlimLock(ReaderWriterLockSlim locker, bool writeMode) 
+            {
                 this.locker = locker;
                 this.writeMode = writeMode;
             }
-            
-            public void Dispose() {
-                if (writeMode) {
+            public void Dispose() 
+            {
+                if (writeMode) 
+                {
                     locker.ExitWriteLock();
-                } else {
+                } 
+                else 
+                {
                     locker.ExitReadLock();
                 }
                 locker = null;

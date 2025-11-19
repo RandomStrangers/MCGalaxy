@@ -22,16 +22,14 @@ namespace MCGalaxy
     {
         /// <remarks> Note this field is highly volatile, you should cache references to it. </remarks>
         public volatile T[] Items = new T[0];
-
         public int Count { get { return Items.Length; } }
-
         /// <summary> Object used to sychronise Add/Remove calls to this array. </summary>
         /// <remarks> When locking on this object from external code, you should try
         /// to minimise the amount of time the object is locked for. </remarks>
         public readonly object locker = new();
-
-        public VolatileArray(bool _ = false) { } // used to mean 'useList'
-
+        public VolatileArray(bool _ = false) 
+        { 
+        } // used to mean 'useList'
         public bool Add(T value)
         {
             lock (locker)
@@ -39,51 +37,63 @@ namespace MCGalaxy
                 T[] newItems = new T[Items.Length + 1];
                 for (int i = 0; i < Items.Length; i++)
                 {
-                    if (ReferenceEquals(Items[i], value)) return false;
+                    if (ReferenceEquals(Items[i], value))
+                    {
+                        return false;
+                    }
                     newItems[i] = Items[i];
                 }
-
                 newItems[Items.Length] = value;
                 Items = newItems;
             }
             return true;
         }
-
         public bool Contains(T value)
         {
             lock (locker)
             {
                 for (int i = 0; i < Items.Length; i++)
                 {
-                    if (ReferenceEquals(Items[i], value)) return true;
+                    if (ReferenceEquals(Items[i], value))
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
         }
-
         public bool Remove(T value)
         {
             lock (locker)
             {
-                if (Items.Length == 0) return false;
-
+                if (Items.Length == 0)
+                {
+                    return false;
+                }
                 T[] newItems = new T[Items.Length - 1];
                 int j = 0;
                 for (int i = 0; i < Items.Length; i++)
                 {
-                    if (ReferenceEquals(Items[i], value)) continue;
-
+                    if (ReferenceEquals(Items[i], value))
+                    {
+                        continue;
+                    }
                     // For some reason item wasn't in the list
-                    if (j == newItems.Length) return false;
-                    newItems[j] = Items[i]; j++;
+                    if (j == newItems.Length)
+                    {
+                        return false;
+                    }
+                    newItems[j] = Items[i]; 
+                    j++;
                 }
-
                 // Handle very rare case when an item has been added twice
                 if (newItems.Length != j)
                 {
                     T[] temp = new T[j];
                     for (int i = 0; i < temp.Length; i++)
+                    {
                         temp[i] = newItems[i];
+                    }
                     Items = temp;
                 }
                 else
@@ -93,21 +103,23 @@ namespace MCGalaxy
             }
             return true;
         }
-
         public bool RemoveFirst()
         {
             lock (locker)
             {
-                if (Items.Length == 0) return false;
-
+                if (Items.Length == 0)
+                {
+                    return false;
+                }
                 T[] newItems = new T[Items.Length - 1];
                 for (int i = 1; i < Items.Length; i++)
+                {
                     newItems[i - 1] = Items[i];
+                }
                 Items = newItems;
             }
             return true;
         }
-
         public void Clear()
         {
             lock (locker)

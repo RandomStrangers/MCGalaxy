@@ -43,7 +43,6 @@ namespace MCGalaxy
         public string DefaultRankName = "guest";
         [ConfigString("server-owner", "Server", "the owner")]
         public string OwnerName = "the owner";
-
         [ConfigBool("autoload", "Level", true)]
         public bool AutoLoadMaps = true;
         /// <summary> true if maps sees server-wide chat, false if maps have level-only/isolated chat </summary>
@@ -55,21 +54,18 @@ namespace MCGalaxy
         public string DefaultTerrain = "";
         [ConfigString("default-texture-pack-url", "Level", "", true)]
         public string DefaultTexture = "";
-
         [ConfigBool("use-whitelist", "Security", false)]
         public bool WhitelistedOnly = false;
         [ConfigBool("admin-verification", "Security", true)]
         public bool verifyadmins = true;
         [ConfigPerm("verify-admin-perm", "Security", LevelPermission.Operator)]
         public LevelPermission VerifyAdminsRank = LevelPermission.Operator;
-        [ConfigPerm("reset-password-perm", "Security", LevelPermission.Operator)]
+        [ConfigPerm("reset-password-perm", "Security", LevelPermission.Owner)]
         public LevelPermission ResetPasswordRank = LevelPermission.Owner;
-
         [ConfigBool("support-web-client", "Webclient", true)]
         public bool WebClient = true;
         [ConfigBool("allow-ip-forwarding", "Webclient", true)]
         public bool AllowIPForwarding = true;
-
         [ConfigString("HeartbeatURL", "Other", "http://www.classicube.net/heartbeat.jsp", false, ":/.,")]
         public string HeartbeatURL = "http://www.classicube.net/heartbeat.jsp";
         [ConfigBool("core-secret-commands", "Other", true)]
@@ -78,21 +74,18 @@ namespace MCGalaxy
         public bool restartOnError = true;
         [ConfigBool("software-staff-prefixes", "Other", true)]
         public bool SoftwareStaffPrefixes = true;
-
         [ConfigInt("position-interval", "Other", 100, 20, 2000)]
         public int PositionUpdateInterval = 100;
         [ConfigBool("agree-to-rules-on-entry", "Other", false)]
         public bool AgreeToRulesOnEntry = false;
         [ConfigBool("admins-join-silent", "Other", false)]
         public bool AdminsJoinSilently = false;
-
-        [ConfigBool("check-updates", "Update", false)]
+        [ConfigBool("check-updates", "Update", true)]
         public bool CheckForUpdates = true;
         [ConfigBool("enable-cpe", "Server", true)]
         public bool EnableCPE = true;
         [ConfigBool("checkpoints-respawn-clientside", "Other", true)]
         public bool CheckpointsRespawnClientside = true;
-
         [ConfigInt("rplimit", "Other", 500, 0, 50000)]
         public int PhysicsRestartLimit = 500;
         [ConfigInt("rplimit-norm", "Other", 10000, 0, 50000)]
@@ -101,17 +94,14 @@ namespace MCGalaxy
         public bool PhysicsRestart = true;
         [ConfigInt("physics-undo-max", "Other", 50000)]
         public int PhysicsUndo = 50000;
-
         [ConfigTimespan("backup-time", "Backup", 300, false)]
         public TimeSpan BackupInterval = TimeSpan.FromSeconds(300);
         [ConfigTimespan("blockdb-backup-time", "Backup", 60, false)]
         public TimeSpan BlockDBSaveInterval = TimeSpan.FromSeconds(60);
         [ConfigString("backup-location", "Backup", "")]
         public string BackupDirectory = "levels/backups";
-
         [ConfigTimespan("afk-minutes", "Other", 10, true)]
         public TimeSpan AutoAfkTime = TimeSpan.FromMinutes(10);
-
         [ConfigInt("max-bots-per-level", "Other", 192, 0, 256)]
         public int MaxBotsPerLevel = 192;
         [ConfigBool("deathcount", "Other", true)]
@@ -122,7 +112,6 @@ namespace MCGalaxy
         public TimeSpan AnnouncementInterval = TimeSpan.FromMinutes(5);
         [ConfigString("money-name", "Other", "moneys")]
         public string Currency = "moneys";
-
         [ConfigBool("guest-limit-notify", "Other", false)]
         public bool GuestLimitNotify = false;
         [ConfigBool("guest-join-notify", "Other", true)]
@@ -131,7 +120,6 @@ namespace MCGalaxy
         public bool GuestLeavesNotify = true;
         [ConfigBool("show-world-changes", "Other", true)]
         public bool ShowWorldChanges = true;
-
         [ConfigBool("kick-on-hackrank", "Other", true)]
         public bool HackrankKicks = true;
         [ConfigTimespan("hackrank-kick-time", "Other", 5, false)]
@@ -164,7 +152,6 @@ namespace MCGalaxy
         public TimeSpan DeathCooldown = TimeSpan.FromSeconds(2);
         [ConfigBool("verify-lan-ips", "Other", false)]
         public bool VerifyLanIPs = false;
-
         [ConfigBool("irc", "IRC bot", false)]
         public bool UseIRC = false;
         [ConfigInt("irc-port", "IRC bot", 6697, 0, 65535)]
@@ -187,7 +174,6 @@ namespace MCGalaxy
         public bool IRCSSL = false;
         [ConfigString("irc-ignored-nicks", "IRC bot", "", true)]
         public string IRCIgnored = "";
-
         [ConfigBool("UseMySQL", "Database", false)]
         public bool UseMySQL = false;
         [ConfigString("host", "Database", "127.0.0.1")]
@@ -202,7 +188,6 @@ namespace MCGalaxy
         public string MySQLDatabaseName = "MCZallDB";
         [ConfigBool("Pooling", "Database", true)]
         public bool DatabasePooling = true;
-
         [ConfigBool("irc-player-titles", "IRC bot", true)]
         public bool IRCShowPlayerTitles = true;
         [ConfigBool("irc-show-world-changes", "IRC bot", false)]
@@ -215,14 +200,12 @@ namespace MCGalaxy
         public IRCControllerVerify IRCVerify = IRCControllerVerify.HalfOp;
         [ConfigPerm("irc-controller-rank", "IRC bot", LevelPermission.Admin)]
         public LevelPermission IRCControllerRank = LevelPermission.Admin;
-
         [ConfigBool("tablist-rank-sorted", "Tablist", true)]
         public bool TablistRankSorted = true;
-        [ConfigBool("tablist-global", "Tablist", false)]
+        [ConfigBool("tablist-global", "Tablist", true)]
         public bool TablistGlobal = true;
         [ConfigBool("tablist-bots", "Tablist", false)]
         public bool TablistBots = false;
-
         [ConfigBool("parse-emotes", "Chat", true)]
         public bool ParseEmotes = true;
         [ConfigBool("dollar-before-dollar", "Chat", true)]
@@ -235,7 +218,6 @@ namespace MCGalaxy
         public string ProfanityReplacement = "*";
         [ConfigString("host-state", "Chat", "Alive")]
         public string ConsoleName = "Alive";
-
         [ConfigColor("defaultColor", "Colors", "&e")]
         public string DefaultColor = "&e";
         [ConfigColor("irc-color", "Colors", "&5")]
@@ -246,7 +228,6 @@ namespace MCGalaxy
         public string HelpDescriptionColor = "&e";
         [ConfigColor("warning-error-color", "Colors", "&c")]
         public string WarningErrorColor = "&c";
-
         [ConfigBool("cheapmessage", "Messages", true)]
         public bool ShowInvincibleMessage = true;
         [ConfigString("cheap-message-given", "Messages", " is now invincible")]
@@ -267,22 +248,22 @@ namespace MCGalaxy
         public string DefaultLoginMessage = "connected";
         [ConfigString("default-logout-message", "Messages", "disconnected")]
         public string DefaultLogoutMessage = "disconnected";
-
         [ConfigString("default-mapgen-theme", "Mapgen", "flat")]
         public string DefaultMapGenTheme = "flat";
         [ConfigString("default-mapgen-biome", "Mapgen", MapGenBiome.FOREST)]
         public string DefaultMapGenBiome = MapGenBiome.FOREST;
-
-        static readonly bool[] defLogLevels = new bool[] {
-            true,true,true,true,true,true, true,true,true,
-            true,true,true,true,true,true, true,true };
+        static readonly bool[] defLogLevels = new bool[] 
+        {
+            true, true, true, true, true, true, true, true, 
+            true, true, true, true, true, true, true, true,
+            true 
+        };
         [ConfigBool("log-notes", "Logging", true)]
         public bool LogNotes = true;
         [ConfigBoolArray("file-logging", "Logging", true, 17)]
         public bool[] FileLogging = defLogLevels;
         [ConfigBoolArray("console-logging", "Logging", true, 17)]
         public bool[] ConsoleLogging = defLogLevels;
-
         [ConfigBool("mute-on-spam", "Spam control", false)]
         public bool ChatSpamCheck = false;
         [ConfigInt("spam-messages", "Spam control", 8, 0, 10000)]
@@ -291,7 +272,6 @@ namespace MCGalaxy
         public TimeSpan ChatSpamMuteTime = TimeSpan.FromSeconds(60);
         [ConfigTimespan("spam-counter-reset-time", "Spam control", 5, false)]
         public TimeSpan ChatSpamInterval = TimeSpan.FromSeconds(5);
-
         [ConfigBool("cmd-spam-check", "Spam control", true)]
         public bool CmdSpamCheck = true;
         [ConfigInt("cmd-spam-count", "Spam control", 25, 0, 10000)]
@@ -300,14 +280,12 @@ namespace MCGalaxy
         public TimeSpan CmdSpamBlockTime = TimeSpan.FromSeconds(30);
         [ConfigTimespan("cmd-spam-interval", "Spam control", 1, false)]
         public TimeSpan CmdSpamInterval = TimeSpan.FromSeconds(1);
-
         [ConfigBool("block-spam-check", "Spam control", true)]
         public bool BlockSpamCheck = true;
         [ConfigInt("block-spam-count", "Spam control", 200, 0, 10000)]
         public int BlockSpamCount = 200;
         [ConfigTimespan("block-spam-interval", "Spam control", 5, false)]
         public TimeSpan BlockSpamInterval = TimeSpan.FromSeconds(5);
-
         [ConfigBool("ip-spam-check", "Spam control", true)]
         public bool IPSpamCheck = true;
         [ConfigInt("ip-spam-count", "Spam control", 25, 0, 10000)]
@@ -316,17 +294,14 @@ namespace MCGalaxy
         public TimeSpan IPSpamBlockTime = TimeSpan.FromSeconds(180);
         [ConfigTimespan("ip-spam-interval", "Spam control", 60, false)]
         public TimeSpan IPSpamInterval = TimeSpan.FromSeconds(60);
-
-
         // List of characters that are both
         // - unicode codepoints <= 255 (so accepted by classicube.net DB)
         // - code page 437 characters  (so accepted by ClassiCube client)
-        const string BASE_NAME_CHARS = " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
-        const string CP437_0x80 = "\xC7\xFC\xE9\xE2\xE4\xE0\xE5\xE7\xEA\xEB\xE8\xEF\xEE\xEC\xC4\xC5"; // ÇüéâäàåçêëèïîìÄÅ
-        const string CP437_0x90 = "\xC9\xE6\xC6\xF4\xF6\xF2\xFB\xF9\xFF\xD6\xDC\xA2\xA3\xA5";         // ÉæÆôöòûùÿÖÜ¢£¥
-        const string CP437_0xA0 = "\xE1\xED\xF3\xFA\xF1\xD1\xAA\xBA\xBF\xAC\xBD\xBC\xA1\xAB\xBB";     // áíóúñÑªº¿¬½¼¡«»
-        const string CP437_0xE0 = "\xDF\xB5";                                                         // ßµ
-        const string CP437_0xF0 = "\xB1\xF7\xB0\xB7\xB2\xA0";                                         // ±÷°·²
-        const string CP437_NAME_CHARS = CP437_0x80 + CP437_0x90 + CP437_0xA0 + CP437_0xE0 + CP437_0xF0;
+        const string BASE_NAME_CHARS = " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
+            CP437_0x80 = "\xC7\xFC\xE9\xE2\xE4\xE0\xE5\xE7\xEA\xEB\xE8\xEF\xEE\xEC\xC4\xC5", // ÇüéâäàåçêëèïîìÄÅ
+            CP437_0x90 = "\xC9\xE6\xC6\xF4\xF6\xF2\xFB\xF9\xFF\xD6\xDC\xA2\xA3\xA5",         // ÉæÆôöòûùÿÖÜ¢£¥
+            CP437_0xA0 = "\xE1\xED\xF3\xFA\xF1\xD1\xAA\xBA\xBF\xAC\xBD\xBC\xA1\xAB\xBB",     // áíóúñÑªº¿¬½¼¡«»
+            CP437_0xE0 = "\xDF\xB5", CP437_0xF0 = "\xB1\xF7\xB0\xB7\xB2\xA0",
+            CP437_NAME_CHARS = CP437_0x80 + CP437_0x90 + CP437_0xA0 + CP437_0xE0 + CP437_0xF0;
     }
 }

@@ -28,18 +28,15 @@ namespace MCGalaxy
         /// <summary> Hooks into events and initalises states/resources etc </summary>
         /// <param name="auto"> True if plugin is being automatically loaded (e.g. on server startup), false if manually. </param>
         public abstract void Load(bool auto);
-
         /// <summary> Unhooks from events and disposes of state/resources etc </summary>
         /// <param name="auto"> True if plugin is being auto unloaded (e.g. on server shutdown), false if manually. </param>
         public abstract void Unload(bool auto);
-
         /// <summary> Called when a player does /Help on the plugin. Typically tells the player what this plugin is about. </summary>
         /// <param name="p"> Player who is doing /Help. </param>
         public virtual void Help(Player p)
         {
             p.Message("No help is available for this plugin.");
         }
-
         /// <summary> Name of the plugin. </summary>
         public abstract string name { get; }
         /// <summary> The oldest version of MCGalaxy this plugin is compatible with. </summary>
@@ -52,22 +49,19 @@ namespace MCGalaxy
         public virtual string creator { get { return ""; } }
         /// <summary> Whether or not to auto load this plugin on server startup. </summary>
         public virtual bool LoadAtStartup { get { return true; } }
-
-
         /// <summary> List of plugins/modules included in the server software </summary>
-        public static List<Plugin> core = new();
-        public static List<Plugin> custom = new();
-
+        public static List<Plugin> core = new(), custom = new();
         public static Plugin FindCustom(string name)
         {
             foreach (Plugin pl in custom)
             {
-                if (pl.name.CaselessEq(name)) return pl;
+                if (pl.name.CaselessEq(name))
+                {
+                    return pl;
+                }
             }
             return null;
         }
-
-
         public static void Load(Plugin pl, bool auto)
         {
             string ver = pl.MCGalaxy_Version;
@@ -76,11 +70,9 @@ namespace MCGalaxy
                 string msg = string.Format("Plugin '{0}' requires a more recent version of {1}!", pl.name, Server.SoftwareName);
                 throw new InvalidOperationException(msg);
             }
-
             try
             {
                 custom.Add(pl);
-
                 if (pl.LoadAtStartup || !auto)
                 {
                     pl.Load(auto);
@@ -90,12 +82,17 @@ namespace MCGalaxy
                 {
                     Logger.Log(LogType.SystemActivity, "Plugin {0} was not loaded, you can load it with /pload", pl.name);
                 }
-
-                if (!string.IsNullOrEmpty(pl.welcome)) Logger.Log(LogType.SystemActivity, pl.welcome);
+                if (!string.IsNullOrEmpty(pl.welcome))
+                {
+                    Logger.Log(LogType.SystemActivity, pl.welcome);
+                }
             }
             catch
             {
-                if (!string.IsNullOrEmpty(pl.creator)) Logger.Log(LogType.Warning, "You can go bug {0} about {1} failing to load.", pl.creator, pl.name);
+                if (!string.IsNullOrEmpty(pl.creator))
+                {
+                    Logger.Log(LogType.Warning, "You can go bug {0} about {1} failing to load.", pl.creator, pl.name);
+                }
                 if (custom.Contains(pl))
                 {
                     custom.Remove(pl);
@@ -103,11 +100,9 @@ namespace MCGalaxy
                 throw;
             }
         }
-
         public static bool Unload(Plugin pl)
         {
             bool success = UnloadPlugin(pl, false);
-
             if (success)
             {
                 custom.Remove(pl);
@@ -115,7 +110,6 @@ namespace MCGalaxy
             }
             return success;
         }
-
         static bool UnloadPlugin(Plugin pl, bool auto)
         {
             try
@@ -129,8 +123,6 @@ namespace MCGalaxy
                 return false;
             }
         }
-
-
         public static void UnloadAll()
         {
             for (int i = 0; i < custom.Count; i++)
@@ -144,18 +136,15 @@ namespace MCGalaxy
                 UnloadPlugin(core[i], true);
             }
         }
-
         public static void LoadAll()
         {
             LoadCorePlugin(new CorePlugin());
-
             LoadCorePlugin(new Modules.Moderation.Review.ReviewPlugin());
             LoadCorePlugin(new Modules.Moderation.Notes.NotesPlugin());
             LoadCorePlugin(new Modules.Relay.Discord.DiscordPlugin());
             LoadCorePlugin(new Modules.Relay.IRC.IRCPlugin());
             LoadCorePlugin(new Modules.Security.IPThrottler());
             LoadCorePlugin(new Modules.Warps.WarpsPlugin());
-
 #if !MCG_STANDALONE
             LoadCorePlugin(new Modules.Compiling.CompilerPlugin());
 #endif
@@ -167,15 +156,15 @@ namespace MCGalaxy
             LoadCorePlugin(new Modules.Games.LS.LSPlugin());
             LoadCorePlugin(new Modules.Games.TW.TWPlugin());
             LoadCorePlugin(new Modules.Games.ZS.ZSPlugin());
-
             IScripting.AutoloadPlugins();
         }
-
         static void LoadCorePlugin(Plugin plugin)
         {
             List<string> disabled = Server.Config.DisabledModules;
-            if (disabled.CaselessContains(plugin.name)) return;
-
+            if (disabled.CaselessContains(plugin.name))
+            {
+                return;
+            }
             plugin.Load(true);
             core.Add(plugin);
         }

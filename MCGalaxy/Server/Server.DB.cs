@@ -24,7 +24,8 @@ namespace MCGalaxy
 {
     public sealed partial class Server
     {
-        static readonly ColumnDesc[] playersTable = new ColumnDesc[] {
+        static readonly ColumnDesc[] playersTable = new ColumnDesc[] 
+        {
             new("ID", ColumnType.Integer, priKey: true, autoInc: true, notNull: true),
             new("Name", ColumnType.VarChar, 17),
             new("IP", ColumnType.Char, 15),
@@ -41,20 +42,21 @@ namespace MCGalaxy
             new("color", ColumnType.VarChar, 6),
             new("title_color", ColumnType.VarChar, 6),
             new("Messages", ColumnType.UInt24),
-        };
-
-        static readonly ColumnDesc[] opstatsTable = new ColumnDesc[] {
+        },
+        opstatsTable = new ColumnDesc[] 
+        {
             new("ID", ColumnType.Integer, priKey: true, autoInc: true, notNull: true),
             new("Time", ColumnType.DateTime),
             new("Name", ColumnType.VarChar, 17),
             new("Cmd", ColumnType.VarChar, 40),
             new("Cmdmsg", ColumnType.VarChar, 40),
         };
-
         static void InitDatabase()
         {
-            if (!Directory.Exists("blockdb")) Directory.CreateDirectory("blockdb");
-
+            if (!Directory.Exists("blockdb"))
+            {
+                Directory.CreateDirectory("blockdb");
+            }
             Logger.Log(LogType.SystemActivity, "Using {0} for database backend", Database.Backend.EngineName);
             try
             {
@@ -66,24 +68,25 @@ namespace MCGalaxy
                 Logger.Log(LogType.Warning, "MySQL settings have not been set! Please Setup using the properties window.");
                 return;
             }
-
             Database.CreateTable("Opstats", opstatsTable);
             Database.CreateTable("Players", playersTable);
-
-            //since 5.5.11 we are cleaning up the table Playercmds
+            //since MCForge 5.5.11 we are cleaning up the table Playercmds
             //if Playercmds exists copy-filter to Opstats and remove Playercmds
             if (Database.TableExists("Playercmds"))
             {
                 const string sql = "INSERT INTO Opstats (Time, Name, Cmd, Cmdmsg) SELECT Time, Name, Cmd, Cmdmsg FROM Playercmds WHERE {0};";
                 foreach (string cmd in Opstats)
+                {
                     Database.Execute(string.Format(sql, "cmd = '" + cmd + "'"));
+                }
                 Database.Execute(string.Format(sql, "cmd = 'review' AND cmdmsg = 'next'"));
                 Database.DeleteTable("Playercmds");
             }
-
             List<string> columns = Database.Backend.ColumnNames("Players");
-            if (columns.Count == 0) return;
-
+            if (columns.Count == 0)
+            {
+                return;
+            }
             if (!columns.CaselessContains("Color"))
             {
                 Database.AddColumn("Players", new ColumnDesc("color", ColumnType.VarChar, 6), "totalKicked");

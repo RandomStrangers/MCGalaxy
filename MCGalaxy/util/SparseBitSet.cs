@@ -23,10 +23,8 @@ namespace MCGalaxy.Util
     /// <remarks> Does NOT perform any bounds checking. </remarks>
     public sealed class SparseBitSet
     {
-
         readonly int chunksX, chunksY, chunksZ;
         readonly byte[][] bits;
-
         /// <summary> Initialises a sparse bit set for the given 3D volume. </summary>
         public SparseBitSet(int width, int height, int length)
         {
@@ -35,19 +33,19 @@ namespace MCGalaxy.Util
             chunksZ = Utils.CeilDiv16(length);
             bits = new byte[chunksX * chunksY * chunksZ][];
         }
-
         /// <summary> Returns the 1 bit of data associated with the given coordinates. </summary>
         /// <remarks> If Set() was never called before at the given coordinates, returns false. </remarks>
         public bool Get(int x, int y, int z)
         {
             int index = (x >> 4) + chunksX * ((z >> 4) + (y >> 4) * chunksZ);
             byte[] chunk = bits[index];
-            if (chunk == null) return false;
-
+            if (chunk == null)
+            {
+                return false;
+            }
             index = (x & 0xF) | (z & 0xF) << 4 | (y & 0xF) << 8;
             return (chunk[index >> 3] & (1 << (index & 0x7))) != 0;
         }
-
         /// <summary> Sets the 1 bit of data associated with the given coordinates. </summary>
         public void Set(int x, int y, int z, bool bit)
         {
@@ -58,12 +56,10 @@ namespace MCGalaxy.Util
                 chunk = new byte[16 * 16 * 16 / 8];
                 bits[index] = chunk;
             }
-
             index = (x & 0xF) | (z & 0xF) << 4 | (y & 0xF) << 8;
             chunk[index >> 3] &= (byte)~(1 << (index & 0x7)); // reset bit
             chunk[index >> 3] |= (byte)((bit ? 1 : 0) << (index & 0x7)); // set new bit
         }
-
         /// <summary> Attempts to sets the 1 bit of data associated with the given coordinates to true. </summary>
         /// <remarks> true if the 1 bit of data was not already set to true, false if it was. </remarks>
         public bool TrySetOn(int x, int y, int z)
@@ -75,20 +71,22 @@ namespace MCGalaxy.Util
                 chunk = new byte[16 * 16 * 16 / 8];
                 bits[index] = chunk;
             }
-
             index = (x & 0xF) | (z & 0xF) << 4 | (y & 0xF) << 8;
-            if ((chunk[index >> 3] & (1 << (index & 0x7))) != 0) return false;
-
+            if ((chunk[index >> 3] & (1 << (index & 0x7))) != 0)
+            {
+                return false;
+            }
             chunk[index >> 3] |= (byte)(1 << (index & 0x7)); // set new bit
             return true;
         }
-
         /// <summary> Resets all bits of data to false. </summary>
         public void Clear()
         {
             byte[][] bits_ = bits; // local var to avoid JIT bounds check
             for (int i = 0; i < bits_.Length; i++)
+            {
                 bits_[i] = null;
+            }
         }
     }
 }
