@@ -151,7 +151,7 @@ namespace MCGalaxy.Modules.Relay.Discord
                 CanReconnect = false;
                 throw new InvalidOperationException("Discord relay: Message Content Intent is not enabled in Bot Account settings, " +
                     "therefore Discord will prevent the bot from being able to see the contents of Discord messages\n" +
-                    "(See " + Updater.SourceURL + "/wiki/Discord-relay-bot#read-permissions)");
+                    "(See https://github.com/ClassiCube/MCGalaxy/wiki/Discord-relay-bot#read-permissions)");
             }
         }
 

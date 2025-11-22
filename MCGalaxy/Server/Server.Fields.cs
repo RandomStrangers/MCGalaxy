@@ -45,21 +45,19 @@ namespace MCGalaxy
         public static string Ver { get { return InternalVersion; } } //Nas differs.
         /// <summary> *** DO NOT USE THIS! *** Use VersionString, as this field is a constant and is inlined if used. </summary>
 #if NAS && TEN_BIT_BLOCKS
-        public static string SoftwareVersion
+        public static string Version
         {
             get
             {
-                return NasVersion;
+                return NotAwesomeSurvival.Nas.NasVersion;
             }
         }
         public static string SoftwareName = "MCGalaxy-NAS";
-        public const string NasVersion = NotAwesomeSurvival.Nas.NasVersion;
 #else
-        public static string SoftwareVersion { get { return InternalVersion; } }
+        public static string Version { get { return InternalVersion; } }
         public static string SoftwareName = "MCGalaxy";
 #endif
         static string fullName;
-        public static string Version { get; set; }
         public static string SoftwareNameVersioned
         {
             // By default, if SoftwareName gets externally changed, that is reflected in SoftwareNameVersioned too

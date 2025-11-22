@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
 Dual-licensed under the Educational Community License, Version 2.0 and
 the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -17,50 +17,45 @@ using MCGalaxy.Gui.Popups;
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 namespace MCGalaxy.Gui
 {
     public partial class PropertyWindow : Form
     {
-
         readonly ItemPermsHelper commandItems = new();
         ComboBox[] commandExtraBoxes;
         Label[] commandExtraLabels;
         Command cmd;
-
-        // need to keep a list of changed command perms, because we don't want
-        // to modify the server's live permissions if user clicks 'discard'
         CommandPerms commandPermsOrig, commandPermsCopy;
         List<CommandExtraPerms> extraPermsList;
         readonly List<CommandPerms> commandPermsChanged = new();
         readonly List<CommandExtraPerms> commandExtraPermsChanged = new();
-
         void LoadCommands()
         {
             cmd_list.Items.Clear();
             List<Command> all = Command.CopyAll();
             all.Sort((a, b) => a.name.CompareTo(b.name));
-
             foreach (Command cmd in all)
             {
                 cmd_list.Items.Add(cmd.name);
             }
-
             commandItems.GetCurPerms = CommandGetOrAddPermsChanged;
             if (cmd_list.SelectedIndex == -1)
+            {
                 cmd_list.SelectedIndex = 0;
+            }
         }
-
         void SaveCommands()
         {
             if (commandPermsChanged.Count > 0)
+            {
                 SaveCommandPermissions();
+            }
             if (commandExtraPermsChanged.Count > 0)
+            {
                 SaveExtraCommandPermissions();
-
+            }
             LoadCommands();
         }
-
         void SaveCommandPermissions()
         {
             foreach (CommandPerms changed in commandPermsChanged)
@@ -68,11 +63,9 @@ namespace MCGalaxy.Gui
                 CommandPerms orig = CommandPerms.Find(changed.CmdName);
                 changed.CopyPermissionsTo(orig);
             }
-
             CommandPerms.Save();
             CommandPerms.ApplyChanges();
         }
-
         void SaveExtraCommandPermissions()
         {
             foreach (CommandExtraPerms changed in commandExtraPermsChanged)
@@ -80,73 +73,79 @@ namespace MCGalaxy.Gui
                 CommandExtraPerms orig = CommandExtraPerms.Find(changed.CmdName, changed.Num);
                 changed.CopyPermissionsTo(orig);
             }
-
             CommandExtraPerms.Save();
         }
-
-
-        void cmd_list_SelectedIndexChanged(object sender, EventArgs e)
+        void Cmd_list_SelectedIndexChanged(object sender, EventArgs e)
         {
             string cmdName = cmd_list.SelectedItem.ToString();
             CommandInitSpecificArrays();
             cmd = Command.Find(cmdName);
-            if (cmd == null) return;
-
+            if (cmd == null)
+            {
+                return;
+            }
             commandPermsOrig = CommandPerms.Find(cmdName);
             commandPermsCopy = commandPermsChanged.Find(p => p.CmdName.CaselessEq(cmdName));
-
             commandItems.SupressEvents = true;
             CommandInitExtraPerms();
             CommandPerms perms = commandPermsCopy ?? commandPermsOrig;
             commandItems.Update(perms);
         }
-
         void CommandInitSpecificArrays()
         {
-            if (commandItems.MinBox != null) return;
+            if (commandItems.MinBox != null)
+            {
+                return;
+            }
             commandItems.MinBox = cmd_cmbMin;
-            commandItems.AllowBoxes = new ComboBox[] { cmd_cmbAlw1, cmd_cmbAlw2, cmd_cmbAlw3 };
-            commandItems.DisallowBoxes = new ComboBox[] { cmd_cmbDis1, cmd_cmbDis2, cmd_cmbDis3 };
+            commandItems.AllowBoxes = new[] 
+            { 
+                cmd_cmbAlw1, cmd_cmbAlw2, cmd_cmbAlw3 
+            };
+            commandItems.DisallowBoxes = new[] 
+            { 
+                cmd_cmbDis1, cmd_cmbDis2, cmd_cmbDis3 
+            };
             commandItems.FillInitial();
-
-            commandExtraBoxes = new ComboBox[] { cmd_cmbExtra1, cmd_cmbExtra2, cmd_cmbExtra3,
-                cmd_cmbExtra4, cmd_cmbExtra5, cmd_cmbExtra6, cmd_cmbExtra7 };
-            commandExtraLabels = new Label[] { cmd_lblExtra1, cmd_lblExtra2, cmd_lblExtra3,
-                cmd_lblExtra4, cmd_lblExtra5, cmd_lblExtra6, cmd_lblExtra7 };
+            commandExtraBoxes = new[] 
+            { 
+                cmd_cmbExtra1, cmd_cmbExtra2, cmd_cmbExtra3,
+                cmd_cmbExtra4, cmd_cmbExtra5, cmd_cmbExtra6, cmd_cmbExtra7 
+            };
+            commandExtraLabels = new[] 
+            { 
+                cmd_lblExtra1, cmd_lblExtra2, cmd_lblExtra3,
+                cmd_lblExtra4, cmd_lblExtra5, cmd_lblExtra6, cmd_lblExtra7 
+            };
             GuiPerms.SetRanks(commandExtraBoxes);
         }
-
         ItemPerms CommandGetOrAddPermsChanged()
         {
-            if (commandPermsCopy != null) return commandPermsCopy;
+            if (commandPermsCopy != null)
+            {
+                return commandPermsCopy;
+            }
             commandPermsCopy = commandPermsOrig.Copy();
             commandPermsChanged.Add(commandPermsCopy);
             return commandPermsCopy;
         }
-
-
-        void cmd_cmbMin_SelectedIndexChanged(object sender, EventArgs e)
+        void Cmd_cmbMin_SelectedIndexChanged(object sender, EventArgs e)
         {
             commandItems.OnMinRankChanged((ComboBox)sender);
         }
-
-        void cmd_cmbSpecific_SelectedIndexChanged(object sender, EventArgs e)
+        void Cmd_cmbSpecific_SelectedIndexChanged(object sender, EventArgs e)
         {
             commandItems.OnSpecificChanged((ComboBox)sender);
         }
-
-        void cmd_btnHelp_Click(object sender, EventArgs e)
+        void Cmd_btnHelp_Click(object sender, EventArgs e)
         {
             GetHelp(cmd_list.SelectedItem.ToString());
         }
-
-        void cmd_btnCustom_Click(object sender, EventArgs e)
+        void Cmd_btnCustom_Click(object sender, EventArgs e)
         {
             using CustomCommands form = new();
             form.ShowDialog();
         }
-
-
         void CommandInitExtraPerms()
         {
             extraPermsList = CommandExtraPerms.FindAll(cmd.name);
@@ -155,12 +154,15 @@ namespace MCGalaxy.Gui
                 commandExtraBoxes[i].Visible = false;
                 commandExtraLabels[i].Visible = false;
             }
-            if (cmd.ExtraPerms == null) extraPermsList.Clear();
-
+            if (cmd.ExtraPerms == null)
+            {
+                extraPermsList.Clear();
+            }
             int height = 12;
             for (int i = 0; i < extraPermsList.Count; i++)
             {
-                CommandExtraPerms perms = LookupExtraPerms(extraPermsList[i].CmdName, extraPermsList[i].Num) ?? extraPermsList[i];
+                CommandExtraPerms perms = LookupExtraPerms(extraPermsList[i].CmdName, extraPermsList[i].Num);
+                perms ??= extraPermsList[i];
                 GuiPerms.SetSelectedRank(commandExtraBoxes[i], perms.MinRank);
                 commandExtraBoxes[i].Visible = true;
                 commandExtraLabels[i].Text = "+ " + perms.Desc;
@@ -170,24 +172,26 @@ namespace MCGalaxy.Gui
             cmd_grpExtra.Visible = extraPermsList.Count > 0;
             cmd_grpExtra.Height = height;
         }
-
         CommandExtraPerms LookupExtraPerms(string cmdName, int number)
         {
             return commandExtraPermsChanged.Find(
                 p => p.CmdName == cmdName && p.Num == number);
         }
-
-        void cmd_cmbExtra_SelectedIndexChanged(object sender, EventArgs e)
+        void Cmd_cmbExtra_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox box = (ComboBox)sender;
-            if (commandItems.SupressEvents) return;
+            if (commandItems.SupressEvents)
+            {
+                return;
+            }
             GuiRank rank = (GuiRank)box.SelectedItem;
-            if (rank == null) return;
-
+            if (rank == null)
+            {
+                return;
+            }
             int boxIdx = Array.IndexOf(commandExtraBoxes, box);
             CommandExtraPerms orig = extraPermsList[boxIdx];
             CommandExtraPerms copy = LookupExtraPerms(orig.CmdName, orig.Num);
-
             if (copy == null)
             {
                 copy = orig.Copy();

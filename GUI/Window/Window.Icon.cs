@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,20 +16,16 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-
 namespace MCGalaxy.Gui
 {
     public partial class Window : Form
     {
-
         Icon GetIcon()
         {
             byte[] data = Convert.FromBase64String(icon_source);
             Stream source = new MemoryStream(data);
-            return new Icon(source);
+            return new(source);
         }
-
-        // base 64 encoded galaxy.ico
         const string icon_source =
         "AAABAAEAICAAAAEAIACoEAAAFgAAACgAAAAgAAAAQAAAAAEAIAAAAAAAABAAAAAAAAAAAAAAAAAAAAAA" +
         "AAAJAwT/BwIC/wYBAv8QBgL/FAoE/w0EAv8TCAL/Fw0C/xgNAv8eDwT/FwsD/wMAAf8FAQH/BgEB/wUB" +

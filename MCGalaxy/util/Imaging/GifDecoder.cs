@@ -21,13 +21,13 @@ namespace MCGalaxy.Util.Imaging
 {
     public class GifDecoder : ImageDecoder
     {
-        static readonly byte[] gif87Sig = new byte[] 
-        { 
-            0x47, 0x49, 0x46, 0x38, 0x37, 0x61 
+        static readonly byte[] gif87Sig = new byte[]
+        {
+            0x47, 0x49, 0x46, 0x38, 0x37, 0x61
         }, // "GIF87a"
-        gif89Sig = new byte[] 
-        { 
-            0x47, 0x49, 0x46, 0x38, 0x39, 0x61 
+        gif89Sig = new byte[]
+        {
+            0x47, 0x49, 0x46, 0x38, 0x39, 0x61
         }; // "GIF89a"
         Pixel[] globalPal;
         public static bool DetectHeader(byte[] data)
@@ -132,7 +132,7 @@ namespace MCGalaxy.Util.Imaging
         {
             int offset = AdvanceOffset(1);
             byte length = src[offset];
-            if (length < 4) 
+            if (length < 4)
             {
                 Fail("graphics control extension too short");
             }
@@ -142,7 +142,7 @@ namespace MCGalaxy.Util.Imaging
             byte tcIndex = src[offset + 3];
             Pixel[] pal = globalPal;
             if (hasTrans && pal != null && tcIndex < pal.Length)
-            {
+            { 
                 pal[tcIndex].A = 0;
             }
             // should only be one sub block
@@ -195,6 +195,7 @@ namespace MCGalaxy.Util.Imaging
             }
             Pixel[] pal = localPal ?? globalPal;
             int dst_index = 0;
+            bool fastPath = imageX == 0 && imageY == 0 && imageW == bmp.Width && imageH == bmp.Height;
             // Read image data
             offset = AdvanceOffset(1);
             byte minCodeSize = src[offset];
@@ -288,16 +289,29 @@ namespace MCGalaxy.Util.Imaging
                 prevCode = code;
                 // "top" entry is actually last entry in chain
                 int chain_len = dict[code].len;
-                for (int i = chain_len - 1; i >= 0; i--)
+                // If frame is same size as image, no need to convert coordinates
+                if (fastPath)
                 {
-                    int index = dst_index + i;
-                    byte palIndex = dict[code].value;
-                    //int localX = index % imageW;
-                    //int localY = index / imageW;
-                    int globalX = imageX + (index % imageW),
-                        globalY = imageY + (index / imageW);
-                    bmp.pixels[globalY * bmp.Width + globalX] = pal[palIndex];
-                    code = dict[code].prev;
+                    for (int i = chain_len - 1; i >= 0; i--)
+                    {
+                        byte palIndex = dict[code].value;
+                        bmp.pixels[dst_index + i] = pal[palIndex];
+                        code = dict[code].prev;
+                    }
+                }
+                else
+                {
+                    for (int i = chain_len - 1; i >= 0; i--)
+                    {
+                        int index = dst_index + i;
+                        byte palIndex = dict[code].value;
+                        //int localX = index % imageW;
+                        //int localY = index / imageW;
+                        int globalX = imageX + (index % imageW),
+                            globalY = imageY + (index / imageW);
+                        bmp.pixels[globalY * bmp.Width + globalX] = pal[palIndex];
+                        code = dict[code].prev;
+                    }
                 }
                 dst_index += chain_len;
             }

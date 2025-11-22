@@ -28,7 +28,6 @@ namespace MCGalaxy.Cli
         public static void Main(string[] _)
         {
             SetCurrentDirectory();
-            // If MCGalaxy_.dll is missing, a FileNotFoundException will get thrown for MCGalaxy dll
             try
             {
                 EnableCLIMode();
@@ -42,10 +41,9 @@ namespace MCGalaxy.Cli
                 Console.ReadKey(true);
                 return;
             }
-            // separate method, in case MCGalaxy_.dll is missing
             StartCLI();
         }
-        public static string GetFilename(string rawName)
+        static string GetFilename(string rawName)
         {
             try
             {
@@ -56,7 +54,7 @@ namespace MCGalaxy.Cli
                 return rawName;
             }
         }
-        public static void SetCurrentDirectory()
+        static void SetCurrentDirectory()
         {
 #if !MCG_STANDALONE
             string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -66,16 +64,11 @@ namespace MCGalaxy.Cli
             }
             catch
             {
-                // assembly.Location usually gives full path of the .exe, but has issues with mkbundle
-                //   https://mono-devel-list.ximian.narkive.com/KfCAxY1F/mkbundle-assembly-getentryassembly
-                //   https://stackoverflow.com/questions/57648241/reliably-get-location-of-bundled-executable-on-linux
-                // Rather than trying to guess when this issue happens, just don't bother at all
-                //  (since most users will not be trying to run .exe from a different folder anyways)
                 Console.Out.WriteLine("Failed to set working directory to '{0}', running in current directory..", path);
             }
 #endif
         }
-        public static void EnableCLIMode()
+        static void EnableCLIMode()
         {
             try
             {
@@ -83,13 +76,12 @@ namespace MCGalaxy.Cli
             }
             catch
             {
-                // in case user is running CLI with older MCGalaxy dll which lacked CLIMode field
             }
 #if !MCG_STANDALONE
             Server.RestartPath = Assembly.GetEntryAssembly().Location;
 #endif
         }
-        public static void StartCLI()
+        static void StartCLI()
         {
             FileLogger.Init();
             AppDomain.CurrentDomain.UnhandledException += GlobalExHandler;
@@ -110,12 +102,11 @@ namespace MCGalaxy.Cli
                 FileLogger.Flush(null);
             }
         }
-        public static void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        static void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
             switch (e.SpecialKey)
             {
                 case ConsoleSpecialKey.ControlBreak:
-                    // Cannot set e.Cancel for this one
                     Write("&e-- Server shutdown (Ctrl+Break) --");
                     Thread stopThread = Server.Stop(false, Server.Config.DefaultShutdownMessage);
                     stopThread.Join();
@@ -127,7 +118,7 @@ namespace MCGalaxy.Cli
                     break;
             }
         }
-        public static void LogAndRestart(Exception ex)
+        static void LogAndRestart(Exception ex)
         {
             Logger.LogError(ex);
             FileLogger.Flush(null);
@@ -138,15 +129,15 @@ namespace MCGalaxy.Cli
                 stopThread.Join();
             }
         }
-        public static void GlobalExHandler(object sender, UnhandledExceptionEventArgs e)
+        static void GlobalExHandler(object sender, UnhandledExceptionEventArgs e)
         {
             LogAndRestart((Exception)e.ExceptionObject);
         }
-        public static string CurrentDate() 
+        static string CurrentDate() 
         { 
             return DateTime.Now.ToString("(HH:mm:ss) "); 
         }
-        public static void LogMessage(LogType type, string message)
+        static void LogMessage(LogType type, string message)
         {
             if (!Server.Config.ConsoleLogging[(int)type])
             {
@@ -159,7 +150,6 @@ namespace MCGalaxy.Cli
                           + " - See " + FileLogger.err.Path + " for more details.");
                     break;
                 case LogType.BackgroundActivity:
-                    // ignore these messages
                     break;
                 case LogType.Warning:
                     Write("&e" + CurrentDate() + message);
@@ -169,14 +159,9 @@ namespace MCGalaxy.Cli
                     break;
             }
         }
-        public static readonly string msgPrefix = Environment.NewLine + "Message: ";
-        public static string ExtractErrorMessage(string raw)
+        static readonly string msgPrefix = Environment.NewLine + "Message: ";
+        static string ExtractErrorMessage(string raw)
         {
-            // Error messages are usually structured like so:
-            //   Type: whatever
-            //   Message: whatever
-            //   Something: whatever
-            // this code extracts the Message line from the raw message
             int beg = raw.IndexOf(msgPrefix);
             if (beg == -1)
             {
@@ -190,7 +175,7 @@ namespace MCGalaxy.Cli
             }
             return " (" + raw.Substring(beg, end - beg) + ")";
         }
-        public static void CheckNameVerification()
+        static void CheckNameVerification()
         {
             if (Server.Config.VerifyNames)
             {
@@ -201,11 +186,11 @@ namespace MCGalaxy.Cli
             Write("&eUnless you know EXACTLY what you are doing, you should change verify-names to true in server.properties");
             Write("&e==============================================");
         }
-        public static void LogNewerVersionDetected(object sender, EventArgs e)
+        static void LogNewerVersionDetected(object sender, EventArgs e)
         {
             Write("&cMCGalaxy update available! Update by replacing with the files from " + Updater.UploadsURL);
         }
-        public static void ConsoleLoop()
+        static void ConsoleLoop()
         {
             int eofs = 0;
             while (true)
@@ -213,18 +198,13 @@ namespace MCGalaxy.Cli
                 try
                 {
                     string msg = Console.ReadLine();
-                    // null msg is triggered in two cases:
-                    //   a) when pressing Ctrl+C to shutdown CLI on Windows
-                    //   b) underlying terminal provides a bogus EOF
-                    // b) actually happens very rarely (e.g. a few times on startup with wine mono),
-                    // so ignore the first few EOFs to workaround this case
                     if (msg == null)
                     {
                         eofs++;
-                        if (eofs >= 15)
-                        {
-                            Write("&e** EOF, console no longer accepts input **");
-                            break;
+                        if (eofs >= 15) 
+                        { 
+                            Write("&e** EOF, console no longer accepts input **"); 
+                            break; 
                         }
                         continue;
                     }
@@ -244,23 +224,17 @@ namespace MCGalaxy.Cli
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    // UnauthorizedAccessException can get thrown when stdin is unreadable
-                    // See https://github.com/dotnet/runtime/issues/21913 for instance
                     Write("&e** Access denied to stdin, console no longer accepts input **");
                     Write("&e** If nohup is being used, remove that to avoid this issue **");
                     break;
                 }
                 catch (Exception ex)
                 {
-                    // ArgumentException is raised on Mono when you:
-                    //  1) Type a message into a large CLI window
-                    //  2) Resize the CLI window to be smaller
-                    //  3) Try to backspace when the message is bigger than the smaller resized CLI window
                     Logger.LogError(ex);
                 }
             }
         }
-        public static void Write(string message)
+        static void Write(string message)
         {
             int index = 0;
             char col = 'S';
@@ -276,7 +250,6 @@ namespace MCGalaxy.Cli
                 ConsoleColor color = GetConsoleColor(curCol);
                 if (color == ConsoleColor.White)
                 {
-                    // show in user's preferred console text color
                     Console.ResetColor();
                 }
                 else
@@ -288,7 +261,8 @@ namespace MCGalaxy.Cli
             Console.ResetColor();
             Console.Out.WriteLine();
         }
-        public static ConsoleColor GetConsoleColor(char c)
+
+        static ConsoleColor GetConsoleColor(char c)
         {
             if (c == 'S')
             {
@@ -297,8 +271,8 @@ namespace MCGalaxy.Cli
             Colors.Map(ref c);
             switch (c)
             {
-                case '0': 
-                    return ConsoleColor.DarkGray; // black text on black background is unreadable
+                case '0':
+                    return ConsoleColor.DarkGray;
                 case '1': 
                     return ConsoleColor.DarkBlue;
                 case '2': 

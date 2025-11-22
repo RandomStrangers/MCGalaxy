@@ -65,7 +65,7 @@ namespace MCGalaxy
             {
                 using (WebClient client = HttpUtil.CreateWebClient())
                 {
-                    client.DownloadFile(Updater.BaseURL + file, file);
+                    client.DownloadFile("https://raw.githubusercontent.com/ClassiCube/MCGalaxy/master/" + file, file);
                 }
                 if (File.Exists(file))
                 {
@@ -83,7 +83,6 @@ namespace MCGalaxy
             serverConfig = ConfigElement.GetAll(typeof(ServerConfig));
             levelConfig = ConfigElement.GetAll(typeof(LevelConfig));
             zoneConfig = ConfigElement.GetAll(typeof(ZoneConfig));
-            Version = SoftwareVersion;
             DotNetBackend.Init();
             IOperatingSystem.DetectOS().Init();
             StartTime = DateTime.UtcNow;

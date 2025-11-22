@@ -102,7 +102,7 @@ namespace MCGalaxy
             string latest = client.DownloadString(CurrentVersionURL);
             Version l = new(latest);
 #if NAS && TEN_BIT_BLOCKS
-            Version v = new(Server.NasVersion);
+            Version v = new(NotAwesomeSurvival.Nas.NasVersion);
 #else
                 Version v = new(Server.InternalVersion);
 #endif

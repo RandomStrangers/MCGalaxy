@@ -16,36 +16,29 @@ using MCGalaxy.Eco;
 using MCGalaxy.Events.GameEvents;
 using System;
 using System.Windows.Forms;
-
 namespace MCGalaxy.Gui
 {
     public partial class PropertyWindow : Form
     {
         readonly ZombieProperties zsSettings = new();
-
         public PropertyWindow()
         {
             InitializeComponent();
             zsSettings.LoadFromServer();
             propsZG.SelectedObject = zsSettings;
         }
-
-        public void RunOnUI_Async(UIAction act) { BeginInvoke(act); }
-
+        public void RunOnUI_Async(UIAction act) 
+        { 
+            BeginInvoke(act); 
+        }
         void PropertyWindow_Load(object sender, EventArgs e)
         {
-            // try to use same icon as main window
-            // must be done in OnLoad, otherwise icon doesn't show on Mono
             GuiUtils.SetIcon(this);
-
             OnMapsChangedEvent.Register(HandleMapsChanged, Priority.Low);
             OnStateChangedEvent.Register(HandleStateChanged, Priority.Low);
             GuiPerms.UpdateRanks();
-
             GuiPerms.SetRanks(blk_cmbMin);
             GuiPerms.SetRanks(cmd_cmbMin);
-
-            //Load server stuff
             LoadProperties();
             LoadRanks();
             try
@@ -57,17 +50,14 @@ namespace MCGalaxy.Gui
             {
                 Logger.LogError("Error loading commands and blocks", ex);
             }
-
             LoadGameProps();
         }
-
         void PropertyWindow_Unload(object sender, EventArgs e)
         {
             OnMapsChangedEvent.Unregister(HandleMapsChanged);
             OnStateChangedEvent.Unregister(HandleStateChanged);
             Window.hasPropsForm = false;
         }
-
         void LoadProperties()
         {
             SrvProperties.Load();
@@ -81,7 +71,6 @@ namespace MCGalaxy.Gui
             LoadSecurityProps();
             zsSettings.LoadFromServer();
         }
-
         void SaveProperties()
         {
             try
@@ -94,7 +83,6 @@ namespace MCGalaxy.Gui
                 ApplyMiscProps();
                 ApplyRankProps();
                 ApplySecurityProps();
-
                 zsSettings.ApplyToServer();
                 SrvProperties.Save();
                 Economy.Save();
@@ -102,14 +90,19 @@ namespace MCGalaxy.Gui
             catch (Exception ex)
             {
                 Logger.LogError(ex);
-                Logger.Log(LogType.Warning, "SAVE FAILED! properties/server.properties");
+                Logger.Log(LogType.Warning, "SAVE FAILED! props/server.properties");
             }
             SaveDiscordProps();
         }
-
-        void btnSave_Click(object sender, EventArgs e) { SaveChanges(); Dispose(); }
-        void btnApply_Click(object sender, EventArgs e) { SaveChanges(); }
-
+        void BtnSave_Click(object sender, EventArgs e) 
+        { 
+            SaveChanges(); 
+            Dispose(); 
+        }
+        void BtnApply_Click(object sender, EventArgs e) 
+        { 
+            SaveChanges(); 
+        }
         void SaveChanges()
         {
             SaveProperties();
@@ -117,12 +110,12 @@ namespace MCGalaxy.Gui
             SaveCommands();
             SaveBlocks();
             SaveGameProps();
-
             SrvProperties.ApplyChanges();
         }
-
-        void btnDiscard_Click(object sender, EventArgs e) { Dispose(); }
-
+        void BtnDiscard_Click(object sender, EventArgs e) 
+        { 
+            Dispose(); 
+        }
         void GetHelp(string toHelp)
         {
             ConsoleHelpPlayer p = new();
@@ -130,17 +123,14 @@ namespace MCGalaxy.Gui
             Popup.Message(Colors.StripUsed(p.Messages), "Help for /" + toHelp);
         }
     }
-
     sealed class ConsoleHelpPlayer : Player
     {
         public string Messages = "";
-
         public ConsoleHelpPlayer() : base("(console)")
         {
             group = Group.ConsoleRank;
             SuperName = "Console";
         }
-
         public override void Message(string message)
         {
             message = Chat.Format(message, this);

@@ -9,22 +9,31 @@ namespace NotAwesomeSurvival
 {
     public static class NASUpdater
     {
-        public const string BaseURL = "https://raw.githubusercontent.com/RandomStrangers/MCGalaxy/nas-rework/Uploads/",
+        public static string BaseURL = "https://raw.githubusercontent.com/RandomStrangers/MCGalaxy/nas-rework/Uploads/",
             ActionsURL = "https://github.com/RandomStrangers/MCGalaxy/actions",
             CurrentVersionURL = BaseURL + "nas_version.txt",
             SourceURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas-rework", 
-            UploadsURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas-rework/Uploads";
-        public static string DLL = BaseURL + "MCGalaxy_nas", NetVer, GUI, CLI, Latest;
+            UploadsURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas-rework/Uploads",
+            DLL = BaseURL + "MCGalaxy_nas", NetVer, GUI, CLI, Latest;
         public static Command UpdateCommand = new CmdNASUpdate();
         public static event EventHandler NewerVersionDetected;
         public static SchedulerTask UpdateTask;
+        public static bool SetupDone = false;
         public static void UpdaterTask(SchedulerTask task)
         {
+            if (!SetupDone)
+            {
+                Setup();
+            }
             UpdateCheck();
             task.Delay = TimeSpan.FromHours(2);
         }
-        static void UpdateCheck()
+        public static void UpdateCheck()
         {
+            if (!SetupDone)
+            {
+                Setup();
+            }
             try
             {
                 if (!NeedsUpdating())
@@ -43,6 +52,10 @@ namespace NotAwesomeSurvival
         }
         public static bool NeedsUpdating()
         {
+            if (!SetupDone)
+            {
+                Setup();
+            }
             using WebClient client = HttpUtil.CreateWebClient();
             Latest = client.DownloadString(CurrentVersionURL);
             Version l = new(Latest), v = new(Nas.NasVersion);
@@ -50,31 +63,39 @@ namespace NotAwesomeSurvival
         }
         public static void Setup()
         {
-            if (Environment.Version.Major == 2)
+            if (!SetupDone)
             {
-                NetVer = "net20";
-                DLL += "_net20";
-            }
-            else if (Environment.Version.Major == 4)
-            {
-                NetVer = "net40";
-            }
-            else
-            {
-                NetVer = "unknown";
-            }
-            if (!NetVer.CaselessEq("unknown"))
-            {
-                CLI = "https://cdn.classicube.net/client/mcg/latest/" + NetVer + "/MCGalaxyCLI.exe";
-                GUI = "https://cdn.classicube.net/client/mcg/latest/" + NetVer + "/MCGalaxy.exe";
-                DLL += ".dll";
-                Command.Register(UpdateCommand);
-                UpdateTask = Server.Background.QueueRepeat(UpdaterTask, null, TimeSpan.FromSeconds(10));
-                NewerVersionDetected += LogNewerVersionDetected;
+                if (Environment.Version.Major == 2)
+                {
+                    NetVer = "net20";
+                    DLL += "_net20";
+                }
+                else if (Environment.Version.Major == 4)
+                {
+                    NetVer = "net40";
+                }
+                else
+                {
+                    NetVer = "unknown";
+                }
+                if (!NetVer.CaselessEq("unknown"))
+                {
+                    CLI = "https://cdn.classicube.net/client/mcg/latest/" + NetVer + "/MCGalaxyCLI.exe";
+                    GUI = "https://cdn.classicube.net/client/mcg/latest/" + NetVer + "/MCGalaxy.exe";
+                    DLL += ".dll";
+                    Command.Register(UpdateCommand);
+                    UpdateTask = Server.Background.QueueRepeat(UpdaterTask, null, TimeSpan.FromSeconds(10));
+                    NewerVersionDetected += LogNewerVersionDetected;
+                }
+                SetupDone = true;
             }
         }
         public static void TakeDown()
         {
+            if (!SetupDone)
+            {
+                Setup();
+            }
             if (!NetVer.CaselessEq("unknown"))
             {
                 Server.Background.Cancel(UpdateTask);
@@ -88,6 +109,10 @@ namespace NotAwesomeSurvival
         }
         public static void PerformUpdate()
         {
+            if (!SetupDone)
+            {
+                Setup();
+            }
             if (NetVer.CaselessContains("unknown"))
             {
                 Logger.Log(LogType.Warning, "Plase update NAS by downloading the needed artifact from {0}.", ActionsURL);
@@ -157,6 +182,10 @@ namespace NotAwesomeSurvival
         public override LevelPermission defaultRank { get { return LevelPermission.Owner; } }
         public override void Use(Player p, string message)
         {
+            if (!NASUpdater.SetupDone)
+            {
+                NASUpdater.Setup();
+            }
             if (message.CaselessEq("check"))
             {
                 p.Message("Checking for updates..");

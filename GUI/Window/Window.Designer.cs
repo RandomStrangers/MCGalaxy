@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,20 +14,11 @@
 */
 using System;
 using System.Windows.Forms;
-
 namespace MCGalaxy.Gui
 {
     public partial class Window
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
-
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -39,13 +27,7 @@ namespace MCGalaxy.Gui
             }
             base.Dispose(disposing);
         }
-
         #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
@@ -185,9 +167,6 @@ namespace MCGalaxy.Gui
             this.pl_gbOther.SuspendLayout();
             this.pl_gbActions.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // tsMap
-            // 
             this.tsMap.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                                     this.tsMap_physicsMenu,
                                     this.tsMap_actionsMenu,
@@ -195,9 +174,6 @@ namespace MCGalaxy.Gui
                                     this.tsMap_info});
             this.tsMap.Name = "mapsStrip";
             this.tsMap.Size = new System.Drawing.Size(138, 76);
-            // 
-            // tsMap_physicsMenu
-            // 
             this.tsMap_physicsMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                                     this.tsMap_physics0,
                                     this.tsMap_physics1,
@@ -208,51 +184,30 @@ namespace MCGalaxy.Gui
             this.tsMap_physicsMenu.Name = "tsMap_physicsMenu";
             this.tsMap_physicsMenu.Size = new System.Drawing.Size(137, 22);
             this.tsMap_physicsMenu.Text = "Physics Level";
-            // 
-            // tsMap_physics0
-            // 
             this.tsMap_physics0.Name = "tsMap_physics0";
             this.tsMap_physics0.Size = new System.Drawing.Size(152, 22);
             this.tsMap_physics0.Text = "Off";
-            this.tsMap_physics0.Click += new System.EventHandler(this.tsMap_Physics0_Click);
-            // 
-            // tsMap_physics1
-            // 
+            this.tsMap_physics0.Click += new System.EventHandler(this.TsMap_Physics0_Click);
             this.tsMap_physics1.Name = "tsMap_physics1";
             this.tsMap_physics1.Size = new System.Drawing.Size(152, 22);
             this.tsMap_physics1.Text = "Normal";
-            this.tsMap_physics1.Click += new System.EventHandler(this.tsMap_Physics1_Click);
-            // 
-            // tsMap_physics2
-            // 
+            this.tsMap_physics1.Click += new System.EventHandler(this.TsMap_Physics1_Click);
             this.tsMap_physics2.Name = "tsMap_physics2";
             this.tsMap_physics2.Size = new System.Drawing.Size(152, 22);
             this.tsMap_physics2.Text = "Advanced";
-            this.tsMap_physics2.Click += new System.EventHandler(this.tsMap_Physics2_Click);
-            // 
-            // tsMap_physics3
-            // 
+            this.tsMap_physics2.Click += new System.EventHandler(this.TsMap_Physics2_Click);
             this.tsMap_physics3.Name = "tsMap_physics3";
             this.tsMap_physics3.Size = new System.Drawing.Size(152, 22);
             this.tsMap_physics3.Text = "Hardcore";
-            this.tsMap_physics3.Click += new System.EventHandler(this.tsMap_Physics3_Click);
-            // 
-            // tsMap_physics4
-            // 
+            this.tsMap_physics3.Click += new System.EventHandler(this.TsMap_Physics3_Click);
             this.tsMap_physics4.Name = "tsMap_physics4";
             this.tsMap_physics4.Size = new System.Drawing.Size(152, 22);
             this.tsMap_physics4.Text = "Instant";
-            this.tsMap_physics4.Click += new System.EventHandler(this.tsMap_Physics4_Click);
-            // 
-            // tsMap_physics5
-            // 
+            this.tsMap_physics4.Click += new System.EventHandler(this.TsMap_Physics4_Click);
             this.tsMap_physics5.Name = "tsMap_physics5";
             this.tsMap_physics5.Size = new System.Drawing.Size(152, 22);
             this.tsMap_physics5.Text = "Doors-Only";
-            this.tsMap_physics5.Click += new System.EventHandler(this.tsMap_Physics5_Click);
-            // 
-            // tsMap_actionsMenu
-            // 
+            this.tsMap_physics5.Click += new System.EventHandler(this.TsMap_Physics5_Click);
             this.tsMap_actionsMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                                     this.tsMap_Save,
                                     this.tsMap_Reload,
@@ -261,49 +216,28 @@ namespace MCGalaxy.Gui
             this.tsMap_actionsMenu.Name = "tsMap_actionsMenu";
             this.tsMap_actionsMenu.Size = new System.Drawing.Size(137, 22);
             this.tsMap_actionsMenu.Text = "Actions";
-            // 
-            // tsMap_Save
-            // 
             this.tsMap_Save.Name = "tsMap_Save";
             this.tsMap_Save.Size = new System.Drawing.Size(152, 22);
             this.tsMap_Save.Text = "Save";
-            this.tsMap_Save.Click += new System.EventHandler(this.tsMap_Save_Click);
-            // 
-            // tsMap_Reload
-            // 
+            this.tsMap_Save.Click += new System.EventHandler(this.TsMap_Save_Click);
             this.tsMap_Reload.Name = "tsMap_Reload";
             this.tsMap_Reload.Size = new System.Drawing.Size(152, 22);
             this.tsMap_Reload.Text = "Reload";
-            this.tsMap_Reload.Click += new System.EventHandler(this.tsMap_Reload_Click);
-            // 
-            // tsMap_Unload
-            // 
+            this.tsMap_Reload.Click += new System.EventHandler(this.TsMap_Reload_Click);
             this.tsMap_Unload.Name = "tsMap_Unload";
             this.tsMap_Unload.Size = new System.Drawing.Size(152, 22);
             this.tsMap_Unload.Text = "Unload";
-            this.tsMap_Unload.Click += new System.EventHandler(this.tsMap_Unload_Click);
-            // 
-            // tsMap_moveAll
-            // 
+            this.tsMap_Unload.Click += new System.EventHandler(this.TsMap_Unload_Click);
             this.tsMap_moveAll.Name = "tsMap_moveAll";
             this.tsMap_moveAll.Size = new System.Drawing.Size(152, 22);
             this.tsMap_moveAll.Text = "Move All";
-            this.tsMap_moveAll.Click += new System.EventHandler(this.tsMap_MoveAll_Click);
-            // 
-            // tsMap_separator
-            // 
+            this.tsMap_moveAll.Click += new System.EventHandler(this.TsMap_MoveAll_Click);
             this.tsMap_separator.Name = "tsMap_separator";
             this.tsMap_separator.Size = new System.Drawing.Size(134, 6);
-            // 
-            // tsMap_info
-            // 
             this.tsMap_info.Name = "tsMap_info";
             this.tsMap_info.Size = new System.Drawing.Size(137, 22);
             this.tsMap_info.Text = "Info";
-            this.tsMap_info.Click += new System.EventHandler(this.tsMap_Info_Click);
-            // 
-            // tsPlayer
-            // 
+            this.tsMap_info.Click += new System.EventHandler(this.TsMap_Info_Click);
             this.tsPlayer.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                                     this.tsPlayer_whois,
                                     this.tsPlayer_kick,
@@ -314,58 +248,34 @@ namespace MCGalaxy.Gui
                                     this.tsPlayer_demote});
             this.tsPlayer.Name = "playerStrip";
             this.tsPlayer.Size = new System.Drawing.Size(115, 158);
-            // 
-            // tsPlayer_whois
-            // 
             this.tsPlayer_whois.Name = "tsPlayer_whois";
             this.tsPlayer_whois.Size = new System.Drawing.Size(114, 22);
             this.tsPlayer_whois.Text = "Whois";
-            this.tsPlayer_whois.Click += new System.EventHandler(this.tsPlayer_Whois_Click);
-            // 
-            // tsPlayer_kick
-            // 
+            this.tsPlayer_whois.Click += new System.EventHandler(this.TsPlayer_Whois_Click);
             this.tsPlayer_kick.Name = "tsPlayer_kick";
             this.tsPlayer_kick.Size = new System.Drawing.Size(114, 22);
             this.tsPlayer_kick.Text = "Kick";
-            this.tsPlayer_kick.Click += new System.EventHandler(this.tsPlayer_Kick_Click);
-            // 
-            // tsPlayer_ban
-            // 
+            this.tsPlayer_kick.Click += new System.EventHandler(this.TsPlayer_Kick_Click);
             this.tsPlayer_ban.Name = "tsPlayer_ban";
             this.tsPlayer_ban.Size = new System.Drawing.Size(114, 22);
             this.tsPlayer_ban.Text = "Ban";
-            this.tsPlayer_ban.Click += new System.EventHandler(this.tsPlayer_Ban_Click);
-            // 
-            // tsPlayer_voice
-            // 
+            this.tsPlayer_ban.Click += new System.EventHandler(this.TsPlayer_Ban_Click);
             this.tsPlayer_voice.Name = "tsPlayer_voice";
             this.tsPlayer_voice.Size = new System.Drawing.Size(114, 22);
             this.tsPlayer_voice.Text = "Voice";
-            this.tsPlayer_voice.Click += new System.EventHandler(this.tsPlayer_Voice_Click);
-            // 
-            // tsPlayer_clones
-            // 
+            this.tsPlayer_voice.Click += new System.EventHandler(this.TsPlayer_Voice_Click);
             this.tsPlayer_clones.Name = "tsPlayer_clones";
             this.tsPlayer_clones.Size = new System.Drawing.Size(114, 22);
             this.tsPlayer_clones.Text = "Clones";
-            this.tsPlayer_clones.Click += new System.EventHandler(this.tsPlayer_Clones_Click);
-            // 
-            // tsPlayer_promote
-            // 
+            this.tsPlayer_clones.Click += new System.EventHandler(this.TsPlayer_Clones_Click);
             this.tsPlayer_promote.Name = "tsPlayer_promote";
             this.tsPlayer_promote.Size = new System.Drawing.Size(114, 22);
             this.tsPlayer_promote.Text = "Promote";
-            this.tsPlayer_promote.Click += new System.EventHandler(this.tsPlayer_Promote_Click);
-            // 
-            // tsPlayer_demote
-            // 
+            this.tsPlayer_promote.Click += new System.EventHandler(this.TsPlayer_Promote_Click);
             this.tsPlayer_demote.Name = "tsPlayer_demote";
             this.tsPlayer_demote.Size = new System.Drawing.Size(114, 22);
             this.tsPlayer_demote.Text = "Demote";
-            this.tsPlayer_demote.Click += new System.EventHandler(this.tsPlayer_Demote_Click);
-            // 
-            // icon_context
-            // 
+            this.tsPlayer_demote.Click += new System.EventHandler(this.TsPlayer_Demote_Click);
             this.icon_context.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                                     this.icon_hideWindow,
                                     this.icon_separator,
@@ -374,42 +284,24 @@ namespace MCGalaxy.Gui
                                     this.icon_restart});
             this.icon_context.Name = "iconContext";
             this.icon_context.Size = new System.Drawing.Size(158, 70);
-            // 
-            // icon_separator
-            // 
             this.icon_separator.Name = "icon_separator";
             this.icon_separator.Size = new System.Drawing.Size(157, 6);
-            // 
-            // icon_hideWindow
-            // 
             this.icon_hideWindow.Name = "icon_hideWindow";
             this.icon_hideWindow.Size = new System.Drawing.Size(157, 22);
             this.icon_hideWindow.Text = "Hide from taskbar";
-            this.icon_hideWindow.Click += new System.EventHandler(this.icon_HideWindow_Click);
-            // 
-            // icon_openConsole
-            // 
+            this.icon_hideWindow.Click += new System.EventHandler(this.Icon_HideWindow_Click);
             this.icon_openConsole.Name = "icon_openConsole";
             this.icon_openConsole.Size = new System.Drawing.Size(157, 22);
             this.icon_openConsole.Text = "Open console";
-            this.icon_openConsole.Click += new System.EventHandler(this.icon_OpenConsole_Click);
-            // 
-            // icon_shutdown
-            // 
+            this.icon_openConsole.Click += new System.EventHandler(this.Icon_OpenConsole_Click);
             this.icon_shutdown.Name = "icon_shutdown";
             this.icon_shutdown.Size = new System.Drawing.Size(157, 22);
             this.icon_shutdown.Text = "Shutdown server";
-            this.icon_shutdown.Click += new System.EventHandler(this.icon_Shutdown_Click);
-            // 
-            // icon_restart
-            // 
+            this.icon_shutdown.Click += new System.EventHandler(this.Icon_Shutdown_Click);
             this.icon_restart.Name = "icon_restart";
             this.icon_restart.Size = new System.Drawing.Size(157, 22);
             this.icon_restart.Text = "Restart server";
-            this.icon_restart.Click += new System.EventHandler(this.icon_restart_Click);
-            // 
-            // main_btnProps
-            // 
+            this.icon_restart.Click += new System.EventHandler(this.Icon_restart_Click);
             this.main_btnProps.Cursor = System.Windows.Forms.Cursors.Hand;
             this.main_btnProps.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.main_btnProps.Location = new System.Drawing.Point(501, 5);
@@ -419,10 +311,7 @@ namespace MCGalaxy.Gui
             this.main_btnProps.Text = "Settings";
             this.main_btnProps.UseVisualStyleBackColor = true;
             this.main_btnProps.Enabled = false;
-            this.main_btnProps.Click += new System.EventHandler(this.btnProperties_Click);
-            // 
-            // main_btnClose
-            // 
+            this.main_btnProps.Click += new System.EventHandler(this.BtnProperties_Click);
             this.main_btnClose.Cursor = System.Windows.Forms.Cursors.Hand;
             this.main_btnClose.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.main_btnClose.Location = new System.Drawing.Point(675, 5);
@@ -431,10 +320,7 @@ namespace MCGalaxy.Gui
             this.main_btnClose.TabIndex = 35;
             this.main_btnClose.Text = "Close";
             this.main_btnClose.UseVisualStyleBackColor = true;
-            this.main_btnClose.Click += new System.EventHandler(this.btnClose_Click);
-            // 
-            // main_btnRestart
-            // 
+            this.main_btnClose.Click += new System.EventHandler(this.BtnClose_Click);
             this.main_btnRestart.Cursor = System.Windows.Forms.Cursors.Hand;
             this.main_btnRestart.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.main_btnRestart.Location = new System.Drawing.Point(584, 5);
@@ -443,10 +329,7 @@ namespace MCGalaxy.Gui
             this.main_btnRestart.TabIndex = 36;
             this.main_btnRestart.Text = "Restart";
             this.main_btnRestart.UseVisualStyleBackColor = true;
-            this.main_btnRestart.Click += new System.EventHandler(this.main_BtnRestart_Click);
-            // 
-            // logs_tp
-            // 
+            this.main_btnRestart.Click += new System.EventHandler(this.Main_BtnRestart_Click);
             this.logs_tp.BackColor = System.Drawing.SystemColors.Control;
             this.logs_tp.Controls.Add(this.logs_tab);
             this.logs_tp.Location = new System.Drawing.Point(4, 22);
@@ -455,9 +338,6 @@ namespace MCGalaxy.Gui
             this.logs_tp.Size = new System.Drawing.Size(767, 488);
             this.logs_tp.TabIndex = 4;
             this.logs_tp.Text = "Logs";
-            // 
-            // logs_tab
-            // 
             this.logs_tab.Controls.Add(this.logs_tabErr);
             this.logs_tab.Controls.Add(this.logs_tabGen);
             this.logs_tab.Controls.Add(this.tabLog_Sys);
@@ -466,9 +346,6 @@ namespace MCGalaxy.Gui
             this.logs_tab.SelectedIndex = 0;
             this.logs_tab.Size = new System.Drawing.Size(775, 491);
             this.logs_tab.TabIndex = 0;
-            // 
-            // logs_tabErr
-            // 
             this.logs_tabErr.Controls.Add(this.logs_txtError);
             this.logs_tabErr.Location = new System.Drawing.Point(4, 22);
             this.logs_tabErr.Name = "logs_tabErr";
@@ -476,9 +353,6 @@ namespace MCGalaxy.Gui
             this.logs_tabErr.TabIndex = 2;
             this.logs_tabErr.Text = "Errors";
             this.logs_tabErr.UseVisualStyleBackColor = true;
-            // 
-            // logs_txtError
-            // 
             this.logs_txtError.BackColor = System.Drawing.SystemColors.Window;
             this.logs_txtError.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.logs_txtError.Location = new System.Drawing.Point(-2, 0);
@@ -488,9 +362,6 @@ namespace MCGalaxy.Gui
             this.logs_txtError.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.logs_txtError.Size = new System.Drawing.Size(765, 465);
             this.logs_txtError.TabIndex = 2;
-            // 
-            // logs_tabGen
-            // 
             this.logs_tabGen.Controls.Add(this.logs_lblGeneral);
             this.logs_tabGen.Controls.Add(this.logs_dateGeneral);
             this.logs_tabGen.Controls.Add(this.logs_txtGeneral);
@@ -501,28 +372,19 @@ namespace MCGalaxy.Gui
             this.logs_tabGen.TabIndex = 0;
             this.logs_tabGen.Text = "General";
             this.logs_tabGen.UseVisualStyleBackColor = true;
-            // 
-            // logs_lblGeneral
-            // 
             this.logs_lblGeneral.AutoSize = true;
             this.logs_lblGeneral.Location = new System.Drawing.Point(3, 9);
             this.logs_lblGeneral.Name = "logs_lblGeneral";
             this.logs_lblGeneral.Size = new System.Drawing.Size(78, 13);
             this.logs_lblGeneral.TabIndex = 6;
             this.logs_lblGeneral.Text = "View logs from:";
-            // 
-            // logs_dateGeneral
-            // 
             this.logs_dateGeneral.Location = new System.Drawing.Point(87, 4);
             this.logs_dateGeneral.CalendarForeColor = System.Drawing.SystemColors.WindowText;
             this.logs_dateGeneral.Name = "logs_dateGeneral";
             this.logs_dateGeneral.Size = new System.Drawing.Size(200, 21);
             this.logs_dateGeneral.TabIndex = 5;
             this.logs_dateGeneral.Value = new System.DateTime(2011, 7, 20, 18, 31, 50, 0);
-            this.logs_dateGeneral.ValueChanged += new System.EventHandler(this.logs_dateGeneral_Changed);
-            // 
-            // logs_txtGeneral
-            // 
+            this.logs_dateGeneral.ValueChanged += new System.EventHandler(this.Logs_dateGeneral_Changed);
             this.logs_txtGeneral.BackColor = System.Drawing.SystemColors.Window;
             this.logs_txtGeneral.Location = new System.Drawing.Point(-2, 30);
             this.logs_txtGeneral.Name = "logs_txtGeneral";
@@ -530,9 +392,6 @@ namespace MCGalaxy.Gui
             this.logs_txtGeneral.Size = new System.Drawing.Size(765, 436);
             this.logs_txtGeneral.TabIndex = 4;
             this.logs_txtGeneral.Text = "";
-            // 
-            // tabLog_Sys
-            // 
             this.tabLog_Sys.Controls.Add(this.logs_txtSystem);
             this.tabLog_Sys.Location = new System.Drawing.Point(4, 22);
             this.tabLog_Sys.Name = "tabLog_Sys";
@@ -541,9 +400,6 @@ namespace MCGalaxy.Gui
             this.tabLog_Sys.TabIndex = 1;
             this.tabLog_Sys.Text = "System";
             this.tabLog_Sys.UseVisualStyleBackColor = true;
-            // 
-            // logs_txtSystem
-            // 
             this.logs_txtSystem.BackColor = System.Drawing.SystemColors.Window;
             this.logs_txtSystem.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.logs_txtSystem.Location = new System.Drawing.Point(-2, 0);
@@ -553,9 +409,6 @@ namespace MCGalaxy.Gui
             this.logs_txtSystem.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.logs_txtSystem.Size = new System.Drawing.Size(765, 465);
             this.logs_txtSystem.TabIndex = 2;
-            // 
-            // tp_Main
-            // 
             this.tp_Main.BackColor = System.Drawing.SystemColors.Control;
             this.tp_Main.Controls.Add(this.main_btnUnloadEmpty);
             this.tp_Main.Controls.Add(this.main_btnKillPhysics);
@@ -571,9 +424,6 @@ namespace MCGalaxy.Gui
             this.tp_Main.Size = new System.Drawing.Size(767, 488);
             this.tp_Main.TabIndex = 0;
             this.tp_Main.Text = "Main";
-            // 
-            // main_btnUnloadEmpty
-            // 
             this.main_btnUnloadEmpty.Cursor = System.Windows.Forms.Cursors.Hand;
             this.main_btnUnloadEmpty.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.main_btnUnloadEmpty.Location = new System.Drawing.Point(676, 263);
@@ -582,10 +432,7 @@ namespace MCGalaxy.Gui
             this.main_btnUnloadEmpty.TabIndex = 41;
             this.main_btnUnloadEmpty.Text = "Unload Empty";
             this.main_btnUnloadEmpty.UseVisualStyleBackColor = true;
-            this.main_btnUnloadEmpty.Click += new System.EventHandler(this.main_BtnUnloadEmpty_Click);
-            // 
-            // main_btnKillPhysics
-            // 
+            this.main_btnUnloadEmpty.Click += new System.EventHandler(this.Main_BtnUnloadEmpty_Click);
             this.main_btnKillPhysics.Cursor = System.Windows.Forms.Cursors.Hand;
             this.main_btnKillPhysics.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.main_btnKillPhysics.Location = new System.Drawing.Point(582, 263);
@@ -594,10 +441,7 @@ namespace MCGalaxy.Gui
             this.main_btnKillPhysics.TabIndex = 40;
             this.main_btnKillPhysics.Text = "Kill All Physics";
             this.main_btnKillPhysics.UseVisualStyleBackColor = true;
-            this.main_btnKillPhysics.Click += new System.EventHandler(this.main_BtnKillPhysics_Click);
-            // 
-            // main_btnSaveAll
-            // 
+            this.main_btnKillPhysics.Click += new System.EventHandler(this.Main_BtnKillPhysics_Click);
             this.main_btnSaveAll.Cursor = System.Windows.Forms.Cursors.Hand;
             this.main_btnSaveAll.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.main_btnSaveAll.Location = new System.Drawing.Point(513, 263);
@@ -606,30 +450,18 @@ namespace MCGalaxy.Gui
             this.main_btnSaveAll.TabIndex = 39;
             this.main_btnSaveAll.Text = "Save All";
             this.main_btnSaveAll.UseVisualStyleBackColor = true;
-            this.main_btnSaveAll.Click += new System.EventHandler(this.main_BtnSaveAll_Click);
-            // 
-            // main_colLvlName
-            // 
+            this.main_btnSaveAll.Click += new System.EventHandler(this.Main_BtnSaveAll_Click);
             this.main_colLvlName.HeaderText = "Name";
             this.main_colLvlName.Name = "main_colLvlName";
             this.main_colLvlName.ReadOnly = true;
-            // 
-            // main_colLvlPlayers
-            // 
             this.main_colLvlPlayers.FillWeight = 70F;
             this.main_colLvlPlayers.HeaderText = "Players";
             this.main_colLvlPlayers.Name = "main_colLvlPlayers";
             this.main_colLvlPlayers.ReadOnly = true;
-            // 
-            // main_colLvlPhysics
-            // 
             this.main_colLvlPhysics.FillWeight = 70F;
             this.main_colLvlPhysics.HeaderText = "Physics";
             this.main_colLvlPhysics.Name = "main_colLvlPhysics";
             this.main_colLvlPhysics.ReadOnly = true;
-            // 
-            // main_Maps
-            // 
             this.main_Maps.AllowUserToAddRows = false;
             this.main_Maps.AllowUserToDeleteRows = false;
             this.main_Maps.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
@@ -637,9 +469,9 @@ namespace MCGalaxy.Gui
             this.main_Maps.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this.main_Maps.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.main_Maps.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-                                    this.main_colLvlName,
-                                    this.main_colLvlPlayers,
-                                    this.main_colLvlPhysics});
+        	        	        	this.main_colLvlName,
+        	        	        	this.main_colLvlPlayers,
+        	        	        	this.main_colLvlPhysics});
             this.main_Maps.ContextMenuStrip = this.tsMap;
             this.main_Maps.Location = new System.Drawing.Point(512, 292);
             this.main_Maps.MultiSelect = false;
@@ -649,9 +481,6 @@ namespace MCGalaxy.Gui
             this.main_Maps.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.main_Maps.Size = new System.Drawing.Size(246, 150);
             this.main_Maps.TabIndex = 38;
-            // 
-            // main_txtLog
-            // 
             this.main_txtLog.BackColor = System.Drawing.SystemColors.Window;
             this.main_txtLog.ContextMenuStrip = this.tsLog_Menu;
             this.main_txtLog.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -662,9 +491,6 @@ namespace MCGalaxy.Gui
             this.main_txtLog.Size = new System.Drawing.Size(498, 404);
             this.main_txtLog.TabIndex = 0;
             this.main_txtLog.Text = "";
-            // 
-            // tsLog_Menu
-            // 
             this.tsLog_Menu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                                     this.tsLog_night,
                                     this.tsLog_Colored,
@@ -677,74 +503,44 @@ namespace MCGalaxy.Gui
                                     this.tsLog_clear});
             this.tsLog_Menu.Name = "txtLogMenuStrip";
             this.tsLog_Menu.Size = new System.Drawing.Size(144, 170);
-            // 
-            // tsLog_night
-            // 
             this.tsLog_night.Name = "tsLog_night";
             this.tsLog_night.Size = new System.Drawing.Size(143, 22);
             this.tsLog_night.Text = "Night Theme";
-            this.tsLog_night.Click += new System.EventHandler(this.tsLog_Night_Click);
-            // 
-            // tsLog_Colored
-            // 
+            this.tsLog_night.Click += new System.EventHandler(this.TsLog_Night_Click);
             this.tsLog_Colored.Checked = true;
             this.tsLog_Colored.CheckState = System.Windows.Forms.CheckState.Checked;
             this.tsLog_Colored.Name = "tsLog_Colored";
             this.tsLog_Colored.Size = new System.Drawing.Size(143, 22);
             this.tsLog_Colored.Text = "Colors";
-            this.tsLog_Colored.Click += new System.EventHandler(this.tsLog_Colored_Click);
-            // 
-            // tsLog_dateStamp
-            // 
+            this.tsLog_Colored.Click += new System.EventHandler(this.TsLog_Colored_Click);
             this.tsLog_dateStamp.Checked = true;
             this.tsLog_dateStamp.CheckState = System.Windows.Forms.CheckState.Checked;
             this.tsLog_dateStamp.Name = "tsLog_dateStamp";
             this.tsLog_dateStamp.Size = new System.Drawing.Size(143, 22);
             this.tsLog_dateStamp.Text = "Date Stamp";
-            this.tsLog_dateStamp.Click += new System.EventHandler(this.tsLog_DateStamp_Click);
-            // 
-            // tsLog_autoScroll
-            // 
+            this.tsLog_dateStamp.Click += new System.EventHandler(this.TsLog_DateStamp_Click);
             this.tsLog_autoScroll.Checked = true;
             this.tsLog_autoScroll.CheckState = System.Windows.Forms.CheckState.Checked;
             this.tsLog_autoScroll.Name = "tsLog_autoScroll";
             this.tsLog_autoScroll.Size = new System.Drawing.Size(143, 22);
             this.tsLog_autoScroll.Text = "Auto Scroll";
-            this.tsLog_autoScroll.Click += new System.EventHandler(this.tsLog_AutoScroll_Click);
-            // 
-            // tsLog_separator1
-            // 
+            this.tsLog_autoScroll.Click += new System.EventHandler(this.TsLog_AutoScroll_Click);
             this.tsLog_separator1.Name = "tsLog_separator1";
             this.tsLog_separator1.Size = new System.Drawing.Size(140, 6);
-            // 
-            // tsPlayer_copySelected
-            // 
             this.tsLog_copySelected.Name = "tsLog_copySelected";
             this.tsLog_copySelected.Size = new System.Drawing.Size(143, 22);
             this.tsLog_copySelected.Text = "Copy Selected";
-            this.tsLog_copySelected.Click += new System.EventHandler(this.tsLog_CopySelected_Click);
-            // 
-            // tsLog_copyAll
-            // 
+            this.tsLog_copySelected.Click += new System.EventHandler(this.TsLog_CopySelected_Click);
             this.tsLog_copyAll.Name = "tsLog_copyAll";
             this.tsLog_copyAll.Size = new System.Drawing.Size(143, 22);
             this.tsLog_copyAll.Text = "Copy All";
-            this.tsLog_copyAll.Click += new System.EventHandler(this.tsLog_CopyAll_Click);
-            // 
-            // tsLog_separator2
-            // 
+            this.tsLog_copyAll.Click += new System.EventHandler(this.TsLog_CopyAll_Click);
             this.tsLog_separator2.Name = "tsLog_separator2";
             this.tsLog_separator2.Size = new System.Drawing.Size(140, 6);
-            // 
-            // tsLog_clear
-            // 
             this.tsLog_clear.Name = "tsLog_clear";
             this.tsLog_clear.Size = new System.Drawing.Size(143, 22);
             this.tsLog_clear.Text = "Clear";
-            this.tsLog_clear.Click += new System.EventHandler(this.tsLog_Clear_Click);
-            // 
-            // main_txtInput
-            // 
+            this.tsLog_clear.Click += new System.EventHandler(this.TsLog_Clear_Click);
             this.main_txtInput.BackColor = System.Drawing.SystemColors.Window;
             this.main_txtInput.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.main_txtInput.Location = new System.Drawing.Point(8, 454);
@@ -753,10 +549,7 @@ namespace MCGalaxy.Gui
             this.main_txtInput.TabIndex = 27;
             this.toolTip.SetToolTip(this.main_txtInput, "To send chat to players, just type the message in.\nTo enter a command, put a / be" +
                         "fore it. (e.g. /help commands)");
-            this.main_txtInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.main_TxtInput_KeyDown);
-            // 
-            // main_txtUrl
-            // 
+            this.main_txtInput.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Main_TxtInput_KeyDown);
             this.main_txtUrl.Cursor = System.Windows.Forms.Cursors.Default;
             this.main_txtUrl.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.main_txtUrl.Location = new System.Drawing.Point(8, 7);
@@ -765,37 +558,25 @@ namespace MCGalaxy.Gui
             this.main_txtUrl.Size = new System.Drawing.Size(498, 21);
             this.main_txtUrl.TabIndex = 25;
             this.main_txtUrl.Text = "Starting server..";
-            this.main_txtUrl.DoubleClick += new System.EventHandler(this.main_TxtUrl_DoubleClick);
-            // 
-            // main_colPlName
-            // 
+            this.main_txtUrl.DoubleClick += new System.EventHandler(this.Main_TxtUrl_DoubleClick);
             this.main_colPlName.HeaderText = "Name";
             this.main_colPlName.Name = "main_colPlName";
             this.main_colPlName.ReadOnly = true;
-            // 
-            // main_colPlMap
-            // 
             this.main_colPlMap.HeaderText = "Map";
             this.main_colPlMap.Name = "main_colPlMap";
             this.main_colPlMap.ReadOnly = true;
-            // 
-            // main_colPlRank
-            // 
             this.main_colPlRank.HeaderText = "Rank";
             this.main_colPlRank.Name = "main_colPlRank";
             this.main_colPlRank.ReadOnly = true;
-            // 
-            // main_Players
-            // 
             this.main_Players.AllowUserToAddRows = false;
             this.main_Players.AllowUserToDeleteRows = false;
             this.main_Players.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.main_Players.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
             this.main_Players.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.main_Players.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-                                    this.main_colPlName,
-                                    this.main_colPlMap,
-                                    this.main_colPlRank});
+        	        	        	this.main_colPlName,
+        	        	        	this.main_colPlMap,
+        	        	        	this.main_colPlRank});
             this.main_Players.ContextMenuStrip = this.tsPlayer;
             this.main_Players.Location = new System.Drawing.Point(512, 7);
             this.main_Players.MultiSelect = false;
@@ -805,10 +586,7 @@ namespace MCGalaxy.Gui
             this.main_Players.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.main_Players.Size = new System.Drawing.Size(246, 250);
             this.main_Players.TabIndex = 37;
-            this.main_Players.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.main_players_RowPrePaint);
-            // 
-            // tabs
-            // 
+            this.main_Players.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.Main_players_RowPrePaint);
             this.tabs.Controls.Add(this.tp_Main);
             this.tabs.Controls.Add(this.logs_tp);
             this.tabs.Controls.Add(this.tp_Maps);
@@ -820,10 +598,7 @@ namespace MCGalaxy.Gui
             this.tabs.SelectedIndex = 0;
             this.tabs.Size = new System.Drawing.Size(775, 514);
             this.tabs.TabIndex = 2;
-            this.tabs.Click += new System.EventHandler(this.tabs_Click);
-            // 
-            // tp_Maps
-            // 
+            this.tabs.Click += new System.EventHandler(this.Tabs_Click);
             this.tp_Maps.BackColor = System.Drawing.SystemColors.Control;
             this.tp_Maps.Controls.Add(this.map_gbProps);
             this.tp_Maps.Controls.Add(this.map_gbLoaded);
@@ -834,9 +609,6 @@ namespace MCGalaxy.Gui
             this.tp_Maps.Size = new System.Drawing.Size(767, 488);
             this.tp_Maps.TabIndex = 9;
             this.tp_Maps.Text = "Maps";
-            // 
-            // map_gbProps
-            // 
             this.map_gbProps.Controls.Add(this.map_pgProps);
             this.map_gbProps.Location = new System.Drawing.Point(415, 3);
             this.map_gbProps.Name = "map_gbProps";
@@ -844,17 +616,11 @@ namespace MCGalaxy.Gui
             this.map_gbProps.TabIndex = 5;
             this.map_gbProps.TabStop = false;
             this.map_gbProps.Text = "Properties for (none selected)";
-            // 
-            // map_pgProps
-            // 
             this.map_pgProps.Location = new System.Drawing.Point(7, 20);
             this.map_pgProps.Name = "map_pgProps";
             this.map_pgProps.Size = new System.Drawing.Size(330, 323);
             this.map_pgProps.TabIndex = 0;
             this.map_pgProps.ToolbarVisible = false;
-            // 
-            // map_gbLoaded
-            // 
             this.map_gbLoaded.Controls.Add(this.map_lbLoaded);
             this.map_gbLoaded.Location = new System.Drawing.Point(7, 3);
             this.map_gbLoaded.Name = "map_gbLoaded";
@@ -862,9 +628,6 @@ namespace MCGalaxy.Gui
             this.map_gbLoaded.TabIndex = 4;
             this.map_gbLoaded.TabStop = false;
             this.map_gbLoaded.Text = "Loaded levels";
-            // 
-            // map_lbLoaded
-            // 
             this.map_lbLoaded.BackColor = System.Drawing.SystemColors.Window;
             this.map_lbLoaded.ForeColor = System.Drawing.SystemColors.WindowText;
             this.map_lbLoaded.FormattingEnabled = true;
@@ -874,9 +637,6 @@ namespace MCGalaxy.Gui
             this.map_lbLoaded.Size = new System.Drawing.Size(379, 199);
             this.map_lbLoaded.TabIndex = 0;
             this.map_lbLoaded.SelectedIndexChanged += new System.EventHandler(this.Map_UpdateSelected);
-            // 
-            // map_gbUnloaded
-            // 
             this.map_gbUnloaded.Controls.Add(this.map_btnLoad);
             this.map_gbUnloaded.Controls.Add(this.map_lbUnloaded);
             this.map_gbUnloaded.Location = new System.Drawing.Point(7, 227);
@@ -885,19 +645,13 @@ namespace MCGalaxy.Gui
             this.map_gbUnloaded.TabIndex = 3;
             this.map_gbUnloaded.TabStop = false;
             this.map_gbUnloaded.Text = "Unloaded levels";
-            // 
-            // map_btnLoad
-            // 
             this.map_btnLoad.Location = new System.Drawing.Point(150, 230);
             this.map_btnLoad.Name = "map_btnLoad";
             this.map_btnLoad.Size = new System.Drawing.Size(75, 23);
             this.map_btnLoad.TabIndex = 1;
             this.map_btnLoad.Text = "Load map";
             this.map_btnLoad.UseVisualStyleBackColor = true;
-            this.map_btnLoad.Click += new System.EventHandler(this.map_BtnLoad_Click);
-            // 
-            // map_lbUnloaded
-            // 
+            this.map_btnLoad.Click += new System.EventHandler(this.Map_BtnLoad_Click);
             this.map_lbUnloaded.BackColor = System.Drawing.SystemColors.Window;
             this.map_lbUnloaded.ForeColor = System.Drawing.SystemColors.WindowText;
             this.map_lbUnloaded.FormattingEnabled = true;
@@ -906,9 +660,6 @@ namespace MCGalaxy.Gui
             this.map_lbUnloaded.Name = "map_lbUnloaded";
             this.map_lbUnloaded.Size = new System.Drawing.Size(379, 212);
             this.map_lbUnloaded.TabIndex = 0;
-            // 
-            // map_gbNew
-            // 
             this.map_gbNew.Controls.Add(this.map_btnGen);
             this.map_gbNew.Controls.Add(this.map_lblType);
             this.map_gbNew.Controls.Add(this.map_lblSeed);
@@ -928,81 +679,54 @@ namespace MCGalaxy.Gui
             this.map_gbNew.TabIndex = 0;
             this.map_gbNew.TabStop = false;
             this.map_gbNew.Text = "Create new map";
-            // 
-            // map_btnGen
-            // 
             this.map_btnGen.Location = new System.Drawing.Point(150, 99);
             this.map_btnGen.Name = "map_btnGen";
             this.map_btnGen.Size = new System.Drawing.Size(75, 23);
             this.map_btnGen.TabIndex = 17;
             this.map_btnGen.Text = "Generate";
             this.map_btnGen.UseVisualStyleBackColor = true;
-            this.map_btnGen.Click += new System.EventHandler(this.map_BtnGen_Click);
-            // 
-            // map_lblType
-            // 
+            this.map_btnGen.Click += new System.EventHandler(this.Map_BtnGen_Click);
             this.map_lblType.AutoSize = true;
             this.map_lblType.Location = new System.Drawing.Point(13, 78);
             this.map_lblType.Name = "map_lblType";
             this.map_lblType.Size = new System.Drawing.Size(32, 13);
             this.map_lblType.TabIndex = 16;
             this.map_lblType.Text = "Type:";
-            // 
-            // map_lblSeed
-            // 
             this.map_lblSeed.AutoSize = true;
             this.map_lblSeed.Location = new System.Drawing.Point(192, 78);
             this.map_lblSeed.Name = "map_lblSeed";
             this.map_lblSeed.Size = new System.Drawing.Size(33, 13);
             this.map_lblSeed.TabIndex = 15;
             this.map_lblSeed.Text = "Seed:";
-            // 
-            // map_lblZ
-            // 
             this.map_lblZ.AutoSize = true;
             this.map_lblZ.Location = new System.Drawing.Point(231, 51);
             this.map_lblZ.Name = "map_lblZ";
             this.map_lblZ.Size = new System.Drawing.Size(42, 13);
             this.map_lblZ.TabIndex = 14;
             this.map_lblZ.Text = "Length:";
-            // 
-            // map_lblX
-            // 
             this.map_lblX.AutoSize = true;
             this.map_lblX.Location = new System.Drawing.Point(7, 51);
             this.map_lblX.Name = "map_lblX";
             this.map_lblX.Size = new System.Drawing.Size(39, 13);
             this.map_lblX.TabIndex = 13;
             this.map_lblX.Text = "Width:";
-            // 
-            // map_lblY
-            // 
             this.map_lblY.AutoSize = true;
             this.map_lblY.Location = new System.Drawing.Point(118, 51);
             this.map_lblY.Name = "map_lblY";
             this.map_lblY.Size = new System.Drawing.Size(41, 13);
             this.map_lblY.TabIndex = 12;
             this.map_lblY.Text = "Height:";
-            // 
-            // map_txtSeed
-            // 
             this.map_txtSeed.BackColor = System.Drawing.SystemColors.Window;
             this.map_txtSeed.Location = new System.Drawing.Point(231, 75);
             this.map_txtSeed.Name = "map_txtSeed";
             this.map_txtSeed.Size = new System.Drawing.Size(107, 21);
             this.map_txtSeed.TabIndex = 11;
-            // 
-            // map_cmbType
-            // 
             this.map_cmbType.BackColor = System.Drawing.SystemColors.Window;
             this.map_cmbType.FormattingEnabled = true;
             this.map_cmbType.Location = new System.Drawing.Point(51, 75);
             this.map_cmbType.Name = "map_cmbType";
             this.map_cmbType.Size = new System.Drawing.Size(121, 21);
             this.map_cmbType.TabIndex = 10;
-            // 
-            // map_cmbZ
-            // 
             this.map_cmbZ.BackColor = System.Drawing.SystemColors.Window;
             this.map_cmbZ.FormattingEnabled = true;
             this.map_cmbZ.Items.AddRange(new object[] {
@@ -1017,9 +741,6 @@ namespace MCGalaxy.Gui
             this.map_cmbZ.Name = "map_cmbZ";
             this.map_cmbZ.Size = new System.Drawing.Size(60, 21);
             this.map_cmbZ.TabIndex = 9;
-            // 
-            // map_cmbY
-            // 
             this.map_cmbY.BackColor = System.Drawing.SystemColors.Window;
             this.map_cmbY.FormattingEnabled = true;
             this.map_cmbY.Items.AddRange(new object[] {
@@ -1034,9 +755,6 @@ namespace MCGalaxy.Gui
             this.map_cmbY.Name = "map_cmbY";
             this.map_cmbY.Size = new System.Drawing.Size(60, 21);
             this.map_cmbY.TabIndex = 8;
-            // 
-            // map_cmbX
-            // 
             this.map_cmbX.BackColor = System.Drawing.SystemColors.Window;
             this.map_cmbX.FormattingEnabled = true;
             this.map_cmbX.Items.AddRange(new object[] {
@@ -1051,26 +769,17 @@ namespace MCGalaxy.Gui
             this.map_cmbX.Name = "map_cmbX";
             this.map_cmbX.Size = new System.Drawing.Size(60, 21);
             this.map_cmbX.TabIndex = 7;
-            // 
-            // map_lblName
-            // 
             this.map_lblName.AutoSize = true;
             this.map_lblName.Location = new System.Drawing.Point(7, 24);
             this.map_lblName.Name = "map_lblName";
             this.map_lblName.Size = new System.Drawing.Size(38, 13);
             this.map_lblName.TabIndex = 6;
             this.map_lblName.Text = "Name:";
-            // 
-            // map_txtName
-            // 
             this.map_txtName.BackColor = System.Drawing.SystemColors.Window;
             this.map_txtName.Location = new System.Drawing.Point(51, 21);
             this.map_txtName.Name = "map_txtName";
             this.map_txtName.Size = new System.Drawing.Size(287, 21);
             this.map_txtName.TabIndex = 0;
-            // 
-            // tp_Players
-            // 
             this.tp_Players.Controls.Add(this.pl_lblOnline);
             this.tp_Players.Controls.Add(this.pl_gbProps);
             this.tp_Players.Controls.Add(this.pl_gbOther);
@@ -1083,18 +792,12 @@ namespace MCGalaxy.Gui
             this.tp_Players.Size = new System.Drawing.Size(767, 488);
             this.tp_Players.TabIndex = 7;
             this.tp_Players.Text = "Players";
-            // 
-            // pl_lblOnline
-            // 
             this.pl_lblOnline.AutoSize = true;
             this.pl_lblOnline.Location = new System.Drawing.Point(8, 9);
             this.pl_lblOnline.Name = "pl_lblOnline";
             this.pl_lblOnline.Size = new System.Drawing.Size(78, 13);
             this.pl_lblOnline.TabIndex = 68;
             this.pl_lblOnline.Text = "Online players:";
-            // 
-            // pl_gbProps
-            // 
             this.pl_gbProps.Controls.Add(this.pl_pgProps);
             this.pl_gbProps.Location = new System.Drawing.Point(147, 9);
             this.pl_gbProps.Name = "pl_gbProps";
@@ -1102,18 +805,12 @@ namespace MCGalaxy.Gui
             this.pl_gbProps.TabIndex = 67;
             this.pl_gbProps.TabStop = false;
             this.pl_gbProps.Text = "Properties for (none selected)";
-            // 
-            // pl_pgProps
-            // 
             this.pl_pgProps.HelpVisible = false;
             this.pl_pgProps.Location = new System.Drawing.Point(6, 18);
             this.pl_pgProps.Name = "pl_pgProps";
             this.pl_pgProps.Size = new System.Drawing.Size(351, 356);
             this.pl_pgProps.TabIndex = 64;
             this.pl_pgProps.ToolbarVisible = false;
-            // 
-            // pl_gbOther
-            // 
             this.pl_gbOther.Controls.Add(this.pl_txtSendCommand);
             this.pl_gbOther.Controls.Add(this.pl_btnSendCommand);
             this.pl_gbOther.Controls.Add(this.pl_txtMessage);
@@ -1124,47 +821,32 @@ namespace MCGalaxy.Gui
             this.pl_gbOther.TabIndex = 66;
             this.pl_gbOther.TabStop = false;
             this.pl_gbOther.Text = "Other";
-            // 
-            // pl_txtSendCommand
-            // 
             this.pl_txtSendCommand.BackColor = System.Drawing.SystemColors.Window;
             this.pl_txtSendCommand.Location = new System.Drawing.Point(115, 50);
             this.pl_txtSendCommand.Name = "pl_txtSendCommand";
             this.pl_txtSendCommand.Size = new System.Drawing.Size(485, 21);
             this.pl_txtSendCommand.TabIndex = 38;
-            this.pl_txtSendCommand.KeyDown += new System.Windows.Forms.KeyEventHandler(this.pl_txtSendCommand_KeyDown);
-            // 
-            // pl_btnImpersonate
-            // 
+            this.pl_txtSendCommand.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Pl_txtSendCommand_KeyDown);
             this.pl_btnSendCommand.Location = new System.Drawing.Point(6, 48);
             this.pl_btnSendCommand.Name = "pl_btnImpersonate";
             this.pl_btnSendCommand.Size = new System.Drawing.Size(98, 23);
             this.pl_btnSendCommand.TabIndex = 37;
             this.pl_btnSendCommand.Text = "Do command:";
             this.pl_btnSendCommand.UseVisualStyleBackColor = true;
-            this.pl_btnSendCommand.Click += new System.EventHandler(this.pl_BtnSendCommand_Click);
-            // 
-            // pl_txtMessage
-            // 
+            this.pl_btnSendCommand.Click += new System.EventHandler(this.Pl_BtnSendCommand_Click);
             this.pl_txtMessage.BackColor = System.Drawing.SystemColors.Window;
             this.pl_txtMessage.Location = new System.Drawing.Point(115, 18);
             this.pl_txtMessage.Name = "pl_txtMessage";
             this.pl_txtMessage.Size = new System.Drawing.Size(485, 21);
             this.pl_txtMessage.TabIndex = 8;
-            this.pl_txtMessage.KeyDown += new System.Windows.Forms.KeyEventHandler(this.pl_txtMessage_KeyDown);
-            // 
-            // pl_btnMessage
-            // 
+            this.pl_txtMessage.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Pl_txtMessage_KeyDown);
             this.pl_btnMessage.Location = new System.Drawing.Point(6, 16);
             this.pl_btnMessage.Name = "pl_btnMessage";
             this.pl_btnMessage.Size = new System.Drawing.Size(98, 23);
             this.pl_btnMessage.TabIndex = 9;
             this.pl_btnMessage.Text = "Send message:";
             this.pl_btnMessage.UseVisualStyleBackColor = true;
-            this.pl_btnMessage.Click += new System.EventHandler(this.pl_BtnMessage_Click);
-            // 
-            // pl_gbActions
-            // 
+            this.pl_btnMessage.Click += new System.EventHandler(this.Pl_BtnMessage_Click);
             this.pl_gbActions.Controls.Add(this.pl_btnKill);
             this.pl_gbActions.Controls.Add(this.pl_numUndo);
             this.pl_gbActions.Controls.Add(this.pl_btnWarn);
@@ -1181,19 +863,13 @@ namespace MCGalaxy.Gui
             this.pl_gbActions.TabIndex = 65;
             this.pl_gbActions.TabStop = false;
             this.pl_gbActions.Text = "Actions";
-            // 
-            // pl_btnKill
-            // 
             this.pl_btnKill.Location = new System.Drawing.Point(8, 105);
             this.pl_btnKill.Name = "pl_btnKill";
             this.pl_btnKill.Size = new System.Drawing.Size(98, 23);
             this.pl_btnKill.TabIndex = 43;
             this.pl_btnKill.Text = "Kill";
             this.pl_btnKill.UseVisualStyleBackColor = true;
-            this.pl_btnKill.Click += new System.EventHandler(this.pl_BtnKill_Click);
-            // 
-            // pl_numUndo
-            // 
+            this.pl_btnKill.Click += new System.EventHandler(this.Pl_BtnKill_Click);
             this.pl_numUndo.BackColor = System.Drawing.SystemColors.Window;
             this.pl_numUndo.Location = new System.Drawing.Point(122, 149);
             this.pl_numUndo.Name = "pl_numUndo";
@@ -1202,90 +878,63 @@ namespace MCGalaxy.Gui
             this.pl_numUndo.Seconds = ((long)(1800));
             this.pl_numUndo.Text = "30m";
             this.pl_numUndo.Value = System.TimeSpan.Parse("00:30:00");
-            this.pl_numUndo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.pl_numUndo_KeyDown);
-            // 
-            // pl_btnWarn
-            // 
+            this.pl_numUndo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Pl_numUndo_KeyDown);
             this.pl_btnWarn.Location = new System.Drawing.Point(8, 18);
             this.pl_btnWarn.Name = "pl_btnWarn";
             this.pl_btnWarn.Size = new System.Drawing.Size(98, 23);
             this.pl_btnWarn.TabIndex = 10;
             this.pl_btnWarn.Text = "Warn";
             this.pl_btnWarn.UseVisualStyleBackColor = true;
-            this.pl_btnWarn.Click += new System.EventHandler(this.pl_BtnWarn_Click);
-            // 
-            // pl_btnRules
-            // 
+            this.pl_btnWarn.Click += new System.EventHandler(this.Pl_BtnWarn_Click);
             this.pl_btnRules.Location = new System.Drawing.Point(122, 105);
             this.pl_btnRules.Name = "pl_btnRules";
             this.pl_btnRules.Size = new System.Drawing.Size(98, 23);
             this.pl_btnRules.TabIndex = 39;
             this.pl_btnRules.Text = "Send Rules";
             this.pl_btnRules.UseVisualStyleBackColor = true;
-            this.pl_btnRules.Click += new System.EventHandler(this.pl_BtnRules_Click);
-            // 
-            // pl_btnKick
-            // 
+            this.pl_btnRules.Click += new System.EventHandler(this.Pl_BtnRules_Click);
             this.pl_btnKick.Location = new System.Drawing.Point(122, 18);
             this.pl_btnKick.Name = "pl_btnKick";
             this.pl_btnKick.Size = new System.Drawing.Size(98, 23);
             this.pl_btnKick.TabIndex = 4;
             this.pl_btnKick.Text = "Kick";
             this.pl_btnKick.UseVisualStyleBackColor = true;
-            this.pl_btnKick.Click += new System.EventHandler(this.pl_BtnKick_Click);
-            // 
-            // pl_btnBanIP
-            // 
+            this.pl_btnKick.Click += new System.EventHandler(this.Pl_BtnKick_Click);
             this.pl_btnBanIP.Location = new System.Drawing.Point(122, 47);
             this.pl_btnBanIP.Name = "pl_btnBanIP";
             this.pl_btnBanIP.Size = new System.Drawing.Size(98, 23);
             this.pl_btnBanIP.TabIndex = 6;
             this.pl_btnBanIP.Text = "IP Ban";
             this.pl_btnBanIP.UseVisualStyleBackColor = true;
-            this.pl_btnBanIP.Click += new System.EventHandler(this.pl_BtnIPBan_Click);
-            // 
-            // pl_btnUndo
-            // 
+            this.pl_btnBanIP.Click += new System.EventHandler(this.Pl_BtnIPBan_Click);
             this.pl_btnUndo.Location = new System.Drawing.Point(8, 148);
             this.pl_btnUndo.Name = "pl_btnUndo";
             this.pl_btnUndo.Size = new System.Drawing.Size(98, 23);
             this.pl_btnUndo.TabIndex = 41;
             this.pl_btnUndo.Text = "Undo:";
             this.pl_btnUndo.UseVisualStyleBackColor = true;
-            this.pl_btnUndo.Click += new System.EventHandler(this.pl_BtnUndo_Click);
-            // 
-            // pl_btnMute
-            // 
+            this.pl_btnUndo.Click += new System.EventHandler(this.Pl_BtnUndo_Click);
             this.pl_btnMute.Location = new System.Drawing.Point(8, 76);
             this.pl_btnMute.Name = "pl_btnMute";
             this.pl_btnMute.Size = new System.Drawing.Size(98, 23);
             this.pl_btnMute.TabIndex = 40;
             this.pl_btnMute.Text = "Mute";
             this.pl_btnMute.UseVisualStyleBackColor = true;
-            this.pl_btnMute.Click += new System.EventHandler(this.pl_BtnMute_Click);
-            // 
-            // pl_btnBan
-            // 
+            this.pl_btnMute.Click += new System.EventHandler(this.Pl_BtnMute_Click);
             this.pl_btnBan.Location = new System.Drawing.Point(8, 47);
             this.pl_btnBan.Name = "pl_btnBan";
             this.pl_btnBan.Size = new System.Drawing.Size(98, 23);
             this.pl_btnBan.TabIndex = 5;
             this.pl_btnBan.Text = "Ban";
             this.pl_btnBan.UseVisualStyleBackColor = true;
-            this.pl_btnBan.Click += new System.EventHandler(this.pl_BtnBan_Click);
-            // 
-            // pl_btnFreeze
-            // 
+            this.pl_btnBan.Click += new System.EventHandler(this.Pl_BtnBan_Click);
             this.pl_btnFreeze.Location = new System.Drawing.Point(122, 76);
             this.pl_btnFreeze.Name = "pl_btnFreeze";
             this.pl_btnFreeze.Size = new System.Drawing.Size(98, 23);
             this.pl_btnFreeze.TabIndex = 36;
             this.pl_btnFreeze.Text = "Freeze";
             this.pl_btnFreeze.UseVisualStyleBackColor = true;
-            this.pl_btnFreeze.Click += new System.EventHandler(this.pl_BtnFreeze_Click);
-            // 
-            // pl_statusBox
-            // 
+            this.pl_btnFreeze.Click += new System.EventHandler(this.Pl_BtnFreeze_Click);
             this.pl_statusBox.BackColor = System.Drawing.SystemColors.Window;
             this.pl_statusBox.Cursor = System.Windows.Forms.Cursors.Default;
             this.pl_statusBox.Font = new System.Drawing.Font("Calibri", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -1296,9 +945,6 @@ namespace MCGalaxy.Gui
             this.pl_statusBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.pl_statusBox.Size = new System.Drawing.Size(232, 188);
             this.pl_statusBox.TabIndex = 63;
-            // 
-            // pl_listBox
-            // 
             this.pl_listBox.BackColor = System.Drawing.SystemColors.Window;
             this.pl_listBox.ForeColor = System.Drawing.SystemColors.WindowText;
             this.pl_listBox.FormattingEnabled = true;
@@ -1306,19 +952,13 @@ namespace MCGalaxy.Gui
             this.pl_listBox.Name = "pl_listBox";
             this.pl_listBox.Size = new System.Drawing.Size(123, 446);
             this.pl_listBox.TabIndex = 62;
-            this.pl_listBox.Click += new System.EventHandler(this.pl_listBox_Click);
-            // 
-            // toolTip
-            // 
+            this.pl_listBox.Click += new System.EventHandler(this.Pl_listBox_Click);
             this.toolTip.AutoPopDelay = 8000;
             this.toolTip.InitialDelay = 500;
             this.toolTip.IsBalloon = true;
             this.toolTip.ReshowDelay = 100;
             this.toolTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             this.toolTip.ToolTipTitle = "Information";
-            // 
-            // Window
-            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(775, 523);
@@ -1401,9 +1041,7 @@ namespace MCGalaxy.Gui
         private System.Windows.Forms.TabPage logs_tabErr;
         private System.Windows.Forms.TabPage logs_tabGen;
         private System.Windows.Forms.TabControl logs_tab;
-
         #endregion
-
         private Button main_btnClose;
         private ContextMenuStrip icon_context;
         private ToolStripMenuItem icon_hideWindow;

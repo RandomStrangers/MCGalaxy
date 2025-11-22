@@ -1,20 +1,8 @@
-﻿namespace MCGalaxy.Gui.Popups
-{
-    partial class ColorSelector
-    {
-
-        /// <summary>
-        /// This method is required for Windows Forms designer support.
-        /// Do not change the method contents inside the source code editor. The Forms designer might
-        /// not be able to load this method if it was changed manually.
-        /// </summary>
-        private void InitializeComponent()
-        {
+namespace MCGalaxy.Gui.Popups {
+    partial class ColorSelector {
+        private void InitializeComponent() {
             this.btnCancel = new System.Windows.Forms.Button();
             this.SuspendLayout();
-            // 
-            // btnCancel
-            // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCancel.Location = new System.Drawing.Point(100, 100);
@@ -23,9 +11,6 @@
             this.btnCancel.TabIndex = 260;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
-            // 
-            // ColorPicker
-            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(200, 200);
