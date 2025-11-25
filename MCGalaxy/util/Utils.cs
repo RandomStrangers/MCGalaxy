@@ -48,10 +48,10 @@ namespace MCGalaxy
         {
             return Math.Max(Math.Min(value, hi), lo);
         }
-        /// <summary> Divides by 16, rounding up if there is a remainder. </summary>
-        public static int CeilDiv16(int x)
+        /// <summary> Divides x by y, rounding up if there is a remainder. </summary>
+        public static int CeilDiv(int x, int y)
         {
-            return (x + 15) / 16;
+            return (x + (y - 1)) / y;
         }
         public static List<string> ReadAllLinesList(string path)
         {
@@ -59,9 +59,9 @@ namespace MCGalaxy
             using (StreamReader r = new(path, Encoding.UTF8))
             {
                 string line;
-                while ((line = r.ReadLine()) != null)
-                {
-                    lines.Add(line);
+                while ((line = r.ReadLine()) != null) 
+                { 
+                    lines.Add(line); 
                 }
             }
             return lines;
@@ -70,12 +70,12 @@ namespace MCGalaxy
         {
             // Throws an exception when called on a dead thread,
             //  which can very rarely happen
-            try
-            {
-                thread.IsBackground = true;
-            }
-            catch
-            {
+            try 
+            { 
+                thread.IsBackground = true; 
+            } 
+            catch 
+            { 
             }
         }
     }
@@ -150,7 +150,7 @@ namespace MCGalaxy
                 {
                     throw new EndOfStreamException("End of stream reading data");
                 }
-                offset += read;
+                offset += read; 
                 count -= read;
             }
         }
