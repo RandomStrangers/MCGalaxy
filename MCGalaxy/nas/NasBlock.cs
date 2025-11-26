@@ -17,7 +17,7 @@ namespace NotAwesomeSurvival
 {
     public partial class NasBlock
     {
-        public static NasBlock[] blocks = new NasBlock[Block.MaxRaw + 1];
+        public static NasBlock[] blocks = new NasBlock[768];
         public static NasBlock[] blocksIndexedByServerushort;
         public static NasBlock Default;
         public static int[] DefaultDurabilities = new int[(int)Material.Count];
@@ -34,7 +34,7 @@ namespace NotAwesomeSurvival
             {
                 id = parentID;
             }
-            return GetBlockName(np, Block.FromRaw(id)).Split('-')[0];
+            return GetBlockName(np, Nas.FromRaw(id)).Split('-')[0];
         }
         public static string GetBlockName(NasPlayer np, ushort block)
         {

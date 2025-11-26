@@ -18,33 +18,12 @@
 using System;
 using System.IO;
 using System.IO.Compression;
-
 namespace MCGalaxy.Util.Imaging
 {
     public unsafe class PngDecoder : ImageDecoder
     {
         int bytesPerPixel, scanline_size;
         RowExpander rowExpander;
-        /*########################################################################################################################*
-         *------------------------------------------------------PNG common---------------------------------------------------------*
-         *#########################################################################################################################*/
-        const int IHDR_SIZE = 13, 
-            MAX_PALETTE = 256, 
-            MAX_PNG_DIMS = 32768,
-            PNG_COLOR_GRAYSCALE = 0,
-            PNG_COLOR_RGB = 2,
-            PNG_COLOR_INDEXED = 3,
-            PNG_COLOR_GRAYSCALE_A = 4,
-            PNG_COLOR_RGB_A = 6,
-            PNG_FILTER_NONE = 0,
-            PNG_FILTER_SUB = 1,
-            PNG_FILTER_UP = 2,
-            PNG_FILTER_AVERAGE = 3,
-            PNG_FILTER_PAETH = 4;
-        const byte SCALE_1BPP = 255, 
-            SCALE_2BPP = 85, 
-            SCALE_4BPP = 17;
-        // PNG spec - 5.2 PNG signature
         static readonly byte[] pngSig = new byte[] 
         { 
             137, 80, 78, 71, 13, 10, 26, 10 
@@ -62,19 +41,19 @@ namespace MCGalaxy.Util.Imaging
             switch (bitsPerSample)
             {
                 case 1:
-                    r *= SCALE_1BPP; 
-                    g *= SCALE_1BPP; 
-                    b *= SCALE_1BPP; 
+                    r *= 255; 
+                    g *= 255; 
+                    b *= 255; 
                     break;
                 case 2:
-                    r *= SCALE_2BPP; 
-                    g *= SCALE_2BPP; 
-                    b *= SCALE_2BPP; 
+                    r *= 85; 
+                    g *= 85; 
+                    b *= 85; 
                     break;
                 case 4:
-                    r *= SCALE_4BPP; 
-                    g *= SCALE_4BPP; 
-                    b *= SCALE_4BPP; 
+                    r *= 17; 
+                    g *= 17; 
+                    b *= 17; 
                     break;
             }
             return new((byte)r, (byte)g, (byte)b, 0);
@@ -100,21 +79,20 @@ namespace MCGalaxy.Util.Imaging
                     fourCC = MemUtils.ReadI32_BE(src, offset + 4);
                 switch (fourCC)
                 {
-                    // 11.2.2 IHDR Image header
                     case ('I' << 24) | ('H' << 16) | ('D' << 8) | 'R':
                         {
-                            if (dataSize != IHDR_SIZE)
+                            if (dataSize != 13)
                             {
                                 Fail("Header size");
                             }
-                            offset = AdvanceOffset(IHDR_SIZE);
+                            offset = AdvanceOffset(13);
                             bmp.Width = MemUtils.ReadI32_BE(src, offset + 0);
                             bmp.Height = MemUtils.ReadI32_BE(src, offset + 4);
-                            if (bmp.Width < 0 || bmp.Width > MAX_PNG_DIMS)
+                            if (bmp.Width < 0 || bmp.Width > 32768)
                             {
                                 Fail("too wide");
                             }
-                            if (bmp.Height < 0 || bmp.Height > MAX_PNG_DIMS)
+                            if (bmp.Height < 0 || bmp.Height > 32768)
                             {
                                 Fail("too tall");
                             }
@@ -146,10 +124,9 @@ namespace MCGalaxy.Util.Imaging
                             bmp.AllocatePixels();
                         }
                         break;
-                    // 11.2.3 PLTE Palette
                     case ('P' << 24) | ('L' << 16) | ('T' << 8) | 'E':
                         {
-                            if (dataSize > MAX_PALETTE * 3)
+                            if (dataSize > 256 * 3)
                             {
                                 Fail("Palette size");
                             }
@@ -167,42 +144,38 @@ namespace MCGalaxy.Util.Imaging
                             }
                         }
                         break;
-                    // 11.3.2.1 tRNS Transparency
                     case ('t' << 24) | ('R' << 16) | ('N' << 8) | 'S':
                         {
-                            if (colorspace == PNG_COLOR_GRAYSCALE)
+                            if (colorspace == 0)
                             {
                                 if (dataSize != 2)
                                 {
                                     Fail("tRNS size");
                                 }
                                 offset = AdvanceOffset(dataSize);
-                                // RGB is always two bytes
                                 byte rgb = src[offset + 1];
                                 trnsColor = ExpandRGB(bitsPerSample, rgb, rgb, rgb);
                             }
-                            else if (colorspace == PNG_COLOR_INDEXED)
+                            else if (colorspace == 3)
                             {
-                                if (dataSize > MAX_PALETTE)
+                                if (dataSize > 256)
                                 {
                                     Fail("tRNS size");
                                 }
                                 offset = AdvanceOffset(dataSize);
                                 palette ??= CreatePalette();
-                                // Set alpha component of palette
                                 for (int i = 0; i < dataSize; i++)
                                 {
                                     palette[i].A = src[offset + i];
                                 }
                             }
-                            else if (colorspace == PNG_COLOR_RGB)
+                            else if (colorspace == 2)
                             {
                                 if (dataSize != 6)
                                 {
                                     Fail("tRNS size");
                                 }
                                 offset = AdvanceOffset(dataSize);
-                                // R,G,B are always two bytes
                                 byte r = src[offset + 1],
                                     g = src[offset + 3],
                                     b = src[offset + 5];
@@ -214,7 +187,6 @@ namespace MCGalaxy.Util.Imaging
                             }
                         }
                         break;
-                    // 11.2.4 IDAT Image data
                     case ('I' << 24) | ('D' << 16) | ('A' << 8) | 'T':
                         {
                             if (!read_zlib_header)
@@ -233,7 +205,7 @@ namespace MCGalaxy.Util.Imaging
                         AdvanceOffset(dataSize);
                         break;
                 }
-                AdvanceOffset(4); // Skip CRC32
+                AdvanceOffset(4);
             }
             all_idats.Position = 0;
             using (DeflateStream comp = new(all_idats, CompressionMode.Decompress))
@@ -244,7 +216,7 @@ namespace MCGalaxy.Util.Imaging
         }
         static Pixel[] CreatePalette()
         {
-            Pixel[] pal = new Pixel[MAX_PALETTE];
+            Pixel[] pal = new Pixel[256];
             for (int i = 0; i < pal.Length; i++)
             {
                 pal[i] = Pixel.BLACK;
@@ -257,10 +229,9 @@ namespace MCGalaxy.Util.Imaging
             {
                 Fail("no data");
             }
-            // TODO offset by 1 so one less read call
             byte[] line = new byte[scanline_size],
                 tmp, prior = new byte[scanline_size],
-                one = new byte[1]; // stream.ReadByte() allocates one byte array each time called
+                one = new byte[1];
             fixed (Pixel* dst = bmp.pixels)
             {
                 for (int y = 0; y < bmp.Height; y++)
@@ -271,14 +242,13 @@ namespace MCGalaxy.Util.Imaging
                         Fail("scanline");
                     }
                     byte method = one[0];
-                    if (method > PNG_FILTER_PAETH)
+                    if (method > 4)
                     {
                         Fail("Scanline");
                     }
                     StreamUtils.ReadFully(src, line, 0, scanline_size);
                     ReconstructRow(method, bytesPerPixel, line, prior, scanline_size);
                     rowExpander(bmp.Width, palette, line, dst + y * bmp.Width);
-                    // Swap current and prior line
                     tmp = line;
                     line = prior;
                     prior = tmp;
@@ -290,7 +260,6 @@ namespace MCGalaxy.Util.Imaging
             }
             return;
         }
-        // Sets alpha to 0 for any pixels in the bitmap whose RGB is same as color
         static void MakeTransparent(Pixel[] img, Pixel color)
         {
             for (int i = 0; i < img.Length; i++)
@@ -319,7 +288,6 @@ namespace MCGalaxy.Util.Imaging
             {
                 Fail("Zlib method");
             }
-            // Upper 4 bits are window size
             byte flags = src[offset + 1];
             if ((flags & 0x20) != 0)
             {
@@ -327,25 +295,24 @@ namespace MCGalaxy.Util.Imaging
             }
             read_zlib_header = true;
         }
-        #region Row filtering        
         static void ReconstructRow(byte type, int bytesPerPixel, byte[] line, byte[] prior, int lineLen)
         {
             int i, j;
             switch (type)
             {
-                case PNG_FILTER_SUB:
+                case 1:
                     for (i = bytesPerPixel, j = 0; i < lineLen; i++, j++)
                     {
                         line[i] += line[j];
                     }
                     return;
-                case PNG_FILTER_UP:
+                case 2:
                     for (i = 0; i < lineLen; i++)
                     {
                         line[i] += prior[i];
                     }
                     return;
-                case PNG_FILTER_AVERAGE:
+                case 3:
                     for (i = 0; i < bytesPerPixel; i++)
                     {
                         line[i] += (byte)(prior[i] >> 1);
@@ -355,8 +322,7 @@ namespace MCGalaxy.Util.Imaging
                         line[i] += (byte)((prior[i] + line[j]) >> 1);
                     }
                     return;
-                case PNG_FILTER_PAETH:
-                    /* TODO: verify this is right */
+                case 4:
                     for (i = 0; i < bytesPerPixel; i++)
                     {
                         line[i] += prior[i];
@@ -384,8 +350,6 @@ namespace MCGalaxy.Util.Imaging
                     return;
             }
         }
-        #endregion
-        #region Row expansion
         delegate void RowExpander(int width, Pixel[] palette, byte[] src, Pixel* dst);
         static int Get_1BPP(byte[] src, int i)
         {
@@ -406,7 +370,7 @@ namespace MCGalaxy.Util.Imaging
         {
             for (int i = 0; i < width; i++)
             {
-                byte rgb = (byte)(Get_1BPP(src, i) * SCALE_1BPP);
+                byte rgb = (byte)(Get_1BPP(src, i) * 255);
                 dst[i] = new(rgb, rgb, rgb, 255);
             }
         }
@@ -414,7 +378,7 @@ namespace MCGalaxy.Util.Imaging
         {
             for (int i = 0; i < width; i++)
             {
-                byte rgb = (byte)(Get_2BPP(src, i) * SCALE_2BPP);
+                byte rgb = (byte)(Get_2BPP(src, i) * 85);
                 dst[i] = new(rgb, rgb, rgb, 255);
             }
         }
@@ -422,7 +386,7 @@ namespace MCGalaxy.Util.Imaging
         {
             for (int i = 0; i < width; i++)
             {
-                byte rgb = (byte)(Get_4BPP(src, i) * SCALE_4BPP);
+                byte rgb = (byte)(Get_4BPP(src, i) * 17);
                 dst[i] = new(rgb, rgb, rgb, 255);
             }
         }
@@ -496,7 +460,7 @@ namespace MCGalaxy.Util.Imaging
         {
             return colorspace switch
             {
-                PNG_COLOR_GRAYSCALE => bitsPerSample switch
+                0 => bitsPerSample switch
                 {
                     1 => Expand_GRAYSCALE_1,
                     2 => Expand_GRAYSCALE_2,
@@ -504,12 +468,12 @@ namespace MCGalaxy.Util.Imaging
                     8 => Expand_GRAYSCALE_8,
                     _ => null,
                 },
-                PNG_COLOR_RGB => bitsPerSample switch
+                2 => bitsPerSample switch
                 {
                     8 => Expand_RGB_8,
                     _ => null,
                 },
-                PNG_COLOR_INDEXED => bitsPerSample switch
+                3 => bitsPerSample switch
                 {
                     1 => Expand_INDEXED_1,
                     2 => Expand_INDEXED_2,
@@ -517,12 +481,12 @@ namespace MCGalaxy.Util.Imaging
                     8 => Expand_INDEXED_8,
                     _ => null,
                 },
-                PNG_COLOR_GRAYSCALE_A => bitsPerSample switch
+                4 => bitsPerSample switch
                 {
                     8 => Expand_GRAYSCALE_A_8,
                     _ => null,
                 },
-                PNG_COLOR_RGB_A => bitsPerSample switch
+                6 => bitsPerSample switch
                 {
                     8 => Expand_RGB_A_8,
                     _ => null,
@@ -530,6 +494,5 @@ namespace MCGalaxy.Util.Imaging
                 _ => null,
             };
         }
-        #endregion
     }
 }

@@ -22,7 +22,7 @@ namespace NotAwesomeSurvival
         {
             for (ushort dy = 0; dy < height + size - 1; dy++)
             {
-                output(x, (ushort)(y + dy), z, Block.FromRaw(242));
+                output(x, (ushort)(y + dy), z, Nas.FromRaw(242));
             }
             for (int dy = -size; dy <= size; ++dy)
             {
@@ -36,7 +36,7 @@ namespace NotAwesomeSurvival
                             ushort xx = (ushort)(x + dx), yy = (ushort)(y + dy + height), zz = (ushort)(z + dz);
                             if (xx != x || zz != z || dy >= size - 1)
                             {
-                                output(xx, yy, zz, Block.FromRaw(103));
+                                output(xx, yy, zz, Nas.FromRaw(103));
                             }
                         }
                     }
@@ -82,18 +82,18 @@ namespace NotAwesomeSurvival
                             {
                                 if (j <= height && rnd.Next(2) == 0)
                                 {
-                                    output(num2, y2, num3, Block.FromRaw(146));
+                                    output(num2, y2, num3, Nas.FromRaw(146));
                                 }
                             }
                             else
                             {
-                                output(num2, y2, num3, Block.FromRaw(146));
+                                output(num2, y2, num3, Nas.FromRaw(146));
                                 if (rnd.Next(15) == 0)
                                 {
-                                    output(num2, (ushort)(height - 3 + y), num3, Block.FromRaw(107));
+                                    output(num2, (ushort)(height - 3 + y), num3, Nas.FromRaw(107));
                                     if (rnd.Next(3) == 0)
                                     {
-                                        output(num2, (ushort)(height - 4 + y), num3, Block.FromRaw(107));
+                                        output(num2, (ushort)(height - 4 + y), num3, Nas.FromRaw(107));
                                     }
                                 }
                             }
@@ -103,15 +103,9 @@ namespace NotAwesomeSurvival
             }
         }
     }
-}
-namespace MCGalaxy.Generator.Foliage
-{
     public class SpruceTree : Tree
     {
         public int branchBaseHeight, branchAmount;
-        public const int maxExtent = 5,
-            maxBranchHeight = 8,
-            maxCluster = 2;
         public List<Vec3S32> branch = new();
         public override long EstimateBlocksAffected()
         {
@@ -150,7 +144,8 @@ namespace MCGalaxy.Generator.Foliage
                 p2 = new(x + num, y + num5, z + num2);
             Line(p, p2, output);
             int num6 = num3;
-            Vec3S32[] marks = new Vec3S32[] {
+            Vec3S32[] marks = new Vec3S32[] 
+            {
                 new(x + num - num6, y + num5 - num6, z + num2 - num6),
                 new(x + num + num6, y + num5 + num6, z + num2 + num6)
             };
@@ -167,14 +162,11 @@ namespace MCGalaxy.Generator.Foliage
             ThingDrawOp.DrawLine(p1.X, p1.Y, p1.Z, 10000, p2.X, p2.Y, p2.Z, branch);
             foreach (Vec3S32 current in branch)
             {
-                output((ushort)current.X, (ushort)current.Y, (ushort)current.Z, Block.FromRaw(250));
+                output((ushort)current.X, (ushort)current.Y, (ushort)current.Z, Nas.FromRaw(250));
             }
             branch.Clear();
         }
     }
-}
-namespace MCGalaxy.Drawing.Ops
-{
     public class ThingDrawOp : DrawOp
     {
         public struct Line
@@ -182,7 +174,6 @@ namespace MCGalaxy.Drawing.Ops
             public int len2, dir, axis;
         }
         public bool WallsMode;
-        public int MaxLength = 2147483647;
         public override string Name
         {
             get
@@ -195,7 +186,7 @@ namespace MCGalaxy.Drawing.Ops
             Vec3U16 vec3U = Clamp(marks[0]),
                 vec3U2 = Clamp(marks[1]);
             List<Vec3S32> list = new();
-            DrawLine(vec3U.X, vec3U.Y, vec3U.Z, MaxLength, vec3U2.X, vec3U2.Y, vec3U2.Z, list);
+            DrawLine(vec3U.X, vec3U.Y, vec3U.Z, 2147483647, vec3U2.X, vec3U2.Y, vec3U2.Z, list);
             if (WallsMode)
             {
                 ushort y = vec3U.Y,
@@ -229,10 +220,10 @@ namespace MCGalaxy.Drawing.Ops
             if (WallsMode)
             {
                 int val = (int)Math.Ceiling(Math.Sqrt(num * num + num3 * num3));
-                return Math.Min(val, MaxLength) * (Math.Abs(vec3S2.Y - vec3S.Y) + 1);
+                return Math.Min(val, 2147483647) * (Math.Abs(vec3S2.Y - vec3S.Y) + 1);
             }
             int val2 = (int)Math.Ceiling(Math.Sqrt(num * num + num2 * num2 + num3 * num3));
-            return Math.Min(val2, MaxLength);
+            return Math.Min(val2, 2147483647);
         }
         public static void DrawLine(int x1, int y1, int z1, int maxLen, int x2, int y2, int z2, List<Vec3S32> buffer)
         {

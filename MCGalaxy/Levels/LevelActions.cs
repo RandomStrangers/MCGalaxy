@@ -25,208 +25,176 @@ using MCGalaxy.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
-
 namespace MCGalaxy
 {
     public static class LevelActions
     {
-        static string BlockPropsLvlPath(string map) { return Paths.BlockPropsPath("_" + map); }
-        static string BlockPropsOldPath(string map) { return Paths.BlockPropsPath("lvl_" + map); }
-
-        public static bool Backup(string map, string backupName)
+        static string BlockPropsLvlPath(string map) 
+        { 
+            return Paths.BlockPropsPath("_" + map); 
+        }
+        static string BlockPropsOldPath(string map) 
+        { 
+            return Paths.BlockPropsPath("lvl_" + map); 
+        }
+        public static bool Backup(string map, string backupName, string ext = ".lvl")
         {
+            if (ext.CaselessContains(".lvl"))
+            {
+                ext = LevelInfo.GetExt(map);
+            }
             string basePath = LevelInfo.BackupBasePath(map);
-            if (!Directory.Exists(basePath)) Directory.CreateDirectory(basePath);
+            if (!Directory.Exists(basePath))
+            {
+                Directory.CreateDirectory(basePath);
+            }
             string path = Path.Combine(basePath, backupName);
             Directory.CreateDirectory(path);
-
-            bool lvl = DoAction(LevelInfo.MapPath(map), Path.Combine(path, map + ".lvl"), action_copy);
-            bool props = DoAction(LevelInfo.PropsPath(map), Path.Combine(path, "map.properties"), action_copy);
-            bool defs = DoAction(Paths.MapBlockDefs(map), Path.Combine(path, "blockdefs.json"), action_copy);
-            bool blkOld = DoAction(BlockPropsOldPath(map), Path.Combine(path, "blockprops.txt"), action_copy);
-            bool blkCur = DoAction(BlockPropsLvlPath(map), Path.Combine(path, "blockprops.txt"), action_copy);
-            bool bots = DoAction(Paths.BotsPath(map), Path.Combine(path, "bots.json"), action_copy);
-
+            bool lvl = DoAction(LevelInfo.MapPath(map, ext), Path.Combine(path, map + ext), 2),
+                props = DoAction(LevelInfo.PropsPath(map), Path.Combine(path, "map.properties"), 2),
+                defs = DoAction(Paths.MapBlockDefs(map), Path.Combine(path, "blockdefs.json"), 2),
+                blkOld = DoAction(BlockPropsOldPath(map), Path.Combine(path, "blockprops.txt"), 2),
+                blkCur = DoAction(BlockPropsLvlPath(map), Path.Combine(path, "blockprops.txt"), 2),
+                bots = DoAction(Paths.BotsPath(map), Path.Combine(path, "bots.json"), 2);
             return lvl && props && defs && blkOld && blkCur && bots;
         }
-
-
         /// <summary> Renames the given level and its associated metadata. Does not unload. </summary>
         /// <remarks> Backups are NOT renamed. </remarks>
         public static bool Rename(Player p, string src, string dst)
         {
             if (LevelInfo.MapExists(dst))
             {
-                p.Message("&WLevel \"{0}\" already exists.", dst); return false;
+                p.Message("&WLevel \"{0}\" already exists.", dst);
+                return false;
             }
-
             Level lvl = LevelInfo.FindExact(src);
             if (lvl == Server.mainLevel)
             {
-                p.Message("Cannot rename the main level."); return false;
+                p.Message("Cannot rename the main level."); 
+                return false;
             }
-
             List<Player> players = null;
-            if (lvl != null) players = lvl.getPlayers();
-
+            if (lvl != null)
+            {
+                players = lvl.getPlayers();
+            }
             if (lvl != null && !lvl.Unload())
             {
                 p.Message("Unable to rename the level, because it could not be unloaded. " +
                           "A game may currently be running on it.");
                 return false;
             }
-
-            //File.Move(LevelInfo.MapPath(src), LevelInfo.MapPath(dst));
             FileIO.TryMove(LevelInfo.MapPath(src), LevelInfo.MapPath(dst));
-            DoAll(src, dst, action_move);
-
-            // TODO: Should we move backups still
-            try
-            {
-                //MoveBackups(src, dst);
-            }
-            catch
-            {
-            }
-
+            DoAll(src, dst, 1);
             RenameDatabaseTables(p, src, dst);
             BlockDBFile.MoveBackingFile(src, dst);
             OnLevelRenamedEvent.Call(src, dst);
-            if (players == null) return true;
-
-            // Move all the old players to the renamed map
+            if (players == null)
+            {
+                return true;
+            }
             Load(p, dst, false);
             foreach (Player pl in players)
+            {
                 PlayerActions.ChangeMap(pl, dst);
+            }
             return true;
         }
-
         static void RenameDatabaseTables(Player p, string src, string dst)
         {
             if (Database.TableExists("Block" + src))
             {
                 Database.RenameTable("Block" + src, "Block" + dst);
             }
-            object srcLocker = ThreadSafeCache.DBCache.GetLocker(src);
-            object dstLocker = ThreadSafeCache.DBCache.GetLocker(dst);
-
+            object srcLocker = ThreadSafeCache.DBCache.GetLocker(src),
+                dstLocker = ThreadSafeCache.DBCache.GetLocker(dst);
             lock (srcLocker)
+            {
                 lock (dstLocker)
                 {
                     Portal.MoveAll(src, dst);
                     MessageBlock.MoveAll(src, dst);
-
                     if (Database.TableExists("Zone" + src))
                     {
                         Database.RenameTable("Zone" + src, "Zone" + dst);
                     }
                 }
-
+            }
             p.Message("Updating portals that go to {0}..", src);
             List<string> tables = Database.Backend.AllTables();
             foreach (string table in tables)
             {
-                if (!table.StartsWith("Portals")) continue;
-
+                if (!table.StartsWith("Portals"))
+                {
+                    continue;
+                }
                 Database.UpdateRows(table, "ExitMap=@1",
                                     "WHERE ExitMap=@0", src, dst);
             }
         }
-
-        /*static void MoveBackups(string src, string dst) {
-            string srcBase = LevelInfo.BackupBasePath(src);
-            string dstBase = LevelInfo.BackupBasePath(dst);
-            if (!Directory.Exists(srcBase)) return;
-            Directory.CreateDirectory(dstBase);
-            
-            string[] backups = Directory.GetDirectories(srcBase);
-            for (int i = 0; i < backups.Length; i++) {
-                string name = LevelInfo.BackupNameFrom(backups[i]);
-                string srcFile = LevelInfo.BackupFilePath(src, name);
-                string dstFile = LevelInfo.BackupFilePath(dst, name);
-                string dstDir = LevelInfo.BackupDirPath(dst, name);
-                
-                Directory.CreateDirectory(dstDir);
-                //File.Move(srcFile, dstFile);
-                FileIO.TryMove(srcFile, dstFile);
-                Directory.Delete(backups[i]);
-            }
-            Directory.Delete(srcBase);
-        }*/
-
-
         /// <summary> Deletes a level and its associated metadata. </summary>
         public static bool Delete(Player p, string map)
         {
             Level lvl = LevelInfo.FindExact(map);
             if (lvl == Server.mainLevel)
             {
-                p.Message("Cannot delete the main level."); return false;
+                p.Message("Cannot delete the main level."); 
+                return false;
             }
-
             if (lvl != null && !lvl.Unload())
             {
                 p.Message("Unable to delete the level, because it could not be unloaded. " +
                           "A game may currently be running on it.");
                 return false;
             }
-
             p.Message("Created backup.");
             if (!Directory.Exists("levels/deleted"))
+            {
                 Directory.CreateDirectory("levels/deleted");
-
+            }
             if (File.Exists(Paths.DeletedMapFile(map)))
             {
                 int num = 0;
-                while (File.Exists(Paths.DeletedMapFile(map + num))) num++;
-
-                //File.Move(LevelInfo.MapPath(map), Paths.DeletedMapFile(map + num));
+                while (File.Exists(Paths.DeletedMapFile(map + num)))
+                {
+                    num++;
+                }
                 FileIO.TryMove(LevelInfo.MapPath(map), Paths.DeletedMapFile(map + num));
             }
             else
             {
-                //File.Move(LevelInfo.MapPath(map), Paths.DeletedMapFile(map));
                 FileIO.TryMove(LevelInfo.MapPath(map), Paths.DeletedMapFile(map));
             }
-
-            DoAll(map, "", action_delete);
+            DoAll(map, "", 0);
             DeleteDatabaseTables(map);
             BlockDBFile.DeleteBackingFile(map);
             OnLevelDeletedEvent.Call(map);
             return true;
         }
-
         /// <summary>
         /// Deletes the backup of the given map, if found. 
         /// Supports LevelInfo.LATEST_MUSEUM_FLAG as backup to return latest backup path.
         /// </summary>
         public static void DeleteBackup(Player p, string map, string backup)
         {
-            if (!LevelInfo.GetBackupPath(p, map, backup, out _)) return;
-
+            if (!LevelInfo.GetBackupPath(p, map, backup, out _))
+            {
+                return;
+            }
             foreach (Player pl in PlayerInfo.Online.Items)
             {
-                //Find if any player is in a museum of the level backup being deleted
                 if (pl.level.MapName.CaselessEq(map) && pl.level.IsMuseum)
                 {
-                    //Move everyone out of that museum.
-                    //Since Unload does not move players if it's a museum, call it manually
                     pl.level.MovePlayersToMain();
                     pl.level.Unload(true, false);
-                    //TODO: Only move players out of the museum if the backup being deleted actually matches their museum
-                    //It really doesn't look like the code was designed to be able to do this
                 }
             }
-
-            //Directory.Delete(LevelInfo.BackupDirPath(map, backup), true);
             FileIO.TryDeleteDirectory(LevelInfo.BackupDirPath(map, backup), true);
             p.Message("Deleted backup {0}.", backup);
         }
-
         static void DeleteDatabaseTables(string map)
         {
             Database.DeleteTable("Block" + map);
-
             object locker = ThreadSafeCache.DBCache.GetLocker(map);
             lock (locker)
             {
@@ -235,70 +203,63 @@ namespace MCGalaxy
                 Database.DeleteTable("Zone" + map);
             }
         }
-
-
         public static void Replace(Level old, Level lvl)
         {
             old.SaveBlockDBChanges();
             LevelInfo.Remove(old);
             LevelInfo.Add(lvl);
-
             old.SetPhysics(0);
             old.ClearPhysics();
             lvl.StartPhysics();
-
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                if (pl.level != old) continue;
+                if (pl.level != old)
+                {
+                    continue;
+                }
                 pl.level = lvl;
                 PlayerActions.ReloadMap(pl);
             }
-
             old.Unload(true, false);
             if (old == Server.mainLevel)
+            {
                 Server.mainLevel = lvl;
+            }
         }
-
-
         /// <summary> Copies a level and its related metadata. </summary>
         /// <remarks> Backups and BlockDB are NOT copied. </remarks>
         public static bool Copy(Player p, string src, string dst)
         {
             if (LevelInfo.MapExists(dst))
             {
-                p.Message("&WLevel \"{0}\" already exists.", dst); return false;
+                p.Message("&WLevel \"{0}\" already exists.", dst); 
+                return false;
             }
-
-            // Make sure any changes to live map are saved first
             Level lvl = LevelInfo.FindExact(src);
             if (lvl != null && !lvl.Save(true))
             {
                 p.Message("&WUnable to save {0}! Some recent block changes may not be copied.", src);
             }
-
-            //File.Copy(LevelInfo.MapPath(src), LevelInfo.MapPath(dst));
             FileIO.TryCopy(LevelInfo.MapPath(src), LevelInfo.MapPath(dst));
-            DoAll(src, dst, action_copy);
+            DoAll(src, dst, 2);
             CopyDatabaseTables(src, dst);
             OnLevelCopiedEvent.Call(src, dst);
             return true;
         }
-
         static void CopyDatabaseTables(string src, string dst)
         {
-            object srcLocker = ThreadSafeCache.DBCache.GetLocker(src);
-            object dstLocker = ThreadSafeCache.DBCache.GetLocker(dst);
-
+            object srcLocker = ThreadSafeCache.DBCache.GetLocker(src),
+                dstLocker = ThreadSafeCache.DBCache.GetLocker(dst);
             lock (srcLocker)
+            {
                 lock (dstLocker)
                 {
                     Portal.CopyAll(src, dst);
                     MessageBlock.CopyAll(src, dst);
                 }
+            }
         }
-
-
         /// <summary> Reloads the given level for all players in that level </summary>
         /// <param name="src"> The player that triggered the reload </param>
         /// <param name="announce"> Whether to show a message in chat </param>
@@ -307,10 +268,15 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {
-                if (p.level != lvl) continue;
+                if (p.level != lvl)
+                {
+                    continue;
+                }
                 PlayerActions.ReloadMap(p);
-                if (!announce) continue;
-
+                if (!announce)
+                {
+                    continue;
+                }
                 if (src == null || !p.CanSee(src))
                 {
                     p.Message("&bMap reloaded");
@@ -325,11 +291,6 @@ namespace MCGalaxy
                 }
             }
         }
-
-        const byte action_delete = 0;
-        const byte action_move = 1;
-        const byte action_copy = 2;
-
         static void DoAll(string src, string dst, byte action)
         {
             DoAction(LevelInfo.MapPath(src) + ".backup",
@@ -347,25 +308,24 @@ namespace MCGalaxy
             DoAction(Paths.BotsPath(src),
                      Paths.BotsPath(dst), action);
         }
-
         static bool DoAction(string src, string dst, byte action)
         {
-            if (!File.Exists(src)) return true;
+            if (!File.Exists(src))
+            {
+                return true;
+            }
             try
             {
-                if (action == action_delete)
+                if (action == 0)
                 {
-                    //File.Delete(src);
                     FileIO.TryDelete(src);
                 }
-                else if (action == action_move)
+                else if (action == 1)
                 {
-                    //File.Move(src, dst);
                     FileIO.TryMove(src, dst);
                 }
-                else if (action == action_copy)
+                else if (action == 2)
                 {
-                    //File.Copy(src, dst, true);
                     FileIO.TryCopy(src, dst, true);
                 }
                 return true;
@@ -376,31 +336,33 @@ namespace MCGalaxy
                 return false;
             }
         }
-
-
         public static Level Load(Player p, string map, bool announce)
         {
             map = map.ToLower();
             Level cur = LevelInfo.FindExact(map);
             if (cur != null)
             {
-                p.Message("&WLevel {0} &Wis already loaded.", cur.ColoredName); return null;
+                p.Message("&WLevel {0} &Wis already loaded.", cur.ColoredName); 
+                return null;
             }
-
             try
             {
                 Level lvl = ReadLevel(p, map);
-                if (lvl == null || !lvl.CanJoin(p)) return null;
-
+                if (lvl == null || !lvl.CanJoin(p))
+                {
+                    return null;
+                }
                 cur = LevelInfo.FindExact(map);
                 if (cur != null)
                 {
-                    p.Message("&WLevel {0} &Wis already loaded.", cur.ColoredName); return null;
+                    p.Message("&WLevel {0} &Wis already loaded.", cur.ColoredName); 
+                    return null;
                 }
-
                 LevelInfo.Add(lvl);
-                if (!announce) return lvl;
-
+                if (!announce)
+                {
+                    return lvl;
+                }
                 string autoloadMsg = "Level " + lvl.ColoredName + " &Sloaded.";
                 Chat.Message(ChatScope.All, autoloadMsg, null, Chat.FilterVisible(p));
                 return lvl;
@@ -410,31 +372,41 @@ namespace MCGalaxy
                 Server.DoGC();
             }
         }
-
         static Level ReadBackup(Player p, string map, string path, string type)
         {
             Logger.Log(LogType.Warning, "Attempting to load {1} for {0}", map, type);
             Level lvl = Level.Load(map, path);
-
-            if (lvl != null) return lvl;
+            if (lvl != null)
+            {
+                return lvl;
+            }
             p.Message("&WLoading {1} of {0} failed.", map, type);
             return null;
         }
-
         static Level ReadLevel(Player p, string map)
         {
             Level lvl = Level.Load(map);
-            if (lvl != null) return lvl;
-
+            if (lvl != null)
+            {
+                return lvl;
+            }
             string path = LevelInfo.MapPath(map) + ".backup";
-            if (!File.Exists(path)) { p.Message("Level \"{0}\" does not exist", map); return lvl; }
+            if (!File.Exists(path)) 
+            { 
+                p.Message("Level \"{0}\" does not exist", map); 
+                return lvl; 
+            }
             lvl = ReadBackup(p, map, path, "backup copy");
-            if (lvl != null) return lvl;
-
+            if (lvl != null)
+            {
+                return lvl;
+            }
             path = Paths.PrevMapFile(map);
             lvl = ReadBackup(p, map, path, "previous save");
-            if (lvl != null) return lvl;
-
+            if (lvl != null)
+            {
+                return lvl;
+            }
             string backupDir = LevelInfo.BackupBasePath(map);
             if (Directory.Exists(backupDir))
             {
@@ -448,47 +420,40 @@ namespace MCGalaxy
             }
             return lvl;
         }
-
-
         public static Level LoadMuseum(Player _, string name, string mapName, string path)
         {
             Level lvl = GetMuseum(name, path);
             lvl.MapName = mapName;
             lvl.IsMuseum = true;
-
             Level.LoadMetadata(lvl);
             lvl.BuildAccess.Min = LevelPermission.Console;
             lvl.Config.Physics = 0;
             return lvl;
         }
-
         static Level GetMuseum(string name, string path)
         {
             Player[] players = PlayerInfo.Online.Items;
-            // Since museums are essentially readonly anyways, try to reuse
-            //  blocks/CustomBlocks from existing museum to reduce memory usage
             foreach (Player pl in players)
             {
                 Level lvl = pl.level;
-                if (!lvl.IsMuseum || lvl.name != name) continue;
-
+                if (!lvl.IsMuseum || lvl.name != name)
+                {
+                    continue;
+                }
                 Level clone = new()
                 {
                     blocks = lvl.blocks,
                     CustomBlocks = lvl.CustomBlocks
                 };
-
-                // Just in case museum was unloaded a split second before
-                if (clone.blocks == null || clone.CustomBlocks == null) break;
-
+                if (clone.blocks == null || clone.CustomBlocks == null)
+                {
+                    break;
+                }
                 clone.Init(name, lvl.Width, lvl.Height, lvl.Length);
                 return clone;
             }
-
             return IMapImporter.Decode(path, name, false);
         }
-
-
         public static void Resize(ref Level lvl, int width, int height, int length)
         {
             Level res = new(lvl.name, (ushort)width, (ushort)height, (ushort)length)
@@ -497,8 +462,6 @@ namespace MCGalaxy
                 hasMessageBlocks = lvl.hasMessageBlocks
             };
             byte[] src = lvl.blocks, dst = res.blocks;
-
-            // Copy blocks in bulk
             width = Math.Min(lvl.Width, res.Width);
             height = Math.Min(lvl.Height, res.Height);
             length = Math.Min(lvl.Length, res.Length);
@@ -506,48 +469,47 @@ namespace MCGalaxy
             {
                 for (int z = 0; z < length; z++)
                 {
-                    int srcI = lvl.Width * (z + y * lvl.Length);
-                    int dstI = res.Width * (z + y * res.Length);
+                    int srcI = lvl.Width * (z + y * lvl.Length),
+                        dstI = res.Width * (z + y * res.Length);
                     Buffer.BlockCopy(src, srcI, dst, dstI, width);
                 }
             }
-
-            // Copy extended blocks in bulk
             width = Math.Min(lvl.ChunksX, res.ChunksX);
             height = Math.Min(lvl.ChunksY, res.ChunksY);
             length = Math.Min(lvl.ChunksZ, res.ChunksZ);
             for (int cy = 0; cy < height; cy++)
+            {
                 for (int cz = 0; cz < length; cz++)
+                {
                     for (int cx = 0; cx < width; cx++)
                     {
                         src = lvl.CustomBlocks[(cy * lvl.ChunksZ + cz) * lvl.ChunksX + cx];
-                        if (src == null) continue;
-
+                        if (src == null)
+                        {
+                            continue;
+                        }
                         dst = new byte[16 * 16 * 16];
                         res.CustomBlocks[(cy * res.ChunksZ + cz) * res.ChunksX + cx] = dst;
                         Buffer.BlockCopy(src, 0, dst, 0, 16 * 16 * 16);
                     }
-
-            // TODO: This copying is really ugly and probably not 100% right
-            res.spawnx = lvl.spawnx; res.spawny = lvl.spawny; res.spawnz = lvl.spawnz;
-            res.rotx = lvl.rotx; res.roty = lvl.roty;
-
+                }
+            }
+            res.spawnx = lvl.spawnx;
+            res.spawny = lvl.spawny; 
+            res.spawnz = lvl.spawnz;
+            res.rotx = lvl.rotx; 
+            res.roty = lvl.roty;
             lock (lvl.saveLock)
             {
                 lvl.Backup(true);
-
-                // Make sure zones are kept
                 res.Zones = lvl.Zones;
                 lvl.Zones = new VolatileArray<Zone>(false);
-
-                IMapExporter.Formats[0].Write(LevelInfo.MapPath(lvl.name), res);
+                IMapExporter.Encode(LevelInfo.MapPath(lvl.name), res);
                 lvl.SaveChanges = false;
             }
-
             res.ChangedSinceBackup = false;
             Level.LoadMetadata(res);
             BotsFile.Load(res);
-
             Replace(lvl, res);
             lvl = res;
         }

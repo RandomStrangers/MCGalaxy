@@ -107,13 +107,13 @@ namespace NotAwesomeSurvival
             };
             ItemProp fishing = new("Fishing Rod|f|δ", nothing, NasBlock.Material.None, 0, 0)
             {
-                baseHP = baseHPconst * 7,
+                baseHP = 200 * 7,
                 damage = 0f,
                 knockback = -1f
             };
             ItemProp shears = new("Shears|f|µ", nothing, NasBlock.Material.Organic, 0.75f, 1)
             {
-                baseHP = baseHPconst * 8
+                baseHP = 200 * 8
             };
             ItemProp woodPick = new("Wood Pickaxe|s|ß", toolEnchants, NasBlock.Material.Stone, 0.0f, 1)
             {
@@ -128,7 +128,7 @@ namespace NotAwesomeSurvival
                 damage = 2.5f,
                 recharge = 750
             };
-            const int ironBaseHP = baseHPconst * 8;
+            const int ironBaseHP = 200 * 8;
             ItemProp ironPick = new("Iron Pickaxe|f|ß", toolEnchants, NasBlock.Material.Stone, 0.85f, 3)
             {
                 baseHP = ironBaseHP
@@ -149,7 +149,7 @@ namespace NotAwesomeSurvival
                 knockback = 1.25f,
                 baseHP = ironBaseHP
             };
-            const int goldBaseHP = baseHPconst * 64;
+            const int goldBaseHP = 200 * 64;
             ItemProp goldPick = new("Gold Pickaxe|6|ß", toolEnchants, NasBlock.Material.Stone, 0.90f, 3)
             {
                 baseHP = goldBaseHP
@@ -170,7 +170,7 @@ namespace NotAwesomeSurvival
                 knockback = 1.25f,
                 baseHP = goldBaseHP
             };
-            const int diamondBaseHP = baseHPconst * 128;
+            const int diamondBaseHP = 200 * 128;
             ItemProp diamondPick = new("Diamond Pickaxe|b|ß", toolEnchants, NasBlock.Material.Stone, 0.95f, 4)
             {
                 baseHP = diamondBaseHP
@@ -191,7 +191,7 @@ namespace NotAwesomeSurvival
                 knockback = 1.25f,
                 baseHP = diamondBaseHP
             };
-            const int emeraldBaseHP = baseHPconst * 192;
+            const int emeraldBaseHP = 200 * 192;
             ItemProp emeraldPick = new("Emerald Pickaxe|2|ß", toolEnchants, NasBlock.Material.Stone, 0.975f, 5)
             {
                 baseHP = emeraldBaseHP

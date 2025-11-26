@@ -55,26 +55,26 @@ namespace NotAwesomeSurvival
         public ushort ConvertBlock(ushort block)
         {
             ushort raw;
-            if (block >= Block.Extended)
+            if (block >= 256)
             {
-                raw = Block.ToRaw(block);
+                raw = Nas.ToRaw(block);
             }
             else
             {
-                raw = Block.Convert(block);
+                raw = Nas.Convert(block);
                 // show invalid physics blocks as Orange
-                if (raw >= Block.CPE_COUNT)
+                if (raw >= 66)
                 {
-                    raw = Block.Orange;
+                    raw = 22;
                 }
             }
-            if (raw > Block.MaxRaw)
+            if (raw > 767)
             {
                 raw = p.level.GetFallback(block);
             }
             // Check if a custom block replaced a core block
             //  If so, assume fallback is the better block to display
-            if (!p.Session.hasBlockDefs && raw < Block.CPE_COUNT)
+            if (!p.Session.hasBlockDefs && raw < 66)
             {
                 BlockDefinition def = p.level.CustomBlockDefs[raw];
                 if (def != null)
@@ -164,19 +164,19 @@ namespace NotAwesomeSurvival
                         int orX = transferInfo.travelX,
                             orY = transferInfo.travelY,
                             orZ = transferInfo.travelZ;
-                        SetSafetyBlock(orX, orY - 1, orZ, Block.FromRaw(162));
-                        SetSafetyBlock(orX, orY + 2, orZ, Block.FromRaw(162));
+                        SetSafetyBlock(orX, orY - 1, orZ, Nas.FromRaw(162));
+                        SetSafetyBlock(orX, orY + 2, orZ, Nas.FromRaw(162));
                         ushort temp = nl.GetBlock(orX, orY + 1, orZ);
-                        if (temp != Block.Air && !nl.blockEntities.ContainsKey(orX + " " + (orY + 1) + " " + orZ))
+                        if (temp != 0 && !nl.blockEntities.ContainsKey(orX + " " + (orY + 1) + " " + orZ))
                         {
-                            nl.SetBlock(orX, orY + 1, orZ, Block.Air);
-                            nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, BlockDBFlags.Drawn, temp, Block.Air);
+                            nl.SetBlock(orX, orY + 1, orZ, 0);
+                            nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, BlockDBFlags.Drawn, temp, 0);
                         }
                         temp = nl.GetBlock(orX, orY, orZ);
-                        if (temp != Block.FromRaw(457) && !nl.blockEntities.ContainsKey(orX + " " + orY + " " + orZ))
+                        if (temp != Nas.FromRaw(457) && !nl.blockEntities.ContainsKey(orX + " " + orY + " " + orZ))
                         {
-                            nl.SetBlock(orX, orY, orZ, Block.FromRaw(457));
-                            nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, BlockDBFlags.Drawn, temp, Block.FromRaw(457));
+                            nl.SetBlock(orX, orY, orZ, Nas.FromRaw(457));
+                            nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, BlockDBFlags.Drawn, temp, Nas.FromRaw(457));
                         }
                         placePortal = false;
                     }

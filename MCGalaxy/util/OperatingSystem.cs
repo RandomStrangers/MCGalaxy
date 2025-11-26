@@ -81,7 +81,7 @@ namespace MCGalaxy.Platform
             detectedOS ??= DoDetectOS();
             return detectedOS;
         }
-        static bool IsWindowsPlatform(PlatformID platform)
+        public static bool IsWindowsPlatform(PlatformID platform)
         {
             return platform switch
             {

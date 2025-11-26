@@ -50,13 +50,13 @@ namespace NotAwesomeSurvival
                         break;
                 }
             }
-            else if (serverushort >= Block.Extended)
+            else if (serverushort >= 256)
             {
                 bounds = new AABB(0, 0, 0, 32, 32, 32);
             }
             else
             {
-                ushort core = Block.Convert(serverushort);
+                ushort core = Nas.Convert(serverushort);
                 bounds = new AABB(0, 0, 0, 32, DefaultSet.Height(core) * 2, 32);
             }
             NasBlock nb = NasBlock.Get(ConvertToClientushort(serverushort));
@@ -73,16 +73,16 @@ namespace NotAwesomeSurvival
         public static ushort ConvertToClientushort(ushort serverushort)
         {
             ushort clientushort;
-            if (serverushort >= Block.Extended)
+            if (serverushort >= 256)
             {
-                clientushort = Block.ToRaw(serverushort);
+                clientushort = Nas.ToRaw(serverushort);
             }
             else
             {
-                clientushort = Block.Convert(serverushort);
-                if (clientushort >= Block.CPE_COUNT)
+                clientushort = Nas.Convert(serverushort);
+                if (clientushort >= 66)
                 {
-                    clientushort = Block.Orange;
+                    clientushort = 2;
                 }
             }
             return clientushort;
@@ -125,7 +125,7 @@ namespace NotAwesomeSurvival
             ushort serverushort = lvl.GetBlock((ushort)x,
                                                  (ushort)y,
                                                  (ushort)z);
-            if (serverushort == Block.Air)
+            if (serverushort == 0)
             {
                 return false;
             }

@@ -20,13 +20,13 @@ namespace MCGalaxy.Util.Imaging
 {
     public class JpegDecoder : ImageDecoder
     {
-        readonly static byte[] jfifSig = new byte[] 
-        { 
-            0xFF, 0xD8, 0xFF, 0xE0 
+        static readonly byte[] jfifSig = new byte[]
+        {
+            0xFF, 0xD8, 0xFF, 0xE0
         },
-        exifSig = new byte[] 
-        { 
-            0xFF, 0xD8, 0xFF, 0xE1 
+        exifSig = new byte[]
+        {
+            0xFF, 0xD8, 0xFF, 0xE1
         },
         zigzag_to_linear = new byte[64]
         {
@@ -277,7 +277,6 @@ namespace MCGalaxy.Util.Imaging
                     for (int i = 0; i < comps.Length; i++)
                     {
                         JpegComponent comp = comps[i];
-
                         for (int by = 0; by < comp.BlocksPerMcuY; by++)
                         {
                             for (int bx = 0; bx < comp.BlocksPerMcuX; bx++)
@@ -290,6 +289,7 @@ namespace MCGalaxy.Util.Imaging
                                 {
                                     for (int x = 0; x < 8; x++)
                                     {
+                                        float sample = output[y * 8 + x];
                                         for (int py = 0; py < samplesY; py++)
                                         {
                                             for (int px = 0; px < samplesX; px++)
@@ -299,15 +299,15 @@ namespace MCGalaxy.Util.Imaging
                                                     idx = YY * mcu_w + XX;
                                                 if (i == 0)
                                                 {
-                                                    colors[idx].Y = output[y * 8 + x];
+                                                    colors[idx].Y = sample;
                                                 }
                                                 else if (i == 1)
                                                 {
-                                                    colors[idx].Cb = output[y * 8 + x];
+                                                    colors[idx].Cb = sample;
                                                 }
                                                 else if (i == 2)
                                                 {
-                                                    colors[idx].Cr = output[y * 8 + x];
+                                                    colors[idx].Cr = sample;
                                                 }
                                             }
                                         }
@@ -402,37 +402,44 @@ namespace MCGalaxy.Util.Imaging
         float[] idct_factors;
         void ComputeIDCTFactors()
         {
-            float[] factors = new float[128];
+            float[] factors = new float[64];
             for (int xy = 0; xy < 8; xy++)
             {
                 for (int uv = 0; uv < 8; uv++)
                 {
                     float cuv = uv == 0 ? 0.70710678f : 1.0f,
                         cosuv = (float)Math.Cos((2 * xy + 1) * uv * Math.PI / 16.0);
-                    factors[(2 * xy + 1) * uv] = cuv * cosuv;
+                    factors[(xy * 8) + uv] = cuv * cosuv;
                 }
             }
             idct_factors = factors;
         }
-        void IDCT(int[] block, float[] output)
+        unsafe void IDCT(int[] block, float[] output)
         {
             float[] factors = idct_factors;
-            for (int y = 0; y < 8; y++)
+            float* tmp = stackalloc float[64];
+            for (int col = 0; col < 8; col++)
             {
-                for (int x = 0; x < 8; x++)
+                for (int y = 0; y < 8; y++)
                 {
                     float sum = 0.0f;
                     for (int v = 0; v < 8; v++)
                     {
-                        for (int u = 0; u < 8; u++)
-                        {
-                            float suv = block[v * 8 + u],
-                                cu_cosu = factors[(2 * x + 1) * u],
-                                cv_cosv = factors[(2 * y + 1) * v];
-                            sum += cu_cosu * cv_cosv * suv;
-                        }
+                        sum += block[v * 8 + col] * factors[(y * 8) + v];
                     }
-                    output[y * 8 + x] = (sum / 4.0f) + 128.0f;
+                    tmp[y * 8 + col] = sum;
+                }
+            }
+            for (int row = 0; row < 8; row++)
+            {
+                for (int x = 0; x < 8; x++)
+                {
+                    float sum = 0.0f;
+                    for (int u = 0; u < 8; u++)
+                    {
+                        sum += tmp[row * 8 + u] * factors[(x * 8) + u];
+                    }
+                    output[row * 8 + x] = (sum / 4.0f) + 128.0f;
                 }
             }
         }
@@ -447,8 +454,8 @@ namespace MCGalaxy.Util.Imaging
                 if (next == 0xFF)
                 {
                     byte type = src[buf_offset++];
-                    if (type == 0xD9) 
-                    { 
+                    if (type == 0xD9)
+                    {
                         end = true; 
                         buf_offset -= 2;
                     }
@@ -513,7 +520,9 @@ namespace MCGalaxy.Util.Imaging
     }
     class HuffmanTable
     {
-        public ushort[] firstCodewords, endCodewords, firstOffsets;
+        public ushort[] firstCodewords,
+            endCodewords,
+            firstOffsets;
         public byte[] values;
     }
 }

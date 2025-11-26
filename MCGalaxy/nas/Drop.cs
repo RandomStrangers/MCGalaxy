@@ -47,10 +47,6 @@ namespace NotAwesomeSurvival
                 item
             };
         }
-        public Drop(int expAdded)
-        {
-            exp = expAdded;
-        }
         public Drop(Inventory inv)
         {
             blockStacks = new List<BlockStack>();

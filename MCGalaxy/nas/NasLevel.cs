@@ -220,30 +220,30 @@ namespace NotAwesomeSurvival
         /// 
         public ushort[] observers =
         {
-            Block.FromRaw(415),
-            Block.FromRaw(416),
-            Block.FromRaw(417),
-            Block.FromRaw(418),
-            Block.FromRaw(419),
-            Block.FromRaw(420),
+            Nas.FromRaw(415),
+            Nas.FromRaw(416),
+            Nas.FromRaw(417),
+            Nas.FromRaw(418),
+            Nas.FromRaw(419),
+            Nas.FromRaw(420),
         };
         public ushort[] repeatersOff =
         {
-            Block.FromRaw(176),
-            Block.FromRaw(177),
-            Block.FromRaw(174),
-            Block.FromRaw(175),
-            Block.FromRaw(172),
-            Block.FromRaw(173),
+            Nas.FromRaw(176),
+            Nas.FromRaw(177),
+            Nas.FromRaw(174),
+            Nas.FromRaw(175),
+            Nas.FromRaw(172),
+            Nas.FromRaw(173),
         };
         public ushort[] repeatersOn =
         {
-            Block.FromRaw(617),
-            Block.FromRaw(618),
-            Block.FromRaw(615),
-            Block.FromRaw(616),
-            Block.FromRaw(613),
-            Block.FromRaw(614),
+            Nas.FromRaw(617),
+            Nas.FromRaw(618),
+            Nas.FromRaw(615),
+            Nas.FromRaw(616),
+            Nas.FromRaw(613),
+            Nas.FromRaw(614),
         };
         public void DisturbBlock(int x, int y, int z, int changeX = 0, int changeY = 0, int changeZ = 0)
         {

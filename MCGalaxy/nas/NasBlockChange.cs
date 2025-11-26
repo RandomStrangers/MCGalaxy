@@ -15,7 +15,7 @@ namespace NotAwesomeSurvival
         public static Scheduler breakScheduler,
             repeaterScheduler,
             fishingScheduler;
-        public static Color[] blockColors = new Color[Block.MaxRaw + 1];
+        public static Color[] blockColors = new Color[768];
         public const string terrainImageName = "terrain.png";
         public static void Log(string format, params object[] args)
         {
@@ -38,12 +38,12 @@ namespace NotAwesomeSurvival
             Bitmap terrain;
             terrain = new Bitmap(Nas.Path + terrainImageName);
             terrain = new Bitmap(terrain, terrain.Width / 16, terrain.Height / 16);
-            for (ushort blockID = 0; blockID <= Block.MaxRaw; blockID++)
+            for (ushort blockID = 0; blockID <= 767; blockID++)
             {
-                BlockDefinition def = BlockDefinition.GlobalDefs[Block.FromRaw(blockID)];
-                if (def == null && blockID < Block.CPE_COUNT)
+                BlockDefinition def = BlockDefinition.GlobalDefs[Nas.FromRaw(blockID)];
+                if (def == null && blockID < 66)
                 {
-                    def = DefaultSet.MakeCustomBlock(Block.FromRaw(blockID));
+                    def = DefaultSet.MakeCustomBlock(Nas.FromRaw(blockID));
                 }
                 if (def == null)
                 {
@@ -122,8 +122,8 @@ namespace NotAwesomeSurvival
                           Block.GetName(np.p, serverushort));
             }
             nasBlock.existAction?.Invoke(np, nasBlock, false, x, y, z);
-            np.p.level.BlockDB.Cache.Add(np.p, x, y, z, BlockDBFlags.ManualPlace, here, Block.Air);
-            np.nl.SetBlock(x, y, z, Block.Air);
+            np.p.level.BlockDB.Cache.Add(np.p, x, y, z, BlockDBFlags.ManualPlace, here, 0);
+            np.nl.SetBlock(x, y, z, 0);
             foreach (Player pl in np.p.level.players)
             {
                 NasEffect.Define(pl, GetBreakID(), NasEffect.breakEffects[(int)nasBlock.material], blockColors[nasBlock.selfID]);
@@ -173,13 +173,13 @@ namespace NotAwesomeSurvival
                 CancelPlacedBlock(p, x, y, z, np, ref cancel);
                 return;
             }
-            if (np.nl.GetBlock(x, y, z + 1) == Block.FromRaw(703) || np.nl.GetBlock(x, y - 1, z) == Block.FromRaw(703))
+            if (np.nl.GetBlock(x, y, z + 1) == Nas.FromRaw(703) || np.nl.GetBlock(x, y - 1, z) == Nas.FromRaw(703))
             {
                 np.Message("&mCan't obstruct a bed!");
                 CancelPlacedBlock(p, x, y, z, np, ref cancel);
                 return;
             }
-            if (nasBlock.selfID == 703 && (np.nl.GetBlock(x, y, z - 1) != Block.Air || np.nl.GetBlock(x, y + 1, z) != Block.Air))
+            if (nasBlock.selfID == 703 && (np.nl.GetBlock(x, y, z - 1) != 0 || np.nl.GetBlock(x, y + 1, z) != 0))
             {
                 np.Message("&mCan't place a bed in an obstructed location!");
                 CancelPlacedBlock(p, x, y, z, np, ref cancel);
@@ -354,7 +354,7 @@ namespace NotAwesomeSurvival
                     NasEffect.UndefineEffect(p, BreakMeterID);
                     return;
                 }
-                if (serverushort == Block.Air)
+                if (serverushort == 0)
                 {
                     if (np.lastAirClickDate == null)
                     {
@@ -445,10 +445,10 @@ namespace NotAwesomeSurvival
                     y = y,
                     z = z
                 };
-                BlockDefinition def = BlockDefinition.GlobalDefs[Block.FromRaw(clientushort)];
-                if (def == null && clientushort < Block.CPE_COUNT)
+                BlockDefinition def = BlockDefinition.GlobalDefs[Nas.FromRaw(clientushort)];
+                if (def == null && clientushort < 66)
                 {
-                    def = DefaultSet.MakeCustomBlock(Block.FromRaw(clientushort));
+                    def = DefaultSet.MakeCustomBlock(Nas.FromRaw(clientushort));
                 }
                 if (def != null)
                 {

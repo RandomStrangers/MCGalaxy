@@ -8,14 +8,9 @@ namespace NotAwesomeSurvival
             color,
             character;
         public List<NasBlock.Material> materialsEffectiveAgainst;
-        public int tier;
-        public float percentageOfTimeSaved;
-        public const int baseHPconst = 200;
-        public float baseHP,
-            damage;
-        public int recharge;
-        public float armor,
-            knockback;
+        public int tier, recharge;
+        public float percentageOfTimeSaved,
+            baseHP, damage, armor, knockback;
         public Dictionary<string, bool> allowedEnchants = new();
         public static Dictionary<string, ItemProp> props = new();
         public ItemProp(string description, Dictionary<string, bool> enchants = null, NasBlock.Material effectiveAgainst = NasBlock.Material.None, float percentageOfTimeSaved = 0, int tier = 1)
@@ -56,7 +51,7 @@ namespace NotAwesomeSurvival
             //tier 0 is fists
             this.tier = tier;
             this.percentageOfTimeSaved = percentageOfTimeSaved;
-            baseHP = baseHPconst;
+            baseHP = 200;
             damage = 0.5f;
             recharge = 250;
             armor = 0f;

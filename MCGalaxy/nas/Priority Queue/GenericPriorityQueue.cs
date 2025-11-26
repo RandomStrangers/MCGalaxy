@@ -21,17 +21,6 @@ namespace Priority_Queue
         /// Instantiate a new Priority Queue
         /// </summary>
         /// <param name="maxNodes">The max nodes ever allowed to be enqueued (going over this will cause undefined behavior)</param>
-        public GenericPriorityQueue(int maxNodes) : this(maxNodes, Comparer<TPriority>.Default) { }
-        /// <summary>
-        /// Instantiate a new Priority Queue
-        /// </summary>
-        /// <param name="maxNodes">The max nodes ever allowed to be enqueued (going over this will cause undefined behavior)</param>
-        /// <param name="comparer">The comparer used to compare TPriority values.</param>
-        public GenericPriorityQueue(int maxNodes, IComparer<TPriority> comparer) : this(maxNodes, comparer.Compare) { }
-        /// <summary>
-        /// Instantiate a new Priority Queue
-        /// </summary>
-        /// <param name="maxNodes">The max nodes ever allowed to be enqueued (going over this will cause undefined behavior)</param>
         /// <param name="comparer">The comparison function to use to compare TPriority values</param>
         public GenericPriorityQueue(int maxNodes, Comparison<TPriority> comparer)
         {
@@ -168,8 +157,8 @@ namespace Priority_Queue
         public void CascadeDown(TItem node)
         {
             //aka Heapify-down
-            int finalQueueIndex = node.QueueIndex;
-            int childLeftIndex = 2 * finalQueueIndex;
+            int finalQueueIndex = node.QueueIndex,
+                childLeftIndex = 2 * finalQueueIndex;
             // If leaf node, we're done
             if (childLeftIndex > _numNodes)
             {

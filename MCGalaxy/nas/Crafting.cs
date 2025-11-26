@@ -11,47 +11,6 @@ namespace NotAwesomeSurvival
     public partial class Crafting
     {
         public static object locker = new();
-        public static void ClearCraftingArea(Player p, ushort startX, ushort startY, ushort startZ, Station.Orientation ori, NasLevel nl)
-        {
-            bool WE = ori == Station.Orientation.WE;
-            if (WE)
-            {
-                startX--;
-            }
-            else
-            {
-                startZ--;
-            }
-            startY += 3;
-            if (WE)
-            {
-                for (ushort y = startY; y > startY - 3; y--)
-                {
-                    for (ushort x = startX; x < startX + 3; x++)
-                    {
-                        p.level.UpdateBlock(p, x, y, startZ, Block.Air);
-                        if (nl.blockEntities.ContainsKey(x + " " + y + " " + startZ))
-                        {
-                            nl.blockEntities.Remove(x + " " + y + " " + startZ);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                for (ushort y = startY; y > startY - 3; y--)
-                {
-                    for (ushort z = startZ; z < startZ + 3; z++)
-                    {
-                        p.level.UpdateBlock(p, startX, y, z, Block.Air);
-                        if (nl.blockEntities.ContainsKey(startX + " " + y + " " + z))
-                        {
-                            nl.blockEntities.Remove(startX + " " + y + " " + z);
-                        }
-                    }
-                }
-            }
-        }
         public static void ClearCraftingArea(NasLevel nl, ushort startX, ushort startY, ushort startZ, Station.Orientation ori)
         {
             bool WE = ori == Station.Orientation.WE;
@@ -70,7 +29,7 @@ namespace NotAwesomeSurvival
                 {
                     for (ushort x = startX; x < startX + 3; x++)
                     {
-                        nl.SetBlock(x, y, startZ, Block.Air);
+                        nl.SetBlock(x, y, startZ, 0);
                         if (nl.blockEntities.ContainsKey(x + " " + y + " " + startZ))
                         {
                             nl.blockEntities.Remove(x + " " + y + " " + startZ);
@@ -84,7 +43,7 @@ namespace NotAwesomeSurvival
                 {
                     for (ushort z = startZ; z < startZ + 3; z++)
                     {
-                        nl.SetBlock(startX, y, z, Block.Air);
+                        nl.SetBlock(startX, y, z, 0);
                         if (nl.blockEntities.ContainsKey(startX + " " + y + " " + z))
                         {
                             nl.blockEntities.Remove(startX + " " + y + " " + z);
@@ -214,18 +173,18 @@ namespace NotAwesomeSurvival
                     for (ushort x = startX; x < startX + 3; x++)
                     {
                         ushort blockID = nl.lvl.GetBlock(x, y, startZ);
-                        if (blockID == Block.Invalid)
+                        if (blockID == 0xff)
                         {
                             blockID = 0;
                         }
                         ushort num;
                         if (blockID >= 256)
                         {
-                            num = Block.ToRaw(blockID);
+                            num = Nas.ToRaw(blockID);
                         }
                         else
                         {
-                            num = Block.Convert(blockID);
+                            num = Nas.Convert(blockID);
                             if (num >= 66)
                             {
                                 num = 22;
@@ -246,18 +205,18 @@ namespace NotAwesomeSurvival
                     for (ushort z = startZ; z < startZ + 3; z++)
                     {
                         ushort blockID = nl.lvl.GetBlock(startX, y, z);
-                        if (blockID == Block.Invalid)
+                        if (blockID == 0xff)
                         {
                             blockID = 0;
                         }
                         ushort num;
                         if (blockID >= 256)
                         {
-                            num = Block.ToRaw(blockID);
+                            num = Nas.ToRaw(blockID);
                         }
                         else
                         {
-                            num = Block.Convert(blockID);
+                            num = Nas.Convert(blockID);
                             if (num >= 66)
                             {
                                 num = 22;

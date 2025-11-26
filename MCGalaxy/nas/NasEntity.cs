@@ -137,9 +137,9 @@ namespace NotAwesomeSurvival
                             ushort block = nl.lvl.GetBlock(xP, yP, zP);
                             if (block == 0)
                             {
-                                block = Block.Air;
+                                block = 0;
                             }
-                            if (block == Block.Invalid)
+                            if (block == 0xff)
                             {
                                 continue;
                             }

@@ -27,7 +27,6 @@ using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing.Processors.Transforms;
 #endif
 using System.IO;
-
 namespace MCGalaxy.Util
 {
     public delegate Pixel PixelGet(int x, int y);
@@ -62,7 +61,6 @@ namespace MCGalaxy.Util
         public abstract void LockBits();
         public abstract void UnlockBits();
         public abstract void Dispose();
-
 #if !MCG_DOTNET
         public static IBitmap2D Create() 
         { 
@@ -92,7 +90,6 @@ namespace MCGalaxy.Util
         public override void Resize(int width, int height, bool hq)
         {
             Bitmap resized = new(width, height);
-            // https://photosauce.net/blog/post/image-scaling-with-gdi-part-3-drawimage-and-the-settings-that-affect-it
             using (Graphics g = Graphics.FromImage(resized))
             {
                 g.InterpolationMode = hq ? InterpolationMode.HighQualityBicubic : InterpolationMode.NearestNeighbor;
@@ -105,10 +102,7 @@ namespace MCGalaxy.Util
         void SetBitmap(Image src)
         {
             img = src;
-            // although rare, possible src might actually be a Metafile instead
             bmp = (Bitmap)src;
-            // NOTE: sometimes Mono will return an invalid bitmap instance that
-            //  throws ArgumentNullException when trying to access Width/Height
             Width = src.Width;
             Height = src.Height;
         }
@@ -130,7 +124,6 @@ namespace MCGalaxy.Util
             {
                 return;
             }
-            // We can only use the fast path for 24bpp or 32bpp bitmaps
             Rectangle r = new(0, 0, bmp.Width, bmp.Height);
             data = bmp.LockBits(r, ImageLockMode.ReadOnly, bmp.PixelFormat);
             scan0 = (byte*)data.Scan0;
@@ -155,7 +148,7 @@ namespace MCGalaxy.Util
         Pixel GetGenericPixel(int x, int y)
         {
             Pixel p;
-            int argb = bmp.GetPixel(x, y).ToArgb(); // R/G/B properties incur overhead  
+            int argb = bmp.GetPixel(x, y).ToArgb();
             p.A = (byte)(argb >> 24);
             p.R = (byte)(argb >> 16);
             p.G = (byte)(argb >> 8);
@@ -217,7 +210,7 @@ namespace MCGalaxy.Util
             p.A = src.A;
             p.R = src.R;
             p.G = src.G;
-            p.B = src.B; // TODO avoid overhead by direct blit??
+            p.B = src.B;
             return p;
         }
         void SetPixel(int x, int y, Pixel p) 
@@ -226,7 +219,7 @@ namespace MCGalaxy.Util
             dst.A = p.A;
             dst.R = p.R;
             dst.G = p.G;
-            dst.B = p.B; // TODO avoid overhead by direct blit??
+            dst.B = p.B;
             img[x, y] = dst;
         }
         public override void Dispose() 

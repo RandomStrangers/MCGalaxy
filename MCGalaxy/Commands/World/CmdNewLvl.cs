@@ -16,7 +16,7 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Generator;
-
+using System.Collections.Generic;
 namespace MCGalaxy.Commands.World
 {
     public sealed class CmdNewLvl : Command2
@@ -27,21 +27,51 @@ namespace MCGalaxy.Commands.World
         public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
         public override CommandPerm[] ExtraPerms
         {
-            get { return new[] { new CommandPerm(LevelPermission.Admin, "can generate maps with advanced themes") }; }
+            get 
+            { 
+                return new[] 
+                { 
+                    new CommandPerm(LevelPermission.Admin, "can generate maps with advanced themes") 
+                }; 
+            }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
-            string[] args = message.SplitSpaces(6);
-            if (args.Length < 4) { Help(p); return; }
-
+            string ext = ".lvl";
+            string[] args = message.SplitSpaces(7);
+            if (args.Length < 4) 
+            { 
+                Help(p); 
+                return; 
+            }
+            if (args.Length > 6) 
+            { 
+                ext = args[6]; 
+                args[6] = ""; 
+            }
+            if (!ext.StartsWith("."))
+            {
+                ext = "." + ext;
+            }
+            List<string> list = new();
+            foreach (Levels.IO.IMapExporter exporter in Levels.IO.IMapExporter.Formats)
+            {
+                list.Add(exporter.Extension);
+            }
+            if (!list.CaselessContains(ext))
+            {
+                p.Message("Unsupported extension {0}, using .lvl instead.", ext);
+                ext = ".lvl";
+            }
             Level lvl = null;
             try
             {
                 lvl = GenerateMap(p, args, data);
-                if (lvl == null) return;
-
-                lvl.Save(true);
+                if (lvl == null)
+                {
+                    return;
+                }
+                lvl.Save(true, ext);
             }
             finally
             {
@@ -49,21 +79,26 @@ namespace MCGalaxy.Commands.World
                 Server.DoGC();
             }
         }
-
         internal Level GenerateMap(Player p, string[] args, CommandData data)
         {
-            if (args.Length < 4) return null;
-            string theme = args.Length > 4 ? args[4] : Server.Config.DefaultMapGenTheme;
-            string seed = args.Length > 5 ? args[5] : "";
-
+            if (args.Length < 4)
+            {
+                return null;
+            }
+            string theme = args.Length > 4 ? args[4] : Server.Config.DefaultMapGenTheme,
+                seed = args.Length > 5 ? args[5] : "";
             MapGen gen = MapGen.Find(theme);
             ushort x = 0, y = 0, z = 0;
-            if (!MapGen.GetDimensions(p, args, 1, ref x, ref y, ref z)) return null;
-
-            if (gen != null && gen.Type == GenType.Advanced && !CheckExtraPerm(p, data, 1)) return null;
+            if (!MapGen.GetDimensions(p, args, 1, ref x, ref y, ref z))
+            {
+                return null;
+            }
+            if (gen != null && gen.Type == GenType.Advanced && !CheckExtraPerm(p, data, 1))
+            {
+                return null;
+            }
             return MapGen.Generate(p, gen, args[0], x, y, z, seed);
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/NewLvl [name] [width] [height] [length] [theme] <seed>");
@@ -73,11 +108,9 @@ namespace MCGalaxy.Commands.World
             p.Message("&HUse &T/Help NewLvl themes &Hfor a list of themes.");
             p.Message("&HUse &T/Help NewLvl [theme] &Hfor details on how seeds affect levels generated with that theme.");
         }
-
         public override void Help(Player p, string message)
         {
             MapGen gen = MapGen.Find(message);
-
             if (message.CaselessEq("theme") || message.CaselessEq("themes"))
             {
                 MapGen.PrintThemes(p);

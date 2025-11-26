@@ -12,6 +12,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 namespace NotAwesomeSurvival
 {
@@ -99,9 +101,240 @@ namespace NotAwesomeSurvival
             }
         }
     }
-
+    class MonoOS : IOperatingSystem
+    {
+        public override bool IsWindows { get { return false; } }
+        public override void Init()
+        {
+            base.Init();
+            if (!Directory.Exists("certs"))
+            {
+                return;
+            }
+            try
+            {
+                Type settingsType = Type.GetType("Mono.Security.Interface.MonoTlsSettings, Mono.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756");
+                PropertyInfo defSettingsProp = settingsType.GetProperty("DefaultSettings", BindingFlags.Static | BindingFlags.Public);
+                object defSettings = defSettingsProp.GetValue(null, null);
+                Type settingsObjType = defSettings.GetType();
+                PropertyInfo pathsProp = settingsObjType.GetProperty("CertificateSearchPaths", BindingFlags.Instance | BindingFlags.NonPublic);
+                pathsProp.SetValue(defSettings, new string[] { "@pem:certs", "@trusted" }, null);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Changing SSL/TLS certificates folder", ex);
+            }
+        }
+        public override void RestartProcess()
+        {
+            try
+            {
+                execvp(Server.GetRuntimeExePath(), GetProcessCommandLineArgs());
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Restarting process", ex);
+            }
+            RestartInPlace();
+        }
+        void RestartInPlace()
+        {
+            execvp("mono", new string[] { "mono", Server.GetServerExePath(), null });
+            Console.Out.WriteLine("execvp mono failed: {0}", Marshal.GetLastWin32Error());
+        }
+        static CPUTime ParseCpuLine(string line)
+        {
+            line = line.Replace("  ", " ");
+            string[] bits = line.SplitSpaces();
+            ulong user = ulong.Parse(bits[1]),
+                nice = ulong.Parse(bits[2]),
+                kern = ulong.Parse(bits[3]),
+                idle = ulong.Parse(bits[4]);
+            CPUTime all;
+            all.UserTime = user + nice;
+            all.KernelTime = kern;
+            all.IdleTime = idle;
+            return all;
+        }
+        public override CPUTime MeasureAllCPUTime()
+        {
+            try
+            {
+                using StreamReader r = new("/proc/stat");
+                string line = r.ReadLine();
+                if (line.StartsWith("cpu "))
+                {
+                    return ParseCpuLine(line);
+                }
+                return new();
+            }
+            catch
+            {
+                return new();
+            }
+        }
+        public static string[] GetProcessCommandLineArgs()
+        {
+            using StreamReader r = new("/proc/self/cmdline");
+            string[] args = r.ReadToEnd().Split('\0');
+            args[args.Length - 1] = null;
+            return args;
+        }
+        [DllImport("libc", SetLastError = true)]
+        protected static extern int execvp(string path, string[] argv);
+    }
     public partial class Nas
     {
+        public static ushort Convert(ushort block)
+        {
+            return block switch
+            {
+                70 => 39,
+                100 => 20,
+                101 => 49,
+                102 => 45,
+                103 => 1,
+                104 => 4,
+                105 => 0,
+                106 => 9,
+                107 => 11,
+                108 => 4,
+                109 => 19,
+                110 => 5,
+                112 => 10,
+                71 or 72 => 36,
+                111 => 17,
+                113 => 49,
+                114 => 20,
+                115 => 1,
+                116 => 18,
+                117 => 12,
+                118 => 5,
+                119 => 25,
+                120 => 46,
+                121 => 44,
+                220 => 42,
+                221 => 3,
+                222 => 2,
+                223 => 29,
+                224 => 47,
+                253 => 41,
+                80 => 4,
+                83 => 21,
+                85 => 22,
+                86 => 23,
+                87 => 24,
+                89 => 26,
+                90 => 27,
+                91 => 28,
+                92 => 30,
+                93 => 31,
+                94 => 32,
+                95 => 33,
+                96 => 34,
+                97 => 35,
+                98 => 36,
+                122 => 17,
+                123 => 49,
+                124 => 20,
+                125 => 1,
+                126 => 18,
+                127 => 12,
+                128 => 5,
+                129 => 25,
+                135 => 46,
+                136 => 44,
+                137 => 0,
+                138 => 9,
+                139 => 11,
+                148 => 17,
+                149 => 49,
+                150 => 20,
+                151 => 1,
+                152 => 18,
+                153 => 12,
+                154 => 5,
+                155 => 25,
+                156 => 46,
+                157 => 44,
+                158 => 11,
+                159 => 9,
+                130 => 36,
+                131 => 34,
+                132 => 0,
+                133 => 9,
+                134 => 11,
+                140 => 8,
+                141 => 10,
+                143 => 27,
+                144 => 22,
+                145 => 8,
+                146 => 10,
+                147 => 28,
+                160 => 0,
+                161 => 9,
+                162 => 11,
+                164 => 0,
+                165 => 0,
+                166 => 9,
+                167 => 11,
+                175 => 28,
+                176 => 22,
+                74 => 46,
+                75 => 21,
+                182 => 46,
+                183 => 46,
+                184 => 10,
+                185 => 10,
+                186 => 46,
+                187 => 20,
+                188 => 41,
+                189 => 42,
+                191 => 9,
+                190 => 11,
+                192 => 0,
+                193 => 8,
+                194 => 10,
+                73 => 10,
+                195 => 10,
+                196 => 8,
+                197 => 0,
+                200 or 201 or 202 or 203 or 204 or 205 or 206 or 207 or 208 or 209 or 210 or 213 or 214 or 215 or 216 or 217 or 225 or 254 or 81 or 226 or 227 or 228 or 229 or 84 or 66 or 67 or 68 or 69 => 0,
+                211 => 21,
+                212 => 10,
+                168 or 169 or 170 or 171 or 172 or 173 or 174 or 179 or 180 or 181 => 0,
+                177 => 21,
+                178 => 11,
+                230 => 27,
+                251 => 34,
+                252 => 16,
+                231 => 46,
+                232 => 48,
+                233 => 24,
+                235 => 36,
+                236 => 34,
+                238 => 10,
+                239 => 21,
+                237 => 8,
+                240 => 29,
+                242 => 10,
+                249 => 29,
+                245 => 41,
+                248 => 21,
+                247 => 35,
+                246 => 19,
+                250 => 49,
+                _ => block,
+            };
+        }
+        public static ushort ToRaw(ushort raw)
+        {
+            return raw < 66 ? raw : (ushort)(raw - 256);
+        }
+        public static ushort FromRaw(ushort raw)
+        {
+            return raw < 66 ? raw : (ushort)(raw + 256);
+        }
         public class CmdServerInfo2 : Command2
         {
             public override string name { get { return "ServerInfo2"; } }
@@ -115,6 +348,17 @@ namespace NotAwesomeSurvival
             public override CommandPerm[] ExtraPerms
             {
                 get { return new[] { new CommandPerm(LevelPermission.Admin, "can see server CPU and memory usage") }; }
+            }
+            public static IOperatingSystem DoDetect()
+            {
+                if (Server.RunningOnMono())
+                {
+                    return new MonoOS();
+                }
+                else
+                {
+                    return IOperatingSystem.DetectOS();
+                }
             }
             public override void Use(Player p, string message, CommandData data)
             {
@@ -146,7 +390,7 @@ namespace NotAwesomeSurvival
             {
                 Process proc = Process.GetCurrentProcess();
                 p.Message("Measuring resource usage...one second");
-                IOperatingSystem os = IOperatingSystem.DetectOS();
+                IOperatingSystem os = DoDetect();
                 if (startTime == default)
                 {
                     startTime = DateTime.UtcNow;

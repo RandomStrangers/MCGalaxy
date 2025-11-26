@@ -105,7 +105,6 @@ namespace MCGalaxy.DB
             Logger.Log(LogType.BackgroundActivity, "Resizing BlockDB for " + db.MapName);
             string tempPath = TempPath(db.MapName);
 
-            //using (Stream src = File.OpenRead(path), dst = File.Create(tempPath)) {
             using (Stream src = FileIO.TryOpenRead(path), dst = File.Create(tempPath))
             {
                 ReadHeader(src, out Vec3U16 dims);

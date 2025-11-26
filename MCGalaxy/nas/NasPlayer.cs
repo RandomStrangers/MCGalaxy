@@ -155,7 +155,7 @@ namespace NotAwesomeSurvival
                 {
                     zPlacing--;
                 }
-                if (p.level.GetBlock(xPlacing, yPlacing, zPlacing) == Block.Air)
+                if (p.level.GetBlock(xPlacing, yPlacing, zPlacing) == 0)
                 {
                     AABB worldAABB = bounds.OffsetPosition(p.Pos),
                     /*checking as if its a fully sized block*/
@@ -690,7 +690,7 @@ namespace NotAwesomeSurvival
                     }
                 }
                 //place tombstone
-                nl.SetBlock(x, y, z, Block.FromRaw(647));
+                nl.SetBlock(x, y, z, Nas.FromRaw(647));
                 NasBlock.Entity blockEntity = new()
                 {
                     drop = deathDrop

@@ -16,7 +16,6 @@
     permissions and limitations under the Licenses.
  */
 using System.IO;
-
 namespace MCGalaxy.Util.Imaging
 {
     public sealed class SimpleBitmap //: IBitmap2D
@@ -53,7 +52,6 @@ namespace MCGalaxy.Util.Imaging
         {
             throw new InvalidDataException(reason);
         }
-
         /// <summary> Checks if starting bytes of data match given signature </summary>
         /// <remarks> Ignores parts of sig that are &lt; 0 values </remarks>
         protected static bool MatchesSignature(byte[] data, byte[] sig)

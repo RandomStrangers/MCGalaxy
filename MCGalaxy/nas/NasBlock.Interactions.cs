@@ -194,55 +194,55 @@ namespace NotAwesomeSurvival
                 }
                 ushort aboveHere = np.nl.GetBlock(x, y + 1, z);
                 float maxHP = np.inventory.HeldItem.Prop.baseHP;
-                if (np.inventory.HeldItem.name.CaselessContains("emerald") && aboveHere == Block.FromRaw(650))
+                if (np.inventory.HeldItem.name.CaselessContains("emerald") && aboveHere == Nas.FromRaw(650))
                 {
                     np.inventory.HeldItem.HP = np.inventory.HeldItem.HP + (0.4f * maxHP);
                     if (np.inventory.HeldItem.HP > maxHP)
                     {
                         np.inventory.HeldItem.HP = maxHP;
                     }
-                    np.nl.SetBlock(x, y + 1, z, Block.Air);
+                    np.nl.SetBlock(x, y + 1, z, 0);
                     np.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
                     return;
                 }
-                if (np.inventory.HeldItem.name.CaselessContains("diamond") && aboveHere == Block.FromRaw(631))
+                if (np.inventory.HeldItem.name.CaselessContains("diamond") && aboveHere == Nas.FromRaw(631))
                 {
                     np.inventory.HeldItem.HP = np.inventory.HeldItem.HP + (0.4f * maxHP);
                     if (np.inventory.HeldItem.HP > maxHP)
                     {
                         np.inventory.HeldItem.HP = maxHP;
                     }
-                    np.nl.SetBlock(x, y + 1, z, Block.Air);
+                    np.nl.SetBlock(x, y + 1, z, 0);
                     np.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
                     return;
                 }
-                if (np.inventory.HeldItem.name.CaselessContains("gold") && aboveHere == Block.FromRaw(41))
+                if (np.inventory.HeldItem.name.CaselessContains("gold") && aboveHere == Nas.FromRaw(41))
                 {
                     np.inventory.HeldItem.HP = np.inventory.HeldItem.HP + (0.4f * maxHP);
                     if (np.inventory.HeldItem.HP > maxHP)
                     {
                         np.inventory.HeldItem.HP = maxHP;
                     }
-                    np.nl.SetBlock(x, y + 1, z, Block.Air);
+                    np.nl.SetBlock(x, y + 1, z, 0);
                     np.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
                     return;
                 }
-                if (np.inventory.HeldItem.name.CaselessContains("iron") && aboveHere == Block.FromRaw(42))
+                if (np.inventory.HeldItem.name.CaselessContains("iron") && aboveHere == Nas.FromRaw(42))
                 {
                     np.inventory.HeldItem.HP = np.inventory.HeldItem.HP + (0.4f * maxHP);
                     if (np.inventory.HeldItem.HP > maxHP)
                     {
                         np.inventory.HeldItem.HP = maxHP;
                     }
-                    np.nl.SetBlock(x, y + 1, z, Block.Air);
+                    np.nl.SetBlock(x, y + 1, z, 0);
                     np.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
                     return;
                 }
-                if (aboveHere == Block.FromRaw(171) && np.nl.blockEntities[x + " " + (y + 1) + " " + z].CanAccess(np) && np.nl.blockEntities[x + " " + (y + 1) + " " + z].blockText != "")
+                if (aboveHere == Nas.FromRaw(171) && np.nl.blockEntities[x + " " + (y + 1) + " " + z].CanAccess(np) && np.nl.blockEntities[x + " " + (y + 1) + " " + z].blockText != "")
                 {
                     string[] words = np.nl.blockEntities[x + " " + (y + 1) + " " + z].blockText.Split(new[] { ':' }, 2);
                     np.inventory.HeldItem.displayName = words[1].Remove(0, 1);
-                    np.nl.SetBlock(x, y + 1, z, Block.Air);
+                    np.nl.SetBlock(x, y + 1, z, 0);
                     np.nl.blockEntities.Remove(x + " " + (y + 1) + " " + z);
                     np.Message("Changed your tool's name to {0}!", np.inventory.HeldItem.displayName);
                     return;
@@ -257,7 +257,7 @@ namespace NotAwesomeSurvival
                 if (exists)
                 {
                     np.inventory.SetAmount(1, 1, true, true);
-                    np.nl.SetBlock(x, y, z, Block.Air);
+                    np.nl.SetBlock(x, y, z, 0);
                     bool inv = np.p.invincible;
                     if (!inv)
                     {
@@ -293,7 +293,7 @@ namespace NotAwesomeSurvival
                     }
                     np.headingToBed = true;
                     np.isDead = true;
-                    np.nl.SetBlock(x, y, z, Block.Air);
+                    np.nl.SetBlock(x, y, z, 0);
                     np.inventory.SetAmount(612, 1, true, true);
                     np.Die("");
                 }
@@ -412,26 +412,26 @@ namespace NotAwesomeSurvival
                     }
                     if (isLava[0] || isLava[1] || isLava[2] || isLava[3] || isLava[4] || isLava[5])
                     {
-                        np.nl.SetBlock(x, y, z, Block.Air);
+                        np.nl.SetBlock(x, y, z, 0);
                         if ((isLava[0] || isLava[5]) && IsPartOfSet(lavaSet, np.nl.GetBlock(x, y + 1, z)) != -1)
                         {
-                            np.nl.SetBlock(x, y + 1, z, Block.Air);
+                            np.nl.SetBlock(x, y + 1, z, 0);
                         }
                         if ((isLava[1] || isLava[5]) && IsPartOfSet(lavaSet, np.nl.GetBlock(x + 1, y, z)) != -1)
                         {
-                            np.nl.SetBlock(x + 1, y, z, Block.Air);
+                            np.nl.SetBlock(x + 1, y, z, 0);
                         }
                         if ((isLava[2] || isLava[5]) && IsPartOfSet(lavaSet, np.nl.GetBlock(x - 1, y, z)) != -1)
                         {
-                            np.nl.SetBlock(x - 1, y, z, Block.Air);
+                            np.nl.SetBlock(x - 1, y, z, 0);
                         }
                         if ((isLava[3] || isLava[5]) && IsPartOfSet(lavaSet, np.nl.GetBlock(x, y, z - 1)) != -1)
                         {
-                            np.nl.SetBlock(x, y, z - 1, Block.Air);
+                            np.nl.SetBlock(x, y, z - 1, 0);
                         }
                         if ((isLava[4] || isLava[5]) && IsPartOfSet(lavaSet, np.nl.GetBlock(x, y, z + 1)) != -1)
                         {
-                            np.nl.SetBlock(x, y, z + 1, Block.Air);
+                            np.nl.SetBlock(x, y, z + 1, 0);
                         }
                         //lava barrel
                         np.inventory.SetAmount(696, 1, true, true);
@@ -497,7 +497,7 @@ namespace NotAwesomeSurvival
                         {
                             for (int offY = 2 - withY; offY + withY <= 245; offY++)
                             {
-                                if (grab.GetBlock((ushort)(offX + withX), (ushort)(offY + withY), (ushort)(offZ + withZ)) == Block.FromRaw(457))
+                                if (grab.GetBlock((ushort)(offX + withX), (ushort)(offY + withY), (ushort)(offZ + withZ)) == Nas.FromRaw(457))
                                 {
                                     double tempDist = Math.Sqrt(offX * offX + offZ * offZ);
                                     if (tempDist < minDist)
@@ -523,7 +523,7 @@ namespace NotAwesomeSurvival
                         {
                             ushort block1 = grab.FastGetBlock((ushort)withX, (ushort)(withY + offY), (ushort)withZ),
                             block2 = grab.FastGetBlock((ushort)withX, (ushort)(withY + offY + 1), (ushort)withZ);
-                            if (block2 == Block.Air && (block1 == Block.FromRaw(457) || block1 == Block.Air))
+                            if (block2 == 0 && (block1 == Nas.FromRaw(457) || block1 == 0))
                             {
                                 dY = offY;
                                 worked = true;
@@ -550,7 +550,7 @@ namespace NotAwesomeSurvival
                         IsPartOfSet(waterSet, np.nl.GetBlock(x, y, z - 1)) != -1
                        )
                     {
-                        np.nl.SetBlock(x, y, z, Block.Air);
+                        np.nl.SetBlock(x, y, z, 0);
                         //water barrel
                         np.inventory.SetAmount(643, 1, true, true);
                         np.inventory.DisplayHeldBlock(blocks[143], -1, false);
@@ -594,11 +594,11 @@ namespace NotAwesomeSurvival
                 }
                 if (button == MouseButton.Right)
                 {
-                    if (toggle == Block.FromRaw(675) || toggle == Block.FromRaw(196))
+                    if (toggle == Nas.FromRaw(675) || toggle == Nas.FromRaw(196))
                     {
                         np.nl.blockEntities[x + " " + y + " " + z].strength = 15;
                     }
-                    if (toggle == Block.FromRaw(674))
+                    if (toggle == Nas.FromRaw(674))
                     {
                         np.nl.blockEntities[x + " " + y + " " + z].strength = 0;
                     }
@@ -1048,7 +1048,7 @@ namespace NotAwesomeSurvival
                     {
                         foreach (KeyValuePair<ushort, int> pair in patternCost)
                         {
-                            if (pair.Key != Block.Air)
+                            if (pair.Key != 0)
                             {
                                 np.inventory.SetAmount(pair.Key, -pair.Value, false);
                             }
@@ -1057,10 +1057,10 @@ namespace NotAwesomeSurvival
                 }
             };
         }
-        public static ushort[] waffleSet = { Block.Extended | 542, Block.Extended | 543 },
-            breadSet = new ushort[] { Block.Extended | 640, Block.Extended | 641, Block.Extended | 642 },
-            pieSet = new ushort[] { Block.Extended | 668, Block.Extended | 669, Block.Extended | 670, Block.Extended | 671 },
-            peachPieSet = new ushort[] { Block.Extended | 698, Block.Extended | 699, Block.Extended | 700, Block.Extended | 701 };
+        public static ushort[] waffleSet = { 256 | 542, 256 | 543 },
+            breadSet = new ushort[] { 256 | 640, 256 | 641, 256 | 642 },
+            pieSet = new ushort[] { 256 | 668, 256 | 669, 256 | 670, 256 | 671 },
+            peachPieSet = new ushort[] { 256 | 698, 256 | 699, 256 | 700, 256 | 701 };
         public static NasBlockInteraction EatInteraction(ushort[] set, int index, float healthRestored, float chewSeconds = 2)
         {
             return (np, button, action, nasBlock, x, y, z) =>
@@ -1084,10 +1084,10 @@ namespace NotAwesomeSurvival
                     };
                     taskChew = Server.MainScheduler.QueueOnce(CanEatAgainCallback, eatInfo, TimeSpan.FromSeconds(chewSeconds));
                     np.Message("*munch*");
-                    np.p.level.BlockDB.Cache.Add(np.p, x, y, z, BlockDBFlags.ManualPlace, set[index], Block.Air);
+                    np.p.level.BlockDB.Cache.Add(np.p, x, y, z, BlockDBFlags.ManualPlace, set[index], 0);
                     if (index == set.Length - 1)
                     {
-                        np.nl.SetBlock(x, y, z, Block.Air);
+                        np.nl.SetBlock(x, y, z, 0);
                         return;
                     }
                     np.nl.SetBlock(x, y, z, set[index + 1]);

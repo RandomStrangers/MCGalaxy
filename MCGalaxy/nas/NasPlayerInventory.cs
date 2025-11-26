@@ -11,7 +11,7 @@ namespace NotAwesomeSurvival
     {
         [JsonIgnore] public Player p;
         [JsonIgnore] public CpeMessageType whereHeldBlockIsDisplayed = CpeMessageType.BottomRight3;
-        public int[] blocks = new int[Block.MaxRaw + 1];
+        public int[] blocks = new int[768];
         public Inventory(Player p)
         {
             this.p = p;
@@ -45,13 +45,13 @@ namespace NotAwesomeSurvival
                 np.SetInventoryNotif = true; //Prevent spamming console
             }
             //hide all blocks
-            for (ushort clientushort = 1; clientushort <= Block.MaxRaw; clientushort++)
+            for (ushort clientushort = 1; clientushort <= 767; clientushort++)
             {
                 Send(Packet.BlockPermission(clientushort, false, false, true));
                 Send(Packet.SetInventoryOrder(clientushort, 0, true));
             }
             //unhide blocks you have access to
-            for (ushort clientushort = 1; clientushort <= Block.MaxRaw; clientushort++)
+            for (ushort clientushort = 1; clientushort <= 767; clientushort++)
             {
                 if (GetAmount(clientushort) > 0)
                 {
@@ -213,10 +213,10 @@ namespace NotAwesomeSurvival
         }
         public void UnhideBlock(ushort clientushort)
         {
-            BlockDefinition def = BlockDefinition.GlobalDefs[Block.FromRaw(clientushort)];
-            if (def == null && clientushort < Block.CPE_COUNT)
+            BlockDefinition def = BlockDefinition.GlobalDefs[Nas.FromRaw(clientushort)];
+            if (def == null && clientushort < 66)
             {
-                def = DefaultSet.MakeCustomBlock(Block.FromRaw(clientushort));
+                def = DefaultSet.MakeCustomBlock(Nas.FromRaw(clientushort));
             }
             if (def == null)
             {
@@ -229,10 +229,10 @@ namespace NotAwesomeSurvival
             {
                 foreach (ushort childID in nasBlock.childIDs)
                 {
-                    def = BlockDefinition.GlobalDefs[Block.FromRaw(childID)];
-                    if (def == null && childID < Block.CPE_COUNT)
+                    def = BlockDefinition.GlobalDefs[Nas.FromRaw(childID)];
+                    if (def == null && childID < 66)
                     {
-                        def = DefaultSet.MakeCustomBlock(Block.FromRaw(childID));
+                        def = DefaultSet.MakeCustomBlock(Nas.FromRaw(childID));
                     }
                     if (def == null)
                     {

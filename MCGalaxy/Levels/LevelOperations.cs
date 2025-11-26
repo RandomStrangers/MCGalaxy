@@ -18,7 +18,6 @@
 using System;
 using System.IO;
 using System.Text;
-
 namespace MCGalaxy
 {
     public static class LevelOperations
@@ -27,45 +26,45 @@ namespace MCGalaxy
         {
             OutputBackups(p, lvl.MapName, lvl.Config);
         }
-
         public static void OutputBackups(Player p, string map, LevelConfig cfg)
         {
             map = map.ToLower();
-            string root = LevelInfo.BackupBasePath(map);
-            string name = cfg.Color + map;
-
+            string root = LevelInfo.BackupBasePath(map),
+                name = cfg.Color + map;
             if (!Directory.Exists(root))
             {
-                p.Message(name + " &Shas no backups yet"); return;
+                p.Message(name + " &Shas no backups yet"); 
+                return;
             }
-
-            //string[] backups = Directory.GetDirectories(root);
             string[] backups = FileIO.TryGetDirectories(root);
             p.Message(name + " &Shas &b" + backups.Length + " &Sbackups");
             int count = 0;
             StringBuilder custom = new();
-
             foreach (string path in backups)
             {
                 string restore = LevelInfo.BackupNameFrom(path);
-                if (NumberUtils.TryParseInt32(restore, out int num)) continue;
-
+                if (NumberUtils.TryParseInt32(restore, out int num))
+                {
+                    continue;
+                }
                 count++;
                 custom.Append(", " + restore);
             }
-
-            if (count == 0) return;
+            if (count == 0)
+            {
+                return;
+            }
             p.Message("&b" + count + " &Sof these are custom-named restores:");
             p.Message(custom.ToString(2, custom.Length - 2));
         }
-
-
-        public static bool Backup(Player p, Level lvl, string backup)
+        public static bool Backup(Player p, Level lvl, string backup, string ext = ".lvl")
         {
             string map = lvl.name;
             bool auto = backup.Length == 0;
-            if (auto) backup = LevelInfo.NextBackup(map);
-
+            if (auto)
+            {
+                backup = LevelInfo.NextBackup(map);
+            }
             TimeSpan delta = lvl.lastBackup - DateTime.UtcNow;
             if (delta.TotalSeconds >= 0)
             {
@@ -74,13 +73,11 @@ namespace MCGalaxy
                 return false;
             }
             lvl.lastBackup = DateTime.UtcNow.AddSeconds(10);
-
-            if (!LevelActions.Backup(map, backup))
+            if (!LevelActions.Backup(map, backup, ext))
             {
                 p.Message("&WFailed to backup {0}", lvl.ColoredName);
                 return false;
             }
-
             if (auto)
             {
                 Logger.Log(LogType.SystemActivity, "Backup {1} saved for {0}", map, backup);

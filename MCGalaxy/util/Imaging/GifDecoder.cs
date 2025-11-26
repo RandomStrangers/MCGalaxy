@@ -16,7 +16,6 @@
     permissions and limitations under the Licenses.
  */
 using System;
-
 namespace MCGalaxy.Util.Imaging
 {
     public class GifDecoder : ImageDecoder
@@ -24,11 +23,11 @@ namespace MCGalaxy.Util.Imaging
         static readonly byte[] gif87Sig = new byte[]
         {
             0x47, 0x49, 0x46, 0x38, 0x37, 0x61
-        }, // "GIF87a"
+        },
         gif89Sig = new byte[]
         {
             0x47, 0x49, 0x46, 0x38, 0x39, 0x61
-        }; // "GIF89a"
+        };
         Pixel[] globalPal;
         public static bool DetectHeader(byte[] data)
         {
@@ -48,25 +47,16 @@ namespace MCGalaxy.Util.Imaging
             ReadMarkers(src, bmp);
             return bmp;
         }
-        const int LOGICAL_DESC_SIZE = 7,
-            MAX_CODE_LEN = 12,
-            MAX_CODES = 1 << MAX_CODE_LEN;
-        const byte MARKER_EXTENSION = 0x21,
-            MARKER_IMAGE_END = 0x3B,
-            MARKER_IMAGE_BEG = 0x2C,
-            EXT_GRAPHICS_CONTROL = 0xF9;
         byte curSubBlockLeft;
         bool subBlocksEnd;
         int subBlocksOffset;
         void ReadGlobalHeader(byte[] src, SimpleBitmap bmp)
         {
-            // read logical screen descriptor
-            int offset = AdvanceOffset(LOGICAL_DESC_SIZE);
+            int offset = AdvanceOffset(7);
             bmp.Width = MemUtils.ReadU16_LE(src, offset + 0);
             bmp.Height = MemUtils.ReadU16_LE(src, offset + 2);
             byte flags = src[offset + 4],
                 bgIndex = src[offset + 5];
-            // src[offset + 6] is pixel aspect ratio - not used
             bool hasGlobalPal = (flags & 0x80) != 0;
             if (hasGlobalPal)
             {
@@ -100,13 +90,13 @@ namespace MCGalaxy.Util.Imaging
                 byte marker = src[offset];
                 switch (marker)
                 {
-                    case MARKER_EXTENSION:
+                    case 0x21:
                         ReadExtension(src);
                         break;
-                    case MARKER_IMAGE_BEG:
+                    case 0x2C:
                         ReadImage(src, bmp);
-                        return; // NOTE: stops reading at first frame
-                    case MARKER_IMAGE_END:
+                        return;
+                    case 0x3B:
                         return;
                     default:
                         Fail("unknown marker:" + marker.ToString("X2"));
@@ -118,7 +108,7 @@ namespace MCGalaxy.Util.Imaging
         {
             int offset = AdvanceOffset(1);
             byte type = src[offset++];
-            if (type == EXT_GRAPHICS_CONTROL)
+            if (type == 0xF9)
             {
                 ReadGraphicsControl(src);
             }
@@ -127,7 +117,6 @@ namespace MCGalaxy.Util.Imaging
                 SkipSubBlocks(src);
             }
         }
-        // Always a simple sub block
         void ReadGraphicsControl(byte[] src)
         {
             int offset = AdvanceOffset(1);
@@ -136,7 +125,6 @@ namespace MCGalaxy.Util.Imaging
             {
                 Fail("graphics control extension too short");
             }
-            // Look for transparent colour index
             offset = AdvanceOffset(length);
             bool hasTrans = (src[offset + 0] & 0x01) != 0;
             byte tcIndex = src[offset + 3];
@@ -145,7 +133,6 @@ namespace MCGalaxy.Util.Imaging
             { 
                 pal[tcIndex].A = 0;
             }
-            // should only be one sub block
             offset = AdvanceOffset(1);
             length = src[offset];
             if (length != 0)
@@ -168,7 +155,6 @@ namespace MCGalaxy.Util.Imaging
         }
         void ReadImage(byte[] src, SimpleBitmap bmp)
         {
-            // Read image descriptor header
             int offset = AdvanceOffset(2 + 2 + 2 + 2 + 1);
             ushort imageX = MemUtils.ReadU16_LE(src, offset + 0),
                 imageY = MemUtils.ReadU16_LE(src, offset + 2),
@@ -196,26 +182,22 @@ namespace MCGalaxy.Util.Imaging
             Pixel[] pal = localPal ?? globalPal;
             int dst_index = 0;
             bool fastPath = imageX == 0 && imageY == 0 && imageW == bmp.Width && imageH == bmp.Height;
-            // Read image data
             offset = AdvanceOffset(1);
             byte minCodeSize = src[offset];
-            if (minCodeSize >= MAX_CODE_LEN)
+            if (minCodeSize >= 12)
             {
                 Fail("codesize too long");
             }
             curSubBlockLeft = 0;
             subBlocksEnd = false;
-            // Init LZW variables
             int codeLen = minCodeSize + 1,
                 codeMask = (1 << codeLen) - 1,
                 clearCode = (1 << minCodeSize) + 0,
                 stopCode = (1 << minCodeSize) + 1,
                 prevCode, availCode;
             DictEntry[] dict = new DictEntry[1 << codeLen];
-            // Bit buffer state
             uint bufVal = 0;
             int bufLen = 0;
-            // Spec says clear code _should_ be sent first, but not required
             for (availCode = 0; availCode < (1 << minCodeSize); availCode++)
             {
                 dict[availCode].first = (byte)availCode;
@@ -223,11 +205,10 @@ namespace MCGalaxy.Util.Imaging
                 dict[availCode].prev = -1;
                 dict[availCode].len = 1;
             }
-            availCode++; // "clear code" and "stop code" entries
+            availCode++; 
             prevCode = -1;
             for (; ; )
             {
-                // Refill buffer when needed
                 if (bufLen < codeLen)
                 {
                     int read;
@@ -248,7 +229,6 @@ namespace MCGalaxy.Util.Imaging
                 {
                     codeLen = minCodeSize + 1;
                     codeMask = (1 << codeLen) - 1;
-                    // Clear dictionary
                     for (availCode = 0; availCode < (1 << minCodeSize); availCode++)
                     {
                         dict[availCode].first = (byte)availCode;
@@ -256,7 +236,7 @@ namespace MCGalaxy.Util.Imaging
                         dict[availCode].prev = -1;
                         dict[availCode].len = 1;
                     }
-                    availCode++; // "clear code" and "stop code" entries
+                    availCode++;
                     prevCode = -1;
                 }
                 else if (code == stopCode)
@@ -267,9 +247,7 @@ namespace MCGalaxy.Util.Imaging
                 {
                     Fail("invalid code");
                 }
-                // Add new entry to code table unless it's full
-                // GIF spec allows this as per 'deferred clear codes'
-                if (prevCode >= 0 && availCode < MAX_CODES)
+                if (prevCode >= 0 && availCode < 1 << 12)
                 {
                     int chainCode = code == availCode ? prevCode : code;
                     dict[availCode].first = dict[prevCode].first;
@@ -277,9 +255,7 @@ namespace MCGalaxy.Util.Imaging
                     dict[availCode].prev = (short)prevCode;
                     dict[availCode].len = (short)(dict[prevCode].len + 1);
                     availCode++;
-                    // Check if inserted code was last free entry of table
-                    // If this is the case, then the table is immediately expanded
-                    if ((availCode & codeMask) == 0 && availCode != MAX_CODES)
+                    if ((availCode & codeMask) == 0 && availCode != 1 << 12)
                     {
                         codeLen++;
                         codeMask = (1 << codeLen) - 1;
@@ -287,9 +263,7 @@ namespace MCGalaxy.Util.Imaging
                     }
                 }
                 prevCode = code;
-                // "top" entry is actually last entry in chain
                 int chain_len = dict[code].len;
-                // If frame is same size as image, no need to convert coordinates
                 if (fastPath)
                 {
                     for (int i = chain_len - 1; i >= 0; i--)
@@ -305,8 +279,6 @@ namespace MCGalaxy.Util.Imaging
                     {
                         int index = dst_index + i;
                         byte palIndex = dict[code].value;
-                        //int localX = index % imageW;
-                        //int localY = index / imageW;
                         int globalX = imageX + (index % imageW),
                             globalY = imageY + (index / imageW);
                         bmp.pixels[globalY * bmp.Width + globalX] = pal[palIndex];
@@ -331,7 +303,6 @@ namespace MCGalaxy.Util.Imaging
                 }
                 subBlocksOffset = AdvanceOffset(1);
                 curSubBlockLeft = buf_data[subBlocksOffset++];
-                // If sub block length is 0, then reached end of sub blocks
                 if (curSubBlockLeft == 0)
                 {
                     subBlocksEnd = true;

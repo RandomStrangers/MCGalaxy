@@ -16,7 +16,6 @@
     permissions and limitations under the Licenses.
  */
 using System;
-
 namespace MCGalaxy.Util
 {
     public static class ImageUtils
@@ -32,10 +31,6 @@ namespace MCGalaxy.Util
             }
             catch (ArgumentException ex)
             {
-                // GDI+ throws ArgumentException when data is not an image
-                // This is a fairly expected error - e.g. when a user tries to /imgprint
-                //   the webpage an image is hosted on, instead of the actual image itself. 
-                // So don't bother logging a full error for this case
                 Logger.Log(LogType.Warning, "Error decoding image: " + ex.Message);
                 OnDecodeError(p, bmp);
                 return null;
@@ -50,7 +45,6 @@ namespace MCGalaxy.Util
         static void OnDecodeError(Player p, IBitmap2D bmp)
         {
             bmp?.Dispose();
-            // TODO failed to decode the image. make sure you are using the URL of the image directly, not just the webpage it is hosted on              
             p.Message("&WThere was an error reading the downloaded image.");
             p.Message("&WThe url may need to end with its extension (such as .jpg).");
         }
