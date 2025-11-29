@@ -1,14 +1,14 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
+
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
+
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -20,14 +20,14 @@ namespace MCGalaxy.Util.Imaging
 {
     public class JpegDecoder : ImageDecoder
     {
-        static readonly byte[] jfifSig = new byte[]
-        {
-            0xFF, 0xD8, 0xFF, 0xE0
+        static readonly byte[] jfifSig = new byte[] 
+        { 
+            0xFF, 0xD8, 0xFF, 0xE0 
         },
-        exifSig = new byte[]
-        {
-            0xFF, 0xD8, 0xFF, 0xE1
-        },
+        exifSig = new byte[] 
+        { 
+            0xFF, 0xD8, 0xFF, 0xE1 
+        }, 
         zigzag_to_linear = new byte[64]
         {
             0,  1,  8, 16,  9,  2,  3, 10,
@@ -281,7 +281,7 @@ namespace MCGalaxy.Util.Imaging
                         {
                             for (int bx = 0; bx < comp.BlocksPerMcuX; bx++)
                             {
-                                DecodeBlock(comp, src, block, output);
+                                DecodeBlock(comp, src, block);
                                 IDCT(block, output);
                                 int samplesX = lowestHor / comp.SamplingHor,
                                     samplesY = lowestVer / comp.SamplingVer;
@@ -353,7 +353,7 @@ namespace MCGalaxy.Util.Imaging
             }
             return (byte)v;
         }
-        void DecodeBlock(JpegComponent comp, byte[] src, int[] block, float[] output)
+        void DecodeBlock(JpegComponent comp, byte[] src, int[] block)
         {
             HuffmanTable table = dc_huff_tables[comp.DCHuffTable];
             int dc_code = ReadHuffman(table, src),
@@ -397,7 +397,6 @@ namespace MCGalaxy.Util.Imaging
                     idx++;
                 }
             } while (idx < 64);
-            IDCT(block, output);
         }
         float[] idct_factors;
         void ComputeIDCTFactors()
@@ -456,7 +455,7 @@ namespace MCGalaxy.Util.Imaging
                     byte type = src[buf_offset++];
                     if (type == 0xD9)
                     {
-                        end = true; 
+                        end = true;
                         buf_offset -= 2;
                     }
                     else if (type != 0)
@@ -521,7 +520,7 @@ namespace MCGalaxy.Util.Imaging
     class HuffmanTable
     {
         public ushort[] firstCodewords,
-            endCodewords,
+            endCodewords, 
             firstOffsets;
         public byte[] values;
     }
