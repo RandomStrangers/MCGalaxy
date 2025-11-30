@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Tasks;
 using Newtonsoft.Json;
@@ -213,10 +213,6 @@ namespace NotAwesomeSurvival
             DisturbBlock(x, y, z, 0, 0, 1);
             DisturbBlock(x, y, z, 0, 0, -1);
         }
-        /// <summary>
-        /// Call to make the nasBlock at this location queue its "whatHappensWhenDisturbed" function.
-        /// </summary>
-        /// 
         public ushort[] observers =
         {
             Nas.FromRaw(415),
@@ -225,8 +221,8 @@ namespace NotAwesomeSurvival
             Nas.FromRaw(418),
             Nas.FromRaw(419),
             Nas.FromRaw(420),
-        };
-        public ushort[] repeatersOff =
+        },
+        repeatersOff =
         {
             Nas.FromRaw(176),
             Nas.FromRaw(177),
@@ -234,8 +230,8 @@ namespace NotAwesomeSurvival
             Nas.FromRaw(175),
             Nas.FromRaw(172),
             Nas.FromRaw(173),
-        };
-        public ushort[] repeatersOn =
+        },
+        repeatersOn =
         {
             Nas.FromRaw(617),
             Nas.FromRaw(618),

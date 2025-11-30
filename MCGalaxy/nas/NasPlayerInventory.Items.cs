@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Network;
 using Newtonsoft.Json;
@@ -19,7 +19,6 @@ namespace NotAwesomeSurvival
         {
             MoveBar(0, ref selectedItemIndex);
         }
-        //returns false if the player doesn't have room for the item
         public bool GetItem(Item item)
         {
             if (items[selectedItemIndex] == null)
@@ -90,7 +89,6 @@ namespace NotAwesomeSurvival
         {
             Item gettingMoved = items[selectedItemIndex],
                 to = items[slotToMoveTo];
-            //swap around
             items[selectedItemIndex] = to;
             items[slotToMoveTo] = gettingMoved;
             selectedItemIndex = slotToMoveTo;
@@ -114,7 +112,6 @@ namespace NotAwesomeSurvival
             MoveBar(direction, ref selectedItemIndex);
             if (heldItemBeforeScrolled != HeldItem)
             {
-                //only reset breaking if they actually are holding a different item than before
                 NasPlayer.StartCooldown(p, np.inventory.HeldItem.Prop.recharge);
                 np.ResetBreaking();
                 NasEffect.UndefineEffect(p, NasBlockChange.BreakMeterID);
@@ -261,7 +258,6 @@ namespace NotAwesomeSurvival
         }
         public void DeleteItem(bool confirmed = false)
         {
-            //don't even fuck with deleting if they're moving items
             if (slotToMoveTo != -1)
             {
                 return;
@@ -336,6 +332,6 @@ namespace NotAwesomeSurvival
                 }
             }
         }
-    } //class Inventory
+    }
 }
 #endif

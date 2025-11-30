@@ -22,10 +22,10 @@ namespace MCGalaxy.Generator
     /// <summary> Implements improved perlin noise as described in http://mrl.nyu.edu/~perlin/noise/ </summary>
     public sealed class ImprovedNoise
     {
-        public float Frequency = 1;
-        public float Amplitude = 1;
-        public float Lacunarity = 2;
-        public float Persistence = 2;
+        public float Frequency = 1,
+            Amplitude = 1,
+            Lacunarity = 2,
+            Persistence = 2;
         public int Octaves = 1;
 
         readonly byte[] p = new byte[512];
@@ -37,8 +37,11 @@ namespace MCGalaxy.Generator
 
             for (int i = 0; i < 256; i++)
             {
+                byte temp;
                 int j = rnd.Next(i, 256);
-                byte temp = p[i]; p[i] = p[j]; p[j] = temp;
+                temp = p[i]; 
+                p[i] = p[j]; 
+                p[j] = temp;
             }
             for (int i = 0; i < 256; i++)
                 p[i + 256] = p[i];
@@ -46,9 +49,9 @@ namespace MCGalaxy.Generator
 
         public float NormalisedNoise(float x, float y, float z)
         {
-            float sum = 0;
-            float freq = Frequency, amp = Amplitude;
-            float scale = 0;
+            float sum = 0,
+                freq = Frequency, amp = Amplitude,
+                scale = 0;
 
             for (int i = 0; i < Octaves; i++)
             {
@@ -62,8 +65,8 @@ namespace MCGalaxy.Generator
 
         public float OctaveNoise(float x, float y, float z)
         {
-            float sum = 0;
-            float freq = Frequency, amp = Amplitude;
+            float sum = 0,
+                freq = Frequency, amp = Amplitude;
             for (int i = 0; i < Octaves; i++)
             {
                 sum += Noise(x * freq, y * freq, z * freq) * amp;
@@ -76,15 +79,17 @@ namespace MCGalaxy.Generator
 
         public float Noise(float x, float y, float z)
         {
-            int xFloor = x >= 0 ? (int)x : (int)x - 1;
-            int yFloor = y >= 0 ? (int)y : (int)y - 1;
-            int zFloor = z >= 0 ? (int)z : (int)z - 1;
-            int X = xFloor & 0xFF, Y = yFloor & 0xFF, Z = zFloor & 0xFF;
-            x -= xFloor; y -= yFloor; z -= zFloor;
+            int xFloor = x >= 0 ? (int)x : (int)x - 1,
+                yFloor = y >= 0 ? (int)y : (int)y - 1,
+                zFloor = z >= 0 ? (int)z : (int)z - 1,
+                X = xFloor & 0xFF, Y = yFloor & 0xFF, Z = zFloor & 0xFF;
+            x -= xFloor; 
+            y -= yFloor; 
+            z -= zFloor;
 
             float u = Fade(x), v = Fade(y), w = Fade(z);
-            int A = p[X] + Y, AA = p[A] + Z, AB = p[A + 1] + Z;
-            int B = p[X + 1] + Y, BA = p[B] + Z, BB = p[B + 1] + Z;
+            int A = p[X] + Y, AA = p[A] + Z, AB = p[A + 1] + Z,
+                B = p[X + 1] + Y, BA = p[B] + Z, BB = p[B + 1] + Z;
 
             return Lerp(
                 Lerp(

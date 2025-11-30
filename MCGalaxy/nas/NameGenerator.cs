@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using System;
 namespace NotAwesomeSurvival
 {
@@ -15,9 +15,6 @@ namespace NotAwesomeSurvival
         public char[] vowel = new char[] { 'a', 'e', 'i', 'o', 'u', 'y' },
             consonant = new char[] { 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z' };
         public Random random;
-        /// <summary>
-        /// Create an instance.
-        /// </summary>
         public NameGenerator()
         {
             random = new();
@@ -65,11 +62,6 @@ namespace NotAwesomeSurvival
             }
             return newName;
         }
-        /// <summary>
-        /// Generates a name randomly using certain construction rules. The name
-        /// will be different each time it is called.
-        /// </summary>
-        /// <returns>A name string.</returns>
         public string MakeName()
         {
             long numberSyllables = numSyllables[IndexSelect(numSyllablesChance)];

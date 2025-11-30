@@ -40,11 +40,11 @@ namespace MCGalaxy.Levels.IO
             for (int i = 0; i < blocks.Length; i++)
             {
                 byte raw = blocks[i];
-                if (raw <= Block.CPE_MAX_BLOCK)
+                if (raw <= 65)
                 {
                     continue;
                 }
-                blocks[i] = Block.custom_block;
+                blocks[i] = 163;
                 lvl.IntToPos(i, out ushort x, out ushort y, out ushort z);
                 lvl.FastSetExtTile(x, y, z, raw);
             }
@@ -53,7 +53,7 @@ namespace MCGalaxy.Levels.IO
         public static List<IMapImporter> Formats = new() 
         {
             new LvlImporter(), new CwImporter(), new FcmImporter(), new McfImporter(),
-            new DatImporter(), new McLevelImporter()
+            new DatImporter(), new McLevelImporter(), new MapImporter()
         };
         public static IMapImporter defaultImporter = new LvlImporter();
         /// <summary> Returns an IMapImporter capable of decoding the given level file </summary>
@@ -98,7 +98,7 @@ namespace MCGalaxy.Levels.IO
         public abstract void Write(Stream dst, Level lvl);
         public static List<IMapExporter> Formats = new()
         {
-            new LvlExporter(), new McfExporter()
+            new LvlExporter(), new McfExporter(), new MapExporter()
         };
         public static IMapExporter GetFor(string path)
         {

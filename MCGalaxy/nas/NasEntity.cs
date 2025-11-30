@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Maths;
 using Newtonsoft.Json;
@@ -10,24 +10,16 @@ namespace NotAwesomeSurvival
         public enum DamageSource { Falling, Suffocating, Drowning, Entity, None, Murder }
         public static string DeathReason(DamageSource source, Player p)
         {
-            switch (source)
+            return source switch
             {
-                case DamageSource.Entity:
-                    return "@p &cdied.";
-                case DamageSource.Falling:
-                    if (p == null) return "@p &cfell to their death.";
-                    else return "@p &cfell to " + p.pronouns.Object + " death.";
-                case DamageSource.Suffocating:
-                    return "@p &esuffocated.";
-                case DamageSource.Drowning:
-                    return "@p &rdrowned.";
-                case DamageSource.None:
-                    return "@p &adied from unknown causes.";
-                case DamageSource.Murder:
-                    return "@p &8" + p.pronouns.PastVerb + "&8 murdered by &S@s";
-                default:
-                    return Enum.GetName(typeof(DamageSource), source).ToLower();
-            }
+                DamageSource.Entity => "@p &cdied.",
+                DamageSource.Falling => "@p &cfell to " + p.pronouns.Object + " death.",
+                DamageSource.Suffocating => "@p &esuffocated.",
+                DamageSource.Drowning => "@p &rdrowned.",
+                DamageSource.None => "@p &adied from unknown causes.",
+                DamageSource.Murder => "@p &8" + p.pronouns.PastVerb + "&8 murdered by &S@s",
+                _ => Enum.GetName(typeof(DamageSource), source).ToLower(),
+            };
         }
         [JsonIgnore] public float AirPrev;
         [JsonIgnore] public NasLevel nl;
@@ -52,7 +44,6 @@ namespace NotAwesomeSurvival
         }
         public virtual void ChangeHealth(float diff)
         {
-            //TODO threadsafe
             HP += diff;
             if (HP < 0)
             {
@@ -109,7 +100,6 @@ namespace NotAwesomeSurvival
                 return;
             }
             AABB worldAABB = bounds.OffsetPosition(entityPos);
-            //counteract client rounding
             worldAABB.Min.X++;
             worldAABB.Min.Y++;
             worldAABB.Min.Z++;
@@ -117,7 +107,6 @@ namespace NotAwesomeSurvival
             eyeAABB.Min.X++;
             eyeAABB.Min.Y++;
             eyeAABB.Min.Z++;
-            //sometimes client subtly clips through things like when walking up stairs...
             worldAABB = worldAABB.Expand(-1);
             Vec3S32 min = worldAABB.BlockMin, max = worldAABB.BlockMax;
             for (int y = min.Y; y <= max.Y; y++)

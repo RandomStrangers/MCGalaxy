@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Blocks;
 using MCGalaxy.Maths;
@@ -40,7 +40,7 @@ namespace NotAwesomeSurvival
                     case CollideType.SwimThrough:
                         bounds.Max.Y -= 4;
                         fallDamageMultiplier = 0;
-                        collideAction = null; //DefaultLiquidCollideAction?
+                        collideAction = null;
                         break;
                     case CollideType.WalkThrough:
                         collideAction = null;
@@ -60,7 +60,6 @@ namespace NotAwesomeSurvival
                 bounds = new(0, 0, 0, 32, DefaultSet.Height(core) * 2, 32);
             }
             NasBlock nb = NasBlock.Get(ConvertToClientushort(serverushort));
-            //physics blocks like cold_water are also attempted to setup in this list, so only use the properties from the first one
             if (nb.fallDamageMultiplier == -1)
             {
                 nb.collides = collides;
@@ -89,7 +88,6 @@ namespace NotAwesomeSurvival
         }
         public static bool TouchesGround(Level lvl, AABB entityAABB, Position entityPos, out float fallDamageMultiplier)
         {
-            //fallDamageMultiplier = 1;
             AABB worldAABB = entityAABB.OffsetPosition(entityPos);
             worldAABB.Min.X++;
             worldAABB.Min.Z++;
@@ -136,8 +134,6 @@ namespace NotAwesomeSurvival
             }
             fallDamageMultiplier = nasBlock.fallDamageMultiplier;
             AABB blockAABB = nasBlock.bounds;
-            //running down stairs will kill you at the bottom if their actual max Y is respected
-            //make them taller so the server can know you're touching them
             blockAABB.Max.Y = 32;
             blockAABB = blockAABB.Offset(x * 32, y * 32, z * 32);
             if (AABB.Intersects(ref entityAABB, ref blockAABB))

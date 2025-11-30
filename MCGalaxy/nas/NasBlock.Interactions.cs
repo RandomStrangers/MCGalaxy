@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Modules.Warps;
@@ -105,7 +105,6 @@ namespace NotAwesomeSurvival
             {
                 if (exists)
                 {
-                    //give back barrel
                     np.inventory.SetAmount(143, 1, false, false);
                 }
             };
@@ -116,7 +115,6 @@ namespace NotAwesomeSurvival
             {
                 if (exists)
                 {
-                    //give back barrel
                     np.inventory.SetAmount(697, 1, false, false);
                 }
             };
@@ -430,7 +428,6 @@ namespace NotAwesomeSurvival
                         {
                             np.nl.SetBlock(x, y, z + 1, 0);
                         }
-                        //lava barrel
                         np.inventory.SetAmount(696, 1, true, true);
                         np.inventory.DisplayHeldBlock(blocks[697], -1, false);
                         return;
@@ -505,7 +502,6 @@ namespace NotAwesomeSurvival
                                         dZ = offZ;
                                         worked = true;
                                     }
-
                                 }
                             }
                         }
@@ -529,14 +525,13 @@ namespace NotAwesomeSurvival
                         }
                     }
                 }
-                np.NetherTravel(newLevel, new NasPlayer.TransferInfo(np.p, levelX - lvlX, levelZ - lvlZ, withX, withY + dY, withZ));
+                np.NetherTravel(newLevel, new(np.p, levelX - lvlX, levelZ - lvlZ, withX, withY + dY, withZ));
             };
         }
         public static NasBlockExistAction ContainerExistAction()
         {
             return (np, nasBlock, exists, x, y, z) =>
             {
-                //this is voodoo -- the question is, is it too much voodoo for the next 10 centuries for god's official temple?
                 if (exists && nasBlock.container.type == Container.Type.Barrel)
                 {
                     if (
@@ -548,7 +543,6 @@ namespace NotAwesomeSurvival
                        )
                     {
                         np.nl.SetBlock(x, y, z, 0);
-                        //water barrel
                         np.inventory.SetAmount(643, 1, true, true);
                         np.inventory.DisplayHeldBlock(blocks[143], -1, false);
                         return;
@@ -654,7 +648,6 @@ namespace NotAwesomeSurvival
                     }
                     if (button == MouseButton.Left)
                     {
-
                         if (np.inventory.HeldItem.name == "Key")
                         {
                             if (nasBlock.container.type == Container.Type.Gravestone || nasBlock.container.type == Container.Type.Dispenser)
@@ -788,7 +781,6 @@ namespace NotAwesomeSurvival
         }
         public static void AddBlocks(NasPlayer np, int x, int y, int z)
         {
-            //np.p.ClientHeldBlock is server block ID
             ushort clientushort = np.ConvertBlock(np.p.ClientHeldBlock);
             NasBlock nasBlock = Get(clientushort);
             Entity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
@@ -824,7 +816,6 @@ namespace NotAwesomeSurvival
                 }
                 foreach (BlockStack stack in bEntity.drop.blockStacks)
                 {
-                    //if a stack exists in the container already, add to that stack
                     if (stack.ID == nasBlock.parentID)
                     {
                         np.inventory.SetAmount(nasBlock.parentID, -amount, true, true);
@@ -848,14 +839,13 @@ namespace NotAwesomeSurvival
                 if (bEntity.drop.blockStacks.Count == 0)
                 {
                     np.Message("&cTHERE ARE 0 BLOCK STACKS INSIDE WARNING THIS SHOULD NEVER HAPPEN IT SHOULD BE NULL INSTEAD");
-                    return;
+                    bEntity.drop.blockStacks = null;
                 }
                 BlockStack bs = null;
                 ushort clientushort = np.ConvertBlock(np.p.ClientHeldBlock);
                 NasBlock nasBlock = Get(clientushort);
                 foreach (BlockStack stack in bEntity.drop.blockStacks)
                 {
-                    //if there's a stack in the container that matches what we're holding
                     if (stack.ID == nasBlock.parentID)
                     {
                         bs = stack;
@@ -1004,7 +994,6 @@ namespace NotAwesomeSurvival
                 Drop dropClone = new(recipe.drop);
                 if (np.inventory.GetDrop(dropClone, true) != null)
                 {
-                    //non null means the player couldn't fit this drop in their inventory
                     return;
                 }
                 np.GiveExp(recipe.expGiven);

@@ -23,8 +23,8 @@ namespace MCGalaxy.Modules.Warps
     {
         public override string name { get { return "Warps"; } }
 
-        readonly Command cmdWarps = new CmdWarp();
-        readonly Command cmdWaypoints = new CmdWaypoint();
+        readonly Command cmdWarps = new CmdWarp(),
+            cmdWaypoints = new CmdWaypoint();
 
         public override void Load(bool startup)
         {

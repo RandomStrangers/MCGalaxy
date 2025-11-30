@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
@@ -8,7 +8,6 @@ namespace NotAwesomeSurvival
 {
     public partial class NasTimeCycle
     {
-        // Vars
         public static float globalCurrentTime;
         public static DayCycles globalCurrentDayCycle;
         public static JsonSerializer serializer = new();
@@ -16,14 +15,13 @@ namespace NotAwesomeSurvival
         public static SchedulerTask task;
         public static string globalSkyColor, globalCloudColor,
             globalSunColor, globalShadowColor, 
-            TimeFilePath = Nas.CoreSavePath + "time.json"; // self explanatory
-        // Cycle Settings
-        public static DayCycles dayCycle = DayCycles.Sunrise; // default cycle
-        public static int cycleCurrentTime = 0, /* current cycle time (must be zero to start)*/
-            cycleMaxTime = 14400, /* duration a whole day*/
-            hourMinutes = 600, //seconds in an hour
+            TimeFilePath = Nas.CoreSavePath + "time.json";
+        public static DayCycles dayCycle = DayCycles.Sunrise;
+        public static int cycleCurrentTime = 0,
+            cycleMaxTime = 14400,
+            hourMinutes = 600,
             gameday = 0;
-        public enum DayCycles // Enum with day and night cycles
+        public enum DayCycles
         {
             Sunrise, Day, Sunset, Night, Midnight
         }
@@ -31,16 +29,13 @@ namespace NotAwesomeSurvival
         {
             weatherScheduler ??= new("WeatherScheduler");
             task = weatherScheduler.QueueRepeat(Update, null, new(0, 0, 7));
-            dayCycle = DayCycles.Sunrise; // start with sunrise state
-            // Static variables to keep time after switching scenes
+            dayCycle = DayCycles.Sunrise;
             if (!File.Exists(TimeFilePath))
             {
                 File.Create(TimeFilePath).Dispose();
                 Log("Created new json time file {0}!", TimeFilePath);
                 using StreamWriter sw = new(TimeFilePath);
-                // To help you better understand, this is the stream writer
                 using JsonWriter writer = new JsonTextWriter(sw);
-                // this is the json writer that will help me to serialize and deserialize items in the file
                 serializer.Serialize(writer, cyc);
             }
             string jsonString = FileUtils.TryReadAllText(TimeFilePath);
@@ -56,76 +51,67 @@ namespace NotAwesomeSurvival
         {
             weatherScheduler.Cancel(task);
         }
-        public static void Update(SchedulerTask task) // this gets executed each time a second has passed.
+        public static void Update(SchedulerTask task)
         {
-            // Update cycle time
             cycleCurrentTime += 6 * 7;
-            // Static variables to keep time after switching scenes
             globalCurrentTime = cycleCurrentTime;
             globalCurrentDayCycle = dayCycle;
-            // Check if cycle time reach cycle duration time
             if (cycleCurrentTime >= cycleMaxTime)
             {
-                cycleCurrentTime = 0; // back to 0 (restarting cycle time)
-                gameday += 1; // one more in-game day just passed
-                dayCycle++; // change cycle state
+                cycleCurrentTime = 0;
+                gameday += 1;
+                dayCycle++;
             }
-            //when to change cycles
             if (cycleCurrentTime >= 7 * hourMinutes & cycleCurrentTime < 8 * hourMinutes)
             {
                 dayCycle = DayCycles.Sunrise;
-            } // 7am
+            }
             if (cycleCurrentTime >= 8 * hourMinutes & cycleCurrentTime < 19 * hourMinutes)
             {
                 dayCycle = DayCycles.Day;
-            } // 8am
+            }
             if (cycleCurrentTime >= 19 * hourMinutes & cycleCurrentTime < 20 * hourMinutes)
             {
                 dayCycle = DayCycles.Sunset;
-            } // 6pm
+            }
             if (cycleCurrentTime >= 20 * hourMinutes & cycleCurrentTime < 24 * hourMinutes)
             {
                 dayCycle = DayCycles.Night;
-            } // 8pm
+            }
             if (cycleCurrentTime == 24 * hourMinutes | cycleCurrentTime == 0 | cycleCurrentTime < 7 * hourMinutes)
             {
                 dayCycle = DayCycles.Midnight;
-            } // 0 am
+            }
             switch (dayCycle)
             {
-                // Sunrise state (you can do a lot of stuff based on every cycle state, like enable monster spawning only when dark)
                 case DayCycles.Sunrise:
-                    globalCloudColor = "#ff8c00"; // Dark Orange
-                    globalSkyColor = "#FFA500"; // Orange
-                    globalSunColor = "#a9a9a9"; // Dark Gray
+                    globalCloudColor = "#ff8c00";
+                    globalSkyColor = "#FFA500";
+                    globalSunColor = "#a9a9a9";
                     globalShadowColor = "#828282";
                     break;
-                // Mid Day state
                 case DayCycles.Day:
-                    globalCloudColor = "#ffffff"; // White
-                    globalSkyColor = "#ADD8E6"; // Light Blue
-                    globalSunColor = "#ffffff"; // White
+                    globalCloudColor = "#ffffff";
+                    globalSkyColor = "#ADD8E6";
+                    globalSunColor = "#ffffff";
                     globalShadowColor = "#9B9B9B";
                     break;
-                // Sunset state
                 case DayCycles.Sunset:
-                    globalCloudColor = "#cf5c00"; // Dark Orange
-                    globalSkyColor = "#FFB500"; // Orange
-                    globalSunColor = "#a9a9a9"; // Dark Gray
+                    globalCloudColor = "#cf5c00";
+                    globalSkyColor = "#FFB500";
+                    globalSunColor = "#a9a9a9";
                     globalShadowColor = "#828282";
                     break;
-                // Night state
                 case DayCycles.Night:
-                    globalCloudColor = "#808080"; // Gray
-                    globalSkyColor = "#404040"; // Darker Gray
-                    globalSunColor = "#808080"; // Gray
+                    globalCloudColor = "#808080";
+                    globalSkyColor = "#404040";
+                    globalSunColor = "#808080";
                     globalShadowColor = "#595959";
                     break;
-                // Midnight state
                 case DayCycles.Midnight:
-                    globalCloudColor = "#404040"; // Darker Gray
-                    globalSkyColor = "#000000"; // Black
-                    globalSunColor = "#404040"; // Darker Gray
+                    globalCloudColor = "#404040";
+                    globalSkyColor = "#000000";
+                    globalSunColor = "#404040";
                     globalShadowColor = "#494949";
                     break;
             }
@@ -142,26 +128,26 @@ namespace NotAwesomeSurvival
                     if (lvl.Config.LightColor != sun)
                     {
                         changed = true;
-                        lvl.Config.LightColor = sun; // Sun Colour
+                        lvl.Config.LightColor = sun;
                     }
                     if (lvl.Config.CloudColor != cloud)
                     {
                         changed = true;
-                        lvl.Config.CloudColor = cloud; // Cloud Colour
+                        lvl.Config.CloudColor = cloud;
                     }
                     if (lvl.Config.SkyColor != sky)
                     {
                         changed = true;
-                        lvl.Config.SkyColor = sky; // Sky
+                        lvl.Config.SkyColor = sky;
                     }
                     if (lvl.Config.ShadowColor != shadow)
                     {
                         changed = true;
-                        lvl.Config.ShadowColor = shadow; // Shadow
+                        lvl.Config.ShadowColor = shadow;
                     }
                     if (changed)
                     {
-                        lvl.SaveSettings(); // We save these settings after
+                        lvl.SaveSettings();
                     }
                 }
             }

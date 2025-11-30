@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using Newtonsoft.Json;
 using System.IO;
@@ -24,9 +24,7 @@ namespace NotAwesomeSurvival
                 Log("Created new json time file {0}!", TimeFilePath);
             }
             using StreamWriter sw = new(TimeFilePath);
-            // To help you better understand, this is the stream writer
             using JsonWriter writer = new JsonTextWriter(sw);
-            // this is the json writer that will help me to serialize and deserialize items in the file
             serializer.Serialize(writer, cyc);
         }
     }

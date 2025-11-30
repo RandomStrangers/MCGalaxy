@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -65,11 +65,6 @@ namespace NotAwesomeSurvival
             armor = prop.armor;
             displayName ??= ColoredName;
         }
-        /// <summary>
-        /// Call to take damage
-        /// </summary>
-        /// <param name="amount">the amount of damage to take. Breaking a block normally gives 1 damage</param>
-        /// <returns>true if the item should break</returns>
         public bool TakeDamage(float amount = 1)
         {
             if (HP == int.MaxValue)

@@ -234,7 +234,7 @@ namespace MCGalaxy.Util.Imaging
                     tables = src[offset++];
                 SetHuffTables(compID, tables);
             }
-            offset += 3;
+            //offset += 3;
         }
         void SetHuffTables(byte compID, byte tables)
         {

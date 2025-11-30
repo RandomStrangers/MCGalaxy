@@ -1,34 +1,10 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 namespace NotAwesomeSurvival
 {
     public partial class Crafting
     {
         public static void Setup()
         {
-            //EXPLANATION FOR HOW TO READ RECIPES!
-
-            //the first line of the recipe shows what will be produced. if it's an item it will give the 
-            //specified item with the name given. If it's a blockID it will give the blockID specified.
-
-            //The recipe.pattern is a 2d list that contains what blocks are needed. Remember that the number is
-            //actually the blockID. You can do /hold (blockid) ingame to see what block it is.
-
-            //the recipe.usesAlternateID specifies whether or not alternate versions of the block can be used. 
-            //The alternateIDs of 5 (oak planks) are birch and spruce planks, e.t.c. For 36 (white wool) it's 
-            //all the other colors of wool.
-
-            //If recipe.stationType = Crafting.Station.Type.Furnace, then it means the recipe must be made in a
-            //furnace and NOT a crafting table.
-
-            //recipe.usesParentID specifies whether or not the Parent ID of a block can be used. ParentIDS usually
-            //amount to rotated versions of a block. So if a slab is in a recipe that uses parentIDS, then the slab
-            //can be in any direction.
-
-            //Finally, recipe.shapeless determines whether or not you can put the blocks in any order.
-            //If it's true, it means the blocks shown don't have to be in the same place relative to each other.
-
-            //Recipes that don't fill up all 9 slots and are NOT shapeless just mean that smaller pattern can be
-            //anywhere on the crafting table, just in the same spot relative to each other.
             Recipe wood = new(5, 4)
             {
                 usesParentID = true,
@@ -158,7 +134,6 @@ namespace NotAwesomeSurvival
                     {  182 }
                 }
             };
-            //spruce wood stuff ------------------------------------------------------
             Recipe sprucewood = new(97, 4)
             {
                 usesParentID = true,
@@ -209,15 +184,6 @@ namespace NotAwesomeSurvival
                     {  252, 254, 252 }
                 }
             };
-            //Recipe thirdDoor = new Recipe(470, 2)
-            //{
-            //  pattern = new ushort[,] {
-            //      { 98, 98 },
-            //      { 98, 98 },
-            //      { 98, 98 }
-            //  }
-            //};
-            //birch wood stuff ------------------------------------------------------
             Recipe birchwood = new(98, 4)
             {
                 usesParentID = true,
@@ -276,7 +242,6 @@ namespace NotAwesomeSurvival
                     { 98, 98 }
                 }
             };
-            //chest
             Recipe chest = new(216, 1)
             {
                 usesAlternateID = true,
@@ -356,7 +321,6 @@ namespace NotAwesomeSurvival
                     { 690, 690, 690 },
                 }
             };
-            //stone stuff ------------------------------------------------------
             Recipe stoneSlab = new(596, 6)
             {
                 pattern = new ushort[,] {
@@ -379,7 +343,6 @@ namespace NotAwesomeSurvival
                     {  1, 1, 1 }
                 }
             };
-            //stonebrick
             Recipe marker = new(64, 1)
             {
                 pattern = new ushort[,] {
@@ -585,7 +548,6 @@ namespace NotAwesomeSurvival
                     {  61, 61, 61 }
                 }
             };
-            //upside down slab recipe
             Recipe stonePlate2 = new(135, 6)
             {
                 pattern = new ushort[,] {
@@ -607,7 +569,6 @@ namespace NotAwesomeSurvival
                     { 45 }
                 }
             };
-            //ore stuff
             Recipe charcoal = new(49, 2)
             {
                 stationType = Station.Type.Furnace,
@@ -686,7 +647,6 @@ namespace NotAwesomeSurvival
                     {  49, 49, 49 },
                 }
             };
-            //old iron
             Recipe oldIron = new(148, 3)
             {
                 stationType = Station.Type.Furnace,
@@ -736,7 +696,6 @@ namespace NotAwesomeSurvival
                     { 148, 21 }
                 }
             };
-            //i = 159; //Iron fence-WE
             Recipe ironFence = new(159, 12)
             {
                 pattern = new ushort[,] {
@@ -744,7 +703,6 @@ namespace NotAwesomeSurvival
                     {  148, 148, 148 }
                 }
             };
-            //i = 161; //Iron cage
             Recipe ironCage = new(161, 4)
             {
                 usesParentID = true,
@@ -787,7 +745,6 @@ namespace NotAwesomeSurvival
                     {  49, 49, 49 },
                 }
             };
-            //glass
             Recipe glass = new(20, 1)
             {
                 stationType = Station.Type.Furnace,
@@ -839,7 +796,6 @@ namespace NotAwesomeSurvival
                     { 78 }
                 }
             };
-            //bread
             Recipe bread = new(640, 1)
             {
                 stationType = Station.Type.Furnace,

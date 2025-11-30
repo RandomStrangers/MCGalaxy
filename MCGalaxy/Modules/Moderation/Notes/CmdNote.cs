@@ -25,8 +25,8 @@ namespace MCGalaxy.Modules.Moderation.Notes
         public override string name { get { return "Note"; } }
         public override string type { get { return CommandTypes.Moderation; } }
         public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        protected virtual bool announce { get { return true; } }
-        protected virtual ModActionType modActionType { get { return ModActionType.Noted; } }
+        protected virtual bool Announce { get { return true; } }
+        protected virtual ModActionType ModActionType { get { return ModActionType.Noted; } }
 
         public override void Use(Player p, string message, CommandData data)
         {
@@ -48,9 +48,9 @@ namespace MCGalaxy.Modules.Moderation.Notes
             Group group = ModActionCmd.CheckTarget(p, data, "note", target);
             if (group == null) return;
 
-            ModAction action = new(target, p, modActionType, note)
+            ModAction action = new(target, p, ModActionType, note)
             {
-                Announce = announce
+                Announce = Announce
             };
             OnModActionEvent.Call(action);
         }
@@ -67,8 +67,8 @@ namespace MCGalaxy.Modules.Moderation.Notes
     {
         public override string name { get { return "OpNote"; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        protected override bool announce { get { return false; } }
-        protected override ModActionType modActionType { get { return ModActionType.OpNoted; } }
+        protected override bool Announce { get { return false; } }
+        protected override ModActionType ModActionType { get { return ModActionType.OpNoted; } }
 
         public override void Help(Player p)
         {

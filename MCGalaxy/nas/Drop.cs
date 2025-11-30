@@ -1,8 +1,7 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using System.Collections.Generic;
 namespace NotAwesomeSurvival
 {
-    //Stores information about a drop (from breaking a block or from a mob dying, or in a chest)
     public class Drop
     {
         public List<BlockStack> blockStacks = null;

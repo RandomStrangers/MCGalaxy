@@ -467,21 +467,21 @@ namespace MCGalaxy
             public int Index;
             int flags;
             byte oldRaw, newRaw;
-            public ushort OldBlock
+            public readonly ushort OldBlock
             {
                 get 
                 { 
                     return (ushort)(oldRaw | ((flags & 0x03) << Block.ExtendedShift));
                 }
             }
-            public ushort NewBlock
+            public readonly ushort NewBlock
             {
                 get 
                 { 
                     return (ushort)(newRaw | ((flags & 0xC >> 2) << Block.ExtendedShift));
                 }
             }
-            public DateTime Time
+            public readonly DateTime Time
             {
                 get 
                 { 

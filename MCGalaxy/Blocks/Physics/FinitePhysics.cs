@@ -30,37 +30,36 @@ namespace MCGalaxy.Blocks.Physics
             ushort x = C.X, y = C.Y, z = C.Z;
             ushort below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
 
-            if (below == Block.Air)
+            if (below == 0)
             {
                 lvl.AddUpdate(index, C.Block, C.Data);
-                lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
+                lvl.AddUpdate(C.Index, 0, default(PhysicsArgs));
                 C.Data.ResetTypes();
             }
-            else if (below == Block.StillWater || below == Block.StillLava)
+            else if (below == 9 || below == 11)
             {
-                lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
+                lvl.AddUpdate(C.Index, 0, default(PhysicsArgs));
                 C.Data.ResetTypes();
             }
             else
             {
-                const int count = 25;
-                int* indices = stackalloc int[count];
-                for (int i = 0; i < count; ++i)
+                int* indices = stackalloc int[25];
+                for (int i = 0; i < 25; ++i)
                     indices[i] = i;
 
-                for (int k = count - 1; k > 1; --k)
+                for (int k = 24; k > 1; --k)
                 {
-                    int randIndx = rand.Next(k);
-                    int temp = indices[k];
+                    int randIndx = rand.Next(k),
+                        temp = indices[k];
                     indices[k] = indices[randIndx]; // move random num to end of list.
                     indices[randIndx] = temp;
                 }
 
-                for (int j = 0; j < count; j++)
+                for (int j = 0; j < 25; j++)
                 {
                     int i = indices[j];
-                    ushort posX = (ushort)(x + (i / 5) - 2);
-                    ushort posZ = (ushort)(z + (i % 5) - 2);
+                    ushort posX = (ushort)(x + (i / 5) - 2),
+                        posZ = (ushort)(z + (i % 5) - 2);
 
                     if (lvl.IsAirAt(posX, (ushort)(y - 1), posZ) && lvl.IsAirAt(posX, y, posZ))
                     {
@@ -84,7 +83,7 @@ namespace MCGalaxy.Blocks.Physics
 
                         if (lvl.IsAirAt(posX, y, posZ, out index) && lvl.AddUpdate(index, C.Block, C.Data))
                         {
-                            lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
+                            lvl.AddUpdate(C.Index, 0, default(PhysicsArgs));
                             C.Data.ResetTypes();
                             return;
                         }
@@ -95,7 +94,7 @@ namespace MCGalaxy.Blocks.Physics
 
         static bool Expand(Level lvl, ushort x, ushort y, ushort z)
         {
-            return lvl.IsAirAt(x, y, z, out int index) && lvl.AddUpdate(index, Block.FiniteWater, default(PhysicsArgs));
+            return lvl.IsAirAt(x, y, z, out int index) && lvl.AddUpdate(index, 145, default(PhysicsArgs));
         }
 
         public static unsafe void DoFaucet(Level lvl, ref PhysInfo C)
@@ -103,20 +102,19 @@ namespace MCGalaxy.Blocks.Physics
             Random rand = lvl.physRandom;
             ushort x = C.X, y = C.Y, z = C.Z;
 
-            const int count = 6;
-            int* indices = stackalloc int[count];
-            for (int i = 0; i < count; ++i)
+            int* indices = stackalloc int[6];
+            for (int i = 0; i < 6; ++i)
                 indices[i] = i;
 
-            for (int k = count - 1; k > 1; --k)
+            for (int k = 5; k > 1; --k)
             {
-                int randIndx = rand.Next(k);
-                int temp = indices[k];
+                int randIndx = rand.Next(k),
+                    temp = indices[k];
                 indices[k] = indices[randIndx]; // move random num to end of list.
                 indices[randIndx] = temp;
             }
 
-            for (int j = 0; j < count; j++)
+            for (int j = 0; j < 6; j++)
             {
                 int i = indices[j];
                 switch (i)

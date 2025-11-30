@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Drawing.Ops;
@@ -10,8 +10,14 @@ namespace NotAwesomeSurvival
 {
     public class BirchTree : Tree
     {
-        public override long EstimateBlocksAffected() { return height + size * size * size; }
-        public override int DefaultSize(Random rnd) { return rnd.Next(5, 8); }
+        public override long EstimateBlocksAffected()
+        {
+            return height + size * size * size; 
+        }
+        public override int DefaultSize(Random rnd) 
+        { 
+            return rnd.Next(5, 8);
+        }
         public override void SetData(Random rnd, int value)
         {
             height = value;

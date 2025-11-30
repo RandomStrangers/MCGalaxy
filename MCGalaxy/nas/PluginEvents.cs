@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Commands;
 using MCGalaxy.Commands.Moderation;
@@ -465,20 +465,17 @@ namespace NotAwesomeSurvival
             np.inventory.ClearHotbar();
             np.inventory.DisplayHeldBlock(NasBlock.Default);
             if (!np.bigUpdate || np.resetCount != 1)
-            { //tick up the one whenever you want to do a reset
+            {
                 np.UpdateValues();
             }
-            //Q and E
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar left◙", 16, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar right◙", 18, 0, true));
-            //arrow keys
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar up◙", 200, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar down◙", 208, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar left◙", 203, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar right◙", 205, 0, true));
-            //M and R
-            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar move◙", 50, 0, true)); //was 50 (M) was 42 (shift)
-            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar inv◙", 19, 0, true)); //was 23 (i)
+            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar move◙", 50, 0, true));
+            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar inv◙", 19, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar delete◙", 45, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar confirmdelete◙", 25, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar toolinfo◙", 23, 0, true));

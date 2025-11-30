@@ -127,7 +127,6 @@ namespace MCGalaxy
         public Queue<string> Cache = new();
         Stream stream;
         StreamWriter writer;
-        const int MAX_LOG_SIZE = 1024 * 1024 * 1024; // 1 GB
         public void FlushCache()
         {
             if (stream == null)
@@ -139,7 +138,7 @@ namespace MCGalaxy
             try
             {
                 // Failsafe in case something has gone catastrophically wrong
-                if (stream.Length > MAX_LOG_SIZE) 
+                if (stream.Length > 1024 * 1024 * 1024) 
                 { 
                     Cache.Clear(); 
                     return; 

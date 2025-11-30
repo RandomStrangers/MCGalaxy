@@ -55,6 +55,7 @@ namespace MCGalaxy
             List<string> Files = new();
             Files.AddRange(FileIO.TryGetFiles("levels", "*.lvl"));
             Files.AddRange(FileIO.TryGetFiles("levels", "*.mcf"));
+            Files.AddRange(FileIO.TryGetFiles("levels", "*.map"));
             return Files.ToArray();
         }
         public static string[] AllMapNames()
@@ -72,10 +73,15 @@ namespace MCGalaxy
         }
         public static string GetExt(string levelName)
         {
-            bool mcf = File.Exists("levels/" + levelName.ToLower() + ".mcf");
+            bool mcf = File.Exists("levels/" + levelName.ToLower() + ".mcf"),
+                map = File.Exists("levels/" + levelName.ToLower() + ".map");
             if (mcf)
             {
                 return ".mcf";
+            }
+            else if (map)
+            {
+                return ".map";
             }
             else
             {
@@ -90,10 +96,15 @@ namespace MCGalaxy
             }
             else
             {
-                bool mcf = File.Exists("levels/" + name.ToLower() + ".mcf");
+                bool mcf = File.Exists("levels/" + name.ToLower() + ".mcf"),
+                    map = File.Exists("levels/" + name.ToLower() + ".map");
                 if (mcf)
                 {
                     return name.ToLower() + ".mcf";
+                }
+                else if (map)
+                {
+                    return name.ToLower() + ".map";
                 }
                 else
                 {
@@ -125,10 +136,15 @@ namespace MCGalaxy
             }
             else
             {
-                bool mcf = File.Exists("levels/" + name.ToLower() + ".mcf");
+                bool mcf = File.Exists("levels/" + name.ToLower() + ".mcf"),
+                    map = File.Exists("levels/" + name.ToLower() + ".map");
                 if (mcf)
                 {
                     return BackupDirPath(name, backup) + "/" + name + ".mcf";
+                }
+                else if (map)
+                {
+                    return BackupDirPath(name, backup) + "/" + name + ".map";
                 }
                 else
                 {

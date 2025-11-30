@@ -1,20 +1,21 @@
 ﻿/*
     Copyright 2015-2024 MCGalaxy
-        
+
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
+
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using System.IO;
 
 namespace MCGalaxy
 {
@@ -50,24 +51,40 @@ namespace MCGalaxy
         public const string ImportsDir = "extra/import/";
         public const string WAYPOINTS_DIR = "extra/Waypoints/";
         /// <summary> Relative path of the file containing a map's bots. </summary>
-        public static string BotsPath(string map) 
+        public static string BotsPath(string map)
         { 
             return "extra/bots/" + map + ".json"; 
         }
         /// <summary> Relative path of the file containing a map's block definitions. </summary>
         public static string MapBlockDefs(string map) 
-        {
+        { 
             return "blockdefs/lvl_" + map + ".json"; 
         }
         /// <summary> Relative path of a deleted level's map file. </summary>
-        public static string DeletedMapFile(string map) 
-        { 
-            return "levels/deleted/" + map + ".lvl"; 
+        public static string DeletedMapFile(string map)
+        {
+            bool mcf = File.Exists("levels/deleted/" + map.ToLower() + ".mcf");
+            if (mcf)
+            {
+                return "levels/deleted/" + map + ".mcf";
+            }
+            else
+            {
+                return "levels/deleted/" + map + ".lvl";
+            }
         }
         /// <summary> Relative path of a level's previous save map file. </summary>
-        public static string PrevMapFile(string map) 
-        { 
-            return "levels/prev/" + map.ToLower() + ".lvl.prev"; 
+        public static string PrevMapFile(string map)
+        {
+            bool mcf = File.Exists("levels/" + map.ToLower() + ".mcf");
+            if (mcf)
+            {
+                return "levels/prev/" + map.ToLower() + ".mcf.prev";
+            }
+            else
+            {
+                return "levels/prev/" + map.ToLower() + ".lvl.prev";
+            }
         }
         /// <summary> Relative path of a block properties file. </summary>     
         public static string BlockPropsPath(string group) 

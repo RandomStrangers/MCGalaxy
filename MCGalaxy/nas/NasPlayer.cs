@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.DB;
 using MCGalaxy.Events.PlayerEvents;
@@ -158,7 +158,6 @@ namespace NotAwesomeSurvival
                 if (p.level.GetBlock(xPlacing, yPlacing, zPlacing) == 0)
                 {
                     AABB worldAABB = bounds.OffsetPosition(p.Pos),
-                    /*checking as if its a fully sized block*/
                         blockAABB = new(0, 0, 0, 32, 32, 32);
                     blockAABB = blockAABB.Offset(xPlacing * 32, yPlacing * 32, zPlacing * 32);
                     if (!AABB.Intersects(ref worldAABB, ref blockAABB))
@@ -203,7 +202,7 @@ namespace NotAwesomeSurvival
             yaw = 128;
             pitch = 0;
             bigUpdate = true;
-            resetCount += 1;//tick this up as well
+            resetCount += 1;
         }
         public static bool CooledDown(Player p)
         {
@@ -550,9 +549,6 @@ namespace NotAwesomeSurvival
             }
             return true;
         }
-        /// <summary>
-        /// returns true if dead
-        /// </summary>
         public override bool TakeDamage(float damage, DamageSource source, string customDeathReason = "")
         {
             if (HP > maxHP)
@@ -687,7 +683,6 @@ namespace NotAwesomeSurvival
                     Message("Sorry, you've lost all your stuff.");
                 }
             }
-            //place tombstone
             nl.SetBlock(x, y, z, Nas.FromRaw(647));
             NasBlock.Entity blockEntity = new()
             {
@@ -726,11 +721,11 @@ namespace NotAwesomeSurvival
             {
                 if (lostHealthRemaining < 1)
                 {
-                    builder.Append("&" + healthColor + "╝"); //broken heart
+                    builder.Append("&" + healthColor + "╝");
                 }
                 else
                 {
-                    builder.Append("♥"); //empty
+                    builder.Append("♥");
                 }
                 lostHealthRemaining--;
             }
@@ -814,7 +809,6 @@ namespace NotAwesomeSurvival
         }
         public void UpdateHeldBlock()
         {
-            //p.ClientHeldBlock is server block ID
             ushort clientushort = ConvertBlock(p.ClientHeldBlock);
             NasBlock nasBlock = NasBlock.Get(clientushort);
             if (nasBlock.parentID != heldNasBlock.parentID)
@@ -823,14 +817,12 @@ namespace NotAwesomeSurvival
             }
             heldNasBlock = nasBlock;
         }
-        [JsonIgnore]
-        public const string precisePrefix = "-precise ";
         public void Teleport(string message)
         {
-            bool preciseTP = message.CaselessStarts(precisePrefix);
+            bool preciseTP = message.CaselessStarts("-precise ");
             if (preciseTP)
             {
-                message = message.Substring(precisePrefix.Length);
+                message = message.Substring("-precise ".Length);
             }
             string[] args = message.SplitSpaces();
             TeleportCoords(args, preciseTP);
@@ -970,7 +962,6 @@ namespace NotAwesomeSurvival
                     p.Message("{0}&S has no gravestones recorded!", PlayerName);
                     return;
                 }
-                //TODO: Simplify this, shouldn't copy deaths
                 string[] deaths = FileUtils.TryReadAllLines(file),
                     deaths2 = FileUtils.TryReadAllLines(file);
                 int count = deaths2.Length;
@@ -1011,7 +1002,6 @@ namespace NotAwesomeSurvival
             public override string Name { get { return "MyGravestones"; } }
             public override void Use(NasPlayer np, string message)
             {
-                //TODO: Simplify this, shouldn't copy deaths
                 string file = Nas.GetDeathPath(np.p.name);
                 if (!File.Exists(file))
                 {

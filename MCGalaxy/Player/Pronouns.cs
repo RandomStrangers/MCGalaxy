@@ -44,14 +44,14 @@ namespace MCGalaxy
                 Directory.CreateDirectory(PLAYER_PATH);
             }
 
-            Default = new Pronouns("default", "they", "their", "themselves", true, "them");
+            Default = new("default", "they", "their", "themselves", true, "them");
 
             if (!File.Exists(CONFIG_FILE))
             {
 
-                Loaded.Add(new Pronouns("they/them", "they", "their", "themselves", true, "them"));
-                Loaded.Add(new Pronouns("he/him", "he", "his", "himself", false, "him"));
-                Loaded.Add(new Pronouns("she/her", "she", "her", "herself", false, "her"));
+                Loaded.Add(new("they/them", "they", "their", "themselves", true, "them"));
+                Loaded.Add(new("he/him", "he", "his", "himself", false, "him"));
+                Loaded.Add(new("she/her", "she", "her", "herself", false, "her"));
 
                 using (StreamWriter w = new(CONFIG_FILE))
                 {
@@ -155,7 +155,7 @@ namespace MCGalaxy
                 tpos = Default.ThirdPersonObjectiveSingular;
             }
 
-            Loaded.Add(new Pronouns(name, words[1], words[2], words[3], plural, tpos));
+            Loaded.Add(new(name, words[1], words[2], words[3], plural, tpos));
         }
 
         static string PlayerPath(string playerName) { return PLAYER_PATH + playerName + ".txt"; }

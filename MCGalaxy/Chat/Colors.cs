@@ -380,8 +380,8 @@ namespace MCGalaxy
         public char Code, Fallback;
         public byte R, G, B, A;
         public string Name;
-        public bool Undefined { get { return Fallback == '\0'; } }
-        public byte Index { get { return (byte)Code.UnicodeToCp437(); } }
+        public readonly bool Undefined { get { return Fallback == '\0'; } }
+        public readonly byte Index { get { return (byte)Code.UnicodeToCp437(); } }
 
         public ColorDesc(byte r, byte g, byte b)
         {
@@ -411,7 +411,7 @@ namespace MCGalaxy
         }
 
         /// <summary> Whether this colour has been modified from its default values. </summary>
-        public bool IsModified()
+        public readonly bool IsModified()
         {
             if ((Code >= '0' && Code <= '9') || (Code >= 'a' && Code <= 'f'))
             {

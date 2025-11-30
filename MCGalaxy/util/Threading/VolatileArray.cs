@@ -27,7 +27,7 @@ namespace MCGalaxy
         /// <remarks> When locking on this object from external code, you should try
         /// to minimise the amount of time the object is locked for. </remarks>
         public readonly object locker = new();
-        public VolatileArray(bool _ = false) 
+        public VolatileArray() 
         { 
         } // used to mean 'useList'
         public bool Add(T value)

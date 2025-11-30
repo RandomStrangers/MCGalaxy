@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.DB;
 using MCGalaxy.Events.PlayerEvents;
@@ -6,14 +6,6 @@ using MCGalaxy.Events.ServerEvents;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-//unknownshadow200: well player ids go from 0 up to 255. normal bots go from 127 down to 64, then 254 down to 127, then finally 63 down to 0.
-//UnknownShadow200: FromRaw adds 256 if the block id is >= 66, and ToRaw subtracts 256 if the block id is >= 66
-//"raw" is MCGalaxy's name for clientushort
-///model |0.93023255813953488372093023255814
-//gravestone drops upon death that contains your inventory
-//different types of crafting stations
-//furnace for smelting-style recipes
 namespace NotAwesomeSurvival
 {
     public partial class Nas : Plugin
@@ -36,24 +28,22 @@ namespace NotAwesomeSurvival
         {
             get
             {
-                return "JuneSolis"; //Zoey no longer supports NAS. 
+                return "JuneSolis";
             }
         }
         public static List<string> Devs = new()
         {
-            //"zoeyvidae", //No longer supports.
-            //"UnseenServant", //No longer involved.
             "JuneSolis",
             "HarmonyNetwork"
         };
-        public const string textureURL = "https://dl.dropboxusercontent.com/s/2x5oxffkgpcyj16/nas.zip?dl=0",
+        public const string textureURL = "https://github.com/RandomStrangers/MCGalaxy/raw/nas-rework/Uploads/nas/texturepack.zip",
             KeyPrefix = "nas_",
             PlayerKey = KeyPrefix + "NasPlayer",
             Path = "nas/",
             SavePath = Path + "playerdata/",
             CoreSavePath = Path + "coredata/",
             EffectsPath = Path + "effects/",
-            NasVersion = "1.0.4.5";
+            NasVersion = "1.0.4.6";
         public static bool LoadedOnStartup = false,
             firstEverPluginLoad = false;
         public static Command[] Commands = new Command[]
@@ -88,61 +78,26 @@ namespace NotAwesomeSurvival
                 NasLevel.Path, NasBlock.Path,
                 NasPlayer.DeathsPath, "blockprops",
                 "blockdefs", "text");
-            if (Directory.Exists("plugins/nas"))
-            {
-                string[] pluginfiles = FileUtils.TryGetFiles("plugins/nas");
-                foreach (string pluginfile in pluginfiles)
-                {
-                    string[] files = FileUtils.TryGetFiles(Path);
-                    foreach (string file in files)
-                    {
-                        if (!File.Exists(file))
-                        {
-                            MovePluginFile("nas/" + pluginfile, System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/nas/" + pluginfile);
-                        }
-                        else
-                        {
-                            Log("Duplicate file {0} found in plugins/nas folder, this should not have happened!", file);
-                            FileIO.TryDelete(pluginfile);
-                        }
-                    }
-                }
-                FileUtils.TryDeleteDirectory("plugins/nas", true);
-            }
             EnsureNasFilesExist();
-            /*if (Block.Props.Length != 1024)
-            { //check for TEN_BIT_BLOCKS. Value is 512 on a default instance of MCGalaxy.
+            if (Block.Props.Length != 1024)
+            {
                 Log("NAS: FAILED to load plugin. In order to run NAS, you must be using a version of MCGalaxy which allows 767 blocks.");
                 Log("NAS: You can find instructions for 767 blocks here: https://github.com/ClassiCube/MCGalaxy/tree/master/Uploads (infid)");
                 return;
-            // Unneeded since NAS compiles with TEN_BIT_BLOCKS
-            }*/
+            }
             if (!File.Exists("Newtonsoft.Json.dll"))
             {
                 Log("NAS: FAILED to load plugin. Could not find Newtonsoft.Json.dll");
                 return;
             }
-            string loadFile = "nas/loaded.txt";
-            MoveFile("props/loaded.txt", loadFile); //loaded.txt
-            //I HATE IT
-            MovePluginFile("global.json", "blockdefs/global.json"); //blockdefs
-            MovePluginFile("default.txt", "blockprops/default.txt"); //blockprops
-            MovePluginFile("customcolors.txt", "text/customcolors.txt"); //custom chat colors
-            MovePluginFile("command.properties", "props/command.properties"); //command permissions
-            MovePluginFile("ExtraCommandPermissions.properties", "props/ExtraCommandPermissions.properties"); //extra command permissions
-            MovePluginFile("ranks.properties", "props/ranks.properties"); //ranks
-            MovePluginFile("faq.txt", "text/faq.txt"); //faq
-            MovePluginFile("messages.txt", "text/messages.txt"); //messages
-            MovePluginFile("welcome.txt", "text/welcome.txt"); //welcome
-            string message = "Do not delete this file unless you are using the plugin for the first time!";
-            if (File.Exists(loadFile))
+            if (File.Exists("nas/loaded.txt"))
             {
                 firstEverPluginLoad = false;
             }
             else
             {
                 firstEverPluginLoad = true;
-                FileUtils.TryWriteAllText(loadFile, message);
+                FileUtils.TryWriteAllText("nas/loaded.txt", "Do not delete this file unless you are using the plugin for the first time!");
             }
             if (firstEverPluginLoad)
             {
@@ -226,8 +181,7 @@ namespace NotAwesomeSurvival
         }
         public static void FailedLoad()
         {
-            string msg = "NAS: FAILED to load plugin. Please report this to randomstrangers on Discord!";
-            Log(msg);
+            Log("NAS: FAILED to load plugin. Please report this to randomstrangers on Discord!");
         }
         public override void Unload(bool shutdown)
         {

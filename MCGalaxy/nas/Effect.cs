@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Config;
 using MCGalaxy.Network;
@@ -28,7 +28,6 @@ namespace NotAwesomeSurvival
             {
                 return false;
             }
-            //set default effect for all types
             for (int i = 0; i < (int)NasBlock.Material.Count; i++)
             {
                 breakEffects[i] = breakEarth;
@@ -38,7 +37,6 @@ namespace NotAwesomeSurvival
         }
         public class Effect
         {
-            //NOT defined in the config file. Filled in at runtime when loaded
             public byte ID;
             [ConfigByte("pixelU1", "Effect")]
             public byte pixelU1 = 1;
@@ -82,7 +80,6 @@ namespace NotAwesomeSurvival
             public bool collidesLeaves = true;
             [ConfigBool("fullBright", "Effect", true)]
             public bool fullBright = true;
-            //Filled in when loaded. Based on pixelSize
             public float offset;
             public static ConfigElement[] cfg;
             public bool Load(string effectName)
@@ -143,7 +140,7 @@ namespace NotAwesomeSurvival
                                         blue,
                                         effect.frameCount,
                                         effect.particleCount,
-                                        (byte)(effect.pixelSize * 2), //convert pixel size to world unit size
+                                        (byte)(effect.pixelSize * 2),
                                         effect.sizeVariation,
                                         effect.spread,
                                         effect.speed,

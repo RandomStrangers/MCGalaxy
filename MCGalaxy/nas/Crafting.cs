@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Maths;
 using MCGalaxy.Network;
@@ -56,9 +56,6 @@ namespace NotAwesomeSurvival
             public string name;
             public enum Type { None, Normal, Furnace, Anvil }
             public Type type = Type.None;
-            /// <summary>
-            /// WE goes along X axis, NS goes along Z axis
-            /// </summary>
             public enum Orientation { None, WE, NS }
             public Orientation ori = Orientation.None;
             public Station() { }
@@ -264,10 +261,6 @@ namespace NotAwesomeSurvival
                 }
             }
             public Station.Type stationType = Station.Type.Normal;
-            /// <summary>
-            /// false to make this recipe strict (e.g. sideways stick doesn't work, only upright)
-            /// and true to make this recipe work with any rotation of a block group (e.g. all four monitors work)
-            /// </summary>
             public bool usesParentID = false,
                 usesAlternateID = false,
                 shapeless = false;
@@ -333,20 +326,16 @@ namespace NotAwesomeSurvival
                     {
                         if (TestRecipe(area, x, y, true) || TestRecipe(area, x, y, false))
                         {
-                            // Check to make sure there aren't any sneaky unused items in the grid
-                            //bounds of the current recipe
                             int minX = x, maxX = x + patternWidth,
                                 minY = y, maxY = y + patternHeight;
-                            //for the entire crafting grid,
                             for (int _x = 0; _x < 3; _x++)
                             {
                                 for (int _y = 0; _y < 3; _y++)
                                 {
-                                    //if a spot is outside the bounds of the current recipe,
                                     if (_x < minX || _x >= maxX || _y < minY || _y >= maxY)
                                     {
                                         if (area[_x, _y].selfID != 0)
-                                        { //and the block at this spot is not air, there was an unused item and the recipe is invalid
+                                        {
                                             return false;
                                         }
                                     }
@@ -360,10 +349,8 @@ namespace NotAwesomeSurvival
             }
             public bool TestRecipe(NasBlock[,] area, int offsetX, int offsetY, bool mirrored)
             {
-                //the offset describes an offset down-right into the crafting grid
                 int patternWidth = pattern.GetLength(1),
                     patternHeight = pattern.GetLength(0);
-                //if we're out of bounds on lower-right side, it definitely doesn't match
                 if (offsetX + patternWidth > 3 || offsetY + patternHeight > 3)
                 {
                     return false;
@@ -388,7 +375,7 @@ namespace NotAwesomeSurvival
                 }
                 return true;
             }
-        } //Recipe
+        }
     }
 }
 #endif

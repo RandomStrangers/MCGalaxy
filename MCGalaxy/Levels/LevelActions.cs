@@ -503,7 +503,7 @@ namespace MCGalaxy
             {
                 lvl.Backup(true);
                 res.Zones = lvl.Zones;
-                lvl.Zones = new VolatileArray<Zone>(false);
+                lvl.Zones = new VolatileArray<Zone>();
                 IMapExporter.Encode(LevelInfo.MapPath(lvl.name), res);
                 lvl.SaveChanges = false;
             }

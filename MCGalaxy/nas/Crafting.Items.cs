@@ -1,34 +1,10 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 namespace NotAwesomeSurvival
 {
     public partial class Crafting
     {
         public static void SetupItems()
         {
-            //EXPLANATION FOR HOW TO READ RECIPES!
-
-            //the first line of the recipe shows what will be produced. if it's an item it will give the 
-            //specified item with the name given. If it's a blockID it will give the blockID specified.
-
-            //The recipe.pattern is a 2d list that contains what blocks are needed. Remember that the number is
-            //actually the blockID. You can do /hold (blockid) ingame to see what block it is.
-
-            //the recipe.usesAlternateID specifies whether or not alternate versions of the block can be used. 
-            //The alternateIDs of 5 (oak planks) are birch and spruce planks, e.t.c. For 36 (white wool) it's 
-            //all the other colors of wool.
-
-            //If recipe.stationType = Crafting.Station.Type.Furnace, then it means the recipe must be made in a
-            //furnace and NOT a crafting table.
-
-            //recipe.usesParentID specifies whether or not the Parent ID of a block can be used. ParentIDS usually
-            //amount to rotated versions of a block. So if a slab is in a recipe that uses parentIDS, then the slab
-            //can be in any direction.
-
-            //Finally, recipe.shapeless determines whether or not you can put the blocks in any order.
-            //If it's true, it means the blocks shown don't have to be in the same place relative to each other.
-
-            //Recipes that don't fill up all 9 slots and are NOT shapeless just mean that smaller pattern can be
-            //anywhere on the crafting table, just in the same spot relative to each other.
             Recipe woodPickaxe = new(new("Wood Pickaxe"))
             {
                 usesAlternateID = true,
@@ -38,7 +14,6 @@ namespace NotAwesomeSurvival
                     {  0, 78, 0 }
                 }
             };
-            // stone tools
             Recipe stonePickaxe = new(new("Stone Pickaxe"))
             {
                 usesAlternateID = true,
@@ -75,7 +50,6 @@ namespace NotAwesomeSurvival
                     { 78 }
                 }
             };
-            //iron tools
             Recipe ironPickaxe = new(new("Iron Pickaxe"))
             {
                 usesAlternateID = true,
@@ -142,7 +116,6 @@ namespace NotAwesomeSurvival
                     { 42, 0, 42 },
                 }
             };
-            //gold tools
             Recipe goldPickaxe = new(new("Gold Pickaxe"))
             {
                 usesAlternateID = true,
@@ -209,7 +182,6 @@ namespace NotAwesomeSurvival
                     { 41, 0, 41 },
                 }
             };
-            //diamond tools
             Recipe diamondPickaxe = new(new("Diamond Pickaxe"))
             {
                 usesAlternateID = true,
@@ -276,7 +248,6 @@ namespace NotAwesomeSurvival
                     { 631, 0, 631 },
                 }
             };
-            //emerald tools
             Recipe emeraldPickaxe = new(new("Emerald Pickaxe"))
             {
                 usesAlternateID = true,

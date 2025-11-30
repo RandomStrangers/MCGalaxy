@@ -168,11 +168,11 @@ namespace MCGalaxy.Network
             float progScale = 100.0f / blocks.Length;
 
             // Store on stack instead of performing function call for every block in map
-            byte* conv = stackalloc byte[Block.SUPPORTED_COUNT];
-            byte* convExt = conv + 256; // 256 blocks per group/class
+            byte* conv = stackalloc byte[Block.SUPPORTED_COUNT],
+                convExt = conv + 256; // 256 blocks per group/class
 #if TEN_BIT_BLOCKS
-            byte* convExt2 = conv + 256 * 2;
-            byte* convExt3 = conv + 256 * 3;
+            byte* convExt2 = conv + 256 * 2,
+                convExt3 = conv + 256 * 3;
 #endif
 
             for (int j = 0; j < Block.SUPPORTED_COUNT; j++)
@@ -297,34 +297,45 @@ namespace MCGalaxy.Network
                 }
             }
 #else
-            if (s.hasBlockDefs) {
-                for (int i = 0; i < blocks.Length; i++) 
+            if (s.hasBlockDefs)
+            {
+                for (int i = 0; i < blocks.Length; i++)
                 {
                     byte block = blocks[i];
-                    if (block == Block.custom_block) {
+                    if (block == Block.custom_block)
+                    {
                         buffer[bIndex] = lvl.GetExtTile(i);
-                    } else {
+                    }
+                    else
+                    {
                         buffer[bIndex] = conv[block];
                     }
-                    
+
                     bIndex++;
-                    if (bIndex == bufferSize) {
+                    if (bIndex == bufferSize)
+                    {
                         dst.chunkValue = (byte)(i * progScale);
                         stream.Write(buffer, 0, bufferSize); bIndex = 0;
                     }
                 }
-            } else {
-                for (int i = 0; i < blocks.Length; i++) 
+            }
+            else
+            {
+                for (int i = 0; i < blocks.Length; i++)
                 {
                     byte block = blocks[i];
-                    if (block == Block.custom_block) {
+                    if (block == Block.custom_block)
+                    {
                         buffer[bIndex] = convExt[lvl.GetExtTile(i)];
-                    } else {
+                    }
+                    else
+                    {
                         buffer[bIndex] = conv[block];
                     }
-                    
+
                     bIndex++;
-                    if (bIndex == bufferSize) {
+                    if (bIndex == bufferSize)
+                    {
                         dst.chunkValue = (byte)(i * progScale);
                         stream.Write(buffer, 0, bufferSize); bIndex = 0;
                     }

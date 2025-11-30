@@ -26,7 +26,7 @@ namespace MCGalaxy.Network
         {
             public DateTime TimeSent, TimeRecv;
             public ushort Data;
-            public double Latency
+            public readonly double Latency
             {
                 get
                 {

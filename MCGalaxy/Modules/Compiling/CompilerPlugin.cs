@@ -16,24 +16,19 @@
     permissions and limitations under the Licenses.
 */
 #if !MCG_STANDALONE
-
 namespace MCGalaxy.Modules.Compiling
 {
     public sealed class CompilerPlugin : Plugin
     {
         public override string name { get { return "Compiler"; } }
-
-        readonly Command cmdCreate = new CmdCmdCreate();
-        readonly Command cmdCompile = new CmdCompile();
-        readonly Command cmdCompLoad = new CmdCompLoad();
-
+        readonly Command cmdCreate = new CmdCmdCreate(),
+            cmdCompile = new CmdCompile(),
+            cmdCompLoad = new CmdCompLoad();
         public override void Load(bool startup)
         {
             Server.EnsureDirectoryExists(ICompiler.COMMANDS_SOURCE_DIR);
-
             Command.Register(cmdCreate, cmdCompile, cmdCompLoad);
         }
-
         public override void Unload(bool shutdown)
         {
             Command.Unregister(cmdCreate, cmdCompile, cmdCompLoad);

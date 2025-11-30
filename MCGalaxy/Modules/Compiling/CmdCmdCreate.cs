@@ -17,7 +17,6 @@
  */
 #if !MCG_STANDALONE
 using MCGalaxy.Commands;
-
 namespace MCGalaxy.Modules.Compiling
 {
     sealed class CmdCmdCreate : CmdCompile
@@ -28,7 +27,6 @@ namespace MCGalaxy.Modules.Compiling
         {
             get { return new[] { new CommandAlias("PCreate", "plugin") }; }
         }
-
         protected override void CompileCommand(Player p, string[] paths, ICompiler compiler)
         {
             foreach (string cmd in paths)
@@ -36,7 +34,6 @@ namespace MCGalaxy.Modules.Compiling
                 CompilerOperations.CreateCommand(p, cmd, compiler);
             }
         }
-
         protected override void CompilePlugin(Player p, string[] paths, ICompiler compiler)
         {
             foreach (string cmd in paths)
@@ -44,7 +41,6 @@ namespace MCGalaxy.Modules.Compiling
                 CompilerOperations.CreatePlugin(p, cmd, compiler);
             }
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/CmdCreate [name]");

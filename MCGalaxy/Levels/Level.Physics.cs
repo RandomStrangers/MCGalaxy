@@ -30,10 +30,6 @@ namespace MCGalaxy
 
     public sealed partial class Level : IDisposable
     {
-
-        readonly object updateLock = new();
-        readonly object checkLock = new();
-
         public void SetPhysics(int level)
         {
             if (IsMuseum) return;
@@ -191,7 +187,8 @@ namespace MCGalaxy
                         C.Block = (ushort)(extended | FastGetExtTile(C.X, C.Y, C.Z));
                     }
 #else
-                    if (C.Block == Block.custom_block) {
+                    if (C.Block == Block.custom_block) 
+                    {
                         C.Block = (ushort)(Block.Extended | FastGetExtTile(C.X, C.Y, C.Z));
                     }
 #endif

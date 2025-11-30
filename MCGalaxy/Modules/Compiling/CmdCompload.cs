@@ -18,7 +18,6 @@
 #if !MCG_STANDALONE
 using MCGalaxy.Commands;
 using MCGalaxy.Scripting;
-
 namespace MCGalaxy.Modules.Compiling
 {
     sealed class CmdCompLoad : CmdCompile
@@ -26,45 +25,42 @@ namespace MCGalaxy.Modules.Compiling
         public override string name { get { return "CompLoad"; } }
         public override string shortcut { get { return "cml"; } }
         public override CommandAlias[] Aliases { get { return null; } }
-
         protected override void CompilePlugin(Player p, string[] paths, ICompiler compiler)
         {
-            string pln = paths[0];
-            string dst = IScripting.PluginPath(pln);
-
+            string pln = paths[0],
+                dst = IScripting.PluginPath(pln);
             UnloadPlugin(p, pln);
             base.CompilePlugin(p, paths, compiler);
             ScriptingOperations.LoadPlugins(p, dst);
         }
-
         static void UnloadPlugin(Player p, string name)
         {
             Plugin plugin = Plugin.FindCustom(name);
-
-            if (plugin == null) return;
+            if (plugin == null)
+            {
+                return;
+            }
             ScriptingOperations.UnloadPlugin(p, plugin);
         }
-
         protected override void CompileCommand(Player p, string[] paths, ICompiler compiler)
         {
-            string cmd = paths[0];
-            string dst = IScripting.CommandPath(cmd);
-
+            string cmd = paths[0],
+                dst = IScripting.CommandPath(cmd);
             UnloadCommand(p, cmd);
             base.CompileCommand(p, paths, compiler);
             ScriptingOperations.LoadCommands(p, dst);
         }
-
         static void UnloadCommand(Player p, string cmdName)
         {
             string cmdArgs = "";
             Search(ref cmdName, ref cmdArgs);
             Command cmd = Find(cmdName);
-
-            if (cmd == null) return;
+            if (cmd == null)
+            {
+                return;
+            }
             ScriptingOperations.UnloadCommand(p, cmd);
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/CompLoad [command]");

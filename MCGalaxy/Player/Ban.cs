@@ -16,7 +16,6 @@
     permissions and limitations under the Licenses.
  */
 using System;
-//using System.IO;
 using System.Text;
 
 namespace MCGalaxy
@@ -98,7 +97,6 @@ namespace MCGalaxy
                                       out DateTime time, out string prevRank)
         {
             who = who.ToLower();
-            //foreach (string line in File.ReadAllLines(bans.file)) 
             foreach (string line in FileIO.TryReadAllLines(bans.file))
             {
                 string[] parts = line.SplitSpaces();
@@ -120,7 +118,6 @@ namespace MCGalaxy
         {
             who = who.ToLower();
             unbanner = null; reason = null;
-            //foreach (string line in File.ReadAllLines(unbans.file)) 
             foreach (string line in FileIO.TryReadAllLines(unbans.file))
             {
                 string[] parts = line.SplitSpaces();
@@ -165,7 +162,6 @@ namespace MCGalaxy
             bool found = false;
             StringBuilder sb = new();
 
-            //foreach (string line in File.ReadAllLines(list.file)) {
             foreach (string line in FileIO.TryReadAllLines(list.file))
             {
                 string[] parts = line.SplitSpaces();
@@ -179,7 +175,6 @@ namespace MCGalaxy
                 }
             }
 
-            //if (found) File.WriteAllText(list.file, sb.ToString());
             if (found) FileIO.TryWriteAllText(list.file, sb.ToString());
             return found;
         }
@@ -201,7 +196,6 @@ namespace MCGalaxy
             bool found = false;
             StringBuilder sb = new();
 
-            //foreach (string line in File.ReadAllLines(list.file)) {
             foreach (string line in FileIO.TryReadAllLines(list.file))
             {
                 string[] parts = line.SplitSpaces();
@@ -217,7 +211,6 @@ namespace MCGalaxy
                 }
             }
 
-            //if (found) File.WriteAllText(list.file, sb.ToString());
             if (found) FileIO.TryWriteAllText(list.file, sb.ToString());
             return found;
         }

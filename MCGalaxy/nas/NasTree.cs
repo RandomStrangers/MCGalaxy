@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Generator.Foliage;
 using System;
@@ -42,7 +42,7 @@ namespace NotAwesomeSurvival
                 ushort here = lvl.GetBlock(X, Y, Z);
                 if (NasBlock.CanPhysicsKillThis(here) || NasBlock.IsPartOfSet(NasBlock.leafSet, here) != -1)
                 {
-                    lvl.SetBlock(X, Y, Z, block); // Thanks Unk!
+                    lvl.SetBlock(X, Y, Z, block);
                     if (broadcastChange)
                     {
                         lvl.BroadcastChange(X, Y, Z, block);

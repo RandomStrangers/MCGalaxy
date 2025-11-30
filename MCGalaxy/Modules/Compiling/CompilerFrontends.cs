@@ -19,7 +19,6 @@
  */
 #if !MCG_STANDALONE
 using System.Collections.Generic;
-
 namespace MCGalaxy.Modules.Compiling
 {
     public sealed class CSCompiler : ICompiler
@@ -27,33 +26,32 @@ namespace MCGalaxy.Modules.Compiling
         public override string FileExtension { get { return ".cs"; } }
         public override string ShortName { get { return "C#"; } }
         public override string FullName { get { return "CSharp"; } }
-
 #if !MCG_DOTNET
         protected override ICompilerErrors DoCompile(string[] srcPaths, string dstPath)
         {
             List<string> referenced = ProcessInput(srcPaths, "//");
-
             CommandLineCompiler compiler = new ClassicCSharpCompiler();
             return compiler.Compile(srcPaths, dstPath, referenced);
         }
 #else
-        protected override ICompilerErrors DoCompile(string[] srcPaths, string dstPath) {
+        protected override ICompilerErrors DoCompile(string[] srcPaths, string dstPath) 
+        {
             List<string> referenced = ProcessInput(srcPaths, "//");
             referenced.Add("System.Collections.dll");    // needed for List<> etc
             referenced.Add("System.IO.Compression.dll"); // needed for GZip compression
             referenced.Add("System.Net.Primitives.dll"); // needed for IPAddress etc
-
             CommandLineCompiler compiler = new RoslynCSharpCompiler();
             return compiler.Compile(srcPaths, dstPath, referenced);
         }
-
-        protected override void ProcessInputLine(string line, List<string> referenced) {
-            if (!line.CaselessStarts("//dotnetref")) return;
-
+        protected override void ProcessInputLine(string line, List<string> referenced) 
+        {
+            if (!line.CaselessStarts("//dotnetref")) 
+            {
+                return;
+            }
             referenced.Add(GetDLL(line));
         }
 #endif
-
         public override string CommandSkeleton
         {
             get
@@ -62,33 +60,25 @@ namespace MCGalaxy.Modules.Compiling
 //\tUse this as a basis for custom MCGalaxy commands
 //\tNaming should be kept consistent (e.g. /update command should have a class name of 'CmdUpdate' and a filename of 'CmdUpdate.cs')
 // As a note, MCGalaxy is designed for .NET 4.0
-
 // To reference other assemblies, put a ""//reference [assembly filename]"" at the top of the file
 //   e.g. to reference the System.Data assembly, put ""//reference System.Data.dll""
-
 // Add any other using statements you need after this
 using System;
 using MCGalaxy;
-
 public class Cmd{0} : Command
 {{
 \t// The command's name (what you put after a slash to use this command)
 \tpublic override string name {{ get {{ return ""{0}""; }} }}
-
 \t// Command's shortcut, can be left blank (e.g. ""/Copy"" has a shortcut of ""c"")
 \tpublic override string shortcut {{ get {{ return """"; }} }}
-
 \t// Which submenu this command displays in under /Help
 \tpublic override string type {{ get {{ return ""other""; }} }}
-
 \t// Whether or not this command can be used in a museum. Block/map altering commands should return false to avoid errors.
 \tpublic override bool museumUsable {{ get {{ return true; }} }}
-
 \t// The default rank required to use this command. Valid values are:
 \t//   LevelPermission.Guest, LevelPermission.Builder, LevelPermission.AdvBuilder,
 \t//   LevelPermission.Operator, LevelPermission.Admin, LevelPermission.Owner
 \tpublic override LevelPermission defaultRank {{ get {{ return LevelPermission.Guest; }} }}
-
 \t// This is for when a player executes this command by doing /{0}
 \t//   p is the player object for the player executing the command. 
 \t//   message is the arguments given to the command. (e.g. for '/{0} this', message is ""this"")
@@ -96,7 +86,6 @@ public class Cmd{0} : Command
 \t{{
 \t\tp.Message(""Hello World!"");
 \t}}
-
 \t// This is for when a player does /Help {0}
 \tpublic override void Help(Player p)
 \t{{
@@ -105,48 +94,38 @@ public class Cmd{0} : Command
 }}";
             }
         }
-
         public override string PluginSkeleton
         {
             get
             {
                 return @"//\tAuto-generated plugin skeleton class
 //\tUse this as a basis for custom MCGalaxy plugins
-
 // To reference other assemblies, put a ""//reference [assembly filename]"" at the top of the file
 //   e.g. to reference the System.Data assembly, put ""//reference System.Data.dll""
-
 // Add any other using statements you need after this
 using System;
-
 namespace MCGalaxy
 {{
 \tpublic class {0} : Plugin
 \t{{
 \t\t// The plugin's name (i.e what shows in /Plugins)
-\t\tpublic override string name {{ get {{ return ""{0}""; }} }}
-
+\t\tpublic override string name {{ get {{ return ""{0}""; }} }
 \t\t// The oldest version of MCGalaxy this plugin is compatible with
 \t\tpublic override string MCGalaxy_Version {{ get {{ return ""{2}""; }} }}
-
 \t\t// Message displayed in server logs when this plugin is loaded
 \t\tpublic override string welcome {{ get {{ return ""Loaded Message!""; }} }}
-
 \t\t// Who created/authored this plugin
 \t\tpublic override string creator {{ get {{ return ""{1}""; }} }}
-
 \t\t// Called when this plugin is being loaded (e.g. on server startup)
 \t\tpublic override void Load(bool startup)
 \t\t{{
 \t\t\t//code to hook into events, load state/resources etc goes here
 \t\t}}
-
 \t\t// Called when this plugin is being unloaded (e.g. on server shutdown)
 \t\tpublic override void Unload(bool shutdown)
 \t\t{{
 \t\t\t//code to unhook from events, dispose of state/resources etc goes here
 \t\t}}
-
 \t\t// Displays help for or information about this plugin
 \t\tpublic override void Help(Player p)
 \t\t{{

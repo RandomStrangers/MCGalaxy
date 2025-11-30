@@ -1,10 +1,9 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Commands;
 using MCGalaxy.DB;
 using MCGalaxy.Generator;
 using MCGalaxy.Maths;
-using MCGalaxy.Network;
 using MCGalaxy.Platform;
 using MCGalaxy.SQL;
 using System;
@@ -487,17 +486,6 @@ namespace NotAwesomeSurvival
                 }
             }
         }
-        public static void MoveFile(string file, string destFile)
-        {
-            if (File.Exists(file))
-            {
-                if (File.Exists(destFile))
-                {
-                    FileIO.TryDelete(destFile);
-                }
-                FileIO.TryMove(file, destFile);
-            }
-        }
         public static string GetSavePath(Player p)
         {
             return SavePath + p.name + ".json";
@@ -532,6 +520,42 @@ namespace NotAwesomeSurvival
                 return false;
             }
         }
+        public static void DisposeErrorResponse(Exception ex)
+        {
+            try
+            {
+                if (ex is WebException webEx && webEx.Response != null) webEx.Response.Close();
+            }
+            catch { }
+        }
+        public class CustomWebClient : WebClient
+        {
+            protected override WebRequest GetWebRequest(Uri address)
+            {
+                HttpWebRequest req = (HttpWebRequest)base.GetWebRequest(address);
+                req.ServicePoint.BindIPEndPointDelegate = BindIPEndPointCallback;
+                req.UserAgent = Server.SoftwareNameVersioned;
+                return req;
+            }
+            static IPEndPoint BindIPEndPointCallback(ServicePoint servicePoint, IPEndPoint remoteEP, int retryCount)
+            {
+                IPAddress localIP;
+                if (Server.Listener.IP != null)
+                {
+                    localIP = Server.Listener.IP;
+                }
+                else if (!IPAddress.TryParse(Server.Config.ListenIP, out localIP))
+                {
+                    return null;
+                }
+                if (remoteEP.AddressFamily != localIP.AddressFamily)
+                {
+                    return null;
+                }
+                return new(localIP, 0);
+            }
+        }
+        public static WebClient CreateWebClient() { return new CustomWebClient(); }
         public static bool EnsureFileExists(string url, string file)
         {
             if (File.Exists(file))
@@ -541,7 +565,7 @@ namespace NotAwesomeSurvival
             Log("{0} doesn't exist, Downloading..", file);
             try
             {
-                using (WebClient client = HttpUtil.CreateWebClient())
+                using (WebClient client = CreateWebClient())
                 {
                     client.DownloadFile(url, file);
                 }
@@ -554,7 +578,7 @@ namespace NotAwesomeSurvival
             catch (Exception ex)
             {
                 bool canRetry = HandleErrorResponse(ex, url, 30);
-                HttpUtil.DisposeErrorResponse(ex);
+                DisposeErrorResponse(ex);
                 if (!canRetry)
                 {
                     Logger.LogError("Downloading " + file + " failed, try again later", ex);
@@ -574,10 +598,6 @@ namespace NotAwesomeSurvival
                 Command.Register(cmd);
             }
         }
-        public static void MovePluginFile(string pluginFile, string destFile)
-        {
-            MoveFile("plugins/" + pluginFile, destFile);
-        }
         public static void Log(string format, params object[] args)
         {
             Logger.Log(LogType.Debug, string.Format(format, args));
@@ -586,13 +606,32 @@ namespace NotAwesomeSurvival
         {
             EnsureFileExists(url, file);
         }
+        public static string GetResponseText(WebResponse response)
+        {
+            using StreamReader r = new(response.GetResponseStream());
+            return r.ReadToEnd().Trim();
+        }
+        public static string GetErrorResponse(Exception ex)
+        {
+            try
+            {
+                if (ex is WebException webEx && webEx.Response != null)
+                {
+                    return GetResponseText(webEx.Response);
+                }
+            }
+            catch 
+            { 
+            }
+            return null;
+        }
         public static bool HandleErrorResponse(Exception ex, string msg, long retry)
         {
             return HandleErrorResponse((WebException)ex, msg, retry);
         }
         public static bool HandleErrorResponse(WebException ex, string msg, long retry)
         {
-            string err = HttpUtil.GetErrorResponse(ex);
+            string err = GetErrorResponse(ex);
             HttpStatusCode status = GetStatus(ex);
             if (status == (HttpStatusCode)429)
             {

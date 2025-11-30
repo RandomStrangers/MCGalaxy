@@ -41,11 +41,11 @@ namespace MCGalaxy.DB
         /// <summary> Flags for the block change. </summary>
         public ushort Flags;
 
-        public ushort OldBlock
+        public readonly ushort OldBlock
         {
             get { return (ushort)(OldRaw | ((Flags & BlockDBFlags.OldExtended) >> 6) | ((Flags & BlockDBFlags.OldExtended2) >> 3)); }
         }
-        public ushort NewBlock
+        public readonly ushort NewBlock
         {
             get { return (ushort)(NewRaw | ((Flags & BlockDBFlags.NewExtended) >> 7) | ((Flags & BlockDBFlags.NewExtended2) >> 4)); }
         }

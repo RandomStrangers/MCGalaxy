@@ -28,7 +28,7 @@ namespace MCGalaxy
         public ConfigAttribute Attrib;
         public FieldInfo Field;
 
-        public string Format(object instance)
+        public readonly string Format(object instance)
         {
             object value = Field.GetValue(instance);
             return Attrib.Name + " = " + Attrib.Serialise(value);

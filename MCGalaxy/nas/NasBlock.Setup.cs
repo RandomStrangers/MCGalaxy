@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using System;
 namespace NotAwesomeSurvival
 {
@@ -23,7 +23,7 @@ namespace NotAwesomeSurvival
             };
             const float fallSpeed = 0.325f;
             ushort i;
-            i = 8; //active 
+            i = 8;
             blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = 1f,
@@ -33,13 +33,13 @@ namespace NotAwesomeSurvival
             };
             const float waterDisturbDelayMin = 0.5f,
                 waterDisturbDelayMax = 0.5f;
-            i = 643; //Water barrel
+            i = 643;
             blocks[i] = new(i, Material.Wood, DefaultDurabilities[(int)Material.Wood] * 2)
             {
                 childIDs = new()
             };
             blocks[i].childIDs.Add(9);
-            i = 9; //still water
+            i = 9;
             blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 existAction = WaterExistAction(),
@@ -49,7 +49,7 @@ namespace NotAwesomeSurvival
                 collideAction = LiquidCollideAction(),
                 parentID = 643
             };
-            i = 632; //water flows
+            i = 632;
             blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = waterDisturbDelayMin,
@@ -82,7 +82,7 @@ namespace NotAwesomeSurvival
                 collideAction = LiquidCollideAction()
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
+            blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = waterDisturbDelayMin,
                 disturbDelayMax = waterDisturbDelayMax,
@@ -90,7 +90,7 @@ namespace NotAwesomeSurvival
                 collideAction = LiquidCollideAction()
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
+            blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = waterDisturbDelayMin,
                 disturbDelayMax = waterDisturbDelayMax,
@@ -105,7 +105,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = LimitedFloodAction(waterSet, 9),
                 collideAction = LiquidCollideAction()
             };
-            i = 639; //waterfall
+            i = 639;
             blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = fallSpeed,
@@ -115,7 +115,7 @@ namespace NotAwesomeSurvival
             };
             float lavaDisturbDelayMin = 1.5f,
                 lavaDisturbDelayMax = 1.5f;
-            i = 10; //Active lava
+            i = 10;
             blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 existAction = LavaExistAction(),
@@ -125,7 +125,7 @@ namespace NotAwesomeSurvival
                 collideAction = LavaCollideAction(),
                 parentID = 696
             };
-            i = 691; //lava flows
+            i = 691;
             blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = lavaDisturbDelayMin,
@@ -157,7 +157,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = LimitedFloodAction(lavaSet, 6),
                 collideAction = LavaCollideAction()
             };
-            i = 695; //lavafall
+            i = 695;
             blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = lavaDisturbDelayMin,
@@ -165,105 +165,104 @@ namespace NotAwesomeSurvival
                 disturbedAction = LimitedFloodAction(lavaSet, 2),
                 collideAction = LavaCollideAction()
             };
-            i = 11; //Lava
+            i = 11;
             blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 collideAction = LavaCollideAction(),
                 disturbedAction = FloodAction(new ushort[] { 11 })
             };
-            i = 1; //Stone
+            i = 1;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            i = 596; //Stone slab
+            i = 596;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             blocks[i] = new(i, blocks[596]);
-            i = 598; //Stone wall
+            i = 598;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             blocks[i] = new(i++, blocks[598]);
             blocks[i] = new(i++, blocks[598]);
             blocks[i] = new(i++, blocks[598]);
-            i = 70; //Stone stair (lower)
+            i = 70;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             blocks[i] = new(i++, blocks[70]);
             blocks[i] = new(i++, blocks[70]);
             blocks[i] = new(i++, blocks[70]);
-            i = 579; //Stone stair (upper)
+            i = 579;
             blocks[i] = new(i++, blocks[70]);
             blocks[i] = new(i++, blocks[70]);
             blocks[i] = new(i++, blocks[70]);
             blocks[i] = new(i++, blocks[70]);
-            i = 162; //Cobblestone
+            i = 162;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            i = 181; //Mossy Cobblestone
+            i = 181;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            i = 163; //Cobblestone-U (next is D)
+            i = 163;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             blocks[i] = new(i, blocks[163]);
             const int stonebrickDurMulti = 2;
-            i = 64; //Marker
+            i = 64;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
-            i = 65; //Stone brick
+            i = 65;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
-            i = 180; //Mossy stone brick
+            i = 180;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
-            i = 86; //Stone brick slab
+            i = 86;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
             blocks[i] = new(i++, blocks[86]);
-            i = 75; //Stone pole
+            i = 75;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             blocks[i] = new(i++, blocks[75]);
             blocks[i] = new(i++, blocks[75]);
-            i = 278; //Stone brick wall-N
+            i = 278;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
             blocks[i] = new(i++, blocks[278]);
             blocks[i] = new(i++, blocks[278]);
             blocks[i] = new(i++, blocks[278]);
-            i = 477; //Lined stone
+            i = 477;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
-            i = 211; //Thin pole
+            i = 211;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             blocks[i] = new(i++, blocks[211]);
             blocks[i] = new(i++, blocks[211]);
-            i = 214; //Boulder
+            i = 214;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 0);
-            i = 194; //Nub
+            i = 194;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 0);
-            i = 236; //unseen head
+            i = 236;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 0);
-            //oh boy it's nether blocks 
-            i = 48; //Netherrack
+            i = 48;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 1);
-            i = 155; //Nether bricks
+            i = 155;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            i = 157; //Nether slab-D
+            i = 157;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            i = 156; //Nether slab-U
+            i = 156;
             blocks[i] = new(i, blocks[157]);
-            i = 452; //Blackstone
+            i = 452;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
             {
                 alternateID = 1
             };
-            i = 458; //polished blackstone + slabs
+            i = 458;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 460;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i--;
             blocks[i] = new(i, blocks[460]);
-            i = 466; //bricks blackstone + slabs
+            i = 466;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 468;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i--;
             blocks[i] = new(i, blocks[468]);
-            i = 469; //Gilded blackstone
+            i = 469;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            i = 474; //Cracked blackstone bricks
+            i = 474;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            i = 475; // blackstone chiseled
+            i = 475;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             const float grassDelayMin = 10,
                 grassDelayMax = 60;
-            i = 2; //Grass
+            i = 2;
             blocks[i] = new(i, Material.Earth)
             {
                 disturbDelayMin = grassDelayMin,
@@ -279,7 +278,7 @@ namespace NotAwesomeSurvival
                     return grassDrop;
                 }
             };
-            i = 129; //Wet grass
+            i = 129;
             blocks[i] = new(i, Material.Earth)
             {
                 disturbDelayMin = grassDelayMin,
@@ -295,7 +294,7 @@ namespace NotAwesomeSurvival
                     return new(3, 1);
                 }
             };
-            i = 139; //Snowy grass
+            i = 139;
             blocks[i] = new(i, Material.Earth)
             {
                 disturbedAction = GrassBlockAction(256 | 139, 3),
@@ -309,7 +308,7 @@ namespace NotAwesomeSurvival
                     return new(3, 1);
                 }
             };
-            i = 547; //Grass path
+            i = 547;
             blocks[i] = new(i, Material.Earth)
             {
                 disturbDelayMin = 10f,
@@ -324,7 +323,7 @@ namespace NotAwesomeSurvival
                     return new(3, 1);
                 }
             };
-            i = 3; //Dirt
+            i = 3;
             blocks[i] = new(i, Material.Earth)
             {
                 disturbDelayMin = grassDelayMin,
@@ -332,37 +331,36 @@ namespace NotAwesomeSurvival
                 interaction = StripInteraction(Nas.FromRaw(547), "Shovel"),
                 disturbedAction = DirtBlockAction(grassSet, 3)
             };
-            i = 685; //Dirt (fake)
+            i = 685;
             blocks[i] = new(i, Material.Earth)
             {
                 collideAction = AirCollideAction()
             };
-            i = 4; //Cobblebrick
+            i = 4; 
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            i = 50; //Cobble brick-D
+            i = 50;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            i = 59; //Cobble brick-U
+            i = 59;
             blocks[i] = new(i, blocks[50]);
-            i = 133; //Cobble brick wall
+            i = 133;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             blocks[i] = new(i, blocks[133]);
-            //BIRCH STUFF~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            i = 98; //Wood
+            i = 98;
             blocks[i] = new(i, Material.Wood)
             {
                 alternateID = 5
             };
-            i = 101; //Wood slab-U
+            i = 101;
             blocks[i] = new(i, Material.Wood)
             {
                 alternateID = 56
             };
-            i = 102; //Wood slab-D
+            i = 102;
             blocks[i] = new(i, blocks[101])
             {
                 alternateID = 57
             };
-            i = 186; //Wood wall
+            i = 186;
             blocks[i] = new(i++, Material.Wood);
             blocks[i - 1].alternateID = 182;
             blocks[i] = new(i++, blocks[186]);
@@ -371,7 +369,7 @@ namespace NotAwesomeSurvival
             blocks[i - 1].alternateID = 184;
             blocks[i] = new(i++, blocks[186]);
             blocks[i - 1].alternateID = 185;
-            i = 262; //Wood stair (lower)
+            i = 262;
             blocks[i] = new(i++, Material.Wood);
             blocks[i - 1].alternateID = 66;
             blocks[i] = new(i++, blocks[262]);
@@ -380,7 +378,7 @@ namespace NotAwesomeSurvival
             blocks[i - 1].alternateID = 68;
             blocks[i] = new(i++, blocks[262]);
             blocks[i - 1].alternateID = 69;
-            i = 575; //Wood stair (upper)
+            i = 575;
             blocks[i] = new(i++, blocks[262]);
             blocks[i - 1].alternateID = 567;
             blocks[i] = new(i++, blocks[262]);
@@ -389,59 +387,58 @@ namespace NotAwesomeSurvival
             blocks[i - 1].alternateID = 569;
             blocks[i] = new(i++, blocks[262]);
             blocks[i - 1].alternateID = 570;
-            i = 255; //Wood pole
+            i = 255;
             blocks[i] = new(i++, Material.Wood);
             blocks[i - 1].alternateID = 78;
             blocks[i] = new(i++, blocks[255]);
             blocks[i - 1].alternateID = 79;
             blocks[i] = new(i++, blocks[255]);
             blocks[i - 1].alternateID = 80;
-            i = 260; //Fence (wood)
+            i = 260;
             blocks[i] = new(i++, Material.Wood);
             blocks[i] = new(i, blocks[260]);
-            i = 243; //Gnarly (Log)
+            i = 243;
             blocks[i] = new(i, Material.Wood);
-            i = 242; //Log-UD
+            i = 242;
             blocks[i] = new(i, Material.Wood)
             {
                 alternateID = 17,
                 interaction = StripInteraction(Nas.FromRaw(546))
             };
-            i = 240; //Log-WE
+            i = 240;
             blocks[i] = new(i, blocks[242])
             {
                 alternateID = 15,
                 interaction = StripInteraction(Nas.FromRaw(544))
             };
-            i = 241; //Log-NS
+            i = 241;
             blocks[i] = new(i, blocks[242])
             {
                 alternateID = 16,
                 interaction = StripInteraction(Nas.FromRaw(545))
             };
-            i = 546; //Stripped-UD
+            i = 546;
             blocks[i] = new(i, Material.Wood);
-            i = 544; //Log-WE
+            i = 544;
             blocks[i] = new(i, blocks[546]);
-            i = 545; //Log-NS
+            i = 545;
             blocks[i] = new(i, blocks[546]);
-            //SPRUCE STUFF~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-            i = 97; //Wood
+            i = 97;
             blocks[i] = new(i, Material.Wood)
             {
                 alternateID = 5
             };
-            i = 99; //Wood slab-U
+            i = 99;
             blocks[i] = new(i, Material.Wood)
             {
                 alternateID = 56
             };
-            i = 100; //Wood slab-D
+            i = 100;
             blocks[i] = new(i, blocks[99])
             {
                 alternateID = 57
             };
-            i = 190; //Wood wall
+            i = 190;
             blocks[i] = new(i++, Material.Wood);
             blocks[i - 1].alternateID = 182;
             blocks[i] = new(i++, blocks[190]);
@@ -450,7 +447,7 @@ namespace NotAwesomeSurvival
             blocks[i - 1].alternateID = 184;
             blocks[i] = new(i++, blocks[190]);
             blocks[i - 1].alternateID = 185;
-            i = 266; //Wood stair (lower)
+            i = 266;
             blocks[i] = new(i++, Material.Wood);
             blocks[i - 1].alternateID = 66;
             blocks[i] = new(i++, blocks[266]);
@@ -459,7 +456,7 @@ namespace NotAwesomeSurvival
             blocks[i - 1].alternateID = 68;
             blocks[i] = new(i++, blocks[266]);
             blocks[i - 1].alternateID = 69;
-            i = 571; //Wood stair (upper)
+            i = 571;
             blocks[i] = new(i++, blocks[266]);
             blocks[i - 1].alternateID = 567;
             blocks[i] = new(i++, blocks[266]);
@@ -468,113 +465,112 @@ namespace NotAwesomeSurvival
             blocks[i - 1].alternateID = 569;
             blocks[i] = new(i++, blocks[266]);
             blocks[i - 1].alternateID = 570;
-            i = 252; //Wood pole
+            i = 252;
             blocks[i] = new(i++, Material.Wood);
             blocks[i - 1].alternateID = 78;
             blocks[i] = new(i++, blocks[252]);
             blocks[i - 1].alternateID = 79;
             blocks[i] = new(i++, blocks[252]);
             blocks[i - 1].alternateID = 80;
-            i = 258; //Fence (wood)
+            i = 258;
             blocks[i] = new(i++, Material.Wood);
             blocks[i] = new(i, blocks[258]);
-            i = 251; //Gnarly (Log)
+            i = 251;
             blocks[i] = new(i, Material.Wood);
-            i = 250; //Log-UD
+            i = 250;
             blocks[i] = new(i, Material.Wood)
             {
                 alternateID = 17,
                 interaction = StripInteraction(Nas.FromRaw(621))
             };
-            i = 248; //Log-WE
+            i = 248;
             blocks[i] = new(i, blocks[250])
             {
                 alternateID = 15,
                 interaction = StripInteraction(Nas.FromRaw(619))
             };
-            i = 249; //Log-NS
+            i = 249;
             blocks[i] = new(i, blocks[250])
             {
                 alternateID = 16,
                 interaction = StripInteraction(Nas.FromRaw(620))
             };
-            i = 621; //Stripped-UD
+            i = 621;
             blocks[i] = new(i, Material.Wood);
-            i = 619; //Log-WE
+            i = 619;
             blocks[i] = new(i, blocks[621]);
-            i = 620; //Log-NS
+            i = 620;
             blocks[i] = new(i, blocks[621]);
-            //OAK STUFF ~~~~~~~~~    
-            i = 5; //Wood
+            i = 5;
             blocks[i] = new(i, Material.Wood);
-            i = 56; //Wood slab-U
+            i = 56;
             blocks[i] = new(i, Material.Wood);
-            i = 57; //Wood slab-D
+            i = 57;
             blocks[i] = new(i, blocks[56]);
-            i = 182; //Wood wall
+            i = 182;
             blocks[i] = new(i++, Material.Wood);
             blocks[i] = new(i++, blocks[182]);
             blocks[i] = new(i++, blocks[182]);
             blocks[i] = new(i++, blocks[182]);
-            i = 66; //Wood stair (lower)
+            i = 66;
             blocks[i] = new(i++, Material.Wood);
             blocks[i] = new(i++, blocks[66]);
             blocks[i] = new(i++, blocks[66]);
             blocks[i] = new(i++, blocks[66]);
-            i = 567; //Wood stair (upper)
+            i = 567;
             blocks[i] = new(i++, blocks[66]);
             blocks[i] = new(i++, blocks[66]);
             blocks[i] = new(i++, blocks[66]);
             blocks[i] = new(i++, blocks[66]);
-            i = 78; //Wood pole
+            i = 78;
             blocks[i] = new(i++, Material.Wood);
             blocks[i] = new(i++, blocks[78]);
             blocks[i] = new(i++, blocks[78]);
-            i = 94; //Fence (wood)
+            i = 94;
             blocks[i] = new(i++, Material.Wood);
             blocks[i] = new(i, blocks[94]);
-            i = 168; //Wood board
+            i = 168;
             blocks[i] = new(i++, Material.Wood);
-            i = 524; //Board (sideways)
+            i = 524;
             blocks[i] = new(i++, Material.Wood);
             blocks[i] = new(i++, blocks[524]);
             blocks[i] = new(i++, blocks[524]);
             blocks[i] = new(i++, blocks[524]);
-            i = 17; //Log-UD
+            i = 17;
             blocks[i] = new(i, Material.Wood)
             {
                 interaction = StripInteraction(Nas.FromRaw(585))
             };
-            i = 15; //Log-WE
+            i = 15;
             blocks[i] = new(i, blocks[17])
             {
                 interaction = StripInteraction(Nas.FromRaw(583))
             };
-            i = 16; //Log-NS
+            i = 16;
             blocks[i] = new(i, blocks[17])
             {
                 interaction = StripInteraction(Nas.FromRaw(584))
             };
-            i = 585; //Stripped-UD
+            i = 585;
             blocks[i] = new(i, Material.Wood);
-            i = 583; //Log-WE
+            i = 583;
             blocks[i] = new(i, blocks[585]);
-            i = 584; //Log-NS
+            i = 584;
             blocks[i] = new(i, blocks[585]);
-            i = 676; //smithing
+            i = 676;
             blocks[i] = new(i, Material.Wood)
             {
                 existAction = SmithingAction(),
                 interaction = SmithingTableAction()
             };
-            i = 657; //Falling Log
+            i = 657;
             blocks[i] = new(i, Material.Wood)
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed,
                 disturbedAction = FallingBlockAction(Nas.FromRaw(i))
             };
-            i = 656; //Falling Log 2
+            i = 656;
             blocks[i] = new(i, Material.Wood)
             {
                 disturbDelayMin = 0.75f,
@@ -583,14 +579,14 @@ namespace NotAwesomeSurvival
             };
             const float treeDelayMin = 30f,
                 treeDelayMax = 60f;
-            i = 6; //Sapling
+            i = 6;
             blocks[i] = new(i, Material.Plant)
             {
                 disturbDelayMin = treeDelayMin,
                 disturbDelayMax = treeDelayMax,
                 disturbedAction = OakSaplingAction()
             };
-            i = 154; //Sapling birch
+            i = 154;
             blocks[i] = new(i, Material.Plant)
             {
                 disturbDelayMin = treeDelayMin,
@@ -598,7 +594,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = BirchSaplingAction(),
                 alternateID = 6
             };
-            i = 450; //Sapling swamp
+            i = 450;
             blocks[i] = new(i, Material.Plant)
             {
                 disturbDelayMin = treeDelayMin,
@@ -606,7 +602,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = SwampSaplingAction(),
                 alternateID = 6
             };
-            i = 689; //Sapling spruce
+            i = 689;
             blocks[i] = new(i, Material.Plant)
             {
                 disturbDelayMin = treeDelayMin,
@@ -614,18 +610,18 @@ namespace NotAwesomeSurvival
                 disturbedAction = SpruceSaplingAction(),
                 alternateID = 6
             };
-            i = 7; //Bedrock
+            i = 7;
             blocks[i] = new(i, Material.Stone, int.MaxValue, 5);
-            i = 767; //Barrier
+            i = 767;
             blocks[i] = new(i, Material.Stone, int.MaxValue - 1, 6)
             {
                 collideAction = AirCollideAction()
             };
-            i = 673; //spawnbedrock
+            i = 673;
             blocks[i] = new(i, Material.Stone, int.MaxValue, 5);
-            i = 690; //Obsidian
+            i = 690;
             blocks[i] = new(i, Material.Stone, 512, 3);
-            i = 457; //Obsidian
+            i = 457;
             blocks[i] = new(i, Material.Stone, 512, 3)
             {
                 interaction = PortalInteraction()
@@ -636,7 +632,7 @@ namespace NotAwesomeSurvival
                 interaction = ChangeInteraction(Nas.FromRaw(658)),
                 dropHandler = CustomDrop(659, 1)
             };
-            i = 658; //trapdoors
+            i = 658;
             blocks[i] = new(i, blocks[659])
             {
                 interaction = ChangeInteraction(Nas.FromRaw(659)),
@@ -678,20 +674,20 @@ namespace NotAwesomeSurvival
                 interaction = ChangeInteraction(Nas.FromRaw(664)),
                 dropHandler = CustomDrop(659, 1)
             };
-            i = 12; //Sand
+            i = 12;
             blocks[i] = new(i, Material.Earth, 3)
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed,
                 disturbedAction = FallingBlockAction(12)
             };
-            i = 451; //Soul sand
+            i = 451;
             blocks[i] = new(i, Material.Earth, 3)
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed
             };
-            i = 13; //Gravel
+            i = 13;
             blocks[i] = new(i, Material.Earth)
             {
                 disturbDelayMin = 0.7f,
@@ -700,7 +696,7 @@ namespace NotAwesomeSurvival
             };
             const float leafShrivelDelayMin = 0.2f,
                 leafShrivelDelayMax = 0.4f;
-            i = 18; //Leaves
+            i = 18;
             blocks[i] = new(i, Material.Leaves)
             {
                 disturbedAction = LeafBlockAction(logSet, 18),
@@ -711,7 +707,7 @@ namespace NotAwesomeSurvival
                     Drop drop = new(18, 1);
                     int rand = r.Next(0, 8);
                     if (rand == 0)
-                    { //16 in 128 chance (1 in 8 chance) of sapling
+                    { 
                         drop.blockStacks.Add(new(6, 1));
                     }
                     else
@@ -721,7 +717,7 @@ namespace NotAwesomeSurvival
                     return drop;
                 }
             };
-            i = 103; //Pink leaves
+            i = 103;
             blocks[i] = new(i, Material.Leaves)
             {
                 disturbedAction = LeafBlockAction(logSet, 256 | 103),
@@ -742,26 +738,25 @@ namespace NotAwesomeSurvival
                     return drop;
                 }
             };
-            i = 666; //dense Leaves
+            i = 666;
             blocks[i] = new(i, Material.Leaves)
             {
                 disturbedAction = LeafBlockAction(logSet, Nas.FromRaw(i)),
                 disturbDelayMin = 1f,
                 disturbDelayMax = 1.5f
             };
-            i = 686; //dense Leaves
+            i = 686;
             blocks[i] = new(i, Material.Leaves)
             {
                 disturbedAction = LeafBlockAction(logSet, Nas.FromRaw(i)),
                 disturbDelayMin = 1f,
                 disturbDelayMax = 1.5f
             };
-            i = 105; //Leaves slab
+            i = 105;
             blocks[i] = new(i, Material.Leaves);
-            i = 246; //pink Leaves slab
+            i = 246;
             blocks[i] = new(i, Material.Leaves);
-
-            i = 19; //Leaves spruce
+            i = 19;
             blocks[i] = new(i, Material.Leaves)
             {
                 disturbedAction = LeafBlockAction(logSet, 19),
@@ -782,12 +777,12 @@ namespace NotAwesomeSurvival
                     return drop;
                 }
             };
-            i = 20; //Glass
+            i = 20;
             blocks[i] = new(i, Material.Glass);
-            i = 136; //Glass pane
+            i = 136;
             blocks[i] = new(i++, Material.Glass);
             blocks[i] = new(i, blocks[136]);
-            i = 687; //Lamp
+            i = 687;
             blocks[i] = new(i, Material.Glass)
             {
                 disturbedAction = LampAction(Nas.FromRaw(688), Nas.FromRaw(687), Nas.FromRaw(687))
@@ -798,7 +793,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = LampAction(Nas.FromRaw(688), Nas.FromRaw(687), Nas.FromRaw(688)),
                 dropHandler = CustomDrop(687, 1)
             };
-            i = 178; //Spikes
+            i = 178;
             blocks[i] = new(i, Material.Stone)
             {
                 disturbedAction = LampAction(Nas.FromRaw(179), Nas.FromRaw(178), Nas.FromRaw(178))
@@ -810,22 +805,22 @@ namespace NotAwesomeSurvival
                 collideAction = SpikeCollideAction(),
                 dropHandler = CustomDrop(178, 1)
             };
-            i = 476; //Obsidian spikes
+            i = 476;
             blocks[i] = new(i, Material.Stone, 128, 4)
             {
                 collideAction = SpikeCollideAction()
             };
-            i = 203; //Old glass
+            i = 203;
             blocks[i] = new(i, Material.Glass);
-            i = 209; //Old pane
+            i = 209;
             blocks[i] = new(i++, Material.Glass);
             blocks[i] = new(i, blocks[209]);
-            i = 471; //New glass
+            i = 471;
             blocks[i] = new(i, Material.Glass);
-            i = 472; //New pane
+            i = 472;
             blocks[i] = new(i++, Material.Glass);
             blocks[i] = new(i, blocks[472]);
-            i = 37; //Dandelion
+            i = 37;
             blocks[i] = new(i, Material.Plant)
             {
                 dropHandler = (NasPlayer, dropID) =>
@@ -842,7 +837,7 @@ namespace NotAwesomeSurvival
                 },
                 disturbedAction = GenericPlantAction()
             };
-            i = 38; //Rose
+            i = 38;
             blocks[i] = new(i, Material.Plant, 1)
             {
                 dropHandler = (NasPlayer, dropID) =>
@@ -859,17 +854,17 @@ namespace NotAwesomeSurvival
                 },
                 disturbedAction = GenericPlantAction()
             };
-            i = 39; //Dead shrub
+            i = 39;
             blocks[i] = new(i, Material.Plant)
             {
                 disturbedAction = NeedsSupportAction()
             };
-            i = 40; //Tall grass
+            i = 40;
             blocks[i] = new(i, Material.Plant)
             {
                 disturbedAction = GenericPlantAction()
             };
-            i = 130; //Wet tall grass
+            i = 130;
             blocks[i] = new(i, Material.Plant)
             {
                 dropHandler = (NasPlayer, dropID) =>
@@ -886,46 +881,46 @@ namespace NotAwesomeSurvival
                 },
                 disturbedAction = GenericPlantAction()
             };
-            i = 41; //Gold
+            i = 41;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 2);
-            i = 42; //Iron
+            i = 42;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1);
-            i = 631; //Diamond
+            i = 631;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 3);
-            i = 650; //Emerald
+            i = 650;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 4);
-            i = 148; //Old iron
+            i = 148;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1);
             i = 208;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1);
-            i = 149; //Old iron slab
+            i = 149;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1);
             blocks[i] = new(i, blocks[149]);
-            i = 294; //Old iron wall
+            i = 294;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1);
             blocks[i] = new(i++, blocks[294]);
             blocks[i] = new(i++, blocks[294]);
             blocks[i] = new(i, blocks[294]);
-            i = 159; //Iron fence-WE
+            i = 159;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 collideAction = AirCollideAction()
             };
             i++;
             blocks[i] = new(i, blocks[159]);
-            i = 161; //Iron cage
+            i = 161;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 collideAction = AirCollideAction()
             };
-            i = 44; //Concrete slab-D
+            i = 44;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 1)
             {
                 damageDoneToTool = 0.5f
             };
-            i = 58; //Concrete slab-U
+            i = 58;
             blocks[i] = new(i, blocks[44]);
-            i = 43; //Double Concrete slab
+            i = 43;
             blocks[i] = new(i, blocks[44])
             {
                 durability = DefaultDurabilities[(int)Material.Stone],
@@ -936,55 +931,55 @@ namespace NotAwesomeSurvival
                 resourceCost = 2,
                 damageDoneToTool = 1f
             };
-            i = 45; //Concrete block
+            i = 45;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            i = 282; //Concrete wall
+            i = 282;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             blocks[i] = new(i++, blocks[282]);
             blocks[i] = new(i++, blocks[282]);
             blocks[i] = new(i++, blocks[282]);
-            i = 549; //Concrete bricks[sic]
+            i = 549;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            i = 135; //Stone plate
+            i = 135;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 1);
-            i = 270; //Concrete stairs
+            i = 270;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             blocks[i] = new(i++, blocks[270]);
             blocks[i] = new(i++, blocks[270]);
             blocks[i] = new(i, blocks[270]);
-            i = 587; //upper
+            i = 587;
             blocks[i] = new(i++, blocks[270]);
             blocks[i] = new(i++, blocks[270]);
             blocks[i] = new(i++, blocks[270]);
             blocks[i] = new(i, blocks[270]);
-            i = 480; //Concrete corner
+            i = 480;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             blocks[i] = new(i++, blocks[480]);
             blocks[i] = new(i++, blocks[480]);
             blocks[i] = new(i, blocks[480]);
-            i = 453; //Obsidian slab-D
+            i = 453;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            i = 298; //Obsidian slab-U
+            i = 298;
             blocks[i] = new(i, blocks[453]);
-            i = 49; //Coal block
+            i = 49;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            i = 51; //Rope
+            i = 51;
             blocks[i] = new(i, Material.Wood);
-            i = 52; //Sandstone
+            i = 52;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            i = 299; //Sandstone slab
+            i = 299;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             blocks[i] = new(i, blocks[299]);
-            i = 53; //Snow (layer)
+            i = 53;
             blocks[i] = new(i, Material.Earth)
             {
                 disturbedAction = NeedsSupportAction()
             };
-            i = 140; //snow (block)
+            i = 140;
             blocks[i] = new(i, Material.Earth);
-            i = 677; //Sticky
+            i = 677;
             blocks[i] = new(i, Material.Organic, 1);
-            i = 54; //Fire
+            i = 54;
             blocks[i] = new(i, Material.None)
             {
                 disturbDelayMin = 10f,
@@ -997,43 +992,43 @@ namespace NotAwesomeSurvival
                 },
                 collideAction = FireCollideAction()
             };
-            i = 55; //Dark door
+            i = 55;
             blocks[i] = new(i, Material.Wood);
-            i = 470; //light door
+            i = 470;
             blocks[i] = new(i, Material.Wood);
-            i = 131; //ash
+            i = 131;
             blocks[i] = new(i, Material.Plant)
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed,
                 disturbedAction = FallingBlockAction(Nas.FromRaw(i))
             };
-            i = 60; //Ice
+            i = 60;
             blocks[i] = new(i, Material.Stone, 8);
-            i = 681; //Packed Ice
+            i = 681;
             blocks[i] = new(i, Material.Stone, 12);
-            i = 61; //Quartz
+            i = 61;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            i = 62; //Lamp
+            i = 62;
             blocks[i] = new(i, Material.Glass);
-            i = 63; //Pillar-UD
+            i = 63;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 166;
             blocks[i] = new(i, blocks[63]);
             i = 167;
             blocks[i] = new(i, blocks[63]);
-            i = 235; //chiseled quartz
+            i = 235;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            i = 84; //Quartz slab-D
+            i = 84;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            i = 85; //Quartz slab-U
+            i = 85;
             blocks[i] = new(i, blocks[84]);
-            i = 286; //Quartz wall
+            i = 286;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             blocks[i] = new(i++, blocks[286]);
             blocks[i] = new(i++, blocks[286]);
             blocks[i] = new(i++, blocks[286]);
-            i = 274; //Quartz stair
+            i = 274;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             blocks[i] = new(i++, blocks[274]);
             blocks[i] = new(i++, blocks[274]);
@@ -1043,14 +1038,13 @@ namespace NotAwesomeSurvival
             blocks[i] = new(i++, blocks[274]);
             blocks[i] = new(i++, blocks[274]);
             blocks[i] = new(i++, blocks[274]);
-            i = 104; //Dry leaves
+            i = 104;
             blocks[i] = new(i, Material.Leaves)
             {
                 disturbedAction = LeafBlockAction(logSet, Nas.FromRaw(i)),
                 disturbDelayMin = leafShrivelDelayMin,
                 disturbDelayMax = leafShrivelDelayMax
             };
-            //Crafting table
             i = 198;
             blocks[i] = new(i, blocks[17])
             {
@@ -1066,7 +1060,7 @@ namespace NotAwesomeSurvival
             i = 199;
             blocks[i] = new(i, blocks[198]);
             blocks[i].station.ori = Crafting.Station.Orientation.WE;
-            i = 413;//autocraft
+            i = 413;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
             {
                 station = new Crafting.Station
@@ -1086,7 +1080,7 @@ namespace NotAwesomeSurvival
             i = 414;
             blocks[i] = new(i, blocks[413]);
             blocks[i].station.ori = Crafting.Station.Orientation.WE;
-            i = 462; //birch crafting table
+            i = 462;
             blocks[i] = new(i, blocks[242])
             {
                 station = new Crafting.Station
@@ -1103,7 +1097,7 @@ namespace NotAwesomeSurvival
             blocks[i] = new(i, blocks[462]);
             blocks[i].station.ori = Crafting.Station.Orientation.WE;
             blocks[i].alternateID = 199;
-            i = 464; //spruce crafting table
+            i = 464;
             blocks[i] = new(i, blocks[250])
             {
                 station = new Crafting.Station
@@ -1120,7 +1114,6 @@ namespace NotAwesomeSurvival
             blocks[i] = new(i, blocks[464]);
             blocks[i].station.ori = Crafting.Station.Orientation.WE;
             blocks[i].alternateID = 199;
-            //Furnace
             i = 625;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
             {
@@ -1136,27 +1129,27 @@ namespace NotAwesomeSurvival
             i = 626;
             blocks[i] = new(i, blocks[625]);
             blocks[i].station.ori = Crafting.Station.Orientation.NS;
-            i = 239; //hotcoals
+            i = 239;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
             {
                 collideAction = FireCollideAction()
             };
-            i = 204; //Monitor-S
+            i = 204;
             blocks[i] = new(i++, Material.Metal, 3);
             blocks[i] = new(i++, blocks[204]);
             blocks[i] = new(i++, blocks[204]);
             blocks[i] = new(i, blocks[204]);
-            i = 142; //Crate
+            i = 142;
             blocks[i] = new(i, Material.Wood, DefaultDurabilities[(int)Material.Wood] * 2)
             {
                 interaction = CrateInteraction("You can't open it. It's just for decoration.")
             };
-            i = 132; //bookshelf
+            i = 132;
             blocks[i] = new(i, Material.Wood, DefaultDurabilities[(int)Material.Wood] * 2)
             {
                 interaction = BookshelfInteraction()
             };
-            i = 143; //Barrel
+            i = 143;
             blocks[i] = new(i, Material.Wood, DefaultDurabilities[(int)Material.Wood] * 2)
             {
                 container = new Container
@@ -1166,10 +1159,10 @@ namespace NotAwesomeSurvival
                 existAction = ContainerExistAction(),
                 interaction = ContainerInteraction()
             };
-            i = 602; //Barrel (sideways)
+            i = 602;
             blocks[i] = new(i++, blocks[143]);
             blocks[i] = new(i, blocks[143]);
-            i = 216; //Chest-S
+            i = 216;
             blocks[i] = new(i, Material.Wood, DefaultDurabilities[(int)Material.Wood] * 2)
             {
                 container = new Container
@@ -1185,7 +1178,7 @@ namespace NotAwesomeSurvival
             blocks[i] = new(i, blocks[216]);
             i++;
             blocks[i] = new(i, blocks[216]);
-            i = 647; //Gravestone
+            i = 647;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 0)
             {
                 container = new Container
@@ -1195,28 +1188,28 @@ namespace NotAwesomeSurvival
                 existAction = ContainerExistAction(),
                 interaction = ContainerInteraction()
             };
-            i = 586; //Quartz ore
+            i = 586;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 2, 1)
             {
                 dropHandler = CustomDrop(61, 1),
                 expGivenMin = 4,
                 expGivenMax = 10
             };
-            i = 454; //Nether quartz ore
+            i = 454;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 2, 1)
             {
                 dropHandler = CustomDrop(61, 1),
                 expGivenMin = 4,
                 expGivenMax = 10
             };
-            i = 455; //Nether gold ore
+            i = 455;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 2, 1)
             {
                 dropHandler = CustomDrop(672, 1),
                 expGivenMin = 6,
                 expGivenMax = 12
             };
-            i = 627; //Coal ore
+            i = 627;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 2, 1)
             {
                 dropHandler = (NasPlayer, dropID) =>
@@ -1226,30 +1219,21 @@ namespace NotAwesomeSurvival
                 expGivenMin = 0,
                 expGivenMax = 4
             };
-            i = 197; //Chunk of coal
+            i = 197;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 2, 1);
-            i = 628; //Iron ore
+            i = 628;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 4, 1);
-            //blocks[i].expGivenMin = 0;
-            //blocks[i].expGivenMax = 4;
-            i = 629; //Gold ore
+            i = 629;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 6, 2);
-            //blocks[i].expGivenMin = 1;
-            //blocks[i].expGivenMax = 6;
-            i = 630; //Diamond ore
+            i = 630;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 6, 3);
-            //blocks[i].expGivenMin = 3;
-            //blocks[i].expGivenMax = 8;
-            i = 649; //Emerald ore
+            i = 649;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 7, 4);
-            //blocks[i].expGivenMin = 4;
-            //blocks[i].expGivenMax = 9;
-            //from 20 to 40 minutes (avg 30)
             const float wheatTotalSeconds = 20f * 60f,
                 wheatMaxAddedSeconds = 20f * 60f,
                 wheatGrowMin = wheatTotalSeconds / 3f,
                 wheatGrowMax = (wheatTotalSeconds + wheatMaxAddedSeconds) / 3f;
-            i = 644; //Wheat (baby)
+            i = 644;
             blocks[i] = new(i, Material.Plant)
             {
                 disturbedAction = CropAction(wheatSet, 0),
@@ -1273,7 +1257,7 @@ namespace NotAwesomeSurvival
                 disturbDelayMax = wheatGrowMax,
                 dropHandler = CustomDrop(644, 1)
             };
-            i = 461; //Wheat (full grown)
+            i = 461;
             blocks[i] = new(i, Material.Plant)
             {
                 disturbedAction = CropAction(wheatSet, 3),
@@ -1286,14 +1270,14 @@ namespace NotAwesomeSurvival
                     return new(644, r.Next(2, 5));
                 }
             };
-            i = 624; //iron nug
+            i = 624;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbDelayMin = fallSpeed / 2f,
                 disturbDelayMax = fallSpeed / 2f,
                 disturbedAction = FallingBlockAction(Nas.FromRaw(i))
             };
-            i = 729; //Iron (baby)
+            i = 729;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = IronCropAction(ironSet, 0),
@@ -1317,7 +1301,7 @@ namespace NotAwesomeSurvival
                 disturbDelayMax = wheatGrowMax * 2,
                 dropHandler = CustomDrop(729, 1)
             };
-            i = 479; //Iron (full grown)
+            i = 479;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = IronCropAction(ironSet, 3),
@@ -1335,21 +1319,21 @@ namespace NotAwesomeSurvival
                 sugarMaxAddedSeconds = 15f * 60f,
                 sugarGrowMin = sugarTotalSeconds / 2f,
                 sugarGrowMax = (sugarTotalSeconds + sugarMaxAddedSeconds) / 2f;
-            i = 667; //sugarcane
+            i = 667;
             blocks[i] = new(i, Material.Plant)
             {
                 disturbDelayMin = sugarGrowMin,
                 disturbDelayMax = sugarGrowMax,
                 disturbedAction = GrowAction(Nas.FromRaw(i))
             };
-            i = 106; //cactus
+            i = 106;
             blocks[i] = new(i, Material.Plant)
             {
                 disturbDelayMin = sugarGrowMin,
                 disturbDelayMax = sugarGrowMax,
                 disturbedAction = GrowAction(Nas.FromRaw(i))
             };
-            i = 107; //vines
+            i = 107;
             blocks[i] = new(i, Material.Plant)
             {
                 disturbDelayMin = sugarGrowMin / 5f,
@@ -1357,7 +1341,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = VineGrowAction(Nas.FromRaw(i)),
                 instantAction = VineDeathAction()
             };
-            i = 146; //Swamp leaves
+            i = 146;
             blocks[i] = new(i, Material.Leaves)
             {
                 disturbedAction = LeafBlockAction(logSet, Nas.FromRaw(146)),
@@ -1368,7 +1352,7 @@ namespace NotAwesomeSurvival
                     Drop drop = new(146, 1);
                     int rand = r.Next(0, 8);
                     if (rand == 0)
-                    { //16 in 128 chance (1 in 8 chance) of sapling
+                    {
                         drop.blockStacks.Add(new(450, 1));
                     }
                     else
@@ -1378,18 +1362,18 @@ namespace NotAwesomeSurvival
                     return drop;
                 }
             };
-            i = 449; //lilypad
+            i = 449;
             blocks[i] = new(i, Material.Plant)
             {
                 disturbedAction = LilyAction()
             };
-            i = 171; //sign
+            i = 171;
             blocks[i] = new(i, Material.None, DefaultDurabilities[(int)Material.Wood])
             {
                 existAction = MessageExistAction(),
                 interaction = MessageInteraction()
             };
-            i = 145; //hay
+            i = 145;
             blocks[i] = new(i, Material.Organic, 3)
             {
                 fallDamageMultiplier = 0.1f
@@ -1398,7 +1382,7 @@ namespace NotAwesomeSurvival
             blocks[i] = new(i++, blocks[145]);
             blocks[i] = new(i++, blocks[145]);
             const float breadRestore = 1f;
-            i = 640; //Loaf of bread
+            i = 640;
             blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(breadSet, 0, breadRestore * 2)
@@ -1414,7 +1398,7 @@ namespace NotAwesomeSurvival
                 interaction = EatInteraction(breadSet, 2, breadRestore)
             };
             const float pieRestore = 2.5f;
-            i = 542; //Waffle
+            i = 542;
             blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(waffleSet, 0, pieRestore)
@@ -1424,7 +1408,7 @@ namespace NotAwesomeSurvival
             {
                 interaction = EatInteraction(waffleSet, 1, pieRestore)
             };
-            i = 668; //Pie
+            i = 668;
             blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(pieSet, 0, pieRestore)
@@ -1444,7 +1428,7 @@ namespace NotAwesomeSurvival
             {
                 interaction = EatInteraction(pieSet, 3, pieRestore)
             };
-            i = 698; //Peach pie
+            i = 698;
             blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(peachPieSet, 0, pieRestore)
@@ -1464,7 +1448,7 @@ namespace NotAwesomeSurvival
             {
                 interaction = EatInteraction(peachPieSet, 3, pieRestore)
             };
-            i = 654; //Poison pie and bread
+            i = 654;
             blocks[i] = new(i, Material.Organic, 3);
             ushort[] set = new ushort[]
             {
@@ -1476,7 +1460,7 @@ namespace NotAwesomeSurvival
             {
                 interaction = EatInteraction(set, 0, -5f)
             };
-            i = 648; //Apple
+            i = 648;
             blocks[i] = new(i, Material.Organic, 3)
             {
                 disturbDelayMin = fallSpeed,
@@ -1484,7 +1468,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = FallingBlockAction(Nas.FromRaw(i)),
                 interaction = EatInteraction(set, 0, 1f)
             };
-            i = 702; //Peach
+            i = 702;
             blocks[i] = new(i, Material.Organic, 3)
             {
                 disturbDelayMin = fallSpeed,
@@ -1496,7 +1480,7 @@ namespace NotAwesomeSurvival
                 Nas.FromRaw(702)
             };
             blocks[i].interaction = EatInteraction(set2, 0, 1f);
-            i = 478; //Gapple
+            i = 478;
             blocks[i] = new(i, Material.Organic, 3)
             {
                 disturbDelayMin = fallSpeed / 2f,
@@ -1508,89 +1492,89 @@ namespace NotAwesomeSurvival
                 Nas.FromRaw(478)
             };
             blocks[i].interaction = EatInteraction(set3, 0, 10f, 0.5f);
-            i = 36; //white
+            i = 36;
             blocks[i] = new(i, Material.Organic, 4);
-            i = 27; //red
+            i = 27;
             blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
-            i = 35; //yellow
+            i = 35;
             blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
-            i = 30; //orange
+            i = 30;
             blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
-            i = 138; //pink
+            i = 138;
             blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
-            i = 23; //blue
+            i = 23;
             blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
-            i = 29; //cyan
+            i = 29;
             blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
-            i = 34; //light blue
+            i = 34;
             blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
-            i = 26; //green
+            i = 26;
             blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
-            i = 32; //lime
+            i = 32;
             blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
-            i = 200; //purple
+            i = 200;
             blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
-            i = 22; //darkpurple
+            i = 22;
             blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
-            i = 21; //black
+            i = 21;
             blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
-            i = 25; //brown
+            i = 25;
             blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
-            i = 31; //lightgray
+            i = 31;
             blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
-            i = 28; //gray
+            i = 28;
             blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
-            i = 703; //bed
+            i = 703;
             blocks[i] = new(i, Material.Organic, 4)
             {
                 interaction = BedInteraction()
             };
-            i = 96; //daisy
+            i = 96;
             blocks[i] = new(i, Material.Plant)
             {
                 dropHandler = (NasPlayer, dropID) =>
@@ -1607,7 +1591,7 @@ namespace NotAwesomeSurvival
                 },
                 disturbedAction = GenericPlantAction()
             };
-            i = 651; //cornflower
+            i = 651;
             blocks[i] = new(i, Material.Plant)
             {
                 dropHandler = (NasPlayer, dropID) =>
@@ -1624,7 +1608,7 @@ namespace NotAwesomeSurvival
                 },
                 disturbedAction = GenericPlantAction()
             };
-            i = 201; //Daisy
+            i = 201;
             blocks[i] = new(i, Material.Plant)
             {
                 dropHandler = (NasPlayer, dropID) =>
@@ -1641,19 +1625,19 @@ namespace NotAwesomeSurvival
                 },
                 disturbedAction = GenericPlantAction()
             };
-            i = 604; //Red mushroom
+            i = 604;
             blocks[i] = new(i, Material.Organic, 3);
             ushort[] set4 = new ushort[]
             {
                 Nas.FromRaw(604)
             };
             blocks[i].interaction = EatInteraction(set4, 0, 1f);
-            i = 456; //Brown mushroom
+            i = 456;
             blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(set4, 0, 1f)
             };
-            i = 653; //Poison Mushroom
+            i = 653;
             blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(set4, 0, -2.5f)
@@ -1666,7 +1650,7 @@ namespace NotAwesomeSurvival
             {
                 blocks[i] = new(i, Material.Organic, 2);
             }
-            i = 655; //glass gravity
+            i = 655;
             blocks[i] = new(i, Material.Glass)
             {
                 disturbDelayMin = fallSpeed,
@@ -1674,7 +1658,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = FallingBlockAction(Nas.FromRaw(i)),
                 collideAction = AirCollideAction()
             };
-            i = 696; //tank of lava
+            i = 696;
             blocks[i] = new(i, Material.Stone, 384, 4)
             {
                 childIDs = new()
@@ -1685,7 +1669,7 @@ namespace NotAwesomeSurvival
             {
                 existAction = LavaBarrelAction()
             };
-            i = 672; //unrefined gold
+            i = 672;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 existAction = WireExistAction(0, 4),
@@ -1698,7 +1682,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = UnrefinedGoldAction(Nas.FromRaw(237), Nas.FromRaw(672), Nas.FromRaw(237)),
                 dropHandler = CustomDrop(672, 1)
             };
-            i = 674;//lever
+            i = 674;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 interaction = ChangeInteraction(Nas.FromRaw(675)),
@@ -1711,13 +1695,13 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(674, 1),
                 existAction = WireExistAction(15, 4)
             };
-            i = 74; //power source 
+            i = 74;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = PowerSourceAction(4),
                 existAction = WireExistAction(15, 4)
             };
-            i = 195;//button
+            i = 195;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 interaction = ChangeInteraction(Nas.FromRaw(196)),
@@ -1732,14 +1716,14 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(195, 1),
                 existAction = WireExistAction(15, 4)
             };
-            i = 704; //piston
+            i = 704;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbDelayMin = 0.125f,
                 disturbDelayMax = 0.125f,
                 disturbedAction = PistonAction("off", 0, 1, 0, pistonUp)
             };
-            i = 705; //piston body
+            i = 705;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbDelayMin = 0.125f,
@@ -1747,7 +1731,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = PistonAction("body", 0, 1, 0, pistonUp),
                 dropHandler = CustomDrop(704, 1)
             };
-            i = 706; //piston head
+            i = 706;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = PistonAction("head", 0, 1, 0, pistonUp)
@@ -1758,12 +1742,12 @@ namespace NotAwesomeSurvival
                 Drop pistonDrop = new(1, 1);
                 return (1 == 0) ? pistonDrop : null;
             };
-            i = 707; //piston
+            i = 707;
             blocks[i] = new(i, blocks[704])
             {
                 disturbedAction = PistonAction("off", 0, -1, 0, pistonDown)
             };
-            i = 708; //piston body
+            i = 708;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbDelayMin = 0.125f,
@@ -1771,7 +1755,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = PistonAction("body", 0, -1, 0, pistonDown),
                 dropHandler = CustomDrop(704, 1)
             };
-            i = 709; //piston head
+            i = 709;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = PistonAction("head", 0, -1, 0, pistonDown)
@@ -1782,14 +1766,14 @@ namespace NotAwesomeSurvival
                 Drop pistonDrop = new(1, 1);
                 return (1 == 0) ? pistonDrop : null;
             };
-            i = 678; //Spiston
+            i = 678;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbDelayMin = 0.125f,
                 disturbDelayMax = 0.125f,
                 disturbedAction = StickyPistonAction("off", 0, 1, 0, stickyPistonUp)
             };
-            i = 679; //Spiston body
+            i = 679;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbDelayMin = 0.125f,
@@ -1797,7 +1781,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = StickyPistonAction("body", 0, 1, 0, stickyPistonUp),
                 dropHandler = CustomDrop(678, 1)
             };
-            i = 680; //Spiston head
+            i = 680;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = StickyPistonAction("head", 0, 1, 0, stickyPistonUp)
@@ -1808,12 +1792,12 @@ namespace NotAwesomeSurvival
                 Drop pistonDrop = new(1, 1);
                 return (1 == 0) ? pistonDrop : null;
             };
-            i = 710; //Spiston
+            i = 710;
             blocks[i] = new(i, blocks[678])
             {
                 disturbedAction = StickyPistonAction("off", 0, -1, 0, stickyPistonDown)
             };
-            i = 711; //Spiston body
+            i = 711;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbDelayMin = 0.125f,
@@ -1821,7 +1805,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = StickyPistonAction("body", 0, -1, 0, stickyPistonDown),
                 dropHandler = CustomDrop(678, 1)
             };
-            i = 712; //Spiston head
+            i = 712;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = StickyPistonAction("head", 0, -1, 0, stickyPistonDown)
@@ -1840,23 +1824,23 @@ namespace NotAwesomeSurvival
             DefinePiston(404, stickyPistonEast, "x", -1, 678, true);
             DefinePiston(407, stickyPistonSouth, "z", -1, 678, true);
             DefinePiston(410, stickyPistonWest, "x", 1, 678, true);
-            i = 609; //Beacon
+            i = 609;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 existAction = BeaconInteractAction()
             };
-            i = 445; //Beacon
+            i = 445;
             blocks[i] = new(i, blocks[1])
             {
                 existAction = BeaconInteractAction(),
                 durability = DefaultDurabilities[(int)Material.Metal]
             };
-            i = 612; //Bed beacon
+            i = 612;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 existAction = BedBeaconAction()
             };
-            i = 550; //wiring
+            i = 550;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 existAction = WireExistAction(0, 1),
@@ -1874,7 +1858,7 @@ namespace NotAwesomeSurvival
                 existAction = WireExistAction(0, 2),
                 disturbedAction = WireAction(wireSetActive, wireSetInactive, 2, Nas.FromRaw(552))
             };
-            i = 682; //wiring
+            i = 682;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = WireAction(wireSetActive, wireSetInactive, 1, Nas.FromRaw(682)),
@@ -1891,7 +1875,7 @@ namespace NotAwesomeSurvival
             {
                 disturbedAction = WireAction(wireSetActive, wireSetInactive, 2, Nas.FromRaw(684))
             };
-            i = 732; //fixed wiring
+            i = 732;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 existAction = WireExistAction(0, 12),
@@ -1909,7 +1893,7 @@ namespace NotAwesomeSurvival
                 existAction = WireExistAction(0, 13),
                 disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 2, Nas.FromRaw(734))
             };
-            i++;  // powered fixedf
+            i++;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 1, Nas.FromRaw(735)),
@@ -1926,7 +1910,7 @@ namespace NotAwesomeSurvival
             {
                 disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 2, Nas.FromRaw(737))
             };
-            i = 172; // repeater
+            i = 172;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 existAction = WireExistAction(0, 5),
@@ -1974,7 +1958,7 @@ namespace NotAwesomeSurvival
                 disturbDelayMax = 0f,
                 disturbedAction = RepeaterAction(10, Nas.FromRaw(177))
             };
-            i = 613; //yes this too
+            i = 613;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 existAction = WireBreakAction(),
@@ -2023,7 +2007,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = RepeaterAction(10, Nas.FromRaw(618)),
                 dropHandler = CustomDrop(172, 1)
             };
-            i = 610; //pressure plates
+            i = 610;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
             {
                 existAction = WireExistAction(0, 4),
@@ -2038,7 +2022,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = PressurePlateAction(),
                 dropHandler = CustomDrop(610, 1)
             };
-            i = 415; //observers
+            i = 415;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
             {
                 existAction = WireExistAction(0, 9),
@@ -2140,14 +2124,14 @@ namespace NotAwesomeSurvival
                 disturbedAction = ObserverDeactivateAction(6),
                 dropHandler = CustomDrop(415, 1)
             };
-            i = 427; //Sponge
+            i = 427;
             blocks[i] = new(i, Material.Leaves)
             {
                 disturbedAction = SpongeAction()
             };
             i++;
             blocks[i] = new(i, Material.Leaves);
-            i = 429; //deepslate
+            i = 429;
             blocks[i] = new(i, Material.Stone, 24, 1)
             {
                 dropHandler = CustomDrop(430, 1)
@@ -2173,7 +2157,7 @@ namespace NotAwesomeSurvival
             blocks[i] = new(i, Material.Stone, 24, 1);
             i++;
             blocks[i] = new(i, blocks[437]);
-            i = 439; //dispenser
+            i = 439;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
             {
                 existAction = ContainerExistAction(),
@@ -2244,6 +2228,6 @@ namespace NotAwesomeSurvival
                 }
             };
         }
-    } //class NasBlock
+    }
 }
 #endif

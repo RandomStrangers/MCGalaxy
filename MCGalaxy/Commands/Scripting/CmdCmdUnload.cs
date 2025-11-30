@@ -16,7 +16,6 @@
     permissions and limitations under the Licenses.
 */
 using MCGalaxy.Scripting;
-
 namespace MCGalaxy.Commands.Scripting
 {
     public sealed class CmdCmdUnload : Command2
@@ -25,22 +24,23 @@ namespace MCGalaxy.Commands.Scripting
         public override string type { get { return CommandTypes.Other; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Owner; } }
         public override bool MessageBlockRestricted { get { return true; } }
-
         public override void Use(Player p, string cmdName, CommandData data)
         {
-            if (cmdName.Length == 0) { Help(p); return; }
-
+            if (cmdName.Length == 0)
+            {
+                Help(p); 
+                return; 
+            }
             string cmdArgs = "";
             Search(ref cmdName, ref cmdArgs);
             Command cmd = Find(cmdName);
-
             if (cmd == null)
             {
-                p.Message("\"{0}\" is not a valid or loaded command.", cmdName); return;
+                p.Message("\"{0}\" is not a valid or loaded command.", cmdName); 
+                return;
             }
             ScriptingOperations.UnloadCommand(p, cmd);
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/CmdUnload [command]");

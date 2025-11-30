@@ -19,44 +19,41 @@
  */
 #if !MCG_STANDALONE
 using System.IO;
-
 namespace MCGalaxy.Modules.Compiling
 {
     public static class CompilerOperations
     {
         public static ICompiler GetCompiler(Player p, string name)
         {
-            if (name.Length == 0) return ICompiler.Compilers[0];
-
+            if (name.Length == 0)
+            {
+                return ICompiler.Compilers[0];
+            }
             foreach (ICompiler comp in ICompiler.Compilers)
             {
-                if (comp.ShortName.CaselessEq(name)) return comp;
+                if (comp.ShortName.CaselessEq(name))
+                {
+                    return comp;
+                }
             }
-
             p.Message("&WUnknown language \"{0}\"", name);
             p.Message("&HAvailable languages: &f{0}",
                       ICompiler.Compilers.Join(c => c.ShortName + " (" + c.FullName + ")"));
             return null;
         }
-
-
         public static bool CreateCommand(Player p, string name, ICompiler compiler)
         {
-            string path = compiler.CommandPath(name);
-            string source = compiler.GenExampleCommand(name);
-
+            string path = compiler.CommandPath(name),
+                source = compiler.GenExampleCommand(name);
             return CreateFile(p, name, path, "command &fCmd", source);
         }
-
         public static bool CreatePlugin(Player p, string name, ICompiler compiler)
         {
-            string path = compiler.PluginPath(name);
-            string creator = p.IsSuper ? Server.Config.Name : p.truename;
-            string source = compiler.GenExamplePlugin(name, creator);
-
+            string path = compiler.PluginPath(name),
+                creator = p.IsSuper ? Server.Config.Name : p.truename,
+                source = compiler.GenExamplePlugin(name, creator);
             return CreateFile(p, name, path, "plugin &f", source);
         }
-
         static bool CreateFile(Player p, string name, string path, string type, string source)
         {
             if (File.Exists(path))
@@ -64,14 +61,10 @@ namespace MCGalaxy.Modules.Compiling
                 p.Message("File {0} already exists. Choose another name.", path);
                 return false;
             }
-
-            //File.WriteAllText(path, source);
             FileIO.TryWriteAllText(path, source);
             p.Message("Successfully saved example {2}{0} &Sto {1}", name, path, type);
             return true;
         }
-
-
         /// <summary> Attempts to compile the given source code files into a .dll </summary>
         /// <param name="p"> Player to send messages to </param>
         /// <param name="type"> Type of files being compiled (e.g. Plugin, Command) </param>
@@ -82,12 +75,13 @@ namespace MCGalaxy.Modules.Compiling
         {
             foreach (string path in srcs)
             {
-                if (File.Exists(path)) continue;
-
+                if (File.Exists(path))
+                {
+                    continue;
+                }
                 p.Message("File &9{0} &Snot found.", path);
                 return false;
             }
-
             ICompilerErrors errors = compiler.Compile(srcs, dst, true);
             if (!errors.HasErrors)
             {
@@ -95,12 +89,9 @@ namespace MCGalaxy.Modules.Compiling
                         type, srcs.Join(file => Path.GetFileName(file)));
                 return true;
             }
-
             SummariseErrors(errors, srcs, p);
             return false;
         }
-
-        const int MAX_LOG = 5;
         static void SummariseErrors(ICompilerErrors errors, string[] srcs, Player p)
         {
             int logged = 0;
@@ -109,9 +100,11 @@ namespace MCGalaxy.Modules.Compiling
                 p.Message("&W{1} - {0}", err.ErrorText,
                           ICompiler.DescribeError(err, srcs, " #" + err.ErrorNumber));
                 logged++;
-                if (logged >= MAX_LOG) break;
+                if (logged >= 5)
+                {
+                    break;
+                }
             }
-
             if (logged < errors.Count)
             {
                 p.Message(" &W.. and {0} more", errors.Count - logged);

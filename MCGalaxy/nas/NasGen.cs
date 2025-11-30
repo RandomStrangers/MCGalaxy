@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using LibNoise;
 using MCGalaxy;
 using MCGalaxy.Generator;
@@ -72,9 +72,6 @@ namespace NotAwesomeSurvival
             }
             return value;
         }
-        /// <summary>
-        /// Returns true if seed and offsets were succesfully found
-        /// </summary>
         public static bool GetSeedAndChunkOffset(string mapName, ref string seed, ref int chunkOffsetX, ref int chunkOffsetZ)
         {
             string[] bits = mapName.Split('_');
@@ -104,7 +101,7 @@ namespace NotAwesomeSurvival
         }
         public static bool Gen(Player p, Level lvl, string seed)
         {
-            if (File.Exists("levels/" + lvl.name + ".lvl") || File.Exists("levels/" + lvl.name + ".mcf"))
+            if (File.Exists("levels/" + lvl.name + ".lvl") || File.Exists("levels/" + lvl.name + ".mcf") || File.Exists("levels/" + lvl.name + ".map"))
             {
                 p.Message("Something weird happened, try going into the map again");
                 return false;
@@ -211,7 +208,6 @@ namespace NotAwesomeSurvival
                 {
                     for (double x = 0; x < lvl.Width; ++x)
                     {
-                        //divide by more for bigger scale
                         double scale = 150,
                             xVal = (x + offsetX) / scale,
                             zVal = (z + offsetZ) / scale;
@@ -227,7 +223,6 @@ namespace NotAwesomeSurvival
             public void GenTerrain()
             {
                 p.Message("Generating terrain");
-                //more frequency = smaller map scale
                 adjNoise.Frequency = 0.75;
                 adjNoise.OctaveCount = 5;
                 DateTime dateStartLayer = DateTime.UtcNow;
@@ -262,13 +257,12 @@ namespace NotAwesomeSurvival
                                     threshDiv = 1;
                                 }
                             }
-                            double averageLandHeightAboveSeaLevel = biome == -1 ? 10 : 1,/* - (6*tallRandom);*/
+                            double averageLandHeightAboveSeaLevel = biome == -1 ? 10 : 1,
                                 minimumFlatness = biome == -1 ? 0 : 5,
                                 maxFlatnessAdded = biome == -1 ? 80 : 28,
-                            /*multiply by more to more strictly follow halfway under = solid, above = air*/
                                 threshold =
                                 (((y + (oceanHeight - averageLandHeightAboveSeaLevel)) / height) - 0.5)
-                                * (minimumFlatness + (maxFlatnessAdded * threshDiv)); //4.5f
+                                * (minimumFlatness + (maxFlatnessAdded * threshDiv));
                             if (threshold < -1.5)
                             {
                                 if (biome == 1)
@@ -292,7 +286,6 @@ namespace NotAwesomeSurvival
                             {
                                 continue;
                             }
-                            //divide y by less for more "layers"
                             double xVal = (x + offsetX) / 200, yVal = y / (250 + (biome == -1 ? 40 : 150 * threshDiv)), zVal = (z + offsetZ) / 200;
                             xVal *= 2;
                             yVal *= 2;
@@ -371,7 +364,6 @@ namespace NotAwesomeSurvival
                 {
                     for (ushort x = 0; x < lvl.Width; ++x)
                     {
-                        //         skip bedrock
                         for (ushort y = 1; y < lvl.Height; ++y)
                         {
                             ushort curBlock = lvl.FastGetBlock(x, y, z);
@@ -483,7 +475,7 @@ namespace NotAwesomeSurvival
                 int width = lvl.Width, height = lvl.Height, length = lvl.Length;
                 p.Message("Now creating caves");
                 adjNoise.Seed = MakeInt(seed + "cave");
-                adjNoise.Frequency = 1; //more frequency = smaller map scale
+                adjNoise.Frequency = 1;
                 adjNoise.OctaveCount = 2;
                 DateTime dateStartLayer = DateTime.UtcNow;
                 for (double y = 0; y < height; y++)
@@ -512,7 +504,6 @@ namespace NotAwesomeSurvival
                             {
                                 continue;
                             }
-                            //divide y by less for more "layers"
                             double xVal = (x + offsetX) / 15, yVal = y / 7, zVal = (z + offsetZ) / 15;
                             xVal += 1;
                             yVal += 1;
@@ -549,7 +540,7 @@ namespace NotAwesomeSurvival
                 int width = lvl.Width, height = lvl.Height, length = lvl.Length;
                 p.Message("Now creating random patches");
                 adjNoise.Seed = MakeInt(seed + "random");
-                adjNoise.Frequency = 1; //more frequency = smaller map scale
+                adjNoise.Frequency = 1;
                 adjNoise.OctaveCount = 2;
                 adjNoise.Persistence = 0.25;
                 DateTime dateStartLayer = DateTime.UtcNow;
@@ -570,7 +561,6 @@ namespace NotAwesomeSurvival
                             {
                                 continue;
                             }
-                            //divide y by less for more "layers"
                             double xVal = (x + offsetX) / 35, yVal = y / 35, zVal = (z + offsetZ) / 35;
                             xVal += 1;
                             yVal += 1;
@@ -633,7 +623,7 @@ namespace NotAwesomeSurvival
                     {
                         for (int x = 0; x < width; ++x)
                         {
-                            topSoil = 256 | 129; //Block.Grass;
+                            topSoil = 256 | 129;
                             if (biome == 1)
                             {
                                 topSoil = 12;
@@ -665,7 +655,6 @@ namespace NotAwesomeSurvival
                                 {
                                     if (r.Next(0, 10) == 0)
                                     {
-                                        //tallgrass 40 wettallgrass Block.Extended|130
                                         lvl.SetBlock((ushort)x, (ushort)(y + 1), (ushort)z, 256 | 130);
                                     }
                                     else
@@ -1294,24 +1283,24 @@ namespace NotAwesomeSurvival
                 level.SetBlock((ushort)x, (ushort)y, (ushort)z, Nas.FromRaw(647));
                 NasBlock.Entity bEntity = new()
                 {
-                    drop = new(41, rng.Next(1, 5)) //gold
+                    drop = new(41, rng.Next(1, 5))
                 };
                 bEntity.drop.blockStacks.Add(new(729, rng.Next(0, 3)));
                 if (rng.Next(2) == 0)
                 {
-                    bEntity.drop.blockStacks.Add(new(631, rng.Next(1, 3))); //dia
+                    bEntity.drop.blockStacks.Add(new(631, rng.Next(1, 3)));
                 }
                 if (rng.Next(4) == 0)
                 {
-                    bEntity.drop.blockStacks.Add(new(650)); //ems
+                    bEntity.drop.blockStacks.Add(new(650));
                 }
                 if (rng.Next(3) == 0)
                 {
-                    bEntity.drop.blockStacks.Add(new(478)); //gapple
+                    bEntity.drop.blockStacks.Add(new(478));
                 }
                 if (rng.Next(3) == 0)
                 {
-                    bEntity.drop.blockStacks.Add(new(204)); //monitor
+                    bEntity.drop.blockStacks.Add(new(204));
                 }
                 if (nsl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {

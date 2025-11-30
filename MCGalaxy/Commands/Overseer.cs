@@ -243,7 +243,7 @@ namespace MCGalaxy.Commands.World
                 GotoExact(p, map); return;
             }
 
-            if (NumberUtils.TryParseInt32(message, out int mapNumber))
+            if (NumberUtils.TryParseInt32(message, out _))
             {
                 //If it's a number, use exact goto logic like before
                 GotoExact(p, map); return;

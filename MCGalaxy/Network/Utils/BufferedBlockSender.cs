@@ -91,8 +91,9 @@ namespace MCGalaxy.Network
 
         void SendPlayer()
         {
-            byte[] bulk = null, normal = null, classic = null, ext = null, extBulk = null;
-            byte[] packet = MakePacket(player, ref bulk, ref normal,
+            byte[] bulk = null, normal = null, 
+                classic = null, ext = null, extBulk = null,
+                packet = MakePacket(player, ref bulk, ref normal,
                                        ref classic, ref ext, ref extBulk);
             player.Socket.Send(packet, SendFlags.LowPriority);
         }
@@ -155,8 +156,10 @@ namespace MCGalaxy.Network
             for (int i = 0, j = 2; i < count; i++)
             {
                 int index = indices[i];
-                data[j++] = (byte)(index >> 24); data[j++] = (byte)(index >> 16);
-                data[j++] = (byte)(index >> 8); data[j++] = (byte)index;
+                data[j++] = (byte)(index >> 24); 
+                data[j++] = (byte)(index >> 16);
+                data[j++] = (byte)(index >> 8); 
+                data[j++] = (byte)index;
             }
 
             for (int i = 0, j = 2 + 256 * sizeof(int); i < count; i++)
@@ -181,15 +184,18 @@ namespace MCGalaxy.Network
             byte[] data = new byte[count * 9];
             for (int i = 0, j = 0; i < count; i++)
             {
-                int index = indices[i];
-                int x = index % level.Width;
-                int y = index / level.Width / level.Length;
-                int z = index / level.Width % level.Length;
+                int index = indices[i],
+                    x = index % level.Width,
+                    y = index / level.Width / level.Length,
+                    z = index / level.Width % level.Length;
 
                 data[j++] = Opcode.SetBlock;
-                data[j++] = (byte)(x >> 8); data[j++] = (byte)x;
-                data[j++] = (byte)(y >> 8); data[j++] = (byte)y;
-                data[j++] = (byte)(z >> 8); data[j++] = (byte)z;
+                data[j++] = (byte)(x >> 8); 
+                data[j++] = (byte)x;
+                data[j++] = (byte)(y >> 8); 
+                data[j++] = (byte)y;
+                data[j++] = (byte)(z >> 8); 
+                data[j++] = (byte)z;
                 ushort raw = Block.ToRaw(blocks[i]);
                 data[j++] = (byte)(raw >> 8);
                 data[j++] = (byte)raw;
@@ -207,8 +213,10 @@ namespace MCGalaxy.Network
             for (int i = 0, j = 2; i < count; i++)
             {
                 int index = indices[i];
-                data[j++] = (byte)(index >> 24); data[j++] = (byte)(index >> 16);
-                data[j++] = (byte)(index >> 8); data[j++] = (byte)index;
+                data[j++] = (byte)(index >> 24); 
+                data[j++] = (byte)(index >> 16);
+                data[j++] = (byte)(index >> 8);
+                data[j++] = (byte)index;
             }
             for (int i = 0, j = 2 + 256 * sizeof(int); i < count; i++)
             {
@@ -227,15 +235,18 @@ namespace MCGalaxy.Network
             byte[] data = new byte[count * 8];
             for (int i = 0, j = 0; i < count; i++)
             {
-                int index = indices[i];
-                int x = index % level.Width;
-                int y = index / level.Width / level.Length;
-                int z = index / level.Width % level.Length;
+                int index = indices[i],
+                    x = index % level.Width,
+                    y = index / level.Width / level.Length,
+                    z = index / level.Width % level.Length;
 
                 data[j++] = Opcode.SetBlock;
-                data[j++] = (byte)(x >> 8); data[j++] = (byte)x;
-                data[j++] = (byte)(y >> 8); data[j++] = (byte)y;
-                data[j++] = (byte)(z >> 8); data[j++] = (byte)z;
+                data[j++] = (byte)(x >> 8); 
+                data[j++] = (byte)x;
+                data[j++] = (byte)(y >> 8);
+                data[j++] = (byte)y;
+                data[j++] = (byte)(z >> 8); 
+                data[j++] = (byte)z;
 #if TEN_BIT_BLOCKS
                 ushort block = blocks[i];
                 data[j++] = block <= 511 ? (byte)block : level.GetFallback(block);
@@ -251,15 +262,18 @@ namespace MCGalaxy.Network
             byte[] data = new byte[count * 8];
             for (int i = 0, j = 0; i < count; i++)
             {
-                int index = indices[i];
-                int x = index % level.Width;
-                int y = index / level.Width / level.Length;
-                int z = index / level.Width % level.Length;
+                int index = indices[i],
+                    x = index % level.Width,
+                    y = index / level.Width / level.Length,
+                    z = index / level.Width % level.Length;
 
                 data[j++] = Opcode.SetBlock;
-                data[j++] = (byte)(x >> 8); data[j++] = (byte)x;
-                data[j++] = (byte)(y >> 8); data[j++] = (byte)y;
-                data[j++] = (byte)(z >> 8); data[j++] = (byte)z;
+                data[j++] = (byte)(x >> 8); 
+                data[j++] = (byte)x;
+                data[j++] = (byte)(y >> 8); 
+                data[j++] = (byte)y;
+                data[j++] = (byte)(z >> 8); 
+                data[j++] = (byte)z;
                 data[j++] = fallback[level.GetFallback(blocks[i])];
             }
             return data;

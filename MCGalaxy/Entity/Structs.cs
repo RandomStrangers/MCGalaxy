@@ -32,7 +32,7 @@ namespace MCGalaxy
         /// <summary> Z fixed-point location in the world. </summary>
         public int Z;
 
-        public Vec3F32 ToVec3F32() { return new Vec3F32(X / 32.0f, Y / 32.0f, Z / 32.0f); }
+        public readonly Vec3F32 ToVec3F32() { return new Vec3F32(X / 32.0f, Y / 32.0f, Z / 32.0f); }
 
 
         public Position(int x, int y, int z) { X = x; Y = y; Z = z; }
@@ -44,29 +44,29 @@ namespace MCGalaxy
         }
 
         /// <summary> World/block coordinate of this position. </summary>
-        public Vec3S32 BlockCoords { get { return new Vec3S32(X >> 5, Y >> 5, Z >> 5); } }
+        public readonly Vec3S32 BlockCoords { get { return new Vec3S32(X >> 5, Y >> 5, Z >> 5); } }
 
         /// <summary> World/block coordinate of this position. </summary>
-        public Vec3S32 FeetBlockCoords { get { return new Vec3S32(X >> 5, (Y - Entities.CharacterHeight) >> 5, Z >> 5); } }
+        public readonly Vec3S32 FeetBlockCoords { get { return new Vec3S32(X >> 5, (Y - Entities.CharacterHeight) >> 5, Z >> 5); } }
 
         /// <summary> X block coordinate of this position. </summary>
-        public int BlockX { get { return X >> 5; } }
+        public readonly int BlockX { get { return X >> 5; } }
 
         /// <summary> Y block coordinate of this position. </summary>
-        public int BlockY { get { return Y >> 5; } }
+        public readonly int BlockY { get { return Y >> 5; } }
 
         /// <summary> Z block coordinate of this position. </summary>
-        public int BlockZ { get { return Z >> 5; } }
+        public readonly int BlockZ { get { return Z >> 5; } }
 
 
-        public override bool Equals(object obj) { return (obj is Position position) && Equals(position); }
+        public override readonly bool Equals(object obj) { return (obj is Position position) && Equals(position); }
 
-        public bool Equals(Position other)
+        public readonly bool Equals(Position other)
         {
             return X == other.X && Y == other.Y && Z == other.Z;
         }
 
-        public override int GetHashCode()
+        public override readonly int GetHashCode()
         {
             return 1000000007 * X + 1000000009 * Y + 1000000021 * Z;
         }
@@ -77,7 +77,7 @@ namespace MCGalaxy
 
 
         const long mask = 0x1FFFFF;
-        internal long Pack()
+        internal readonly long Pack()
         {
             return (X & mask) | ((Y & mask) << 21) | ((Z & mask) << 42);
         }
@@ -133,7 +133,7 @@ namespace MCGalaxy
         }
 
 
-        internal uint Pack()
+        internal readonly uint Pack()
         {
             return (uint)(RotX | (RotY << 8) | (RotZ << 16) | (HeadX << 24));
         }

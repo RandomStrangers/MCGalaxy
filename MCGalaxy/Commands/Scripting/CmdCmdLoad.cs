@@ -16,7 +16,6 @@
     permissions and limitations under the Licenses.
 */
 using MCGalaxy.Scripting;
-
 namespace MCGalaxy.Commands.Scripting
 {
     public sealed class CmdCmdLoad : Command2
@@ -25,16 +24,20 @@ namespace MCGalaxy.Commands.Scripting
         public override string type { get { return CommandTypes.Other; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Owner; } }
         public override bool MessageBlockRestricted { get { return true; } }
-
         public override void Use(Player p, string cmdName, CommandData data)
         {
-            if (cmdName.Length == 0) { Help(p); return; }
-            if (!Formatter.ValidFilename(p, cmdName)) return;
-
+            if (cmdName.Length == 0) 
+            { 
+                Help(p); 
+                return; 
+            }
+            if (!Formatter.ValidFilename(p, cmdName))
+            {
+                return;
+            }
             string path = IScripting.CommandPath(cmdName);
             ScriptingOperations.LoadCommands(p, path);
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/CmdLoad [command name]");

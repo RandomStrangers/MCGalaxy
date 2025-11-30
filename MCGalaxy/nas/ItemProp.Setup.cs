@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using System.Collections.Generic;
 namespace NotAwesomeSurvival
 {

@@ -18,7 +18,6 @@
 using MCGalaxy.Config;
 using MCGalaxy.Events.ServerEvents;
 using System;
-//using System.IO;
 using System.Net;
 
 namespace MCGalaxy.Network
@@ -113,7 +112,6 @@ namespace MCGalaxy.Network
         {
             text = Truncate(text);
             Server.UpdateUrl(text);
-            //File.WriteAllText("text/externalurl.txt", text);
             FileIO.TryWriteAllText("text/externalurl.txt", text);
 
             Logger.Log(LogType.SystemActivity, "Server URL found: " + text);

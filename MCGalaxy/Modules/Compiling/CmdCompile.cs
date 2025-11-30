@@ -19,7 +19,6 @@
 using MCGalaxy.Commands;
 using MCGalaxy.Scripting;
 using System.IO;
-
 namespace MCGalaxy.Modules.Compiling
 {
     class CmdCompile : Command2
@@ -32,35 +31,36 @@ namespace MCGalaxy.Modules.Compiling
             get { return new[] { new CommandAlias("PCompile", "plugin") }; }
         }
         public override bool MessageBlockRestricted { get { return true; } }
-
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
             bool plugin = args[0].CaselessEq("plugin");
             string name, lang;
-
             if (plugin)
             {
-                // compile plugin [name] <language>
                 name = args.Length > 1 ? args[1] : "";
                 lang = args.Length > 2 ? args[2] : "";
             }
             else
             {
-                // compile [name] <language>
                 name = args[0];
                 lang = args.Length > 1 ? args[1] : "";
             }
-
-            if (name.Length == 0) { Help(p); return; }
-            if (!Formatter.ValidFilename(p, name)) return;
-
+            if (name.Length == 0) 
+            { 
+                Help(p); 
+                return; 
+            }
+            if (!Formatter.ValidFilename(p, name))
+            {
+                return;
+            }
             ICompiler compiler = CompilerOperations.GetCompiler(p, lang);
-            if (compiler == null) return;
-
-            // either "source" or "source1,source2,source3"
+            if (compiler == null)
+            {
+                return;
+            }
             string[] paths = name.SplitComma();
-
             if (plugin)
             {
                 CompilePlugin(p, paths, compiler);
@@ -70,47 +70,41 @@ namespace MCGalaxy.Modules.Compiling
                 CompileCommand(p, paths, compiler);
             }
         }
-
         protected virtual void CompilePlugin(Player p, string[] paths, ICompiler compiler)
         {
-            string pln = paths[0];
-            string dstPath = IScripting.PluginPath(pln);
-
+            string pln = paths[0],
+                dstPath = IScripting.PluginPath(pln);
             for (int i = 0; i < paths.Length; i++)
             {
                 paths[i] = compiler.PluginPath(paths[i]);
             }
             paths = TryDirectory(ICompiler.PLUGINS_SOURCE_DIR, pln, paths, compiler);
-
             CompilerOperations.Compile(p, compiler, "Plugin", paths, dstPath);
         }
-
         protected virtual void CompileCommand(Player p, string[] paths, ICompiler compiler)
         {
-            string cmd = paths[0];
-            string dstPath = IScripting.CommandPath(cmd);
-
+            string cmd = paths[0],
+                dstPath = IScripting.CommandPath(cmd);
             for (int i = 0; i < paths.Length; i++)
             {
                 paths[i] = compiler.CommandPath(paths[i]);
             }
             paths = TryDirectory(ICompiler.COMMANDS_SOURCE_DIR, cmd, paths, compiler);
-
             CompilerOperations.Compile(p, compiler, "Command", paths, dstPath);
         }
-
-        // If first source file doesn't exist, try treating it as a directory instead
         string[] TryDirectory(string root, string name, string[] srcPaths, ICompiler compiler)
         {
-            if (File.Exists(srcPaths[0])) return srcPaths;
-
+            if (File.Exists(srcPaths[0]))
+            {
+                return srcPaths;
+            }
             string dir = Path.Combine(root, name);
-            if (!Directory.Exists(dir)) return srcPaths;
-
-            //return Directory.GetFiles(dir, "*" + compiler.FileExtension);
+            if (!Directory.Exists(dir))
+            {
+                return srcPaths;
+            }
             return FileIO.TryGetFiles(dir, "*" + compiler.FileExtension);
         }
-
         public override void Help(Player p)
         {
             ICompiler compiler = ICompiler.Compilers[0];

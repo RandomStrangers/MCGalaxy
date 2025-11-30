@@ -1,6 +1,5 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
-using MCGalaxy.DB;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
@@ -51,7 +50,6 @@ namespace NotAwesomeSurvival
             np.nl = NasLevel.Get(p.level.name);
             np.SpawnPlayer(p.level, ref pos, ref yaw, ref pitch);
         }
-        /// <summary> Converts the given block ID into a raw block ID that can be sent to this player </summary>
         public ushort ConvertBlock(ushort block)
         {
             ushort raw;
@@ -62,7 +60,6 @@ namespace NotAwesomeSurvival
             else
             {
                 raw = Nas.Convert(block);
-                // show invalid physics blocks as Orange
                 if (raw >= 66)
                 {
                     raw = 22;
@@ -72,8 +69,6 @@ namespace NotAwesomeSurvival
             {
                 raw = p.level.GetFallback(block);
             }
-            // Check if a custom block replaced a core block
-            //  If so, assume fallback is the better block to display
             if (!p.Session.hasBlockDefs && raw < 66)
             {
                 BlockDefinition def = p.level.CustomBlockDefs[raw];
@@ -106,7 +101,7 @@ namespace NotAwesomeSurvival
             if (!NasLevel.IsNasLevel(level))
             {
                 return;
-            } //not a nas map
+            }
             CanDoStuffBasedOnPosition = false;
             inventory.Setup();
             if (isDead)
@@ -170,13 +165,13 @@ namespace NotAwesomeSurvival
                         if (temp != 0 && !nl.blockEntities.ContainsKey(orX + " " + (orY + 1) + " " + orZ))
                         {
                             nl.SetBlock(orX, orY + 1, orZ, 0);
-                            nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, BlockDBFlags.Drawn, temp, 0);
+                            nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, 1 << 2, temp, 0);
                         }
                         temp = nl.GetBlock(orX, orY, orZ);
                         if (temp != Nas.FromRaw(457) && !nl.blockEntities.ContainsKey(orX + " " + orY + " " + orZ))
                         {
                             nl.SetBlock(orX, orY, orZ, Nas.FromRaw(457));
-                            nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, BlockDBFlags.Drawn, temp, Nas.FromRaw(457));
+                            nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, 1 << 2, temp, Nas.FromRaw(457));
                         }
                         placePortal = false;
                     }
@@ -197,7 +192,7 @@ namespace NotAwesomeSurvival
             if (NasBlock.Get(Collision.ConvertToClientushort(oldBlock)).collideAction != NasBlock.DefaultSolidCollideAction())
             {
                 nl.SetBlock(x, y, z, block);
-                nl.lvl.BlockDB.Cache.Add(p, (ushort)x, (ushort)y, (ushort)z, BlockDBFlags.Drawn, oldBlock, block);
+                nl.lvl.BlockDB.Cache.Add(p, (ushort)x, (ushort)y, (ushort)z, 1 << 2, oldBlock, block);
             }
         }
         public void SetModel()
@@ -217,7 +212,7 @@ namespace NotAwesomeSurvival
             {
                 SetModel();
             }
-            spawnPos = new Position(location.X, location.Y, location.Z);
+            spawnPos = new(location.X, location.Y, location.Z);
             yaw = this.yaw;
             pitch = this.pitch;
             Log("Teleporting {0}!", p.truename);
@@ -363,7 +358,10 @@ namespace NotAwesomeSurvival
             atBorder = true;
             int chunkOffsetX = 0, chunkOffsetZ = 0;
             string seed = "DEFAULT";
-            if (!NasGen.GetSeedAndChunkOffset(p.level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ)) { return false; }
+            if (!NasGen.GetSeedAndChunkOffset(p.level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ)) 
+            { 
+                return false; 
+            }
             string mapName;
             mapName = map;
             NasGen.GetSeedAndChunkOffset(map, ref seed, ref chunkOffsetX, ref chunkOffsetZ);
@@ -446,7 +444,6 @@ namespace NotAwesomeSurvival
             }
             public void CalcNewPos()
             {
-                //* 32 because its in player units
                 int xOffset = chunkOffsetX * NasGen.mapWideness * 32,
                     zOffset = chunkOffsetZ * NasGen.mapWideness * 32;
                 posBeforeMapChange.X -= xOffset;

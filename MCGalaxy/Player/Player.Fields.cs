@@ -24,10 +24,6 @@ using MCGalaxy.Maths;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using MCGalaxy.Undo;
-#if NAS
-using Newtonsoft.Json;
-#endif
-
 
 namespace MCGalaxy
 {
@@ -50,13 +46,8 @@ namespace MCGalaxy
         /// <remarks> Use 'truename' for displaying/logging, use 'name' for storing data </remarks>
         public string truename;
         /// <summary> The underlying socket for sending/receiving raw data </summary>
-#if NAS
-        [JsonIgnore] public INetSocket Socket;
-        [JsonIgnore] public IGameSession Session;
-#else
         public INetSocket Socket;
         public IGameSession Session;
-#endif
         public EntityList EntityList;
         public DateTime LastAction, AFKCooldown;
         public bool IsAfk, AutoAfk;
@@ -77,13 +68,8 @@ namespace MCGalaxy
         internal List<Pronouns> pronounsList = new() { Pronouns.Default };
 
         public int warn;
-#if NAS
-        [JsonIgnore] public IPAddress IP;
-        [JsonIgnore] public string ip;
-#else
         public IPAddress IP;
         public string ip;
-#endif
         public string color;
         public Group group;
         public LevelPermission hideRank = LevelPermission.Banned;

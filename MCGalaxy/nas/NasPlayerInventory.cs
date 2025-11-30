@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Blocks;
 using MCGalaxy.Network;
@@ -42,15 +42,13 @@ namespace NotAwesomeSurvival
             if (!np.SetInventoryNotif)
             {
                 Log("Setting up inventory for {0}", np.p.truename);
-                np.SetInventoryNotif = true; //Prevent spamming console
+                np.SetInventoryNotif = true;
             }
-            //hide all blocks
             for (ushort clientushort = 1; clientushort <= 767; clientushort++)
             {
                 Send(Packet.BlockPermission(clientushort, false, false, true));
                 Send(Packet.SetInventoryOrder(clientushort, 0, true));
             }
-            //unhide blocks you have access to
             for (ushort clientushort = 1; clientushort <= 767; clientushort++)
             {
                 if (GetAmount(clientushort) > 0)
@@ -72,9 +70,6 @@ namespace NotAwesomeSurvival
                 Send(Packet.SetHotbar(0, i, true));
             }
         }
-        /// <summary>
-        /// Returns a drop that contains the items the player was unable to pickup due to full inventory. If the drop is null, the player fit everything.
-        /// </summary>
         public Drop GetDrop(Drop drop, bool showToNormalChat = false, bool overrideBool = false)
         {
             if (drop == null)
@@ -133,7 +128,6 @@ namespace NotAwesomeSurvival
         }
         public void SetAmount(ushort clientushort, int amount, bool displayChange = true, bool showToNormalChat = false)
         {
-            //TODO threadsafe
             blocks[clientushort] += amount;
             if (displayChange)
             {
@@ -142,19 +136,16 @@ namespace NotAwesomeSurvival
             }
             if (blocks[clientushort] > 0)
             {
-                //more than zero? unhide the block
                 UnhideBlock(clientushort);
                 return;
             }
             else
             {
-                //0 or less? hide the block
                 HideBlock(clientushort);
             }
         }
         public int GetAmount(ushort clientushort)
         {
-            //TODO threadsafe
             return blocks[clientushort];
         }
         public void DisplayHeldBlock(NasBlock nasBlock, int amountChanged = 0, bool showToNormalChat = false)

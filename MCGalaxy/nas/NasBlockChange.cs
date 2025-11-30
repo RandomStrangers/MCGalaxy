@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Blocks;
 using MCGalaxy.Events.PlayerEvents;
@@ -61,25 +61,18 @@ namespace NotAwesomeSurvival
             BreakIDKey = ClickableBlocksKey + "breakID";
         public const byte BreakEffectIDcount = 6,
             BreakMeterID = byte.MaxValue - BreakEffectIDcount;
-        public static object breakIDLocker = new();
         public static byte BreakEffectID = 255;
         public static byte GetBreakID()
         {
-            lock (breakIDLocker)
-            {
-                return BreakEffectID;
-            }
+            return BreakEffectID;
         }
         public static void SetBreakID(byte value)
         {
-            lock (breakIDLocker)
+            if (value <= byte.MaxValue - BreakEffectIDcount)
             {
-                if (value <= byte.MaxValue - BreakEffectIDcount)
-                {
-                    value = 255;
-                }
-                BreakEffectID = value;
+                value = 255;
             }
+            BreakEffectID = value;
         }
         public static void BreakBlock(NasPlayer np, ushort x, ushort y, ushort z, ushort serverushort, NasBlock nasBlock)
         {
@@ -91,9 +84,7 @@ namespace NotAwesomeSurvival
             if (here != serverushort)
             {
                 return;
-            } //don't let them break it if the block changed since we've started
-            //If there's a container and it's not empty or locked by someone else, it can't be broken
-            //COPY PASTED IN 2 PLACES
+            }
             if (nasBlock.container != null &&
                 np.nl.blockEntities.ContainsKey(x + " " + y + " " + z) &&
                 (np.nl.blockEntities[x + " " + y + " " + z].drop != null || !np.nl.blockEntities[x + " " + y + " " + z].CanAccess(np))
@@ -316,8 +307,6 @@ namespace NotAwesomeSurvival
                     NasEffect.UndefineEffect(p, BreakMeterID);
                     return;
                 }
-                //If there's a container and it's not empty or locked by someone else, it can't be broken
-                //COPY PASTED IN 2 PLACES
                 if (nasBlock.container != null &&
                     np.nl.blockEntities.ContainsKey(x + " " + y + " " + z) &&
                     (np.nl.blockEntities[x + " " + y + " " + z].drop != null || !np.nl.blockEntities[x + " " + y + " " + z].CanAccess(np))
@@ -399,7 +388,6 @@ namespace NotAwesomeSurvival
                     millisecs = 0;
                 }
                 TimeSpan breakTime = TimeSpan.FromMilliseconds(np.SearchItem("helmet").Enchant("Aqua Affinity") == 0 && np.holdingBreath ? millisecs * 8 : millisecs);
-                //lag compensation
                 if (np.lastAirClickDate != null)
                 {
                     TimeSpan sub = DateTime.UtcNow.Subtract((DateTime)np.lastAirClickDate);
@@ -418,8 +406,6 @@ namespace NotAwesomeSurvival
                     }
                 }
                 np.lastAirClickDate = null;
-                //lag compensation
-                //Unk's Tunnel: 178.62.37.103:25570
                 BreakInfo breakInfo = new()
                 {
                     np = np,
@@ -464,7 +450,6 @@ namespace NotAwesomeSurvival
                     {
                         DoOffset(def.MinZ, false, ref meterInfo.y);
                     }
-                    //blockdefinition's Y and Z bounds are swapped around
                     if (face == TargetBlockFace.AwayZ)
                     {
                         DoOffset(def.MaxY, true, ref meterInfo.z);
@@ -483,15 +468,15 @@ namespace NotAwesomeSurvival
         {
             if (positive)
             {
-                coord -= 0.5f; //pull to minimum edge
-                coord += (float)(minOrMax / 16.0f); //push to maximum edge
-                coord += 0.125f; //nudge out by offset
+                coord -= 0.5f;
+                coord += (float)(minOrMax / 16.0f);
+                coord += 0.125f;
                 return;
             }
-            coord -= 0.5f; //pull to minimum edge
-            coord += (float)(minOrMax / 16.0f); //push to minimum edge
-            coord -= 0.125f; //nudge out by offset
+            coord -= 0.5f;
+            coord += (float)(minOrMax / 16.0f);
+            coord -= 0.125f;
         }
-    } //class NasBlockChange
+    }
 }
 #endif

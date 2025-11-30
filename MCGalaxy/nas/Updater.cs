@@ -1,6 +1,5 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
-using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using System;
 using System.Net;
@@ -55,7 +54,7 @@ namespace NotAwesomeSurvival
             {
                 Setup();
             }
-            using WebClient client = HttpUtil.CreateWebClient();
+            using WebClient client = Nas.CreateWebClient();
             Latest = client.DownloadString(CurrentVersionURL);
             Version l = new(Latest), v = new(Nas.NasVersion);
             return l > v;
@@ -128,7 +127,7 @@ namespace NotAwesomeSurvival
                 {
                 }
                 Logger.Log(LogType.SystemActivity, "Downloading NAS update files");
-                WebClient client = HttpUtil.CreateWebClient();
+                WebClient client = Nas.CreateWebClient();
                 DownloadFile(client, DLL, "MCGalaxy_.update");
                 if (!Server.RunningOnMono())
                 {

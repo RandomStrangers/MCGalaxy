@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Maths;
 using System;
@@ -25,9 +25,6 @@ namespace NotAwesomeSurvival
         {
             return blocks[clientushort] ?? Default;
         }
-        /// <summary>
-        /// Leave id arg blank to use parent's name
-        /// </summary>
         public string GetName(NasPlayer np, ushort id = ushort.MaxValue)
         {
             if (id == ushort.MaxValue)
@@ -62,7 +59,6 @@ namespace NotAwesomeSurvival
         {
             return new(id);
         }
-        //value is default durability, which is considered in terms of how many "hits" it takes to break
         public enum Material
         {
             None,

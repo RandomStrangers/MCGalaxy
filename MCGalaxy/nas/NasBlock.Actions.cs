@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Maths;
 using System;
@@ -324,12 +324,6 @@ namespace NotAwesomeSurvival
         public static int LiquidInfiniteIndex = 0,
             LiquidSourceIndex = 1,
             LiquidWaterfallIndex = 2;
-        /// <summary>
-        /// Check if the given block exists within the given set.
-        /// </summary>
-        /// <returns>The index of the set that the block is at
-        /// or -1 if the block does not exist within the set.
-        /// </returns>
         public static int IsPartOfSet(ushort[] set, ushort block)
         {
             for (int i = 0; i < set.Length; i++)
@@ -341,9 +335,6 @@ namespace NotAwesomeSurvival
             }
             return -1;
         }
-        /// <summary>
-        /// returns -1 if not part of the set, spreadIndex+1 if air(or block liquids kill), otherwise the index into the set
-        /// </summary>
         public static int CanReplaceBlockAt(NasLevel nl, int x, int y, int z, ushort[] set, int spreadIndex)
         {
             ushort hereBlock = nl.GetBlock(x, y, z);
@@ -403,13 +394,10 @@ namespace NotAwesomeSurvival
                         return;
                     }
                 }
-                //Step one -- Check if we need to drain
                 if (index > LiquidSourceIndex)
                 {
-                    //it's not a source block
                     if (index == LiquidWaterfallIndex)
                     {
-                        //it's a waterfall -- see if it needs to die
                         if (IsPartOfSet(set, aboveHere[0]) == -1)
                         {
                             nl.SetBlock(x, y, z, 0);
@@ -418,7 +406,6 @@ namespace NotAwesomeSurvival
                     }
                     else
                     {
-                        //it's not a waterfall -- see if it needs to diewa
                         if (!(CanLiquidLive(nl, set, index, x + 1, y, z) ||
                             CanLiquidLive(nl, set, index, x - 1, y, z) ||
                             CanLiquidLive(nl, set, index, x, y, z + 1) ||
@@ -429,7 +416,6 @@ namespace NotAwesomeSurvival
                         }
                     }
                 }
-                //Step two -- Do the actual flooding
                 if (set == waterSet && hereBlock == set[3])
                 {
                     int borders = 0;
@@ -459,7 +445,6 @@ namespace NotAwesomeSurvival
                 int belowIndex = IsPartOfSet(set, below);
                 if (CanPhysicsKillThis(below) || belowIndex != -1)
                 {
-                    //don't override infinite source, source, or waterfall with a waterfall
                     if (!CanPhysicsKillThis(below) && belowIndex <= LiquidWaterfallIndex)
                     {
                         return;
@@ -469,7 +454,6 @@ namespace NotAwesomeSurvival
                 }
                 if (index == set.Length - 1)
                 {
-                    //it's the end of the stream -- no need to flood further
                     return;
                 }
                 int spreadIndex = (index < LiquidWaterfallIndex + 1) ? LiquidWaterfallIndex + 1 : index + 1;
@@ -546,14 +530,12 @@ namespace NotAwesomeSurvival
             zPos = zPos && !zBlockedPos;
             zNeg = zNeg && !zBlockedNeg;
             if (!(xPos || xNeg || zPos || zNeg))
-            { //no water can be spread
-                //allow any to spread that were not blocked by solid blocks before
+            {
                 xPos = !xBlockedPos;
                 xNeg = !xBlockedNeg;
                 zPos = !zBlockedPos;
                 zNeg = !zBlockedNeg;
             }
-            //make it not spread if the neighbor is taller
             xPos = xPos && neighborIndex1 > spreadIndex;
             xNeg = xNeg && neighborIndex2 > spreadIndex;
             zPos = zPos && neighborIndex3 > spreadIndex;
@@ -601,7 +583,6 @@ namespace NotAwesomeSurvival
             }
             public List<Vec3S32> GetHoles(out int distance)
             {
-                //place water in the center
                 Flood(xO, zO, true);
                 TryFlood(xO + 1, yO, zO);
                 TryFlood(xO - 1, yO, zO);
@@ -613,24 +594,20 @@ namespace NotAwesomeSurvival
             public void TryFlood(int x, int y, int z)
             {
                 int distanceFromCenter = Math.Abs(x - xO) + Math.Abs(z - zO);
-                //this spot is out of bounds? quit
                 if (distanceFromCenter > totalDistance)
                 {
                     return;
                 }
-                //this spot has been flooded already? quit
                 if (AlreadyFlooded(x, z))
                 {
                     return;
                 }
                 ushort here = nl.GetBlock(x, y, z);
-                //can't flood into this spot? quit
                 if (!(CanPhysicsKillThis(here) || IsPartOfSet(liquidSet, here) != -1))
                 {
                     return;
                 }
                 ushort below = nl.GetBlock(x, y - 1, z);
-                //if there's a hole here
                 if (CanPhysicsKillThis(below) || IsPartOfSet(liquidSet, below) != -1)
                 {
                     if (distanceFromCenter < distanceHolesWereFoundAt)
@@ -656,7 +633,6 @@ namespace NotAwesomeSurvival
                     zI = z - zO;
                 xI += totalDistance;
                 zI += totalDistance;
-                //both dimensions are the same 
                 if (
                     xI >= widthAndHeight ||
                     zI >= widthAndHeight ||
@@ -1873,7 +1849,6 @@ namespace NotAwesomeSurvival
                             {
                                 nl.blockEntities.Remove(x + " " + (y + (2 * changeY)) + " " + z);
                             }
-
                         }
                         return;
                     }
@@ -2401,7 +2376,6 @@ namespace NotAwesomeSurvival
                                 nl.SetBlock(x + xOff, y + yOff, z + zOff, 0);
                                 absorbed = true;
                             }
-
                         }
                     }
                 }

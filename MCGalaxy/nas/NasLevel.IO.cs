@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Events.LevelEvents;
 using Newtonsoft.Json;
@@ -91,7 +91,7 @@ namespace NotAwesomeSurvival
                     return nl;
                 }
                 Log("NasLevel {0} does not exist, creating a new one!", name);
-                return nl; //Never return null, results in error
+                return nl;
             }
         }
         public static void Unload(string name, NasLevel nl)

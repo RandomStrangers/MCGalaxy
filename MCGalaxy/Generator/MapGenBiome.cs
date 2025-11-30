@@ -49,7 +49,7 @@ namespace MCGalaxy.Generator
         public const string PLAINS = "Plains";
         public const string SPACE = "Space";
 
-        public void ApplyEnv(EnvConfig env)
+        public readonly void ApplyEnv(EnvConfig env)
         {
             if (CloudColor != null) env.CloudColor = CloudColor;
             if (SkyColor != null) env.SkyColor = SkyColor;
@@ -58,7 +58,7 @@ namespace MCGalaxy.Generator
             if (Border != 0) env.EdgeBlock = Border;
         }
 
-        public Tree GetTreeGen(string defaultType)
+        public readonly Tree GetTreeGen(string defaultType)
         {
             if (TreeType == null) return null;
 

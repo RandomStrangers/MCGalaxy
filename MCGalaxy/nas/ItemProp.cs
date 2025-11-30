@@ -1,4 +1,4 @@
-﻿#if NAS && TEN_BIT_BLOCKS
+#if NAS && TEN_BIT_BLOCKS
 using System.Collections.Generic;
 namespace NotAwesomeSurvival
 {
@@ -48,7 +48,6 @@ namespace NotAwesomeSurvival
             {
                 materialsEffectiveAgainst = null;
             }
-            //tier 0 is fists
             this.tier = tier;
             this.percentageOfTimeSaved = percentageOfTimeSaved;
             baseHP = 200;

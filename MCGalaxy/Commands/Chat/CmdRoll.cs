@@ -28,7 +28,7 @@ namespace MCGalaxy.Commands.Chatting
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
-            int min = 1, max = 6;
+            int min = 1, max = 6, tmp;
 
             if (args.Length > 1)
             {
@@ -40,7 +40,12 @@ namespace MCGalaxy.Commands.Chatting
                 if (!CommandParser.GetInt(p, args[0], "Max", ref max)) return;
             }
 
-            if (min > max) { int tmp = min; min = max; max = tmp; }
+            if (min > max) 
+            {
+                tmp = min; 
+                min = max; 
+                max = tmp; 
+            }
             // rand.Next(min, max) is exclusive of max, so we need to use (max + 1)
             int adjMax = max == int.MaxValue ? int.MaxValue : max + 1;
 
@@ -49,7 +54,7 @@ namespace MCGalaxy.Commands.Chatting
             int number;
             lock (rngLock)
             {
-                rng ??= new Random();
+                rng ??= new();
                 number = rng.Next(min, adjMax);
             }
 

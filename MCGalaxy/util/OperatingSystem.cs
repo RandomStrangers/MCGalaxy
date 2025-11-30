@@ -284,10 +284,12 @@ namespace MCGalaxy.Platform
                 kern = ulong.Parse(bits[3]),
                 idle = ulong.Parse(bits[4]);
             // TODO interrupt time too?
-            CPUTime all;
-            all.UserTime = user + nice;
-            all.KernelTime = kern;
-            all.IdleTime = idle;
+            CPUTime all = new()
+            {
+                UserTime = user + nice,
+                KernelTime = kern,
+                IdleTime = idle
+            };
             return all;
         }
         protected override void RestartInPlace()
@@ -322,14 +324,15 @@ namespace MCGalaxy.Platform
         // https://stackoverflow.com/questions/5329149/using-system-calls-from-c-how-do-i-get-the-utilization-of-the-cpus
         public override unsafe CPUTime MeasureAllCPUTime()
         {
-            const int CPUSTATES = 5;
-            UIntPtr* states = stackalloc UIntPtr[CPUSTATES];
-            IntPtr size = (IntPtr)(CPUSTATES * IntPtr.Size);
+            UIntPtr* states = stackalloc UIntPtr[5];
+            IntPtr size = (IntPtr)(5 * IntPtr.Size);
             sysctlbyname("kern.cp_time", states, &size, IntPtr.Zero, IntPtr.Zero);
-            CPUTime all;
-            all.UserTime = states[0].ToUInt64() + states[1].ToUInt64(); // CP_USER + CP_NICE
-            all.KernelTime = states[2].ToUInt64(); // CP_SYS
-            all.IdleTime = states[4].ToUInt64(); // CP_IDLE
+            CPUTime all = new()
+            {
+                UserTime = states[0].ToUInt64() + states[1].ToUInt64(), // CP_USER + CP_NICE
+                KernelTime = states[2].ToUInt64(), // CP_SYS
+                IdleTime = states[4].ToUInt64() // CP_IDLE
+            };
             // TODO interrupt time too?
             return all;
         }
@@ -339,14 +342,15 @@ namespace MCGalaxy.Platform
         // https://man.netbsd.org/sysctl.7
         public override unsafe CPUTime MeasureAllCPUTime()
         {
-            const int CPUSTATES = 5;
-            ulong* states = stackalloc ulong[CPUSTATES];
-            IntPtr size = (IntPtr)(CPUSTATES * sizeof(ulong));
+            ulong* states = stackalloc ulong[5];
+            IntPtr size = (IntPtr)(5 * sizeof(ulong));
             sysctlbyname("kern.cp_time", states, &size, IntPtr.Zero, IntPtr.Zero);
-            CPUTime all;
-            all.UserTime = states[0] + states[1]; // CP_USER + CP_NICE
-            all.KernelTime = states[2]; // CP_SYS
-            all.IdleTime = states[4]; // CP_IDLE
+            CPUTime all = new()
+            {
+                UserTime = states[0] + states[1], // CP_USER + CP_NICE
+                KernelTime = states[2], // CP_SYS
+                IdleTime = states[4] // CP_IDLE
+            };
             // TODO interrupt time too?
             return all;
         }
@@ -365,10 +369,12 @@ namespace MCGalaxy.Platform
             uint count = 4; // HOST_CPU_LOAD_INFO_COUNT 
             int flavor = 3; // HOST_CPU_LOAD_INFO
             host_statistics(mach_host_self(), flavor, info, ref count);
-            CPUTime all;
-            all.IdleTime = info[2]; // CPU_STATE_IDLE
-            all.UserTime = info[0] + info[3]; // CPU_STATE_USER + CPU_STATE_NICE
-            all.KernelTime = info[1]; // CPU_STATE_SYSTEM
+            CPUTime all = new()
+            {
+                IdleTime = info[2], // CPU_STATE_IDLE
+                UserTime = info[0] + info[3], // CPU_STATE_USER + CPU_STATE_NICE
+                KernelTime = info[1] // CPU_STATE_SYSTEM
+            };
             return all;
         }
         [DllImport("libc")]
