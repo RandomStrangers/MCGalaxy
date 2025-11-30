@@ -1,6 +1,6 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
 using System;
-namespace Priority_Queue
+namespace NotAwesomeSurvival
 {
     /// <summary>
     /// A helper-interface only needed to make writing unit tests a bit easier

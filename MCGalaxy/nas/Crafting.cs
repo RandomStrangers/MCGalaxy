@@ -10,7 +10,6 @@ namespace NotAwesomeSurvival
 {
     public partial class Crafting
     {
-        public static object locker = new();
         public static void ClearCraftingArea(NasLevel nl, ushort startX, ushort startY, ushort startZ, Station.Orientation ori)
         {
             bool WE = ori == Station.Orientation.WE;
@@ -91,8 +90,8 @@ namespace NotAwesomeSurvival
                 AreaInfo info = new()
                 {
                     np = np,
-                    start = new Vec3U16(startX, startY, startZ),
-                    end = new Vec3U16(endX, endY, endZ),
+                    start = new(startX, startY, startZ),
+                    end = new(endX, endY, endZ),
                     totalRounds = 16
                 };
                 info.curRound = info.totalRounds;
@@ -280,12 +279,12 @@ namespace NotAwesomeSurvival
             public Recipe(Item item) : this()
             {
                 name = item.name;
-                drop = new Drop(item);
+                drop = new(item);
             }
             public Recipe(ushort blockID, int amount) : this()
             {
                 name = blockID.ToString();
-                drop = new Drop(blockID, amount);
+                drop = new(blockID, amount);
             }
             public bool MatchesShapeless(NasBlock[,] area)
             {

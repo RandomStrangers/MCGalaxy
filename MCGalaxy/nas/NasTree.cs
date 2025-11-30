@@ -46,7 +46,6 @@ namespace NotAwesomeSurvival
                     if (broadcastChange)
                     {
                         lvl.BroadcastChange(X, Y, Z, block);
-
                     }
                 }
             });

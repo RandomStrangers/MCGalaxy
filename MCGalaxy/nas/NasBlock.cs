@@ -38,7 +38,7 @@ namespace NotAwesomeSurvival
         }
         public static string GetBlockName(NasPlayer np, ushort block)
         {
-            if (Block.IsPhysicsType(block))
+            if (Nas.IsPhysicsType(block))
             {
                 return "Physics block";
             }
@@ -60,7 +60,7 @@ namespace NotAwesomeSurvival
         }
         public static Drop DefaultDropHandler(NasPlayer np, ushort id)
         {
-            return new Drop(id);
+            return new(id);
         }
         //value is default durability, which is considered in terms of how many "hits" it takes to break
         public enum Material
@@ -84,23 +84,23 @@ namespace NotAwesomeSurvival
             alternateID;
         public List<ushort> childIDs = null;
         public Material material;
-        public int tierOfToolNeededToBreak;
+        public int tierOfToolNeededToBreak, 
+            durability,
+            resourceCost,
+            expGivenMax = 0,
+            expGivenMin = 0;
         public Type type;
-        public int durability;
-        public float damageDoneToTool;
+        public float damageDoneToTool,
+            fallDamageMultiplier = -1,
+            disturbDelayMax = 0f,
+            disturbDelayMin = 0f, 
+            beginDelayMax = 0f,
+            beginDelayMin = 0f;
         public Func<NasPlayer, ushort, Drop> dropHandler;
-        public int resourceCost;
         public Crafting.Station station;
         public Container container;
         public bool collides = true;
         public AABB bounds;
-        public float fallDamageMultiplier = -1,
-            disturbDelayMax = 0f,
-            disturbDelayMin = 0f;
-        public int expGivenMax = 0,
-            expGivenMin = 0;
-        public float beginDelayMax = 0f,
-            beginDelayMin = 0f;
         public NasBlockAction disturbedAction = null,
             instantAction = null;
         public NasBlockInteraction interaction = null;
@@ -134,7 +134,7 @@ namespace NotAwesomeSurvival
             alternateID = id;
             if (blocks[parent.parentID].childIDs == null)
             {
-                blocks[parent.parentID].childIDs = new List<ushort>();
+                blocks[parent.parentID].childIDs = new();
             }
             blocks[parent.parentID].childIDs.Add(id);
             parentID = parent.parentID;
@@ -146,11 +146,11 @@ namespace NotAwesomeSurvival
             resourceCost = parent.resourceCost;
             if (parent.station != null)
             {
-                station = new Crafting.Station(parent.station);
+                station = new(parent.station);
             }
             if (parent.container != null)
             {
-                container = new Container(parent.container);
+                container = new(parent.container);
             }
             if (parent.disturbedAction != null)
             {

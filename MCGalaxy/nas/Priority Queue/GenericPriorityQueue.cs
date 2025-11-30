@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-namespace Priority_Queue
+namespace NotAwesomeSurvival
 {
     /// <summary>
     /// A copy of StablePriorityQueue which also has generic priority-type

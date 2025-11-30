@@ -100,7 +100,7 @@ namespace NotAwesomeSurvival
             {
                 baseHP = int.MaxValue
             };
-            Item.Fist = new Item("Fist");
+            Item.Fist = new("Fist");
             ItemProp key = new("Key|f|σ", nothing, NasBlock.Material.None, 0, 0)
             {
                 baseHP = int.MaxValue

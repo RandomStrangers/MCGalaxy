@@ -74,26 +74,25 @@ namespace NotAwesomeSurvival
             Server.DoGC();
             return true;
         }
-        public static NasLevel ForceGet(string name)
-        {
-            NasLevel nl = new();
-            string fileName = GetFileName(name);
-            if (File.Exists(fileName))
-            {
-                string jsonString = FileUtils.TryReadAllText(fileName);
-                nl = JsonConvert.DeserializeObject<NasLevel>(jsonString);
-                return nl;
-            }
-            Log("NasLevel {0} does not exist, creating a new one!", name);
-            return nl;//Never return null, results in error
-        }
         public static NasLevel Get(string name)
         {
             if (all.ContainsKey(name))
             {
                 return all[name];
             }
-            return ForceGet(name); //Failsafe.
+            else
+            {
+                NasLevel nl = new();
+                string fileName = GetFileName(name);
+                if (File.Exists(fileName))
+                {
+                    string jsonString = FileUtils.TryReadAllText(fileName);
+                    nl = JsonConvert.DeserializeObject<NasLevel>(jsonString);
+                    return nl;
+                }
+                Log("NasLevel {0} does not exist, creating a new one!", name);
+                return nl; //Never return null, results in error
+            }
         }
         public static void Unload(string name, NasLevel nl)
         {

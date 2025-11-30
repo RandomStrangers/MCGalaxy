@@ -32,7 +32,7 @@ namespace NotAwesomeSurvival
                 return false;
             }
             Bitmap colorImage;
-            colorImage = new Bitmap(Nas.Path + "selectorColors.png");
+            colorImage = new(Nas.Path + "selectorColors.png");
             defaultColors = new ColorDesc[colorImage.Width];
             fullHealthColors = new ColorDesc[colorImage.Width];
             mediumHealthColors = new ColorDesc[colorImage.Width];

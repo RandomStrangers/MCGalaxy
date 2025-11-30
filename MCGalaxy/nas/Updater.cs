@@ -4,7 +4,6 @@ using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using System;
 using System.Net;
-
 namespace NotAwesomeSurvival
 {
     public static class NASUpdater

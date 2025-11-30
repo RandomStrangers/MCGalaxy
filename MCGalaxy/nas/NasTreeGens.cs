@@ -236,12 +236,18 @@ namespace NotAwesomeSurvival
             int value = x2 - x1,
                 value2 = y2 - y1,
                 value3 = z2 - z1;
-            Line line;
-            line.dir = Math.Sign(value);
-            Line line2;
-            line2.dir = Math.Sign(value2);
-            Line line3;
-            line3.dir = Math.Sign(value3);
+            Line line = new()
+            {
+                dir = Math.Sign(value)
+            },
+            line2 = new()
+            {
+                dir = Math.Sign(value2)
+            },
+            line3 = new()
+            {
+                dir = Math.Sign(value3)
+            };
             int num = Math.Abs(value),
                 num2 = Math.Abs(value2),
                 num3 = Math.Abs(value3);
@@ -266,10 +272,12 @@ namespace NotAwesomeSurvival
                     DoLine(line2, line, line3, num3, array, maxLen, buffer);
                 }
             }
-            Vec3S32 item;
-            item.X = array[0];
-            item.Y = array[1];
-            item.Z = array[2];
+            Vec3S32 item = new()
+            {
+                X = array[0],
+                Y = array[1],
+                Z = array[2]
+            };
             buffer.Add(item);
         }
         public static void DoLine(Line l1, Line l2, Line l3, int len, int[] pixel, int maxLen, List<Vec3S32> buffer)
@@ -279,10 +287,12 @@ namespace NotAwesomeSurvival
                 num3 = 0;
             while (num3 < len && num3 < maxLen - 1)
             {
-                Vec3S32 item;
-                item.X = pixel[0];
-                item.Y = pixel[1];
-                item.Z = pixel[2];
+                Vec3S32 item = new()
+                {
+                    X = pixel[0],
+                    Y = pixel[1],
+                    Z = pixel[2]
+                };
                 buffer.Add(item);
                 if (num > 0)
                 {

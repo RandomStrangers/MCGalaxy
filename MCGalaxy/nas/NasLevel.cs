@@ -2,7 +2,6 @@
 using MCGalaxy;
 using MCGalaxy.Tasks;
 using Newtonsoft.Json;
-using Priority_Queue;
 using System;
 using System.Collections.Generic;
 using NasBlockAction = NotAwesomeSurvival.Action<NotAwesomeSurvival.NasLevel, NotAwesomeSurvival.NasBlock, int, int, int>;
@@ -54,7 +53,7 @@ namespace NotAwesomeSurvival
         }
         public void BeginTickTask()
         {
-            TickScheduler ??= new Scheduler("NasLevelTickScheduler");
+            TickScheduler ??= new("NasLevelTickScheduler");
             Log("Re-disturbing {0} blocks.", blocksThatMustBeDisturbed.Count);
             foreach (BlockLocation blockLoc in blocksThatMustBeDisturbed)
             {
@@ -65,14 +64,14 @@ namespace NotAwesomeSurvival
         }
         public void EndTickTask()
         {
-            TickScheduler ??= new Scheduler("NasLevelTickScheduler");
+            TickScheduler ??= new("NasLevelTickScheduler");
             TickScheduler.Cancel(schedulerTask);
             Log("Saving {0} blocks to re-disturb later.", tickQueue.Count);
             if (tickQueue.Count == 0)
             {
                 return;
             }
-            blocksThatMustBeDisturbed = new List<BlockLocation>();
+            blocksThatMustBeDisturbed = new();
             foreach (QueuedBlockUpdate qb in tickQueue)
             {
                 BlockLocation blockLoc = new(qb);

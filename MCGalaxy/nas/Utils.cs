@@ -12,7 +12,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 namespace NotAwesomeSurvival
@@ -104,27 +103,6 @@ namespace NotAwesomeSurvival
     class MonoOS : IOperatingSystem
     {
         public override bool IsWindows { get { return false; } }
-        public override void Init()
-        {
-            base.Init();
-            if (!Directory.Exists("certs"))
-            {
-                return;
-            }
-            try
-            {
-                Type settingsType = Type.GetType("Mono.Security.Interface.MonoTlsSettings, Mono.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756");
-                PropertyInfo defSettingsProp = settingsType.GetProperty("DefaultSettings", BindingFlags.Static | BindingFlags.Public);
-                object defSettings = defSettingsProp.GetValue(null, null);
-                Type settingsObjType = defSettings.GetType();
-                PropertyInfo pathsProp = settingsObjType.GetProperty("CertificateSearchPaths", BindingFlags.Instance | BindingFlags.NonPublic);
-                pathsProp.SetValue(defSettings, new string[] { "@pem:certs", "@trusted" }, null);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Changing SSL/TLS certificates folder", ex);
-            }
-        }
         public override void RestartProcess()
         {
             try
@@ -150,10 +128,12 @@ namespace NotAwesomeSurvival
                 nice = ulong.Parse(bits[2]),
                 kern = ulong.Parse(bits[3]),
                 idle = ulong.Parse(bits[4]);
-            CPUTime all;
-            all.UserTime = user + nice;
-            all.KernelTime = kern;
-            all.IdleTime = idle;
+            CPUTime all = new()
+            {
+                UserTime = user + nice,
+                KernelTime = kern,
+                IdleTime = idle
+            };
             return all;
         }
         public override CPUTime MeasureAllCPUTime()
@@ -195,7 +175,6 @@ namespace NotAwesomeSurvival
                 102 => 45,
                 103 => 1,
                 104 => 4,
-                105 => 0,
                 106 => 9,
                 107 => 11,
                 108 => 4,
@@ -244,7 +223,6 @@ namespace NotAwesomeSurvival
                 129 => 25,
                 135 => 46,
                 136 => 44,
-                137 => 0,
                 138 => 9,
                 139 => 11,
                 148 => 17,
@@ -261,7 +239,6 @@ namespace NotAwesomeSurvival
                 159 => 9,
                 130 => 36,
                 131 => 34,
-                132 => 0,
                 133 => 9,
                 134 => 11,
                 140 => 8,
@@ -271,11 +248,8 @@ namespace NotAwesomeSurvival
                 145 => 8,
                 146 => 10,
                 147 => 28,
-                160 => 0,
                 161 => 9,
                 162 => 11,
-                164 => 0,
-                165 => 0,
                 166 => 9,
                 167 => 11,
                 175 => 28,
@@ -292,17 +266,22 @@ namespace NotAwesomeSurvival
                 189 => 42,
                 191 => 9,
                 190 => 11,
-                192 => 0,
                 193 => 8,
                 194 => 10,
                 73 => 10,
                 195 => 10,
                 196 => 8,
-                197 => 0,
-                200 or 201 or 202 or 203 or 204 or 205 or 206 or 207 or 208 or 209 or 210 or 213 or 214 or 215 or 216 or 217 or 225 or 254 or 81 or 226 or 227 or 228 or 229 or 84 or 66 or 67 or 68 or 69 => 0,
+                197 or 200 or 201 or 202 or 203 or 204 
+                    or 205 or 206 or 207 or 208 or 209 
+                    or 210 or 213 or 214 or 215 or 216 
+                    or 217 or 225 or 254 or 81 or 226 
+                    or 227 or 228 or 229 or 84 or 66 
+                    or 67 or 68 or 69 or 137 or 105 
+                    or 132 or 160 or 165 or 164 or 192 
+                    or 168 or 169 or 170 or 171 or 172 
+                    or 173 or 174 or 179 or 180 or 181 => 0,
                 211 => 21,
                 212 => 10,
-                168 or 169 or 170 or 171 or 172 or 173 or 174 or 179 or 180 or 181 => 0,
                 177 => 21,
                 178 => 11,
                 230 => 27,
@@ -335,6 +314,10 @@ namespace NotAwesomeSurvival
         {
             return raw < 66 ? raw : (ushort)(raw + 256);
         }
+        public static bool IsPhysicsType(ushort block)
+        {
+            return block >= 66 && block < 256;
+        }
         public class CmdServerInfo2 : Command2
         {
             public override string name { get { return "ServerInfo2"; } }
@@ -343,7 +326,7 @@ namespace NotAwesomeSurvival
             public override bool UseableWhenFrozen { get { return true; } }
             public override CommandAlias[] Aliases
             {
-                get { return new[] { new CommandAlias("Host"), new CommandAlias("ZAll"), new CommandAlias("ServerInfo") }; }
+                get { return new[] { new CommandAlias("Host"), new("ZAll"), new("ServerInfo") }; }
             }
             public override CommandPerm[] ExtraPerms
             {
@@ -770,7 +753,7 @@ namespace NotAwesomeSurvival
         public static DateTime Floor(this DateTime date, TimeSpan span)
         {
             long ticks = date.Ticks / span.Ticks;
-            return new DateTime(ticks * span.Ticks);
+            return new(ticks * span.Ticks);
         }
         public static bool IsNullOrWhiteSpace(this string value)
         {

@@ -114,7 +114,7 @@ namespace NotAwesomeSurvival
                 if (!headingToBed)
                 {
                     TryDropGravestone();
-                    inventory = new Inventory(p);
+                    inventory = new(p);
                     exp = 0;
                     levels = 0;
                     inventory.Setup();
@@ -254,14 +254,14 @@ namespace NotAwesomeSurvival
         }
         public void UpdatePosition(Position pos, string level)
         {
-            location = new MCGalaxy.Maths.Vec3S32(pos.X, pos.Y, pos.Z);
+            location = new(pos.X, pos.Y, pos.Z);
             levelName = level;
         }
         public void CheckGround(Position next)
         {
             if (p.invincible)
             {
-                lastGroundedLocation = new MCGalaxy.Maths.Vec3S32(next.X, next.Y, next.Z);
+                lastGroundedLocation = new(next.X, next.Y, next.Z);
                 return;
             }
             Position below = next;
@@ -284,7 +284,7 @@ namespace NotAwesomeSurvival
                         TakeDamage(damage * fallDamageMultiplier, DamageSource.Falling);
                     }
                 }
-                lastGroundedLocation = new MCGalaxy.Maths.Vec3S32(next.X, next.Y, next.Z);
+                lastGroundedLocation = new(next.X, next.Y, next.Z);
             }
         }
         public void CheckMapCrossing(Position next)
@@ -330,7 +330,7 @@ namespace NotAwesomeSurvival
             mapName = seed + "_" + chunkOffsetX + "," + chunkOffsetZ;
             if (File.Exists(NasLevel.GetFileName(mapName)))
             {
-                transferInfo = new TransferInfo(p, dirX, dirZ, -1, -1, -1);
+                transferInfo = new(p, dirX, dirZ, -1, -1, -1);
                 CommandData data = p.DefaultCmdData;
                 data.Context = CommandContext.SendCmd;
                 p.HandleCommand("goto", mapName, data);
@@ -459,10 +459,9 @@ namespace NotAwesomeSurvival
             {
                 return;
             }
-            const float change = 0.03125f;//0.03125f;
             if (curRenderDistance > targetRenderDistance)
             {
-                curRenderDistance *= 1 - change;
+                curRenderDistance *= 1 - 0.03125f;
                 if (curRenderDistance < targetRenderDistance)
                 {
                     curRenderDistance = targetRenderDistance;
@@ -470,7 +469,7 @@ namespace NotAwesomeSurvival
             }
             else if (curRenderDistance < targetRenderDistance)
             {
-                curRenderDistance *= 1 + change;
+                curRenderDistance *= 1 + 0.03125f;
                 if (curRenderDistance > targetRenderDistance)
                 {
                     curRenderDistance = targetRenderDistance;

@@ -44,7 +44,7 @@ namespace NotAwesomeSurvival
         }
         public static void Setup()
         {
-            genScheduler ??= new Scheduler("MapGenScheduler");
+            genScheduler ??= new("MapGenScheduler");
             MapGen.Register("NASGen", GenType.Advanced, Gen, "hello?");
             coalFogColor = ColorTranslator.FromHtml("#BCC9E8");
             ironFogColor = ColorTranslator.FromHtml("#A1A3A8");
@@ -104,7 +104,7 @@ namespace NotAwesomeSurvival
         }
         public static bool Gen(Player p, Level lvl, string seed)
         {
-            if (File.Exists("levels/" + lvl.name + ".lvl"))
+            if (File.Exists("levels/" + lvl.name + ".lvl") || File.Exists("levels/" + lvl.name + ".mcf"))
             {
                 p.Message("Something weird happened, try going into the map again");
                 return false;
@@ -230,10 +230,8 @@ namespace NotAwesomeSurvival
                 //more frequency = smaller map scale
                 adjNoise.Frequency = 0.75;
                 adjNoise.OctaveCount = 5;
-                DateTime dateStartLayer;
+                DateTime dateStartLayer = DateTime.UtcNow;
                 double width = lvl.Width, height = lvl.Height, length = lvl.Length;
-                //counter = 0;
-                dateStartLayer = DateTime.UtcNow;
                 for (double y = 0; y < height; y++)
                 {
                     for (double z = 0; z < length; ++z)
@@ -395,9 +393,7 @@ namespace NotAwesomeSurvival
                 adjNoise.Seed = MakeInt(seed + "soil");
                 adjNoise.Frequency = 1;
                 adjNoise.OctaveCount = 6;
-                DateTime dateStartLayer;
-                //counter = 0;
-                dateStartLayer = DateTime.UtcNow;
+                DateTime dateStartLayer = DateTime.UtcNow;
                 for (int y = 0; y < height - 1; y++)
                 {
                     for (int z = 0; z < length; ++z)
@@ -489,7 +485,6 @@ namespace NotAwesomeSurvival
                 adjNoise.Seed = MakeInt(seed + "cave");
                 adjNoise.Frequency = 1; //more frequency = smaller map scale
                 adjNoise.OctaveCount = 2;
-                int counter = 0;
                 DateTime dateStartLayer = DateTime.UtcNow;
                 for (double y = 0; y < height; y++)
                 {
@@ -523,7 +518,6 @@ namespace NotAwesomeSurvival
                             yVal += 1;
                             zVal += 1;
                             double value = adjNoise.GetValue(xVal, yVal, zVal);
-                            counter++;
                             if (value > threshold)
                             {
                                 if (y <= 4)
@@ -558,7 +552,6 @@ namespace NotAwesomeSurvival
                 adjNoise.Frequency = 1; //more frequency = smaller map scale
                 adjNoise.OctaveCount = 2;
                 adjNoise.Persistence = 0.25;
-                int counter = 0;
                 DateTime dateStartLayer = DateTime.UtcNow;
                 for (double y = 0; y < height; y++)
                 {
@@ -583,7 +576,6 @@ namespace NotAwesomeSurvival
                             yVal += 1;
                             zVal += 1;
                             double value = adjNoise.GetValue(xVal, yVal, zVal);
-                            counter++;
                             if (value > threshold)
                             {
                                 lvl.SetBlock((ushort)x, (ushort)y, (ushort)z, Nas.FromRaw(451));
@@ -633,9 +625,7 @@ namespace NotAwesomeSurvival
                 adjNoise.Seed = MakeInt(seed + "tree");
                 adjNoise.Frequency = 1;
                 adjNoise.OctaveCount = 1;
-                DateTime dateStartLayer;
-                //counter = 0;
-                dateStartLayer = DateTime.UtcNow;
+                DateTime dateStartLayer = DateTime.UtcNow;
                 int height = lvl.Height - 1, width = lvl.Width, length = lvl.Length;
                 for (int y = 0; y < (ushort)height; y++)
                 {
@@ -1052,7 +1042,7 @@ namespace NotAwesomeSurvival
                             {
                                 if (BlockExposed2(x, y, z))
                                 {
-                                    nl.blocksThatMustBeDisturbed.Add(new NasLevel.BlockLocation(x, y, z));
+                                    nl.blocksThatMustBeDisturbed.Add(new(x, y, z));
                                 }
                             }
                             if (NasBlock.IsPartOfSet(stoneTypes, curBlock) == -1)
@@ -1068,7 +1058,7 @@ namespace NotAwesomeSurvival
                                         continue;
                                     }
                                     lvl.SetTile((ushort)x, (ushort)y, (ushort)z, (byte)(biome < 0 ? 10 : 9));
-                                    nl.blocksThatMustBeDisturbed.Add(new NasLevel.BlockLocation(x, y, z));
+                                    nl.blocksThatMustBeDisturbed.Add(new(x, y, z));
                                 }
                             }
                         }
@@ -1193,7 +1183,7 @@ namespace NotAwesomeSurvival
                     level.SetTile((ushort)(x + 4), (ushort)(y + 1), (ushort)(z + 5), 0);
                     level.SetTile((ushort)(x + 4), (ushort)(y + 4), (ushort)(z + 4), 65);
                     level.SetTile((ushort)(x + 4), (ushort)(y + 5), (ushort)(z + 4), 10);
-                    nsl.blocksThatMustBeDisturbed.Add(new NasLevel.BlockLocation(x + 4, y + 5, z + 4));
+                    nsl.blocksThatMustBeDisturbed.Add(new(x + 4, y + 5, z + 4));
                     GenLoot(x + 4, y + 2, z + 4, level, rng, nsl, forced, p);
                     return;
                 }
@@ -1304,24 +1294,24 @@ namespace NotAwesomeSurvival
                 level.SetBlock((ushort)x, (ushort)y, (ushort)z, Nas.FromRaw(647));
                 NasBlock.Entity bEntity = new()
                 {
-                    drop = new Drop(41, rng.Next(1, 5)) //gold
+                    drop = new(41, rng.Next(1, 5)) //gold
                 };
-                bEntity.drop.blockStacks.Add(new BlockStack(729, rng.Next(0, 3)));
+                bEntity.drop.blockStacks.Add(new(729, rng.Next(0, 3)));
                 if (rng.Next(2) == 0)
                 {
-                    bEntity.drop.blockStacks.Add(new BlockStack(631, rng.Next(1, 3))); //dia
+                    bEntity.drop.blockStacks.Add(new(631, rng.Next(1, 3))); //dia
                 }
                 if (rng.Next(4) == 0)
                 {
-                    bEntity.drop.blockStacks.Add(new BlockStack(650)); //ems
+                    bEntity.drop.blockStacks.Add(new(650)); //ems
                 }
                 if (rng.Next(3) == 0)
                 {
-                    bEntity.drop.blockStacks.Add(new BlockStack(478)); //gapple
+                    bEntity.drop.blockStacks.Add(new(478)); //gapple
                 }
                 if (rng.Next(3) == 0)
                 {
-                    bEntity.drop.blockStacks.Add(new BlockStack(204)); //monitor
+                    bEntity.drop.blockStacks.Add(new(204)); //monitor
                 }
                 if (nsl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {

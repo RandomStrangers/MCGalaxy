@@ -46,18 +46,18 @@ namespace NotAwesomeSurvival
         [JsonIgnore] public Player lastAttackedPlayer = null;
         [JsonIgnore] public string reason = null;
         [JsonIgnore] public CpeMessageType whereHealthIsDisplayed = CpeMessageType.BottomRight2;
-        public bool bigUpdate = false;
-        public int resetCount = 0;
-        public bool oldBarrel = true;
+        public bool bigUpdate = false, 
+            oldBarrel = true,
+            pvpEnabled = false;
         public Inventory inventory;
         public Position spawnCoords;
         public int[] bedCoords;
         public string spawnMap;
         public DateTime pvpCooldown;
-        public bool pvpEnabled = false;
         public int kills = 0,
             exp = 0,
-            levels = 0;
+            levels = 0, 
+            resetCount = 0;
         public void Message(string message, params object[] args)
         {
             p.Message(string.Format(message, args));
@@ -110,7 +110,7 @@ namespace NotAwesomeSurvival
             this.p = p;
             HP = 10;
             Air = 10;
-            inventory = new Inventory(p);
+            inventory = new(p);
             spawnCoords = Server.mainLevel.SpawnPos;
             bedCoords = new int[] { 238, 94, 179 };
             spawnMap = Server.mainLevel.name;
@@ -198,7 +198,7 @@ namespace NotAwesomeSurvival
             bedCoords = new int[] { 238, 94, 179 };
             spawnMap = Server.mainLevel.name;
             levelName = Server.mainLevel.name;
-            location = new Vec3S32(spawnCoords.X, spawnCoords.Y, spawnCoords.Z);
+            location = new(spawnCoords.X, spawnCoords.Y, spawnCoords.Z);
             lastGroundedLocation = location;
             yaw = 128;
             pitch = 0;
@@ -285,7 +285,7 @@ namespace NotAwesomeSurvival
         public static void ClickOnPlayer(Player p, byte entity, MouseButton button, MouseAction action)
         {
             NasPlayer np = GetNasPlayer(p);
-            if (entity == Entities.SelfID)
+            if (entity == 0xFF)
             {
                 return;
             }
@@ -337,11 +337,12 @@ namespace NotAwesomeSurvival
                 if (np.inventory.HeldItem.Prop.knockback < 0)
                 {
                     reachSq *= 16;
-                    kbdelay = new TimeSpan(TimeSpan.TicksPerMillisecond * (int)delta.LengthSquared * 20);
+                    kbdelay = new(TimeSpan.TicksPerMillisecond * (int)delta.LengthSquared * 20);
                 }
                 if (!CooledDown(p))
                 {
-                    StartCooldown(p, np.inventory.HeldItem.Prop.recharge + (int)(kbdelay.Ticks / TimeSpan.TicksPerMillisecond)); return;
+                    StartCooldown(p, np.inventory.HeldItem.Prop.recharge + (int)(kbdelay.Ticks / TimeSpan.TicksPerMillisecond));
+                    return;
                 }
                 StartCooldown(p, np.inventory.HeldItem.Prop.recharge + (int)(kbdelay.Ticks / TimeSpan.TicksPerMillisecond));
                 if (delta.LengthSquared > (reachSq + 1))
@@ -478,9 +479,8 @@ namespace NotAwesomeSurvival
         public Item SearchItem(string type, bool takeDamage = false)
         {
             float armor = 0f;
-            int i;
+            int i, index = 0;
             bool done = false;
-            int index = 0;
             for (i = 0; i < inventory.items.Length; i++)
             {
                 if (inventory.items[i] != null)
@@ -652,55 +652,52 @@ namespace NotAwesomeSurvival
         }
         public void TryDropGravestone()
         {
-            lock (NasBlock.Container.locker)
+            Drop deathDrop = new(inventory);
+            if (deathDrop.blockStacks == null && deathDrop.items == null)
             {
-                Drop deathDrop = new(inventory);
-                if (deathDrop.blockStacks == null && deathDrop.items == null)
-                {
-                    return;
-                }
-                Vec3S32 gravePos = p.Pos.FeetBlockCoords;
-                p.level.ClampPos(gravePos);
-                int x = gravePos.X,
-                    y = gravePos.Y,
-                    z = gravePos.Z;
-                if (x < 0)
-                {
-                    x = 0;
-                }
-                if (z < 0)
-                {
-                    z = 0;
-                }
-                if (x > 383)
-                {
-                    x = 383;
-                }
-                if (z > 383)
-                {
-                    z = 383;
-                }
-                while (!CanPlaceGraveStone(x, y, z))
-                {
-                    y++;
-                    if (y >= p.level.Height - 1)
-                    {
-                        Message("Something weird happened. You died in a location such that we can't place a grave.");
-                        Message("Sorry, you've lost all your stuff.");
-                    }
-                }
-                //place tombstone
-                nl.SetBlock(x, y, z, Nas.FromRaw(647));
-                NasBlock.Entity blockEntity = new()
-                {
-                    drop = deathDrop
-                };
-                nl.blockEntities.Add(x + " " + y + " " + z, blockEntity);
-                Message("You dropped a gravestone at {0} {1} {2} in {3}", x, y, z, p.level.name);
-                FileUtils.TryAppendAllText(Nas.GetDeathPath(p.name), x + " " + y + " " + z + " in " + p.level.name);
-                nl.blockEntities[x + " " + y + " " + z].lockedBy = p.name;
-                nl.blockEntities[x + " " + y + " " + z].drop.exp = GetExp();
+                return;
             }
+            Vec3S32 gravePos = p.Pos.FeetBlockCoords;
+            p.level.ClampPos(gravePos);
+            int x = gravePos.X,
+                y = gravePos.Y,
+                z = gravePos.Z;
+            if (x < 0)
+            {
+                x = 0;
+            }
+            if (z < 0)
+            {
+                z = 0;
+            }
+            if (x > 383)
+            {
+                x = 383;
+            }
+            if (z > 383)
+            {
+                z = 383;
+            }
+            while (!CanPlaceGraveStone(x, y, z))
+            {
+                y++;
+                if (y >= p.level.Height - 1)
+                {
+                    Message("Something weird happened. You died in a location such that we can't place a grave.");
+                    Message("Sorry, you've lost all your stuff.");
+                }
+            }
+            //place tombstone
+            nl.SetBlock(x, y, z, Nas.FromRaw(647));
+            NasBlock.Entity blockEntity = new()
+            {
+                drop = deathDrop
+            };
+            nl.blockEntities.Add(x + " " + y + " " + z, blockEntity);
+            Message("You dropped a gravestone at {0} {1} {2} in {3}", x, y, z, p.level.name);
+            FileUtils.TryAppendAllText(Nas.GetDeathPath(p.name), x + " " + y + " " + z + " in " + p.level.name);
+            nl.blockEntities[x + " " + y + " " + z].lockedBy = p.name;
+            nl.blockEntities[x + " " + y + " " + z].drop.exp = GetExp();
         }
         public bool CanPlaceGraveStone(int x, int y, int z)
         {
@@ -856,12 +853,12 @@ namespace NotAwesomeSurvival
             }
             else
             {
-                P = new Vec3S32(p.Pos.X, p.Pos.Y - Entities.CharacterHeight, p.Pos.Z);
+                P = new(p.Pos.X, p.Pos.Y - 51, p.Pos.Z);
                 if (!GetCoords(p, args, 0, ref P))
                 {
                     return false;
                 }
-                pos = new Position(P.X, P.Y + Entities.CharacterHeight, P.Z);
+                pos = new(P.X, P.Y + 51, P.Z);
             }
             int angle = 0;
             if (args.Length > 3)
@@ -888,7 +885,7 @@ namespace NotAwesomeSurvival
             {
                 return;
             }
-            PlayerOperations.TeleportToCoords(p, pos, new Orientation(yaw, pitch));
+            PlayerOperations.TeleportToCoords(p, pos, new(yaw, pitch));
         }
         public void SendToMain()
         {

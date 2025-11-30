@@ -15,7 +15,7 @@ namespace NotAwesomeSurvival
         {
             if (parent.blockStacks != null)
             {
-                blockStacks = new List<BlockStack>();
+                blockStacks = new();
                 foreach (BlockStack bs in parent.blockStacks)
                 {
                     BlockStack bsClone = new(bs.ID, bs.amount);
@@ -24,7 +24,7 @@ namespace NotAwesomeSurvival
             }
             if (parent.items != null)
             {
-                items = new List<Item>();
+                items = new();
                 foreach (Item item in parent.items)
                 {
                     Item itemClone = new(item.name);
@@ -49,20 +49,20 @@ namespace NotAwesomeSurvival
         }
         public Drop(Inventory inv)
         {
-            blockStacks = new List<BlockStack>();
+            blockStacks = new();
             for (int i = 0; i < inv.blocks.Length; i++)
             {
                 if (inv.blocks[i] == 0)
                 {
                     continue;
                 }
-                blockStacks.Add(new BlockStack((ushort)i, inv.blocks[i]));
+                blockStacks.Add(new((ushort)i, inv.blocks[i]));
             }
             if (blockStacks.Count == 0)
             {
                 blockStacks = null;
             }
-            items = new List<Item>();
+            items = new();
             foreach (Item item in inv.items)
             {
                 if (item == null)

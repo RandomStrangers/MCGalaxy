@@ -1,5 +1,4 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using MCGalaxy;
 using NasBlockCollideAction =
     NotAwesomeSurvival.Action<NotAwesomeSurvival.NasEntity,
     NotAwesomeSurvival.NasBlock, bool, ushort, ushort, ushort>;
@@ -52,7 +51,7 @@ namespace NotAwesomeSurvival
                 ne.nl.SetBlock(x, y, z, Nas.FromRaw(611));
                 if (!ne.nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {
-                    ne.nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
+                    ne.nl.blockEntities.Add(x + " " + y + " " + z, new());
                 }
                 ne.nl.blockEntities[x + " " + y + " " + z].strength = 15;
             };

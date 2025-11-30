@@ -29,7 +29,7 @@ namespace NotAwesomeSurvival
 
             //Recipes that don't fill up all 9 slots and are NOT shapeless just mean that smaller pattern can be
             //anywhere on the crafting table, just in the same spot relative to each other.
-            Recipe woodPickaxe = new(new Item("Wood Pickaxe"))
+            Recipe woodPickaxe = new(new("Wood Pickaxe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -39,7 +39,7 @@ namespace NotAwesomeSurvival
                 }
             };
             // stone tools
-            Recipe stonePickaxe = new(new Item("Stone Pickaxe"))
+            Recipe stonePickaxe = new(new("Stone Pickaxe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -48,7 +48,7 @@ namespace NotAwesomeSurvival
                     {  0, 78, 0 }
                 }
             };
-            Recipe stoneShovel = new(new Item("Stone Shovel"))
+            Recipe stoneShovel = new(new("Stone Shovel"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -57,7 +57,7 @@ namespace NotAwesomeSurvival
                     {  78 }
                 }
             };
-            Recipe stoneAxe = new(new Item("Stone Axe"))
+            Recipe stoneAxe = new(new("Stone Axe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -66,7 +66,7 @@ namespace NotAwesomeSurvival
                     {  0, 78 }
                 }
             };
-            Recipe stoneSword = new(new Item("Stone Sword"))
+            Recipe stoneSword = new(new("Stone Sword"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -76,7 +76,7 @@ namespace NotAwesomeSurvival
                 }
             };
             //iron tools
-            Recipe ironPickaxe = new(new Item("Iron Pickaxe"))
+            Recipe ironPickaxe = new(new("Iron Pickaxe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -85,7 +85,7 @@ namespace NotAwesomeSurvival
                     {  0, 78, 0 }
                 }
             };
-            Recipe ironShovel = new(new Item("Iron Shovel"))
+            Recipe ironShovel = new(new("Iron Shovel"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -94,7 +94,7 @@ namespace NotAwesomeSurvival
                     {  78 }
                 }
             };
-            Recipe ironAxe = new(new Item("Iron Axe"))
+            Recipe ironAxe = new(new("Iron Axe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -103,7 +103,7 @@ namespace NotAwesomeSurvival
                     {  0, 78 }
                 }
             };
-            Recipe ironSword = new(new Item("Iron Sword"))
+            Recipe ironSword = new(new("Iron Sword"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -112,14 +112,14 @@ namespace NotAwesomeSurvival
                     { 78 }
                 }
             };
-            Recipe ironhelm = new(new Item("Iron Helmet"))
+            Recipe ironhelm = new(new("Iron Helmet"))
             {
                 pattern = new ushort[,] {
                     { 42, 42, 42 },
                     { 42, 0, 42 },
                 }
             };
-            Recipe ironchest = new(new Item("Iron Chestplate"))
+            Recipe ironchest = new(new("Iron Chestplate"))
             {
                 pattern = new ushort[,] {
                     { 42, 0, 42 },
@@ -127,7 +127,7 @@ namespace NotAwesomeSurvival
                     { 42, 42, 42 },
                 }
             };
-            Recipe ironlegs = new(new Item("Iron Leggings"))
+            Recipe ironlegs = new(new("Iron Leggings"))
             {
                 pattern = new ushort[,] {
                     { 42, 42, 42 },
@@ -135,7 +135,7 @@ namespace NotAwesomeSurvival
                     { 42, 0, 42 },
                 }
             };
-            Recipe ironboots = new(new Item("Iron Boots"))
+            Recipe ironboots = new(new("Iron Boots"))
             {
                 pattern = new ushort[,] {
                     { 42, 0, 42 },
@@ -143,7 +143,7 @@ namespace NotAwesomeSurvival
                 }
             };
             //gold tools
-            Recipe goldPickaxe = new(new Item("Gold Pickaxe"))
+            Recipe goldPickaxe = new(new("Gold Pickaxe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -152,7 +152,7 @@ namespace NotAwesomeSurvival
                     {  0, 78, 0 }
                 }
             };
-            Recipe goldShovel = new(new Item("Gold Shovel"))
+            Recipe goldShovel = new(new("Gold Shovel"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -161,7 +161,7 @@ namespace NotAwesomeSurvival
                     {  78 }
                 }
             };
-            Recipe goldAxe = new(new Item("Gold Axe"))
+            Recipe goldAxe = new(new("Gold Axe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -170,7 +170,7 @@ namespace NotAwesomeSurvival
                     {  0, 78 }
                 }
             };
-            Recipe goldSword = new(new Item("Gold Sword"))
+            Recipe goldSword = new(new("Gold Sword"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -179,14 +179,14 @@ namespace NotAwesomeSurvival
                     { 78 }
                 }
             };
-            Recipe goldhelm = new(new Item("Gold Helmet"))
+            Recipe goldhelm = new(new("Gold Helmet"))
             {
                 pattern = new ushort[,] {
                     { 41, 41, 41 },
                     { 41, 0, 41 },
                 }
             };
-            Recipe goldchest = new(new Item("Gold Chestplate"))
+            Recipe goldchest = new(new("Gold Chestplate"))
             {
                 pattern = new ushort[,] {
                     { 41, 0, 41 },
@@ -194,7 +194,7 @@ namespace NotAwesomeSurvival
                     { 41, 41, 41 },
                 }
             };
-            Recipe goldlegs = new(new Item("Gold Leggings"))
+            Recipe goldlegs = new(new("Gold Leggings"))
             {
                 pattern = new ushort[,] {
                     { 41, 41, 41 },
@@ -202,7 +202,7 @@ namespace NotAwesomeSurvival
                     { 41, 0, 41 },
                 }
             };
-            Recipe goldboots = new(new Item("Gold Boots"))
+            Recipe goldboots = new(new("Gold Boots"))
             {
                 pattern = new ushort[,] {
                     { 41, 0, 41 },
@@ -210,7 +210,7 @@ namespace NotAwesomeSurvival
                 }
             };
             //diamond tools
-            Recipe diamondPickaxe = new(new Item("Diamond Pickaxe"))
+            Recipe diamondPickaxe = new(new("Diamond Pickaxe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -219,7 +219,7 @@ namespace NotAwesomeSurvival
                     {  0, 78, 0 }
                 }
             };
-            Recipe diamondShovel = new(new Item("Diamond Shovel"))
+            Recipe diamondShovel = new(new("Diamond Shovel"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -228,7 +228,7 @@ namespace NotAwesomeSurvival
                     {  78 }
                 }
             };
-            Recipe diamondAxe = new(new Item("Diamond Axe"))
+            Recipe diamondAxe = new(new("Diamond Axe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -237,7 +237,7 @@ namespace NotAwesomeSurvival
                     {  0, 78 }
                 }
             };
-            Recipe diamondSword = new(new Item("Diamond Sword"))
+            Recipe diamondSword = new(new("Diamond Sword"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -246,14 +246,14 @@ namespace NotAwesomeSurvival
                     { 78 }
                 }
             };
-            Recipe diamondhelm = new(new Item("Diamond Helmet"))
+            Recipe diamondhelm = new(new("Diamond Helmet"))
             {
                 pattern = new ushort[,] {
                     { 631, 631, 631 },
                     { 631, 0, 631 },
                 }
             };
-            Recipe diamondchest = new(new Item("Diamond Chestplate"))
+            Recipe diamondchest = new(new("Diamond Chestplate"))
             {
                 pattern = new ushort[,] {
                     { 631, 0, 631 },
@@ -261,7 +261,7 @@ namespace NotAwesomeSurvival
                     { 631, 631, 631 },
                 }
             };
-            Recipe diamondlegs = new(new Item("Diamond Leggings"))
+            Recipe diamondlegs = new(new("Diamond Leggings"))
             {
                 pattern = new ushort[,] {
                     { 631, 631, 631 },
@@ -269,7 +269,7 @@ namespace NotAwesomeSurvival
                     { 631, 0, 631 },
                 }
             };
-            Recipe diamondboots = new(new Item("Diamond Boots"))
+            Recipe diamondboots = new(new("Diamond Boots"))
             {
                 pattern = new ushort[,] {
                     { 631, 0, 631 },
@@ -277,7 +277,7 @@ namespace NotAwesomeSurvival
                 }
             };
             //emerald tools
-            Recipe emeraldPickaxe = new(new Item("Emerald Pickaxe"))
+            Recipe emeraldPickaxe = new(new("Emerald Pickaxe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -286,7 +286,7 @@ namespace NotAwesomeSurvival
                     {  0, 78, 0 }
                 }
             };
-            Recipe emeraldShovel = new(new Item("Emerald Shovel"))
+            Recipe emeraldShovel = new(new("Emerald Shovel"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -295,7 +295,7 @@ namespace NotAwesomeSurvival
                     {  78 }
                 }
             };
-            Recipe emeraldAxe = new(new Item("Emerald Axe"))
+            Recipe emeraldAxe = new(new("Emerald Axe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -304,7 +304,7 @@ namespace NotAwesomeSurvival
                     {  0, 78 }
                 }
             };
-            Recipe emeraldSword = new(new Item("Emerald Sword"))
+            Recipe emeraldSword = new(new("Emerald Sword"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -313,14 +313,14 @@ namespace NotAwesomeSurvival
                     { 78 }
                 }
             };
-            Recipe emeraldhelm = new(new Item("Emerald Helmet"))
+            Recipe emeraldhelm = new(new("Emerald Helmet"))
             {
                 pattern = new ushort[,] {
                     { 650, 650, 650 },
                     { 650, 0, 650 },
                 }
             };
-            Recipe emeraldchest = new(new Item("Emerald Chestplate"))
+            Recipe emeraldchest = new(new("Emerald Chestplate"))
             {
                 pattern = new ushort[,] {
                     { 650, 0, 650 },
@@ -328,7 +328,7 @@ namespace NotAwesomeSurvival
                     { 650, 650, 650 },
                 }
             };
-            Recipe emeraldlegs = new(new Item("Emerald Leggings"))
+            Recipe emeraldlegs = new(new("Emerald Leggings"))
             {
                 pattern = new ushort[,] {
                     { 650, 650, 650 },
@@ -336,14 +336,14 @@ namespace NotAwesomeSurvival
                     { 650, 0, 650 },
                 }
             };
-            Recipe emeraldboots = new(new Item("Emerald Boots"))
+            Recipe emeraldboots = new(new("Emerald Boots"))
             {
                 pattern = new ushort[,] {
                     { 650, 0, 650 },
                     { 650, 0, 650 },
                 }
             };
-            Recipe key = new(new Item("Key"))
+            Recipe key = new(new("Key"))
             {
                 usesParentID = true,
                 pattern = new ushort[,] {
@@ -352,14 +352,14 @@ namespace NotAwesomeSurvival
                     {  149, 148,  0  }
                 }
             };
-            Recipe shears = new(new Item("Shears"))
+            Recipe shears = new(new("Shears"))
             {
                 pattern = new ushort[,] {
                     {  0, 42 },
                     {  42, 0 }
                 }
             };
-            Recipe fishing = new(new Item("Fishing Rod"))
+            Recipe fishing = new(new("Fishing Rod"))
             {
                 usesParentID = true,
                 usesAlternateID = true,

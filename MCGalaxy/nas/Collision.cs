@@ -15,8 +15,8 @@ namespace NotAwesomeSurvival
         }
         public static void SetupBlockBounds(Level lvl)
         {
-            NasBlock.blocksIndexedByServerushort = new NasBlock[Block.ExtendedCount];
-            for (ushort blockID = 0; blockID < Block.ExtendedCount; blockID++)
+            NasBlock.blocksIndexedByServerushort = new NasBlock[1024];
+            for (ushort blockID = 0; blockID < 1024; blockID++)
             {
                 NasBlock.blocksIndexedByServerushort[blockID] = GetNasBlockAndFillInCollisionInformation(blockID, lvl);
             }
@@ -31,7 +31,7 @@ namespace NotAwesomeSurvival
             BlockDefinition def = lvl.GetBlockDef(serverushort);
             if (def != null)
             {
-                bounds = new AABB(def.MinX * 2, def.MinZ * 2, def.MinY * 2,
+                bounds = new(def.MinX * 2, def.MinZ * 2, def.MinY * 2,
                                 def.MaxX * 2, def.MaxZ * 2, def.MaxY * 2);
                 switch (def.CollideType)
                 {
@@ -52,12 +52,12 @@ namespace NotAwesomeSurvival
             }
             else if (serverushort >= 256)
             {
-                bounds = new AABB(0, 0, 0, 32, 32, 32);
+                bounds = new(0, 0, 0, 32, 32, 32);
             }
             else
             {
                 ushort core = Nas.Convert(serverushort);
-                bounds = new AABB(0, 0, 0, 32, DefaultSet.Height(core) * 2, 32);
+                bounds = new(0, 0, 0, 32, DefaultSet.Height(core) * 2, 32);
             }
             NasBlock nb = NasBlock.Get(ConvertToClientushort(serverushort));
             //physics blocks like cold_water are also attempted to setup in this list, so only use the properties from the first one

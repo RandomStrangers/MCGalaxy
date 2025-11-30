@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-namespace Priority_Queue
+namespace NotAwesomeSurvival
 {
     /// <summary>
     /// A simplified priority queue implementation.  Is stable, auto-resizes, and thread-safe, at the cost of being slightly slower than
@@ -43,8 +43,8 @@ namespace Priority_Queue
         /// <param name="itemEquality">The equality comparison function to use to compare TItem values</param>
         public SimplePriorityQueue(Comparison<TPriority> priorityComparer, IEqualityComparer<TItem> itemEquality)
         {
-            _queue = new GenericPriorityQueue<SimpleNode, TPriority>(10, priorityComparer);
-            _itemToNodesCache = new Dictionary<TItem, IList<SimpleNode>>(itemEquality);
+            _queue = new(10, priorityComparer);
+            _itemToNodesCache = new(itemEquality);
             _nullNodesCache = new List<SimpleNode>();
         }
         #endregion
@@ -91,10 +91,7 @@ namespace Priority_Queue
         {
             get
             {
-                lock (_queue)
-                {
-                    return _queue.Count;
-                }
+                return _queue.Count;
             }
         }
         /// <summary>
@@ -106,14 +103,11 @@ namespace Priority_Queue
         {
             get
             {
-                lock (_queue)
+                if (_queue.Count <= 0)
                 {
-                    if (_queue.Count <= 0)
-                    {
-                        throw new InvalidOperationException("Cannot call .First on an empty queue");
-                    }
-                    return _queue.First.Data;
+                    throw new InvalidOperationException("Cannot call .First on an empty queue");
                 }
+                return _queue.First.Data;
             }
         }
         /// <summary>
@@ -122,12 +116,9 @@ namespace Priority_Queue
         /// </summary>
         public void Clear()
         {
-            lock (_queue)
-            {
-                _queue.Clear();
-                _itemToNodesCache.Clear();
-                _nullNodesCache.Clear();
-            }
+            _queue.Clear();
+            _itemToNodesCache.Clear();
+            _nullNodesCache.Clear();
         }
         /// <summary>
         /// Returns whether the given item is in the queue.
@@ -135,10 +126,7 @@ namespace Priority_Queue
         /// </summary>
         public bool Contains(TItem item)
         {
-            lock (_queue)
-            {
-                return item == null ? _nullNodesCache.Count > 0 : _itemToNodesCache.ContainsKey(item);
-            }
+            return item == null ? _nullNodesCache.Count > 0 : _itemToNodesCache.ContainsKey(item);
         }
         /// <summary>
         /// Removes the head of the queue (node with minimum priority; ties are broken by order of insertion), and returns it.
@@ -147,16 +135,13 @@ namespace Priority_Queue
         /// </summary>
         public TItem Dequeue()
         {
-            lock (_queue)
+            if (_queue.Count <= 0)
             {
-                if (_queue.Count <= 0)
-                {
-                    throw new InvalidOperationException("Cannot call Dequeue() on an empty queue");
-                }
-                SimpleNode node = _queue.Dequeue();
-                RemoveFromNodeCache(node);
-                return node.Data;
+                throw new InvalidOperationException("Cannot call Dequeue() on an empty queue");
             }
+            SimpleNode node = _queue.Dequeue();
+            RemoveFromNodeCache(node);
+            return node.Data;
         }
         /// <summary>
         /// Enqueue the item with the given priority, without calling lock(_queue) or AddToNodeCache(node)
@@ -182,21 +167,18 @@ namespace Priority_Queue
         /// </summary>
         public void Enqueue(TItem item, TPriority priority)
         {
-            lock (_queue)
+            IList<SimpleNode> nodes;
+            if (item == null)
             {
-                IList<SimpleNode> nodes;
-                if (item == null)
-                {
-                    nodes = _nullNodesCache;
-                }
-                else if (!_itemToNodesCache.TryGetValue(item, out nodes))
-                {
-                    nodes = new List<SimpleNode>();
-                    _itemToNodesCache[item] = nodes;
-                }
-                SimpleNode node = EnqueueNoLockOrCache(item, priority);
-                nodes.Add(node);
+                nodes = _nullNodesCache;
             }
+            else if (!_itemToNodesCache.TryGetValue(item, out nodes))
+            {
+                nodes = new List<SimpleNode>();
+                _itemToNodesCache[item] = nodes;
+            }
+            SimpleNode node = EnqueueNoLockOrCache(item, priority);
+            nodes.Add(node);
         }
         /// <summary>
         /// Removes an item from the queue.  The item does not need to be the head of the queue.  
@@ -206,34 +188,31 @@ namespace Priority_Queue
         /// </summary>
         public void Remove(TItem item)
         {
-            lock (_queue)
+            SimpleNode removeMe;
+            IList<SimpleNode> nodes;
+            if (item == null)
             {
-                SimpleNode removeMe;
-                IList<SimpleNode> nodes;
-                if (item == null)
+                if (_nullNodesCache.Count == 0)
                 {
-                    if (_nullNodesCache.Count == 0)
-                    {
-                        throw new InvalidOperationException("Cannot call Remove() on a node which is not enqueued: " + item);
-                    }
-                    removeMe = _nullNodesCache[0];
-                    nodes = _nullNodesCache;
+                    throw new InvalidOperationException("Cannot call Remove() on a node which is not enqueued: " + item);
                 }
-                else
-                {
-                    if (!_itemToNodesCache.TryGetValue(item, out nodes))
-                    {
-                        throw new InvalidOperationException("Cannot call Remove() on a node which is not enqueued: " + item);
-                    }
-                    removeMe = nodes[0];
-                    if (nodes.Count == 1)
-                    {
-                        _itemToNodesCache.Remove(item);
-                    }
-                }
-                _queue.Remove(removeMe);
-                nodes.Remove(removeMe);
+                removeMe = _nullNodesCache[0];
+                nodes = _nullNodesCache;
             }
+            else
+            {
+                if (!_itemToNodesCache.TryGetValue(item, out nodes))
+                {
+                    throw new InvalidOperationException("Cannot call Remove() on a node which is not enqueued: " + item);
+                }
+                removeMe = nodes[0];
+                if (nodes.Count == 1)
+                {
+                    _itemToNodesCache.Remove(item);
+                }
+            }
+            _queue.Remove(removeMe);
+            nodes.Remove(removeMe);
         }
         /// <summary>
         /// Call this method to change the priority of an item.
@@ -245,22 +224,15 @@ namespace Priority_Queue
         /// </summary>
         public void UpdatePriority(TItem item, TPriority priority)
         {
-            lock (_queue)
-            {
-                SimpleNode updateMe = GetExistingNode(item) ?? throw new InvalidOperationException("Cannot call UpdatePriority() on a node which is not enqueued: " + item);
-                _queue.UpdatePriority(updateMe, priority);
-            }
+            SimpleNode updateMe = GetExistingNode(item) ?? throw new InvalidOperationException("Cannot call UpdatePriority() on a node which is not enqueued: " + item);
+            _queue.UpdatePriority(updateMe, priority);
         }
         public IEnumerator<TItem> GetEnumerator()
         {
             List<TItem> queueData = new();
-            lock (_queue)
+            foreach (SimpleNode node in _queue)
             {
-                //Copy to a separate list because we don't want to 'yield return' inside a lock
-                foreach (SimpleNode node in _queue)
-                {
-                    queueData.Add(node.Data);
-                }
+                queueData.Add(node.Data);
             }
             return queueData.GetEnumerator();
         }

@@ -13,17 +13,17 @@ namespace NotAwesomeSurvival
         public static Effect[] breakEffects = new Effect[(int)NasBlock.Material.Count];
         public static bool Setup()
         {
-            breakMeter = new Effect();
+            breakMeter = new();
             if (!breakMeter.Load("breakmeter"))
             {
                 return false;
             }
-            breakEarth = new Effect();
+            breakEarth = new();
             if (!breakEarth.Load("breakdust"))
             {
                 return false;
             }
-            breakLeaves = new Effect();
+            breakLeaves = new();
             if (!breakLeaves.Load("breakleaf"))
             {
                 return false;

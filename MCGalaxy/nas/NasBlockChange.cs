@@ -1,7 +1,6 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
 using MCGalaxy.Blocks;
-using MCGalaxy.DB;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
@@ -32,12 +31,11 @@ namespace NotAwesomeSurvival
                 Log("Could not locate {0} (needed for block particle colors)", terrainImageName);
                 return false;
             }
-            breakScheduler ??= new Scheduler("BlockBreakScheduler");
-            repeaterScheduler ??= new Scheduler("RepeaterScheduler");
-            fishingScheduler ??= new Scheduler("FishingScheduler");
-            Bitmap terrain;
-            terrain = new Bitmap(Nas.Path + terrainImageName);
-            terrain = new Bitmap(terrain, terrain.Width / 16, terrain.Height / 16);
+            breakScheduler ??= new("BlockBreakScheduler");
+            repeaterScheduler ??= new("RepeaterScheduler");
+            fishingScheduler ??= new("FishingScheduler");
+            Bitmap terrain = new(Nas.Path + terrainImageName);
+            terrain = new(terrain, terrain.Width / 16, terrain.Height / 16);
             for (ushort blockID = 0; blockID <= 767; blockID++)
             {
                 BlockDefinition def = BlockDefinition.GlobalDefs[Nas.FromRaw(blockID)];
@@ -61,11 +59,10 @@ namespace NotAwesomeSurvival
             LastClickedCoordsKey = ClickableBlocksKey + "lastClickedCoords",
             BreakAmountKey = ClickableBlocksKey + "breakAmount",
             BreakIDKey = ClickableBlocksKey + "breakID";
-        public const byte BreakEffectIDcount = 6;
-        public static byte BreakEffectID = 255;
-        public const byte BreakMeterID = byte.MaxValue - BreakEffectIDcount;
-        public const int BreakMeterSpawnDelay = 100;
+        public const byte BreakEffectIDcount = 6,
+            BreakMeterID = byte.MaxValue - BreakEffectIDcount;
         public static object breakIDLocker = new();
+        public static byte BreakEffectID = 255;
         public static byte GetBreakID()
         {
             lock (breakIDLocker)
@@ -122,7 +119,7 @@ namespace NotAwesomeSurvival
                           Block.GetName(np.p, serverushort));
             }
             nasBlock.existAction?.Invoke(np, nasBlock, false, x, y, z);
-            np.p.level.BlockDB.Cache.Add(np.p, x, y, z, BlockDBFlags.ManualPlace, here, 0);
+            np.p.level.BlockDB.Cache.Add(np.p, x, y, z, 1 << 0, here, 0);
             np.nl.SetBlock(x, y, z, 0);
             foreach (Player pl in np.p.level.players)
             {
@@ -255,7 +252,7 @@ namespace NotAwesomeSurvival
             MeterInfo info = (MeterInfo)task.State;
             Player p = info.p;
             int millisecs = info.milliseconds;
-            millisecs -= BreakMeterSpawnDelay;
+            millisecs -= 100;
             NasEffect.Define(p, BreakMeterID, NasEffect.breakMeter, Color.White, (float)(millisecs / 1000.0f));
             NasEffect.Spawn(p, BreakMeterID, NasEffect.breakMeter, info.x, info.y, info.z, info.x, info.y, info.z);
         }
@@ -373,8 +370,7 @@ namespace NotAwesomeSurvival
                 np.breakY = y;
                 np.breakZ = z;
                 np.breakAttempt++;
-                const int swingTime = 260;
-                int millisecs = (nasBlock.durability * swingTime) - swingTime;
+                int millisecs = (nasBlock.durability * 260) - 260;
                 if (toolEffective)
                 {
                     float multiplier = 1 - heldItem.Prop.percentageOfTimeSaved;
@@ -479,23 +475,22 @@ namespace NotAwesomeSurvival
                     }
                 }
                 SchedulerTask taskDisplayMeter;
-                taskDisplayMeter = breakScheduler.QueueOnce(MeterTask, meterInfo, TimeSpan.FromMilliseconds(BreakMeterSpawnDelay));
+                taskDisplayMeter = breakScheduler.QueueOnce(MeterTask, meterInfo, TimeSpan.FromMilliseconds(100));
                 p.Extras["nas_taskDisplayMeter"] = taskDisplayMeter;
             }
         }
         public static void DoOffset(byte minOrMax, bool positive, ref float coord)
         {
-            const float offset = 0.125f;
             if (positive)
             {
                 coord -= 0.5f; //pull to minimum edge
                 coord += (float)(minOrMax / 16.0f); //push to maximum edge
-                coord += offset; //nudge out by offset
+                coord += 0.125f; //nudge out by offset
                 return;
             }
             coord -= 0.5f; //pull to minimum edge
             coord += (float)(minOrMax / 16.0f); //push to minimum edge
-            coord -= offset; //nudge out by offset
+            coord -= 0.125f; //nudge out by offset
         }
     } //class NasBlockChange
 }

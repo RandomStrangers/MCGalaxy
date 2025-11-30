@@ -1,7 +1,5 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using MCGalaxy;
 using System;
-using System.Collections.Generic;
 namespace NotAwesomeSurvival
 {
     public partial class NasBlock
@@ -19,14 +17,14 @@ namespace NotAwesomeSurvival
             DefaultDurabilities[(int)Material.Organic] = 5;
             DefaultDurabilities[(int)Material.Glass] = 3;
             DefaultDurabilities[(int)Material.Metal] = 32;
-            Default = new NasBlock(0, Material.Earth)
+            Default = new(0, Material.Earth)
             {
                 collideAction = AirCollideAction()
             };
             const float fallSpeed = 0.325f;
             ushort i;
             i = 8; //active 
-            blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
+            blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = 1f,
                 disturbDelayMax = 5f,
@@ -36,13 +34,13 @@ namespace NotAwesomeSurvival
             const float waterDisturbDelayMin = 0.5f,
                 waterDisturbDelayMax = 0.5f;
             i = 643; //Water barrel
-            blocks[i] = new NasBlock(i, Material.Wood, DefaultDurabilities[(int)Material.Wood] * 2)
+            blocks[i] = new(i, Material.Wood, DefaultDurabilities[(int)Material.Wood] * 2)
             {
-                childIDs = new List<ushort>()
+                childIDs = new()
             };
             blocks[i].childIDs.Add(9);
             i = 9; //still water
-            blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
+            blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 existAction = WaterExistAction(),
                 disturbDelayMin = waterDisturbDelayMin,
@@ -52,7 +50,7 @@ namespace NotAwesomeSurvival
                 parentID = 643
             };
             i = 632; //water flows
-            blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
+            blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = waterDisturbDelayMin,
                 disturbDelayMax = waterDisturbDelayMax,
@@ -60,7 +58,7 @@ namespace NotAwesomeSurvival
                 collideAction = LiquidCollideAction()
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
+            blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = waterDisturbDelayMin,
                 disturbDelayMax = waterDisturbDelayMax,
@@ -68,7 +66,7 @@ namespace NotAwesomeSurvival
                 collideAction = LiquidCollideAction()
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
+            blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = waterDisturbDelayMin,
                 disturbDelayMax = waterDisturbDelayMax,
@@ -76,7 +74,7 @@ namespace NotAwesomeSurvival
                 collideAction = LiquidCollideAction()
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
+            blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = waterDisturbDelayMin,
                 disturbDelayMax = waterDisturbDelayMax,
@@ -100,7 +98,7 @@ namespace NotAwesomeSurvival
                 collideAction = LiquidCollideAction()
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
+            blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = waterDisturbDelayMin,
                 disturbDelayMax = waterDisturbDelayMax,
@@ -108,7 +106,7 @@ namespace NotAwesomeSurvival
                 collideAction = LiquidCollideAction()
             };
             i = 639; //waterfall
-            blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
+            blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed,
@@ -118,7 +116,7 @@ namespace NotAwesomeSurvival
             float lavaDisturbDelayMin = 1.5f,
                 lavaDisturbDelayMax = 1.5f;
             i = 10; //Active lava
-            blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
+            blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 existAction = LavaExistAction(),
                 disturbDelayMin = lavaDisturbDelayMin,
@@ -128,7 +126,7 @@ namespace NotAwesomeSurvival
                 parentID = 696
             };
             i = 691; //lava flows
-            blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
+            blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = lavaDisturbDelayMin,
                 disturbDelayMax = lavaDisturbDelayMax,
@@ -136,7 +134,7 @@ namespace NotAwesomeSurvival
                 collideAction = LavaCollideAction()
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
+            blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = lavaDisturbDelayMin,
                 disturbDelayMax = lavaDisturbDelayMax,
@@ -144,7 +142,7 @@ namespace NotAwesomeSurvival
                 collideAction = LavaCollideAction()
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
+            blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = lavaDisturbDelayMin,
                 disturbDelayMax = lavaDisturbDelayMax,
@@ -152,7 +150,7 @@ namespace NotAwesomeSurvival
                 collideAction = LavaCollideAction()
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
+            blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = lavaDisturbDelayMin,
                 disturbDelayMax = lavaDisturbDelayMax,
@@ -160,7 +158,7 @@ namespace NotAwesomeSurvival
                 collideAction = LavaCollideAction()
             };
             i = 695; //lavafall
-            blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
+            blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 disturbDelayMin = lavaDisturbDelayMin,
                 disturbDelayMax = lavaDisturbDelayMax,
@@ -168,105 +166,105 @@ namespace NotAwesomeSurvival
                 collideAction = LavaCollideAction()
             };
             i = 11; //Lava
-            blocks[i] = new NasBlock(i, Material.Liquid, int.MaxValue)
+            blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
                 collideAction = LavaCollideAction(),
                 disturbedAction = FloodAction(new ushort[] { 11 })
             };
             i = 1; //Stone
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 596; //Stone slab
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            blocks[i] = new NasBlock(i, blocks[596]);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, blocks[596]);
             i = 598; //Stone wall
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            blocks[i] = new NasBlock(i++, blocks[598]);
-            blocks[i] = new NasBlock(i++, blocks[598]);
-            blocks[i] = new NasBlock(i++, blocks[598]);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i++, blocks[598]);
+            blocks[i] = new(i++, blocks[598]);
+            blocks[i] = new(i++, blocks[598]);
             i = 70; //Stone stair (lower)
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            blocks[i] = new NasBlock(i++, blocks[70]);
-            blocks[i] = new NasBlock(i++, blocks[70]);
-            blocks[i] = new NasBlock(i++, blocks[70]);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i++, blocks[70]);
+            blocks[i] = new(i++, blocks[70]);
+            blocks[i] = new(i++, blocks[70]);
             i = 579; //Stone stair (upper)
-            blocks[i] = new NasBlock(i++, blocks[70]);
-            blocks[i] = new NasBlock(i++, blocks[70]);
-            blocks[i] = new NasBlock(i++, blocks[70]);
-            blocks[i] = new NasBlock(i++, blocks[70]);
+            blocks[i] = new(i++, blocks[70]);
+            blocks[i] = new(i++, blocks[70]);
+            blocks[i] = new(i++, blocks[70]);
+            blocks[i] = new(i++, blocks[70]);
             i = 162; //Cobblestone
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 181; //Mossy Cobblestone
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 163; //Cobblestone-U (next is D)
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            blocks[i] = new NasBlock(i, blocks[163]);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, blocks[163]);
             const int stonebrickDurMulti = 2;
             i = 64; //Marker
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
             i = 65; //Stone brick
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
             i = 180; //Mossy stone brick
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
             i = 86; //Stone brick slab
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
-            blocks[i] = new NasBlock(i++, blocks[86]);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
+            blocks[i] = new(i++, blocks[86]);
             i = 75; //Stone pole
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            blocks[i] = new NasBlock(i++, blocks[75]);
-            blocks[i] = new NasBlock(i++, blocks[75]);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i++, blocks[75]);
+            blocks[i] = new(i++, blocks[75]);
             i = 278; //Stone brick wall-N
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
-            blocks[i] = new NasBlock(i++, blocks[278]);
-            blocks[i] = new NasBlock(i++, blocks[278]);
-            blocks[i] = new NasBlock(i++, blocks[278]);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
+            blocks[i] = new(i++, blocks[278]);
+            blocks[i] = new(i++, blocks[278]);
+            blocks[i] = new(i++, blocks[278]);
             i = 477; //Lined stone
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
             i = 211; //Thin pole
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            blocks[i] = new NasBlock(i++, blocks[211]);
-            blocks[i] = new NasBlock(i++, blocks[211]);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i++, blocks[211]);
+            blocks[i] = new(i++, blocks[211]);
             i = 214; //Boulder
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 0);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 0);
             i = 194; //Nub
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 0);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 0);
             i = 236; //unseen head
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 0);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 0);
             //oh boy it's nether blocks 
             i = 48; //Netherrack
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 1);
             i = 155; //Nether bricks
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 157; //Nether slab-D
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 156; //Nether slab-U
-            blocks[i] = new NasBlock(i, blocks[157]);
+            blocks[i] = new(i, blocks[157]);
             i = 452; //Blackstone
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
             {
                 alternateID = 1
             };
             i = 458; //polished blackstone + slabs
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 460;
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i--;
-            blocks[i] = new NasBlock(i, blocks[460]);
+            blocks[i] = new(i, blocks[460]);
             i = 466; //bricks blackstone + slabs
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 468;
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i--;
-            blocks[i] = new NasBlock(i, blocks[468]);
+            blocks[i] = new(i, blocks[468]);
             i = 469; //Gilded blackstone
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 474; //Cracked blackstone bricks
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 475; // blackstone chiseled
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             const float grassDelayMin = 10,
                 grassDelayMax = 60;
             i = 2; //Grass
-            blocks[i] = new NasBlock(i, Material.Earth)
+            blocks[i] = new(i, Material.Earth)
             {
                 disturbDelayMin = grassDelayMin,
                 disturbDelayMax = grassDelayMax,
@@ -275,14 +273,14 @@ namespace NotAwesomeSurvival
                 {
                     Drop grassDrop = new()
                     {
-                        blockStacks = new List<BlockStack>()
+                        blockStacks = new()
                     };
-                    grassDrop.blockStacks.Add(new BlockStack(3, 1));
+                    grassDrop.blockStacks.Add(new(3, 1));
                     return grassDrop;
                 }
             };
             i = 129; //Wet grass
-            blocks[i] = new NasBlock(i, Material.Earth)
+            blocks[i] = new(i, Material.Earth)
             {
                 disturbDelayMin = grassDelayMin,
                 disturbDelayMax = grassDelayMax,
@@ -292,13 +290,13 @@ namespace NotAwesomeSurvival
                 {
                     if (NasPlayer.inventory.HeldItem.name == "Shears")
                     {
-                        return new Drop(129, 1);
+                        return new(129, 1);
                     }
-                    return new Drop(3, 1);
+                    return new(3, 1);
                 }
             };
             i = 139; //Snowy grass
-            blocks[i] = new NasBlock(i, Material.Earth)
+            blocks[i] = new(i, Material.Earth)
             {
                 disturbedAction = GrassBlockAction(256 | 139, 3),
                 interaction = StripInteraction(Nas.FromRaw(547), "Shovel"),
@@ -306,13 +304,13 @@ namespace NotAwesomeSurvival
                 {
                     if (NasPlayer.inventory.HeldItem.name == "Shears")
                     {
-                        return new Drop(139, 1);
+                        return new(139, 1);
                     }
-                    return new Drop(3, 1);
+                    return new(3, 1);
                 }
             };
             i = 547; //Grass path
-            blocks[i] = new NasBlock(i, Material.Earth)
+            blocks[i] = new(i, Material.Earth)
             {
                 disturbDelayMin = 10f,
                 disturbDelayMax = 20f,
@@ -321,13 +319,13 @@ namespace NotAwesomeSurvival
                 {
                     if (NasPlayer.inventory.HeldItem.name == "Shears")
                     {
-                        return new Drop(547, 1);
+                        return new(547, 1);
                     }
-                    return new Drop(3, 1);
+                    return new(3, 1);
                 }
             };
             i = 3; //Dirt
-            blocks[i] = new NasBlock(i, Material.Earth)
+            blocks[i] = new(i, Material.Earth)
             {
                 disturbDelayMin = grassDelayMin,
                 disturbDelayMax = grassDelayMax,
@@ -335,249 +333,249 @@ namespace NotAwesomeSurvival
                 disturbedAction = DirtBlockAction(grassSet, 3)
             };
             i = 685; //Dirt (fake)
-            blocks[i] = new NasBlock(i, Material.Earth)
+            blocks[i] = new(i, Material.Earth)
             {
                 collideAction = AirCollideAction()
             };
             i = 4; //Cobblebrick
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 50; //Cobble brick-D
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 59; //Cobble brick-U
-            blocks[i] = new NasBlock(i, blocks[50]);
+            blocks[i] = new(i, blocks[50]);
             i = 133; //Cobble brick wall
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            blocks[i] = new NasBlock(i, blocks[133]);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, blocks[133]);
             //BIRCH STUFF~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             i = 98; //Wood
-            blocks[i] = new NasBlock(i, Material.Wood)
+            blocks[i] = new(i, Material.Wood)
             {
                 alternateID = 5
             };
             i = 101; //Wood slab-U
-            blocks[i] = new NasBlock(i, Material.Wood)
+            blocks[i] = new(i, Material.Wood)
             {
                 alternateID = 56
             };
             i = 102; //Wood slab-D
-            blocks[i] = new NasBlock(i, blocks[101])
+            blocks[i] = new(i, blocks[101])
             {
                 alternateID = 57
             };
             i = 186; //Wood wall
-            blocks[i] = new NasBlock(i++, Material.Wood);
+            blocks[i] = new(i++, Material.Wood);
             blocks[i - 1].alternateID = 182;
-            blocks[i] = new NasBlock(i++, blocks[186]);
+            blocks[i] = new(i++, blocks[186]);
             blocks[i - 1].alternateID = 183;
-            blocks[i] = new NasBlock(i++, blocks[186]);
+            blocks[i] = new(i++, blocks[186]);
             blocks[i - 1].alternateID = 184;
-            blocks[i] = new NasBlock(i++, blocks[186]);
+            blocks[i] = new(i++, blocks[186]);
             blocks[i - 1].alternateID = 185;
             i = 262; //Wood stair (lower)
-            blocks[i] = new NasBlock(i++, Material.Wood);
+            blocks[i] = new(i++, Material.Wood);
             blocks[i - 1].alternateID = 66;
-            blocks[i] = new NasBlock(i++, blocks[262]);
+            blocks[i] = new(i++, blocks[262]);
             blocks[i - 1].alternateID = 67;
-            blocks[i] = new NasBlock(i++, blocks[262]);
+            blocks[i] = new(i++, blocks[262]);
             blocks[i - 1].alternateID = 68;
-            blocks[i] = new NasBlock(i++, blocks[262]);
+            blocks[i] = new(i++, blocks[262]);
             blocks[i - 1].alternateID = 69;
             i = 575; //Wood stair (upper)
-            blocks[i] = new NasBlock(i++, blocks[262]);
+            blocks[i] = new(i++, blocks[262]);
             blocks[i - 1].alternateID = 567;
-            blocks[i] = new NasBlock(i++, blocks[262]);
+            blocks[i] = new(i++, blocks[262]);
             blocks[i - 1].alternateID = 568;
-            blocks[i] = new NasBlock(i++, blocks[262]);
+            blocks[i] = new(i++, blocks[262]);
             blocks[i - 1].alternateID = 569;
-            blocks[i] = new NasBlock(i++, blocks[262]);
+            blocks[i] = new(i++, blocks[262]);
             blocks[i - 1].alternateID = 570;
             i = 255; //Wood pole
-            blocks[i] = new NasBlock(i++, Material.Wood);
+            blocks[i] = new(i++, Material.Wood);
             blocks[i - 1].alternateID = 78;
-            blocks[i] = new NasBlock(i++, blocks[255]);
+            blocks[i] = new(i++, blocks[255]);
             blocks[i - 1].alternateID = 79;
-            blocks[i] = new NasBlock(i++, blocks[255]);
+            blocks[i] = new(i++, blocks[255]);
             blocks[i - 1].alternateID = 80;
             i = 260; //Fence (wood)
-            blocks[i] = new NasBlock(i++, Material.Wood);
-            blocks[i] = new NasBlock(i, blocks[260]);
+            blocks[i] = new(i++, Material.Wood);
+            blocks[i] = new(i, blocks[260]);
             i = 243; //Gnarly (Log)
-            blocks[i] = new NasBlock(i, Material.Wood);
+            blocks[i] = new(i, Material.Wood);
             i = 242; //Log-UD
-            blocks[i] = new NasBlock(i, Material.Wood)
+            blocks[i] = new(i, Material.Wood)
             {
                 alternateID = 17,
                 interaction = StripInteraction(Nas.FromRaw(546))
             };
             i = 240; //Log-WE
-            blocks[i] = new NasBlock(i, blocks[242])
+            blocks[i] = new(i, blocks[242])
             {
                 alternateID = 15,
                 interaction = StripInteraction(Nas.FromRaw(544))
             };
             i = 241; //Log-NS
-            blocks[i] = new NasBlock(i, blocks[242])
+            blocks[i] = new(i, blocks[242])
             {
                 alternateID = 16,
                 interaction = StripInteraction(Nas.FromRaw(545))
             };
             i = 546; //Stripped-UD
-            blocks[i] = new NasBlock(i, Material.Wood);
+            blocks[i] = new(i, Material.Wood);
             i = 544; //Log-WE
-            blocks[i] = new NasBlock(i, blocks[546]);
+            blocks[i] = new(i, blocks[546]);
             i = 545; //Log-NS
-            blocks[i] = new NasBlock(i, blocks[546]);
+            blocks[i] = new(i, blocks[546]);
             //SPRUCE STUFF~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             i = 97; //Wood
-            blocks[i] = new NasBlock(i, Material.Wood)
+            blocks[i] = new(i, Material.Wood)
             {
                 alternateID = 5
             };
             i = 99; //Wood slab-U
-            blocks[i] = new NasBlock(i, Material.Wood)
+            blocks[i] = new(i, Material.Wood)
             {
                 alternateID = 56
             };
             i = 100; //Wood slab-D
-            blocks[i] = new NasBlock(i, blocks[99])
+            blocks[i] = new(i, blocks[99])
             {
                 alternateID = 57
             };
             i = 190; //Wood wall
-            blocks[i] = new NasBlock(i++, Material.Wood);
+            blocks[i] = new(i++, Material.Wood);
             blocks[i - 1].alternateID = 182;
-            blocks[i] = new NasBlock(i++, blocks[190]);
+            blocks[i] = new(i++, blocks[190]);
             blocks[i - 1].alternateID = 183;
-            blocks[i] = new NasBlock(i++, blocks[190]);
+            blocks[i] = new(i++, blocks[190]);
             blocks[i - 1].alternateID = 184;
-            blocks[i] = new NasBlock(i++, blocks[190]);
+            blocks[i] = new(i++, blocks[190]);
             blocks[i - 1].alternateID = 185;
             i = 266; //Wood stair (lower)
-            blocks[i] = new NasBlock(i++, Material.Wood);
+            blocks[i] = new(i++, Material.Wood);
             blocks[i - 1].alternateID = 66;
-            blocks[i] = new NasBlock(i++, blocks[266]);
+            blocks[i] = new(i++, blocks[266]);
             blocks[i - 1].alternateID = 67;
-            blocks[i] = new NasBlock(i++, blocks[266]);
+            blocks[i] = new(i++, blocks[266]);
             blocks[i - 1].alternateID = 68;
-            blocks[i] = new NasBlock(i++, blocks[266]);
+            blocks[i] = new(i++, blocks[266]);
             blocks[i - 1].alternateID = 69;
             i = 571; //Wood stair (upper)
-            blocks[i] = new NasBlock(i++, blocks[266]);
+            blocks[i] = new(i++, blocks[266]);
             blocks[i - 1].alternateID = 567;
-            blocks[i] = new NasBlock(i++, blocks[266]);
+            blocks[i] = new(i++, blocks[266]);
             blocks[i - 1].alternateID = 568;
-            blocks[i] = new NasBlock(i++, blocks[266]);
+            blocks[i] = new(i++, blocks[266]);
             blocks[i - 1].alternateID = 569;
-            blocks[i] = new NasBlock(i++, blocks[266]);
+            blocks[i] = new(i++, blocks[266]);
             blocks[i - 1].alternateID = 570;
             i = 252; //Wood pole
-            blocks[i] = new NasBlock(i++, Material.Wood);
+            blocks[i] = new(i++, Material.Wood);
             blocks[i - 1].alternateID = 78;
-            blocks[i] = new NasBlock(i++, blocks[252]);
+            blocks[i] = new(i++, blocks[252]);
             blocks[i - 1].alternateID = 79;
-            blocks[i] = new NasBlock(i++, blocks[252]);
+            blocks[i] = new(i++, blocks[252]);
             blocks[i - 1].alternateID = 80;
             i = 258; //Fence (wood)
-            blocks[i] = new NasBlock(i++, Material.Wood);
-            blocks[i] = new NasBlock(i, blocks[258]);
+            blocks[i] = new(i++, Material.Wood);
+            blocks[i] = new(i, blocks[258]);
             i = 251; //Gnarly (Log)
-            blocks[i] = new NasBlock(i, Material.Wood);
+            blocks[i] = new(i, Material.Wood);
             i = 250; //Log-UD
-            blocks[i] = new NasBlock(i, Material.Wood)
+            blocks[i] = new(i, Material.Wood)
             {
                 alternateID = 17,
                 interaction = StripInteraction(Nas.FromRaw(621))
             };
             i = 248; //Log-WE
-            blocks[i] = new NasBlock(i, blocks[250])
+            blocks[i] = new(i, blocks[250])
             {
                 alternateID = 15,
                 interaction = StripInteraction(Nas.FromRaw(619))
             };
             i = 249; //Log-NS
-            blocks[i] = new NasBlock(i, blocks[250])
+            blocks[i] = new(i, blocks[250])
             {
                 alternateID = 16,
                 interaction = StripInteraction(Nas.FromRaw(620))
             };
             i = 621; //Stripped-UD
-            blocks[i] = new NasBlock(i, Material.Wood);
+            blocks[i] = new(i, Material.Wood);
             i = 619; //Log-WE
-            blocks[i] = new NasBlock(i, blocks[621]);
+            blocks[i] = new(i, blocks[621]);
             i = 620; //Log-NS
-            blocks[i] = new NasBlock(i, blocks[621]);
+            blocks[i] = new(i, blocks[621]);
             //OAK STUFF ~~~~~~~~~    
             i = 5; //Wood
-            blocks[i] = new NasBlock(i, Material.Wood);
+            blocks[i] = new(i, Material.Wood);
             i = 56; //Wood slab-U
-            blocks[i] = new NasBlock(i, Material.Wood);
+            blocks[i] = new(i, Material.Wood);
             i = 57; //Wood slab-D
-            blocks[i] = new NasBlock(i, blocks[56]);
+            blocks[i] = new(i, blocks[56]);
             i = 182; //Wood wall
-            blocks[i] = new NasBlock(i++, Material.Wood);
-            blocks[i] = new NasBlock(i++, blocks[182]);
-            blocks[i] = new NasBlock(i++, blocks[182]);
-            blocks[i] = new NasBlock(i++, blocks[182]);
+            blocks[i] = new(i++, Material.Wood);
+            blocks[i] = new(i++, blocks[182]);
+            blocks[i] = new(i++, blocks[182]);
+            blocks[i] = new(i++, blocks[182]);
             i = 66; //Wood stair (lower)
-            blocks[i] = new NasBlock(i++, Material.Wood);
-            blocks[i] = new NasBlock(i++, blocks[66]);
-            blocks[i] = new NasBlock(i++, blocks[66]);
-            blocks[i] = new NasBlock(i++, blocks[66]);
+            blocks[i] = new(i++, Material.Wood);
+            blocks[i] = new(i++, blocks[66]);
+            blocks[i] = new(i++, blocks[66]);
+            blocks[i] = new(i++, blocks[66]);
             i = 567; //Wood stair (upper)
-            blocks[i] = new NasBlock(i++, blocks[66]);
-            blocks[i] = new NasBlock(i++, blocks[66]);
-            blocks[i] = new NasBlock(i++, blocks[66]);
-            blocks[i] = new NasBlock(i++, blocks[66]);
+            blocks[i] = new(i++, blocks[66]);
+            blocks[i] = new(i++, blocks[66]);
+            blocks[i] = new(i++, blocks[66]);
+            blocks[i] = new(i++, blocks[66]);
             i = 78; //Wood pole
-            blocks[i] = new NasBlock(i++, Material.Wood);
-            blocks[i] = new NasBlock(i++, blocks[78]);
-            blocks[i] = new NasBlock(i++, blocks[78]);
+            blocks[i] = new(i++, Material.Wood);
+            blocks[i] = new(i++, blocks[78]);
+            blocks[i] = new(i++, blocks[78]);
             i = 94; //Fence (wood)
-            blocks[i] = new NasBlock(i++, Material.Wood);
-            blocks[i] = new NasBlock(i, blocks[94]);
+            blocks[i] = new(i++, Material.Wood);
+            blocks[i] = new(i, blocks[94]);
             i = 168; //Wood board
-            blocks[i] = new NasBlock(i++, Material.Wood);
+            blocks[i] = new(i++, Material.Wood);
             i = 524; //Board (sideways)
-            blocks[i] = new NasBlock(i++, Material.Wood);
-            blocks[i] = new NasBlock(i++, blocks[524]);
-            blocks[i] = new NasBlock(i++, blocks[524]);
-            blocks[i] = new NasBlock(i++, blocks[524]);
+            blocks[i] = new(i++, Material.Wood);
+            blocks[i] = new(i++, blocks[524]);
+            blocks[i] = new(i++, blocks[524]);
+            blocks[i] = new(i++, blocks[524]);
             i = 17; //Log-UD
-            blocks[i] = new NasBlock(i, Material.Wood)
+            blocks[i] = new(i, Material.Wood)
             {
                 interaction = StripInteraction(Nas.FromRaw(585))
             };
             i = 15; //Log-WE
-            blocks[i] = new NasBlock(i, blocks[17])
+            blocks[i] = new(i, blocks[17])
             {
                 interaction = StripInteraction(Nas.FromRaw(583))
             };
             i = 16; //Log-NS
-            blocks[i] = new NasBlock(i, blocks[17])
+            blocks[i] = new(i, blocks[17])
             {
                 interaction = StripInteraction(Nas.FromRaw(584))
             };
             i = 585; //Stripped-UD
-            blocks[i] = new NasBlock(i, Material.Wood);
+            blocks[i] = new(i, Material.Wood);
             i = 583; //Log-WE
-            blocks[i] = new NasBlock(i, blocks[585]);
+            blocks[i] = new(i, blocks[585]);
             i = 584; //Log-NS
-            blocks[i] = new NasBlock(i, blocks[585]);
+            blocks[i] = new(i, blocks[585]);
             i = 676; //smithing
-            blocks[i] = new NasBlock(i, Material.Wood)
+            blocks[i] = new(i, Material.Wood)
             {
                 existAction = SmithingAction(),
                 interaction = SmithingTableAction()
             };
             i = 657; //Falling Log
-            blocks[i] = new NasBlock(i, Material.Wood)
+            blocks[i] = new(i, Material.Wood)
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed,
                 disturbedAction = FallingBlockAction(Nas.FromRaw(i))
             };
             i = 656; //Falling Log 2
-            blocks[i] = new NasBlock(i, Material.Wood)
+            blocks[i] = new(i, Material.Wood)
             {
                 disturbDelayMin = 0.75f,
                 disturbDelayMax = 0.75f,
@@ -586,14 +584,14 @@ namespace NotAwesomeSurvival
             const float treeDelayMin = 30f,
                 treeDelayMax = 60f;
             i = 6; //Sapling
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 disturbDelayMin = treeDelayMin,
                 disturbDelayMax = treeDelayMax,
                 disturbedAction = OakSaplingAction()
             };
             i = 154; //Sapling birch
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 disturbDelayMin = treeDelayMin,
                 disturbDelayMax = treeDelayMax,
@@ -601,7 +599,7 @@ namespace NotAwesomeSurvival
                 alternateID = 6
             };
             i = 450; //Sapling swamp
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 disturbDelayMin = treeDelayMin,
                 disturbDelayMax = treeDelayMax,
@@ -609,7 +607,7 @@ namespace NotAwesomeSurvival
                 alternateID = 6
             };
             i = 689; //Sapling spruce
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 disturbDelayMin = treeDelayMin,
                 disturbDelayMax = treeDelayMax,
@@ -617,84 +615,84 @@ namespace NotAwesomeSurvival
                 alternateID = 6
             };
             i = 7; //Bedrock
-            blocks[i] = new NasBlock(i, Material.Stone, int.MaxValue, 5);
+            blocks[i] = new(i, Material.Stone, int.MaxValue, 5);
             i = 767; //Barrier
-            blocks[i] = new NasBlock(i, Material.Stone, int.MaxValue - 1, 6)
+            blocks[i] = new(i, Material.Stone, int.MaxValue - 1, 6)
             {
                 collideAction = AirCollideAction()
             };
             i = 673; //spawnbedrock
-            blocks[i] = new NasBlock(i, Material.Stone, int.MaxValue, 5);
+            blocks[i] = new(i, Material.Stone, int.MaxValue, 5);
             i = 690; //Obsidian
-            blocks[i] = new NasBlock(i, Material.Stone, 512, 3);
+            blocks[i] = new(i, Material.Stone, 512, 3);
             i = 457; //Obsidian
-            blocks[i] = new NasBlock(i, Material.Stone, 512, 3)
+            blocks[i] = new(i, Material.Stone, 512, 3)
             {
                 interaction = PortalInteraction()
             };
             i = 659;
-            blocks[i] = new NasBlock(i, Material.Wood)
+            blocks[i] = new(i, Material.Wood)
             {
                 interaction = ChangeInteraction(Nas.FromRaw(658)),
                 dropHandler = CustomDrop(659, 1)
             };
             i = 658; //trapdoors
-            blocks[i] = new NasBlock(i, blocks[659])
+            blocks[i] = new(i, blocks[659])
             {
                 interaction = ChangeInteraction(Nas.FromRaw(659)),
                 dropHandler = CustomDrop(659, 1)
             };
             i = 660;
-            blocks[i] = new NasBlock(i, blocks[659])
+            blocks[i] = new(i, blocks[659])
             {
                 interaction = ChangeInteraction(Nas.FromRaw(661)),
                 dropHandler = CustomDrop(659, 1)
             };
             i = 661;
-            blocks[i] = new NasBlock(i, blocks[659])
+            blocks[i] = new(i, blocks[659])
             {
                 interaction = ChangeInteraction(Nas.FromRaw(660)),
                 dropHandler = CustomDrop(659, 1)
             };
             i = 662;
-            blocks[i] = new NasBlock(i, blocks[659])
+            blocks[i] = new(i, blocks[659])
             {
                 interaction = ChangeInteraction(Nas.FromRaw(663)),
                 dropHandler = CustomDrop(659, 1)
             };
             i = 663;
-            blocks[i] = new NasBlock(i, blocks[659])
+            blocks[i] = new(i, blocks[659])
             {
                 interaction = ChangeInteraction(Nas.FromRaw(662)),
                 dropHandler = CustomDrop(659, 1)
             };
             i = 664;
-            blocks[i] = new NasBlock(i, blocks[659])
+            blocks[i] = new(i, blocks[659])
             {
                 interaction = ChangeInteraction(Nas.FromRaw(665)),
                 dropHandler = CustomDrop(659, 1)
             };
             i = 665;
-            blocks[i] = new NasBlock(i, blocks[659])
+            blocks[i] = new(i, blocks[659])
             {
                 interaction = ChangeInteraction(Nas.FromRaw(664)),
                 dropHandler = CustomDrop(659, 1)
             };
             i = 12; //Sand
-            blocks[i] = new NasBlock(i, Material.Earth, 3)
+            blocks[i] = new(i, Material.Earth, 3)
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed,
                 disturbedAction = FallingBlockAction(12)
             };
             i = 451; //Soul sand
-            blocks[i] = new NasBlock(i, Material.Earth, 3)
+            blocks[i] = new(i, Material.Earth, 3)
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed
             };
             i = 13; //Gravel
-            blocks[i] = new NasBlock(i, Material.Earth)
+            blocks[i] = new(i, Material.Earth)
             {
                 disturbDelayMin = 0.7f,
                 disturbDelayMax = 0.7f,
@@ -703,7 +701,7 @@ namespace NotAwesomeSurvival
             const float leafShrivelDelayMin = 0.2f,
                 leafShrivelDelayMax = 0.4f;
             i = 18; //Leaves
-            blocks[i] = new NasBlock(i, Material.Leaves)
+            blocks[i] = new(i, Material.Leaves)
             {
                 disturbedAction = LeafBlockAction(logSet, 18),
                 disturbDelayMin = leafShrivelDelayMin,
@@ -714,17 +712,17 @@ namespace NotAwesomeSurvival
                     int rand = r.Next(0, 8);
                     if (rand == 0)
                     { //16 in 128 chance (1 in 8 chance) of sapling
-                        drop.blockStacks.Add(new BlockStack(6, 1));
+                        drop.blockStacks.Add(new(6, 1));
                     }
                     else
                     {
-                        drop = new Drop(18, 1);
+                        drop = new(18, 1);
                     }
                     return drop;
                 }
             };
             i = 103; //Pink leaves
-            blocks[i] = new NasBlock(i, Material.Leaves)
+            blocks[i] = new(i, Material.Leaves)
             {
                 disturbedAction = LeafBlockAction(logSet, 256 | 103),
                 disturbDelayMin = leafShrivelDelayMin,
@@ -735,36 +733,36 @@ namespace NotAwesomeSurvival
                     int rand = r.Next(0, 8);
                     if (rand == 0)
                     {
-                        drop.blockStacks.Add(new BlockStack(154, 1));
+                        drop.blockStacks.Add(new(154, 1));
                     }
                     else
                     {
-                        drop = new Drop(103, 1);
+                        drop = new(103, 1);
                     }
                     return drop;
                 }
             };
             i = 666; //dense Leaves
-            blocks[i] = new NasBlock(i, Material.Leaves)
+            blocks[i] = new(i, Material.Leaves)
             {
                 disturbedAction = LeafBlockAction(logSet, Nas.FromRaw(i)),
                 disturbDelayMin = 1f,
                 disturbDelayMax = 1.5f
             };
             i = 686; //dense Leaves
-            blocks[i] = new NasBlock(i, Material.Leaves)
+            blocks[i] = new(i, Material.Leaves)
             {
                 disturbedAction = LeafBlockAction(logSet, Nas.FromRaw(i)),
                 disturbDelayMin = 1f,
                 disturbDelayMax = 1.5f
             };
             i = 105; //Leaves slab
-            blocks[i] = new NasBlock(i, Material.Leaves);
+            blocks[i] = new(i, Material.Leaves);
             i = 246; //pink Leaves slab
-            blocks[i] = new NasBlock(i, Material.Leaves);
+            blocks[i] = new(i, Material.Leaves);
 
             i = 19; //Leaves spruce
-            blocks[i] = new NasBlock(i, Material.Leaves)
+            blocks[i] = new(i, Material.Leaves)
             {
                 disturbedAction = LeafBlockAction(logSet, 19),
                 disturbDelayMin = leafShrivelDelayMin,
@@ -775,66 +773,66 @@ namespace NotAwesomeSurvival
                     int rand = r.Next(0, 8);
                     if (rand == 0)
                     {
-                        drop.blockStacks.Add(new BlockStack(689, 1));
+                        drop.blockStacks.Add(new(689, 1));
                     }
                     else
                     {
-                        drop = new Drop(19, 1);
+                        drop = new(19, 1);
                     }
                     return drop;
                 }
             };
             i = 20; //Glass
-            blocks[i] = new NasBlock(i, Material.Glass);
+            blocks[i] = new(i, Material.Glass);
             i = 136; //Glass pane
-            blocks[i] = new NasBlock(i++, Material.Glass);
-            blocks[i] = new NasBlock(i, blocks[136]);
+            blocks[i] = new(i++, Material.Glass);
+            blocks[i] = new(i, blocks[136]);
             i = 687; //Lamp
-            blocks[i] = new NasBlock(i, Material.Glass)
+            blocks[i] = new(i, Material.Glass)
             {
                 disturbedAction = LampAction(Nas.FromRaw(688), Nas.FromRaw(687), Nas.FromRaw(687))
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Glass)
+            blocks[i] = new(i, Material.Glass)
             {
                 disturbedAction = LampAction(Nas.FromRaw(688), Nas.FromRaw(687), Nas.FromRaw(688)),
                 dropHandler = CustomDrop(687, 1)
             };
             i = 178; //Spikes
-            blocks[i] = new NasBlock(i, Material.Stone)
+            blocks[i] = new(i, Material.Stone)
             {
                 disturbedAction = LampAction(Nas.FromRaw(179), Nas.FromRaw(178), Nas.FromRaw(178))
             };
             i = 179;
-            blocks[i] = new NasBlock(i, Material.Stone)
+            blocks[i] = new(i, Material.Stone)
             {
                 disturbedAction = LampAction(Nas.FromRaw(179), Nas.FromRaw(178), Nas.FromRaw(179)),
                 collideAction = SpikeCollideAction(),
                 dropHandler = CustomDrop(178, 1)
             };
             i = 476; //Obsidian spikes
-            blocks[i] = new NasBlock(i, Material.Stone, 128, 4)
+            blocks[i] = new(i, Material.Stone, 128, 4)
             {
                 collideAction = SpikeCollideAction()
             };
             i = 203; //Old glass
-            blocks[i] = new NasBlock(i, Material.Glass);
+            blocks[i] = new(i, Material.Glass);
             i = 209; //Old pane
-            blocks[i] = new NasBlock(i++, Material.Glass);
-            blocks[i] = new NasBlock(i, blocks[209]);
+            blocks[i] = new(i++, Material.Glass);
+            blocks[i] = new(i, blocks[209]);
             i = 471; //New glass
-            blocks[i] = new NasBlock(i, Material.Glass);
+            blocks[i] = new(i, Material.Glass);
             i = 472; //New pane
-            blocks[i] = new NasBlock(i++, Material.Glass);
-            blocks[i] = new NasBlock(i, blocks[472]);
+            blocks[i] = new(i++, Material.Glass);
+            blocks[i] = new(i, blocks[472]);
             i = 37; //Dandelion
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 dropHandler = (NasPlayer, dropID) =>
                 {
                     if (NasPlayer.inventory.HeldItem.name == "Shears")
                     {
-                        return new Drop(37, 1);
+                        return new(37, 1);
                     }
                     else
                     {
@@ -845,13 +843,13 @@ namespace NotAwesomeSurvival
                 disturbedAction = GenericPlantAction()
             };
             i = 38; //Rose
-            blocks[i] = new NasBlock(i, Material.Plant, 1)
+            blocks[i] = new(i, Material.Plant, 1)
             {
                 dropHandler = (NasPlayer, dropID) =>
                 {
                     if (NasPlayer.inventory.HeldItem.name == "Shears")
                     {
-                        return new Drop(38, 1);
+                        return new(38, 1);
                     }
                     else
                     {
@@ -862,23 +860,23 @@ namespace NotAwesomeSurvival
                 disturbedAction = GenericPlantAction()
             };
             i = 39; //Dead shrub
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 disturbedAction = NeedsSupportAction()
             };
             i = 40; //Tall grass
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 disturbedAction = GenericPlantAction()
             };
             i = 130; //Wet tall grass
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 dropHandler = (NasPlayer, dropID) =>
                 {
                     if (NasPlayer.inventory.HeldItem.name == "Shears")
                     {
-                        return new Drop(130, 1);
+                        return new(130, 1);
                     }
                     else
                     {
@@ -889,105 +887,105 @@ namespace NotAwesomeSurvival
                 disturbedAction = GenericPlantAction()
             };
             i = 41; //Gold
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 2);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 2);
             i = 42; //Iron
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1);
             i = 631; //Diamond
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 3);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 3);
             i = 650; //Emerald
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 4);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 4);
             i = 148; //Old iron
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1);
             i = 208;
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1);
             i = 149; //Old iron slab
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1);
-            blocks[i] = new NasBlock(i, blocks[149]);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1);
+            blocks[i] = new(i, blocks[149]);
             i = 294; //Old iron wall
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1);
-            blocks[i] = new NasBlock(i++, blocks[294]);
-            blocks[i] = new NasBlock(i++, blocks[294]);
-            blocks[i] = new NasBlock(i, blocks[294]);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1);
+            blocks[i] = new(i++, blocks[294]);
+            blocks[i] = new(i++, blocks[294]);
+            blocks[i] = new(i, blocks[294]);
             i = 159; //Iron fence-WE
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 collideAction = AirCollideAction()
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[159]);
+            blocks[i] = new(i, blocks[159]);
             i = 161; //Iron cage
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 collideAction = AirCollideAction()
             };
             i = 44; //Concrete slab-D
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 1)
             {
                 damageDoneToTool = 0.5f
             };
             i = 58; //Concrete slab-U
-            blocks[i] = new NasBlock(i, blocks[44]);
+            blocks[i] = new(i, blocks[44]);
             i = 43; //Double Concrete slab
-            blocks[i] = new NasBlock(i, blocks[44])
+            blocks[i] = new(i, blocks[44])
             {
                 durability = DefaultDurabilities[(int)Material.Stone],
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    return new Drop(dropID, 2);
+                    return new(dropID, 2);
                 },
                 resourceCost = 2,
                 damageDoneToTool = 1f
             };
             i = 45; //Concrete block
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 282; //Concrete wall
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            blocks[i] = new NasBlock(i++, blocks[282]);
-            blocks[i] = new NasBlock(i++, blocks[282]);
-            blocks[i] = new NasBlock(i++, blocks[282]);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i++, blocks[282]);
+            blocks[i] = new(i++, blocks[282]);
+            blocks[i] = new(i++, blocks[282]);
             i = 549; //Concrete bricks[sic]
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 135; //Stone plate
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] / 2, 1);
             i = 270; //Concrete stairs
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            blocks[i] = new NasBlock(i++, blocks[270]);
-            blocks[i] = new NasBlock(i++, blocks[270]);
-            blocks[i] = new NasBlock(i, blocks[270]);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i++, blocks[270]);
+            blocks[i] = new(i++, blocks[270]);
+            blocks[i] = new(i, blocks[270]);
             i = 587; //upper
-            blocks[i] = new NasBlock(i++, blocks[270]);
-            blocks[i] = new NasBlock(i++, blocks[270]);
-            blocks[i] = new NasBlock(i++, blocks[270]);
-            blocks[i] = new NasBlock(i, blocks[270]);
+            blocks[i] = new(i++, blocks[270]);
+            blocks[i] = new(i++, blocks[270]);
+            blocks[i] = new(i++, blocks[270]);
+            blocks[i] = new(i, blocks[270]);
             i = 480; //Concrete corner
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            blocks[i] = new NasBlock(i++, blocks[480]);
-            blocks[i] = new NasBlock(i++, blocks[480]);
-            blocks[i] = new NasBlock(i, blocks[480]);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i++, blocks[480]);
+            blocks[i] = new(i++, blocks[480]);
+            blocks[i] = new(i, blocks[480]);
             i = 453; //Obsidian slab-D
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 298; //Obsidian slab-U
-            blocks[i] = new NasBlock(i, blocks[453]);
+            blocks[i] = new(i, blocks[453]);
             i = 49; //Coal block
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 51; //Rope
-            blocks[i] = new NasBlock(i, Material.Wood);
+            blocks[i] = new(i, Material.Wood);
             i = 52; //Sandstone
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 299; //Sandstone slab
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            blocks[i] = new NasBlock(i, blocks[299]);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, blocks[299]);
             i = 53; //Snow (layer)
-            blocks[i] = new NasBlock(i, Material.Earth)
+            blocks[i] = new(i, Material.Earth)
             {
                 disturbedAction = NeedsSupportAction()
             };
             i = 140; //snow (block)
-            blocks[i] = new NasBlock(i, Material.Earth);
+            blocks[i] = new(i, Material.Earth);
             i = 677; //Sticky
-            blocks[i] = new NasBlock(i, Material.Organic, 1);
+            blocks[i] = new(i, Material.Organic, 1);
             i = 54; //Fire
-            blocks[i] = new NasBlock(i, Material.None)
+            blocks[i] = new(i, Material.None)
             {
                 disturbDelayMin = 10f,
                 disturbDelayMax = 15f,
@@ -1000,53 +998,53 @@ namespace NotAwesomeSurvival
                 collideAction = FireCollideAction()
             };
             i = 55; //Dark door
-            blocks[i] = new NasBlock(i, Material.Wood);
+            blocks[i] = new(i, Material.Wood);
             i = 470; //light door
-            blocks[i] = new NasBlock(i, Material.Wood);
+            blocks[i] = new(i, Material.Wood);
             i = 131; //ash
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed,
                 disturbedAction = FallingBlockAction(Nas.FromRaw(i))
             };
             i = 60; //Ice
-            blocks[i] = new NasBlock(i, Material.Stone, 8);
+            blocks[i] = new(i, Material.Stone, 8);
             i = 681; //Packed Ice
-            blocks[i] = new NasBlock(i, Material.Stone, 12);
+            blocks[i] = new(i, Material.Stone, 12);
             i = 61; //Quartz
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 62; //Lamp
-            blocks[i] = new NasBlock(i, Material.Glass);
+            blocks[i] = new(i, Material.Glass);
             i = 63; //Pillar-UD
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 166;
-            blocks[i] = new NasBlock(i, blocks[63]);
+            blocks[i] = new(i, blocks[63]);
             i = 167;
-            blocks[i] = new NasBlock(i, blocks[63]);
+            blocks[i] = new(i, blocks[63]);
             i = 235; //chiseled quartz
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 84; //Quartz slab-D
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 85; //Quartz slab-U
-            blocks[i] = new NasBlock(i, blocks[84]);
+            blocks[i] = new(i, blocks[84]);
             i = 286; //Quartz wall
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            blocks[i] = new NasBlock(i++, blocks[286]);
-            blocks[i] = new NasBlock(i++, blocks[286]);
-            blocks[i] = new NasBlock(i++, blocks[286]);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i++, blocks[286]);
+            blocks[i] = new(i++, blocks[286]);
+            blocks[i] = new(i++, blocks[286]);
             i = 274; //Quartz stair
-            blocks[i] = new NasBlock(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            blocks[i] = new NasBlock(i++, blocks[274]);
-            blocks[i] = new NasBlock(i++, blocks[274]);
-            blocks[i] = new NasBlock(i++, blocks[274]);
+            blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+            blocks[i] = new(i++, blocks[274]);
+            blocks[i] = new(i++, blocks[274]);
+            blocks[i] = new(i++, blocks[274]);
             i = 591;
-            blocks[i] = new NasBlock(i++, blocks[274]);
-            blocks[i] = new NasBlock(i++, blocks[274]);
-            blocks[i] = new NasBlock(i++, blocks[274]);
-            blocks[i] = new NasBlock(i++, blocks[274]);
+            blocks[i] = new(i++, blocks[274]);
+            blocks[i] = new(i++, blocks[274]);
+            blocks[i] = new(i++, blocks[274]);
+            blocks[i] = new(i++, blocks[274]);
             i = 104; //Dry leaves
-            blocks[i] = new NasBlock(i, Material.Leaves)
+            blocks[i] = new(i, Material.Leaves)
             {
                 disturbedAction = LeafBlockAction(logSet, Nas.FromRaw(i)),
                 disturbDelayMin = leafShrivelDelayMin,
@@ -1054,7 +1052,7 @@ namespace NotAwesomeSurvival
             };
             //Crafting table
             i = 198;
-            blocks[i] = new NasBlock(i, blocks[17])
+            blocks[i] = new(i, blocks[17])
             {
                 station = new Crafting.Station
                 {
@@ -1066,10 +1064,10 @@ namespace NotAwesomeSurvival
                 interaction = CraftingInteraction()
             };
             i = 199;
-            blocks[i] = new NasBlock(i, blocks[198]);
+            blocks[i] = new(i, blocks[198]);
             blocks[i].station.ori = Crafting.Station.Orientation.WE;
             i = 413;//autocraft
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
             {
                 station = new Crafting.Station
                 {
@@ -1086,10 +1084,10 @@ namespace NotAwesomeSurvival
                 }
             };
             i = 414;
-            blocks[i] = new NasBlock(i, blocks[413]);
+            blocks[i] = new(i, blocks[413]);
             blocks[i].station.ori = Crafting.Station.Orientation.WE;
             i = 462; //birch crafting table
-            blocks[i] = new NasBlock(i, blocks[242])
+            blocks[i] = new(i, blocks[242])
             {
                 station = new Crafting.Station
                 {
@@ -1102,11 +1100,11 @@ namespace NotAwesomeSurvival
                 alternateID = 198
             };
             i = 463;
-            blocks[i] = new NasBlock(i, blocks[462]);
+            blocks[i] = new(i, blocks[462]);
             blocks[i].station.ori = Crafting.Station.Orientation.WE;
             blocks[i].alternateID = 199;
             i = 464; //spruce crafting table
-            blocks[i] = new NasBlock(i, blocks[250])
+            blocks[i] = new(i, blocks[250])
             {
                 station = new Crafting.Station
                 {
@@ -1119,12 +1117,12 @@ namespace NotAwesomeSurvival
                 alternateID = 198
             };
             i = 465;
-            blocks[i] = new NasBlock(i, blocks[464]);
+            blocks[i] = new(i, blocks[464]);
             blocks[i].station.ori = Crafting.Station.Orientation.WE;
             blocks[i].alternateID = 199;
             //Furnace
             i = 625;
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
             {
                 station = new Crafting.Station
                 {
@@ -1136,30 +1134,30 @@ namespace NotAwesomeSurvival
                 interaction = CraftingInteraction()
             };
             i = 626;
-            blocks[i] = new NasBlock(i, blocks[625]);
+            blocks[i] = new(i, blocks[625]);
             blocks[i].station.ori = Crafting.Station.Orientation.NS;
             i = 239; //hotcoals
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
             {
                 collideAction = FireCollideAction()
             };
             i = 204; //Monitor-S
-            blocks[i] = new NasBlock(i++, Material.Metal, 3);
-            blocks[i] = new NasBlock(i++, blocks[204]);
-            blocks[i] = new NasBlock(i++, blocks[204]);
-            blocks[i] = new NasBlock(i, blocks[204]);
+            blocks[i] = new(i++, Material.Metal, 3);
+            blocks[i] = new(i++, blocks[204]);
+            blocks[i] = new(i++, blocks[204]);
+            blocks[i] = new(i, blocks[204]);
             i = 142; //Crate
-            blocks[i] = new NasBlock(i, Material.Wood, DefaultDurabilities[(int)Material.Wood] * 2)
+            blocks[i] = new(i, Material.Wood, DefaultDurabilities[(int)Material.Wood] * 2)
             {
                 interaction = CrateInteraction("You can't open it. It's just for decoration.")
             };
             i = 132; //bookshelf
-            blocks[i] = new NasBlock(i, Material.Wood, DefaultDurabilities[(int)Material.Wood] * 2)
+            blocks[i] = new(i, Material.Wood, DefaultDurabilities[(int)Material.Wood] * 2)
             {
                 interaction = BookshelfInteraction()
             };
             i = 143; //Barrel
-            blocks[i] = new NasBlock(i, Material.Wood, DefaultDurabilities[(int)Material.Wood] * 2)
+            blocks[i] = new(i, Material.Wood, DefaultDurabilities[(int)Material.Wood] * 2)
             {
                 container = new Container
                 {
@@ -1169,10 +1167,10 @@ namespace NotAwesomeSurvival
                 interaction = ContainerInteraction()
             };
             i = 602; //Barrel (sideways)
-            blocks[i] = new NasBlock(i++, blocks[143]);
-            blocks[i] = new NasBlock(i, blocks[143]);
+            blocks[i] = new(i++, blocks[143]);
+            blocks[i] = new(i, blocks[143]);
             i = 216; //Chest-S
-            blocks[i] = new NasBlock(i, Material.Wood, DefaultDurabilities[(int)Material.Wood] * 2)
+            blocks[i] = new(i, Material.Wood, DefaultDurabilities[(int)Material.Wood] * 2)
             {
                 container = new Container
                 {
@@ -1182,13 +1180,13 @@ namespace NotAwesomeSurvival
                 interaction = ContainerInteraction()
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[216]);
+            blocks[i] = new(i, blocks[216]);
             i++;
-            blocks[i] = new NasBlock(i, blocks[216]);
+            blocks[i] = new(i, blocks[216]);
             i++;
-            blocks[i] = new NasBlock(i, blocks[216]);
+            blocks[i] = new(i, blocks[216]);
             i = 647; //Gravestone
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 0)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 0)
             {
                 container = new Container
                 {
@@ -1198,52 +1196,52 @@ namespace NotAwesomeSurvival
                 interaction = ContainerInteraction()
             };
             i = 586; //Quartz ore
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 2, 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 2, 1)
             {
                 dropHandler = CustomDrop(61, 1),
                 expGivenMin = 4,
                 expGivenMax = 10
             };
             i = 454; //Nether quartz ore
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 2, 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 2, 1)
             {
                 dropHandler = CustomDrop(61, 1),
                 expGivenMin = 4,
                 expGivenMax = 10
             };
             i = 455; //Nether gold ore
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 2, 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 2, 1)
             {
                 dropHandler = CustomDrop(672, 1),
                 expGivenMin = 6,
                 expGivenMax = 12
             };
             i = 627; //Coal ore
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 2, 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 2, 1)
             {
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    return new Drop(197, r.Next(2, 5));
+                    return new(197, r.Next(2, 5));
                 },
                 expGivenMin = 0,
                 expGivenMax = 4
             };
             i = 197; //Chunk of coal
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 2, 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 2, 1);
             i = 628; //Iron ore
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 4, 1);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 4, 1);
             //blocks[i].expGivenMin = 0;
             //blocks[i].expGivenMax = 4;
             i = 629; //Gold ore
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 6, 2);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 6, 2);
             //blocks[i].expGivenMin = 1;
             //blocks[i].expGivenMax = 6;
             i = 630; //Diamond ore
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 6, 3);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 6, 3);
             //blocks[i].expGivenMin = 3;
             //blocks[i].expGivenMax = 8;
             i = 649; //Emerald ore
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 7, 4);
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 7, 4);
             //blocks[i].expGivenMin = 4;
             //blocks[i].expGivenMax = 9;
             //from 20 to 40 minutes (avg 30)
@@ -1252,7 +1250,7 @@ namespace NotAwesomeSurvival
                 wheatGrowMin = wheatTotalSeconds / 3f,
                 wheatGrowMax = (wheatTotalSeconds + wheatMaxAddedSeconds) / 3f;
             i = 644; //Wheat (baby)
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 disturbedAction = CropAction(wheatSet, 0),
                 disturbDelayMin = wheatGrowMin,
@@ -1260,7 +1258,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(644, 1)
             };
             i = 645;
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 disturbedAction = CropAction(wheatSet, 1),
                 disturbDelayMin = wheatGrowMin,
@@ -1268,7 +1266,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(644, 1)
             };
             i = 646;
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 disturbedAction = CropAction(wheatSet, 2),
                 disturbDelayMin = wheatGrowMin,
@@ -1276,27 +1274,27 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(644, 1)
             };
             i = 461; //Wheat (full grown)
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 disturbedAction = CropAction(wheatSet, 3),
                 dropHandler = (NasPlayer, dropID) =>
                 {
                     if (r.Next(0, 2) == 0)
                     {
-                        return new Drop(145, 1);
+                        return new(145, 1);
                     }
-                    return new Drop(644, r.Next(2, 5));
+                    return new(644, r.Next(2, 5));
                 }
             };
             i = 624; //iron nug
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbDelayMin = fallSpeed / 2f,
                 disturbDelayMax = fallSpeed / 2f,
                 disturbedAction = FallingBlockAction(Nas.FromRaw(i))
             };
             i = 729; //Iron (baby)
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = IronCropAction(ironSet, 0),
                 disturbDelayMin = wheatGrowMin * 2,
@@ -1304,7 +1302,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(729, 1)
             };
             i = 730;
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = IronCropAction(ironSet, 1),
                 disturbDelayMin = wheatGrowMin * 2,
@@ -1312,7 +1310,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(729, 1)
             };
             i = 731;
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = IronCropAction(ironSet, 2),
                 disturbDelayMin = wheatGrowMin * 2,
@@ -1320,7 +1318,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(729, 1)
             };
             i = 479; //Iron (full grown)
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = IronCropAction(ironSet, 3),
                 dropHandler = (NasPlayer, dropID) =>
@@ -1328,7 +1326,7 @@ namespace NotAwesomeSurvival
                     Drop finalDrop = new(729, r.Next(1, 4));
                     if (r.Next(0, 2) == 0)
                     {
-                        finalDrop.blockStacks.Add(new BlockStack(624, 1));
+                        finalDrop.blockStacks.Add(new(624, 1));
                     }
                     return finalDrop;
                 }
@@ -1338,21 +1336,21 @@ namespace NotAwesomeSurvival
                 sugarGrowMin = sugarTotalSeconds / 2f,
                 sugarGrowMax = (sugarTotalSeconds + sugarMaxAddedSeconds) / 2f;
             i = 667; //sugarcane
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 disturbDelayMin = sugarGrowMin,
                 disturbDelayMax = sugarGrowMax,
                 disturbedAction = GrowAction(Nas.FromRaw(i))
             };
             i = 106; //cactus
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 disturbDelayMin = sugarGrowMin,
                 disturbDelayMax = sugarGrowMax,
                 disturbedAction = GrowAction(Nas.FromRaw(i))
             };
             i = 107; //vines
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 disturbDelayMin = sugarGrowMin / 5f,
                 disturbDelayMax = sugarGrowMax / 5f,
@@ -1360,7 +1358,7 @@ namespace NotAwesomeSurvival
                 instantAction = VineDeathAction()
             };
             i = 146; //Swamp leaves
-            blocks[i] = new NasBlock(i, Material.Leaves)
+            blocks[i] = new(i, Material.Leaves)
             {
                 disturbedAction = LeafBlockAction(logSet, Nas.FromRaw(146)),
                 disturbDelayMin = leafShrivelDelayMin,
@@ -1371,115 +1369,115 @@ namespace NotAwesomeSurvival
                     int rand = r.Next(0, 8);
                     if (rand == 0)
                     { //16 in 128 chance (1 in 8 chance) of sapling
-                        drop.blockStacks.Add(new BlockStack(450, 1));
+                        drop.blockStacks.Add(new(450, 1));
                     }
                     else
                     {
-                        drop = new Drop(146, 1);
+                        drop = new(146, 1);
                     }
                     return drop;
                 }
             };
             i = 449; //lilypad
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 disturbedAction = LilyAction()
             };
             i = 171; //sign
-            blocks[i] = new NasBlock(i, Material.None, DefaultDurabilities[(int)Material.Wood])
+            blocks[i] = new(i, Material.None, DefaultDurabilities[(int)Material.Wood])
             {
                 existAction = MessageExistAction(),
                 interaction = MessageInteraction()
             };
             i = 145; //hay
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 fallDamageMultiplier = 0.1f
             };
             i = 622;
-            blocks[i] = new NasBlock(i++, blocks[145]);
-            blocks[i] = new NasBlock(i++, blocks[145]);
+            blocks[i] = new(i++, blocks[145]);
+            blocks[i] = new(i++, blocks[145]);
             const float breadRestore = 1f;
             i = 640; //Loaf of bread
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(breadSet, 0, breadRestore * 2)
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(breadSet, 1, breadRestore)
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(breadSet, 2, breadRestore)
             };
             const float pieRestore = 2.5f;
             i = 542; //Waffle
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(waffleSet, 0, pieRestore)
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(waffleSet, 1, pieRestore)
             };
             i = 668; //Pie
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(pieSet, 0, pieRestore)
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(pieSet, 1, pieRestore)
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(pieSet, 2, pieRestore)
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(pieSet, 3, pieRestore)
             };
             i = 698; //Peach pie
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(peachPieSet, 0, pieRestore)
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(peachPieSet, 1, pieRestore)
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(peachPieSet, 2, pieRestore)
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(peachPieSet, 3, pieRestore)
             };
             i = 654; //Poison pie and bread
-            blocks[i] = new NasBlock(i, Material.Organic, 3);
+            blocks[i] = new(i, Material.Organic, 3);
             ushort[] set = new ushort[]
             {
                 Nas.FromRaw(648)
             };
             blocks[i].interaction = EatInteraction(set, 0, -6f);
             i = 652;
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(set, 0, -5f)
             };
             i = 648; //Apple
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed,
@@ -1487,7 +1485,7 @@ namespace NotAwesomeSurvival
                 interaction = EatInteraction(set, 0, 1f)
             };
             i = 702; //Peach
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed,
@@ -1499,7 +1497,7 @@ namespace NotAwesomeSurvival
             };
             blocks[i].interaction = EatInteraction(set2, 0, 1f);
             i = 478; //Gapple
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 disturbDelayMin = fallSpeed / 2f,
                 disturbDelayMax = fallSpeed / 2f,
@@ -1511,95 +1509,95 @@ namespace NotAwesomeSurvival
             };
             blocks[i].interaction = EatInteraction(set3, 0, 10f, 0.5f);
             i = 36; //white
-            blocks[i] = new NasBlock(i, Material.Organic, 4);
+            blocks[i] = new(i, Material.Organic, 4);
             i = 27; //red
-            blocks[i] = new NasBlock(i, Material.Organic, 4)
+            blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
             i = 35; //yellow
-            blocks[i] = new NasBlock(i, Material.Organic, 4)
+            blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
             i = 30; //orange
-            blocks[i] = new NasBlock(i, Material.Organic, 4)
+            blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
             i = 138; //pink
-            blocks[i] = new NasBlock(i, Material.Organic, 4)
+            blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
             i = 23; //blue
-            blocks[i] = new NasBlock(i, Material.Organic, 4)
+            blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
             i = 29; //cyan
-            blocks[i] = new NasBlock(i, Material.Organic, 4)
+            blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
             i = 34; //light blue
-            blocks[i] = new NasBlock(i, Material.Organic, 4)
+            blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
             i = 26; //green
-            blocks[i] = new NasBlock(i, Material.Organic, 4)
+            blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
             i = 32; //lime
-            blocks[i] = new NasBlock(i, Material.Organic, 4)
+            blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
             i = 200; //purple
-            blocks[i] = new NasBlock(i, Material.Organic, 4)
+            blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
             i = 22; //darkpurple
-            blocks[i] = new NasBlock(i, Material.Organic, 4)
+            blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
             i = 21; //black
-            blocks[i] = new NasBlock(i, Material.Organic, 4)
+            blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
             i = 25; //brown
-            blocks[i] = new NasBlock(i, Material.Organic, 4)
+            blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
             i = 31; //lightgray
-            blocks[i] = new NasBlock(i, Material.Organic, 4)
+            blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
             i = 28; //gray
-            blocks[i] = new NasBlock(i, Material.Organic, 4)
+            blocks[i] = new(i, Material.Organic, 4)
             {
                 alternateID = 36
             };
             i = 703; //bed
-            blocks[i] = new NasBlock(i, Material.Organic, 4)
+            blocks[i] = new(i, Material.Organic, 4)
             {
                 interaction = BedInteraction()
             };
             i = 96; //daisy
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 dropHandler = (NasPlayer, dropID) =>
                 {
                     if (NasPlayer.inventory.HeldItem.name == "Shears")
                     {
-                        return new Drop(96, 1);
+                        return new(96, 1);
                     }
                     else
                     {
@@ -1610,13 +1608,13 @@ namespace NotAwesomeSurvival
                 disturbedAction = GenericPlantAction()
             };
             i = 651; //cornflower
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 dropHandler = (NasPlayer, dropID) =>
                 {
                     if (NasPlayer.inventory.HeldItem.name == "Shears")
                     {
-                        return new Drop(651, 1);
+                        return new(651, 1);
                     }
                     else
                     {
@@ -1627,13 +1625,13 @@ namespace NotAwesomeSurvival
                 disturbedAction = GenericPlantAction()
             };
             i = 201; //Daisy
-            blocks[i] = new NasBlock(i, Material.Plant)
+            blocks[i] = new(i, Material.Plant)
             {
                 dropHandler = (NasPlayer, dropID) =>
                 {
                     if (NasPlayer.inventory.HeldItem.name == "Shears")
                     {
-                        return new Drop(201, 1);
+                        return new(201, 1);
                     }
                     else
                     {
@@ -1644,32 +1642,32 @@ namespace NotAwesomeSurvival
                 disturbedAction = GenericPlantAction()
             };
             i = 604; //Red mushroom
-            blocks[i] = new NasBlock(i, Material.Organic, 3);
+            blocks[i] = new(i, Material.Organic, 3);
             ushort[] set4 = new ushort[]
             {
                 Nas.FromRaw(604)
             };
             blocks[i].interaction = EatInteraction(set4, 0, 1f);
             i = 456; //Brown mushroom
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(set4, 0, 1f)
             };
             i = 653; //Poison Mushroom
-            blocks[i] = new NasBlock(i, Material.Organic, 3)
+            blocks[i] = new(i, Material.Organic, 3)
             {
                 interaction = EatInteraction(set4, 0, -2.5f)
             };
             for (i = 484; i < 524; i++)
             {
-                blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
+                blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             }
             for (i = 713; i <= 728; i++)
             {
-                blocks[i] = new NasBlock(i, Material.Organic, 2);
+                blocks[i] = new(i, Material.Organic, 2);
             }
             i = 655; //glass gravity
-            blocks[i] = new NasBlock(i, Material.Glass)
+            blocks[i] = new(i, Material.Glass)
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed,
@@ -1677,56 +1675,56 @@ namespace NotAwesomeSurvival
                 collideAction = AirCollideAction()
             };
             i = 696; //tank of lava
-            blocks[i] = new NasBlock(i, Material.Stone, 384, 4)
+            blocks[i] = new(i, Material.Stone, 384, 4)
             {
-                childIDs = new List<ushort>()
+                childIDs = new()
             };
             blocks[i].childIDs.Add(10);
             i = 697;
-            blocks[i] = new NasBlock(i, Material.Stone, 384, 4)
+            blocks[i] = new(i, Material.Stone, 384, 4)
             {
                 existAction = LavaBarrelAction()
             };
             i = 672; //unrefined gold
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 existAction = WireExistAction(0, 4),
                 disturbedAction = UnrefinedGoldAction(Nas.FromRaw(237), Nas.FromRaw(672), Nas.FromRaw(672))
             };
             i = 237;
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 existAction = WireBreakAction(),
                 disturbedAction = UnrefinedGoldAction(Nas.FromRaw(237), Nas.FromRaw(672), Nas.FromRaw(237)),
                 dropHandler = CustomDrop(672, 1)
             };
             i = 674;//lever
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 interaction = ChangeInteraction(Nas.FromRaw(675)),
                 existAction = WireExistAction(0, 4)
             };
             i = 675;
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 interaction = ChangeInteraction(Nas.FromRaw(674)),
                 dropHandler = CustomDrop(674, 1),
                 existAction = WireExistAction(15, 4)
             };
             i = 74; //power source 
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = PowerSourceAction(4),
                 existAction = WireExistAction(15, 4)
             };
             i = 195;//button
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 interaction = ChangeInteraction(Nas.FromRaw(196)),
                 existAction = WireExistAction(0, 4)
             };
             i = 196;
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbDelayMin = 1.2f,
                 disturbDelayMax = 1.2f,
@@ -1735,14 +1733,14 @@ namespace NotAwesomeSurvival
                 existAction = WireExistAction(15, 4)
             };
             i = 704; //piston
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbDelayMin = 0.125f,
                 disturbDelayMax = 0.125f,
                 disturbedAction = PistonAction("off", 0, 1, 0, pistonUp)
             };
             i = 705; //piston body
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbDelayMin = 0.125f,
                 disturbDelayMax = 0.125f,
@@ -1750,7 +1748,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(704, 1)
             };
             i = 706; //piston head
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = PistonAction("head", 0, 1, 0, pistonUp)
             };
@@ -1761,12 +1759,12 @@ namespace NotAwesomeSurvival
                 return (1 == 0) ? pistonDrop : null;
             };
             i = 707; //piston
-            blocks[i] = new NasBlock(i, blocks[704])
+            blocks[i] = new(i, blocks[704])
             {
                 disturbedAction = PistonAction("off", 0, -1, 0, pistonDown)
             };
             i = 708; //piston body
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbDelayMin = 0.125f,
                 disturbDelayMax = 0.125f,
@@ -1774,7 +1772,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(704, 1)
             };
             i = 709; //piston head
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = PistonAction("head", 0, -1, 0, pistonDown)
             };
@@ -1785,14 +1783,14 @@ namespace NotAwesomeSurvival
                 return (1 == 0) ? pistonDrop : null;
             };
             i = 678; //Spiston
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbDelayMin = 0.125f,
                 disturbDelayMax = 0.125f,
                 disturbedAction = StickyPistonAction("off", 0, 1, 0, stickyPistonUp)
             };
             i = 679; //Spiston body
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbDelayMin = 0.125f,
                 disturbDelayMax = 0.125f,
@@ -1800,7 +1798,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(678, 1)
             };
             i = 680; //Spiston head
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = StickyPistonAction("head", 0, 1, 0, stickyPistonUp)
             };
@@ -1811,12 +1809,12 @@ namespace NotAwesomeSurvival
                 return (1 == 0) ? pistonDrop : null;
             };
             i = 710; //Spiston
-            blocks[i] = new NasBlock(i, blocks[678])
+            blocks[i] = new(i, blocks[678])
             {
                 disturbedAction = StickyPistonAction("off", 0, -1, 0, stickyPistonDown)
             };
             i = 711; //Spiston body
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbDelayMin = 0.125f,
                 disturbDelayMax = 0.125f,
@@ -1824,7 +1822,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(678, 1)
             };
             i = 712; //Spiston head
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = StickyPistonAction("head", 0, -1, 0, stickyPistonDown)
             };
@@ -1843,93 +1841,93 @@ namespace NotAwesomeSurvival
             DefinePiston(407, stickyPistonSouth, "z", -1, 678, true);
             DefinePiston(410, stickyPistonWest, "x", 1, 678, true);
             i = 609; //Beacon
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 existAction = BeaconInteractAction()
             };
             i = 445; //Beacon
-            blocks[i] = new NasBlock(i, blocks[1])
+            blocks[i] = new(i, blocks[1])
             {
                 existAction = BeaconInteractAction(),
                 durability = DefaultDurabilities[(int)Material.Metal]
             };
             i = 612; //Bed beacon
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 existAction = BedBeaconAction()
             };
             i = 550; //wiring
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 existAction = WireExistAction(0, 1),
                 disturbedAction = WireAction(wireSetActive, wireSetInactive, 1, Nas.FromRaw(550))
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[550])
+            blocks[i] = new(i, blocks[550])
             {
                 existAction = WireExistAction(0, 0),
                 disturbedAction = WireAction(wireSetActive, wireSetInactive, 0, Nas.FromRaw(551))
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[550])
+            blocks[i] = new(i, blocks[550])
             {
                 existAction = WireExistAction(0, 2),
                 disturbedAction = WireAction(wireSetActive, wireSetInactive, 2, Nas.FromRaw(552))
             };
             i = 682; //wiring
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = WireAction(wireSetActive, wireSetInactive, 1, Nas.FromRaw(682)),
                 existAction = WireBreakAction(),
                 dropHandler = CustomDrop(550, 1)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[682])
+            blocks[i] = new(i, blocks[682])
             {
                 disturbedAction = WireAction(wireSetActive, wireSetInactive, 0, Nas.FromRaw(683))
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[682])
+            blocks[i] = new(i, blocks[682])
             {
                 disturbedAction = WireAction(wireSetActive, wireSetInactive, 2, Nas.FromRaw(684))
             };
             i = 732; //fixed wiring
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 existAction = WireExistAction(0, 12),
                 disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 1, Nas.FromRaw(732))
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[732])
+            blocks[i] = new(i, blocks[732])
             {
                 existAction = WireExistAction(0, 11),
                 disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 0, Nas.FromRaw(733))
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[732])
+            blocks[i] = new(i, blocks[732])
             {
                 existAction = WireExistAction(0, 13),
                 disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 2, Nas.FromRaw(734))
             };
             i++;  // powered fixedf
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 1, Nas.FromRaw(735)),
                 existAction = WireBreakAction(),
                 dropHandler = CustomDrop(732, 1)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[735])
+            blocks[i] = new(i, blocks[735])
             {
                 disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 0, Nas.FromRaw(736))
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[735])
+            blocks[i] = new(i, blocks[735])
             {
                 disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 2, Nas.FromRaw(737))
             };
             i = 172; // repeater
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 existAction = WireExistAction(0, 5),
                 disturbDelayMin = 0f,
@@ -1937,7 +1935,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = RepeaterAction(5, Nas.FromRaw(172))
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[172])
+            blocks[i] = new(i, blocks[172])
             {
                 existAction = WireExistAction(0, 6),
                 disturbDelayMin = 0f,
@@ -1945,7 +1943,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = RepeaterAction(6, Nas.FromRaw(173))
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[172])
+            blocks[i] = new(i, blocks[172])
             {
                 existAction = WireExistAction(0, 7),
                 disturbDelayMin = 0f,
@@ -1953,7 +1951,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = RepeaterAction(7, Nas.FromRaw(174))
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[172])
+            blocks[i] = new(i, blocks[172])
             {
                 existAction = WireExistAction(0, 8),
                 disturbDelayMin = 0f,
@@ -1961,7 +1959,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = RepeaterAction(8, Nas.FromRaw(175))
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[172])
+            blocks[i] = new(i, blocks[172])
             {
                 existAction = WireExistAction(0, 9),
                 disturbDelayMin = 0f,
@@ -1969,7 +1967,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = RepeaterAction(9, Nas.FromRaw(176))
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[172])
+            blocks[i] = new(i, blocks[172])
             {
                 existAction = WireExistAction(0, 10),
                 disturbDelayMin = 0f,
@@ -1977,7 +1975,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = RepeaterAction(10, Nas.FromRaw(177))
             };
             i = 613; //yes this too
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 existAction = WireBreakAction(),
                 disturbDelayMin = 0f,
@@ -1986,7 +1984,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(172, 1)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[613])
+            blocks[i] = new(i, blocks[613])
             {
                 disturbDelayMin = 0f,
                 disturbDelayMax = 0f,
@@ -1994,7 +1992,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(172, 1)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[613])
+            blocks[i] = new(i, blocks[613])
             {
                 disturbDelayMin = 0f,
                 disturbDelayMax = 0f,
@@ -2002,7 +2000,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(172, 1)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[613])
+            blocks[i] = new(i, blocks[613])
             {
                 disturbDelayMin = 0f,
                 disturbDelayMax = 0f,
@@ -2010,7 +2008,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(172, 1)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[613])
+            blocks[i] = new(i, blocks[613])
             {
                 disturbDelayMin = 0f,
                 disturbDelayMax = 0f,
@@ -2018,7 +2016,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(172, 1)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[613])
+            blocks[i] = new(i, blocks[613])
             {
                 disturbDelayMin = 0f,
                 disturbDelayMax = 0f,
@@ -2026,13 +2024,13 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(172, 1)
             };
             i = 610; //pressure plates
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
             {
                 existAction = WireExistAction(0, 4),
                 collideAction = PressureCollideAction()
             };
             i = 611;
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
             {
                 existAction = WireBreakAction(),
                 disturbDelayMin = 1f,
@@ -2041,7 +2039,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(610, 1)
             };
             i = 415; //observers
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
             {
                 existAction = WireExistAction(0, 9),
                 disturbDelayMin = 0.2f,
@@ -2049,7 +2047,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = ObserverActivateAction(9)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[415])
+            blocks[i] = new(i, blocks[415])
             {
                 existAction = WireExistAction(0, 10),
                 disturbDelayMin = 0.2f,
@@ -2057,7 +2055,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = ObserverActivateAction(10)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[415])
+            blocks[i] = new(i, blocks[415])
             {
                 existAction = WireExistAction(0, 7),
                 disturbDelayMin = 0.2f,
@@ -2065,7 +2063,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = ObserverActivateAction(7)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[415])
+            blocks[i] = new(i, blocks[415])
             {
                 existAction = WireExistAction(0, 8),
                 disturbDelayMin = 0.2f,
@@ -2073,7 +2071,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = ObserverActivateAction(8)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[415])
+            blocks[i] = new(i, blocks[415])
             {
                 existAction = WireExistAction(0, 5),
                 disturbDelayMin = 0.2f,
@@ -2081,7 +2079,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = ObserverActivateAction(5)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[415])
+            blocks[i] = new(i, blocks[415])
             {
                 existAction = WireExistAction(0, 6),
                 disturbDelayMin = 0.2f,
@@ -2089,7 +2087,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = ObserverActivateAction(6)
             };
             i = 421;
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
             {
                 existAction = WireBreakAction(),
                 disturbDelayMin = 0.2f,
@@ -2098,7 +2096,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(415, 1)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[421])
+            blocks[i] = new(i, blocks[421])
             {
                 existAction = WireBreakAction(),
                 disturbDelayMin = 0.2f,
@@ -2107,7 +2105,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(415, 1)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[421])
+            blocks[i] = new(i, blocks[421])
             {
                 existAction = WireBreakAction(),
                 disturbDelayMin = 0.2f,
@@ -2116,7 +2114,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(415, 1)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[421])
+            blocks[i] = new(i, blocks[421])
             {
                 existAction = WireBreakAction(),
                 disturbDelayMin = 0.2f,
@@ -2125,7 +2123,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(415, 1)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[421])
+            blocks[i] = new(i, blocks[421])
             {
                 existAction = WireBreakAction(),
                 disturbDelayMin = 0.2f,
@@ -2134,7 +2132,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(415, 1)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[421])
+            blocks[i] = new(i, blocks[421])
             {
                 existAction = WireBreakAction(),
                 disturbDelayMin = 0.2f,
@@ -2143,40 +2141,40 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop(415, 1)
             };
             i = 427; //Sponge
-            blocks[i] = new NasBlock(i, Material.Leaves)
+            blocks[i] = new(i, Material.Leaves)
             {
                 disturbedAction = SpongeAction()
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Leaves);
+            blocks[i] = new(i, Material.Leaves);
             i = 429; //deepslate
-            blocks[i] = new NasBlock(i, Material.Stone, 24, 1)
+            blocks[i] = new(i, Material.Stone, 24, 1)
             {
                 dropHandler = CustomDrop(430, 1)
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Stone, 24, 1)
+            blocks[i] = new(i, Material.Stone, 24, 1)
             {
                 alternateID = 1
             };
             i = 431;
-            blocks[i] = new NasBlock(i, Material.Stone, 24, 1);
+            blocks[i] = new(i, Material.Stone, 24, 1);
             i++;
-            blocks[i] = new NasBlock(i, blocks[431]);
+            blocks[i] = new(i, blocks[431]);
             i = 433;
-            blocks[i] = new NasBlock(i, Material.Stone, 24, 1);
+            blocks[i] = new(i, Material.Stone, 24, 1);
             i++;
-            blocks[i] = new NasBlock(i, Material.Stone, 24, 1);
+            blocks[i] = new(i, Material.Stone, 24, 1);
             i++;
-            blocks[i] = new NasBlock(i, Material.Stone, 24, 1);
+            blocks[i] = new(i, Material.Stone, 24, 1);
             i++;
-            blocks[i] = new NasBlock(i, Material.Stone, 24, 1);
+            blocks[i] = new(i, Material.Stone, 24, 1);
             i = 437;
-            blocks[i] = new NasBlock(i, Material.Stone, 24, 1);
+            blocks[i] = new(i, Material.Stone, 24, 1);
             i++;
-            blocks[i] = new NasBlock(i, blocks[437]);
+            blocks[i] = new(i, blocks[437]);
             i = 439; //dispenser
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1)
             {
                 existAction = ContainerExistAction(),
                 disturbedAction = DispenserAction(0, 0, 1),
@@ -2187,27 +2185,27 @@ namespace NotAwesomeSurvival
                 }
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[439])
+            blocks[i] = new(i, blocks[439])
             {
                 disturbedAction = DispenserAction(-1, 0, 0)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[439])
+            blocks[i] = new(i, blocks[439])
             {
                 disturbedAction = DispenserAction(0, 0, -1)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[439])
+            blocks[i] = new(i, blocks[439])
             {
                 disturbedAction = DispenserAction(1, 0, 0)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[439])
+            blocks[i] = new(i, blocks[439])
             {
                 disturbedAction = DispenserAction(0, -1, 0)
             };
             i++;
-            blocks[i] = new NasBlock(i, blocks[439])
+            blocks[i] = new(i, blocks[439])
             {
                 disturbedAction = DispenserAction(0, 1, 0)
             };
@@ -2216,18 +2214,18 @@ namespace NotAwesomeSurvival
         {
             return (NasPlayer, dropID) =>
             {
-                return new Drop(clientushort, amount);
+                return new(clientushort, amount);
             };
         }
         public static void DefinePiston(ushort startID, ushort[] set, string axis, int direction, int parent, bool sticky = false)
         {
             ushort i = startID;
-            blocks[i] = new NasBlock(i, blocks[parent])
+            blocks[i] = new(i, blocks[parent])
             {
                 disturbedAction = SidewaysPistonAction("off", axis, direction, set, sticky)
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbDelayMin = 0.125f,
                 disturbDelayMax = 0.125f,
@@ -2235,7 +2233,7 @@ namespace NotAwesomeSurvival
                 dropHandler = CustomDrop((ushort)parent, 1)
             };
             i++;
-            blocks[i] = new NasBlock(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
+            blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
             {
                 disturbedAction = SidewaysPistonAction("head", axis, direction, set, sticky),
                 collideAction = AirCollideAction(),

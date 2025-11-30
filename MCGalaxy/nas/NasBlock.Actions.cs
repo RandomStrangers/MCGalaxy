@@ -60,6 +60,247 @@ namespace NotAwesomeSurvival
             Nas.FromRaw(646),
             Nas.FromRaw(461),
             53
+        },
+        waterSet = new ushort[]
+        {
+            8, 9,
+            256|639,
+            256|632,
+            256|633,
+            256|634,
+            256|635,
+            256|636,
+            256|637,
+            256|638
+        },
+        lavaSet = new ushort[]
+        {
+            11, 10,
+            256|695,
+            256|691,
+            256|692,
+            256|693,
+            256|694
+        },
+        grassSet = new ushort[]
+        {
+            2,
+            256|119,
+            256|129,
+            256|139
+        },
+        tallGrassSet = new ushort[]
+        {
+            40,
+            256|120,
+            256|130,
+            256|130
+        },
+        logSet = new ushort[]
+        {
+            15, 16, 17,
+            256|144,
+            256|242,
+            256|656,
+            256|657,
+            256|240,
+            256|241,
+            256|248,
+            256|249,
+            256|250,
+        },
+        infinifire = new ushort[]
+        {
+            256|647,
+            256|690,
+            48
+        },
+        pistonUp =
+        {
+            Nas.FromRaw(704),
+            Nas.FromRaw(705),
+            Nas.FromRaw(706)
+        },
+        stickyPistonUp =
+        {
+            Nas.FromRaw(678),
+            Nas.FromRaw(679),
+            Nas.FromRaw(680)
+        },
+        pistonDown =
+        {
+            Nas.FromRaw(707),
+            Nas.FromRaw(708),
+            Nas.FromRaw(709)
+        },
+        stickyPistonDown =
+        {
+            Nas.FromRaw(710),
+            Nas.FromRaw(711),
+            Nas.FromRaw(712)
+        },
+        pistonNorth =
+        {
+            Nas.FromRaw(389),
+            Nas.FromRaw(390),
+            Nas.FromRaw(391)
+        },
+        pistonEast =
+        {
+            Nas.FromRaw(392),
+            Nas.FromRaw(393),
+            Nas.FromRaw(394)
+        },
+        pistonSouth =
+        {
+            Nas.FromRaw(395),
+            Nas.FromRaw(396),
+            Nas.FromRaw(397)
+        },
+        pistonWest =
+        {
+            Nas.FromRaw(398),
+            Nas.FromRaw(399),
+            Nas.FromRaw(400)
+        },
+        stickyPistonNorth =
+        {
+            Nas.FromRaw(401),
+            Nas.FromRaw(402),
+            Nas.FromRaw(403)
+        },
+        stickyPistonEast =
+        {
+            Nas.FromRaw(404),
+            Nas.FromRaw(405),
+            Nas.FromRaw(406)
+        },
+        stickyPistonSouth =
+        {
+            Nas.FromRaw(407),
+            Nas.FromRaw(408),
+            Nas.FromRaw(409)
+        },
+        stickyPistonWest =
+        {
+            Nas.FromRaw(410),
+            Nas.FromRaw(411),
+            Nas.FromRaw(412)
+        },
+        unpushable =
+        {
+            Nas.FromRaw(690),
+            Nas.FromRaw(647),
+            Nas.FromRaw(216),
+            Nas.FromRaw(217),
+            Nas.FromRaw(218),
+            Nas.FromRaw(219),
+            Nas.FromRaw(602),
+            Nas.FromRaw(603),
+            Nas.FromRaw(143),
+            Nas.FromRaw(171),
+            Nas.FromRaw(54),
+            Nas.FromRaw(703),
+            Nas.FromRaw(7),
+            Nas.FromRaw(767),
+            Nas.FromRaw(674),
+            Nas.FromRaw(675),
+            Nas.FromRaw(195),
+            Nas.FromRaw(196),
+            Nas.FromRaw(172),
+            Nas.FromRaw(173),
+            Nas.FromRaw(174),
+            Nas.FromRaw(175),
+            Nas.FromRaw(176),
+            Nas.FromRaw(177),
+            Nas.FromRaw(612),
+            Nas.FromRaw(613),
+            Nas.FromRaw(614),
+            Nas.FromRaw(615),
+            Nas.FromRaw(616),
+            Nas.FromRaw(617),
+            Nas.FromRaw(413),
+            Nas.FromRaw(414),
+            Nas.FromRaw(439),
+            Nas.FromRaw(440),
+            Nas.FromRaw(441),
+            Nas.FromRaw(442),
+            Nas.FromRaw(443),
+            Nas.FromRaw(444),
+            Nas.FromRaw(673),
+            Nas.FromRaw(457),
+        },
+        wireSetActive =
+        {
+            256|683,
+            256|682,
+            256|684
+        },
+        wireSetInactive =
+        {
+            256|551,
+            256|550,
+            256|552
+        },
+        fixedWireSetInactive =
+        {
+            256|732,
+            256|733,
+            256|734
+        },
+        fixedWireSetActive =
+        {
+            256|735,
+            256|736,
+            256|737
+        },
+        repeaterSetActive =
+        {
+            256|613,
+            256|614,
+            256|615,
+            256|616,
+            256|617,
+            256|618,
+        },
+        repeaterSetInactive =
+        {
+            256|172,
+            256|173,
+            256|174,
+            256|175,
+            256|176,
+            256|177,
+        },
+        leafSet = new ushort[]
+        {
+            18
+        },
+        wheatSet = new ushort[]
+        {
+            Nas.FromRaw(644),
+            Nas.FromRaw(645),
+            Nas.FromRaw(646),
+            Nas.FromRaw(461)
+        },
+        ironSet = new ushort[]
+        {
+            Nas.FromRaw(729),
+            Nas.FromRaw(730),
+            Nas.FromRaw(731),
+            Nas.FromRaw(479)
+        },
+        soilForPlants = new ushort[]
+        {
+            3,
+            256|144,
+            256|685
+        },
+        soilForIron = new ushort[]
+        {
+            48,
+            256|452,
+            256|451
         };
         public static bool CanPhysicsKillThis(ushort block)
         {
@@ -83,30 +324,6 @@ namespace NotAwesomeSurvival
         public static int LiquidInfiniteIndex = 0,
             LiquidSourceIndex = 1,
             LiquidWaterfallIndex = 2;
-        /// <summary>
-        /// First ID is the infinite-flood version of the liquid, second is the source, third is waterfall, the rest are heights from tallest to shortest
-        /// </summary>
-        public static ushort[] waterSet = new ushort[]
-        {
-            8, 9,
-            256|639,
-            256|632,
-            256|633,
-            256|634,
-            256|635,
-            256|636,
-            256|637,
-            256|638
-        };
-        public static ushort[] lavaSet = new ushort[]
-        {
-            11, 10,
-            256|695,
-            256|691,
-            256|692,
-            256|693,
-            256|694
-        };
         /// <summary>
         /// Check if the given block exists within the given set.
         /// </summary>
@@ -379,7 +596,7 @@ namespace NotAwesomeSurvival
                 liquidSet = set;
                 waterAtSpot = new bool[totalDistance * 2 + 1, totalDistance * 2 + 1];
                 widthAndHeight = waterAtSpot.GetLength(0);
-                holes = new List<Vec3S32>();
+                holes = new();
                 distanceHolesWereFoundAt = totalDistance;
             }
             public List<Vec3S32> GetHoles(out int distance)
@@ -419,12 +636,12 @@ namespace NotAwesomeSurvival
                     if (distanceFromCenter < distanceHolesWereFoundAt)
                     {
                         holes.Clear();
-                        holes.Add(new Vec3S32(x, y - 1, z));
+                        holes.Add(new(x, y - 1, z));
                         distanceHolesWereFoundAt = distanceFromCenter;
                     }
                     else if (distanceFromCenter == distanceHolesWereFoundAt)
                     {
-                        holes.Add(new Vec3S32(x, y - 1, z));
+                        holes.Add(new(x, y - 1, z));
                     }
                 }
                 Flood(x, z, true);
@@ -496,20 +713,6 @@ namespace NotAwesomeSurvival
                 }
             };
         }
-        public static ushort[] grassSet = new ushort[]
-        {
-            2,
-            256|119,
-            256|129,
-            256|139
-        };
-        public static ushort[] tallGrassSet = new ushort[]
-        {
-            40,
-            256|120,
-            256|130,
-            256|130
-        };
         public static NasBlockAction DirtBlockAction(ushort[] grassSet, ushort _)
         {
             return (nl, nasBlock, x, y, z) =>
@@ -616,7 +819,7 @@ namespace NotAwesomeSurvival
             {
                 if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {
-                    nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
+                    nl.blockEntities.Add(x + " " + y + " " + z, new());
                     nl.blockEntities[x + " " + y + " " + z].type = type;
                 }
                 nl.blockEntities[x + " " + y + " " + z].strength = 15;
@@ -629,26 +832,13 @@ namespace NotAwesomeSurvival
             {
                 if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {
-                    nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
+                    nl.blockEntities.Add(x + " " + y + " " + z, new());
                     nl.blockEntities[x + " " + y + " " + z].type = type;
                 }
                 nl.blockEntities[x + " " + y + " " + z].strength = 0;
                 nl.SetBlock(x, y, z, (ushort)(nl.lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z) - 6));
             };
         }
-        public static ushort[] logSet = new ushort[]
-        {
-            15, 16, 17,
-            256|144,
-            256|242,
-            256|656,
-            256|657,
-            256|240,
-            256|241,
-            256|248,
-            256|249,
-            256|250,
-        };
         public static NasBlockAction LeafBlockAction(ushort[] _, ushort leaf)
         {
             return (nl, nasBlock, x, y, z) =>
@@ -787,12 +977,6 @@ namespace NotAwesomeSurvival
             IsThereLog(nl, x, y - 1, z, leaf, iteration, ref canLive);
             IsThereLog(nl, x, y, z - 1, leaf, iteration, ref canLive);
         }
-        public static ushort[] infinifire = new ushort[]
-        {
-            256|647,
-            256|690,
-            48
-        };
         public static NasBlockAction FireAction()
         {
             return (nl, nasBlock, x, y, z) =>
@@ -1142,7 +1326,7 @@ namespace NotAwesomeSurvival
                                     posit.X += changeX * 32;
                                     posit.Y += changeY * 32;
                                     posit.Z += changeZ * 32;
-                                    who.SendPosition(posit, new Orientation(who.Rot.RotY, who.Rot.HeadX));
+                                    who.SendPosition(posit, new(who.Rot.RotY, who.Rot.HeadX));
                                 }
                             }
                         }
@@ -1416,7 +1600,7 @@ namespace NotAwesomeSurvival
                                     posit.X += changeX * 32;
                                     posit.Y += changeY * 32;
                                     posit.Z += changeZ * 32;
-                                    who.SendPosition(posit, new Orientation(who.Rot.RotY, who.Rot.HeadX));
+                                    who.SendPosition(posit, new(who.Rot.RotY, who.Rot.HeadX));
                                 }
                             }
                         }
@@ -1470,78 +1654,6 @@ namespace NotAwesomeSurvival
                 }
             };
         }
-        public static ushort[] pistonUp =
-        {
-            Nas.FromRaw(704),
-            Nas.FromRaw(705),
-            Nas.FromRaw(706)
-        };
-        public static ushort[] stickyPistonUp =
-        {
-            Nas.FromRaw(678),
-            Nas.FromRaw(679),
-            Nas.FromRaw(680)
-        };
-        public static ushort[] pistonDown =
-        {
-            Nas.FromRaw(707),
-            Nas.FromRaw(708),
-            Nas.FromRaw(709)
-        };
-        public static ushort[] stickyPistonDown =
-        {
-            Nas.FromRaw(710),
-            Nas.FromRaw(711),
-            Nas.FromRaw(712)
-        };
-        public static ushort[] pistonNorth =
-        {
-            Nas.FromRaw(389),
-            Nas.FromRaw(390),
-            Nas.FromRaw(391)
-        };
-        public static ushort[] pistonEast =
-        {
-            Nas.FromRaw(392),
-            Nas.FromRaw(393),
-            Nas.FromRaw(394)
-        };
-        public static ushort[] pistonSouth =
-        {
-            Nas.FromRaw(395),
-            Nas.FromRaw(396),
-            Nas.FromRaw(397)
-        };
-        public static ushort[] pistonWest =
-        {
-            Nas.FromRaw(398),
-            Nas.FromRaw(399),
-            Nas.FromRaw(400)
-        };
-        public static ushort[] stickyPistonNorth =
-        {
-            Nas.FromRaw(401),
-            Nas.FromRaw(402),
-            Nas.FromRaw(403)
-        };
-        public static ushort[] stickyPistonEast =
-        {
-            Nas.FromRaw(404),
-            Nas.FromRaw(405),
-            Nas.FromRaw(406)
-        };
-        public static ushort[] stickyPistonSouth =
-        {
-            Nas.FromRaw(407),
-            Nas.FromRaw(408),
-            Nas.FromRaw(409)
-        };
-        public static ushort[] stickyPistonWest =
-        {
-            Nas.FromRaw(410),
-            Nas.FromRaw(411),
-            Nas.FromRaw(412)
-        };
         public static NasBlockAction StickyPistonAction(string type, int changeX, int changeY, int changeZ, ushort[] pistonSet)
         {
             return (nl, nasBlock, x, y, z) =>
@@ -1735,7 +1847,7 @@ namespace NotAwesomeSurvival
                                     posit.X += changeX * 32;
                                     posit.Y += changeY * 32;
                                     posit.Z += changeZ * 32;
-                                    who.SendPosition(posit, new Orientation(who.Rot.RotY, who.Rot.HeadX));
+                                    who.SendPosition(posit, new(who.Rot.RotY, who.Rot.HeadX));
                                 }
                             }
                         }
@@ -1841,98 +1953,13 @@ namespace NotAwesomeSurvival
             }
             return returnedBlock;
         }
-        public static ushort[] unpushable =
-        {
-            Nas.FromRaw(690),
-            Nas.FromRaw(647),
-            Nas.FromRaw(216),
-            Nas.FromRaw(217),
-            Nas.FromRaw(218),
-            Nas.FromRaw(219),
-            Nas.FromRaw(602),
-            Nas.FromRaw(603),
-            Nas.FromRaw(143),
-            Nas.FromRaw(171),
-            Nas.FromRaw(54),
-            Nas.FromRaw(703),
-            Nas.FromRaw(7),
-            Nas.FromRaw(767),
-            Nas.FromRaw(674),
-            Nas.FromRaw(675),
-            Nas.FromRaw(195),
-            Nas.FromRaw(196),
-            Nas.FromRaw(172),
-            Nas.FromRaw(173),
-            Nas.FromRaw(174),
-            Nas.FromRaw(175),
-            Nas.FromRaw(176),
-            Nas.FromRaw(177),
-            Nas.FromRaw(612),
-            Nas.FromRaw(613),
-            Nas.FromRaw(614),
-            Nas.FromRaw(615),
-            Nas.FromRaw(616),
-            Nas.FromRaw(617),
-            Nas.FromRaw(413),
-            Nas.FromRaw(414),
-            Nas.FromRaw(439),
-            Nas.FromRaw(440),
-            Nas.FromRaw(441),
-            Nas.FromRaw(442),
-            Nas.FromRaw(443),
-            Nas.FromRaw(444),
-            Nas.FromRaw(673),
-            Nas.FromRaw(457),
-        };
-        public static ushort[] wireSetActive =
-        {
-            256|683,
-            256|682,
-            256|684
-        };
-        public static ushort[] wireSetInactive =
-        {
-            256|551,
-            256|550,
-            256|552
-        };
-        public static ushort[] fixedWireSetInactive =
-        {
-            256|732,
-            256|733,
-            256|734
-        };
-        public static ushort[] fixedWireSetActive =
-        {
-            256|735,
-            256|736,
-            256|737
-        };
-        public static ushort[] repeaterSetActive =
-        {
-            256|613,
-            256|614,
-            256|615,
-            256|616,
-            256|617,
-            256|618,
-        };
-        public static ushort[] repeaterSetInactive =
-        {
-            256|172,
-            256|173,
-            256|174,
-            256|175,
-            256|176,
-            256|177,
-        };
         public static NasBlockAction PowerSourceAction(int direction)
         {
             return (nl, nasBlock, x, y, z) =>
             {
                 if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {
-                    nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
+                    nl.blockEntities.Add(x + " " + y + " " + z, new());
                     nl.blockEntities[x + " " + y + " " + z].strength = 15;
                     nl.blockEntities[x + " " + y + " " + z].type = direction;
                     nl.SimulateSetBlock(x, y, z);
@@ -1958,7 +1985,7 @@ namespace NotAwesomeSurvival
                 }
                 if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {
-                    nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
+                    nl.blockEntities.Add(x + " " + y + " " + z, new());
                     nl.blockEntities[x + " " + y + " " + z].strength = 0;
                     nl.blockEntities[x + " " + y + " " + z].type = type;
                 }
@@ -2109,7 +2136,7 @@ namespace NotAwesomeSurvival
                 }
                 if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                 {
-                    nl.blockEntities.Add(x + " " + y + " " + z, new Entity());
+                    nl.blockEntities.Add(x + " " + y + " " + z, new());
                     nl.blockEntities[x + " " + y + " " + z].strength = 0;
                     nl.blockEntities[x + " " + y + " " + z].type = direction;
                 }
@@ -2316,14 +2343,14 @@ namespace NotAwesomeSurvival
                         nl.SetBlock(x + changeX, y + changeY, z + changeZ, Nas.FromRaw(clientushort));
                         if (Get(bs.ID).container != null)
                         {
-                            nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new Entity());
+                            nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new());
                         }
                         return;
                     }
                     if (bEntity.drop == null)
                     {
                         nl.SetBlock(x + changeX, y + changeY, z + changeZ, Nas.FromRaw(clientushort));
-                        bEntity.drop = new Drop(addedushort);
+                        bEntity.drop = new(addedushort);
                         return;
                     }
                     foreach (BlockStack stack in bEntity.drop.blockStacks)
@@ -2337,7 +2364,7 @@ namespace NotAwesomeSurvival
                             nl.SetBlock(x + changeX, y + changeY, z + changeZ, Nas.FromRaw(clientushort));
                             if (Get(bs.ID).container != null)
                             {
-                                nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new Entity());
+                                nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new());
                             }
                             return;
                         }
@@ -2348,12 +2375,12 @@ namespace NotAwesomeSurvival
                     }
                     if (addedushort != 0)
                     {
-                        bEntity.drop.blockStacks.Add(new BlockStack(addedushort));
+                        bEntity.drop.blockStacks.Add(new(addedushort));
                     }
                     nl.SetBlock(x + changeX, y + changeY, z + changeZ, Nas.FromRaw(clientushort));
                     if (Get(bs.ID).container != null)
                     {
-                        nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new Entity());
+                        nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new());
                     }
                 }
             };
@@ -2398,10 +2425,6 @@ namespace NotAwesomeSurvival
                 GenericPlantSurvived(nl, x, y, z);
             };
         }
-        public static ushort[] leafSet = new ushort[]
-        {
-            18
-        };
         public static NasBlockAction OakSaplingAction()
         {
             return (nl, nasBlock, x, y, z) =>
@@ -2450,20 +2473,6 @@ namespace NotAwesomeSurvival
                 NasTree.GenSpruceTree(nl, r, x, y, z, true);
             };
         }
-        public static ushort[] wheatSet = new ushort[]
-        {
-            Nas.FromRaw(644),
-            Nas.FromRaw(645),
-            Nas.FromRaw(646),
-            Nas.FromRaw(461)
-        };
-        public static ushort[] ironSet = new ushort[]
-        {
-            Nas.FromRaw(729),
-            Nas.FromRaw(730),
-            Nas.FromRaw(731),
-            Nas.FromRaw(479)
-        };
         public static NasBlockAction CropAction(ushort[] cropSet, int index)
         {
             return (nl, nasBlock, x, y, z) =>
@@ -2535,50 +2544,46 @@ namespace NotAwesomeSurvival
                     return;
                 }
                 nl.blockEntities[x + " " + y + " " + z].type = 1;
-                lock (Crafting.locker)
+                Crafting.Recipe recipe = Crafting.GetRecipe(nl, (ushort)x, (ushort)y, (ushort)z, nasBlock.station);
+                if (recipe == null)
                 {
-                    Crafting.Recipe recipe = Crafting.GetRecipe(nl, (ushort)x, (ushort)y, (ushort)z, nasBlock.station);
-                    if (recipe == null)
+                    return;
+                }
+                Drop dropClone = new(recipe.drop);
+                Crafting.ClearCraftingArea(nl, (ushort)x, (ushort)y, (ushort)z, nasBlock.station.ori);
+                Entity bEntity = nl.blockEntities[x + " " + y + " " + z];
+                if (bEntity.drop == null)
+                {
+                    bEntity.drop = dropClone;
+                    return;
+                }
+                if (dropClone.items != null)
+                {
+                    foreach (Item tool in bEntity.drop.items)
                     {
-                        return;
+                        bEntity.drop.items.Add(tool);
                     }
-                    Drop dropClone = new(recipe.drop);
-                    Crafting.ClearCraftingArea(nl, (ushort)x, (ushort)y, (ushort)z, nasBlock.station.ori);
-                    Entity bEntity = nl.blockEntities[x + " " + y + " " + z];
-                    if (bEntity.drop == null)
+                }
+                if (dropClone.blockStacks != null)
+                {
+                    bool exists = false;
+                    foreach (BlockStack stack in dropClone.blockStacks)
                     {
-                        bEntity.drop = dropClone;
-                        return;
-                    }
-                    if (dropClone.items != null)
-                    {
-                        foreach (Item tool in bEntity.drop.items)
+                        exists = false;
+                        foreach (BlockStack otherStack in bEntity.drop.blockStacks)
                         {
-                            bEntity.drop.items.Add(tool);
+                            if (stack.ID == otherStack.ID)
+                            {
+                                otherStack.amount += stack.amount;
+                                exists = true;
+                            }
                         }
-                    }
-                    if (dropClone.blockStacks != null)
-                    {
-                        bool exists = false;
-                        foreach (BlockStack stack in dropClone.blockStacks)
+                        if (!exists)
                         {
-                            exists = false;
-                            foreach (BlockStack otherStack in bEntity.drop.blockStacks)
-                            {
-                                if (stack.ID == otherStack.ID)
-                                {
-                                    otherStack.amount += stack.amount;
-                                    exists = true;
-                                }
-                            }
-                            if (!exists)
-                            {
-                                bEntity.drop.blockStacks.Add(new BlockStack(stack.ID, stack.amount));
-                            }
+                            bEntity.drop.blockStacks.Add(new(stack.ID, stack.amount));
                         }
                     }
                 }
-
             };
         }
         public static bool IsSupported(NasLevel nl, int x, int y, int z)
@@ -2638,18 +2643,6 @@ namespace NotAwesomeSurvival
             }
             return true;
         }
-        public static ushort[] soilForPlants = new ushort[]
-        {
-            3,
-            256|144,
-            256|685
-        };
-        public static ushort[] soilForIron = new ushort[]
-        {
-            48,
-            256|452,
-            256|451
-        };
         public static bool CanPlantsLiveOn(ushort block)
         {
             if (IsPartOfSet(soilForPlants, block) != -1 || IsPartOfSet(grassSet, block) != -1)

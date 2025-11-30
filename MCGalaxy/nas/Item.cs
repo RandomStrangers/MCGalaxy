@@ -40,10 +40,8 @@ namespace NotAwesomeSurvival
             }
         }
         public static Item Fist;
-        public string name;
-        public float HP,
-            armor;
-        public string displayName = null;
+        public string name, displayName = null;
+        public float HP, armor;
         public Dictionary<string, int> enchants = new(){
                 {"Aqua Affinity",0},
                 {"Efficiency",0},

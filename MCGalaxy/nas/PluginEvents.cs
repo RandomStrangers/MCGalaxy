@@ -4,7 +4,6 @@ using MCGalaxy.Commands;
 using MCGalaxy.Commands.Moderation;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Network;
-using MCGalaxy.Tasks;
 using Newtonsoft.Json;
 using System;
 namespace NotAwesomeSurvival
@@ -21,8 +20,7 @@ namespace NotAwesomeSurvival
                 }
                 foreach (Command _cmd in Command.allCmds)
                 {
-                    Command command = new CmdCmdSet();
-                    command.Use(p, _cmd.name + " Operator");
+                    new CmdCmdSet().Use(p, _cmd.name + " Operator");
                 }
                 p.cancelcommand = true;
                 return;
@@ -290,12 +288,12 @@ namespace NotAwesomeSurvival
                         }
                         if (func2.CaselessEq("up"))
                         {
-                            np.inventory.MoveItemBarSelection(-Inventory.itemBarLength);
+                            np.inventory.MoveItemBarSelection(-9);
                             return;
                         }
                         if (func2.CaselessEq("down"))
                         {
-                            np.inventory.MoveItemBarSelection(Inventory.itemBarLength);
+                            np.inventory.MoveItemBarSelection(9);
                             return;
                         }
                     }
@@ -313,12 +311,12 @@ namespace NotAwesomeSurvival
                 }
                 if (hotbarFunc.CaselessEq("up"))
                 {
-                    np.inventory.MoveItemBarSelection(-Inventory.itemBarLength);
+                    np.inventory.MoveItemBarSelection(-9);
                     return;
                 }
                 if (hotbarFunc.CaselessEq("down"))
                 {
-                    np.inventory.MoveItemBarSelection(Inventory.itemBarLength);
+                    np.inventory.MoveItemBarSelection(9);
                     return;
                 }
                 if (hotbarFunc.CaselessEq("move"))
@@ -385,7 +383,7 @@ namespace NotAwesomeSurvival
                 if (bEntity.drop == null)
                 {
                     np.inventory.SetAmount(nasBlock.parentID, -items, true, true);
-                    bEntity.drop = new Drop(nasBlock.parentID, items);
+                    bEntity.drop = new(nasBlock.parentID, items);
                     p.cancelchat = true;
                     p.SendMapMotd();
                     np.isInserting = false;
@@ -412,7 +410,7 @@ namespace NotAwesomeSurvival
                     return;
                 }
                 np.inventory.SetAmount(nasBlock.parentID, -items, true, true);
-                bEntity.drop.blockStacks.Add(new BlockStack(nasBlock.parentID, items));
+                bEntity.drop.blockStacks.Add(new(nasBlock.parentID, items));
                 p.cancelchat = true;
                 p.SendMapMotd();
                 np.isInserting = false;
@@ -478,20 +476,13 @@ namespace NotAwesomeSurvival
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar down◙", 208, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar left◙", 203, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar right◙", 205, 0, true));
-            //WASD (Doesn't seem to work, remove?)
-            /*
-            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen up◙", 17, 0, true));
-            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen down◙", 31, 0, true));
-            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen left◙", 30, 0, true));
-            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar bagopen right◙", 32, 0, true));
-            */
             //M and R
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar move◙", 50, 0, true)); //was 50 (M) was 42 (shift)
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar inv◙", 19, 0, true)); //was 23 (i)
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar delete◙", 45, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar confirmdelete◙", 25, 0, true));
             np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar toolinfo◙", 23, 0, true));
-            np.PlayerSavingScheduler ??= new Scheduler("SavingScheduler" + p.name);
+            np.PlayerSavingScheduler ??= new("SavingScheduler" + p.name);
             np.PlayerSaveTask = np.PlayerSavingScheduler.QueueRepeat(np.SaveStatsTask, null, TimeSpan.FromSeconds(5));
         }
         public static void OnShutdown(bool restarting, string reason)
@@ -503,7 +494,7 @@ namespace NotAwesomeSurvival
             NasPlayer np = NasPlayer.GetNasPlayer(p);
             if (np != null)
             {
-                np.PlayerSavingScheduler ??= new Scheduler("SavingScheduler" + p.name);
+                np.PlayerSavingScheduler ??= new("SavingScheduler" + p.name);
                 np.PlayerSavingScheduler.Cancel(np.PlayerSaveTask);
                 np.Save();
             }

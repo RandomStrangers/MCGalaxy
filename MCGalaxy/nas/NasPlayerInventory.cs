@@ -119,7 +119,7 @@ namespace NotAwesomeSurvival
                     {
                         if (leftovers == null)
                         {
-                            leftovers = new Drop(item);
+                            leftovers = new(item);
                         }
                         else
                         {

@@ -1,7 +1,7 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
 using System;
 using System.Collections.Generic;
-namespace Priority_Queue
+namespace NotAwesomeSurvival
 {
     /// <summary>
     /// The IPriorityQueue interface.  This is mainly here for purists, and in case I decide to add more implementations later.

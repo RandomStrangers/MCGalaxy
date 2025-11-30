@@ -13,9 +13,7 @@ namespace NotAwesomeSurvival
         [JsonIgnore] public bool bagOpen = false;
         [JsonIgnore] public int slotToMoveTo = -1;
         [JsonIgnore] public bool deleting = false;
-        public Item[] items = new Item[maxItems];
-        public const int maxItems = 27,
-            itemBarLength = 9;
+        public Item[] items = new Item[27];
         public int selectedItemIndex = 0;
         public void SetupItems()
         {
@@ -30,7 +28,7 @@ namespace NotAwesomeSurvival
                 Message("You got {0}&S!", item.displayName);
                 return true;
             }
-            for (int i = 0; i < maxItems; i++)
+            for (int i = 0; i < 27; i++)
             {
                 if (items[i] == null)
                 {
@@ -124,22 +122,22 @@ namespace NotAwesomeSurvival
         }
         public void MoveBar(int direction, ref int selection)
         {
-            int length = bagOpen ? maxItems : itemBarLength;
+            int length = bagOpen ? 27 : 9;
             if (bagOpen)
             {
                 int offset = 0;
             thing:
-                if (offset <= maxItems - itemBarLength)
+                if (offset <= 18)
                 {
-                    if (selection == offset + itemBarLength - 1 && selection + direction == offset + itemBarLength)
+                    if (selection == offset + 8 && selection + direction == offset + 9)
                     {
-                        direction -= itemBarLength;
+                        direction -= 9;
                     }
                     else if (selection == offset && selection + direction == offset - 1)
                     {
-                        direction += itemBarLength;
+                        direction += 9;
                     }
-                    offset += itemBarLength;
+                    offset += 9;
                     goto thing;
                 }
             }
@@ -157,8 +155,8 @@ namespace NotAwesomeSurvival
             if (bagOpen)
             {
                 DisplayItemBar(0, "&7↑ª", "&7ª↑", CpeMessageType.BottomRight3);
-                DisplayItemBar(itemBarLength, "&7←¥", "&7₧→", CpeMessageType.BottomRight2);
-                DisplayItemBar(itemBarLength * 2, "&7↓º", "&7º↓", CpeMessageType.BottomRight1);
+                DisplayItemBar(9, "&7←¥", "&7₧→", CpeMessageType.BottomRight2);
+                DisplayItemBar(18, "&7↓º", "&7º↓", CpeMessageType.BottomRight1);
                 return;
             }
             DisplayItemBar();
@@ -167,7 +165,7 @@ namespace NotAwesomeSurvival
                                    CpeMessageType location = CpeMessageType.BottomRight1)
         {
             StringBuilder builder = new(prefix);
-            for (int i = offset; i < itemBarLength + offset; i++)
+            for (int i = offset; i < 9 + offset; i++)
             {
                 bool moving = !(slotToMoveTo == -1),
                     handsHere = i == slotToMoveTo,
@@ -252,7 +250,7 @@ namespace NotAwesomeSurvival
                         }
                     }
                 }
-                else if (!selectionNext || i == itemBarLength + offset - 1)
+                else if (!selectionNext || i == 9 + offset - 1)
                 {
                     builder.Append("⌐");
                 }
@@ -298,7 +296,7 @@ namespace NotAwesomeSurvival
         }
         public void BreakItem(ref Item item)
         {
-            for (int i = 0; i < maxItems; i++)
+            for (int i = 0; i < 27; i++)
             {
                 if (item == items[i])
                 {

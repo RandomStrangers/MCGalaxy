@@ -1,5 +1,5 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-namespace Priority_Queue
+namespace NotAwesomeSurvival
 {
     public class GenericPriorityQueueNode<TPriority>
     {

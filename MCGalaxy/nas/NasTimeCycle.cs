@@ -3,7 +3,6 @@ using MCGalaxy;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using Newtonsoft.Json;
-using System;
 using System.IO;
 namespace NotAwesomeSurvival
 {
@@ -12,26 +11,26 @@ namespace NotAwesomeSurvival
         // Vars
         public static float globalCurrentTime;
         public static DayCycles globalCurrentDayCycle;
-        public static int gameday = 0;
-        public static string TimeFilePath = Nas.CoreSavePath + "time.json";
         public static JsonSerializer serializer = new();
         public static Scheduler weatherScheduler;
         public static SchedulerTask task;
         public static string globalSkyColor, globalCloudColor,
-            globalSunColor, globalShadowColor; // self explanatory
+            globalSunColor, globalShadowColor, 
+            TimeFilePath = Nas.CoreSavePath + "time.json"; // self explanatory
         // Cycle Settings
         public static DayCycles dayCycle = DayCycles.Sunrise; // default cycle
         public static int cycleCurrentTime = 0, /* current cycle time (must be zero to start)*/
             cycleMaxTime = 14400, /* duration a whole day*/
-            hourMinutes = 600; //seconds in an hour
+            hourMinutes = 600, //seconds in an hour
+            gameday = 0;
         public enum DayCycles // Enum with day and night cycles
         {
             Sunrise, Day, Sunset, Night, Midnight
         }
         public static void Setup()
         {
-            weatherScheduler ??= new Scheduler("WeatherScheduler");
-            task = weatherScheduler.QueueRepeat(Update, null, new TimeSpan(0, 0, 7));
+            weatherScheduler ??= new("WeatherScheduler");
+            task = weatherScheduler.QueueRepeat(Update, null, new(0, 0, 7));
             dayCycle = DayCycles.Sunrise; // start with sunrise state
             // Static variables to keep time after switching scenes
             if (!File.Exists(TimeFilePath))

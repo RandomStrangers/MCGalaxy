@@ -20,7 +20,7 @@ namespace NotAwesomeSurvival
         /// </summary>
         public NameGenerator()
         {
-            random = new Random();
+            random = new();
         }
         public long IndexSelect(long[] intArray)
         {
