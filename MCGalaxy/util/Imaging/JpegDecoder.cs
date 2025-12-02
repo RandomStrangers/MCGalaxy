@@ -1,14 +1,14 @@
 /*
     Copyright 2015-2024 MCGalaxy
-
+        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-
+    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-
+    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,7 +18,7 @@
 using System;
 namespace MCGalaxy.Util.Imaging
 {
-    public class JpegDecoder : ImageDecoder
+    public unsafe class JpegDecoder : ImageDecoder
     {
         static readonly byte[] jfifSig = new byte[] 
         { 
@@ -74,7 +74,7 @@ namespace MCGalaxy.Util.Imaging
                 {
                     SkipMarker(src);
                 }
-                else if (marker == 0xFFFE)
+                else if (marker == 0xFFFE || marker == 0xFFDD)
                 {
                     SkipMarker(src);
                 }
@@ -111,9 +111,9 @@ namespace MCGalaxy.Util.Imaging
         {
             int offset = AdvanceOffset(2),
                 length = MemUtils.ReadU16_BE(src, offset);
-            offset = AdvanceOffset(length - 2);
-            length -= 2;
-            while (length != 0)
+            length -= 2; 
+            offset = AdvanceOffset(length);
+            while (length > 0)
             {
                 if (length < 65)
                 {
@@ -141,11 +141,20 @@ namespace MCGalaxy.Util.Imaging
         {
             int offset = AdvanceOffset(2),
                 length = MemUtils.ReadU16_BE(src, offset);
-            offset = AdvanceOffset(length - 2);
-            byte flags = src[offset++];
-            HuffmanTable table = new();
-            HuffmanTable[] tables = (flags >> 4) != 0 ? ac_huff_tables : dc_huff_tables;
-            tables[flags & 0x03] = table;
+            length -= 2;
+            offset = AdvanceOffset(length);
+            while (length > 0)
+            {
+                byte flags = src[offset++];
+                HuffmanTable table = new();
+                HuffmanTable[] tables = (flags >> 4) != 0 ? ac_huff_tables : dc_huff_tables;
+                tables[flags & 0x03] = table;
+                int read = DecodeHuffmanTable(src, table, ref offset);
+                length -= 1 + read;
+            }
+        }
+        int DecodeHuffmanTable(byte[] src, HuffmanTable table, ref int offset)
+        {
             table.firstCodewords = new ushort[16];
             table.endCodewords = new ushort[16];
             table.firstOffsets = new ushort[16];
@@ -173,14 +182,15 @@ namespace MCGalaxy.Util.Imaging
             {
                 Fail("too many values");
             }
-            total = 0;
+            int valueIdx = 0;
             for (int i = 0; i < counts.Length; i++)
             {
                 for (int j = 0; j < counts[i]; j++)
                 {
-                    table.values[total++] = src[offset++];
+                    table.values[valueIdx++] = src[offset++];
                 }
             }
+            return 16 + total;
         }
         void ReadFrameStart(byte[] src, SimpleBitmap bmp)
         {
@@ -252,7 +262,7 @@ namespace MCGalaxy.Util.Imaging
             Fail("unknown scan component");
         }
         struct YCbCr 
-        { 
+        {
             public float Y, Cb, Cr; 
         };
         void DecodeMCUs(byte[] src, SimpleBitmap bmp)
@@ -263,7 +273,7 @@ namespace MCGalaxy.Util.Imaging
                 mcus_y = Utils.CeilDiv(bmp.Height, mcu_h);
             JpegComponent[] comps = this.comps;
             int[] block = new int[64];
-            float[] output = new float[64];
+            float* output = stackalloc float[64];
             YCbCr[] colors = new YCbCr[mcu_w * mcu_h];
             for (int i = 0; i < colors.Length; i++)
             {
@@ -274,6 +284,15 @@ namespace MCGalaxy.Util.Imaging
             {
                 for (int mcuX = 0; mcuX < mcus_x; mcuX++)
                 {
+                    if (hit_rst)
+                    {
+                        hit_rst = false;
+                        ConsumeBits(bit_cnt & 0x07);
+                        for (int i = 0; i < comps.Length; i++)
+                        {
+                            comps[i].PredDCValue = 0;
+                        }
+                    }
                     for (int i = 0; i < comps.Length; i++)
                     {
                         JpegComponent comp = comps[i];
@@ -343,9 +362,9 @@ namespace MCGalaxy.Util.Imaging
         }
         static byte ByteClamp(float v)
         {
-            if (v < 0)
-            {
-                return 0;
+            if (v < 0) 
+            { 
+                return 0; 
             }
             if (v > 255)
             {
@@ -413,7 +432,7 @@ namespace MCGalaxy.Util.Imaging
             }
             idct_factors = factors;
         }
-        unsafe void IDCT(int[] block, float[] output)
+        void IDCT(int[] block, float* output)
         {
             float[] factors = idct_factors;
             float* tmp = stackalloc float[64];
@@ -444,19 +463,25 @@ namespace MCGalaxy.Util.Imaging
         }
         uint bit_buf;
         int bit_cnt;
-        bool end;
+        bool hit_end, hit_rst;
         int ReadBits(byte[] src, int count)
         {
-            while (bit_cnt <= 24 && !end)
+            while (bit_cnt <= 24 && !hit_end)
             {
                 byte next = src[buf_offset++];
                 if (next == 0xFF)
                 {
                     byte type = src[buf_offset++];
-                    if (type == 0xD9)
+                    if (type == (0xFFD9 & 0xFF))
                     {
-                        end = true;
+                        next = 0;
+                        hit_end = true;
                         buf_offset -= 2;
+                    }
+                    else if (type >= (0xFFD0 & 0xFF) && type <= (0xFFD7 & 0xFF))
+                    {
+                        hit_rst = true;
+                        continue;
                     }
                     else if (type != 0)
                     {
@@ -472,6 +497,12 @@ namespace MCGalaxy.Util.Imaging
             bit_buf &= (uint)((1 << read) - 1);
             bit_cnt -= count;
             return bits;
+        }
+        void ConsumeBits(int count)
+        {
+            int read = bit_cnt - count;
+            bit_buf &= (uint)((1 << read) - 1);
+            bit_cnt -= count;
         }
         byte ReadHuffman(HuffmanTable table, byte[] src)
         {
@@ -520,7 +551,7 @@ namespace MCGalaxy.Util.Imaging
     class HuffmanTable
     {
         public ushort[] firstCodewords,
-            endCodewords, 
+            endCodewords,
             firstOffsets;
         public byte[] values;
     }
