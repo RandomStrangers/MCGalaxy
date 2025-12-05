@@ -1,14 +1,14 @@
 /*
     Copyright 2015-2024 MCGalaxy
-        
+
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
+
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
+
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -53,7 +53,6 @@ namespace MCGalaxy.Util.Imaging
         {
             SetBuffer(src);
             SimpleBitmap bmp = new();
-            ComputeIDCTFactors();
             ReadMarkers(src, bmp);
             return bmp;
         }
@@ -159,6 +158,7 @@ namespace MCGalaxy.Util.Imaging
             table.endCodewords = new ushort[16];
             table.firstOffsets = new ushort[16];
             table.values = new byte[256];
+            table.fast = new ushort[1 << 8];
             int code = 0, total = 0;
             byte[] counts = new byte[16];
             for (int i = 0; i < 16; i++)
@@ -187,7 +187,20 @@ namespace MCGalaxy.Util.Imaging
             {
                 for (int j = 0; j < counts[i]; j++)
                 {
-                    table.values[valueIdx++] = src[offset++];
+                    byte value = src[offset++];
+                    table.values[valueIdx++] = value;
+                    int len = i + 1;
+                    if (len > 8)
+                    {
+                        continue;
+                    }
+                    ushort packed = (ushort)((len << 8) | value);
+                    int codeword = table.firstCodewords[i] + j;
+                    codeword <<= 8 - len;
+                    for (int k = 0; k < 1 << (8 - len); k++)
+                    {
+                        table.fast[codeword + k] = packed;
+                    }
                 }
             }
             return 16 + total;
@@ -206,10 +219,7 @@ namespace MCGalaxy.Util.Imaging
             bmp.Width = MemUtils.ReadU16_BE(src, offset + 3);
             bmp.AllocatePixels();
             byte numComps = src[offset + 5];
-            if (!(numComps == 1 || numComps == 3))
-            {
-                Fail("num components");
-            }
+            if (!(numComps == 1 || numComps == 3)) Fail("num components");
             offset += 6;
             comps = new JpegComponent[numComps];
             for (int i = 0; i < numComps; i++)
@@ -228,8 +238,12 @@ namespace MCGalaxy.Util.Imaging
             }
             for (int i = 0; i < numComps; i++)
             {
-                comps[i].BlocksPerMcuX = comps[i].SamplingHor;
-                comps[i].BlocksPerMcuY = comps[i].SamplingVer;
+                JpegComponent comp = comps[i];
+                comp.BlocksPerMcuX = comp.SamplingHor;
+                comp.BlocksPerMcuY = comp.SamplingVer;
+                comp.SamplesPerBlockX = (byte)(lowestHor / comp.BlocksPerMcuX);
+                comp.SamplesPerBlockY = (byte)(lowestVer / comp.BlocksPerMcuY);
+                comp.OutputBlock = GetBlockOutputFunction(comp);
             }
         }
         void ReadScanStart(byte[] src)
@@ -244,7 +258,7 @@ namespace MCGalaxy.Util.Imaging
                     tables = src[offset++];
                 SetHuffTables(compID, tables);
             }
-            //offset += 3;
+            offset += 3;
         }
         void SetHuffTables(byte compID, byte tables)
         {
@@ -261,10 +275,6 @@ namespace MCGalaxy.Util.Imaging
             }
             Fail("unknown scan component");
         }
-        struct YCbCr 
-        {
-            public float Y, Cb, Cr; 
-        };
         void DecodeMCUs(byte[] src, SimpleBitmap bmp)
         {
             int mcu_w = lowestHor * 8,
@@ -272,14 +282,9 @@ namespace MCGalaxy.Util.Imaging
                 mcus_x = Utils.CeilDiv(bmp.Width, mcu_w),
                 mcus_y = Utils.CeilDiv(bmp.Height, mcu_h);
             JpegComponent[] comps = this.comps;
-            int[] block = new int[64];
+            int* block = stackalloc int[64 + 32];
             float* output = stackalloc float[64];
             YCbCr[] colors = new YCbCr[mcu_w * mcu_h];
-            for (int i = 0; i < colors.Length; i++)
-            {
-                colors[i].Cr = 128;
-                colors[i].Cb = 128;
-            }
             for (int mcuY = 0; mcuY < mcus_y; mcuY++)
             {
                 for (int mcuX = 0; mcuX < mcus_x; mcuX++)
@@ -288,10 +293,7 @@ namespace MCGalaxy.Util.Imaging
                     {
                         hit_rst = false;
                         ConsumeBits(bit_cnt & 0x07);
-                        for (int i = 0; i < comps.Length; i++)
-                        {
-                            comps[i].PredDCValue = 0;
-                        }
+                        for (int i = 0; i < comps.Length; i++) comps[i].PredDCValue = 0;
                     }
                     for (int i = 0; i < comps.Length; i++)
                     {
@@ -302,36 +304,8 @@ namespace MCGalaxy.Util.Imaging
                             {
                                 DecodeBlock(comp, src, block);
                                 IDCT(block, output);
-                                int samplesX = lowestHor / comp.SamplingHor,
-                                    samplesY = lowestVer / comp.SamplingVer;
-                                for (int y = 0; y < 8; y++)
-                                {
-                                    for (int x = 0; x < 8; x++)
-                                    {
-                                        float sample = output[y * 8 + x];
-                                        for (int py = 0; py < samplesY; py++)
-                                        {
-                                            for (int px = 0; px < samplesX; px++)
-                                            {
-                                                int YY = (by * 8 + y) * samplesY + py,
-                                                    XX = (bx * 8 + x) * samplesX + px,
-                                                    idx = YY * mcu_w + XX;
-                                                if (i == 0)
-                                                {
-                                                    colors[idx].Y = sample;
-                                                }
-                                                else if (i == 1)
-                                                {
-                                                    colors[idx].Cb = sample;
-                                                }
-                                                else if (i == 2)
-                                                {
-                                                    colors[idx].Cr = sample;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                                comp.OutputBlock(comp, colors, mcu_w, i, output,
+                                                 bx * 8, by * 8);
                             }
                         }
                     }
@@ -346,12 +320,12 @@ namespace MCGalaxy.Util.Imaging
                                 globalY = baseY + YY;
                             if (globalX < bmp.Width && globalY < bmp.Height)
                             {
-                                float y = colors[j].Y,
+                                float y = colors[j].Y + 128.0f,
                                     cr = colors[j].Cr,
                                     cb = colors[j].Cb,
-                                    r = 1.40200f * (cr - 128) + y,
-                                    g = -0.34414f * (cb - 128) - 0.71414f * (cr - 128) + y,
-                                    b = 1.77200f * (cb - 128) + y;
+                                    r = 1.40200f * cr + y,
+                                    g = -0.34414f * cb - 0.71414f * cr + y,
+                                    b = 1.77200f * cb + y;
                                 Pixel p = new(ByteClamp(r), ByteClamp(g), ByteClamp(b), 255);
                                 bmp.pixels[globalY * bmp.Width + globalX] = p;
                             }
@@ -362,9 +336,9 @@ namespace MCGalaxy.Util.Imaging
         }
         static byte ByteClamp(float v)
         {
-            if (v < 0) 
-            { 
-                return 0; 
+            if (v < 0)
+            {
+                return 0;
             }
             if (v > 255)
             {
@@ -372,7 +346,7 @@ namespace MCGalaxy.Util.Imaging
             }
             return (byte)v;
         }
-        void DecodeBlock(JpegComponent comp, byte[] src, int[] block)
+        void DecodeBlock(JpegComponent comp, byte[] src, int* block)
         {
             HuffmanTable table = dc_huff_tables[comp.DCHuffTable];
             int dc_code = ReadHuffman(table, src),
@@ -380,7 +354,7 @@ namespace MCGalaxy.Util.Imaging
                 dc_value = comp.PredDCValue + dc_delta;
             comp.PredDCValue = dc_value;
             byte[] dequant = quant_tables[comp.QuantTable];
-            for (int j = 0; j < block.Length; j++)
+            for (int j = 0; j < 64; j++)
             {
                 block[j] = 0;
             }
@@ -417,54 +391,136 @@ namespace MCGalaxy.Util.Imaging
                 }
             } while (idx < 64);
         }
-        float[] idct_factors;
-        void ComputeIDCTFactors()
+        static void IDCT(int* block, float* output)
         {
-            float[] factors = new float[64];
-            for (int xy = 0; xy < 8; xy++)
-            {
-                for (int uv = 0; uv < 8; uv++)
-                {
-                    float cuv = uv == 0 ? 0.70710678f : 1.0f,
-                        cosuv = (float)Math.Cos((2 * xy + 1) * uv * Math.PI / 16.0);
-                    factors[(xy * 8) + uv] = cuv * cosuv;
-                }
-            }
-            idct_factors = factors;
-        }
-        void IDCT(int[] block, float* output)
-        {
-            float[] factors = idct_factors;
-            float* tmp = stackalloc float[64];
+            float* tmp = stackalloc float[8 * 8];
             for (int col = 0; col < 8; col++)
             {
-                for (int y = 0; y < 8; y++)
-                {
-                    float sum = 0.0f;
-                    for (int v = 0; v < 8; v++)
-                    {
-                        sum += block[v * 8 + col] * factors[(y * 8) + v];
-                    }
-                    tmp[y * 8 + col] = sum;
-                }
+                float B0 = block[0 * 8 + col], 
+                    B1 = block[1 * 8 + col],
+                    B2 = block[2 * 8 + col], 
+                    B3 = block[3 * 8 + col],
+                    B4 = block[4 * 8 + col], 
+                    B5 = block[5 * 8 + col],
+                    B6 = block[6 * 8 + col], 
+                    B7 = block[7 * 8 + col],
+                    a4 = 0.70710678118f * B0,
+                    e4 = 0.70710678118f * B4,
+                    c2 = 0.92387953251f * B2, 
+                    c6 = 0.38268343236f * B2,
+                    g2 = 0.92387953251f * B6, 
+                    g6 = 0.38268343236f * B6,
+                    b1 = 0.98078528040f * B1, 
+                    b3 = 0.83146961230f * B1, 
+                    b5 = 0.55557023302f * B1,
+                    b7 = 0.19509032201f * B1,
+                    d1 = 0.98078528040f * B3, 
+                    d3 = 0.83146961230f * B3, 
+                    d5 = 0.55557023302f * B3, 
+                    d7 = 0.19509032201f * B3,
+                    f1 = 0.98078528040f * B5, 
+                    f3 = 0.83146961230f * B5, 
+                    f5 = 0.55557023302f * B5, 
+                    f7 = 0.19509032201f * B5,
+                    h1 = 0.98078528040f * B7, 
+                    h3 = 0.83146961230f * B7,
+                    h5 = 0.55557023302f * B7, 
+                    h7 = 0.19509032201f * B7,
+                    w1 = a4 + e4, 
+                    w2 = a4 - e4,
+                    x1 = c2 + g6, 
+                    x2 = c6 - g2,
+                    y1 = b1 + d3, 
+                    y2 = b3 - d7, 
+                    y3 = b5 - d1,
+                    y4 = b7 - d5,
+                    z1 = f5 + h7, 
+                    z2 = f1 + h5, 
+                    z3 = f7 + h3, 
+                    z4 = f3 - h1,
+                    u1 = w1 + x1, 
+                    u2 = w2 + x2, 
+                    u3 = w2 - x2, 
+                    u4 = w1 - x1,
+                    v1 = y1 + z1, 
+                    v2 = y2 - z2, 
+                    v3 = y3 + z3, 
+                    v4 = y4 + z4;
+                tmp[0 * 8 + col] = u1 + v1;
+                tmp[1 * 8 + col] = u2 + v2;
+                tmp[2 * 8 + col] = u3 + v3;
+                tmp[3 * 8 + col] = u4 + v4;
+                tmp[4 * 8 + col] = u4 - v4;
+                tmp[5 * 8 + col] = u3 - v3;
+                tmp[6 * 8 + col] = u2 - v2;
+                tmp[7 * 8 + col] = u1 - v1;
             }
             for (int row = 0; row < 8; row++)
             {
-                for (int x = 0; x < 8; x++)
-                {
-                    float sum = 0.0f;
-                    for (int u = 0; u < 8; u++)
-                    {
-                        sum += tmp[row * 8 + u] * factors[(x * 8) + u];
-                    }
-                    output[row * 8 + x] = (sum / 4.0f) + 128.0f;
-                }
+                float B0 = tmp[row * 8 + 0], 
+                    B1 = tmp[row * 8 + 1],
+                    B2 = tmp[row * 8 + 2], 
+                    B3 = tmp[row * 8 + 3],
+                    B4 = tmp[row * 8 + 4], 
+                    B5 = tmp[row * 8 + 5],
+                    B6 = tmp[row * 8 + 6], 
+                    B7 = tmp[row * 8 + 7],
+                    a4 = 0.70710678118f / 4.0f * B0,
+                    e4 = 0.70710678118f / 4.0f * B4,
+                    c2 = 0.92387953251f / 4.0f * B2, 
+                    c6 = 0.38268343236f / 4.0f * B2,
+                    g2 = 0.92387953251f / 4.0f * B6, 
+                    g6 = 0.38268343236f / 4.0f * B6,
+                    b1 = 0.98078528040f / 4.0f * B1, 
+                    b3 = 0.83146961230f / 4.0f * B1, 
+                    b5 = 0.55557023302f / 4.0f * B1, 
+                    b7 = 0.19509032201f / 4.0f * B1,
+                    d1 = 0.98078528040f / 4.0f * B3, 
+                    d3 = 0.83146961230f / 4.0f * B3, 
+                    d5 = 0.55557023302f / 4.0f * B3, 
+                    d7 = 0.19509032201f / 4.0f * B3,
+                    f1 = 0.98078528040f / 4.0f * B5, 
+                    f3 = 0.83146961230f / 4.0f * B5, 
+                    f5 = 0.55557023302f / 4.0f * B5, 
+                    f7 = 0.19509032201f / 4.0f * B5,
+                    h1 = 0.98078528040f / 4.0f * B7, 
+                    h3 = 0.83146961230f / 4.0f * B7, 
+                    h5 = 0.55557023302f / 4.0f * B7, 
+                    h7 = 0.19509032201f / 4.0f * B7,
+                    w1 = a4 + e4, 
+                    w2 = a4 - e4,
+                    x1 = c2 + g6, 
+                    x2 = c6 - g2,
+                    y1 = b1 + d3, 
+                    y2 = b3 - d7, 
+                    y3 = b5 - d1, 
+                    y4 = b7 - d5,
+                    z1 = f5 + h7, 
+                    z2 = f1 + h5, 
+                    z3 = f7 + h3, 
+                    z4 = f3 - h1,
+                    u1 = w1 + x1, 
+                    u2 = w2 + x2, 
+                    u3 = w2 - x2,
+                    u4 = w1 - x1,
+                    v1 = y1 + z1, 
+                    v2 = y2 - z2, 
+                    v3 = y3 + z3, 
+                    v4 = y4 + z4;
+                output[row * 8 + 0] = u1 + v1;
+                output[row * 8 + 1] = u2 + v2;
+                output[row * 8 + 2] = u3 + v3;
+                output[row * 8 + 3] = u4 + v4;
+                output[row * 8 + 4] = u4 - v4;
+                output[row * 8 + 5] = u3 - v3;
+                output[row * 8 + 6] = u2 - v2;
+                output[row * 8 + 7] = u1 - v1;
             }
         }
         uint bit_buf;
         int bit_cnt;
         bool hit_end, hit_rst;
-        int ReadBits(byte[] src, int count)
+        void RefillBits(byte[] src)
         {
             while (bit_cnt <= 24 && !hit_end)
             {
@@ -492,10 +548,19 @@ namespace MCGalaxy.Util.Imaging
                 bit_buf |= next;
                 bit_cnt += 8;
             }
+        }
+        int ReadBits(int count)
+        {
             int read = bit_cnt - count,
                 bits = (int)(bit_buf >> read);
             bit_buf &= (uint)((1 << read) - 1);
             bit_cnt -= count;
+            return bits;
+        }
+        int PeekBits(int count)
+        {
+            int read = bit_cnt - count,
+                bits = (int)(bit_buf >> read);
             return bits;
         }
         void ConsumeBits(int count)
@@ -506,11 +571,19 @@ namespace MCGalaxy.Util.Imaging
         }
         byte ReadHuffman(HuffmanTable table, byte[] src)
         {
-            int codeword = 0;
-            for (int i = 0; i < 16; i++)
+            RefillBits(src);
+            int codeword = PeekBits(8),
+                packed = table.fast[codeword];
+            if (packed != 0)
+            {
+                ConsumeBits(packed >> 8);
+                return (byte)packed;
+            }
+            ConsumeBits(8);
+            for (int i = 8; i < 16; i++)
             {
                 codeword <<= 1;
-                codeword |= ReadBits(src, 1);
+                codeword |= ReadBits(1);
                 if (codeword < table.endCodewords[i])
                 {
                     int offset = table.firstOffsets[i] + (codeword - table.firstCodewords[i]);
@@ -527,7 +600,8 @@ namespace MCGalaxy.Util.Imaging
             {
                 return 0;
             }
-            int value = ReadBits(src, bits),
+            RefillBits(src);
+            int value = ReadBits(bits),
                 midpoint = 1 << (bits - 1);
             if (value < midpoint)
             {
@@ -535,24 +609,166 @@ namespace MCGalaxy.Util.Imaging
             }
             return value;
         }
+        static JpegBlockOutput GetBlockOutputFunction(JpegComponent comp)
+        {
+            if (comp.SamplesPerBlockX == 1 && comp.SamplesPerBlockY == 1)
+            {
+                if (comp.ID == 1)
+                {
+                    return Y_1x1Output;
+                }
+                if (comp.ID == 2)
+                {
+                    return Cb_1x1Output;
+                }
+                if (comp.ID == 3)
+                {
+                    return Cr_1x1Output;
+                }
+            }
+            if (comp.SamplesPerBlockX == 2 && comp.SamplesPerBlockY == 2)
+            {
+                if (comp.ID == 2)
+                {
+                    return Cb_2x2Output;
+                }
+                if (comp.ID == 3)
+                {
+                    return Cr_2x2Output;
+                }
+            }
+            return Generic_BlockOutput;
+        }
+        static void Generic_BlockOutput(JpegComponent comp, YCbCr[] colors, int mcu_w,
+                                        int i, float* output, int baseX, int baseY)
+        {
+            int samplesX = comp.SamplesPerBlockX,
+                samplesY = comp.SamplesPerBlockY;
+            for (int y = 0; y < 8; y++)
+            {
+                for (int x = 0; x < 8; x++)
+                {
+                    float sample = output[y * 8 + x];
+                    for (int py = 0; py < samplesY; py++)
+                    {
+                        for (int px = 0; px < samplesX; px++)
+                        {
+                            int YY = (baseY + y) * samplesY + py,
+                                XX = (baseX + x) * samplesX + px,
+                                idx = YY * mcu_w + XX;
+                            if (i == 0)
+                            {
+                                colors[idx].Y = sample;
+                            }
+                            else if (i == 1)
+                            {
+                                colors[idx].Cb = sample;
+                            }
+                            else if (i == 2)
+                            {
+                                colors[idx].Cr = sample;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        static void Y_1x1Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
+                                int i, float* output, int baseX, int baseY)
+        {
+            for (int y = 0, src = 0; y < 8; y++)
+            {
+                int dst = (baseY + y) * mcu_w + baseX + 0;
+                for (int x = 0; x < 8; x++)
+                {
+                    colors[dst++].Y = output[src++];
+                }
+            }
+        }
+        static void Cb_1x1Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
+                                int i, float* output, int baseX, int baseY)
+        {
+            for (int y = 0, src = 0; y < 8; y++)
+            {
+                int dst = (baseY + y) * mcu_w + baseX + 0;
+                for (int x = 0; x < 8; x++)
+                {
+                    colors[dst++].Cb = output[src++];
+                }
+            }
+        }
+        static void Cr_1x1Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
+                                int i, float* output, int baseX, int baseY)
+        {
+            for (int y = 0, src = 0; y < 8; y++)
+            {
+                int dst = (baseY + y) * mcu_w + baseX + 0;
+                for (int x = 0; x < 8; x++)
+                {
+                    colors[dst++].Cr = output[src++];
+                }
+            }
+        }
+        static void Cb_2x2Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
+                                 int i, float* output, int baseX, int baseY)
+        {
+            for (int y = 0, src = 0; y < 8; y++)
+            {
+                int dst = (baseY + y) * 2 * mcu_w + (baseX + 0) * 2;
+                for (int x = 0; x < 8; x++, dst += 2)
+                {
+                    float sample = output[src++];
+                    colors[dst + 0].Cb = sample; 
+                    colors[dst + 1].Cb = sample;
+                    colors[dst + mcu_w + 0].Cb = sample;
+                    colors[dst + mcu_w + 1].Cb = sample;
+                }
+            }
+        }
+        static void Cr_2x2Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
+                                 int i, float* output, int baseX, int baseY)
+        {
+            for (int y = 0, src = 0; y < 8; y++)
+            {
+                int dst = (baseY + y) * 2 * mcu_w + (baseX + 0) * 2;
+                for (int x = 0; x < 8; x++, dst += 2)
+                {
+                    float sample = output[src++];
+                    colors[dst + 0].Cr = sample; 
+                    colors[dst + 1].Cr = sample;
+                    colors[dst + mcu_w + 0].Cr = sample;
+                    colors[dst + mcu_w + 1].Cr = sample;
+                }
+            }
+        }
     }
+    struct YCbCr 
+    { 
+        public float Y, Cb, Cr;
+    };
+    unsafe delegate void JpegBlockOutput(JpegComponent comp, YCbCr[] colors, int mcu_w,
+                                         int i, float* output, int baseX, int baseY);
     class JpegComponent
     {
         public byte ID,
             QuantTable,
-            SamplingHor,
-            SamplingVer,
+            ACHuffTable,
+            DCHuffTable,
             BlocksPerMcuX,
             BlocksPerMcuY,
-            ACHuffTable,
-            DCHuffTable;
+            SamplesPerBlockX,
+            SamplesPerBlockY,
+            SamplingHor,
+            SamplingVer;
         public int PredDCValue;
+        public JpegBlockOutput OutputBlock;
     }
     class HuffmanTable
     {
         public ushort[] firstCodewords,
             endCodewords,
-            firstOffsets;
+            firstOffsets,
+            fast;
         public byte[] values;
     }
 }

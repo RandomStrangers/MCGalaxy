@@ -43,7 +43,7 @@ namespace NotAwesomeSurvival
             SavePath = Path + "playerdata/",
             CoreSavePath = Path + "coredata/",
             EffectsPath = Path + "effects/",
-            NasVersion = "1.0.4.7";
+            NasVersion = "1.0.4.8";
         public static bool LoadedOnStartup = false,
             firstEverPluginLoad = false;
         public static Command[] Commands = new Command[]
