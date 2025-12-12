@@ -495,6 +495,7 @@
     <Compile Include="Levels\IO\Exporters\LvlExporter.cs" />
     <Compile Include="Levels\IO\Exporters\MapExporter.cs" />
     <Compile Include="Levels\IO\Exporters\McfExporter.cs" />
+    <Compile Include="Levels\IO\Exporters\UclExporter.cs" />
     <Compile Include="Levels\IO\fNbt.cs" />
     <Compile Include="Levels\IO\Importers\CwImporter.cs" />
     <Compile Include="Levels\IO\Importers\DatImporter.cs" />
@@ -504,6 +505,7 @@
     <Compile Include="Levels\IO\Importers\MapImporter.cs" />
     <Compile Include="Levels\IO\Importers\McfImporter.cs" />
     <Compile Include="Levels\IO\Importers\McLevelImporter.cs" />
+    <Compile Include="Levels\IO\Importers\UclImporter.cs" />
     <Compile Include="Levels\IO\MapFormats.cs" />
     <Compile Include="Levels\Level.Blocks.cs" />
     <Compile Include="Levels\Level.Fields.cs" />

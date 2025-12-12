@@ -56,6 +56,7 @@ namespace MCGalaxy
             Files.AddRange(FileIO.TryGetFiles("levels", "*.lvl"));
             Files.AddRange(FileIO.TryGetFiles("levels", "*.mcf"));
             Files.AddRange(FileIO.TryGetFiles("levels", "*.map"));
+            Files.AddRange(FileIO.TryGetFiles("levels", "*.ucl"));
             return Files.ToArray();
         }
         public static string[] AllMapNames()
@@ -74,7 +75,8 @@ namespace MCGalaxy
         public static string GetExt(string levelName)
         {
             bool mcf = File.Exists("levels/" + levelName.ToLower() + ".mcf"),
-                map = File.Exists("levels/" + levelName.ToLower() + ".map");
+                map = File.Exists("levels/" + levelName.ToLower() + ".map"),
+                ucl = File.Exists("levels/" + levelName.ToLower() + ".ucl");
             if (mcf)
             {
                 return ".mcf";
@@ -82,6 +84,10 @@ namespace MCGalaxy
             else if (map)
             {
                 return ".map";
+            }
+            else if (ucl)
+            {
+                return ".ucl";
             }
             else
             {
@@ -97,7 +103,8 @@ namespace MCGalaxy
             else
             {
                 bool mcf = File.Exists("levels/" + name.ToLower() + ".mcf"),
-                    map = File.Exists("levels/" + name.ToLower() + ".map");
+                    map = File.Exists("levels/" + name.ToLower() + ".map"),
+                    ucl = File.Exists("levels/" + name.ToLower() + ".ucl");
                 if (mcf)
                 {
                     return name.ToLower() + ".mcf";
@@ -105,6 +112,10 @@ namespace MCGalaxy
                 else if (map)
                 {
                     return name.ToLower() + ".map";
+                }
+                else if (ucl)
+                {
+                    return name.ToLower() + ".ucl";
                 }
                 else
                 {
@@ -137,7 +148,8 @@ namespace MCGalaxy
             else
             {
                 bool mcf = File.Exists("levels/" + name.ToLower() + ".mcf"),
-                    map = File.Exists("levels/" + name.ToLower() + ".map");
+                    map = File.Exists("levels/" + name.ToLower() + ".map"),
+                    ucl = File.Exists("levels/" + name.ToLower() + ".ucl");
                 if (mcf)
                 {
                     return BackupDirPath(name, backup) + "/" + name + ".mcf";
@@ -145,6 +157,10 @@ namespace MCGalaxy
                 else if (map)
                 {
                     return BackupDirPath(name, backup) + "/" + name + ".map";
+                }
+                else if (ucl)
+                {
+                    return BackupDirPath(name, backup) + "/" + name + ".ucl";
                 }
                 else
                 {

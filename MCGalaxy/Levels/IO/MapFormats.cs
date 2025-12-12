@@ -52,8 +52,10 @@ namespace MCGalaxy.Levels.IO
         /// <summary> List of all level format importers </summary>
         public static List<IMapImporter> Formats = new() 
         {
-            new LvlImporter(), new CwImporter(), new FcmImporter(), new McfImporter(),
-            new DatImporter(), new McLevelImporter(), new MapImporter()
+            new LvlImporter(), new CwImporter(), 
+            new FcmImporter(), new McfImporter(),
+            new DatImporter(), new McLevelImporter(), 
+            new MapImporter(), new UclImporter()
         };
         public static IMapImporter defaultImporter = new LvlImporter();
         /// <summary> Returns an IMapImporter capable of decoding the given level file </summary>
@@ -98,7 +100,8 @@ namespace MCGalaxy.Levels.IO
         public abstract void Write(Stream dst, Level lvl);
         public static List<IMapExporter> Formats = new()
         {
-            new LvlExporter(), new McfExporter(), new MapExporter()
+            new LvlExporter(), new McfExporter(), 
+            new MapExporter(), new UclExporter()
         };
         public static IMapExporter GetFor(string path)
         {

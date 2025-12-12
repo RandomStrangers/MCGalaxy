@@ -101,7 +101,10 @@ namespace NotAwesomeSurvival
         }
         public static bool Gen(Player p, Level lvl, string seed)
         {
-            if (File.Exists("levels/" + lvl.name + ".lvl") || File.Exists("levels/" + lvl.name + ".mcf") || File.Exists("levels/" + lvl.name + ".map"))
+            if (File.Exists("levels/" + lvl.name + ".lvl") 
+                || File.Exists("levels/" + lvl.name + ".mcf") 
+                || File.Exists("levels/" + lvl.name + ".map") 
+                || File.Exists("levels/" + lvl.name + ".ucl"))
             {
                 p.Message("Something weird happened, try going into the map again");
                 return false;
