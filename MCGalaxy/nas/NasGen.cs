@@ -3,8 +3,8 @@ using LibNoise;
 using MCGalaxy;
 using MCGalaxy.Generator;
 using MCGalaxy.Tasks;
+using MCGalaxy.Util.Imaging;
 using System;
-using System.Drawing;
 using System.IO;
 namespace NotAwesomeSurvival
 {
@@ -25,7 +25,7 @@ namespace NotAwesomeSurvival
             quartzChance = 1f / 24f,
             diamondChance = 1.25f / 48f,
             emeraldChance = 1.25f / 40f;
-        public static Color coalFogColor,
+        public static Pixel coalFogColor,
             ironFogColor,
             goldFogColor,
             diamondFogColor,
@@ -46,11 +46,26 @@ namespace NotAwesomeSurvival
         {
             genScheduler ??= new("MapGenScheduler");
             MapGen.Register("NASGen", GenType.Advanced, Gen, "hello?");
-            coalFogColor = ColorTranslator.FromHtml("#BCC9E8");
-            ironFogColor = ColorTranslator.FromHtml("#A1A3A8");
-            goldFogColor = ColorTranslator.FromHtml("#7A706A");
-            diamondFogColor = ColorTranslator.FromHtml("#605854");
-            emeraldFogColor = ColorTranslator.FromHtml("#605854");
+            string coalFog = "#BCC9E8",
+                ironFog = "#A1A3A8",
+                goldFog = "#7A706A",
+                diamondFog = "#605854",
+                emeraldFog = "#605854";
+            coalFogColor = new(Convert.ToByte(coalFog.Substring(1, 2), 16), 
+                Convert.ToByte(coalFog.Substring(3, 2), 16), 
+                Convert.ToByte(coalFog.Substring(5, 2), 16), 255);
+            ironFogColor = new(Convert.ToByte(ironFog.Substring(1, 2), 16),
+                Convert.ToByte(ironFog.Substring(3, 2), 16),
+                Convert.ToByte(ironFog.Substring(5, 2), 16), 255);
+            goldFogColor = new(Convert.ToByte(goldFog.Substring(1, 2), 16),
+                Convert.ToByte(goldFog.Substring(3, 2), 16),
+                Convert.ToByte(goldFog.Substring(5, 2), 16), 255);
+            diamondFogColor = new(Convert.ToByte(diamondFog.Substring(1, 2), 16),
+                Convert.ToByte(diamondFog.Substring(3, 2), 16),
+                Convert.ToByte(diamondFog.Substring(5, 2), 16), 255);
+            emeraldFogColor = new(Convert.ToByte(emeraldFog.Substring(1, 2), 16),
+                Convert.ToByte(emeraldFog.Substring(3, 2), 16),
+                Convert.ToByte(emeraldFog.Substring(5, 2), 16), 255);
         }
         public static void TakeDown()
         {

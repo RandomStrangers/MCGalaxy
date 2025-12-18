@@ -15,23 +15,14 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using System;
 using System.IO;
 namespace MCGalaxy.Util.Imaging
 {
-    public sealed class SimpleBitmap //: IBitmap2D
-    {
-        public int Width, Height;
-        public Pixel[] pixels;
-        public void AllocatePixels()
-        {
-            pixels = new Pixel[Width * Height];
-        }
-    }
     public abstract class ImageDecoder
     {
         protected byte[] buf_data;
         protected int buf_offset, buf_length;
-        /// <summary> Attempts to advance next read offset by 'amount', then returns current read offset </summary>
         protected int AdvanceOffset(int amount)
         {
             int offset = buf_offset;
@@ -52,8 +43,6 @@ namespace MCGalaxy.Util.Imaging
         {
             throw new InvalidDataException(reason);
         }
-        /// <summary> Checks if starting bytes of data match given signature </summary>
-        /// <remarks> Ignores parts of sig that are &lt; 0 values </remarks>
         protected static bool MatchesSignature(byte[] data, byte[] sig)
         {
             if (data.Length < sig.Length)
@@ -69,14 +58,14 @@ namespace MCGalaxy.Util.Imaging
             }
             return true;
         }
-        public static SimpleBitmap DecodeFrom(byte[] src)
+        public static Bitmap2D DecodeFrom(byte[] src)
         {
             ImageDecoder decoder = DetectFrom(src);
             if (decoder != null)
             {
                 return decoder.Decode(src);
             }
-            throw new InvalidDataException("Unsupported or invalid image format");
+            throw new UnknownImageFormatException();
         }
         static ImageDecoder DetectFrom(byte[] src)
         {
@@ -94,6 +83,9 @@ namespace MCGalaxy.Util.Imaging
             }
             return null;
         }
-        public abstract SimpleBitmap Decode(byte[] src);
+        public abstract Bitmap2D Decode(byte[] src);
+    }
+    public sealed class UnknownImageFormatException : Exception 
+    { 
     }
 }

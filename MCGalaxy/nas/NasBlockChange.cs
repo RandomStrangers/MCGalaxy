@@ -4,8 +4,8 @@ using MCGalaxy.Blocks;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
+using MCGalaxy.Util.Imaging;
 using System;
-using System.Drawing;
 using System.IO;
 namespace NotAwesomeSurvival
 {
@@ -14,7 +14,7 @@ namespace NotAwesomeSurvival
         public static Scheduler breakScheduler,
             repeaterScheduler,
             fishingScheduler;
-        public static Color[] blockColors = new Color[768];
+        public static Pixel[] blockColors = new Pixel[768];
         public const string terrainImageName = "terrain.png";
         public static void Log(string format, params object[] args)
         {
@@ -34,8 +34,10 @@ namespace NotAwesomeSurvival
             breakScheduler ??= new("BlockBreakScheduler");
             repeaterScheduler ??= new("RepeaterScheduler");
             fishingScheduler ??= new("FishingScheduler");
-            Bitmap terrain = new(Nas.Path + terrainImageName);
-            terrain = new(terrain, terrain.Width / 16, terrain.Height / 16);
+            byte[] data = File.ReadAllBytes(Nas.Path + terrainImageName);
+            Bitmap2D terrain = ImageDecoder.DecodeFrom(data);
+            terrain.Width /= 16;
+            terrain.Height /= 16;
             for (ushort blockID = 0; blockID <= 767; blockID++)
             {
                 BlockDefinition def = BlockDefinition.GlobalDefs[Nas.FromRaw(blockID)];
@@ -45,14 +47,13 @@ namespace NotAwesomeSurvival
                 }
                 if (def == null)
                 {
-                    blockColors[blockID] = Color.White;
+                    blockColors[blockID] = new(255,255,255,255);
                     continue;
                 }
                 int x = def.BackTex % 16,
                     y = def.BackTex / 16;
-                blockColors[blockID] = terrain.GetPixel(x, y);
+                blockColors[blockID] = terrain.Get(x, y);
             }
-            terrain.Dispose();
             return true;
         }
         public const string ClickableBlocksKey = "__clickableBlocks_",
@@ -244,7 +245,7 @@ namespace NotAwesomeSurvival
             Player p = info.p;
             int millisecs = info.milliseconds;
             millisecs -= 100;
-            NasEffect.Define(p, BreakMeterID, NasEffect.breakMeter, Color.White, (float)(millisecs / 1000.0f));
+            NasEffect.Define(p, BreakMeterID, NasEffect.breakMeter, new(255,255,255,255), (float)(millisecs / 1000.0f));
             NasEffect.Spawn(p, BreakMeterID, NasEffect.breakMeter, info.x, info.y, info.z, info.x, info.y, info.z);
         }
         public class BreakInfo

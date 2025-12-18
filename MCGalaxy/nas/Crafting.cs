@@ -3,9 +3,9 @@ using MCGalaxy;
 using MCGalaxy.Maths;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
+using MCGalaxy.Util.Imaging;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 namespace NotAwesomeSurvival
 {
     public partial class Crafting
@@ -65,7 +65,7 @@ namespace NotAwesomeSurvival
                 type = parent.type;
                 ori = parent.ori;
             }
-            public void ShowArea(NasPlayer np, ushort x, ushort y, ushort z, Color color, int millisecs = 2000, byte A = 127)
+            public void ShowArea(NasPlayer np, ushort x, ushort y, ushort z, Pixel color, int millisecs = 2000, byte A = 127)
             {
                 ushort startX = x, startY = y, startZ = z,
                     endX = x, endY = y, endZ = z;

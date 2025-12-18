@@ -3,9 +3,9 @@ using MCGalaxy;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
+using MCGalaxy.Util.Imaging;
 using Newtonsoft.Json;
 using System;
-using System.Drawing;
 using System.IO;
 namespace NotAwesomeSurvival
 {
@@ -124,7 +124,7 @@ namespace NotAwesomeSurvival
                 {
                     SendCpeMessage(CpeMessageType.Announcement, "&cY O U  D I E D");
                     Chat.MessageChat(p, reason, null, true);
-                    curFogColor = Color.Black;
+                    curFogColor = new(0, 0, 0, 255);
                     curRenderDistance = 1;
                     HP = maxHP;
                     Air = maxAir;
@@ -515,17 +515,17 @@ namespace NotAwesomeSurvival
             else
             {
                 targetRenderDistance = Server.Config.MaxFogDistance;
-                targetFogColor = Color.White;
+                targetFogColor = new(255, 255, 255, 255);
                 expFog = 0;
             }
             Send(Packet.EnvMapProperty(EnvProp.ExpFog, expFog));
         }
-        public static Color ScaleColor(Color cur, Color goal)
+        public static Pixel ScaleColor(Pixel cur, Pixel goal)
         {
             byte R = ScaleChannel(cur.R, goal.R),
                 G = ScaleChannel(cur.G, goal.G),
                 B = ScaleChannel(cur.B, goal.B);
-            return Color.FromArgb(R, G, B);
+            return new(R, G, B, 255);
         }
         public static byte ScaleChannel(byte curChannel, byte goalChannel)
         {

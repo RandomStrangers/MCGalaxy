@@ -5,10 +5,10 @@ using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Maths;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
+using MCGalaxy.Util.Imaging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Text;
 namespace NotAwesomeSurvival
@@ -37,8 +37,8 @@ namespace NotAwesomeSurvival
             isDead = false,
             headingToBed = false;
         [JsonIgnore]
-        public Color targetFogColor = Color.White,
-            curFogColor = Color.White;
+        public Pixel targetFogColor = new(255, 255, 255, 255),
+            curFogColor = new(255, 255, 255, 255);
         [JsonIgnore]
         public float targetRenderDistance = Server.Config.MaxFogDistance,
             curRenderDistance = Server.Config.MaxFogDistance;
@@ -581,7 +581,7 @@ namespace NotAwesomeSurvival
                 return false;
             }
             ChangeHealth(-damage);
-            curFogColor = Color.FromArgb(255, 255, 0, 0);
+            curFogColor = new(255, 255, 0, 0);
             Position next = p.Pos;
             int x = Utils.Clamp(next.BlockX, 0, (ushort)(p.level.Width - 1)),
                 z = Utils.Clamp(next.BlockZ, 0, (ushort)(p.level.Length - 1));

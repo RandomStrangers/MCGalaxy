@@ -2,7 +2,7 @@
 using MCGalaxy;
 using MCGalaxy.Config;
 using MCGalaxy.Network;
-using System.Drawing;
+using MCGalaxy.Util.Imaging;
 using System.IO;
 namespace NotAwesomeSurvival
 {
@@ -104,13 +104,13 @@ namespace NotAwesomeSurvival
         {
             Logger.Log(LogType.Debug, string.Format(format, args));
         }
-        public static void Define(Player p, byte ID, Effect effect, Color? color = null, float? lifetime = null)
+        public static void Define(Player p, byte ID, Effect effect, Pixel? color = null, float? lifetime = null)
         {
             byte red, green, blue;
             float baseLifetime;
             if (color != null)
             {
-                Color realColor = (Color)color;
+                Pixel realColor = (Pixel)color;
                 red = realColor.R;
                 green = realColor.G;
                 blue = realColor.B;

@@ -58,12 +58,12 @@ namespace MCGalaxy.Util.Imaging
             }
             return new((byte)r, (byte)g, (byte)b, 0);
         }
-        public override SimpleBitmap Decode(byte[] src)
+        public override Bitmap2D Decode(byte[] src)
         {
             byte colorspace = 0xFF, bitsPerSample = 0;
             Pixel trnsColor = Pixel.BLACK;
             Pixel[] palette = null;
-            SimpleBitmap bmp = new();
+            Bitmap2D bmp = new();
             MemoryStream all_idats = new();
             bool reachedEnd = false;
             SetBuffer(src);
@@ -223,16 +223,16 @@ namespace MCGalaxy.Util.Imaging
             }
             return pal;
         }
-        void DecompressImage(Stream src, SimpleBitmap bmp, Pixel[] palette, Pixel trnsColor)
+        void DecompressImage(Stream src, Bitmap2D bmp, Pixel[] palette, Pixel trnsColor)
         {
-            if (bmp.pixels == null)
+            if (bmp.Pixels == null)
             {
                 Fail("no data");
             }
             byte[] line = new byte[scanline_size],
                 tmp, prior = new byte[scanline_size],
                 one = new byte[1];
-            fixed (Pixel* dst = bmp.pixels)
+            fixed (Pixel* dst = bmp.Pixels)
             {
                 for (int y = 0; y < bmp.Height; y++)
                 {
@@ -256,7 +256,7 @@ namespace MCGalaxy.Util.Imaging
             }
             if (trnsColor.A == 0)
             {
-                MakeTransparent(bmp.pixels, trnsColor);
+                MakeTransparent(bmp.Pixels, trnsColor);
             }
             return;
         }

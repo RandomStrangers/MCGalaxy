@@ -16,37 +16,92 @@
     permissions and limitations under the Licenses.
  */
 using System;
-namespace MCGalaxy.Util
+namespace MCGalaxy.Util.Imaging
 {
     public static class ImageUtils
     {
-        public static IBitmap2D DecodeImage(byte[] data, Player p)
+        public static Bitmap2D DecodeImage(byte[] data, Player p)
         {
-            IBitmap2D bmp = null;
             try
             {
-                bmp = IBitmap2D.Create();
-                bmp.Decode(data);
-                return bmp;
+                return ImageDecoder.DecodeFrom(data);
             }
-            catch (ArgumentException ex)
+            catch (UnknownImageFormatException ex)
             {
                 Logger.Log(LogType.Warning, "Error decoding image: " + ex.Message);
-                OnDecodeError(p, bmp);
+                OnDecodeError(p);
                 return null;
             }
             catch (Exception ex)
             {
                 Logger.LogError("Error decoding image", ex);
-                OnDecodeError(p, bmp);
+                OnDecodeError(p);
                 return null;
             }
         }
-        static void OnDecodeError(Player p, IBitmap2D bmp)
+        static void OnDecodeError(Player p)
         {
-            bmp?.Dispose();
             p.Message("&WThere was an error reading the downloaded image.");
             p.Message("&WThe url may need to end with its extension (such as .jpg).");
+        }
+        public static Bitmap2D ResizeBilinear(Bitmap2D src, int dstWidth, int dstHeight)
+        {
+            Bitmap2D dst = new()
+            {
+                Width = dstWidth,
+                Height = dstHeight
+            };
+            dst.AllocatePixels();
+            float scaleX = (float)src.Width / dstWidth,
+                scaleY = (float)src.Height / dstHeight;
+            int maxX = src.Width - 1,
+                maxY = src.Height - 1;
+            Pixel[] pixels = src.Pixels;
+            int stride = src.Width,
+                dstI = 0;
+            for (int y = 0; y < dstHeight; y++)
+            {
+                float sy = (y + 0.5f) * scaleY;
+                int sy0 = (int)sy;
+                if (sy0 >= maxY)
+                {
+                    sy0 = maxY;
+                }
+                int sy1 = sy0 + 1;
+                if (sy1 >= maxY)
+                {
+                    sy1 = maxY;
+                }
+                float dy = sy - sy0;
+                for (int x = 0; x < dstWidth; x++)
+                {
+                    float sx = (x + 0.5f) * scaleX;
+                    int sx0 = (int)sx;
+                    if (sx0 >= maxX)
+                    {
+                        sx0 = maxX;
+                    }
+                    int sx1 = sx0 + 1;
+                    if (sx1 >= maxX)
+                    {
+                        sx1 = maxX;
+                    }
+                    float dx = sx - sx0;
+                    Pixel p00 = pixels[sy0 * stride + sx0],
+                        p10 = pixels[sy0 * stride + sx1],
+                        p01 = pixels[sy1 * stride + sx0],
+                        p11 = pixels[sy1 * stride + sx1],
+                        p = new()
+                        {
+                            R = (byte)((p00.R * (1 - dx) * (1 - dy)) + (p10.R * dx * (1 - dy)) + (p01.R * (1 - dx) * dy) + (p11.R * dx * dy)),
+                            G = (byte)((p00.G * (1 - dx) * (1 - dy)) + (p10.G * dx * (1 - dy)) + (p01.G * (1 - dx) * dy) + (p11.G * dx * dy)),
+                            B = (byte)((p00.B * (1 - dx) * (1 - dy)) + (p10.B * dx * (1 - dy)) + (p01.B * (1 - dx) * dy) + (p11.B * dx * dy)),
+                            A = (byte)((p00.A * (1 - dx) * (1 - dy)) + (p10.A * dx * (1 - dy)) + (p01.A * (1 - dx) * dy) + (p11.A * dx * dy))
+                        };
+                    dst.Pixels[dstI++] = p;
+                }
+            }
+            return dst;
         }
     }
 }

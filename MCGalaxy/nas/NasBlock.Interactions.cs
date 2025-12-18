@@ -7,7 +7,6 @@ using MCGalaxy.Tasks;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Text;
 using NasBlockExistAction =
@@ -920,7 +919,7 @@ namespace NotAwesomeSurvival
                     np.Message("Click to craft.");
                     np.Message("Right click to auto-replace recipe.");
                     np.Message("Left click for one-and-done.");
-                    nasBlock.station.ShowArea(np, x, y, z, Color.White);
+                    nasBlock.station.ShowArea(np, x, y, z, new(255, 255, 255, 255));
                     return;
                 }
             };
@@ -970,7 +969,7 @@ namespace NotAwesomeSurvival
                     np.Message("It can craft things without user input.");
                     np.Message("When powered it tries to craft whatever is above it.");
                     np.Message("Click it to remove all items crafted, like a gravestone.");
-                    nasBlock.station.ShowArea(np, x, y, z, Color.White);
+                    nasBlock.station.ShowArea(np, x, y, z, new(255, 255, 255, 255));
                     return;
                 }
                 np.nl.blockEntities.Remove(x + " " + y + " " + z);
@@ -988,7 +987,7 @@ namespace NotAwesomeSurvival
                 Crafting.Recipe recipe = Crafting.GetRecipe(np.nl, x, y, z, nasBlock.station);
                 if (recipe == null)
                 {
-                    nasBlock.station.ShowArea(np, x, y, z, Color.Red, 500, 127);
+                    nasBlock.station.ShowArea(np, x, y, z, new(255, 0, 0, 255), 500, 127);
                     return;
                 }
                 Drop dropClone = new(recipe.drop);
@@ -997,7 +996,7 @@ namespace NotAwesomeSurvival
                     return;
                 }
                 np.GiveExp(recipe.expGiven);
-                nasBlock.station.ShowArea(np, x, y, z, Color.LightGreen, 500);
+                nasBlock.station.ShowArea(np, x, y, z, new(144, 238, 144, 255), 500);
                 bool clearCraftingArea = button == MouseButton.Left;
                 Dictionary<ushort, int> patternCost = recipe.PatternCost;
                 foreach (KeyValuePair<ushort, int> pair in patternCost)

@@ -34,7 +34,7 @@ namespace MCGalaxy.Util.Imaging
             return MatchesSignature(data, gif87Sig)
                 || MatchesSignature(data, gif89Sig);
         }
-        public override SimpleBitmap Decode(byte[] src)
+        public override Bitmap2D Decode(byte[] src)
         {
             SetBuffer(src);
             if (!DetectHeader(src))
@@ -42,7 +42,7 @@ namespace MCGalaxy.Util.Imaging
                 Fail("sig invalid");
             }
             AdvanceOffset(gif87Sig.Length);
-            SimpleBitmap bmp = new();
+            Bitmap2D bmp = new();
             ReadGlobalHeader(src, bmp);
             ReadMarkers(src, bmp);
             return bmp;
@@ -50,7 +50,7 @@ namespace MCGalaxy.Util.Imaging
         byte curSubBlockLeft;
         bool subBlocksEnd;
         int subBlocksOffset;
-        void ReadGlobalHeader(byte[] src, SimpleBitmap bmp)
+        void ReadGlobalHeader(byte[] src, Bitmap2D bmp)
         {
             int offset = AdvanceOffset(7);
             bmp.Width = MemUtils.ReadU16_LE(src, offset + 0);
@@ -82,7 +82,7 @@ namespace MCGalaxy.Util.Imaging
             }
             return pal;
         }
-        void ReadMarkers(byte[] src, SimpleBitmap bmp)
+        void ReadMarkers(byte[] src, Bitmap2D bmp)
         {
             for (; ; )
             {
@@ -153,7 +153,7 @@ namespace MCGalaxy.Util.Imaging
                 AdvanceOffset(length);
             }
         }
-        void ReadImage(byte[] src, SimpleBitmap bmp)
+        void ReadImage(byte[] src, Bitmap2D bmp)
         {
             int offset = AdvanceOffset(2 + 2 + 2 + 2 + 1);
             ushort imageX = MemUtils.ReadU16_LE(src, offset + 0),
@@ -269,7 +269,7 @@ namespace MCGalaxy.Util.Imaging
                     for (int i = chain_len - 1; i >= 0; i--)
                     {
                         byte palIndex = dict[code].value;
-                        bmp.pixels[dst_index + i] = pal[palIndex];
+                        bmp.Pixels[dst_index + i] = pal[palIndex];
                         code = dict[code].prev;
                     }
                 }
@@ -281,7 +281,7 @@ namespace MCGalaxy.Util.Imaging
                         byte palIndex = dict[code].value;
                         int globalX = imageX + (index % imageW),
                             globalY = imageY + (index / imageW);
-                        bmp.pixels[globalY * bmp.Width + globalX] = pal[palIndex];
+                        bmp.Pixels[globalY * bmp.Width + globalX] = pal[palIndex];
                         code = dict[code].prev;
                     }
                 }

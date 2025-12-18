@@ -2,8 +2,8 @@
 using MCGalaxy;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
+using MCGalaxy.Util.Imaging;
 using System;
-using System.Drawing;
 using System.IO;
 namespace NotAwesomeSurvival
 {
@@ -31,8 +31,8 @@ namespace NotAwesomeSurvival
                 Log("Could not locate {0} (needed for tool health/selection colors)", selectorImageName);
                 return false;
             }
-            Bitmap colorImage;
-            colorImage = new(Nas.Path + "selectorColors.png");
+            byte[] data = File.ReadAllBytes(Nas.Path + "selectorColors.png");
+            Bitmap2D colorImage = ImageDecoder.DecodeFrom(data);
             defaultColors = new ColorDesc[colorImage.Width];
             fullHealthColors = new ColorDesc[colorImage.Width];
             mediumHealthColors = new ColorDesc[colorImage.Width];
@@ -44,15 +44,14 @@ namespace NotAwesomeSurvival
             SetupDescs(index++, colorImage, ref mediumHealthColors);
             SetupDescs(index++, colorImage, ref lowHealthColors);
             SetupDescs(index++, colorImage, ref direHealthColors);
-            colorImage.Dispose();
             task = Server.MainScheduler.QueueRepeat(Update, null, TimeSpan.FromMilliseconds(100));
             return true;
         }
-        public static void SetupDescs(int yOffset, Bitmap colorImage, ref ColorDesc[] colorDescs)
+        public static void SetupDescs(int yOffset, Bitmap2D colorImage, ref ColorDesc[] colorDescs)
         {
             for (int i = 0; i < colorImage.Width; i++)
             {
-                Color color = colorImage.GetPixel(i, yOffset);
+                Pixel color = colorImage.Get(i, yOffset);
                 colorDescs[i].R = color.R;
                 colorDescs[i].G = color.G;
                 colorDescs[i].B = color.B;

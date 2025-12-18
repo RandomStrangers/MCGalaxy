@@ -49,14 +49,14 @@ namespace MCGalaxy.Util.Imaging
             return MatchesSignature(data, jfifSig)
                 || MatchesSignature(data, exifSig);
         }
-        public override SimpleBitmap Decode(byte[] src)
+        public override Bitmap2D Decode(byte[] src)
         {
             SetBuffer(src);
-            SimpleBitmap bmp = new();
+            Bitmap2D bmp = new();
             ReadMarkers(src, bmp);
             return bmp;
         }
-        void ReadMarkers(byte[] src, SimpleBitmap bmp)
+        void ReadMarkers(byte[] src, Bitmap2D bmp)
         {
             for (; ; )
             {
@@ -205,7 +205,7 @@ namespace MCGalaxy.Util.Imaging
             }
             return 16 + total;
         }
-        void ReadFrameStart(byte[] src, SimpleBitmap bmp)
+        void ReadFrameStart(byte[] src, Bitmap2D bmp)
         {
             int offset = AdvanceOffset(2),
                 length = MemUtils.ReadU16_BE(src, offset);
@@ -275,7 +275,7 @@ namespace MCGalaxy.Util.Imaging
             }
             Fail("unknown scan component");
         }
-        void DecodeMCUs(byte[] src, SimpleBitmap bmp)
+        void DecodeMCUs(byte[] src, Bitmap2D bmp)
         {
             int mcu_w = lowestHor * 8,
                 mcu_h = lowestVer * 8,
@@ -327,24 +327,25 @@ namespace MCGalaxy.Util.Imaging
                                     g = -0.34414f * cb - 0.71414f * cr + y,
                                     b = 1.77200f * cb + y;
                                 Pixel p = new(ByteClamp(r), ByteClamp(g), ByteClamp(b), 255);
-                                bmp.pixels[globalY * bmp.Width + globalX] = p;
+                                bmp.Pixels[globalY * bmp.Width + globalX] = p;
                             }
                         }
                     }
                 }
             }
         }
-        static byte ByteClamp(float v)
+        static byte ByteClamp(float value)
         {
-            if (v < 0)
+            int n = (int)value;
+            if (n < 0)
             {
                 return 0;
             }
-            if (v > 255)
+            if (n > 255)
             {
                 return 255;
             }
-            return (byte)v;
+            return (byte)n;
         }
         void DecodeBlock(JpegComponent comp, byte[] src, int* block)
         {
