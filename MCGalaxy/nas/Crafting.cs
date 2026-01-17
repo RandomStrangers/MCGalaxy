@@ -10,6 +10,7 @@ namespace NotAwesomeSurvival
 {
     public partial class Crafting
     {
+        public static List<Recipe> recipes = new();
         public static void ClearCraftingArea(NasLevel nl, ushort startX, ushort startY, ushort startZ, Station.Orientation ori)
         {
             bool WE = ori == Station.Orientation.WE;
@@ -124,7 +125,6 @@ namespace NotAwesomeSurvival
                 info.curRound--;
             }
         }
-        public static List<Recipe> recipes = new();
         public static Recipe GetRecipe(NasLevel nl, ushort x, ushort y, ushort z, Station station)
         {
             NasBlock[,] area = GetArea(nl, x, y, z, station.ori);
@@ -233,6 +233,25 @@ namespace NotAwesomeSurvival
             public int expGiven = 0;
             public string name;
             public ushort[,] pattern;
+            public Station.Type stationType = Station.Type.Normal;
+            public bool usesParentID = false,
+                usesAlternateID = false,
+                shapeless = false;
+            public Drop drop;
+            public Recipe()
+            {
+                recipes.Add(this);
+            }
+            public Recipe(Item item) : this()
+            {
+                name = item.name;
+                drop = new(item);
+            }
+            public Recipe(ushort blockID, int amount) : this()
+            {
+                name = blockID.ToString();
+                drop = new(blockID, amount);
+            }
             public Dictionary<ushort, int> PatternCost
             {
                 get
@@ -259,25 +278,6 @@ namespace NotAwesomeSurvival
                 {
                     stacks.Add(ID, 1);
                 }
-            }
-            public Station.Type stationType = Station.Type.Normal;
-            public bool usesParentID = false,
-                usesAlternateID = false,
-                shapeless = false;
-            public Drop drop;
-            public Recipe()
-            {
-                recipes.Add(this);
-            }
-            public Recipe(Item item) : this()
-            {
-                name = item.name;
-                drop = new(item);
-            }
-            public Recipe(ushort blockID, int amount) : this()
-            {
-                name = blockID.ToString();
-                drop = new(blockID, amount);
             }
             public bool MatchesShapeless(NasBlock[,] area)
             {

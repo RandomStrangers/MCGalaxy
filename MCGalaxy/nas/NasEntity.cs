@@ -3,11 +3,24 @@ using MCGalaxy;
 using MCGalaxy.Maths;
 using Newtonsoft.Json;
 using System;
+using System.Text;
 namespace NotAwesomeSurvival
 {
     public partial class NasEntity
     {
         public enum DamageSource { Falling, Suffocating, Drowning, Entity, None, Murder }
+        [JsonIgnore] public float AirPrev;
+        [JsonIgnore] public NasLevel nl;
+        [JsonIgnore] public AABB bounds = AABB.Make(new(0, 0, 0), new(16, 26 * 2, 16));
+        [JsonIgnore] public AABB eyeBounds = AABB.Make(new(0, 24 * 2 - 2, 0), new(4, 4, 4));
+        [JsonIgnore] public DateTime lastSuffocationDate = DateTime.MinValue;
+        public const int SuffocationMilliseconds = 500;
+        public float HP, Air;
+        public const float maxHP = 10, maxAir = 10;
+        public bool holdingBreath = false;
+        public string levelName;
+        public Vec3S32 location, lastGroundedLocation;
+        public byte yaw, pitch;
         public static string DeathReason(DamageSource source, Player p)
         {
             return source switch
@@ -21,18 +34,6 @@ namespace NotAwesomeSurvival
                 _ => Enum.GetName(typeof(DamageSource), source).ToLower(),
             };
         }
-        [JsonIgnore] public float AirPrev;
-        [JsonIgnore] public NasLevel nl;
-        [JsonIgnore] public AABB bounds = AABB.Make(new(0, 0, 0), new(16, 26 * 2, 16));
-        [JsonIgnore] public AABB eyeBounds = AABB.Make(new(0, 24 * 2 - 2, 0), new(4, 4, 4));
-        [JsonIgnore] public DateTime lastSuffocationDate = DateTime.MinValue;
-        public const int SuffocationMilliseconds = 500;
-        public float HP, Air;
-        public const float maxHP = 10, maxAir = 10;
-        public bool holdingBreath = false;
-        public string levelName;
-        public Vec3S32 location, lastGroundedLocation;
-        public byte yaw, pitch;
         public static void SetLocation(NasEntity ne, string levelName, Position pos, Orientation rot)
         {
             ne.levelName = levelName;
@@ -54,6 +55,25 @@ namespace NotAwesomeSurvival
                 HP = maxHP;
             }
         }
+        public string OxygenString()
+        {
+            if (Air == maxAir)
+            {
+                return "";
+            }
+            if (Air == 0)
+            {
+                return "&r?";
+            }
+            StringBuilder builder = new("", (int)maxAir + 6);
+            string final;
+            for (int i = 0; i < Air; ++i)
+            {
+                builder.Append('°');
+            }
+            final = builder.ToString();
+            return final;
+        }
         public virtual bool CanTakeDamage(DamageSource source)
         {
             return true;
@@ -65,9 +85,6 @@ namespace NotAwesomeSurvival
                 return false;
             }
             return false;
-        }
-        public virtual void Die(string source)
-        {
         }
         public virtual void UpdateAir()
         {
@@ -93,7 +110,7 @@ namespace NotAwesomeSurvival
                 TakeDamage(0.125f, DamageSource.Drowning);
             }
         }
-        public virtual void DoNasBlockCollideActions(Position entityPos)
+        public void DoNasBlockCollideActions(Position entityPos)
         {
             if (nl == null)
             {

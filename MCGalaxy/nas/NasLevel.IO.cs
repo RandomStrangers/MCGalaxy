@@ -8,6 +8,8 @@ namespace NotAwesomeSurvival
 {
     public partial class NasLevel
     {
+        public const string Path = Nas.Path + "leveldata/",
+            Extension = ".json";
         public static bool IsNasLevel(Level lvl)
         {
             bool valid = true;
@@ -29,8 +31,6 @@ namespace NotAwesomeSurvival
             }
             return null;
         }
-        public const string Path = Nas.Path + "leveldata/",
-            Extension = ".json";
         public static void Setup()
         {
             OnLevelLoadedEvent.Register(OnLevelLoaded, Priority.High);

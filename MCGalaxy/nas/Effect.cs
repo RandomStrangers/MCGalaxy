@@ -81,7 +81,7 @@ namespace NotAwesomeSurvival
             [ConfigBool("fullBright", "Effect", true)]
             public bool fullBright = true;
             public float offset;
-            public static ConfigElement[] cfg;
+            static ConfigElement[] cfg;
             public bool Load(string effectName)
             {
                 string fileName = Path + effectName + ".properties",

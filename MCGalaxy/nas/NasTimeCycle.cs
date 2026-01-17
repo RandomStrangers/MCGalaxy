@@ -17,10 +17,12 @@ namespace NotAwesomeSurvival
             globalSunColor, globalShadowColor, 
             TimeFilePath = Nas.CoreSavePath + "time.json";
         public static DayCycles dayCycle = DayCycles.Sunrise;
+        public DayCycles cycle = DayCycles.Sunrise;
         public static int cycleCurrentTime = 0,
             cycleMaxTime = 14400,
             hourMinutes = 600,
             gameday = 0;
+        public int day = 0, minutes = 7 * hourMinutes;
         public enum DayCycles
         {
             Sunrise, Day, Sunset, Night, Midnight

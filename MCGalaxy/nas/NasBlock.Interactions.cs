@@ -19,6 +19,13 @@ namespace NotAwesomeSurvival
 {
     public partial class NasBlock
     {
+        public const string Path = Nas.SavePath + "blocks/";
+        public static List<string> books = ReadAllLinesList("text/BookTitles.txt"),
+            authors = ReadAllLinesList("text/BookAuthors.txt");
+        public static ushort[] waffleSet = { 256 | 542, 256 | 543 },
+            breadSet = new ushort[] { 256 | 640, 256 | 641, 256 | 642 },
+            pieSet = new ushort[] { 256 | 668, 256 | 669, 256 | 670, 256 | 671 },
+            peachPieSet = new ushort[] { 256 | 698, 256 | 699, 256 | 700, 256 | 701 };
         public static List<string> ReadAllLinesList(string path)
         {
             if (!File.Exists(path))
@@ -36,13 +43,18 @@ namespace NotAwesomeSurvival
             }
             return lines;
         }
-        public const string Path = Nas.SavePath + "blocks/";
         public static string GetTextPath(Player p)
         {
             return Path + p.name + ".txt";
         }
         public class Entity
         {
+            public string lockedBy = "",
+                blockText = "";
+            public int strength = 0, 
+                type = 0,
+                direction = 0;
+            public Drop drop = null;
             [JsonIgnore]
             public string FormattedNameOfLocker
             {
@@ -60,12 +72,6 @@ namespace NotAwesomeSurvival
             {
                 return lockedBy.Length == 0 || lockedBy == np.p.name;
             }
-            public string lockedBy = "",
-                blockText = "";
-            public int strength = 0, 
-                type = 0,
-                direction = 0;
-            public Drop drop = null;
         }
         public class Container
         {
@@ -118,8 +124,6 @@ namespace NotAwesomeSurvival
                 }
             };
         }
-        public static List<string> books = ReadAllLinesList("text/BookTitles.txt"),
-            authors = ReadAllLinesList("text/BookAuthors.txt");
         public static NasBlockInteraction BookshelfInteraction()
         {
             return (np, button, action, nasBlock, x, y, z) =>
@@ -1027,10 +1031,6 @@ namespace NotAwesomeSurvival
                 }
             };
         }
-        public static ushort[] waffleSet = { 256 | 542, 256 | 543 },
-            breadSet = new ushort[] { 256 | 640, 256 | 641, 256 | 642 },
-            pieSet = new ushort[] { 256 | 668, 256 | 669, 256 | 670, 256 | 671 },
-            peachPieSet = new ushort[] { 256 | 698, 256 | 699, 256 | 700, 256 | 701 };
         public static NasBlockInteraction EatInteraction(ushort[] set, int index, float healthRestored, float chewSeconds = 2)
         {
             return (np, button, action, nasBlock, x, y, z) =>

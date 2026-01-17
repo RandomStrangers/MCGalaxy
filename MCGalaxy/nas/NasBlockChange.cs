@@ -15,7 +15,14 @@ namespace NotAwesomeSurvival
             repeaterScheduler,
             fishingScheduler;
         public static Pixel[] blockColors = new Pixel[768];
-        public const string terrainImageName = "terrain.png";
+        public const string terrainImageName = "terrain.png",
+            ClickableBlocksKey = "__clickableBlocks_",
+            LastClickedCoordsKey = ClickableBlocksKey + "lastClickedCoords",
+            BreakAmountKey = ClickableBlocksKey + "breakAmount",
+            BreakIDKey = ClickableBlocksKey + "breakID";
+        public const byte BreakEffectIDcount = 6,
+            BreakMeterID = byte.MaxValue - BreakEffectIDcount;
+        public static byte BreakEffectID = 255;
         public static void Log(string format, params object[] args)
         {
             Logger.Log(LogType.Debug, string.Format(format, args));
@@ -56,13 +63,6 @@ namespace NotAwesomeSurvival
             }
             return true;
         }
-        public const string ClickableBlocksKey = "__clickableBlocks_",
-            LastClickedCoordsKey = ClickableBlocksKey + "lastClickedCoords",
-            BreakAmountKey = ClickableBlocksKey + "breakAmount",
-            BreakIDKey = ClickableBlocksKey + "breakID";
-        public const byte BreakEffectIDcount = 6,
-            BreakMeterID = byte.MaxValue - BreakEffectIDcount;
-        public static byte BreakEffectID = 255;
         public static byte GetBreakID()
         {
             return BreakEffectID;

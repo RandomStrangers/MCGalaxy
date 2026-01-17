@@ -21,7 +21,44 @@ namespace NotAwesomeSurvival
             {
                 collideAction = AirCollideAction()
             };
-            const float fallSpeed = 0.325f;
+            float fallSpeed = 0.325f,
+                waterDisturbDelayMin = 0.5f,
+                waterDisturbDelayMax = 0.5f,
+                pieRestore = 2.5f,
+                breadRestore = 1f,
+                sugarTotalSeconds = 10f * 60f,
+                sugarMaxAddedSeconds = 15f * 60f,
+                sugarGrowMin = sugarTotalSeconds / 2f,
+                sugarGrowMax = (sugarTotalSeconds + sugarMaxAddedSeconds) / 2f,
+                wheatTotalSeconds = 20f * 60f,
+                wheatMaxAddedSeconds = 20f * 60f,
+                wheatGrowMin = wheatTotalSeconds / 3f,
+                wheatGrowMax = (wheatTotalSeconds + wheatMaxAddedSeconds) / 3f,
+                leafShrivelDelayMin = 0.2f,
+                leafShrivelDelayMax = 0.4f,
+                grassDelayMin = 10,
+                grassDelayMax = 60,
+                lavaDisturbDelayMin = 1.5f,
+                lavaDisturbDelayMax = 1.5f,
+                treeDelayMin = 30f,
+                treeDelayMax = 60f;
+            int stonebrickDurMulti = 2;
+            ushort[] set = new ushort[]
+            {
+                Nas.FromRaw(648)
+            },
+            set2 = new ushort[]
+            {
+                Nas.FromRaw(702)
+            },
+            set3 = new ushort[]
+            {
+                Nas.FromRaw(478)
+            },
+            set4 = new ushort[]
+            {
+                Nas.FromRaw(604)
+            };
             ushort i;
             i = 8;
             blocks[i] = new(i, Material.Liquid, int.MaxValue)
@@ -31,8 +68,6 @@ namespace NotAwesomeSurvival
                 disturbedAction = FloodAction(waterSet),
                 collideAction = LiquidCollideAction()
             };
-            const float waterDisturbDelayMin = 0.5f,
-                waterDisturbDelayMax = 0.5f;
             i = 643;
             blocks[i] = new(i, Material.Wood, DefaultDurabilities[(int)Material.Wood] * 2)
             {
@@ -113,8 +148,6 @@ namespace NotAwesomeSurvival
                 disturbedAction = LimitedFloodAction(waterSet, 2),
                 collideAction = LiquidCollideAction()
             };
-            float lavaDisturbDelayMin = 1.5f,
-                lavaDisturbDelayMax = 1.5f;
             i = 10;
             blocks[i] = new(i, Material.Liquid, int.MaxValue)
             {
@@ -198,7 +231,6 @@ namespace NotAwesomeSurvival
             i = 163;
             blocks[i] = new(i++, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             blocks[i] = new(i, blocks[163]);
-            const int stonebrickDurMulti = 2;
             i = 64;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] * stonebrickDurMulti, 1);
             i = 65;
@@ -260,8 +292,6 @@ namespace NotAwesomeSurvival
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 475;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
-            const float grassDelayMin = 10,
-                grassDelayMax = 60;
             i = 2;
             blocks[i] = new(i, Material.Earth)
             {
@@ -577,8 +607,6 @@ namespace NotAwesomeSurvival
                 disturbDelayMax = 0.75f,
                 disturbedAction = FallingBlockAction(Nas.FromRaw(i))
             };
-            const float treeDelayMin = 30f,
-                treeDelayMax = 60f;
             i = 6;
             blocks[i] = new(i, Material.Plant)
             {
@@ -694,8 +722,6 @@ namespace NotAwesomeSurvival
                 disturbDelayMax = 0.7f,
                 disturbedAction = FallingBlockAction(13)
             };
-            const float leafShrivelDelayMin = 0.2f,
-                leafShrivelDelayMax = 0.4f;
             i = 18;
             blocks[i] = new(i, Material.Leaves)
             {
@@ -831,8 +857,7 @@ namespace NotAwesomeSurvival
                     }
                     else
                     {
-                        Drop yellowDrop = new(35, 1);
-                        return (r.Next(0, 2) == 0) ? yellowDrop : null;
+                        return (r.Next(0, 2) == 0) ? new(35, 1) : null;
                     }
                 },
                 disturbedAction = GenericPlantAction()
@@ -848,8 +873,7 @@ namespace NotAwesomeSurvival
                     }
                     else
                     {
-                        Drop redDrop = new(27, 1);
-                        return (r.Next(0, 2) == 0) ? redDrop : null;
+                        return (r.Next(0, 2) == 0) ? new(27, 1) : null;
                     }
                 },
                 disturbedAction = GenericPlantAction()
@@ -875,8 +899,7 @@ namespace NotAwesomeSurvival
                     }
                     else
                     {
-                        Drop wheatDrop = new(644, 1);
-                        return (r.Next(0, 8) == 0) ? wheatDrop : null;
+                        return (r.Next(0, 8) == 0) ? new(644, 1) : null;
                     }
                 },
                 disturbedAction = GenericPlantAction()
@@ -987,8 +1010,7 @@ namespace NotAwesomeSurvival
                 disturbedAction = FireAction(),
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    Drop fireDrop = new(131, 1);
-                    return (r.Next(0, 100) == 0) ? fireDrop : null;
+                    return (r.Next(0, 100) == 0) ? new(131, 1) : null;
                 },
                 collideAction = FireCollideAction()
             };
@@ -1229,10 +1251,6 @@ namespace NotAwesomeSurvival
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 6, 3);
             i = 649;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone] + 7, 4);
-            const float wheatTotalSeconds = 20f * 60f,
-                wheatMaxAddedSeconds = 20f * 60f,
-                wheatGrowMin = wheatTotalSeconds / 3f,
-                wheatGrowMax = (wheatTotalSeconds + wheatMaxAddedSeconds) / 3f;
             i = 644;
             blocks[i] = new(i, Material.Plant)
             {
@@ -1315,10 +1333,6 @@ namespace NotAwesomeSurvival
                     return finalDrop;
                 }
             };
-            const float sugarTotalSeconds = 10f * 60f,
-                sugarMaxAddedSeconds = 15f * 60f,
-                sugarGrowMin = sugarTotalSeconds / 2f,
-                sugarGrowMax = (sugarTotalSeconds + sugarMaxAddedSeconds) / 2f;
             i = 667;
             blocks[i] = new(i, Material.Plant)
             {
@@ -1381,7 +1395,6 @@ namespace NotAwesomeSurvival
             i = 622;
             blocks[i] = new(i++, blocks[145]);
             blocks[i] = new(i++, blocks[145]);
-            const float breadRestore = 1f;
             i = 640;
             blocks[i] = new(i, Material.Organic, 3)
             {
@@ -1397,7 +1410,6 @@ namespace NotAwesomeSurvival
             {
                 interaction = EatInteraction(breadSet, 2, breadRestore)
             };
-            const float pieRestore = 2.5f;
             i = 542;
             blocks[i] = new(i, Material.Organic, 3)
             {
@@ -1449,12 +1461,10 @@ namespace NotAwesomeSurvival
                 interaction = EatInteraction(peachPieSet, 3, pieRestore)
             };
             i = 654;
-            blocks[i] = new(i, Material.Organic, 3);
-            ushort[] set = new ushort[]
+            blocks[i] = new(i, Material.Organic, 3)
             {
-                Nas.FromRaw(648)
+                interaction = EatInteraction(set, 0, -6f)
             };
-            blocks[i].interaction = EatInteraction(set, 0, -6f);
             i = 652;
             blocks[i] = new(i, Material.Organic, 3)
             {
@@ -1473,25 +1483,17 @@ namespace NotAwesomeSurvival
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed,
-                disturbedAction = FallingBlockAction(Nas.FromRaw(i))
+                disturbedAction = FallingBlockAction(Nas.FromRaw(i)),
+                interaction = EatInteraction(set2, 0, 1f)
             };
-            ushort[] set2 = new ushort[]
-            {
-                Nas.FromRaw(702)
-            };
-            blocks[i].interaction = EatInteraction(set2, 0, 1f);
             i = 478;
             blocks[i] = new(i, Material.Organic, 3)
             {
                 disturbDelayMin = fallSpeed / 2f,
                 disturbDelayMax = fallSpeed / 2f,
-                disturbedAction = FallingBlockAction(Nas.FromRaw(i))
+                disturbedAction = FallingBlockAction(Nas.FromRaw(i)),
+                interaction = EatInteraction(set3, 0, 10f, 0.5f)
             };
-            ushort[] set3 = new ushort[]
-            {
-                Nas.FromRaw(478)
-            };
-            blocks[i].interaction = EatInteraction(set3, 0, 10f, 0.5f);
             i = 36;
             blocks[i] = new(i, Material.Organic, 4);
             i = 27;
@@ -1585,8 +1587,7 @@ namespace NotAwesomeSurvival
                     }
                     else
                     {
-                        Drop whiteDrop = new(36, 1);
-                        return (r.Next(0, 2) == 0) ? whiteDrop : null;
+                        return (r.Next(0, 2) == 0) ? new(36, 1) : null;
                     }
                 },
                 disturbedAction = GenericPlantAction()
@@ -1602,8 +1603,7 @@ namespace NotAwesomeSurvival
                     }
                     else
                     {
-                        Drop blueDrop = new(23, 1);
-                        return (r.Next(0, 3) == 0) ? blueDrop : null;
+                        return (r.Next(0, 3) == 0) ? new(23, 1) : null;
                     }
                 },
                 disturbedAction = GenericPlantAction()
@@ -1619,19 +1619,16 @@ namespace NotAwesomeSurvival
                     }
                     else
                     {
-                        Drop pinkDrop = new(138, 1);
-                        return (r.Next(0, 2) == 0) ? pinkDrop : null;
+                        return (r.Next(0, 2) == 0) ? new(138, 1) : null;
                     }
                 },
                 disturbedAction = GenericPlantAction()
             };
             i = 604;
-            blocks[i] = new(i, Material.Organic, 3);
-            ushort[] set4 = new ushort[]
+            blocks[i] = new(i, Material.Organic, 3)
             {
-                Nas.FromRaw(604)
+                interaction = EatInteraction(set4, 0, 1f)
             };
-            blocks[i].interaction = EatInteraction(set4, 0, 1f);
             i = 456;
             blocks[i] = new(i, Material.Organic, 3)
             {
@@ -1739,8 +1736,7 @@ namespace NotAwesomeSurvival
             blocks[i].dropHandler = (NasPlayer, dropID) =>
             {
                 blocks[i].collideAction = AirCollideAction();
-                Drop pistonDrop = new(1, 1);
-                return (1 == 0) ? pistonDrop : null;
+                return (1 == 0) ? new(1, 1) : null;
             };
             i = 707;
             blocks[i] = new(i, blocks[704])
@@ -1763,8 +1759,7 @@ namespace NotAwesomeSurvival
             blocks[i].dropHandler = (NasPlayer, dropID) =>
             {
                 blocks[i].collideAction = AirCollideAction();
-                Drop pistonDrop = new(1, 1);
-                return (1 == 0) ? pistonDrop : null;
+                return (1 == 0) ? new(1, 1) : null;
             };
             i = 678;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Metal], 1)
@@ -1789,8 +1784,7 @@ namespace NotAwesomeSurvival
             blocks[i].dropHandler = (NasPlayer, dropID) =>
             {
                 blocks[i].collideAction = AirCollideAction();
-                Drop pistonDrop = new(1, 1);
-                return (1 == 0) ? pistonDrop : null;
+                return (1 == 0) ? new(1, 1) : null;
             };
             i = 710;
             blocks[i] = new(i, blocks[678])
@@ -1813,8 +1807,7 @@ namespace NotAwesomeSurvival
             blocks[i].dropHandler = (NasPlayer, dropID) =>
             {
                 blocks[i].collideAction = AirCollideAction();
-                Drop pistonDrop = new(1, 1);
-                return (1 == 0) ? pistonDrop : null;
+                return (1 == 0) ? new(1, 1) : null;
             };
             DefinePiston(389, pistonNorth, "z", 1, 704);
             DefinePiston(392, pistonEast, "x", -1, 704);
@@ -2223,8 +2216,7 @@ namespace NotAwesomeSurvival
                 collideAction = AirCollideAction(),
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    Drop pistonDrop = new(1, 1);
-                    return (1 == 0) ? pistonDrop : null;
+                    return (1 == 0) ? new(1, 1) : null;
                 }
             };
         }

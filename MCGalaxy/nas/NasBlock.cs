@@ -17,48 +17,9 @@ namespace NotAwesomeSurvival
 {
     public partial class NasBlock
     {
-        public static NasBlock[] blocks = new NasBlock[768];
-        public static NasBlock[] blocksIndexedByServerushort;
+        public static NasBlock[] blocks = new NasBlock[768], blocksIndexedByServerushort;
         public static NasBlock Default;
         public static int[] DefaultDurabilities = new int[(int)Material.Count];
-        public static NasBlock Get(ushort clientushort)
-        {
-            return blocks[clientushort] ?? Default;
-        }
-        public string GetName(NasPlayer np, ushort id = ushort.MaxValue)
-        {
-            if (id == ushort.MaxValue)
-            {
-                id = parentID;
-            }
-            return GetBlockName(np, Nas.FromRaw(id)).Split('-')[0];
-        }
-        public static string GetBlockName(NasPlayer np, ushort block)
-        {
-            if (Nas.IsPhysicsType(block))
-            {
-                return "Physics block";
-            }
-            BlockDefinition def;
-            if (!np.p.IsSuper)
-            {
-                def = np.p.level.GetBlockDef(block);
-                def ??= BlockDefinition.GlobalDefs[block];
-            }
-            else
-            {
-                def = BlockDefinition.GlobalDefs[block];
-            }
-            if (def != null)
-            {
-                return def.Name;
-            }
-            return "Unknown";
-        }
-        public static Drop DefaultDropHandler(NasPlayer np, ushort id)
-        {
-            return new(id);
-        }
         public enum Material
         {
             None,
@@ -80,7 +41,7 @@ namespace NotAwesomeSurvival
             alternateID;
         public List<ushort> childIDs = null;
         public Material material;
-        public int tierOfToolNeededToBreak, 
+        public int tierOfToolNeededToBreak,
             durability,
             resourceCost,
             expGivenMax = 0,
@@ -89,7 +50,7 @@ namespace NotAwesomeSurvival
         public float damageDoneToTool,
             fallDamageMultiplier = -1,
             disturbDelayMax = 0f,
-            disturbDelayMin = 0f, 
+            disturbDelayMin = 0f,
             beginDelayMax = 0f,
             beginDelayMin = 0f;
         public Func<NasPlayer, ushort, Drop> dropHandler;
@@ -160,6 +121,49 @@ namespace NotAwesomeSurvival
             {
                 existAction = parent.existAction;
             }
+        }
+        public static NasBlock Get(ushort clientushort)
+        {
+            return blocks[clientushort] ?? Default;
+        }
+        public string GetName(NasPlayer np, ushort id = ushort.MaxValue)
+        {
+            if (id == ushort.MaxValue)
+            {
+                id = parentID;
+            }
+            string name;
+            ushort block = Nas.FromRaw(id);
+            if (Nas.IsPhysicsType(block))
+            {
+                name = "Physics block";
+            }
+            else
+            {
+                BlockDefinition def;
+                if (!np.p.IsSuper)
+                {
+                    def = np.p.level.GetBlockDef(block);
+                    def ??= BlockDefinition.GlobalDefs[block];
+                }
+                else
+                {
+                    def = BlockDefinition.GlobalDefs[block];
+                }
+                if (def != null)
+                {
+                    name = def.Name;
+                }
+                else
+                {
+                    name = "Unknown";
+                }
+            }
+            return name.Split('-')[0];
+        }
+        public static Drop DefaultDropHandler(NasPlayer np, ushort id)
+        {
+            return new(id);
         }
     }
 }

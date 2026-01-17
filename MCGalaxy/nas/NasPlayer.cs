@@ -58,6 +58,7 @@ namespace NotAwesomeSurvival
             exp = 0,
             levels = 0, 
             resetCount = 0;
+        public static Dictionary<string, DateTime> cooldowns = new();
         public void Message(string message, params object[] args)
         {
             p.Message(string.Format(message, args));
@@ -182,7 +183,6 @@ namespace NotAwesomeSurvival
                 nasBlock.interaction(this, button, action, nasBlock, x, y, z);
             }
         }
-        public static Dictionary<string, DateTime> cooldowns = new();
         public static void StartCooldown(Player p, int milli)
         {
             int milliseconds = milli % 1000,
@@ -637,7 +637,7 @@ namespace NotAwesomeSurvival
             NasPlayer np = (NasPlayer)task.State;
             np.DisplayHealth();
         }
-        public override void Die(string thing)
+        public void Die(string thing)
         {
             hasBeenSpawned = false;
             isDead = true;
@@ -787,25 +787,6 @@ namespace NotAwesomeSurvival
             {
                 DisplayHealth();
             }
-        }
-        public string OxygenString()
-        {
-            if (Air == maxAir)
-            {
-                return "";
-            }
-            if (Air == 0)
-            {
-                return "&r┘";
-            }
-            StringBuilder builder = new("", (int)maxAir + 6);
-            string final;
-            for (int i = 0; i < Air; ++i)
-            {
-                builder.Append('°');
-            }
-            final = builder.ToString();
-            return final;
         }
         public void UpdateHeldBlock()
         {

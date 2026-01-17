@@ -8,42 +8,9 @@ namespace NotAwesomeSurvival
 {
     public partial class NasBlock
     {
-        public static NasBlockAction FloodAction(ushort[] set)
-        {
-            return (nl, nasBlock, x, y, z) =>
-            {
-                if (CanInfiniteFloodKillThis(nl, x, y - 1, z, set))
-                {
-                    nl.SetBlock(x, y - 1, z, set[LiquidInfiniteIndex]);
-                    return;
-                }
-                if (CanInfiniteFloodKillThis(nl, x + 1, y, z, set))
-                {
-                    nl.SetBlock(x + 1, y, z, set[LiquidInfiniteIndex]);
-                }
-                if (CanInfiniteFloodKillThis(nl, x - 1, y, z, set))
-                {
-                    nl.SetBlock(x - 1, y, z, set[LiquidInfiniteIndex]);
-                }
-                if (CanInfiniteFloodKillThis(nl, x, y, z + 1, set))
-                {
-                    nl.SetBlock(x, y, z + 1, set[LiquidInfiniteIndex]);
-                }
-                if (CanInfiniteFloodKillThis(nl, x, y, z - 1, set))
-                {
-                    nl.SetBlock(x, y, z - 1, set[LiquidInfiniteIndex]);
-                }
-            };
-        }
-        public static bool CanInfiniteFloodKillThis(NasLevel nl, int x, int y, int z, ushort[] set)
-        {
-            ushort here = nl.GetBlock(x, y, z);
-            if (CanPhysicsKillThis(here) || IsPartOfSet(set, here) > LiquidInfiniteIndex)
-            {
-                return true;
-            }
-            return false;
-        }
+        public static int LiquidInfiniteIndex = 0,
+            LiquidSourceIndex = 1,
+            LiquidWaterfallIndex = 2;
         public static ushort[] blocksPhysicsCanKill = new ushort[]
         {
             0,
@@ -302,6 +269,42 @@ namespace NotAwesomeSurvival
             256|452,
             256|451
         };
+        public static NasBlockAction FloodAction(ushort[] set)
+        {
+            return (nl, nasBlock, x, y, z) =>
+            {
+                if (CanInfiniteFloodKillThis(nl, x, y - 1, z, set))
+                {
+                    nl.SetBlock(x, y - 1, z, set[LiquidInfiniteIndex]);
+                    return;
+                }
+                if (CanInfiniteFloodKillThis(nl, x + 1, y, z, set))
+                {
+                    nl.SetBlock(x + 1, y, z, set[LiquidInfiniteIndex]);
+                }
+                if (CanInfiniteFloodKillThis(nl, x - 1, y, z, set))
+                {
+                    nl.SetBlock(x - 1, y, z, set[LiquidInfiniteIndex]);
+                }
+                if (CanInfiniteFloodKillThis(nl, x, y, z + 1, set))
+                {
+                    nl.SetBlock(x, y, z + 1, set[LiquidInfiniteIndex]);
+                }
+                if (CanInfiniteFloodKillThis(nl, x, y, z - 1, set))
+                {
+                    nl.SetBlock(x, y, z - 1, set[LiquidInfiniteIndex]);
+                }
+            };
+        }
+        public static bool CanInfiniteFloodKillThis(NasLevel nl, int x, int y, int z, ushort[] set)
+        {
+            ushort here = nl.GetBlock(x, y, z);
+            if (CanPhysicsKillThis(here) || IsPartOfSet(set, here) > LiquidInfiniteIndex)
+            {
+                return true;
+            }
+            return false;
+        }
         public static bool CanPhysicsKillThis(ushort block)
         {
             for (int i = 0; i < blocksPhysicsCanKill.Length; i++)
@@ -321,9 +324,6 @@ namespace NotAwesomeSurvival
             }
             return false;
         }
-        public static int LiquidInfiniteIndex = 0,
-            LiquidSourceIndex = 1,
-            LiquidWaterfallIndex = 2;
         public static int IsPartOfSet(ushort[] set, ushort block)
         {
             for (int i = 0; i < set.Length; i++)

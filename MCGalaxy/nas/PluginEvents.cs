@@ -20,7 +20,9 @@ namespace NotAwesomeSurvival
                 }
                 foreach (Command _cmd in Command.allCmds)
                 {
-                    new CmdCmdSet().Use(p, _cmd.name + " Operator");
+                    Group group = Group.Find(LevelPermission.Operator);
+                    group ??= Group.Find(p.Rank);
+                    new CmdCmdSet().Use(p, _cmd.name + " " + group.Name);
                 }
                 p.cancelcommand = true;
                 return;

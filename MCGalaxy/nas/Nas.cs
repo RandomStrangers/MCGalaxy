@@ -43,7 +43,7 @@ namespace NotAwesomeSurvival
             SavePath = Path + "playerdata/",
             CoreSavePath = Path + "coredata/",
             EffectsPath = Path + "effects/",
-            NasVersion = "1.0.5.3";
+            NasVersion = "1.0.5.4";
         public static bool LoadedOnStartup = false,
             firstEverPluginLoad = false;
         public static Command[] Commands = new Command[]
@@ -54,7 +54,7 @@ namespace NotAwesomeSurvival
             new NasPlayer.CmdNASSpawn(),
             new NasPlayer.CmdPVP(),
             new NasPlayer.CmdSpawnDungeon(),
-            new CmdServerInfo2(),
+            new CmdNewServerInfo(),
         };
         public static Command ServerInfoCommand;
         public static void EnsureNasFilesExist()

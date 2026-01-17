@@ -23,6 +23,33 @@ namespace NotAwesomeSurvival
         public ushort height;
         public List<BlockLocation> blocksThatMustBeDisturbed = new();
         public Dictionary<string, NasBlock.Entity> blockEntities = new();
+        public ushort[] observers =
+        {
+            Nas.FromRaw(415),
+            Nas.FromRaw(416),
+            Nas.FromRaw(417),
+            Nas.FromRaw(418),
+            Nas.FromRaw(419),
+            Nas.FromRaw(420),
+        },
+        repeatersOff =
+        {
+            Nas.FromRaw(176),
+            Nas.FromRaw(177),
+            Nas.FromRaw(174),
+            Nas.FromRaw(175),
+            Nas.FromRaw(172),
+            Nas.FromRaw(173),
+        },
+        repeatersOn =
+        {
+            Nas.FromRaw(617),
+            Nas.FromRaw(618),
+            Nas.FromRaw(615),
+            Nas.FromRaw(616),
+            Nas.FromRaw(613),
+            Nas.FromRaw(614),
+        };
         public class BlockLocation
         {
             public int X, Y, Z;
@@ -213,33 +240,6 @@ namespace NotAwesomeSurvival
             DisturbBlock(x, y, z, 0, 0, 1);
             DisturbBlock(x, y, z, 0, 0, -1);
         }
-        public ushort[] observers =
-        {
-            Nas.FromRaw(415),
-            Nas.FromRaw(416),
-            Nas.FromRaw(417),
-            Nas.FromRaw(418),
-            Nas.FromRaw(419),
-            Nas.FromRaw(420),
-        },
-        repeatersOff =
-        {
-            Nas.FromRaw(176),
-            Nas.FromRaw(177),
-            Nas.FromRaw(174),
-            Nas.FromRaw(175),
-            Nas.FromRaw(172),
-            Nas.FromRaw(173),
-        },
-        repeatersOn =
-        {
-            Nas.FromRaw(617),
-            Nas.FromRaw(618),
-            Nas.FromRaw(615),
-            Nas.FromRaw(616),
-            Nas.FromRaw(613),
-            Nas.FromRaw(614),
-        };
         public void DisturbBlock(int x, int y, int z, int changeX = 0, int changeY = 0, int changeZ = 0)
         {
             if (

@@ -15,6 +15,7 @@ namespace NotAwesomeSurvival
             mediumHealthColors,
             lowHealthColors,
             direHealthColors;
+        public static int index;
         public const string selectorImageName = "selectorColors.png";
         public static void Log(string format, params object[] args)
         {
@@ -68,7 +69,6 @@ namespace NotAwesomeSurvival
             }
             Server.MainScheduler.Cancel(task);
         }
-        public static int index;
         public static void Update(SchedulerTask task)
         {
             index = (index + 1) % defaultColors.Length;

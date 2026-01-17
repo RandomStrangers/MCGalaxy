@@ -14,11 +14,7 @@ namespace NotAwesomeSurvival
             consonantChance = new long[] { 10, 10, 10, 10, 10, 10, 10, 10, 12, 12, 12, 10, 5, 12, 12, 12, 8, 8, 3, 4, 3 };
         public char[] vowel = new char[] { 'a', 'e', 'i', 'o', 'u', 'y' },
             consonant = new char[] { 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z' };
-        public Random random;
-        public NameGenerator()
-        {
-            random = new();
-        }
+        public Random random = new();
         public long IndexSelect(long[] intArray)
         {
             long totalPossible = 0;

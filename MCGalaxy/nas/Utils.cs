@@ -17,18 +17,6 @@ namespace NotAwesomeSurvival
 {
     public static class FileUtils
     {
-        public static bool TryDeleteDirectory(string path, bool recursive = false)
-        {
-            try
-            {
-                Directory.Delete(path, recursive);
-                return true;
-            }
-            catch (DirectoryNotFoundException)
-            {
-                return false;
-            }
-        }
         public static string TryReadAllText(string path)
         {
             try
@@ -36,17 +24,6 @@ namespace NotAwesomeSurvival
                 return File.ReadAllText(path);
             }
             catch (FileNotFoundException)
-            {
-                return null;
-            }
-        }
-        public static string[] TryGetFiles(string directory, string searchPattern = "*", SearchOption searchOption = SearchOption.TopDirectoryOnly)
-        {
-            try
-            {
-                return Directory.GetFiles(directory, searchPattern, searchOption);
-            }
-            catch (DirectoryNotFoundException)
             {
                 return null;
             }
@@ -99,7 +76,79 @@ namespace NotAwesomeSurvival
             }
         }
     }
-    class MonoOS : IOperatingSystem
+    public static class OS
+    {
+        public static unsafe string Get()
+        {
+            string bitType, name;
+            if (IntPtr.Size == 8)
+            {
+                bitType =  " 64-bit";
+            }
+            else if (IntPtr.Size == 4)
+            {
+                bitType = " 32-bit";
+            }
+            else if (IntPtr.Size == 2)
+            {
+                bitType = " 16-bit";
+            }
+            else
+            {
+                bitType = " unknown bit type (" + IntPtr.Size + ")";
+            }
+            if (Server.RunningOnMono())
+            {
+                name = "Mono";
+            }
+            else
+            {
+                PlatformID platform = Environment.OSVersion.Platform;
+                if (platform == PlatformID.Win32S 
+                    || platform == PlatformID.Win32Windows
+                    || platform == PlatformID.Win32NT
+                    || platform == PlatformID.WinCE
+                    || platform == PlatformID.Xbox) 
+                {
+                    name = "Windows";
+                }
+                else if (platform == PlatformID.MacOSX)
+                {
+                    name = "Mac";
+                }
+                else
+                {
+                    sbyte* utsname = stackalloc sbyte[8192];
+                    uname(utsname);
+                    string kernel = new(utsname);
+                    if (kernel.CaselessContains("linux"))
+                    {
+                        name = "Linux";
+                    }
+                    else if (kernel.CaselessContains("freeBSD"))
+                    {
+                        name = "FreeBSD";
+                    }
+                    else if (kernel.CaselessContains("netBSD"))
+                    {
+                        name = "NetBSD";
+                    }
+                    else if (kernel.CaselessContains("darwin"))
+                    {
+                        name = "Mac";
+                    }
+                    else
+                    {
+                        name = "Unix";
+                    }
+                }
+            }
+            return name + bitType;
+        }
+        [DllImport("libc")]
+        static extern unsafe void uname(sbyte* uname_struct);
+    }
+    public class MonoOS : IOperatingSystem
     {
         public override bool IsWindows { get { return false; } }
         public override void RestartProcess()
@@ -152,7 +201,7 @@ namespace NotAwesomeSurvival
                 return new();
             }
         }
-        public static string[] GetProcessCommandLineArgs()
+        static string[] GetProcessCommandLineArgs()
         {
             using StreamReader r = new("/proc/self/cmdline");
             string[] args = r.ReadToEnd().Split('\0');
@@ -317,9 +366,9 @@ namespace NotAwesomeSurvival
         {
             return block >= 66 && block < 256;
         }
-        public class CmdServerInfo2 : Command2
+        public class CmdNewServerInfo : Command
         {
-            public override string name { get { return "ServerInfo2"; } }
+            public override string name { get { return "NewServerInfo"; } }
             public override string shortcut { get { return "SInfo"; } }
             public override string type { get { return CommandTypes.Information; } }
             public override bool UseableWhenFrozen { get { return true; } }
@@ -329,25 +378,13 @@ namespace NotAwesomeSurvival
             }
             public override CommandPerm[] ExtraPerms
             {
-                get { return new[] { new CommandPerm(LevelPermission.Admin, "can see server CPU and memory usage") }; }
+                get { return new[] { new CommandPerm(LevelPermission.Admin, "can see server host, operating system, CPU and memory usage") }; }
             }
-            public static IOperatingSystem DoDetect()
+            public override void Use(Player p, string message)
             {
-                if (Server.RunningOnMono())
-                {
-                    return new MonoOS();
-                }
-                else
-                {
-                    return IOperatingSystem.DetectOS();
-                }
-            }
-            public override void Use(Player p, string message, CommandData data)
-            {
-                int count = Database.CountRows("Players");
                 p.Message("About &b{0}&S", Server.Config.Name);
                 p.Message("  &a{0} &Splayers total. (&a{1} &Sonline, &8{2} banned&S)",
-                          count, PlayerInfo.GetOnlineCanSee(p, data.Rank).Count, Group.BannedRank.Players.Count);
+                          Database.CountRows("Players"), PlayerInfo.GetOnlineCanSee(p, p.Rank).Count, Group.BannedRank.Players.Count);
                 p.Message("  &a{0} &Slevels total (&a{1} &Sloaded). Currency is &3{2}&S.",
                           LevelInfo.AllMapFiles().Length, LevelInfo.Loaded.Count, Server.Config.Currency);
                 TimeSpan up = DateTime.UtcNow - Server.StartTime;
@@ -361,18 +398,28 @@ namespace NotAwesomeSurvival
                 {
                     p.Message("  Owner is &3{0}", owner);
                 }
-                if (HasExtraPerm(p, data.Rank, 1))
+                if (HasExtraPerm(p, p.Rank, 1))
                 {
                     OutputResourceUsage(p);
                 }
             }
-            public static DateTime startTime;
-            public static ProcInfo startUsg;
-            public static void OutputResourceUsage(Player p)
+            static DateTime startTime;
+            static ProcInfo startUsg;
+            static void OutputResourceUsage(Player p)
             {
+                p.Message("Host: {0}", Environment.MachineName.ToLower().Capitalize());
+                p.Message("OS: {0}", OS.Get());
                 Process proc = Process.GetCurrentProcess();
                 p.Message("Measuring resource usage...one second");
-                IOperatingSystem os = DoDetect();
+                IOperatingSystem os;
+                if (Server.RunningOnMono())
+                {
+                    os = new MonoOS();
+                }
+                else
+                {
+                    os = IOperatingSystem.DetectOS();
+                }
                 if (startTime == default)
                 {
                     startTime = DateTime.UtcNow;
@@ -386,8 +433,8 @@ namespace NotAwesomeSurvival
                 p.Message("&a{0}% &SCPU usage now, &a{1}% &Soverall",
                     MeasureCPU(begUsg.ProcessorTime, endUsg.ProcessorTime, TimeSpan.FromSeconds(1)),
                     MeasureCPU(startUsg.ProcessorTime, endUsg.ProcessorTime, DateTime.UtcNow - startTime));
-                ulong idl = allEnd.IdleTime - allBeg.IdleTime;
-                ulong sys = allEnd.ProcessorTime - allBeg.ProcessorTime;
+                ulong idl = allEnd.IdleTime - allBeg.IdleTime,
+                    sys = allEnd.ProcessorTime - allBeg.ProcessorTime;
                 double cpu = sys * 100.0 / (sys + idl);
                 int cores = Environment.ProcessorCount;
                 p.Message("  &a{0}% &Sby all processes across {1} CPU core{2}",
@@ -397,7 +444,7 @@ namespace NotAwesomeSurvival
                 p.Message("&a{0} &Sthreads, using &a{1} &Smegabytes of memory",
                     endUsg.NumThreads, memory);
             }
-            public static string MeasureCPU(TimeSpan beg, TimeSpan end, TimeSpan interval)
+            static string MeasureCPU(TimeSpan beg, TimeSpan end, TimeSpan interval)
             {
                 if (end < beg)
                 {
@@ -638,7 +685,8 @@ namespace NotAwesomeSurvival
                 Sleep();
                 return true;
             }
-            if (status >= (HttpStatusCode)500 && status <= (HttpStatusCode)504)
+            //if (status >= (HttpStatusCode)500 && status <= (HttpStatusCode)504)
+            if (status >= HttpStatusCode.InternalServerError && status <= HttpStatusCode.GatewayTimeout)
             {
                 LogWarning(ex);
                 LogResponse(err);
@@ -791,8 +839,7 @@ namespace NotAwesomeSurvival
     {
         public static DateTime Floor(this DateTime date, TimeSpan span)
         {
-            long ticks = date.Ticks / span.Ticks;
-            return new(ticks * span.Ticks);
+            return new((date.Ticks / span.Ticks) * span.Ticks);
         }
         public static bool IsNullOrWhiteSpace(this string value)
         {
