@@ -366,6 +366,11 @@ namespace NotAwesomeSurvival
             {
                 collideAction = AirCollideAction()
             };
+            i = 740;
+            blocks[i] = new(i, Material.Earth)
+            {
+                collideAction = AirCollideAction()
+            };
             i = 4; 
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 50;

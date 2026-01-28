@@ -1,5 +1,6 @@
 #if NAS && TEN_BIT_BLOCKS
 using MCGalaxy;
+using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using System;
 using System.Net;
@@ -14,8 +15,9 @@ namespace NotAwesomeSurvival
             UploadsURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas-rework/Uploads",
             DLL = BaseURL + "MCGalaxy_nas", NetVer, GUI, CLI, Latest;
         public static Command UpdateCommand = new CmdNASUpdate();
-        public static event EventHandler NewerVersionDetected;
-        public static SchedulerTask UpdateTask;
+        static event EventHandler NewerVersionDetected;
+        static SchedulerTask UpdateTask;
+        static Scheduler updateScheduler;
         public static bool SetupDone = false;
         public static void UpdaterTask(SchedulerTask task)
         {
@@ -32,20 +34,34 @@ namespace NotAwesomeSurvival
             {
                 Setup();
             }
-            try
+            for (int retry = 0; retry < 10; retry++)
             {
-                if (!NeedsUpdating())
+                try
                 {
-                    Logger.Log(LogType.SystemActivity, "No NAS update found!");
+                    if (!NeedsUpdating())
+                    {
+                        Logger.Log(LogType.SystemActivity, "No NAS update found!");
+                    }
+                    else
+                    {
+                        NewerVersionDetected?.Invoke(null, EventArgs.Empty);
+                    }
                 }
-                else
+                catch (WebException ex)
                 {
-                    NewerVersionDetected?.Invoke(null, EventArgs.Empty);
+                    bool canRetry = Nas.HandleErrorResponse(ex, SourceURL, retry);
+                    HttpUtil.DisposeErrorResponse(ex);
+                    if (!canRetry)
+                    {
+                        updateScheduler ??= new("NASUpdater");
+                        updateScheduler.Cancel(UpdateTask);
+                        return;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Error checking for NAS updates", ex);
+                catch (Exception ex)
+                {
+                    Logger.LogError("Error checking for NAS updates", ex);
+                }
             }
         }
         public static bool NeedsUpdating()
@@ -54,7 +70,7 @@ namespace NotAwesomeSurvival
             {
                 Setup();
             }
-            using WebClient client = Nas.CreateWebClient();
+            using WebClient client = new Nas.CustomWebClient();
             Latest = client.DownloadString(CurrentVersionURL);
             Version l = new(Latest), v = new(Nas.NasVersion);
             return l > v;
@@ -82,7 +98,8 @@ namespace NotAwesomeSurvival
                     GUI = "https://cdn.classicube.net/client/mcg/latest/" + NetVer + "/MCGalaxy.exe";
                     DLL += ".dll";
                     Command.Register(UpdateCommand);
-                    UpdateTask = Server.Background.QueueRepeat(UpdaterTask, null, TimeSpan.FromSeconds(10));
+                    updateScheduler ??= new("NASUpdater");
+                    UpdateTask = updateScheduler.QueueRepeat(UpdaterTask, null, TimeSpan.FromSeconds(10));
                     NewerVersionDetected += LogNewerVersionDetected;
                 }
                 SetupDone = true;
@@ -96,7 +113,8 @@ namespace NotAwesomeSurvival
             }
             if (!NetVer.CaselessEq("unknown"))
             {
-                Server.Background.Cancel(UpdateTask);
+                updateScheduler ??= new("NASUpdater");
+                updateScheduler.Cancel(UpdateTask);
                 Command.Unregister(UpdateCommand);
                 NewerVersionDetected -= LogNewerVersionDetected;
             }
@@ -127,7 +145,7 @@ namespace NotAwesomeSurvival
                 {
                 }
                 Logger.Log(LogType.SystemActivity, "Downloading NAS update files");
-                WebClient client = Nas.CreateWebClient();
+                WebClient client = new Nas.CustomWebClient();
                 DownloadFile(client, DLL, "MCGalaxy_.update");
                 if (!Server.RunningOnMono())
                 {
@@ -202,7 +220,7 @@ namespace NotAwesomeSurvival
             {
                 if (NASUpdater.NetVer.CaselessContains("unknown"))
                 {
-                    if (!p.IsConsole)
+                    if (!p.IsSuper)
                     {
                         p.Message("Cannot update NAS using /NASUpdate, see logs for more info.");
                     }

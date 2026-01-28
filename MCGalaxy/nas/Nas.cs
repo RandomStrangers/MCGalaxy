@@ -43,7 +43,7 @@ namespace NotAwesomeSurvival
             SavePath = Path + "playerdata/",
             CoreSavePath = Path + "coredata/",
             EffectsPath = Path + "effects/",
-            NasVersion = "1.0.5.4";
+            NasVersion = "1.0.5.5";
         public static bool LoadedOnStartup = false,
             firstEverPluginLoad = false;
         public static Command[] Commands = new Command[]
@@ -131,6 +131,7 @@ namespace NotAwesomeSurvival
                 return;
             }
             Collision.Setup();
+            Server.ConsoleCommand += new(NasConsoleCommand);
             OnPlayerConnectEvent.Register(OnPlayerConnect, Priority.High);
             OnPlayerClickEvent.Register(OnPlayerClick, Priority.High);
             OnBlockChangingEvent.Register(OnBlockChanging, Priority.High);

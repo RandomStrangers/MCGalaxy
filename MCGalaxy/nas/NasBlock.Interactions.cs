@@ -173,7 +173,7 @@ namespace NotAwesomeSurvival
                 }
                 waypoints.Update(waypoints.Find("Bed"), np.p);
                 np.Teleport("-precise " + coords.X + " " + (coords.Y - 50) + " " + coords.Z);
-                np.spawnMap = np.p.level.name;
+                np.spawnMap = np.p.Level.name;
                 np.bedCoords = new int[]
                 {
                     x, y, z
@@ -710,7 +710,7 @@ namespace NotAwesomeSurvival
                             newLocations = new string[locations.Length];
                             for (int i = 0; i < locations.Length; i++)
                             {
-                                if (!locations[i].CaselessContains(x + " " + y + " " + z + " in " + np.p.level.name))
+                                if (!locations[i].CaselessContains(x + " " + y + " " + z + " in " + np.p.Level.name))
                                 {
                                     newLocations[i] = locations[i];
                                 }
@@ -1052,7 +1052,7 @@ namespace NotAwesomeSurvival
                 };
                 taskChew = Server.MainScheduler.QueueOnce(CanEatAgainCallback, eatInfo, TimeSpan.FromSeconds(chewSeconds));
                 np.Message("*munch*");
-                np.p.level.BlockDB.Cache.Add(np.p, x, y, z, 1 << 0, set[index], 0);
+                np.p.Level.BlockDB.Cache.Add(np.p, x, y, z, 1 << 0, set[index], 0);
                 if (index == set.Length - 1)
                 {
                     np.nl.SetBlock(x, y, z, 0);

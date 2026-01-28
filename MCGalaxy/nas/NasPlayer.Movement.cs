@@ -47,8 +47,8 @@ namespace NotAwesomeSurvival
         public static void OnPlayerSpawning(Player p, ref Position pos, ref byte yaw, ref byte pitch, bool respawning)
         {
             NasPlayer np = GetNasPlayer(p);
-            np.nl = NasLevel.Get(p.level.name);
-            np.SpawnPlayer(p.level, ref pos, ref yaw, ref pitch);
+            np.nl = NasLevel.Get(p.Level.name);
+            np.SpawnPlayer(p.Level, ref pos, ref yaw, ref pitch);
         }
         public ushort ConvertBlock(ushort block)
         {
@@ -67,11 +67,11 @@ namespace NotAwesomeSurvival
             }
             if (raw > 767)
             {
-                raw = p.level.GetFallback(block);
+                raw = p.Level.GetFallback(block);
             }
             if (!p.Session.hasBlockDefs && raw < 66)
             {
-                BlockDefinition def = p.level.CustomBlockDefs[raw];
+                BlockDefinition def = p.Level.CustomBlockDefs[raw];
                 if (def != null)
                 {
                     raw = def.FallBack;
@@ -241,7 +241,7 @@ namespace NotAwesomeSurvival
             }
             if (CanDoStuffBasedOnPosition)
             {
-                UpdatePosition(p.Pos, p.level.name);
+                UpdatePosition(p.Pos, p.Level.name);
             }
             CheckGround(p.Pos);
             UpdateCaveFog(next);
@@ -261,7 +261,7 @@ namespace NotAwesomeSurvival
             }
             Position below = next;
             below.Y -= 2;
-            if (Collision.TouchesGround(p.level, bounds, below, out float fallDamageMultiplier))
+            if (Collision.TouchesGround(p.Level, bounds, below, out float fallDamageMultiplier))
             {
                 float fallHeight = lastGroundedLocation.Y - next.Y;
                 if (!CanDoStuffBasedOnPosition && fallHeight > 0 && !hasBeenSpawned)
@@ -289,7 +289,7 @@ namespace NotAwesomeSurvival
                 TryGoMapAt(-1, 0);
                 return;
             }
-            if (next.BlockX >= p.level.Width - 1)
+            if (next.BlockX >= p.Level.Width - 1)
             {
                 TryGoMapAt(1, 0);
                 return;
@@ -299,7 +299,7 @@ namespace NotAwesomeSurvival
                 TryGoMapAt(0, -1);
                 return;
             }
-            if (next.BlockZ >= p.level.Length - 1)
+            if (next.BlockZ >= p.Level.Length - 1)
             {
                 TryGoMapAt(0, 1);
                 return;
@@ -315,7 +315,7 @@ namespace NotAwesomeSurvival
             atBorder = true;
             int chunkOffsetX = 0, chunkOffsetZ = 0;
             string seed = "DEFAULT";
-            if (!NasGen.GetSeedAndChunkOffset(p.level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ))
+            if (!NasGen.GetSeedAndChunkOffset(p.Level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ))
             {
                 return false;
             }
@@ -358,7 +358,7 @@ namespace NotAwesomeSurvival
             atBorder = true;
             int chunkOffsetX = 0, chunkOffsetZ = 0;
             string seed = "DEFAULT";
-            if (!NasGen.GetSeedAndChunkOffset(p.level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ)) 
+            if (!NasGen.GetSeedAndChunkOffset(p.Level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ)) 
             { 
                 return false; 
             }
@@ -452,7 +452,7 @@ namespace NotAwesomeSurvival
         }
         public void UpdateCaveFog(Position next)
         {
-            if (!NasLevel.all.ContainsKey(p.level.name))
+            if (!NasLevel.all.ContainsKey(p.Level.name))
             {
                 return;
             }
@@ -475,10 +475,10 @@ namespace NotAwesomeSurvival
             curFogColor = ScaleColor(curFogColor, targetFogColor);
             Send(Packet.EnvMapProperty(EnvProp.MaxFog, (int)curRenderDistance));
             Send(Packet.EnvColor(2, curFogColor.R, curFogColor.G, curFogColor.B));
-            NasLevel nl = NasLevel.all[p.level.name];
+            NasLevel nl = NasLevel.all[p.Level.name];
             int z = next.BlockZ;
-            z = Utils.Clamp(z, 0, (ushort)(p.level.Length - 1));
-            ushort height = (ushort)Utils.Clamp(z, 0, (ushort)(p.level.Height - 1));
+            z = Utils.Clamp(z, 0, (ushort)(p.Level.Length - 1));
+            ushort height = (ushort)Utils.Clamp(z, 0, (ushort)(p.Level.Height - 1));
             if (next.BlockCoords == p.Pos.BlockCoords)
             {
                 return;

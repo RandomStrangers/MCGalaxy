@@ -2080,7 +2080,7 @@ namespace NotAwesomeSurvival
                 for (int i = 0; i < players.Length; i++)
                 {
                     Player who = players[i];
-                    if ((who.Pos.FeetBlockCoords == new Vec3S32(x, y, z) || who.Pos.FeetBlockCoords == new Vec3S32(x, y + 1, z)) && who.level == nl.lvl)
+                    if ((who.Pos.FeetBlockCoords == new Vec3S32(x, y, z) || who.Pos.FeetBlockCoords == new Vec3S32(x, y + 1, z)) && who.Level == nl.lvl)
                     {
                         stoodOn = true;
                     }

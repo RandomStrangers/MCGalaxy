@@ -6,6 +6,7 @@ using MCGalaxy.Generator;
 using MCGalaxy.Maths;
 using MCGalaxy.Platform;
 using MCGalaxy.SQL;
+using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -83,7 +84,7 @@ namespace NotAwesomeSurvival
             string bitType, name;
             if (IntPtr.Size == 8)
             {
-                bitType =  " 64-bit";
+                bitType = " 64-bit";
             }
             else if (IntPtr.Size == 4)
             {
@@ -95,7 +96,7 @@ namespace NotAwesomeSurvival
             }
             else
             {
-                bitType = " unknown bit type (" + IntPtr.Size + ")";
+                bitType = " unknown bit type (IntPtr size is " + IntPtr.Size + ")";
             }
             if (Server.RunningOnMono())
             {
@@ -161,10 +162,6 @@ namespace NotAwesomeSurvival
             {
                 Logger.LogError("Restarting process", ex);
             }
-            RestartInPlace();
-        }
-        void RestartInPlace()
-        {
             execvp("mono", new string[] { "mono", Server.GetServerExePath(), null });
             Console.Out.WriteLine("execvp mono failed: {0}", Marshal.GetLastWin32Error());
         }
@@ -209,10 +206,37 @@ namespace NotAwesomeSurvival
             return args;
         }
         [DllImport("libc", SetLastError = true)]
-        protected static extern int execvp(string path, string[] argv);
+        static extern int execvp(string path, string[] argv);
+    }
+    public class NasConsolePlayer : Player
+    {
+        public NasConsolePlayer() : base("(NAS)")
+        {
+            group = new()
+            {
+                Permission = LevelPermission.Console,
+                DrawLimit = int.MaxValue,
+                MaxUndo = TimeSpan.MaxValue,
+                Name = "NAS",
+                Color = "&S",
+                GenVolume = int.MaxValue,
+                OverseerMaps = int.MaxValue,
+            };
+            color = "&S";
+            SuperName = "NAS";
+        }
+        public override string FullName
+        {
+            get { return "NAS [" + Server.Config.ConsoleName + "&S]"; }
+        }
+        public override void Message(string message)
+        {
+            Logger.Log(LogType.Debug, message);
+        }
     }
     public partial class Nas
     {
+        public static Player NasConsole = new NasConsolePlayer();
         public static ushort Convert(ushort block)
         {
             return block switch
@@ -407,7 +431,7 @@ namespace NotAwesomeSurvival
             static ProcInfo startUsg;
             static void OutputResourceUsage(Player p)
             {
-                p.Message("Host: {0}", Environment.MachineName.ToLower().Capitalize());
+                p.Message("Host: {0}", Environment.MachineName);
                 p.Message("OS: {0}", OS.Get());
                 Process proc = Process.GetCurrentProcess();
                 p.Message("Measuring resource usage...one second");
@@ -481,7 +505,10 @@ namespace NotAwesomeSurvival
                 p.Message("Saving {0} &Sis currently disabled (most likely because a game is or was running on the level)", lvl.ColoredName);
                 return false;
             }
-            bool saved = lvl.Save(true);
+            NasLevel nl = NasLevel.Get(lvl.name);
+            string jsonString = JsonConvert.SerializeObject(nl, Formatting.Indented),
+                fileName = NasLevel.GetFileName(nl.lvl.name);
+            bool saved = lvl.Save(true) && FileUtils.TryWriteAllText(fileName, jsonString);            
             if (!saved)
             {
                 p.Message("Saving of level {0} &Swas cancelled", lvl.ColoredName);
@@ -497,7 +524,7 @@ namespace NotAwesomeSurvival
                 Log("NAS: {0} is not a NAS level, generating a NAS level to replace it!", Server.mainLevel.name);
                 seed = new NameGenerator().MakeName().ToLower();
                 string mapName = seed + "_0,0";
-                NasLevel.GenerateMap(Player.Console,
+                NasLevel.GenerateMap(NasConsole,
                                            mapName,
                                            NasGen.mapWideness.ToString(),
                                            NasGen.mapTallness.ToString(),
@@ -551,10 +578,7 @@ namespace NotAwesomeSurvival
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
         public static bool IsDev(PlayerData data)
         {
@@ -562,10 +586,7 @@ namespace NotAwesomeSurvival
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
         public static void DisposeErrorResponse(Exception ex)
         {
@@ -602,7 +623,6 @@ namespace NotAwesomeSurvival
                 return new(localIP, 0);
             }
         }
-        public static WebClient CreateWebClient() { return new CustomWebClient(); }
         public static bool EnsureFileExists(string url, string file)
         {
             if (File.Exists(file))
@@ -612,7 +632,7 @@ namespace NotAwesomeSurvival
             Log("{0} doesn't exist, Downloading..", file);
             try
             {
-                using (WebClient client = CreateWebClient())
+                using (WebClient client = new CustomWebClient())
                 {
                     client.DownloadFile(url, file);
                 }
@@ -633,7 +653,7 @@ namespace NotAwesomeSurvival
                 }
                 else
                 {
-                    Retry(url, file);
+                    EnsureFileExists(url, file);
                 }
             }
             return false;
@@ -648,10 +668,6 @@ namespace NotAwesomeSurvival
         public static void Log(string format, params object[] args)
         {
             Logger.Log(LogType.Debug, string.Format(format, args));
-        }
-        public static void Retry(string url, string file)
-        {
-            EnsureFileExists(url, file);
         }
         public static string GetResponseText(WebResponse response)
         {
@@ -685,7 +701,6 @@ namespace NotAwesomeSurvival
                 Sleep();
                 return true;
             }
-            //if (status >= (HttpStatusCode)500 && status <= (HttpStatusCode)504)
             if (status >= HttpStatusCode.InternalServerError && status <= HttpStatusCode.GatewayTimeout)
             {
                 LogWarning(ex);

@@ -12,16 +12,15 @@ namespace NotAwesomeSurvival
             Extension = ".json";
         public static bool IsNasLevel(Level lvl)
         {
-            bool valid = true;
             if (lvl.Config.Deletable && lvl.Config.Buildable)
             {
-                valid = false;
+                return false;
             }
             if (Get(lvl) == null)
             {
-                valid = false;
+                return false;
             }
-            return valid;
+            return true;
         }
         public static NasLevel Get(Level lvl)
         {

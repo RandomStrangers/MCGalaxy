@@ -34,14 +34,14 @@ namespace NotAwesomeSurvival
         public Drop(ushort clientushort, int amount = 1)
         {
             BlockStack bs = new(clientushort, amount);
-            blockStacks = new List<BlockStack>
+            blockStacks = new()
             {
                 bs
             };
         }
         public Drop(Item item)
         {
-            items = new List<Item>
+            items = new()
             {
                 item
             };

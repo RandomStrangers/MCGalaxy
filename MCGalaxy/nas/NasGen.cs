@@ -360,7 +360,7 @@ namespace NotAwesomeSurvival
                     TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
                     if (span > TimeSpan.FromSeconds(5))
                     {
-                        if (p != Player.Console)
+                        if (!p.IsSuper)
                         {
                             Log("Initial gen {0}% complete.", (int)(y / height * 100));
                         }
@@ -373,7 +373,7 @@ namespace NotAwesomeSurvival
             public void CalcHeightmap()
             {
                 p.Message("Calculating heightmap");
-                nl = new NasLevel
+                nl = new()
                 {
                     heightmap = new ushort[lvl.Width, lvl.Length],
                     height = lvl.Height
@@ -449,7 +449,7 @@ namespace NotAwesomeSurvival
                     TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
                     if (span > TimeSpan.FromSeconds(5))
                     {
-                        if (p != Player.Console)
+                        if (!p.IsSuper)
                         {
                             Log("Soil gen {0}% complete.", y / height * 100);
                         }
@@ -543,7 +543,7 @@ namespace NotAwesomeSurvival
                     TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
                     if (span > TimeSpan.FromSeconds(5))
                     {
-                        if (p != Player.Console)
+                        if (!p.IsSuper)
                         {
                             Log("Cave gen {0}% complete.", (int)(y / height * 100));
                         }
@@ -593,7 +593,7 @@ namespace NotAwesomeSurvival
                     TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
                     if (span > TimeSpan.FromSeconds(5))
                     {
-                        if (p != Player.Console)
+                        if (!p.IsSuper)
                         {
                             Log("Random gen {0}% complete.", (int)(y / height * 100));
                         }
@@ -739,7 +739,7 @@ namespace NotAwesomeSurvival
                     TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
                     if (span > TimeSpan.FromSeconds(5))
                     {
-                        if (p != Player.Console)
+                        if (!p.IsSuper)
                         {
                             Log("Foilage gen {0}% complete.", y / height * 100);
                         }
@@ -917,9 +917,8 @@ namespace NotAwesomeSurvival
             public bool TryGenDiamond(int x, int y, int z, int oreDepth, float oreChance, ushort oreID, int size = 0, double vsf = 0.4)
             {
                 double chance = (double)(oreChance / 100);
-                int height = nl.heightmap[x, z];
-                Random rng = new();
-                int genY = rng.Next(0, 20);
+                int height = nl.heightmap[x, z],
+                    genY = new Random().Next(0, 20);
                 if (height < oceanHeight)
                 {
                     height = oceanHeight;
@@ -943,9 +942,8 @@ namespace NotAwesomeSurvival
             public bool TryGenEmerald(int x, int y, int z, int oreDepth, float oreChance, ushort oreID, int size = 0, double vsf = 0.4)
             {
                 double chance = (double)(oreChance / 100);
-                int height = nl.heightmap[x, z];
-                Random rng = new();
-                int genY = rng.Next(0, 15);
+                int height = nl.heightmap[x, z],
+                    genY = new Random().Next(0, 15);
                 if (height < oceanHeight)
                 {
                     height = oceanHeight;
@@ -1294,7 +1292,7 @@ namespace NotAwesomeSurvival
                 int genX = rng.Next(10, mapWideness - 10),
                     genZ = rng.Next(10, mapWideness - 10),
                     genY = rng.Next(0, 15);
-                GenerateDungeon(rng, genX, genY, genZ, level, nsl, false, Player.Console);
+                GenerateDungeon(rng, genX, genY, genZ, level, nsl, false, Nas.NasConsole);
             }
             public static void GenLoot(int x, int y, int z, Level level, Random rng, NasLevel nsl, bool forced, Player p)
             {

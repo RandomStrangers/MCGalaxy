@@ -125,57 +125,65 @@ namespace NotAwesomeSurvival
             bool changed = false;
             foreach (Level lvl in LevelInfo.Loaded.Items)
             {
-                if (NasLevel.Get(lvl.name).biome >= 0)
+                NasLevel nl = NasLevel.Get(lvl);
+                if (nl != null)
                 {
-                    if (lvl.Config.LightColor != sun)
+                    if (nl.biome >= 0)
                     {
-                        changed = true;
-                        lvl.Config.LightColor = sun;
-                    }
-                    if (lvl.Config.CloudColor != cloud)
-                    {
-                        changed = true;
-                        lvl.Config.CloudColor = cloud;
-                    }
-                    if (lvl.Config.SkyColor != sky)
-                    {
-                        changed = true;
-                        lvl.Config.SkyColor = sky;
-                    }
-                    if (lvl.Config.ShadowColor != shadow)
-                    {
-                        changed = true;
-                        lvl.Config.ShadowColor = shadow;
-                    }
-                    if (changed)
-                    {
-                        lvl.SaveSettings();
+                        if (lvl.Config.LightColor != sun)
+                        {
+                            changed = true;
+                            lvl.Config.LightColor = sun;
+                        }
+                        if (lvl.Config.CloudColor != cloud)
+                        {
+                            changed = true;
+                            lvl.Config.CloudColor = cloud;
+                        }
+                        if (lvl.Config.SkyColor != sky)
+                        {
+                            changed = true;
+                            lvl.Config.SkyColor = sky;
+                        }
+                        if (lvl.Config.ShadowColor != shadow)
+                        {
+                            changed = true;
+                            lvl.Config.ShadowColor = shadow;
+                        }
+                        if (changed)
+                        {
+                            lvl.SaveSettings();
+                        }
                     }
                 }
             }
             foreach (Player p in PlayerInfo.Online.Items)
             {
-                if (NasLevel.Get(p.level.name).biome >= 0)
+                NasLevel nl = NasLevel.Get(p.Level);
+                if (nl != null)
                 {
-                    if (changed)
+                    if (nl.biome >= 0)
                     {
-                        if (p.Supports(CpeExt.EnvColors))
+                        if (changed)
                         {
-                            if (Colors.TryParseHex(sky, out ColorDesc c))
+                            if (p.Supports(CpeExt.EnvColors))
                             {
-                                p.Send(Packet.EnvColor(0, c.R, c.G, c.B));
-                            }
-                            if (Colors.TryParseHex(cloud, out c))
-                            {
-                                p.Send(Packet.EnvColor(1, c.R, c.G, c.B));
-                            }
-                            if (Colors.TryParseHex(shadow, out c))
-                            {
-                                p.Send(Packet.EnvColor(3, c.R, c.G, c.B));
-                            }
-                            if (Colors.TryParseHex(sun, out c))
-                            {
-                                p.Send(Packet.EnvColor(4, c.R, c.G, c.B));
+                                if (Colors.TryParseHex(sky, out ColorDesc c))
+                                {
+                                    p.Send(Packet.EnvColor(0, c.R, c.G, c.B));
+                                }
+                                if (Colors.TryParseHex(cloud, out c))
+                                {
+                                    p.Send(Packet.EnvColor(1, c.R, c.G, c.B));
+                                }
+                                if (Colors.TryParseHex(shadow, out c))
+                                {
+                                    p.Send(Packet.EnvColor(3, c.R, c.G, c.B));
+                                }
+                                if (Colors.TryParseHex(sun, out c))
+                                {
+                                    p.Send(Packet.EnvColor(4, c.R, c.G, c.B));
+                                }
                             }
                         }
                     }

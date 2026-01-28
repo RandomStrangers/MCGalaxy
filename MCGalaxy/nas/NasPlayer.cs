@@ -156,7 +156,7 @@ namespace NotAwesomeSurvival
                 {
                     zPlacing--;
                 }
-                if (p.level.GetBlock(xPlacing, yPlacing, zPlacing) == 0)
+                if (p.Level.GetBlock(xPlacing, yPlacing, zPlacing) == 0)
                 {
                     AABB worldAABB = bounds.OffsetPosition(p.Pos),
                         blockAABB = new(0, 0, 0, 32, 32, 32);
@@ -167,7 +167,7 @@ namespace NotAwesomeSurvival
                     }
                 }
             }
-            ushort serverushort = p.level.GetBlock(x, y, z),
+            ushort serverushort = p.Level.GetBlock(x, y, z),
                 clientushort = ConvertBlock(serverushort);
             NasBlock nasBlock = NasBlock.Get(clientushort);
             if (nasBlock.interaction != null)
@@ -583,9 +583,9 @@ namespace NotAwesomeSurvival
             ChangeHealth(-damage);
             curFogColor = new(255, 255, 0, 0);
             Position next = p.Pos;
-            int x = Utils.Clamp(next.BlockX, 0, (ushort)(p.level.Width - 1)),
-                z = Utils.Clamp(next.BlockZ, 0, (ushort)(p.level.Length - 1));
-            ushort y = (ushort)Utils.Clamp(next.BlockY, 0, (ushort)(p.level.Height - 1));
+            int x = Utils.Clamp(next.BlockX, 0, (ushort)(p.Level.Width - 1)),
+                z = Utils.Clamp(next.BlockZ, 0, (ushort)(p.Level.Length - 1));
+            ushort y = (ushort)Utils.Clamp(next.BlockY, 0, (ushort)(p.Level.Height - 1));
             if (y < NasGen.oceanHeight)
             {
                 y = NasGen.oceanHeight;
@@ -654,7 +654,7 @@ namespace NotAwesomeSurvival
                 return;
             }
             Vec3S32 gravePos = p.Pos.FeetBlockCoords;
-            p.level.ClampPos(gravePos);
+            p.Level.ClampPos(gravePos);
             int x = gravePos.X,
                 y = gravePos.Y,
                 z = gravePos.Z;
@@ -677,7 +677,7 @@ namespace NotAwesomeSurvival
             while (!CanPlaceGraveStone(x, y, z))
             {
                 y++;
-                if (y >= p.level.Height - 1)
+                if (y >= p.Level.Height - 1)
                 {
                     Message("Something weird happened. You died in a location such that we can't place a grave.");
                     Message("Sorry, you've lost all your stuff.");
@@ -862,7 +862,7 @@ namespace NotAwesomeSurvival
         }
         public void SendToMain()
         {
-            if (p.level == Server.mainLevel)
+            if (p.Level == Server.mainLevel)
             {
                 PlayerActions.Respawn(p);
             }
@@ -945,8 +945,8 @@ namespace NotAwesomeSurvival
                 }
                 string[] deaths = FileUtils.TryReadAllLines(file),
                     deaths2 = FileUtils.TryReadAllLines(file);
-                int count = deaths2.Length;
-                for (int i = 0; i < deaths2.Length; i++)
+                long count = deaths2.LongLength;
+                for (long i = 0; i < deaths2.LongLength; i++)
                 {
                     if (!deaths2[i].IsNullOrWhiteSpace())
                     {
@@ -991,8 +991,8 @@ namespace NotAwesomeSurvival
                 }
                 string[] deaths = FileUtils.TryReadAllLines(file),
                     deaths2 = FileUtils.TryReadAllLines(file);
-                int count = deaths2.Length;
-                for (int i = 0; i < deaths2.Length; i++)
+                long count = deaths2.LongLength;
+                for (long i = 0; i < deaths2.LongLength; i++)
                 {
                     if (!deaths2[i].IsNullOrWhiteSpace())
                     {
@@ -1108,7 +1108,7 @@ namespace NotAwesomeSurvival
             {
                 np.Message("Generating dungeon.");
                 Vec3S32 P = np.p.Pos.BlockCoords;
-                NasGen.GenInstance.GenerateDungeon(np, P.X, P.Y, P.Z, np.p.level, NasLevel.Get(np.p.level.name));
+                NasGen.GenInstance.GenerateDungeon(np, P.X, P.Y, P.Z, np.p.Level, NasLevel.Get(np.p.Level.name));
             }
             public override void Help(Player p)
             {

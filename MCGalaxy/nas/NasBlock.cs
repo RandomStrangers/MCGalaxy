@@ -143,7 +143,7 @@ namespace NotAwesomeSurvival
                 BlockDefinition def;
                 if (!np.p.IsSuper)
                 {
-                    def = np.p.level.GetBlockDef(block);
+                    def = np.p.Level.GetBlockDef(block);
                     def ??= BlockDefinition.GlobalDefs[block];
                 }
                 else

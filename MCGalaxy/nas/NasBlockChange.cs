@@ -81,7 +81,7 @@ namespace NotAwesomeSurvival
             {
                 return;
             }
-            ushort here = np.p.level.GetBlock(x, y, z);
+            ushort here = np.p.Level.GetBlock(x, y, z);
             if (here != serverushort)
             {
                 return;
@@ -111,9 +111,9 @@ namespace NotAwesomeSurvival
                           Block.GetName(np.p, serverushort));
             }
             nasBlock.existAction?.Invoke(np, nasBlock, false, x, y, z);
-            np.p.level.BlockDB.Cache.Add(np.p, x, y, z, 1 << 0, here, 0);
+            np.p.Level.BlockDB.Cache.Add(np.p, x, y, z, 1 << 0, here, 0);
             np.nl.SetBlock(x, y, z, 0);
-            foreach (Player pl in np.p.level.players)
+            foreach (Player pl in np.p.Level.players)
             {
                 NasEffect.Define(pl, GetBreakID(), NasEffect.breakEffects[(int)nasBlock.material], blockColors[nasBlock.selfID]);
                 NasEffect.Spawn(pl, GetBreakID(), NasEffect.breakEffects[(int)nasBlock.material], x, y, z, x, y, z);
@@ -137,7 +137,7 @@ namespace NotAwesomeSurvival
         }
         public static void PlaceBlock(Player p, ushort x, ushort y, ushort z, ushort serverushort, bool placing, ref bool cancel)
         {
-            if (p.level.Config.Deletable && p.level.Config.Buildable)
+            if (p.Level.Config.Deletable && p.Level.Config.Buildable)
             {
                 return;
             }
@@ -156,11 +156,14 @@ namespace NotAwesomeSurvival
                 CancelPlacedBlock(p, x, y, z, np, ref cancel);
                 return;
             }
-            if ((nasBlock.selfID == 10 || nasBlock.selfID == 476 || nasBlock.selfID == 178) && p.level.name.Contains("0,0") && !p.level.name.Contains("nether"))
+            if ((nasBlock.selfID == 10 || nasBlock.selfID == 476 || nasBlock.selfID == 178) && p.Level.name.Contains("0,0") && !p.Level.name.Contains("nether"))
             {
-                np.Message("&mCan't do that at 0,0.");
-                CancelPlacedBlock(p, x, y, z, np, ref cancel);
-                return;
+                if (p.Rank < LevelPermission.Admin)
+                {
+                    np.Message("&mCan't do that at 0,0.");
+                    CancelPlacedBlock(p, x, y, z, np, ref cancel);
+                    return;
+                }
             }
             if (np.nl.GetBlock(x, y, z + 1) == Nas.FromRaw(703) || np.nl.GetBlock(x, y - 1, z) == Nas.FromRaw(703))
             {
@@ -193,17 +196,17 @@ namespace NotAwesomeSurvival
         }
         public static void OnBlockChanged(Player p, ushort x, ushort y, ushort z, ChangeResult _)
         {
-            if (p.level.Config.Deletable && p.level.Config.Buildable)
+            if (p.Level.Config.Deletable && p.Level.Config.Buildable)
             {
                 return;
             }
             NasPlayer np = NasPlayer.GetNasPlayer(p);
-            if (!NasLevel.IsNasLevel(p.level))
+            if (!NasLevel.IsNasLevel(p.Level))
             {
                 return;
             }
-            NasLevel nl = NasLevel.Get(p.level.name);
-            NasBlock nasBlock = NasBlock.blocksIndexedByServerushort[p.level.GetBlock(x, y, z)];
+            NasLevel nl = NasLevel.Get(p.Level.name);
+            NasBlock nasBlock = NasBlock.blocksIndexedByServerushort[p.Level.GetBlock(x, y, z)];
             nasBlock.existAction?.Invoke(np, nasBlock, true, x, y, z);
             nl?.SimulateSetBlock(x, y, z);
         }
@@ -299,7 +302,7 @@ namespace NotAwesomeSurvival
                     NasEffect.UndefineEffect(p, BreakMeterID);
                     return;
                 }
-                ushort serverushort = p.level.GetBlock(x, y, z),
+                ushort serverushort = p.Level.GetBlock(x, y, z),
                     clientushort = np.ConvertBlock(serverushort);
                 NasBlock nasBlock = NasBlock.Get(clientushort);
                 if (nasBlock.durability == int.MaxValue)

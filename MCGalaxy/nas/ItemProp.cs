@@ -19,7 +19,8 @@ namespace NotAwesomeSurvival
             name = descriptionBits[0];
             color = descriptionBits[1];
             character = descriptionBits[2];
-            allowedEnchants = new Dictionary<string, bool>(){
+            allowedEnchants = new()
+            {
                 {"Aqua Affinity",false},
                 {"Efficiency",false},
                 {"Feather Falling",false},
@@ -39,7 +40,7 @@ namespace NotAwesomeSurvival
             }
             if (effectiveAgainst != NasBlock.Material.None)
             {
-                materialsEffectiveAgainst = new List<NasBlock.Material>
+                materialsEffectiveAgainst = new()
                 {
                     effectiveAgainst
                 };

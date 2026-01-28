@@ -6,13 +6,56 @@ using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Network;
 using Newtonsoft.Json;
 using System;
+using System.Threading;
 namespace NotAwesomeSurvival
 {
     public partial class Nas
     {
-        public static void OnPlayerCommand(Player p, string cmd, string message, CommandData data)
+        public static void NasConsoleCommand(string name, string args)
         {
-            if (cmd.CaselessEq("setall"))
+            Server.cancelcommand = true;
+            if (name.CaselessEq("exit"))
+            {
+                Environment.Exit(0);
+                return;
+            }
+            Command cmd = Command.Find(name);
+            if (cmd == null)
+            {
+                Logger.Log(LogType.CommandUsage, "{0}: Unknown command \"{1}\"", NasConsole.name, name); 
+                return;
+            }
+            if (!cmd.SuperUseable)
+            {
+                Logger.Log(LogType.CommandUsage, "{0}: /{1} can only be used in-game.", NasConsole.name, cmd.name); 
+                return;
+            }
+            Server.StartThread(out Thread thread, "NASCMD_" + name,
+                () =>
+                {
+                    try
+                    {
+                        cmd.Use(NasConsole, args);
+                        if (string.IsNullOrEmpty(args))
+                        {
+                            Logger.Log(LogType.CommandUsage, "{0} used /{1}", NasConsole.name, cmd.name);
+                        }
+                        else
+                        {
+                            Logger.Log(LogType.CommandUsage, "{0} used /{1} {2}", NasConsole.name, cmd.name, args);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex);
+                        Logger.Log(LogType.CommandUsage, "{0}: FAILED COMMAND", NasConsole.name);
+                    }
+                });
+            Utils.SetBackgroundMode(thread);
+        }
+        public static void OnPlayerCommand(Player p, string name, string message, CommandData data)
+        {
+            if (name.CaselessEq("setall"))
             {
                 if (p.Rank < LevelPermission.Operator)
                 {
@@ -27,12 +70,12 @@ namespace NotAwesomeSurvival
                 p.cancelcommand = true;
                 return;
             }
-            if (cmd.CaselessEq("reload"))
+            if (name.CaselessEq("reload"))
             {
-                if (p.CanUse(cmd))
+                if (p.CanUse(name))
                 {
                     NasPlayer npl = NasPlayer.GetNasPlayer(p);
-                    if (message.CaselessEq("all") && HasExtraPerm(npl, cmd, 1))
+                    if (message.CaselessEq("all") && HasExtraPerm(npl, name, 1))
                     {
                         Player[] players = PlayerInfo.Online.Items;
                         foreach (Player player in players)
@@ -41,13 +84,13 @@ namespace NotAwesomeSurvival
                             n.SendingMap = true;
                         }
                     }
-                    else if (message.Length > 0 && HasExtraPerm(npl, cmd, 1))
+                    else if (message.Length > 0 && HasExtraPerm(npl, name, 1))
                     {
                         Player[] players = PlayerInfo.Online.Items;
                         foreach (Player player in players)
                         {
                             Level lvl = Matcher.FindLevels(npl.p, message);
-                            if (player.level.name.CaselessEq(lvl.name))
+                            if (player.Level.name.CaselessEq(lvl.name))
                             {
                                 NasPlayer n = NasPlayer.GetNasPlayer(player);
                                 n.SendingMap = true;
@@ -57,7 +100,7 @@ namespace NotAwesomeSurvival
                     npl.SendingMap = true;
                 }
             }
-            if (cmd.CaselessEq("gentree"))
+            if (name.CaselessEq("gentree"))
             {
                 p.cancelcommand = true;
                 if (p.Rank < LevelPermission.Operator)
@@ -65,10 +108,10 @@ namespace NotAwesomeSurvival
                     return;
                 }
                 string[] messageString = message.SplitSpaces();
-                NasTree.GenSwampTree(NasLevel.Get(p.level.name), new Random(), int.Parse(messageString[0]), int.Parse(messageString[1]), int.Parse(messageString[2]));
+                NasTree.GenSwampTree(NasLevel.Get(p.Level.name), new Random(), int.Parse(messageString[0]), int.Parse(messageString[1]), int.Parse(messageString[2]));
                 return;
             }
-            if (cmd.CaselessEq("time") && message.SplitSpaces()[0].CaselessEq("current"))
+            if (name.CaselessEq("time") && message.SplitSpaces()[0].CaselessEq("current"))
             {
                 p.cancelcommand = true;
                 int mins = NasTimeCycle.cyc.minutes;
@@ -177,7 +220,7 @@ namespace NotAwesomeSurvival
                 }
                 return;
             }
-            if (cmd.CaselessEq("time") && message.SplitSpaces()[0].CaselessEq("set"))
+            if (name.CaselessEq("time") && message.SplitSpaces()[0].CaselessEq("set"))
             {
                 p.cancelcommand = true;
                 if (message.SplitSpaces().Length > 1)
@@ -211,13 +254,13 @@ namespace NotAwesomeSurvival
                     NasTimeCycle.cycleCurrentTime = time % NasTimeCycle.cycleMaxTime;
                 }
             }
-            if (cmd.CaselessEq("goto") && p.Rank < LevelPermission.Operator && data.Context != CommandContext.SendCmd)
+            if (name.CaselessEq("goto") && p.Rank < LevelPermission.Operator && data.Context != CommandContext.SendCmd)
             {
                 p.Message("You cannot use /goto manually. It is triggered automatically when you go to map borders.");
                 p.cancelcommand = true;
                 return;
             }
-            if (cmd.CaselessEq("color"))
+            if (name.CaselessEq("color"))
             {
                 if (message.Length == 0)
                 {
@@ -233,7 +276,7 @@ namespace NotAwesomeSurvival
                 }
                 return;
             }
-            if (cmd.CaselessEq("sign"))
+            if (name.CaselessEq("sign"))
             {
                 p.cancelcommand = true;
                 if (string.IsNullOrEmpty(message))
@@ -247,7 +290,7 @@ namespace NotAwesomeSurvival
                     return;
                 }
             }
-            if (cmd.CaselessEq("smite"))
+            if (name.CaselessEq("smite"))
             {
                 p.cancelcommand = true;
                 if (p.Rank < LevelPermission.Operator)
@@ -259,7 +302,7 @@ namespace NotAwesomeSurvival
                 nw.TakeDamage(50, NasEntity.DamageSource.Entity, "@p &fwas smote by " + p.ColoredName);
                 return;
             }
-            if (!cmd.CaselessEq("nas"))
+            if (!name.CaselessEq("nas"))
             {
                 return;
             }
@@ -486,7 +529,7 @@ namespace NotAwesomeSurvival
         }
         public static void OnShutdown(bool restarting, string reason)
         {
-            SaveAll(Player.Console);
+            SaveAll(NasConsole);
         }
         public static void OnPlayerDisconnect(Player p, string reason)
         {
@@ -502,7 +545,7 @@ namespace NotAwesomeSurvival
             MouseAction action, ushort yaw, ushort pitch, byte entity,
             ushort x, ushort y, ushort z, TargetBlockFace face)
         {
-            if (p.level.Config.Deletable && p.level.Config.Buildable)
+            if (p.Level.Config.Deletable && p.Level.Config.Buildable)
             {
                 return;
             }
