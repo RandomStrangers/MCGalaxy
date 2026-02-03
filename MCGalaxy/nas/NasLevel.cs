@@ -74,10 +74,7 @@ namespace NotAwesomeSurvival
             public DateTime date;
             public NasBlockAction da;
         }
-        public static void Log(string format, params object[] args)
-        {
-            Logger.Log(LogType.Debug, string.Format(format, args));
-        }
+        public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
         public void BeginTickTask()
         {
             TickScheduler ??= new("NasLevelTickScheduler");
@@ -330,10 +327,7 @@ namespace NotAwesomeSurvival
             qb.da = nb.instantAction;
             tickQueue.Enqueue(qb, DateTime.UtcNow.Floor(tickDelay));
         }
-        public ushort GetBlock(int x, int y, int z)
-        {
-            return lvl.GetBlock((ushort)x, (ushort)y, (ushort)z);
-        }
+        public ushort GetBlock(int x, int y, int z) => lvl.GetBlock((ushort)x, (ushort)y, (ushort)z);
     }
 }
 #endif

@@ -9,10 +9,7 @@ namespace NotAwesomeSurvival
 {
     public static class Collision
     {
-        public static void Setup()
-        {
-            SetupBlockBounds(Server.mainLevel);
-        }
+        public static void Setup() => SetupBlockBounds(Server.mainLevel);
         public static void SetupBlockBounds(Level lvl)
         {
             NasBlock.blocksIndexedByServerushort = new NasBlock[1024];

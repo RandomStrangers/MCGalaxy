@@ -21,19 +21,16 @@ namespace NotAwesomeSurvival
         public string levelName;
         public Vec3S32 location, lastGroundedLocation;
         public byte yaw, pitch;
-        public static string DeathReason(DamageSource source, Player p)
+        public static string DeathReason(DamageSource source, Player p) => source switch
         {
-            return source switch
-            {
-                DamageSource.Entity => "@p &cdied.",
-                DamageSource.Falling => "@p &cfell to " + p.pronouns.Object + " death.",
-                DamageSource.Suffocating => "@p &esuffocated.",
-                DamageSource.Drowning => "@p &rdrowned.",
-                DamageSource.None => "@p &adied from unknown causes.",
-                DamageSource.Murder => "@p &8" + p.pronouns.PastVerb + "&8 murdered by &S@s",
-                _ => Enum.GetName(typeof(DamageSource), source).ToLower(),
-            };
-        }
+            DamageSource.Entity => "@p &cdied.",
+            DamageSource.Falling => "@p &cfell to " + p.pronouns.Object + " death.",
+            DamageSource.Suffocating => "@p &esuffocated.",
+            DamageSource.Drowning => "@p &rdrowned.",
+            DamageSource.None => "@p &adied from unknown causes.",
+            DamageSource.Murder => "@p &8" + p.pronouns.PastVerb + "&8 murdered by &S@s",
+            _ => Enum.GetName(typeof(DamageSource), source).ToLower(),
+        };
         public static void SetLocation(NasEntity ne, string levelName, Position pos, Orientation rot)
         {
             ne.levelName = levelName;
@@ -74,10 +71,7 @@ namespace NotAwesomeSurvival
             final = builder.ToString();
             return final;
         }
-        public virtual bool CanTakeDamage(DamageSource source)
-        {
-            return true;
-        }
+        public virtual bool CanTakeDamage(DamageSource source) => true;
         public virtual bool TakeDamage(float damage, DamageSource source, string customDeathReason = "")
         {
             if (!CanTakeDamage(source))

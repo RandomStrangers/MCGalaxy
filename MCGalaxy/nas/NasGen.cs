@@ -38,10 +38,7 @@ namespace NotAwesomeSurvival
             48
         };
         public static bool currentlyGenerating = false;
-        public static void Log(string format, params object[] args)
-        {
-            Logger.Log(LogType.Debug, string.Format(format, args));
-        }
+        public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
         public static void Setup()
         {
             genScheduler ??= new("MapGenScheduler");
@@ -110,10 +107,7 @@ namespace NotAwesomeSurvival
             }
             return true;
         }
-        public static bool Gen(Player p, Level lvl, MapGenArgs args)
-        {
-            return Gen(p, lvl, args.Seed.ToString());
-        }
+        public static bool Gen(Player p, Level lvl, MapGenArgs args) => Gen(p, lvl, args.Seed.ToString());
         public static bool Gen(Player p, Level lvl, string seed)
         {
             if (File.Exists("levels/" + lvl.name + ".lvl") 
@@ -1129,14 +1123,10 @@ namespace NotAwesomeSurvival
             }
             public static void GenerateDungeon(NasPlayer np, int x, int y, int z, Level level, NasLevel nsl)
             {
-                GenerateDungeon(np.p, x, y, z, level, nsl);
-            }
-            public static void GenerateDungeon(Player p, int x, int y, int z, Level level, NasLevel nsl)
-            {
                 Random rng = new(MakeInt(level.name));
-                if (p != null)
+                if (np.p != null)
                 {
-                    GenerateDungeon(rng, x + 2, y, z + 2, level, nsl, true, p);
+                    GenerateDungeon(rng, x + 2, y, z + 2, level, nsl, true, np.p);
                 }
             }
             public static void GenerateDungeon(Random rng, int x, int y, int z, Level level, NasLevel nsl, bool forced, Player p)

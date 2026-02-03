@@ -10,14 +10,11 @@ namespace NotAwesomeSurvival
         public class SimpleNode : GenericPriorityQueueNode<TPriority>
         {
             public TItem Data { get; set; }
-            public SimpleNode(TItem data)
-            {
-                Data = data;
-            }
+            public SimpleNode(TItem data) => Data = data;
         }
-        private readonly GenericPriorityQueue<SimpleNode, TPriority> _queue;
-        private readonly Dictionary<TItem, IList<SimpleNode>> _itemToNodesCache;
-        private readonly IList<SimpleNode> _nullNodesCache;
+        readonly GenericPriorityQueue<SimpleNode, TPriority> _queue;
+        readonly Dictionary<TItem, IList<SimpleNode>> _itemToNodesCache;
+        readonly IList<SimpleNode> _nullNodesCache;
         public SimplePriorityQueue() : this(Comparer<TPriority>.Default, EqualityComparer<TItem>.Default) { }
         public SimplePriorityQueue(IComparer<TPriority> priorityComparer, IEqualityComparer<TItem> itemEquality) : this(priorityComparer.Compare, itemEquality) { }
         public SimplePriorityQueue(Comparison<TPriority> priorityComparer, IEqualityComparer<TItem> itemEquality)
@@ -55,13 +52,7 @@ namespace NotAwesomeSurvival
                 _itemToNodesCache.Remove(node.Data);
             }
         }
-        public int Count
-        {
-            get
-            {
-                return _queue.Count;
-            }
-        }
+        public int Count => _queue.Count;
         public TItem First
         {
             get
@@ -79,10 +70,7 @@ namespace NotAwesomeSurvival
             _itemToNodesCache.Clear();
             _nullNodesCache.Clear();
         }
-        public bool Contains(TItem item)
-        {
-            return item == null ? _nullNodesCache.Count > 0 : _itemToNodesCache.ContainsKey(item);
-        }
+        public bool Contains(TItem item) => item == null ? _nullNodesCache.Count > 0 : _itemToNodesCache.ContainsKey(item);
         public TItem Dequeue()
         {
             if (_queue.Count <= 0)
@@ -160,10 +148,7 @@ namespace NotAwesomeSurvival
             }
             return queueData.GetEnumerator();
         }
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
 #endif

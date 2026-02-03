@@ -10,27 +10,9 @@ namespace NotAwesomeSurvival
 {
     public partial class Nas : Plugin
     {
-        public override string name
-        {
-            get
-            {
-                return "NAS";
-            }
-        }
-        public override string MCGalaxy_Version
-        {
-            get
-            {
-                return "1.9.5.3";
-            }
-        }
-        public override string creator
-        {
-            get
-            {
-                return "JuneSolis";
-            }
-        }
+        public override string name => "NAS";
+        public override string MCGalaxy_Version => "1.9.5.3";
+        public override string creator => "JuneSolis";
         public static List<string> Devs = new()
         {
             "JuneSolis",
@@ -43,7 +25,7 @@ namespace NotAwesomeSurvival
             SavePath = Path + "playerdata/",
             CoreSavePath = Path + "coredata/",
             EffectsPath = Path + "effects/",
-            NasVersion = "1.0.5.5";
+            NasVersion = "1.0.5.6";
         public static bool LoadedOnStartup = false,
             firstEverPluginLoad = false;
         public static Command[] Commands = new Command[]

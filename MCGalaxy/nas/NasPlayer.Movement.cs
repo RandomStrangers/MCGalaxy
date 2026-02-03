@@ -36,14 +36,8 @@ namespace NotAwesomeSurvival
                 }
             }
         }
-        public static void Register()
-        {
-            OnPlayerSpawningEvent.Register(OnPlayerSpawning, Priority.High);
-        }
-        public static void Unregister()
-        {
-            OnPlayerSpawningEvent.Unregister(OnPlayerSpawning);
-        }
+        public static void Register() => OnPlayerSpawningEvent.Register(OnPlayerSpawning, Priority.High);
+        public static void Unregister() => OnPlayerSpawningEvent.Unregister(OnPlayerSpawning);
         public static void OnPlayerSpawning(Player p, ref Position pos, ref byte yaw, ref byte pitch, bool respawning)
         {
             NasPlayer np = GetNasPlayer(p);
@@ -83,10 +77,7 @@ namespace NotAwesomeSurvival
             }
             return raw;
         }
-        public void SaveStatsTask(SchedulerTask _)
-        {
-            Save();
-        }
+        public void SaveStatsTask(SchedulerTask _) => Save();
         public void Save()
         {
             if (this != null)
@@ -103,16 +94,19 @@ namespace NotAwesomeSurvival
                 return;
             }
             CanDoStuffBasedOnPosition = false;
-            inventory.Setup();
+            inventory.Setup(p);
             if (isDead)
             {
                 if (!headingToBed)
                 {
                     TryDropGravestone();
-                    inventory = new(p);
+                    inventory = new()
+                    {
+                        p = p
+                    };
                     exp = 0;
                     levels = 0;
-                    inventory.Setup();
+                    inventory.Setup(p);
                     inventory.DisplayHeldBlock(NasBlock.Default, 0);
                 }
                 CommandData data = p.DefaultCmdData;

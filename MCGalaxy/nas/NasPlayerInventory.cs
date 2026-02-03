@@ -12,36 +12,16 @@ namespace NotAwesomeSurvival
         [JsonIgnore] public Player p;
         [JsonIgnore] public CpeMessageType whereHeldBlockIsDisplayed = CpeMessageType.BottomRight3;
         public int[] blocks = new int[768];
-        public Inventory(Player p)
+        public void Message(string message, params object[] args) => p.Message(string.Format(message, args));
+        public void Send(byte[] buffer) => p.Socket.Send(buffer, SendFlags.None);
+        public void SendCpeMessage(CpeMessageType type, string message) => p.SendCpeMessage(type, message);
+        public void Setup(Player p)
         {
             this.p = p;
-        }
-        public static void Log(string format, params object[] args)
-        {
-            Logger.Log(LogType.Debug, string.Format(format, args));
-        }
-        public void Message(string message, params object[] args)
-        {
-            p.Message(string.Format(message, args));
-        }
-        public void Send(byte[] buffer)
-        {
-            p.Socket.Send(buffer, SendFlags.None);
-        }
-        public void SendCpeMessage(CpeMessageType type, string message)
-        {
-            p.SendCpeMessage(type, message);
-        }
-        public void SetPlayer(Player p)
-        {
-            this.p = p;
-        }
-        public void Setup()
-        {
             NasPlayer np = NasPlayer.GetNasPlayer(p);
             if (!np.SetInventoryNotif)
             {
-                Log("Setting up inventory for {0}", np.p.truename);
+                Logger.Log(LogType.Debug, "Setting up inventory for {0}", np.p.truename);
                 np.SetInventoryNotif = true;
             }
             for (ushort clientushort = 1; clientushort <= 767; clientushort++)
@@ -56,12 +36,7 @@ namespace NotAwesomeSurvival
                     UnhideBlock(clientushort);
                 }
             }
-            SetupItems();
-        }
-        public void Setup(Player pl)
-        {
-            SetPlayer(pl);
-            Setup();
+            MoveBar(0, ref selectedItemIndex);
         }
         public void ClearHotbar()
         {
@@ -144,10 +119,7 @@ namespace NotAwesomeSurvival
                 HideBlock(clientushort);
             }
         }
-        public int GetAmount(ushort clientushort)
-        {
-            return blocks[clientushort];
-        }
+        public int GetAmount(ushort clientushort) => blocks[clientushort];
         public void DisplayHeldBlock(NasBlock nasBlock, int amountChanged = 0, bool showToNormalChat = false)
         {
             string display = DisplayedBlockString(nasBlock);

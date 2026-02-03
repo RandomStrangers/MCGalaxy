@@ -39,13 +39,10 @@ namespace NotAwesomeSurvival
                 bs
             };
         }
-        public Drop(Item item)
-        {
-            items = new()
+        public Drop(Item item) => items = new()
             {
                 item
             };
-        }
         public Drop(Inventory inv)
         {
             blockStacks = new();

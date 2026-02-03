@@ -151,7 +151,7 @@ namespace NotAwesomeSurvival
     }
     public class MonoOS : IOperatingSystem
     {
-        public override bool IsWindows { get { return false; } }
+        public override bool IsWindows => false;
         public override void RestartProcess()
         {
             try
@@ -173,13 +173,12 @@ namespace NotAwesomeSurvival
                 nice = ulong.Parse(bits[2]),
                 kern = ulong.Parse(bits[3]),
                 idle = ulong.Parse(bits[4]);
-            CPUTime all = new()
+            return new()
             {
                 UserTime = user + nice,
                 KernelTime = kern,
                 IdleTime = idle
             };
-            return all;
         }
         public override CPUTime MeasureAllCPUTime()
         {
@@ -225,185 +224,157 @@ namespace NotAwesomeSurvival
             color = "&S";
             SuperName = "NAS";
         }
-        public override string FullName
-        {
-            get { return "NAS [" + Server.Config.ConsoleName + "&S]"; }
-        }
-        public override void Message(string message)
-        {
-            Logger.Log(LogType.Debug, message);
-        }
+        public override string FullName => "NAS [" + Server.Config.ConsoleName + "&S]";
+        public override void Message(string message) => Logger.Log(LogType.Debug, message);
     }
     public partial class Nas
     {
         public static Player NasConsole = new NasConsolePlayer();
-        public static ushort Convert(ushort block)
+        public static ushort Convert(ushort block) => block switch
         {
-            return block switch
-            {
-                70 => 39,
-                100 => 20,
-                101 => 49,
-                102 => 45,
-                103 => 1,
-                104 => 4,
-                106 => 9,
-                107 => 11,
-                108 => 4,
-                109 => 19,
-                110 => 5,
-                112 => 10,
-                71 or 72 => 36,
-                111 => 17,
-                113 => 49,
-                114 => 20,
-                115 => 1,
-                116 => 18,
-                117 => 12,
-                118 => 5,
-                119 => 25,
-                120 => 46,
-                121 => 44,
-                220 => 42,
-                221 => 3,
-                222 => 2,
-                223 => 29,
-                224 => 47,
-                253 => 41,
-                80 => 4,
-                83 => 21,
-                85 => 22,
-                86 => 23,
-                87 => 24,
-                89 => 26,
-                90 => 27,
-                91 => 28,
-                92 => 30,
-                93 => 31,
-                94 => 32,
-                95 => 33,
-                96 => 34,
-                97 => 35,
-                98 => 36,
-                122 => 17,
-                123 => 49,
-                124 => 20,
-                125 => 1,
-                126 => 18,
-                127 => 12,
-                128 => 5,
-                129 => 25,
-                135 => 46,
-                136 => 44,
-                138 => 9,
-                139 => 11,
-                148 => 17,
-                149 => 49,
-                150 => 20,
-                151 => 1,
-                152 => 18,
-                153 => 12,
-                154 => 5,
-                155 => 25,
-                156 => 46,
-                157 => 44,
-                158 => 11,
-                159 => 9,
-                130 => 36,
-                131 => 34,
-                133 => 9,
-                134 => 11,
-                140 => 8,
-                141 => 10,
-                143 => 27,
-                144 => 22,
-                145 => 8,
-                146 => 10,
-                147 => 28,
-                161 => 9,
-                162 => 11,
-                166 => 9,
-                167 => 11,
-                175 => 28,
-                176 => 22,
-                74 => 46,
-                75 => 21,
-                182 => 46,
-                183 => 46,
-                184 => 10,
-                185 => 10,
-                186 => 46,
-                187 => 20,
-                188 => 41,
-                189 => 42,
-                191 => 9,
-                190 => 11,
-                193 => 8,
-                194 => 10,
-                73 => 10,
-                195 => 10,
-                196 => 8,
-                197 or 200 or 201 or 202 or 203 or 204 
-                    or 205 or 206 or 207 or 208 or 209 
-                    or 210 or 213 or 214 or 215 or 216 
-                    or 217 or 225 or 254 or 81 or 226 
-                    or 227 or 228 or 229 or 84 or 66 
-                    or 67 or 68 or 69 or 137 or 105 
-                    or 132 or 160 or 165 or 164 or 192 
-                    or 168 or 169 or 170 or 171 or 172 
-                    or 173 or 174 or 179 or 180 or 181 => 0,
-                211 => 21,
-                212 => 10,
-                177 => 21,
-                178 => 11,
-                230 => 27,
-                251 => 34,
-                252 => 16,
-                231 => 46,
-                232 => 48,
-                233 => 24,
-                235 => 36,
-                236 => 34,
-                238 => 10,
-                239 => 21,
-                237 => 8,
-                240 => 29,
-                242 => 10,
-                249 => 29,
-                245 => 41,
-                248 => 21,
-                247 => 35,
-                246 => 19,
-                250 => 49,
-                _ => block,
-            };
-        }
-        public static ushort ToRaw(ushort raw)
-        {
-            return raw < 66 ? raw : (ushort)(raw - 256);
-        }
-        public static ushort FromRaw(ushort raw)
-        {
-            return raw < 66 ? raw : (ushort)(raw + 256);
-        }
-        public static bool IsPhysicsType(ushort block)
-        {
-            return block >= 66 && block < 256;
-        }
+            70 => 39,
+            100 => 20,
+            101 => 49,
+            102 => 45,
+            103 => 1,
+            104 => 4,
+            106 => 9,
+            107 => 11,
+            108 => 4,
+            109 => 19,
+            110 => 5,
+            112 => 10,
+            71 or 72 => 36,
+            111 => 17,
+            113 => 49,
+            114 => 20,
+            115 => 1,
+            116 => 18,
+            117 => 12,
+            118 => 5,
+            119 => 25,
+            120 => 46,
+            121 => 44,
+            220 => 42,
+            221 => 3,
+            222 => 2,
+            223 => 29,
+            224 => 47,
+            253 => 41,
+            80 => 4,
+            83 => 21,
+            85 => 22,
+            86 => 23,
+            87 => 24,
+            89 => 26,
+            90 => 27,
+            91 => 28,
+            92 => 30,
+            93 => 31,
+            94 => 32,
+            95 => 33,
+            96 => 34,
+            97 => 35,
+            98 => 36,
+            122 => 17,
+            123 => 49,
+            124 => 20,
+            125 => 1,
+            126 => 18,
+            127 => 12,
+            128 => 5,
+            129 => 25,
+            135 => 46,
+            136 => 44,
+            138 => 9,
+            139 => 11,
+            148 => 17,
+            149 => 49,
+            150 => 20,
+            151 => 1,
+            152 => 18,
+            153 => 12,
+            154 => 5,
+            155 => 25,
+            156 => 46,
+            157 => 44,
+            158 => 11,
+            159 => 9,
+            130 => 36,
+            131 => 34,
+            133 => 9,
+            134 => 11,
+            140 or 193 or 196 or 237 or 145 => 8,
+            141 => 10,
+            143 => 27,
+            144 => 22,
+            146 => 10,
+            147 => 28,
+            161 => 9,
+            162 => 11,
+            166 => 9,
+            167 => 11,
+            175 => 28,
+            176 => 22,
+            74 => 46,
+            75 => 21,
+            182 => 46,
+            183 => 46,
+            184 => 10,
+            185 => 10,
+            186 => 46,
+            187 => 20,
+            188 => 41,
+            189 => 42,
+            191 => 9,
+            190 => 11,
+            194 => 10,
+            73 => 10,
+            195 => 10,
+            197 or 200 or 201 or 202 or 203 or 204
+                or 205 or 206 or 207 or 208 or 209
+                or 210 or 213 or 214 or 215 or 216
+                or 217 or 225 or 254 or 81 or 226
+                or 227 or 228 or 229 or 84 or 66
+                or 67 or 68 or 69 or 137 or 105
+                or 132 or 160 or 165 or 164 or 192
+                or 168 or 169 or 170 or 171 or 172
+                or 173 or 174 or 179 or 180 or 181 => 0,
+            211 => 21,
+            212 => 10,
+            177 => 21,
+            178 => 11,
+            230 => 27,
+            251 => 34,
+            252 => 16,
+            231 => 46,
+            232 => 48,
+            233 => 24,
+            235 => 36,
+            236 => 34,
+            238 => 10,
+            239 => 21,
+            240 => 29,
+            242 => 10,
+            249 => 29,
+            245 => 41,
+            248 => 21,
+            247 => 35,
+            246 => 19,
+            250 => 49,
+            _ => block,
+        };
+        public static ushort ToRaw(ushort raw) => raw < 66 ? raw : (ushort)(raw - 256);
+        public static ushort FromRaw(ushort raw) => raw < 66 ? raw : (ushort)(raw + 256);
+        public static bool IsPhysicsType(ushort block) => block >= 66 && block < 256;
         public class CmdNewServerInfo : Command
         {
-            public override string name { get { return "NewServerInfo"; } }
-            public override string shortcut { get { return "SInfo"; } }
-            public override string type { get { return CommandTypes.Information; } }
-            public override bool UseableWhenFrozen { get { return true; } }
-            public override CommandAlias[] Aliases
-            {
-                get { return new[] { new CommandAlias("Host"), new("ZAll"), new("ServerInfo") }; }
-            }
-            public override CommandPerm[] ExtraPerms
-            {
-                get { return new[] { new CommandPerm(LevelPermission.Admin, "can see server host, operating system, CPU and memory usage") }; }
-            }
+            public override string name => "NewServerInfo";
+            public override string shortcut => "SInfo";
+            public override string type => CommandTypes.Information;
+            public override bool UseableWhenFrozen => true;
+            public override CommandAlias[] Aliases => new[] { new CommandAlias("Host"), new("ZAll"), new("ServerInfo") };
+            public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Admin, "can see server host, operating system, CPU and memory usage") };
             public override void Use(Player p, string message)
             {
                 p.Message("About &b{0}&S", Server.Config.Name);
@@ -435,14 +406,10 @@ namespace NotAwesomeSurvival
                 p.Message("OS: {0}", OS.Get());
                 Process proc = Process.GetCurrentProcess();
                 p.Message("Measuring resource usage...one second");
-                IOperatingSystem os;
+                IOperatingSystem os = IOperatingSystem.DetectOS();
                 if (Server.RunningOnMono())
                 {
                     os = new MonoOS();
-                }
-                else
-                {
-                    os = IOperatingSystem.DetectOS();
                 }
                 if (startTime == default)
                 {
@@ -479,16 +446,9 @@ namespace NotAwesomeSurvival
                 double elapsed = 100.0 * (used.TotalSeconds / interval.TotalSeconds);
                 return (elapsed / cores).ToString("F2");
             }
-            public override void Help(Player p)
-            {
-                p.Message("&T/ServerInfo");
-                p.Message("&HDisplays the server information.");
-            }
+            public override void Help(Player p) => p.Message("&T/ServerInfo &H- Displays the server information.");
         }
-        public static bool HasExtraPerm(NasPlayer np, string cmd, int num)
-        {
-            return CommandExtraPerms.Find(cmd, num).UsableBy(np.p.Rank);
-        }
+        public static bool HasExtraPerm(NasPlayer np, string cmd, int num) => CommandExtraPerms.Find(cmd, num).UsableBy(np.p.Rank);
         public static void SaveAll(Player p)
         {
             Level[] loaded = LevelInfo.Loaded.Items;
@@ -560,67 +520,22 @@ namespace NotAwesomeSurvival
                 }
             }
         }
-        public static string GetSavePath(Player p)
-        {
-            return SavePath + p.name + ".json";
-        }
-        public static string GetDeathPath(string name)
-        {
-            return NasPlayer.DeathsPath + name + ".txt";
-        }
-        public static string GetTextPath(Player p)
-        {
-            return SavePath + p.name + ".txt";
-        }
-        public static bool IsDev(Player p)
-        {
-            if (Devs.CaselessContains(p.truename))
-            {
-                return true;
-            }
-            return false;
-        }
-        public static bool IsDev(PlayerData data)
-        {
-            if (Devs.CaselessContains(data.Name))
-            {
-                return true;
-            }
-            return false;
-        }
+        public static string GetSavePath(Player p) => SavePath + p.name + ".json";
+        public static string GetDeathPath(string name) => NasPlayer.DeathsPath + name + ".txt";
+        public static string GetTextPath(Player p) => SavePath + p.name + ".txt";
+        public static bool IsDev(Player p) => Devs.CaselessContains(p.truename);
+        public static bool IsDev(PlayerData data) => Devs.CaselessContains(data.Name);
         public static void DisposeErrorResponse(Exception ex)
         {
             try
             {
-                if (ex is WebException webEx && webEx.Response != null) webEx.Response.Close();
+                if (ex is WebException webEx && webEx.Response != null)
+                {
+                    webEx.Response.Close();
+                }
             }
-            catch { }
-        }
-        public class CustomWebClient : WebClient
-        {
-            protected override WebRequest GetWebRequest(Uri address)
-            {
-                HttpWebRequest req = (HttpWebRequest)base.GetWebRequest(address);
-                req.ServicePoint.BindIPEndPointDelegate = BindIPEndPointCallback;
-                req.UserAgent = Server.SoftwareNameVersioned;
-                return req;
-            }
-            static IPEndPoint BindIPEndPointCallback(ServicePoint servicePoint, IPEndPoint remoteEP, int retryCount)
-            {
-                IPAddress localIP;
-                if (Server.Listener.IP != null)
-                {
-                    localIP = Server.Listener.IP;
-                }
-                else if (!IPAddress.TryParse(Server.Config.ListenIP, out localIP))
-                {
-                    return null;
-                }
-                if (remoteEP.AddressFamily != localIP.AddressFamily)
-                {
-                    return null;
-                }
-                return new(localIP, 0);
+            catch 
+            { 
             }
         }
         public static bool EnsureFileExists(string url, string file)
@@ -632,7 +547,7 @@ namespace NotAwesomeSurvival
             Log("{0} doesn't exist, Downloading..", file);
             try
             {
-                using (WebClient client = new CustomWebClient())
+                using (WebClient client = new())
                 {
                     client.DownloadFile(url, file);
                 }
@@ -665,22 +580,14 @@ namespace NotAwesomeSurvival
                 Command.Register(cmd);
             }
         }
-        public static void Log(string format, params object[] args)
-        {
-            Logger.Log(LogType.Debug, string.Format(format, args));
-        }
-        public static string GetResponseText(WebResponse response)
-        {
-            using StreamReader r = new(response.GetResponseStream());
-            return r.ReadToEnd().Trim();
-        }
+        public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
         public static string GetErrorResponse(Exception ex)
         {
             try
             {
                 if (ex is WebException webEx && webEx.Response != null)
                 {
-                    return GetResponseText(webEx.Response);
+                    return new StreamReader(webEx.Response.GetResponseStream()).ReadToEnd().Trim();
                 }
             }
             catch 
@@ -688,10 +595,7 @@ namespace NotAwesomeSurvival
             }
             return null;
         }
-        public static bool HandleErrorResponse(Exception ex, string msg, long retry)
-        {
-            return HandleErrorResponse((WebException)ex, msg, retry);
-        }
+        public static bool HandleErrorResponse(Exception ex, string msg, long retry) => HandleErrorResponse((WebException)ex, msg, retry);
         public static bool HandleErrorResponse(WebException ex, string msg, long retry)
         {
             string err = GetErrorResponse(ex);
@@ -729,21 +633,12 @@ namespace NotAwesomeSurvival
             }
             return ((HttpWebResponse)ex.Response).StatusCode;
         }
-        public static void LogWarning(Exception ex, string target)
-        {
-            Logger.Log(LogType.Warning, "Error sending request to Github API {0}: {1}", target, ex.Message);
-        }
-        public static void LogWarning(string message)
-        {
-            Logger.Log(LogType.Warning, message);
-        }
-        public static void LogWarning(Exception ex)
-        {
-            Logger.Log(LogType.Warning, "Error sending request to Github API - {0}", ex.Message);
-        }
+        public static void LogWarning(Exception ex, string target) => Logger.Log(LogType.Warning, "Error sending request to Github API {0}: {1}", target, ex.Message);
+        public static void LogWarning(string message) => Logger.Log(LogType.Warning, message);
+        public static void LogWarning(Exception ex) => Logger.Log(LogType.Warning, "Error sending request to Github API - {0}", ex.Message);
         public static void LogResponse(string err)
         {
-            if (string.IsNullOrEmpty(err))
+            if (err.IsNullOrEmpty())
             {
                 return;
             }
@@ -755,20 +650,15 @@ namespace NotAwesomeSurvival
         }
         public static void Sleep()
         {
-            float delay = 30;
             Log("Waiting to download files...");
-            Thread.Sleep(TimeSpan.FromSeconds(delay + 0.5f));
+            Thread.Sleep(TimeSpan.FromSeconds(30 + 0.5f));
         }
     }
     public partial class NasPlayer
     {
-        public static bool GetCoords(Player p, string[] args, int argsOffset, ref Vec3S32 P)
-        {
-            return
-                GetCoordInt(p, args[argsOffset + 0], "X coordinate", ref P.X) &&
+        public static bool GetCoords(Player p, string[] args, int argsOffset, ref Vec3S32 P) => GetCoordInt(p, args[argsOffset + 0], "X coordinate", ref P.X) &&
                 GetCoordInt(p, args[argsOffset + 1], "Y coordinate", ref P.Y) &&
                 GetCoordInt(p, args[argsOffset + 2], "Z coordinate", ref P.Z);
-        }
         public static bool ParseRelative(ref string arg)
         {
             bool relative = arg.Length > 0 && (arg[0] == '~' || arg[0] == '#');
@@ -796,10 +686,7 @@ namespace NotAwesomeSurvival
             }
             return true;
         }
-        public static bool TryParseInt32(string s, out int result)
-        {
-            return int.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
-        }
+        public static bool TryParseInt32(string s, out int result) => int.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
         public static bool CheckRange(Player p, int value, string argName, int min, int max)
         {
             if (value >= min && value <= max)
@@ -852,13 +739,10 @@ namespace NotAwesomeSurvival
     }
     public static class Extensions
     {
-        public static DateTime Floor(this DateTime date, TimeSpan span)
-        {
-            return new((date.Ticks / span.Ticks) * span.Ticks);
-        }
+        public static DateTime Floor(this DateTime date, TimeSpan span) => new((date.Ticks / span.Ticks) * span.Ticks);
         public static bool IsNullOrWhiteSpace(this string value)
         {
-            if (value as object == null)
+            if (value as object is null)
             {
                 return true;
             }
@@ -873,7 +757,7 @@ namespace NotAwesomeSurvival
         }
         public static bool IsNullOrEmpty(this string value)
         {
-            if (value as object != null)
+            if (value as object is not null)
             {
                 return value.Length == 0;
             }

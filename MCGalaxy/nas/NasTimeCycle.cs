@@ -49,10 +49,7 @@ namespace NotAwesomeSurvival
             cyc.day = ntc.day;
             cyc.minutes = ntc.minutes;
         }
-        public static void TakeDown()
-        {
-            weatherScheduler.Cancel(task);
-        }
+        public static void TakeDown() => weatherScheduler.Cancel(task);
         public static void Update(SchedulerTask task)
         {
             cycleCurrentTime += 6 * 7;

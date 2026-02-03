@@ -23,20 +23,8 @@ namespace NotAwesomeSurvival
             _numNodesEverEnqueued = 0;
             _comparer = comparer;
         }
-        public int Count
-        {
-            get
-            {
-                return _numNodes;
-            }
-        }
-        public int MaxSize
-        {
-            get
-            {
-                return _nodes.Length - 1;
-            }
-        }
+        public int Count => _numNodes;
+        public int MaxSize => _nodes.Length - 1;
         public void Clear()
         {
             Array.Clear(_nodes, 1, _numNodes);
@@ -365,10 +353,7 @@ namespace NotAwesomeSurvival
                 yield return _nodes[i];
             }
         }
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         public bool IsValidQueue()
         {
             for (int i = 1; i < _nodes.Length; i++)

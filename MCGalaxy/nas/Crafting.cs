@@ -238,10 +238,7 @@ namespace NotAwesomeSurvival
                 usesAlternateID = false,
                 shapeless = false;
             public Drop drop;
-            public Recipe()
-            {
-                recipes.Add(this);
-            }
+            public Recipe() => recipes.Add(this);
             public Recipe(Item item) : this()
             {
                 name = item.name;

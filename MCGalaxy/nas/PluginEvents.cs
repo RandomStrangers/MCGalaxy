@@ -474,6 +474,7 @@ namespace NotAwesomeSurvival
             {
                 return;
             }
+            np.inventory.p = p;
             np.inventory.Setup(p);
             np.SendingMap = false;
         }
@@ -527,10 +528,7 @@ namespace NotAwesomeSurvival
             np.PlayerSavingScheduler ??= new("SavingScheduler" + p.name);
             np.PlayerSaveTask = np.PlayerSavingScheduler.QueueRepeat(np.SaveStatsTask, null, TimeSpan.FromSeconds(5));
         }
-        public static void OnShutdown(bool restarting, string reason)
-        {
-            SaveAll(NasConsole);
-        }
+        public static void OnShutdown(bool restarting, string reason) => SaveAll(NasConsole);
         public static void OnPlayerDisconnect(Player p, string reason)
         {
             NasPlayer np = NasPlayer.GetNasPlayer(p);
@@ -570,14 +568,8 @@ namespace NotAwesomeSurvival
                 np.justBrokeOrPlaced = false;
             }
         }
-        public static void OnBlockChanging(Player p, ushort x, ushort y, ushort z, ushort block, bool placing, ref bool cancel)
-        {
-            NasBlockChange.PlaceBlock(p, x, y, z, block, placing, ref cancel);
-        }
-        public static void OnBlockChanged(Player p, ushort x, ushort y, ushort z, ChangeResult result)
-        {
-            NasBlockChange.OnBlockChanged(p, x, y, z, result);
-        }
+        public static void OnBlockChanging(Player p, ushort x, ushort y, ushort z, ushort block, bool placing, ref bool cancel) => NasBlockChange.PlaceBlock(p, x, y, z, block, placing, ref cancel);
+        public static void OnBlockChanged(Player p, ushort x, ushort y, ushort z, ChangeResult result) => NasBlockChange.OnBlockChanged(p, x, y, z, result);
         public static void OnPlayerMove(Player p, Position next, byte yaw, byte pitch, ref bool cancel)
         {
             NasPlayer np = NasPlayer.GetNasPlayer(p);

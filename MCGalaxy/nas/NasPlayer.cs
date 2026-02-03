@@ -59,18 +59,9 @@ namespace NotAwesomeSurvival
             levels = 0, 
             resetCount = 0;
         public static Dictionary<string, DateTime> cooldowns = new();
-        public void Message(string message, params object[] args)
-        {
-            p.Message(string.Format(message, args));
-        }
-        public void MessageLines(IEnumerable<string> lines)
-        {
-            p.MessageLines(lines);
-        }
-        public void Send(byte[] buffer)
-        {
-            p.Socket.Send(buffer, SendFlags.None);
-        }
+        public void Message(string message, params object[] args) => p.Message(string.Format(message, args));
+        public void MessageLines(IEnumerable<string> lines) => p.MessageLines(lines);
+        public void Send(byte[] buffer) => p.Socket.Send(buffer, SendFlags.None);
         public void ResetBreaking()
         {
             breakX = breakY = breakZ = ushort.MaxValue;
@@ -79,10 +70,7 @@ namespace NotAwesomeSurvival
                 NasBlockChange.breakScheduler.Cancel((SchedulerTask)p.Extras["nas_taskDisplayMeter"]);
             }
         }
-        public static void Log(string format, params object[] args)
-        {
-            Logger.Log(LogType.Debug, string.Format(format, args));
-        }
+        public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
         public static NasPlayer GetNasPlayer(Player p)
         {
             if (!p.Extras.Contains(Nas.PlayerKey))
@@ -101,29 +89,26 @@ namespace NotAwesomeSurvival
             {
                 return false;
             }
-            else
-            {
-                return true;
-            }
+            return true;
         }
         public NasPlayer(Player p)
         {
             this.p = p;
             HP = 10;
             Air = 10;
-            inventory = new(p);
+            inventory = new()
+            {
+                p = p
+            };
             spawnCoords = Server.mainLevel.SpawnPos;
             bedCoords = new int[] { 238, 94, 179 };
             spawnMap = Server.mainLevel.name;
         }
-        public void SetPlayer(Player p, bool log = true)
+        public void SetPlayer(Player p)
         {
-            if (log)
-            {
-                Log("setting {0} in inventory", p.truename);
-            }
+            Log("setting {0} in inventory", p.truename);
             this.p = p;
-            inventory.SetPlayer(p);
+            inventory.p = p;
         }
         public void HandleInteraction(MouseButton button, MouseAction action, ushort x, ushort y, ushort z, byte _, TargetBlockFace face)
         {
@@ -204,10 +189,7 @@ namespace NotAwesomeSurvival
             bigUpdate = true;
             resetCount += 1;
         }
-        public static bool CooledDown(Player p)
-        {
-            return DateTime.UtcNow.CompareTo(cooldowns[p.name]) != -1;
-        }
+        public static bool CooledDown(Player p) => DateTime.UtcNow.CompareTo(cooldowns[p.name]) != -1;
         public void GiveExp(int amount)
         {
             if (inventory.HeldItem.Enchant("Mending") == 1 && inventory.HeldItem.HP < inventory.HeldItem.Prop.baseHP)
@@ -699,14 +681,8 @@ namespace NotAwesomeSurvival
             ushort here = nl.GetBlock(x, y, z);
             return NasBlock.CanPhysicsKillThis(here) || NasBlock.IsThisLiquid(here);
         }
-        public void SendCpeMessage(CpeMessageType type, string message)
-        {
-            p.SendCpeMessage(type, message);
-        }
-        public void DisplayHealth(string healthColor = "p", string prefix = "&7[", string suffix = "&7]¼")
-        {
-            SendCpeMessage(whereHealthIsDisplayed, OxygenString() + " " + prefix + HealthString(healthColor) + suffix + ArmorDisplay() + " " + ExpDisplay() + " " + AttackRecharge());
-        }
+        public void SendCpeMessage(CpeMessageType type, string message) => p.SendCpeMessage(type, message);
+        public void DisplayHealth(string healthColor = "p", string prefix = "&7[", string suffix = "&7]¼") => SendCpeMessage(whereHealthIsDisplayed, OxygenString() + " " + prefix + HealthString(healthColor) + suffix + ArmorDisplay() + " " + ExpDisplay() + " " + AttackRecharge());
         public string HealthString(string healthColor)
         {
             if (HP > maxHP)
@@ -874,12 +850,12 @@ namespace NotAwesomeSurvival
         public abstract class NASCommand : Command
         {
             public abstract string Name { get; }
-            public override string name { get { return Name; } }
-            public override string type { get { return "NAS"; } }
-            public override bool SuperUseable { get { return false; } }
-            public override bool museumUsable { get { return false; } }
-            public override bool MessageBlockRestricted { get { return true; } }
-            public override LevelPermission defaultRank { get { return LevelPermission.Guest; } }
+            public override string name => Name;
+            public override string type => "NAS";
+            public override bool SuperUseable => false;
+            public override bool museumUsable => false;
+            public override bool MessageBlockRestricted => true;
+            public override LevelPermission defaultRank => LevelPermission.Guest;
             public override void Use(Player p, string message)
             {
                 NasPlayer np = GetNasPlayer(p);
@@ -889,17 +865,14 @@ namespace NotAwesomeSurvival
         }
         public abstract class NASCommand2 : NASCommand
         {
-            public override void Use(NasPlayer np, string message)
-            {
-                Execute(np.p, message);
-            }
+            public override void Use(NasPlayer np, string message) => Execute(np.p, message);
             public abstract void Execute(Player p, string message);
         }
         public class CmdGravestones : NASCommand2
         {
-            public override string Name { get { return "Gravestones"; } }
-            public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-            public override bool SuperUseable { get { return true; } }
+            public override string Name => "Gravestones";
+            public override LevelPermission defaultRank => LevelPermission.Operator;
+            public override bool SuperUseable => true;
             public bool IsSuper(Player p, string message, string type)
             {
                 if (message.Length > 0 || !p.IsSuper)
@@ -909,10 +882,7 @@ namespace NotAwesomeSurvival
                 SuperNeedsArgs(p, type);
                 return true;
             }
-            public void SuperNeedsArgs(Player p, string type)
-            {
-                p.Message("When using /{0} from {2}, you must provide a {1}.", Name, type, p.SuperName);
-            }
+            public void SuperNeedsArgs(Player p, string type) => p.Message("When using /{0} from {2}, you must provide a {1}.", Name, type, p.SuperName);
             public override void Execute(Player p, string message)
             {
                 string[] args = message.SplitSpaces();
@@ -921,7 +891,7 @@ namespace NotAwesomeSurvival
                 {
                     return;
                 }
-                if (name.Length == 0)
+                if (string.IsNullOrEmpty(name))
                 {
                     PlayerName = p.name;
                 }
@@ -973,14 +943,11 @@ namespace NotAwesomeSurvival
                 p.Message("{0}&S's gravestones:", PlayerName);
                 p.MessageLines(deaths);
             }
-            public override void Help(Player p)
-            {
-                p.Message("&T/Gravestones [name] &H- Views the location of the player's gravestones");
-            }
+            public override void Help(Player p) => p.Message("&T/Gravestones [name] &H- Views the location of the player's gravestones");
         }
         public class CmdMyGravestones : NASCommand
         {
-            public override string Name { get { return "MyGravestones"; } }
+            public override string Name => "MyGravestones";
             public override void Use(NasPlayer np, string message)
             {
                 string file = Nas.GetDeathPath(np.p.name);
@@ -1019,14 +986,11 @@ namespace NotAwesomeSurvival
                 np.Message("Your gravestones:");
                 np.MessageLines(deaths);
             }
-            public override void Help(Player p)
-            {
-                p.Message("&T/MyGravestones &H- Views the location of the your own gravestones");
-            }
+            public override void Help(Player p) => p.Message("&T/MyGravestones &H- Views the location of the your own gravestones");
         }
         public class CmdPVP : NASCommand
         {
-            public override string Name { get { return "PvP"; } }
+            public override string Name => "PvP";
             public override void Use(NasPlayer np, string message)
             {
                 if (message.CaselessEq("on") || message.CaselessEq("enable"))
@@ -1072,8 +1036,8 @@ namespace NotAwesomeSurvival
         }
         public class CmdNASSpawn : NASCommand
         {
-            public override string Name { get { return "NASSpawn"; } }
-            public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
+            public override string Name => "NASSpawn";
+            public override LevelPermission defaultRank => LevelPermission.Admin;
             public override void Use(NasPlayer np, string message)
             {
                 if ((!message.CaselessContains("confirm") || message.IsNullOrEmpty()) && np.hasBeenSpawned)
@@ -1094,16 +1058,13 @@ namespace NotAwesomeSurvival
                     return;
                 }
             }
-            public override void Help(Player p)
-            {
-                p.Message("&T/NASSpawn &H- Toggles hasBeenSpawned");
-            }
+            public override void Help(Player p) => p.Message("&T/NASSpawn &H- Toggles hasBeenSpawned");
         }
         public class CmdSpawnDungeon : NASCommand
         {
-            public override string Name { get { return "SpawnDungeon"; } }
-            public override string shortcut { get { return "GenerateDungeon"; } }
-            public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
+            public override string Name => "SpawnDungeon";
+            public override string shortcut => "GenerateDungeon";
+            public override LevelPermission defaultRank => LevelPermission.Admin;
             public override void Use(NasPlayer np, string message)
             {
                 np.Message("Generating dungeon.");
@@ -1118,7 +1079,7 @@ namespace NotAwesomeSurvival
         }
         public class CmdBarrelMode : NASCommand
         {
-            public override string Name { get { return "BarrelMode"; } }
+            public override string Name => "BarrelMode";
             public override void Use(NasPlayer np, string message)
             {
                 if (np.oldBarrel)

@@ -44,6 +44,10 @@ namespace NotAwesomeSurvival
             etheriumLegs, etheriumBoots, etheriumSword;
         public static void Setup()
         {
+            int ironBaseHP = 200 * 8,
+                goldBaseHP = 200 * 64,
+                diamondBaseHP = 200 * 128,
+                emeraldBaseHP = 200 * 192;
             bedrockPick = new("Bedrock Pickaxe|m|╟", nothing, NasBlock.Material.None, -1f, 5)
             {
                 baseHP = int.MaxValue
@@ -128,7 +132,6 @@ namespace NotAwesomeSurvival
                 damage = 2.5f,
                 recharge = 750
             };
-            const int ironBaseHP = 200 * 8;
             ItemProp ironPick = new("Iron Pickaxe|f|ß", toolEnchants, NasBlock.Material.Stone, 0.85f, 3)
             {
                 baseHP = ironBaseHP
@@ -149,7 +152,6 @@ namespace NotAwesomeSurvival
                 knockback = 1.25f,
                 baseHP = ironBaseHP
             };
-            const int goldBaseHP = 200 * 64;
             ItemProp goldPick = new("Gold Pickaxe|6|ß", toolEnchants, NasBlock.Material.Stone, 0.90f, 3)
             {
                 baseHP = goldBaseHP
@@ -170,7 +172,6 @@ namespace NotAwesomeSurvival
                 knockback = 1.25f,
                 baseHP = goldBaseHP
             };
-            const int diamondBaseHP = 200 * 128;
             ItemProp diamondPick = new("Diamond Pickaxe|b|ß", toolEnchants, NasBlock.Material.Stone, 0.95f, 4)
             {
                 baseHP = diamondBaseHP
@@ -191,7 +192,6 @@ namespace NotAwesomeSurvival
                 knockback = 1.25f,
                 baseHP = diamondBaseHP
             };
-            const int emeraldBaseHP = 200 * 192;
             ItemProp emeraldPick = new("Emerald Pickaxe|2|ß", toolEnchants, NasBlock.Material.Stone, 0.975f, 5)
             {
                 baseHP = emeraldBaseHP

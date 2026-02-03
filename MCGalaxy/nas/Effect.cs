@@ -93,16 +93,12 @@ namespace NotAwesomeSurvival
                 cfg ??= ConfigElement.GetAll(typeof(Effect));
                 if (!ConfigElement.ParseFile(cfg, fileName, this))
                 {
-                    Log("NAS: Could not find required effect file {0}", effectName);
+                    Logger.Log(LogType.Debug, "NAS: Could not find required effect file {0}", effectName);
                     return false;
                 }
                 offset = pixelSize / 32;
                 return true;
             }
-        }
-        public static void Log(string format, params object[] args)
-        {
-            Logger.Log(LogType.Debug, string.Format(format, args));
         }
         public static void Define(Player p, byte ID, Effect effect, Pixel? color = null, float? lifetime = null)
         {
@@ -153,12 +149,9 @@ namespace NotAwesomeSurvival
                                         effect.collidesLeaves,
                                         effect.fullBright));
         }
-        public static void UndefineEffect(Player p, byte ID)
-        {
-            p.Send(Packet.DefineEffect(ID, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 0, 0,
+        public static void UndefineEffect(Player p, byte ID) => p.Send(Packet.DefineEffect(ID, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1000, 0, 0,
                                        false, false, false, false, false
                                       ));
-        }
         public static void Spawn(Player p, byte ID, Effect effect, float x, float y, float z, float originX, float originY, float originZ)
         {
             if (!p.Supports(CpeExt.CustomParticles))

@@ -736,8 +736,7 @@ namespace NotAwesomeSurvival
                 dropHandler = (NasPlayer, dropID) =>
                 {
                     Drop drop = new(18, 1);
-                    int rand = r.Next(0, 8);
-                    if (rand == 0)
+                    if (r.Next(0, 8) == 0)
                     { 
                         drop.blockStacks.Add(new(6, 1));
                     }
@@ -757,8 +756,7 @@ namespace NotAwesomeSurvival
                 dropHandler = (NasPlayer, dropID) =>
                 {
                     Drop drop = new(103, 1);
-                    int rand = r.Next(0, 8);
-                    if (rand == 0)
+                    if (r.Next(0, 8) == 0)
                     {
                         drop.blockStacks.Add(new(154, 1));
                     }
@@ -796,8 +794,7 @@ namespace NotAwesomeSurvival
                 dropHandler = (NasPlayer, dropID) =>
                 {
                     Drop drop = new(19, 1);
-                    int rand = r.Next(0, 8);
-                    if (rand == 0)
+                    if (r.Next(0, 8) == 0)
                     {
                         drop.blockStacks.Add(new(689, 1));
                     }
@@ -1369,8 +1366,7 @@ namespace NotAwesomeSurvival
                 dropHandler = (NasPlayer, dropID) =>
                 {
                     Drop drop = new(146, 1);
-                    int rand = r.Next(0, 8);
-                    if (rand == 0)
+                    if (r.Next(0, 8) == 0)
                     {
                         drop.blockStacks.Add(new(450, 1));
                     }
@@ -2192,13 +2188,10 @@ namespace NotAwesomeSurvival
                 disturbedAction = DispenserAction(0, 1, 0)
             };
         }
-        public static Func<NasPlayer, ushort, Drop> CustomDrop(ushort clientushort, int amount)
-        {
-            return (NasPlayer, dropID) =>
-            {
-                return new(clientushort, amount);
-            };
-        }
+        public static Func<NasPlayer, ushort, Drop> CustomDrop(ushort clientushort, int amount) => (NasPlayer, dropID) =>
+                                                                                                            {
+                                                                                                                return new(clientushort, amount);
+                                                                                                            };
         public static void DefinePiston(ushort startID, ushort[] set, string axis, int direction, int parent, bool sticky = false)
         {
             ushort i = startID;

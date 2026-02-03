@@ -7,10 +7,7 @@ namespace NotAwesomeSurvival
     public partial class NasTimeCycle
     {
         public static NasTimeCycle cyc = new();
-        public static void Log(string format, params object[] args)
-        {
-            Logger.Log(LogType.Debug, string.Format(format, args));
-        }
+        public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
         public static void StoreTimeData(int day, int minutes, DayCycles cycle)
         {
             cyc.day = day;

@@ -6,14 +6,11 @@ namespace NotAwesomeSurvival
 {
     public class Item
     {
-        [JsonIgnore] public ItemProp Prop { get { return ItemProp.props[name]; } }
+        [JsonIgnore] public ItemProp Prop => ItemProp.props[name];
         [JsonIgnore]
-        public string ColoredName { get { return "&" + ItemProp.props[name].color + name; } }
+        public string ColoredName => "&" + ItemProp.props[name].color + name;
         [JsonIgnore]
-        public string ColoredIcon
-        {
-            get { return "&" + ItemProp.props[name].color + ItemProp.props[name].character; }
-        }
+        public string ColoredIcon => "&" + ItemProp.props[name].color + ItemProp.props[name].character;
         [JsonIgnore]
         public ColorDesc[] HealthColors
         {

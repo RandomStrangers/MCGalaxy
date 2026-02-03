@@ -3,6 +3,7 @@ using MCGalaxy;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using System;
+using System.IO;
 using System.Net;
 namespace NotAwesomeSurvival
 {
@@ -53,7 +54,6 @@ namespace NotAwesomeSurvival
                     HttpUtil.DisposeErrorResponse(ex);
                     if (!canRetry)
                     {
-                        updateScheduler ??= new("NASUpdater");
                         updateScheduler.Cancel(UpdateTask);
                         return;
                     }
@@ -70,7 +70,7 @@ namespace NotAwesomeSurvival
             {
                 Setup();
             }
-            using WebClient client = new Nas.CustomWebClient();
+            using WebClient client = new();
             Latest = client.DownloadString(CurrentVersionURL);
             Version l = new(Latest), v = new(Nas.NasVersion);
             return l > v;
@@ -79,6 +79,7 @@ namespace NotAwesomeSurvival
         {
             if (!SetupDone)
             {
+                updateScheduler ??= new("NASUpdater");
                 if (Environment.Version.Major == 2)
                 {
                     NetVer = "net20";
@@ -98,7 +99,6 @@ namespace NotAwesomeSurvival
                     GUI = "https://cdn.classicube.net/client/mcg/latest/" + NetVer + "/MCGalaxy.exe";
                     DLL += ".dll";
                     Command.Register(UpdateCommand);
-                    updateScheduler ??= new("NASUpdater");
                     UpdateTask = updateScheduler.QueueRepeat(UpdaterTask, null, TimeSpan.FromSeconds(10));
                     NewerVersionDetected += LogNewerVersionDetected;
                 }
@@ -113,16 +113,12 @@ namespace NotAwesomeSurvival
             }
             if (!NetVer.CaselessEq("unknown"))
             {
-                updateScheduler ??= new("NASUpdater");
                 updateScheduler.Cancel(UpdateTask);
                 Command.Unregister(UpdateCommand);
                 NewerVersionDetected -= LogNewerVersionDetected;
             }
         }
-        public static void LogNewerVersionDetected(object sender, EventArgs e)
-        {
-            Logger.Log(LogType.SystemActivity, "&cNAS update available! Update by using /{0}.", UpdateCommand.name);
-        }
+        public static void LogNewerVersionDetected(object sender, EventArgs e) => Logger.Log(LogType.SystemActivity, "&cNAS update available! Update by using /{0}.", UpdateCommand.name);
         public static void PerformUpdate()
         {
             if (!SetupDone)
@@ -138,14 +134,14 @@ namespace NotAwesomeSurvival
             {
                 try
                 {
-                    DeleteFiles("Changelog.txt", "MCGalaxy_.update", "MCGalaxy.update", "MCGalaxyCLI.update",
+                    DeleteFiles("MCGalaxy_.update", "MCGalaxy.update", "MCGalaxyCLI.update",
                                 "prev_MCGalaxy_.dll", "prev_MCGalaxy.exe", "prev_MCGalaxyCLI.exe");
                 }
                 catch
                 {
                 }
                 Logger.Log(LogType.SystemActivity, "Downloading NAS update files");
-                WebClient client = new Nas.CustomWebClient();
+                WebClient client = new();
                 DownloadFile(client, DLL, "MCGalaxy_.update");
                 if (!Server.RunningOnMono())
                 {
@@ -180,7 +176,7 @@ namespace NotAwesomeSurvival
         public static void DownloadFile(WebClient client, string url, string dst)
         {
             Logger.Log(LogType.SystemActivity, "Downloading {0} to {1}",
-                       url, System.IO.Path.GetFileName(dst));
+                       url, Path.GetFileName(dst));
             client.DownloadFile(url, dst);
         }
         public static void DeleteFiles(params string[] paths)
@@ -193,9 +189,9 @@ namespace NotAwesomeSurvival
     }
     public class CmdNASUpdate : Command
     {
-        public override string name { get { return "NASUpdate"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Owner; } }
+        public override string name => "NASUpdate";
+        public override string type => CommandTypes.Moderation;
+        public override LevelPermission defaultRank => LevelPermission.Owner;
         public override void Use(Player p, string message)
         {
             if (!NASUpdater.SetupDone)
@@ -209,7 +205,7 @@ namespace NotAwesomeSurvival
                 p.Message("NAS {0}", needsUpdating ? "&cneeds updating" : "&ais up to date");
                 if (needsUpdating)
                 {
-                    if (!string.IsNullOrEmpty(NASUpdater.Latest))
+                    if (!NASUpdater.Latest.IsNullOrEmpty())
                     {
                         p.Message("Current NAS version: {0}.", Nas.NasVersion);
                         p.Message("Latest NAS version: {0}.", NASUpdater.Latest);

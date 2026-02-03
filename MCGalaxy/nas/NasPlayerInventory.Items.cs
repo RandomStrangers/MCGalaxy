@@ -9,16 +9,12 @@ namespace NotAwesomeSurvival
     public partial class Inventory
     {
         [JsonIgnore] public ColorDesc[] selectorColors = DynamicColor.defaultColors;
-        [JsonIgnore] public Item HeldItem { get { return items[selectedItemIndex] ?? Item.Fist; } }
+        [JsonIgnore] public Item HeldItem => items[selectedItemIndex] ?? Item.Fist;
         [JsonIgnore] public bool bagOpen = false;
         [JsonIgnore] public int slotToMoveTo = -1;
         [JsonIgnore] public bool deleting = false;
         public Item[] items = new Item[27];
         public int selectedItemIndex = 0;
-        public void SetupItems()
-        {
-            MoveBar(0, ref selectedItemIndex);
-        }
         public bool GetItem(Item item)
         {
             if (items[selectedItemIndex] == null)
@@ -73,17 +69,13 @@ namespace NotAwesomeSurvival
         {
             if (slotToMoveTo == -1)
             {
-                BeginItemMove();
+                slotToMoveTo = selectedItemIndex;
             }
             else
             {
                 FinalizeItemMove();
             }
             UpdateItemDisplay();
-        }
-        public void BeginItemMove()
-        {
-            slotToMoveTo = selectedItemIndex;
         }
         public void FinalizeItemMove()
         {
@@ -187,7 +179,9 @@ namespace NotAwesomeSurvival
                             builder.Append("&`ƒ");
                         }
                         else
+                        {
                             builder.Append("&hƒ");
+                        }
                     }
                 }
                 else if (i == offset)

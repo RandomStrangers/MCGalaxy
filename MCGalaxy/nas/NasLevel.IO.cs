@@ -53,10 +53,7 @@ namespace NotAwesomeSurvival
             OnLevelDeletedEvent.Unregister(OnLevelDeleted);
             OnLevelRenamedEvent.Unregister(OnLevelRenamed);
         }
-        public static string GetFileName(string name)
-        {
-            return Path + name + Extension;
-        }
+        public static string GetFileName(string name) => Path + name + Extension;
         public bool Save(string name = "")
         {
             if (name.IsNullOrEmpty())
@@ -93,10 +90,7 @@ namespace NotAwesomeSurvival
                 return nl;
             }
         }
-        public static void Unload(string name, NasLevel nl)
-        {
-            nl.Save(name);
-        }
+        public static void Unload(string name, NasLevel nl) => nl.Save(name);
         public static int MakeInt(string seed)
         {
             if (seed.Length == 0)

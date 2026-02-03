@@ -10,14 +10,8 @@ namespace NotAwesomeSurvival
 {
     public class BirchTree : Tree
     {
-        public override long EstimateBlocksAffected()
-        {
-            return height + size * size * size; 
-        }
-        public override int DefaultSize(Random rnd) 
-        { 
-            return rnd.Next(5, 8);
-        }
+        public override long EstimateBlocksAffected() => height + size * size * size;
+        public override int DefaultSize(Random rnd) => rnd.Next(5, 8);
         public override void SetData(Random rnd, int value)
         {
             height = value;
@@ -52,14 +46,8 @@ namespace NotAwesomeSurvival
     }
     public class SwampTree : Tree
     {
-        public override long EstimateBlocksAffected()
-        {
-            return height + 145;
-        }
-        public override int DefaultSize(Random rnd)
-        {
-            return rnd.Next(4, 8);
-        }
+        public override long EstimateBlocksAffected() => height + 145;
+        public override int DefaultSize(Random rnd) => rnd.Next(4, 8);
         public override void SetData(Random rnd, int value)
         {
             height = value;
@@ -113,14 +101,8 @@ namespace NotAwesomeSurvival
     {
         public int branchBaseHeight, branchAmount;
         public List<Vec3S32> branch = new();
-        public override long EstimateBlocksAffected()
-        {
-            return height * (long)height * height;
-        }
-        public override int DefaultSize(Random rnd)
-        {
-            return rnd.Next(5, 8);
-        }
+        public override long EstimateBlocksAffected() => height * (long)height * height;
+        public override int DefaultSize(Random rnd) => rnd.Next(5, 8);
         public override void SetData(Random rnd, int value)
         {
             this.rnd = rnd;
@@ -180,13 +162,7 @@ namespace NotAwesomeSurvival
             public int len2, dir, axis;
         }
         public bool WallsMode;
-        public override string Name
-        {
-            get
-            {
-                return "Line";
-            }
-        }
+        public override string Name => "Line";
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             Vec3U16 vec3U = Clamp(marks[0]),

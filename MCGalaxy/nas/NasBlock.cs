@@ -122,10 +122,7 @@ namespace NotAwesomeSurvival
                 existAction = parent.existAction;
             }
         }
-        public static NasBlock Get(ushort clientushort)
-        {
-            return blocks[clientushort] ?? Default;
-        }
+        public static NasBlock Get(ushort clientushort) => blocks[clientushort] ?? Default;
         public string GetName(NasPlayer np, ushort id = ushort.MaxValue)
         {
             if (id == ushort.MaxValue)
@@ -161,10 +158,7 @@ namespace NotAwesomeSurvival
             }
             return name.Split('-')[0];
         }
-        public static Drop DefaultDropHandler(NasPlayer np, ushort id)
-        {
-            return new(id);
-        }
+        public static Drop DefaultDropHandler(NasPlayer np, ushort id) => new(id);
     }
 }
 #endif

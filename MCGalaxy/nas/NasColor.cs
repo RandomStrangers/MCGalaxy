@@ -9,17 +9,25 @@ namespace NotAwesomeSurvival
 {
     public class DynamicColor
     {
-        public static SchedulerTask task;
+        public static SchedulerTask task, GoldTask;
         public static ColorDesc[] defaultColors,
             fullHealthColors,
             mediumHealthColors,
             lowHealthColors,
             direHealthColors;
-        public static int index;
+        public static int index, GoldIndex;
         public const string selectorImageName = "selectorColors.png";
-        public static void Log(string format, params object[] args)
+        static readonly string[] GoldColors = { "ffe649", "e4bf16", "c39800", "a57800", "c39800", "e4bf16", "ffe649" };
+        public static void GoldCallback(SchedulerTask task)
         {
-            Logger.Log(LogType.Debug, string.Format(format, args));
+            GoldIndex = (GoldIndex + 1) % GoldColors.Length;
+            ColorDesc desc = Colors.ParseHex(GoldColors[GoldIndex]);
+            desc.Code = '`';
+            Player[] players = PlayerInfo.Online.Items;
+            foreach (Player p in players)
+            {
+                p.Session.SendSetTextColor(desc);
+            }
         }
         public static bool Setup()
         {
@@ -29,7 +37,7 @@ namespace NotAwesomeSurvival
             }
             if (!File.Exists(Nas.Path + selectorImageName))
             {
-                Log("Could not locate {0} (needed for tool health/selection colors)", selectorImageName);
+                Logger.Log(LogType.Debug, "Could not locate {0} (needed for tool health/selection colors)", selectorImageName);
                 return false;
             }
             byte[] data = File.ReadAllBytes(Nas.Path + "selectorColors.png");
@@ -46,6 +54,7 @@ namespace NotAwesomeSurvival
             SetupDescs(index++, colorImage, ref lowHealthColors);
             SetupDescs(index++, colorImage, ref direHealthColors);
             task = Server.MainScheduler.QueueRepeat(Update, null, TimeSpan.FromMilliseconds(100));
+            GoldTask = Server.MainScheduler.QueueRepeat(GoldCallback, null, TimeSpan.FromMilliseconds(100));
             return true;
         }
         public static void SetupDescs(int yOffset, Bitmap2D colorImage, ref ColorDesc[] colorDescs)
@@ -63,11 +72,14 @@ namespace NotAwesomeSurvival
         }
         public static void TakeDown()
         {
-            if (task == null)
+            if (task != null)
             {
-                return;
+                Server.MainScheduler.Cancel(task);
             }
-            Server.MainScheduler.Cancel(task);
+            if (GoldTask != null)
+            {
+                Server.MainScheduler.Cancel(GoldTask);
+            }
         }
         public static void Update(SchedulerTask task)
         {
