@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,16 +14,12 @@
  */
 using System.Collections.Generic;
 using System.IO;
-
 namespace MCGalaxy.Games
 {
-
     public sealed class Team
     {
-
         public string Color, Name, Owner;
         public List<string> Members = new();
-
         public Team() { }
         public Team(string name, string owner)
         {
@@ -34,34 +27,28 @@ namespace MCGalaxy.Games
             Owner = owner;
             Members.Add(owner);
         }
-
         public void Message(Player source, string message)
         {
             message = "&9- to team - λNICK: &f" + message;
             if (!source.CheckCanSpeak("send teamchat")) return;
-
             Chat.MessageChat(ChatScope.All, source, message, this,
                              (pl, arg) => pl.Game.Team == arg);
         }
-
         public void Action(Player source, string message)
         {
             message = "Team - λNICK &S" + message;
             Chat.MessageFrom(ChatScope.All, source, message, this,
                              (pl, arg) => pl.Game.Team == arg);
         }
-
         public bool Remove(string name)
         {
             return Members.CaselessRemove(name);
         }
-
         public void DeleteIfEmpty()
         {
             if (Members.Count > 0) return;
             Teams.Remove(this);
         }
-
         public void UpdatePrefix()
         {
             foreach (string name in Members)
@@ -70,11 +57,8 @@ namespace MCGalaxy.Games
                 p?.SetPrefix();
             }
         }
-
-
         public static List<Team> Teams = new();
         static readonly object ioLock = new();
-
         public static Team TeamIn(Player p)
         {
             foreach (Team team in Teams)
@@ -84,11 +68,9 @@ namespace MCGalaxy.Games
             }
             return null;
         }
-
         public static Team Find(string name)
         {
             name = Colors.Strip(name);
-
             foreach (Team team in Teams)
             {
                 string teamName = Colors.Strip(team.Name);
@@ -96,14 +78,12 @@ namespace MCGalaxy.Games
             }
             return null;
         }
-
         public static void Add(Team team)
         {
             Team old = Find(team.Name);
             if (old != null) Teams.Remove(old);
             Teams.Add(team);
         }
-
         public static void SaveList()
         {
             lock (ioLock)
@@ -118,12 +98,10 @@ namespace MCGalaxy.Games
                         w.WriteLine("");
                     }
         }
-
         public static void LoadList()
         {
             if (!File.Exists("extra/teams.txt")) return;
             Team tmp = new();
-
             lock (ioLock)
             {
                 Teams.Clear();
@@ -131,7 +109,6 @@ namespace MCGalaxy.Games
                 if (tmp.Name != null) Add(tmp);
             }
         }
-
         static void LineProcessor(string key, string value, ref Team tmp)
         {
             switch (key.ToLower())

@@ -1,13 +1,10 @@
 /*  Copyright 2011 MCForge
-        
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -21,7 +18,6 @@ using MCGalaxy.Commands;
 using MCGalaxy.Commands.Fun;
 using MCGalaxy.Games;
 using MCGalaxy.Generator;
-
 namespace MCGalaxy.Modules.Games.Countdown
 {
     sealed class CmdCountdown : RoundsGameCmd
@@ -33,7 +29,6 @@ namespace MCGalaxy.Modules.Games.Countdown
         {
             get { return new[] { new CommandPerm(LevelPermission.Operator, "can manage countdown") }; }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.CaselessEq("join"))
@@ -45,7 +40,6 @@ namespace MCGalaxy.Modules.Games.Countdown
                 base.Use(p, message, data);
             }
         }
-
         void HandleJoin(Player p, CountdownGame game)
         {
             if (!game.Running)
@@ -61,13 +55,11 @@ namespace MCGalaxy.Modules.Games.Countdown
                 game.PlayerJoinedGame(p);
             }
         }
-
         static string FormatPlayer(Player pl, CountdownGame game)
         {
             string suffix = game.Remaining.Contains(pl) ? " &a[IN]" : " &c[OUT]";
             return pl.ColoredName + suffix;
         }
-
         protected override void HandleSet(Player p, RoundsGame game_, string[] args)
         {
             if (args.Length < 4) { Help(p); return; }
@@ -75,21 +67,16 @@ namespace MCGalaxy.Modules.Games.Countdown
             {
                 p.Message("You must stop Countdown before replacing the map."); return;
             }
-
             ushort x = 0, y = 0, z = 0;
             if (!MapGen.GetDimensions(p, args, 1, ref x, ref y, ref z)) return;
-
             CountdownGame game = (CountdownGame)game_;
             game.GenerateMap(p, x, y, z);
         }
-
         protected override void HandleStart(Player p, RoundsGame game_, string[] args)
         {
             if (game_.Running) { p.Message("{0} is already running", game_.GameName); return; }
-
             CountdownGame game = (CountdownGame)game_;
             CountdownSpeed speed = game.Config.DefaultSpeed;
-
             if (args.Length > 1)
             {
                 if (!CommandParser.GetEnum(p, args[1], "Speed", ref speed)) return;
@@ -98,13 +85,11 @@ namespace MCGalaxy.Modules.Games.Countdown
             {
                 p.Message("No speed specified, playing at '{0}' speed", speed);
             }
-
             game.SetSpeed(speed);
             string mode = args.Length > 2 ? args[2] : "";
             game.FreezeMode = mode == "freeze" || mode == "frozen";
             game.Start(p, "countdown", int.MaxValue);
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/CD set [width] [height] [length]");

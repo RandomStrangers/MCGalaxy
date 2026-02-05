@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Eco;
-
 namespace MCGalaxy.Commands.Eco
 {
     public sealed class CmdStore : Command2
@@ -28,11 +24,9 @@ namespace MCGalaxy.Commands.Eco
         {
             get { return new[] { new CommandAlias("Item") }; }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (!Economy.CheckIsEnabled(p, this)) return;
-
             if (message.Length == 0 || IsListModifier(message))
             {
                 Paginator.Output(p, Economy.GetEnabledItems(),
@@ -43,7 +37,6 @@ namespace MCGalaxy.Commands.Eco
             {
                 Item item = Economy.GetItem(message);
                 if (item == null) { Help(p); return; }
-
                 if (!item.Enabled)
                 {
                     p.Message("&WThe " + item.ShopName + " item is not currently buyable."); return;
@@ -51,12 +44,10 @@ namespace MCGalaxy.Commands.Eco
                 item.OnStoreCommand(p);
             }
         }
-
         static void PrintItemOverview(Player p, Item item)
         {
             item.OnStoreOverview(p);
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Store [item]");

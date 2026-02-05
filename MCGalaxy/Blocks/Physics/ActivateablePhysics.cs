@@ -1,28 +1,21 @@
-﻿/*
+/*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-
-
-
 namespace MCGalaxy.Blocks.Physics
 {
     public static class ActivateablePhysics
     {
-
         /// <summary> Activates fireworks, rockets, and TNT in 1 block radius around (x, y, z) </summary>
         public static void DoNeighbours(Level lvl, ushort x, ushort y, ushort z)
         {
@@ -40,7 +33,6 @@ namespace MCGalaxy.Blocks.Physics
                                 lvl.GetBlock((ushort)(x + dx * 3), (ushort)(y + dy * 3), (ushort)(z + dz * 3), out bHead) == Block.Air &&
                                 !lvl.listUpdateExists.Get(x + dx * 3, y + dy * 3, z + dz * 3) &&
                                 !lvl.listUpdateExists.Get(x + dx * 2, y + dy * 2, z + dz * 2);
-
                             if (isFree)
                             {
                                 lvl.AddUpdate(bHead, Block.RocketHead, default(PhysicsArgs));
@@ -54,7 +46,6 @@ namespace MCGalaxy.Blocks.Physics
                                 lvl.GetBlock((ushort)(x + dx), (ushort)(y + dy + 2), (ushort)(z + dz), out bHead) == Block.Air &&
                                 !lvl.listUpdateExists.Get(x + dx, y + dy + 1, z + dz) &&
                                 !lvl.listUpdateExists.Get(x + dx, y + dy + 2, z + dz);
-
                             if (isFree)
                             {
                                 lvl.AddUpdate(bHead, Block.Fireworks, default(PhysicsArgs));
@@ -69,13 +60,11 @@ namespace MCGalaxy.Blocks.Physics
                         }
                     }
         }
-
         /// <summary> Activates doors, tdoors and toggles odoors at (x, y, z) </summary>
         public static void DoDoors(Level lvl, ushort x, ushort y, ushort z, bool instant)
         {
             ushort block = lvl.GetBlock(x, y, z, out int index);
             if (index == -1) return;
-
             if (lvl.Props[block].IsDoor)
             {
                 PhysicsArgs args = GetDoorArgs(block, out ushort physForm);
@@ -94,15 +83,12 @@ namespace MCGalaxy.Blocks.Physics
                 lvl.AddUpdate(index, oDoor, true);
             }
         }
-
-
         internal static PhysicsArgs GetDoorArgs(ushort block, out ushort physForm)
         {
             PhysicsArgs args = default;
             args.Type1 = PhysicsArgs.Custom; args.Value1 = 16 - 1;
             args.Type2 = PhysicsArgs.Revert; args.Value2 = (byte)block;
             args.ExtBlock = (byte)(block >> Block.ExtendedShift);
-
             physForm = Block.Door_Log_air; // air
             if (block == Block.Door_Air || block == Block.Door_AirActivatable)
             {
@@ -118,7 +104,6 @@ namespace MCGalaxy.Blocks.Physics
             }
             return args;
         }
-
         internal static PhysicsArgs GetTDoorArgs(ushort block)
         {
             PhysicsArgs args = default;
@@ -127,8 +112,6 @@ namespace MCGalaxy.Blocks.Physics
             args.ExtBlock = (byte)(block >> Block.ExtendedShift);
             return args;
         }
-
-
         internal static void CheckNeighbours(Level lvl, ushort x, ushort y, ushort z)
         {
             CheckAt(lvl, (ushort)(x + 1), y, z);
@@ -138,12 +121,10 @@ namespace MCGalaxy.Blocks.Physics
             CheckAt(lvl, x, (ushort)(y + 1), z);
             // NOTE: omission of y-1 to match original behaviour
         }
-
         // TODO: Stop checking block type and just always call lvl.AddCheck
         internal static void CheckAt(Level lvl, ushort x, ushort y, ushort z)
         {
             ushort block = lvl.GetBlock(x, y, z, out int index);
-
             switch (block)
             {
                 //case Block.water:

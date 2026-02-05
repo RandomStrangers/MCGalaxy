@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
 Dual-licensed under the Educational Community License, Version 2.0 and
 the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -16,7 +16,6 @@ using MCGalaxy.Events.ServerEvents;
 using System;
 using System.Net;
 using System.Net.Sockets;
-
 namespace MCGalaxy.Network
 {
     /// <summary> Abstracts listening on network socket </summary>
@@ -28,25 +27,20 @@ namespace MCGalaxy.Network
         public int Port;
         /// <summary> Whether connections are currently being accepted </summary>
         public bool Listening;
-
         /// <summary> Begins listening for connections on the given IP and port </summary>
         /// <remarks> Client connections are asynchronously accepted </remarks>
         public abstract void Listen(IPAddress ip, int port);
-
         /// <summary> Closes this network listener </summary>
         public abstract void Close();
     }
-
     /// <summary> Abstracts listening on a TCP socket </summary>
     public sealed class TcpListen : INetListen
     {
         Socket socket;
-
         void DisableIPV6OnlyListener()
         {
             if (socket.AddressFamily != AddressFamily.InterNetworkV6) return;
             // TODO: Make windows only?
-
             // NOTE: SocketOptionName.IPv6Only is not defined in Mono, but apparently
             //  macOS and Linux default to dual stack by default already
             const SocketOptionName ipv6Only = (SocketOptionName)27;
@@ -59,7 +53,6 @@ namespace MCGalaxy.Network
                 Logger.LogError("Failed to disable IPv6 only listener setting", ex);
             }
         }
-
         void EnableAddressReuse()
         {
             // This fixes when on certain environments, if the server is restarted while there are still some
@@ -71,7 +64,6 @@ namespace MCGalaxy.Network
             //  (note that this code is required for WINE, therefore just check if running in mono)
             //  (see WS_SO_REUSEADDR case handling in WS_setsockopt in WINE/dlls/ws2_32/socket.c)
             if (!Server.RunningOnMono()) return;
-
             try
             {
                 socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
@@ -81,19 +73,16 @@ namespace MCGalaxy.Network
                 // not really a critical issue if this fails to work
             }
         }
-
         public override void Listen(IPAddress ip, int port)
         {
             if (IP == ip && Port == port) return;
             Close();
             IP = ip; Port = port;
-
             try
             {
                 socket = new Socket(ip.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                 DisableIPV6OnlyListener();
                 EnableAddressReuse();
-
                 socket.Bind(new IPEndPoint(ip, port));
                 socket.Listen((int)SocketOptionName.MaxConnections);
                 AcceptNextAsync();
@@ -102,7 +91,6 @@ namespace MCGalaxy.Network
             {
                 Logger.LogError(ex);
                 Logger.Log(LogType.Warning, "Failed to start listening on port {0} ({1})", port, ex.Message);
-
                 string msg = string.Format("Failed to start listening. Is another server or instance of {0} already running on port {1}?",
                                            Server.SoftwareName, port);
                 Server.UpdateUrl(msg);
@@ -111,7 +99,6 @@ namespace MCGalaxy.Network
             Listening = true;
             Logger.Log(LogType.SystemActivity, "Started listening on port {0}... ", port);
         }
-
         void AcceptNextAsync()
         {
             // retry, because if we don't call BeginAccept, no one can connect anymore
@@ -127,19 +114,16 @@ namespace MCGalaxy.Network
                 }
             }
         }
-
         static readonly AsyncCallback acceptCallback = new(AcceptCallback);
         static void AcceptCallback(IAsyncResult result)
         {
             if (Server.shuttingDown) return;
             TcpListen listen = (TcpListen)result.AsyncState;
             INetSocket s = null;
-
             try
             {
                 Socket raw = listen.socket.EndAccept(result);
                 bool cancel = false, announce = true;
-
                 OnConnectionReceivedEvent.Call(raw, ref cancel, ref announce);
                 if (cancel)
                 {
@@ -154,7 +138,6 @@ namespace MCGalaxy.Network
 #else
                     s = new TcpSocket(raw);
 #endif
-
                     if (announce) Logger.Log(LogType.UserActivity, s.IP + " connected to the server.");
                     s.Init();
                 }
@@ -166,7 +149,6 @@ namespace MCGalaxy.Network
             }
             listen.AcceptNextAsync();
         }
-
         public override void Close()
         {
             try

@@ -27,10 +27,7 @@ namespace MCGalaxy.Gui
             zsSettings.LoadFromServer();
             propsZG.SelectedObject = zsSettings;
         }
-        public void RunOnUI_Async(UIAction act) 
-        { 
-            BeginInvoke(act); 
-        }
+        public void RunOnUI_Async(UIAction act) => BeginInvoke(act);
         void PropertyWindow_Load(object sender, EventArgs e)
         {
             GuiUtils.SetIcon(this);
@@ -94,15 +91,12 @@ namespace MCGalaxy.Gui
             }
             SaveDiscordProps();
         }
-        void BtnSave_Click(object sender, EventArgs e) 
-        { 
-            SaveChanges(); 
-            Dispose(); 
+        void BtnSave_Click(object sender, EventArgs e)
+        {
+            SaveChanges();
+            Dispose();
         }
-        void BtnApply_Click(object sender, EventArgs e) 
-        { 
-            SaveChanges(); 
-        }
+        void BtnApply_Click(object sender, EventArgs e) => SaveChanges();
         void SaveChanges()
         {
             SaveProperties();
@@ -112,10 +106,7 @@ namespace MCGalaxy.Gui
             SaveGameProps();
             SrvProperties.ApplyChanges();
         }
-        void BtnDiscard_Click(object sender, EventArgs e) 
-        { 
-            Dispose(); 
-        }
+        void BtnDiscard_Click(object sender, EventArgs e) => Dispose();
         void GetHelp(string toHelp)
         {
             ConsoleHelpPlayer p = new();

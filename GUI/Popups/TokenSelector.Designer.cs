@@ -1,6 +1,9 @@
-namespace MCGalaxy.Gui.Popups {
-    partial class TokenSelector {
-        private void InitializeComponent() {
+namespace MCGalaxy.Gui.Popups
+{
+    partial class TokenSelector
+    {
+        private void InitializeComponent()
+        {
             this.btnCancel = new System.Windows.Forms.Button();
             this.components = new System.ComponentModel.Container();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
@@ -28,8 +31,12 @@ namespace MCGalaxy.Gui.Popups {
             this.Text = "ColorPicker";
             this.ResumeLayout(false);
         }
-        protected override void Dispose(bool disposing) {
-            if (disposing && components != null) { components.Dispose(); }
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && components != null) 
+            { 
+                components.Dispose(); 
+            }
             base.Dispose(disposing);
         }
         private System.ComponentModel.IContainer components;

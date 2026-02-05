@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,7 +15,6 @@
 using MCGalaxy.Maths;
 using System;
 using System.IO;
-
 namespace MCGalaxy.Drawing
 {
     /// <summary> Represents a copied region/area of blocks plus some additional data </summary>
@@ -37,26 +33,21 @@ namespace MCGalaxy.Drawing
         /// <summary> Origin of this copy/where this copy came from </summary>
         /// <example> "level example1", "file example2" </example>
         public string CopySource;
-
         internal int OppositeOriginX { get { return OriginX == X ? X + Width - 1 : X; } }
         internal int OppositeOriginY { get { return OriginY == Y ? Y + Height - 1 : Y; } }
         internal int OppositeOriginZ { get { return OriginZ == Z ? Z + Length - 1 : Z; } }
-
         const int chunkSize = 0x1000, chunkShift = 12, chunkMask = 0xFFF;
         public int Volume { get { return Width * Height * Length; } }
         public int ExtChunks { get { return (Volume + (chunkSize - 1)) / chunkSize; } }
-
         public string Summary
         {
             get { return Volume + " blocks from " + CopySource + ", " + (DateTime.UtcNow - CopyTime).Shorten(true) + " ago"; }
         }
-
         public CopyState(int x, int y, int z, int width, int height, int length)
         {
             Init(x, y, z, width, height, length);
             CopyTime = DateTime.UtcNow;
         }
-
         void Init(int x, int y, int z, int width, int height, int length)
         {
             X = x; Y = y; Z = z;
@@ -65,14 +56,11 @@ namespace MCGalaxy.Drawing
             extBlocks = new byte[ExtChunks][];
             UsedBlocks = Volume;
         }
-
         public void Clear()
         {
             blocks = null;
             extBlocks = null;
         }
-
-
         public void GetCoords(int index, out ushort x, out ushort y, out ushort z)
         {
             y = (ushort)(index / Width / Length);
@@ -81,12 +69,10 @@ namespace MCGalaxy.Drawing
             index -= z * Width;
             x = (ushort)index;
         }
-
         public int GetIndex(int x, int y, int z)
         {
             return (y * Length + z) * Width + x;
         }
-
         public ushort Get(int index)
         {
             byte raw = blocks[index];
@@ -101,7 +87,6 @@ namespace MCGalaxy.Drawing
             return chunk == null ? Block.Air : (ushort)(Block.Extended | chunk[index & chunkMask]);
 #endif
         }
-
         public void Set(ushort block, int index)
         {
             if (block >= Block.Extended)
@@ -111,7 +96,6 @@ namespace MCGalaxy.Drawing
 #else
                 blocks[index] = Block.custom_block;
 #endif
-
                 byte[] chunk = extBlocks[index >> chunkShift];
                 if (chunk == null)
                 {
@@ -125,18 +109,14 @@ namespace MCGalaxy.Drawing
                 blocks[index] = (byte)block;
             }
         }
-
         public void Set(ushort block, int x, int y, int z)
         {
             Set(block, (y * Length + z) * Width + x);
         }
-
-
         const int identifier1 = 0x434F5059; // version 1, 'COPY' (copy)
         const int identifier2 = 0x434F5043; // 'COPC' (copy compressed)
         const int identifier3 = 0x434F504F; // 'COPO' (copy optimised)
         const int identifier4 = 0x434F5053; // 'COPS' (copy sparse)
-
         /// <summary> Saves this copy state to the given stream. </summary>
         public void SaveTo(Stream stream)
         {
@@ -144,30 +124,25 @@ namespace MCGalaxy.Drawing
             w.Write(identifier4);
             w.Write(X); w.Write(Y); w.Write(Z);
             w.Write(Width); w.Write(Height); w.Write(Length);
-
             byte[] data = blocks.GZip();
             w.Write(data.Length);
             w.Write(data);
-
             for (int i = 0; i < extBlocks.Length; i++)
             {
                 if (extBlocks[i] == null)
                 {
                     w.Write((byte)0); continue;
                 }
-
                 w.Write((byte)1);
                 data = extBlocks[i].GZip();
                 w.Write((ushort)data.Length);
                 w.Write(data);
             }
-
             w.Write(OriginX); w.Write(OriginY); w.Write(OriginZ);
             w.Write((byte)0x0f); // 0ffset
             w.Write(Offset.X); w.Write(Offset.Y); w.Write(Offset.Z);
             w.Write((byte)(PasteAir ? 1 : 0));
         }
-
         /// <summary> Loads this copy state from the given stream. </summary>
         public void LoadFrom(Stream stream)
         {
@@ -175,28 +150,23 @@ namespace MCGalaxy.Drawing
             int id = r.ReadInt32();
             if (!(id == identifier1 || id == identifier2 || id == identifier3 || id == identifier4))
                 throw new InvalidDataException("invalid identifier");
-
             X = r.ReadInt32(); Y = r.ReadInt32(); Z = r.ReadInt32();
             Width = r.ReadInt32(); Height = r.ReadInt32(); Length = r.ReadInt32();
             LoadBlocks(r, id);
             UsedBlocks = Volume;
-
             // origin is not present in version 1
             if (id == identifier1) return;
             OriginX = r.ReadInt32(); OriginY = r.ReadInt32(); OriginZ = r.ReadInt32();
-
             // was added in later (ReadByte also catches end of stream)
             if (stream.ReadByte() != 0x0f) return;
             Offset.X = r.ReadInt32(); Offset.Y = r.ReadInt32(); Offset.Z = r.ReadInt32();
             PasteAir = stream.ReadByte() == 1;
         }
-
         void LoadBlocks(BinaryReader r, int id)
         {
             byte[] allExtBlocks;
             int dataLen;
             extBlocks = new byte[(Volume + (chunkSize - 1)) / chunkSize][];
-
             if (id == identifier1)
             {
                 blocks = r.ReadBytes(Volume);
@@ -207,7 +177,6 @@ namespace MCGalaxy.Drawing
             {
                 dataLen = r.ReadInt32();
                 blocks = r.ReadBytes(dataLen).Decompress(Volume);
-
                 if (id == identifier2)
                 {
                     dataLen = r.ReadInt32();
@@ -231,7 +200,6 @@ namespace MCGalaxy.Drawing
                 }
             }
         }
-
         void UnpackExtBlocks(byte[] allExtBlocks)
         {
             for (int i = 0; i < blocks.Length; i++)
@@ -240,7 +208,6 @@ namespace MCGalaxy.Drawing
                 Set((ushort)(Block.Extended | allExtBlocks[i]), i);
             }
         }
-
         void UnpackPackedExtBlocks(byte[] allExtBlocks)
         {
             for (int i = 0; i < blocks.Length; i++)
@@ -249,7 +216,6 @@ namespace MCGalaxy.Drawing
                 if (isExt) { Set((ushort)(Block.Extended | blocks[i]), i); }
             }
         }
-
         /// <summary> Loads this copy state from the given stream, using the very old format. </summary>
         public void LoadFromOld(Stream _, Stream underlying)
         {
@@ -257,37 +223,31 @@ namespace MCGalaxy.Drawing
             underlying.Read(raw, 0, (int)underlying.Length);
             raw = raw.Decompress(16);
             if (raw.Length == 0) return;
-
             CalculateBounds(raw);
             for (int i = 0; i < raw.Length; i += 7)
             {
                 ushort x = MemUtils.ReadU16_LE(raw, i + 0);
                 ushort y = MemUtils.ReadU16_LE(raw, i + 2);
                 ushort z = MemUtils.ReadU16_LE(raw, i + 4);
-
                 byte rawBlock = raw[i + 6];
                 Set(rawBlock, x - X, y - Y, z - Z);
             }
             UsedBlocks = Volume;
             OriginX = X; OriginY = Y; OriginZ = Z;
         }
-
         void CalculateBounds(byte[] raw)
         {
             int minX = int.MaxValue, minY = int.MaxValue, minZ = int.MaxValue;
             int maxX = int.MinValue, maxY = int.MinValue, maxZ = int.MinValue;
-
             for (int i = 0; i < raw.Length; i += 7)
             {
                 ushort x = MemUtils.ReadU16_LE(raw, i + 0);
                 ushort y = MemUtils.ReadU16_LE(raw, i + 2);
                 ushort z = MemUtils.ReadU16_LE(raw, i + 4);
-
                 minX = Math.Min(x, minX); maxX = Math.Max(x, maxX);
                 minY = Math.Min(y, minY); maxY = Math.Max(y, maxY);
                 minZ = Math.Min(z, minZ); maxZ = Math.Max(z, maxZ);
             }
-
             Init(minX, minY, minZ,
                  maxX - minX + 1,
                  maxY - minY + 1,

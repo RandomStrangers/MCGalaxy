@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2011 MCForge
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -20,8 +17,6 @@ using MCGalaxy.Maths;
 using MCGalaxy.Tasks;
 using System;
 using System.Collections.Generic;
-
-
 namespace MCGalaxy.Games
 {
     /// <summary> Represents a missile that adjusts the direction it is
@@ -30,9 +25,7 @@ namespace MCGalaxy.Games
     {
         public override string Name { get { return "Missile"; } }
         public WeaponType type;
-
         protected override void OnDisabled(Player p) { }
-
         protected override void OnActivated(Vec3F32 dir, ushort block)
         {
             MissileData args = new()
@@ -41,38 +34,32 @@ namespace MCGalaxy.Games
                 type = type,
                 pos = (Vec3U16)p.Pos.BlockCoords
             };
-
             SchedulerTask task = new(MissileCallback, args,
                                                    TimeSpan.FromMilliseconds(100), true);
             p.CriticalTasks.Add(task);
             Disable();
         }
-
         protected class MissileData : AmmunitionData
         {
             public WeaponType type;
             public Vec3U16 pos;
             public List<Vec3S32> buffer = new();
         }
-
         /// <summary> Called when a missile has collided with a block. </summary>
         /// <returns> true if this block stops the missile, false if it should continue moving. </returns>
         protected virtual bool OnHitBlock(MissileData args, Vec3U16 pos, ushort block)
         {
             return true;
         }
-
         /// <summary> Called when a missile has collided with a player. </summary>
         protected virtual void OnHitPlayer(MissileData args, Player pl)
         {
             pl.HandleDeath(Block.Cobblestone, "@p &Swas hit by a missile from " + p.ColoredName);
         }
-
         void MissileCallback(SchedulerTask task)
         {
             MissileData args = (MissileData)task.State;
             if (args.moving) { PerformMove(args); return; }
-
             if (args.visible.Count > 0)
             {
                 Vec3U16 pos = args.visible[0];
@@ -81,7 +68,6 @@ namespace MCGalaxy.Games
             }
             task.Repeating = args.visible.Count > 0;
         }
-
         void PerformMove(MissileData args)
         {
             while (true)
@@ -89,50 +75,41 @@ namespace MCGalaxy.Games
                 args.iterations++;
                 Vec3U16 target = MissileTarget(args);
                 FindNext(target, ref args.pos, args.buffer);
-
                 if (args.iterations <= 3) continue;
                 args.moving = MoveMissile(args, args.pos, target);
                 return;
             }
         }
-
         Vec3U16 MissileTarget(MissileData args)
         {
             args.start = (Vec3U16)p.Pos.BlockCoords;
             args.dir = DirUtils.GetDirVector(p.Rot.RotY, p.Rot.HeadX);
             int i;
-
             for (i = 1; ; i++)
             {
                 Vec3U16 target = args.PosAt(i);
                 ushort block = p.level.GetBlock(target.X, target.Y, target.Z);
-
                 if (block == Block.Invalid) break;
                 if (block != Block.Air && !args.all.Contains(target)) break;
-
                 Player hit = PlayerAt(p, target, true);
                 if (hit != null) return (Vec3U16)hit.Pos.BlockCoords;
             }
             return args.PosAt(i - 1);
         }
-
         bool MoveMissile(MissileData args, Vec3U16 pos, Vec3U16 target)
         {
             ushort block = p.level.GetBlock(pos.X, pos.Y, pos.Z);
             if (block != Block.Air && !args.all.Contains(pos) && OnHitBlock(args, pos, block))
                 return false;
-
             p.level.Blockchange(pos.X, pos.Y, pos.Z, args.block);
             args.visible.Add(pos);
             args.all.Add(pos);
             if (HitsPlayer(args, pos)) return false;
-
             if (pos == target && p.level.physics >= 3 && args.type >= WeaponType.Explode)
             {
                 p.level.MakeExplosion(target.X, target.Y, target.Z, 2);
                 return false;
             }
-
             if (args.visible.Count > 12)
             {
                 pos = args.visible[0];
@@ -141,16 +118,13 @@ namespace MCGalaxy.Games
             }
             return true;
         }
-
         bool HitsPlayer(MissileData args, Vec3U16 pos)
         {
             Player pl = PlayerAt(p, pos, true);
             if (pl == null) return false;
-
             OnHitPlayer(args, pl);
             return true;
         }
-
         void FindNext(Vec3U16 lookedAt, ref Vec3U16 pos, List<Vec3S32> buffer)
         {
             LineDrawOp.DrawLine(pos.X, pos.Y, pos.Z, 2, lookedAt.X, lookedAt.Y, lookedAt.Z, buffer);
@@ -159,26 +133,21 @@ namespace MCGalaxy.Games
             buffer.Clear();
         }
     }
-
     public class PenetrativeMissile : Missile
     {
         public override string Name { get { return "Penetrative missile"; } }
-
         protected override bool OnHitBlock(MissileData args, Vec3U16 pos, ushort block)
         {
             if (p.level.physics < 2) return true;
-
             if (!p.level.Props[block].LavaKills) return true;
             // Penetrative missile goes through blocks lava can go through
             p.level.Blockchange(pos.X, pos.Y, pos.Z, Block.Air);
             return false;
         }
     }
-
     public class ExplosiveMissile : Missile
     {
         public override string Name { get { return "Explosive missile"; } }
-
         protected override void OnHitPlayer(MissileData args, Player pl)
         {
             if (pl.level.physics >= 3)
@@ -190,23 +159,19 @@ namespace MCGalaxy.Games
                 base.OnHitPlayer(args, pl);
             }
         }
-
         protected override bool OnHitBlock(MissileData args, Vec3U16 pos, ushort block)
         {
             if (p.level.physics >= 3) p.level.MakeExplosion(pos.X, pos.Y, pos.Z, 1);
             return true;
         }
     }
-
     public class TeleportMissile : Missile
     {
         public override string Name { get { return "Teleporter missile"; } }
-
         protected override void OnHitPlayer(MissileData args, Player pl)
         {
             args.DoTeleport(p);
         }
-
         protected override bool OnHitBlock(MissileData args, Vec3U16 pos, ushort block)
         {
             args.DoTeleport(p);

@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
 Dual-licensed under the Educational Community License, Version 2.0 and
 the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -15,7 +15,6 @@ permissions and limitations under the Licenses.
 using MCGalaxy.Events.EntityEvents;
 using MCGalaxy.Maths;
 using System;
-
 namespace MCGalaxy
 {
     /// <summary> Contains methods related to the management of entities (such as players). </summary>
@@ -23,32 +22,26 @@ namespace MCGalaxy
     {
         public const byte SelfID = 0xFF;
         public const ushort CharacterHeight = 51;
-
         #region Spawning / Despawning
-
         /// <summary> Respawns this player to all players (including self) that can see the player in the current world. </summary>
         public static void GlobalRespawn(Player p, bool self = true)
         {
             GlobalDespawn(p, self);
             GlobalSpawn(p, self);
         }
-
         /// <summary> Spawns this player to all other players that can see the player in the current world. </summary>
         public static void GlobalSpawn(Player p, bool self, string possession = "")
         {
             GlobalSpawn(p, p.Pos, p.Rot, self, possession);
         }
-
         /// <summary> Spawns this player to all other players that can see the player in the current world. </summary>
         public static void GlobalSpawn(Player p, Position pos, Orientation rot, bool self, string possession = "")
         {
             Player[] players = PlayerInfo.Online.Items;
             TabList.Update(p, self);
-
             foreach (Player other in players)
             {
                 if ((other.Loading && p != other) || p.level != other.level) continue;
-
                 if (p != other && other.CanSeeEntity(p))
                 {
                     Spawn(other, p, pos, rot, possession);
@@ -61,21 +54,17 @@ namespace MCGalaxy
                 }
             }
         }
-
         /// <summary> Despawns this player to all other players that can
         /// (or cannot if 'toVisible' is false) see the player in the current world. </summary>
         public static void GlobalDespawn(Player p, bool self, bool toVisible = true)
         {
             Player[] players = PlayerInfo.Online.Items;
             TabList.RemoveAll(p, self, toVisible);
-
             foreach (Player other in players)
             {
                 if (p.level != other.level) continue;
-
                 bool despawn = other.CanSeeEntity(p);
                 if (!toVisible) despawn = !despawn;
-
                 if (p != other && despawn)
                 {
                     Despawn(other, p);
@@ -86,8 +75,6 @@ namespace MCGalaxy
                 }
             }
         }
-
-
         /// <summary>
         /// Spawns p to dst and calls OnEntitySpawnedEvent
         /// </summary>
@@ -98,17 +85,13 @@ namespace MCGalaxy
         public static void Spawn(Player dst, Player p, Position pos,
                                  Orientation rot, string possession = "")
         {
-
             string name = p.color + p.truename + possession;
             string skin = p.SkinName, model = p.Model;
             OnEntitySpawnedEvent.Call(p, ref name, ref skin, ref model, dst);
-
             SpawnRaw(dst, p, pos, rot, skin, name, model);
         }
-
         /// <summary> Spawns this player to all other players, and spawns all others players to this player. </summary>
         internal static void SpawnEntities(Player p, bool bots = true) { SpawnEntities(p, p.Pos, p.Rot, bots); }
-
         /// <summary> Spawns this player to all other players, and spawns all others players to this player. </summary>
         internal static void SpawnEntities(Player p, Position pos, Orientation rot, bool bots = true)
         {
@@ -119,12 +102,10 @@ namespace MCGalaxy
                 Spawn(p, other);
             }
             GlobalSpawn(p, pos, rot, true);
-
             if (!bots) return;
             PlayerBot[] botsList = p.level.Bots.Items;
             foreach (PlayerBot b in botsList) { Spawn(p, b); }
         }
-
         /// <summary> Despawns this player to all other players, and despawns all others players to this player. </summary>
         internal static void DespawnEntities(Player p, bool bots = true)
         {
@@ -134,33 +115,27 @@ namespace MCGalaxy
                 if (p.level == other.level && p != other) Despawn(p, other);
             }
             GlobalDespawn(p, true);
-
             if (!bots) return;
             PlayerBot[] botsList = p.level.Bots.Items;
             foreach (PlayerBot b in botsList) { Despawn(p, b); }
         }
-
         public static void Spawn(Player dst, PlayerBot b)
         {
             string name = Chat.Format(b.color + b.DisplayName, dst, true, false);
             if (b.DisplayName.CaselessEq("empty")) name = "";
             string skin = Chat.Format(b.SkinName, dst, true, false);
             string model = Chat.Format(b.Model, dst, true, false);
-
             OnEntitySpawnedEvent.Call(b, ref name, ref skin, ref model, dst);
             SpawnRaw(dst, b, b.Pos, b.Rot, skin, name, model);
         }
-
         /// <summary>
         /// Attempts to spawn and add an entity to p's tab list.
         /// </summary>
         static void SpawnRaw(Player p, Entity e, Position pos, Orientation rot,
                              string skin, string name, string model)
         {
-
             p.EntityList.Add(e, pos, rot, skin, name, model, true);
         }
-
         /// <summary>
         /// Despawns other to dst and calls OnEntityDespawnedEvent
         /// </summary>
@@ -169,15 +144,12 @@ namespace MCGalaxy
             OnEntityDespawnedEvent.Call(other, dst);
             dst.EntityList.Remove(other, true);
         }
-
         public static void Despawn(Player dst, PlayerBot b)
         {
             OnEntityDespawnedEvent.Call(b, dst);
             dst.EntityList.Remove(b, true);
         }
-
         #endregion
-
         public static void DisplayPosition(Player p, Entity src, string displayName)
         {
             Vec3S32 feet = src.Pos.FeetBlockCoords;
@@ -187,12 +159,10 @@ namespace MCGalaxy
                       feet.X, feet.Y, feet.Z);
             p.Message(" Precise coords: &b{0} {1} {2}",
                       x, y, z);
-
             p.Message("Yaw pitch degrees: &b{0} {1}",
                       Orientation.PackedToDegrees(src.Rot.RotY),
                       Orientation.PackedToDegrees(src.Rot.HeadX));
         }
-
         /// <summary>
         /// Broadcasts the current model and scales for e to everyone who can see it.
         /// </summary>
@@ -200,19 +170,15 @@ namespace MCGalaxy
         {
             Player[] players = PlayerInfo.Online.Items;
             Level lvl = e.Level;
-
             foreach (Player pl in players)
             {
                 if (pl.level != lvl || !pl.hasChangeModel) continue;
                 if (!pl.CanSeeEntity(e)) continue;
-
                 string model = Chat.Format(m, pl, true, false);
-
                 pl.EntityList.SendModel(e, model);
                 pl.EntityList.SendScales(e);
             }
         }
-
         /// <summary>
         /// Sets the rot of the given entity on the given axis to the given degrees, then broadcasts it to everyone who can see it.
         /// </summary>
@@ -222,19 +188,14 @@ namespace MCGalaxy
             {
                 throw new ArgumentException("You may only pass EntityProp.RotX, EntityProp.RotY, or EntityProp.RotZ to UpdateEntityRot");
             }
-
             Orientation rot = e.Rot;
             byte packedDeg = Orientation.DegreesToPacked(degrees);
-
             if (prop == EntityProp.RotX) rot.RotX = packedDeg;
             if (prop == EntityProp.RotY) rot.RotY = packedDeg;
             if (prop == EntityProp.RotZ) rot.RotZ = packedDeg;
-
             e.Rot = rot;
             if (prop == EntityProp.RotY) e.SetYawPitch(rot.RotY, rot.HeadX);
-
             degrees = Orientation.PackedToDegrees(packedDeg);
-
             BroadcastEntityProp(e, prop, degrees);
         }
         /// <summary>
@@ -244,7 +205,6 @@ namespace MCGalaxy
         {
             Player[] players = PlayerInfo.Online.Items;
             Level lvl = e.Level;
-
             foreach (Player pl in players)
             {
                 if (pl.level != lvl || !pl.Supports(CpeExt.EntityProperty)) continue;
@@ -252,17 +212,11 @@ namespace MCGalaxy
                 pl.EntityList.SendProp(e, prop, value);
             }
         }
-
-
         #region Position updates
-
-
         public static void GlobalUpdate()
         {
             Player[] players = PlayerInfo.Online.Items;
-
             PlayerBot.GlobalUpdatePosition(); //Bots update their positions internally first
-
             // We need to cache the player's position before iterating.
             // Avoids the very rare issue of player's position changing mid-way through iteration,
             // which can cause this player to show minorly offset to other players.
@@ -279,7 +233,6 @@ namespace MCGalaxy
             {
                 p._lastPos = p._positionUpdatePos; p._lastRot = p.Rot;
             }
-
             PlayerBot.GlobalPostBroadcastPosition(); //Need to set bot's _lastPos and _lastRot
         }
         #endregion

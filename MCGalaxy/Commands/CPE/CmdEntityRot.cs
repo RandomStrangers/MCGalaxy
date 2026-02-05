@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Bots;
-
 namespace MCGalaxy.Commands.CPE
 {
     public class CmdEntityRot : EntityPropertyCmd
@@ -33,7 +29,6 @@ namespace MCGalaxy.Commands.CPE
                     new CommandPerm(LevelPermission.Operator, "can change the rotation of bots") };
             }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.IndexOf(' ') == -1)
@@ -43,20 +38,17 @@ namespace MCGalaxy.Commands.CPE
             }
             UseBotOrOnline(p, data, message, "rotation");
         }
-
         protected override void SetBotData(Player p, PlayerBot bot, string args)
         {
             if (!ParseArgs(p, args, bot)) return;
             BotsFile.Save(p.level);
         }
-
         protected override void SetOnlineData(Player p, Player who, string args)
         {
             if (!ParseArgs(p, args, who)) return;
             Server.rotations.Update(who.name, who.Rot.RotX + " " + who.Rot.RotZ);
             Server.rotations.Save();
         }
-
         static bool ParseArgs(Player p, string args, Entity entity)
         {
             if (args.Length == 0)
@@ -65,7 +57,6 @@ namespace MCGalaxy.Commands.CPE
                 Entities.UpdateEntityRot(entity, EntityProp.RotZ, 0);
                 return true;
             }
-
             string[] bits = args.SplitSpaces();
             if (bits.Length != 2)
             {
@@ -73,7 +64,6 @@ namespace MCGalaxy.Commands.CPE
             }
             int angle = 0;
             if (!CommandParser.GetInt(p, bits[1], "Angle", ref angle, -360, 360)) return false;
-
             if (bits[0].CaselessEq("x"))
             {
                 Entities.UpdateEntityRot(entity, EntityProp.RotX, angle);
@@ -88,7 +78,6 @@ namespace MCGalaxy.Commands.CPE
             }
             return true;
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/EntityRot [name] x/z [angle].");

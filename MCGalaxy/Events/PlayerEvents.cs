@@ -1,14 +1,11 @@
 /*
     Copyright 2011 MCForge
-        
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,8 +14,6 @@
  */
 using System;
 using System.Collections.Generic;
-
-
 namespace MCGalaxy.Events.PlayerEvents
 {
     public enum PlayerAction { Me, Referee, UnReferee, AFK, UnAFK, Hide, Unhide };
@@ -26,7 +21,6 @@ namespace MCGalaxy.Events.PlayerEvents
     public enum MouseAction { Pressed, Released }
     public enum TargetBlockFace { AwayX, TowardsX, AwayY, TowardsY, AwayZ, TowardsZ, None }
     public enum NotifyActionType { BlockListSelected, BlockListToggled, LevelSaved, Respawned, SpawnUpdated, TexturePackChanged, TexturePromptResponded, ThirdPersonChanged }
-
     public delegate void OnPlayerChat(Player p, string message);
     /// <summary> Called whenever a player sends chat to the server </summary>
     /// <remarks> You must cancel this event to prevent the message being sent to the user (and others). </remarks>
@@ -44,7 +38,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnPlayerMove(Player p, Position next, byte yaw, byte pitch, ref bool cancel);
     /// <summary> Called whenever a player moves </summary>
     public sealed class OnPlayerMoveEvent : IEvent<OnPlayerMove>
@@ -59,7 +52,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnPlayerCommand(Player p, string cmd, string args, CommandData data);
     /// <summary> Called whenever a player uses a command </summary>
     /// <remarks> You must cancel this event to prevent "Unknown command!" being shown. </remarks>
@@ -75,7 +67,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnPlayerHelp(Player p, string target, ref bool cancel);
     /// <summary> Called whenever a player attempts to display help for something via /help </summary>
     /// <remarks> You can cancel this event to prevent the default /help behaviour. </remarks>
@@ -91,7 +82,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnPlayerConnect(Player p);
     /// <summary> Called whenever a player connects to the server </summary>
     public sealed class OnPlayerConnectEvent : IEvent<OnPlayerConnect>
@@ -102,7 +92,6 @@ namespace MCGalaxy.Events.PlayerEvents
             CallCommon(pl => pl(p));
         }
     }
-
     public delegate void OnPlayerStartConnecting(Player p, string mppass);
     /// <summary> Called whenever a player tries connecting to the server </summary>
     /// <remarks> Called just after Handshake received, but before CPE handshake is performed. </remarks>
@@ -114,7 +103,6 @@ namespace MCGalaxy.Events.PlayerEvents
             CallCommon(pl => pl(p, mppass));
         }
     }
-
     public delegate void OnPlayerFinishConnecting(Player p);
     /// <summary> Called whenever a player tries connecting to the server </summary>
     /// <remarks> Called after CPE handshake has been performed, and just before spawn map is sent. </remarks>
@@ -126,7 +114,6 @@ namespace MCGalaxy.Events.PlayerEvents
             CallCommon(pl => pl(p));
         }
     }
-
     public delegate void OnPlayerDying(Player p, ushort cause, ref bool cancel);
     /// <summary> Called whenever a player is about to die </summary>
     /// <remarks> Can be caused by e.g. walking into a deadly block like nerve_gas </remarks>
@@ -142,7 +129,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnPlayerDied(Player p, ushort cause, ref TimeSpan cooldown);
     /// <summary> Called whenever a player has died </summary>
     /// <remarks> Can be caused by e.g. walking into a deadly block like nerve_gas </remarks>
@@ -158,7 +144,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnPlayerDisconnect(Player p, string reason);
     /// <summary> Called whenever a player disconnects from the server. </summary>
     public sealed class OnPlayerDisconnectEvent : IEvent<OnPlayerDisconnect>
@@ -169,11 +154,10 @@ namespace MCGalaxy.Events.PlayerEvents
             CallCommon(pl => pl(p, reason));
         }
     }
-
     public delegate void SelectionBlockChange(Player p, ushort x, ushort y, ushort z, ushort block);
     public delegate void OnBlockChanging(Player p, ushort x, ushort y, ushort z, ushort block, bool placing, ref bool cancel);
     /// <summary> Called whenever a player is manually placing or deleting a block </summary>
-    /// <remarks> The client always assumes a block change succeeds. 
+    /// <remarks> The client always assumes a block change succeeds.
     /// So if you cancel this event, make sure you have sent a block change or reverted it using p.RevertBlock </remarks>
     public sealed class OnBlockChangingEvent : IEvent<OnBlockChanging>
     {
@@ -187,7 +171,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnBlockChanged(Player p, ushort x, ushort y, ushort z, ChangeResult result);
     /// <summary> Called whenever a player has manually placed or deleted a block </summary>
     public sealed class OnBlockChangedEvent : IEvent<OnBlockChanged>
@@ -202,7 +185,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnPlayerClick(Player p, MouseButton button, MouseAction action,
                                        ushort yaw, ushort pitch, byte entity,
                                        ushort x, ushort y, ushort z, TargetBlockFace face);
@@ -221,7 +203,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnNotifyAction(Player p, NotifyActionType action, short value);
     /// <summary> Called whenever a player triggers a certain client event </summary>
     public sealed class OnNotifyActionEvent : IEvent<OnNotifyAction>
@@ -236,7 +217,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnNotifyPositionAction(Player p, NotifyActionType action, ushort x, ushort y, ushort z);
     /// <summary> Called whenever a player triggers a respawn/setspawn client event </summary>
     public sealed class OnNotifyPositionActionEvent : IEvent<OnNotifyPositionAction>
@@ -251,7 +231,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnMessageReceived(Player p, ref string message, ref bool cancel);
     /// <summary> Called whenever a player recieves a message from the server or from another player </summary>
     public sealed class OnMessageRecievedEvent : IEvent<OnMessageReceived>
@@ -266,7 +245,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnSentMap(Player p, Level prevLevel, Level level);
     /// <summary> Called when a player has been sent a new map </summary>
     public sealed class OnSentMapEvent : IEvent<OnSentMap>
@@ -277,8 +255,6 @@ namespace MCGalaxy.Events.PlayerEvents
             CallCommon(pl => pl(p, prevLevl, level));
         }
     }
-
-
     public delegate void OnJoiningLevel(Player p, Level lvl, ref bool canJoin);
     /// <summary> Called when player intends to join a map </summary>
     /// <remarks> canJoin decides whether player will be allowed into the map </remarks>
@@ -295,7 +271,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnJoinedLevel(Player p, Level prevLevel, Level level, ref bool announce);
     /// <summary> Called when a player has been sent a new map, and has been spawned in that map. </summary>
     public sealed class OnJoinedLevelEvent : IEvent<OnJoinedLevel>
@@ -311,7 +286,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnPlayerAction(Player p, PlayerAction action,
                                         string message, bool stealth);
     /// <summary> Called when a player performs an action. </summary>
@@ -324,7 +298,6 @@ namespace MCGalaxy.Events.PlayerEvents
             CallCommon(pl => pl(p, action, message, stealth));
         }
     }
-
     public delegate void OnSettingPrefix(Player p, List<string> prefixes);
     /// <summary> Called when prefix is being updated for a player </summary>
     public sealed class OnSettingPrefixEvent : IEvent<OnSettingPrefix>
@@ -335,7 +308,6 @@ namespace MCGalaxy.Events.PlayerEvents
             CallCommon(pl => pl(p, prefixes));
         }
     }
-
     public delegate void OnSettingColor(Player p, ref string color);
     /// <summary> Called when color is being updated for a player. </summary>
     /// <example> You can use this to ensure player's color remains fixed to red while in a game. </example>
@@ -352,7 +324,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnGettingMotd(Player p, ref string motd);
     /// <summary> Called when MOTD is being retrieved for a player </summary>
     /// <remarks> e.g. You can use this event to make one player always have +hax motd. </remarks>
@@ -369,7 +340,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnSendingMotd(Player p, ref string motd);
     /// <summary> Called when MOTD is being sent to a player </summary>
     /// <remarks> To change MOTD for a player in general (e.g. for /fly), use OnGettingMotdEvent instead. </remarks>
@@ -386,7 +356,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnPlayerSpawning(Player p, ref Position pos, ref byte yaw, ref byte pitch, bool respawning);
     /// <summary> Called when a player is initially spawning in a map, or is respawning (e.g. killed by deadly lava) </summary>
     public sealed class OnPlayerSpawningEvent : IEvent<OnPlayerSpawning>
@@ -402,7 +371,6 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-
     public delegate void OnChangedZone(Player p);
     /// <summary> Called when player has moved into a different zone </summary>
     /// <remarks> The 'zone' the player moves into may be null. </remarks>
@@ -414,7 +382,6 @@ namespace MCGalaxy.Events.PlayerEvents
             CallCommon(pl => pl(p));
         }
     }
-
     public delegate void OnGettingCanSee(Player p, LevelPermission plRank, ref bool canSee, Player target);
     /// <summary> Called when code is checking if this player can see the given player </summary>
     public sealed class OnGettingCanSeeEvent : IEvent<OnGettingCanSee>

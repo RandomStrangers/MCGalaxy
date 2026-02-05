@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,21 +15,17 @@
 using MCGalaxy.Commands;
 using MCGalaxy.Generator.Foliage;
 using System.Collections.Generic;
-
 namespace MCGalaxy
 {
-
     public sealed class LevelOption
     {
         public string Name, Help;
         public LevelOptions.OptionSetter SetFunc;
-
         public LevelOption(string name, LevelOptions.OptionSetter func, string help)
         {
             Name = name; SetFunc = func; Help = help;
         }
     }
-
     public static class LevelOptions
     {
         public delegate void OptionSetter(Player p, Level lvl, string value);
@@ -42,7 +35,6 @@ namespace MCGalaxy
         public const string Goto = "LoadOnGoto", Decay = "LeafDecay", Flow = "RandomFlow", Trees = "GrowTrees";
         public const string Chat = "Chat", Guns = "Guns", Buildable = "Buildable", Deletable = "Deletable";
         public const string LoadDelay = "LoadDelay", Drawing = "Drawing", Authors = "Authors";
-
         public static List<LevelOption> Options = new() {
              new LevelOption(MOTD,       SetMotd,  "&HSets the motd for this map. (leave blank to use default motd)"),
              new LevelOption(RealmOwner, SetOwner, "&HSets the players allowed to use /realm on this map."),
@@ -73,7 +65,6 @@ namespace MCGalaxy
                              "Only useful for forcing players to see the map's MOTD at the loading screen."),
              new LevelOption(Authors, SetAuthors, "&HSets authors of map. Only shown when running games"),
         };
-
         public static LevelOption Find(string opt)
         {
             if (opt.CaselessEq("ps")) opt = Speed;
@@ -81,19 +72,16 @@ namespace MCGalaxy
             if (opt.CaselessEq("leaf")) opt = Decay;
             if (opt.CaselessEq("flow")) opt = Flow;
             if (opt.CaselessEq("tree")) opt = Trees;
-
             foreach (LevelOption option in Options)
             {
                 if (option.Name.CaselessEq(opt)) return option;
             }
             return null;
         }
-
         static void SetMotd(Player p, Level lvl, string value)
         {
             lvl.Config.MOTD = value.Length == 0 ? "ignore" : value;
             lvl.Message("Map's MOTD was changed to: &b" + lvl.Config.MOTD);
-
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
@@ -109,7 +97,6 @@ namespace MCGalaxy
                 }
             }
         }
-
         static void SetOwner(Player p, Level lvl, string value)
         {
             if (value.Length == 0)
@@ -118,21 +105,17 @@ namespace MCGalaxy
                 p.Message("Removed realm owner for this level.");
                 return;
             }
-
             value = value.Replace(", ", ",");
             value = value.Replace(",", " ");
-
             string[] names = value.SplitSpaces();
             for (int i = 0; i < names.Length; i++)
             {
                 names[i] = PlayerInfo.FindMatchesPreferOnline(p, names[i]);
                 if (names[i] == null) return;
             }
-
             lvl.Config.RealmOwner = names.Join(","); ;
             p.Message("Set realm owner/owners of this level to {0}.", names.Join((n) => p.FormatNick(n)));
         }
-
         static void SetTree(Player p, Level lvl, string value)
         {
             if (value.Length == 0)
@@ -141,7 +124,6 @@ namespace MCGalaxy
                 lvl.Config.TreeType = "fern";
                 return;
             }
-
             Tree tree = Tree.Find(value);
             if (tree == null)
             {
@@ -149,11 +131,9 @@ namespace MCGalaxy
                 p.Message("Tree types: {0}", Tree.TreeTypes.Join(t => t.Key));
                 return;
             }
-
             lvl.Config.TreeType = value.ToLower();
             p.Message("Set tree type that saplings grow into to {0}.", value);
         }
-
         static void SetFinite(Player p, Level l, string v) { Toggle(p, l, ref l.Config.FiniteLiquids, "Finite mode"); }
         static void SetAI(Player p, Level l, string v) { Toggle(p, l, ref l.Config.AnimalHuntAI, "Animal AI"); }
         static void SetEdge(Player p, Level l, string v) { Toggle(p, l, ref l.Config.EdgeWater, "Edge water"); }
@@ -167,7 +147,6 @@ namespace MCGalaxy
         static void SetTrees(Player p, Level l, string v) { Toggle(p, l, ref l.Config.GrowTrees, "Tree growing"); }
         static void SetBuildable(Player p, Level l, string v) { TogglePerms(p, l, ref l.Config.Buildable, "Buildable"); }
         static void SetDeletable(Player p, Level l, string v) { TogglePerms(p, l, ref l.Config.Deletable, "Deletable"); }
-
         static void SetChat(Player p, Level l, string v)
         {
             Toggle(p, l, ref l.Config.ServerWideChat, "Local level only chat", true);
@@ -177,64 +156,53 @@ namespace MCGalaxy
                 if (pl.level == l) TabList.Update(pl, true);
             }
         }
-
         static void SetDrawing(Player p, Level l, string v)
         {
             Toggle(p, l, ref l.Config.Drawing, "Drawing commands");
         }
-
         static void SetLoadDelay(Player p, Level l, string value)
         {
             int raw = 0;
             if (!CommandParser.GetInt(p, value, "Load delay", ref raw, 0, 2000)) return;
             SetInt(l, raw, ref l.Config.LoadDelay, "Load delay");
         }
-
         static void SetSpeed(Player p, Level l, string value)
         {
             int raw = 0;
             if (!CommandParser.GetInt(p, value, "Physics speed", ref raw, 10)) return;
             SetInt(l, raw, ref l.Config.PhysicsSpeed, "Physics speed");
         }
-
         static void SetOverload(Player p, Level l, string value)
         {
             int raw = 0;
             if (!CommandParser.GetInt(p, value, "Physics overload", ref raw, 500)) return;
-
             if (p.Rank < LevelPermission.Admin && raw > 2500)
             {
                 p.Message("Only SuperOPs may set physics overload higher than 2500"); return;
             }
             SetInt(l, raw, ref l.Config.PhysicsOverload, "Physics overload");
         }
-
         static void SetFall(Player p, Level l, string value)
         {
             int raw = 0;
             if (!CommandParser.GetInt(p, value, "Fall distance", ref raw)) return;
             SetInt(l, raw, ref l.Config.FallHeight, "Fall distance");
         }
-
         static void SetDrown(Player p, Level l, string value)
         {
             int raw = 0;
             if (!CommandParser.GetInt(p, value, "Drown time (in tenths of a second)", ref raw)) return;
             SetInt(l, raw, ref l.Config.DrownTime, "Drown time (in tenths of a second)");
         }
-
         static void SetInt(Level lvl, int raw, ref int target, string name)
         {
             target = raw;
             lvl.Message(name + ": &b" + target);
         }
-
-
         static void SetGuns(Player p, Level lvl, string value)
         {
             Toggle(p, lvl, ref lvl.Config.Guns, "Guns allowed");
             if (lvl.Config.Guns) return;
-
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
@@ -242,25 +210,21 @@ namespace MCGalaxy
                 pl.weapon.Disable();
             }
         }
-
         static void SetAuthors(Player p, Level lvl, string value)
         {
             lvl.Config.Authors = value.Replace(", ", ",").Replace(" ", ",");
             p.Message("Map authors set to: &b" + lvl.Config.Authors);
         }
-
         static void TogglePerms(Player p, Level lvl, ref bool target, string name)
         {
             Toggle(p, lvl, ref target, name);
             lvl.UpdateBlockPermissions();
         }
-
         static void Toggle(Player p, Level lvl, ref bool target, string name, bool not = false)
         {
             target = !target;
             bool display = not ? !target : target;
             string targetStr = display ? "&aON" : "&cOFF";
-
             lvl.Message(name + ": " + targetStr);
             if (p.level != lvl) p.Message(name + ": " + targetStr);
         }

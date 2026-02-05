@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -27,31 +24,24 @@ namespace MCGalaxy.Commands.World
         {
             get { return new CommandAlias[] { new("KillPhysics", "kill") }; }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { ShowPhysics(p); return; }
             if (message.CaselessEq("kill")) { KillPhysics(p); return; }
-
             string[] args = message.SplitSpaces();
             Level lvl = p.IsSuper ? Server.mainLevel : p.level;
-
             int state = 0, stateI = args.Length == 1 ? 0 : 1;
             if (!CommandParser.GetInt(p, args[stateI], "Physics state", ref state, 0, 5)) return;
-
             if (args.Length == 2)
             {
                 lvl = Matcher.FindLevels(p, args[0]);
                 if (lvl == null) return;
             }
-
             if (!LevelInfo.Check(p, data.Rank, lvl, "set physics of this level")) return;
             SetPhysics(lvl, state);
         }
-
         internal static string[] states = new string[] { "&cOFF", "&aNormal", "&aAdvanced",
             "&aHardcore", "&aInstant", "&4Doors-only" };
-
         void ShowPhysics(Player p)
         {
             Level[] loaded = LevelInfo.Loaded.Items;
@@ -62,7 +52,6 @@ namespace MCGalaxy.Commands.World
                                lvl.ColoredName, lvl.physics, lvl.lastCheck, lvl.lastUpdate);
             }
         }
-
         void KillPhysics(Player p)
         {
             Level[] levels = LevelInfo.Loaded.Items;
@@ -73,20 +62,17 @@ namespace MCGalaxy.Commands.World
             }
             p.Message("Physics killed on all levels.");
         }
-
         internal static void SetPhysics(Level lvl, int state)
         {
             lvl.SetPhysics(state);
             if (state == 0) lvl.ClearPhysics();
             string stateDesc = states[state];
             lvl.Message("Physics are now " + stateDesc + " &Son " + lvl.ColoredName);
-
             stateDesc = stateDesc.Substring(2);
             string logInfo = "Physics are now " + stateDesc + " on " + lvl.name;
             Logger.Log(LogType.SystemActivity, logInfo);
             lvl.SaveSettings();
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Physics [level] [0/1/2/3/4/5]");

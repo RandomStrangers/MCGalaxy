@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -21,8 +18,6 @@ using MCGalaxy.Games;
 using MCGalaxy.Maths;
 using System;
 using System.Collections.Generic;
-
-
 namespace MCGalaxy.Modules.Games.TW
 {
     sealed class CmdTntWars : RoundsGameCmd
@@ -34,7 +29,6 @@ namespace MCGalaxy.Modules.Games.TW
         {
             get { return new[] { new CommandPerm(LevelPermission.Operator, "can manage TNT wars") }; }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.CaselessEq("scores"))
@@ -46,7 +40,6 @@ namespace MCGalaxy.Modules.Games.TW
                 base.Use(p, message, data);
             }
         }
-
         void HandleScores(Player p)
         {
             TWGame game = (TWGame)Game;
@@ -54,27 +47,22 @@ namespace MCGalaxy.Modules.Games.TW
             {
                 p.Message("Round is not in progress!"); return;
             }
-
             PlayerAndScore[] top = game.SortedByScore();
             int count = Math.Min(top.Length, 5);
-
             p.Message("Top {0} scores:", count);
             for (int i = 0; i < count; i++)
             {
                 p.Message(game.FormatTopScore(top, i));
             }
         }
-
         protected override void HandleSet(Player p, RoundsGame game_, string[] args)
         {
             TWGame game = (TWGame)game_;
             TWMapConfig cfg = new();
             TWConfig gameCfg = game.Config;
-
             LoadMapConfig(p, cfg);
             if (args.Length == 1) { Help(p, "set"); return; }
             if (args.Length == 2) { OutputStatus(p, gameCfg, cfg); return; }
-
             string prop = args[1], value = args[2];
             if (prop.CaselessEq("spawn"))
             {
@@ -82,7 +70,6 @@ namespace MCGalaxy.Modules.Games.TW
                 {
                     p.Message("&WCannot set spawns in Free For All mode"); return;
                 }
-
                 if (value.CaselessEq("red"))
                 {
                     cfg.RedSpawn = (Vec3U16)p.Pos.FeetBlockCoords;
@@ -103,7 +90,6 @@ namespace MCGalaxy.Modules.Games.TW
                 int amount = 1;
                 if (!CommandParser.GetInt(p, value, "TNT at a time", ref amount, 0)) return;
                 cfg.MaxActiveTnt = amount;
-
                 p.Message("Number of TNTs placeable by a player at a time is now {0}",
                                amount == 0 ? "unlimited" : value);
             }
@@ -116,7 +102,6 @@ namespace MCGalaxy.Modules.Games.TW
                 TimeSpan time = default;
                 if (!CommandParser.GetTimespan(p, value, ref time, "set grace time to", "s")) return;
                 cfg.GracePeriodTime = time;
-
                 p.Message("Grace period is now {0}", time.Shorten(true, true));
             }
             else if (prop.CaselessEq("gamemode"))
@@ -172,7 +157,6 @@ namespace MCGalaxy.Modules.Games.TW
             else if (prop.CaselessEq("zone"))
             {
                 if (args.Length < 4) { Help(p, "zone"); return; }
-
                 if (value.CaselessEq("notnt"))
                 {
                     if (!HandleZone(p, game, true, args)) return;
@@ -192,7 +176,6 @@ namespace MCGalaxy.Modules.Games.TW
             }
             SaveMapConfig(p, cfg);
         }
-
         static void OutputStatus(Player p, TWConfig gameCfg, TWMapConfig cfg)
         {
             p.Message("Gamemode: &a{0} &Sat difficulty &a{1}",
@@ -210,9 +193,7 @@ namespace MCGalaxy.Modules.Games.TW
             p.Message("Assists: {0} &S(at {1} points)",
                            GetBool(cfg.AssistScore > 0), cfg.AssistScore);
         }
-
         static string GetBool(bool value) { return value ? "&aEnabled" : "&cDisabled"; }
-
         bool HandleSetScore(Player p, TWMapConfig cfg, string[] args)
         {
             string opt = args[2], value = args[3];
@@ -221,7 +202,6 @@ namespace MCGalaxy.Modules.Games.TW
                 int score = 1;
                 if (!CommandParser.GetInt(p, value, "Points", ref score, 0)) return false;
                 cfg.ScoreRequired = score;
-
                 p.Message("Score required to win is now &a{0} &Spoints!", score);
             }
             else if (opt.CaselessEq("streaks"))
@@ -233,7 +213,6 @@ namespace MCGalaxy.Modules.Games.TW
                 int multi = 1;
                 if (!CommandParser.GetInt(p, value, "Points", ref multi, 0)) return false;
                 cfg.MultiKillBonus = multi;
-
                 if (multi == 0)
                 {
                     p.Message("Multikill bonus is now &cdisabled");
@@ -248,7 +227,6 @@ namespace MCGalaxy.Modules.Games.TW
                 int kill = 1;
                 if (!CommandParser.GetInt(p, value, "Points", ref kill, 0)) return false;
                 cfg.ScorePerKill = kill;
-
                 p.Message("Score per kill is now &a{0} &Spoints", kill);
             }
             else if (opt.CaselessEq("assist"))
@@ -256,7 +234,6 @@ namespace MCGalaxy.Modules.Games.TW
                 int assist = 1;
                 if (!CommandParser.GetInt(p, value, "Points", ref assist, 0)) return false;
                 cfg.AssistScore = assist;
-
                 if (assist == 0)
                 {
                     p.Message("Scores per assist is now &cdisabled");
@@ -272,13 +249,11 @@ namespace MCGalaxy.Modules.Games.TW
             }
             return true;
         }
-
         bool HandleZone(Player p, TWGame game, bool noTntZone, string[] args)
         {
             string type = noTntZone ? "no TNT" : "no blocks deleted on explosions";
             List<TWGame.TWZone> zones = noTntZone ? game.tntFreeZones : game.tntImmuneZones;
             string opt = args[3];
-
             if (IsCreateAction(opt))
             {
                 p.Message("Place 2 blocks to create a {0} zone", type);
@@ -308,24 +283,20 @@ namespace MCGalaxy.Modules.Games.TW
             }
             return true;
         }
-
         static bool AddZoneCallback(Player p, Vec3S32[] marks, object state, ushort block)
         {
             Vec3U16 p1 = (Vec3U16)marks[0], p2 = (Vec3U16)marks[1];
             TWGame.TWZone zn = new(p1, p2);
-
             List<TWGame.TWZone> zones = (List<TWGame.TWZone>)state;
             zones.Add(zn);
             p.Message("TNT Wars: Zone added!");
             return false;
         }
-
         static bool DeleteZoneCallback(Player p, Vec3S32[] marks, object state, ushort block)
         {
             ushort x = (ushort)marks[0].X, y = (ushort)marks[0].Y, z = (ushort)marks[0].Z;
             List<TWGame.TWZone> zones = (List<TWGame.TWZone>)state;
             bool any = false;
-
             for (int i = zones.Count - 1; i >= 0; i--)
             {
                 TWGame.TWZone zn = zones[i];
@@ -336,15 +307,12 @@ namespace MCGalaxy.Modules.Games.TW
                     any = true;
                 }
             }
-
             if (!any) p.Message("TNT Wars Error: You weren't in any zone");
             return false;
         }
-
         static bool CheckZoneCallback(Player p, Vec3S32[] marks, object state, ushort block)
         {
             ushort x = (ushort)marks[0].X, y = (ushort)marks[0].Y, z = (ushort)marks[0].Z;
-
             List<TWGame.TWZone> zones = (List<TWGame.TWZone>)state;
             TWGame game = TWGame.Instance;
             if (zones == game.tntFreeZones)
@@ -371,21 +339,17 @@ namespace MCGalaxy.Modules.Games.TW
             }
             return false;
         }
-
         static void SetDifficulty(TWGame game, TWDifficulty diff, Player p)
         {
             if (p.level != game.Map)
                 p.Message("Changed TNT wars difficulty to {0}", diff);
             game.SetDifficulty(diff);
         }
-
         static void SetBool(Player p, ref bool target, string opt, string name)
         {
             if (!CommandParser.GetBool(p, opt, ref target)) return;
             p.Message("{0} is now {1}", name, GetBool(target));
         }
-
-
         public override void Help(Player p, string message)
         {
             if (message.CaselessEq("set"))
@@ -432,7 +396,6 @@ namespace MCGalaxy.Modules.Games.TW
                 base.Help(p, message);
             }
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/TW start <map> &H- Starts TNT wars");

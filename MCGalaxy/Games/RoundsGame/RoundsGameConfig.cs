@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,7 +16,6 @@ using MCGalaxy.Config;
 using MCGalaxy.Events.GameEvents;
 using System.Collections.Generic;
 using System.IO;
-
 namespace MCGalaxy.Games
 {
     /// <summary> Stores map-specific game configuration state. </summary>
@@ -30,17 +26,14 @@ namespace MCGalaxy.Games
             string path = propsDir + map + ".properties";
             ConfigElement.ParseFile(cfg, path, this);
         }
-
         protected void SaveTo(ConfigElement[] cfg, string propsDir, string map)
         {
             string path = propsDir + map + ".properties";
             if (!Directory.Exists(propsDir)) Directory.CreateDirectory(propsDir);
-
             using StreamWriter w = FileIO.CreateGuarded(path);
             w.WriteLine("#Game settings file");
             ConfigElement.SerialiseElements(cfg, w, this);
         }
-
         /// <summary> Saves this configuration to disc. </summary>
         public abstract void Save(string map);
         /// <summary> Loads this configuration from disc. </summary>
@@ -49,7 +42,6 @@ namespace MCGalaxy.Games
         /// <remarks> e.g. spawn positions, zones </remarks>
         public abstract void SetDefaults(Level lvl);
     }
-
     /// <summary> Stores overall game configuration state. </summary>
     public abstract class RoundsGameConfig
     {
@@ -61,35 +53,28 @@ namespace MCGalaxy.Games
         public bool MapInHeartbeat;
         [ConfigStringList("maps", "General")]
         public List<string> Maps = new();
-
         /// <summary> Whether users are allowed to auto-join maps used by this game. </summary>
         /// <remarks> If false, users can only join these maps when manually /load ed. </remarks>
         public abstract bool AllowAutoload { get; }
         protected abstract string GameName { get; }
         public string Path;
-
         ConfigElement[] cfg;
         public virtual void Save()
         {
             cfg ??= ConfigElement.GetAll(GetType());
-
             using StreamWriter w = FileIO.CreateGuarded(Path);
             w.WriteLine("#" + GameName + " configuration");
             ConfigElement.Serialise(cfg, w, this);
         }
-
         public virtual void Load()
         {
             cfg ??= ConfigElement.GetAll(GetType());
             ConfigElement.ParseFile(cfg, Path, this);
         }
-
-
         public static void AddMap(Player p, string map, LevelConfig lvlCfg, RoundsGame game)
         {
             RoundsGameConfig cfg = game.GetConfig();
             string coloredName = lvlCfg.Color + map;
-
             if (cfg.Maps.CaselessContains(map))
             {
                 p.Message("{0} &Sis already in the list of {1} maps", coloredName, game.GameName);
@@ -99,18 +84,15 @@ namespace MCGalaxy.Games
                 p.Message("Added {0} &Sto the list of {1} maps", coloredName, game.GameName);
                 cfg.Maps.Add(map);
                 if (!cfg.AllowAutoload) lvlCfg.LoadOnGoto = false;
-
                 cfg.Save();
                 lvlCfg.SaveFor(map);
                 OnMapsChangedEvent.Call(game);
             }
         }
-
         public static void RemoveMap(Player p, string map, LevelConfig lvlCfg, RoundsGame game)
         {
             RoundsGameConfig cfg = game.GetConfig();
             string coloredName = lvlCfg.Color + map;
-
             if (!cfg.Maps.CaselessRemove(map))
             {
                 p.Message("{0} &Swas not in the list of {1} maps", coloredName, game.GameName);
@@ -120,7 +102,6 @@ namespace MCGalaxy.Games
                 p.Message("Removed {0} &Sfrom the list of {1} maps", coloredName, game.GameName);
                 lvlCfg.AutoUnload = true;
                 if (!cfg.AllowAutoload) lvlCfg.LoadOnGoto = true;
-
                 cfg.Save();
                 lvlCfg.SaveFor(map);
                 OnMapsChangedEvent.Call(game);

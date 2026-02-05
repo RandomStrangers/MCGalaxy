@@ -1,14 +1,11 @@
 /*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Network;
-
 namespace MCGalaxy.Commands.CPE
 {
     public sealed class CmdTexture : Command2
@@ -24,7 +20,6 @@ namespace MCGalaxy.Commands.CPE
         public override string name { get { return "Texture"; } }
         public override string type { get { return CommandTypes.Other; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -32,7 +27,6 @@ namespace MCGalaxy.Commands.CPE
             string scope = args[0].ToLower();
             if (scope == "local") scope = "level";
             if (scope == "localzip") scope = "levelzip";
-
             if (args.Length == 1)
             {
                 if (scope == "level")
@@ -47,7 +41,6 @@ namespace MCGalaxy.Commands.CPE
                     Help(p);
                 return;
             }
-
             string url = args[1];
             if (url.CaselessEq("normal") || url.CaselessEq("reset"))
             {
@@ -56,7 +49,6 @@ namespace MCGalaxy.Commands.CPE
             else
             {
                 HttpUtil.FilterURL(ref url);
-
                 if (!(url.CaselessContains(".png") || url.CaselessContains(".zip")))
                 {
                     p.Message("URL must contain either .png (for terrain) or .zip (for texture pack)"); return;
@@ -66,12 +58,10 @@ namespace MCGalaxy.Commands.CPE
                     p.Message("The URL must be " + (NetUtils.StringSize * 2) + " characters or less."); return;
                 }
             }
-
             if (scope == "global" || scope == "globalzip")
             {
                 Server.Config.DefaultTerrain = "";
                 Server.Config.DefaultTexture = "";
-
                 if (url.Length == 0)
                 {
                     p.Message("Reset server textures to default");
@@ -93,7 +83,6 @@ namespace MCGalaxy.Commands.CPE
                 if (!LevelInfo.Check(p, data.Rank, p.level, "set texture of this level")) return;
                 p.level.Config.Terrain = "";
                 p.level.Config.TexturePack = "";
-
                 if (url.Length == 0)
                 {
                     p.Message("Reset level textures to server default");
@@ -115,9 +104,7 @@ namespace MCGalaxy.Commands.CPE
                 Help(p);
             }
         }
-
         static string GetPath(string url) { return url.Length == 0 ? "(none)" : url; }
-
         static void UpdateGlobal(Player _)
         {
             Player[] players = PlayerInfo.Online.Items;
@@ -127,7 +114,6 @@ namespace MCGalaxy.Commands.CPE
             }
             SrvProperties.Save();
         }
-
         static void UpdateLevel(Player p)
         {
             Player[] players = PlayerInfo.Online.Items;
@@ -138,7 +124,6 @@ namespace MCGalaxy.Commands.CPE
             }
             p.level.SaveSettings();
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Texture global/level [url]");

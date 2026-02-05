@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,25 +15,20 @@
 using MCGalaxy.Commands;
 using MCGalaxy.Network;
 using System.Collections.Generic;
-
-
 namespace MCGalaxy
 {
     public sealed class EnvOption
     {
         public string Name, Help;
         public EnvOptions.OptionSetter SetFunc;
-
         public EnvOption(string name, EnvOptions.OptionSetter func, string help)
         {
             Name = name; SetFunc = func; Help = help;
         }
     }
-
     public static class EnvOptions
     {
         public delegate void OptionSetter(Player p, string area, EnvConfig cfg, string value);
-
         public static List<EnvOption> Options = new() {
              new EnvOption("Weather",   SetWeather,   "&HSets the weather (sun, rain, snow)"),
              new EnvOption("SmoothFog", SetSmoothFog, "&HSets whether smoother fog is used"),
@@ -62,7 +54,6 @@ namespace MCGalaxy
              new EnvOption("SkyboxHorSpeed", SetSkyboxHor,  "&HSets how many times per second skybox fully spins horizontally (e.g. 0.1 is once every 10 seconds)"),
              new EnvOption("SkyboxVerSpeed", SetSkyboxVer,  "&HSets how many times per second skybox fully spins vertically (e.g. 0.1 is once every 10 seconds)"),
         };
-
         public static EnvOption Find(string opt)
         {
             if (opt.CaselessEq("ExpFog")) opt = "SmoothFog";
@@ -83,15 +74,12 @@ namespace MCGalaxy
             if (opt.CaselessEq("lavacolor")) opt = "LavaLight";
             if (opt.CaselessEq("lampcolor")) opt = "LampLight";
             if (opt.CaselessEq("lighting")) opt = "LightingMode";
-
             foreach (EnvOption option in Options)
             {
                 if (option.Name.CaselessEq(opt)) return option;
             }
             return null;
         }
-
-
         static void SetHorizon(Player p, string area, EnvConfig cfg, string value)
         {
             SetBlock(p, value, area, "edge block", ref cfg.HorizonBlock);
@@ -100,7 +88,6 @@ namespace MCGalaxy
         {
             SetBlock(p, value, area, "sides block", ref cfg.EdgeBlock);
         }
-
         static void SetCloudsHeight(Player p, string area, EnvConfig cfg, string value)
         {
             SetInt(p, value, area, "clouds height", ref cfg.CloudsHeight);
@@ -117,7 +104,6 @@ namespace MCGalaxy
         {
             SetInt(p, value, area, "max fog distance", ref cfg.MaxFogDistance);
         }
-
         static void SetSky(Player p, string area, EnvConfig cfg, string value)
         {
             SetColor(p, value, area, "sky color", ref cfg.SkyColor);
@@ -155,13 +141,11 @@ namespace MCGalaxy
             string[] args = value.SplitSpaces(2);
             string lightingMode = args[0];
             bool locked = args.Length > 1 && args[1].CaselessEq("locked");
-
             if (!SetEnum(p, lightingMode, area, "lighting mode", Packet.LightingMode.None, ref cfg.LightingMode)) return;
             cfg.LightingModeLocked = locked;
             if (locked) p.Message("Lighting mode for {0}&S was %clocked%S. Players will not be able to change lighting mode while inside.", area);
             if (!p.Supports(CpeExt.LightingMode)) p.Message("&WNote: Your client does not support lighting modes, so you will see no changes.");
         }
-
         static void SetCloudsSpeed(Player p, string area, EnvConfig cfg, string value)
         {
             SetFloat(p, value, area, 256, "clouds speed", ref cfg.CloudsSpeed, -0xFFFFFF, 0xFFFFFF);
@@ -182,14 +166,11 @@ namespace MCGalaxy
         {
             SetFloat(p, value, area, 1024, "skybox vertical speed", ref cfg.SkyboxVerSpeed, -0xFFFFFF, 0xFFFFFF);
         }
-
-
         static bool IsResetString(string value)
         {
             return value.CaselessEq("normal") || value.CaselessEq("default")
                 || value.CaselessEq("reset") || value.Length == 0;
         }
-
         static void SetWeather(Player p, string area, EnvConfig cfg, string value)
         {
             int weather;
@@ -215,7 +196,6 @@ namespace MCGalaxy
                 {
                     weather = 2;
                 }
-
                 if (weather < 0 || weather > 2)
                 {
                     p.Message("Weather can be either sun, rain, or snow."); return;
@@ -225,7 +205,6 @@ namespace MCGalaxy
             }
             cfg.Weather = weather;
         }
-
         static void SetSmoothFog(Player p, string area, EnvConfig cfg, string value)
         {
             if (IsResetString(value))
@@ -237,12 +216,10 @@ namespace MCGalaxy
             {
                 bool enabled = false;
                 if (!CommandParser.GetBool(p, value, ref enabled)) return;
-
                 cfg.ExpFog = enabled ? 1 : 0;
                 p.Message("Set smooth fog for {0} &Sto {1}", area, enabled ? "&aON" : "&cOFF");
             }
         }
-
         static void SetBlock(Player p, string input, string area, string type, ref ushort target)
         {
             if (IsResetString(input))
@@ -257,13 +234,11 @@ namespace MCGalaxy
                 {
                     p.Message("&WCannot use physics block ids for &T/env"); return;
                 }
-
                 string name = Block.GetName(p, block);
                 target = block;
                 p.Message("Set {0} for {1} &Sto {2}", type, area, name);
             }
         }
-
         static void SetInt(Player p, string input, string area, string type, ref int target)
         {
             if (IsResetString(input))
@@ -276,12 +251,10 @@ namespace MCGalaxy
                 int value = 0;
                 if (!CommandParser.GetInt(p, input, type, ref value,
                                           short.MinValue, short.MaxValue)) return;
-
                 target = (short)value;
                 p.Message("Set {0} for {1} &Sto {2}", type, area, value);
             }
         }
-
         static void SetFloat(Player p, string input, string area, int scale, string type, ref int target, int min, int max)
         {
             if (IsResetString(input))
@@ -293,12 +266,10 @@ namespace MCGalaxy
             {
                 float value = 0, minF = (float)min / scale, maxF = (float)max / scale;
                 if (!CommandParser.GetReal(p, input, type, ref value, minF, maxF)) return;
-
                 target = (int)(value * scale);
                 p.Message("Set {0} for {1} &Sto {2}", type, area, value.ToString("F4"));
             }
         }
-
         static void SetColor(Player p, string input, string area, string variable, ref string target)
         {
             if (IsResetString(input))
@@ -310,12 +281,10 @@ namespace MCGalaxy
             {
                 ColorDesc rgb = default;
                 if (!CommandParser.GetHex(p, input, ref rgb)) return;
-
                 p.Message("Set {0} for {1} &Sto #{2}", variable, area, input);
                 target = Utils.Hex(rgb.R, rgb.G, rgb.B);
             }
         }
-
         static bool SetEnum<T>(Player p, string input, string area, string variable, T resetValue, ref T target) where T : struct
         {
             if (IsResetString(input))

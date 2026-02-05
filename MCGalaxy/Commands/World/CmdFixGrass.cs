@@ -1,15 +1,11 @@
-﻿/*
+/*
     Copyright 2010 MCLawl Team - Written by Valek (Modified for use with MCForge)
- 
-   
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,8 +14,6 @@
  */
 using MCGalaxy.Drawing.Ops;
 using MCGalaxy.Maths;
-
-
 namespace MCGalaxy.Commands.World
 {
     public sealed class CmdFixGrass : Command2
@@ -30,11 +24,9 @@ namespace MCGalaxy.Commands.World
         public override bool museumUsable { get { return false; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
         public override bool SuperUseable { get { return false; } }
-
         public override void Use(Player p, string message, CommandData data)
         {
             FixGrassDrawOp op = new();
-
             if (message.Length == 0)
             {
                 op.FixDirt = true;
@@ -56,20 +48,16 @@ namespace MCGalaxy.Commands.World
             {
                 Help(p); return;
             }
-
             p.Message("Place or break two blocks to determine the bounds within which grass/dirt is fixed");
             p.MakeSelection(2, "Selecting corners for &SFixGrass", op, DoFixGrass);
         }
-
         bool DoFixGrass(Player p, Vec3S32[] marks, object state, ushort block)
         {
             FixGrassDrawOp op = (FixGrassDrawOp)state;
             op.AlwaysUsable = true;
-
             DrawOpPerformer.Do(op, null, p, marks, false);
             return false;
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/FixGrass &H- Turns grass with something on top to dirt, and turns dirt with nothing on top to grass");

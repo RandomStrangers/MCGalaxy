@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,8 +14,6 @@
  */
 using MCGalaxy.Blocks;
 using MCGalaxy.Maths;
-
-
 namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdMark : Command2
@@ -35,7 +30,6 @@ namespace MCGalaxy.Commands.Building
                     new CommandAlias("MarkAll", "all"), new CommandAlias("ma", "all") };
             }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.CaselessEq("all"))
@@ -51,20 +45,15 @@ namespace MCGalaxy.Commands.Building
                 }
                 return;
             }
-
-
             Vec3S32 P = p.Pos.BlockCoords;
             P.Y = (p.Pos.Y - 32) / 32;
             if (message.Length > 0 && !ParseCoords(message, p, ref P)) return;
-
             P = p.level.ClampPos(P);
             if (DoMark(p, P.X, P.Y, P.Z)) return;
-
             Vec3U16 mark = (Vec3U16)P;
             // We only want to activate blocks in the world
             ushort old = p.level.GetBlock(mark.X, mark.Y, mark.Z);
             if (!p.CheckManualChange(old, true)) return;
-
             HandleDelete handler = p.level.DeleteHandlers[old];
             if (handler != null)
             {
@@ -76,7 +65,6 @@ namespace MCGalaxy.Commands.Building
                                "nor could the existing block at the coordinates be activated."); return;
             }
         }
-
         bool ParseCoords(string message, Player p, ref Vec3S32 P)
         {
             string[] args = message.SplitSpaces();
@@ -86,18 +74,14 @@ namespace MCGalaxy.Commands.Building
                 args = new string[] { message, message, message };
             }
             if (args.Length != 3) { Help(p); return false; }
-
             AdjustArg(ref args[0], ref P.X, "X", p.lastClick.X);
             AdjustArg(ref args[1], ref P.Y, "Y", p.lastClick.Y);
             AdjustArg(ref args[2], ref P.Z, "Z", p.lastClick.Z);
-
             return CommandParser.GetCoords(p, args, 0, ref P);
         }
-
         void AdjustArg(ref string arg, ref int value, string axis, int last)
         {
             if (!arg.CaselessStarts(axis)) return;
-
             if (arg.Length == 1)
             {
                 // just 'X' changes input to coordinate of last click
@@ -110,7 +94,6 @@ namespace MCGalaxy.Commands.Building
                 value = last;
             }
         }
-
         internal static bool DoMark(Player p, int x, int y, int z)
         {
             if (!p.HasBlockChange()) return false;
@@ -118,12 +101,10 @@ namespace MCGalaxy.Commands.Building
             {
                 p.Message("Mark placed at &b({0}, {1}, {2})", x, y, z);
             }
-
             ushort block = p.GetHeldBlock();
             p.DoBlockchangeCallback((ushort)x, (ushort)y, (ushort)z, block);
             return true;
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Mark <x y z> &H- Places a marker for selections, e.g for &T/z");

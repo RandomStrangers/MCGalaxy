@@ -1,14 +1,11 @@
 /*
     Copyright 2011 MCForge
-        
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -48,9 +45,9 @@ namespace MCGalaxy.Commands.Building
             {
                 Directory.CreateDirectory("extra/images/");
             }
-            if (message.Length == 0) 
-            { 
-                Help(p); 
+            if (message.Length == 0)
+            {
+                Help(p);
                 return;
             }
             string[] parts = message.SplitSpaces(5);
@@ -64,23 +61,23 @@ namespace MCGalaxy.Commands.Building
                 dArgs.Pal = ImagePalette.Find(parts[1]);
                 if (dArgs.Pal == null)
                 {
-                    p.Message("Palette {0} not found.", parts[1]); 
+                    p.Message("Palette {0} not found.", parts[1]);
                     return;
                 }
                 if (dArgs.Pal.Entries == null || dArgs.Pal.Entries.Length == 0)
                 {
                     p.Message("Palette {0} does not have any entries", dArgs.Pal.Name);
-                    p.Message("Use &T/Palette &Sto add entries to it"); 
+                    p.Message("Use &T/Palette &Sto add entries to it");
                     return;
                 }
             }
             if (parts.Length > 2)
             {
                 string mode = parts[2];
-                if (!ParseMode(mode, dArgs)) 
-                { 
+                if (!ParseMode(mode, dArgs))
+                {
                     p.Message("&WUnknown print mode \"{0}\".", mode);
-                    return; 
+                    return;
                 }
             }
             if (parts.Length > 4)
@@ -105,10 +102,10 @@ namespace MCGalaxy.Commands.Building
             else
             {
                 string path = "extra/images/" + parts[0] + ".bmp";
-                if (!File.Exists(path)) 
-                { 
-                    p.Message("{0} does not exist", path); 
-                    return; 
+                if (!File.Exists(path))
+                {
+                    p.Message("{0} does not exist", path);
+                    return;
                 }
                 dArgs.Data = File.ReadAllBytes(path);
             }
@@ -134,19 +131,19 @@ namespace MCGalaxy.Commands.Building
             }
             else if (mode.CaselessEq("floordither"))
             {
-                args.Floor = true; 
+                args.Floor = true;
                 args.Dithered = true;
             }
-            else 
-            { 
+            else
+            {
                 return false;
             }
             return true;
         }
         bool DoImage(Player p, Vec3S32[] m, object state, ushort _)
         {
-            if (m[0].X == m[1].X && m[0].Z == m[1].Z) 
-            { 
+            if (m[0].X == m[1].X && m[0].Z == m[1].Z)
+            {
                 p.Message("No direction was selected");
                 return false;
             }
@@ -174,7 +171,7 @@ namespace MCGalaxy.Commands.Building
                 return;
             }
             ImagePrintDrawOp op = dArgs.Dithered ? new ImagePrintDitheredDrawOp() : new ImagePrintDrawOp();
-            op.LayerMode = dArgs.Floor; 
+            op.LayerMode = dArgs.Floor;
             op.DualLayer = dArgs.TwoLayer;
             op.CalcState(marks);
             int width = dArgs.Width == 0 ? bmp.Width : dArgs.Width,
@@ -184,7 +181,7 @@ namespace MCGalaxy.Commands.Building
             {
                 bmp = ImageUtils.ResizeBilinear(bmp, width, height);
             }
-            op.Source = bmp; 
+            op.Source = bmp;
             op.Palette = dArgs.Pal;
             DrawOpPerformer.Do(op, null, p, marks, false);
         }
@@ -204,7 +201,7 @@ namespace MCGalaxy.Commands.Building
             resizedHeight = Math.Max(1, (int)(height * ratio));
             p.Message("&WImage is too large ({0}x{1}), resizing to ({2}x{3})",
                       width, height, resizedWidth, resizedHeight);
-            width = resizedWidth; 
+            width = resizedWidth;
             height = resizedHeight;
         }
         static int LargestDelta(Level lvl, Vec3S32 point)

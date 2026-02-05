@@ -22,29 +22,25 @@ namespace MCGalaxy.Gui.Popups
             UpdateBaseLayout();
             ResumeLayout(false);
         }
-        void TokenSelector_Load(object sender, EventArgs e)
-        {
-            GuiUtils.SetIcon(this);
-        }
-        const int btnWidth = 110, btnHeight = 40, btnsPerCol = 9;
+        void TokenSelector_Load(object sender, EventArgs e) => GuiUtils.SetIcon(this);
         int index = 0;
         void MakeButton(ChatToken token)
         {
-            int row = index / btnsPerCol, col = index % btnsPerCol;
+            int row = index / 9, col = index % 9;
             index++;
             Button btn = new()
             {
-                Location = new(9 + row * btnWidth, 7 + col * btnHeight),
-                Size = new(btnWidth, btnHeight),
+                Location = new(9 + row * 110, 7 + col * 40),
+                Size = new(110, 40),
                 Name = "b" + index,
                 TabIndex = index
             };
             toolTip.SetToolTip(btn, token.Description);
             btn.Text = token.Trigger;
-            btn.Click += delegate 
-            { 
-                Token = token.Trigger; 
-                DialogResult = DialogResult.OK; 
+            btn.Click += delegate
+            {
+                Token = token.Trigger;
+                DialogResult = DialogResult.OK;
                 Close();
             };
             btn.Margin = new(0);
@@ -55,22 +51,22 @@ namespace MCGalaxy.Gui.Popups
         }
         void UpdateBaseLayout()
         {
-            int rows = index / btnsPerCol;
-            if ((index % btnsPerCol) != 0)
+            int rows = index / 9;
+            if ((index % 9) != 0)
             {
                 rows++;
             }
             int x;
             if ((rows & 1) == 0)
             {
-                x = rows * btnWidth / 2 - (100 / 2);
+                x = rows * 110 / 2 - (100 / 2);
             }
             else
             {
-                x = (rows / 2 * btnWidth) + (btnWidth - 100) / 2;
+                x = (rows / 2 * 110) + 5;
             }
-            btnCancel.Location = new(8 + x, 12 + btnHeight * btnsPerCol);
-            ClientSize = new(18 + btnWidth * rows, 47 + btnHeight * btnsPerCol);
+            btnCancel.Location = new(8 + x, 12 + 40 * 9);
+            ClientSize = new(18 + 110 * rows, 47 + 40 * 9);
         }
     }
 }

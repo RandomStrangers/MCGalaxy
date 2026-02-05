@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,10 +15,8 @@
 using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Drawing.Ops;
 using MCGalaxy.Maths;
-
 namespace MCGalaxy.Commands.Building
 {
-
     public sealed class CmdReplaceAll : Command2
     {
         public override string name { get { return "ReplaceAll"; } }
@@ -30,27 +25,22 @@ namespace MCGalaxy.Commands.Building
         public override bool museumUsable { get { return false; } }
         public override bool SuperUseable { get { return false; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-
         public override void Use(Player p, string message, CommandData data)
         {
             BrushArgs args = new(p, message, p.GetHeldBlock());
             Brush brush = BrushFactory.Find("Replace").Construct(args);
             if (brush == null) return;
-
             Vec3S32 max = new(p.level.MaxX, p.level.MaxY, p.level.MaxZ);
             Vec3S32[] marks = new Vec3S32[] { Vec3S32.Zero, max };
-
             MeasureDrawOp measure = new();
             measure.Setup(p, p.level, marks);
             measure.Perform(marks, brush, null);
-
             if (measure.Total > p.group.DrawLimit)
             {
                 p.Message("You tried to replace " + measure.Total + " blocks.");
                 p.Message("You cannot draw more than " + p.group.DrawLimit + ".");
                 return;
             }
-
             DrawOp op = new CuboidDrawOp
             {
                 AffectedByTransform = false
@@ -58,14 +48,11 @@ namespace MCGalaxy.Commands.Building
             if (!DrawOpPerformer.Do(op, brush, p, marks, false)) return;
             p.Message("&4/replaceall finished!");
         }
-
-
         class MeasureDrawOp : DrawOp
         {
             public override string Name { get { return null; } }
             public override long BlocksAffected(Level lvl, Vec3S32[] marks) { return 0; }
             public int Total = 0;
-
             public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
             {
                 Vec3U16 p1 = Clamp(Min), p2 = Clamp(Max);
@@ -78,7 +65,6 @@ namespace MCGalaxy.Commands.Building
                         }
             }
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/ReplaceAll [block] [block2].. [new]");

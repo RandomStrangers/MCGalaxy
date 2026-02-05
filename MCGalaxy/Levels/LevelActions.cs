@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2011 MCForge
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -29,13 +26,13 @@ namespace MCGalaxy
 {
     public static class LevelActions
     {
-        static string BlockPropsLvlPath(string map) 
-        { 
-            return Paths.BlockPropsPath("_" + map); 
+        static string BlockPropsLvlPath(string map)
+        {
+            return Paths.BlockPropsPath("_" + map);
         }
-        static string BlockPropsOldPath(string map) 
-        { 
-            return Paths.BlockPropsPath("lvl_" + map); 
+        static string BlockPropsOldPath(string map)
+        {
+            return Paths.BlockPropsPath("lvl_" + map);
         }
         public static bool Backup(string map, string backupName, string ext = ".lvl")
         {
@@ -70,7 +67,7 @@ namespace MCGalaxy
             Level lvl = LevelInfo.FindExact(src);
             if (lvl == Server.mainLevel)
             {
-                p.Message("Cannot rename the main level."); 
+                p.Message("Cannot rename the main level.");
                 return false;
             }
             List<Player> players = null;
@@ -138,7 +135,7 @@ namespace MCGalaxy
             Level lvl = LevelInfo.FindExact(map);
             if (lvl == Server.mainLevel)
             {
-                p.Message("Cannot delete the main level."); 
+                p.Message("Cannot delete the main level.");
                 return false;
             }
             if (lvl != null && !lvl.Unload())
@@ -172,7 +169,7 @@ namespace MCGalaxy
             return true;
         }
         /// <summary>
-        /// Deletes the backup of the given map, if found. 
+        /// Deletes the backup of the given map, if found.
         /// Supports LevelInfo.LATEST_MUSEUM_FLAG as backup to return latest backup path.
         /// </summary>
         public static void DeleteBackup(Player p, string map, string backup)
@@ -233,7 +230,7 @@ namespace MCGalaxy
         {
             if (LevelInfo.MapExists(dst))
             {
-                p.Message("&WLevel \"{0}\" already exists.", dst); 
+                p.Message("&WLevel \"{0}\" already exists.", dst);
                 return false;
             }
             Level lvl = LevelInfo.FindExact(src);
@@ -342,7 +339,7 @@ namespace MCGalaxy
             Level cur = LevelInfo.FindExact(map);
             if (cur != null)
             {
-                p.Message("&WLevel {0} &Wis already loaded.", cur.ColoredName); 
+                p.Message("&WLevel {0} &Wis already loaded.", cur.ColoredName);
                 return null;
             }
             try
@@ -355,7 +352,7 @@ namespace MCGalaxy
                 cur = LevelInfo.FindExact(map);
                 if (cur != null)
                 {
-                    p.Message("&WLevel {0} &Wis already loaded.", cur.ColoredName); 
+                    p.Message("&WLevel {0} &Wis already loaded.", cur.ColoredName);
                     return null;
                 }
                 LevelInfo.Add(lvl);
@@ -391,10 +388,10 @@ namespace MCGalaxy
                 return lvl;
             }
             string path = LevelInfo.MapPath(map) + ".backup";
-            if (!File.Exists(path)) 
-            { 
-                p.Message("Level \"{0}\" does not exist", map); 
-                return lvl; 
+            if (!File.Exists(path))
+            {
+                p.Message("Level \"{0}\" does not exist", map);
+                return lvl;
             }
             lvl = ReadBackup(p, map, path, "backup copy");
             if (lvl != null)
@@ -495,9 +492,9 @@ namespace MCGalaxy
                 }
             }
             res.spawnx = lvl.spawnx;
-            res.spawny = lvl.spawny; 
+            res.spawny = lvl.spawny;
             res.spawnz = lvl.spawnz;
-            res.rotx = lvl.rotx; 
+            res.rotx = lvl.rotx;
             res.roty = lvl.roty;
             lock (lvl.saveLock)
             {

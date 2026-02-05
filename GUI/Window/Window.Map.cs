@@ -1,4 +1,4 @@
-/*    
+/*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -136,36 +136,33 @@ namespace MCGalaxy.Gui
         {
             if (map_lbLoaded.SelectedItem == null)
             {
-                if (map_pgProps.SelectedObject == null)
+                if (map_pgProps.SelectedObject != null)
                 {
-                    return;
+                    map_pgProps.SelectedObject = null;
+                    last = null;
+                    map_gbProps.Text = "Properties for (none selected)";
                 }
-                map_pgProps.SelectedObject = null;
-                last = null;
-                map_gbProps.Text = "Properties for (none selected)";
                 return;
             }
             string name = map_lbLoaded.SelectedItem.ToString();
             Level lvl = LevelInfo.FindExact(name);
             if (lvl == null)
             {
-                if (map_pgProps.SelectedObject == null)
+                if (map_pgProps.SelectedObject != null)
                 {
-                    return;
+                    map_pgProps.SelectedObject = null;
+                    last = null;
+                    map_gbProps.Text = "Properties for (none selected)";
                 }
-                map_pgProps.SelectedObject = null;
-                last = null;
-                map_gbProps.Text = "Properties for (none selected)";
                 return;
             }
-            if (name == last)
+            if (name != last)
             {
-                return;
+                last = name;
+                LevelProperties settings = new(lvl);
+                map_pgProps.SelectedObject = settings;
+                map_gbProps.Text = "Properties for " + name;
             }
-            last = name;
-            LevelProperties settings = new(lvl);
-            map_pgProps.SelectedObject = settings;
-            map_gbProps.Text = "Properties for " + name;
         }
         void Map_UpdateUnloadedList()
         {

@@ -21,28 +21,13 @@ namespace MCGalaxy.Gui
     public delegate void UIAction();
     public static class Popup
     {
-        public static void Message(string message, string title = "")
-        {
-            MessageBox.Show(message, title);
-        }
-        public static void Error(string message)
-        {
-            MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-        public static void Warning(string message)
-        {
-            MessageBox.Show(message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        }
-        public static bool OKCancel(string message, string title)
-        {
-            return MessageBox.Show(message, title, MessageBoxButtons.OKCancel,
+        public static void Message(string message, string title = "") => MessageBox.Show(message, title);
+        public static void Error(string message) => MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        public static void Warning(string message) => MessageBox.Show(message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        public static bool OKCancel(string message, string title) => MessageBox.Show(message, title, MessageBoxButtons.OKCancel,
                                   MessageBoxIcon.Warning) == DialogResult.OK;
-        }
-        public static bool YesNo(string message, string title)
-        {
-            return MessageBox.Show(message, title, MessageBoxButtons.YesNo,
+        public static bool YesNo(string message, string title) => MessageBox.Show(message, title, MessageBoxButtons.YesNo,
                                    MessageBoxIcon.Question) == DialogResult.Yes;
-        }
     }
     public static class GuiUtils
     {

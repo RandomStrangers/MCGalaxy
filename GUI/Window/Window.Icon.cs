@@ -20,12 +20,7 @@ namespace MCGalaxy.Gui
 {
     public partial class Window : Form
     {
-        Icon GetIcon()
-        {
-            byte[] data = Convert.FromBase64String(icon_source);
-            Stream source = new MemoryStream(data);
-            return new(source);
-        }
+        Icon GetIcon() => new(new MemoryStream(Convert.FromBase64String(icon_source)));
         const string icon_source =
         "AAABAAEAICAAAAEAIACoEAAAFgAAACgAAAAgAAAAQAAAAAEAIAAAAAAAABAAAAAAAAAAAAAAAAAAAAAA" +
         "AAAJAwT/BwIC/wYBAv8QBgL/FAoE/w0EAv8TCAL/Fw0C/xgNAv8eDwT/FwsD/wMAAf8FAQH/BgEB/wUB" +

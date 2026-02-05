@@ -1,4 +1,4 @@
-﻿using MCGalaxy.Maths;
+using MCGalaxy.Maths;
 using System.IO;
 namespace MCGalaxy.Levels.IO
 {

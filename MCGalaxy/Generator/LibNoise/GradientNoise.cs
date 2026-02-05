@@ -1,26 +1,24 @@
-﻿// 
+//
 // Copyright (c) 2013 Jason Bell
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a 
-// copy of this software and associated documentation files (the "Software"), 
-// to deal in the Software without restriction, including without limitation 
-// the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-// and/or sell copies of the Software, and to permit persons to whom the 
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included 
+//
+// The above copyright notice and this permission notice shall be included
 // in all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS 
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-// 
-
-
+//
 namespace LibNoise
 {
     public static class GradientNoise
@@ -30,7 +28,6 @@ namespace LibNoise
         const int Z_NOISE_GEN = 6971;
         const int SEED_NOISE = 1013;
         const int SHIFT_NOISE_GEN = 8;
-
         static readonly double[] RandomVectors =
         {
             -0.763874, -0.596439, -0.246489,
@@ -290,7 +287,6 @@ namespace LibNoise
             0.991353, 0.112814, 0.0670273,
             0.0337884, -0.979891, -0.196654,
         };
-
         public static double GradientCoherentNoise(double x, double y, double z, int seed)
         {
             // NOTE: Incorrect logic, should be >= 0.0 (kept for compatibility)
@@ -300,12 +296,10 @@ namespace LibNoise
             int y1 = y0 + 1;
             int z0 = z > 0.0 ? (int)z : (int)z - 1;
             int z1 = z0 + 1;
-
             // case NoiseQuality.Standard:
             double xs = SCurve3(x - x0);
             double ys = SCurve3(y - y0);
             double zs = SCurve3(z - z0);
-
             double n0, n1, ix0, ix1, iy0, iy1;
             n0 = GradientRawNoise(x, y, z, x0, y0, z0, seed);
             n1 = GradientRawNoise(x, y, z, x1, y0, z0, seed);
@@ -314,7 +308,6 @@ namespace LibNoise
             n1 = GradientRawNoise(x, y, z, x1, y1, z0, seed);
             ix1 = LinearInterpolate(n0, n1, xs);
             iy0 = LinearInterpolate(ix0, ix1, ys);
-
             n0 = GradientRawNoise(x, y, z, x0, y0, z1, seed);
             n1 = GradientRawNoise(x, y, z, x1, y0, z1, seed);
             ix0 = LinearInterpolate(n0, n1, xs);
@@ -322,10 +315,8 @@ namespace LibNoise
             n1 = GradientRawNoise(x, y, z, x1, y1, z1, seed);
             ix1 = LinearInterpolate(n0, n1, xs);
             iy1 = LinearInterpolate(ix0, ix1, ys);
-
             return LinearInterpolate(iy0, iy1, zs);
         }
-
         static double GradientRawNoise(double fx, double fy, double fz, int ix, int iy, int iz, int seed)
         {
             int vectorIndex =
@@ -335,22 +326,17 @@ namespace LibNoise
                 + SEED_NOISE * seed;
             vectorIndex ^= vectorIndex >> SHIFT_NOISE_GEN;
             vectorIndex &= 0xff;
-
             double xvGradient = RandomVectors[vectorIndex * 3];
             double yvGradient = RandomVectors[(vectorIndex * 3) + 1];
             double zvGradient = RandomVectors[(vectorIndex * 3) + 2];
-
             double xvPoint = fx - ix;
             double yvPoint = fy - iy;
             double zvPoint = fz - iz;
-
             return
                  ((xvGradient * xvPoint)
                 + (yvGradient * yvPoint)
                 + (zvGradient * zvPoint)) * 2.12;
         }
-
-
         /// <summary>
         /// Returns the linear interpolation of two values with the given alpha.
         /// </summary>
@@ -358,7 +344,6 @@ namespace LibNoise
         {
             return ((1.0 - a) * n0) + (a * n1);
         }
-
         /// <summary>
         /// Returns the given value mapped onto a cubic S-curve.
         /// </summary>

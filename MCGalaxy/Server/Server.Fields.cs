@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,7 +16,6 @@ using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using System;
 using System.Collections.Generic;
-
 namespace MCGalaxy
 {
     public sealed partial class Server
@@ -34,15 +30,14 @@ namespace MCGalaxy
         public static event VoidHandler OnSettingsUpdate;
         public static ServerConfig Config = new();
         public static DateTime StartTime;
-        public static PlayerExtList AutoloadMaps, models, skins, 
-            reach, rotations, modelScales, bannedIP, 
+        public static PlayerExtList AutoloadMaps, models, skins,
+            reach, rotations, modelScales, bannedIP,
             frozen, muted, tempBans, tempRanks;
         public static PlayerMetaList RankInfo = new("text/rankinfo.txt"),
             Notes = new("text/notes.txt");
-        public static PlayerList whiteList, invalidIds, ignored, 
+        public static PlayerList whiteList, invalidIds, ignored,
             hidden, agreed, vip, noEmotes, lockdown, reviewlist = new();
         public const string InternalVersion = "1.9.5.3";
-        public static string Ver { get { return InternalVersion; } } //Nas differs.
         /// <summary> *** DO NOT USE THIS! *** Use VersionString, as this field is a constant and is inlined if used. </summary>
 #if NAS && TEN_BIT_BLOCKS
         public static string Version
@@ -66,14 +61,14 @@ namespace MCGalaxy
         }
         public static INetListen Listener = new TcpListen();
         //Other
-        public static readonly List<string> Devs = new() 
-        { 
-            "Hetal", "UclCommander" 
+        public static readonly List<string> Devs = new()
+        {
+            "Hetal", "UclCommander"
         },
-        Opstats = new() 
-        { 
+        Opstats = new()
+        {
             "ban", "tempban", "xban", "banip", "kick",
-            "warn", "mute", "freeze", "setrank" 
+            "warn", "mute", "freeze", "setrank"
         };
         public static Level mainLevel;
         static string[] announcements = new string[0];

@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,8 +16,6 @@ using MCGalaxy.Drawing.Ops;
 using MCGalaxy.Levels.IO;
 using MCGalaxy.Maths;
 using System.IO;
-
-
 namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdRestoreSelection : Command2
@@ -30,12 +25,10 @@ namespace MCGalaxy.Commands.Moderation
         public override string type { get { return CommandTypes.Moderation; } }
         public override bool museumUsable { get { return false; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
             if (!Formatter.ValidMapName(p, message)) return;
-
             string path = LevelInfo.BackupFilePath(p.level.name, message);
             if (File.Exists(path))
             {
@@ -48,23 +41,19 @@ namespace MCGalaxy.Commands.Moderation
                 LevelOperations.OutputBackups(p, p.level);
             }
         }
-
         bool DoRestore(Player p, Vec3S32[] marks, object state, ushort block)
         {
             string path = (string)state;
             Level source = IMapImporter.Decode(path, "templevel", false);
-
             RestoreSelectionDrawOp op = new()
             {
                 Source = source
             };
             if (DrawOpPerformer.Do(op, null, p, marks)) return false;
-
             // Not high enough draw limit
             source.Dispose();
             return false;
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/RestoreSelection [backup name]");

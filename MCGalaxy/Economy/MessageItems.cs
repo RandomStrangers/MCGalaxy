@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.DB;
-
 namespace MCGalaxy.Eco
 {
     public sealed class LoginMessageItem : SimpleItem
@@ -25,9 +21,7 @@ namespace MCGalaxy.Eco
         {
             Aliases = new string[] { "login", "loginmsg", "loginmessage" };
         }
-
         public override string Name { get { return "LoginMessage"; } }
-
         public override void OnPurchase(Player p, string msg)
         {
             if (msg.Length == 0)
@@ -36,7 +30,6 @@ namespace MCGalaxy.Eco
                 p.Message("&aYour login message was removed for free.");
                 return;
             }
-
             if (!CheckPrice(p)) return;
             if (msg == PlayerDB.GetLoginMessage(p.name))
             {
@@ -46,21 +39,17 @@ namespace MCGalaxy.Eco
             {
                 p.Message("&WLogin message must be 64 characters or less."); return;
             }
-
             if (!PlayerOperations.SetLoginMessage(p, p.name, msg)) return;
             Economy.MakePurchase(p, Price, "%3LoginMessage: %f" + msg);
         }
     }
-
     public sealed class LogoutMessageItem : SimpleItem
     {
         public LogoutMessageItem()
         {
             Aliases = new string[] { "logout", "logoutmsg", "logoutmessage" };
         }
-
         public override string Name { get { return "LogoutMessage"; } }
-
         public override void OnPurchase(Player p, string msg)
         {
             if (msg.Length == 0)
@@ -69,7 +58,6 @@ namespace MCGalaxy.Eco
                 p.Message("&aYour logout message was removed for free.");
                 return;
             }
-
             if (!CheckPrice(p)) return;
             if (msg == PlayerDB.GetLogoutMessage(p.name))
             {
@@ -79,7 +67,6 @@ namespace MCGalaxy.Eco
             {
                 p.Message("&WLogin message must be 64 characters or less."); return;
             }
-
             if (!PlayerOperations.SetLogoutMessage(p, p.name, msg)) return;
             Economy.MakePurchase(p, Price, "%3LogoutMessage: %f" + msg);
         }

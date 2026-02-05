@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
 namespace MCGalaxy.Commands.World
 {
     public sealed class CmdGoto : Command2
@@ -36,17 +32,14 @@ namespace MCGalaxy.Commands.World
         }
         public override bool SuperUseable { get { return false; } }
         public override CommandParallelism Parallelism { get { return CommandParallelism.NoAndWarn; } }
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
-
             if (message.CaselessStarts("-random"))
             {
                 Random r = new();
                 string[] files = LevelInfo.AllMapFiles();
                 string[] args = message.SplitSpaces(2);
-
                 int attempts = 0;
                 GrResult res;
                 do
@@ -54,24 +47,20 @@ namespace MCGalaxy.Commands.World
                     attempts++;
                     res = TryGotoRandom(p, r, files, args);
                 } while (attempts < 5 && res == GrResult.NoPermission);
-
                 if (res == GrResult.NoPermission)
                 {
                     p.Message("&WTook too long to find a random map to go to. Giving up.");
                 }
-
             }
             else if (Formatter.ValidMapName(p, message))
             {
                 PlayerActions.ChangeMap(p, message);
             }
         }
-
         enum GrResult { NoLevels, NoPermission, Success }
         static GrResult TryGotoRandom(Player p, Random r, string[] files, string[] args)
         {
             string map;
-
             // randomly visit a specified subset of all levels
             if (args.Length > 1)
             {
@@ -94,12 +83,10 @@ namespace MCGalaxy.Commands.World
                 // try again silently
                 return GrResult.NoPermission;
             }
-
             bool changed = PlayerActions.ChangeMap(p, map);
             if (changed) return GrResult.Success;
             return GrResult.NoPermission;
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Goto [map name]");

@@ -1,14 +1,19 @@
-namespace MCGalaxy.Gui.Popups {
-    partial class PortTools {
+namespace MCGalaxy.Gui.Popups
+{
+    partial class PortTools
+    {
         private System.ComponentModel.IContainer components = null;
-        protected override void Dispose(bool disposing) {
-            if (disposing && (components != null)) {
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
                 components.Dispose();
             }
             base.Dispose(disposing);
         }
         #region Windows Form Designer generated code
-        private void InitializeComponent() {
+        private void InitializeComponent()
+        {
             this.components = new System.ComponentModel.Container();
             this.linkManually = new System.Windows.Forms.LinkLabel();
             this.gbUpnp = new System.Windows.Forms.GroupBox();

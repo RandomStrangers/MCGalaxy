@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
 namespace MCGalaxy
 {
     public enum CpeMessageType : byte
@@ -27,24 +23,19 @@ namespace MCGalaxy
         BottomRight1 = 11, BottomRight2 = 12, BottomRight3 = 13,
         Announcement = 100, BigAnnouncement = 101, SmallAnnouncement = 102
     }
-
     public enum EnvProp : byte
     {
         SidesBlock = 0, EdgeBlock = 1, EdgeLevel = 2,
         CloudsLevel = 3, MaxFog = 4, CloudsSpeed = 5,
         WeatherSpeed = 6, WeatherFade = 7, ExpFog = 8,
         SidesOffset = 9, SkyboxHorSpeed = 10, SkyboxVerSpeed = 11,
-
         Max,
         Weather = 255, // this is internal, not an official env prop
     }
-
     public enum EntityProp : byte
     {
         RotX = 0, RotY = 1, RotZ = 2, ScaleX = 3, ScaleY = 4, ScaleZ = 5,
     }
-
-
     public class CpeExt
     {
         /// <summary> Name of the CPE extension (e.g. ExtPlayerList) </summary>
@@ -53,7 +44,6 @@ namespace MCGalaxy
         public byte ServerVersion;
         /// <summary> Highest version of this CPE extension supported by the client </summary>
         public byte ClientVersion;
-
         public const string ClickDistance = "ClickDistance";
         public const string CustomBlocks = "CustomBlocks";
         public const string HeldBlock = "HeldBlock";
@@ -96,7 +86,6 @@ namespace MCGalaxy
         public const string NotifyAction = "NotifyAction";
         public const string ToggleBlockList = "ToggleBlockList";
     }
-
     public sealed class CpeExtension
     {
         /// <summary> Name of the CPE extension (e.g. ExtPlayerList) </summary>
@@ -107,7 +96,6 @@ namespace MCGalaxy
         public byte Version;
         /// <summary> Whether this CPE extension is currently enabled by the server </summary>
         public bool Enabled = true;
-
         public CpeExtension(string name, string desc)
         {
             Name = name; Desc = desc; Version = 1;
@@ -116,8 +104,6 @@ namespace MCGalaxy
         {
             Name = name; Desc = desc; Version = version;
         }
-
-
         /// <summary> Array of all supported CPE extensions </summary>
         public static CpeExtension[] All = new CpeExtension[] {
             new(CpeExt.ClickDistance,       "Allows controlling how far away blocks can be placed/deleted (/Reach)"),
@@ -164,33 +150,26 @@ namespace MCGalaxy
             #endif
         };
         internal static CpeExt[] Empty = new CpeExt[0];
-
         /// <summary> Retrieves a list of all supported and enabled CPE extensions </summary>
         public static CpeExt[] GetAllEnabled()
         {
             if (!Server.Config.EnableCPE) return Empty;
             CpeExtension[] all = All;
             List<CpeExt> exts = new(all.Length);
-
             for (int i = 0; i < all.Length; i++)
             {
                 CpeExtension e = all[i];
                 if (!e.Enabled) continue;
-
                 exts.Add(new CpeExt() { Name = e.Name, ServerVersion = e.Version });
             }
             return exts.ToArray();
         }
-
-
         static int supportedCount;
         public static void LoadDisabledList()
         {
             supportedCount = 0;
-
             foreach (CpeExtension e in All) { e.Enabled = true; }
             PropertiesFile.Read(Paths.CPEDisabledFile, ParseLine, '=');
-
             // file is out of sync with actual list
             if (supportedCount == All.Length) return;
             try
@@ -202,19 +181,16 @@ namespace MCGalaxy
                 Logger.LogError("Error saving CPE disabled list", ex);
             }
         }
-
         static void ParseLine(string name, string value)
         {
             foreach (CpeExtension c in All)
             {
                 if (!name.CaselessEq(c.Name)) continue;
-
                 c.Enabled = bool.Parse(value);
                 supportedCount++;
                 return;
             }
         }
-
         static void SaveDisabledList()
         {
             using StreamWriter w = FileIO.CreateGuarded(Paths.CPEDisabledFile);
@@ -223,7 +199,6 @@ namespace MCGalaxy
             w.WriteLine("#   To disable an extension, just change '= True' to '= False'");
             w.WriteLine("#   You do not normally need to edit this file - all non-classic functionality can be simply disabled by setting 'enable-cpe' in server.properties to 'False'");
             w.WriteLine();
-
             foreach (CpeExtension c in All)
             {
                 w.WriteLine("#  " + c.Desc);

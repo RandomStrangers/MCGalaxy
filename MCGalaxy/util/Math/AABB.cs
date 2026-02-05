@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Blocks;
-
 namespace MCGalaxy.Maths
 {
     public struct AABB
@@ -31,11 +27,11 @@ namespace MCGalaxy.Maths
         public readonly Vec3S32 BlockMax { get { return new(Max.X >> 5, Max.Y >> 5, Max.Z >> 5); } }
         public AABB(int x1, int y1, int z1, int x2, int y2, int z2)
         {
-            Min.X = x1; 
-            Min.Y = y1; 
+            Min.X = x1;
+            Min.Y = y1;
             Min.Z = z1;
             Max.X = x2;
-            Max.Y = y2; 
+            Max.Y = y2;
             Max.Z = z2;
         }
         public AABB(Vec3S32 min, Vec3S32 max)
@@ -55,51 +51,51 @@ namespace MCGalaxy.Maths
         public readonly AABB Offset(int x, int y, int z)
         {
             AABB bb = this;
-            bb.Min.X += x; 
-            bb.Min.Y += y; 
+            bb.Min.X += x;
+            bb.Min.Y += y;
             bb.Min.Z += z;
-            bb.Max.X += x; 
-            bb.Max.Y += y; 
+            bb.Max.X += x;
+            bb.Max.Y += y;
             bb.Max.Z += z;
             return bb;
         }
         public readonly AABB Adjust(int x, int y, int z)
         {
             AABB bb = this;
-            if (x >= 0) 
+            if (x >= 0)
             {
-                bb.Max.X += x; 
-            } 
-            else 
-            { 
-                bb.Min.X += x; 
+                bb.Max.X += x;
             }
-            if (y >= 0) 
-            { 
+            else
+            {
+                bb.Min.X += x;
+            }
+            if (y >= 0)
+            {
                 bb.Max.Y += y;
-            } 
-            else 
-            { 
-                bb.Min.Y += y; 
             }
-            if (z >= 0) 
-            { 
-                bb.Max.Z += z; 
-            } 
-            else 
-            { 
-                bb.Min.Z += z; 
+            else
+            {
+                bb.Min.Y += y;
+            }
+            if (z >= 0)
+            {
+                bb.Max.Z += z;
+            }
+            else
+            {
+                bb.Min.Z += z;
             }
             return bb;
         }
         public readonly AABB Expand(int amount)
         {
             AABB bb = this;
-            bb.Min.X -= amount; 
+            bb.Min.X -= amount;
             bb.Min.Y -= amount;
             bb.Min.Z -= amount;
-            bb.Max.X += amount; 
-            bb.Max.Y += amount; 
+            bb.Max.X += amount;
+            bb.Max.Y += amount;
             bb.Max.Z += amount;
             return bb;
         }
@@ -117,8 +113,8 @@ namespace MCGalaxy.Maths
             }
             return false;
         }
-        public override readonly string ToString() 
-        { 
+        public override readonly string ToString()
+        {
             return Min + " : " + Max;
         }
         public static bool IntersectsSolidBlocks(AABB bb, Level lvl)
@@ -177,11 +173,11 @@ namespace MCGalaxy.Maths
                     {
                         ushort block = lvl.GetBlock((ushort)x, (ushort)y, (ushort)z);
                         AABB blockBB = lvl.blockAABBs[block];
-                        blockBB.Min.X += x * 32; 
-                        blockBB.Min.Y += y * 32; 
+                        blockBB.Min.X += x * 32;
+                        blockBB.Min.Y += y * 32;
                         blockBB.Min.Z += z * 32;
-                        blockBB.Max.X += x * 32; 
-                        blockBB.Max.Y += y * 32; 
+                        blockBB.Max.X += x * 32;
+                        blockBB.Max.Y += y * 32;
                         blockBB.Max.Z += z * 32;
                         if (!Intersects(ref bb, ref blockBB))
                         {

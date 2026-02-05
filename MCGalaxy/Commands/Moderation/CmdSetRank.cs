@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,7 +14,6 @@
  */
 using MCGalaxy.Events;
 using MCGalaxy.Events.GroupEvents;
-
 namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdSetRank : Command2
@@ -34,14 +30,12 @@ namespace MCGalaxy.Commands.Moderation
                     new CommandAlias("Promote", "+up"), new CommandAlias("Demote", "-down") };
             }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(3);
             if (args.Length < 2) { Help(p); return; }
             string rankName, target;
             string reason = args.Length > 2 ? args[2] : null;
-
             if (args[0].CaselessEq("+up"))
             {
                 rankName = args[0];
@@ -57,17 +51,14 @@ namespace MCGalaxy.Commands.Moderation
                 rankName = args[1];
                 target = ModActionCmd.FindName(p, "rank", "Rank", " " + rankName, args[0], ref reason);
             }
-
             if (target == null) return;
             if (p.name.CaselessEq(target))
             {
                 p.Message("Cannot change your own rank."); return;
             }
-
             Group curRank = PlayerInfo.GetGroup(target);
             Group newRank = TargetRank(p, rankName, curRank);
             if (newRank == null) return;
-
             if (curRank == newRank)
             {
                 p.Message("{0} &Sis already ranked {1}",
@@ -75,7 +66,6 @@ namespace MCGalaxy.Commands.Moderation
                 return;
             }
             if (!CanChangeRank(target, curRank, newRank, p, data, ref reason)) return;
-
             ModAction action = new(target, p, ModActionType.Rank, reason)
             {
                 targetGroup = curRank,
@@ -83,7 +73,6 @@ namespace MCGalaxy.Commands.Moderation
             };
             OnModActionEvent.Call(action);
         }
-
         internal static bool CanChangeRank(string name, Group curRank, Group newRank,
                                            Player p, CommandData data, ref string reason)
         {
@@ -92,7 +81,6 @@ namespace MCGalaxy.Commands.Moderation
                     Server.Config.DefaultPromoteMessage : Server.Config.DefaultDemoteMessage;
             reason = ModActionCmd.ExpandReason(p, reason);
             if (reason == null) return false;
-
             if (newRank == banned)
             {
                 p.Message("Use &T/Ban &Sto change a player's rank to {0}&S.", banned.ColoredName); return false;
@@ -101,31 +89,26 @@ namespace MCGalaxy.Commands.Moderation
             {
                 p.Message("Use &T/Unban &Sto change a player's rank from &S{0}.", banned.ColoredName); return false;
             }
-
             if (!CheckRank(p, data, name, curRank.Permission, "change the rank of", false)) return false;
             if (newRank.Permission >= data.Rank)
             {
                 p.Message("Cannot rank a player to a rank equal to or higher than yours."); return false;
             }
-
             if (newRank.Permission == curRank.Permission)
             {
                 p.Message("{0} &Sis already ranked {1}.",
                           p.FormatNick(name), curRank.ColoredName); return false;
             }
-
             bool cancel = false;
             OnChangingGroupEvent.Call(name, curRank, newRank, ref cancel);
             return !cancel;
         }
-
         static Group TargetRank(Player p, string name, Group curRank)
         {
             if (name.CaselessEq("+up")) return NextRankUp(p, curRank);
             if (name.CaselessEq("-down")) return NextRankDown(p, curRank);
             return Matcher.FindRanks(p, name);
         }
-
         static Group NextRankDown(Player p, Group curRank)
         {
             int index = Group.GroupList.IndexOf(curRank);
@@ -136,7 +119,6 @@ namespace MCGalaxy.Commands.Moderation
             }
             p.Message("No lower ranks exist"); return null;
         }
-
         static Group NextRankUp(Player p, Group curRank)
         {
             int index = Group.GroupList.IndexOf(curRank);
@@ -147,7 +129,6 @@ namespace MCGalaxy.Commands.Moderation
             }
             p.Message("No higher ranks exist"); return null;
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/SetRank [player] [rank] <reason>");

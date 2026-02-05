@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2011 MCForge
-        
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,11 +14,8 @@
  */
 using MCGalaxy.Blocks.Physics;
 using System;
-
-
 namespace MCGalaxy.Events.LevelEvents
 {
-
     public delegate void OnLevelLoaded(Level lvl);
     public sealed class OnLevelLoadedEvent : IEvent<OnLevelLoaded>
     {
@@ -31,7 +25,6 @@ namespace MCGalaxy.Events.LevelEvents
             CallCommon(pl => pl(lvl));
         }
     }
-
     public delegate void OnLevelLoad(string name, string path, ref bool cancel);
     public sealed class OnLevelLoadEvent : IEvent<OnLevelLoad>
     {
@@ -45,7 +38,6 @@ namespace MCGalaxy.Events.LevelEvents
             }
         }
     }
-
     public delegate void OnLevelSave(Level lvl, ref bool cancel);
     public sealed class OnLevelSaveEvent : IEvent<OnLevelSave>
     {
@@ -59,7 +51,6 @@ namespace MCGalaxy.Events.LevelEvents
             }
         }
     }
-
     public delegate void OnLevelUnload(Level lvl, ref bool cancel);
     public sealed class OnLevelUnloadEvent : IEvent<OnLevelUnload>
     {
@@ -73,7 +64,6 @@ namespace MCGalaxy.Events.LevelEvents
             }
         }
     }
-
     public delegate void OnLevelAdded(Level lvl);
     public sealed class OnLevelAddedEvent : IEvent<OnLevelAdded>
     {
@@ -83,7 +73,6 @@ namespace MCGalaxy.Events.LevelEvents
             CallCommon(pl => pl(lvl));
         }
     }
-
     public delegate void OnLevelRemoved(Level lvl);
     public sealed class OnLevelRemovedEvent : IEvent<OnLevelRemoved>
     {
@@ -93,7 +82,6 @@ namespace MCGalaxy.Events.LevelEvents
             CallCommon(pl => pl(lvl));
         }
     }
-
     public delegate void OnPhysicsStateChanged(Level lvl, PhysicsState state);
     public sealed class OnPhysicsStateChangedEvent : IEvent<OnPhysicsStateChanged>
     {
@@ -103,7 +91,6 @@ namespace MCGalaxy.Events.LevelEvents
             CallCommon(pl => pl(lvl, state));
         }
     }
-
     public delegate void OnPhysicsLevelChanged(Level lvl, int level);
     public sealed class OnPhysicsLevelChangedEvent : IEvent<OnPhysicsLevelChanged>
     {
@@ -113,7 +100,6 @@ namespace MCGalaxy.Events.LevelEvents
             CallCommon(pl => pl(lvl, level));
         }
     }
-
     public delegate void OnPhysicsUpdate(ushort x, ushort y, ushort z, PhysicsArgs args, Level lvl);
     public sealed class OnPhysicsUpdateEvent : IEvent<OnPhysicsUpdate>
     {
@@ -123,7 +109,6 @@ namespace MCGalaxy.Events.LevelEvents
             CallCommon(pl => pl(x, y, z, extraInfo, l));
         }
     }
-
     public delegate void OnLevelRenamed(string srcMap, string dstMap);
     public sealed class OnLevelRenamedEvent : IEvent<OnLevelRenamed>
     {
@@ -133,7 +118,6 @@ namespace MCGalaxy.Events.LevelEvents
             CallCommon(pl => pl(srcMap, dstMap));
         }
     }
-
     public delegate void OnLevelCopied(string srcMap, string dstMap);
     public sealed class OnLevelCopiedEvent : IEvent<OnLevelCopied>
     {
@@ -143,7 +127,6 @@ namespace MCGalaxy.Events.LevelEvents
             CallCommon(pl => pl(srcMap, dstMap));
         }
     }
-
     public delegate void OnLevelDeleted(string map);
     public sealed class OnLevelDeletedEvent : IEvent<OnLevelDeleted>
     {
@@ -153,7 +136,6 @@ namespace MCGalaxy.Events.LevelEvents
             CallCommon(pl => pl(map));
         }
     }
-
     public delegate void OnBlockHandlersUpdated(Level lvl, ushort block);
     public sealed class OnBlockHandlersUpdatedEvent : IEvent<OnBlockHandlersUpdated>
     {
@@ -163,7 +145,6 @@ namespace MCGalaxy.Events.LevelEvents
             CallCommon(pl => pl(lvl, block));
         }
     }
-
     public delegate void OnMainLevelChanging(ref string map);
     public sealed class OnMainLevelChangingEvent : IEvent<OnMainLevelChanging>
     {

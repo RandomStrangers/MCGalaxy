@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,7 +15,6 @@
 using MCGalaxy.Blocks.Extended;
 using MCGalaxy.Bots;
 using System;
-
 namespace MCGalaxy.Commands.Bots
 {
     public sealed class CmdBot : Command2
@@ -43,18 +39,14 @@ namespace MCGalaxy.Commands.Bots
         {
             get { return new[] { new CommandPerm(LevelPermission.Operator, "can modify bots that do not belong to them") }; }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
             string[] args = message.SplitSpaces(3);
             if (args[0].CaselessEq("info")) { BotInfo(p, args.Length < 2 ? "" : args[1]); return; }
-
             if (args.Length < 2) { Help(p); return; }
-
             if (!Formatter.ValidName(p, args[1], "bot")) return;
             if (!LevelInfo.Check(p, data.Rank, p.level, "modify bots in this level")) return;
-
             string bot = args[1], value = args.Length > 2 ? args[2] : null;
             if (args[0].CaselessEq("add"))
             {
@@ -85,7 +77,6 @@ namespace MCGalaxy.Commands.Bots
                 Help(p);
             }
         }
-
         void AddBot(Player p, string botName)
         {
             botName = botName.Replace(' ', '_');
@@ -96,7 +87,6 @@ namespace MCGalaxy.Commands.Bots
             };
             TryAddBot(p, bot);
         }
-
         void TryAddBot(Player p, PlayerBot bot)
         {
             if (BotExists(p.level, bot.name, null))
@@ -107,14 +97,11 @@ namespace MCGalaxy.Commands.Bots
             {
                 p.Message("Reached maximum number of bots allowed on this map."); return;
             }
-
             bot.SetInitialPos(p.Pos);
             bot.SetYawPitch(p.Rot.RotY, 0);
-
             p.Message("You added the bot " + bot.ColoredName);
             PlayerBot.Add(bot);
         }
-
         static bool BotExists(Level lvl, string name, PlayerBot skip)
         {
             PlayerBot[] bots = lvl.Bots.Items;
@@ -125,7 +112,6 @@ namespace MCGalaxy.Commands.Bots
             }
             return false;
         }
-
         void RemoveBot(Player p, string botName, string extArgs)
         {
             if (botName.CaselessEq("all"))
@@ -154,7 +140,6 @@ namespace MCGalaxy.Commands.Bots
                     }
                     return;
                 }
-
                 if (PlayerBot.CanEditAny(p))
                 {
                     int removedCount = PlayerBot.RemoveLoadedBots(p.level, false);
@@ -172,25 +157,21 @@ namespace MCGalaxy.Commands.Bots
                 {
                     p.Message("&WYou cannot remove all bots unless you are the owner of this map.");
                 }
-
             }
             else
             {
                 PlayerBot bot = Matcher.FindBots(p, botName);
                 if (bot == null) return;
                 if (!bot.EditableBy(p, "remove")) return;
-
                 PlayerBot.Remove(bot);
                 p.Message("Removed bot {0}", bot.ColoredName);
             }
         }
-
         void SetBotText(Player p, string botName, string text, LevelPermission plRank)
         {
             PlayerBot bot = Matcher.FindBots(p, botName);
             if (bot == null) return;
             if (!bot.EditableBy(p, "set the text of")) return;
-
             if (text == null)
             {
                 p.Message("Removed text shown when bot {0} &Sclicked on", bot.ColoredName);
@@ -200,19 +181,16 @@ namespace MCGalaxy.Commands.Bots
             {
                 bool allCmds = HasExtraPerm(p, "MB", plRank, 1);
                 if (!MessageBlock.Validate(p, text, allCmds)) return;
-
                 p.Message("Set text shown when bot {0} &Sis clicked on to {1}", bot.ColoredName, text);
                 bot.ClickedOnText = text;
             }
             BotsFile.Save(p.level);
         }
-
         void SetDeathMessage(Player p, string botName, string text)
         {
             PlayerBot bot = Matcher.FindBots(p, botName);
             if (bot == null) return;
             if (!bot.EditableBy(p, "set the death message of")) return;
-
             if (text == null)
             {
                 p.Message("Reset shown when bot {0} &Skills someone", bot.ColoredName);
@@ -225,12 +203,10 @@ namespace MCGalaxy.Commands.Bots
             }
             BotsFile.Save(p.level);
         }
-
         void RenameBot(Player p, string botName, string newName)
         {
             if (newName == null) { p.Message("New name of bot required."); return; }
             if (!Formatter.ValidName(p, newName, "bot")) return;
-
             PlayerBot bot = Matcher.FindBots(p, botName);
             if (bot == null) return;
             if (!bot.EditableBy(p, "rename")) { return; }
@@ -238,7 +214,6 @@ namespace MCGalaxy.Commands.Bots
             {
                 p.Message("A bot with the new name already exists."); return;
             }
-
             p.Message("Renamed bot {0}", bot.ColoredName);
             if (bot.DisplayName == bot.name)
             {
@@ -246,19 +221,15 @@ namespace MCGalaxy.Commands.Bots
                 bot.GlobalDespawn();
                 bot.GlobalSpawn();
             }
-
             bot.name = newName;
             BotsFile.Save(p.level);
         }
-
         void CopyBot(Player p, string botName, string newName)
         {
             if (newName == null) { p.Message("Name of new bot required."); return; }
             if (!Formatter.ValidName(p, newName, "bot")) return;
-
             PlayerBot bot = Matcher.FindBots(p, botName);
             if (bot == null) return;
-
             PlayerBot clone = new(newName, p.level);
             BotProperties props = new();
             props.FromBot(bot);
@@ -271,7 +242,6 @@ namespace MCGalaxy.Commands.Bots
             if (bot.DisplayName == bot.name) clone.DisplayName = newName;
             TryAddBot(p, clone);
         }
-
         void BotInfo(Player p, string botName)
         {
             if (botName.Length == 0)
@@ -293,7 +263,6 @@ namespace MCGalaxy.Commands.Bots
             bot.DisplayInfo(p);
             if (p.checkingBotInfo) { p.checkingBotInfo = false; p.Message("Note: pending click-to-check bot info has been cancelled."); }
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Bot add [name] &H- Adds a new bot at your position");

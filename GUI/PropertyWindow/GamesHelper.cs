@@ -30,15 +30,15 @@ namespace MCGalaxy.Gui
                            Button add, Button del, ListBox used, ListBox notUsed)
         {
             this.game = game;
-            cbStart = start_; 
-            cbMap = map; 
+            cbStart = start_;
+            cbMap = map;
             cbMain = main;
-            btnStart = start; 
-            btnStop = stop; 
+            btnStart = start;
+            btnStop = stop;
             btnEnd = end;
-            _ = add; 
-            _ = del; 
-            lbUsed = used; 
+            _ = add;
+            _ = del;
+            lbUsed = used;
             lbNotUsed = notUsed;
             start.Click += StartGame_Click;
             stop.Click += StopGame_Click;
@@ -106,10 +106,10 @@ namespace MCGalaxy.Gui
             try
             {
                 object selected = lbNotUsed.SelectedItem;
-                if (selected == null) 
-                { 
-                    Popup.Warning("No map selected"); 
-                    return; 
+                if (selected == null)
+                {
+                    Popup.Warning("No map selected");
+                    return;
                 }
                 string map = (string)selected;
                 LevelConfig lvlCfg = LevelInfo.GetConfig(map);
@@ -127,8 +127,8 @@ namespace MCGalaxy.Gui
                 object selected = lbUsed.SelectedItem;
                 if (selected == null)
                 {
-                    Popup.Warning("No map selected"); 
-                    return; 
+                    Popup.Warning("No map selected");
+                    return;
                 }
                 string map = (string)selected;
                 LevelConfig lvlCfg = LevelInfo.GetConfig(map);

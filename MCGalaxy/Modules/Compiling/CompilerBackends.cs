@@ -1,30 +1,26 @@
-﻿/*
+/*
     Copyright 2015 MCGalaxy
- 
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-
 // Based on https://github.com/aspnet/RoslynCodeDomProvider
 // Copyright(c) Microsoft Corporation All rights reserved.
-// 
+//
 // MIT License
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the ""Software""), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #if !MCG_STANDALONE
 using System;
@@ -83,9 +79,9 @@ namespace MCGalaxy.Modules.Compiling
             }
         }
         protected abstract void AddReferencedAssemblies(StringBuilder sb, List<string> referenced);
-        protected static string Quote(string value) 
-        { 
-            return "\"" + value.Trim() + "\""; 
+        protected static string Quote(string value)
+        {
+            return "\"" + value.Trim() + "\"";
         }
         protected abstract string GetExecutable();
         protected abstract string GetCompilerArgs(string exe, string args);
@@ -176,7 +172,7 @@ namespace MCGalaxy.Modules.Compiling
         protected override string GetExecutable()
         {
             string root = RuntimeEnvironment.GetRuntimeDirectory();
-            string[] paths = new string[] 
+            string[] paths = new string[]
             {
                 @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\Roslyn\csc.exe",
                 @"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\Roslyn\csc.exe",
@@ -205,24 +201,24 @@ namespace MCGalaxy.Modules.Compiling
     /// <summary> Compiles C# source code files, using Roslyn for the compiler </summary>
     public class RoslynCSharpCompiler : CommandLineCompiler
     {
-        protected override string GetExecutable() 
+        protected override string GetExecutable()
         {
             string path = Server.GetRuntimeExePath();
-            if (path.EndsWith("dotnet")) 
+            if (path.EndsWith("dotnet"))
             {
                 return path;
             }
             path = Environment.GetEnvironmentVariable("MCG_DOTNET_PATH");
-            if (string.IsNullOrEmpty(path)) 
+            if (string.IsNullOrEmpty(path))
             {
                 throw new InvalidOperationException("Env variable 'MCG_DOTNET_PATH' must specify the path to 'dotnet' executable - e.g. /home/test/.dotnet/dotnet");
             }
-            using (Stream tmp = FileIO.TryOpenRead(path)) 
-            { 
+            using (Stream tmp = FileIO.TryOpenRead(path))
+            {
             }
             return path;
         }
-        protected override string GetCompilerArgs(string dotnetPath, string args) 
+        protected override string GetCompilerArgs(string dotnetPath, string args)
         {
             ProcessStartInfo psi = CreateStartInfo(dotnetPath, "--list-sdks");
             string rootFolder = Path.GetDirectoryName(dotnetPath);
@@ -234,7 +230,7 @@ namespace MCGalaxy.Modules.Compiling
             string compileArgs = Path.Combine(rootFolder, "sdk", sdk, "Roslyn", "bincore", "csc.dll");
             return "exec " + Quote(compileArgs) + " " + args;
         }
-        protected override void AddReferencedAssemblies(StringBuilder sb, List<string> referenced) 
+        protected override void AddReferencedAssemblies(StringBuilder sb, List<string> referenced)
         {
             string[] sysAssemblyPaths = GetSystemAssemblyPaths();
             referenced.Add("System.Runtime.dll");
@@ -256,7 +252,7 @@ namespace MCGalaxy.Modules.Compiling
             }
             return assemblies.Split(Path.PathSeparator);
         }
-        static void AddReferencedAssembly(StringBuilder sb, string[] sysAssemblyPaths, string path) 
+        static void AddReferencedAssembly(StringBuilder sb, string[] sysAssemblyPaths, string path)
         {
             path = MapAssembly(sysAssemblyPaths, path);
             sb.AppendFormat("/R:{0} ", Quote(path));

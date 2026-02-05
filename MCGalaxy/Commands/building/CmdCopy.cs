@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -33,12 +30,12 @@ namespace MCGalaxy.Commands.Building
         public override bool SuperUseable { get { return false; } }
         public override CommandAlias[] Aliases
         {
-            get 
-            { 
-                return new CommandAlias[] 
-                { 
-                    new("Cut", "cut") 
-                }; 
+            get
+            {
+                return new CommandAlias[]
+                {
+                    new("Cut", "cut")
+                };
             }
         }
         public override void Use(Player p, string message, CommandData data)
@@ -52,10 +49,10 @@ namespace MCGalaxy.Commands.Building
             string opt = parts[0].ToLower();
             if (opt == "save")
             {
-                if (parts.Length != 2) 
-                { 
-                    Help(p); 
-                    return; 
+                if (parts.Length != 2)
+                {
+                    Help(p);
+                    return;
                 }
                 if (!Formatter.ValidFilename(p, parts[1]))
                 {
@@ -65,10 +62,10 @@ namespace MCGalaxy.Commands.Building
             }
             else if (opt == "load")
             {
-                if (parts.Length != 2) 
-                { 
-                    Help(p); 
-                    return; 
+                if (parts.Length != 2)
+                {
+                    Help(p);
+                    return;
                 }
                 if (!Formatter.ValidFilename(p, parts[1]))
                 {
@@ -78,20 +75,20 @@ namespace MCGalaxy.Commands.Building
             }
             else if (IsDeleteAction(opt))
             {
-                if (parts.Length != 2) 
-                { 
+                if (parts.Length != 2)
+                {
                     Help(p);
-                    return; 
+                    return;
                 }
                 if (!Formatter.ValidFilename(p, parts[1]))
                 {
                     return;
                 }
                 string path = FindCopy(p.name, parts[1]);
-                if (path == null) 
-                { 
-                    p.Message("No such copy exists."); 
-                    return; 
+                if (path == null)
+                {
+                    p.Message("No such copy exists.");
+                    return;
                 }
                 FileIO.TryDelete(path);
                 p.Message("Deleted copy " + parts[1]);
@@ -101,7 +98,7 @@ namespace MCGalaxy.Commands.Building
                 string dir = "extra/savecopy/" + p.name;
                 if (!Directory.Exists(dir))
                 {
-                    p.Message("You have no saved copies"); 
+                    p.Message("You have no saved copies");
                     return;
                 }
                 string[] files = FileIO.TryGetFiles(dir);
@@ -192,10 +189,10 @@ namespace MCGalaxy.Commands.Building
                     for (ushort x = minX; x <= maxX; ++x)
                     {
                         block = p.level.GetBlock(x, y, z);
-                        if (!p.group.CanPlace[block]) 
-                        { 
-                            index++; 
-                            continue; 
+                        if (!p.group.CanPlace[block])
+                        {
+                            index++;
+                            continue;
                         }
                         if (block != Block.Air || cState.PasteAir)
                         {
@@ -233,14 +230,14 @@ namespace MCGalaxy.Commands.Building
                 CompleteCopy(p, m, cArgs);
             }
         }
-        bool DoCopy(Player p, Vec3S32[] m, object state, ushort block) 
-        { 
-            return false; 
+        bool DoCopy(Player p, Vec3S32[] m, object state, ushort block)
+        {
+            return false;
         }
-        class CopyArgs 
-        { 
-            public int offsetIndex; 
-            public bool cut, air; 
+        class CopyArgs
+        {
+            public int offsetIndex;
+            public bool cut, air;
         }
         void SaveCopy(Player p, string file)
         {
@@ -260,7 +257,7 @@ namespace MCGalaxy.Commands.Building
             CopyState cState = p.CurrentCopy;
             if (cState == null)
             {
-                p.Message("You haven't copied anything yet"); 
+                p.Message("You haven't copied anything yet");
                 return;
             }
             string path = "extra/savecopy/" + p.name + "/" + file + ".cpb";
@@ -275,9 +272,9 @@ namespace MCGalaxy.Commands.Building
         {
             string path = FindCopy(p.name, file);
             if (path == null)
-            { 
-                p.Message("No such copy exists"); 
-                return; 
+            {
+                p.Message("No such copy exists");
+                return;
             }
             using (FileStream fs = FileIO.TryOpenRead(path))
             using (GZipStream gs = new(fs, CompressionMode.Decompress))

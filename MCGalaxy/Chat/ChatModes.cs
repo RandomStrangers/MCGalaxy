@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
 Dual-licensed under the Educational Community License, Version 2.0 and
 the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -13,12 +13,10 @@ or implied. See the Licenses for the specific language governing
 permissions and limitations under the Licenses.
  */
 using MCGalaxy.Commands.Chatting;
-
 namespace MCGalaxy
 {
     public static class ChatModes
     {
-
         public static bool Handle(Player p, string text)
         {
             if (text.Length >= 2 && text[0] == '@' && text[1] == '@')
@@ -27,31 +25,25 @@ namespace MCGalaxy
                 MessageDirect(p, Player.Console, text);
                 return true;
             }
-
             if (text[0] == '@' || p.whisper)
             {
                 if (text[0] == '@') text = text.Remove(0, 1).Trim();
-
                 string target = p.whisperTo;
                 if (target.Length == 0)
                 {
                     text.Separate(' ', out target, out text);
-
                     if (text.Length == 0)
                     {
                         p.Message("No message entered");
                         return true;
                     }
                 }
-
                 Player who = PlayerInfo.FindMatches(p, target);
                 if (who == null) return true;
                 if (who == p) { p.Message("Trying to talk to yourself, huh?"); return true; }
-
                 MessageDirect(p, who, text);
                 return true;
             }
-
             if (p.opchat)
             {
                 MessageOps(p, text);
@@ -88,33 +80,27 @@ namespace MCGalaxy
             }
             return false;
         }
-
         public static void MessageOps(Player p, string message)
         {
             if (!MessageCmd.CanSpeak(p, "OpChat")) return;
             MessageStaff(p, message, Chat.OpchatPerms, "Ops");
         }
-
         public static void MessageAdmins(Player p, string message)
         {
             if (!MessageCmd.CanSpeak(p, "AdminChat")) return;
             MessageStaff(p, message, Chat.AdminchatPerms, "Admins");
         }
-
         public static void MessageStaff(Player p, string message,
                                         ItemPerms perms, string group)
         {
             if (message.Length == 0) { p.Message("No message to send."); return; }
-
             string chatMsg = "To " + group + " &f-λNICK&f- " + message;
             Chat.MessageChat(ChatScope.Perms, p, chatMsg, perms, null, true);
         }
-
         public static void MessageDirect(Player p, Player target, string message)
         {
             if (message.Length == 0) { p.Message("No message entered"); return; }
             Logger.Log(LogType.PrivateChat, "{0} @{1}: {2}", p.name, target.name, message);
-
             if (!p.IsConsole)
             {
                 p.Message("[<] {0}: &f{1}", p.FormatNick(target), message);

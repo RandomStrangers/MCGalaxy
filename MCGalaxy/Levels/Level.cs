@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -34,9 +31,9 @@ namespace MCGalaxy
         Operator = 80, Admin = 100, Owner = 120, Console = 127,
         Null = 150, Nobody = 120
     }
-    public enum BuildType 
+    public enum BuildType
     {
-        Normal, ModifyOnly, NoModify 
+        Normal, ModifyOnly, NoModify
     };
     public sealed partial class Level : IDisposable
     {
@@ -49,8 +46,8 @@ namespace MCGalaxy
             this.blocks = blocks;
             Init(name, width, height, length);
         }
-        internal Level() 
-        { 
+        internal Level()
+        {
         }
         internal void Init(string name, ushort width, ushort height, ushort length)
         {
@@ -66,8 +63,8 @@ namespace MCGalaxy
             {
                 length = 1;
             }
-            Width = width; 
-            Height = height; 
+            Width = width;
+            Height = height;
             Length = length;
             for (int i = 0; i < CustomBlockDefs.Length; i++)
             {
@@ -80,7 +77,7 @@ namespace MCGalaxy
                 blockAABBs[i] = Block.BlockAABB((ushort)i, this);
             }
             UpdateAllBlockHandlers();
-            this.name = name; 
+            this.name = name;
             MapName = name.ToLower();
             BlockDB = new(this);
             ChunksX = Utils.CeilDiv(width, 16);
@@ -96,12 +93,12 @@ namespace MCGalaxy
             listCheckExists = new(width, height, length);
             listUpdateExists = new(width, height, length);
         }
-        public List<Player> players 
-        { 
-            get 
-            { 
-                return getPlayers(); 
-            } 
+        public List<Player> players
+        {
+            get
+            {
+                return getPlayers();
+            }
         }
         public void Dispose()
         {
@@ -143,7 +140,7 @@ namespace MCGalaxy
             }
             if (Server.lockdown.Contains(name))
             {
-                p.Message("The level " + name + " is locked."); 
+                p.Message("The level " + name + " is locked.");
                 return false;
             }
             return true;
@@ -176,10 +173,10 @@ namespace MCGalaxy
             {
                 return false;
             }
-            if (IsMuseum) 
+            if (IsMuseum)
             {
-                Cleanup(); 
-                return true; 
+                Cleanup();
+                return true;
             }
             bool cancel = false;
             OnLevelUnloadEvent.Call(this, ref cancel);
@@ -232,7 +229,7 @@ namespace MCGalaxy
                 }
             }
         }
-        public void SaveSettings() 
+        public void SaveSettings()
         {
             if (!IsMuseum)
             {
@@ -341,9 +338,9 @@ namespace MCGalaxy
             Logger.Log(LogType.SystemActivity, "Level unchanged, skipping backup");
             return null;
         }
-        public static Level Load(string name) 
-        { 
-            return Load(name, LevelInfo.MapPath(name)); 
+        public static Level Load(string name)
+        {
+            return Load(name, LevelInfo.MapPath(name));
         }
         public static Level Load(string name, string path)
         {
@@ -469,32 +466,32 @@ namespace MCGalaxy
             byte oldRaw, newRaw;
             public readonly ushort OldBlock
             {
-                get 
-                { 
+                get
+                {
                     return (ushort)(oldRaw | ((flags & 0x03) << Block.ExtendedShift));
                 }
             }
             public readonly ushort NewBlock
             {
-                get 
-                { 
+                get
+                {
                     return (ushort)(newRaw | ((flags & 0xC >> 2) << Block.ExtendedShift));
                 }
             }
             public readonly DateTime Time
             {
-                get 
-                { 
-                    return Server.StartTime.AddTicks((flags >> 4) * TimeSpan.TicksPerSecond); 
+                get
+                {
+                    return Server.StartTime.AddTicks((flags >> 4) * TimeSpan.TicksPerSecond);
                 }
             }
             public void SetData(ushort oldBlock, ushort newBlock)
             {
                 TimeSpan delta = DateTime.UtcNow.Subtract(Server.StartTime);
                 flags = (int)delta.TotalSeconds << 4;
-                oldRaw = (byte)oldBlock; 
+                oldRaw = (byte)oldBlock;
                 flags |= oldBlock >> Block.ExtendedShift;
-                newRaw = (byte)newBlock; 
+                newRaw = (byte)newBlock;
                 flags |= (newBlock >> Block.ExtendedShift) << 2;
             }
         }

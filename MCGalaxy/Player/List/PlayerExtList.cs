@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,34 +15,27 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
 namespace MCGalaxy
 {
-
     /// <summary> Represents a list of player names and simple associated data. Case insensitive. Thread safe. </summary>
     public class PlayerExtList
     {
         public char Separator = ' ';
         public string Path;
-
         readonly List<string> names = new(), lines = new();
         internal readonly object locker = new();
         readonly object saveLocker = new();
-
         public List<string> AllNames()
         {
             lock (locker) return new List<string>(names);
         }
-
         /// <summary> Returns a copy of all lines (name + separator + data) in the list. </summary>
         public List<string> AllLines()
         {
             lock (locker) return new List<string>(lines);
         }
-
         /// <summary> Returns number of names that are in this list. </summary>
         public int Count { get { lock (locker) return names.Count; } }
-
         /// <summary> Sets the data associated with the given name. </summary>
         public void Update(string name, string data)
         {
@@ -62,7 +52,6 @@ namespace MCGalaxy
                 }
             }
         }
-
         /// <summary> Returns whether the given name was removed from this list. </summary>
         public bool Remove(string name)
         {
@@ -70,19 +59,16 @@ namespace MCGalaxy
             {
                 int idx = names.CaselessIndexOf(name);
                 if (idx == -1) return false;
-
                 names.RemoveAt(idx);
                 lines.RemoveAt(idx);
                 return true;
             }
         }
-
         /// <summary> Returns whether the given name is in this list. </summary>
         public bool Contains(string name)
         {
             lock (locker) return names.CaselessContains(name);
         }
-
         /// <summary> Retrieves the data associated with the given name </summary>
         /// <remarks> Returns "" if the data associated with the given name is missing </remarks>
         /// <remarks> Returns null if the given name was not found at all </remarks>
@@ -92,14 +78,11 @@ namespace MCGalaxy
             {
                 int idx = names.CaselessIndexOf(name);
                 if (idx == -1) return null;
-
                 string line = lines[idx];
                 idx = line.IndexOf(Separator);
                 return idx == -1 ? "" : line.Substring(idx + 1);
             }
         }
-
-
         public void Save() { Save(true); }
         public void Save(bool log)
         {
@@ -110,7 +93,6 @@ namespace MCGalaxy
             }
             if (log) Logger.Log(LogType.BackgroundActivity, "SAVED: " + Path);
         }
-
         void SaveEntries(StreamWriter w)
         {
             lock (locker)
@@ -118,7 +100,6 @@ namespace MCGalaxy
                 foreach (string line in lines) w.WriteLine(line);
             }
         }
-
         public static PlayerExtList Load(string path, char separator = ' ')
         {
             PlayerExtList list = new()
@@ -126,14 +107,12 @@ namespace MCGalaxy
                 Path = path,
                 Separator = separator
             };
-
             if (!File.Exists(path))
             {
                 File.Create(path).Close();
                 Logger.Log(LogType.SystemActivity, "CREATED NEW: " + path);
                 return list;
             }
-
             using (StreamReader r = new(path, Encoding.UTF8))
             {
                 string line = null;

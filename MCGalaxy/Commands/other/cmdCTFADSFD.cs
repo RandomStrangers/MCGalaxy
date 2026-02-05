@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCLawl (Modified for use with MCForge)
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,7 +15,6 @@
 /*using System;
 using System.Collections.Generic;
 using System.Text;
-
 namespace MCGalaxy.Commands
 {
     public class CmdCtf : Command
@@ -27,7 +23,6 @@ namespace MCGalaxy.Commands
         public override string type { get { return CommandTypes.Other; } }
         public override bool museumUsable { get { return false; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-
         public override void Use(Player p, string message)
         {
             if (message.IndexOf(' ') != -1)
@@ -72,7 +67,6 @@ namespace MCGalaxy.Commands
                         Team workTeam = newPlayer.level.teams.Find(team => team.color == newPlayer.onTeam);
                         workTeam.removePlayer(newPlayer);
                         if (newPlayer == null) { Help(p); return; }
-
                     }
                 }
                 else if (message.SplitSpaces()[0].ToLower() == "flag")
@@ -96,7 +90,6 @@ namespace MCGalaxy.Commands
                         }
                     }
                     else { Help(p); return; }
-
                 }
                 else if (message.SplitSpaces()[0].ToLower() == "spawn")
                 {
@@ -113,7 +106,6 @@ namespace MCGalaxy.Commands
                     p.level.maxroundpoints = i;
                     p.Message("Max points has been set to " + i);
                 }
-
             }
             else if (message.SplitSpaces()[0].ToLower() == "debug")
             {
@@ -124,7 +116,7 @@ namespace MCGalaxy.Commands
                 p.Message("Flag base: x: " + workTeam.flagBase[0] + ", y: " + workTeam.flagBase[1] + ", z: " + workTeam.flagBase[2]);
                 p.Message("Flag loc:  x: " + workTeam.flagLocation[0] + ", y: " + workTeam.flagLocation[1] + ", z: " + workTeam.flagLocation[2]);
                 p.Message("Level ctfmode: " + workTeam.mapOn.ctfmode);
-            } 
+            }
             else if (message.SplitSpaces()[0].ToLower() == "clear")
             {
                 if (message.SplitSpaces().Length > 1 && message.SplitSpaces().Length < 1) { Help(p); return;}
@@ -161,8 +153,6 @@ namespace MCGalaxy.Commands
                 Help(p);
             }
         }
-        
-
         public void GameStart(Player p)
         {
             foreach (Team team in p.level.teams)
@@ -178,7 +168,6 @@ namespace MCGalaxy.Commands
                 p.level.ChatLevel("Capture the flag game start! Game goes to " + p.level.maxroundpoints + " point(s)!");
             }
         }
-
         public void GameEnd(Player p)
         {
             int currentpoints = 0;
@@ -210,10 +199,7 @@ namespace MCGalaxy.Commands
             {
                 team.EndRound();
             }
-            
-            
         }
-
         public void CtfInitTeam(Player p, string color)
         {
             Level workLevel = p.level;
@@ -253,7 +239,6 @@ namespace MCGalaxy.Commands
             {
                 p.Message("That team has not been initialized on this level.");
             }
-            
         }
         public void RemoveTeamMember(Player p, Player newPlayer, string color)
         {
@@ -304,7 +289,6 @@ namespace MCGalaxy.Commands
             {
                 p.Message("That team has not been initialized on this level.");
             }
-
         }
         public void AddTeamSpawn(Player p, string color)
         {
@@ -326,7 +310,6 @@ namespace MCGalaxy.Commands
                 p.Message("That team has not been initialized on this level.");
             }
         }
-
         void AddFlag(Player p, ushort x, ushort y, ushort z, byte type)
         {
             CatchPos bp = (CatchPos)p.blockchangeObject;
@@ -343,12 +326,10 @@ namespace MCGalaxy.Commands
             p.ClearBlockchange();
             AddTeamSpawn(p, bp.color, x, y, z);
         }*//*
-
         public override void Help(Player p)
         {
             p.Message("Please visit http://forums.mclawl.tk and visit the Help and How-To section for a detailed");
             p.Message("help feature for CTF.  There are too many functions and required things to list here!");
         }
-        
     }
 }*/

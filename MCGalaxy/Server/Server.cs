@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -38,14 +35,13 @@ using System.Net;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Threading;
-
 namespace MCGalaxy
 {
     public sealed partial class Server
     {
-        public Server() 
-        { 
-            s = this; 
+        public Server()
+        {
+            s = this;
         }
         //True = cancel event
         //False = don't cancel event
@@ -117,19 +113,19 @@ namespace MCGalaxy
         static void ForceEnableTLS()
         {
             // Force enable TLS 1.1/1.2, otherwise checking for updates on Github doesn't work
-            try 
-            { 
-                ServicePointManager.SecurityProtocol |= (SecurityProtocolType)0x300; 
-            } 
-            catch 
-            { 
-            }
-            try 
+            try
             {
-                ServicePointManager.SecurityProtocol |= (SecurityProtocolType)0xC00; 
-            } 
-            catch 
-            { 
+                ServicePointManager.SecurityProtocol |= (SecurityProtocolType)0x300;
+            }
+            catch
+            {
+            }
+            try
+            {
+                ServicePointManager.SecurityProtocol |= (SecurityProtocolType)0xC00;
+            }
+            catch
+            {
             }
         }
         static void EnsureFilesExist()
@@ -162,9 +158,9 @@ namespace MCGalaxy
                 Logger.LogError("Creating directory " + dir, ex);
             }
         }
-        public static void LoadAllSettings() 
-        { 
-            LoadAllSettings(false); 
+        public static void LoadAllSettings()
+        {
+            LoadAllSettings(false);
         }
         // TODO rethink this
         static void LoadAllSettings(bool commands)
@@ -220,35 +216,35 @@ namespace MCGalaxy
             {
                 Logger.Log(LogType.SystemActivity, "Server shutting down ({0})", msg);
             }
-            catch 
-            { 
+            catch
+            {
             }
             // Stop accepting new connections and disconnect existing sessions
             Listener.Close();
             try
             {
                 Player[] players = PlayerInfo.Online.Items;
-                foreach (Player p in players) 
-                { 
-                    p.Leave(msg); 
+                foreach (Player p in players)
+                {
+                    p.Leave(msg);
                 }
             }
-            catch (Exception ex) 
-            { 
-                Logger.LogError(ex); 
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
             }
             byte[] kick = Packet.Kick(msg, false);
             try
             {
                 INetSocket[] pending = INetSocket.pending.Items;
-                foreach (INetSocket p in pending) 
-                { 
-                    p.Send(kick, SendFlags.None); 
+                foreach (INetSocket p in pending)
+                {
+                    p.Send(kick, SendFlags.None);
                 }
             }
-            catch (Exception ex) 
-            { 
-                Logger.LogError(ex); 
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
             }
             OnShuttingDownEvent.Call(restarting, msg);
             Plugin.UnloadAll();
@@ -261,23 +257,23 @@ namespace MCGalaxy
                     FileIO.TryWriteAllText("text/autoload.txt", autoload);
                 }
             }
-            catch (Exception ex) 
-            { 
-                Logger.LogError(ex); 
+            catch (Exception ex)
+            {
+                Logger.LogError(ex);
             }
             try
             {
                 Logger.Log(LogType.SystemActivity, "Server shutdown completed");
             }
-            catch 
-            { 
-            }
-            try 
+            catch
             {
-                FileLogger.Flush(null); 
-            } 
-            catch 
-            { 
+            }
+            try
+            {
+                FileLogger.Flush(null);
+            }
+            catch
+            {
             }
             if (restarting)
             {
@@ -391,12 +387,12 @@ namespace MCGalaxy
         public static void StartThread(out Thread thread, string name, ThreadStart threadFunc)
         {
             thread = new(threadFunc);
-            try 
-            { 
-                thread.Name = name; 
-            } 
-            catch 
-            { 
+            try
+            {
+                thread.Name = name;
+            }
+            catch
+            {
             }
             thread.Start();
         }

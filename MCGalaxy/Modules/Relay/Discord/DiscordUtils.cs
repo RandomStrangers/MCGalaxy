@@ -1,21 +1,17 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-
 namespace MCGalaxy.Modules.Relay.Discord
 {
     public static class DiscordUtils
@@ -31,8 +27,6 @@ namespace MCGalaxy.Modules.Relay.Discord
             }
             return message;
         }
-
-
         // these characters are chosen specifically to lie within the unspecified unicode range,
         //  as those characters are "application defined" (EDCX = Escaped Discord Character #X)
         //  https://en.wikipedia.org/wiki/Private_Use_Areas
@@ -41,14 +35,12 @@ namespace MCGalaxy.Modules.Relay.Discord
         public const char STAR = '\uEDC3'; // *
         public const char GRAVE = '\uEDC4'; // `
         public const char BAR = '\uEDC5'; // |
-
         public const string UNDERLINE = "\uEDC1\uEDC1"; // __
         public const string BOLD = "\uEDC3\uEDC3"; // **
         public const string ITALIC = "\uEDC1"; // _
         public const string CODE = "\uEDC4"; // `
         public const string SPOILER = "\uEDC5\uEDC5"; // ||
         public const string STRIKETHROUGH = "\uEDC2\uEDC2"; // ~~
-
         public static string MarkdownToSpecial(string input)
         {
             return input
@@ -58,7 +50,6 @@ namespace MCGalaxy.Modules.Relay.Discord
                 .Replace('`', GRAVE)
                 .Replace('|', BAR);
         }
-
         public static string SpecialToMarkdown(string input)
         {
             return input

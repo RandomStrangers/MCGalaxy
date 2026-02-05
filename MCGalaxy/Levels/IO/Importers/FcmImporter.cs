@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -20,21 +17,17 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-
 namespace MCGalaxy.Levels.IO
 {
     public sealed class FcmImporter : IMapImporter
     {
-
         public override string Extension { get { return ".fcm"; } }
         public override string Description { get { return "fCraft/800Craft/ProCraft map"; } }
-
         public override Vec3U16 ReadDimensions(Stream src)
         {
             BinaryReader reader = new(src);
             return ReadHeader(reader);
         }
-
         public override Level Read(Stream src, string name, bool metadata)
         {
             BinaryReader reader = new(src);
@@ -47,13 +40,11 @@ namespace MCGalaxy.Levels.IO
                 rotx = reader.ReadByte(),
                 roty = reader.ReadByte()
             };
-
             reader.ReadUInt32();  // date modified
             reader.ReadUInt32();  // date created
             reader.ReadBytes(16); // uuid
             reader.ReadBytes(26); // layer index
             int metaSize = reader.ReadInt32();
-
             using (DeflateStream ds = new(src, CompressionMode.Decompress))
             {
                 reader = new BinaryReader(ds);
@@ -62,7 +53,6 @@ namespace MCGalaxy.Levels.IO
                     string group = ReadString(reader);
                     string key = ReadString(reader);
                     string value = ReadString(reader);
-
                     if (group != "zones") continue;
                     try
                     {
@@ -78,35 +68,30 @@ namespace MCGalaxy.Levels.IO
             ConvertCustom(lvl);
             return lvl;
         }
-
         static Vec3U16 ReadHeader(BinaryReader reader)
         {
             if (reader.ReadInt32() != 0x0FC2AF40 || reader.ReadByte() != 13)
             {
                 throw new InvalidDataException("Unexpected constant in .fcm file");
             }
-
             Vec3U16 dims;
             dims.X = reader.ReadUInt16();
             dims.Y = reader.ReadUInt16();
             dims.Z = reader.ReadUInt16();
             return dims;
         }
-
         static string ReadString(BinaryReader reader)
         {
             int length = reader.ReadUInt16();
             byte[] data = reader.ReadBytes(length);
             return Encoding.ASCII.GetString(data);
         }
-
         static readonly char[] comma = new char[] { ',' };
         static void ParseZone(Level lvl, string raw)
         {
             string[] parts = raw.Split(comma);
             string[] header = parts[0].SplitSpaces();
             Zone zone = new();
-
             // fCraft uses Z for height
             zone.Config.Name = header[0];
             zone.MinX = ushort.Parse(header[1]);
@@ -115,14 +100,12 @@ namespace MCGalaxy.Levels.IO
             zone.MaxX = ushort.Parse(header[4]);
             zone.MaxZ = ushort.Parse(header[5]);
             zone.MaxY = ushort.Parse(header[6]);
-
             // fCraft uses name#identifier for ranks
             string minRaw = header[7];
             int idStart = minRaw.IndexOf('#');
             if (idStart >= 0) minRaw = minRaw.Substring(0, idStart);
             Group minRank = Group.Find(minRaw);
             if (minRank != null) zone.Config.BuildMin = minRank.Permission;
-
             // Extended ProCraft zone header adds colour
             if (header.Length > 8)
             {
@@ -130,19 +113,16 @@ namespace MCGalaxy.Levels.IO
                 zone.Config.ShowColor = header[9];
                 zone.Config.ShowAlpha = byte.Parse(header[10]);
             }
-
             if (parts[1].Length > 0)
             {
                 string[] whitelist = parts[1].SplitSpaces();
                 zone.Config.BuildWhitelist.AddRange(whitelist);
             }
-
             if (parts[2].Length > 0)
             {
                 string[] blacklist = parts[2].SplitSpaces();
                 zone.Config.BuildBlacklist.AddRange(blacklist);
             }
-
             zone.AddTo(lvl);
         }
     }

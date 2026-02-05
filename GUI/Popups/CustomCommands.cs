@@ -36,15 +36,12 @@ namespace MCGalaxy.Gui.Popups
                 }
             }
         }
-        void CustomCommands_Load(object sender, EventArgs e)
-        {
-            GuiUtils.SetIcon(this);
-        }
+        void CustomCommands_Load(object sender, EventArgs e) => GuiUtils.SetIcon(this);
         void LoadCompilers()
         {
-            Button[] buttons = 
-            { 
-                btnCreate1, btnCreate2, btnCreate3, btnCreate4, btnCreate5 
+            Button[] buttons =
+            {
+                btnCreate1, btnCreate2, btnCreate3, btnCreate4, btnCreate5
             };
             List<ICompiler> compilers = ICompiler.Compilers;
             int i;
@@ -53,9 +50,9 @@ namespace MCGalaxy.Gui.Popups
                 ICompiler compiler = compilers[i];
                 buttons[i].Visible = true;
                 buttons[i].Text = "Create " + compiler.ShortName;
-                buttons[i].Click += delegate 
-                { 
-                    CreateCommand(compiler); 
+                buttons[i].Click += delegate
+                {
+                    CreateCommand(compiler);
                 };
             }
             for (; i < buttons.Length; i++)
@@ -68,13 +65,13 @@ namespace MCGalaxy.Gui.Popups
             string cmdName = txtCmdName.Text.Trim();
             if (cmdName.Length == 0)
             {
-                Popup.Warning("Command must have a name"); 
+                Popup.Warning("Command must have a name");
                 return;
             }
             string path = compiler.CommandPath(cmdName);
             if (File.Exists(path))
             {
-                Popup.Warning("Command already exists"); 
+                Popup.Warning("Command already exists");
                 return;
             }
             try
@@ -103,22 +100,20 @@ namespace MCGalaxy.Gui.Popups
                 }
                 path = dialog.FileName;
             }
-            if (!File.Exists(path))
+            if (File.Exists(path))
             {
-                return;
+                if (path.CaselessEnds(".dll"))
+                {
+                    LoadCommands(path);
+                    return;
+                }
+                string tmp = CompileCommands(path);
+                if (tmp != null)
+                {
+                    LoadCommands(tmp);
+                    DeleteAssembly(tmp);
+                }
             }
-            if (path.CaselessEnds(".dll"))
-            {
-                LoadCommands(path); 
-                return;
-            }
-            string tmp = CompileCommands(path);
-            if (tmp == null)
-            {
-                return;
-            }
-            LoadCommands(tmp);
-            DeleteAssembly(tmp);
         }
         void BtnUnload_Click(object sender, EventArgs e)
         {
@@ -126,36 +121,32 @@ namespace MCGalaxy.Gui.Popups
             Command cmd = Command.Find(cmdName);
             if (cmd == null)
             {
-                Popup.Warning("Command " + cmdName + " is not loaded."); 
+                Popup.Warning("Command " + cmdName + " is not loaded.");
                 return;
             }
             lstCommands.Items.Remove(cmd.name);
             Command.Unregister(cmd);
             Popup.Message("Command successfully unloaded.");
         }
-        void LstCommands_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            btnUnload.Enabled = lstCommands.SelectedIndex != -1;
-        }
+        void LstCommands_SelectedIndexChanged(object sender, EventArgs e) => btnUnload.Enabled = lstCommands.SelectedIndex != -1;
         void LoadCommands(string path)
         {
             Assembly lib = IScripting.LoadAssembly(path);
-            if (lib == null)
+            if (lib != null)
             {
-                return;
-            }
-            List<Command> commands = IScripting.LoadTypes<Command>(lib);
-            for (int i = 0; i < commands.Count; i++)
-            {
-                Command cmd = commands[i];
-                if (lstCommands.Items.Contains(cmd.name))
+                List<Command> commands = IScripting.LoadTypes<Command>(lib);
+                for (int i = 0; i < commands.Count; i++)
                 {
-                    Popup.Warning("Command " + cmd.name + " already exists, so was not loaded");
-                    continue;
+                    Command cmd = commands[i];
+                    if (lstCommands.Items.Contains(cmd.name))
+                    {
+                        Popup.Warning("Command " + cmd.name + " already exists, so was not loaded");
+                        continue;
+                    }
+                    lstCommands.Items.Add(cmd.name);
+                    Command.Register(cmd);
+                    Logger.Log(LogType.SystemActivity, "Added /" + cmd.name + " to commands");
                 }
-                lstCommands.Items.Add(cmd.name);
-                Command.Register(cmd);
-                Logger.Log(LogType.SystemActivity, "Added /" + cmd.name + " to commands");
             }
         }
         string CompileCommands(string path)
@@ -189,32 +180,29 @@ namespace MCGalaxy.Gui.Popups
         }
         static void DeleteAssembly(string path)
         {
-            try 
-            { 
-                FileIO.TryDelete(path); 
-            } 
-            catch 
-            { 
-            }
-            try 
+            try
             {
-                FileIO.TryDelete(path.Replace(".dll", ".pdb")); 
-            } 
-            catch 
-            { 
+                FileIO.TryDelete(path);
             }
-            try 
-            { 
-                FileIO.TryDelete(path + ".mdb"); 
-            } 
-            catch 
-            { 
+            catch
+            {
+            }
+            try
+            {
+                FileIO.TryDelete(path.Replace(".dll", ".pdb"));
+            }
+            catch
+            {
+            }
+            try
+            {
+                FileIO.TryDelete(path + ".mdb");
+            }
+            catch
+            {
             }
         }
-        static string ListCompilers(StringFormatter<ICompiler> formatter)
-        {
-            return ICompiler.Compilers.Join(formatter, "");
-        }
+        static string ListCompilers(StringFormatter<ICompiler> formatter) => ICompiler.Compilers.Join(formatter, "");
         static string GetFilterText()
         {
             StringBuilder sb = new();

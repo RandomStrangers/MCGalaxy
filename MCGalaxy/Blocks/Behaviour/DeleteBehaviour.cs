@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,26 +16,20 @@ using MCGalaxy.Blocks.Extended;
 using MCGalaxy.Blocks.Physics;
 using MCGalaxy.Maths;
 using System;
-
 namespace MCGalaxy.Blocks
 {
-
     internal static class DeleteBehaviour
     {
-
         internal static ChangeResult RocketStart(Player p, ushort _, ushort x, ushort y, ushort z)
         {
             if (p.level.physics < 2 || p.level.physics == 5) return ChangeResult.Unchanged;
-
             DirUtils.EightYaw(p.Rot.RotY, out int dx, out int dz);
             DirUtils.Pitch(p.Rot.HeadX, out int dy);
-
             // Looking straight up or down
             byte pitch = p.Rot.HeadX;
             if (pitch >= 192 && pitch <= 196 || pitch >= 60 && pitch <= 64) { dx = 0; dz = 0; }
             Vec3U16 head = new((ushort)(x + dx * 2), (ushort)(y + dy * 2), (ushort)(z + dz * 2));
             Vec3U16 tail = new((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz));
-
             bool headFree = p.level.IsAirAt(head.X, head.Y, head.Z) && p.level.CheckClear(head.X, head.Y, head.Z);
             bool tailFree = p.level.IsAirAt(tail.X, tail.Y, tail.Z) && p.level.CheckClear(tail.X, tail.Y, tail.Z);
             if (headFree && tailFree)
@@ -48,11 +39,9 @@ namespace MCGalaxy.Blocks
             }
             return ChangeResult.Unchanged;
         }
-
         internal static ChangeResult Firework(Player p, ushort _, ushort x, ushort y, ushort z)
         {
             if (p.level.physics == 0 || p.level.physics == 5) return ChangeResult.Unchanged;
-
             Random rand = new();
             // Offset the firework randomly
             Vec3U16 pos = new(0, 0, 0)
@@ -61,13 +50,11 @@ namespace MCGalaxy.Blocks
                 Z = (ushort)(z + rand.Next(0, 2) - 1)
             };
             ushort headY = (ushort)(y + 2), tailY = (ushort)(y + 1);
-
             bool headFree = p.level.IsAirAt(pos.X, headY, pos.Z) && p.level.CheckClear(pos.X, headY, pos.Z);
             bool tailFree = p.level.IsAirAt(pos.X, tailY, pos.Z) && p.level.CheckClear(pos.X, tailY, pos.Z);
             if (headFree && tailFree)
             {
                 p.level.Blockchange(pos.X, headY, pos.Z, Block.Fireworks);
-
                 PhysicsArgs args = default;
                 args.Type1 = PhysicsArgs.Wait; args.Value1 = 1;
                 args.Type2 = PhysicsArgs.Dissipate; args.Value2 = 100;
@@ -75,28 +62,23 @@ namespace MCGalaxy.Blocks
             }
             return ChangeResult.Unchanged;
         }
-
         internal static ChangeResult C4Det(Player p, ushort _, ushort x, ushort y, ushort z)
         {
             int index = p.level.PosToInt(x, y, z);
             C4Physics.BlowUp(index, p.level);
             return p.ChangeBlock(x, y, z, Block.Air);
         }
-
         internal static ChangeResult RevertDoor(Player _, ushort __, ushort ___, ushort ____, ushort _____)
         {
             return ChangeResult.Unchanged;
         }
-
         internal static ChangeResult Door(Player p, ushort old, ushort x, ushort y, ushort z)
         {
             if (p.level.physics == 0) return p.ChangeBlock(x, y, z, Block.Air);
-
             PhysicsArgs args = ActivateablePhysics.GetDoorArgs(old, out ushort physForm);
             p.level.Blockchange(x, y, z, physForm, false, args);
             return ChangeResult.Modified;
         }
-
         internal static ChangeResult oDoor(Player p, ushort old, ushort x, ushort y, ushort z)
         {
             if (old == Block.oDoor_Green || old == Block.oDoor_Green_air)
@@ -107,7 +89,6 @@ namespace MCGalaxy.Blocks
             }
             return ChangeResult.Unchanged;
         }
-
         internal static ChangeResult DoPortal(Player p, ushort _, ushort x, ushort y, ushort z)
         {
             if (!Portal.Handle(p, x, y, z))
@@ -116,7 +97,6 @@ namespace MCGalaxy.Blocks
             }
             return ChangeResult.Unchanged;
         }
-
         internal static ChangeResult DoMessageBlock(Player p, ushort _, ushort x, ushort y, ushort z)
         {
             if (!MessageBlock.Handle(p, x, y, z, true))

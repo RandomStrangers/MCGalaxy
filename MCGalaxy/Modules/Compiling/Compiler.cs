@@ -1,16 +1,12 @@
-﻿/*
+/*
     Copyright 2010 MCLawl Team - Written by Valek (Modified by MCGalaxy)
-
     Edited for use with MCGalaxy
- 
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -43,15 +39,15 @@ namespace MCGalaxy.Modules.Compiling
         public abstract string CommandSkeleton { get; }
         /// <summary> Returns source code for an example Plugin </summary>
         public abstract string PluginSkeleton { get; }
-        public string CommandPath(string name) 
-        { 
-            return COMMANDS_SOURCE_DIR + "Cmd" + name + FileExtension; 
+        public string CommandPath(string name)
+        {
+            return COMMANDS_SOURCE_DIR + "Cmd" + name + FileExtension;
         }
-        public string PluginPath(string name) 
-        { 
-            return PLUGINS_SOURCE_DIR + name + FileExtension; 
+        public string PluginPath(string name)
+        {
+            return PLUGINS_SOURCE_DIR + name + FileExtension;
         }
-        public static List<ICompiler> Compilers = new() 
+        public static List<ICompiler> Compilers = new()
         {
             new CSCompiler()
         };
@@ -61,14 +57,14 @@ namespace MCGalaxy.Modules.Compiling
             source = source.Replace("\n", "\r\n");
             return string.Format(source, args);
         }
-        /// <summary> Generates source code for an example command, 
+        /// <summary> Generates source code for an example command,
         /// preformatted with the given command name </summary>
         public string GenExampleCommand(string cmdName)
         {
             cmdName = cmdName.ToLower().Capitalize();
             return FormatSource(CommandSkeleton, cmdName);
         }
-        /// <summary> Generates source code for an example plugin, 
+        /// <summary> Generates source code for an example plugin,
         /// preformatted with the given name and creator </summary>
         public string GenExamplePlugin(string plugin, string creator)
         {
@@ -122,7 +118,7 @@ namespace MCGalaxy.Modules.Compiling
         }
         /// <summary> Compiles the given source code. </summary>
         protected abstract ICompilerErrors DoCompile(string[] srcPaths, string dstPath);
-        /// <summary> Converts source file paths to full paths, 
+        /// <summary> Converts source file paths to full paths,
         /// then returns list of parsed referenced assemblies </summary>
         protected List<string> ProcessInput(string[] srcPaths, string commentPrefix)
         {
@@ -159,8 +155,8 @@ namespace MCGalaxy.Modules.Compiling
                 }
             }
         }
-        protected virtual void ProcessInputLine(string line, List<string> referenced) 
-        { 
+        protected virtual void ProcessInputLine(string line, List<string> referenced)
+        {
         }
         protected static string GetDLL(string line)
         {
@@ -172,8 +168,8 @@ namespace MCGalaxy.Modules.Compiling
     {
         public bool HasErrors
         {
-            get 
-            { 
+            get
+            {
                 return FindIndex(ce => !ce.IsWarning) >= 0;
             }
         }

@@ -1,28 +1,22 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-
 namespace MCGalaxy.Network
 {
-
     /// <summary> List of packet opcode bytes. (Packet identifiers) </summary>
     public static class Opcode
     {
-
         public const byte Handshake = 0;
         public const byte Ping = 1;
         public const byte LevelInitialise = 2;
@@ -39,7 +33,6 @@ namespace MCGalaxy.Network
         public const byte Message = 13;
         public const byte Kick = 14;
         public const byte SetPermission = 15;
-
         public const byte CpeExtInfo = 16;
         public const byte CpeExtEntry = 17;
         public const byte CpeSetClickDistance = 18;

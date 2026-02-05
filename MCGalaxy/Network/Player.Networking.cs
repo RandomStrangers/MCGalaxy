@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
 Dual-licensed under the Educational Community License, Version 2.0 and
 the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -17,17 +17,13 @@ using MCGalaxy.Maths;
 using MCGalaxy.Network;
 using System;
 using System.Collections.Generic;
-
-
 namespace MCGalaxy
 {
     public partial class Player : IDisposable
     {
         // these are checked very frequently, so avoid overhead of .Supports(
         public bool hasChangeModel, hasExtList, hasCP437;
-
         public void Send(byte[] buffer) { Socket.Send(buffer, SendFlags.None); }
-
         public void MessageLines(IEnumerable<string> lines)
         {
             lock (messageLocker)
@@ -35,14 +31,12 @@ namespace MCGalaxy
                 foreach (string line in lines) { Message(line); }
             }
         }
-
         // Put a lock on sending messages so that MessageLines is not interrupted by other messages
         readonly object messageLocker = new();
         public void Message(string message, object a0) { Message(string.Format(message, a0)); }
         public void Message(string message, object a0, object a1) { Message(string.Format(message, a0, a1)); }
         public void Message(string message, object a0, object a1, object a2) { Message(string.Format(message, a0, a1, a2)); }
         public void Message(string message, params object[] args) { Message(string.Format(message, args)); }
-
         public virtual void Message(string message)
         {
             // Message should start with server color if no initial color
@@ -53,13 +47,11 @@ namespace MCGalaxy
                 SendRawMessage(message);
             }
         }
-
         void SendRawMessage(string message)
         {
             bool cancel = false;
             OnMessageRecievedEvent.Call(this, ref message, ref cancel);
             if (cancel) return;
-
             try
             {
                 Session.SendChat(message);
@@ -69,12 +61,10 @@ namespace MCGalaxy
                 Logger.LogError(e);
             }
         }
-
         public void SendCpeMessage(CpeMessageType type, string message)
         {
             SendCpeMessage(type, message, PersistentMessagePriority.Normal);
         }
-
         public void SendCpeMessage(CpeMessageType type, string message, PersistentMessagePriority priority = PersistentMessagePriority.Normal)
         {
             if (type != CpeMessageType.Normal && !Supports(CpeExt.MessageTypes))
@@ -82,18 +72,15 @@ namespace MCGalaxy
                 if (type == CpeMessageType.Announcement) type = CpeMessageType.Normal;
                 else return;
             }
-
             message = Chat.Format(message, this);
             if (!persistentMessages.Handle(type, ref message, priority)) return;
             Session.SendMessage(type, message);
         }
-
         public void SendMapMotd()
         {
             string motd = GetMotd();
             motd = Chat.Format(motd, this);
             OnSendingMotdEvent.Call(this, ref motd);
-
             // Change -hax into +hax etc when in Referee mode
             //  (can't just do Replace('-', '+') though, that breaks -push)
             if (Game.Referee)
@@ -105,14 +92,12 @@ namespace MCGalaxy
             }
             Session.SendMotd(motd);
         }
-
         readonly object joinLock = new();
         public bool SendRawMap(Level oldLevel, Level level)
         {
             lock (joinLock)
                 return SendRawMapCore(oldLevel, level);
         }
-
         bool SendRawMapCore(Level prev, Level level)
         {
             bool success = true;
@@ -120,19 +105,15 @@ namespace MCGalaxy
             {
                 if (level.blocks == null)
                     throw new InvalidOperationException("Tried to join unloaded level");
-
                 useCheckpointSpawn = false;
                 lastCheckpointIndex = -1;
-
                 AFKCooldown = DateTime.UtcNow.AddSeconds(2);
                 ZoneIn = null;
                 AllowBuild = level.BuildAccess.CheckAllowed(this);
-
                 SendMapMotd();
                 selections.Clear();
                 Session.SendLevel(prev, level);
                 Loading = false;
-
                 OnSentMapEvent.Call(this, prev, level);
             }
             catch (Exception ex)
@@ -148,8 +129,6 @@ namespace MCGalaxy
             }
             return success;
         }
-
-
         /// <summary> Like SendPosition, but immediately updates the player's server-side position and orientation. </summary>
         public void SendAndSetPos(Position pos, Orientation rot)
         {
@@ -157,7 +136,6 @@ namespace MCGalaxy
             SetYawPitch(rot.RotY, rot.HeadX);
             Session.SendTeleport(Entities.SelfID, pos, rot);
         }
-
         /// <summary> Sends a packet indicating an absolute position + orientation change for this player. </summary>
         public void SendPosition(Position pos, Orientation rot)
         {
@@ -168,22 +146,17 @@ namespace MCGalaxy
             // Forcibly move the player since their position won't naturally update
             if (frozen || Session.Ping.IgnorePosition) Pos = pos;
         }
-
         public void SendBlockchange(ushort x, ushort y, ushort z, ushort block)
         {
             //if (x < 0 || y < 0 || z < 0) return;
             if (x >= level.Width || y >= level.Height || z >= level.Length) return;
-
             Session.SendBlockchange(x, y, z, block);
         }
-
-
         /// <summary> Whether this player's client supports the given CPE extension at the given version </summary>
         public bool Supports(string extName, int version = 1)
         {
             return Session != null && Session.Supports(extName, version);
         }
-
         public string GetTextureUrl()
         {
             string url = level.Config.TexturePack.Length == 0 ? level.Config.Terrain : level.Config.TexturePack;
@@ -193,8 +166,6 @@ namespace MCGalaxy
             }
             return url;
         }
-
-
         string lastUrl = "";
         public void SendCurrentTextures()
         {
@@ -202,11 +173,9 @@ namespace MCGalaxy
             int cloudsHeight = CurrentEnvProp(EnvProp.CloudsLevel, zone);
             int edgeHeight = CurrentEnvProp(EnvProp.EdgeLevel, zone);
             int maxFogDist = CurrentEnvProp(EnvProp.MaxFog, zone);
-
             byte side = (byte)CurrentEnvProp(EnvProp.SidesBlock, zone);
             byte edge = (byte)CurrentEnvProp(EnvProp.EdgeBlock, zone);
             string url = GetTextureUrl();
-
             if (Supports(CpeExt.EnvMapAspect, 2))
             {
                 // reset all other textures back to client default.
@@ -235,21 +204,18 @@ namespace MCGalaxy
                 Send(Packet.MapAppearance(url, side, edge, edgeHeight, hasCP437));
             }
         }
-
         public void SendCurrentBlockPermissions()
         {
             if (!Supports(CpeExt.BlockPermissions)) return;
             // Write the block permissions as one bulk TCP packet
             SendAllBlockPermissions();
         }
-
         void SendAllBlockPermissions()
         {
             bool extBlocks = Session.hasExtBlocks;
             int count = Session.MaxRawBlock + 1;
             int size = extBlocks ? 5 : 4;
             byte[] bulk = new byte[count * size];
-
             for (int i = 0; i < count; i++)
             {
                 ushort block = Block.FromRaw((ushort)i);
@@ -258,18 +224,14 @@ namespace MCGalaxy
                 // (see ClassiCube client #815)
                 // TODO: Maybe better solution than this?
                 bool delete = group.CanDelete[block] && (level.CanDelete || i == Block.Air);
-
                 // Placing air is the same as deleting existing block at that position in the world
                 if (block == Block.Air) place &= delete;
                 Packet.WriteBlockPermission((ushort)i, place, delete, extBlocks, bulk, i * size);
             }
             Send(bulk);
         }
-
-
         class VisibleSelection { public object data; public byte ID; }
         readonly VolatileArray<VisibleSelection> selections = new();
-
         public bool AddVisibleSelection(string label, Vec3U16 min, Vec3U16 max, ColorDesc color, object instance)
         {
             lock (selections.locker)
@@ -278,7 +240,6 @@ namespace MCGalaxy
                 return Session.SendAddSelection(id, label, min, max, color);
             }
         }
-
         public bool RemoveVisibleSelection(object instance)
         {
             lock (selections.locker)
@@ -287,41 +248,33 @@ namespace MCGalaxy
                 for (int i = 0; i < items.Length; i++)
                 {
                     if (items[i].data != instance) continue;
-
                     selections.Remove(items[i]);
                     return Session.SendRemoveSelection(items[i].ID);
                 }
             }
-
             return false;
         }
-
         unsafe byte FindOrAddSelection(VisibleSelection[] items, object instance)
         {
             byte* used = stackalloc byte[256];
             for (int i = 0; i < 256; i++) used[i] = 0;
             byte id;
-
             for (int i = 0; i < items.Length; i++)
             {
                 id = items[i].ID;
                 if (instance == items[i].data) return id;
-
                 used[id] = 1;
             }
-
             // find unused ID, or 255 if none unused
             for (id = 0; id < 255; id++)
             {
                 if (used[id] == 0) break;
             }
-
             VisibleSelection sel = new()
             {
                 data = instance,
                 ID = id
             };
-
             selections.Add(sel);
             return id;
         }

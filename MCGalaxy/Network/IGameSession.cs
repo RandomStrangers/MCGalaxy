@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,8 +14,6 @@
  */
 using MCGalaxy.Maths;
 using System;
-
-
 namespace MCGalaxy.Network
 {
     /// <summary> Abstracts a network session with a client supporting a particular game protocol </summary>
@@ -31,16 +26,13 @@ namespace MCGalaxy.Network
         public ushort MaxRawBlock = Block.CLASSIC_MAX_BLOCK;
         public bool hasCpe;
         public string appName;
-
         // these are checked very frequently, so avoid overhead of .Supports(
         public bool hasCustomBlocks, hasExtBlocks, hasBlockDefs, hasBulkBlockUpdate;
         protected INetSocket socket;
         protected Player player;
         /// <summary> Temporary unique ID for this network session </summary>
         public int ID;
-
         public PingList Ping = new();
-
         public int ProcessReceived(byte[] buffer, int bufferLen)
         {
             int read = 0;
@@ -51,7 +43,6 @@ namespace MCGalaxy.Network
                     int packetLen = HandlePacket(buffer, read, bufferLen - read);
                     // Partial packet received
                     if (packetLen == 0) break;
-
                     // Packet processed, onto next
                     read += packetLen;
                 }
@@ -62,9 +53,7 @@ namespace MCGalaxy.Network
             }
             return read;
         }
-
         public abstract int MaxEntityID { get; }
-
         public void Disconnect() { player.Disconnect(); }
         /// <summary> Sends raw data to the client </summary>
         public void Send(byte[] data) { socket.Send(data, SendFlags.None); }
@@ -74,7 +63,6 @@ namespace MCGalaxy.Network
         /// <returns> 0 if insufficient data left to fully process the next packet,
         /// otherwise returns the number of bytes processed </returns>
         protected abstract int HandlePacket(byte[] buffer, int offset, int left);
-
         /// <summary> Sends a ping packet to the client </summary>
         public abstract void SendPing();
         public abstract void SendMotd(string motd);
@@ -86,7 +74,6 @@ namespace MCGalaxy.Network
         /// <summary> Sends a kick/disconnect packet with the given reason </summary>
         public abstract void SendKick(string reason, bool sync);
         public abstract bool SendSetUserType(byte type);
-
         /// <summary> Sends an entity teleport (absolute location update) packet to the client </summary>
         public abstract void SendTeleport(byte id, Position pos, Orientation rot);
         /// <summary> Sends an ext entity teleport with more control over behavior </summary>
@@ -98,7 +85,6 @@ namespace MCGalaxy.Network
         /// <summary> Sends a despawn/remove entity to the client </summary>
         public abstract void SendRemoveEntity(byte id);
         public abstract void SendSetSpawnpoint(Position pos, Orientation rot);
-
         public abstract void SendAddTabEntry(byte id, string name, string nick, string group, byte groupRank);
         public abstract void SendRemoveTabEntry(byte id);
         /// <summary> Sends a set reach/click distance packet to the client </summary>
@@ -123,12 +109,10 @@ namespace MCGalaxy.Network
         public abstract bool SendCinematicGui(CinematicGui gui);
         /// <summary> Sends a toggle block list packet to the client </summary>
         public abstract bool SendToggleBlockList(bool toggle);
-
         /// <summary> Sends a level to the client </summary>
         public abstract void SendLevel(Level prev, Level level);
         /// <summary> Sends a block change/update packet to the client </summary>
         public abstract void SendBlockchange(ushort x, ushort y, ushort z, ushort block);
-
         public abstract byte[] MakeBulkBlockchange(BufferedBlockSender buffer);
         /// <summary> Gets the name of the software the client is using </summary>
         /// <example> ClassiCube, Classic 0.0.16, etc </example>
@@ -140,7 +124,6 @@ namespace MCGalaxy.Network
         {
             ushort raw;
             Player p = player;
-
             if (block >= Block.Extended)
             {
                 raw = Block.ToRaw(block);
@@ -152,7 +135,6 @@ namespace MCGalaxy.Network
                 if (raw >= Block.CPE_COUNT) raw = Block.Orange;
             }
             if (raw > MaxRawBlock) raw = p.level.GetFallback(block);
-
             // Check if a custom block replaced a core block
             //  If so, assume fallback is the better block to display
             if (!hasBlockDefs && raw < Block.CPE_COUNT)
@@ -160,10 +142,8 @@ namespace MCGalaxy.Network
                 BlockDefinition def = p.level.CustomBlockDefs[raw];
                 if (def != null) raw = def.FallBack;
             }
-
             if (!hasCustomBlocks) raw = fallback[(byte)raw];
             return raw;
         }
-
     }
 }

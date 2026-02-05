@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2011 MCForge
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,7 +16,6 @@ using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Maths;
 using System;
 using System.Collections.Generic;
-
 namespace MCGalaxy.Drawing.Ops
 {
     public class LineDrawOp : DrawOp
@@ -27,7 +23,6 @@ namespace MCGalaxy.Drawing.Ops
         public override string Name { get { return "Line"; } }
         public bool WallsMode;
         public int MaxLength = int.MaxValue;
-
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
             Vec3S32 p1 = marks[0], p2 = marks[1];
@@ -43,7 +38,6 @@ namespace MCGalaxy.Drawing.Ops
                 return Math.Min(baseLen, MaxLength);
             }
         }
-
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             Vec3U16 p1 = Clamp(marks[0]), p2 = Clamp(marks[1]);
@@ -54,7 +48,6 @@ namespace MCGalaxy.Drawing.Ops
                 ushort yy1 = p1.Y, yy2 = p2.Y;
                 p1.Y = Math.Min(yy1, yy2); p2.Y = Math.Max(yy1, yy2);
             }
-
             for (int i = 0; i < buffer.Count; i++)
             {
                 Vec3U16 pos = (Vec3U16)buffer[i];
@@ -69,7 +62,6 @@ namespace MCGalaxy.Drawing.Ops
                 }
             }
         }
-
         internal static void DrawLine(int x1, int y1, int z1, int maxLen,
                                       int x2, int y2, int z2, List<Vec3S32> buffer)
         {
@@ -77,25 +69,20 @@ namespace MCGalaxy.Drawing.Ops
             int[] pixel = new int[] { x1, y1, z1 };
             int dx = x2 - x1, dy = y2 - y1, dz = z2 - z1;
             lx.dir = Math.Sign(dx); ly.dir = Math.Sign(dy); lz.dir = Math.Sign(dz);
-
             int xLen = Math.Abs(dx), yLen = Math.Abs(dy), zLen = Math.Abs(dz);
             lx.len2 = xLen << 1; ly.len2 = yLen << 1; lz.len2 = zLen << 1;
             lx.axis = 0; ly.axis = 1; lz.axis = 2;
-
             if (xLen >= yLen && xLen >= zLen)
                 DoLine(ly, lz, lx, xLen, pixel, maxLen, buffer);
             else if (yLen >= xLen && yLen >= zLen)
                 DoLine(lx, lz, ly, yLen, pixel, maxLen, buffer);
             else
                 DoLine(ly, lx, lz, zLen, pixel, maxLen, buffer);
-
             Vec3S32 pos;
             pos.X = pixel[0]; pos.Y = pixel[1]; pos.Z = pixel[2];
             buffer.Add(pos);
         }
-
         struct Line { public int len2, dir, axis; }
-
         static void DoLine(Line l1, Line l2, Line l3, int len,
                            int[] pixel, int maxLen, List<Vec3S32> buffer)
         {
@@ -105,7 +92,6 @@ namespace MCGalaxy.Drawing.Ops
             {
                 pos.X = pixel[0]; pos.Y = pixel[1]; pos.Z = pixel[2];
                 buffer.Add(pos);
-
                 if (err_1 > 0)
                 {
                     pixel[l1.axis] += l1.dir;

@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -105,10 +102,10 @@ namespace MCGalaxy.Drawing.Ops
                     ushort x = (ushort)(Origin.X + dx.X * xx + dy.X * yy),
                         y = (ushort)(Origin.Y + dx.Y * xx + dy.Y * yy),
                         z = (ushort)(Origin.Z + dx.Z * xx + dy.Z * yy);
-                    if (P.A < 20) 
+                    if (P.A < 20)
                     {
                         output(Place(x, y, z, Block.Air));
-                        continue; 
+                        continue;
                     }
                     ushort block;
                     if (!DualLayer)
@@ -131,7 +128,7 @@ namespace MCGalaxy.Drawing.Ops
         public void CalcState(Vec3S32[] m)
         {
             dx = default;
-            dy = default; 
+            dy = default;
             adj = default;
             DualLayer = DualLayer && !LayerMode;
             int dir;
@@ -161,22 +158,22 @@ namespace MCGalaxy.Drawing.Ops
             }
             if (LayerMode)
             {
-                if (dir == 0) 
-                { 
-                    dx.X = +1; 
-                    dy.Z = -1; 
-                }
-                if (dir == 1) 
+                if (dir == 0)
                 {
-                    dx.X = -1; 
-                    dy.Z = +1; 
+                    dx.X = +1;
+                    dy.Z = -1;
                 }
-                if (dir == 2) 
+                if (dir == 1)
                 {
-                    dx.Z = +1; 
+                    dx.X = -1;
+                    dy.Z = +1;
+                }
+                if (dir == 2)
+                {
+                    dx.Z = +1;
                     dy.X = +1;
                 }
-                if (dir == 3) 
+                if (dir == 3)
                 {
                     dx.Z = -1;
                     dy.X = -1;
@@ -219,35 +216,35 @@ namespace MCGalaxy.Drawing.Ops
                     ushort x = (ushort)(Origin.X + dx.X * xx + dy.X * yy),
                         y = (ushort)(Origin.Y + dx.Y * xx + dy.Y * yy),
                         z = (ushort)(Origin.Z + dx.Z * xx + dy.Z * yy);
-                    if (P.A < 20) 
+                    if (P.A < 20)
                     {
                         output(Place(x, y, z, Block.Air));
-                        continue; 
+                        continue;
                     }
                     Vec3F32 oldPixel = new Vec3F32(P.R, P.G, P.B) + errors[xx, yy];
-                    if (oldPixel.X > 255) 
-                    { 
+                    if (oldPixel.X > 255)
+                    {
                         oldPixel.X = 255;
                     }
-                    if (oldPixel.X < 0) 
-                    { 
-                        oldPixel.X = 0; 
-                    }
-                    if (oldPixel.Y > 255) 
-                    { 
-                        oldPixel.Y = 255; 
-                    }
-                    if (oldPixel.Y < 0) 
+                    if (oldPixel.X < 0)
                     {
-                        oldPixel.Y = 0; 
+                        oldPixel.X = 0;
                     }
-                    if (oldPixel.Z > 255) 
-                    { 
-                        oldPixel.Z = 255; 
+                    if (oldPixel.Y > 255)
+                    {
+                        oldPixel.Y = 255;
                     }
-                    if (oldPixel.Z < 0) 
-                    { 
-                        oldPixel.Z = 0; 
+                    if (oldPixel.Y < 0)
+                    {
+                        oldPixel.Y = 0;
+                    }
+                    if (oldPixel.Z > 255)
+                    {
+                        oldPixel.Z = 255;
+                    }
+                    if (oldPixel.Z < 0)
+                    {
+                        oldPixel.Z = 0;
                     }
                     P.R = (byte)oldPixel.X;
                     P.G = (byte)oldPixel.Y;

@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -20,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
 namespace MCGalaxy.SQL
 {
     public class SQLiteBackend : IDatabaseBackend
@@ -31,26 +27,20 @@ namespace MCGalaxy.SQL
             CaselessWhereSuffix = " COLLATE NOCASE";
             CaselessLikeSuffix = " COLLATE NOCASE";
         }
-
         public override bool EnforcesTextLength { get { return false; } }
         public override bool EnforcesIntegerLimits { get { return false; } }
         public override bool MultipleSchema { get { return false; } }
         public override string EngineName { get { return "SQLite"; } }
-
         public override ISqlConnection CreateConnection()
         {
             return new MCGSQLiteConnection();
         }
-
-
         public override void LoadDependencies()
         {
             // on macOS/Linux, system provided sqlite3 native library is used
             if (!IOperatingSystem.DetectOS().IsWindows) return;
-
             Server.CheckFile("sqlite3_x32.dll");
             Server.CheckFile("sqlite3_x64.dll");
-
             // sqlite3.dll is the .DLL that MCGalaxy will actually load on Windows
             try
             {
@@ -63,20 +53,16 @@ namespace MCGalaxy.SQL
                 Logger.LogError("Error moving SQLite dll", ex);
             }
         }
-
         public override void CreateDatabase() { }
-
         public override bool TableExists(string table)
         {
             return Database.CountRows("sqlite_master",
                                       "WHERE type='table' AND name=@0", table) > 0;
         }
-
         public override List<string> AllTables()
         {
             const string sql = "SELECT name from sqlite_master WHERE type='table'";
             List<string> tables = GetStrings(sql);
-
             // exclude sqlite built-in database tables
             for (int i = tables.Count - 1; i >= 0; i--)
             {
@@ -84,22 +70,18 @@ namespace MCGalaxy.SQL
             }
             return tables;
         }
-
         public override List<string> ColumnNames(string table)
         {
             SqlUtils.ValidateName(table);
             List<string> columns = new();
-
             Database.Iterate("PRAGMA table_info(`" + table + "`)",
                              record => columns.Add(record.GetText("name")), null);
             return columns;
         }
-
         public override string RenameTableSql(string srcTable, string dstTable)
         {
             return "ALTER TABLE `" + srcTable + "` RENAME TO `" + dstTable + "`";
         }
-
         protected override void CreateTableColumns(StringBuilder sql, ColumnDesc[] columns)
         {
             string priKey = null;
@@ -108,7 +90,6 @@ namespace MCGalaxy.SQL
                 ColumnDesc col = columns[i];
                 sql.Append(col.Column).Append(' ');
                 sql.Append(col.FormatType());
-
                 // When the primary key isn't autoincrement, we use the same form as mysql
                 // Otherwise we have to use sqlite's 'PRIMARY KEY AUTO_INCREMENT' form
                 if (col.PrimaryKey)
@@ -118,7 +99,6 @@ namespace MCGalaxy.SQL
                 }
                 if (col.AutoIncrement) sql.Append(" AUTOINCREMENT");
                 if (col.NotNull) sql.Append(" NOT NULL");
-
                 if (i < columns.Length - 1)
                 {
                     sql.Append(',');
@@ -130,12 +110,10 @@ namespace MCGalaxy.SQL
                 sql.AppendLine();
             }
         }
-
         public override void PrintSchema(string table, TextWriter w)
         {
             string sql = "SELECT sql from sqlite_master WHERE tbl_name = @0 AND type = 'table'";
             List<string> all = GetStrings(sql + CaselessWhereSuffix, table);
-
             for (int i = 0; i < all.Count; i++)
             {
                 sql = all[i].Replace(" " + table, " `" + table + "`");
@@ -143,18 +121,15 @@ namespace MCGalaxy.SQL
                 w.WriteLine(sql + ";");
             }
         }
-
         public override string AddColumnSql(string table, ColumnDesc col, string colAfter)
         {
             return "ALTER TABLE `" + table + "` ADD COLUMN " + col.Column + " " + col.FormatType();
         }
-
         public override string AddOrReplaceRowSql(string table, string columns, int numArgs)
         {
             return InsertSql("INSERT OR REPLACE INTO", table, columns, numArgs);
         }
     }
-
     sealed class MCGSQLiteConnection : SQLiteConnection
     {
         protected override bool ConnectionPooling { get { return Server.Config.DatabasePooling; } }

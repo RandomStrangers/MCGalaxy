@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
 Dual-licensed under the Educational Community License, Version 2.0 and
 the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -15,7 +15,6 @@ permissions and limitations under the Licenses.
 using System;
 using System.Collections.Generic;
 using System.IO;
-
 namespace MCGalaxy.Modules.Warps
 {
     /// <summary> A named pair of position and orientation, located on a particular map. </summary>
@@ -30,13 +29,11 @@ namespace MCGalaxy.Modules.Warps
         /// <summary> The name of the level this warp is located on. </summary>
         public string Level;
     }
-
     public sealed class WarpList
     {
         public static WarpList Global;
         public List<Warp> Items = new();
         public string Filename;
-
         public Warp Find(string name)
         {
             foreach (Warp wp in Items)
@@ -45,9 +42,7 @@ namespace MCGalaxy.Modules.Warps
             }
             return null;
         }
-
         public bool Exists(string name) { return Find(name) != null; }
-
         public void Create(string name, Player p)
         {
             Warp warp = new();
@@ -55,33 +50,28 @@ namespace MCGalaxy.Modules.Warps
             Items.Add(warp);
             Save();
         }
-
         void Make(Warp warp, string name, Player p)
         {
             warp.Pos = p.Pos; warp.Name = name;
             warp.Yaw = p.Rot.RotY; warp.Pitch = p.Rot.HeadX;
             warp.Level = p.level.name;
         }
-
         public void Update(Warp warp, Player p)
         {
             Make(warp, warp.Name, p);
             Save();
         }
-
         public void Remove(Warp warp, Player _)
         {
             Items.Remove(warp);
             Save();
         }
-
         public void Goto(Warp warp, Player p)
         {
             if (!p.level.name.CaselessEq(warp.Level))
             {
                 PlayerActions.ChangeMap(p, warp.Level);
             }
-
             if (p.level.name.CaselessEq(warp.Level))
             {
                 p.SendPosition(warp.Pos, new Orientation(warp.Yaw, warp.Pitch));
@@ -92,23 +82,17 @@ namespace MCGalaxy.Modules.Warps
                 p.Message("&WUnable to send you to the warp as the map it is on is not loaded.");
             }
         }
-
-
         /// <summary> Find partial matches of 'name' against this list of warps. </summary>
         public Warp FindMatch(Player p, string name)
         {
             string group = (this == Global) ? "warps" : "waypoints";
-
             return Matcher.Find(p, name, out int matches, Items,
                                 null, wp => wp.Name, group);
         }
-
-
         public void Load()
         {
             if (!File.Exists(Filename)) return;
             List<Warp> warps = new();
-
             using (StreamReader r = new(Filename))
             {
                 string line;
@@ -116,7 +100,6 @@ namespace MCGalaxy.Modules.Warps
                 {
                     line = line.Trim();
                     if (line.IsCommentLine()) continue;
-
                     string[] parts = line.Split(':');
                     Warp warp = new();
                     try
@@ -139,7 +122,6 @@ namespace MCGalaxy.Modules.Warps
             // don't change live list while still loading warps
             Items = warps;
         }
-
         public void Save()
         {
             using StreamWriter w = FileIO.CreateGuarded(Filename);

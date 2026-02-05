@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,17 +14,14 @@
  */
 using MCGalaxy.Drawing.Ops;
 using MCGalaxy.Maths;
-
 namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdDraw : DrawCmd
     {
         public override string name { get { return "Draw"; } }
-
         protected override int MarksCount { get { return 1; } }
         protected override string SelectionType { get { return "origin"; } }
         protected override string PlaceMessage { get { return "Place a block to determine the origin."; } }
-
         protected override DrawMode GetMode(string[] parts)
         {
             string msg = parts[0];
@@ -45,7 +39,6 @@ namespace MCGalaxy.Commands.Building
             if (msg == "cylinder") return DrawMode.hollow;
             return DrawMode.normal;
         }
-
         protected override DrawOp GetDrawOp(DrawArgs dArgs)
         {
             DrawOp op = null;
@@ -65,12 +58,10 @@ namespace MCGalaxy.Commands.Building
                 case DrawMode.hollow: op = new CylinderDrawOp(); break;
             }
             if (op == null) { Help(dArgs.Player); return null; }
-
             AdvDrawMeta meta = new();
             bool success = false;
             string[] args = dArgs.Message.SplitSpaces();
             Player p = dArgs.Player;
-
             if (UsesHeight(dArgs))
             {
                 if (args.Length < 3)
@@ -94,23 +85,19 @@ namespace MCGalaxy.Commands.Building
                     success = CommandParser.GetInt(p, args[1], "radius", ref meta.radius, 0, 2000);
                 }
             }
-
             if (!success) return null;
             dArgs.Meta = meta;
             return op;
         }
-
         protected override void GetMarks(DrawArgs dArgs, ref Vec3S32[] m)
         {
             AdvDrawMeta meta = (AdvDrawMeta)dArgs.Meta;
             int radius = meta.radius;
-
             Vec3S32 P = m[0];
             m = new Vec3S32[] {
                 new(P.X - radius, P.Y, P.Z - radius),
                 new(P.X + radius, P.Y, P.Z + radius),
             };
-
             if (UsesHeight(dArgs))
             {
                 m[1].Y += meta.height - 1;
@@ -120,21 +107,17 @@ namespace MCGalaxy.Commands.Building
                 m[0].Y -= radius; m[1].Y += radius;
             }
         }
-
         protected override void GetBrush(DrawArgs dArgs)
         {
             int argsUsed = UsesHeight(dArgs) ? 3 : 2;
             dArgs.BrushArgs = dArgs.Message.Splice(argsUsed, 0);
         }
-
         class AdvDrawMeta { public int radius, height; }
-
         static bool UsesHeight(DrawArgs args)
         {
             DrawMode mode = args.Mode;
             return !(mode == DrawMode.sphere || mode == DrawMode.hsphere);
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Draw [object] [baseradius] [height] <brush args>");

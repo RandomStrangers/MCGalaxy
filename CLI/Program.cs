@@ -25,7 +25,7 @@ namespace MCGalaxy.Cli
     public static class Program
     {
         [STAThread]
-        public static void Main(string[] _)
+        public static void Main()
         {
             SetCurrentDirectory();
             try
@@ -129,45 +129,37 @@ namespace MCGalaxy.Cli
                 stopThread.Join();
             }
         }
-        static void GlobalExHandler(object sender, UnhandledExceptionEventArgs e)
-        {
-            LogAndRestart((Exception)e.ExceptionObject);
-        }
-        static string CurrentDate() 
-        { 
-            return DateTime.Now.ToString("(HH:mm:ss) "); 
-        }
+        static void GlobalExHandler(object sender, UnhandledExceptionEventArgs e) => LogAndRestart((Exception)e.ExceptionObject);
+        static string CurrentDate() => DateTime.Now.ToString("(HH:mm:ss) ");
         static void LogMessage(LogType type, string message)
         {
-            if (!Server.Config.ConsoleLogging[(int)type])
+            if (Server.Config.ConsoleLogging[(int)type])
             {
-                return;
-            }
-            switch (type)
-            {
-                case LogType.Error:
-                    Write("&c!!!Error" + ExtractErrorMessage(message)
-                          + " - See " + FileLogger.err.Path + " for more details.");
-                    break;
-                case LogType.BackgroundActivity:
-                    break;
-                case LogType.Warning:
-                    Write("&e" + CurrentDate() + message);
-                    break;
-                default:
-                    Write(CurrentDate() + message);
-                    break;
+                switch (type)
+                {
+                    case LogType.Error:
+                        Write("&c!!!Error" + ExtractErrorMessage(message)
+                              + " - See " + FileLogger.err.Path + " for more details.");
+                        break;
+                    case LogType.BackgroundActivity:
+                        break;
+                    case LogType.Warning:
+                        Write("&e" + CurrentDate() + message);
+                        break;
+                    default:
+                        Write(CurrentDate() + message);
+                        break;
+                }
             }
         }
-        static readonly string msgPrefix = Environment.NewLine + "Message: ";
         static string ExtractErrorMessage(string raw)
         {
-            int beg = raw.IndexOf(msgPrefix);
+            int beg = raw.IndexOf(Environment.NewLine + "Message: ");
             if (beg == -1)
             {
                 return "";
             }
-            beg += msgPrefix.Length;
+            beg += (Environment.NewLine + "Message: ").Length;
             int end = raw.IndexOf(Environment.NewLine, beg);
             if (end == -1)
             {
@@ -177,19 +169,15 @@ namespace MCGalaxy.Cli
         }
         static void CheckNameVerification()
         {
-            if (Server.Config.VerifyNames)
+            if (!Server.Config.VerifyNames)
             {
-                return;
+                Write("&e==============================================");
+                Write("&eWARNING: Name verification is disabled! This means players can login as anyone, including YOU");
+                Write("&eUnless you know EXACTLY what you are doing, you should change verify-names to true in server.properties");
+                Write("&e==============================================");
             }
-            Write("&e==============================================");
-            Write("&eWARNING: Name verification is disabled! This means players can login as anyone, including YOU");
-            Write("&eUnless you know EXACTLY what you are doing, you should change verify-names to true in server.properties");
-            Write("&e==============================================");
         }
-        static void LogNewerVersionDetected(object sender, EventArgs e)
-        {
-            Write("&cMCGalaxy update available! Update by replacing with the files from " + Updater.UploadsURL);
-        }
+        static void LogNewerVersionDetected(object sender, EventArgs e) => Write("&cMCGalaxy update available! Update by replacing with the files from " + Updater.UploadsURL);
         static void ConsoleLoop()
         {
             int eofs = 0;

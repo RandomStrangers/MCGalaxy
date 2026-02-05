@@ -65,20 +65,18 @@ namespace MCGalaxy.Gui
         void HandleMapsChanged(RoundsGame game)
         {
             GamesHelper helper = GetGameHelper(game);
-            if (helper == null)
+            if (helper != null)
             {
-                return;
+                RunOnUI_Async(() => helper.UpdateMaps());
             }
-            RunOnUI_Async(() => helper.UpdateMaps());
         }
         void HandleStateChanged(IGame game)
         {
             GamesHelper helper = GetGameHelper(game);
-            if (helper == null)
+            if (helper != null)
             {
-                return;
+                RunOnUI_Async(() => helper.UpdateButtons());
             }
-            RunOnUI_Async(() => helper.UpdateButtons());
         }
         void LoadZSSettings(string[] allMaps)
         {
@@ -191,48 +189,46 @@ namespace MCGalaxy.Gui
                 Logger.LogError(ex);
                 lsCurCfg = null;
             }
-            if (lsCurCfg == null)
+            if (lsCurCfg != null)
             {
-                return;
+                LSConfig cfg = LSGame.Instance.Config;
+                ls_numWater.Value = lsCurCfg.WaterChance;
+                ls_numFast.Value = lsCurCfg.FastChance;
+                ls_numFloodUp.Value = lsCurCfg.FloodUpChance;
+                ls_numLayer.Value = lsCurCfg.LayerChance;
+                ls_numCount.Value = lsCurCfg.LayerCount;
+                ls_numHeight.Value = lsCurCfg.LayerHeight;
+                ls_numRound.Value = cfg.GetRoundTime(lsCurCfg);
+                ls_numFlood.Value = cfg.GetFloodTime(lsCurCfg);
+                ls_numLayerTime.Value = cfg.GetLayerInterval(lsCurCfg);
             }
-            LSConfig cfg = LSGame.Instance.Config;
-            ls_numWater.Value = lsCurCfg.WaterChance;
-            ls_numFast.Value = lsCurCfg.FastChance;
-            ls_numFloodUp.Value = lsCurCfg.FloodUpChance;
-            ls_numLayer.Value = lsCurCfg.LayerChance;
-            ls_numCount.Value = lsCurCfg.LayerCount;
-            ls_numHeight.Value = lsCurCfg.LayerHeight;
-            ls_numRound.Value = cfg.GetRoundTime(lsCurCfg);
-            ls_numFlood.Value = cfg.GetFloodTime(lsCurCfg);
-            ls_numLayerTime.Value = cfg.GetLayerInterval(lsCurCfg);
         }
         void SaveLSMapSettings()
         {
-            if (lsCurCfg == null)
+            if (lsCurCfg != null)
             {
-                return;
+                LSConfig cfg = LSGame.Instance.Config;
+                lsCurCfg.WaterChance = (int)ls_numWater.Value;
+                lsCurCfg.FastChance = (int)ls_numFast.Value;
+                lsCurCfg.FloodUpChance = (int)ls_numFloodUp.Value;
+                lsCurCfg.LayerChance = (int)ls_numLayer.Value;
+                lsCurCfg.LayerCount = (int)ls_numCount.Value;
+                lsCurCfg.LayerHeight = (int)ls_numHeight.Value;
+                if (ls_numRound.Value != cfg.DefaultRoundTime)
+                {
+                    lsCurCfg._RoundTime = ls_numRound.Value;
+                }
+                if (ls_numFlood.Value != cfg.DefaultFloodTime)
+                {
+                    lsCurCfg._FloodTime = ls_numFlood.Value;
+                }
+                if (ls_numLayerTime.Value != cfg.DefaultLayerInterval)
+                {
+                    lsCurCfg._LayerInterval = ls_numLayerTime.Value;
+                }
+                lsCurCfg.Save(lsCurMap);
+                lsHelper.UpdateMapConfig(lsCurMap);
             }
-            LSConfig cfg = LSGame.Instance.Config;
-            lsCurCfg.WaterChance = (int)ls_numWater.Value;
-            lsCurCfg.FastChance = (int)ls_numFast.Value;
-            lsCurCfg.FloodUpChance = (int)ls_numFloodUp.Value;
-            lsCurCfg.LayerChance = (int)ls_numLayer.Value;
-            lsCurCfg.LayerCount = (int)ls_numCount.Value;
-            lsCurCfg.LayerHeight = (int)ls_numHeight.Value;
-            if (ls_numRound.Value != cfg.DefaultRoundTime)
-            {
-                lsCurCfg._RoundTime = ls_numRound.Value;
-            }
-            if (ls_numFlood.Value != cfg.DefaultFloodTime)
-            {
-                lsCurCfg._FloodTime = ls_numFlood.Value;
-            }
-            if (ls_numLayerTime.Value != cfg.DefaultLayerInterval)
-            {
-                lsCurCfg._LayerInterval = ls_numLayerTime.Value;
-            }
-            lsCurCfg.Save(lsCurMap);
-            lsHelper.UpdateMapConfig(lsCurMap);
         }
         void LoadTWSettings(string[] allMaps)
         {
@@ -291,37 +287,35 @@ namespace MCGalaxy.Gui
                 Logger.LogError(ex);
                 twCurCfg = null;
             }
-            if (twCurCfg == null)
+            if (twCurCfg != null)
             {
-                return;
+                tw_numScoreLimit.Value = twCurCfg.ScoreRequired;
+                tw_numScorePerKill.Value = twCurCfg.ScorePerKill;
+                tw_numScoreAssists.Value = twCurCfg.AssistScore;
+                tw_numMultiKills.Value = twCurCfg.MultiKillBonus;
+                tw_cbStreaks.Checked = twCurCfg.Streaks;
+                tw_cbGrace.Checked = twCurCfg.GracePeriod;
+                tw_numGrace.Value = twCurCfg.GracePeriodTime;
+                tw_cbBalance.Checked = twCurCfg.BalanceTeams;
+                tw_cbKills.Checked = twCurCfg.TeamKills;
             }
-            tw_numScoreLimit.Value = twCurCfg.ScoreRequired;
-            tw_numScorePerKill.Value = twCurCfg.ScorePerKill;
-            tw_numScoreAssists.Value = twCurCfg.AssistScore;
-            tw_numMultiKills.Value = twCurCfg.MultiKillBonus;
-            tw_cbStreaks.Checked = twCurCfg.Streaks;
-            tw_cbGrace.Checked = twCurCfg.GracePeriod;
-            tw_numGrace.Value = twCurCfg.GracePeriodTime;
-            tw_cbBalance.Checked = twCurCfg.BalanceTeams;
-            tw_cbKills.Checked = twCurCfg.TeamKills;
         }
         void SaveTWMapSettings()
         {
-            if (twCurCfg == null)
+            if (twCurCfg != null)
             {
-                return;
+                twCurCfg.ScoreRequired = (int)tw_numScoreLimit.Value;
+                twCurCfg.ScorePerKill = (int)tw_numScorePerKill.Value;
+                twCurCfg.AssistScore = (int)tw_numScoreAssists.Value;
+                twCurCfg.MultiKillBonus = (int)tw_numMultiKills.Value;
+                twCurCfg.Streaks = tw_cbStreaks.Checked;
+                twCurCfg.GracePeriod = tw_cbGrace.Checked;
+                twCurCfg.GracePeriodTime = tw_numGrace.Value;
+                twCurCfg.BalanceTeams = tw_cbBalance.Checked;
+                twCurCfg.TeamKills = tw_cbKills.Checked;
+                twCurCfg.Save(twCurMap);
+                twHelper.UpdateMapConfig(twCurMap);
             }
-            twCurCfg.ScoreRequired = (int)tw_numScoreLimit.Value;
-            twCurCfg.ScorePerKill = (int)tw_numScorePerKill.Value;
-            twCurCfg.AssistScore = (int)tw_numScoreAssists.Value;
-            twCurCfg.MultiKillBonus = (int)tw_numMultiKills.Value;
-            twCurCfg.Streaks = tw_cbStreaks.Checked;
-            twCurCfg.GracePeriod = tw_cbGrace.Checked;
-            twCurCfg.GracePeriodTime = tw_numGrace.Value;
-            twCurCfg.BalanceTeams = tw_cbBalance.Checked;
-            twCurCfg.TeamKills = tw_cbKills.Checked;
-            twCurCfg.Save(twCurMap);
-            twHelper.UpdateMapConfig(twCurMap);
         }
         void LoadCDSettings(string[] allMaps)
         {

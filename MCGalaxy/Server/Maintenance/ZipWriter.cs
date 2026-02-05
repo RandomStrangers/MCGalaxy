@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -20,7 +17,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-
 namespace MCGalaxy
 {
     struct ZipEntry
@@ -48,7 +44,7 @@ namespace MCGalaxy
         public uint Crc32 = uint.MaxValue;
         public long CompressedLen;
         public Stream stream;
-        public ZipWriterStream(Stream stream) 
+        public ZipWriterStream(Stream stream)
         {
             this.stream = stream;
         }
@@ -58,21 +54,21 @@ namespace MCGalaxy
         static readonly Exception ex = new NotSupportedException();
         public override void Flush()
         {
-            stream.Flush(); 
+            stream.Flush();
         }
         public override long Length { get { throw ex; } }
         public override long Position { get { throw ex; } set { throw ex; } }
-        public override int Read(byte[] buffer, int offset, int count) 
-        { 
-            throw ex; 
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            throw ex;
         }
-        public override long Seek(long offset, SeekOrigin origin) 
-        { 
-            throw ex; 
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            throw ex;
         }
-        public override void SetLength(long length) 
-        { 
-            throw ex; 
+        public override void SetLength(long length)
+        {
+            throw ex;
         }
         public override void Write(byte[] buffer, int offset, int count)
         {
@@ -84,9 +80,9 @@ namespace MCGalaxy
             stream.WriteByte(value);
             CompressedLen++;
         }
-        public override void Close() 
-        { 
-            stream = null; 
+        public override void Close()
+        {
+            stream = null;
         }
         public long WriteStream(Stream src, byte[] buffer, bool compress)
         {
@@ -125,8 +121,8 @@ namespace MCGalaxy
                     {
                         c = 0xEDB88320 ^ (c >> 1);
                     }
-                    else 
-                    { 
+                    else
+                    {
                         c >>= 1;
                     }
                 }
@@ -250,10 +246,10 @@ namespace MCGalaxy
             w.Write(ZIP64_LOCAL_EXTRA_SIZE);
             w.Write(entry.Filename);
             // not using zip64, fill in with empty data
-            if (!zip64) 
-            { 
-                w.Write(emptyZip64Local); 
-                return; 
+            if (!zip64)
+            {
+                w.Write(emptyZip64Local);
+                return;
             }
             // zip64 extra data entry
             w.Write(EXTRA_TAG_ZIP64);
@@ -267,7 +263,7 @@ namespace MCGalaxy
                 version = zip64 ? ver_zip64 : ver_norm;
             BinaryWriter w = writer;
             ZipEntry copy = entry;
-            if (zip64) 
+            if (zip64)
             {
                 entry.MakeZip64Placeholder();
             }

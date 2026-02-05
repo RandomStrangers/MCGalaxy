@@ -15,7 +15,6 @@ permissions and limitations under the Licenses.
 using MCGalaxy.Events;
 using System;
 using System.Collections.Generic;
-
 namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdTempRank : Command2
@@ -28,12 +27,10 @@ namespace MCGalaxy.Commands.Moderation
         {
             get { return new[] { new CommandAlias("dtr", "delete"), new CommandAlias("trl", "list") }; }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(4);
             string cmd = args[0];
-
             if (args.Length >= 3)
             {
                 Assign(p, args, data);
@@ -55,31 +52,25 @@ namespace MCGalaxy.Commands.Moderation
                 Help(p);
             }
         }
-
         static void Assign(Player p, string[] args, CommandData data)
         {
             string target = PlayerInfo.FindMatchesPreferOnline(p, args[0]);
             if (target == null) return;
-
             Group newRank = Matcher.FindRanks(p, args[1]);
             if (newRank == null) return;
             TimeSpan duration = TimeSpan.Zero;
             if (!CommandParser.GetTimespan(p, args[2], ref duration, "temp rank for", "h")) return;
-
             if (Server.tempRanks.Contains(target))
             {
                 p.Message("&WThe player already has a temporary rank assigned!"); return;
             }
-
             if (p.name.CaselessEq(target))
             {
                 p.Message("&WYou cannot assign yourself a temporary rank."); return;
             }
-
             Group curRank = PlayerInfo.GetGroup(target);
             string reason = args.Length > 3 ? args[3] : "assigning temp rank";
             if (!CmdSetRank.CanChangeRank(target, curRank, newRank, p, data, ref reason)) return;
-
             ModAction action = new(target, p, ModActionType.Rank, reason, duration)
             {
                 targetGroup = curRank,
@@ -87,7 +78,6 @@ namespace MCGalaxy.Commands.Moderation
             };
             OnModActionEvent.Call(action);
         }
-
         internal static void Delete(Player p, string target, CommandData data)
         {
             string line = Server.tempRanks.Get(target);
@@ -96,16 +86,12 @@ namespace MCGalaxy.Commands.Moderation
                 p.Message("{0} &Whas not been assigned a temp rank.", p.FormatNick(target));
                 return;
             }
-
             string[] parts = line.SplitSpaces();
             Group curRank = PlayerInfo.GetGroup(target);
-
             Group oldRank = Group.Find(parts[4 - 1]); // -1 because data, not whole line
             if (oldRank == null) return;
-
             string reason = "temp rank unassigned";
             if (!CmdSetRank.CanChangeRank(target, curRank, oldRank, p, data, ref reason)) return;
-
             ModAction action = new(target, p, ModActionType.Rank, reason)
             {
                 Metadata = oldRank,
@@ -113,7 +99,6 @@ namespace MCGalaxy.Commands.Moderation
             };
             OnModActionEvent.Call(action);
         }
-
         static void Info(Player p, string target)
         {
             string data = Server.tempRanks.Get(target);
@@ -126,7 +111,6 @@ namespace MCGalaxy.Commands.Moderation
                 PrintTempRankInfo(p, target, data);
             }
         }
-
         static void List(Player p)
         {
             List<string> lines = Server.tempRanks.AllLines();
@@ -144,18 +128,15 @@ namespace MCGalaxy.Commands.Moderation
                 }
             }
         }
-
         static void PrintTempRankInfo(Player p, string name, string data)
         {
             string[] args = data.SplitSpaces();
             if (args.Length < 4) return;
-
             string assigner = args[0];
             DateTime assigned = long.Parse(args[1]).FromUnixTime();
             DateTime expiry = long.Parse(args[2]).FromUnixTime();
             string oldRank = Group.GetColoredName(args[3]);
             string tempRank = Group.GetColoredName(args[4]);
-
             TimeSpan assignDelta = DateTime.UtcNow - assigned;
             TimeSpan expireDelta = expiry - DateTime.UtcNow;
             p.Message("Temp rank information for {0}:", p.FormatNick(name));
@@ -163,7 +144,6 @@ namespace MCGalaxy.Commands.Moderation
                            oldRank, tempRank, assigner,
                            assignDelta.Shorten(), expireDelta.Shorten());
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/TempRank [player] [rank] [timespan] <reason>");

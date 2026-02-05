@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,69 +13,55 @@
     permissions and limitations under the Licenses.
  */
 using System.Runtime.InteropServices;
-
 namespace MCGalaxy.Blocks.Physics
 {
-
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct PhysicsArgs
     {
         public uint Raw;
-
         public const uint TypeMask = 0x3F;
         public const uint TypeBitsMask = 0x07;
         public const uint ValueBitsMask = 0xFF;
         public const uint ExtBit = 1u << 30;
         public const uint ExtBits = (1u << 30) | (1u << 31);
-
-        /// <summary> Indicates that this physics entry should be removed from the list of 
+        /// <summary> Indicates that this physics entry should be removed from the list of
         /// entries that are checked for physics, at the end of the current tick. </summary>
         public const byte RemoveFromChecks = 255;
-
         public byte Type1
         {
             readonly get { return (byte)(Raw & TypeBitsMask); }
             set { Raw &= ~TypeBitsMask; Raw |= (uint)value << 0; }
         }
-
         public byte Type2
         {
             readonly get { return (byte)((Raw >> 3) & TypeBitsMask); }
             set { Raw &= ~(TypeBitsMask << 3); Raw |= (uint)value << 3; }
         }
-
         public byte Value1
         {
             readonly get { return (byte)(Raw >> 6); }
             set { Raw &= ~(ValueBitsMask << 6); Raw |= (uint)value << 6; }
         }
-
         public byte Value2
         {
             readonly get { return (byte)(Raw >> 14); }
             set { Raw &= ~(ValueBitsMask << 14); Raw |= (uint)value << 14; }
         }
-
         public byte Data
         {
             readonly get { return (byte)(Raw >> 22); }
             set { Raw &= ~(ValueBitsMask << 22); Raw |= (uint)value << 22; }
         }
-
         public byte ExtBlock
         {
             readonly get { return (byte)(Raw >> 30); }
             set { Raw &= ~ExtBits; Raw |= (uint)value << 30; }
         }
-
-
         public readonly bool HasWait
         {
             get { return (Raw & TypeBitsMask) == Wait || ((Raw >> 3) & TypeBitsMask) == Wait; }
         }
-
         public void ResetTypes() { Raw &= ~TypeMask; }
-
         /// <summary> No special action is performed. </summary>
         public const byte None = 0;
         /// <summary> Another action will be executed after the given delay. </summary>

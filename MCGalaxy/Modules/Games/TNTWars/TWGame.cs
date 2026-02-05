@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2011 MCForge
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -26,7 +23,6 @@ using MCGalaxy.Maths;
 //-------|__________________________________|-------\\
 using System;
 using System.Collections.Generic;
-
 namespace MCGalaxy.Modules.Games.TW
 {
     public enum TWGameMode { FFA, TDM };
@@ -38,14 +34,12 @@ namespace MCGalaxy.Modules.Games.TW
         Extreme, // 1 Hit to die, Tnt has short delay and BIG exlosion
     }
     public sealed class PlayerAndScore { public Player p; public int Score; }
-
     internal sealed class TWData
     {
         public int Score, Health = 2, KillStreak, TNTCounter;
         public float ScoreMultiplier = 1f;
         public int LastKillStreakAnnounced;
         public Player HarmedBy; // For Assists
-
         public void Reset(TWDifficulty diff)
         {
             bool easyish = diff == TWDifficulty.Easy || diff == TWDifficulty.Normal;
@@ -58,7 +52,6 @@ namespace MCGalaxy.Modules.Games.TW
             HarmedBy = null;
         }
     }
-
     sealed class TWTeam
     {
         public string Name, Color;
@@ -66,64 +59,52 @@ namespace MCGalaxy.Modules.Games.TW
         public int Score;
         public Vec3U16 SpawnPos;
         public VolatileArray<Player> Members = new();
-
         public TWTeam(string name, string color) { Name = name; Color = color; }
     }
-
     public partial class TWGame : RoundsGame
     {
         TWMapConfig cfg = new();
         public TWConfig Config = new();
         public override string GameName { get { return "TNT Wars"; } }
         public override RoundsGameConfig GetConfig() { return Config; }
-
         protected override string WelcomeMessage
         {
             get { return "&4TNT Wars &Sis running! Type &T/TW go &Sto join"; }
         }
-
         readonly TWTeam Red = new("Red", Colors.red);
         readonly TWTeam Blue = new("Blue", Colors.blue);
         public List<TWZone> tntFreeZones = new();
         public List<TWZone> tntImmuneZones = new();
         readonly VolatileArray<Player> allPlayers = new();
         TNTImmuneFilter tntImmuneFilter;
-
         public static TWGame Instance = new();
         public TWGame() { Picker = new SimpleLevelPicker(); }
-
         const string twExtrasKey = "MCG_TW_DATA";
         static TWData Get(Player p)
         {
             TWData data = TryGet(p);
             if (data != null) return data;
             data = new TWData();
-
             // TODO: Is this even thread-safe
             p.Extras[twExtrasKey] = data;
             return data;
         }
-
         static TWData TryGet(Player p)
         {
             p.Extras.TryGet(twExtrasKey, out object data); return (TWData)data;
         }
-
         public override void UpdateMapConfig()
         {
             TWMapConfig cfg = new();
             cfg.SetDefaults(Map);
             cfg.Load(Map.name);
-
             this.cfg = cfg;
             Red.SpawnPos = cfg.RedSpawn;
             Blue.SpawnPos = cfg.BlueSpawn;
-
             if (!Running) return;
             UpdateAllStatus1();
             UpdateAllStatus2();
         }
-
         protected override List<Player> GetPlayers()
         {
             List<Player> playing = new();
@@ -131,7 +112,6 @@ namespace MCGalaxy.Modules.Games.TW
             playing.AddRange(Blue.Members.Items);
             return playing;
         }
-
         public override void OutputStatus(Player p)
         {
             if (Config.Mode == TWGameMode.TDM)
@@ -144,101 +124,83 @@ namespace MCGalaxy.Modules.Games.TW
             p.Message("Your score: &f{0}/{1} &Spoints, health: &f{2} &SHP",
                            Get(p).Score, cfg.ScoreRequired, Get(p).Health);
         }
-
         protected override void StartGame()
         {
             ResetTeams();
             tntImmuneFilter = (x, y, z) => InZone(x, y, z, tntImmuneZones);
         }
-
         protected override void EndGame()
         {
             RestoreBuildPerms();
             ResetTeams();
-
             // Reset block handlers
             UpdateBlockHandlers();
             Map.UpdateBlockProps();
         }
-
         void ResetTeams()
         {
             Blue.Members.Clear();
             Red.Members.Clear();
             Blue.Score = 0;
             Red.Score = 0;
-
             Player[] players = allPlayers.Items;
             foreach (Player pl in players)
             {
                 RestoreColor(pl);
             }
         }
-
         public override void PlayerJoinedGame(Player p)
         {
             bool announce = false;
             HandleSentMap(p, Map, Map);
             HandleJoinedLevel(p, Map, Map, ref announce);
         }
-
         public override void PlayerLeftGame(Player p)
         {
             allPlayers.Remove(p);
             TWTeam team = TeamOf(p);
-
             if (team == null) return;
             team.Members.Remove(p);
             RestoreColor(p);
         }
-
         void RestoreColor(Player p)
         {
             TWData data = TryGet(p);
             // TODO: p.Socket.Disconnected check should be elsewhere
             if (data == null || p.Socket.Disconnected) return;
-
             p.UpdateColor(PlayerInfo.DefaultColor(p));
             TabList.Update(p, true);
         }
-
         void JoinTeam(Player p, TWTeam team)
         {
             team.Members.Add(p);
             Map.Message(p.ColoredName + " &Sjoined the " + team.ColoredName + " &Steam");
-
             p.UpdateColor(team.Color);
             p.Message("You are now on the " + team.ColoredName + " team!");
             TabList.Update(p, true);
         }
-
         TWTeam TeamOf(Player p)
         {
             if (Red.Members.Contains(p)) return Red;
             if (Blue.Members.Contains(p)) return Blue;
             return null;
         }
-
-
         public void ModeTDM()
         {
             Config.Mode = TWGameMode.TDM;
             MessageMap(CpeMessageType.Announcement,
                        "&4Gamemode changed to &fTeam Deathmatch");
             Player[] players = allPlayers.Items;
-
             foreach (Player pl in players)
             {
                 string msg = pl.ColoredName + " &Sis now on the ";
                 AutoAssignTeam(pl);
-
                 // assigning team changed colour of player
                 msg += TeamOf(pl).ColoredName + " team";
                 Map.Message(msg);
             }
             Config.Save();
         }
-
         public void ModeFFA()
         {
             Config.Mode = TWGameMode.FFA;
@@ -247,37 +209,30 @@ namespace MCGalaxy.Modules.Games.TW
             ResetTeams();
             Config.Save();
         }
-
         public void SetDifficulty(TWDifficulty diff)
         {
             Config.Difficulty = diff;
             MessageMap(CpeMessageType.Announcement,
                        "&4Difficulty changed to &f" + diff);
             Config.Save();
-
             bool teamKill = diff >= TWDifficulty.Hard;
             if (cfg.TeamKills == teamKill) return;
-
             cfg.TeamKills = teamKill;
             // TODO rethink this
             if (Map != null) cfg.Save(Map.name);
         }
-
         public class TWZone
         {
             public ushort MinX, MinY, MinZ, MaxX, MaxY, MaxZ;
-
             public TWZone(Vec3U16 p1, Vec3U16 p2)
             {
                 MinX = Math.Min(p1.X, p2.X);
                 MinY = Math.Min(p1.Y, p2.Y);
                 MinZ = Math.Min(p1.Z, p2.Z);
-
                 MaxX = Math.Max(p1.X, p2.X);
                 MaxY = Math.Max(p1.Y, p2.Y);
                 MaxZ = Math.Max(p1.Z, p2.Z);
             }
-
             public string DescribeBounds()
             {
                 return
@@ -285,7 +240,6 @@ namespace MCGalaxy.Modules.Games.TW
                     ") to (" + MaxX + ", " + MaxY + ", " + MaxZ + ")";
             }
         }
-
         public bool InZone(ushort x, ushort y, ushort z, List<TWZone> zones)
         {
             foreach (TWZone Zn in zones)
@@ -295,7 +249,6 @@ namespace MCGalaxy.Modules.Games.TW
             }
             return false;
         }
-
         void AutoAssignTeam(Player p)
         {
             if (Blue.Members.Count > Red.Members.Count)
@@ -320,12 +273,10 @@ namespace MCGalaxy.Modules.Games.TW
                 JoinTeam(p, red ? Red : Blue);
             }
         }
-
         public PlayerAndScore[] SortedByScore()
         {
             Player[] all = allPlayers.Items;
             PlayerAndScore[] sorted = new PlayerAndScore[all.Length];
-
             for (int i = 0; i < all.Length; i++)
             {
                 PlayerAndScore entry = new()
@@ -335,50 +286,39 @@ namespace MCGalaxy.Modules.Games.TW
                 entry.Score = Get(entry.p).Score;
                 sorted[i] = entry;
             }
-
             Array.Sort(sorted, (a, b) => b.Score.CompareTo(a.Score));
             return sorted;
         }
-
         public string FormatTopScore(PlayerAndScore[] top, int i)
         {
             string col = "&f";
             PlayerAndScore p = top[i];
-
             if (i == 0) col = "&6";
             if (i == 1) col = "&7";
             if (i == 2) col = "&4";
-
             return string.Format("{0}) {2} - {1}{3} points", i + 1, col,
                                  p.p.ColoredName, p.Score);
         }
-
         public void ChangeScore(Player p, int amount)
         {
             Get(p).Score += amount;
             UpdateStatus2(p);
-
             if (Config.Mode != TWGameMode.TDM) return;
             TWTeam team = TeamOf(p);
             if (team == null) return;
-
             team.Score += amount;
             UpdateAllStatus1();
         }
-
         bool TeamKill(Player p1, Player p2)
         {
             return Config.Mode == TWGameMode.TDM && TeamOf(p1) == TeamOf(p2);
         }
-
         protected override string FormatStatus1(Player p)
         {
             if (Config.Mode != TWGameMode.TDM) return "";
-
             return Red.ColoredName + ": &f" + Red.Score + "/" + cfg.ScoreRequired + ", "
                 + Blue.ColoredName + ": &f" + Blue.Score + "/" + cfg.ScoreRequired;
         }
-
         protected override string FormatStatus2(Player p)
         {
             TWData data = Get(p);

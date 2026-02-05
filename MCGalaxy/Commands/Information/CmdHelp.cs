@@ -16,8 +16,6 @@ using MCGalaxy.Blocks;
 using MCGalaxy.Commands.CPE;
 using MCGalaxy.Events.PlayerEvents;
 using System.Collections.Generic;
-
-
 namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdHelp : Command2
@@ -33,13 +31,11 @@ namespace MCGalaxy.Commands.Info
                     new CommandAlias("Colors", "colors"), new CommandAlias("Emotes", "emotes") };
             }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             bool cancel = false;
             OnPlayerHelpEvent.Call(p, message, ref cancel);
             if (cancel) return;
-
             if (message.Length == 0)
             {
                 PrintHelpMenu(p);
@@ -63,7 +59,6 @@ namespace MCGalaxy.Commands.Info
                 p.Message("Could not find command, plugin or block specified.");
             }
         }
-
         static void PrintHelpMenu(Player p)
         {
             p.Message("&HCommand Categories:");
@@ -78,7 +73,6 @@ namespace MCGalaxy.Commands.Info
             p.Message("&HTo join a map, type &T/Goto WorldName");
             p.Message("&HTo send private messages, type &T@PlayerName Message");
         }
-
         static void PrintRanks(Player p)
         {
             foreach (Group grp in Group.GroupList)
@@ -87,40 +81,33 @@ namespace MCGalaxy.Commands.Info
                           grp.ColoredName, grp.DrawLimit, (int)grp.Permission, grp.OverseerMaps);
             }
         }
-
         static void PrintColors(Player p)
         {
             p.Message("&fTo use a color, put a '%' and then put the color code.");
             p.Message("Colors Available:");
-
             p.Message("0 - &0{0} &S| 1 - &1{1} &S| 2 - &2{2} &S| 3 - &3{3}",
                       Colors.Name('0'), Colors.Name('1'), Colors.Name('2'), Colors.Name('3'));
             p.Message("4 - &4{0} &S| 5 - &5{1} &S| 6 - &6{2} &S| 7 - &7{3}",
                       Colors.Name('4'), Colors.Name('5'), Colors.Name('6'), Colors.Name('7'));
-
             p.Message("8 - &8{0} &S| 9 - &9{1} &S| a - &a{2} &S| b - &b{3}",
                       Colors.Name('8'), Colors.Name('9'), Colors.Name('a'), Colors.Name('b'));
             p.Message("c - &c{0} &S| d - &d{1} &S| e - &e{2} &S| f - &f{3}",
                       Colors.Name('c'), Colors.Name('d'), Colors.Name('e'), Colors.Name('f'));
-
             foreach (ColorDesc color in Colors.List)
             {
                 if (color.Undefined || Colors.IsStandard(color.Code)) continue;
                 CmdCustomColors.PrintColor(p, color);
             }
         }
-
         static void PrintEmotes(Player p, string message)
         {
             char[] emotes = EmotesHandler.ControlCharReplacements.ToCharArray();
             emotes[0] = EmotesHandler.ExtendedCharReplacements[0]; // replace NULL with house
-
             string[] args = message.SplitSpaces(2);
             string modifier = args.Length > 1 ? args[1] : "";
             Paginator.Output(p, emotes, PrintEmote,
                              "Help emotes", "emotes", modifier);
         }
-
         static void PrintEmote(Player p, char emote)
         {
             List<string> keywords = new();
@@ -130,16 +117,13 @@ namespace MCGalaxy.Commands.Info
             }
             p.Message("&f{0} &S- {1}", emote, keywords.Join());
         }
-
         bool ParseCommand(Player p, string message)
         {
             string[] args = message.SplitSpaces(2);
             string cmdName = args[0], cmdArgs = "";
             Search(ref cmdName, ref cmdArgs);
-
             Command cmd = Find(cmdName);
             if (cmd == null) return false;
-
             if (args.Length == 1)
             {
                 cmd.Help(p);
@@ -151,26 +135,20 @@ namespace MCGalaxy.Commands.Info
             }
             return true;
         }
-
         bool ParseBlock(Player p, string message)
         {
             ushort block = Block.Parse(p, message);
             if (block == Block.Invalid) return false;
-
             p.Message("Block \"{0}\" appears as &b{1}",
                       message, Block.GetName(p, Block.Convert(block)));
-
             BlockPerms.GetPlace(block).MessageCannotUse(p, "use");
             BlockPerms.GetDelete(block).MessageCannotUse(p, "delete");
-
             DescribePhysics(p, message, block);
             return true;
         }
-
         void DescribePhysics(Player p, string _, ushort b)
         {
             BlockProps props = p.IsSuper ? Block.Props[b] : p.level.Props[b];
-
             if (props.IsDoor)
             {
                 p.Message("Door can be used as an 'openable' block if physics are enabled, will automatically toggle back to closed after a few seconds. " +
@@ -250,7 +228,6 @@ namespace MCGalaxy.Commands.Info
                 p.Message("Active_lava and its fast counterparts flow horizontally through the map, active_hot_lava and magma kill players, " +
                                "magma flows upwards slowly if it is placed in a spot where it cannot flow then broken out.");
             }
-
             AnimalAI ai = props.AnimalAI;
             if (ai == AnimalAI.KillerAir || ai == AnimalAI.Fly || ai == AnimalAI.FleeAir)
             {
@@ -262,16 +239,13 @@ namespace MCGalaxy.Commands.Info
                                "sharks and lava sharks eat players they touch.");
             }
         }
-
         bool ParsePlugin(Player p, string message)
         {
             Plugin pl = Plugin.FindCustom(message);
             if (pl == null) return false;
-
             pl.Help(p);
             return true;
         }
-
         public override void Help(Player p)
         {
             p.Message("...really? Wow. Just...wow.");

@@ -26,9 +26,9 @@ namespace MCGalaxy.Gui.Popups
         public PortTools(int port)
         {
             InitializeComponent();
-            worker = new BackgroundWorker 
+            worker = new BackgroundWorker
             {
-                WorkerSupportsCancellation = true 
+                WorkerSupportsCancellation = true
             };
             worker.DoWork += AsyncWorker_DoWork;
             worker.RunWorkerCompleted += AsyncWorker_OnCompleted;
@@ -39,30 +39,12 @@ namespace MCGalaxy.Gui.Popups
                 Log = LogUPnP
             };
         }
-        void PortTools_Load(object sender, EventArgs e)
-        {
-            GuiUtils.SetIcon(this);
-        }
-        void PortChecker_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            worker.CancelAsync();
-        }
-        void LinkManually_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            GuiUtils.OpenBrowser("https://www.canyouseeme.org/");
-        }
-        void LinkHelpForward_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            GuiUtils.OpenBrowser("https://portforward.com");
-        }
-        void BtnForward_Click(object sender, EventArgs e)
-        {
-            StartForwardOrDelete(true);
-        }
-        void BtnDelete_Click(object sender, EventArgs e)
-        {
-            StartForwardOrDelete(false);
-        }
+        void PortTools_Load(object sender, EventArgs e) => GuiUtils.SetIcon(this);
+        void PortChecker_FormClosing(object sender, FormClosingEventArgs e) => worker.CancelAsync();
+        void LinkManually_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) => GuiUtils.OpenBrowser("https://www.canyouseeme.org/");
+        void LinkHelpForward_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) => GuiUtils.OpenBrowser("https://portforward.com");
+        void BtnForward_Click(object sender, EventArgs e) => StartForwardOrDelete(true);
+        void BtnDelete_Click(object sender, EventArgs e) => StartForwardOrDelete(false);
         void StartForwardOrDelete(bool forwardingMode)
         {
             SetUPnPEnabled(false);
@@ -72,12 +54,11 @@ namespace MCGalaxy.Gui.Popups
         }
         void MakeLogsVisible()
         {
-            if (gbLogs.Visible)
+            if (!gbLogs.Visible)
             {
-                return;
+                AutoSize = true;
+                gbLogs.Visible = true;
             }
-            AutoSize = true;
-            gbLogs.Visible = true;
         }
         void SetUPnPEnabled(bool enabled)
         {
@@ -112,39 +93,32 @@ namespace MCGalaxy.Gui.Popups
         }
         void AsyncWorker_OnCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            if (e.Cancelled)
+            if (!e.Cancelled)
             {
-                return;
+                SetUPnPEnabled(true);
+                int result = (int)e.Result;
+                switch (result)
+                {
+                    case 0:
+                        lblResult.Text = "Error contacting router.";
+                        lblResult.ForeColor = Color.Red;
+                        return;
+                    case 1:
+                        lblResult.Text = "Port forwarded automatically using UPnP";
+                        lblResult.ForeColor = Color.Green;
+                        return;
+                    case 2:
+                        lblResult.Text = "Unexpected error, see Error Logs";
+                        lblResult.ForeColor = Color.Red;
+                        return;
+                    case 3:
+                        lblResult.Text = "Deleted port forward rule";
+                        lblResult.ForeColor = Color.Green;
+                        return;
+                }
             }
-            SetUPnPEnabled(true);
-            int result = (int)e.Result;
-            switch (result)
-            {
-                case 0:
-                    lblResult.Text = "Error contacting router.";
-                    lblResult.ForeColor = Color.Red;
-                    return;
-                case 1:
-                    lblResult.Text = "Port forwarded automatically using UPnP";
-                    lblResult.ForeColor = Color.Green;
-                    return;
-                case 2:
-                    lblResult.Text = "Unexpected error, see Error Logs";
-                    lblResult.ForeColor = Color.Red;
-                    return;
-                case 3:
-                    lblResult.Text = "Deleted port forward rule";
-                    lblResult.ForeColor = Color.Green;
-                    return;
-            }
         }
-        void LogUPnP(string message)
-        {
-            RunOnUI_Async(() => txtLogs.AppendText(message + "\r\n"));
-        }
-        void RunOnUI_Async(UIAction act) 
-        { 
-            BeginInvoke(act); 
-        }
+        void LogUPnP(string message) => RunOnUI_Async(() => txtLogs.AppendText(message + "\r\n"));
+        void RunOnUI_Async(UIAction act) => BeginInvoke(act);
     }
 }

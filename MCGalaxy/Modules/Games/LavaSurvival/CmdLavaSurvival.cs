@@ -1,15 +1,12 @@
 /*
     Copyright 2011 MCForge
     Created by Techjar (Jordan S.)
-        
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -21,8 +18,6 @@ using MCGalaxy.Commands.Fun;
 using MCGalaxy.Games;
 using MCGalaxy.Maths;
 using System;
-
-
 namespace MCGalaxy.Modules.Games.LS
 {
     sealed class CmdLavaSurvival : RoundsGameCmd
@@ -34,13 +29,11 @@ namespace MCGalaxy.Modules.Games.LS
         {
             get { return new[] { new CommandPerm(LevelPermission.Operator, "can manage lava survival") }; }
         }
-
         protected override void HandleSet(Player p, RoundsGame game, string[] args)
         {
             string prop = args[1];
             LSMapConfig cfg = new();
             LoadMapConfig(p, cfg);
-
             if (prop.CaselessEq("spawn"))
             {
                 HandleSetSpawn(p, args, cfg);
@@ -64,25 +57,20 @@ namespace MCGalaxy.Modules.Games.LS
                 Help(p, "set");
             }
         }
-
         static bool ParseChance(Player p, string arg, string[] args, ref int value)
         {
             if (!CommandParser.GetInt(p, args[3], "Chance", ref value, 0, 100)) return false;
             p.Message("Set {0} chance to &b{1}%", arg, value);
             return true;
         }
-
         static bool ParseTimespan(Player p, string arg, string[] args, ref TimeSpan? span)
         {
             TimeSpan value = default;
             if (!CommandParser.GetTimespan(p, args[3], ref value, "set " + arg + " to", "m")) return false;
-
             span = value;
             p.Message("Set {0} to &b{1}", arg, value.Shorten(true));
             return true;
         }
-
-
         void HandleSetSpawn(Player p, string[] args, LSMapConfig cfg)
         {
             if (args.Length < 3)
@@ -91,7 +79,6 @@ namespace MCGalaxy.Modules.Games.LS
                 p.Message("Safe zone: &b({0}) ({1})", cfg.SafeZoneMin, cfg.SafeZoneMax);
                 return;
             }
-
             string prop = args[2];
             if (prop.CaselessEq("flood"))
             {
@@ -105,31 +92,25 @@ namespace MCGalaxy.Modules.Games.LS
                 p.MakeSelection(2, cfg, SetSafeZone);
                 return;
             }
-
             Help(p, "spawn");
         }
-
         bool SetFloodPos(Player p, Vec3S32[] m, object state, ushort block)
         {
             LSMapConfig cfg = (LSMapConfig)state;
             cfg.FloodPos = (Vec3U16)m[0];
             SaveMapConfig(p, cfg);
-
             p.Message("Flood position set to &b({0})", m[0]);
             return false;
         }
-
         bool SetSafeZone(Player p, Vec3S32[] m, object state, ushort block)
         {
             LSMapConfig cfg = (LSMapConfig)state;
             cfg.SafeZoneMin = (Vec3U16)Vec3S32.Min(m[0], m[1]);
             cfg.SafeZoneMax = (Vec3U16)Vec3S32.Max(m[0], m[1]);
             SaveMapConfig(p, cfg);
-
             p.Message("Safe zone set! &b({0}) ({1})", cfg.SafeZoneMin, cfg.SafeZoneMax);
             return false;
         }
-
         void HandleSetBlock(Player p, string[] args, LSMapConfig cfg)
         {
             if (args.Length < 3)
@@ -139,11 +120,9 @@ namespace MCGalaxy.Modules.Games.LS
                 p.Message("Flood upwards chance: &b" + cfg.FloodUpChance + "%");
                 return;
             }
-
             string prop = args[2];
             if (args.Length < 4) { Help(p, "block"); return; }
             bool ok = false;
-
             if (prop.CaselessEq("fast"))
             {
                 ok = ParseChance(p, "fast lava", args, ref cfg.FastChance);
@@ -160,10 +139,8 @@ namespace MCGalaxy.Modules.Games.LS
             {
                 Help(p, "block");
             }
-
             if (ok) SaveMapConfig(p, cfg);
         }
-
         void HandleSetOther(Player p, string[] args, LSMapConfig cfg, LSConfig gameCfg)
         {
             if (args.Length < 3)
@@ -172,11 +149,9 @@ namespace MCGalaxy.Modules.Games.LS
                 p.Message("Flood time: &b" + gameCfg.GetFloodTime(cfg).Shorten(true));
                 return;
             }
-
             string prop = args[2];
             if (args.Length < 4) { Help(p, "other"); return; }
             bool ok = false;
-
             if (prop.CaselessEq("round"))
             {
                 ok = ParseTimespan(p, "round time", args, ref cfg._RoundTime);
@@ -189,11 +164,8 @@ namespace MCGalaxy.Modules.Games.LS
             {
                 Help(p, "other");
             }
-
             if (ok) SaveMapConfig(p, cfg);
         }
-
-
         void HandleSetLayer(Player p, string[] args, LSMapConfig cfg, LSConfig gameCfg)
         {
             if (args.Length < 3)
@@ -205,7 +177,6 @@ namespace MCGalaxy.Modules.Games.LS
                           cfg.LayerCount, cfg.LayerHeight);
                 return;
             }
-
             string prop = args[2];
             if (prop.CaselessEq("spawn"))
             {
@@ -213,10 +184,8 @@ namespace MCGalaxy.Modules.Games.LS
                 p.MakeSelection(1, cfg, SetLayerPos);
                 return;
             }
-
             if (args.Length < 4) { Help(p, "layer"); return; }
             bool ok = false;
-
             if (prop.CaselessEq("time"))
             {
                 ok = ParseTimespan(p, "layer time", args, ref cfg._LayerInterval);
@@ -239,20 +208,16 @@ namespace MCGalaxy.Modules.Games.LS
             {
                 Help(p, "layer");
             }
-
             if (ok) SaveMapConfig(p, cfg);
         }
-
         bool SetLayerPos(Player p, Vec3S32[] m, object state, ushort block)
         {
             LSMapConfig cfg = (LSMapConfig)state;
             cfg.LayerPos = (Vec3U16)m[0];
             SaveMapConfig(p, cfg);
-
             p.Message("Layers start position set to &b({0})", m[0]);
             return false;
         }
-
         public override void Help(Player p, string message)
         {
             if (message.CaselessEq("set"))
@@ -301,7 +266,6 @@ namespace MCGalaxy.Modules.Games.LS
                 base.Help(p, message);
             }
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/LS start <map> &H- Starts Lava Survival");

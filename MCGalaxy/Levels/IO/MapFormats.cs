@@ -1,4 +1,4 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -50,11 +50,11 @@ namespace MCGalaxy.Levels.IO
             }
         }
         /// <summary> List of all level format importers </summary>
-        public static List<IMapImporter> Formats = new() 
+        public static List<IMapImporter> Formats = new()
         {
-            new LvlImporter(), new CwImporter(), 
+            new LvlImporter(), new CwImporter(),
             new FcmImporter(), new McfImporter(),
-            new DatImporter(), new McLevelImporter(), 
+            new DatImporter(), new McLevelImporter(),
             new MapImporter(), new UclImporter()
         };
         public static IMapImporter defaultImporter = new LvlImporter();
@@ -100,7 +100,7 @@ namespace MCGalaxy.Levels.IO
         public abstract void Write(Stream dst, Level lvl);
         public static List<IMapExporter> Formats = new()
         {
-            new LvlExporter(), new McfExporter(), 
+            new LvlExporter(), new McfExporter(),
             new MapExporter(), new UclExporter()
         };
         public static IMapExporter GetFor(string path)

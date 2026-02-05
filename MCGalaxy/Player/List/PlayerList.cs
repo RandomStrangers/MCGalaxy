@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,30 +15,23 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
 namespace MCGalaxy
 {
-
     /// <summary> Represents a list of player names. Case insensitive. Thread safe. </summary>
     public class PlayerList
     {
         public string Path;
-
         readonly List<string> names = new();
         internal readonly object locker = new();
         readonly object saveLocker = new();
-
         public PlayerList() { }
-
         /// <summary> Returns a copy of all names in the list. </summary>
         public List<string> All()
         {
             lock (locker) return new List<string>(names);
         }
-
         /// <summary> Returns number of names that are in this list. </summary>
         public int Count { get { lock (locker) return names.Count; } }
-
         /// <summary> Returns whether the given name was actually added to this list. </summary>
         public bool Add(string name)
         {
@@ -49,36 +39,29 @@ namespace MCGalaxy
             {
                 int idx = names.CaselessIndexOf(name);
                 if (idx >= 0) return false;
-
                 names.Add(name);
             }
             return true;
         }
-
         /// <summary> Returns whether the given name was removed from this list. </summary>
         public bool Remove(string name)
         {
             lock (locker) return names.CaselessRemove(name);
         }
-
         /// <summary> Returns whether the given name is in this list. </summary>
         public bool Contains(string name)
         {
             lock (locker) return names.CaselessContains(name);
         }
-
         /// <summary> Removes all names from this list. </summary>
         public void Clear()
         {
             lock (locker) names.Clear();
         }
-
-
         internal int IndexOf(string name)
         {
             lock (locker) return names.CaselessIndexOf(name);
         }
-
         internal string GetAt(int index)
         {
             lock (locker)
@@ -87,8 +70,6 @@ namespace MCGalaxy
                 return names[index];
             }
         }
-
-
         /// <summary> Finds matches within this list for the given name. </summary>
         public string FindMatches(Player p, string name, string type, out int matches)
         {
@@ -98,7 +79,6 @@ namespace MCGalaxy
                                     null, n => n, type, 20);
             }
         }
-
         /// <summary> Outputs list of players using MultiPageOutput.Output. </summary>
         /// <remarks> Names are formatted using Player.FormatNick(). </remarks>
         public void Output(Player p, string group, string listCmd, string modifier)
@@ -115,7 +95,6 @@ namespace MCGalaxy
                                  listCmd, "players", modifier);
             }
         }
-
         /// <summary> Outputs list of players using MultiPageOutput.Output. </summary>
         /// <remarks> Names are not formatted at all. </remarks>
         public void OutputPlain(Player p, string group, string listCmd, string modifier)
@@ -132,8 +111,6 @@ namespace MCGalaxy
                                  listCmd, "players", modifier);
             }
         }
-
-
         public void Save() { Save(true); }
         public void Save(bool log)
         {
@@ -144,7 +121,6 @@ namespace MCGalaxy
             }
             if (log) Logger.Log(LogType.BackgroundActivity, "SAVED: " + Path);
         }
-
         void SaveEntries(StreamWriter w)
         {
             lock (locker)
@@ -152,21 +128,18 @@ namespace MCGalaxy
                 foreach (string p in names) w.WriteLine(p);
             }
         }
-
         public static PlayerList Load(string path)
         {
             PlayerList list = new()
             {
                 Path = path
             };
-
             if (!File.Exists(path))
             {
                 File.Create(path).Close();
                 Logger.Log(LogType.SystemActivity, "CREATED NEW: " + path);
                 return list;
             }
-
             using (StreamReader r = new(path, Encoding.UTF8))
             {
                 string line = null;

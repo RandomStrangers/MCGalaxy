@@ -1,16 +1,12 @@
 /*
     Copyright 2011 MCForge
-    
     Written by jordanneil23 with alot of help from TheMusiKid.
-        
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,7 +15,6 @@
  */
 using MCGalaxy.Tasks;
 using System;
-
 namespace MCGalaxy.Commands.Maintenance
 {
     public sealed class CmdShutdown : Command2
@@ -27,7 +22,6 @@ namespace MCGalaxy.Commands.Maintenance
         public override string name { get { return "Shutdown"; } }
         public override string type { get { return CommandTypes.Moderation; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-
         static SchedulerTask shutdownTask;
         public override void Use(Player p, string message, CommandData data)
         {
@@ -37,7 +31,6 @@ namespace MCGalaxy.Commands.Maintenance
                 {
                     p.Message("No server shutdown is in progress."); return;
                 }
-
                 Log("Shutdown aborted.");
                 Server.MainScheduler.Cancel(shutdownTask);
                 shutdownTask = null;
@@ -49,12 +42,10 @@ namespace MCGalaxy.Commands.Maintenance
                     p.Message("Server is already shutting down, use " +
                                    "&T/Shutdown abort &Sto abort the shutdown."); return;
                 }
-
                 if (message.Length == 0) message = "10";
                 string reason;
                 TimeSpan delay;
                 string[] args = message.SplitSpaces(2);
-
                 try
                 {
                     delay = args[0].ParseShort("s");
@@ -65,13 +56,11 @@ namespace MCGalaxy.Commands.Maintenance
                     delay = TimeSpan.FromSeconds(10);
                     reason = message;
                 }
-
                 int delaySec = (int)delay.TotalSeconds;
                 if (delaySec <= 0) { p.Message("Countdown time must be greater than zero"); return; }
                 DoShutdown(delaySec, reason);
             }
         }
-
         static void DoShutdown(int delay, string reason)
         {
             ShutdownArgs args = new()
@@ -79,22 +68,17 @@ namespace MCGalaxy.Commands.Maintenance
                 Delay = delay - 1,
                 Reason = reason
             };
-
             if (reason.Length > 0) reason = ": " + reason;
             Log("Server shutdown started" + reason);
             Log("Server shutdown in " + delay + " seconds");
-
             shutdownTask = Server.MainScheduler.QueueRepeat(
                 ShutdownCallback, args, TimeSpan.FromSeconds(1));
         }
-
-
         static void Log(string message)
         {
             Chat.MessageAll("&4" + message);
             Logger.Log(LogType.SystemActivity, message);
         }
-
         static void ShutdownCallback(SchedulerTask task)
         {
             ShutdownArgs args = (ShutdownArgs)task.State;
@@ -110,13 +94,11 @@ namespace MCGalaxy.Commands.Maintenance
                 args.Delay--;
             }
         }
-
         class ShutdownArgs
         {
             public int Delay;
             public string Reason;
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Shutdown [delay] <reason>");

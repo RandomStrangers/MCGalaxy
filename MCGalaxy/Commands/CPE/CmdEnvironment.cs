@@ -1,21 +1,17 @@
 /*
     Copyright 2011 MCForge
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-
 namespace MCGalaxy.Commands.CPE
 {
     public sealed class CmdEnvironment : Command2
@@ -24,18 +20,15 @@ namespace MCGalaxy.Commands.CPE
         public override string shortcut { get { return "Env"; } }
         public override string type { get { return CommandTypes.World; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.CaselessEq("preset"))
             {
                 ExplainPresets(p); return;
             }
-
             Level lvl = null;
             EnvConfig cfg = null;
             string area = "server";
-
             if (message.CaselessStarts("global "))
             {
                 message = message.Substring("global ".Length);
@@ -45,29 +38,24 @@ namespace MCGalaxy.Commands.CPE
             {
                 message = message.Substring("level ".Length);
             }
-
             // Work on current level by default
             if (cfg == null)
             {
                 if (p.IsSuper) { p.Message("&WWhen using &T/Env &Wfrom {0}, only &T/Env Global &Wis supported", p.SuperName); return; }
-
                 lvl = p.level; cfg = lvl.Config;
                 area = lvl.ColoredName;
                 if (!LevelInfo.Check(p, data.Rank, lvl, "set env settings of this level")) return;
             }
-
             string[] args = message.SplitSpaces(2);
             string opt = args[0], value = args.Length > 1 ? args[1] : "";
             if (!Handle(p, lvl, opt, value, cfg, area)) { Help(p); }
         }
-
         internal static bool Handle(Player p, Level lvl, string type, string value, EnvConfig cfg, string area)
         {
             if (type.CaselessEq("preset"))
             {
                 EnvPreset preset = EnvPreset.Find(value);
                 if (preset == null) { ExplainPresets(p); return false; }
-
                 cfg.SkyColor = preset.Sky;
                 cfg.CloudColor = preset.Clouds;
                 cfg.FogColor = preset.Fog;
@@ -85,7 +73,6 @@ namespace MCGalaxy.Commands.CPE
                 if (opt == null) return false;
                 opt.SetFunc(p, area, cfg, value);
             }
-
             if (lvl == null)
             {
                 Player[] players = PlayerInfo.Online.Items;
@@ -102,7 +89,6 @@ namespace MCGalaxy.Commands.CPE
             }
             return true;
         }
-
         static void SendEnv(Level lvl)
         {
             Player[] players = PlayerInfo.Online.Items;
@@ -112,13 +98,11 @@ namespace MCGalaxy.Commands.CPE
                 pl.SendCurrentEnv();
             }
         }
-
         static void ExplainPresets(Player p)
         {
             p.Message("&T/Env preset [type] &H- Applies an env preset on the map");
             EnvPreset.ListFor(p);
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Environment global/level [variable] [value]");
@@ -127,7 +111,6 @@ namespace MCGalaxy.Commands.CPE
             p.Message("&T/Environment global/level normal");
             p.Message("&HResets all environment variables to default");
         }
-
         public override void Help(Player p, string message)
         {
             if (message.CaselessEq("variable") || message.CaselessEq("variables"))
@@ -140,7 +123,6 @@ namespace MCGalaxy.Commands.CPE
             {
                 ExplainPresets(p); return;
             }
-
             EnvOption opt = EnvOptions.Find(message);
             if (opt != null)
             {

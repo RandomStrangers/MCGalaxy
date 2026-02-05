@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,20 +15,20 @@
 #if !NET_20
 using System;
 using System.Threading;
-namespace MCGalaxy.Util 
+namespace MCGalaxy.Util
 {
-    public sealed class IReaderWriterLock 
+    public sealed class IReaderWriterLock
     {
         readonly ReaderWriterLockSlim locker = new();
-        public IDisposable AccquireRead() 
-        { 
-            return AccquireRead(-1); 
+        public IDisposable AccquireRead()
+        {
+            return AccquireRead(-1);
         }
-        public IDisposable AccquireWrite() 
-        { 
-            return AccquireWrite(-1); 
+        public IDisposable AccquireWrite()
+        {
+            return AccquireWrite(-1);
         }
-        public IDisposable AccquireRead(int msTimeout) 
+        public IDisposable AccquireRead(int msTimeout)
         {
             if (!locker.TryEnterReadLock(msTimeout))
             {
@@ -39,7 +36,7 @@ namespace MCGalaxy.Util
             }
             return new SlimLock(locker, false);
         }
-        public IDisposable AccquireWrite(int msTimeout) 
+        public IDisposable AccquireWrite(int msTimeout)
         {
             if (!locker.TryEnterWriteLock(msTimeout))
             {
@@ -47,22 +44,22 @@ namespace MCGalaxy.Util
             }
             return new SlimLock(locker, true);
         }
-        class SlimLock : IDisposable 
+        class SlimLock : IDisposable
         {
             ReaderWriterLockSlim locker;
             readonly bool writeMode;
-            public SlimLock(ReaderWriterLockSlim locker, bool writeMode) 
+            public SlimLock(ReaderWriterLockSlim locker, bool writeMode)
             {
                 this.locker = locker;
                 this.writeMode = writeMode;
             }
-            public void Dispose() 
+            public void Dispose()
             {
-                if (writeMode) 
+                if (writeMode)
                 {
                     locker.ExitWriteLock();
-                } 
-                else 
+                }
+                else
                 {
                     locker.ExitReadLock();
                 }

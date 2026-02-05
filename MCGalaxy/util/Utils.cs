@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -20,7 +17,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
-
 namespace MCGalaxy
 {
     public static class Utils
@@ -59,9 +55,9 @@ namespace MCGalaxy
             using (StreamReader r = new(path, Encoding.UTF8))
             {
                 string line;
-                while ((line = r.ReadLine()) != null) 
-                { 
-                    lines.Add(line); 
+                while ((line = r.ReadLine()) != null)
+                {
+                    lines.Add(line);
                 }
             }
             return lines;
@@ -70,12 +66,12 @@ namespace MCGalaxy
         {
             // Throws an exception when called on a dead thread,
             //  which can very rarely happen
-            try 
-            { 
-                thread.IsBackground = true; 
-            } 
-            catch 
-            { 
+            try
+            {
+                thread.IsBackground = true;
+            }
+            catch
+            {
             }
         }
     }
@@ -150,7 +146,7 @@ namespace MCGalaxy
                 {
                     throw new EndOfStreamException("End of stream reading data");
                 }
-                offset += read; 
+                offset += read;
                 count -= read;
             }
         }

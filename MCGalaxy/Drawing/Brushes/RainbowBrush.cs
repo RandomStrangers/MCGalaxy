@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,15 +14,12 @@
  */
 using MCGalaxy.Drawing.Ops;
 using System;
-
-
 namespace MCGalaxy.Drawing.Brushes
 {
     public sealed class RainbowBrush : CheckeredPaletteBrush
     {
         public override string Name { get { return "Rainbow"; } }
         public RainbowBrush() : base(blocks) { }
-
         internal static ushort[] blocks = new ushort[] {
             Block.Red,   Block.Orange,  Block.Yellow,
             Block.Lime,  Block.Green,   Block.Teal,
@@ -33,27 +27,21 @@ namespace MCGalaxy.Drawing.Brushes
             Block.Indigo, Block.Violet, Block.Magenta,
             Block.Pink };
     }
-
     public sealed class BWRainbowBrush : CheckeredPaletteBrush
     {
         public override string Name { get { return "BWRainbow"; } }
         public BWRainbowBrush() : base(blocks) { }
-
         internal static ushort[] blocks = new ushort[] {
             Block.Iron,  Block.White,    Block.Gray,
             Block.Black, Block.Obsidian, Block.Black,
             Block.Gray,  Block.White };
     }
-
     public sealed class RandomRainbowBrush : Brush
     {
         readonly Random rnd = new();
         readonly ushort[] blocks;
-
         public override string Name { get { return "RandomRainbow"; } }
-
         public RandomRainbowBrush(ushort[] list) { blocks = list; }
-
         public override ushort NextBlock(DrawOp op)
         {
             return blocks[rnd.Next(blocks.Length)];

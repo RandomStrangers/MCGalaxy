@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using System;
-
 namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdCalculate : Command2
@@ -24,20 +20,16 @@ namespace MCGalaxy.Commands.Building
         public override string name { get { return "Calculate"; } }
         public override string shortcut { get { return "Calc"; } }
         public override string type { get { return CommandTypes.Building; } }
-
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
             if (args.Length < 2) { Help(p); return; }
-
             double result = 0;
             string r1 = args[0], op = args[1], r2 = null;
-
             if (!NumberUtils.TryParseDouble(r1, out double n1))
             {
                 p.Message("&W\"{0}\" is not a valid number.", r1); return;
             }
-
             char sym = op[0];
             string format;
             if (sym == '+' || sym == '-' || sym == '*' || sym == '/' || sym == '^')
@@ -48,13 +40,11 @@ namespace MCGalaxy.Commands.Building
                 {
                     p.Message("&W\"{0}\" is not a valid number.", r2); return;
                 }
-
                 if (sym == '+') { result = n1 + n2; }
                 if (sym == '-') { result = n1 - n2; }
                 if (sym == '*') { result = n1 * n2; }
                 if (sym == '/') { result = n1 / n2; }
                 if (sym == '^') { result = Math.Pow(n1, n2); }
-
                 format = "&aResult&f: {0} {1} {2} = {3}";
             }
             else if (op == "sqrt")
@@ -77,10 +67,8 @@ namespace MCGalaxy.Commands.Building
                 p.Message("&WOnly supported operators are: +, -, *, /, sqrt, square, or cubed");
                 return;
             }
-
             p.Message(format, r1, op, r2, result);
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Calculate [num1] [operation] [num2]");

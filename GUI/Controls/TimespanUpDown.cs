@@ -37,38 +37,31 @@ namespace MCGalaxy.Gui
             }
             set
             {
-                if (value == totalSecs)
+                if (value != totalSecs)
                 {
-                    return;
+                    if (value < 0)
+                    {
+                        value = 0;
+                    }
+                    totalSecs = value;
+                    ValueChanged?.Invoke(this, EventArgs.Empty);
+                    UpdateEditText();
                 }
-                if (value < 0)
-                {
-                    value = 0;
-                }
-                totalSecs = value;
-                ValueChanged?.Invoke(this, EventArgs.Empty);
-                UpdateEditText();
             }
         }
         public TimeSpan Value
         {
-            get 
+            get
             {
-                return TimeSpan.FromSeconds(Seconds); 
+                return TimeSpan.FromSeconds(Seconds);
             }
-            set 
+            set
             {
-                Seconds = (long)value.TotalSeconds; 
+                Seconds = (long)value.TotalSeconds;
             }
         }
-        public TimespanUpDown() 
-        { 
-            Text = "0s"; 
-        }
-        public void BeginInit() 
-        { 
-            initialising = true; 
-        }
+        public TimespanUpDown() => Text = "0s";
+        public void BeginInit() => initialising = true;
         public void EndInit()
         {
             initialising = false;
@@ -78,22 +71,21 @@ namespace MCGalaxy.Gui
         protected override void OnTextBoxKeyPress(object source, KeyPressEventArgs e)
         {
             base.OnTextBoxKeyPress(source, e);
-            if ((ModifierKeys & (Keys.Control | Keys.Alt)) != Keys.None)
+            if ((ModifierKeys & (Keys.Control | Keys.Alt)) == Keys.None)
             {
-                return;
-            }
-            if (e.KeyChar == '\b' || char.IsDigit(e.KeyChar))
-            {
-                return;
-            }
-            try
-            {
-                (Text + e.KeyChar.ToString()).ParseShort("s");
-            }
-            catch
-            {
-                e.Handled = true;
-                SystemSounds.Beep.Play();
+                if (e.KeyChar == '\b' || char.IsDigit(e.KeyChar))
+                {
+                    return;
+                }
+                try
+                {
+                    (Text + e.KeyChar.ToString()).ParseShort("s");
+                }
+                catch
+                {
+                    e.Handled = true;
+                    SystemSounds.Beep.Play();
+                }
             }
         }
         protected override void OnLostFocus(EventArgs e)
@@ -122,11 +114,10 @@ namespace MCGalaxy.Gui
             {
                 ParseEditText();
             }
-            if (totalSecs == long.MaxValue)
+            if (totalSecs != long.MaxValue)
             {
-                return;
+                Seconds = totalSecs + 1;
             }
-            Seconds = totalSecs + 1;
         }
         void ParseEditText()
         {
@@ -144,15 +135,14 @@ namespace MCGalaxy.Gui
         }
         protected override void UpdateEditText()
         {
-            if (initialising)
+            if (!initialising)
             {
-                return;
+                if (UserEdit)
+                {
+                    ParseEditText();
+                }
+                Text = TimeSpan.FromSeconds(totalSecs).Shorten(true, true);
             }
-            if (UserEdit)
-            {
-                ParseEditText();
-            }
-            Text = TimeSpan.FromSeconds(totalSecs).Shorten(true, true);
         }
         protected override void ValidateEditText()
         {

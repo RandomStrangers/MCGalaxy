@@ -1,14 +1,11 @@
 /*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,7 +16,6 @@ using MCGalaxy.DB;
 using MCGalaxy.SQL;
 using System;
 using System.Net;
-
 namespace MCGalaxy.Commands.Maintenance
 {
     public sealed class CmdPlayerEdit : Command2
@@ -32,16 +28,13 @@ namespace MCGalaxy.Commands.Maintenance
         {
             get { return new[] { new CommandAlias("SetInfo") }; }
         }
-
         delegate void DBSetter(string name, string column, string data);
         const int type_norm = 0, type_lo = 1, type_hi = 2;
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
             string[] args = message.SplitSpaces(3);
             args[0] = PlayerInfo.FindMatchesPreferOnline(p, args[0]);
-
             if (args[0] == null) return;
             Player who = PlayerInfo.FindExact(args[0]);
             if (args.Length == 1)
@@ -49,7 +42,6 @@ namespace MCGalaxy.Commands.Maintenance
                 p.Message("&WYou must specify a type to modify.");
                 MessageValidTypes(p); return;
             }
-
             string opt = args[1].ToLower();
             if (opt == "firstlogin")
             {
@@ -84,13 +76,11 @@ namespace MCGalaxy.Commands.Maintenance
                 }
                 if (args[2].Length >= 20) { p.Message("Title must be under 20 characters"); return; }
                 if (args[2] == "null") args[2] = "";
-
                 if (who != null)
                 {
                     who.title = args[2];
                     who.SetPrefix();
                 }
-
                 PlayerDB.Update(args[0], PlayerData.ColumnTitle, args[2].UnicodeToCp437());
                 MessageDataChanged(p, args[0], args[1], args[2]);
             }
@@ -100,12 +90,10 @@ namespace MCGalaxy.Commands.Maintenance
                 {
                     p.Message("A new IP address must be provided."); return;
                 }
-
                 if (!IPAddress.TryParse(args[2], out IPAddress ip))
                 {
                     p.Message("&W\"{0}\" is not a valid IP address.", args[2]); return;
                 }
-
                 who?.SetIP(ip);
                 PlayerDB.Update(args[0], PlayerData.ColumnIP, args[2]);
                 MessageDataChanged(p, args[0], args[1], args[2]);
@@ -161,29 +149,23 @@ namespace MCGalaxy.Commands.Maintenance
                 MessageValidTypes(p);
             }
         }
-
-
         static void SetColor(Player p, string[] args, string column, Player who, Action<string> setter)
         {
             if (args.Length < 3)
             {
                 p.Message("Color format: color name, or \"null\" to reset to default color."); return;
             }
-
             string col = args[2] == "null" ? "" : Matcher.FindColor(p, args[2]);
             if (col == null) return;
-
             if (who != null)
             {
                 setter(col);
                 who.SetPrefix();
                 args[0] = who.name;
             }
-
             PlayerDB.Update(args[0], column, col);
             MessageDataChanged(p, args[0], args[1], args[2]);
         }
-
         static void SetDate(Player p, string[] args, string column, Player who, Action<DateTime> setter)
         {
             if (args.Length < 3)
@@ -191,18 +173,15 @@ namespace MCGalaxy.Commands.Maintenance
                 p.Message("Dates must be in the format: " + Database.DateFormat);
                 return;
             }
-
             if (!args[2].TryParseInvariantDateString(out DateTime dt))
             {
                 p.Message("Invalid date. It must be in format: " + Database.DateFormat);
                 return;
             }
-
             if (who != null) setter(dt);
             PlayerDB.Update(args[0], column, args[2]);
             MessageDataChanged(p, args[0], args[1], args[2]);
         }
-
         static void SetTimespan(Player p, string[] args, string column, Player who, Action<TimeSpan> setter)
         {
             if (args.Length < 3)
@@ -211,10 +190,8 @@ namespace MCGalaxy.Commands.Maintenance
                 p.Message(CommandParser.TimespanHelp, "set time spent to");
                 return;
             }
-
             TimeSpan span = TimeSpan.Zero;
             if (!CommandParser.GetTimespan(p, args[2], ref span, "set time spent to", "m")) return;
-
             if (who != null)
             {
                 setter(span);
@@ -226,7 +203,6 @@ namespace MCGalaxy.Commands.Maintenance
             }
             MessageDataChanged(p, args[0], args[1], span.Shorten(true));
         }
-
         static long GetLong(string name, string column)
         {
             long value = 0;
@@ -235,7 +211,6 @@ namespace MCGalaxy.Commands.Maintenance
                                 "WHERE Name=@0", name);
             return value;
         }
-
         static void SetInteger(Player p, string[] args, string column, int max, Player who,
                                Action<int> setter, int type)
         {
@@ -243,10 +218,8 @@ namespace MCGalaxy.Commands.Maintenance
             {
                 p.Message("You must specify a positive integer, which can be {0} at most.", max); return;
             }
-
             int value = 0;
             if (!CommandParser.GetInt(p, args[2], "Amount", ref value, 0, max)) return;
-
             if (who != null)
             {
                 setter(value);
@@ -271,8 +244,6 @@ namespace MCGalaxy.Commands.Maintenance
             }
             MessageDataChanged(p, args[0], args[1], args[2]);
         }
-
-
         static void MessageDataChanged(Player p, string name, string type, string value)
         {
             name = p.FormatNick(name);
@@ -285,13 +256,11 @@ namespace MCGalaxy.Commands.Maintenance
                 p.Message("The {1} data for &b{0} &Shas been updated to &a{2}&S.", name, type, value);
             }
         }
-
         static void MessageValidTypes(Player p)
         {
             p.Message("&HValid types: &SFirstLogin, LastLogin, Logins, Title, IP, Deaths, Money, " +
                       "Modified, Drawn, Placed, Deleted, TotalKicked, TimeSpent, Color, TitleColor, Messages ");
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/PlayerEdit [username] [type] <value>");

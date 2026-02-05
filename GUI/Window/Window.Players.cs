@@ -1,4 +1,4 @@
-/*    
+/*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -19,10 +19,7 @@ namespace MCGalaxy.Gui
 {
     public partial class Window : Form
     {
-        void NoPlayerSelected()
-        {
-            Popup.Warning("No player selected");
-        }
+        void NoPlayerSelected() => Popup.Warning("No player selected");
         void Pl_BtnUndo_Click(object sender, EventArgs e)
         {
             if (curPlayer == null)
@@ -108,30 +105,12 @@ namespace MCGalaxy.Gui
                 DoCmd("freeze", "Unfroze @p");
             }
         }
-        void Pl_BtnWarn_Click(object sender, EventArgs e)
-        {
-            DoCmd("warn", "Warned @p");
-        }
-        void Pl_BtnKick_Click(object sender, EventArgs e)
-        {
-            DoCmd("kick", "Kicked @p");
-        }
-        void Pl_BtnBan_Click(object sender, EventArgs e)
-        {
-            DoCmd("ban", "Banned @p");
-        }
-        void Pl_BtnIPBan_Click(object sender, EventArgs e)
-        {
-            DoCmd("banip", "IP-Banned @p");
-        }
-        void Pl_BtnKill_Click(object sender, EventArgs e)
-        {
-            DoCmd("kill", "Killed @p");
-        }
-        void Pl_BtnRules_Click(object sender, EventArgs e)
-        {
-            DoCmd("Rules", "Sent rules to @p");
-        }
+        void Pl_BtnWarn_Click(object sender, EventArgs e) => DoCmd("warn", "Warned @p");
+        void Pl_BtnKick_Click(object sender, EventArgs e) => DoCmd("kick", "Kicked @p");
+        void Pl_BtnBan_Click(object sender, EventArgs e) => DoCmd("ban", "Banned @p");
+        void Pl_BtnIPBan_Click(object sender, EventArgs e) => DoCmd("banip", "IP-Banned @p");
+        void Pl_BtnKill_Click(object sender, EventArgs e) => DoCmd("kill", "Killed @p");
+        void Pl_BtnRules_Click(object sender, EventArgs e) => DoCmd("Rules", "Sent rules to @p");
         void DoCmd(string cmdName, string action, string suffix = null)
         {
             if (curPlayer == null)
@@ -178,22 +157,18 @@ namespace MCGalaxy.Gui
                 Pl_BtnMessage_Click(sender, e);
             }
         }
-        void Players_AppendStatus(string text)
-        {
-            pl_statusBox.AppendText(text + Environment.NewLine);
-        }
+        void Players_AppendStatus(string text) => pl_statusBox.AppendText(text + Environment.NewLine);
         void Players_UpdateSelected()
         {
-            if (tabs.SelectedTab != tp_Players)
+            if (tabs.SelectedTab == tp_Players)
             {
-                return;
-            }
-            try
-            {
-                pl_pgProps.Refresh();
-            }
-            catch
-            {
+                try
+                {
+                    pl_pgProps.Refresh();
+                }
+                catch
+                {
+                }
             }
         }
         void Players_UpdateList()

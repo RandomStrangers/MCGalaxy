@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Drawing.Brushes;
-
 namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdBrush : Command2
@@ -30,28 +26,23 @@ namespace MCGalaxy.Commands.Building
         {
             get { return new CommandAlias[] { new("Brushes", "list") }; }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0)
             {
                 p.Message("Your current brush is: " + p.BrushName); return;
             }
-
             string[] args = message.SplitSpaces(2);
             if (IsListAction(args[0]))
             {
                 BrushFactory.List(p); return;
             }
-
             BrushFactory brush = BrushFactory.FindMatch(p, args[0]);
             if (brush == null) return;
-
             p.Message("Set your brush to: " + brush.Name);
             p.BrushName = brush.Name;
             p.DefaultBrushArgs = args.Length > 1 ? args[1] : "";
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Brush [name] <default brush args>");
@@ -62,12 +53,10 @@ namespace MCGalaxy.Commands.Building
             p.Message("&H- If \"skip\" is used for a block name, " +
                       "existing blocks in the map will not be replaced by this block.");
         }
-
         public override void Help(Player p, string message)
         {
             BrushFactory brush = BrushFactory.FindMatch(p, message);
             if (brush == null) return;
-
             p.MessageLines(brush.Help);
         }
     }

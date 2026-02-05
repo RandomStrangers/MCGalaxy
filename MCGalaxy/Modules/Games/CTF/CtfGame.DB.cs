@@ -1,16 +1,12 @@
-﻿/*
+/*
     Copyright 2011 MCForge
-    
     Written by fenderrock87
-    
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,13 +15,11 @@
  */
 using MCGalaxy.Games;
 using MCGalaxy.SQL;
-
 namespace MCGalaxy.Modules.Games.CTF
 {
     public partial class CTFGame : RoundsGame
     {
         struct CtfStats { public int Points, Captures, Tags; }
-
         static readonly ColumnDesc[] ctfTable = new ColumnDesc[] {
             new("ID", ColumnType.Integer, priKey: true, autoInc: true, notNull: true),
             new("Name", ColumnType.VarChar, 20),
@@ -33,7 +27,6 @@ namespace MCGalaxy.Modules.Games.CTF
             new("Captures", ColumnType.UInt24),
             new("tags", ColumnType.UInt24),
         };
-
         static CtfStats ParseStats(ISqlRecord record)
         {
             CtfStats stats;
@@ -42,7 +35,6 @@ namespace MCGalaxy.Modules.Games.CTF
             stats.Tags = record.GetInt("Tags");
             return stats;
         }
-
         static CtfStats LoadStats(string name)
         {
             CtfStats stats = default;
@@ -51,17 +43,14 @@ namespace MCGalaxy.Modules.Games.CTF
                                 "WHERE Name=@0", name);
             return stats;
         }
-
         protected override void SaveStats(Player p)
         {
             CtfData data = TryGet(p);
             if (data == null || data.Points == 0 && data.Captures == 0 && data.Tags == 0) return;
-
             object[] args = new object[] {
                  data.Points, data.Captures, data.Tags,
                  p.name
             };
-
             int changed = Database.UpdateRows("CTF", "Points=@0, Captures=@1, tags=@2",
                                               "WHERE Name=@3", args);
             if (changed == 0)

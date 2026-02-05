@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,18 +14,14 @@
  */
 using MCGalaxy.Maths;
 using System;
-
 namespace MCGalaxy.Config
 {
-
     public sealed class ConfigBoolAttribute : ConfigAttribute
     {
         readonly bool defValue;
-
         public ConfigBoolAttribute() : this(null, null, false) { }
         public ConfigBoolAttribute(string name, string section, bool def)
             : base(name, section) { defValue = def; }
-
         public override object Parse(string raw)
         {
             if (!bool.TryParse(raw, out bool value))
@@ -38,21 +31,17 @@ namespace MCGalaxy.Config
             }
             return value;
         }
-
         public override string Serialise(object value)
         {
             bool boolValue = (bool)value;
             return boolValue ? "true" : "false";
         }
     }
-
     public sealed class ConfigPermAttribute : ConfigAttribute
     {
         readonly LevelPermission defPerm;
-
         public ConfigPermAttribute(string name, string section, LevelPermission def)
             : base(name, section) { defPerm = def; }
-
         public override object Parse(string raw)
         {
             LevelPermission perm = Group.ParsePermOrName(raw, LevelPermission.Null);
@@ -62,7 +51,6 @@ namespace MCGalaxy.Config
                                             Name, defPerm, raw);
                 perm = defPerm;
             }
-
             if (perm < LevelPermission.Banned)
             {
                 Logger.Log(LogType.Warning, "Config key \"{0}\" cannot be below banned rank.", Name);
@@ -75,22 +63,18 @@ namespace MCGalaxy.Config
             }
             return perm;
         }
-
         public override string Serialise(object value)
         {
             LevelPermission perm = (LevelPermission)value;
             return NumberUtils.StringifyInt((sbyte)perm);
         }
     }
-
     public sealed class ConfigEnumAttribute : ConfigAttribute
     {
         readonly object defValue;
         readonly Type enumType;
-
         public ConfigEnumAttribute(string name, string section, object def, Type type)
             : base(name, section) { defValue = def; enumType = type; }
-
         public override object Parse(string raw)
         {
             object value;
@@ -107,11 +91,9 @@ namespace MCGalaxy.Config
             return value;
         }
     }
-
     public sealed class ConfigVec3Attribute : ConfigAttribute
     {
         public ConfigVec3Attribute(string name, string section) : base(name, section) { }
-
         public override object Parse(string raw)
         {
             Vec3U16 value;
@@ -128,35 +110,28 @@ namespace MCGalaxy.Config
             return value;
         }
     }
-
     public sealed class ConfigBoolArrayAttribute : ConfigAttribute
     {
         readonly bool defValue;
         readonly int minCount;
-
         public ConfigBoolArrayAttribute() : this(null, null, false, 0) { }
         public ConfigBoolArrayAttribute(string name, string section, bool def, int min)
             : base(name, section) { defValue = def; minCount = min; }
-
         public override object Parse(string value)
         {
             string[] parts = value.SplitComma();
             bool[] values = new bool[minCount];
             int i;
-
             for (i = 0; i < parts.Length; i++)
             {
                 if (bool.TryParse(parts[i], out values[i])) continue;
-
                 Logger.Log(LogType.Warning, "Config key \"{0}\" is not a valid boolean, using default of {1}", Name, defValue);
                 values[i] = defValue;
             }
-
             // shouldn't usually happen, but handle anyways
             for (; i < values.Length; i++) values[i] = defValue;
             return values;
         }
-
         public override string Serialise(object value)
         {
             bool[] values = (bool[])value;

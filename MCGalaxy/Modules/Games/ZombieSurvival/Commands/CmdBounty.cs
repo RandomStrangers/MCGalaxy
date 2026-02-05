@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,36 +13,29 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Commands;
-
 namespace MCGalaxy.Modules.Games.ZS
 {
     sealed class CmdBounty : Command2
     {
         public override string name { get { return "Bounty"; } }
         public override string type { get { return CommandTypes.Games; } }
-
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
             if (args.Length < 2) { Help(p); return; }
-
             Player target = PlayerInfo.FindMatches(p, args[0]);
             if (target == null) return;
-
             int amount = 0;
             if (!CommandParser.GetInt(p, args[1], "Bounty amount", ref amount, 1, 256)) return;
-
             if (p.money < amount)
             {
                 p.Message("You do not have enough " + Server.Config.Currency + " to place such a large bountry."); return;
             }
-
             BountyData old = BountyData.Find(target.name);
             if (old != null && old.Amount >= amount)
             {
                 p.Message("There is already a larger active bounty for " + p.FormatNick(target)); return;
             }
-
             string msg;
             if (old == null)
             {
@@ -59,11 +49,9 @@ namespace MCGalaxy.Modules.Games.ZS
                 BountyData.Bounties.Remove(old);
             }
             ZSGame.Instance.Map.Message(msg);
-
             BountyData.Bounties.Add(new BountyData(p.name, target.name, amount));
             p.SetMoney(p.money - amount);
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Bounty [name] [amount]");

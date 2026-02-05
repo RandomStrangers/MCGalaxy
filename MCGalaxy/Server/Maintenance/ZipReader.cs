@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -20,42 +17,41 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-
 namespace MCGalaxy
 {
     sealed class ZipReaderStream : Stream
     {
         public long CompressedLen;
         public Stream stream;
-        public ZipReaderStream(Stream stream) 
-        { 
+        public ZipReaderStream(Stream stream)
+        {
             this.stream = stream;
         }
         public override bool CanRead { get { return true; } }
         public override bool CanSeek { get { return false; } }
         public override bool CanWrite { get { return false; } }
         static readonly Exception ex = new NotSupportedException();
-        public override void Flush() 
-        { 
-            stream.Flush(); 
+        public override void Flush()
+        {
+            stream.Flush();
         }
         public override long Length { get { throw ex; } }
         public override long Position { get { throw ex; } set { throw ex; } }
-        public override long Seek(long offset, SeekOrigin origin) 
-        { 
-            throw ex; 
-        }
-        public override void SetLength(long length) 
-        { 
-            throw ex; 
-        }
-        public override void Write(byte[] buffer, int offset, int count) 
-        { 
-            throw ex; 
-        }
-        public override void WriteByte(byte value) 
+        public override long Seek(long offset, SeekOrigin origin)
         {
-            throw ex; 
+            throw ex;
+        }
+        public override void SetLength(long length)
+        {
+            throw ex;
+        }
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            throw ex;
+        }
+        public override void WriteByte(byte value)
+        {
+            throw ex;
         }
         public override int Read(byte[] buffer, int offset, int count)
         {
@@ -80,9 +76,9 @@ namespace MCGalaxy
             CompressedLen--;
             return stream.ReadByte();
         }
-        public override void Close() 
-        { 
-            stream = null; 
+        public override void Close()
+        {
+            stream = null;
         }
     }
     /// <summary> Reads entries from a ZIP archive. </summary>
@@ -164,7 +160,7 @@ namespace MCGalaxy
             sig = r.ReadUInt32();
             if (sig != ZipEntry.SIG_ZIP64_LOC)
             {
-                Logger.Log(LogType.Warning, "&WFailed to find ZIP64 locator"); 
+                Logger.Log(LogType.Warning, "&WFailed to find ZIP64 locator");
                 return;
             }
             ReadZip64EndOfCentralDirectoryLocator();
@@ -172,7 +168,7 @@ namespace MCGalaxy
             sig = r.ReadUInt32();
             if (sig != ZipEntry.SIG_ZIP64_END)
             {
-                Logger.Log(LogType.Warning, "&WFailed to find ZIP64 end"); 
+                Logger.Log(LogType.Warning, "&WFailed to find ZIP64 end");
                 return;
             }
             ReadZip64EndOfCentralDirectoryRecord();

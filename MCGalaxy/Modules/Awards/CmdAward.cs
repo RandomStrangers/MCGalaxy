@@ -1,21 +1,17 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
 */
-
 namespace MCGalaxy.Modules.Awards
 {
     public sealed class CmdAward : Command2
@@ -23,7 +19,6 @@ namespace MCGalaxy.Modules.Awards
         public override string name { get { return "Award"; } }
         public override string type { get { return CommandTypes.Economy; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-
         public override void Use(Player p, string message, CommandData data)
         {
             bool take = false;
@@ -35,16 +30,12 @@ namespace MCGalaxy.Modules.Awards
             {
                 message = message.Substring(5); take = true;
             }
-
             string[] args = message.SplitSpaces(2);
             if (args.Length < 2) { Help(p); return; }
-
             string plName = PlayerInfo.FindMatchesPreferOnline(p, args[0]);
             if (plName == null) return;
-
             string award = AwardsList.FindMatch(p, args[1]);
             if (award == null) { p.Message("Use &T/Awards &Sfor a list of awards"); return; }
-
             string displayName = p.FormatNick(plName);
             if (!take)
             {
@@ -79,7 +70,6 @@ namespace MCGalaxy.Modules.Awards
                 }
             }
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Award give/take [player] [award]");

@@ -1,6 +1,5 @@
-﻿// Part of fCraft | Copyright 2009-2015 Matvei Stefarov <me@matvei.org> | BSD-3 | See LICENSE.txt
+// Part of fCraft | Copyright 2009-2015 Matvei Stefarov <me@matvei.org> | BSD-3 | See LICENSE.txt
 using System;
-
 namespace MCGalaxy.Generator.fCraft
 {
     /// <summary> Contains parameters for advanced map generation. </summary>
@@ -8,25 +7,21 @@ namespace MCGalaxy.Generator.fCraft
     {
         public string MapName;
         public string Biome = MapGenBiome.FOREST;
-
         public int Seed; // 0
         public int MaxHeight = 20;
         public int MaxDepth = 12;
         public int MaxHeightVariation = 4;
         public int MaxDepthVariation; // 0
-
         public bool AddWater = true;
         public bool MatchWaterCoverage; // false
         public int WaterLevel = 48;
         public float WaterCoverage = .5f;
-
         public bool UseBias;        // false
         public bool DelayBias;      // false
         public float Bias;           // 0
         public int RaisedCorners;  // 0
         public int LoweredCorners; // 0
         public int MidPoint;       // 0
-
         public int DetailScale = 7;
         public int FeatureScale = 1;
         public float Roughness = .5f;
@@ -34,24 +29,18 @@ namespace MCGalaxy.Generator.fCraft
         public bool InvertHeightmap;  // false
         public float AboveFuncExponent = 1;
         public float BelowFuncExponent = 1;
-
         public bool AddTrees = true;
         public bool AddGiantTrees; // false
         public int TreeSpacingMin = 7;
         public int TreeSpacingMax = 11;
-
         public bool AddSnow; // false
         public int SnowAltitude = 70;
         public int SnowTransition = 7;
-
         public bool CliffSmoothing = true;
         public float CliffThreshold = 1;
-
         public bool AddBeaches; // false
         public int BeachExtent = 6;
         public int BeachHeight = 2;
-
-
         public static fCraftMapGenArgs MakeTemplate(MapGenTemplate template)
         {
             return template switch

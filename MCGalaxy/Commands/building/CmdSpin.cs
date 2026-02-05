@@ -1,14 +1,11 @@
 /*
     Copyright 2011 MCForge
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Drawing;
-
 namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdSpin : Command2
@@ -29,7 +25,6 @@ namespace MCGalaxy.Commands.Building
         {
             get { return new[] { new CommandAlias("Rotate") }; }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) message = "y";
@@ -37,24 +32,20 @@ namespace MCGalaxy.Commands.Building
             {
                 p.Message("You haven't copied anything yet"); return;
             }
-
             CopyState cState = p.CurrentCopy;
             string opt = message.ToLower();
             BlockDefinition[] defs = p.level.CustomBlockDefs;
-
             // /Mirror used to be part of spin
             if (opt.CaselessStarts("mirror"))
             {
                 p.Message("&T/Spin {0} &Sis deprecated. Use &T/Mirror &Sinstead", opt);
                 return;
             }
-
             string[] args = opt.SplitSpaces();
             char axis = 'Y';
             int angle = 90;
             if (!Handle(ref axis, ref angle, args[0])) { Help(p); return; }
             if (args.Length > 1 && !Handle(ref axis, ref angle, args[1])) { Help(p); return; }
-
             CopyState newState = cState;
             if (angle == 0)
             {
@@ -71,13 +62,11 @@ namespace MCGalaxy.Commands.Building
             {
                 newState = Flip.RotateZ(cState, angle, defs);
             }
-
             newState.CopySource = cState.CopySource;
             newState.CopyTime = cState.CopyTime;
             p.CurrentCopy = newState;
             p.Message("Rotated copy {0} degrees around the {1} axis", angle, axis);
         }
-
         bool Handle(ref char axis, ref int angle, string arg)
         {
             if (arg == "x" || arg == "y" || arg == "z")
@@ -94,7 +83,6 @@ namespace MCGalaxy.Commands.Building
             }
             return false;
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Spin X/Y/Z 90/180/270");

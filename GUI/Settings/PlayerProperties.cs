@@ -79,25 +79,21 @@ namespace MCGalaxy.Gui
         [Category("Status")]
         [DisplayName("Voiced")]
         public bool Voiced { get { return p.voice; } set { DoCmd("Voice"); } }
-        void DoCmd(string cmd) 
-        { 
-            DoCmd(cmd, ""); 
-        }
+        void DoCmd(string cmd) => DoCmd(cmd, "");
         void DoCmd(string cmd, string args)
         {
             Player pl = PlayerInfo.FindExact(p.name);
-            if (pl == null)
+            if (pl != null)
             {
-                return;
-            }
-            try
-            {
-                string cmdArgs = args.Length == 0 ? p.name : p.name + " " + args;
-                Command.Find(cmd).Use(Player.Console, cmdArgs);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
+                try
+                {
+                    string cmdArgs = args.Length == 0 ? p.name : p.name + " " + args;
+                    Command.Find(cmd).Use(Player.Console, cmdArgs);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex);
+                }
             }
         }
     }

@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,7 +16,6 @@ using MCGalaxy.Config;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
-
 namespace MCGalaxy.Modules.Relay.Discord
 {
     /// <summary> Represents an abstract Discord API message </summary>
@@ -31,35 +27,26 @@ namespace MCGalaxy.Modules.Relay.Discord
         /// <summary> The HTTP method to handle the path/route with </summary>
         /// <example> POST, PATCH, DELETE </example>
         public string Method = "POST";
-
-
         /// <summary> Returns the JSON representation of the request data </summary>
         public abstract JsonObject ToJson();
-
         /// <summary> Attempts to combine this message with a prior message to reduce API calls </summary>
         public virtual bool CombineWith(DiscordApiMessage prior) { return false; }
-
-
         /// <summary> Optionally adjusts the request to send to Discord </summary>
         public virtual void OnRequest(HttpWebRequest req) { }
-
         /// <summary> Processes the response received from Discord </summary>
         public virtual void ProcessResponse(string response) { }
     }
-
     /// <summary> Message for sending text to a channel </summary>
     public class ChannelSendMessage : DiscordApiMessage
     {
         static readonly JsonArray default_allowed = new() { "users", "roles" };
         readonly StringBuilder content;
         public JsonArray Allowed;
-
         public ChannelSendMessage(string channelID, string message)
         {
             Path = "/channels/" + channelID + "/messages";
             content = new StringBuilder(message);
         }
-
         public override JsonObject ToJson()
         {
             // only allow pinging certain groups
@@ -67,20 +54,16 @@ namespace MCGalaxy.Modules.Relay.Discord
             {
                 { "parse", Allowed ?? default_allowed }
             };
-
             return new JsonObject()
             {
                 { "content", content.ToString() },
                 { "allowed_mentions", allowed }
             };
         }
-
         public override bool CombineWith(DiscordApiMessage prior)
         {
             if (prior is not ChannelSendMessage msg || msg.Path != Path) return false;
-
             if (content.Length + msg.content.Length > 1024) return false;
-
             // TODO: is stringbuilder even beneficial here
             msg.content.Append('\n');
             msg.content.Append(content.ToString());
@@ -88,18 +71,15 @@ namespace MCGalaxy.Modules.Relay.Discord
             return true;
         }
     }
-
     public class ChannelSendEmbed : DiscordApiMessage
     {
         public string Title;
         public Dictionary<string, string> Fields = new();
         public int Color;
-
         public ChannelSendEmbed(string channelID)
         {
             Path = "/channels/" + channelID + "/messages";
         }
-
         JsonArray GetFields()
         {
             JsonArray arr = new();
@@ -114,7 +94,6 @@ namespace MCGalaxy.Modules.Relay.Discord
             }
             return arr;
         }
-
         public override JsonObject ToJson()
         {
             return new JsonObject()

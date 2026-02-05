@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -29,21 +26,17 @@ namespace MCGalaxy.Commands.Building
         {
             get { return new[] { new CommandAlias("zz", "cuboid") }; }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             p.staticCommands = !p.staticCommands;
             p.ClearBlockchange();
-
             p.Message("Static mode: &a" + p.staticCommands);
             if (message.Length == 0 || !p.staticCommands) return;
             data.Context = CommandContext.Static;
-
             string[] parts = message.SplitSpaces(2);
             string cmd = parts[0], args = parts.Length > 1 ? parts[1] : "";
             p.HandleCommand(cmd, args, data);
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Static [command]");

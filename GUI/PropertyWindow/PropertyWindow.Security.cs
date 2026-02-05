@@ -68,22 +68,10 @@ namespace MCGalaxy.Gui
             Server.Config.IPSpamInterval = sec_numIPSecs.Value;
             Server.Config.IPSpamBlockTime = sec_numIPMute.Value;
         }
-        void Sec_cbChatAuto_Checked(object sender, EventArgs e)
-        {
-            ToggleChatSpamSettings(sec_cbChatAuto.Checked);
-        }
-        void Sec_cbCmdAuto_Checked(object sender, EventArgs e)
-        {
-            ToggleCmdSpamSettings(sec_cbCmdAuto.Checked);
-        }
-        void Sec_cbBlocksAuto_Checked(object sender, EventArgs e)
-        {
-            ToggleBlocksSpamSettings(sec_cbBlocksAuto.Checked);
-        }
-        void Sec_cbIPAuto_Checked(object sender, EventArgs e)
-        {
-            ToggleIPSpamSettings(sec_cbIPAuto.Checked);
-        }
+        void Sec_cbChatAuto_Checked(object sender, EventArgs e) => ToggleChatSpamSettings(sec_cbChatAuto.Checked);
+        void Sec_cbCmdAuto_Checked(object sender, EventArgs e) => ToggleCmdSpamSettings(sec_cbCmdAuto.Checked);
+        void Sec_cbBlocksAuto_Checked(object sender, EventArgs e) => ToggleBlocksSpamSettings(sec_cbBlocksAuto.Checked);
+        void Sec_cbIPAuto_Checked(object sender, EventArgs e) => ToggleIPSpamSettings(sec_cbIPAuto.Checked);
         void ToggleChatSpamSettings(bool enabled)
         {
             sec_numChatMsgs.Enabled = enabled;
@@ -107,9 +95,6 @@ namespace MCGalaxy.Gui
             sec_numIPMute.Enabled = enabled;
             sec_numIPSecs.Enabled = enabled;
         }
-        void VerifyAdminsChecked(object sender, EventArgs e)
-        {
-            sec_cmbVerifyRank.Enabled = sec_cbVerifyAdmins.Checked;
-        }
+        void VerifyAdminsChecked(object sender, EventArgs e) => sec_cmbVerifyRank.Enabled = sec_cbVerifyAdmins.Checked;
     }
 }

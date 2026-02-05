@@ -1,8 +1,6 @@
 using MCGalaxy.Maths;
-
 namespace MCGalaxy
 {
-
     public class CustomModel
     {
         public string name;
@@ -36,13 +34,11 @@ namespace MCGalaxy
         public ushort vScale = 64;
         public byte partCount;
     }
-
     public class CustomModelPart
     {
         /* min and max vec3 points */
         public Vec3F32 min;
         public Vec3F32 max;
-
         /* uv coords in order: top, bottom, front, back, left, right */
         public ushort[] u1;
         public ushort[] v1;
@@ -50,24 +46,20 @@ namespace MCGalaxy
         public ushort[] v2;
         /* rotation origin point */
         public Vec3F32 rotationOrigin;
-
         public Vec3F32 rotation;
         public CustomModelAnim[] anims;
         public bool fullbright = false;
         public bool firstPersonArm = false;
     }
-
     public class CustomModelAnim
     {
         public CustomModelAnimType type = CustomModelAnimType.None;
         public CustomModelAnimAxis axis;
-
         public float a;
         public float b;
         public float c;
         public float d;
     }
-
     public enum CustomModelAnimType
     {
         None = 0,
@@ -93,7 +85,6 @@ namespace MCGalaxy
         FlipSize = 20,
         FlipSizeVelocity = 21
     }
-
     public enum CustomModelAnimAxis
     {
         X = 0,

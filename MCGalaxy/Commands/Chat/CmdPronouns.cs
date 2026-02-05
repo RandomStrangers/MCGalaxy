@@ -1,23 +1,18 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-
 using System.Collections.Generic;
-
 namespace MCGalaxy.Commands.Chatting
 {
     public class CmdPronouns : Command2
@@ -27,34 +22,28 @@ namespace MCGalaxy.Commands.Chatting
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
-
             string[] names = message.SplitSpaces();
             Dictionary<string, Pronouns> pros = new();
-
             foreach (string name in names)
             {
                 Pronouns pro = Pronouns.FindMatch(p, name);
                 if (pro == null) { HelpList(p); return; }
                 pros[pro.Name] = pro;
             }
-
             // Disallow using default pronouns along with other pronouns (it's weird..?)
             if (pros.Count > 1 && pros.ContainsKey(Pronouns.Default.Name))
             {
                 pros.Remove(Pronouns.Default.Name);
             }
-
             List<Pronouns> final = new();
             foreach (KeyValuePair<string, Pronouns> pair in pros)
             {
                 final.Add(pair.Value);
             }
-
             p.pronounsList = final;
             p.Message("Your pronouns were changed to: &T{0}", Pronouns.ListFor(p, ", "));
             Pronouns.SaveFor(p);
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Pronouns [pronouns1] <pronouns2> <etc>");

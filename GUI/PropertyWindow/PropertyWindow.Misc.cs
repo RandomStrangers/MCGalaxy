@@ -56,11 +56,7 @@ namespace MCGalaxy.Gui
             Server.Config.ReviewCooldown = misc_numReview.Value;
             Server.Config.restartOnError = chkRestart.Checked;
         }
-        void Adv_btnEditTexts_Click(object sender, EventArgs e)
-        {
-            using Form form = new EditText();
-            form.ShowDialog();
-        }
+        void Adv_btnEditTexts_Click(object sender, EventArgs e) => new EditText().ShowDialog();
         void LoadSqlProps()
         {
             sql_chkUseSQL.Checked = Server.Config.UseMySQL;
@@ -83,24 +79,18 @@ namespace MCGalaxy.Gui
         }
         void ToggleMySQLSettings(bool enabled)
         {
-            sql_txtUser.Enabled = enabled; 
+            sql_txtUser.Enabled = enabled;
             sql_lblUser.Enabled = enabled;
-            sql_txtPass.Enabled = enabled; 
+            sql_txtPass.Enabled = enabled;
             sql_lblPass.Enabled = enabled;
-            sql_txtPort.Enabled = enabled; 
+            sql_txtPort.Enabled = enabled;
             sql_lblPort.Enabled = enabled;
-            sql_txtHost.Enabled = enabled; 
+            sql_txtHost.Enabled = enabled;
             sql_lblHost.Enabled = enabled;
-            sql_txtDBName.Enabled = enabled; 
+            sql_txtDBName.Enabled = enabled;
             sql_lblDBName.Enabled = enabled;
         }
-        void Sql_linkDownload_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            GuiUtils.OpenBrowser("https://dev.mysql.com/downloads/");
-        }
-        void Sql_chkUseSQL_CheckedChanged(object sender, EventArgs e)
-        {
-            ToggleMySQLSettings(sql_chkUseSQL.Checked);
-        }
+        void Sql_linkDownload_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) => GuiUtils.OpenBrowser("https://dev.mysql.com/downloads/");
+        void Sql_chkUseSQL_CheckedChanged(object sender, EventArgs e) => ToggleMySQLSettings(sql_chkUseSQL.Checked);
     }
 }

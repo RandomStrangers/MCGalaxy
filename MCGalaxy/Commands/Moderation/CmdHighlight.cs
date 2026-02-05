@@ -1,14 +1,11 @@
 /*
     Copyright 2011 MCForge
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -20,7 +17,6 @@ using MCGalaxy.Drawing.Ops;
 using MCGalaxy.Maths;
 using MCGalaxy.Network;
 using System;
-
 namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdHighlight : Command2
@@ -34,16 +30,13 @@ namespace MCGalaxy.Commands.Moderation
         {
             get { return new CommandAlias[] { new("HighlightArea", "area") }; }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             TimeSpan delta = TimeSpan.Zero;
             bool area = message.CaselessStarts("area ");
             if (area) message = message.Substring("area ".Length);
-
             if (message.Length == 0) message = p.name;
             string[] parts = message.SplitSpaces();
-
             if (parts.Length >= 2)
             {
                 if (!CommandParser.GetTimespan(p, parts[1], ref delta, "highlight the past", "s")) return;
@@ -52,11 +45,9 @@ namespace MCGalaxy.Commands.Moderation
             {
                 delta = TimeSpan.FromDays(100);
             }
-
             parts[0] = PlayerDB.MatchNames(p, parts[0]);
             if (parts[0] == null) return;
             int[] ids = NameConverter.FindIds(parts[0]);
-
             if (!area)
             {
                 Vec3S32[] marks = new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal };
@@ -74,17 +65,13 @@ namespace MCGalaxy.Commands.Moderation
                 p.MakeSelection(2, "Selecting region for &SHighlight", args, DoHighlightArea);
             }
         }
-
         bool DoHighlightArea(Player p, Vec3S32[] marks, object state, ushort block)
         {
             HighlightAreaArgs args = (HighlightAreaArgs)state;
             HighlightPlayer(p, args.delta, args.who, args.ids, marks);
             return false;
         }
-
         struct HighlightAreaArgs { public string who; public int[] ids; public TimeSpan delta; }
-
-
         static void HighlightPlayer(Player p, TimeSpan delta, string who, int[] ids, Vec3S32[] marks)
         {
             HighlightDrawOp op = new()
@@ -94,7 +81,6 @@ namespace MCGalaxy.Commands.Moderation
                 ids = ids
             };
             op.Setup(p, p.level, marks);
-
             BufferedBlockSender buffer = new(p);
             op.Perform(marks, null,
                        P =>
@@ -103,7 +89,6 @@ namespace MCGalaxy.Commands.Moderation
                            buffer.Add(index, P.Block);
                        });
             buffer.Flush();
-
             if (op.totalChanges > 0)
             {
                 p.Message("Highlighting &T{0}&S changes by {1}&S in the past &b{2}",
@@ -116,7 +101,6 @@ namespace MCGalaxy.Commands.Moderation
                            delta.Shorten(true), p.FormatNick(who));
             }
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Highlight [player] <timespan>");

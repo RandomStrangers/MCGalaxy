@@ -1,14 +1,11 @@
 /*
     Copyright 2011 MCForge
-        
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,7 +16,6 @@ using MCGalaxy.Drawing;
 using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Drawing.Ops;
 using MCGalaxy.Maths;
-
 namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdPaste : Command2
@@ -34,33 +30,27 @@ namespace MCGalaxy.Commands.Building
         {
             get { return new[] { new CommandAlias("PasteNot", "not"), new CommandAlias("pn", "not") }; }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             BrushArgs args = new(p, message, Block.Air);
             if (!BrushFactory.Find("Paste").Validate(args)) return;
-
             DrawCmd.DrawMessage(p, "Place a block in the corner of where you want to paste.");
             p.MakeSelection(1, "Selecting location for &SPaste", args, DoPaste);
         }
-
         bool DoPaste(Player p, Vec3S32[] m, object state, ushort block)
         {
             BrushArgs args = (BrushArgs)state;
             Brush brush = BrushFactory.Find("Paste").Construct(args);
             if (brush == null) return false;
-
             CopyState cState = p.CurrentCopy;
             PasteDrawOp op = new()
             {
                 CopyState = cState
             };
-
             m[0] += cState.Offset;
             DrawOpPerformer.Do(op, brush, p, m);
             return true;
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Paste &H- Pastes the stored copy.");

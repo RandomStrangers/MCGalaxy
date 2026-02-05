@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,25 +14,19 @@
  */
 using MCGalaxy.Maths;
 using System;
-
-
 namespace MCGalaxy.Network
 {
     /// <summary> Constructors for all classic and CPE packets. </summary>
     public static class Packet
     {
-
         #region Classic
-
         public static byte[] Motd(Player p, string motd)
         {
             byte version = p.Session.ProtocolVersion;
             bool type = version >= Server.VERSION_0020;
-
             byte[] buffer = new byte[130 + (type ? 1 : 0)];
             buffer[0] = Opcode.Handshake;
             buffer[1] = version;
-
             if (motd.Length > NetUtils.StringSize)
             {
                 NetUtils.Write(motd, buffer, 2, p.hasCP437);
@@ -46,13 +37,10 @@ namespace MCGalaxy.Network
                 NetUtils.Write(Server.Config.Name, buffer, 2, p.hasCP437);
                 NetUtils.Write(motd, buffer, 66, p.hasCP437);
             }
-
             if (type) buffer[130] = p.UserType();
             return buffer;
         }
-
         public static byte[] Ping() { return new byte[] { Opcode.Ping }; }
-
         public static byte[] LevelInitalise() { return new byte[] { Opcode.LevelInitialise }; }
         public static byte[] LevelInitaliseExt(int volume)
         {
@@ -61,7 +49,6 @@ namespace MCGalaxy.Network
             NetUtils.WriteI32(volume, buffer, 1);
             return buffer;
         }
-
         public static byte[] LevelFinalise(ushort width, ushort height, ushort length)
         {
             byte[] buffer = new byte[7];
@@ -71,7 +58,6 @@ namespace MCGalaxy.Network
             NetUtils.WriteU16(length, buffer, 5);
             return buffer;
         }
-
         public static byte[] AddEntity(byte entityID, string name, Position pos,
                                        Orientation rot, bool hasCP437, bool extPos)
         {
@@ -79,46 +65,38 @@ namespace MCGalaxy.Network
             buffer[0] = Opcode.AddEntity;
             buffer[1] = entityID;
             NetUtils.Write(name, buffer, 2, hasCP437);
-
             int offset = NetUtils.WritePos(pos, buffer, 66, extPos);
             buffer[66 + offset] = rot.RotY;
             buffer[67 + offset] = rot.HeadX;
             return buffer;
         }
-
         public static byte[] Teleport(byte entityID, Position pos, Orientation rot, bool extPos)
         {
             byte[] buffer = new byte[10 + (extPos ? 6 : 0)];
             buffer[0] = Opcode.EntityTeleport;
             buffer[1] = entityID;
-
             int offset = NetUtils.WritePos(pos, buffer, 2, extPos);
             buffer[2 + offset] = rot.RotY;
             buffer[3 + offset] = rot.HeadX;
             return buffer;
         }
-
         public static byte[] RemoveEntity(byte entityID)
         {
             return new byte[] { Opcode.RemoveEntity, entityID };
         }
-
         public static byte[] BlankMessage() { return Message("", 0, false); }
-
         public static byte[] Message(string message, CpeMessageType type, bool hasCp437)
         {
             byte[] buffer = new byte[66];
             WriteMessage(message, (byte)type, hasCp437, buffer, 0);
             return buffer;
         }
-
         public static void WriteMessage(string message, byte type, bool hasCp437, byte[] buffer, int index)
         {
             buffer[index++] = Opcode.Message;
             buffer[index++] = type;
             NetUtils.Write(message, buffer, index, hasCp437);
         }
-
         public static byte[] Kick(string message, bool cp437)
         {
             byte[] buffer = new byte[65];
@@ -126,17 +104,12 @@ namespace MCGalaxy.Network
             NetUtils.Write(message, buffer, 1, cp437);
             return buffer;
         }
-
         public static byte[] UserType(byte type)
         {
             return new byte[] { Opcode.SetPermission, type };
         }
-
         #endregion
-
-
         #region CPE
-
         public static byte[] ExtInfo(byte extsCount)
         {
             byte[] buffer = new byte[67];
@@ -145,7 +118,6 @@ namespace MCGalaxy.Network
             NetUtils.WriteI16(extsCount, buffer, 65);
             return buffer;
         }
-
         public static byte[] ExtEntry(string name, int version)
         {
             byte[] buffer = new byte[69];
@@ -154,7 +126,6 @@ namespace MCGalaxy.Network
             NetUtils.WriteI32(version, buffer, 65);
             return buffer;
         }
-
         public static byte[] ClickDistance(short distance)
         {
             byte[] buffer = new byte[3];
@@ -162,7 +133,6 @@ namespace MCGalaxy.Network
             NetUtils.WriteI16(distance, buffer, 1);
             return buffer;
         }
-
         public static byte[] CustomBlockSupportLevel(byte level)
         {
             byte[] buffer = new byte[2];
@@ -170,7 +140,6 @@ namespace MCGalaxy.Network
             buffer[1] = level;
             return buffer;
         }
-
         public static byte[] HoldThis(ushort raw, bool locked, bool extBlocks)
         {
             byte[] buffer = new byte[extBlocks ? 4 : 3];
@@ -179,13 +148,11 @@ namespace MCGalaxy.Network
             buffer[extBlocks ? 3 : 2] = (byte)(locked ? 1 : 0);
             return buffer;
         }
-
         public static byte[] TextHotKey(string label, string input, int keycode,
                                         byte mods, bool hasCP437)
         {
             // per spec, \n should cause client to automatically send hotkey
             input = input.Replace('\n', '◙');
-
             byte[] buffer = new byte[134];
             buffer[0] = Opcode.CpeSetTextHotkey;
             NetUtils.Write(label, buffer, 1, hasCP437);
@@ -194,7 +161,6 @@ namespace MCGalaxy.Network
             buffer[133] = mods;
             return buffer;
         }
-
         public static byte[] ExtAddEntity(byte entityID, string skin, string name, bool hasCP437)
         {
             byte[] buffer = new byte[130];
@@ -204,7 +170,6 @@ namespace MCGalaxy.Network
             NetUtils.Write(name, buffer, 66, hasCP437);
             return buffer;
         }
-
         public static byte[] ExtAddPlayerName(byte nameID, string listName, string displayName,
                                               string grp, byte grpRank, bool hasCP437)
         {
@@ -217,7 +182,6 @@ namespace MCGalaxy.Network
             buffer[195] = grpRank;
             return buffer;
         }
-
         public static byte[] ExtRemovePlayerName(byte nameID)
         {
             byte[] buffer = new byte[3];
@@ -225,7 +189,6 @@ namespace MCGalaxy.Network
             NetUtils.WriteI16(nameID, buffer, 1);
             return buffer;
         }
-
         public static byte[] EnvColor(byte type, short r, short g, short b)
         {
             byte[] buffer = new byte[8];
@@ -236,7 +199,6 @@ namespace MCGalaxy.Network
             NetUtils.WriteI16(b, buffer, 6);
             return buffer;
         }
-
         public static byte[] MakeSelection(byte selID, string label, Vec3U16 p1, Vec3U16 p2,
                                            short r, short g, short b, short opacity, bool hasCP437)
         {
@@ -244,21 +206,18 @@ namespace MCGalaxy.Network
             buffer[0] = Opcode.CpeMakeSelection;
             buffer[1] = selID;
             NetUtils.Write(label, buffer, 2, hasCP437);
-
             NetUtils.WriteU16(p1.X, buffer, 66);
             NetUtils.WriteU16(p1.Y, buffer, 68);
             NetUtils.WriteU16(p1.Z, buffer, 70);
             NetUtils.WriteU16(p2.X, buffer, 72);
             NetUtils.WriteU16(p2.Y, buffer, 74);
             NetUtils.WriteU16(p2.Z, buffer, 76);
-
             NetUtils.WriteI16(r, buffer, 78);
             NetUtils.WriteI16(g, buffer, 80);
             NetUtils.WriteI16(b, buffer, 82);
             NetUtils.WriteI16(opacity, buffer, 84);
             return buffer;
         }
-
         public static byte[] DeleteSelection(byte selID)
         {
             byte[] buffer = new byte[2];
@@ -266,14 +225,12 @@ namespace MCGalaxy.Network
             buffer[1] = selID;
             return buffer;
         }
-
         public static byte[] BlockPermission(ushort raw, bool place, bool delete, bool extBlocks)
         {
             byte[] buffer = new byte[extBlocks ? 5 : 4];
             WriteBlockPermission(raw, place, delete, extBlocks, buffer, 0);
             return buffer;
         }
-
         public static void WriteBlockPermission(ushort raw, bool place, bool delete, bool extBlocks, byte[] buffer, int index)
         {
             buffer[index++] = Opcode.CpeSetBlockPermission;
@@ -282,7 +239,6 @@ namespace MCGalaxy.Network
             buffer[index++] = place ? (byte)1 : (byte)0;
             buffer[index++] = delete ? (byte)1 : (byte)0;
         }
-
         public static byte[] ChangeModel(byte entityID, string model, bool hasCP437)
         {
             byte[] buffer = new byte[66];
@@ -291,7 +247,6 @@ namespace MCGalaxy.Network
             NetUtils.Write(model, buffer, 2, hasCP437);
             return buffer;
         }
-
         public static byte[] MapAppearance(string url, byte side, byte edge, int sideLevel,
                                            bool hasCP437)
         {
@@ -299,7 +254,6 @@ namespace MCGalaxy.Network
             WriteMapAppearance(buffer, url, side, edge, sideLevel, hasCP437);
             return buffer;
         }
-
         public static byte[] MapAppearanceV2(string url, byte side, byte edge, int sideLevel,
                                              int cloudHeight, int maxFog, bool hasCP437)
         {
@@ -309,7 +263,6 @@ namespace MCGalaxy.Network
             NetUtils.WriteI16((short)maxFog, buffer, 71);
             return buffer;
         }
-
         static void WriteMapAppearance(byte[] buffer, string url, byte side, byte edge,
                                        int sideLevel, bool hasCP437)
         {
@@ -319,7 +272,6 @@ namespace MCGalaxy.Network
             buffer[66] = edge;
             NetUtils.WriteI16((short)sideLevel, buffer, 67);
         }
-
         public static byte[] EnvWeatherType(byte type)
         { // 0 - sunny; 1 - raining; 2 - snowing
             byte[] buffer = new byte[2];
@@ -327,7 +279,6 @@ namespace MCGalaxy.Network
             buffer[1] = type;
             return buffer;
         }
-
         public static byte[] HackControl(bool canFly, bool canNoclip,
                                          bool canSpeed, bool canRespawn,
                                          bool can3rdPerson, short maxJumpHeight)
@@ -342,7 +293,6 @@ namespace MCGalaxy.Network
             NetUtils.WriteI16(maxJumpHeight, buffer, 6);
             return buffer;
         }
-
         public static byte[] ExtAddEntity2(byte entityID, string skinName, string displayName,
                                            Position pos, Orientation rot, bool hasCP437, bool extPos)
         {
@@ -351,13 +301,11 @@ namespace MCGalaxy.Network
             buffer[1] = entityID;
             NetUtils.Write(displayName, buffer, 2, hasCP437);
             NetUtils.Write(skinName, buffer, 66, hasCP437);
-
             int offset = NetUtils.WritePos(pos, buffer, 130, extPos);
             buffer[130 + offset] = rot.RotY;
             buffer[131 + offset] = rot.HeadX;
             return buffer;
         }
-
         public static byte[] SetTextColor(ColorDesc col)
         {
             byte[] buffer = new byte[6];
@@ -366,8 +314,6 @@ namespace MCGalaxy.Network
             buffer[5] = col.Index;
             return buffer;
         }
-
-
         public static byte[] EnvMapUrl(string url, bool hasCP437)
         {
             byte[] buffer = new byte[65];
@@ -375,20 +321,17 @@ namespace MCGalaxy.Network
             NetUtils.Write(url, buffer, 1, hasCP437);
             return buffer;
         }
-
         public static byte[] EnvMapUrlV2(string url, bool hasCP437)
         {
             byte[] buffer = new byte[129];
             buffer[0] = Opcode.CpeSetMapEnvUrl;
             NetUtils.Write(url, buffer, 1, hasCP437);
-
             if (url.Length > NetUtils.StringSize)
             {
                 NetUtils.Write(url.Substring(NetUtils.StringSize), buffer, 65, hasCP437);
             }
             return buffer;
         }
-
         public static byte[] EnvMapProperty(EnvProp prop, int value)
         {
             byte[] buffer = new byte[6];
@@ -397,7 +340,6 @@ namespace MCGalaxy.Network
             NetUtils.WriteI32(value, buffer, 2);
             return buffer;
         }
-
         public static byte[] EntityProperty(byte entityID, EntityProp prop, int value)
         {
             byte[] buffer = new byte[7];
@@ -407,7 +349,6 @@ namespace MCGalaxy.Network
             NetUtils.WriteI32(value, buffer, 3);
             return buffer;
         }
-
         public static byte[] TwoWayPing(bool serverToClient, ushort data)
         {
             byte[] buffer = new byte[4];
@@ -416,7 +357,6 @@ namespace MCGalaxy.Network
             NetUtils.WriteU16(data, buffer, 2);
             return buffer;
         }
-
         public static byte[] SetInventoryOrder(ushort rawId, ushort rawOrder, bool extBlocks)
         {
             byte[] buffer = new byte[extBlocks ? 5 : 3];
@@ -425,7 +365,6 @@ namespace MCGalaxy.Network
             NetUtils.WriteBlock(rawOrder, buffer, extBlocks ? 3 : 2, extBlocks);
             return buffer;
         }
-
         public static byte[] SetHotbar(ushort rawId, byte slot, bool extBlocks)
         {
             byte[] buffer = new byte[extBlocks ? 4 : 3];
@@ -434,7 +373,6 @@ namespace MCGalaxy.Network
             buffer[extBlocks ? 3 : 2] = slot;
             return buffer;
         }
-
         public static byte[] SetSpawnpoint(Position pos, Orientation rot, bool extPos)
         {
             byte[] buffer = new byte[extPos ? 15 : 9];
@@ -445,8 +383,7 @@ namespace MCGalaxy.Network
             buffer[1 + offset] = rot.HeadX;
             return buffer;
         }
-
-        /// <summary> Velocity is considered in terms of the 
+        /// <summary> Velocity is considered in terms of the
         /// force needed to reach [num] block height if applied to Y velocity.
         /// e.g. 0 1.233 0 would give an upward force identical to a default clientside jump.
         /// </summary>
@@ -462,7 +399,6 @@ namespace MCGalaxy.Network
             buffer[15] = zMode;
             return buffer;
         }
-
         public static byte[] DefineEffect(byte effectID,
                                             byte U1, byte V1, byte U2, byte V2,
                                             byte tintRed, byte tintGreen, byte tintBlue,
@@ -476,20 +412,16 @@ namespace MCGalaxy.Network
             byte[] buffer = new byte[36];
             buffer[0] = Opcode.CpeDefineEffect;
             buffer[1] = effectID;
-
             buffer[2] = U1;
             buffer[3] = V1;
             buffer[4] = U2;
             buffer[5] = V2;
-
             buffer[6] = tintRed;
             buffer[7] = tintGreen;
             buffer[8] = tintBlue;
-
             buffer[9] = frameCount;
             buffer[10] = particleCount;
             buffer[11] = size;
-
             NetUtils.WriteI32((int)(sizeVariation * 10000), buffer, 12);
             NetUtils.WriteU16((ushort)(spread * 32), buffer, 16);
             NetUtils.WriteI32((int)(speed * 10000), buffer, 18);
@@ -501,18 +433,15 @@ namespace MCGalaxy.Network
             if (collidesSolid) flags |= 1 << 1;
             if (collidesLiquid) flags |= 1 << 2;
             if (collidesLeaves) flags |= 1 << 3;
-
             buffer[34] = flags;
             buffer[35] = fullBright ? (byte)1 : (byte)0;
             return buffer;
         }
-
         public static byte[] SpawnEffect(byte effectId, float x, float y, float z, float originX, float originY, float originZ)
         {
             byte[] buffer = new byte[26];
             buffer[0] = Opcode.CpeSpawnEffect;
             buffer[1] = effectId;
-
             NetUtils.WriteI32((int)(x * 32), buffer, 2);
             NetUtils.WriteI32((int)(y * 32), buffer, 6);
             NetUtils.WriteI32((int)(z * 32), buffer, 10);
@@ -521,7 +450,6 @@ namespace MCGalaxy.Network
             NetUtils.WriteI32((int)(originZ * 32), buffer, 22);
             return buffer;
         }
-
         public const int MaxCustomModels = 64;
         public const int MaxCustomModelParts = 64;
         public const int MaxCustomModelAnims = 4;
@@ -532,11 +460,9 @@ namespace MCGalaxy.Network
             int i = 0;
             buffer[i++] = Opcode.CpeDefineModel;
             buffer[i++] = modelId;
-
             // write model name
             NetUtils.Write(customModel.name, buffer, i, false);
             i += NetUtils.StringSize;
-
             // write bool flags
             byte flags = 0;
             flags |= (byte)((customModel.bobbing ? 1 : 0) << 0);
@@ -544,13 +470,11 @@ namespace MCGalaxy.Network
             flags |= (byte)((customModel.usesHumanSkin ? 1 : 0) << 2);
             flags |= (byte)((customModel.calcHumanAnims ? 1 : 0) << 3);
             buffer[i++] = flags;
-
             // write nameY, eyeY
             NetUtils.WriteF32(customModel.nameY, buffer, i);
             i += 4;
             NetUtils.WriteF32(customModel.eyeY, buffer, i);
             i += 4;
-
             // write collisionBounds
             NetUtils.WriteF32(customModel.collisionBounds.X, buffer, i);
             i += 4;
@@ -558,7 +482,6 @@ namespace MCGalaxy.Network
             i += 4;
             NetUtils.WriteF32(customModel.collisionBounds.Z, buffer, i);
             i += 4;
-
             // write pickingBoundsAABB
             NetUtils.WriteF32(customModel.pickingBoundsMin.X, buffer, i);
             i += 4;
@@ -566,60 +489,47 @@ namespace MCGalaxy.Network
             i += 4;
             NetUtils.WriteF32(customModel.pickingBoundsMin.Z, buffer, i);
             i += 4;
-
             NetUtils.WriteF32(customModel.pickingBoundsMax.X, buffer, i);
             i += 4;
             NetUtils.WriteF32(customModel.pickingBoundsMax.Y, buffer, i);
             i += 4;
             NetUtils.WriteF32(customModel.pickingBoundsMax.Z, buffer, i);
             i += 4;
-
             // write uScale, vScale
             NetUtils.WriteU16(customModel.uScale, buffer, i);
             i += 2;
             NetUtils.WriteU16(customModel.vScale, buffer, i);
             i += 2;
-
             // write # CustomModelParts
             buffer[i++] = customModel.partCount;
-
             return buffer;
         }
-
         public static byte[] DefineModelPart(byte modelId, CustomModelPart part)
         {
             // v1: 104 = (1 + 1 + 3*4 + 3*4 + 6*(2*2 + 2*2) + 3*4 + 3*4) + 1 + 4 + 1
             byte[] buffer = new byte[104];
             int i = WriteDefineModelPart(buffer, modelId, part);
-
             // ignore animations
             i++;
             i += 4;
-
             // write bool flags
             byte flags = 0;
             flags |= (byte)((part.fullbright ? 1 : 0) << 0);
             flags |= (byte)((part.firstPersonArm ? 1 : 0) << 1);
-
             buffer[i++] = flags;
-
             return buffer;
         }
-
         public static byte[] DefineModelPartV2(byte modelId, CustomModelPart part)
         {
             // v2: 167 = (1 + 1 + 3*4 + 3*4 + 6*(2*2 + 2*2) + 3*4 + 3*4) + 4*(1 + 4*4) + 1
             byte[] buffer = new byte[167];
             int i = WriteDefineModelPart(buffer, modelId, part);
-
             for (int j = 0; j < MaxCustomModelAnims; j++)
             {
                 CustomModelAnim anim = part.anims[j];
-
                 buffer[i++] = (byte)(
                     ((byte)anim.type & 0x3F) | ((byte)anim.axis << 6)
                 );
-
                 NetUtils.WriteF32(anim.a, buffer, i);
                 i += 4;
                 NetUtils.WriteF32(anim.b, buffer, i);
@@ -629,23 +539,18 @@ namespace MCGalaxy.Network
                 NetUtils.WriteF32(anim.d, buffer, i);
                 i += 4;
             }
-
             // write bool flags
             byte flags = 0;
             flags |= (byte)((part.fullbright ? 1 : 0) << 0);
             flags |= (byte)((part.firstPersonArm ? 1 : 0) << 1);
-
             buffer[i++] = flags;
-
             return buffer;
         }
-
         public static int WriteDefineModelPart(byte[] buffer, byte modelId, CustomModelPart part)
         {
             int i = 0;
             buffer[i++] = Opcode.CpeDefineModelPart;
             buffer[i++] = modelId;
-
             /* write min, max vec3 coords */
             NetUtils.WriteF32(part.min.X, buffer, i);
             i += 4;
@@ -653,14 +558,12 @@ namespace MCGalaxy.Network
             i += 4;
             NetUtils.WriteF32(part.min.Z, buffer, i);
             i += 4;
-
             NetUtils.WriteF32(part.max.X, buffer, i);
             i += 4;
             NetUtils.WriteF32(part.max.Y, buffer, i);
             i += 4;
             NetUtils.WriteF32(part.max.Z, buffer, i);
             i += 4;
-
             /* write u, v coords for our 6 faces */
             for (int j = 0; j < 6; j++)
             {
@@ -668,13 +571,11 @@ namespace MCGalaxy.Network
                 i += 2;
                 NetUtils.WriteU16(part.v1[j], buffer, i);
                 i += 2;
-
                 NetUtils.WriteU16(part.u2[j], buffer, i);
                 i += 2;
                 NetUtils.WriteU16(part.v2[j], buffer, i);
                 i += 2;
             }
-
             /* write rotation origin point */
             NetUtils.WriteF32(part.rotationOrigin.X, buffer, i);
             i += 4;
@@ -682,7 +583,6 @@ namespace MCGalaxy.Network
             i += 4;
             NetUtils.WriteF32(part.rotationOrigin.Z, buffer, i);
             i += 4;
-
             /* write rotation angles */
             NetUtils.WriteF32(part.rotation.X, buffer, i);
             i += 4;
@@ -690,20 +590,16 @@ namespace MCGalaxy.Network
             i += 4;
             NetUtils.WriteF32(part.rotation.Z, buffer, i);
             i += 4;
-
             return i;
         }
-
         public static byte[] UndefineModel(byte modelId)
         {
             byte[] buffer = new byte[2];
             int i = 0;
             buffer[i++] = Opcode.CpeUndefineModel;
             buffer[i++] = modelId;
-
             return buffer;
         }
-
         public const int PluginMessageDataLength = 64;
         public static byte[] PluginMessage(byte channel, byte[] data)
         {
@@ -712,10 +608,8 @@ namespace MCGalaxy.Network
             buffer[i++] = Opcode.CpePluginMessage;
             buffer[i++] = channel;
             Array.Copy(data, 0, buffer, i, PluginMessageDataLength);
-
             return buffer;
         }
-
         public enum TeleportMoveMode { AbsoluteInstant, AbsoluteSmooth, RelativeSmooth, RelativeShift }
         public static byte[] TeleportExt(byte entityID, bool usePos, TeleportMoveMode moveMode, bool useOri, bool interpolateOri,
                                          Position pos, Orientation rot, bool extPos)
@@ -725,18 +619,15 @@ namespace MCGalaxy.Network
             flags |= (byte)((byte)moveMode << 1);
             if (useOri) { flags |= 16; }
             if (interpolateOri) { flags |= 32; }
-
             byte[] buffer = new byte[11 + (extPos ? 6 : 0)];
             buffer[0] = Opcode.CpeEntityTeleportExt;
             buffer[1] = entityID;
             buffer[2] = flags;
-
             int offset = NetUtils.WritePos(pos, buffer, 3, extPos);
             buffer[3 + offset] = rot.RotY;
             buffer[4 + offset] = rot.HeadX;
             return buffer;
         }
-
         public enum LightingMode { None, Classic, Fancy }
         public static byte[] SetLightingMode(LightingMode mode, bool locked)
         {
@@ -746,7 +637,6 @@ namespace MCGalaxy.Network
             buffer[2] = (byte)(locked ? 1 : 0);
             return buffer;
         }
-
         public static byte[] SetCinematicGui(bool hideCrosshair, bool hideHand, bool hideHotbar, byte r, byte g, byte b, byte opacity, ushort barSize)
         {
             byte[] buffer = new byte[10];
@@ -754,16 +644,13 @@ namespace MCGalaxy.Network
             buffer[1] = (byte)(hideCrosshair ? 1 : 0);
             buffer[2] = (byte)(hideHand ? 1 : 0);
             buffer[3] = (byte)(hideHotbar ? 1 : 0);
-
             buffer[4] = r;
             buffer[5] = g;
             buffer[6] = b;
             buffer[7] = opacity;
-
             NetUtils.WriteU16(barSize, buffer, 8);
             return buffer;
         }
-
         public static byte[] ToggleBlockList(bool toggle)
         {
             byte[] buffer = new byte[2];
@@ -771,11 +658,8 @@ namespace MCGalaxy.Network
             buffer[1] = (byte)(toggle ? 1 : 0);
             return buffer;
         }
-
         #endregion
-
         #region Block definitions
-
         public static byte[] DefineBlock(BlockDefinition def, bool hasCP437,
                                          bool extBlocks, bool extTexs)
         {
@@ -787,7 +671,6 @@ namespace MCGalaxy.Network
             MakeDefineBlockEnd(def, ref i, buffer);
             return buffer;
         }
-
         public static byte[] UndefineBlock(BlockDefinition def, bool extBlocks)
         {
             byte[] buffer = new byte[extBlocks ? 3 : 2];
@@ -795,7 +678,6 @@ namespace MCGalaxy.Network
             NetUtils.WriteBlock(def.RawID, buffer, 1, extBlocks);
             return buffer;
         }
-
         public static byte[] DefineBlockExt(BlockDefinition def, bool uniqueSideTexs, bool hasCP437,
                                             bool extBlocks, bool extTexs)
         {
@@ -808,7 +690,6 @@ namespace MCGalaxy.Network
             MakeDefineBlockEnd(def, ref i, buffer);
             return buffer;
         }
-
         static void WriteTex(byte[] buffer, ref int i, ushort value, bool extTexs)
         {
             if (extTexs)
@@ -820,7 +701,6 @@ namespace MCGalaxy.Network
                 buffer[i++] = (byte)value;
             }
         }
-
         static void MakeDefineBlockStart(BlockDefinition def, byte[] buffer, ref int i, bool uniqueSideTexs,
                                          bool hasCP437, bool extBlocks, bool extTexs)
         {
@@ -833,7 +713,6 @@ namespace MCGalaxy.Network
             i += NetUtils.StringSize;
             buffer[i++] = def.CollideType;
             buffer[i++] = rawSpeed;
-
             WriteTex(buffer, ref i, def.TopTex, extTexs);
             if (uniqueSideTexs)
             {
@@ -845,10 +724,8 @@ namespace MCGalaxy.Network
                 WriteTex(buffer, ref i, def.RightTex, extTexs);
             }
             WriteTex(buffer, ref i, def.BottomTex, extTexs);
-
             buffer[i++] = (byte)(def.BlocksLight ? 0 : 1);
             buffer[i++] = def.WalkSound;
-
             // Less than zero shouldn't happen, but just in case
             if (def.Brightness <= 0)
             {
@@ -860,11 +737,9 @@ namespace MCGalaxy.Network
                 byte brightness = (byte)Math.Max(0, Math.Min(def.Brightness, 15));
                 brightness |= 1 << 7; // Insert "use modern brightness" flag (otherwise client will interpret it as either 0 or 15 lava brightness)
                 if (def.UseLampBrightness) brightness |= 1 << 6; // Insert "use lamplight color" flag
-
                 buffer[i++] = brightness;
             }
         }
-
         static void MakeDefineBlockEnd(BlockDefinition def, ref int i, byte[] buffer)
         {
             buffer[i++] = def.BlockDraw;

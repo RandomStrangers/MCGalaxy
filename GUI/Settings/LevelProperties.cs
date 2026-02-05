@@ -103,10 +103,7 @@ namespace MCGalaxy.Gui
         [Category("Survival")]
         [DisplayName("Fall height")]
         public int FallHeight { get { return cfg.FallHeight; } set { DoMap(LevelOptions.Fall, value); } }
-        bool GetAutoload()
-        {
-            return Server.AutoloadMaps.Contains(lvl.name);
-        }
+        bool GetAutoload() => Server.AutoloadMaps.Contains(lvl.name);
         void SetAutoload(bool value)
         {
             if (value)
@@ -119,10 +116,7 @@ namespace MCGalaxy.Gui
             }
             Server.AutoloadMaps.Save();
         }
-        void DoMap(string key, object raw) 
-        { 
-            DoCmd("Map", key + " " + raw); 
-        }
+        void DoMap(string key, object raw) => DoCmd("Map", key + " " + raw);
         void DoCmd(string cmd, object raw)
         {
             try

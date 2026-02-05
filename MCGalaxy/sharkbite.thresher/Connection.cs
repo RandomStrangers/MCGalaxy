@@ -6,7 +6,7 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,18 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- * 
+ *
  * See the gpl.txt file located in the top-level-directory of
  * the archive of this library for complete text of license.
  */
-
 using System;
 using System.Globalization;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
-
 namespace Sharkbite.Irc
 {
     /// <summary>
@@ -40,12 +38,12 @@ namespace Sharkbite.Irc
             MAX_HOSTNAME_LEN = 63,
             MAX_NICKNAME_LEN = 30;
         readonly object sendLock = new();
-        // Odd chars that IRC allows in nicknames 
+        // Odd chars that IRC allows in nicknames
         const string Special = "\\[\\]\\`_\\^\\{\\|\\}", ACTION = "\u0001ACTION",
             NickChars = "[" + Special + "a-zA-Z][\\w\\-" + Special + "]{0,8}",
             ChannelPrefix = "#!+&",
             ctcpTypes = "(FINGER|USERINFO|VERSION|SOURCE|CLIENTINFO|ERRMSG|PING|TIME)";
-        // Regex that matches a legal IRC nick 
+        // Regex that matches a legal IRC nick
         static readonly Regex nickRegex = new(NickChars),
             nameSplitterRegex = new("[!@]", RegexOptions.Compiled | RegexOptions.Singleline),//Regex to create a UserInfo from a string
             ctcpRegex = new(":([^ ]+) [A-Z]+ [^:]+:\u0001" + ctcpTypes + "([^\u0001]*)\u0001", RegexOptions.Compiled | RegexOptions.Singleline),
@@ -228,9 +226,9 @@ namespace Sharkbite.Irc
         {
             try
             {
-                lock (sendLock) 
+                lock (sendLock)
                 {
-                    writer.WriteLine(command); 
+                    writer.WriteLine(command);
                 }
             }
             catch
@@ -415,7 +413,7 @@ namespace Sharkbite.Irc
         /// </summary>
         public event PrivateMessageEventHandler OnPrivate;
         /// <summary>
-        /// Someone has left a channel. 
+        /// Someone has left a channel.
         /// </summary>
         public event PartEventHandler OnPart;
         /// <summary>
@@ -427,7 +425,7 @@ namespace Sharkbite.Irc
         /// </summary>
         public event InviteEventHandler OnInvite;
         /// <summary>
-        /// Someone has been kicked from a channel. 
+        /// Someone has been kicked from a channel.
         /// </summary>
         public event KickEventHandler OnKick;
         /// <summary>
@@ -552,7 +550,7 @@ namespace Sharkbite.Irc
             tokens[3] = RemoveLeadingColon(tokens[3]);
             switch (code)
             {
-                //Messages sent upon successful registration 
+                //Messages sent upon successful registration
                 case ReplyCode.RPL_WELCOME:
                 case ReplyCode.RPL_YOURESERVICE:
                     OnRegistered();

@@ -22,7 +22,7 @@ namespace MCGalaxy.Gui
     public static class Program
     {
         [STAThread]
-        public static void Main(string[] _)
+        public static void Main()
         {
             SetCurrentDirectory();
             try
@@ -76,14 +76,8 @@ namespace MCGalaxy.Gui
                 stopThread.Join();
             }
         }
-        static void GlobalExHandler(object sender, UnhandledExceptionEventArgs e)
-        {
-            LogAndRestart((Exception)e.ExceptionObject);
-        }
-        static void ThreadExHandler(object sender, ThreadExceptionEventArgs e)
-        {
-            LogAndRestart(e.Exception);
-        }
+        static void GlobalExHandler(object sender, UnhandledExceptionEventArgs e) => LogAndRestart((Exception)e.ExceptionObject);
+        static void ThreadExHandler(object sender, ThreadExceptionEventArgs e) => LogAndRestart(e.Exception);
         static void DetectBuggyCursors()
         {
             try
@@ -109,15 +103,14 @@ namespace MCGalaxy.Gui
         }
         static void BypassCursorsHACK()
         {
-            if (!Server.RunningOnMono())
+            if (Server.RunningOnMono())
             {
-                return;
+                Type stdCursorType = typeof(Cursor).Assembly.GetType("System.Windows.Forms.StdCursor");
+                ConstructorInfo cursor_cons = typeof(Cursor).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { stdCursorType }, null);
+                object cursor = cursor_cons.Invoke(new object[] { 23 });
+                FieldInfo nwse_field = typeof(Cursors).GetField("size_nwse", BindingFlags.NonPublic | BindingFlags.Static);
+                nwse_field.SetValue(null, cursor);
             }
-            Type stdCursorType = typeof(Cursor).Assembly.GetType("System.Windows.Forms.StdCursor");
-            ConstructorInfo cursor_cons = typeof(Cursor).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { stdCursorType }, null);
-            object cursor = cursor_cons.Invoke(new object[] { 23 });
-            FieldInfo nwse_field = typeof(Cursors).GetField("size_nwse", BindingFlags.NonPublic | BindingFlags.Static);
-            nwse_field.SetValue(null, cursor);
         }
     }
 }

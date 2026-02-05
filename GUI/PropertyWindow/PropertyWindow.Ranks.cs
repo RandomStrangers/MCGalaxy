@@ -77,29 +77,27 @@ namespace MCGalaxy.Gui
         }
         void Rank_list_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (rankSupressEvents)
+            if (!rankSupressEvents)
             {
-                return;
+                curGroup = null;
+                if (rank_list.SelectedIndex != -1)
+                {
+                    Group grp = copiedGroups[rank_list.SelectedIndex];
+                    curGroup = grp;
+                    rank_txtName.Text = grp.Name;
+                    rank_numPerm.Value = (int)grp.Permission;
+                    Chat_ParseColor(grp.Color, rank_btnColor);
+                    rank_txtMOTD.Text = grp.MOTD;
+                    rank_txtPrefix.Text = grp.Prefix;
+                    rank_cbAfk.Checked = grp.AfkKicked;
+                    rank_numAfk.Value = grp.AfkKickTime;
+                    rank_numDraw.Value = grp.DrawLimit;
+                    rank_numUndo.Value = grp.MaxUndo;
+                    rank_numMaps.Value = grp.OverseerMaps;
+                    rank_numGen.Value = grp.GenVolume;
+                    rank_numCopy.Value = grp.CopySlots;
+                }
             }
-            curGroup = null;
-            if (rank_list.SelectedIndex == -1)
-            {
-                return;
-            }
-            Group grp = copiedGroups[rank_list.SelectedIndex];
-            curGroup = grp;
-            rank_txtName.Text = grp.Name;
-            rank_numPerm.Value = (int)grp.Permission;
-            Chat_ParseColor(grp.Color, rank_btnColor);
-            rank_txtMOTD.Text = grp.MOTD;
-            rank_txtPrefix.Text = grp.Prefix;
-            rank_cbAfk.Checked = grp.AfkKicked;
-            rank_numAfk.Value = grp.AfkKickTime;
-            rank_numDraw.Value = grp.DrawLimit;
-            rank_numUndo.Value = grp.MaxUndo;
-            rank_numMaps.Value = grp.OverseerMaps;
-            rank_numGen.Value = grp.GenVolume;
-            rank_numCopy.Value = grp.CopySlots;
         }
         void Rank_txtName_TextChanged(object sender, EventArgs e)
         {
@@ -108,14 +106,13 @@ namespace MCGalaxy.Gui
                 rank_txtName.Text = rank_txtName.Text.Replace(" ", "");
                 return;
             }
-            if (rank_txtName.Text.Length == 0)
+            if (rank_txtName.Text.Length != 0)
             {
-                return;
+                curGroup.Name = rank_txtName.Text;
+                rankSupressEvents = true;
+                rank_list.Items[rank_list.SelectedIndex] = rank_txtName.Text + " = " + (int)curGroup.Permission;
+                rankSupressEvents = false;
             }
-            curGroup.Name = rank_txtName.Text;
-            rankSupressEvents = true;
-            rank_list.Items[rank_list.SelectedIndex] = rank_txtName.Text + " = " + (int)curGroup.Permission;
-            rankSupressEvents = false;
         }
         void Rank_numPerm_ValueChanged(object sender, EventArgs e)
         {
@@ -125,52 +122,28 @@ namespace MCGalaxy.Gui
             rank_list.Items[rank_list.SelectedIndex] = curGroup.Name + " = " + perm;
             rankSupressEvents = false;
         }
-        void Rank_txtMOTD_TextChanged(object sender, EventArgs e)
-        {
-            curGroup.MOTD = rank_txtMOTD.Text;
-        }
-        void Rank_txtPrefix_TextChanged(object sender, EventArgs e)
-        {
-            curGroup.Prefix = rank_txtPrefix.Text;
-        }
+        void Rank_txtMOTD_TextChanged(object sender, EventArgs e) => curGroup.MOTD = rank_txtMOTD.Text;
+        void Rank_txtPrefix_TextChanged(object sender, EventArgs e) => curGroup.Prefix = rank_txtPrefix.Text;
         void Rank_cbAfk_CheckedChanged(object sender, EventArgs e)
         {
             curGroup.AfkKicked = rank_cbAfk.Checked;
             rank_numAfk.Enabled = rank_cbAfk.Checked;
         }
-        void Rank_numAfk_ValueChanged(object sender, EventArgs e)
-        {
-            curGroup.AfkKickTime = rank_numAfk.Value;
-        }
-        void Rank_numDraw_ValueChanged(object sender, EventArgs e)
-        {
-            curGroup.DrawLimit = (int)rank_numDraw.Value;
-        }
-        void Rank_numUndo_ValueChanged(object sender, EventArgs e)
-        {
-            curGroup.MaxUndo = rank_numUndo.Value;
-        }
-        void Rank_numMaps_ValueChanged(object sender, EventArgs e)
-        {
-            curGroup.OverseerMaps = (int)rank_numMaps.Value;
-        }
-        void Rank_numGen_ValueChanged(object sender, EventArgs e)
-        {
-            curGroup.GenVolume = (int)rank_numGen.Value;
-        }
-        void Rank_numCopy_ValueChanged(object sender, EventArgs e)
-        {
-            curGroup.CopySlots = (int)rank_numCopy.Value;
-        }
+        void Rank_numAfk_ValueChanged(object sender, EventArgs e) => curGroup.AfkKickTime = rank_numAfk.Value;
+        void Rank_numDraw_ValueChanged(object sender, EventArgs e) => curGroup.DrawLimit = (int)rank_numDraw.Value;
+        void Rank_numUndo_ValueChanged(object sender, EventArgs e) => curGroup.MaxUndo = rank_numUndo.Value;
+        void Rank_numMaps_ValueChanged(object sender, EventArgs e) => curGroup.OverseerMaps = (int)rank_numMaps.Value;
+        void Rank_numGen_ValueChanged(object sender, EventArgs e) => curGroup.GenVolume = (int)rank_numGen.Value;
+        void Rank_numCopy_ValueChanged(object sender, EventArgs e) => curGroup.CopySlots = (int)rank_numCopy.Value;
         void Rank_btnAdd_Click(object sender, EventArgs e)
         {
             int perm = 5;
             for (int i = (int)LevelPermission.Guest; i <= (int)LevelPermission.Owner; i++)
             {
-                if (PermissionFree(i)) 
-                { 
-                    perm = i; 
-                    break; 
+                if (PermissionFree(i))
+                {
+                    perm = i;
+                    break;
                 }
             }
             Group newGroup = Group.DefaultRank.CopyConfig();
@@ -182,16 +155,15 @@ namespace MCGalaxy.Gui
         }
         void Rank_btnDel_Click(object sender, EventArgs e)
         {
-            if (rank_list.Items.Count == 0)
+            if (rank_list.Items.Count != 0)
             {
-                return;
+                copiedGroups.RemoveAt(rank_list.SelectedIndex);
+                rankSupressEvents = true;
+                rank_list.Items.RemoveAt(rank_list.SelectedIndex);
+                rankSupressEvents = false;
+                int i = rank_list.Items.Count > 0 ? 0 : -1;
+                rank_list.SelectedIndex = i;
             }
-            copiedGroups.RemoveAt(rank_list.SelectedIndex);
-            rankSupressEvents = true;
-            rank_list.Items.RemoveAt(rank_list.SelectedIndex);
-            rankSupressEvents = false;
-            int i = rank_list.Items.Count > 0 ? 0 : -1;
-            rank_list.SelectedIndex = i;
         }
         bool PermissionFree(int i)
         {

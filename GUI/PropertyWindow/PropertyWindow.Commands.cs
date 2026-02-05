@@ -80,72 +80,56 @@ namespace MCGalaxy.Gui
             string cmdName = cmd_list.SelectedItem.ToString();
             CommandInitSpecificArrays();
             cmd = Command.Find(cmdName);
-            if (cmd == null)
+            if (cmd != null)
             {
-                return;
+                commandPermsOrig = CommandPerms.Find(cmdName);
+                commandPermsCopy = commandPermsChanged.Find(p => p.CmdName.CaselessEq(cmdName));
+                commandItems.SupressEvents = true;
+                CommandInitExtraPerms();
+                CommandPerms perms = commandPermsCopy ?? commandPermsOrig;
+                commandItems.Update(perms);
             }
-            commandPermsOrig = CommandPerms.Find(cmdName);
-            commandPermsCopy = commandPermsChanged.Find(p => p.CmdName.CaselessEq(cmdName));
-            commandItems.SupressEvents = true;
-            CommandInitExtraPerms();
-            CommandPerms perms = commandPermsCopy ?? commandPermsOrig;
-            commandItems.Update(perms);
         }
         void CommandInitSpecificArrays()
         {
-            if (commandItems.MinBox != null)
+            if (commandItems.MinBox == null)
             {
-                return;
+                commandItems.MinBox = cmd_cmbMin;
+                commandItems.AllowBoxes = new[]
+                {
+                    cmd_cmbAlw1, cmd_cmbAlw2, cmd_cmbAlw3
+                };
+                commandItems.DisallowBoxes = new[]
+                {
+                    cmd_cmbDis1, cmd_cmbDis2, cmd_cmbDis3
+                };
+                commandItems.FillInitial();
+                commandExtraBoxes = new[]
+                {
+                    cmd_cmbExtra1, cmd_cmbExtra2, cmd_cmbExtra3,
+                    cmd_cmbExtra4, cmd_cmbExtra5, cmd_cmbExtra6, cmd_cmbExtra7
+                };
+                commandExtraLabels = new[]
+                {
+                    cmd_lblExtra1, cmd_lblExtra2, cmd_lblExtra3,
+                    cmd_lblExtra4, cmd_lblExtra5, cmd_lblExtra6, cmd_lblExtra7
+                };
+                GuiPerms.SetRanks(commandExtraBoxes);            
             }
-            commandItems.MinBox = cmd_cmbMin;
-            commandItems.AllowBoxes = new[] 
-            { 
-                cmd_cmbAlw1, cmd_cmbAlw2, cmd_cmbAlw3 
-            };
-            commandItems.DisallowBoxes = new[] 
-            { 
-                cmd_cmbDis1, cmd_cmbDis2, cmd_cmbDis3 
-            };
-            commandItems.FillInitial();
-            commandExtraBoxes = new[] 
-            { 
-                cmd_cmbExtra1, cmd_cmbExtra2, cmd_cmbExtra3,
-                cmd_cmbExtra4, cmd_cmbExtra5, cmd_cmbExtra6, cmd_cmbExtra7 
-            };
-            commandExtraLabels = new[] 
-            { 
-                cmd_lblExtra1, cmd_lblExtra2, cmd_lblExtra3,
-                cmd_lblExtra4, cmd_lblExtra5, cmd_lblExtra6, cmd_lblExtra7 
-            };
-            GuiPerms.SetRanks(commandExtraBoxes);
         }
         ItemPerms CommandGetOrAddPermsChanged()
         {
-            if (commandPermsCopy != null)
+            if (commandPermsCopy == null)
             {
-                return commandPermsCopy;
+                commandPermsCopy = commandPermsOrig.Copy();
+                commandPermsChanged.Add(commandPermsCopy);
             }
-            commandPermsCopy = commandPermsOrig.Copy();
-            commandPermsChanged.Add(commandPermsCopy);
             return commandPermsCopy;
         }
-        void Cmd_cmbMin_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            commandItems.OnMinRankChanged((ComboBox)sender);
-        }
-        void Cmd_cmbSpecific_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            commandItems.OnSpecificChanged((ComboBox)sender);
-        }
-        void Cmd_btnHelp_Click(object sender, EventArgs e)
-        {
-            GetHelp(cmd_list.SelectedItem.ToString());
-        }
-        void Cmd_btnCustom_Click(object sender, EventArgs e)
-        {
-            using CustomCommands form = new();
-            form.ShowDialog();
-        }
+        void Cmd_cmbMin_SelectedIndexChanged(object sender, EventArgs e) => commandItems.OnMinRankChanged((ComboBox)sender);
+        void Cmd_cmbSpecific_SelectedIndexChanged(object sender, EventArgs e) => commandItems.OnSpecificChanged((ComboBox)sender);
+        void Cmd_btnHelp_Click(object sender, EventArgs e) => GetHelp(cmd_list.SelectedItem.ToString());
+        void Cmd_btnCustom_Click(object sender, EventArgs e) => new CustomCommands().ShowDialog();
         void CommandInitExtraPerms()
         {
             extraPermsList = CommandExtraPerms.FindAll(cmd.name);
@@ -172,32 +156,27 @@ namespace MCGalaxy.Gui
             cmd_grpExtra.Visible = extraPermsList.Count > 0;
             cmd_grpExtra.Height = height;
         }
-        CommandExtraPerms LookupExtraPerms(string cmdName, int number)
-        {
-            return commandExtraPermsChanged.Find(
+        CommandExtraPerms LookupExtraPerms(string cmdName, int number) => commandExtraPermsChanged.Find(
                 p => p.CmdName == cmdName && p.Num == number);
-        }
         void Cmd_cmbExtra_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox box = (ComboBox)sender;
-            if (commandItems.SupressEvents)
+            if (!commandItems.SupressEvents)
             {
-                return;
+                GuiRank rank = (GuiRank)box.SelectedItem;
+                if (rank != null)
+                {
+                    int boxIdx = Array.IndexOf(commandExtraBoxes, box);
+                    CommandExtraPerms orig = extraPermsList[boxIdx];
+                    CommandExtraPerms copy = LookupExtraPerms(orig.CmdName, orig.Num);
+                    if (copy == null)
+                    {
+                        copy = orig.Copy();
+                        commandExtraPermsChanged.Add(copy);
+                    }
+                    copy.MinRank = rank.Permission;
+                }
             }
-            GuiRank rank = (GuiRank)box.SelectedItem;
-            if (rank == null)
-            {
-                return;
-            }
-            int boxIdx = Array.IndexOf(commandExtraBoxes, box);
-            CommandExtraPerms orig = extraPermsList[boxIdx];
-            CommandExtraPerms copy = LookupExtraPerms(orig.CmdName, orig.Num);
-            if (copy == null)
-            {
-                copy = orig.Copy();
-                commandExtraPermsChanged.Add(copy);
-            }
-            copy.MinRank = rank.Permission;
         }
     }
 }

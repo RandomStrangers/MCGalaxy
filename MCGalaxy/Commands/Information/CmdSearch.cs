@@ -14,8 +14,6 @@ permissions and limitations under the Licenses.
  */
 using MCGalaxy.SQL;
 using System.Collections.Generic;
-
-
 namespace MCGalaxy.Commands.Info
 {
     public class CmdSearch : Command2
@@ -24,16 +22,13 @@ namespace MCGalaxy.Commands.Info
         public override string type { get { return CommandTypes.Information; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Builder; } }
         public override bool UseableWhenFrozen { get { return true; } }
-
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(3);
             if (args.Length < 2) { Help(p); return; }
-
             string list = args[0].ToLower();
             string keyword = args[1];
             string modifier = args.Length > 2 ? args[2] : "";
-
             if (list == "block" || list == "blocks")
             {
                 SearchBlocks(p, keyword, modifier);
@@ -67,8 +62,6 @@ namespace MCGalaxy.Commands.Info
                 Help(p);
             }
         }
-
-
         static void SearchBlocks(Player p, string keyword, string modifier)
         {
             List<ushort> blocks = new();
@@ -77,13 +70,11 @@ namespace MCGalaxy.Commands.Info
                 ushort block = (ushort)b;
                 if (Block.ExistsFor(p, block)) blocks.Add(block);
             }
-
             List<string> blockNames = Wildcard.Filter(blocks, keyword,
                                                       b => Block.GetName(p, b), null,
                                                       b => Block.GetColoredName(p, b));
             OutputList(p, keyword, "search blocks", "blocks", modifier, blockNames);
         }
-
         static void SearchCommands(Player p, string keyword, string modifier)
         {
             List<string> commands = Wildcard.Filter(allCmds, keyword, cmd => cmd.name,
@@ -91,24 +82,20 @@ namespace MCGalaxy.Commands.Info
             List<string> shortcuts = Wildcard.Filter(allCmds, keyword, cmd => cmd.shortcut,
                                                      cmd => !string.IsNullOrEmpty(cmd.shortcut),
                                                      GetColoredName);
-
             // Match both names and shortcuts
             foreach (string shortcutCmd in shortcuts)
             {
                 if (commands.CaselessContains(shortcutCmd)) continue;
                 commands.Add(shortcutCmd);
             }
-
             OutputList(p, keyword, "search commands", "commands", modifier, commands);
         }
-
         static void SearchRanks(Player p, string keyword, string modifier)
         {
             List<string> ranks = Wildcard.Filter(Group.GroupList, keyword, grp => grp.Name,
                                                 null, grp => grp.ColoredName);
             OutputList(p, keyword, "search ranks", "ranks", modifier, ranks);
         }
-
         static void SearchOnline(Player p, string keyword, string modifier)
         {
             Player[] online = PlayerInfo.Online.Items;
@@ -116,14 +103,12 @@ namespace MCGalaxy.Commands.Info
                                                   pl => p.CanSee(pl), pl => pl.ColoredName);
             OutputList(p, keyword, "search online", "players", modifier, players);
         }
-
         static void SearchLoaded(Player p, string keyword, string modifier)
         {
             Level[] loaded = LevelInfo.Loaded.Items;
             List<string> levels = Wildcard.Filter(loaded, keyword, level => level.name);
             OutputList(p, keyword, "search loaded", "loaded levels", modifier, levels);
         }
-
         static void SearchMaps(Player p, string keyword, string modifier)
         {
             string[] allMaps = LevelInfo.AllMapNames();
@@ -131,7 +116,6 @@ namespace MCGalaxy.Commands.Info
             maps.Sort(new AlphanumComparator());
             OutputList(p, keyword, "search levels", "maps", modifier, maps);
         }
-
         static void OutputList(Player p, string keyword, string cmd, string type, string modifier, List<string> items)
         {
             if (items.Count == 0)
@@ -143,22 +127,16 @@ namespace MCGalaxy.Commands.Info
                 Paginator.Output(p, items, item => item, cmd + " " + keyword, type, modifier);
             }
         }
-
-
         static void SearchPlayers(Player p, string keyword, string modifier)
         {
             List<string> names = new();
             string suffix = Database.Backend.CaselessLikeSuffix;
-
             // TODO supporting more than 100 matches somehow
             Database.ReadRows("Players", "Name", r => names.Add(r.GetText(0)),
                               "WHERE Name LIKE @0 ESCAPE '#' LIMIT 100" + suffix,
                               Wildcard.ToSQLFilter(keyword));
-
             OutputList(p, keyword, "search players", "players", modifier, names);
         }
-
-
         public override void Help(Player p)
         {
             p.Message("&T/Search [list] [keyword]");

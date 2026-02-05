@@ -98,10 +98,7 @@ namespace MCGalaxy.Gui
             }
             return (int)(c * 255);
         }
-        static double WeightedW3C(RGB rgb)
-        {
-            return rgb.R * 0.299 + rgb.G * 0.587 + rgb.B * 0.11;
-        }
+        static double WeightedW3C(RGB rgb) => rgb.R * 0.299 + rgb.G * 0.587 + rgb.B * 0.11;
         static HSV RGBToHSV(RGB rgb)
         {
             HSV hsv = default;

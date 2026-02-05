@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Eco;
-
 namespace MCGalaxy.Modules.Games.LS
 {
     sealed class LifeItem : SimpleItem
@@ -27,9 +23,7 @@ namespace MCGalaxy.Modules.Games.LS
             Enabled = true;
             Price = 20;
         }
-
         public override string Name { get { return "Life"; } }
-
         public override void OnPurchase(Player p, string args)
         {
             if (!LSGame.Instance.RoundInProgress)
@@ -37,15 +31,12 @@ namespace MCGalaxy.Modules.Games.LS
                 p.Message("You can only buy a life " +
                           "when a round of lava survival is in progress."); return;
             }
-
-            // TODO: Don't allow buying when Config.MaxLives == 0        
+            // TODO: Don't allow buying when Config.MaxLives == 0
             if (!CheckPrice(p)) return;
-
             LSGame.Instance.AddLives(p, 1, false);
             Economy.MakePurchase(p, Price, "%3Life:");
         }
     }
-
     sealed class SpongesItem : SimpleItem
     {
         public SpongesItem()
@@ -54,9 +45,7 @@ namespace MCGalaxy.Modules.Games.LS
             Enabled = true;
             Price = 2;
         }
-
         public override string Name { get { return "Sponges"; } }
-
         public override void OnPurchase(Player p, string args)
         {
             if (!LSGame.Instance.RoundInProgress)
@@ -65,7 +54,6 @@ namespace MCGalaxy.Modules.Games.LS
                           "when a round of lava survival is in progress."); return;
             }
             if (!CheckPrice(p)) return;
-
             // TODO avoid code duplication
             LSData data = LSGame.Get(p);
             data.SpongesLeft += 10;
@@ -73,7 +61,6 @@ namespace MCGalaxy.Modules.Games.LS
             Economy.MakePurchase(p, Price, "%3Sponges:");
         }
     }
-
     sealed class WaterItem : SimpleItem
     {
         public WaterItem()
@@ -82,9 +69,7 @@ namespace MCGalaxy.Modules.Games.LS
             Enabled = true;
             Price = 2;
         }
-
         public override string Name { get { return "Water"; } }
-
         public override void OnPurchase(Player p, string args)
         {
             if (!LSGame.Instance.RoundInProgress)
@@ -93,7 +78,6 @@ namespace MCGalaxy.Modules.Games.LS
                           "when a round of lava survival is in progress."); return;
             }
             if (!CheckPrice(p)) return;
-
             // TODO avoid code duplication
             LSData data = LSGame.Get(p);
             data.WaterLeft += 10;
@@ -101,7 +85,6 @@ namespace MCGalaxy.Modules.Games.LS
             Economy.MakePurchase(p, Price, "%3Water:");
         }
     }
-
     sealed class DoorsItem : SimpleItem
     {
         public DoorsItem()
@@ -110,9 +93,7 @@ namespace MCGalaxy.Modules.Games.LS
             Enabled = true;
             Price = 2;
         }
-
         public override string Name { get { return "Door"; } }
-
         public override void OnPurchase(Player p, string args)
         {
             if (!LSGame.Instance.RoundInProgress)
@@ -121,7 +102,6 @@ namespace MCGalaxy.Modules.Games.LS
                           "when a round of lava survival is in progress."); return;
             }
             if (!CheckPrice(p)) return;
-
             // TODO avoid code duplication
             LSData data = LSGame.Get(p);
             data.DoorsLeft += 6;

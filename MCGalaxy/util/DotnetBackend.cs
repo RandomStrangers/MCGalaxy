@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -22,14 +19,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 #endif
-
 namespace MCGalaxy.Platform
 {
 #if !MCG_DOTNET
     public static class DotNetBackend
     {
-        public static void Init() 
-        { 
+        public static void Init()
+        {
         }
         public static string GetExePath(string path)
         {
@@ -43,47 +39,47 @@ namespace MCGalaxy.Platform
 #else
     public static class DotNetBackend
     {
-        public static void Init() 
+        public static void Init()
         {
             NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), ImportResolver);
         }
-        static IntPtr ImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath) 
+        static IntPtr ImportResolver(string libraryName, Assembly assembly, DllImportSearchPath? searchPath)
         {
             IntPtr libHandle = IntPtr.Zero;
             // Since otherwise it's not always found on Linux
-            if (libraryName == "sqlite3") 
+            if (libraryName == "sqlite3")
             {
                 NativeLibrary.TryLoad("libsqlite3.so.0", assembly, DllImportSearchPath.System32, out libHandle);
             }
             return libHandle;
         }
-        public static string GetExePath(string path) 
+        public static string GetExePath(string path)
         {
             // NET core/5/6 executables tend to use the following structure:
             //   MCGalaxyCLI --> MCGalaxyCLI.dll
             // in this case, 'RestartPath' will include '.dll' since this file
             //  is actually the managed assembly, but we need to remove '.dll'
             //   as the actual executable which must be started is the non .dll file
-            if (path.CaselessEnds(".dll")) 
+            if (path.CaselessEnds(".dll"))
             {
                 path = path.Substring(0, path.Length - 4);
             }
             return path;
         }
-        public static Assembly ResolvePluginReference(string name) 
+        public static Assembly ResolvePluginReference(string name)
         {
             // When there is a .deps.json, dotnet won't automatically always try looking in application's directory to resolve references
             // https://learn.microsoft.com/en-us/dotnet/core/dependency-loading/default-probing?source=recommendations#how-are-the-properties-populated
-            try 
+            try
             {
                 AssemblyName assemName = new(name);
                 string path = assemName.Name + ".dll";
-                if (File.Exists(path)) 
+                if (File.Exists(path))
                 {
                     return Assembly.LoadFrom(path);
                 }
-            } 
-            catch (Exception ex) 
+            }
+            catch (Exception ex)
             {
                 Logger.LogError("Resolving plugin DLL reference", ex);
             }

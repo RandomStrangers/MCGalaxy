@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using System;
-
 namespace MCGalaxy.Maths
 {
     public static class DirUtils
@@ -37,7 +33,7 @@ namespace MCGalaxy.Maths
          *                             */
         public static void EightYaw(byte yaw, out int dirX, out int dirZ)
         {
-            dirX = 0; 
+            dirX = 0;
             dirZ = 0;
             const byte extent = 64 / 4 * 3;
             if (yaw < (0 + extent) || yaw > (256 - extent))
@@ -59,7 +55,7 @@ namespace MCGalaxy.Maths
         }
         public static void FourYaw(byte yaw, out int dirX, out int dirZ)
         {
-            dirX = 0; 
+            dirX = 0;
             dirZ = 0;
             const byte quadrant = 64 / 2;
             if (yaw <= (0 + quadrant) || yaw >= (256 - quadrant))
@@ -122,7 +118,7 @@ namespace MCGalaxy.Maths
             // b) Pitch will always be from 0-64 or 192-256, therefore flipped heads lost
             //    However since we have X/Z, this problem does not occur for yaw,
             //    as we can use both values to determine which side of unit circle yaw is in
-            // c) Resulting yaw/pitch may be 1 or 2 values off due to rounding            
+            // c) Resulting yaw/pitch may be 1 or 2 values off due to rounding
             yaw = (byte)(Math.Atan2(dir.X, -dir.Z) * rad2Packed);
             pitch = (byte)(Math.Asin(-dir.Y) * rad2Packed);
         }

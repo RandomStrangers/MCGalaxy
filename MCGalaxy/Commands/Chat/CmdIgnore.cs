@@ -1,23 +1,18 @@
 /*
     Written by Jack1312
-  
     Copyright 2011 MCForge
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-
 namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdIgnore : Command2
@@ -30,13 +25,11 @@ namespace MCGalaxy.Commands.Chatting
         {
             get { return new[] { new CommandAlias("Deafen", "all") }; }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
             string[] args = message.SplitSpaces();
             string action = args[0].ToLower();
-
             if (action == "all")
             {
                 Toggle(p, ref p.Ignores.All, "{0} ignoring all chat"); return;
@@ -72,7 +65,6 @@ namespace MCGalaxy.Commands.Chatting
             {
                 p.Ignores.Output(p); return;
             }
-
             if (p.Ignores.Names.CaselessRemove(action))
             {
                 p.Message("&aNo longer ignoring {0}", action);
@@ -85,7 +77,6 @@ namespace MCGalaxy.Commands.Chatting
                     if (matches == 0) p.Message("You must use the full name when unignoring offline players.");
                     return;
                 }
-
                 if (p.Ignores.Names.CaselessRemove(target.name))
                 {
                     p.Message("&aNo longer ignoring {0}", p.FormatNick(target));
@@ -98,7 +89,6 @@ namespace MCGalaxy.Commands.Chatting
             }
             p.Ignores.Save(p);
         }
-
         static void Toggle(Player p, ref bool ignore, string format)
         {
             ignore = !ignore;
@@ -112,7 +102,6 @@ namespace MCGalaxy.Commands.Chatting
             }
             p.Ignores.Save(p);
         }
-
         static void IgnoreIRCNick(Player p, string nick)
         {
             if (p.Ignores.IRCNicks.CaselessRemove(nick))
@@ -126,7 +115,6 @@ namespace MCGalaxy.Commands.Chatting
             }
             p.Ignores.Save(p);
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Ignore [name]");
@@ -135,7 +123,6 @@ namespace MCGalaxy.Commands.Chatting
             p.Message("&HUsing the same [name] again will unignore.");
             p.Message("&T/Ignore list &H- display what you're currently ignoring.");
         }
-
         public override void Help(Player p, string message)
         {
             if (!message.CaselessEq("special")) { Help(p); return; }

@@ -1,14 +1,11 @@
 /*
     Copyright 2011 MCForge
-        
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,7 +15,6 @@
 using MCGalaxy.SQL;
 using System;
 using System.Collections.Generic;
-
 namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdInbox : Command2
@@ -28,23 +24,20 @@ namespace MCGalaxy.Commands.Chatting
         public override bool SuperUseable { get { return false; } }
         public override bool UseableWhenFrozen { get { return true; } }
         public override CommandParallelism Parallelism { get { return CommandParallelism.NoAndWarn; } }
-
-        const int i_text = 0, i_sent = 1, i_from = 2;
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (!Database.TableExists("Inbox" + p.name))
             {
-                p.Message("Your inbox is empty."); return;
+                p.Message("Your inbox is empty.");
+                return;
             }
-
             List<string[]> entries = Database.GetRows("Inbox" + p.name, "Contents,TimeSent,PlayerFrom",
                                                       "ORDER BY TimeSent");
             if (entries.Count == 0)
             {
-                p.Message("Your inbox is empty."); return;
+                p.Message("Your inbox is empty.");
+                return;
             }
-
             string[] args = message.SplitSpaces(2);
             if (message.Length == 0)
             {
@@ -57,12 +50,11 @@ namespace MCGalaxy.Commands.Chatting
             {
                 if (args.Length == 1)
                 {
-                    p.Message("You need to provide either \"all\" or a number."); return;
+                    p.Message("You need to provide either \"all\" or a number.");
                 }
                 else if (args[1].CaselessEq("all"))
                 {
-                    int count = Database.DeleteRows("Inbox" + p.name, "");
-                    p.Message("Deleted all {0} messages.", count);
+                    DeleteAll(p);
                 }
                 else
                 {
@@ -74,12 +66,19 @@ namespace MCGalaxy.Commands.Chatting
                 OutputByID(p, message, entries);
             }
         }
-
+        static void DeleteAll(Player p)
+        {
+            string sql = SqlUtils.WithTable("DELETE FROM {table}", "Inbox" + p.name);
+            int count = Database.Execute(sql);
+            p.Message("Deleted all {0} messages.", count);
+        }
         static void DeleteByID(Player p, string value, List<string[]> entries)
         {
             int num = 1;
-            if (!CommandParser.GetInt(p, value, "Message number", ref num, 1)) return;
-
+            if (!CommandParser.GetInt(p, value, "Message number", ref num, 1))
+            {
+                return;
+            }
             if (num > entries.Count)
             {
                 p.Message("Message #{0} does not exist.", num);
@@ -87,17 +86,18 @@ namespace MCGalaxy.Commands.Chatting
             else
             {
                 string[] entry = entries[num - 1];
-                Database.DeleteRows("Inbox" + p.name,
-                                    "WHERE PlayerFrom=@0 AND TimeSent=@1", entry[i_from], entry[i_sent]);
+                string sql = SqlUtils.WithTable("DELETE FROM {table} WHERE PlayerFrom=@0 AND TimeSent=@1", "Inbox" + p.name);
+                Database.Execute(sql, entry[2], entry[1]);
                 p.Message("Deleted message #{0}", num);
             }
         }
-
         static void OutputByID(Player p, string value, List<string[]> entries)
         {
             int num = 1;
-            if (!CommandParser.GetInt(p, value, "Message number", ref num, 1)) return;
-
+            if (!CommandParser.GetInt(p, value, "Message number", ref num, 1))
+            {
+                return;
+            }
             if (num > entries.Count)
             {
                 p.Message("Message #{0} does not exist.", num);
@@ -107,17 +107,14 @@ namespace MCGalaxy.Commands.Chatting
                 Output(p, num, entries[num - 1]);
             }
         }
-
         static void Output(Player p, int num, string[] entry)
         {
-            DateTime time = Database.ParseDBDate(entry[i_sent]);
+            DateTime time = Database.ParseDBDate(entry[1]);
             TimeSpan delta = DateTime.Now - time;
-            string sender = p.FormatNick(entry[i_from]);
-
+            string sender = p.FormatNick(entry[2]);
             p.Message("{0}) From {1} &a{2} ago:", num, sender, delta.Shorten());
-            p.Message("  {0}", entry[i_text]);
+            p.Message("  {0}", entry[0]);
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Inbox");

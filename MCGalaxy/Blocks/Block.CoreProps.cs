@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,15 +14,12 @@
  */
 using MCGalaxy.Blocks;
 using System.Collections.Generic;
-
-
 namespace MCGalaxy
 {
     public static partial class Block
     {
         public static BlockProps[] Props = new BlockProps[SUPPORTED_COUNT];
         public static Dictionary<string, byte> Aliases = new();
-
         internal static BlockProps MakeDefaultProps(ushort b)
         {
             BlockProps props = BlockProps.MakeEmpty();
@@ -33,7 +27,6 @@ namespace MCGalaxy
             {
                 props.OPBlock = true;
             }
-
             if ((b >= tDoor_Log && b <= tDoor_Green) || (b >= tDoor_TNT && b <= tDoor_Lava))
             {
                 props.IsTDoor = true;
@@ -46,7 +39,6 @@ namespace MCGalaxy
             {
                 props.IsPortal = true;
             }
-
             // oDoor blocks
             if (b >= oDoor_Log && b <= oDoor_Wood)
             {
@@ -64,11 +56,9 @@ namespace MCGalaxy
             {
                 props.oDoorBlock = (ushort)(oDoor_Green + (b - oDoor_Green_air));
             }
-
             // Water/Lava kills
             props.LavaKills = b == Wood || b == Log
                 || b == Sponge || b == Bookshelf || b == Leaves || b == Crate;
-
             if ((b >= Red && b <= White) || (b >= LightPink && b <= Turquoise))
             {
                 props.LavaKills = true;
@@ -78,23 +68,19 @@ namespace MCGalaxy
                 props.LavaKills = true;
                 props.WaterKills = true;
             }
-
             props.IsDoor = IsDoor(b);
             props.AnimalAI = GetAI(b);
             props.IsRails = b == Red || b == Op_Air;
-
             props.Drownable = b >= Water && b <= StillLava;
             if (b == Water || b == StillWater) props.DeathMessage = "@p &S&cdrowned.";
             if (b == Lava || b == StillLava) props.DeathMessage = "@p &Sburnt to a &ccrisp.";
             if (b == Air) props.DeathMessage = "@p &Shit the floor &chard.";
-
             string deathMsg = GetDeathMessage(b);
             if (deathMsg != null)
             {
                 props.DeathMessage = deathMsg;
                 props.KillerBlock = true;
             }
-
             // Block specific properties
             if (b == Slab) props.StackBlock = DoubleSlab;
             if (b == CobblestoneSlab) props.StackBlock = Cobblestone;
@@ -102,7 +88,6 @@ namespace MCGalaxy
             if (b == Grass) props.DirtBlock = Dirt;
             return props;
         }
-
         static bool IsDoor(ushort b)
         {
             if (b >= Door_Obsidian && b <= Door_Slab) return true;
@@ -111,29 +96,23 @@ namespace MCGalaxy
             if (b >= Door_Air && b <= Door_Lava) return true;
             return b == Door_Cobblestone || b == Door_Red || b == Door_Log || b == Door_Gold;
         }
-
         static AnimalAI GetAI(ushort b)
         {
             if (b == Bird_Black || b == Bird_White || b == Bird_Lava || b == Bird_Water) return AnimalAI.Fly;
             if (b == Bird_Red || b == Bird_Blue || b == Bird_Killer) return AnimalAI.KillerAir;
-
             if (b == Fish_Betta || b == Fish_Shark) return AnimalAI.KillerWater;
             if (b == Fish_LavaShark) return AnimalAI.KillerLava;
             if (b == Fish_Gold || b == Fish_Salmon || b == Fish_Sponge) return AnimalAI.FleeWater;
-
             return AnimalAI.None;
         }
-
         static string GetDeathMessage(ushort b)
         {
             if (b == TNT_Explosion) return "@p &S&cblew into pieces.";
             if (b == Deadly_Air) return "@p &Swalked into &cnerve gas and suffocated.";
-
             if (b == Deadly_Water || b == Deadly_ActiveWater)
                 return "@p &Sstepped in &dcold water and froze.";
             if (b == Deadly_Lava || b == Deadly_ActiveLava || b == Deadly_FastLava)
                 return "@p &Sstood in &cmagma and melted.";
-
             if (b == Magma) return "@p &Swas hit by &cflowing magma and melted.";
             if (b == Geyser) return "@p &Swas hit by &cboiling water and melted.";
             if (b == Bird_Killer) return "@p &Swas hit by a &cphoenix and burnt.";
@@ -145,16 +124,13 @@ namespace MCGalaxy
             if (b == Creeper) return "@p &Swas killed &cb-SSSSSSSSSSSSSS";
             if (b == Fish_LavaShark) return "@p &Swas eaten by a ... LAVA SHARK?!";
             if (b == Snake) return "@p &Swas bit by a deadly snake.";
-
             return null;
         }
-
         internal static void SetDefaultNames()
         {
             Aliases.Clear();
             SetDefaultAliases();
             int start = 0;
-
             // Using a single const string reduces size by 2KB
             const string default_names =
                 "Air@Stone@Grass@Dirt@Cobblestone@Wood@Sapling@Bedrock@" +
@@ -189,20 +165,17 @@ namespace MCGalaxy
                 "Zombie@Zombie_Head@@Dove@Pidgeon@Duck@Phoenix@Red_Robin@" +
                 "Blue_Bird@@Killer_Phoenix@@@GoldFish@Sea_Sponge@Shark@" +
                 "Salmon@Betta_Fish@Lava_Shark@Snake@Snake_Tail@Door_Gold@@@";
-
             for (int b = 0; b < CORE_COUNT; b++)
             {
                 int end = default_names.IndexOf('@', start);
                 string name = start == end ? "unknown" : default_names.Substring(start, end - start);
                 start = end + 1;
-
                 if (b > 0 && b < CPE_COUNT)
                 {
                     BlockDefinition def = BlockDefinition.GlobalDefs[b];
                     if (def != null) name = def.Name;
                 }
                 coreNames[b] = name;
-
                 name = name.ToLower();
                 if (name != "unknown")
                     Aliases[name] = (byte)b;
@@ -210,7 +183,6 @@ namespace MCGalaxy
                     Aliases[name.Replace("_", "")] = (byte)b;
             }
         }
-
         static void SetDefaultAliases()
         {
             Dictionary<string, byte> aliases = Aliases;
@@ -230,7 +202,6 @@ namespace MCGalaxy
             aliases["activelava"] = Lava; aliases["fhl"] = Deadly_FastLava;
             aliases["water_door"] = Door_Water; aliases["lava_door"] = Door_Lava;
             aliases["acw"] = Deadly_ActiveWater; aliases["ahl"] = Deadly_ActiveLava;
-
             aliases["door_tree"] = Door_Log; aliases["door2"] = Door_Obsidian;
             aliases["door3"] = Door_Glass; aliases["door4"] = Door_Stone;
             aliases["door5"] = Door_Leaves; aliases["door6"] = Door_Sand;
@@ -240,7 +211,6 @@ namespace MCGalaxy
             aliases["door13"] = Door_Grass; aliases["door14"] = Door_Blue;
             aliases["door15"] = Door_Bookshelf; aliases["door16"] = Door_Gold;
             aliases["door17"] = Door_Cobblestone; aliases["door18"] = Door_Red;
-
             aliases["tdoor_tree"] = tDoor_Log; aliases["tdoor2"] = tDoor_Obsidian;
             aliases["tdoor3"] = tDoor_Glass; aliases["tdoor4"] = tDoor_Stone;
             aliases["tdoor5"] = tDoor_Leaves; aliases["tdoor6"] = tDoor_Sand;
@@ -248,14 +218,12 @@ namespace MCGalaxy
             aliases["tdoor9"] = tDoor_TNT; aliases["tdoor10"] = tDoor_Slab;
             aliases["tair_switch"] = tDoor_Air; aliases["tdoor11"] = tDoor_Air;
             aliases["tdoor12"] = tDoor_Water; aliases["tdoor13"] = tDoor_Lava;
-
             aliases["odoor_tree"] = oDoor_Log; aliases["odoor2"] = oDoor_Obsidian;
             aliases["odoor3"] = oDoor_Glass; aliases["odoor4"] = oDoor_Stone;
             aliases["odoor5"] = oDoor_Leaves; aliases["odoor6"] = oDoor_Sand;
             aliases["odoor7"] = oDoor_Wood; aliases["odoor8"] = oDoor_Green;
             aliases["odoor9"] = oDoor_TNT; aliases["odoor10"] = oDoor_Slab;
             aliases["odoor11"] = oDoor_Lava; aliases["odoor12"] = oDoor_Water;
-
             aliases["steps"] = Slab; aliases["double_steps"] = DoubleSlab;
             aliases["step"] = Slab; aliases["double_step"] = DoubleSlab;
             aliases["grey"] = Gray; aliases["door_darkgray"] = Door_Black;

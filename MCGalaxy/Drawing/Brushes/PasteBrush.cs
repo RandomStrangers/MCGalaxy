@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,23 +14,17 @@
  */
 using MCGalaxy.DB;
 using MCGalaxy.Drawing.Ops;
-
-
 namespace MCGalaxy.Drawing.Brushes
 {
     public class SimplePasteBrush : Brush
     {
         readonly CopyState state;
-
         public SimplePasteBrush(CopyState state) { this.state = state; }
-
         public override string Name { get { return "Paste"; } }
-
         public override void Configure(DrawOp op, Player p)
         {
             op.Flags = BlockDBFlags.Pasted;
         }
-
         public override ushort NextBlock(DrawOp op)
         {
             // Figure out local coords for this block
@@ -43,23 +34,18 @@ namespace MCGalaxy.Drawing.Brushes
             if (y < 0) y += state.Height;
             int z = (op.Coords.Z - op.Min.Z) % state.Length;
             if (z < 0) z += state.Length;
-
             int index = (y * state.Length + z) * state.Width + x;
             return state.Get(index);
         }
     }
-
     public sealed class PasteBrush : SimplePasteBrush
     {
         public ushort[] Include;
-
         public PasteBrush(CopyState state) : base(state) { }
-
         public override ushort NextBlock(DrawOp op)
         {
             ushort block = base.NextBlock(op);
             ushort[] include = Include; // local var to avoid JIT bounds check
-
             for (int i = 0; i < include.Length; i++)
             {
                 if (block == include[i]) return block;
@@ -67,18 +53,14 @@ namespace MCGalaxy.Drawing.Brushes
             return Block.Invalid;
         }
     }
-
     public sealed class PasteNotBrush : SimplePasteBrush
     {
         public ushort[] Exclude;
-
         public PasteNotBrush(CopyState state) : base(state) { }
-
         public override ushort NextBlock(DrawOp op)
         {
             ushort block = base.NextBlock(op);
             ushort[] exclude = Exclude; // local var to avoid JIT bounds check
-
             for (int i = 0; i < exclude.Length; i++)
             {
                 if (block == exclude[i]) return Block.Invalid;

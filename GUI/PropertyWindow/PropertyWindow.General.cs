@@ -65,11 +65,10 @@ namespace MCGalaxy.Gui
             {
                 return;
             }
-            if (Popup.OKCancel(warnMsg, "Security warning"))
+            if (!Popup.OKCancel(warnMsg, "Security warning"))
             {
-                return;
+                adv_chkVerify.Checked = true;
             }
-            adv_chkVerify.Checked = true;
         }
         void NumPlayers_ValueChanged(object sender, EventArgs e)
         {
@@ -79,12 +78,7 @@ namespace MCGalaxy.Gui
             }
             srv_numGuests.Maximum = srv_numPlayers.Value;
         }
-        void ChkPort_Click(object sender, EventArgs e)
-        {
-            int port = (int)srv_numPort.Value;
-            using PortTools form = new(port);
-            form.ShowDialog();
-        }
+        void ChkPort_Click(object sender, EventArgs e) => new PortTools((int)srv_numPort.Value).ShowDialog();
         void ForceUpdateBtn_Click(object sender, EventArgs e)
         {
             srv_btnForceUpdate.Enabled = false;

@@ -1,16 +1,12 @@
 /*
     Copyright 2010 MCLawl Team - Written by Valek (Modified by MCGalaxy)
-
     Edited for use with MCGalaxy
- 
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -34,7 +30,7 @@ namespace MCGalaxy.Modules.Compiling
             return compiler.Compile(srcPaths, dstPath, referenced);
         }
 #else
-        protected override ICompilerErrors DoCompile(string[] srcPaths, string dstPath) 
+        protected override ICompilerErrors DoCompile(string[] srcPaths, string dstPath)
         {
             List<string> referenced = ProcessInput(srcPaths, "//");
             referenced.Add("System.Collections.dll");    // needed for List<> etc
@@ -43,9 +39,9 @@ namespace MCGalaxy.Modules.Compiling
             CommandLineCompiler compiler = new RoslynCSharpCompiler();
             return compiler.Compile(srcPaths, dstPath, referenced);
         }
-        protected override void ProcessInputLine(string line, List<string> referenced) 
+        protected override void ProcessInputLine(string line, List<string> referenced)
         {
-            if (!line.CaselessStarts("//dotnetref")) 
+            if (!line.CaselessStarts("//dotnetref"))
             {
                 return;
             }
@@ -80,7 +76,7 @@ public class Cmd{0} : Command
 \t//   LevelPermission.Operator, LevelPermission.Admin, LevelPermission.Owner
 \tpublic override LevelPermission defaultRank {{ get {{ return LevelPermission.Guest; }} }}
 \t// This is for when a player executes this command by doing /{0}
-\t//   p is the player object for the player executing the command. 
+\t//   p is the player object for the player executing the command.
 \t//   message is the arguments given to the command. (e.g. for '/{0} this', message is ""this"")
 \tpublic override void Use(Player p, string message)
 \t{{

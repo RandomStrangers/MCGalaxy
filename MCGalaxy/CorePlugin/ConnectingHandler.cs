@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
 Dual-licensed under the Educational Community License, Version 2.0 and
 the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -15,19 +15,16 @@ permissions and limitations under the Licenses.
 using MCGalaxy.Authentication;
 using MCGalaxy.Network;
 using System;
-
 namespace MCGalaxy.Core
 {
     internal static class ConnectingHandler
     {
-
         internal static void HandleConnecting(Player p, string mppass)
         {
             if (p.cancelconnecting) return;
             bool success = HandleConnectingCore(p, mppass);
             if (!success) p.cancelconnecting = true;
         }
-
         static bool HandleConnectingCore(Player p, string mppass)
         {
             if (!LoginAuthenticator.VerifyLogin(p, mppass))
@@ -35,28 +32,23 @@ namespace MCGalaxy.Core
                 p.Leave(null, "Login failed! Close the game and sign in again.", true); return false;
             }
             if (!CheckTempban(p)) return false;
-
             if (Server.Config.WhitelistedOnly && !Server.whiteList.Contains(p.name))
             {
                 p.Leave(null, Server.Config.DefaultWhitelistMessage, true);
                 return false;
             }
-
             p.group = Group.GroupIn(p.name);
             if (!CheckBanned(p)) return false;
             if (!CheckPlayersCount(p)) return false;
             return true;
         }
-
         static bool CheckTempban(Player p)
         {
             try
             {
                 string data = Server.tempBans.Get(p.name);
                 if (string.IsNullOrEmpty(data)) return true;
-
                 Ban.UnpackTempBanData(data, out string reason, out string banner, out DateTime expiry);
-
                 if (expiry < DateTime.UtcNow)
                 {
                     Server.tempBans.Remove(p.name);
@@ -66,7 +58,6 @@ namespace MCGalaxy.Core
                 {
                     reason = reason.Length == 0 ? "" : " (" + reason + ")";
                     string delta = (expiry - DateTime.UtcNow).Shorten(true);
-
                     p.Kick(null, "Banned by " + banner + " for another " + delta + reason, true);
                     return false;
                 }
@@ -74,18 +65,15 @@ namespace MCGalaxy.Core
             catch { } // TODO log error
             return true;
         }
-
         static bool CheckPlayersCount(Player p)
         {
             if (Server.vip.Contains(p.name)) return true;
-
             Player[] online = PlayerInfo.Online.Items;
             if (online.Length >= Server.Config.MaxPlayers && !IPUtil.IsPrivate(p.IP))
             {
                 p.Leave(null, "Server full!", true); return false;
             }
             if (p.Rank > LevelPermission.Guest) return true;
-
             online = PlayerInfo.Online.Items;
             int guests = 0;
             foreach (Player pl in online)
@@ -93,13 +81,11 @@ namespace MCGalaxy.Core
                 if (pl.Rank <= LevelPermission.Guest) guests++;
             }
             if (guests < Server.Config.MaxGuests) return true;
-
             if (Server.Config.GuestLimitNotify) Chat.MessageOps("Guest " + p.truename + " couldn't log in - too many guests.");
             Logger.Log(LogType.Warning, "Guest {0} couldn't log in - too many guests.", p.truename);
             p.Leave(null, "Server has reached max number of guests", true);
             return false;
         }
-
         static bool CheckBanned(Player p)
         {
             string ipban = Server.bannedIP.Get(p.ip);
@@ -111,7 +97,6 @@ namespace MCGalaxy.Core
             }
             if (p.Rank != LevelPermission.Banned) return true;
             Ban.GetBanData(p.name, out string banner, out string reason, out _, out _);
-
             if (banner != null)
             {
                 p.Kick(null, "Banned by " + banner + ": " + reason, true);

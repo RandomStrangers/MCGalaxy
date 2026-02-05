@@ -1,16 +1,12 @@
 /*
     Copyright 2011 MCForge
-    
     Author: fenderrock87
-    
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -22,7 +18,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-
 namespace MCGalaxy
 {
     /// <summary> Converts an object into a string. </summary>
@@ -44,7 +39,7 @@ namespace MCGalaxy
         {
             return value.Split(space, maxParts);
         }
-        /// <summary> Works like value.Split(' '), removing first 'startCount' and last 'endCount' elements, 
+        /// <summary> Works like value.Split(' '), removing first 'startCount' and last 'endCount' elements,
         /// then joining the leftover elements together again. </summary>
         /// <example> "abc def ghi xyz".Splice(1, 1) becomes "def ghi" </example>
         /// <example> "abc def ghi xyz".Splice(0, 3) becomes "abc" </example>
@@ -88,12 +83,12 @@ namespace MCGalaxy
                 start = end + 1;
             }
             // If not enough split strings, set remaining to null
-            for (; i < split.Length; i++) 
-            { 
-                split[i] = null; 
+            for (; i < split.Length; i++)
+            {
+                split[i] = null;
             }
         }
-        /// <summary> Trims spaces then calls Split(','). However, returns an empty array on empty input, 
+        /// <summary> Trims spaces then calls Split(','). However, returns an empty array on empty input,
         /// instead of a array consisting of "" that a .Split() call would. </summary>
         public static string[] SplitComma(this string str)
         {
@@ -119,8 +114,8 @@ namespace MCGalaxy
             prefix = index == -1 ? str : str.Substring(0, index);
             suffix = index == -1 ? "" : str.Substring(index + 1);
         }
-        public static string Plural(this int value) 
-        { 
+        public static string Plural(this int value)
+        {
             return value != 1 ? "s" : "";
         }
         public static byte[] GZip(this byte[] bytes)
@@ -188,21 +183,21 @@ namespace MCGalaxy
             return builder.ToString();
         }
         const StringComparison comp = StringComparison.OrdinalIgnoreCase;
-        public static bool CaselessEq(this string a, string b) 
+        public static bool CaselessEq(this string a, string b)
         {
-            return a.Equals(b, comp); 
+            return a.Equals(b, comp);
         }
-        public static bool CaselessStarts(this string a, string b) 
+        public static bool CaselessStarts(this string a, string b)
         {
-            return a.StartsWith(b, comp); 
+            return a.StartsWith(b, comp);
         }
-        public static bool CaselessEnds(this string a, string b) 
+        public static bool CaselessEnds(this string a, string b)
         {
-            return a.EndsWith(b, comp); 
+            return a.EndsWith(b, comp);
         }
-        public static bool CaselessContains(this string a, string b) 
+        public static bool CaselessContains(this string a, string b)
         {
-            return a.IndexOf(b, comp) >= 0; 
+            return a.IndexOf(b, comp) >= 0;
         }
         public static bool CaselessContains(this List<string> items, string value)
         {
@@ -234,7 +229,7 @@ namespace MCGalaxy
                 {
                     continue;
                 }
-                items.RemoveAt(i); 
+                items.RemoveAt(i);
                 return true;
             }
             return false;

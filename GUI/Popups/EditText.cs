@@ -29,32 +29,28 @@ namespace MCGalaxy.Gui.Popups
             }
             cmbList.Text = "Select file..";
         }
-        void EditText_Load(object sender, EventArgs e)
-        {
-            GuiUtils.SetIcon(this);
-        }
+        void EditText_Load(object sender, EventArgs e) => GuiUtils.SetIcon(this);
         void CmbList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbList.SelectedIndex == -1)
+            if (cmbList.SelectedIndex != -1)
             {
-                return;
-            }
-            TrySaveChanges();
-            string selectedName = cmbList.SelectedItem.ToString();
-            curFile = TextFile.Files[selectedName];
-            try
-            {
-                curFile.EnsureExists();
-                txtEdit.Lines = curFile.GetText();
-                Text = "Editing " + curFile.Filename;
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                Popup.Error("Failed to read text from " + curFile.Filename);
-                curFile = null;
-                cmbList.Text = "";
-                Text = "Editing (none)";
+                TrySaveChanges();
+                string selectedName = cmbList.SelectedItem.ToString();
+                curFile = TextFile.Files[selectedName];
+                try
+                {
+                    curFile.EnsureExists();
+                    txtEdit.Lines = curFile.GetText();
+                    Text = "Editing " + curFile.Filename;
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex);
+                    Popup.Error("Failed to read text from " + curFile.Filename);
+                    curFile = null;
+                    cmbList.Text = "";
+                    Text = "Editing (none)";
+                }
             }
         }
         void SaveChanges(string[] lines)
@@ -64,18 +60,16 @@ namespace MCGalaxy.Gui.Popups
         }
         void TrySaveChanges()
         {
-            if (curFile == null)
+            if (curFile != null)
             {
-                return;
-            }
-            string[] lines = txtEdit.Lines;
-            if (!HasChanged(lines))
-            {
-                return;
-            }
-            if (Popup.YesNo("Save changes to " + curFile.Filename + "?", "Save changes"))
-            {
-                SaveChanges(lines);
+                string[] lines = txtEdit.Lines;
+                if (HasChanged(lines))
+                {
+                    if (Popup.YesNo("Save changes to " + curFile.Filename + "?", "Save changes"))
+                    {
+                        SaveChanges(lines);
+                    }
+                }
             }
         }
         bool HasChanged(string[] lines)
@@ -98,11 +92,10 @@ namespace MCGalaxy.Gui.Popups
         {
             using ColorSelector sel = new("Insert color", '\0');
             DialogResult result = sel.ShowDialog();
-            if (result == DialogResult.Cancel)
+            if (result != DialogResult.Cancel)
             {
-                return;
+                InsertText("&" + sel.ColorCode);
             }
-            InsertText("&" + sel.ColorCode);
         }
         void BtnToken_Click(object sender, EventArgs e)
         {
@@ -124,17 +117,13 @@ namespace MCGalaxy.Gui.Popups
             }
             txtEdit.Focus();
         }
-        void EditTxt_Unload(object sender, EventArgs e)
-        {
-            TrySaveChanges();
-        }
+        void EditTxt_Unload(object sender, EventArgs e) => TrySaveChanges();
         void BtnSave_Click(object sender, EventArgs e)
         {
-            if (curFile == null)
+            if (curFile != null)
             {
-                return;
+                SaveChanges(txtEdit.Lines);
             }
-            SaveChanges(txtEdit.Lines);
         }
     }
 }

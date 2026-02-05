@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2011 MCForge
-        
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using System.Collections.Generic;
-
 namespace MCGalaxy.Modules.Relay.IRC
 {
     /// <summary> Manages a list of IRC nicks and asssociated permissions </summary>
@@ -24,15 +20,12 @@ namespace MCGalaxy.Modules.Relay.IRC
     {
         readonly Dictionary<string, List<string>> userMap = new();
         public IRCBot bot;
-
         public void Clear() { userMap.Clear(); }
-
         public void OnLeftChannel(string userNick, string channel)
         {
             List<string> chanNicks = GetNicks(channel);
             RemoveNick(userNick, chanNicks);
         }
-
         public void OnLeft(string userNick)
         {
             foreach (KeyValuePair<string, List<string>> chans in userMap)
@@ -40,7 +33,6 @@ namespace MCGalaxy.Modules.Relay.IRC
                 RemoveNick(userNick, chans.Value);
             }
         }
-
         public void OnChangedNick(string userNick, string newNick)
         {
             foreach (KeyValuePair<string, List<string>> chans in userMap)
@@ -58,27 +50,22 @@ namespace MCGalaxy.Modules.Relay.IRC
                 }
             }
         }
-
         public void UpdateFor(string channel, string[] nicks)
         {
             List<string> chanNicks = GetNicks(channel);
             foreach (string n in nicks)
                 UpdateNick(n, chanNicks);
         }
-
-
         List<string> GetNicks(string channel)
         {
             foreach (KeyValuePair<string, List<string>> chan in userMap)
             {
                 if (chan.Key.CaselessEq(channel)) return chan.Value;
             }
-
             List<string> nicks = new();
             userMap[channel] = nicks;
             return nicks;
         }
-
         void UpdateNick(string n, List<string> chanNicks)
         {
             string unprefixNick = Unprefix(n);
@@ -91,18 +78,15 @@ namespace MCGalaxy.Modules.Relay.IRC
             }
             chanNicks.Add(n);
         }
-
         void RemoveNick(string n, List<string> chanNicks)
         {
             int index = GetNickIndex(n, chanNicks);
             if (index >= 0) chanNicks.RemoveAt(index);
         }
-
         int GetNickIndex(string n, List<string> chanNicks)
         {
             if (chanNicks == null) return -1;
             string unprefixNick = Unprefix(n);
-
             for (int i = 0; i < chanNicks.Count; i++)
             {
                 if (unprefixNick == Unprefix(chanNicks[i]))
@@ -110,17 +94,14 @@ namespace MCGalaxy.Modules.Relay.IRC
             }
             return -1;
         }
-
         string Unprefix(string nick)
         {
             return nick.Substring(GetPrefixLength(nick));
         }
-
         string GetPrefix(string nick)
         {
             return nick.Substring(0, GetPrefixLength(nick));
         }
-
         int GetPrefixLength(string nick)
         {
             int prefixChars = 0;
@@ -133,25 +114,20 @@ namespace MCGalaxy.Modules.Relay.IRC
             }
             return prefixChars;
         }
-
         bool IsNickChar(char c)
         {
             return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
                 c == '[' || c == ']' || c == '{' || c == '}' || c == '^' || c == '`' || c == '_' || c == '|';
         }
-
         public bool VerifyNick(string channel, string userNick, ref string error, ref bool foundAtAll)
         {
             List<string> chanNicks = GetNicks(channel);
             if (chanNicks.Count == 0) return false;
-
             int index = GetNickIndex(userNick, chanNicks);
             if (index == -1) return false;
             foundAtAll = true;
-
             IRCControllerVerify verify = Server.Config.IRCVerify;
             if (verify == IRCControllerVerify.None) return true;
-
             if (verify == IRCControllerVerify.HalfOp)
             {
                 string prefix = GetPrefix(chanNicks[index]);
@@ -167,7 +143,6 @@ namespace MCGalaxy.Modules.Relay.IRC
                 {
                     chanNicks = GetNicks(chan);
                     if (chanNicks.Count == 0) continue;
-
                     index = GetNickIndex(userNick, chanNicks);
                     if (index != -1) return true;
                 }
@@ -176,4 +151,3 @@ namespace MCGalaxy.Modules.Relay.IRC
         }
     }
 }
-

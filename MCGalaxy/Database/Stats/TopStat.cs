@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,38 +15,29 @@
 using MCGalaxy.SQL;
 using System;
 using System.Collections.Generic;
-
 namespace MCGalaxy.DB
 {
     /// <summary> Formats a raw stat value </summary>
     public delegate string TopStatFormatter(string input);
-
     public struct TopResult { public string Name, Value; }
-
     /// <summary> Outputs ordered stats from an underlying data source </summary>
     /// <example> Most TopStats are read from a column in a database table </example>
     public abstract class TopStat
     {
         public string Identifier, Title;
         public TopStatFormatter Formatter;
-
         public TopStat(string identifier, string title, TopStatFormatter formatter)
         {
             Identifier = identifier;
             Title = title;
             Formatter = formatter;
         }
-
-
         public virtual string FormatName(Player p, string name)
         {
             return p.FormatNick(name);
         }
-
         /// <summary> Retrieves unformatted results from the underlying data source </summary>
         public abstract List<TopResult> GetResults(int maxResults, int offset);
-
-
         public static TopStat Find(string name)
         {
             foreach (TopStat stat in stats)
@@ -58,23 +46,18 @@ namespace MCGalaxy.DB
             }
             return null;
         }
-
         public static void List(Player p)
         {
             p.Message("&f" + stats.Join(stat => stat.Identifier));
         }
-
         public static void Register(TopStat stat)
         {
             stats.Add(stat);
         }
-
         public static void Unregister(TopStat stat)
         {
             stats.Remove(stat);
         }
-
-
         static readonly List<TopStat> stats = new() {
             new DBTopStat("Logins", "Most logins", "Players",
                         PlayerData.ColumnLogins, FormatInteger),
@@ -109,20 +92,16 @@ namespace MCGalaxy.DB
             new DBTopStat("Messages", "Most messages written", "Players",
                         PlayerData.ColumnMessages, FormatInteger),
         };
-
-
         public static string FormatInteger(string input)
         {
             long value = PlayerData.ParseLong(input);
             return value.ToString("N0");
         }
-
         public static string FormatTimespan(string input)
         {
             long value = PlayerData.ParseLong(input);
             return TimeSpan.FromSeconds(value).Shorten(true);
         }
-
         public static string FormatDate(string input)
         {
             DateTime time = Database.ParseDBDate(input);
@@ -130,35 +109,28 @@ namespace MCGalaxy.DB
             return string.Format("{0:H:mm} on {0:d} ({1} ago)", time, delta.Shorten());
         }
     }
-
     public class DBTopStat : TopStat
     {
         public string Table, Column, OrderBy;
-
         public DBTopStat(string identifier, string title, string table, string column,
                          TopStatFormatter formatter, bool ascending = false, string orderBy = null)
                         : base(identifier, title, formatter)
         {
             Table = table;
             Column = column;
-
             OrderBy = orderBy;
             OrderBy ??= " " + column + " ";
             OrderBy += ascending ? "asc" : "desc";
         }
-
-
         public override List<TopResult> GetResults(int maxResults, int offset)
         {
             string limit = " LIMIT " + offset + "," + maxResults;
             List<TopResult> stats = new();
-
             Database.ReadRows(Table, "DISTINCT Name, " + Column,
                               record => stats.Add(ParseRow(record)),
                               "ORDER BY" + OrderBy + limit);
             return stats;
         }
-
         static TopResult ParseRow(ISqlRecord record)
         {
             TopResult result;

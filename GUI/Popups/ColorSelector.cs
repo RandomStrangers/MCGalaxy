@@ -33,31 +33,27 @@ namespace MCGalaxy.Gui.Popups
             UpdateBaseLayout();
             ResumeLayout(false);
         }
-        void ColorSelector_Load(object sender, EventArgs e)
-        {
-            GuiUtils.SetIcon(this);
-        }
-        const int btnWidth = 130, btnHeight = 40, btnsPerCol = 8;
+        void ColorSelector_Load(object sender, EventArgs e) => GuiUtils.SetIcon(this);
         int index = 0;
         void MakeButton(char colCode)
         {
-            int row = index / btnsPerCol, col = index % btnsPerCol;
+            int row = index / 8, col = index % 8;
             index++;
             Button btn = new()
             {
                 BackColor = LookupColor(colCode, out Color textCol),
                 ForeColor = textCol,
-                Location = new(9 + row * btnWidth, 7 + col * btnHeight),
-                Size = new(btnWidth, btnHeight),
+                Location = new(9 + row * 130, 7 + col * 40),
+                Size = new(130, 40),
                 Name = "b" + index,
                 TabIndex = index,
                 Text = Colors.Name(colCode) + " - " + colCode
             };
-            btn.Click += delegate 
+            btn.Click += delegate
             {
                 ColorCode = colCode;
-                DialogResult = DialogResult.OK; 
-                Close(); 
+                DialogResult = DialogResult.OK;
+                Close();
             };
             btn.Margin = new(0);
             btn.UseVisualStyleBackColor = false;
@@ -66,22 +62,22 @@ namespace MCGalaxy.Gui.Popups
         }
         void UpdateBaseLayout()
         {
-            int rows = index / btnsPerCol;
-            if ((index % btnsPerCol) != 0)
+            int rows = index / 8;
+            if ((index % 8) != 0)
             {
                 rows++;
             }
             int x;
             if ((rows & 1) == 0)
             {
-                x = rows * btnWidth / 2 - (100 / 2);
+                x = rows * 130 / 2 - (100 / 2);
             }
             else
             {
-                x = (rows / 2 * btnWidth) + (btnWidth - 100) / 2;
+                x = (rows / 2 * 130) + 30 / 2;
             }
-            btnCancel.Location = new(8 + x, 12 + btnHeight * btnsPerCol);
-            ClientSize = new(18 + btnWidth * rows, 47 + btnHeight * btnsPerCol);
+            btnCancel.Location = new(8 + x, 12 + 40 * 8);
+            ClientSize = new(18 + 130 * rows, 47 + 40 * 8);
         }
     }
 }

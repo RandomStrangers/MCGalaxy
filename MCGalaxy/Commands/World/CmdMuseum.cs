@@ -1,14 +1,11 @@
 /*
     Copyright 2011 MCForge
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,7 +14,6 @@
  */
 using System.IO;
 using System.Threading;
-
 namespace MCGalaxy.Commands.World
 {
     public sealed class CmdMuseum : Command2
@@ -25,17 +21,13 @@ namespace MCGalaxy.Commands.World
         public override string name { get { return "Museum"; } }
         public override string type { get { return CommandTypes.World; } }
         public override bool SuperUseable { get { return false; } }
-
         const string CURRENT_FLAG = "*current";
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { LevelOperations.OutputBackups(p, p.level); return; }
-
             string[] args = message.ToLower().SplitSpaces();
             string mapArg = args.Length > 1 ? args[0] : p.level.MapName;
             string backupArg = args.Length > 1 ? args[1] : args[0];
-
             string path;
             if (backupArg == CURRENT_FLAG)
             {
@@ -58,7 +50,6 @@ namespace MCGalaxy.Commands.World
             {
                 if (!LevelInfo.GetBackupPath(p, mapArg, backupArg, out path)) return;
             }
-
             string formattedMuseumName;
             if (backupArg == CURRENT_FLAG)
             {
@@ -68,7 +59,6 @@ namespace MCGalaxy.Commands.World
             {
                 formattedMuseumName = "&cMuseum &S(" + mapArg + " " + backupArg + ")";
             }
-
             if (p.level.name.CaselessEq(formattedMuseumName))
             {
                 p.Message("You are already in this museum."); return;
@@ -77,7 +67,6 @@ namespace MCGalaxy.Commands.World
             {
                 p.Message("You are already loading a museum level."); return;
             }
-
             try
             {
                 Level lvl = LevelActions.LoadMuseum(p, formattedMuseumName, mapArg, path);
@@ -88,7 +77,6 @@ namespace MCGalaxy.Commands.World
                 Interlocked.Exchange(ref p.LoadingMuseum, 0);
             }
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Museum <level> [backup]");

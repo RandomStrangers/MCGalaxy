@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,38 +14,29 @@
  */
 using MCGalaxy.Commands;
 using MCGalaxy.Events.ServerEvents;
-
 namespace MCGalaxy.Modules.Relay.IRC
 {
     public sealed class IRCPlugin : Plugin
     {
         public override string name { get { return "IRCRelay"; } }
-
         public static IRCBot Bot = new();
-
         static readonly Command cmdIrcBot = new CmdIRCBot();
         static readonly Command cmdIrcCtrls = new CmdIrcControllers();
-
         public override void Load(bool startup)
         {
             Command.Register(cmdIrcBot, cmdIrcCtrls);
-
             Bot.ReloadConfig();
             Bot.Connect();
             OnConfigUpdatedEvent.Register(OnConfigUpdated, Priority.Low);
         }
-
         public override void Unload(bool shutdown)
         {
             Command.Unregister(cmdIrcBot, cmdIrcCtrls);
-
             OnConfigUpdatedEvent.Unregister(OnConfigUpdated);
             Bot.Disconnect("Disconnecting IRC bot");
         }
-
         void OnConfigUpdated() { Bot.ReloadConfig(); }
     }
-
     sealed class CmdIRCBot : RelayBotCmd
     {
         public override string name { get { return "IRCBot"; } }
@@ -58,7 +46,6 @@ namespace MCGalaxy.Modules.Relay.IRC
         }
         protected override RelayBot Bot { get { return IRCPlugin.Bot; } }
     }
-
     sealed class CmdIrcControllers : BotControllersCmd
     {
         public override string name { get { return "IRCControllers"; } }

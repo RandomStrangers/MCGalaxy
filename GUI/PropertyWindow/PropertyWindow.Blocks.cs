@@ -122,43 +122,32 @@ namespace MCGalaxy.Gui
         }
         void BlockInitSpecificArrays()
         {
-            if (blockItems.MinBox != null)
+            if (blockItems.MinBox == null)
             {
-                return;
+                blockItems.MinBox = blk_cmbMin;
+                blockItems.AllowBoxes = new[]
+                {
+                    blk_cmbAlw1, blk_cmbAlw2, blk_cmbAlw3
+                };
+                blockItems.DisallowBoxes = new[]
+                {
+                    blk_cmbDis1, blk_cmbDis2, blk_cmbDis3
+                };
+                blockItems.FillInitial();
             }
-            blockItems.MinBox = blk_cmbMin;
-            blockItems.AllowBoxes = new[] 
-            { 
-                blk_cmbAlw1, blk_cmbAlw2, blk_cmbAlw3 
-            };
-            blockItems.DisallowBoxes = new[] 
-            { 
-                blk_cmbDis1, blk_cmbDis2, blk_cmbDis3 
-            };
-            blockItems.FillInitial();
         }
         ItemPerms BlockGetOrAddPermsChanged()
         {
-            if (placePermsCopy != null)
+            if (placePermsCopy == null)
             {
-                return placePermsCopy;
+                placePermsCopy = placePermsOrig.Copy();
+                placePermsChanged.Add(placePermsCopy);
             }
-            placePermsCopy = placePermsOrig.Copy();
-            placePermsChanged.Add(placePermsCopy);
             return placePermsCopy;
         }
-        void Blk_cmbMin_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            blockItems.OnMinRankChanged((ComboBox)sender);
-        }
-        void Blk_cmbSpecific_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            blockItems.OnSpecificChanged((ComboBox)sender);
-        }
-        void Blk_btnHelp_Click(object sender, EventArgs e)
-        {
-            GetHelp(blk_list.SelectedItem.ToString());
-        }
+        void Blk_cmbMin_SelectedIndexChanged(object sender, EventArgs e) => blockItems.OnMinRankChanged((ComboBox)sender);
+        void Blk_cmbSpecific_SelectedIndexChanged(object sender, EventArgs e) => blockItems.OnSpecificChanged((ComboBox)sender);
+        void Blk_btnHelp_Click(object sender, EventArgs e) => GetHelp(blk_list.SelectedItem.ToString());
         void Blk_cbMsgBlock_CheckedChanged(object sender, EventArgs e)
         {
             blockPropsChanged[curBlock].IsMessageBlock = blk_cbMsgBlock.Checked;
@@ -205,10 +194,6 @@ namespace MCGalaxy.Gui
             blockPropsChanged[curBlock].WaterKills = blk_cbWater.Checked;
             MarkBlockPropsChanged();
         }
-        void MarkBlockPropsChanged()
-        {
-            int changed = blockItems.SupressEvents ? 0 : BlockProps.SCOPE_GLOBAL;
-            blockPropsChanged[curBlock].ChangedScope = (byte)changed;
-        }
+        void MarkBlockPropsChanged() => blockPropsChanged[curBlock].ChangedScope = (byte)(blockItems.SupressEvents ? 0 : 0x01);
     }
 }

@@ -1,16 +1,12 @@
-﻿/*
+/*
     Copyright 2010 MCLawl Team - Written by Valek (Modified by MCGalaxy)
-
     Edited for use with MCGalaxy
- 
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -24,12 +20,12 @@ using System.Reflection;
 using MCGalaxy.Platform;
 namespace MCGalaxy.Scripting
 {
-    /// <summary> Exception raised when attempting to load a new command/plugin 
+    /// <summary> Exception raised when attempting to load a new command/plugin
     /// that has the same name as an already loaded command/plugin </summary>
     public sealed class AlreadyLoadedException : Exception
     {
-        public AlreadyLoadedException(string msg) : base(msg) 
-        { 
+        public AlreadyLoadedException(string msg) : base(msg)
+        {
         }
     }
     /// <summary> Utility methods for loading assemblies, commands, and plugins </summary>
@@ -38,14 +34,14 @@ namespace MCGalaxy.Scripting
         public const string COMMANDS_DLL_DIR = "extra/commands/dll/",
             PLUGINS_DLL_DIR = "plugins/";
         /// <summary> Returns the default .dll path for the custom command with the given name </summary>
-        public static string CommandPath(string name) 
-        { 
-            return COMMANDS_DLL_DIR + "Cmd" + name + ".dll"; 
+        public static string CommandPath(string name)
+        {
+            return COMMANDS_DLL_DIR + "Cmd" + name + ".dll";
         }
         /// <summary> Returns the default .dll path for the plugin with the given name </summary>
-        public static string PluginPath(string name) 
+        public static string PluginPath(string name)
         {
-            return PLUGINS_DLL_DIR + name + ".dll"; 
+            return PLUGINS_DLL_DIR + name + ".dll";
         }
         public static void Init()
         {
@@ -97,7 +93,7 @@ namespace MCGalaxy.Scripting
             Assembly coreRef = DotNetBackend.ResolvePluginReference(target);
             return coreRef ?? null;
         }
-        static bool IsPluginDLL(Assembly a) 
+        static bool IsPluginDLL(Assembly a)
         {
             return string.IsNullOrEmpty(a.Location);
         }
@@ -188,9 +184,9 @@ namespace MCGalaxy.Scripting
             {
                 return;
             }
-            foreach (string path in files) 
-            { 
-                AutoloadCommands(path); 
+            foreach (string path in files)
+            {
+                AutoloadCommands(path);
             }
         }
         static void AutoloadCommands(string path)

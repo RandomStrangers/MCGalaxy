@@ -1,14 +1,11 @@
 /*
     Copyright 2015-2024 MCGalaxy
-
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -20,14 +17,14 @@ namespace MCGalaxy.Util.Imaging
 {
     public unsafe class JpegDecoder : ImageDecoder
     {
-        static readonly byte[] jfifSig = new byte[] 
-        { 
-            0xFF, 0xD8, 0xFF, 0xE0 
+        static readonly byte[] jfifSig = new byte[]
+        {
+            0xFF, 0xD8, 0xFF, 0xE0
         },
-        exifSig = new byte[] 
-        { 
-            0xFF, 0xD8, 0xFF, 0xE1 
-        }, 
+        exifSig = new byte[]
+        {
+            0xFF, 0xD8, 0xFF, 0xE1
+        },
         zigzag_to_linear = new byte[64]
         {
             0,  1,  8, 16,  9,  2,  3, 10,
@@ -110,7 +107,7 @@ namespace MCGalaxy.Util.Imaging
         {
             int offset = AdvanceOffset(2),
                 length = MemUtils.ReadU16_BE(src, offset);
-            length -= 2; 
+            length -= 2;
             offset = AdvanceOffset(length);
             while (length > 0)
             {
@@ -397,55 +394,55 @@ namespace MCGalaxy.Util.Imaging
             float* tmp = stackalloc float[8 * 8];
             for (int col = 0; col < 8; col++)
             {
-                float B0 = block[0 * 8 + col], 
+                float B0 = block[0 * 8 + col],
                     B1 = block[1 * 8 + col],
-                    B2 = block[2 * 8 + col], 
+                    B2 = block[2 * 8 + col],
                     B3 = block[3 * 8 + col],
-                    B4 = block[4 * 8 + col], 
+                    B4 = block[4 * 8 + col],
                     B5 = block[5 * 8 + col],
-                    B6 = block[6 * 8 + col], 
+                    B6 = block[6 * 8 + col],
                     B7 = block[7 * 8 + col],
                     a4 = 0.70710678118f * B0,
                     e4 = 0.70710678118f * B4,
-                    c2 = 0.92387953251f * B2, 
+                    c2 = 0.92387953251f * B2,
                     c6 = 0.38268343236f * B2,
-                    g2 = 0.92387953251f * B6, 
+                    g2 = 0.92387953251f * B6,
                     g6 = 0.38268343236f * B6,
-                    b1 = 0.98078528040f * B1, 
-                    b3 = 0.83146961230f * B1, 
+                    b1 = 0.98078528040f * B1,
+                    b3 = 0.83146961230f * B1,
                     b5 = 0.55557023302f * B1,
                     b7 = 0.19509032201f * B1,
-                    d1 = 0.98078528040f * B3, 
-                    d3 = 0.83146961230f * B3, 
-                    d5 = 0.55557023302f * B3, 
+                    d1 = 0.98078528040f * B3,
+                    d3 = 0.83146961230f * B3,
+                    d5 = 0.55557023302f * B3,
                     d7 = 0.19509032201f * B3,
-                    f1 = 0.98078528040f * B5, 
-                    f3 = 0.83146961230f * B5, 
-                    f5 = 0.55557023302f * B5, 
+                    f1 = 0.98078528040f * B5,
+                    f3 = 0.83146961230f * B5,
+                    f5 = 0.55557023302f * B5,
                     f7 = 0.19509032201f * B5,
-                    h1 = 0.98078528040f * B7, 
+                    h1 = 0.98078528040f * B7,
                     h3 = 0.83146961230f * B7,
-                    h5 = 0.55557023302f * B7, 
+                    h5 = 0.55557023302f * B7,
                     h7 = 0.19509032201f * B7,
-                    w1 = a4 + e4, 
+                    w1 = a4 + e4,
                     w2 = a4 - e4,
-                    x1 = c2 + g6, 
+                    x1 = c2 + g6,
                     x2 = c6 - g2,
-                    y1 = b1 + d3, 
-                    y2 = b3 - d7, 
+                    y1 = b1 + d3,
+                    y2 = b3 - d7,
                     y3 = b5 - d1,
                     y4 = b7 - d5,
-                    z1 = f5 + h7, 
-                    z2 = f1 + h5, 
-                    z3 = f7 + h3, 
+                    z1 = f5 + h7,
+                    z2 = f1 + h5,
+                    z3 = f7 + h3,
                     z4 = f3 - h1,
-                    u1 = w1 + x1, 
-                    u2 = w2 + x2, 
-                    u3 = w2 - x2, 
+                    u1 = w1 + x1,
+                    u2 = w2 + x2,
+                    u3 = w2 - x2,
                     u4 = w1 - x1,
-                    v1 = y1 + z1, 
-                    v2 = y2 - z2, 
-                    v3 = y3 + z3, 
+                    v1 = y1 + z1,
+                    v2 = y2 - z2,
+                    v3 = y3 + z3,
                     v4 = y4 + z4;
                 tmp[0 * 8 + col] = u1 + v1;
                 tmp[1 * 8 + col] = u2 + v2;
@@ -458,55 +455,55 @@ namespace MCGalaxy.Util.Imaging
             }
             for (int row = 0; row < 8; row++)
             {
-                float B0 = tmp[row * 8 + 0], 
+                float B0 = tmp[row * 8 + 0],
                     B1 = tmp[row * 8 + 1],
-                    B2 = tmp[row * 8 + 2], 
+                    B2 = tmp[row * 8 + 2],
                     B3 = tmp[row * 8 + 3],
-                    B4 = tmp[row * 8 + 4], 
+                    B4 = tmp[row * 8 + 4],
                     B5 = tmp[row * 8 + 5],
-                    B6 = tmp[row * 8 + 6], 
+                    B6 = tmp[row * 8 + 6],
                     B7 = tmp[row * 8 + 7],
                     a4 = 0.70710678118f / 4.0f * B0,
                     e4 = 0.70710678118f / 4.0f * B4,
-                    c2 = 0.92387953251f / 4.0f * B2, 
+                    c2 = 0.92387953251f / 4.0f * B2,
                     c6 = 0.38268343236f / 4.0f * B2,
-                    g2 = 0.92387953251f / 4.0f * B6, 
+                    g2 = 0.92387953251f / 4.0f * B6,
                     g6 = 0.38268343236f / 4.0f * B6,
-                    b1 = 0.98078528040f / 4.0f * B1, 
-                    b3 = 0.83146961230f / 4.0f * B1, 
-                    b5 = 0.55557023302f / 4.0f * B1, 
+                    b1 = 0.98078528040f / 4.0f * B1,
+                    b3 = 0.83146961230f / 4.0f * B1,
+                    b5 = 0.55557023302f / 4.0f * B1,
                     b7 = 0.19509032201f / 4.0f * B1,
-                    d1 = 0.98078528040f / 4.0f * B3, 
-                    d3 = 0.83146961230f / 4.0f * B3, 
-                    d5 = 0.55557023302f / 4.0f * B3, 
+                    d1 = 0.98078528040f / 4.0f * B3,
+                    d3 = 0.83146961230f / 4.0f * B3,
+                    d5 = 0.55557023302f / 4.0f * B3,
                     d7 = 0.19509032201f / 4.0f * B3,
-                    f1 = 0.98078528040f / 4.0f * B5, 
-                    f3 = 0.83146961230f / 4.0f * B5, 
-                    f5 = 0.55557023302f / 4.0f * B5, 
+                    f1 = 0.98078528040f / 4.0f * B5,
+                    f3 = 0.83146961230f / 4.0f * B5,
+                    f5 = 0.55557023302f / 4.0f * B5,
                     f7 = 0.19509032201f / 4.0f * B5,
-                    h1 = 0.98078528040f / 4.0f * B7, 
-                    h3 = 0.83146961230f / 4.0f * B7, 
-                    h5 = 0.55557023302f / 4.0f * B7, 
+                    h1 = 0.98078528040f / 4.0f * B7,
+                    h3 = 0.83146961230f / 4.0f * B7,
+                    h5 = 0.55557023302f / 4.0f * B7,
                     h7 = 0.19509032201f / 4.0f * B7,
-                    w1 = a4 + e4, 
+                    w1 = a4 + e4,
                     w2 = a4 - e4,
-                    x1 = c2 + g6, 
+                    x1 = c2 + g6,
                     x2 = c6 - g2,
-                    y1 = b1 + d3, 
-                    y2 = b3 - d7, 
-                    y3 = b5 - d1, 
+                    y1 = b1 + d3,
+                    y2 = b3 - d7,
+                    y3 = b5 - d1,
                     y4 = b7 - d5,
-                    z1 = f5 + h7, 
-                    z2 = f1 + h5, 
-                    z3 = f7 + h3, 
+                    z1 = f5 + h7,
+                    z2 = f1 + h5,
+                    z3 = f7 + h3,
                     z4 = f3 - h1,
-                    u1 = w1 + x1, 
-                    u2 = w2 + x2, 
+                    u1 = w1 + x1,
+                    u2 = w2 + x2,
                     u3 = w2 - x2,
                     u4 = w1 - x1,
-                    v1 = y1 + z1, 
-                    v2 = y2 - z2, 
-                    v3 = y3 + z3, 
+                    v1 = y1 + z1,
+                    v2 = y2 - z2,
+                    v3 = y3 + z3,
                     v4 = y4 + z4;
                 output[row * 8 + 0] = u1 + v1;
                 output[row * 8 + 1] = u2 + v2;
@@ -719,7 +716,7 @@ namespace MCGalaxy.Util.Imaging
                 for (int x = 0; x < 8; x++, dst += 2)
                 {
                     float sample = output[src++];
-                    colors[dst + 0].Cb = sample; 
+                    colors[dst + 0].Cb = sample;
                     colors[dst + 1].Cb = sample;
                     colors[dst + mcu_w + 0].Cb = sample;
                     colors[dst + mcu_w + 1].Cb = sample;
@@ -735,7 +732,7 @@ namespace MCGalaxy.Util.Imaging
                 for (int x = 0; x < 8; x++, dst += 2)
                 {
                     float sample = output[src++];
-                    colors[dst + 0].Cr = sample; 
+                    colors[dst + 0].Cr = sample;
                     colors[dst + 1].Cr = sample;
                     colors[dst + mcu_w + 0].Cr = sample;
                     colors[dst + mcu_w + 1].Cr = sample;
@@ -743,8 +740,8 @@ namespace MCGalaxy.Util.Imaging
             }
         }
     }
-    struct YCbCr 
-    { 
+    struct YCbCr
+    {
         public float Y, Cb, Cr;
     };
     unsafe delegate void JpegBlockOutput(JpegComponent comp, YCbCr[] colors, int mcu_w,

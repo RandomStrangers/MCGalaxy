@@ -1,25 +1,20 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-
 namespace MCGalaxy.Generator.Realistic
 {
     public delegate ushort CalcLiquidLevel(ushort lvlHeight);
-
     public sealed class RealisticMapGenArgs
     {
         public string Biome = MapGenBiome.FOREST;
@@ -30,17 +25,14 @@ namespace MCGalaxy.Generator.Realistic
         public bool UseLavaLiquid = false;
         public bool GenOverlay2 = true;
         public CalcLiquidLevel GetLiquidLevel = (lvlHeight) => (ushort)(lvlHeight / 2 + 2);
-
         // Decoration parameters
         public float TreeDensity = 0.35f;
         public short TreeDistance = 3;
         public bool GenFlowers = true, GenTrees = true;
-
         // Fault parameters
         public float StartHeight = 0.5f;
         public float DisplacementMax = 0.01f;
         public float DisplacementStep = -0.0025f;
-
         internal static RealisticMapGenArgs Hell = new()
         {
             RangeLow = 0.3f,
@@ -52,7 +44,6 @@ namespace MCGalaxy.Generator.Realistic
             GetLiquidLevel = (height) => 5,
             Biome = MapGenBiome.HELL,
         };
-
         internal static RealisticMapGenArgs Island = new()
         {
             RangeLow = 0.40f,
@@ -60,7 +51,6 @@ namespace MCGalaxy.Generator.Realistic
             FalloffEdges = true,
             IslandColumns = true
         };
-
         internal static RealisticMapGenArgs Forest = new()
         {
             RangeLow = 0.45f,
@@ -68,7 +58,6 @@ namespace MCGalaxy.Generator.Realistic
             TreeDensity = 0.7f,
             TreeDistance = 2
         };
-
         internal static RealisticMapGenArgs Mountains = new()
         {
             RangeLow = 0.3f,
@@ -77,7 +66,6 @@ namespace MCGalaxy.Generator.Realistic
             StartHeight = 0.6f,
             DisplacementMax = 0.02f,
         };
-
         internal static RealisticMapGenArgs Ocean = new()
         {
             RangeLow = 0.1f,
@@ -86,7 +74,6 @@ namespace MCGalaxy.Generator.Realistic
             GenOverlay2 = false,
             GetLiquidLevel = (height) => (ushort)(height * 0.85f)
         };
-
         internal static RealisticMapGenArgs Desert = new()
         {
             RangeLow = 0.5f,

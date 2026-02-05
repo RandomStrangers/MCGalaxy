@@ -76,11 +76,7 @@ namespace MCGalaxy.Gui
         {
             protected override object GetFormattedValue(object value, int rowIndex,
                                                         ref DataGridViewCellStyle cellStyle, TypeConverter valueTypeConverter,
-                                                        TypeConverter formattedValueTypeConverter, DataGridViewDataErrorContexts context)
-            {
-                MapGen gen = MapGen.Find((string)value);
-                return gen?.Theme;
-            }
+                                                        TypeConverter formattedValueTypeConverter, DataGridViewDataErrorContexts context) => MapGen.Find((string)value)?.Theme;
         }
         void Eco_UpdateEnables()
         {
@@ -92,10 +88,7 @@ namespace MCGalaxy.Gui
             eco_gbLvl.Enabled = eco_cbEnabled.Checked;
             eco_gbRank.Enabled = eco_cbEnabled.Checked;
         }
-        void Eco_cbEnabled_CheckedChanged(object sender, EventArgs e)
-        {
-            Eco_UpdateEnables();
-        }
+        void Eco_cbEnabled_CheckedChanged(object sender, EventArgs e) => Eco_UpdateEnables();
         void Eco_cmbCfg_SelectedIndexChanged(object sender, EventArgs e)
         {
             string text = "(none)";
@@ -152,23 +145,15 @@ namespace MCGalaxy.Gui
             Eco_UpdateItemEnables();
             eco_curItem.Enabled = eco_cbItem.Checked;
         }
-        void Eco_numItemPrice_ValueChanged(object sender, EventArgs e)
-        {
-            eco_curItem.Price = (int)eco_numItemPrice.Value;
-        }
+        void Eco_numItemPrice_ValueChanged(object sender, EventArgs e) => eco_curItem.Price = (int)eco_numItemPrice.Value;
         void Eco_cmbItemRank_SelectedIndexChanged(object sender, EventArgs e)
         {
-            const LevelPermission perm = LevelPermission.Guest;
-            if (eco_curItem == null)
+            if (eco_curItem != null)
             {
-                return;
+                eco_curItem.PurchaseRank = GuiPerms.GetSelectedRank(eco_cmbItemRank, LevelPermission.Guest);
             }
-            eco_curItem.PurchaseRank = GuiPerms.GetSelectedRank(eco_cmbItemRank, perm);
         }
-        void Eco_UpdateRankEnables()
-        {
-            eco_dgvRanks.Enabled = eco_cbRank.Enabled;
-        }
+        void Eco_UpdateRankEnables() => eco_dgvRanks.Enabled = eco_cbRank.Enabled;
         void Eco_UpdateRanks()
         {
             eco_dgvRanks.Rows.Clear();
@@ -200,22 +185,20 @@ namespace MCGalaxy.Gui
         }
         void Eco_dgvRanks_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex == -1)
+            if (e.RowIndex != -1)
             {
-                return;
-            }
-            DataGridViewRow row = eco_dgvRanks.Rows[e.RowIndex];
-            object price = row.Cells[1].Value;
-            if (price == null)
-            {
-                return;
-            }
-            LevelPermission perm = (LevelPermission)row.Tag;
-            RankItem.RankEntry rank = Economy.Ranks.GetOrAdd(perm);
-            rank.Price = int.Parse(price.ToString());
-            if (rank.Price == 0)
-            {
-                Economy.Ranks.Remove(perm);
+                DataGridViewRow row = eco_dgvRanks.Rows[e.RowIndex];
+                object price = row.Cells[1].Value;
+                if (price != null)
+                {
+                    LevelPermission perm = (LevelPermission)row.Tag;
+                    RankItem.RankEntry rank = Economy.Ranks.GetOrAdd(perm);
+                    rank.Price = int.Parse(price.ToString());
+                    if (rank.Price == 0)
+                    {
+                        Economy.Ranks.Remove(perm);
+                    }
+                }
             }
         }
         void Eco_UpdateLevelEnables()

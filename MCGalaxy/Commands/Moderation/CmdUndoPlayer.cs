@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2011 MCForge
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -21,8 +18,6 @@ using MCGalaxy.Drawing.Ops;
 using MCGalaxy.Maths;
 using System;
 using System.Collections.Generic;
-
-
 namespace MCGalaxy.Commands.Moderation
 {
     public class CmdUndoPlayer : Command2
@@ -39,7 +34,6 @@ namespace MCGalaxy.Commands.Moderation
                     new CommandAlias("UndoArea", "-area"), new CommandAlias("ua", "-area") };
             }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             bool area = message.CaselessStarts("-area");
@@ -47,17 +41,13 @@ namespace MCGalaxy.Commands.Moderation
             {
                 message = message.Substring("-area".Length).TrimStart();
             }
-
             if (CheckSuper(p, message, "player name")) return;
             if (message.Length == 0) { p.Message("You need to provide a player name."); return; }
-
             string[] parts = message.SplitSpaces();
             int[] ids = GetIds(p, parts, data, out string[] names);
             if (ids == null) return;
-
             TimeSpan delta = CmdUndo.GetDelta(p, parts[0], parts, 1);
             if (delta == TimeSpan.MinValue) return;
-
             if (!area)
             {
                 Vec3S32[] marks = new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal };
@@ -75,17 +65,13 @@ namespace MCGalaxy.Commands.Moderation
                 p.MakeSelection(2, "Selecting region for &SUndo player", args, DoUndoArea);
             }
         }
-
         bool DoUndoArea(Player p, Vec3S32[] marks, object state, ushort block)
         {
             UndoAreaArgs args = (UndoAreaArgs)state;
             UndoPlayer(p, args.delta, args.names, args.ids, marks);
             return false;
         }
-
         struct UndoAreaArgs { public string[] names; public int[] ids; public TimeSpan delta; }
-
-
         static void UndoPlayer(Player p, TimeSpan delta, string[] names, int[] ids, Vec3S32[] marks)
         {
             UndoDrawOp op = new()
@@ -95,12 +81,10 @@ namespace MCGalaxy.Commands.Moderation
                 ids = ids,
                 AlwaysUsable = true
             };
-
             if (p.IsSuper)
             {
                 // undo them across all loaded levels
                 Level[] levels = LevelInfo.Loaded.Items;
-
                 foreach (Level lvl in levels)
                 {
                     op.Setup(p, lvl, marks);
@@ -112,7 +96,6 @@ namespace MCGalaxy.Commands.Moderation
             {
                 DrawOpPerformer.Do(op, null, p, marks);
             }
-
             string namesStr = names.Join(name => p.FormatNick(name));
             if (op.found)
             { // TODO bug assumes no other queued drawops
@@ -124,25 +107,21 @@ namespace MCGalaxy.Commands.Moderation
                 p.Message("No changes found by {1} &Sin the past &b{0}", delta.Shorten(true), namesStr);
             }
         }
-
         int[] GetIds(Player p, string[] parts, CommandData data, out string[] names)
         {
             int count = Math.Max(1, parts.Length - 1);
             List<int> ids = new();
             names = new string[count];
-
             for (int i = 0; i < names.Length; i++)
             {
                 names[i] = PlayerDB.MatchNames(p, parts[i]);
                 if (names[i] == null) return null;
-
                 Group grp = PlayerInfo.GetGroup(names[i]);
                 if (!CheckRank(p, data, names[i], grp.Permission, "undo", false)) return null;
                 ids.AddRange(NameConverter.FindIds(names[i]));
             }
             return ids.ToArray();
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/UndoPlayer [player1] <player2..> <timespan>");

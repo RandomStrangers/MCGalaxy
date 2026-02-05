@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,8 +15,6 @@
 using MCGalaxy.Maths;
 using System;
 using System.Collections.Generic;
-
-
 namespace MCGalaxy
 {
     public struct ModelInfo
@@ -27,7 +22,6 @@ namespace MCGalaxy
         public readonly string Model;
         public readonly Vec3S32 BaseSize;
         public readonly int EyeHeight;
-
         public ModelInfo(string model, int sizeX, int sizeY, int sizeZ, int eyeHeight)
         {
             Model = model;
@@ -36,7 +30,6 @@ namespace MCGalaxy
             BaseSize.Z = sizeZ;
             EyeHeight = eyeHeight;
         }
-
         // Eye height may be 1-2 pixels different from client's eye height,
         // because we're really after the centre of the entity's head
         public static List<ModelInfo> Models = new() {
@@ -52,7 +45,6 @@ namespace MCGalaxy
             new ModelInfo("skeleton",    16,56,16, 28),
             new ModelInfo("spider",      30,24,30,  8),
         };
-
         public static ModelInfo Get(string model)
         {
             foreach (ModelInfo m in Models)
@@ -61,40 +53,32 @@ namespace MCGalaxy
             }
             return Models[0];
         }
-
         public static string GetRawModel(string model)
         {
             int sep = model.IndexOf('|');
             return sep == -1 ? model : model.Substring(0, sep);
         }
-
         public static float GetRawScale(string model)
         {
             int sep = model.IndexOf('|');
             string str = sep == -1 ? null : model.Substring(sep + 1);
-
             if (!NumberUtils.TryParseSingle(str, out float scale)) scale = 1.0f;
             if (scale < 0.01f) scale = 0.01f;
-
             // backwards compatibility for giant model
             if (model.CaselessEq("giant")) scale *= 2;
             // special handling for hold model
             if (model.CaselessStarts("hold|") && scale > 1) scale = 1;
-
             return scale;
         }
-
         public static float DefaultMaxScale(string model)
         {
             return model.CaselessEq("chibi") ? 3 : 2;
         }
-
         public static float MaxScale(Entity entity, string model)
         {
             if (!entity.RestrictsScale) return float.MaxValue;
             return DefaultMaxScale(GetRawModel(model));
         }
-
         public static Vec3F32 CalcScale(Entity entity)
         {
             float raw = GetRawScale(entity.Model);
@@ -104,11 +88,9 @@ namespace MCGalaxy
                 entity.ScaleZ != 0 ? entity.ScaleZ : raw
             );
         }
-
         public static AABB CalcAABB(Entity entity)
         {
             string model = GetRawModel(entity.Model);
-
             AABB bb;
             if (ushort.TryParse(model, out ushort raw) && raw <= Block.MaxRaw)
             {
@@ -121,28 +103,23 @@ namespace MCGalaxy
                 bb = AABB.Make(new Vec3S32(0, 0, 0), Get(model).BaseSize);
             }
             bb = bb.Expand(-1); // adjust the model AABB inwards slightly
-
             Vec3F32 scale = CalcScale(entity);
-            // always limit max scale for collisions performance 
+            // always limit max scale for collisions performance
             float max = DefaultMaxScale(model);
             scale.X = Math.Min(scale.X, max);
             scale.Y = Math.Min(scale.Y, max);
             scale.Z = Math.Min(scale.Z, max);
-
             bb.Min.X = (int)(bb.Min.X * scale.X); bb.Max.X = (int)(bb.Max.X * scale.X);
             bb.Min.Y = (int)(bb.Min.Y * scale.Y); bb.Max.Y = (int)(bb.Max.Y * scale.Y);
             bb.Min.Z = (int)(bb.Min.Z * scale.Z); bb.Max.Z = (int)(bb.Max.Z * scale.Z);
-
             return bb;
         }
-
         /// <summary> Gives distance (in half-pixel world units) from feet to camera height </summary>
         public static int CalcEyeHeight(Entity entity)
         {
             Vec3F32 scale = CalcScale(entity);
             string model = GetRawModel(entity.Model);
             if (ushort.TryParse(model, out ushort raw) && raw <= Block.MaxRaw) return 16; //lazily return middle of full block if it thinks it's a block ID.
-
             float eyeHeight = Get(model).EyeHeight;
             eyeHeight *= scale.Y;
             eyeHeight *= 2f; //multiply by two because world positions are measured in half-pixels

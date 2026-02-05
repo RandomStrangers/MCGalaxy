@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -22,7 +19,6 @@ using System.Runtime.InteropServices;
 #if MCG_STANDALONE
 using System.Reflection;
 #endif
-
 namespace MCGalaxy.Platform
 {
     /// <summary> Summarises resource usage of all CPU cores in the system </summary>
@@ -49,8 +45,8 @@ namespace MCGalaxy.Platform
         /// <summary> Whether the operating system currently being run on is Windows </summary>
         public abstract bool IsWindows { get; }
         public virtual string StandaloneName { get { return "UNSUPPORTED"; } }
-        public virtual void Init() 
-        { 
+        public virtual void Init()
+        {
         }
         /// <summary> Attempts to restart the current process </summary>
         /// <remarks> Does not return if the restart is performed in-place
@@ -166,10 +162,10 @@ namespace MCGalaxy.Platform
         public override bool IsWindows { get { return false; } }
         public override void RestartProcess()
         {
-            if (!Server.CLIMode) 
-            { 
-                base.RestartProcess(); 
-                return; 
+            if (!Server.CLIMode)
+            {
+                base.RestartProcess();
+                return;
             }
             RestartInPlace();
             // If restarting in place fails, it's better to let the server die
@@ -185,7 +181,7 @@ namespace MCGalaxy.Platform
             //   Message: Invalid handle to path "server_folder_path/[Unknown]"
             //   Trace:   at System.IO.FileStream.ReadData (System.Runtime.InteropServices.SafeHandle safeHandle, System.Byte[] buf, System.Int32 offset, System.Int32 count) [0x0002d]
             //     at System.IO.FileStream.ReadInternal (System.Byte[] dest, System.Int32 offset, System.Int32 count) [0x00026]
-            //     at System.IO.FileStream.Read (System.Byte[] array, System.Int32 offset, System.Int32 count) [0x000a1] 
+            //     at System.IO.FileStream.Read (System.Byte[] array, System.Int32 offset, System.Int32 count) [0x000a1]
             //     at System.IO.StreamReader.ReadBuffer () [0x000b3]
             //     at System.IO.StreamReader.Read () [0x00028]
             //     at System.TermInfoDriver.GetCursorPosition () [0x0000d]
@@ -220,9 +216,9 @@ namespace MCGalaxy.Platform
         }
         [DllImport("libc", SetLastError = true)]
         protected static extern int execvp(string path, string[] argv);
-        public override CPUTime MeasureAllCPUTime() 
-        { 
-            return default; 
+        public override CPUTime MeasureAllCPUTime()
+        {
+            return default;
         }
         [DllImport("libc", SetLastError = true)]
         protected static extern unsafe int sysctlbyname(string name, void* oldp, IntPtr* oldlenp, IntPtr newp, IntPtr newlen);
@@ -237,7 +233,7 @@ namespace MCGalaxy.Platform
         {
             base.Init();
 #if MCG_STANDALONE
-            if (!Directory.Exists("certs")) 
+            if (!Directory.Exists("certs"))
             {
                 return;
             }
@@ -246,7 +242,7 @@ namespace MCGalaxy.Platform
             //  - /usr/share/.mono/new-certs/Trust
             // but that won't work when distributed in a standalone build - so in this case, have to
             //  modify internal runtime state to make it look elsewhere for certifcates on Linux
-            try 
+            try
             {
                 Type settingsType = Type.GetType("Mono.Security.Interface.MonoTlsSettings, Mono.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756");
                 PropertyInfo defSettingsProp = settingsType.GetProperty("DefaultSettings", BindingFlags.Static | BindingFlags.Public);
@@ -254,8 +250,8 @@ namespace MCGalaxy.Platform
                 Type settingsObjType = defSettings.GetType();
                 PropertyInfo pathsProp = settingsObjType.GetProperty("CertificateSearchPaths", BindingFlags.Instance | BindingFlags.NonPublic);
                 pathsProp.SetValue(defSettings, new string[] { "@pem:certs", "@trusted" }, null);
-            } 
-            catch (Exception ex) 
+            }
+            catch (Exception ex)
             {
                 Logger.LogError("Changing SSL/TLS certificates folder", ex);
             }
@@ -366,7 +362,7 @@ namespace MCGalaxy.Platform
         public override CPUTime MeasureAllCPUTime()
         {
             uint[] info = new uint[4]; // CPU_STATE_MAX
-            uint count = 4; // HOST_CPU_LOAD_INFO_COUNT 
+            uint count = 4; // HOST_CPU_LOAD_INFO_COUNT
             int flavor = 3; // HOST_CPU_LOAD_INFO
             host_statistics(mach_host_self(), flavor, info, ref count);
             CPUTime all = new()

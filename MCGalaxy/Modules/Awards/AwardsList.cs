@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,22 +14,17 @@
  */
 using System.Collections.Generic;
 using System.IO;
-
 namespace MCGalaxy.Modules.Awards
 {
     public class Award { public string Name, Description; }
-
     /// <summary> Manages the awards the server has </summary>
     public static class AwardsList
     {
         /// <summary> List of currently defined awards </summary>
         public static List<Award> Awards = new();
-
-
         public static bool Add(string name, string desc)
         {
             if (Exists(name)) return false;
-
             Award award = new()
             {
                 Name = name,
@@ -41,18 +33,14 @@ namespace MCGalaxy.Modules.Awards
             Awards.Add(award);
             return true;
         }
-
         public static bool Remove(string name)
         {
             Award award = FindExact(name);
             if (award == null) return false;
-
             Awards.Remove(award);
             return true;
         }
-
         public static bool Exists(string name) { return FindExact(name) != null; }
-
         public static Award FindExact(string name)
         {
             foreach (Award award in Awards)
@@ -61,8 +49,6 @@ namespace MCGalaxy.Modules.Awards
             }
             return null;
         }
-
-
         /// <summary> Finds partial matches of 'name' against the list of all awards </summary>
         public static string FindMatch(Player p, string name)
         {
@@ -70,8 +56,6 @@ namespace MCGalaxy.Modules.Awards
                                        null, a => a.Name, "awards");
             return award?.Name;
         }
-
-
         static readonly object saveLock = new();
         public static void Save()
         {
@@ -85,7 +69,6 @@ namespace MCGalaxy.Modules.Awards
                     }
                 }
         }
-
         public static void Load()
         {
             if (!File.Exists("text/awardsList.txt"))
@@ -96,17 +79,14 @@ namespace MCGalaxy.Modules.Awards
                 w.WriteLine("Climbing the ladder : Earned a rank advancement");
                 w.WriteLine("Do you live here? : Joined the server a huge bunch of times");
             }
-
             Awards = new List<Award>();
             PropertiesFile.Read("text/awardsList.txt", ProcessLine, ':');
         }
-
         static void ProcessLine(string award, string desc)
         {
             if (desc.Length == 0) return;
             Add(award, desc);
         }
-
         static void WriteHeader(StreamWriter w)
         {
             w.WriteLine("#This is a full list of awards. The server will load these and they can be awarded as you please");

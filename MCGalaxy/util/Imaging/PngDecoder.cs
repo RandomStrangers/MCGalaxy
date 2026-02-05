@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -24,13 +21,13 @@ namespace MCGalaxy.Util.Imaging
     {
         int bytesPerPixel, scanline_size;
         RowExpander rowExpander;
-        static readonly byte[] pngSig = new byte[] 
-        { 
-            137, 80, 78, 71, 13, 10, 26, 10 
-        },
-        samplesPerPixel = new byte[] 
+        static readonly byte[] pngSig = new byte[]
         {
-            1, 0, 3, 1, 2, 0, 4 
+            137, 80, 78, 71, 13, 10, 26, 10
+        },
+        samplesPerPixel = new byte[]
+        {
+            1, 0, 3, 1, 2, 0, 4
         };
         public static bool DetectHeader(byte[] data)
         {
@@ -41,19 +38,19 @@ namespace MCGalaxy.Util.Imaging
             switch (bitsPerSample)
             {
                 case 1:
-                    r *= 255; 
-                    g *= 255; 
-                    b *= 255; 
+                    r *= 255;
+                    g *= 255;
+                    b *= 255;
                     break;
                 case 2:
-                    r *= 85; 
-                    g *= 85; 
-                    b *= 85; 
+                    r *= 85;
+                    g *= 85;
+                    b *= 85;
                     break;
                 case 4:
-                    r *= 17; 
-                    g *= 17; 
-                    b *= 17; 
+                    r *= 17;
+                    g *= 17;
+                    b *= 17;
                     break;
             }
             return new((byte)r, (byte)g, (byte)b, 0);
@@ -334,17 +331,17 @@ namespace MCGalaxy.Util.Imaging
                             pa = Math.Abs(p - a),
                             pb = Math.Abs(p - b),
                             pc = Math.Abs(p - c);
-                        if (pa <= pb && pa <= pc) 
+                        if (pa <= pb && pa <= pc)
                         {
-                            line[i] += a; 
+                            line[i] += a;
                         }
                         else if (pb <= pc)
-                        { 
+                        {
                             line[i] += b;
                         }
-                        else 
-                        { 
-                            line[i] += c; 
+                        else
+                        {
+                            line[i] += c;
                         }
                     }
                     return;
@@ -410,30 +407,30 @@ namespace MCGalaxy.Util.Imaging
         }
         static void Expand_INDEXED_1(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
-            for (int i = 0; i < width; i++) 
-            { 
+            for (int i = 0; i < width; i++)
+            {
                 dst[i] = palette[Get_1BPP(src, i)];
             }
         }
         static void Expand_INDEXED_2(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
-            for (int i = 0; i < width; i++) 
-            { 
+            for (int i = 0; i < width; i++)
+            {
                 dst[i] = palette[Get_2BPP(src, i)];
             }
         }
         static void Expand_INDEXED_4(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
-            for (int i = 0; i < width; i++) 
+            for (int i = 0; i < width; i++)
             {
-                dst[i] = palette[Get_4BPP(src, i)]; 
+                dst[i] = palette[Get_4BPP(src, i)];
             }
         }
         static void Expand_INDEXED_8(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
-            for (int i = 0; i < width; i++) 
-            { 
-                dst[i] = palette[src[i]]; 
+            for (int i = 0; i < width; i++)
+            {
+                dst[i] = palette[src[i]];
             }
         }
         static void Expand_GRAYSCALE_A_8(int width, Pixel[] palette, byte[] src, Pixel* dst)

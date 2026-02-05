@@ -1,14 +1,11 @@
 /*
     Copyright 2011 MCForge
-        
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,7 +14,6 @@
  */
 using MCGalaxy.Tasks;
 using System;
-
 namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdVote : Command2
@@ -26,12 +22,10 @@ namespace MCGalaxy.Commands.Chatting
         public override string shortcut { get { return "vo"; } }
         public override string type { get { return CommandTypes.Chat; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
             if (!MessageCmd.CanSpeak(p, name)) return;
-
             if (Server.voting)
             {
                 p.Message("A vote is in progress!"); return;
@@ -41,7 +35,6 @@ namespace MCGalaxy.Commands.Chatting
             Chat.MessageGlobal("&2 VOTE: &S{0} &S(type &2Yes &Sor &cNo &Sin chat)", message);
             Server.MainScheduler.QueueOnce(VoteCallback, null, TimeSpan.FromSeconds(15));
         }
-
         void VoteCallback(SchedulerTask task)
         {
             Server.voting = false;
@@ -49,7 +42,6 @@ namespace MCGalaxy.Commands.Chatting
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players) pl.voted = false;
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Vote [message]");

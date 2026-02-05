@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using System.IO;
-
 namespace MCGalaxy.Commands.World
 {
     public sealed class CmdRestore : Command2
@@ -26,11 +22,9 @@ namespace MCGalaxy.Commands.World
         public override bool museumUsable { get { return false; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
         public override bool MessageBlockRestricted { get { return true; } }
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { LevelOperations.OutputBackups(p, p.level); return; }
-
             Level lvl;
             string[] args = message.SplitSpaces();
             if (args.Length >= 2)
@@ -46,10 +40,8 @@ namespace MCGalaxy.Commands.World
                 }
                 lvl = p.level;
             }
-
             if (!LevelInfo.Check(p, data.Rank, lvl, "restore a backup of this level")) return;
             string path = LevelInfo.BackupFilePath(lvl.name, args[0]);
-
             if (File.Exists(path))
             {
                 DoRestore(lvl, args[0]);
@@ -60,7 +52,6 @@ namespace MCGalaxy.Commands.World
                 LevelOperations.OutputBackups(p, lvl);
             }
         }
-
         static void DoRestore(Level lvl, string backup)
         {
             lock (lvl.saveLock)
@@ -69,7 +60,6 @@ namespace MCGalaxy.Commands.World
                 FileIO.TryCopy(LevelInfo.BackupFilePath(lvl.name, backup), LevelInfo.MapPath(lvl.name), true);
                 lvl.SaveChanges = false;
             }
-
             Level restore = Level.Load(lvl.name);
             if (restore != null)
             {
@@ -82,7 +72,6 @@ namespace MCGalaxy.Commands.World
                 FileIO.TryCopy(LevelInfo.MapPath(lvl.name) + ".backup", LevelInfo.MapPath(lvl.name), true);
             }
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Restore &H- lists all backups for the current level");

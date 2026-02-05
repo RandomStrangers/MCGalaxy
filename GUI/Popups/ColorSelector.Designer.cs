@@ -1,6 +1,9 @@
-namespace MCGalaxy.Gui.Popups {
-    partial class ColorSelector {
-        private void InitializeComponent() {
+namespace MCGalaxy.Gui.Popups
+{
+    partial class ColorSelector
+    {
+        private void InitializeComponent()
+        {
             this.btnCancel = new System.Windows.Forms.Button();
             this.SuspendLayout();
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;

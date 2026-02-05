@@ -1,14 +1,11 @@
 /*
     Copyright 2011 MCForge
-        
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,7 +15,6 @@
 using MCGalaxy.DB;
 using MCGalaxy.SQL;
 using System.IO;
-
 namespace MCGalaxy.Commands.Maintenance
 {
     public sealed class CmdServer : Command2
@@ -27,7 +23,6 @@ namespace MCGalaxy.Commands.Maintenance
         public override string shortcut { get { return "Serv"; } }
         public override string type { get { return CommandTypes.Moderation; } }
         public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
@@ -44,7 +39,6 @@ namespace MCGalaxy.Commands.Maintenance
                 default: Help(p); break;
             }
         }
-
         void SetPublic(Player p)
         {
             Server.Config.Public = true;
@@ -52,7 +46,6 @@ namespace MCGalaxy.Commands.Maintenance
             Logger.Log(LogType.SystemActivity, "Server is now public!");
             SrvProperties.Save();
         }
-
         void SetPrivate(Player p)
         {
             Server.Config.Public = false;
@@ -60,7 +53,6 @@ namespace MCGalaxy.Commands.Maintenance
             Logger.Log(LogType.SystemActivity, "Server is now private!");
             SrvProperties.Save();
         }
-
         void DoReload(Player p)
         {
             p.Message("Reloading settings...");
@@ -68,18 +60,15 @@ namespace MCGalaxy.Commands.Maintenance
             Server.LoadPlayerLists();
             p.Message("Settings reloaded! You may need to restart the server, however.");
         }
-
         void DoBackup(Player p, string[] args)
         {
             string type = args.Length > 1 ? args[1] : "";
             string value = args.Length > 2 ? args[2] : "";
-
             if (type.CaselessEq("table"))
             {
                 if (value.Length == 0) { p.Message("You need to provide the name of the table to backup."); return; }
                 if (!Formatter.ValidName(p, value, "table")) return;
                 if (!Database.TableExists(value)) { p.Message("Table \"{0}\" does not exist.", value); return; }
-
                 p.Message("Start backing up table {0}. Please wait while backup finishes.", value);
                 using (StreamWriter sql = new(value + ".sql"))
                 {
@@ -88,10 +77,8 @@ namespace MCGalaxy.Commands.Maintenance
                 p.Message("Finished backing up table {0}.", value);
                 return;
             }
-
             bool compress = true;
             if (value.Length > 0 && !CommandParser.GetBool(p, value, ref compress)) return;
-
             if (type.Length == 0 || type.CaselessEq("all"))
             {
                 p.Message("Server backup started. Please wait while backup finishes.");
@@ -117,7 +104,6 @@ namespace MCGalaxy.Commands.Maintenance
                 Help(p);
             }
         }
-
         static void DoRestore(Player p)
         {
             if (!CheckPerms(p))
@@ -126,27 +112,23 @@ namespace MCGalaxy.Commands.Maintenance
             }
             Backup.Extract(p);
         }
-
         static bool CheckPerms(Player p)
         {
             if (p.IsConsole) return true;
             if (Server.Config.OwnerName.CaselessEq("Notch")) return false;
             return p.name.CaselessEq(Server.Config.OwnerName);
         }
-
         void DoImport(Player p, string[] args)
         {
             if (args.Length == 1) { p.Message("You need to provide the table name to import."); return; }
             if (!Formatter.ValidName(p, args[1], "table")) return;
             if (!File.Exists(args[1] + ".sql")) { p.Message("File \"{0}\".sql does not exist.", args[1]); return; }
-
             p.Message("Importing table {0} started. Please wait while import finishes.", args[1]);
             //using (Stream fs = File.OpenRead(args[1] + ".sql"))
             using (Stream fs = FileIO.TryOpenRead(args[1] + ".sql"))
                 Backup.ImportSql(fs);
             p.Message("Finished importing table {0}.", args[1]);
         }
-
         void DoBlockDBUpgrade(Player p, string[] args)
         {
             if (args.Length == 1 || !args[1].CaselessEq("confirm"))
@@ -173,7 +155,6 @@ namespace MCGalaxy.Commands.Maintenance
                 }
             }
         }
-
         public override void Help(Player p, string message)
         {
             if (message.CaselessEq("backup"))
@@ -191,7 +172,6 @@ namespace MCGalaxy.Commands.Maintenance
                 base.Help(p, message);
             }
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Server reload &H- Reloads the server files");

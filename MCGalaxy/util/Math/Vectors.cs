@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using System;
-
 namespace MCGalaxy.Maths
 {
     /// <summary> 3 component vector (unsigned 16 bit integer) </summary>
@@ -28,14 +24,14 @@ namespace MCGalaxy.Maths
             MaxVal = new(ushort.MaxValue);
         public Vec3U16(ushort x, ushort y, ushort z)
         {
-            X = x; 
-            Y = y; 
+            X = x;
+            Y = y;
             Z = z;
         }
         public Vec3U16(ushort value)
         {
-            X = value; 
-            Y = value; 
+            X = value;
+            Y = value;
             Z = value;
         }
         public static explicit operator Vec3U16(Vec3S32 a)
@@ -68,9 +64,9 @@ namespace MCGalaxy.Maths
         {
             return a.X != b.X || a.Y != b.Y || a.Z != b.Z;
         }
-        public override readonly string ToString() 
-        { 
-            return X + ", " + Y + ", " + Z; 
+        public override readonly string ToString()
+        {
+            return X + ", " + Y + ", " + Z;
         }
     }
     /// <summary> 3 component vector (signed 32 bit integer) </summary>
@@ -80,14 +76,14 @@ namespace MCGalaxy.Maths
         public static Vec3S32 Zero = new(0);
         public Vec3S32(int x, int y, int z)
         {
-            X = x; 
-            Y = y; 
+            X = x;
+            Y = y;
             Z = z;
         }
         public Vec3S32(int value)
         {
-            X = value; 
-            Y = value; 
+            X = value;
+            Y = value;
             Z = value;
         }
         public readonly int LengthSquared { get { return X * X + Y * Y + Z * Z; } }
@@ -96,32 +92,32 @@ namespace MCGalaxy.Maths
         {
             readonly get
             {
-                if (index == 0) 
+                if (index == 0)
                 {
-                    return X; 
+                    return X;
                 }
-                else if (index == 1) 
-                { 
-                    return Y; 
+                else if (index == 1)
+                {
+                    return Y;
                 }
-                else 
-                { 
-                    return Z; 
+                else
+                {
+                    return Z;
                 }
             }
             set
             {
-                if (index == 0) 
-                { 
-                    X = value; 
-                }
-                else if (index == 1) 
-                { 
-                    Y = value; 
-                }
-                else 
+                if (index == 0)
                 {
-                    Z = value; 
+                    X = value;
+                }
+                else if (index == 1)
+                {
+                    Y = value;
+                }
+                else
+                {
+                    Z = value;
                 }
             }
         }
@@ -192,14 +188,14 @@ namespace MCGalaxy.Maths
         public float X, Y, Z;
         public Vec3F32(float x, float y, float z)
         {
-            X = x; 
-            Y = y; 
+            X = x;
+            Y = y;
             Z = z;
         }
         public Vec3F32(float value)
         {
-            X = value; 
-            Y = value; 
+            X = value;
+            Y = value;
             Z = value;
         }
         public readonly float LengthSquared
@@ -229,7 +225,7 @@ namespace MCGalaxy.Maths
                 return a;
             }
             a.X *= invLen;
-            a.Y *= invLen; 
+            a.Y *= invLen;
             a.Z *= invLen;
             return a;
         }

@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,7 +16,6 @@ using MCGalaxy.Commands.Moderation;
 using MCGalaxy.Events;
 using System;
 using System.Collections.Generic;
-
 namespace MCGalaxy.Tasks
 {
     internal static class ModerationTasks
@@ -38,9 +34,9 @@ namespace MCGalaxy.Tasks
         {
             DoTask(task, Server.tempRanks, TemprankCallback);
         }
-        internal static void TemprankCalcNextRun() 
-        { 
-            CalcNextRun(temprankTask, Server.tempRanks); 
+        internal static void TemprankCalcNextRun()
+        {
+            CalcNextRun(temprankTask, Server.tempRanks);
         }
         static void TemprankCallback(string[] args)
         {
@@ -56,7 +52,7 @@ namespace MCGalaxy.Tasks
             DoTask(task, Server.frozen, FreezeCallback);
         }
         internal static void FreezeCalcNextRun()
-        { 
+        {
             CalcNextRun(freezeTask, Server.frozen);
         }
         static void FreezeCallback(string[] args)
@@ -68,9 +64,9 @@ namespace MCGalaxy.Tasks
         {
             DoTask(task, Server.muted, MuteCallback);
         }
-        internal static void MuteCalcNextRun() 
-        { 
-            CalcNextRun(muteTask, Server.muted); 
+        internal static void MuteCalcNextRun()
+        {
+            CalcNextRun(muteTask, Server.muted);
         }
         static void MuteCallback(string[] args)
         {

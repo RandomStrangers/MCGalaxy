@@ -63,26 +63,11 @@ namespace MCGalaxy.Gui
             Server.Config.DefaultLoginMessage = chat_txtLogin.Text;
             Server.Config.DefaultLogoutMessage = chat_txtLogout.Text;
         }
-        void Chat_cmbDefault_Click(object sender, EventArgs e)
-        {
-            Chat_ShowColorDialog(chat_btnDefault, "Default color");
-        }
-        void Chat_btnIRC_Click(object sender, EventArgs e)
-        {
-            Chat_ShowColorDialog(chat_btnIRC, "IRC text color");
-        }
-        void Chat_btnSyntax_Click(object sender, EventArgs e)
-        {
-            Chat_ShowColorDialog(chat_btnSyntax, "Help syntax color");
-        }
-        void Chat_btnDesc_Click(object sender, EventArgs e)
-        {
-            Chat_ShowColorDialog(chat_btnDesc, "Help description color");
-        }
-        void Chat_btnWarn_Click(object sender, EventArgs e)
-        {
-            Chat_ShowColorDialog(chat_btnWarn, "Warning / error color");
-        }
+        void Chat_cmbDefault_Click(object sender, EventArgs e) => Chat_ShowColorDialog(chat_btnDefault, "Default color");
+        void Chat_btnIRC_Click(object sender, EventArgs e) => Chat_ShowColorDialog(chat_btnIRC, "IRC text color");
+        void Chat_btnSyntax_Click(object sender, EventArgs e) => Chat_ShowColorDialog(chat_btnSyntax, "Help syntax color");
+        void Chat_btnDesc_Click(object sender, EventArgs e) => Chat_ShowColorDialog(chat_btnDesc, "Help description color");
+        void Chat_btnWarn_Click(object sender, EventArgs e) => Chat_ShowColorDialog(chat_btnWarn, "Warning / error color");
         void Chat_ParseColor(string value, Button target)
         {
             char code = value[1];
@@ -96,13 +81,12 @@ namespace MCGalaxy.Gui
             char col = parsed.Length == 0 ? 'f' : parsed[1];
             using ColorSelector sel = new(title, col);
             DialogResult result = sel.ShowDialog();
-            if (result == DialogResult.Cancel)
+            if (result != DialogResult.Cancel)
             {
-                return;
+                target.Text = Colors.Name(sel.ColorCode);
+                target.BackColor = ColorSelector.LookupColor(sel.ColorCode, out Color textCol);
+                target.ForeColor = textCol;
             }
-            target.Text = Colors.Name(sel.ColorCode);
-            target.BackColor = ColorSelector.LookupColor(sel.ColorCode, out Color textCol);
-            target.ForeColor = textCol;
         }
     }
 }

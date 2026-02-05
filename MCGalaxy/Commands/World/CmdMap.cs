@@ -1,21 +1,17 @@
 /*
     Copyright 2011 MCForge
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-
 namespace MCGalaxy.Commands.World
 {
     public sealed class CmdMap : Command2
@@ -38,16 +34,13 @@ namespace MCGalaxy.Commands.World
                     new CommandAlias("AllowGuns", "{args} " + LevelOptions.Guns) };
             }
         }
-
         public override void Use(Player p, string message, CommandData data)
         {
             if (CheckSuper(p, message, "level name")) return;
-
             if (message.Length == 0)
             {
                 PrintMapInfo(p, p.level.Config); return;
             }
-
             string[] args = message.SplitSpaces(3);
             string value;
             string optName;
@@ -56,7 +49,6 @@ namespace MCGalaxy.Commands.World
             {
                 if (p.IsSuper) { SuperRequiresArgs(p, "level name"); return; }
                 lvl = p.level;
-
                 optName = args[0];
                 args = message.SplitSpaces(2);
                 value = args.Length > 1 ? args[1] : "";
@@ -65,7 +57,6 @@ namespace MCGalaxy.Commands.World
             {
                 string map = Matcher.FindMaps(p, args[0]);
                 if (map == null) return;
-
                 PrintMapInfo(p, LevelInfo.GetConfig(map));
                 return;
             }
@@ -73,15 +64,12 @@ namespace MCGalaxy.Commands.World
             {
                 lvl = Matcher.FindLevels(p, args[0]);
                 if (lvl == null) return;
-
                 optName = args[1];
                 value = args.Length > 2 ? args[2] : "";
             }
-
             if (!CheckExtraPerm(p, data, 1)) return;
             if (optName.CaselessEq(LevelOptions.RealmOwner) && !CheckExtraPerm(p, data, 2)) return;
             if (!LevelInfo.Check(p, data.Rank, lvl, "change map settings of this level")) return;
-
             LevelOption opt = LevelOptions.Find(optName);
             if (opt == null)
             {
@@ -93,25 +81,21 @@ namespace MCGalaxy.Commands.World
                 lvl.SaveSettings();
             }
         }
-
         static bool IsMapOption(string[] args)
         {
             LevelOption opt = LevelOptions.Find(args[0]);
             if (opt == null) return false;
             // In rare case someone uses /map motd motd My MOTD
             if (opt.Name == LevelOptions.MOTD && (args.Length == 1 || !args[1].CaselessStarts("motd "))) return true;
-
             int argsCount = HasArgument(opt.Name) ? 2 : 1;
             return args.Length == argsCount;
         }
-
         static bool HasArgument(string opt)
         {
             return
                 opt == LevelOptions.Speed || opt == LevelOptions.Overload || opt == LevelOptions.TreeType ||
                 opt == LevelOptions.Fall || opt == LevelOptions.Drown || opt == LevelOptions.RealmOwner || opt == LevelOptions.LoadDelay;
         }
-
         static void PrintMapInfo(Player p, LevelConfig cfg)
         {
             p.Message("&TPhysics settings:");
@@ -125,13 +109,11 @@ namespace MCGalaxy.Commands.World
                            GetBool(cfg.LeafDecay), cfg.PhysicsOverload);
             p.Message("  Physics speed: &b{0} &Smilliseconds between ticks",
                            cfg.PhysicsSpeed);
-
             p.Message("&TSurvival settings:");
             p.Message("  Survival death: {0} &S(Fall: {1}, Drown: {2})",
                            GetBool(cfg.SurvivalDeath), cfg.FallHeight, cfg.DrownTime);
             p.Message("  Guns: {0}&S, Killer blocks: {1}",
                            GetBool(cfg.Guns), GetBool(cfg.KillerBlocks));
-
             p.Message("&TGeneral settings:");
             p.Message("  MOTD: &b" + cfg.MOTD);
             p.Message("  Local level only chat: " + GetBool(!cfg.ServerWideChat));
@@ -140,16 +122,13 @@ namespace MCGalaxy.Commands.World
             p.Message("  Buildable: {0}&S, Deletable: {1}&S, Drawing: {2}",
                            GetBool(cfg.Buildable), GetBool(cfg.Deletable), GetBool(cfg.Drawing));
         }
-
         static string GetBool(bool value) { return value ? "&aON" : "&cOFF"; }
-
         public override void Help(Player p)
         {
             p.Message("&T/Map [level] [option] <value> &H- Sets [option] on that level");
             p.Message("&HUse &T/Help map options &Hfor a list of options");
             p.Message("&HUse &T/Help map [option] &Hto see description for that option");
         }
-
         public override void Help(Player p, string message)
         {
             if (message.CaselessEq("options"))
@@ -158,21 +137,17 @@ namespace MCGalaxy.Commands.World
                 p.Message("&HUse &T/Help map [option] &Hto see description for that option");
                 return;
             }
-
             LevelOption opt = LevelOptions.Find(message);
             if (opt == null)
             {
                 p.Message("Unrecognised option \"{0}\".", message); return;
             }
-
             bool isMotd = opt.Name == LevelOptions.MOTD;
             string suffix = isMotd ? " <value>" : (HasArgument(opt.Name) ? " [value]" : "");
-
             p.Message("&T/Map [level] {0}{1}", opt.Name, suffix);
             p.Message("&H" + opt.Help);
             if (isMotd) ShowMotdRules(p);
         }
-
         static void ShowMotdRules(Player p)
         {
             p.Message("&HSpecial rules that can be put in a motd:");

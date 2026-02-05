@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,7 +14,6 @@
  */
 using MCGalaxy.Games;
 using MCGalaxy.Maths;
-
 namespace MCGalaxy.Commands.Misc
 {
     public sealed class CmdTp : Command2
@@ -30,21 +26,17 @@ namespace MCGalaxy.Commands.Misc
         {
             get { return new[] { new CommandAlias("Teleport"), new CommandAlias("TPP", "-precise") }; }
         }
-
         const string precisePrefix = "-precise ";
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
-
             bool preciseTP = message.CaselessStarts(precisePrefix);
             if (preciseTP)
             {
                 message = message.Substring(precisePrefix.Length);
             }
-
             string[] args = message.SplitSpaces();
             if (args.Length >= 3) { TeleportCoords(p, args, preciseTP); return; }
-
             Player target = null;
             PlayerBot bot = null;
             if (args.Length == 1)
@@ -62,17 +54,14 @@ namespace MCGalaxy.Commands.Misc
             {
                 Help(p); return;
             }
-
             Entity dst = bot ?? (Entity)target;
             PlayerOperations.TeleportToEntity(p, dst);
         }
-
         internal static bool GetTeleportCoords(Player p, Entity ori, string[] args, bool precise,
                                                out Position pos, out byte yaw, out byte pitch)
         {
             Vec3S32 P;
             pos = p.Pos; yaw = ori.Rot.RotY; pitch = ori.Rot.HeadX;
-
             if (!precise)
             {
                 // relative to feet block coordinates
@@ -87,7 +76,6 @@ namespace MCGalaxy.Commands.Misc
                 if (!CommandParser.GetCoords(p, args, 0, ref P)) return false;
                 pos = new Position(P.X, P.Y + Entities.CharacterHeight, P.Z);
             }
-
             int angle = 0;
             if (args.Length > 3)
             {
@@ -101,14 +89,11 @@ namespace MCGalaxy.Commands.Misc
             }
             return true;
         }
-
         static void TeleportCoords(Player p, string[] args, bool precise)
         {
             if (!GetTeleportCoords(p, p, args, precise, out Position pos, out byte yaw, out byte pitch)) return;
-
             PlayerOperations.TeleportToCoords(p, pos, new Orientation(yaw, pitch));
         }
-
         static bool CheckPlayer(Player p, Player target, CommandData data)
         {
             if (target.level.IsMuseum)
@@ -116,7 +101,6 @@ namespace MCGalaxy.Commands.Misc
                 p.Message("{0} &Sis in a museum.", p.FormatNick(target)); return false;
             }
             if (!Server.Config.HigherRankTP && !CheckRank(p, data, target, "teleport to", true)) return false;
-
             IGame game = IGame.GameOn(target.level);
             if (!p.Game.Referee && game != null)
             {
@@ -125,7 +109,6 @@ namespace MCGalaxy.Commands.Misc
             }
             return true;
         }
-
         public override void Help(Player p)
         {
             p.Message("&HUse ~ before a coordinate to move relative to current position");

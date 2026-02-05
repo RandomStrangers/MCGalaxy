@@ -1,16 +1,12 @@
-﻿/*
+/*
     Copyright 2011 MCForge
-    
     Written by fenderrock87
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -22,8 +18,6 @@ using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Games;
 using MCGalaxy.Maths;
 using System;
-
-
 namespace MCGalaxy.Modules.Games.CTF
 {
     public partial class CTFGame : RoundsGame
@@ -34,56 +28,44 @@ namespace MCGalaxy.Modules.Games.CTF
             OnPlayerChatEvent.Register(HandlePlayerChat, Priority.High);
             OnPlayerCommandEvent.Register(HandlePlayerCommand, Priority.High);
             OnBlockChangingEvent.Register(HandleBlockChanging, Priority.High);
-
             OnPlayerSpawningEvent.Register(HandlePlayerSpawning, Priority.High);
             OnTabListEntryAddedEvent.Register(HandleTabListEntryAdded, Priority.High);
             OnSentMapEvent.Register(HandleSentMap, Priority.High);
             OnJoinedLevelEvent.Register(HandleJoinedLevel, Priority.High);
-
             base.HookEventHandlers();
         }
-
         protected override void UnhookEventHandlers()
         {
             OnPlayerDiedEvent.Unregister(HandlePlayerDied);
             OnPlayerChatEvent.Unregister(HandlePlayerChat);
             OnPlayerCommandEvent.Unregister(HandlePlayerCommand);
             OnBlockChangingEvent.Unregister(HandleBlockChanging);
-
             OnPlayerSpawningEvent.Unregister(HandlePlayerSpawning);
             OnTabListEntryAddedEvent.Unregister(HandleTabListEntryAdded);
             OnSentMapEvent.Unregister(HandleSentMap);
             OnJoinedLevelEvent.Unregister(HandleJoinedLevel);
-
             base.UnhookEventHandlers();
         }
-
-
         void HandlePlayerDied(Player p, ushort deathblock, ref TimeSpan cooldown)
         {
             if (p.level != Map || !Get(p).HasFlag) return;
             CtfTeam team = TeamOf(p);
             if (team != null) DropFlag(p, team);
         }
-
         void HandlePlayerChat(Player p, string message)
         {
             if (p.level != Map || !Get(p).TeamChatting) return;
-
             CtfTeam team = TeamOf(p);
             if (team == null) return;
-
             string prefix = team.Color + " - to " + team.Name;
             Chat.MessageChat(ChatScope.Level, p, prefix + " - λNICK: &f" + message,
                              Map, (pl, arg) => pl.Game.Referee || TeamOf(pl) == team);
             p.cancelchat = true;
         }
-
         void HandlePlayerCommand(Player p, string cmd, string args, CommandData data)
         {
             if (p.level != Map || cmd != "teamchat") return;
             CtfData data_ = Get(p);
-
             if (data_.TeamChatting)
             {
                 p.Message("You are no longer chatting with your team!");
@@ -92,11 +74,9 @@ namespace MCGalaxy.Modules.Games.CTF
             {
                 p.Message("You are now chatting with your team!");
             }
-
             data_.TeamChatting = !data_.TeamChatting;
             p.cancelcommand = true;
         }
-
         void HandleBlockChanging(Player p, ushort x, ushort y, ushort z, ushort block, bool placing, ref bool cancel)
         {
             if (p.level != Map) return;
@@ -108,7 +88,6 @@ namespace MCGalaxy.Modules.Games.CTF
                 p.Message("You are not on a team!");
                 return;
             }
-
             Vec3U16 pos = new(x, y, z);
             if (pos == Opposing(team).FlagPos && !Map.IsAirAt(x, y, z))
             {
@@ -120,24 +99,19 @@ namespace MCGalaxy.Modules.Games.CTF
                 cancel = true;
             }
         }
-
         void HandlePlayerSpawning(Player p, ref Position pos, ref byte yaw, ref byte pitch, bool respawning)
         {
             if (p.level != Map) return;
             CtfTeam team = TeamOf(p);
-
             if (team == null) return;
             if (respawning) DropFlag(p, team);
-
             Vec3U16 coords = team.SpawnPos;
             pos = Position.FromFeetBlockCoords(coords.X, coords.Y, coords.Z);
         }
-
         void HandleTabListEntryAdded(Entity entity, ref string tabName, ref string tabGroup, Player dst)
         {
             if (entity is not Player p || p.level != Map) return;
             CtfTeam team = TeamOf(p);
-
             if (p.Game.Referee)
             {
                 tabGroup = "&2Referees";
@@ -151,14 +125,12 @@ namespace MCGalaxy.Modules.Games.CTF
                 tabGroup = "&7Spectators";
             }
         }
-
         void HandleSentMap(Player p, Level prevLevel, Level level)
         {
             if (level != Map) return;
             OutputMapSummary(p, Map.name, Map.Config);
             if (TeamOf(p) == null) AutoAssignTeam(p);
         }
-
         void HandleJoinedLevel(Player p, Level prevLevel, Level level, ref bool announce)
         {
             HandleJoinedCommon(p, prevLevel, level, ref announce);

@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,18 +14,14 @@
  */
 using System.Collections.Generic;
 using System.IO;
-
 namespace MCGalaxy
 {
     public sealed class EnvPreset
     {
-
         const string FOLDER = "presets";
         const string FILE_EXTENSION = ".env";
-
         public readonly string Fog, Sky, Clouds, Sun, Shadow;
         public readonly string LavaLight = "", LampLight = "";
-
         public EnvPreset(string raw)
         {
             string[] args = raw.SplitSpaces();
@@ -36,7 +29,6 @@ namespace MCGalaxy
             LavaLight = args.Length > 5 ? args[5] : "";
             LampLight = args.Length > 6 ? args[6] : "";
         }
-
         static readonly Dictionary<string, string> Presets = new() {
                         //   fog   sky   clouds   sun   shadow
             { "Cartoon",  "00FFFF 1E90FF 00BFFF F5DEB3 F4A460" },
@@ -50,12 +42,10 @@ namespace MCGalaxy
             { "Midnight", "131947 070A23 1E223A 181828 0F0F19" },
             { "Normal",   "    " },
         };
-
         public static EnvPreset Find(string value)
         {
             EnvPreset preset = FindDefault(value);
             if (preset != null) return preset;
-
             if (File.Exists(FOLDER + "/" + value.ToLower() + FILE_EXTENSION))
             {
                 //string text = File.ReadAllText(FOLDER + "/" + value.ToLower() + FILE_EXTENSION);
@@ -64,7 +54,6 @@ namespace MCGalaxy
             }
             return null;
         }
-
         static EnvPreset FindDefault(string name)
         {
             foreach (KeyValuePair<string, string> kvp in Presets)
@@ -73,14 +62,11 @@ namespace MCGalaxy
             }
             return null;
         }
-
         public static void ListFor(Player p)
         {
             p.Message("&HPresets: &f{0}", Presets.Join(pr => pr.Key));
-
             string[] files = FileIO.TryGetFiles(FOLDER, "*" + FILE_EXTENSION);
             if (files == null) return;
-
             string all = files.Join(f => Path.GetFileNameWithoutExtension(f));
             if (all.Length > 0) p.Message("&HCustom presets: &f" + all);
         }

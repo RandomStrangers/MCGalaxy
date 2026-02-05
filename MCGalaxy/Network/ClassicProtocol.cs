@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
 Dual-licensed under the Educational Community License, Version 2.0 and
 the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -18,8 +18,6 @@ using MCGalaxy.Maths;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-
-
 namespace MCGalaxy.Network
 {
     public class ClassicProtocol : IGameSession
@@ -27,20 +25,15 @@ namespace MCGalaxy.Network
         // these are checked very frequently, so avoid overhead of .Supports(
         bool hasEmoteFix, hasTwoWayPing, hasExtTexs, hasTextColors;
         bool hasHeldBlock, hasLongerMessages;
-
         bool finishedCpeLogin;
         int extensionCount;
         CpeExt[] extensions = CpeExtension.Empty;
-
         public ClassicProtocol(INetSocket s)
         {
             socket = s;
             player = new Player(s, this);
         }
-
-
         public override int MaxEntityID { get { return 254; } }
-
         protected override int HandlePacket(byte[] buffer, int offset, int left)
         {
             switch (buffer[offset])
@@ -57,7 +50,6 @@ namespace MCGalaxy.Network
                 case Opcode.CpePluginMessage: return HandlePluginMessage(buffer, offset, left);
                 case Opcode.CpeNotifyAction: return HandleNotifyAction(buffer, offset, left);
                 case Opcode.CpeNotifyPositionAction: return HandleNotifyPositionAction(buffer, offset, left);
-
                 case Opcode.CpeCustomBlockSupportLevel:
                     return left < 2 ? 0 : 2; // only ever one level anyways
                 default:
@@ -65,7 +57,6 @@ namespace MCGalaxy.Network
                     return left;
             }
         }
-
 #if TEN_BIT_BLOCKS
         ushort ReadBlock(byte[] buffer, int offset)
         {
@@ -78,15 +69,12 @@ namespace MCGalaxy.Network
             {
                 block = buffer[offset];
             }
-
             if (block > Block.MaxRaw) block = Block.MaxRaw;
             return Block.FromRaw(block);
         }
 #else
         ushort ReadBlock(byte[] buffer, int offset) { return Block.FromRaw(buffer[offset]); }
 #endif
-
-
         #region Classic processing
         int HandleLogin(byte[] buffer, int offset, int left)
         {
@@ -96,13 +84,11 @@ namespace MCGalaxy.Network
             const int new_size = 1 + 1 + 64 + 64 + 1;
             // the packet must be at least old_size long
             if (left < old_size) return 0;
-
             ProtocolVersion = buffer[offset + 1];
             // check size now that know whether usertype field is included or not
             int size = ProtocolVersion >= Server.VERSION_0020 ? new_size : old_size;
             if (left < size) return 0;
             if (player.loggedIn) return size;
-
             // usertype field has different meanings depending on protocol version
             //  Version 7 - 0x42 for CPE supporting client, should be 0 otherwise
             //  Version 6 - should be 0
@@ -111,51 +97,42 @@ namespace MCGalaxy.Network
             {
                 hasCpe = buffer[offset + 130] == 0x42 && Server.Config.EnableCPE;
             }
-
             string name = NetUtils.ReadString(buffer, offset + 2);
             string mppass = NetUtils.ReadString(buffer, offset + 66);
             if (!player.ProcessLogin(name, mppass)) return left;
-
             UpdateFallbackTable();
             if (hasCpe) { SendCpeExtensions(); }
             else { player.CompleteLoginProcess(); }
             return size;
         }
-
         int HandleBlockchange(byte[] buffer, int offset, int left)
         {
             int size = 1 + 6 + 1 + (hasExtBlocks ? 2 : 1);
             if (left < size) return 0;
             if (!player.loggedIn) return size;
-
             ushort x = MemUtils.ReadU16_BE(buffer, offset + 1);
             ushort y = MemUtils.ReadU16_BE(buffer, offset + 3);
             ushort z = MemUtils.ReadU16_BE(buffer, offset + 5);
-
             byte action = buffer[offset + 7];
             if (action > 1)
             {
                 player.Leave("Unknown block action!", true); return left;
             }
-
             ushort held = ReadBlock(buffer, offset + 8);
             player.ProcessBlockchange(x, y, z, action, held);
             return size;
         }
-
         int HandleMovement(byte[] buffer, int offset, int left)
         {
             int size = 1 + 6 + 2 + (player.hasExtPositions ? 6 : 0) + (hasExtBlocks ? 2 : 1);
             if (left < size) return 0;
             if (!player.loggedIn) return size;
-
             int held = -1;
             if (hasHeldBlock)
             {
                 held = ReadBlock(buffer, offset + 1);
                 if (hasExtBlocks) offset++; // correct offset for position later
             }
-
             int x, y, z;
             if (player.hasExtPositions)
             {
@@ -170,37 +147,30 @@ namespace MCGalaxy.Network
                 y = MemUtils.ReadI16_BE(buffer, offset + 4);
                 z = MemUtils.ReadI16_BE(buffer, offset + 6);
             }
-
             byte yaw = buffer[offset + 8];
             byte pitch = buffer[offset + 9];
             player.ProcessMovement(x, y, z, yaw, pitch, held);
             return size;
         }
-
         int HandleChat(byte[] buffer, int offset, int left)
         {
             const int size = 1 + 1 + 64;
             if (left < size) return 0;
             if (!player.loggedIn) return size;
-
             // In original clasic, this field is 'player ID' and so useless
             // With LongerMessages extension, this field has been repurposed
             bool continued = hasLongerMessages && buffer[offset + 1] != 0;
-
             string text = NetUtils.ReadString(buffer, offset + 2);
             player.ProcessChat(text, continued);
             return size;
         }
         #endregion
-
-
         #region CPE processing
         public override bool Supports(string extName, int version = 1)
         {
             CpeExt ext = FindExtension(extName);
             return ext != null && ext.ClientVersion == version;
         }
-
         CpeExt FindExtension(string extName)
         {
             foreach (CpeExt ext in extensions)
@@ -209,20 +179,17 @@ namespace MCGalaxy.Network
             }
             return null;
         }
-
         void SendCpeExtensions()
         {
             extensions = CpeExtension.GetAllEnabled();
             Send(Packet.ExtInfo((byte)(extensions.Length + 1)));
             // fix for old classicube java client, doesn't reply if only send EnvMapAppearance with version 2
             Send(Packet.ExtEntry(CpeExt.EnvMapAppearance, 1));
-
             foreach (CpeExt ext in extensions)
             {
                 Send(Packet.ExtEntry(ext.Name, ext.ServerVersion));
             }
         }
-
         void CheckReadAllExtensions()
         {
             if (extensionCount <= 0 && !finishedCpeLogin)
@@ -231,44 +198,36 @@ namespace MCGalaxy.Network
                 finishedCpeLogin = true;
             }
         }
-
         int HandleExtInfo(byte[] buffer, int offset, int left)
         {
             const int size = 1 + 64 + 2;
             if (left < size) return 0;
-
             appName = NetUtils.ReadString(buffer, offset + 1);
             extensionCount = buffer[offset + 66];
             CheckReadAllExtensions(); // in case client supports 0 CPE packets
             return size;
         }
-
         int HandleExtEntry(byte[] buffer, int offset, int left)
         {
             const int size = 1 + 64 + 4;
             if (left < size) return 0;
-
             string extName = NetUtils.ReadString(buffer, offset + 1);
             int extVersion = MemUtils.ReadI32_BE(buffer, offset + 65);
-
             // TODO: Classic+ client seems to use a custom protocol
             if (extVersion == 0x03110003)
             {
                 player.Leave("Classic+ Client is unsupported");
                 return size;
             }
-
             AddExtension(extName, extVersion);
             extensionCount--;
             CheckReadAllExtensions();
             return size;
         }
-
         int HandlePlayerClicked(byte[] buffer, int offset, int left)
         {
             const int size = 1 + 1 + 1 + 2 + 2 + 1 + 2 + 2 + 2 + 1;
             if (left < size) return 0;
-
             MouseButton Button = (MouseButton)buffer[offset + 1];
             MouseAction Action = (MouseAction)buffer[offset + 2];
             ushort yaw = MemUtils.ReadU16_BE(buffer, offset + 3);
@@ -277,49 +236,38 @@ namespace MCGalaxy.Network
             ushort x = MemUtils.ReadU16_BE(buffer, offset + 8);
             ushort y = MemUtils.ReadU16_BE(buffer, offset + 10);
             ushort z = MemUtils.ReadU16_BE(buffer, offset + 12);
-
             TargetBlockFace face = (TargetBlockFace)buffer[offset + 14];
             if (face > TargetBlockFace.None) face = TargetBlockFace.None;
             OnPlayerClickEvent.Call(player, Button, Action, yaw, pitch, entityID, x, y, z, face);
             return size;
         }
-
         int HandleNotifyAction(byte[] buffer, int offset, int left)
         {
             const int size = 1 + 2 + 2;
             if (left < size) return 0;
-
             NotifyActionType action = (NotifyActionType)buffer[offset + 2];
             short value = MemUtils.ReadI16_BE(buffer, offset + 3);
-
             OnNotifyActionEvent.Call(player, action, value);
             return size;
         }
-
         int HandleNotifyPositionAction(byte[] buffer, int offset, int left)
         {
             const int size = 1 + 2 + 2 + 2 + 2;
             if (left < size) return 0;
-
             NotifyActionType action = (NotifyActionType)buffer[offset + 2];
             ushort x = MemUtils.ReadU16_BE(buffer, offset + 3);
             ushort y = MemUtils.ReadU16_BE(buffer, offset + 5);
             ushort z = MemUtils.ReadU16_BE(buffer, offset + 7);
-
             OnNotifyPositionActionEvent.Call(player, action, x, y, z);
             return size;
         }
-
         int HandleTwoWayPing(byte[] buffer, int offset, int left)
         {
             const int size = 1 + 1 + 2;
             if (left < size) return 0;
-
             bool serverToClient = buffer[offset + 1] != 0;
             ushort data = MemUtils.ReadU16_BE(buffer, offset + 2);
-
             //player.Message("&bServerToClient? {0}, data {1}", serverToClient, data);
-
             if (!serverToClient)
             {
                 // Client-> server ping, immediately send reply.
@@ -333,32 +281,26 @@ namespace MCGalaxy.Network
             }
             return size;
         }
-
         int HandlePluginMessage(byte[] buffer, int offset, int left)
         {
             const int size = 1 + 1 + Packet.PluginMessageDataLength;
             if (left < size) return 0;
-
             byte channel = buffer[offset + 1];
             byte[] data = new byte[Packet.PluginMessageDataLength];
             Array.Copy(buffer, offset + 2, data, 0, Packet.PluginMessageDataLength);
             OnPluginMessageReceivedEvent.Call(player, channel, data);
-
             return size;
         }
-
         void AddExtension(string extName, int version)
         {
             Player p = player;
             CpeExt ext = FindExtension(extName);
             if (ext == null) return;
             ext.ClientVersion = (byte)version;
-
             if (ext.Name == CpeExt.CustomBlocks)
             {
                 if (version == 1) Send(Packet.CustomBlockSupportLevel(1));
                 hasCustomBlocks = true;
-
                 UpdateFallbackTable();
                 if (MaxRawBlock < Block.CPE_MAX_BLOCK) MaxRawBlock = Block.CPE_MAX_BLOCK;
             }
@@ -420,7 +362,6 @@ namespace MCGalaxy.Network
             }
 #endif
         }
-
         void SendGlobalColors()
         {
             for (int i = 0; i < Colors.List.Length; i++)
@@ -430,8 +371,6 @@ namespace MCGalaxy.Network
             }
         }
         #endregion
-
-
         #region Classic packet sending
         public override void SendTeleport(byte id, Position pos, Orientation rot)
         {
@@ -449,27 +388,22 @@ namespace MCGalaxy.Network
                 SendSpawnEntity(id, player.color + player.truename, player.SkinName, pos, rot);
                 return;
             }
-
             // NOTE: Classic clients require offseting own entity by 22 units vertically
             bool self = id == Entities.SelfID;
             if (self) pos.Y -= 22;
-
             SendTeleportCore(self, Packet.Teleport(id, pos, rot, player.hasExtPositions), id, pos, rot);
         }
         public override bool SendTeleport(byte id, Position pos, Orientation rot,
                                           Packet.TeleportMoveMode moveMode, bool usePos = true, bool interpolateOri = false, bool useOri = true)
         {
             if (!Supports(CpeExt.ExtEntityTeleport)) { return false; }
-
             bool absoluteSelf = (moveMode == Packet.TeleportMoveMode.AbsoluteInstant ||
                 moveMode == Packet.TeleportMoveMode.AbsoluteSmooth) && id == Entities.SelfID;
             // NOTE: Classic clients require offseting own entity by 22 units vertically when using absolute location updates
             if (absoluteSelf) pos.Y -= 22;
-
             SendTeleportCore(absoluteSelf, Packet.TeleportExt(id, usePos, moveMode, useOri, interpolateOri, pos, rot, player.hasExtPositions), id, pos, rot);
             return true;
         }
-
         void SendTeleportCore(bool absoluteSelf, byte[] packet, byte _, Position __, Orientation ___)
         {
             if (!absoluteSelf || !hasTwoWayPing)
@@ -477,31 +411,25 @@ namespace MCGalaxy.Network
                 Send(packet);
                 return;
             }
-
             byte[] pingPacket = Packet.TwoWayPing(true, Ping.NextTwoWayPingData(true));
-
             byte[] merged = new byte[packet.Length + pingPacket.Length];
             Buffer.BlockCopy(packet, 0, merged, 0, packet.Length);
             Buffer.BlockCopy(pingPacket, 0, merged, packet.Length, pingPacket.Length);
-
             Send(merged);
             // This shouldn't be called -- checking blocks can trigger other teleports leading to a stack overflow
             // Update server-side position and check MB/portals/zones
             // player.ProcessMovementCore(pos, rot.RotY, rot.HeadX, false);
         }
-
         public override void SendRemoveEntity(byte id)
         {
             Send(Packet.RemoveEntity(id));
         }
-
         public override void SendChat(string message)
         {
             // See comment in CleanupColors
             char[] buffer = LineWrapper.CleanupColors(message, out int bufferLen,
                                                       hasTextColors, hasTextColors);
             List<string> lines = LineWrapper.Wordwrap(buffer, bufferLen, hasEmoteFix);
-
             // Need to combine chat line packets into one Send call, so that
             // multi-line messages from multiple threads don't interleave
             for (int i = 0; i < lines.Count;)
@@ -510,7 +438,6 @@ namespace MCGalaxy.Network
                 // Divide by 66 (size of chat packet) gives ~62 lines
                 int count = Math.Min(62, lines.Count - i);
                 byte[] data = new byte[count * 66];
-
                 for (int j = 0; j < count; i++, j++)
                 {
                     Packet.WriteMessage(lines[i], 0, player.hasCP437, data, j * 66);
@@ -518,31 +445,25 @@ namespace MCGalaxy.Network
                 Send(data);
             }
         }
-
         public override void SendMessage(CpeMessageType type, string message)
         {
             message = CleanupColors(message);
             Send(Packet.Message(message, type, player.hasCP437));
         }
-
         public override void SendKick(string reason, bool sync)
         {
             reason = CleanupColors(reason);
             byte[] buffer = Packet.Kick(reason, player.hasCP437);
             socket.Send(buffer, sync ? SendFlags.Synchronous : SendFlags.None);
         }
-
         public override bool SendSetUserType(byte type)
         {
             // this packet doesn't exist before protocol version 7
             if (ProtocolVersion < Server.VERSION_0030) return false;
-
             Send(Packet.UserType(type));
             return true;
         }
         #endregion
-
-
         #region CPE packet sending
         public override void SendAddTabEntry(byte id, string name, string nick, string group, byte groupRank)
         {
@@ -550,33 +471,26 @@ namespace MCGalaxy.Network
             group = CleanupColors(group);
             Send(Packet.ExtAddPlayerName(id, name, nick, group, groupRank, player.hasCP437));
         }
-
         public override void SendRemoveTabEntry(byte id)
         {
             Send(Packet.ExtRemovePlayerName(id));
         }
-
         public override bool SendSetReach(float reach)
         {
             if (!Supports(CpeExt.ClickDistance)) return false;
-
             Send(Packet.ClickDistance((short)(reach * 32)));
             return true;
         }
-
         public override bool SendHoldThis(ushort block, bool locked)
         {
             if (!hasHeldBlock) return false;
-
             ushort raw = ConvertBlock(block);
             Send(Packet.HoldThis(raw, locked, hasExtBlocks));
             return true;
         }
-
         public override bool SendSetEnvColor(byte type, string hex)
         {
             if (!Supports(CpeExt.EnvColors)) return false;
-
             if (Colors.TryParseHex(hex, out ColorDesc c))
             {
                 Send(Packet.EnvColor(type, c.R, c.G, c.B));
@@ -587,7 +501,6 @@ namespace MCGalaxy.Network
             }
             return true;
         }
-
         public override void SendChangeModel(byte id, string model)
         {
             if (ushort.TryParse(model, out ushort raw) && raw > MaxRawBlock)
@@ -606,31 +519,24 @@ namespace MCGalaxy.Network
         }
         public override void SendEntityProperty(byte id, EntityProp prop, int value)
         {
-
             Send(Packet.EntityProperty(id, prop, value));
         }
-
         public override bool SendSetWeather(byte weather)
         {
             if (!Supports(CpeExt.EnvWeatherType)) return false;
-
             Send(Packet.EnvWeatherType(weather));
             return true;
         }
-
         public override bool SendSetTextColor(ColorDesc color)
         {
             if (!hasTextColors) return false;
-
             Send(Packet.SetTextColor(color));
             return true;
         }
-
         public override bool SendDefineBlock(BlockDefinition def)
         {
             if (!hasBlockDefs || def.RawID > MaxRawBlock) return false;
             byte[] packet;
-
             if (Supports(CpeExt.BlockDefinitionsExt, 2) && def.Shape != 0)
             {
                 packet = Packet.DefineBlockExt(def, true, player.hasCP437, hasExtBlocks, hasExtTexs);
@@ -643,36 +549,28 @@ namespace MCGalaxy.Network
             {
                 packet = Packet.DefineBlock(def, player.hasCP437, hasExtBlocks, hasExtTexs);
             }
-
             Send(packet);
             return true;
         }
-
         public override bool SendUndefineBlock(BlockDefinition def)
         {
             if (!hasBlockDefs || def.RawID > MaxRawBlock) return false;
-
             Send(Packet.UndefineBlock(def, hasExtBlocks));
             return true;
         }
-
         public override bool SendAddSelection(byte id, string label, Vec3U16 p1, Vec3U16 p2, ColorDesc color)
         {
             if (!Supports(CpeExt.SelectionCuboid)) return false;
-
             Send(Packet.MakeSelection(id, label, p1, p2,
                                       color.R, color.G, color.B, color.A, player.hasCP437));
             return true;
         }
-
         public override bool SendRemoveSelection(byte id)
         {
             if (!Supports(CpeExt.SelectionCuboid)) return false;
-
             Send(Packet.DeleteSelection(id));
             return true;
         }
-
         public override bool SendCinematicGui(CinematicGui gui)
         {
             if (!Supports(CpeExt.CinematicGui)) return false;
@@ -684,27 +582,21 @@ namespace MCGalaxy.Network
                 (ushort)(barSize * ushort.MaxValue)));
             return true;
         }
-
         public override bool SendToggleBlockList(bool toggle)
         {
             if (!Supports(CpeExt.ToggleBlockList)) return false;
-
             Send(Packet.ToggleBlockList(toggle));
             return true;
         }
         #endregion
-
-
         #region Higher level sending
         public override void SendMotd(string motd)
         {
             motd = CleanupColors(motd);
             Send(Packet.Motd(player, motd));
-
             if (!Supports(CpeExt.HackControl)) return;
             Send(Hacks.MakeHackControl(player, motd));
         }
-
         public override void SendPing()
         {
             if (hasTwoWayPing)
@@ -716,7 +608,6 @@ namespace MCGalaxy.Network
                 Send(Packet.Ping());
             }
         }
-
         public override void SendSetSpawnpoint(Position pos, Orientation rot)
         {
             if (Supports(CpeExt.SetSpawnpoint))
@@ -729,14 +620,12 @@ namespace MCGalaxy.Network
                 Entities.Spawn(player, player, pos, rot);
             }
         }
-
         public override void SendSpawnEntity(byte id, string name, string skin, Position pos, Orientation rot)
         {
             name = CleanupColors(name);
             bool self = id == Entities.SelfID;
             // NOTE: Classic clients require offseting own entity by 22 units vertically
             if (self) pos.Y -= 22;
-
             // SpawnEntity for self ID behaves differently in Classic 0.0.16a
             //  - yaw and pitch fields are swapped
             //  - pitch is inverted
@@ -747,7 +636,6 @@ namespace MCGalaxy.Network
                 rot.HeadX = rot.RotY;
                 rot.RotY = (byte)(256 - temp);
             }
-
             byte[] packet;
             if (Supports(CpeExt.ExtPlayerList, 2))
             {
@@ -767,7 +655,6 @@ namespace MCGalaxy.Network
             }
             SendTeleportCore(self, packet, id, pos, rot);
         }
-
         public override void SendLevel(Level prev, Level level)
         {
             int volume = level.blocks.Length;
@@ -779,7 +666,6 @@ namespace MCGalaxy.Network
             {
                 Send(Packet.LevelInitalise());
             }
-
             if (hasBlockDefs)
             {
                 if (prev != null && prev != level)
@@ -787,22 +673,17 @@ namespace MCGalaxy.Network
                     RemoveOldLevelCustomBlocks(prev);
                 }
                 BlockDefinition.SendLevelCustomBlocks(player);
-
                 if (Supports(CpeExt.InventoryOrder))
                 {
                     BlockDefinition.SendLevelInventoryOrder(player);
                 }
             }
-
             LevelChunkStream.SendLevel(this, level, volume);
-
             // Force players to read the MOTD (clamped to 3 seconds at most)
             if (level.Config.LoadDelay > 0)
                 Thread.Sleep(level.Config.LoadDelay);
-
             Send(Packet.LevelFinalise(level.Width, level.Height, level.Length));
         }
-
         void RemoveOldLevelCustomBlocks(Level oldLevel)
         {
             BlockDefinition[] defs = oldLevel.CustomBlockDefs;
@@ -810,13 +691,10 @@ namespace MCGalaxy.Network
             {
                 BlockDefinition def = defs[i];
                 if (def == BlockDefinition.GlobalDefs[i] || def == null) continue;
-
                 SendUndefineBlock(def);
             }
         }
         #endregion
-
-
         public override void SendBlockchange(ushort x, ushort y, ushort z, ushort block)
         {
             byte[] buffer = new byte[hasExtBlocks ? 9 : 8];
@@ -824,17 +702,14 @@ namespace MCGalaxy.Network
             NetUtils.WriteU16(x, buffer, 1);
             NetUtils.WriteU16(y, buffer, 3);
             NetUtils.WriteU16(z, buffer, 5);
-
             ushort raw = ConvertBlock(block);
             NetUtils.WriteBlock(raw, buffer, 7, hasExtBlocks);
             socket.Send(buffer, SendFlags.LowPriority);
         }
-
         public override byte[] MakeBulkBlockchange(BufferedBlockSender buffer)
         {
             return buffer.MakeLimited(fallback);
         }
-
         void UpdateFallbackTable()
         {
             for (byte b = 0; b <= Block.CPE_MAX_BLOCK; b++)
@@ -842,8 +717,6 @@ namespace MCGalaxy.Network
                 fallback[b] = hasCustomBlocks ? b : Block.ConvertClassic(b, ProtocolVersion);
             }
         }
-
-
         string CleanupColors(string value)
         {
             // Although ClassiCube in classic mode supports invalid colours,
@@ -853,21 +726,17 @@ namespace MCGalaxy.Network
             //  when text colours extension is not supported
             return LineWrapper.CleanupColors(value, hasTextColors, hasTextColors);
         }
-
         public override string ClientName()
         {
             if (!string.IsNullOrEmpty(appName)) return appName;
             byte version = ProtocolVersion;
-
             if (version == Server.VERSION_0016) return "Classic 0.0.16";
             if (version == Server.VERSION_0017) return "Classic 0.0.17-0.0.18";
             if (version == Server.VERSION_0019) return "Classic 0.0.19";
             if (version == Server.VERSION_0020) return "Classic 0.0.20-0.0.23";
-
             // Might really be Classicube in Classic Mode, Charged Miners, etc though
             return "Classic 0.28-0.30";
         }
-
         public override unsafe void GetPositionPacket(ref byte* ptr, byte id, bool srcExtPos, bool extPos,
                                                     Position pos, Position oldPos, Orientation rot, Orientation oldRot)
         {
@@ -875,12 +744,10 @@ namespace MCGalaxy.Network
             bool posChanged = delta.X != 0 || delta.Y != 0 || delta.Z != 0;
             bool oriChanged = rot.RotY != oldRot.RotY || rot.HeadX != oldRot.HeadX;
             bool absPosUpdate = Math.Abs(delta.X) > 32 || Math.Abs(delta.Y) > 32 || Math.Abs(delta.Z) > 32;
-
             if (absPosUpdate)
             {
                 *ptr = Opcode.EntityTeleport; ptr++;
                 *ptr = id; ptr++;
-
                 if (extPos)
                 {
                     WriteI32(ref ptr, pos.X); WriteI32(ref ptr, pos.Y); WriteI32(ref ptr, pos.Z);
@@ -895,7 +762,6 @@ namespace MCGalaxy.Network
                 byte opcode = oriChanged ? Opcode.RelPosAndOrientationUpdate : Opcode.RelPosUpdate;
                 *ptr = opcode; ptr++;
                 *ptr = id; ptr++;
-
                 *ptr = (byte)delta.X; ptr++;
                 *ptr = (byte)delta.Y; ptr++;
                 *ptr = (byte)delta.Z; ptr++;
@@ -905,33 +771,27 @@ namespace MCGalaxy.Network
                 *ptr = Opcode.OrientationUpdate; ptr++;
                 *ptr = id; ptr++;
             }
-
             if (absPosUpdate || oriChanged)
             {
                 *ptr = rot.RotY; ptr++;
                 *ptr = rot.HeadX; ptr++;
             }
         }
-
         static unsafe void WriteI32(ref byte* ptr, int value)
         {
             *ptr = (byte)(value >> 24); ptr++; *ptr = (byte)(value >> 16); ptr++;
             *ptr = (byte)(value >> 8); ptr++; *ptr = (byte)value; ptr++;
         }
-
         static unsafe void WriteI16(ref byte* ptr, short value)
         {
             *ptr = (byte)(value >> 8); ptr++; *ptr = (byte)value; ptr++;
         }
-
         static Position GetDelta(Position pos, Position old, bool extPositions)
         {
             Position delta = new(pos.X - old.X, pos.Y - old.Y, pos.Z - old.Z);
             if (extPositions) return delta;
-
             delta.X = (short)delta.X; delta.Y = (short)delta.Y; delta.Z = (short)delta.Z;
             return delta;
         }
-
     }
 }

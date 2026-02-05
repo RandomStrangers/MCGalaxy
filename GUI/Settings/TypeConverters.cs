@@ -18,14 +18,8 @@ namespace MCGalaxy.Gui
 {
     internal class ColorConverter : StringConverter
     {
-        public override bool GetStandardValuesSupported(ITypeDescriptorContext context) 
-        { 
-            return true; 
-        }
-        public override bool GetStandardValuesExclusive(ITypeDescriptorContext context) 
-        { 
-            return true; 
-        }
+        public override bool GetStandardValuesSupported(ITypeDescriptorContext context) => true;
+        public override bool GetStandardValuesExclusive(ITypeDescriptorContext context) => true;
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             List<string> colors = new();
@@ -42,14 +36,8 @@ namespace MCGalaxy.Gui
     }
     internal class RankConverter : StringConverter
     {
-        public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
-        { 
-            return true;
-        }
-        public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
-        { 
-            return true; 
-        }
+        public override bool GetStandardValuesSupported(ITypeDescriptorContext context) => true;
+        public override bool GetStandardValuesExclusive(ITypeDescriptorContext context) => true;
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             List<string> ranks = new();
@@ -66,14 +54,8 @@ namespace MCGalaxy.Gui
     }
     internal class LevelConverter : StringConverter
     {
-        public override bool GetStandardValuesSupported(ITypeDescriptorContext context) 
-        {
-            return true; 
-        }
-        public override bool GetStandardValuesExclusive(ITypeDescriptorContext context) 
-        { 
-            return true; 
-        }
+        public override bool GetStandardValuesSupported(ITypeDescriptorContext context) => true;
+        public override bool GetStandardValuesExclusive(ITypeDescriptorContext context) => true;
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             List<string> levels = new();

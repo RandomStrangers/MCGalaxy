@@ -23,17 +23,8 @@ namespace MCGalaxy.Gui
     {
         sealed class HackyPropertiesTab : PropertiesTab
         {
-            public override Bitmap Bitmap
-            {
-                get 
-                { 
-                    return base.Bitmap ?? new(16, 16); 
-                }
-            }
+            public override Bitmap Bitmap => base.Bitmap ?? new(16, 16);
         }
-        protected override PropertyTab CreatePropertyTab(Type tabType)
-        { 
-            return new HackyPropertiesTab(); 
-        }
+        protected override PropertyTab CreatePropertyTab(Type tabType) => new HackyPropertiesTab();
     }
 }

@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -20,10 +17,8 @@ using MCGalaxy.Blocks.Physics;
 using MCGalaxy.DB;
 using MCGalaxy.Maths;
 using System;
-
 namespace MCGalaxy
 {
-
     /// <summary> Result of attempting to change a block to another </summary>
     public enum ChangeResult
     {
@@ -34,7 +29,6 @@ namespace MCGalaxy
         /// <summary> Old block was different to new block visually </summary>
         Modified
     }
-
     public sealed partial class Level : IDisposable
     {
         public byte[] blocks;
@@ -43,20 +37,17 @@ namespace MCGalaxy
         public byte[][] CustomBlocks;
         /// <summary> Number of 16x16x16 chunks that this level consists of </summary>
         public int ChunksX, ChunksY, ChunksZ;
-
         /// <summary> Makes a quick guess at whether this level might use custom blocks </summary>
         public bool MightHaveCustomBlocks()
         {
             byte[][] customBlocks = CustomBlocks;
             if (customBlocks == null) return false;
-
             for (int i = 0; i < customBlocks.Length; i++)
             {
                 if (customBlocks[i] != null) return true;
             }
             return false;
         }
-
         /// <summary> Converts the given coordinates to a position index </summary>
         /// <remarks> Returns -1 if coordinates outside this level's boundaries are given </remarks>
         public int PosToInt(ushort x, ushort y, ushort z)
@@ -64,7 +55,6 @@ namespace MCGalaxy
             if (x >= Width || y >= Height || z >= Length) return -1;
             return x + Width * (z + y * Length);
         }
-
         /// <summary> Converts the given position index to coordinates </summary>
         /// <remarks> Undefined coordinates if given position index is invalid </remarks>
         public void IntToPos(int pos, out ushort x, out ushort y, out ushort z)
@@ -75,27 +65,22 @@ namespace MCGalaxy
             pos -= z * Width;
             x = (ushort)pos;
         }
-
         /// <summary> Offsets the given position index by the given relative coordinates </summary>
         /// <example> index = lvl.IntOffset(index, 0, -1, 0); </example>
         public int IntOffset(int pos, int x, int y, int z)
         {
             return pos + x + z * Width + y * Width * Length;
         }
-
         /// <summary> Returns whether the given coordinates lie within this level's boundaries </summary>
         public bool IsValidPos(Vec3U16 pos)
         {
             return pos.X < Width && pos.Y < Height && pos.Z < Length;
         }
-
         /// <summary> Returns whether the given coordinates lie within this level's boundaries </summary>
         public bool IsValidPos(int x, int y, int z)
         {
             return x >= 0 && y >= 0 && z >= 0 && x < Width && y < Height && z < Length;
         }
-
-
         /// <summary> Gets the block at the given coordinates </summary>
         /// <returns> Undefined behaviour if coordinates are invalid </returns>
         public ushort FastGetBlock(int index)
@@ -108,7 +93,6 @@ namespace MCGalaxy
             return raw != Block.custom_block ? raw : (ushort)(Block.Extended | GetExtTile(index));
 #endif
         }
-
         /// <summary> Gets the block at the given coordinates </summary>
         /// <returns> Undefined behaviour if coordinates are invalid </returns>
         public ushort FastGetBlock(ushort x, ushort y, ushort z)
@@ -121,14 +105,12 @@ namespace MCGalaxy
             return raw != Block.custom_block ? raw : (ushort)(Block.Extended | FastGetExtTile(x, y, z));
 #endif
         }
-
         /// <summary> Gets the block at the given coordinates </summary>
         /// <returns> Block.Invalid if coordinates outside level </returns>
         public ushort GetBlock(ushort x, ushort y, ushort z)
         {
             if (x >= Width || y >= Height || z >= Length || blocks == null) return Block.Invalid;
             byte raw = blocks[x + Width * (z + y * Length)];
-
 #if TEN_BIT_BLOCKS
             ushort extended = Block.ExtendedBase[raw];
             return extended == 0 ? raw : (ushort)(extended | FastGetExtTile(x, y, z));
@@ -136,7 +118,6 @@ namespace MCGalaxy
             return raw != Block.custom_block ? raw : (ushort)(Block.Extended | FastGetExtTile(x, y, z));
 #endif
         }
-
         /// <summary> Gets the block at the given coordinates </summary>
         /// <returns> Block.Invalid if coordinates outside level </returns>
         public ushort GetBlock(ushort x, ushort y, ushort z, out int index)
@@ -144,7 +125,6 @@ namespace MCGalaxy
             if (x >= Width || y >= Height || z >= Length || blocks == null) { index = -1; return Block.Invalid; }
             index = x + Width * (z + y * Length);
             byte raw = blocks[index];
-
 #if TEN_BIT_BLOCKS
             ushort extended = Block.ExtendedBase[raw];
             return extended == 0 ? raw : (ushort)(extended | FastGetExtTile(x, y, z));
@@ -152,14 +132,12 @@ namespace MCGalaxy
             return raw != Block.custom_block ? raw : (ushort)(Block.Extended | FastGetExtTile(x, y, z));
 #endif
         }
-
         /// <summary> Gets whether the block at the given coordinates is air </summary>
         public bool IsAirAt(ushort x, ushort y, ushort z)
         {
             if (x >= Width || y >= Height || z >= Length || blocks == null) return false;
             return blocks[x + Width * (z + y * Length)] == Block.Air;
         }
-
         /// <summary> Gets whether the block at the given coordinates is air </summary>
         public bool IsAirAt(ushort x, ushort y, ushort z, out int index)
         {
@@ -167,18 +145,15 @@ namespace MCGalaxy
             index = x + Width * (z + y * Length);
             return blocks[index] == Block.Air;
         }
-
         /// <summary> Gets the extended tile at the given position index </summary>
         /// <remarks> GetBlock / FastGetBlock is preferred over calling this method </remarks>
         public byte GetExtTile(int index)
         {
             IntToPos(index, out ushort x, out ushort y, out ushort z);
-
             int cx = x >> 4, cy = y >> 4, cz = z >> 4;
             byte[] chunk = CustomBlocks[(cy * ChunksZ + cz) * ChunksX + cx];
             return chunk == null ? Block.Air : chunk[(y & 0x0F) << 8 | (z & 0x0F) << 4 | (x & 0x0F)];
         }
-
         /// <summary> Gets the extended tile at the given coordinates </summary>
         /// <remarks> GetBlock / FastGetBlock is preferred over calling this method </remarks>
         /// <returns> Undefined behaviour if coordinates are invalid. </returns>
@@ -188,7 +163,6 @@ namespace MCGalaxy
             byte[] chunk = CustomBlocks[(cy * ChunksZ + cz) * ChunksX + cx];
             return chunk == null ? Block.Air : chunk[(y & 0x0F) << 8 | (z & 0x0F) << 4 | (x & 0x0F)];
         }
-
         public void SetTile(ushort x, ushort y, ushort z, byte block)
         {
             int index = PosToInt(x, y, z);
@@ -196,13 +170,11 @@ namespace MCGalaxy
             blocks[index] = block;
             Changed = true;
         }
-
         public void FastSetExtTile(ushort x, ushort y, ushort z, byte extBlock)
         {
             int cx = x >> 4, cy = y >> 4, cz = z >> 4;
             int cIndex = (cy * ChunksZ + cz) * ChunksX + cx;
             byte[] chunk = CustomBlocks[cIndex];
-
             if (chunk == null)
             {
                 chunk = new byte[16 * 16 * 16];
@@ -210,23 +182,19 @@ namespace MCGalaxy
             }
             chunk[(y & 0x0F) << 8 | (z & 0x0F) << 4 | (x & 0x0F)] = extBlock;
         }
-
         public void FastRevertExtTile(ushort x, ushort y, ushort z)
         {
             int cx = x >> 4, cy = y >> 4, cz = z >> 4;
             int cIndex = (cy * ChunksZ + cz) * ChunksX + cx;
             byte[] chunk = CustomBlocks[cIndex];
-
             if (chunk == null) return;
             chunk[(y & 0x0F) << 8 | (z & 0x0F) << 4 | (x & 0x0F)] = 0;
         }
-
         public void SetBlock(ushort x, ushort y, ushort z, ushort block)
         {
             int index = PosToInt(x, y, z);
             if (blocks == null || index < 0) return;
             Changed = true;
-
             if (block >= Block.Extended)
             {
 #if TEN_BIT_BLOCKS
@@ -241,28 +209,22 @@ namespace MCGalaxy
                 blocks[index] = (byte)block;
             }
         }
-
-
         /// <summary> Returns the AccessController denying the player from changing blocks at the given coordinates. </summary>
         /// <remarks> If no AccessController denies the player, returns null. </remarks>
         public AccessController CanAffect(Player p, ushort x, ushort y, ushort z)
         {
             Zone[] zones = Zones.Items;
             if (zones.Length == 0) goto checkRank; // TODO: avoid this
-
             // Check zones specifically allowed in
             for (int i = 0; i < zones.Length; i++)
             {
                 Zone zn = zones[i];
                 if (x < zn.MinX || x > zn.MaxX || y < zn.MinY || y > zn.MaxY || z < zn.MinZ || z > zn.MaxZ) continue;
-
                 ZoneConfig cfg = zn.Config;
                 if (cfg.BuildBlacklist.Count > 0 && cfg.BuildBlacklist.CaselessContains(p.name)) break;
-
                 if (p.group.Permission >= cfg.BuildMin) return null;
                 if (cfg.BuildWhitelist.Count > 0 && cfg.BuildWhitelist.CaselessContains(p.name)) return null;
             }
-
             // Check zones denied from
             for (int i = 0; i < zones.Length; i++)
             {
@@ -270,10 +232,8 @@ namespace MCGalaxy
                 if (x < zn.MinX || x > zn.MaxX || y < zn.MinY || y > zn.MaxY || z < zn.MinZ || z > zn.MaxZ) continue;
                 AccessResult access = zn.Access.Check(p.name, p.Rank);
                 if (access == AccessResult.Accepted || access == AccessResult.Whitelisted) continue;
-
                 return zn.Access;
             }
-
         checkRank:
             if (p.level == this)
             {
@@ -284,13 +244,11 @@ namespace MCGalaxy
                 return BuildAccess.CheckAllowed(p) ? null : BuildAccess;
             }
         }
-
         public bool CheckAffect(Player p, ushort x, ushort y, ushort z, ushort old, ushort block)
         {
             if (!p.group.CanDelete[old] || !p.group.CanPlace[block]) return false;
             AccessController denier = CanAffect(p, x, y, z);
             if (denier == null) return true;
-
             if (p.lastAccessStatus < DateTime.UtcNow)
             {
                 denier.CheckDetailed(p);
@@ -298,7 +256,6 @@ namespace MCGalaxy
             }
             return false;
         }
-
         /// <summary> Sends a block update packet to all players in this level. </summary>
         public void BroadcastChange(ushort x, ushort y, ushort z, ushort block)
         {
@@ -308,7 +265,6 @@ namespace MCGalaxy
                 if (p.level == this) p.SendBlockchange(x, y, z, block);
             }
         }
-
         /// <summary> Sends a block update packet to all players in this level. </summary>
         /// <remarks> The block sent is the current block at the given coordinates. </remarks>
         public void BroadcastRevert(ushort x, ushort y, ushort z)
@@ -316,13 +272,10 @@ namespace MCGalaxy
             ushort block = GetBlock(x, y, z);
             if (block != Block.Invalid) BroadcastChange(x, y, z, block);
         }
-
-
         public void Blockchange(Player p, ushort x, ushort y, ushort z, ushort block)
         {
             if (TryChangeBlock(p, x, y, z, block) == ChangeResult.Modified) BroadcastChange(x, y, z, block);
         }
-
         /// <summary> Performs a user like block change, but **DOES NOT** update the BlockDB. </summary>
         /// <remarks> The return code can be used to avoid sending redundant block changes. </remarks>
         /// <remarks> Does NOT send the changed block to any players - use BroadcastChange. </remarks>
@@ -333,11 +286,9 @@ namespace MCGalaxy
             {
                 ushort old = GetBlock(x, y, z);
                 if (old == Block.Invalid) return ChangeResult.Unchanged;
-
                 errorLocation = "Permission checking";
                 if (!CheckAffect(p, x, y, z, old, block)) return ChangeResult.Unchanged;
                 if (old == block) return ChangeResult.Unchanged;
-
                 if (old == Block.Sponge && physics > 0 && block != Block.Sponge)
                 {
                     OtherPhysics.DoSpongeRemoved(this, PosToInt(x, y, z), false);
@@ -346,12 +297,10 @@ namespace MCGalaxy
                 {
                     OtherPhysics.DoSpongeRemoved(this, PosToInt(x, y, z), true);
                 }
-
                 p.TotalModified++;
                 if (drawn) p.TotalDrawn++;
                 else if (block == Block.Air) p.TotalDeleted++;
                 else p.TotalPlaced++;
-
                 errorLocation = "Setting tile";
                 if (block >= Block.Extended)
                 {
@@ -370,13 +319,10 @@ namespace MCGalaxy
                         FastRevertExtTile(x, y, z);
                     }
                 }
-
                 errorLocation = "Adding physics";
                 if (physics > 0 && ActivatesPhysics(block)) AddCheck(PosToInt(x, y, z));
-
                 Changed = true;
                 ChangedSinceBackup = true;
-
                 return Block.VisuallyEquals(old, block) ? ChangeResult.VisuallySame : ChangeResult.Modified;
             }
             catch (Exception e)
@@ -388,27 +334,22 @@ namespace MCGalaxy
                 return 0;
             }
         }
-
         public void Blockchange(int b, ushort block, bool overRide = false,
                                 PhysicsArgs data = default, bool addUndo = true)
         { //Block change made by physics
             if (!DoPhysicsBlockchange(b, block, overRide, data, addUndo)) return;
-
             IntToPos(b, out ushort x, out ushort y, out ushort z);
             BroadcastChange(x, y, z, block);
         }
-
         public void Blockchange(ushort x, ushort y, ushort z, ushort block, bool overRide = false,
                                 PhysicsArgs data = default, bool addUndo = true)
         {
             Blockchange(PosToInt(x, y, z), block, overRide, data, addUndo); //Block change made by physics
         }
-
         public void Blockchange(ushort x, ushort y, ushort z, ushort block)
         {
             Blockchange(PosToInt(x, y, z), block, false, default); //Block change made by physics
         }
-
         public bool DoPhysicsBlockchange(int b, ushort block, bool overRide = false,
                                          PhysicsArgs data = default, bool addUndo = true)
         {
@@ -420,14 +361,12 @@ namespace MCGalaxy
 #else
             if (old == Block.custom_block) old = (ushort)(Block.Extended | GetExtTile(b));
 #endif
-
             try
             {
                 if (!overRide)
                 {
                     if (Props[old].OPBlock || (Props[block].OPBlock && data.Raw != 0)) return false;
                 }
-
                 if (old == Block.Sponge && physics > 0 && block != Block.Sponge)
                 {
                     OtherPhysics.DoSpongeRemoved(this, b, false);
@@ -436,13 +375,11 @@ namespace MCGalaxy
                 {
                     OtherPhysics.DoSpongeRemoved(this, b, true);
                 }
-
                 if (addUndo)
                 {
                     UndoPos uP = default;
                     uP.Index = b;
                     uP.SetData(old, block);
-
                     if (UndoBuffer.Count < Server.Config.PhysicsUndo)
                     {
                         UndoBuffer.Add(uP);
@@ -455,7 +392,6 @@ namespace MCGalaxy
                     }
                     currentUndo++;
                 }
-
                 Changed = true;
                 if (block >= Block.Extended)
                 {
@@ -480,7 +416,6 @@ namespace MCGalaxy
                 {
                     AddCheck(b, false, data);
                 }
-
                 // Save bandwidth not sending identical looking blocks, like air/op_air changes.
                 return !Block.VisuallyEquals(old, block);
             }
@@ -489,19 +424,15 @@ namespace MCGalaxy
                 return false;
             }
         }
-
         public void UpdateBlock(Player p, ushort x, ushort y, ushort z, ushort block,
                                 ushort flags = BlockDBFlags.ManualPlace, bool buffered = false)
         {
             ushort old = GetBlock(x, y, z, out int index);
             bool drawn = (flags & BlockDBFlags.ManualPlace) == 0;
-
             ChangeResult result = TryChangeBlock(p, x, y, z, block, drawn);
             if (result == ChangeResult.Unchanged) return;
-
             BlockDB.Cache.Add(p, x, y, z, flags, old, block);
             if (result == ChangeResult.VisuallySame) return;
-
             if (buffered)
             {
                 p.level.blockqueue.Add(index, block);
@@ -511,8 +442,6 @@ namespace MCGalaxy
                 BroadcastChange(x, y, z, block);
             }
         }
-
-
         public Vec3S32 ClampPos(Vec3S32 P)
         {
             P.X = Math.Max(0, Math.Min(P.X, Width - 1));
@@ -520,7 +449,6 @@ namespace MCGalaxy
             P.Z = Math.Max(0, Math.Min(P.Z, Length - 1));
             return P;
         }
-
         public BlockDefinition GetBlockDef(ushort block)
         {
             if (block == Block.Air) return null;
@@ -533,24 +461,20 @@ namespace MCGalaxy
                 return CustomBlockDefs[block];
             }
         }
-
         public byte CollideType(ushort block)
         {
             BlockDefinition def = GetBlockDef(block);
             byte collide = def != null ? def.CollideType : Blocks.CollideType.Solid;
-
             if (def == null && block < Block.Extended)
                 return DefaultSet.Collide(Block.Convert(block));
             return collide;
         }
-
         public bool LightPasses(ushort block)
         {
             BlockDefinition def = GetBlockDef(block);
             if (def != null) return !def.BlocksLight || def.BlockDraw == DrawType.TransparentThick || def.MinZ > 0;
             return Block.LightPass(block);
         }
-
         public byte GetFallback(ushort b)
         {
             BlockDefinition def = CustomBlockDefs[b];

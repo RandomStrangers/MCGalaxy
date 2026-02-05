@@ -25,12 +25,11 @@ namespace MCGalaxy.Gui.Components
         bool _nightMode = false, _colorize = true,
             _showDateStamp = true, _autoScroll = true;
         int lines = 0;
-        const int maxLines = 2000, linesToTrim = 25;
         public bool AutoScroll
         {
-            get 
-            { 
-                return _autoScroll; 
+            get
+            {
+                return _autoScroll;
             }
             set
             {
@@ -43,31 +42,31 @@ namespace MCGalaxy.Gui.Components
         }
         public bool Colorize
         {
-            get 
-            { 
-                return _colorize; 
+            get
+            {
+                return _colorize;
             }
-            set 
-            { 
+            set
+            {
                 _colorize = value;
             }
         }
         public bool DateStamp
         {
-            get 
+            get
             {
-                return _showDateStamp; 
+                return _showDateStamp;
             }
-            set 
-            { 
+            set
+            {
                 _showDateStamp = value;
             }
         }
         public bool NightMode
         {
-            get 
-            { 
-                return _nightMode; 
+            get
+            {
+                return _nightMode;
             }
             set
             {
@@ -77,26 +76,14 @@ namespace MCGalaxy.Gui.Components
                 Invalidate();
             }
         }
-        string CurrentDate 
-        { 
-            get 
-            {
-                return "[" + DateTime.Now.ToString("T") + "] "; 
-            } 
-        }
-        public ColoredTextBox() : base()
-        {
-            LinkClicked += HandleLinkClicked;
-        }
+        string CurrentDate => "[" + DateTime.Now.ToString("T") + "] ";
+        public ColoredTextBox() : base() => LinkClicked += HandleLinkClicked;
         public void ClearLog()
         {
             Clear();
             lines = 0;
         }
-        public void AppendLog(string text) 
-        { 
-            AppendLog(text, ForeColor, DateStamp); 
-        }
+        public void AppendLog(string text) => AppendLog(text, ForeColor, DateStamp);
         public void AppendLog(string text, Color color, bool dateStamp)
         {
             int line = GetLineFromCharIndex(Math.Max(0, TextLength - 1)),
@@ -107,7 +94,7 @@ namespace MCGalaxy.Gui.Components
             }
             AppendLogCore(text, color, dateStamp);
             lines++;
-            if (lines > maxLines)
+            if (lines > 2000)
             {
                 TrimLog(ref selStart);
             }
@@ -138,9 +125,9 @@ namespace MCGalaxy.Gui.Components
         }
         void TrimLog(ref int selStart)
         {
-            int trimLength = GetFirstCharIndexFromLine(linesToTrim);
+            int trimLength = GetFirstCharIndexFromLine(25);
             selStart -= trimLength;
-            lines -= linesToTrim;
+            lines -= 25;
             SelectionStart = 0;
             SelectionLength = trimLength;
             string trimMsg = "----- cut off, see log files for rest of logs -----" + Environment.NewLine;
@@ -158,11 +145,10 @@ namespace MCGalaxy.Gui.Components
         }
         void HandleLinkClicked(object sender, LinkClickedEventArgs e)
         {
-            if (!Popup.OKCancel("Never open links from people that you don't trust!", "Warning!!"))
+            if (Popup.OKCancel("Never open links from people that you don't trust!", "Warning!!"))
             {
-                return;
+                GuiUtils.OpenBrowser(e.LinkText);
             }
-            GuiUtils.OpenBrowser(e.LinkText);
         }
         internal void ScrollToEnd(int startIndex)
         {

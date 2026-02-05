@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,7 +16,6 @@ using MCGalaxy.Authentication;
 using MCGalaxy.Commands;
 using System.Collections.Generic;
 using System.Text;
-
 namespace MCGalaxy
 {
     public static class Formatter
@@ -67,10 +63,10 @@ namespace MCGalaxy
                     continue;
                 }
                 dst.Append('/').Append(a.Trigger);
-                if (a.Format == null) 
+                if (a.Format == null)
                 {
                     dst.Append(", ");
-                    continue; 
+                    continue;
                 }
                 string name = string.IsNullOrEmpty(cmd.shortcut) ? cmd.name : cmd.shortcut;
                 if (name.Length > cmd.name.Length)
@@ -182,7 +178,7 @@ namespace MCGalaxy
                     return number;
                 }
                 nameLength--;
-                int digit = name[i] - '0'; //Paige Ruten: here's the most insane way to convert a digit char to an integer 
+                int digit = name[i] - '0'; //Paige Ruten: here's the most insane way to convert a digit char to an integer
                 number += digit * decimalShift;
                 decimalShift *= 10;
             }

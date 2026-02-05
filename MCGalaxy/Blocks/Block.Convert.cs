@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,30 +13,24 @@
     permissions and limitations under the Licenses.
 */
 using MCGalaxy.Blocks;
-
 namespace MCGalaxy
 {
     public static partial class Block
     {
         static readonly string[] coreNames = new string[CORE_COUNT];
         public static bool Undefined(ushort block) { return IsPhysicsType(block) && coreNames[block].CaselessEq("unknown"); }
-
         public static bool ExistsGlobal(ushort b) { return ExistsFor(Player.Console, b); }
-
         public static bool ExistsFor(Player p, ushort b)
         {
             if (b < CORE_COUNT) return !Undefined(b);
-
             if (!p.IsSuper) return p.level.GetBlockDef(b) != null;
             return BlockDefinition.GlobalDefs[b] != null;
         }
-
         /// <summary> Gets the name for the block with the given block ID </summary>
         /// <remarks> Block names can differ depending on the player's level </remarks>
         public static string GetName(Player p, ushort block)
         {
             if (IsPhysicsType(block)) return coreNames[block];
-
             BlockDefinition def;
             if (!p.IsSuper)
             {
@@ -50,10 +41,8 @@ namespace MCGalaxy
                 def = BlockDefinition.GlobalDefs[block];
             }
             if (def != null) return def.Name.Replace(" ", "");
-
             return block < CPE_COUNT ? coreNames[block] : ToRaw(block).ToString();
         }
-
         public static ushort Parse(Player p, string input)
         {
             BlockDefinition[] defs = p.IsSuper ? BlockDefinition.GlobalDefs : p.level.CustomBlockDefs;
@@ -65,21 +54,16 @@ namespace MCGalaxy
                     return FromRaw(block);
                 } // TODO redo to use ExistsFor?
             }
-
             BlockDefinition def = BlockDefinition.ParseName(input, defs);
             if (def != null) return def.GetBlock();
-
             bool success = Aliases.TryGetValue(input.ToLower(), out byte coreID);
             return success ? coreID : Invalid;
         }
-
         public static string GetColoredName(Player p, ushort block)
         {
             BlockPerms perms = BlockPerms.GetPlace(block); // TODO check Delete perms too?
             return Group.GetColor(perms.MinRank) + GetName(p, block);
         }
-
-
         /// <summary> Converts a block &lt;= CPE_MAX_BLOCK into a suitable
         /// block compatible for the given classic protocol version </summary>
         public static byte ConvertClassic(byte block, byte protocolVersion)
@@ -89,25 +73,21 @@ namespace MCGalaxy
             {
                 return block <= Obsidian ? block : v7_fallback[block - CobblestoneSlab];
             }
-
             // protocol version 6 only supports up to Gold block
             if (protocolVersion >= Server.VERSION_0020)
             {
                 return block <= Gold ? block : v6_fallback[block - Iron];
             }
-
             // protocol version 5 only supports up to Glass block
             if (protocolVersion >= Server.VERSION_0019)
             {
                 return block <= Glass ? block : v5_fallback[block - Red];
             }
-
             // protocol version 4 only supports up to Leaves block
             //  protocol version 3 seems to have same support
             //  TODO what even changed between 3 and 4?
             return block <= Leaves ? block : v4_fallback[block - Sponge];
         }
-
         static readonly byte[] v7_fallback = {
             // CobbleSlab Rope      Sandstone Snow Fire  LightPink ForestGreen Brown
                Slab,      Mushroom, Sand,     Air, Lava, Pink,     Green,      Dirt,
@@ -152,8 +132,6 @@ namespace MCGalaxy
             // DeepBlue Turquoise Ice     CeramicTile Magma        Pillar Crate StoneBrick
                Sand,    Sand,     Leaves, Stone,      Cobblestone, Stone, Wood, Stone
         };
-
-
         /// <summary> Converts physics block IDs to their visual block IDs </summary>
         /// <remarks> If block ID is not converted, returns input block ID </remarks>
         /// <example> Op_Glass becomes Glass, Door_Log becomes Log </example>

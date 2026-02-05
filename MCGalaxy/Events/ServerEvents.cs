@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2011 MCForge
-        
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,7 +15,6 @@
 using MCGalaxy.Network;
 using System;
 using System.Net.Sockets;
-
 namespace MCGalaxy.Events.ServerEvents
 {
     public delegate void OnSendingHeartbeat(Heartbeat service, ref string name);
@@ -36,7 +32,6 @@ namespace MCGalaxy.Events.ServerEvents
             }
         }
     }
-
     public delegate void OnShuttingDown(bool restarting, string reason);
     /// <summary> Called when the server is shutting down or restarting. </summary>
     public sealed class OnShuttingDownEvent : IEvent<OnShuttingDown>
@@ -47,7 +42,6 @@ namespace MCGalaxy.Events.ServerEvents
             CallCommon(pl => pl(restarting, reason));
         }
     }
-
     public delegate void OnConfigUpdated();
     /// <summary> Called when the server configuration has been updated. </summary>
     public sealed class OnConfigUpdatedEvent : IEvent<OnConfigUpdated>
@@ -58,7 +52,6 @@ namespace MCGalaxy.Events.ServerEvents
             CallCommon(pl => pl());
         }
     }
-
     public delegate void OnConnectionReceived(Socket s, ref bool cancel, ref bool announce);
     /// <summary> Called when a new connection has been received. </summary>
     public sealed class OnConnectionReceivedEvent : IEvent<OnConnectionReceived>
@@ -74,7 +67,6 @@ namespace MCGalaxy.Events.ServerEvents
             }
         }
     }
-
     public delegate void OnChatSys(ChatScope scope, ref string msg, object arg,
                                    ref ChatMessageFilter filter, bool relay);
     public sealed class OnChatSysEvent : IEvent<OnChatSys>
@@ -90,7 +82,6 @@ namespace MCGalaxy.Events.ServerEvents
             }
         }
     }
-
     public delegate void OnChatFrom(ChatScope scope, Player source, ref string msg,
                                     object arg, ref ChatMessageFilter filter, bool relay);
     public sealed class OnChatFromEvent : IEvent<OnChatFrom>
@@ -106,7 +97,6 @@ namespace MCGalaxy.Events.ServerEvents
             }
         }
     }
-
     public delegate void OnChat(ChatScope scope, Player source, ref string msg,
                                 object arg, ref ChatMessageFilter filter, bool relay);
     public sealed class OnChatEvent : IEvent<OnChat>
@@ -122,7 +112,6 @@ namespace MCGalaxy.Events.ServerEvents
             }
         }
     }
-
     public delegate void OnPluginMessageReceived(Player p, byte channel, byte[] data);
     /// <summary> Called when a player sends a PluginMessage CPE packet to the server. </summary>
     public sealed class OnPluginMessageReceivedEvent : IEvent<OnPluginMessageReceived>
@@ -133,7 +122,6 @@ namespace MCGalaxy.Events.ServerEvents
             CallCommon(pl => pl(p, channel, data));
         }
     }
-
     public delegate void OnPluginsLoaded();
     /// <summary>Called when all plugins have been auto-loaded.</summary>
     public sealed class OnPluginsLoadedEvent : IEvent<OnPluginsLoaded>

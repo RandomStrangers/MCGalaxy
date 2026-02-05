@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,8 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Drawing.Ops;
-
-
 namespace MCGalaxy.Drawing.Brushes
 {
     public sealed class GradientBrush : Brush
@@ -26,19 +21,15 @@ namespace MCGalaxy.Drawing.Brushes
         private readonly CustomModelAnimAxis axis;
         private CustomModelAnimAxis _axis;
         int xLen, yLen, zLen;
-
         public GradientBrush(ushort[] blocks, CustomModelAnimAxis axis)
         {
             this.blocks = blocks;
             this.axis = axis;
         }
-
         public override string Name { get { return "Gradient"; } }
-
         public override void Configure(DrawOp op, Player p)
         {
             xLen = op.SizeX; yLen = op.SizeY; zLen = op.SizeZ;
-
             if (axis <= CustomModelAnimAxis.Z)
             {
                 _axis = axis;
@@ -56,11 +47,9 @@ namespace MCGalaxy.Drawing.Brushes
                 _axis = CustomModelAnimAxis.Z;
             }
         }
-
         public override ushort NextBlock(DrawOp op)
         {
             int index = 0;
-
             switch (_axis)
             {
                 case CustomModelAnimAxis.X:

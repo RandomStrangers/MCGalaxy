@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -26,19 +23,19 @@ namespace MCGalaxy.Generator
             string url = null;
             int argIdx = 0;
             args.ArgFilter = (arg) => argIdx++ == 0;
-            args.ArgParser = (arg) => 
+            args.ArgParser = (arg) =>
             {
-                url = arg; 
+                url = arg;
                 return true;
             };
             if (!args.ParseArgs(p))
             {
                 return false;
             }
-            if (url == null) 
+            if (url == null)
             {
-                p.Message("You need to provide a url for the image."); 
-                return false; 
+                p.Message("You need to provide a url for the image.");
+                return false;
             }
             MapGenBiome biome = MapGenBiome.Get(args.Biome);
             byte[] data = HttpUtil.DownloadImage(url, p);
@@ -83,8 +80,8 @@ namespace MCGalaxy.Generator
                     {
                         lvl.blocks[index + oneY * y] = layer;
                     }
-                    if (height > 0) 
-                    { 
+                    if (height > 0)
+                    {
                         lvl.blocks[index + oneY * (height - 1)] = top;
                     }
                     index++;

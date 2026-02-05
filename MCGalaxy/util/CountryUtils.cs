@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using System.Collections.Generic;
-
 namespace MCGalaxy.Util
 {
     public static class CountryUtils
@@ -27,763 +23,763 @@ namespace MCGalaxy.Util
         public static string GetName(string twoLetterCode)
         {
             twoLetterCode = twoLetterCode.ToUpperInvariant();
-            if (!CodesToNames.ContainsKey(twoLetterCode)) 
-            { 
-                return null; 
+            if (!CodesToNames.ContainsKey(twoLetterCode))
+            {
+                return null;
             }
             return CodesToNames[twoLetterCode];
         }
         /// <summary>
         /// Based on https://www.iban.com/country-codes
         /// </summary>
-        static readonly Dictionary<string, string> CodesToNames = new() 
+        static readonly Dictionary<string, string> CodesToNames = new()
         {
-            { 
-                "AF", "Afghanistan" 
+            {
+                "AF", "Afghanistan"
             },
-            { 
-                "AL", "Albania" 
+            {
+                "AL", "Albania"
             },
-            { 
+            {
                 "DZ", "Algeria"
             },
-            { 
+            {
                 "AS", "American Samoa"
             },
-            { 
+            {
                 "AD", "Andorra"
             },
-            { 
+            {
                 "AO", "Angola"
             },
-            { 
+            {
                 "AI", "Anguilla"
             },
-            { 
+            {
                 "AQ", "Antarctica"
             },
-            { 
+            {
                 "AG", "Antigua and Barbuda"
             },
-            { 
+            {
                 "AR", "Argentina"
             },
-            { 
+            {
                 "AM", "Armenia"
             },
-            { 
+            {
                 "AW", "Aruba"
             },
-            { 
+            {
                 "AU", "Australia"
             },
-            { 
+            {
                 "AT", "Austria"
             },
-            { 
+            {
                 "AZ", "Azerbaijan"
             },
-            { 
+            {
                 "BS", "Bahamas"
             },
-            { 
+            {
                 "BH", "Bahrain"
             },
-            { 
+            {
                 "BD", "Bangladesh"
             },
-            { 
+            {
                 "BB", "Barbados"
             },
-            { 
+            {
                 "BY", "Belarus"
             },
-            { 
+            {
                 "BE", "Belgium"
             },
-            { 
+            {
                 "BZ", "Belize"
             },
-            { 
+            {
                 "BJ", "Benin"
             },
-            { 
+            {
                 "BM", "Bermuda"
             },
-            { 
+            {
                 "BT", "Bhutan"
             },
-            { 
+            {
                 "BO", "Plurinational State of Bolivia"
             },
-            { 
+            {
                 "BQ", "Bonaire, Sint Eustatius and Saba"
             },
-            { 
+            {
                 "BA", "Bosnia and Herzegovina"
             },
-            { 
+            {
                 "BW", "Botswana"
             },
-            { 
+            {
                 "BV", "Bouvet Island"
             },
-            { 
+            {
                 "BR", "Brazil"
             },
-            { 
+            {
                 "IO", "The British Indian Ocean Territory"
             },
-            { 
+            {
                 "BN", "Brunei Darussalam"
             },
-            { 
+            {
                 "BG", "Bulgaria"
             },
-            { 
+            {
                 "BF", "Burkina Faso"
             },
-            { 
+            {
                 "BI", "Burundi"
             },
-            { 
+            {
                 "CV", "Cabo Verde"
             },
-            { 
+            {
                 "KH", "Cambodia"
             },
-            { 
+            {
                 "CM", "Cameroon"
             },
-            { 
+            {
                 "CA", "Canada"
             },
-            { 
+            {
                 "KY", "The Cayman Islands"
             },
-            { 
+            {
                 "CF", "The Central African Republic"
             },
-            { 
+            {
                 "TD", "Chad"
             },
-            { 
+            {
                 "CL", "Chile"
             },
-            { 
+            {
                 "CN", "China"
             },
-            { 
+            {
                 "CX", "Christmas Island"
             },
-            { 
+            {
                 "CC", "The Cocos (Keeling) Islands"
             },
-            { 
+            {
                 "CO", "Colombia"
             },
-            { 
+            {
                 "KM", "Comoros"
             },
-            { 
+            {
                 "CD", "The Democratic Republic of the Congo"
             },
-            { 
+            {
                 "CG", "The Congo"
             },
-            { 
+            {
                 "CK", "The Cook Islands"
             },
-            { 
+            {
                 "CR", "Costa Rica"
             },
-            { 
+            {
                 "HR", "Croatia"
             },
-            { 
+            {
                 "CU", "Cuba"
             },
-            { 
+            {
                 "CW", "Curaçao"
             },
-            { 
+            {
                 "CY", "Cyprus"
             },
-            { 
+            {
                 "CZ", "Czechia"
             },
-            { 
+            {
                 "CI", "Côte d'Ivoire"
             },
-            { 
+            {
                 "DK", "Denmark"
             },
-            { 
+            {
                 "DJ", "Djibouti"
             },
-            { 
+            {
                 "DM", "Dominica"
             },
-            { 
+            {
                 "DO", "The Dominican Republic"
             },
-            { 
+            {
                 "EC", "Ecuador"
             },
-            { 
-                "EG", "Egypt" 
+            {
+                "EG", "Egypt"
             },
-            { 
+            {
                 "SV", "El Salvador"
             },
-            { 
+            {
                 "GQ", "Equatorial Guinea"
             },
-            { 
+            {
                 "ER", "Eritrea"
             },
-            { 
+            {
                 "EE", "Estonia"
             },
-            { 
+            {
                 "SZ", "Eswatini"
             },
-            { 
+            {
                 "ET", "Ethiopia"
             },
-            { 
+            {
                 "FK", "The Falkland Islands [Malvinas]"
             },
-            { 
+            {
                 "FO", "The Faroe Islands"
             },
-            { 
+            {
                 "FJ", "Fiji"
             },
-            { 
+            {
                 "FI", "Finland"
             },
-            { 
+            {
                 "FR", "France"
             },
-            { 
+            {
                 "GF", "French Guiana"
             },
-            { 
+            {
                 "PF", "French Polynesia"
             },
-            { 
+            {
                 "TF", "The French Southern Territories"
             },
-            { 
+            {
                 "GA", "Gabon"
             },
-            { 
+            {
                 "GM", "The Gambia"
             },
-            { 
+            {
                 "GE", "Georgia"
             },
-            { 
+            {
                 "DE", "Germany"
             },
-            { 
+            {
                 "GH", "Ghana"
             },
-            { 
+            {
                 "GI", "Gibraltar"
             },
-            { 
+            {
                 "GR", "Greece"
             },
-            { 
+            {
                 "GL", "Greenland"
             },
-            { 
+            {
                 "GD", "Grenada"
             },
-            { 
+            {
                 "GP", "Guadeloupe"
             },
-            { 
+            {
                 "GU", "Guam"
             },
-            { 
+            {
                 "GT", "Guatemala"
             },
-            { 
+            {
                 "GG", "Guernsey"
             },
-            { 
+            {
                 "GN", "Guinea"
             },
-            { 
+            {
                 "GW", "Guinea-Bissau"
             },
-            { 
+            {
                 "GY", "Guyana"
             },
-            { 
+            {
                 "HT", "Haiti"
             },
-            { 
+            {
                 "HM", "Heard Island and McDonald Islands"
             },
-            { 
+            {
                 "VA", "The Holy See"
             },
-            { 
+            {
                 "HN", "Honduras"
             },
-            { 
+            {
                 "HK", "Hong Kong"
             },
-            { 
+            {
                 "HU", "Hungary"
             },
-            { 
+            {
                 "IS", "Iceland"
             },
-            { 
+            {
                 "IN", "India"
             },
-            { 
+            {
                 "ID", "Indonesia"
             },
-            { 
+            {
                 "IR", "Islamic Republic of Iran"
             },
-            { 
+            {
                 "IQ", "Iraq"
             },
-            { 
+            {
                 "IE", "Ireland"
             },
-            { 
+            {
                 "IM", "Isle of Man"
             },
-            { 
+            {
                 "IL", "Israel"
             },
-            { 
-                "IT", "Italy" 
+            {
+                "IT", "Italy"
             },
-            { 
+            {
                 "JM", "Jamaica"
             },
-            { 
+            {
                 "JP", "Japan"
             },
-            { 
+            {
                 "JE", "Jersey"
             },
-            { 
+            {
                 "JO", "Jordan"
             },
-            { 
+            {
                 "KZ", "Kazakhstan"
             },
-            { 
+            {
                 "KE", "Kenya"
             },
-            { 
-                "KI", "Kiribati" 
+            {
+                "KI", "Kiribati"
             },
-            { 
-                "KP", "North Korea" 
+            {
+                "KP", "North Korea"
             },
-            { 
-                "KR", "South Korea" 
+            {
+                "KR", "South Korea"
             },
-            { 
-                "KW", "Kuwait" 
+            {
+                "KW", "Kuwait"
             },
-            { 
-                "KG", "Kyrgyzstan" 
+            {
+                "KG", "Kyrgyzstan"
             },
-            { 
+            {
                 "LA", "The Lao People's Democratic Republic"
             },
-            { 
-                "LV", "Latvia" 
+            {
+                "LV", "Latvia"
             },
-            { 
+            {
                 "LB", "Lebanon"
             },
-            { 
+            {
                 "LS", "Lesotho"
             },
-            { 
+            {
                 "LR", "Liberia"
             },
-            { 
-                "LY", "Libya" 
+            {
+                "LY", "Libya"
             },
-            { 
+            {
                 "LI", "Liechtenstein"
             },
-            { 
+            {
                 "LT", "Lithuania"
             },
-            { 
+            {
                 "LU", "Luxembourg"
             },
-            { 
-                "MO", "Macao" 
+            {
+                "MO", "Macao"
             },
-            { 
-                "MG", "Madagascar" 
+            {
+                "MG", "Madagascar"
             },
-            { 
-                "MW", "Malawi" 
+            {
+                "MW", "Malawi"
             },
-            { 
-                "MY", "Malaysia" 
+            {
+                "MY", "Malaysia"
             },
-            { 
-                "MV", "Maldives" 
+            {
+                "MV", "Maldives"
             },
-            { 
-                "ML", "Mali" 
+            {
+                "ML", "Mali"
             },
-            { 
-                "MT", "Malta" 
+            {
+                "MT", "Malta"
             },
-            { 
+            {
                 "MH", "The Marshall Islands"
             },
-            { 
+            {
                 "MQ", "Martinique"
             },
-            { 
-                "MR", "Mauritania" 
+            {
+                "MR", "Mauritania"
             },
-            { 
-                "MU", "Mauritius" 
+            {
+                "MU", "Mauritius"
             },
-            { 
-                "YT", "Mayotte" 
+            {
+                "YT", "Mayotte"
             },
-            { 
-                "MX", "Mexico" 
+            {
+                "MX", "Mexico"
             },
-            { 
-                "FM", "Federated States of Micronesia" 
+            {
+                "FM", "Federated States of Micronesia"
             },
-            { 
-                "MD", "The Republic of Moldova" 
+            {
+                "MD", "The Republic of Moldova"
             },
-            { 
-                "MC", "Monaco" 
+            {
+                "MC", "Monaco"
             },
-            { 
-                "MN", "Mongolia" 
+            {
+                "MN", "Mongolia"
             },
-            { 
-                "ME", "Montenegro" 
+            {
+                "ME", "Montenegro"
             },
-            { 
-                "MS", "Montserrat" 
+            {
+                "MS", "Montserrat"
             },
-            { 
-                "MA", "Morocco" 
+            {
+                "MA", "Morocco"
             },
-            { 
-                "MZ", "Mozambique" 
+            {
+                "MZ", "Mozambique"
             },
-            { 
-                "MM", "Myanmar" 
+            {
+                "MM", "Myanmar"
             },
-            { 
-                "NA", "Namibia" 
+            {
+                "NA", "Namibia"
             },
-            { 
-                "NR", "Nauru" 
+            {
+                "NR", "Nauru"
             },
-            { 
-                "NP", "Nepal" 
+            {
+                "NP", "Nepal"
             },
-            { 
+            {
                 "NL", "The Netherlands"
             },
-            { 
-                "NC", "New Caledonia" 
+            {
+                "NC", "New Caledonia"
             },
-            { 
-                "NZ", "New Zealand" 
+            {
+                "NZ", "New Zealand"
             },
-            { 
-                "NI", "Nicaragua" 
+            {
+                "NI", "Nicaragua"
             },
-            { 
+            {
                 "NE", "The Niger"
             },
-            { 
-                "NG", "Nigeria" 
-            },
-            { 
-                "NU", "Niue" 
+            {
+                "NG", "Nigeria"
             },
             {
-                "NF", "Norfolk Island" 
-            },
-            { 
-                "MP", "The Northern Mariana Islands" 
-            },
-            { 
-                "NO", "Norway" 
-            },
-            { 
-                "OM", "Oman" 
-            },
-            { 
-                "PK", "Pakistan" 
-            },
-            { 
-                "PW", "Palau" 
-            },
-            { 
-                "PS", "State of Palestine" 
-            },
-            { 
-                "PA", "Panama" 
-            },
-            { 
-                "PG", "Papua New Guinea" 
-            },
-            { 
-                "PY", "Paraguay" 
-            },
-            { 
-                "PE", "Peru" 
-            },
-            { 
-                "PH", "The Philippines" 
-            },
-            { 
-                "PN", "Pitcairn" 
+                "NU", "Niue"
             },
             {
-                "PL", "Poland" 
-            },
-            { 
-                "PT", "Portugal" 
+                "NF", "Norfolk Island"
             },
             {
-                "PR", "Puerto Rico" 
+                "MP", "The Northern Mariana Islands"
             },
-            { 
-                "QA", "Qatar" 
+            {
+                "NO", "Norway"
             },
-            { 
-                "MK", "Republic of North Macedonia" 
+            {
+                "OM", "Oman"
             },
-            { 
-                "RO", "Romania" 
+            {
+                "PK", "Pakistan"
             },
-            { 
-                "RU", "The Russian Federation" 
+            {
+                "PW", "Palau"
             },
-            { 
-                "RW", "Rwanda" 
+            {
+                "PS", "State of Palestine"
             },
-            { 
-                "RE", "Réunion" 
+            {
+                "PA", "Panama"
             },
-            { 
-                "BL", "Saint Barthélemy" 
+            {
+                "PG", "Papua New Guinea"
             },
-            { 
-                "SH", "Saint Helena, Ascension and Tristan da Cunha" 
+            {
+                "PY", "Paraguay"
             },
-            { 
+            {
+                "PE", "Peru"
+            },
+            {
+                "PH", "The Philippines"
+            },
+            {
+                "PN", "Pitcairn"
+            },
+            {
+                "PL", "Poland"
+            },
+            {
+                "PT", "Portugal"
+            },
+            {
+                "PR", "Puerto Rico"
+            },
+            {
+                "QA", "Qatar"
+            },
+            {
+                "MK", "Republic of North Macedonia"
+            },
+            {
+                "RO", "Romania"
+            },
+            {
+                "RU", "The Russian Federation"
+            },
+            {
+                "RW", "Rwanda"
+            },
+            {
+                "RE", "Réunion"
+            },
+            {
+                "BL", "Saint Barthélemy"
+            },
+            {
+                "SH", "Saint Helena, Ascension and Tristan da Cunha"
+            },
+            {
                 "KN", "Saint Kitts and Nevis"
             },
             {
                 "LC", "Saint Lucia"
             },
-            { 
-                "MF", "Saint Martin (French part)" 
-            },
-            { 
-                "PM", "Saint Pierre and Miquelon" 
+            {
+                "MF", "Saint Martin (French part)"
             },
             {
-                "VC", "Saint Vincent and the Grenadines" 
-            },
-            { 
-                "WS", "Samoa" 
-            },
-            { 
-                "SM", "San Marino" 
-            },
-            { 
-                "ST", "Sao Tome and Principe" 
-            },
-            { 
-                "SA", "Saudi Arabia" 
-            },
-            { 
-                "SN", "Senegal" 
-            },
-            { 
-                "RS", "Serbia" 
+                "PM", "Saint Pierre and Miquelon"
             },
             {
-                "SC", "Seychelles" 
+                "VC", "Saint Vincent and the Grenadines"
             },
-            { 
-                "SL", "Sierra Leone" 
+            {
+                "WS", "Samoa"
             },
-            { 
-                "SG", "Singapore" 
+            {
+                "SM", "San Marino"
             },
-            { 
-                "SX", "Sint Maarten (Dutch part)" 
+            {
+                "ST", "Sao Tome and Principe"
             },
-            { 
-                "SK", "Slovakia" 
+            {
+                "SA", "Saudi Arabia"
             },
-            { 
-                "SI", "Slovenia" 
+            {
+                "SN", "Senegal"
             },
-            { 
-                "SB", "Solomon Islands" 
+            {
+                "RS", "Serbia"
             },
-            { 
-                "SO", "Somalia" 
+            {
+                "SC", "Seychelles"
             },
-            { 
-                "ZA", "South Africa" 
+            {
+                "SL", "Sierra Leone"
             },
-            { 
-                "GS", "South Georgia and the South Sandwich Islands" 
+            {
+                "SG", "Singapore"
             },
-            { 
-                "SS", "South Sudan" 
+            {
+                "SX", "Sint Maarten (Dutch part)"
             },
-            { 
-                "ES", "Spain" 
+            {
+                "SK", "Slovakia"
             },
-            { 
-                "LK", "Sri Lanka" 
+            {
+                "SI", "Slovenia"
             },
-            { 
-                "SD", "The Sudan" 
+            {
+                "SB", "Solomon Islands"
             },
-            { 
-                "SR", "Suriname" 
+            {
+                "SO", "Somalia"
             },
-            { 
+            {
+                "ZA", "South Africa"
+            },
+            {
+                "GS", "South Georgia and the South Sandwich Islands"
+            },
+            {
+                "SS", "South Sudan"
+            },
+            {
+                "ES", "Spain"
+            },
+            {
+                "LK", "Sri Lanka"
+            },
+            {
+                "SD", "The Sudan"
+            },
+            {
+                "SR", "Suriname"
+            },
+            {
                 "SJ", "Svalbard and Jan Mayen"
             },
-            { 
+            {
                 "SE", "Sweden"
             },
-            { 
-                "CH", "Switzerland" 
+            {
+                "CH", "Switzerland"
             },
-            { 
-                "SY", "Syrian Arab Republic" 
+            {
+                "SY", "Syrian Arab Republic"
             },
-            { 
-                "TW", "Taiwan" 
+            {
+                "TW", "Taiwan"
             },
-            { 
-                "TJ", "Tajikistan" 
+            {
+                "TJ", "Tajikistan"
             },
-            { 
-                "TZ", "United Republic of Tanzania" 
+            {
+                "TZ", "United Republic of Tanzania"
             },
-            { 
-                "TH", "Thailand" 
+            {
+                "TH", "Thailand"
             },
-            { 
-                "TL", "Timor-Leste" 
+            {
+                "TL", "Timor-Leste"
             },
-            { 
-                "TG", "Togo" 
+            {
+                "TG", "Togo"
             },
-            { 
-                "TK", "Tokelau" 
+            {
+                "TK", "Tokelau"
             },
-            { 
-                "TO", "Tonga" 
+            {
+                "TO", "Tonga"
             },
-            { 
-                "TT", "Trinidad and Tobago" 
+            {
+                "TT", "Trinidad and Tobago"
             },
-            { 
-                "TN", "Tunisia" 
+            {
+                "TN", "Tunisia"
             },
-            { 
-                "TR", "Turkey" 
+            {
+                "TR", "Turkey"
             },
-            { 
-                "TM", "Turkmenistan" 
+            {
+                "TM", "Turkmenistan"
             },
-            { 
-                "TC", "The Turks and Caicos Islands" 
+            {
+                "TC", "The Turks and Caicos Islands"
             },
-            { 
-                "TV", "Tuvalu" 
+            {
+                "TV", "Tuvalu"
             },
-            { 
-                "UG", "Uganda" 
+            {
+                "UG", "Uganda"
             },
-            { 
-                "UA", "Ukraine" 
+            {
+                "UA", "Ukraine"
             },
-            { 
-                "AE", "The United Arab Emirates" 
+            {
+                "AE", "The United Arab Emirates"
             },
-            { 
-                "GB", "The United Kingdom of Great Britain and Northern Ireland" 
+            {
+                "GB", "The United Kingdom of Great Britain and Northern Ireland"
             },
-            { 
-                "UM", "The United States Minor Outlying Islands" 
+            {
+                "UM", "The United States Minor Outlying Islands"
             },
-            { 
-                "US", "The United States of America" 
+            {
+                "US", "The United States of America"
             },
-            { 
-                "UY", "Uruguay" 
+            {
+                "UY", "Uruguay"
             },
-            { 
+            {
                 "UZ", "Uzbekistan"
             },
-            { 
-                "VU", "Vanuatu" 
+            {
+                "VU", "Vanuatu"
             },
-            { 
-                "VE", "Bolivarian Republic of Venezuela" 
+            {
+                "VE", "Bolivarian Republic of Venezuela"
             },
-            { 
-                "VN", "Viet Nam" 
+            {
+                "VN", "Viet Nam"
             },
-            { 
-                "VG", "Virgin Islands (British)" 
+            {
+                "VG", "Virgin Islands (British)"
             },
-            { 
-                "VI", "Virgin Islands (U.S.)" 
+            {
+                "VI", "Virgin Islands (U.S.)"
             },
-            { 
-                "WF", "Wallis and Futuna" 
+            {
+                "WF", "Wallis and Futuna"
             },
-            { 
-                "EH", "Western Sahara" 
+            {
+                "EH", "Western Sahara"
             },
-            { 
-                "YE", "Yemen" 
+            {
+                "YE", "Yemen"
             },
-            { 
-                "ZM", "Zambia" 
+            {
+                "ZM", "Zambia"
             },
-            { 
-                "ZW", "Zimbabwe" 
+            {
+                "ZW", "Zimbabwe"
             },
-            { 
-                "AX", "Åland Islands" 
+            {
+                "AX", "Åland Islands"
             },
         };
     }

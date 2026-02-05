@@ -73,14 +73,13 @@ namespace MCGalaxy.Gui
             }
             if (rank.Permission == LevelPermission.Null)
             {
-                if (boxIdx >= perms.Count)
+                if (boxIdx < perms.Count)
                 {
-                    return;
+                    perms.RemoveAt(boxIdx);
+                    SupressEvents = true;
+                    SetSpecificPerms(perms, boxes);
+                    SupressEvents = false;
                 }
-                perms.RemoveAt(boxIdx);
-                SupressEvents = true;
-                SetSpecificPerms(perms, boxes);
-                SupressEvents = false;
             }
             else
             {
@@ -126,11 +125,10 @@ namespace MCGalaxy.Gui
                     GuiPerms.SetSelectedRank(box, perms[i]);
                 }
             }
-            if (permsCount >= boxes.Length)
+            if (permsCount < boxes.Length)
             {
-                return;
+                SetAddRank(boxes[permsCount]);
             }
-            SetAddRank(boxes[permsCount]);
         }
     }
 }

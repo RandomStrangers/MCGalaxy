@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,14 +14,12 @@
  */
 using MCGalaxy.Commands;
 using System.Collections.Generic;
-
 namespace MCGalaxy.Drawing.Brushes
 {
     public sealed class CloudyBrushFactory : BrushFactory
     {
         public override string Name { get { return "Cloudy"; } }
         public override string[] Help { get { return HelpString; } }
-
         static readonly string[] HelpString = new string[] {
             "&TArguments: [block1/frequency] [block2] <args>..",
             "&HDraws by selecting blocks from the given [blocks] using perlin noise.",
@@ -34,7 +29,6 @@ namespace MCGalaxy.Drawing.Brushes
             "&HArguments: &Ta&Hmplitude, &Tf&Hrequency (scale), &Ts&Heed, " +
             "&To&Hctaves, &Tp&Hersistence (turbulence), &Tl&Hacunarity",
         };
-
         public override Brush Construct(BrushArgs args)
         {
             NoiseArgs n = default;
@@ -45,28 +39,21 @@ namespace MCGalaxy.Drawing.Brushes
             n.Seed = int.MinValue;
             n.Persistence = 0.75f;
             n.Lacunarity = 2;
-
-
             bool ok = FrequencyBrush.GetBlocks(args, out List<ushort> toAffect, out List<int> freqs,
                                                Filter, arg => Handler(arg, args.Player, ref n));
             if (!ok) return null;
-
             return new CloudyBrush(toAffect, freqs, n);
         }
-
         // Only want to handle non block options.
         static bool Filter(string arg) { return arg.Length >= 2 && (arg[1] == '_' || arg[1] == '='); }
-
         static bool Handler(string arg, Player p, ref NoiseArgs args)
         {
             char opt = arg[0];
             arg = arg.Substring(2); // get part after _ or =
-
             if (opt == 'l') return ParseDecimal(p, arg, ref args.Lacunarity, 2.00f);
             if (opt == 'a') return ParseDecimal(p, arg, ref args.Amplitude, 1.00f);
             if (opt == 'f') return ParseDecimal(p, arg, ref args.Frequency, 0.08f);
             if (opt == 'p') return ParseDecimal(p, arg, ref args.Persistence, 0.75f);
-
             if (opt == 'o')
             {
                 if (!CommandParser.GetInt(p, arg, "Octaves", ref args.Octaves, 1, 16)) return false;
@@ -82,14 +69,12 @@ namespace MCGalaxy.Drawing.Brushes
             }
             return true;
         }
-
         static bool ParseDecimal(Player p, string arg, ref float target, float scale)
         {
             if (!CommandParser.GetReal(p, arg, "Value", ref target)) return false;
             target *= scale; return true;
         }
     }
-
     public struct NoiseArgs
     {
         public int Octaves, Seed;

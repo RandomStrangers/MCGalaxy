@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -30,14 +27,14 @@ namespace MCGalaxy.Drawing
         PaletteEntry[] front, back;
         public void SetPalette(PaletteEntry[] front, PaletteEntry[] back)
         {
-            this.front = front; 
+            this.front = front;
             this.back = back;
         }
         public ushort BestMatch(ref Pixel P)
         {
             MinDist(P.R, P.G, P.B, front, out int pos);
-            P.R = front[pos].R; 
-            P.G = front[pos].G; 
+            P.R = front[pos].R;
+            P.G = front[pos].G;
             P.B = front[pos].B;
             return front[pos].Block;
         }
@@ -50,7 +47,7 @@ namespace MCGalaxy.Drawing
         }
         static int MinDist(byte R, byte G, byte B, PaletteEntry[] entries, out int pos)
         {
-            int minDist = int.MaxValue; 
+            int minDist = int.MaxValue;
             pos = 0;
             for (int i = 0; i < entries.Length; i++)
             {
@@ -59,10 +56,10 @@ namespace MCGalaxy.Drawing
                     (R - entry.R) * (R - entry.R) +
                     (G - entry.G) * (G - entry.G) +
                     (B - entry.B) * (B - entry.B);
-                if (dist < minDist) 
+                if (dist < minDist)
                 {
-                    minDist = dist; 
-                    pos = i; 
+                    minDist = dist;
+                    pos = i;
                 }
             }
             return minDist;
@@ -84,8 +81,8 @@ namespace MCGalaxy.Drawing
         public ushort BestMatch(ref Pixel P)
         {
             MinDist(P.R, P.G, P.B, palette, out int pos);
-            P.R = front[pos].R; 
-            P.G = front[pos].G; 
+            P.R = front[pos].R;
+            P.G = front[pos].G;
             P.B = front[pos].B;
             return front[pos].Block;
         }
@@ -97,7 +94,7 @@ namespace MCGalaxy.Drawing
         }
         static double MinDist(byte R, byte G, byte B, LabColor[] entries, out int pos)
         {
-            double minDist = int.MaxValue; 
+            double minDist = int.MaxValue;
             pos = 0;
             LabColor col = RgbToLab(R, G, B);
             for (int i = 0; i < entries.Length; i++)
@@ -107,21 +104,21 @@ namespace MCGalaxy.Drawing
                     (col.L - pixel.L) * (col.L - pixel.L) +
                     (col.A - pixel.A) * (col.A - pixel.A) +
                     (col.B - pixel.B) * (col.B - pixel.B);
-                if (dist < minDist) 
-                { 
-                    minDist = dist; 
-                    pos = i; 
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    pos = i;
                 }
             }
             return minDist;
         }
-        struct LabColor 
-        { 
+        struct LabColor
+        {
             public double L, A, B;
         }
         static LabColor RgbToLab(byte r, byte g, byte b)
         {
-            double R = r / 255.0, 
+            double R = r / 255.0,
                 G = g / 255.0,
                 B = b / 255.0;
             if (R > 0.04045)
@@ -151,8 +148,8 @@ namespace MCGalaxy.Drawing
             double X = R * 0.4124 + G * 0.3576 + B * 0.1805,
                 Y = R * 0.2126 + G * 0.7152 + B * 0.0722,
                 Z = R * 0.0193 + G * 0.1192 + B * 0.9505;
-            X /= 95.047; 
-            Y /= 100.0; 
+            X /= 95.047;
+            Y /= 100.0;
             Z /= 108.883;
             if (X > 0.008856)
             {

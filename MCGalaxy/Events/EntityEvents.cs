@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -16,15 +13,12 @@
     permissions and limitations under the Licenses.
  */
 using System;
-
 namespace MCGalaxy.Events.EntityEvents
 {
-
     public delegate void OnTabListEntryAdded(Entity e, ref string tabName, ref string tabGroup, Player dst);
     /// <summary> Called when a tab list entry is being sent to a user. </summary>
     public sealed class OnTabListEntryAddedEvent : IEvent<OnTabListEntryAdded>
     {
-
         public static void Call(Entity e, ref string tabName, ref string tabGroup, Player dst)
         {
             IEvent<OnTabListEntryAdded>[] items = handlers.Items;
@@ -42,12 +36,10 @@ namespace MCGalaxy.Events.EntityEvents
             }
         }
     }
-
     public delegate void OnTabListEntryRemoved(Entity e, Player dst);
     /// <summary> Called when a tab list entry is being removed from a user. </summary>
     public sealed class OnTabListEntryRemovedEvent : IEvent<OnTabListEntryRemoved>
     {
-
         public static void Call(Entity e, Player dst)
         {
             IEvent<OnTabListEntryRemoved>[] items = handlers.Items;
@@ -60,12 +52,10 @@ namespace MCGalaxy.Events.EntityEvents
             }
         }
     }
-
     public delegate void OnEntitySpawned(Entity e, ref string name, ref string skin, ref string model, Player dst);
     /// <summary> Called when an entity is being spawned to someone. </summary>
     public sealed class OnEntitySpawnedEvent : IEvent<OnEntitySpawned>
     {
-
         public static void Call(Entity e, ref string name, ref string skin, ref string model, Player dst)
         {
             IEvent<OnEntitySpawned>[] items = handlers.Items;
@@ -83,12 +73,10 @@ namespace MCGalaxy.Events.EntityEvents
             }
         }
     }
-
     public delegate void OnEntityDespawned(Entity e, Player dst);
     /// <summary> Called when an entity is being despawned from someone. </summary>
     public sealed class OnEntityDespawnedEvent : IEvent<OnEntityDespawned>
     {
-
         public static void Call(Entity e, Player dst)
         {
             IEvent<OnEntityDespawned>[] items = handlers.Items;
@@ -99,12 +87,10 @@ namespace MCGalaxy.Events.EntityEvents
             }
         }
     }
-
     public delegate void OnSendingModel(Entity e, ref string model, Player dst);
     /// <summary> Called when model is being sent to a player. </summary>
     public sealed class OnSendingModelEvent : IEvent<OnSendingModel>
     {
-
         public static void Call(Entity e, ref string model, Player dst)
         {
             IEvent<OnSendingModel>[] items = handlers.Items;
@@ -116,13 +102,11 @@ namespace MCGalaxy.Events.EntityEvents
             }
         }
     }
-
     public delegate void OnGettingCanSeeEntity(Player p, ref bool canSee, Entity target);
     /// <summary> Called when checking if this player can see the given entity as an entity in the level. </summary>
     /// <remarks> e.g. You can use this event to make a player invisible during a game. </remarks>
     public sealed class OnGettingCanSeeEntityEvent : IEvent<OnGettingCanSeeEntity>
     {
-
         public static void Call(Player p, ref bool canSee, Entity target)
         {
             IEvent<OnGettingCanSeeEntity>[] items = handlers.Items;

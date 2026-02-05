@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,11 +15,9 @@
 // Copyright 2009, 2010 Matvei Stefarov <me@matvei.org>
 /*
 This generator was developed by Neko_baron.
-
 Ideas, concepts, and code were used from the following two sources:
 1) Isaac McGarvey's 'perlin noise generator' code
 2) http://www.lighthouse3d.com/opengl/terrain/index.php3?introduction
-
  */
 using System;
 namespace MCGalaxy.Generator.Realistic
@@ -32,31 +27,26 @@ namespace MCGalaxy.Generator.Realistic
         public static void GenerateNormalized(float[] array, float persistence, int octaves, int width, int height, int seed, float zoom)
         {
             float min = float.MaxValue, max = float.MinValue;
-
             //Generate raw float data
             for (int y = 0; y < height; ++y)
                 for (int x = 0; x < width; ++x)
                 {
                     float sum = 0, frequency = 1, amplitude = 1;
-
                     for (int i = 0; i < octaves; ++i)
                     {
                         sum += InterpolatedNoise(x * frequency / zoom, y * frequency / zoom, seed) * amplitude;
                         frequency *= 2;
                         amplitude *= persistence;
                     }
-
                     array[y * width + x] = sum;
                     min = sum < min ? sum : min;
                     max = sum > max ? sum : max;
                 }
-
             //Normalize
             float range = max - min;
             for (int i = 0; i < array.Length; ++i)
                 array[i] = (array[i] - min) / range;
         }
-
         static float Interpolate(float a, float b, float x)
         {
             float ft = x * 3.1415927f;
@@ -70,16 +60,12 @@ namespace MCGalaxy.Generator.Realistic
             return (float)(1.0 - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
             //return value is always in range [-1.0, 1.0]
         }
-
-
         static unsafe float InterpolatedNoise(float x, float y, int seed)
         {
             int wholeX = (int)x, wholeY = (int)y, i = 0;
             float fracX = x - wholeX, fracY = y - wholeY;
-
             // Calculates the smoothed noise for the 4 cells around the given point,
-            //  then interpolates between the smoothed noise results of the 4 cells 
-
+            //  then interpolates between the smoothed noise results of the 4 cells
             //   -1 0 1 2
             // -1 * * * *
             //  0 * X X *
@@ -91,21 +77,17 @@ namespace MCGalaxy.Generator.Realistic
                 {
                     noise[i++] = Noise(wholeX + xx, wholeY + yy, seed);
                 }
-
             float n00 = SmoothNoise(noise, (0 + 1) * ONEX + (0 + 1) * ONEY); // x=0, y=0
             float n10 = SmoothNoise(noise, (1 + 1) * ONEX + (0 + 1) * ONEY); // x=1, y=0
             float n01 = SmoothNoise(noise, (0 + 1) * ONEX + (1 + 1) * ONEY); // x=0, y=1
             float n11 = SmoothNoise(noise, (1 + 1) * ONEX + (1 + 1) * ONEY); // x=1, y=1
-
             float N0 = Interpolate(n00, n10, fracX);
             float N1 = Interpolate(n01, n11, fracX);
             return Interpolate(N0, N1, fracY);
         }
-
         const int RANGE = 4;
         const int ONEX = 1;
         const int ONEY = RANGE;
-
         /// <summary> Calculates smoothed noise across the given cell and its 8 neighbours </summary>
         static unsafe float SmoothNoise(float* noise, int i)
         {

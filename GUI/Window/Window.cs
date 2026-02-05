@@ -1,4 +1,4 @@
-/*    
+/*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -42,19 +42,18 @@ namespace MCGalaxy.Gui
         {
             string gui_version = Server.InternalVersion,
                 dll_version = Server.Version;
-            if (gui_version.CaselessEq(dll_version))
+            if (!gui_version.CaselessEq(dll_version))
             {
-                return;
-            }
-            const string fmt =
+                const string fmt =
 @"Currently you are using:
   {2} for {0} {1}
   {4} for {0} {3}
 Trying to mix two versions is unsupported - you may experience issues";
-            string msg = string.Format(fmt, Server.SoftwareName,
-                                       gui_version, AssemblyFile(typeof(Window), "MCGalaxy.exe"),
-                                       dll_version, AssemblyFile(typeof(Server), "MCGalaxy_.dll"));
-            RunAsync(() => Popup.Warning(msg));
+                string msg = string.Format(fmt, Server.SoftwareName,
+                                           gui_version, AssemblyFile(typeof(Window), "MCGalaxy.exe"),
+                                           dll_version, AssemblyFile(typeof(Server), "MCGalaxy_.dll"));
+                RunAsync(() => Popup.Warning(msg));
+            }
         }
         static string AssemblyFile(Type type, string defPath)
         {
@@ -71,29 +70,28 @@ Trying to mix two versions is unsupported - you may experience issues";
         void Window_Load(object sender, EventArgs e)
         {
             LoadIcon();
-            if (loaded)
+            if (!loaded)
             {
-                return;
-            }
-            loaded = true;
-            Text = "Starting " + Server.SoftwareNameVersioned + "...";
-            Show();
-            BringToFront();
-            WindowState = FormWindowState.Normal;
-            CheckVersions();
-            InitServer();
-            foreach (MapGen gen in MapGen.Generators)
-            {
-                if (gen.Type == GenType.Advanced)
+                loaded = true;
+                Text = "Starting " + Server.SoftwareNameVersioned + "...";
+                Show();
+                BringToFront();
+                WindowState = FormWindowState.Normal;
+                CheckVersions();
+                InitServer();
+                foreach (MapGen gen in MapGen.Generators)
                 {
-                    continue;
+                    if (gen.Type == GenType.Advanced)
+                    {
+                        continue;
+                    }
+                    map_cmbType.Items.Add(gen.Theme);
                 }
-                map_cmbType.Items.Add(gen.Theme);
+                Text = Server.Config.Name + " - " + Server.SoftwareNameVersioned;
+                MakeNotifyIcon();
+                main_Players.Font = new("Calibri", 8.25f);
+                main_Maps.Font = new("Calibri", 8.25f);
             }
-            Text = Server.Config.Name + " - " + Server.SoftwareNameVersioned;
-            MakeNotifyIcon();
-            main_Players.Font = new("Calibri", 8.25f);
-            main_Maps.Font = new("Calibri", 8.25f);
         }
         void LoadIcon()
         {
@@ -102,8 +100,8 @@ Trying to mix two versions is unsupported - you may experience issues";
                 Icon = GetIcon();
                 GuiUtils.WinIcon = Icon;
             }
-            catch 
-            { 
+            catch
+            {
             }
         }
         void UpdateNotifyIconText()
@@ -144,50 +142,47 @@ Trying to mix two versions is unsupported - you may experience issues";
         readonly LogCallback logCallback;
         void LogMessage(LogType type, string message)
         {
-            if (!Server.Config.ConsoleLogging[(int)type])
+            if (Server.Config.ConsoleLogging[(int)type])
             {
-                return;
-            }
-            try
-            {
-                BeginInvoke(logCallback, type, message);
-            }
-            catch (InvalidOperationException)
-            {
+                try
+                {
+                    BeginInvoke(logCallback, type, message);
+                }
+                catch (InvalidOperationException)
+                {
+                }
             }
         }
         void LogMessageCore(LogType type, string message)
         {
-            if (Server.shuttingDown)
+            if (!Server.shuttingDown)
             {
-                return;
-            }
-            string newline = Environment.NewLine;
-            switch (type)
-            {
-                case LogType.Error:
-                    main_txtLog.AppendLog("&c!!!Error" + ExtractErrorMessage(message)
-                                          + " - See Logs tab for more details" + newline);
-                    message = FormatError(message);
-                    logs_txtError.AppendText(message + newline);
-                    break;
-                case LogType.BackgroundActivity:
-                    message = DateTime.Now.ToString("(HH:mm:ss) ") + message;
-                    logs_txtSystem.AppendText(message + newline);
-                    break;
-                case LogType.CommandUsage:
-                    message = DateTime.Now.ToString("(HH:mm:ss) ") + message;
-                    main_txtLog.AppendLog(message + newline, main_txtLog.ForeColor, false);
-                    break;
-                default:
-                    main_txtLog.AppendLog(message + newline);
-                    break;
+                string newline = Environment.NewLine;
+                switch (type)
+                {
+                    case LogType.Error:
+                        main_txtLog.AppendLog("&c!!!Error" + ExtractErrorMessage(message)
+                                              + " - See Logs tab for more details" + newline);
+                        message = FormatError(message);
+                        logs_txtError.AppendText(message + newline);
+                        break;
+                    case LogType.BackgroundActivity:
+                        message = DateTime.Now.ToString("(HH:mm:ss) ") + message;
+                        logs_txtSystem.AppendText(message + newline);
+                        break;
+                    case LogType.CommandUsage:
+                        message = DateTime.Now.ToString("(HH:mm:ss) ") + message;
+                        main_txtLog.AppendLog(message + newline, main_txtLog.ForeColor, false);
+                        break;
+                    default:
+                        main_txtLog.AppendLog(message + newline);
+                        break;
+                }
             }
         }
         static string FormatError(string message)
         {
-            string date = "----" + DateTime.Now + "----";
-            return date + Environment.NewLine + message + Environment.NewLine + "-------------------------";
+            return "----" + DateTime.Now + "----" + Environment.NewLine + message + Environment.NewLine + "-------------------------";
         }
         static readonly string msgPrefix = Environment.NewLine + "Message: ";
         static string ExtractErrorMessage(string raw)
@@ -205,20 +200,16 @@ Trying to mix two versions is unsupported - you may experience issues";
             }
             return " (" + raw.Substring(beg, end - beg) + ")";
         }
-        void OnNewerVersionDetected(object sender, EventArgs e)
-        {
-            RunOnUI_Async(ShowUpdateMessageBox);
-        }
+        void OnNewerVersionDetected(object sender, EventArgs e) => RunOnUI_Async(ShowUpdateMessageBox);
         void ShowUpdateMessageBox()
         {
-            if (UpdateAvailable.Active)
+            if (!UpdateAvailable.Active)
             {
-                return;
+                UpdateAvailable form = new();
+                form.Location = new(Location.X + (Width - form.Width) / 2,
+                    Location.Y + (Height - form.Height) / 2);
+                form.Show(this);
             }
-            UpdateAvailable form = new();
-            form.Location = new(Location.X + (Width - form.Width) / 2,
-                Location.Y + (Height - form.Height) / 2);
-            form.Show(this);
         }
         static void RunAsync(ThreadStart func)
         {
@@ -241,92 +232,63 @@ Trying to mix two versions is unsupported - you may experience issues";
             OnPhysicsLevelChangedEvent.Register(Level_PhysicsLevelChanged, Priority.Low);
             RunOnUI_Async(() => main_btnProps.Enabled = true);
         }
-        public void RunOnUI_Async(UIAction act) 
-        { 
-            BeginInvoke(act); 
-        }
-        void Player_PlayerConnect(Player p)
-        {
-            RunOnUI_Async(() =>
-            {
-                Main_UpdatePlayersList();
-                Players_UpdateList();
-            });
-        }
-        void Player_PlayerDisconnect(Player p, string reason)
-        {
-            RunOnUI_Async(() =>
-            {
-                Main_UpdateMapList();
-                Main_UpdatePlayersList();
-                Players_UpdateList();
-            });
-        }
-        void Player_OnJoinedLevel(Player p, Level prevLevel, Level lvl)
-        {
-            RunOnUI_Async(() =>
-            {
-                Main_UpdateMapList();
-                Main_UpdatePlayersList();
-                Players_UpdateSelected();
-            });
-        }
+        public void RunOnUI_Async(UIAction act) => BeginInvoke(act);
+        void Player_PlayerConnect(Player p) => RunOnUI_Async(() =>
+                                                        {
+                                                            Main_UpdatePlayersList();
+                                                            Players_UpdateList();
+                                                        });
+        void Player_PlayerDisconnect(Player p, string reason) => RunOnUI_Async(() =>
+                                                                          {
+                                                                              Main_UpdateMapList();
+                                                                              Main_UpdatePlayersList();
+                                                                              Players_UpdateList();
+                                                                          });
+        void Player_OnJoinedLevel(Player p, Level prevLevel, Level lvl) => RunOnUI_Async(() =>
+                                                                                    {
+                                                                                        Main_UpdateMapList();
+                                                                                        Main_UpdatePlayersList();
+                                                                                        Players_UpdateSelected();
+                                                                                    });
         void Player_OnModAction(ModAction action)
         {
-            if (action.Type != ModActionType.Rank)
+            if (action.Type == ModActionType.Rank)
             {
-                return;
-            }
-            RunOnUI_Async(() =>
-            {
-                Main_UpdatePlayersList();
-            });
-        }
-        void Level_LevelAdded(Level lvl)
-        {
-            RunOnUI_Async(() =>
-            {
-                Main_UpdateMapList();
-                Map_UpdateLoadedList();
-                Map_UpdateUnloadedList();
-            });
-        }
-        void Level_LevelRemoved(Level lvl)
-        {
-            RunOnUI_Async(() =>
-            {
-                Main_UpdateMapList();
-                Map_UpdateLoadedList();
-                Map_UpdateUnloadedList();
-            });
-        }
-        void Level_PhysicsLevelChanged(Level lvl, int level)
-        {
-            RunOnUI_Async(() =>
-            {
-                Main_UpdateMapList();
-                Map_UpdateLoadedList();
-            });
-        }
-        void SettingsUpdate()
-        {
-            RunOnUI_Async(() =>
-            {
-                if (Server.shuttingDown)
+                RunOnUI_Async(() =>
                 {
-                    return;
-                }
-                Text = Server.Config.Name + " - " + Server.SoftwareNameVersioned;
-                UpdateNotifyIconText();
-            });
+                    Main_UpdatePlayersList();
+                });
+            }
         }
-        void UpdateUrl(string s)
-        {
-            RunOnUI_Async(() => 
-            { 
-                Main_UpdateUrl(s); 
-            });
-        }
+        void Level_LevelAdded(Level lvl) => RunOnUI_Async(() =>
+                                                     {
+                                                         Main_UpdateMapList();
+                                                         Map_UpdateLoadedList();
+                                                         Map_UpdateUnloadedList();
+                                                     });
+        void Level_LevelRemoved(Level lvl) => RunOnUI_Async(() =>
+                                                       {
+                                                           Main_UpdateMapList();
+                                                           Map_UpdateLoadedList();
+                                                           Map_UpdateUnloadedList();
+                                                       });
+        void Level_PhysicsLevelChanged(Level lvl, int level) => RunOnUI_Async(() =>
+                                                                         {
+                                                                             Main_UpdateMapList();
+                                                                             Map_UpdateLoadedList();
+                                                                         });
+        void SettingsUpdate() => RunOnUI_Async(() =>
+                                          {
+                                              if (!Server.shuttingDown)
+                                              {
+                                                  Text = Server.Config.Name + " - " + Server.SoftwareNameVersioned;
+                                                  UpdateNotifyIconText();
+                                              }
+                                          });
+        void UpdateUrl(string s) => RunOnUI_Async(() =>
+                                             {
+                                                 Main_UpdateUrl(s);
+                                             });
         void Window_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (e.CloseReason == CloseReason.WindowsShutDown)
@@ -344,10 +306,7 @@ Trying to mix two versions is unsupported - you may experience issues";
                 e.Cancel = true;
             }
         }
-        void BtnClose_Click(object sender, EventArgs e) 
-        {
-            Close(); 
-        }
+        void BtnClose_Click(object sender, EventArgs e) => Close();
         void BtnProperties_Click(object sender, EventArgs e)
         {
             if (!hasPropsForm)
@@ -364,10 +323,7 @@ Trying to mix two versions is unsupported - you may experience issues";
         public static bool hasPropsForm;
         PropertyWindow propsForm;
         bool alwaysInTaskbar = true;
-        void Window_Resize(object sender, EventArgs e)
-        {
-            ShowInTaskbar = alwaysInTaskbar;
-        }
+        void Window_Resize(object sender, EventArgs e) => ShowInTaskbar = alwaysInTaskbar;
         void Icon_HideWindow_Click(object sender, EventArgs e)
         {
             alwaysInTaskbar = !alwaysInTaskbar;
@@ -380,29 +336,23 @@ Trying to mix two versions is unsupported - you may experience issues";
             BringToFront();
             WindowState = FormWindowState.Normal;
         }
-        void Icon_Shutdown_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-        void Icon_restart_Click(object sender, EventArgs e)
-        {
-            Main_BtnRestart_Click(sender, e);
-        }
+        void Icon_Shutdown_Click(object sender, EventArgs e) => Close();
+        void Icon_restart_Click(object sender, EventArgs e) => Main_BtnRestart_Click(sender, e);
         void Tabs_Click(object sender, EventArgs e)
         {
-            try 
+            try
             {
-                Map_UpdateUnloadedList(); 
+                Map_UpdateUnloadedList();
             }
-            catch 
-            { 
+            catch
+            {
             }
-            try 
-            { 
-                Players_UpdateList(); 
+            try
+            {
+                Players_UpdateList();
             }
-            catch 
-            { 
+            catch
+            {
             }
             try
             {
@@ -411,8 +361,8 @@ Trying to mix two versions is unsupported - you may experience issues";
                     logs_dateGeneral.Value = DateTime.Now;
                 }
             }
-            catch 
-            { 
+            catch
+            {
             }
             foreach (TabPage page in tabs.TabPages)
             {
@@ -427,9 +377,6 @@ Trying to mix two versions is unsupported - you may experience issues";
             }
             tabs.Update();
         }
-        void Main_players_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
-        {
-            e.PaintParts &= ~DataGridViewPaintParts.Focus;
-        }
+        void Main_players_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e) => e.PaintParts &= ~DataGridViewPaintParts.Focus;
     }
 }

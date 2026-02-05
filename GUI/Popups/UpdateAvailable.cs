@@ -37,18 +37,9 @@ namespace MCGalaxy.Gui.Popups
             }
             base.OnPaint(e);
         }
-        void UpdateCheck_Closed(object sender, EventArgs e)
-        {
-            Active = false;
-        }
-        void UpdateCheck_Load(object sender, EventArgs e)
-        {
-            GuiUtils.SetIcon(this);
-        }
-        void BtnNo_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
+        void UpdateCheck_Closed(object sender, EventArgs e) => Active = false;
+        void UpdateCheck_Load(object sender, EventArgs e) => GuiUtils.SetIcon(this);
+        void BtnNo_Click(object sender, EventArgs e) => Close();
         void BtnUpdate_Click(object sender, EventArgs e)
         {
             Updater.PerformUpdate();

@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,22 +15,17 @@
 using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Maths;
 using System;
-
-
 namespace MCGalaxy.Drawing.Ops
 {
     public class UndoPhysicsDrawOp : DrawOp
     {
         public override string Name { get { return "UndoPhysics"; } }
         internal DateTime Start;
-
         public UndoPhysicsDrawOp()
         {
             AffectedByTransform = false;
         }
-
         public override long BlocksAffected(Level lvl, Vec3S32[] marks) { return -1; }
-
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             if (Level.UndoBuffer.Count != Server.Config.PhysicsUndo)
@@ -69,15 +61,12 @@ namespace MCGalaxy.Drawing.Ops
                 }
             }
         }
-
         bool CheckBlockPhysics(Player _, Level lvl, int i)
         {
             Level.UndoPos undo = lvl.UndoBuffer[i];
             if (undo.Time < Start) return false;
-
             lvl.IntToPos(undo.Index, out ushort x, out ushort y, out ushort z);
             ushort cur = lvl.GetBlock(x, y, z);
-
             ushort newBlock = undo.NewBlock;
             if (cur == newBlock || Block.Convert(cur) == Block.Water || Block.Convert(cur) == Block.Lava)
             {

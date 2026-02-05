@@ -1,27 +1,22 @@
-﻿/*
+/*
     Written by Jack1312
     Copyright 2011-2012 MCForge
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
         https://opensource.org/license/ecl-2-0/
         https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
- 
  */
 using MCGalaxy.Events.PlayerEvents;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-
 namespace MCGalaxy.Authentication
 {
     /// <summary> Manages optional additional verification for certain users </summary>
@@ -133,20 +128,20 @@ namespace MCGalaxy.Authentication
         {
             if (!Server.Config.verifyadmins)
             {
-                p.Message("Password verification is not currently enabled."); 
+                p.Message("Password verification is not currently enabled.");
                 return;
             }
             if (data.Rank < Server.Config.VerifyAdminsRank)
             {
                 Formatter.MessageNeedMinPerm(p, "+ require password verification",
-                                             Server.Config.VerifyAdminsRank); 
+                                             Server.Config.VerifyAdminsRank);
                 return;
             }
             message = message.Trim();
-            if (message.Length == 0) 
-            { 
-                PrintHelp(p); 
-                return; 
+            if (message.Length == 0)
+            {
+                PrintHelp(p);
+                return;
             }
             string[] args = message.SplitSpaces(2);
             if (args.Length == 2 && args[0].CaselessEq("set"))
@@ -164,20 +159,20 @@ namespace MCGalaxy.Authentication
         }
         void DoVerifyPassword(Player p, string password)
         {
-            if (!p.Unverified) 
-            { 
-                p.Message("&WYou are already verified."); 
-                return; 
+            if (!p.Unverified)
+            {
+                p.Message("&WYou are already verified.");
+                return;
             }
-            if (p.passtries >= 3) 
-            { 
-                p.Kick("Did you really think you could keep on guessing?"); 
-                return; 
+            if (p.passtries >= 3)
+            {
+                p.Kick("Did you really think you could keep on guessing?");
+                return;
             }
-            if (password.IndexOf(' ') >= 0) 
-            { 
-                p.Message("Your password must be &Wone &Sword!"); 
-                return; 
+            if (password.IndexOf(' ') >= 0)
+            {
+                p.Message("Your password must be &Wone &Sword!");
+                return;
             }
             if (!HasPassword(p.name))
             {
@@ -187,7 +182,7 @@ namespace MCGalaxy.Authentication
             }
             if (VerifyPassword(p.name, password))
             {
-                Verify(p); 
+                Verify(p);
                 return;
             }
             p.passtries++;
@@ -204,7 +199,7 @@ namespace MCGalaxy.Authentication
             }
             if (password.IndexOf(' ') >= 0)
             {
-                p.Message("&WPassword must be one word."); 
+                p.Message("&WPassword must be one word.");
                 return;
             }
             StorePassword(p.name, password);
@@ -255,8 +250,8 @@ namespace MCGalaxy.Authentication
     {
         const string PASS_FOLDER = "extra/passwords/";
         public override bool HasPassword(string name)
-        { 
-            return GetHashPath(name) != null; 
+        {
+            return GetHashPath(name) != null;
         }
         public override bool VerifyPassword(string name, string password)
         {

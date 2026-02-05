@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,8 +16,6 @@ using MCGalaxy.Drawing.Ops;
 using MCGalaxy.Generator;
 using System;
 using System.Collections.Generic;
-
-
 namespace MCGalaxy.Drawing.Brushes
 {
     public sealed class CloudyBrush : Brush
@@ -29,7 +24,6 @@ namespace MCGalaxy.Drawing.Brushes
         readonly int[] counts;
         readonly float[] thresholds;
         readonly ImprovedNoise noise;
-
         public CloudyBrush(List<ushort> blocks, List<int> counts, NoiseArgs n)
         {
             this.blocks = blocks.ToArray();
@@ -45,22 +39,18 @@ namespace MCGalaxy.Drawing.Brushes
                 Persistence = n.Persistence
             };
         }
-
         public override string Name { get { return "Cloudy"; } }
-
         public override unsafe void Configure(DrawOp op, Player p)
         {
             if (!p.Ignores.DrawOutput)
             {
                 p.Message("Calculating noise distribution...");
             }
-
             // Initalise our noise histogram
             const int accuracy = 10000;
             int* values = stackalloc int[accuracy];
             for (int i = 0; i < accuracy; i++)
                 values[i] = 0;
-
             // Fill the histogram with the distribution of the noise
             for (int x = op.Min.X; x <= op.Max.X; x++)
                 for (int y = op.Min.Y; y <= op.Max.Y; y++)
@@ -68,13 +58,11 @@ namespace MCGalaxy.Drawing.Brushes
                     {
                         float N = noise.NormalisedNoise(x, y, z);
                         N = (N + 1) * 0.5f; // rescale to [0, 1]
-
                         int index = (int)(N * accuracy);
                         index = index < 0 ? 0 : index;
                         index = index >= accuracy ? accuracy - 1 : index;
                         values[index]++;
                     }
-
             // Calculate the coverage of blocks
             float* coverage = stackalloc float[counts.Length];
             int totalBlocks = 0;
@@ -86,7 +74,6 @@ namespace MCGalaxy.Drawing.Brushes
                 coverage[i] = last + (counts[i] / (float)totalBlocks);
                 last = coverage[i];
             }
-
             // Map noise distribution to block coverage
             int volume = op.SizeX * op.SizeY * op.SizeZ;
             float sum = 0;
@@ -106,13 +93,11 @@ namespace MCGalaxy.Drawing.Brushes
                 sum += values[i] / (float)volume;
             }
             thresholds[blocks.Length - 1] = 1;
-
             if (!p.Ignores.DrawOutput)
             {
                 p.Message("Finished calculating, now drawing.");
             }
         }
-
         int next;
         public override ushort NextBlock(DrawOp op)
         {
@@ -120,7 +105,6 @@ namespace MCGalaxy.Drawing.Brushes
             N = (N + 1) * 0.5f; // rescale to [0, 1];
             N = N < 0 ? 0 : N;
             N = N > 1 ? 1 : N;
-
             next = blocks.Length - 1;
             for (int i = 0; i < thresholds.Length; i++)
             {

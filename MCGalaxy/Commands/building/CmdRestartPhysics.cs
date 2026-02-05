@@ -1,14 +1,11 @@
 /*
     Copyright 2011 MCForge
-        
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,9 +16,6 @@ using MCGalaxy.Blocks.Physics;
 using MCGalaxy.Maths;
 using System;
 using System.Collections.Generic;
-
-
-
 namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdRestartPhysics : Command2
@@ -32,17 +26,14 @@ namespace MCGalaxy.Commands.Building
         public override bool museumUsable { get { return false; } }
         public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
         public override bool SuperUseable { get { return false; } }
-
         public override void Use(Player p, string message, CommandData data)
         {
             PhysicsArgs extraInfo = default;
             message = message.ToLower();
             if (message.Length > 0 && !ParseArgs(p, message, ref extraInfo)) return;
-
             p.Message("Place or break two blocks to determine the edges.");
             p.MakeSelection(2, "Selecting region for &SRestart physics", extraInfo, DoRestart);
         }
-
         bool ParseArgs(Player p, string message, ref PhysicsArgs args)
         {
             string[] parts = message.SplitSpaces();
@@ -53,7 +44,6 @@ namespace MCGalaxy.Commands.Building
             }
             byte type = 0, value = 0;
             byte extBits = 0;
-
             if (parts.Length >= 2)
             {
                 if (!Parse(p, parts[0], parts[1], ref type, ref value, ref extBits)) return false;
@@ -68,24 +58,19 @@ namespace MCGalaxy.Commands.Building
             {
                 p.Message("You can only use up to two types of physics."); return false;
             }
-
             args.ExtBlock = extBits;
             return true;
         }
-
         bool Parse(Player p, string name, string arg, ref byte type, ref byte value, ref byte isExt)
         {
             if (name == "revert")
             {
                 if (!CommandParser.GetBlock(p, arg, out ushort block)) return false;
-
                 type = PhysicsArgs.Revert; value = (byte)block;
                 isExt = (byte)(block >> Block.ExtendedShift);
                 return true;
             }
-
             if (!CommandParser.GetByte(p, arg, "Value", ref value)) return false;
-
             switch (name)
             {
                 case "drop": type = PhysicsArgs.Drop; return true;
@@ -97,12 +82,10 @@ namespace MCGalaxy.Commands.Building
             p.Message(name + " type is not supported.");
             return false;
         }
-
         bool DoRestart(Player p, Vec3S32[] m, object state, ushort block)
         {
             PhysicsArgs args = (PhysicsArgs)state;
             List<int> buffer = new();
-
             for (int y = Math.Min(m[0].Y, m[1].Y); y <= Math.Max(m[0].Y, m[1].Y); y++)
                 for (int z = Math.Min(m[0].Z, m[1].Z); z <= Math.Max(m[0].Z, m[1].Z); z++)
                     for (int x = Math.Min(m[0].X, m[1].X); x <= Math.Max(m[0].X, m[1].X); x++)
@@ -112,7 +95,6 @@ namespace MCGalaxy.Commands.Building
                             buffer.Add(index);
                         }
                     }
-
             if (args.Raw == 0)
             {
                 if (buffer.Count > Server.Config.PhysicsRestartNormLimit)
@@ -128,7 +110,6 @@ namespace MCGalaxy.Commands.Building
                 p.Message("Cannot add physics to more than " + Server.Config.PhysicsRestartLimit + " blocks.");
                 return false;
             }
-
             foreach (int index1 in buffer)
             {
                 p.level.AddCheck(index1, true, args);
@@ -136,7 +117,6 @@ namespace MCGalaxy.Commands.Building
             p.Message("Activated " + buffer.Count + " blocks.");
             return true;
         }
-
         public override void Help(Player p)
         {
             p.Message("/restartphysics ([type] [num]) ([type2] [num2]) - Restarts every physics block in an area");

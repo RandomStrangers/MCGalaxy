@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,8 +15,6 @@
 using MCGalaxy.Blocks;
 using MCGalaxy.Maths;
 using System.IO;
-
-
 namespace MCGalaxy
 {
     public static partial class Block
@@ -31,7 +26,6 @@ namespace MCGalaxy
                 || (block >= Water && block <= StillLava)
                 || (block >= Dandelion && block <= RedMushroom);
         }
-
         public static bool AllowBreak(ushort block)
         {
             return block switch
@@ -40,7 +34,6 @@ namespace MCGalaxy
                 _ => false,
             };
         }
-
         public static bool LightPass(ushort block)
         {
             return Convert(block) switch
@@ -49,7 +42,6 @@ namespace MCGalaxy
                 _ => false,
             };
         }
-
         public static bool NeedRestart(ushort block)
         {
             return block switch
@@ -58,7 +50,6 @@ namespace MCGalaxy
                 _ => false,
             };
         }
-
         public static AABB BlockAABB(ushort block, Level lvl)
         {
             BlockDefinition def = lvl.GetBlockDef(block);
@@ -67,12 +58,10 @@ namespace MCGalaxy
                 return new AABB(def.MinX * 2, def.MinZ * 2, def.MinY * 2,
                                 def.MaxX * 2, def.MaxZ * 2, def.MaxY * 2);
             }
-
             if (block >= Extended) return new AABB(0, 0, 0, 32, 32, 32);
             ushort core = Convert(block);
             return new AABB(0, 0, 0, 32, DefaultSet.Height(core) * 2, 32);
         }
-
         public static void SetBlocks()
         {
             BlockProps[] props = Props;
@@ -80,10 +69,8 @@ namespace MCGalaxy
             {
                 props[b] = MakeDefaultProps((ushort)b);
             }
-
             SetDefaultNames();
             string propsPath = Paths.BlockPropsPath("default");
-
             // backwards compatibility with older versions
             if (!File.Exists(propsPath))
             {
@@ -94,10 +81,8 @@ namespace MCGalaxy
             {
                 BlockProps.Load("default", Props, 1, false);
             }
-
             UpdateLoadedLevels();
         }
-
         public static void UpdateLoadedLevels()
         {
             Level[] loaded = LevelInfo.Loaded.Items;
@@ -107,32 +92,27 @@ namespace MCGalaxy
                 lvl.UpdateAllBlockHandlers();
             }
         }
-
         /// <summary> Converts a raw/client block ID to a server block ID </summary>
         public static ushort FromRaw(ushort raw)
         {
             return raw < CPE_COUNT ? raw : (ushort)(raw + Extended);
         }
-
         /// <summary> Converts a server block ID to a raw/client block ID </summary>
         /// <remarks> Undefined behaviour for physics block IDs </remarks>
         public static ushort ToRaw(ushort raw)
         {
             return raw < CPE_COUNT ? raw : (ushort)(raw - Extended);
         }
-
         public static ushort MapOldRaw(ushort raw)
         {
             // old raw form was: 0 - 65 core block ids, 66 - 255 custom block ids
             // 256+ remain unchanged
             return IsPhysicsType(raw) ? ((ushort)(raw + Extended)) : raw;
         }
-
         public static bool IsPhysicsType(ushort block)
         {
             return block >= CPE_COUNT && block < Extended;
         }
-
         public static bool VisuallyEquals(ushort a, ushort b)
         {
             return Convert(a) == Convert(b);

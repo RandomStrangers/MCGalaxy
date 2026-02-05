@@ -1,21 +1,17 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-
 namespace MCGalaxy
 {
     /// <summary> Extension methods relating to strings. </summary>
@@ -77,7 +73,7 @@ namespace MCGalaxy
             return new(c);
         }
         /// <summary> Converts a unicode string into a string consisting of code page 437 indices. </summary>
-        /// <remarks> Unicode characters not in code page 437 are converted to '?'. </remarks> 
+        /// <remarks> Unicode characters not in code page 437 are converted to '?'. </remarks>
         public static string UnicodeToCp437(this string str)
         {
             if (!HasSpecial(str))
@@ -108,7 +104,7 @@ namespace MCGalaxy
             }
             return '?';
         }
-        /// <summary> Converts a unicode character into a code page 437 indice. </summary>        
+        /// <summary> Converts a unicode character into a code page 437 indice. </summary>
         public static char UnicodeToCp437(this char c)
         {
             int cpIndex;

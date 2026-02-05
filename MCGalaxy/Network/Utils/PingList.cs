@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-        
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,7 +14,6 @@
  */
 using System;
 using System.Threading;
-
 namespace MCGalaxy.Network
 {
     public sealed class PingList
@@ -35,13 +31,10 @@ namespace MCGalaxy.Network
                 }
             }
         }
-
-        // Pings are stored using a circular array 
+        // Pings are stored using a circular array
         public PingEntry[] Entries = new PingEntry[10];
         int pingCounter, nextPingHead;
-
         long ignorePositionData = -1;
-
         public bool IgnorePosition
         {
             get { return Interlocked.Read(ref ignorePositionData) >= 0; }
@@ -50,20 +43,16 @@ namespace MCGalaxy.Network
         {
             Interlocked.CompareExchange(ref ignorePositionData, -1, data);
         }
-
         public ushort NextTwoWayPingData(bool startIgnoringPosition = false)
         {
             int pingValue = Interlocked.Increment(ref pingCounter);
             int pingHead = (Interlocked.Increment(ref nextPingHead) - 1) % 10;
-
             Entries[pingHead].Data = (ushort)pingValue;
             Entries[pingHead].TimeRecv = default;
             Entries[pingHead].TimeSent = DateTime.UtcNow;
-
             if (startIgnoringPosition) Interlocked.Exchange(ref ignorePositionData, pingValue);
             return (ushort)pingValue;
         }
-
         public void Update(ushort data)
         {
             for (int i = 0; i < Entries.Length; i++)
@@ -73,14 +62,11 @@ namespace MCGalaxy.Network
                 return;
             }
         }
-
-
         bool Valid(int i)
         {
             PingEntry e = Entries[i];
             return e.TimeSent.Ticks != 0 && e.TimeRecv.Ticks != 0;
         }
-
         public int Measures()
         {
             int measures = 0;
@@ -90,7 +76,6 @@ namespace MCGalaxy.Network
             }
             return measures;
         }
-
         public int LowestPing()
         {
             double ms = 100000000;
@@ -100,7 +85,6 @@ namespace MCGalaxy.Network
             }
             return (int)ms;
         }
-
         public int AveragePing()
         {
             double ms = 0;
@@ -111,7 +95,6 @@ namespace MCGalaxy.Network
             }
             return measures == 0 ? 0 : (int)(ms / measures);
         }
-
         public int HighestPing()
         {
             double ms = 0;
@@ -121,13 +104,11 @@ namespace MCGalaxy.Network
             }
             return (int)ms;
         }
-
         public string Format()
         {
             return string.Format("Lowest ping {0}ms, average {1}ms, highest {2}ms",
                                  LowestPing(), AveragePing(), HighestPing());
         }
-
         public string FormatAll()
         {
             return string.Format(" &a{0}&S:&7{1}&S:&c{2}",

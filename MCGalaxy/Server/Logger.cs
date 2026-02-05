@@ -1,14 +1,11 @@
 /*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,7 +16,6 @@ using System;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
-
 namespace MCGalaxy
 {
     public enum LogType
@@ -120,33 +116,33 @@ namespace MCGalaxy
         static void DescribeError(Exception ex, StringBuilder sb)
         {
             // Attempt to gather this info. Skip anything that you can't read for whatever reason
-            try 
-            { 
+            try
+            {
                 sb.AppendLine("Type: " + ex.GetType().Name);
-            } 
-            catch 
-            { 
             }
-            try 
-            { 
-                sb.AppendLine("Source: " + ex.Source); 
-            } 
-            catch 
-            { 
+            catch
+            {
             }
-            try 
-            { 
-                sb.AppendLine("Message: " + ex.Message); 
-            } 
-            catch 
-            { 
+            try
+            {
+                sb.AppendLine("Source: " + ex.Source);
             }
-            try 
-            { 
-                sb.AppendLine("Trace: " + ex.StackTrace); 
-            } 
-            catch 
-            { 
+            catch
+            {
+            }
+            try
+            {
+                sb.AppendLine("Message: " + ex.Message);
+            }
+            catch
+            {
+            }
+            try
+            {
+                sb.AppendLine("Trace: " + ex.StackTrace);
+            }
+            catch
+            {
             }
             // Exception-specific extra details
             try
@@ -156,8 +152,8 @@ namespace MCGalaxy
                     LogLoaderErrors(refEx, sb);
                 }
             }
-            catch 
-            { 
+            catch
+            {
             }
             try
             {
@@ -166,8 +162,8 @@ namespace MCGalaxy
                     sb.AppendLine("Error: " + sockEx.SocketErrorCode);
                 }
             }
-            catch 
-            { 
+            catch
+            {
             }
             try
             {
@@ -176,13 +172,13 @@ namespace MCGalaxy
                     sb.AppendLine("Loading type: " + typeEx.TypeName);
                 }
             }
-            catch 
-            { 
+            catch
+            {
             }
         }
         static void LogLoaderErrors(ReflectionTypeLoadException ex, StringBuilder sb)
         {
-            // For errors with loading plugins (e.g. missing dependancy) you get a 
+            // For errors with loading plugins (e.g. missing dependancy) you get a
             //   Message: Unable to load one or more of the requested types. Retrieve the LoaderExceptions property for more information.
             // which is pretty useless by itself, so specifically handle this case
             sb.AppendLine("## Loader exceptions ##");

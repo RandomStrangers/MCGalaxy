@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -18,26 +15,20 @@
 using MCGalaxy.Commands;
 using System;
 using System.Collections.Generic;
-
-
 namespace MCGalaxy.Blocks
 {
-
     public sealed class BlockOption
     {
         public string Name, Help;
         public BlockOptions.OptionSetter SetFunc;
-
         public BlockOption(string name, BlockOptions.OptionSetter func, string help)
         {
             Name = name; SetFunc = func; Help = help;
         }
     }
-
     public static class BlockOptions
     {
         public delegate void OptionSetter(Player p, BlockProps[] scope, ushort b, string value);
-
         public static List<BlockOption> Options = new() {
             new BlockOption("Portal",       SetPortal, "&HToggles whether the block is a &T/Portal"),
             new BlockOption("MessageBlock", SetMB,     "&HToggles whether the block is a &T/MessageBlock"),
@@ -64,7 +55,6 @@ namespace MCGalaxy.Blocks
             new BlockOption("oDoor",      SetODoor,  "&HSets the block that this block is changed into, " +
                             "when activated by a neighbouring door"),
         };
-
         public static BlockOption Find(string opt)
         {
             if (opt.CaselessEq("MB")) opt = "MessageBlock";
@@ -73,15 +63,12 @@ namespace MCGalaxy.Blocks
             if (opt.CaselessEq("Animal")) opt = "AnimalAI";
             if (opt.CaselessEq("StackID")) opt = "StackBlock";
             if (opt.CaselessEq("Drown")) opt = "Drownable";
-
             foreach (BlockOption option in Options)
             {
                 if (option.Name.CaselessEq(opt)) return option;
             }
             return null;
         }
-
-
         static void SetPortal(Player p, BlockProps[] s, ushort b, string v) { ToggleBehaviour(p, s, b, "a portal", ref s[b].IsPortal); }
         static void SetMB(Player p, BlockProps[] s, ushort b, string v) { ToggleBehaviour(p, s, b, "a message block", ref s[b].IsMessageBlock); }
         static void SetRails(Player p, BlockProps[] s, ushort b, string v) { Toggle(p, s, b, "train rails", ref s[b].IsRails); }
@@ -95,7 +82,6 @@ namespace MCGalaxy.Blocks
         static void SetGrass(Player p, BlockProps[] s, ushort b, string v) { SetBlock(p, s, b, v, "Grass form", ref s[b].GrassBlock); }
         static void SetDirt(Player p, BlockProps[] s, ushort b, string v) { SetBlock(p, s, b, v, "Dirt form", ref s[b].DirtBlock); }
         static void SetODoor(Player p, BlockProps[] s, ushort b, string v) { SetBlock(p, s, b, v, "oDoor form", ref s[b].oDoorBlock); }
-
         // NOTE: Make sure to keep this in sync with BlockBehaviour.GetDeleteHandler
         static string CheckBehaviour(BlockProps[] props, ushort block)
         {
@@ -106,7 +92,6 @@ namespace MCGalaxy.Blocks
             if (props[block].IsDoor) return "door";
             return null;
         }
-
         static void ToggleBehaviour(Player p, BlockProps[] scope, ushort block, string type, ref bool on)
         {
             string behaviour;
@@ -120,24 +105,20 @@ namespace MCGalaxy.Blocks
             }
             Toggle(p, scope, block, type, ref on);
         }
-
         static void Toggle(Player p, BlockProps[] scope, ushort block, string type, ref bool on)
         {
             on = !on;
             string name = BlockProps.ScopedName(scope, p, block);
             p.Message("Block {0} is {1}: {2}", name, type, on ? "&aYes" : "&cNo");
         }
-
         static void SetAI(Player p, BlockProps[] scope, ushort block, string msg)
         {
             AnimalAI ai = AnimalAI.None;
             if (!CommandParser.GetEnum(p, msg, "Animal AI", ref ai)) return;
             scope[block].AnimalAI = ai;
-
             string name = BlockProps.ScopedName(scope, p, block);
             p.Message("Animal AI for {0} set to: {1}", name, ai);
         }
-
         static void SetDeathMsg(Player p, BlockProps[] scope, ushort block, string msg)
         {
             string name = BlockProps.ScopedName(scope, p, block);
@@ -152,7 +133,6 @@ namespace MCGalaxy.Blocks
                 p.Message("Death message for {0} set to: {1}", name, msg);
             }
         }
-
         static void SetStackId(Player p, BlockProps[] scope, ushort block, string msg)
         {
             ushort stackBlock;
@@ -165,7 +145,6 @@ namespace MCGalaxy.Blocks
                 if (!CommandParser.GetBlock(p, msg, out stackBlock)) return;
             }
             scope[block].StackBlock = stackBlock;
-
             string name = BlockProps.ScopedName(scope, p, block);
             if (stackBlock == Block.Air)
             {
@@ -177,7 +156,6 @@ namespace MCGalaxy.Blocks
                           name, BlockProps.ScopedName(scope, p, stackBlock));
             }
         }
-
         static void SetBlock(Player p, BlockProps[] scope, ushort block,
                              string msg, string type, ref ushort target)
         {
@@ -191,7 +169,6 @@ namespace MCGalaxy.Blocks
             {
                 if (!CommandParser.GetBlockIfAllowed(p, msg, "use", out ushort other)) return;
                 if (other == block) { p.Message("ID of {0} must be different.", type); return; }
-
                 target = other;
                 p.Message("{2} for {0} set to: {1}",
                           name, BlockProps.ScopedName(scope, p, other), type);

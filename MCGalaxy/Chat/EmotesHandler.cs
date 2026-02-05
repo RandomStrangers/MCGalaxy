@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text;
-
 namespace MCGalaxy
 {
-
     public static class EmotesHandler
     {
-
         /// <summary> Mapping of emote keywords to unicode characters </summary>
         public static readonly Dictionary<string, char> Keywords = new()
         {
@@ -43,34 +40,28 @@ namespace MCGalaxy
             { "vv", '▼' }, { "down", '▼' },
             { "house", '⌂' }
         };
-
         /// <summary> Conversion for code page 437 characters from index 0 to 31 to unicode. </summary>
         public const string ControlCharReplacements = "\0☺☻♥♦♣♠•◘○◙♂♀♪♫☼►◄↕‼¶§▬↨↑↓→←∟↔▲▼";
-
         /// <summary> Conversion for code page 437 characters from index 127 to 255 to unicode. </summary>
         public const string ExtendedCharReplacements = "⌂ÇüéâäàåçêëèïîìÄÅÉæÆôöòûùÿÖÜ¢£¥₧ƒáíóúñÑªº¿⌐¬½¼¡«»" +
             "░▒▓│┤╡╢╖╕╣║╗╝╜╛┐└┴┬├─┼╞╟╚╔╩╦╠═╬╧╨╤╥╙╘╒╓╫╪┘┌" +
             "█▄▌▐▀αßΓπΣσµτΦΘΩδ∞φε∩≡±≥≤⌠⌡÷≈°∙·√ⁿ²■\u00a0";
-
         public static string Replace(string message)
         {
             Dictionary<string, char> tokens = Keywords;
             int begIndex = message.IndexOf('(');
             if (begIndex == -1) return message;
-
             StringBuilder output = new(message.Length);
             int lastAppendedIndex = 0;
             while (begIndex != -1)
             {
                 int endIndex = message.IndexOf(')', begIndex + 1);
                 if (endIndex == -1) break;
-
                 bool escaped = false;
                 for (int i = begIndex - 1; i >= 0 && message[i] == '\\'; i--)
                 {
                     escaped = !escaped;
                 }
-
                 string keyword = message.Substring(begIndex + 1, endIndex - begIndex - 1);
                 if (tokens.TryGetValue(keyword.ToLowerInvariant(), out char substitute))
                 {

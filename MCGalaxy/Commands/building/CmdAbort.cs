@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -17,7 +14,6 @@
 */
 using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Drawing.Transforms;
-
 namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdAbort : Command2
@@ -26,7 +22,6 @@ namespace MCGalaxy.Commands.Building
         public override string shortcut { get { return "a"; } }
         public override string type { get { return CommandTypes.Building; } }
         public override bool SuperUseable { get { return false; } }
-
         public override void Use(Player p, string message, CommandData data)
         {
             p.ClearBlockchange();
@@ -38,15 +33,12 @@ namespace MCGalaxy.Commands.Building
             p.ModeBlock = Block.Invalid;
             p.onTrain = false;
             p.isFlying = false;
-
             p.BrushName = Brush.DefaultBrush;
             p.Transform = Transform.DefaultTransform;
             p.DefaultBrushArgs = "";
-
             p.weapon?.Disable();
             p.Message("Every toggle or action was aborted.");
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/Abort");

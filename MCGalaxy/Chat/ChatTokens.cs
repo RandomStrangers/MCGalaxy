@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
 Dual-licensed under the Educational Community License, Version 2.0 and
 the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -16,7 +16,6 @@ using MCGalaxy.Util;
 using System;
 using System.Collections.Generic;
 using System.Text;
-
 namespace MCGalaxy
 {
     public sealed class ChatToken
@@ -24,16 +23,13 @@ namespace MCGalaxy
         public readonly string Trigger;
         public readonly string Description;
         public readonly StringFormatter<Player> Formatter;
-
         public ChatToken(string trigger, string desc, StringFormatter<Player> formatter)
         {
             Trigger = trigger; Description = desc; Formatter = formatter;
         }
     }
-
     public static class ChatTokens
     {
-
         public static string Apply(string text, Player p)
         {
             if (text.IndexOf('$') == -1) return text;
@@ -41,7 +37,6 @@ namespace MCGalaxy
             Apply(sb, p);
             return sb.ToString();
         }
-
         public static void Apply(StringBuilder sb, Player p)
         {
             // only apply standard $tokens when necessary
@@ -52,7 +47,6 @@ namespace MCGalaxy
             }
             ApplyCustom(sb);
         }
-
         public static string ApplyCustom(string text)
         {
             if (Custom.Count == 0) return text;
@@ -60,7 +54,6 @@ namespace MCGalaxy
             ApplyCustom(sb);
             return sb.ToString();
         }
-
         static void ApplyStandard(StringBuilder sb, Player p)
         {
             foreach (ChatToken token in Standard)
@@ -70,7 +63,6 @@ namespace MCGalaxy
                 if (value != null) sb.Replace(token.Trigger, value);
             }
         }
-
         static void ApplyCustom(StringBuilder sb)
         {
             foreach (ChatToken token in Custom)
@@ -78,8 +70,6 @@ namespace MCGalaxy
                 sb.Replace(token.Trigger, token.Description);
             }
         }
-
-
         public static List<ChatToken> Standard = new() {
             new ChatToken("$date", "Current date (year-month-day)", TokenDate),
             new ChatToken("$time", "Current time of day (hour:minute:second)", TokenTime),
@@ -90,7 +80,6 @@ namespace MCGalaxy
             new ChatToken("$loaded", "Number of loaded levels", TokenLoaded),
             new ChatToken("$worlds", "Number of worlds", TokenWorlds),
             new ChatToken("$online", "Number of players online", TokenOnline),
-
             new ChatToken("$name", "Nickname of the player", TokenName),
             new ChatToken("$truename", "Account name of the player", TokenTrueName),
             new ChatToken("$color", "Color code of the player's nick", TokenColor),
@@ -110,7 +99,6 @@ namespace MCGalaxy
             new ChatToken("$level", "Name of level/map player is on", TokenLevel),
             new ChatToken("$currency", "Name of server currency", TokenCurrency),
         };
-
         static string TokenDate(Player p)
         {
             return DateTime.Now.ToString("yyyy-MM-dd");
@@ -147,14 +135,12 @@ namespace MCGalaxy
         {
             Player[] players = PlayerInfo.Online.Items;
             int count = 0;
-
             foreach (Player pl in players)
             {
                 if (p.CanSee(pl)) count++;
             }
             return NumberUtils.StringifyInt(count);
         }
-
         static string TokenName(Player p)
         {
             return (Server.Config.DollarNames ? "$" : "") + Colors.StripUsed(p.DisplayName);
@@ -227,27 +213,22 @@ namespace MCGalaxy
         {
             return Server.Config.Currency;
         }
-
-
         public static List<ChatToken> Custom = new();
         static bool hookedCustom;
         internal static void LoadCustom()
         {
             TextFile tokensFile = TextFile.Files["Custom $s"];
             tokensFile.EnsureExists();
-
             if (!hookedCustom)
             {
                 hookedCustom = true;
                 tokensFile.OnTextChanged += LoadCustom;
             }
             string[] lines = tokensFile.GetText();
-
             Custom.Clear();
             LoadTokens(lines,
                        (key, value) => Custom.Add(new ChatToken(key, value, null)));
         }
-
         public delegate void TokenLineProcessor(string phrase, string replacement);
         public static void LoadTokens(string[] lines, TokenLineProcessor addToken)
         {
@@ -262,23 +243,19 @@ namespace MCGalaxy
                     if (emoteEnd == -1) continue;
                     offset = emoteEnd + 1;
                 }
-
                 int separator = FindColon(line, offset);
                 if (separator == -1) continue; // not a proper line
-
                 string key = line.Substring(0, separator).Trim().Replace("\\:", ":");
                 string value = line.Substring(separator + 1).Trim();
                 if (key.Length == 0) continue;
                 addToken(key, value);
             }
         }
-
         static int FindColon(string s, int offset)
         {
             for (int i = offset; i < s.Length; i++)
             {
                 if (s[i] != ':') continue;
-
                 // "\:" is used to specify 'this colon is not the separator'
                 if (i > 0 && s[i - 1] == '\\') continue;
                 return i;

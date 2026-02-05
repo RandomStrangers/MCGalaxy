@@ -1,14 +1,11 @@
-﻿/*
+/*
     Copyright 2015-2024 MCGalaxy
-
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,7 +16,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
-
 namespace MCGalaxy.Levels.IO
 {
     public class JClassDesc
@@ -29,42 +25,35 @@ namespace MCGalaxy.Levels.IO
         public JFieldDesc[] Fields;
         public JClassDesc SuperClass;
     }
-
     public class JClassData
     {
         public object[] Values;
     }
-
     public class JClass
     {
         public JClassDesc Desc;
     }
-
     public class JObject
     {
         public JClassDesc Desc;
         public JClassData[] ClassData;
     }
-
     public class JArray
     {
         public JClassDesc Desc;
         public object Values;
     }
-
     public class JFieldDesc
     {
         public char Type;
         public string Name, ClassName;
     }
-
     public class JEnum
     {
         public JClassDesc Desc;
         public object Name;
         public override string ToString() { return Desc.Name + "." + Name; }
     }
-
     // Java serialised objects are quite complicated and annoying to parse
     //  http://www.javaworld.com/article/2072752/the-java-serialization-algorithm-revealed.html
     //  https://docs.oracle.com/javase/7/docs/platform/serialization/spec/protocol.html
@@ -75,18 +64,13 @@ namespace MCGalaxy.Levels.IO
         public BinaryReader src;
         public List<object> handles = new();
         public byte[] ReadBytes(int count) { return src.ReadBytes(count); }
-
         public byte ReadUInt8() { return src.ReadByte(); }
         public short ReadInt16() { return IPAddress.HostToNetworkOrder(src.ReadInt16()); }
         public ushort ReadUInt16() { return (ushort)IPAddress.HostToNetworkOrder(src.ReadInt16()); }
-
         public int ReadInt32() { return IPAddress.HostToNetworkOrder(src.ReadInt32()); }
         public long ReadInt64() { return IPAddress.HostToNetworkOrder(src.ReadInt64()); }
         public string ReadUtf8() { return Encoding.UTF8.GetString(src.ReadBytes(ReadUInt16())); }
-
         public object ReadObject() { return ReadObject(ReadUInt8()); }
-
-
         const byte TC_NULL = 0x70;
         const byte TC_REFERENCE = 0x71;
         const byte TC_CLASSDESC = 0x72;
@@ -102,11 +86,8 @@ namespace MCGalaxy.Levels.IO
         const byte TC_LONGSTRING = 0x7C; // Unimplemented
         const byte TC_PROXYCLASSDESC = 0x7D; // Unimplemented
         const byte TC_ENUM = 0x7E;
-
         const int baseWireHandle = 0x7E0000;
         const byte SC_WRITE_METHOD = 0x01, SC_SERIALIZABLE = 0x02;
-
-
         object ReadObject(byte typeCode)
         {
             return typeCode switch
@@ -121,21 +102,18 @@ namespace MCGalaxy.Levels.IO
                 _ => throw new InvalidDataException("Invalid typecode: " + typeCode),
             };
         }
-
         string NewString()
         {
             string value = ReadUtf8();
             handles.Add(value);
             return value;
         }
-
         object PrevObject()
         {
             int handle = ReadInt32() - baseWireHandle;
             if (handle >= 0 && handle < handles.Count) return handles[handle];
             throw new InvalidDataException("Invalid stream handle: " + handle);
         }
-
         JObject NewObject()
         {
             JObject obj = new()
@@ -143,17 +121,14 @@ namespace MCGalaxy.Levels.IO
                 Desc = ClassDesc()
             };
             handles.Add(obj);
-
             List<JClassDesc> descs = new();
             JClassDesc tmp = obj.Desc;
-
             // most superclass data is first
             while (tmp != null)
             {
                 descs.Add(tmp);
                 tmp = tmp.SuperClass;
             }
-
             obj.ClassData = new JClassData[descs.Count];
             for (int i = descs.Count - 1; i >= 0; i--)
             {
@@ -161,7 +136,6 @@ namespace MCGalaxy.Levels.IO
             }
             return obj;
         }
-
         JArray NewArray()
         {
             JArray array = new()
@@ -171,7 +145,6 @@ namespace MCGalaxy.Levels.IO
             handles.Add(array);
             char type = array.Desc.Name[1];
             int size = ReadInt32();
-
             if (type == 'B')
             {
                 array.Values = ReadBytes(size);
@@ -187,7 +160,6 @@ namespace MCGalaxy.Levels.IO
             }
             return array;
         }
-
         JClassDesc NewClassDesc()
         {
             JClassDesc desc = new()
@@ -196,7 +168,6 @@ namespace MCGalaxy.Levels.IO
             };
             ReadInt64(); // serial UID
             handles.Add(desc);
-
             // read class desc info
             desc.Flags = ReadUInt8();
             desc.Fields = new JFieldDesc[ReadUInt16()];
@@ -204,12 +175,10 @@ namespace MCGalaxy.Levels.IO
             {
                 desc.Fields[i] = FieldDesc();
             }
-
             SkipAnnotation();
             desc.SuperClass = ClassDesc();
             return desc;
         }
-
         JEnum NewEnum()
         { // TC_ENUM classDesc newHandle enumConstantName
             JEnum je = new()
@@ -220,7 +189,6 @@ namespace MCGalaxy.Levels.IO
             je.Name = ReadObject(); // enumConstantName
             return je;
         }
-
         JClass NewClass()
         { // TC_CLASS classDesc newHandle
             JClass jc = new()
@@ -230,24 +198,20 @@ namespace MCGalaxy.Levels.IO
             handles.Add(jc);       // newHandle
             return jc;
         }
-
         JClassDesc ClassDesc()
         {
             byte typeCode = ReadUInt8();
             if (typeCode == TC_CLASSDESC) return NewClassDesc();
             if (typeCode == TC_NULL) return null;
             if (typeCode == TC_REFERENCE) return (JClassDesc)PrevObject();
-
             throw new InvalidDataException("Invalid type code: " + typeCode);
         }
-
         JClassData ClassData(JClassDesc desc)
         {
             if ((desc.Flags & SC_SERIALIZABLE) == 0)
             {
                 throw new InvalidDataException("Invalid class data flags: " + desc.Flags);
             }
-
             JClassData data = new()
             {
                 Values = new object[desc.Fields.Length]
@@ -256,14 +220,12 @@ namespace MCGalaxy.Levels.IO
             {
                 data.Values[i] = Value(desc.Fields[i].Type);
             }
-
             if ((desc.Flags & SC_WRITE_METHOD) != 0)
             {
                 SkipAnnotation();
             }
             return data;
         }
-
         unsafe object Value(char type)
         {
             if (type == 'B') return ReadUInt8();
@@ -276,16 +238,13 @@ namespace MCGalaxy.Levels.IO
             if (type == 'Z') return ReadUInt8() != 0;
             if (type == 'L') return ReadObject();
             if (type == '[') return ReadObject();
-
             throw new InvalidDataException("Invalid value code: " + type);
         }
-
         JFieldDesc FieldDesc()
         {
             JFieldDesc desc = new();
             byte type = ReadUInt8();
             desc.Type = (char)type;
-
             if (type == 'B' || type == 'C' || type == 'D' || type == 'F' || type == 'I' || type == 'J' || type == 'S' || type == 'Z')
             {
                 desc.Name = ReadUtf8();
@@ -301,7 +260,6 @@ namespace MCGalaxy.Levels.IO
             }
             return desc;
         }
-
         void SkipAnnotation()
         {
             byte typeCode;

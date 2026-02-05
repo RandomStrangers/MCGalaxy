@@ -1,14 +1,11 @@
-/* 
+/*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
-    
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
     not use this file except in compliance with the Licenses. You may
     obtain a copy of the Licenses at
-    
     https://opensource.org/license/ecl-2-0/
     https://www.gnu.org/licenses/gpl-3.0.html
-    
     Unless required by applicable law or agreed to in writing,
     software distributed under the Licenses are distributed on an "AS IS"
     BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -19,8 +16,6 @@ using MCGalaxy.Commands;
 using MCGalaxy.Commands.Fun;
 using MCGalaxy.Games;
 using MCGalaxy.Maths;
-
-
 namespace MCGalaxy.Modules.Games.CTF
 {
     sealed class CmdCTF : RoundsGameCmd
@@ -32,13 +27,11 @@ namespace MCGalaxy.Modules.Games.CTF
         {
             get { return new[] { new CommandPerm(LevelPermission.Operator, "can manage CTF") }; }
         }
-
         protected override void HandleSet(Player p, RoundsGame game, string[] args)
         {
             string prop = args[1];
             CTFMapConfig cfg = new();
             LoadMapConfig(p, cfg);
-
             if (prop.CaselessEq("bluespawn"))
             {
                 cfg.BlueSpawn = (Vec3U16)p.Pos.FeetBlockCoords;
@@ -72,39 +65,32 @@ namespace MCGalaxy.Modules.Games.CTF
                 Help(p, "set");
             }
         }
-
         bool BlueFlagCallback(Player p, Vec3S32[] marks, object state, ushort block)
         {
             CTFMapConfig cfg = (CTFMapConfig)state;
             Vec3U16 P = (Vec3U16)marks[0];
             cfg.BlueFlagPos = P;
             p.Message("Set flag position of blue team to ({0})", P);
-
             block = p.level.GetBlock(P.X, P.Y, P.Z);
             if (block == Block.Air) block = Block.Blue;
             cfg.BlueFlagBlock = block;
             p.Message("Set flag block of blue team to {0}", Block.GetName(p, block));
-
             SaveMapConfig(p, cfg);
             return false;
         }
-
         bool RedFlagCallback(Player p, Vec3S32[] marks, object state, ushort block)
         {
             CTFMapConfig cfg = (CTFMapConfig)state;
             Vec3U16 P = (Vec3U16)marks[0];
             cfg.RedFlagPos = P;
             p.Message("Set flag position of red team to ({0})", P);
-
             block = p.level.GetBlock(P.X, P.Y, P.Z);
             if (block == Block.Air) block = Block.Red;
             cfg.RedFlagBlock = block;
             p.Message("Set flag block of red team to {0}", Block.GetName(p, block));
-
             SaveMapConfig(p, cfg);
             return false;
         }
-
         public override void Help(Player p, string message)
         {
             if (message.CaselessEq("set"))
@@ -123,7 +109,6 @@ namespace MCGalaxy.Modules.Games.CTF
                 Help(p);
             }
         }
-
         public override void Help(Player p)
         {
             p.Message("&T/CTF start <map> &H- Starts CTF game");
