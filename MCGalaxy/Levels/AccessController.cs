@@ -126,12 +126,12 @@ namespace MCGalaxy {
             if (shorten && list.Count > DESCRIBE_LIMIT) displayCount = DESCRIBE_LIMIT;
             for (int i = 0; i < displayCount; i++) {
                 string name = list[i];
-                perms.Append(String.Format(format, p.FormatNick(name)));
+                perms.Append(string.Format(format, p.FormatNick(name)));
             }
             if (list.Count > displayCount) {
                 shortened = true;
                 //perms.Append(" &Sand " + (list.Count - displayCount) + " more");
-                perms.Append(String.Format(format, "&Sand " + (list.Count - displayCount) + " more"));
+                perms.Append(string.Format(format, "&Sand " + (list.Count - displayCount) + " more"));
             }
         }
         
@@ -281,7 +281,7 @@ namespace MCGalaxy {
         protected override void ApplyChanges(Player p, Level lvl, string msg) {
             Update(lvl);
             Logger.Log(LogType.UserActivity, "{0} &Son {1}", msg, lvlName);            
-            if (lvl != null) lvl.Message(Chat.LocalPrefix + msg);
+            lvl?.Message(Chat.LocalPrefix + msg);
             
             if (p != Player.Console && p.level != lvl) {
                 p.Message("{0} &Son {1} &Sby you.", msg, ColoredName);

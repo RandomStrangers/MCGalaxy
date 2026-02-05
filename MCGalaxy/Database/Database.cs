@@ -77,7 +77,7 @@ namespace MCGalaxy.SQL
         /// <summary> Returns whether a table (case sensitive) exists by that name </summary>
         public static bool TableExists(string table)
         {
-            ValidateName(table);
+            SqlUtils.ValidateName(table);
             return Backend.TableExists(table);
         }
 
@@ -85,7 +85,7 @@ namespace MCGalaxy.SQL
         /// <remarks> Does nothing if a table with the same name already exists. </remarks>
         public static void CreateTable(string table, ColumnDesc[] columns)
         {
-            ValidateName(table);
+            SqlUtils.ValidateName(table);
             string sql = Backend.CreateTableSql(table, columns);
             Execute(sql, null);
         }
@@ -93,8 +93,8 @@ namespace MCGalaxy.SQL
         /// <summary> Renames the source table to the given name. </summary>
         public static void RenameTable(string srcTable, string dstTable)
         {
-            ValidateName(srcTable);
-            ValidateName(dstTable);
+            SqlUtils.ValidateName(srcTable);
+            SqlUtils.ValidateName(dstTable);
             string sql = Backend.RenameTableSql(srcTable, dstTable);
             Execute(sql, null);
         }
@@ -103,7 +103,7 @@ namespace MCGalaxy.SQL
         /// <remarks> Does nothing if no table with the given name exists. </remarks>
         public static void DeleteTable(string table)
         {
-            ValidateName(table);
+            SqlUtils.ValidateName(table);
             string sql = Backend.DeleteTableSql(table);
             Execute(sql, null);
         }
@@ -112,7 +112,7 @@ namespace MCGalaxy.SQL
         /// <remarks> Note colAfter is only a hint - some database backends ignore this. </remarks>
         public static void AddColumn(string table, ColumnDesc col, string colAfter)
         {
-            ValidateName(table);
+            SqlUtils.ValidateName(table);
             string sql = Backend.AddColumnSql(table, col, colAfter);
             Execute(sql, null);
         }
@@ -126,8 +126,8 @@ namespace MCGalaxy.SQL
         /// <returns> The number of rows copied </returns>
         public static int CopyAllRows(string srcTable, string dstTable)
         {
-            ValidateName(srcTable);
-            ValidateName(dstTable);
+            SqlUtils.ValidateName(srcTable);
+            SqlUtils.ValidateName(dstTable);
 
             string sql = Backend.CopyAllRowsSql(srcTable, dstTable);
             return Execute(sql, null);
@@ -139,7 +139,7 @@ namespace MCGalaxy.SQL
         public static void ReadRows(string table, string columns,
                                     ReaderCallback callback, string modifier = "", params object[] args)
         {
-            ValidateName(table);
+            SqlUtils.ValidateName(table);
 
             string sql = Backend.ReadRowsSql(table, columns, modifier);
             Iterate(sql, callback, args);
@@ -151,7 +151,7 @@ namespace MCGalaxy.SQL
         public static int UpdateRows(string table, string columns,
                                      string modifier, params object[] args)
         {
-            ValidateName(table);
+            SqlUtils.ValidateName(table);
             string sql = Backend.UpdateRowsSql(table, columns, modifier);
             return Execute(sql, args);
         }
@@ -161,7 +161,7 @@ namespace MCGalaxy.SQL
         /// <returns> The number of rows deleted </returns>
         public static int DeleteRows(string table, string modifier, params object[] args)
         {
-            ValidateName(table);
+            SqlUtils.ValidateName(table);
 
             string sql = Backend.DeleteRowsSql(table, modifier);
             return Execute(sql, args);
@@ -170,7 +170,7 @@ namespace MCGalaxy.SQL
         /// <summary> Adds a row to the given table. </summary>
         public static void AddRow(string table, string columns, params object[] args)
         {
-            ValidateName(table);
+            SqlUtils.ValidateName(table);
 
             string sql = Backend.AddRowSql(table, columns, args.Length);
             Execute(sql, args);
@@ -179,7 +179,7 @@ namespace MCGalaxy.SQL
         /// <summary> Adds or replaces a row (same primary key) in the given table. </summary>
         public static void AddOrReplaceRow(string table, string columns, params object[] args)
         {
-            ValidateName(table);
+            SqlUtils.ValidateName(table);
 
             string sql = Backend.AddOrReplaceRowSql(table, columns, args.Length);
             Execute(sql, args);
@@ -231,24 +231,6 @@ namespace MCGalaxy.SQL
         }
         #endregion
 
-
-        internal static bool ValidNameChar(char c)
-        {
-            return
-                c > ' ' && c != '"' && c != '%' && c != '&' &&
-                c != '\'' && c != '*' && c != '/' && c != ':' &&
-                c != '<' && c != '>' && c != '?' && c != '\\' &&
-                c != '`' && c != '|' && c <= '~';
-        }
-
-        internal static void ValidateName(string table)
-        {
-            foreach (char c in table)
-            {
-                if (ValidNameChar(c)) continue;
-                throw new ArgumentException("Invalid character '" + c + "' in table name '" + table + "'");
-            }
-        }
 
         public static void UpdateActiveBackend()
         {

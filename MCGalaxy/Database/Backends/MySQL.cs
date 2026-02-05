@@ -104,7 +104,7 @@ namespace MCGalaxy.SQL
 
         public override List<string> ColumnNames(string table)
         {
-            Database.ValidateName(table);
+            SqlUtils.ValidateName(table);
             return GetStrings("DESCRIBE `" + table + "`");
         }
 
@@ -287,11 +287,11 @@ namespace MCGalaxy.SQL
             // TODO doubles not exact? probably doesn't matter
             if (colType == typeof(string) || colType == typeof(byte[]))
             {
-                return Quote(GetString(col));
+                return SqlUtils.QuoteString(GetString(col));
             }
             else if (colType == typeof(DateTime))
             {
-                return Quote(RawGetDateTime(col));
+                return SqlUtils.QuoteString(RawGetDateTime(col));
             }
             return GetString(col);
         }

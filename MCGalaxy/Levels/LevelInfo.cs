@@ -290,7 +290,7 @@ namespace MCGalaxy
         {
             foreach (char c in map)
             {
-                if (!Database.ValidNameChar(c))
+                if (!SqlUtils.ValidNameChar(c))
                 {
                     return false;
                 }

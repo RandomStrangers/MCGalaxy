@@ -55,8 +55,7 @@ namespace MCGalaxy.SQL
             try
             {
                 string dll = IntPtr.Size == 8 ? "sqlite3_x64.dll" : "sqlite3_x32.dll";
-                //if (File.Exists(dll)) File.Copy(dll, "sqlite3.dll", true);
-                FileIO.TryCopy(dll, "sqlite3.dll", true);
+                if (File.Exists(dll)) FileIO.TryCopy(dll, "sqlite3.dll", true);
             }
             catch (Exception ex)
             {
@@ -88,7 +87,7 @@ namespace MCGalaxy.SQL
 
         public override List<string> ColumnNames(string table)
         {
-            Database.ValidateName(table);
+            SqlUtils.ValidateName(table);
             List<string> columns = new();
 
             Database.Iterate("PRAGMA table_info(`" + table + "`)",
