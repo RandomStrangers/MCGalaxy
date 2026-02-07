@@ -36,7 +36,8 @@
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>..\bin\Release\</OutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>Prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>False</DebugSymbols>
@@ -611,6 +612,7 @@
     <Compile Include="Modules\Relay\Discord\DiscordPlugin.cs" />
     <Compile Include="Modules\Relay\Discord\DiscordUtils.cs" />
     <Compile Include="Modules\Relay\Discord\DiscordWebsocket.cs" />
+    <Compile Include="Modules\Relay\IRC\Connection.cs" />
     <Compile Include="Modules\Relay\IRC\IRCNickList.cs" />
     <Compile Include="Modules\Relay\IRC\IRCPlugin.cs" />
     <Compile Include="Modules\Relay\RelayBot.cs" />
@@ -711,8 +713,7 @@
     <Compile Include="Util\Threading\ThreadSafeCache.cs" />
     <Compile Include="Util\Threading\VolatileArray.cs" />
     <Compile Include="Util\Utils.cs" />
-    <Compile Include="Sharkbite.Thresher\Connection.cs" />
-    <Compile Include="Sharkbite.Thresher\Utils.cs" />
+    <Compile Include="Modules\Relay\IRC\Utils.cs" />
     <Compile Include="Util\ExtrasCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Database\PlayerDB.cs" />

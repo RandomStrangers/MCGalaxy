@@ -1,0 +1,44 @@
+/*
+    Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
+    Dual-licensed under the    Educational Community License, Version 2.0 and
+    the GNU General Public License, Version 3 (the "Licenses"); you may
+    not use this file except in compliance with the Licenses. You may
+    obtain a copy of the Licenses at
+    https://opensource.org/license/ecl-2-0/
+    https://www.gnu.org/licenses/gpl-3.0.html
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the Licenses are distributed on an "AS IS"
+    BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+    or implied. See the Licenses for the specific language governing
+    permissions and limitations under the Licenses.
+ */
+namespace MCGalaxy.Commands.Building
+{
+    public sealed class CmdStatic : Command2
+    {
+        public override string Name => "Static";
+        public override string Shortcut => "t";
+        public override string Type => CommandTypes.Building;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 50;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("zz", "cuboid") };
+        public override void Use(Player p, string message, CommandData data)
+        {
+            p.staticCommands = !p.staticCommands;
+            p.ClearBlockchange();
+            p.Message("Static mode: &a" + p.staticCommands);
+            if (message.Length == 0 || !p.staticCommands) return;
+            data.Context = 1;
+            string[] parts = message.SplitSpaces(2);
+            string cmd = parts[0], args = parts.Length > 1 ? parts[1] : "";
+            p.HandleCommand(cmd, args, data);
+        }
+        public override void Help(Player p)
+        {
+            p.Message("&T/Static [command]");
+            p.Message("&HMakes every command a toggle.");
+            p.Message("&HIf [command] is given, then that command is used");
+        }
+    }
+}
