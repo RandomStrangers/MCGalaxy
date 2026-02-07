@@ -13,10 +13,11 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Maths;
+using System;
 namespace MCGalaxy
 {
     /// <summary> Represents the position of an entity in the world. </summary>
-    public struct Position
+    public struct Position : IEquatable<Position>
     {
         /// <summary> X fixed-point location in the world. </summary>
         public int X;
@@ -38,6 +39,11 @@ namespace MCGalaxy
         public readonly int BlockY => Y >> 5;
         /// <summary> Z block coordinate of this position. </summary>
         public readonly int BlockZ => Z >> 5;
+        public override readonly bool Equals(object obj) => (obj is Position position) && Equals(position);
+        public readonly bool Equals(Position other) => X == other.X && Y == other.Y && Z == other.Z;
+        public override readonly int GetHashCode() => 1000000007 * X + 1000000009 * Y + 1000000021 * Z;
+        public static bool operator ==(Position a, Position b) { return a.Equals(b); }
+        public static bool operator !=(Position a, Position b) { return !a.Equals(b); }
         const long mask = 0x1FFFFF;
         internal readonly long Pack() => (X & mask) | ((Y & mask) << 21) | ((Z & mask) << 42);
         internal static Position Unpack(long raw)

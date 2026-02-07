@@ -12,28 +12,16 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using MCGalaxy.Games;
 using System;
 namespace MCGalaxy.Commands.Info
 {
-    public sealed class CmdTime : Command2
+    public sealed class CmdTime : Command
     {
         public override string Name => "Time";
         public override string Shortcut => "ti";
         public override string Type => CommandTypes.Information;
         public override bool UseableWhenFrozen => true;
-        public override void Use(Player p, string message, CommandData data)
-        {
-            p.Message("Server time: {0:HH:mm:ss} on {0:yyyy-MM-dd}", DateTime.Now);
-            IGame game = IGame.GameOn(p.Level);
-            game?.OutputTimeInfo(p);
-        }
-        public override void Help(Player p)
-        {
-            p.Message("&T/Time");
-            p.Message("&HShows the server time.");
-            p.Message("&HIf a time limit round-based game is running on the level you are currently on, " +
-                      "shows time left until round end or start.");
-        }
+        public override void Use(Player p, string message) => p.Message("Server time: {0:HH:mm:ss} on {0:yyyy-MM-dd}", DateTime.Now);
+        public override void Help(Player p) => p.Message("&T/Time - &HShows the server time.");
     }
 }

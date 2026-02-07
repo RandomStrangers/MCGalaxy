@@ -299,7 +299,7 @@ namespace MCGalaxy
                 disturbedAction = GrassBlockAction(2, 3),
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    Drop grassDrop = new()
+                    NASDrop grassDrop = new()
                     {
                         blockStacks = new()
                     };
@@ -734,7 +734,7 @@ namespace MCGalaxy
                 disturbDelayMax = leafShrivelDelayMax,
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    Drop drop = new(18, 1);
+                    NASDrop drop = new(18, 1);
                     if (r.Next(0, 8) == 0)
                     { 
                         drop.blockStacks.Add(new(6, 1));
@@ -754,7 +754,7 @@ namespace MCGalaxy
                 disturbDelayMax = leafShrivelDelayMax,
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    Drop drop = new(103, 1);
+                    NASDrop drop = new(103, 1);
                     if (r.Next(0, 8) == 0)
                     {
                         drop.blockStacks.Add(new(154, 1));
@@ -792,7 +792,7 @@ namespace MCGalaxy
                 disturbDelayMax = leafShrivelDelayMax,
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    Drop drop = new(19, 1);
+                    NASDrop drop = new(19, 1);
                     if (r.Next(0, 8) == 0)
                     {
                         drop.blockStacks.Add(new(689, 1));
@@ -1071,46 +1071,46 @@ namespace MCGalaxy
             i = 198;
             blocks[i] = new(i, blocks[17])
             {
-                station = new Station
+                station = new NASCrafting.NASStation
                 {
                     name = "Crafting Table",
-                    type = 1,
-                    ori = 2
+                    type = NASCrafting.NASStation.NASStationType.Normal,
+                    ori = NASCrafting.NASStation.NASOrientation.NS
                 },
                 existAction = CraftingExistAction(),
                 interaction = CraftingInteraction()
             };
             i = 199;
             blocks[i] = new(i, blocks[198]);
-            blocks[i].station.ori = 1;
+            blocks[i].station.ori = NASCrafting.NASStation.NASOrientation.WE;
             i = 413;
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Stone], 1)
             {
-                station = new Station
+                station = new NASCrafting.NASStation
                 {
                     name = "Auto Crafter",
-                    type = 1,
-                    ori = 2
+                    type = NASCrafting.NASStation.NASStationType.Normal,
+                    ori = NASCrafting.NASStation.NASOrientation.NS
                 },
                 existAction = AutoCraftExistAction(),
                 interaction = AutoCraftInteraction(),
                 disturbedAction = AutoCraftingAction(),
-                container = new Container
+                container = new NASContainer
                 {
-                    type = NASType.AutoCraft
+                    type = NASContainer.NASContainerType.AutoCraft
                 }
             };
             i = 414;
             blocks[i] = new(i, blocks[413]);
-            blocks[i].station.ori = 1;
+            blocks[i].station.ori = NASCrafting.NASStation.NASOrientation.WE;
             i = 462;
             blocks[i] = new(i, blocks[242])
             {
-                station = new Station
+                station = new NASCrafting.NASStation
                 {
                     name = "Crafting Table",
-                    type = 1,
-                    ori = 2
+                    type = NASCrafting.NASStation.NASStationType.Normal,
+                    ori = NASCrafting.NASStation.NASOrientation.NS
                 },
                 existAction = CraftingExistAction(),
                 interaction = CraftingInteraction(),
@@ -1118,16 +1118,16 @@ namespace MCGalaxy
             };
             i = 463;
             blocks[i] = new(i, blocks[462]);
-            blocks[i].station.ori = 1;
+            blocks[i].station.ori = NASCrafting.NASStation.NASOrientation.WE;
             blocks[i].alternateID = 199;
             i = 464;
             blocks[i] = new(i, blocks[250])
             {
-                station = new Station
+                station = new NASCrafting.NASStation
                 {
                     name = "Crafting Table",
-                    type = 1,
-                    ori = 2
+                    type = NASCrafting.NASStation.NASStationType.Normal,
+                    ori = NASCrafting.NASStation.NASOrientation.NS
                 },
                 existAction = CraftingExistAction(),
                 interaction = CraftingInteraction(),
@@ -1135,23 +1135,23 @@ namespace MCGalaxy
             };
             i = 465;
             blocks[i] = new(i, blocks[464]);
-            blocks[i].station.ori = 1;
+            blocks[i].station.ori = NASCrafting.NASStation.NASOrientation.WE;
             blocks[i].alternateID = 199;
             i = 625;
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Stone], 1)
             {
-                station = new Station
+                station = new NASCrafting.NASStation
                 {
                     name = "Furnace",
-                    type = 2,
-                    ori = 1
+                    type = NASCrafting.NASStation.NASStationType.Furnace,
+                    ori = NASCrafting.NASStation.NASOrientation.WE
                 },
                 existAction = CraftingExistAction(),
                 interaction = CraftingInteraction()
             };
             i = 626;
             blocks[i] = new(i, blocks[625]);
-            blocks[i].station.ori = 2;
+            blocks[i].station.ori = NASCrafting.NASStation.NASOrientation.NS;
             i = 239;
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Stone], 1)
             {
@@ -1175,9 +1175,9 @@ namespace MCGalaxy
             i = 143;
             blocks[i] = new(i, NASMaterial.Wood, DefaultDurabilities[(int)NASMaterial.Wood] * 2)
             {
-                container = new Container
+                container = new NASContainer
                 {
-                    type = NASType.Barrel
+                    type = NASContainer.NASContainerType.Barrel
                 },
                 existAction = ContainerExistAction(),
                 interaction = ContainerInteraction()
@@ -1188,9 +1188,9 @@ namespace MCGalaxy
             i = 216;
             blocks[i] = new(i, NASMaterial.Wood, DefaultDurabilities[(int)NASMaterial.Wood] * 2)
             {
-                container = new Container
+                container = new NASContainer
                 {
-                    type = NASType.Chest
+                    type = NASContainer.NASContainerType.Chest
                 },
                 existAction = ContainerExistAction(),
                 interaction = ContainerInteraction()
@@ -1204,9 +1204,9 @@ namespace MCGalaxy
             i = 647;
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Stone], 0)
             {
-                container = new Container
+                container = new NASContainer
                 {
-                    type = NASType.Gravestone
+                    type = NASContainer.NASContainerType.Gravestone
                 },
                 existAction = ContainerExistAction(),
                 interaction = ContainerInteraction()
@@ -1326,7 +1326,7 @@ namespace MCGalaxy
                 disturbedAction = IronCropAction(ironSet, 3),
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    Drop finalDrop = new(729, r.Next(1, 4));
+                    NASDrop finalDrop = new(729, r.Next(1, 4));
                     if (r.Next(0, 2) == 0)
                     {
                         finalDrop.blockStacks.Add(new(624, 1));
@@ -1364,7 +1364,7 @@ namespace MCGalaxy
                 disturbDelayMax = leafShrivelDelayMax,
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    Drop drop = new(146, 1);
+                    NASDrop drop = new(146, 1);
                     if (r.Next(0, 8) == 0)
                     {
                         drop.blockStacks.Add(new(450, 1));
@@ -2156,9 +2156,9 @@ namespace MCGalaxy
                 existAction = ContainerExistAction(),
                 disturbedAction = DispenserAction(0, 0, 1),
                 interaction = ContainerInteraction(),
-                container = new Container
+                container = new NASContainer
                 {
-                    type = NASType.Dispenser
+                    type = NASContainer.NASContainerType.Dispenser
                 }
             };
             i++;
@@ -2187,7 +2187,7 @@ namespace MCGalaxy
                 disturbedAction = DispenserAction(0, 1, 0)
             };
         }
-        public static Func<NASPlayer, ushort, Drop> CustomDrop(ushort clientushort, int amount) => (NasPlayer, dropID) =>
+        public static NASFunc<NASPlayer, ushort, NASDrop> CustomDrop(ushort clientushort, int amount) => (NasPlayer, dropID) =>
                                                                                                             {
                                                                                                                 return new(clientushort, amount);
                                                                                                             };

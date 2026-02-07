@@ -151,6 +151,7 @@ namespace MCGalaxy
             return found;
         }
         public static bool ChangeBanReason(string who, string reason) => ChangeReason(who, reason, bans);
+        public static bool ChangeUnbanReason(string who, string reason) => ChangeReason(who, reason, unbans);
         static bool ChangeReason(string who, string reason, PlayerMetaList list)
         {
             who = who.ToLower();

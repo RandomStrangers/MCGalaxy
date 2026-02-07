@@ -50,6 +50,8 @@ namespace MCGalaxy.Levels.IO
             byte[] blocks = root["BlockArray"].ByteArrayValue;
             lvl = new(name, width, height, length, blocks);
             ReadSpawn(root, lvl);
+            // Can't use ConvertCustom, as that changes lvl.blocks
+            // (aka the array containing the lower 8 bits of block ids)
             if (root.Contains("BlockArray2"))
             {
                 ReadExtBlocks(root, lvl);
@@ -155,7 +157,7 @@ namespace MCGalaxy.Levels.IO
             bool hasBlockDefs = false;
             foreach (NbtTag tag in blocks)
             {
-                if (tag.TagType != 0x0a)
+                if (tag.TagType != NbtTagType.Compound)
                 {
                     continue;
                 }
@@ -203,7 +205,7 @@ namespace MCGalaxy.Levels.IO
                 ushort block = def.GetBlock();
                 if (block >= 1024)
                 {
-                    Logger.Log(6, "Cannot import custom block {0} (ID {1})",
+                    Logger.Log(LogType.Warning, "Cannot import custom block {0} (ID {1})",
                                def.Name, def.RawID);
                     continue;
                 }

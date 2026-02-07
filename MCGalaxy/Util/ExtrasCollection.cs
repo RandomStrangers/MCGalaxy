@@ -16,6 +16,8 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
+    /// <summary> Stores extra information for/about a player/level/server. </summary>
+    /// <example> Storing a "lives" value for a player. </example>
     public sealed class ExtrasCollection
     {
         readonly Dictionary<string, object> dict = new();

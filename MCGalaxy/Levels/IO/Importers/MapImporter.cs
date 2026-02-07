@@ -11,7 +11,9 @@ namespace MCGalaxy.Levels.IO
         public override string Description => "Map";
         public override Vec3U16 ReadDimensions(Stream src)
         {
-            ReadHeader(new GZipStream(src, CompressionMode.Decompress, true), new byte[18], out byte X, out byte Y, out byte Z);
+            using Stream gs = new GZipStream(src, CompressionMode.Decompress, true);
+            byte[] header = new byte[18];
+            ReadHeader(gs, header, out byte X, out byte Y, out byte Z);
             return new()
             {
                 X = X,
@@ -57,7 +59,8 @@ namespace MCGalaxy.Levels.IO
         public static void ReadHeader(Stream gs, byte[] header, out byte X, out byte Y, out byte Z)
         {
             StreamUtils.ReadFully(gs, header, 0, 18);
-            if (BitConverter.ToUInt16(header, 0) != 255)
+            int signature = BitConverter.ToUInt16(header, 0);
+            if (signature != 255)
             {
                 throw new InvalidDataException("Invalid .map map signature");
             }
@@ -83,7 +86,7 @@ namespace MCGalaxy.Levels.IO
                         read = gs.Read(data, 0, 1);
                         if (read > 0 && data[0] == 1)
                         {
-                            byte[] chunk = new byte[4096];
+                            byte[] chunk = new byte[16 * 16 * 16];
                             StreamUtils.ReadFully(gs, chunk, 0, chunk.Length);
                             lvl.CustomBlocks[index] = chunk;
                         }

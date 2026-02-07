@@ -207,9 +207,6 @@
     <Compile Include="Commands\Fun\CmdReferee.cs" />
     <Compile Include="Commands\Fun\CmdSlap.cs" />
     <Compile Include="Commands\Fun\CmdTeam.cs" />
-    <Compile Include="Commands\Fun\CmdZombieSpawn.cs" />
-    <Compile Include="Commands\Fun\RateMapCmds.cs" />
-    <Compile Include="Commands\Fun\RoundsGameCmd.cs" />
     <Compile Include="Commands\Information\CmdAbout.cs" />
     <Compile Include="Commands\Information\CmdBanInfo.cs" />
     <Compile Include="Commands\Information\CmdBlocks.cs" />
@@ -287,7 +284,6 @@
     <Compile Include="Commands\Moderation\ModActionCmd.cs" />
     <Compile Include="Commands\Other\CmdAscend.cs" />
     <Compile Include="Commands\Other\CmdBack.cs" />
-    <Compile Include="Commands\Other\cmdCTFADSFD.cs" />
     <Compile Include="Commands\Other\CmdDelay.cs" />
     <Compile Include="Commands\Other\CmdDescend.cs" />
     <Compile Include="Commands\Other\CmdFakerank.cs" />
@@ -443,20 +439,12 @@
     <Compile Include="Events\PlayerDBEvents.cs" />
     <Compile Include="Events\EconomyEvents.cs" />
     <Compile Include="Events\EntityEvents.cs" />
-    <Compile Include="Events\GameEvents.cs" />
     <Compile Include="Events\GroupEvents.cs" />
     <Compile Include="Events\IPluginEvent.cs" />
     <Compile Include="Events\LevelEvents.cs" />
     <Compile Include="Events\ModActionEvent.cs" />
     <Compile Include="Events\PlayerEvents.cs" />
     <Compile Include="Events\ServerEvents.cs" />
-    <Compile Include="Games\GameProps.cs" />
-    <Compile Include="Games\IGame.cs" />
-    <Compile Include="Games\HacksDetection.cs" />
-    <Compile Include="Games\RoundsGame\LevelPicker.cs" />
-    <Compile Include="Games\RoundsGame\RoundsGame.cs" />
-    <Compile Include="Games\RoundsGame\RoundsGameConfig.cs" />
-    <Compile Include="Games\RoundsGame\RoundsGame.Plugin.cs" />
     <Compile Include="Games\Team.cs" />
     <Compile Include="Games\Weapons\Missile.cs" />
     <Compile Include="Games\Weapons\Weapon.cs" />
@@ -552,56 +540,6 @@
     <Compile Include="Modules\Compiling\CompilerOperations.cs" />
     <Compile Include="Modules\Compiling\CompilerBackends.cs" />
     <Compile Include="Modules\Compiling\CompilerPlugin.cs" />
-    <Compile Include="Modules\Games\Countdown\CountdownConfig.cs" />
-    <Compile Include="Modules\Games\Countdown\CountdownPlugin.cs" />
-    <Compile Include="Modules\Games\Countdown\CmdCountdown.cs" />
-    <Compile Include="Modules\Games\Countdown\CountdownGame.cs" />
-    <Compile Include="Modules\Games\Countdown\CountdownGame.Plugin.cs" />
-    <Compile Include="Modules\Games\Countdown\CountdownGame.Round.cs" />
-    <Compile Include="Modules\Games\Countdown\CountdownMap.cs" />
-    <Compile Include="Modules\Games\CTF\CmdCtf.cs" />
-    <Compile Include="Modules\Games\CTF\CtfConfig.cs" />
-    <Compile Include="Modules\Games\CTF\CtfGame.cs" />
-    <Compile Include="Modules\Games\CTF\CtfGame.DB.cs" />
-    <Compile Include="Modules\Games\CTF\CtfGame.Plugin.cs" />
-    <Compile Include="Modules\Games\CTF\CtfGame.Round.cs" />
-    <Compile Include="Modules\Games\CTF\CtfPlugin.cs" />
-    <Compile Include="Modules\Games\LavaSurvival\CmdLavaSurvival.cs" />
-    <Compile Include="Modules\Games\LavaSurvival\Commands\CmdLives.cs" />
-    <Compile Include="Modules\Games\LavaSurvival\LSConfig.cs" />
-    <Compile Include="Modules\Games\LavaSurvival\LSGame.cs" />
-    <Compile Include="Modules\Games\LavaSurvival\LSGame.DB.cs" />
-    <Compile Include="Modules\Games\LavaSurvival\LSGame.Physics.cs" />
-    <Compile Include="Modules\Games\LavaSurvival\LSGame.Plugin.cs" />
-    <Compile Include="Modules\Games\LavaSurvival\LSGame.Round.cs" />
-    <Compile Include="Modules\Games\LavaSurvival\LSItems.cs" />
-    <Compile Include="Modules\Games\LavaSurvival\LSPlugin.cs" />
-    <Compile Include="Modules\Games\TNTWars\CmdTntWars.cs" />
-    <Compile Include="Modules\Games\TNTWars\TWConfig.cs" />
-    <Compile Include="Modules\Games\TNTWars\TWGame.cs" />
-    <Compile Include="Modules\Games\TNTWars\TWGame.Physics.cs" />
-    <Compile Include="Modules\Games\TNTWars\TWGame.Plugin.cs" />
-    <Compile Include="Modules\Games\TNTWars\TWGame.Round.cs" />
-    <Compile Include="Modules\Games\TNTWars\TWPlugin.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\CmdZombieSurvival.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\Commands\CmdAka.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\Commands\CmdAlive.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\Commands\CmdBounties.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\Commands\CmdBounty.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\Commands\CmdDisinfect.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\Commands\CmdHuman.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\Commands\CmdInfect.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\Commands\CmdInfected.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\Commands\CmdLastLevels.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\Commands\CmdQueue.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\Commands\CmdShowQueue.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\ZSItems.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\ZSConfig.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\ZSGame.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\ZSGame.DB.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\ZSGame.Plugin.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\ZSGame.Round.cs" />
-    <Compile Include="Modules\Games\ZombieSurvival\ZSPlugin.cs" />
     <Compile Include="Modules\Moderation\Notes\CmdNote.cs" />
     <Compile Include="Modules\Moderation\Notes\CmdNotes.cs" />
     <Compile Include="Modules\Moderation\Notes\NotesPlugin.cs" />
@@ -615,9 +553,10 @@
     <Compile Include="Modules\Relay\Discord\DiscordPlugin.cs" />
     <Compile Include="Modules\Relay\Discord\DiscordUtils.cs" />
     <Compile Include="Modules\Relay\Discord\DiscordWebsocket.cs" />
-    <Compile Include="Modules\Relay\IRC\Connection.cs" />
     <Compile Include="Modules\Relay\IRC\IRCNickList.cs" />
     <Compile Include="Modules\Relay\IRC\IRCPlugin.cs" />
+    <Compile Include="Modules\Relay\IRC\Connection.cs" />
+    <Compile Include="Modules\Relay\IRC\Utils.cs" />
     <Compile Include="Modules\Relay\RelayBot.cs" />
     <Compile Include="Modules\Relay\RelayBotCmd.cs" />
     <Compile Include="Modules\Relay\RelayBotEvents.cs" />
@@ -635,6 +574,7 @@
     <Compile Include="Modules\Relay\IRC\IRCBot.cs" />
     <Compile Include="Network\IGameSession.cs" />
     <Compile Include="Network\Listeners.cs" />
+    <Compile Include="Network\Packets\Opcode.cs" />
     <Compile Include="Network\Packets\Packet.cs" />
     <Compile Include="Network\Sockets.cs" />
     <Compile Include="Network\Utils\BufferedBlockSender.cs" />
@@ -659,6 +599,7 @@
     <Compile Include="Player\SpamChecker.cs" />
     <Compile Include="Database\Undo\UndoFormat.cs" />
     <Compile Include="Network\Player.Networking.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Scripting\Plugin.cs" />
     <Compile Include="Scripting\Scripting.cs" />
     <Compile Include="Player\Ban.cs" />
@@ -716,20 +657,17 @@
     <Compile Include="Util\Threading\ThreadSafeCache.cs" />
     <Compile Include="Util\Threading\VolatileArray.cs" />
     <Compile Include="Util\Utils.cs" />
-    <Compile Include="Modules\Relay\IRC\Utils.cs" />
     <Compile Include="Util\ExtrasCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Database\PlayerDB.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="NAS\GlobalSupressions.cs" />
-    <Compile Include="Server\Maintenance\Updater.cs" />
-    <Compile Include="NAS\Crafting.Items.cs" />
-    <Compile Include="NAS\NameGenerator.cs" />
-    <Compile Include="NAS\PluginEvents.cs" />
-    <Compile Include="NAS\Utils.cs" />
-    <Compile Include="NAS\Collision.cs" />
-    <Compile Include="NAS\Crafting.Setup.cs" />
-    <Compile Include="NAS\Drop.cs" />
+    <Compile Include="NAS\NASGlobalSupressions.cs" />
+    <Compile Include="NAS\NASCrafting.Items.cs" />
+    <Compile Include="NAS\NASNameGenerator.cs" />
+    <Compile Include="NAS\NASPluginEvents.cs" />
+    <Compile Include="NAS\NASUtils.cs" />
+    <Compile Include="NAS\NASCollision.cs" />
+    <Compile Include="NAS\NASCrafting.Setup.cs" />
+    <Compile Include="NAS\NASDrop.cs" />
     <Compile Include="NAS\NASTimeCycle.cs" />
     <Compile Include="NAS\NASTreeGens.cs" />
     <Compile Include="NAS\NASItemProp.Setup.cs" />
@@ -738,7 +676,7 @@
     <Compile Include="NAS\NASBlock.Interactions.cs" />
     <Compile Include="NAS\NASBlock.Setup.cs" />
     <Compile Include="NAS\NASColor.cs" />
-    <Compile Include="NAS\Crafting.cs" />
+    <Compile Include="NAS\NASCrafting.cs" />
     <Compile Include="NAS\NASEffect.cs" />
     <Compile Include="NAS\NASItem.cs" />
     <Compile Include="NAS\NASItemProp.cs" />
@@ -758,6 +696,7 @@
     <Compile Include="NAS\Priority Queue\IPriorityQueue.cs" />
     <Compile Include="NAS\Priority Queue\SimplePriorityQueue.cs" />
     <Compile Include="NAS\NASPlayerInventory.Items.cs" />
+    <Compile Include="NAS\NASLevel.IO.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\LICENSE.txt">
@@ -772,7 +711,7 @@
     <Content Include="..\Newtonsoft.Json.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Galaxy.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -25,7 +25,7 @@ namespace MCGalaxy.Util.Imaging
             }
             catch (UnknownImageFormatException ex)
             {
-                Logger.Log(6, "Error decoding image: " + ex.Message);
+                Logger.Log(LogType.Warning, "Error decoding image: " + ex.Message);
                 OnDecodeError(p);
                 return null;
             }

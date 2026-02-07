@@ -12,11 +12,11 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using MySql.Data.MySqlClient;
 namespace MCGalaxy.SQL
 {
     public class MySQLBackend : IDatabaseBackend
@@ -32,31 +32,46 @@ namespace MCGalaxy.SQL
         public override bool EnforcesIntegerLimits => true;
         public override bool MultipleSchema => true;
         public override string EngineName => "MySQL";
-        public override ISqlConnection CreateConnection() => new MySQLConnection(new(string.Format("Data Source={0};Port={1};User ID={2};Password={3};Pooling={4};Treat Tiny As Boolean=false;", Server.Config.MySQLHost, Server.Config.MySQLPort,
-                                       Server.Config.MySQLUsername, Server.Config.MySQLPassword, Server.Config.DatabasePooling)));
+        public override ISqlConnection CreateConnection()
+        {
+            const string format = "Data Source={0};Port={1};User ID={2};Password={3};Pooling={4};Treat Tiny As Boolean=false;";
+            string str = string.Format(format, Server.Config.MySQLHost, Server.Config.MySQLPort,
+                                       Server.Config.MySQLUsername, Server.Config.MySQLPassword, Server.Config.DatabasePooling);
+            MySqlConnection conn = new(str);
+            return new MySQLConnection(conn);
+        }
         public override void LoadDependencies() => Server.CheckFile("MySql.Data.dll");
-        public override void CreateDatabase() => Database.Do("CREATE DATABASE if not exists `" + Server.Config.MySQLDatabaseName + "`", true, null, null);
+        public override void CreateDatabase()
+        {
+            string sql = "CREATE DATABASE if not exists `" + Server.Config.MySQLDatabaseName + "`";
+            Database.Do(sql, true, null, null);
+        }
         protected internal override void ParseCreate(ref string cmd)
         {
-            int priIndex = cmd.ToUpper().IndexOf(" PRIMARY KEY AUTOINCREMENT");
-            if (priIndex == -1)
-            {
-                return;
-            }
-            char[] sepChars = new char[] { '\t', ' ' },
-                startChars = new char[] { '`', '(', ' ', ',', '\t' };
+            // MySQL does not support the format used by the SQLite backend for the primary key
+            const string priKey = " PRIMARY KEY AUTOINCREMENT";
+            int priIndex = cmd.ToUpper().IndexOf(priKey);
+            if (priIndex == -1) return;
+            // Find the name of this column
+            char[] sepChars = new char[] { '\t', ' ' }; // chars that separate part of a column definition
+            char[] startChars = new char[] { '`', '(', ' ', ',', '\t' }; // chars that can start a column definition
             string before = cmd.Substring(0, priIndex);
-            before = before.Substring(0, before.LastIndexOfAny(sepChars));
+            before = before.Substring(0, before.LastIndexOfAny(sepChars)); // get rid of column type
             int nameStart = before.LastIndexOfAny(startChars) + 1;
             string name = before.Substring(nameStart);
-            cmd = cmd.Remove(priIndex, " PRIMARY KEY AUTOINCREMENT".Length);
+            // Replace the 'PRIMARY KEY AUTOINCREMENT' with just 'AUTO_INCREMENT';
+            cmd = cmd.Remove(priIndex, priKey.Length);
             cmd = cmd.Insert(priIndex, " AUTO_INCREMENT");
+            // Insert 'PRIMARY KEY' at end of columns definition
             cmd = cmd.Insert(cmd.LastIndexOf(")"), ", PRIMARY KEY (`" + name + "`)");
         }
         public override bool TableExists(string table)
         {
+            // "SHOW TABLES LIKE '[table]'" SQL statement is insufficient
+            //  because "table" might include characters such as _, %, etc
+            string column = "Tables_in_" + Server.Config.MySQLDatabaseName;
             bool found = false;
-            Database.Iterate("SHOW TABLES WHERE Tables_in_" + Server.Config.MySQLDatabaseName + " = @0",
+            Database.Iterate("SHOW TABLES WHERE " + column + " = @0",
                             record => found = true,
                             table);
             return found;
@@ -75,18 +90,9 @@ namespace MCGalaxy.SQL
             {
                 ColumnDesc col = columns[i];
                 sql.Append(col.Column).Append(' ').Append(col.FormatType());
-                if (col.PrimaryKey)
-                {
-                    priKey = col.Column;
-                }
-                if (col.AutoIncrement)
-                {
-                    sql.Append(" AUTO_INCREMENT");
-                }
-                if (col.NotNull)
-                {
-                    sql.Append(" NOT NULL");
-                }
+                if (col.PrimaryKey) priKey = col.Column;
+                if (col.AutoIncrement) sql.Append(" AUTO_INCREMENT");
+                if (col.NotNull) sql.Append(" NOT NULL");
                 if (i < columns.Length - 1)
                 {
                     sql.Append(',');
@@ -104,38 +110,25 @@ namespace MCGalaxy.SQL
             List<string[]> fields = new();
             Database.Iterate("DESCRIBE `" + table + "`",
                             record => fields.Add(Database.ParseFields(record)));
+            const int i_name = 0, i_type = 1, i_null = 2, i_key = 3, i_def = 4, i_extra = 5;
             string pri = "";
             for (int i = 0; i < fields.Count; i++)
             {
                 string[] field = fields[i];
-                if (field[3].CaselessEq("pri"))
-                {
-                    pri = field[0];
-                }
-                string meta = field[2].CaselessEq("no") ? "NOT NULL" : "DEFAULT NULL";
-                if (field[4].Length > 0)
-                {
-                    meta += " DEFAULT '" + field[4] + "'";
-                }
-                if (field[5].Length > 0)
-                {
-                    meta += " " + field[5];
-                }
-                w.WriteLine("`{0}` {1} {2}{3}", field[0], field[1], meta, pri.Length == 0 && (i == fields.Count - 1) ? "" : ",");
+                if (field[i_key].CaselessEq("pri")) pri = field[i_name];
+                string meta = field[i_null].CaselessEq("no") ? "NOT NULL" : "DEFAULT NULL";
+                if (field[i_def].Length > 0) meta += " DEFAULT '" + field[i_def] + "'";
+                if (field[i_extra].Length > 0) meta += " " + field[i_extra];
+                string suffix = pri.Length == 0 && (i == fields.Count - 1) ? "" : ",";
+                w.WriteLine("`{0}` {1} {2}{3}", field[i_name], field[i_type], meta, suffix);
             }
-            if (pri.Length > 0)
-            {
-                w.Write("PRIMARY KEY (`{0}`)", pri);
-            }
+            if (pri.Length > 0) w.Write("PRIMARY KEY (`{0}`)", pri);
             w.WriteLine(");");
         }
         public override string AddColumnSql(string table, ColumnDesc col, string colAfter)
         {
             string sql = "ALTER TABLE `" + table + "` ADD COLUMN " + col.Column + " " + col.FormatType();
-            if (colAfter.Length > 0)
-            {
-                sql += " AFTER " + colAfter;
-            }
+            if (colAfter.Length > 0) sql += " AFTER " + colAfter;
             return sql;
         }
         public override string AddOrReplaceRowSql(string table, string columns, int numArgs) => InsertSql("REPLACE INTO", table, columns, numArgs);
@@ -143,9 +136,17 @@ namespace MCGalaxy.SQL
     sealed class MySQLConnection : ISqlConnection
     {
         public readonly MySqlConnection conn;
-        public MySQLConnection(MySqlConnection conn) => this.conn = conn;
-        public ISqlTransaction BeginTransaction() => new MySQLTransaction(conn.BeginTransaction());
-        public ISqlCommand CreateCommand(string sql) => new MySQLCommand(new(sql, conn));
+        public MySQLConnection(MySqlConnection conn) { this.conn = conn; }
+        public ISqlTransaction BeginTransaction()
+        {
+            MySqlTransaction trn = conn.BeginTransaction();
+            return new MySQLTransaction(trn);
+        }
+        public ISqlCommand CreateCommand(string sql)
+        {
+            MySqlCommand cmd = new(sql, conn);
+            return new MySQLCommand(cmd);
+        }
         public void Open() => conn.Open();
         public void ChangeDatabase(string name) => conn.ChangeDatabase(name);
         public void Close() => conn.Close();
@@ -154,18 +155,22 @@ namespace MCGalaxy.SQL
     sealed class MySQLCommand : ISqlCommand
     {
         readonly MySqlCommand cmd;
-        public MySQLCommand(MySqlCommand cmd) => this.cmd = cmd;
+        public MySQLCommand(MySqlCommand cmd) { this.cmd = cmd; }
         public void ClearParameters() => cmd.Parameters.Clear();
         public void AddParameter(string name, object value) => cmd.Parameters.AddWithValue(name, value);
         public void Dispose() => cmd.Dispose();
         public void Prepare() => cmd.Prepare();
         public int ExecuteNonQuery() => cmd.ExecuteNonQuery();
-        public ISqlReader ExecuteReader() => new MySQLReader(cmd.ExecuteReader());
+        public ISqlReader ExecuteReader()
+        {
+            MySqlDataReader rdr = cmd.ExecuteReader();
+            return new MySQLReader(rdr);
+        }
     }
     sealed class MySQLTransaction : ISqlTransaction
     {
         readonly MySqlTransaction trn;
-        public MySQLTransaction(MySqlTransaction trn) => this.trn = trn;
+        public MySQLTransaction(MySqlTransaction trn) { this.trn = trn; }
         public void Commit() => trn.Commit();
         public void Rollback() => trn.Rollback();
         public void Dispose() => trn.Dispose();
@@ -173,11 +178,11 @@ namespace MCGalaxy.SQL
     sealed class MySQLReader : ISqlReader
     {
         readonly MySqlDataReader rdr;
-        public MySQLReader(MySqlDataReader rdr) => this.rdr = rdr;
+        public MySQLReader(MySqlDataReader rdr) { this.rdr = rdr; }
         public override int RowsAffected => rdr.RecordsAffected;
         public override void Close() => rdr.Close();
         public override void Dispose() => rdr.Dispose();
-        public bool NextResult() => rdr.NextResult();
+        public bool NextResult() => rdr.NextResult();  // TODO do we need to call this?
         public override bool Read() => rdr.Read();
         public override int FieldCount => rdr.FieldCount;
         public override string GetName(int i) => rdr.GetName(i);
@@ -191,31 +196,24 @@ namespace MCGalaxy.SQL
         public override DateTime GetDateTime(int i) => rdr.GetDateTime(i);
         public override bool IsDBNull(int i) => rdr.IsDBNull(i);
         public override object GetValue(int i) => rdr.GetValue(i);
-        string RawGetDateTime(int col) => GetDateTime(col).ToInvariantDateString();
+        string RawGetDateTime(int col)
+        {
+            DateTime date = GetDateTime(col);
+            return date.ToInvariantDateString();
+        }
         public override string GetStringValue(int col)
         {
-            if (IsDBNull(col))
-            {
-                return "";
-            }
+            if (IsDBNull(col)) return "";
             Type type = rdr.GetFieldType(col);
-            if (type == typeof(string))
-            {
-                return GetString(col);
-            }
-            if (type == typeof(DateTime))
-            {
-                return RawGetDateTime(col);
-            }
+            if (type == typeof(string)) return GetString(col);
+            if (type == typeof(DateTime)) return RawGetDateTime(col);
             return GetValue(col).ToString();
         }
         public override string DumpValue(int col)
         {
-            if (IsDBNull(col))
-            {
-                return "NULL";
-            }
+            if (IsDBNull(col)) return "NULL";
             Type colType = rdr.GetFieldType(col);
+            // TODO doubles not exact? probably doesn't matter
             if (colType == typeof(string) || colType == typeof(byte[]))
             {
                 return SqlUtils.QuoteString(GetString(col));

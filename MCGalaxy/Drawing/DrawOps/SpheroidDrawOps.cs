@@ -123,7 +123,7 @@ namespace MCGalaxy.Drawing.Ops
     {
         public bool Invert;
         public override string Name => "Cone";
-        public ConeDrawOp(bool invert = false) => Invert = invert;
+        public ConeDrawOp(bool invert = false) { Invert = invert; }
         public override long BlocksAffected(Level lvl, Vec3S32[] marks) => (long)ConeVolume(XRadius, ZRadius, Height);
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {

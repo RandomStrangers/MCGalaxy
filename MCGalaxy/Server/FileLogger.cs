@@ -21,6 +21,7 @@ namespace MCGalaxy
 {
     public static class FileLogger
     {
+        public static string ErrorLogPath => err.Path;
         static bool disposed;
         static DateTime last;
         static readonly object logLock = new();
@@ -35,6 +36,7 @@ namespace MCGalaxy
             logTask = Server.MainScheduler.QueueRepeat(Flush, null,
                                                        TimeSpan.FromMilliseconds(500));
         }
+        // Update paths only if a new date
         static void UpdatePaths()
         {
             DateTime now = DateTime.Now;
@@ -48,31 +50,33 @@ namespace MCGalaxy
             err.Close();
             msg.Close();
         }
-        static void LogMessage(int type, string message)
+        static void LogMessage(LogType type, string message)
         {
-            if (!string.IsNullOrEmpty(message))
+            if (string.IsNullOrEmpty(message))
             {
-                if (Server.Config.FileLogging[type])
+                return;
+            }
+            if (!Server.Config.FileLogging[(int)type])
+            {
+                return;
+            }
+            if (type == LogType.Error)
+            {
+                StringBuilder sb = new();
+                sb.AppendLine("----" + DateTime.Now + " ----");
+                sb.AppendLine(message);
+                sb.Append('-', 25);
+                string output = sb.ToString();
+                lock (logLock)
                 {
-                    if (type == 7)
-                    {
-                        StringBuilder sb = new();
-                        sb.AppendLine("----" + DateTime.Now + " ----");
-                        sb.AppendLine(message);
-                        sb.Append('-', 25);
-                        string output = sb.ToString();
-                        lock (logLock)
-                        {
-                            err.Cache.Enqueue(output);
-                        }
-                        message = "!!!Error! See " + err.Path + " for more information.";
-                    }
-                    string now = DateTime.Now.ToString("(HH:mm:ss) ");
-                    lock (logLock)
-                    {
-                        msg.Cache.Enqueue(now + message);
-                    }
+                    err.Cache.Enqueue(output);
                 }
+                message = "!!!Error! See " + err.Path + " for more information.";
+            }
+            string now = DateTime.Now.ToString("(HH:mm:ss) ");
+            lock (logLock)
+            {
+                msg.Cache.Enqueue(now + message);
             }
         }
         public static void Flush(SchedulerTask task)
@@ -97,18 +101,19 @@ namespace MCGalaxy
         }
         public static void Dispose()
         {
-            if (!disposed)
+            if (disposed)
             {
-                disposed = true;
-                Server.MainScheduler.Cancel(logTask);
-                lock (logLock)
+                return;
+            }
+            disposed = true;
+            Server.MainScheduler.Cancel(logTask);
+            lock (logLock)
+            {
+                if (err.Cache.Count > 0)
                 {
-                    if (err.Cache.Count > 0)
-                    {
-                        err.FlushCache();
-                    }
-                    msg.Cache.Clear();
+                    err.FlushCache();
                 }
+                msg.Cache.Clear();
             }
         }
     }
@@ -124,7 +129,7 @@ namespace MCGalaxy
             {
                 stream = new FileStream(Path, FileMode.Append, FileAccess.Write,
                                         FileShare.ReadWrite, 4096, FileOptions.SequentialScan);
-                writer = new(stream);
+                writer = new StreamWriter(stream);
             }
             try
             {

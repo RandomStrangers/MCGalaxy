@@ -16,17 +16,17 @@ using MCGalaxy.Generator;
 using System.Collections.Generic;
 namespace MCGalaxy.Commands.World
 {
-    public sealed class CmdNewLvl : Command2
+    public sealed class CmdNewLvl : Command
     {
         public override string Name => "NewLvl";
         public override string Shortcut => "Gen";
         public override string Type => CommandTypes.World;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override CommandPerm[] ExtraPerms => new[]
                 {
-                    new CommandPerm(100, "can generate maps with advanced themes")
+                    new CommandPerm(LevelPermission.Admin, "can generate maps with advanced themes")
                 };
-        public override void Use(Player p, string message, CommandData data)
+        public override void Use(Player p, string message)
         {
             string ext = ".lvl";
             string[] args = message.SplitSpaces(7);
@@ -57,7 +57,7 @@ namespace MCGalaxy.Commands.World
             Level lvl = null;
             try
             {
-                lvl = GenerateMap(p, args, data);
+                lvl = GenerateMap(p, args);
                 if (lvl == null)
                 {
                     return;
@@ -70,7 +70,7 @@ namespace MCGalaxy.Commands.World
                 Server.DoGC();
             }
         }
-        internal Level GenerateMap(Player p, string[] args, CommandData data)
+        internal Level GenerateMap(Player p, string[] args)
         {
             if (args.Length < 4)
             {
@@ -84,7 +84,7 @@ namespace MCGalaxy.Commands.World
             {
                 return null;
             }
-            if (gen != null && gen.Type == 2 && !CheckExtraPerm(p, data, 1))
+            if (gen != null && gen.Type == GenType.Advanced && !CheckExtraPerm(p, 1))
             {
                 return null;
             }

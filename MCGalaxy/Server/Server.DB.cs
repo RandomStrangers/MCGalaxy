@@ -53,7 +53,7 @@ namespace MCGalaxy
             {
                 Directory.CreateDirectory("blockdb");
             }
-            Logger.Log(1, "Using {0} for database backend", Database.Backend.EngineName);
+            Logger.Log(LogType.SystemActivity, "Using {0} for database backend", Database.Backend.EngineName);
             try
             {
                 Database.Backend.CreateDatabase();
@@ -61,7 +61,7 @@ namespace MCGalaxy
             catch (Exception e)
             {
                 Logger.LogError(e);
-                Logger.Log(6, "MySQL settings have not been set! Please Setup using the properties window.");
+                Logger.Log(LogType.Warning, "MySQL settings have not been set! Please Setup using the properties window.");
                 return;
             }
             Database.CreateTable("Opstats", opstatsTable);

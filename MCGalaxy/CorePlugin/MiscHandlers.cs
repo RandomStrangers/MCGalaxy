@@ -60,16 +60,16 @@ namespace MCGalaxy.Core
                 p.isFlying = false;
             }
         }
-        internal static void HandlePlayerClick(Player p, int _, int action, ushort __, ushort ___,
-                                               byte id, ushort x, ushort y, ushort z, int ____)
+        internal static void HandlePlayerClick(Player p, MouseButton _, MouseAction action, ushort __, ushort ___,
+                                               byte id, ushort x, ushort y, ushort z, TargetBlockFace ____)
         {
-            if (action != 0) return;
-            if (id != 0xFF && ClickOnBot(p, id)) return;
+            if (action != MouseAction.Pressed) return;
+            if (id != Entities.SelfID && ClickOnBot(p, id)) return;
             // if Deletable is enabled, handle MBs/Portals in SetBlock instead
             if (p.Level.Config.Deletable || !p.Level.IsValidPos(x, y, z)) return;
             ushort block = p.Level.GetBlock(x, y, z);
-            bool isMB = p.Level.Props[block].IsMessageBlock,
-                isPortal = p.Level.Props[block].IsPortal;
+            bool isMB = p.Level.Props[block].IsMessageBlock;
+            bool isPortal = p.Level.Props[block].IsPortal;
             if (isMB) { MessageBlock.Handle(p, x, y, z, true); }
             if (isPortal) { Portal.Handle(p, x, y, z); }
         }

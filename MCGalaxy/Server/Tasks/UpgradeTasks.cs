@@ -22,80 +22,89 @@ namespace MCGalaxy.Tasks
     {
         internal static void UpgradeOldAgreed()
         {
-            if (File.Exists("ranks/agreed.txt"))
+            // agreed.txt format used to be names separated by spaces, we need to fix that up.
+            if (!File.Exists("ranks/agreed.txt"))
             {
-                string data = null;
-                using (FileStream fs = FileIO.TryOpenRead("ranks/agreed.txt"))
-                {
-                    if (fs.ReadByte() != ' ')
-                    {
-                        return;
-                    }
-                    data = new StreamReader(fs).ReadToEnd();
-                    data = data.Replace(" ", Environment.NewLine);
-                }
-                FileIO.TryWriteAllText("ranks/agreed.txt", data);
+                return;
             }
+            string data = null;
+            //using (FileStream fs = File.OpenRead("ranks/agreed.txt"))
+            using (FileStream fs = FileIO.TryOpenRead("ranks/agreed.txt"))
+            {
+                if (fs.ReadByte() != ' ')
+                {
+                    return;
+                }
+                data = new StreamReader(fs).ReadToEnd();
+                data = data.Replace(" ", Environment.NewLine);
+            }
+            //File.WriteAllText("ranks/agreed.txt", data);
+            FileIO.TryWriteAllText("ranks/agreed.txt", data);
         }
         internal static void UpgradeOldTempranks(SchedulerTask _)
         {
-            if (File.Exists(Paths.TempRanksFile))
+            if (!File.Exists(Paths.TempRanksFile))
             {
-                using (StreamReader r = new(Paths.TempRanksFile))
-                {
-                    string line = r.ReadLine();
-                    if (line == null)
-                    {
-                        return;
-                    }
-                    string[] parts = line.SplitSpaces();
-                    if (parts.Length < 9)
-                    {
-                        return;
-                    }
-                }
-                //string[] lines = File.ReadAllLines(Paths.TempRanksFile);
-                string[] lines = FileIO.TryReadAllLines(Paths.TempRanksFile);
-                for (int i = 0; i < lines.Length; i++)
-                {
-                    string[] args = lines[i].SplitSpaces();
-                    if (args.Length < 9)
-                    {
-                        continue;
-                    }
-                    int min = NumberUtils.ParseInt32(args[4]),
-                        hour = NumberUtils.ParseInt32(args[5]),
-                        day = NumberUtils.ParseInt32(args[6]),
-                        month = NumberUtils.ParseInt32(args[7]),
-                        year = NumberUtils.ParseInt32(args[8]),
-                        periodH = NumberUtils.ParseInt32(args[3]),
-                        periodM = 0;
-                    if (args.Length > 10)
-                    {
-                        periodM = NumberUtils.ParseInt32(args[10]);
-                    }
-                    DateTime assigned = new(year, month, day, hour, min, 0);
-                    DateTime expiry = assigned.AddHours(periodH).AddMinutes(periodM);
-                    // Line format: name assigner assigntime expiretime oldRank tempRank
-                    lines[i] = args[0] + " " + args[9] + " " + assigned.ToUnixTime() +
-                        " " + expiry.ToUnixTime() + " " + args[2] + " " + args[1];
-                }
-                FileIO.TryWriteAllLines(Paths.TempRanksFile, lines);
+                return;
             }
+            // Check if empty, or not old form
+            using (StreamReader r = new(Paths.TempRanksFile))
+            {
+                string line = r.ReadLine();
+                if (line == null)
+                {
+                    return;
+                }
+                string[] parts = line.SplitSpaces();
+                if (parts.Length < 9)
+                {
+                    return;
+                }
+            }
+            //string[] lines = File.ReadAllLines(Paths.TempRanksFile);
+            string[] lines = FileIO.TryReadAllLines(Paths.TempRanksFile);
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string[] args = lines[i].SplitSpaces();
+                if (args.Length < 9)
+                {
+                    continue;
+                }
+                int min = NumberUtils.ParseInt32(args[4]),
+                    hour = NumberUtils.ParseInt32(args[5]),
+                    day = NumberUtils.ParseInt32(args[6]),
+                    month = NumberUtils.ParseInt32(args[7]),
+                    year = NumberUtils.ParseInt32(args[8]),
+                    periodH = NumberUtils.ParseInt32(args[3]),
+                    periodM = 0;
+                if (args.Length > 10)
+                {
+                    periodM = NumberUtils.ParseInt32(args[10]);
+                }
+                DateTime assigned = new(year, month, day, hour, min, 0);
+                DateTime expiry = assigned.AddHours(periodH).AddMinutes(periodM);
+                // Line format: name assigner assigntime expiretime oldRank tempRank
+                lines[i] = args[0] + " " + args[9] + " " + assigned.ToUnixTime() +
+                    " " + expiry.ToUnixTime() + " " + args[2] + " " + args[1];
+            }
+            //File.WriteAllLines(Paths.TempRanksFile, lines);
+            FileIO.TryWriteAllLines(Paths.TempRanksFile, lines);
         }
         internal static void UpgradeDBTimeSpent(SchedulerTask _)
         {
             string time = Database.ReadString("Players", "TimeSpent", "LIMIT 1");
-            if (time != null)
+            if (time == null)
             {
-                if (time.IndexOf(' ') != -1)
-                {
-                    Logger.Log(1, "Upgrading TimeSpent column in database to new format..");
-                    DumpPlayerTimeSpents();
-                    UpgradePlayerTimeSpents();
-                    Logger.Log(1, "Upgraded {0} rows. ({1} rows failed)", playerCount, playerFailed);
-                }
+                return; // no players at all in DB
             }
+            if (time.IndexOf(' ') == -1)
+            {
+                return; // already upgraded
+            }
+            Logger.Log(LogType.SystemActivity, "Upgrading TimeSpent column in database to new format..");
+            DumpPlayerTimeSpents();
+            UpgradePlayerTimeSpents();
+            Logger.Log(LogType.SystemActivity, "Upgraded {0} rows. ({1} rows failed)", playerCount, playerFailed);
         }
         static List<int> playerIds;
         static List<long> playerSeconds;

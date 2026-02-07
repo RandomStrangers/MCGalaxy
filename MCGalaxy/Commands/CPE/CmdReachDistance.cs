@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.CPE
         public override string Name => "ReachDistance";
         public override string Shortcut => "Reach";
         public override string Type => CommandTypes.Building;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {

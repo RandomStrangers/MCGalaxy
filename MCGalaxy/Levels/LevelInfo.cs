@@ -172,9 +172,11 @@ namespace MCGalaxy
         }
         public static string NextBackup(string map)
         {
-            Directory.CreateDirectory(BackupBasePath(map));
+            string root = BackupBasePath(map);
+            Directory.CreateDirectory(root);
             return (LatestBackup(map) + 1).ToString();
         }
+        public const string LATEST_MUSEUM_FLAG = "*latest";
         /// <summary>
         /// Returns true if a file was found for the given map with the given backup number.
         /// Supports LATEST_FLAG as backup number to return latest backup path.
@@ -187,7 +189,7 @@ namespace MCGalaxy
                 path = null;
                 return false;
             }
-            if (backupNumber == "*latest")
+            if (backupNumber == LATEST_MUSEUM_FLAG)
             {
                 int latest = LatestBackup(map);
                 if (latest == 0)
@@ -222,7 +224,7 @@ namespace MCGalaxy
             cfg.Load(propsPath);
             return cfg;
         }
-        public static bool Check(Player p, sbyte plRank, string map, string action, out LevelConfig cfg)
+        public static bool Check(Player p, LevelPermission plRank, string map, string action, out LevelConfig cfg)
         {
             cfg = GetConfig(map, out Level lvl);
             if (p.IsConsole)
@@ -242,7 +244,8 @@ namespace MCGalaxy
             }
             return true;
         }
-        public static bool Check(Player p, sbyte plRank, Level lvl, string action)
+        public static bool Check(Player p, LevelPermission plRank, string map, string action) => Check(p, plRank, map, action, out _);
+        public static bool Check(Player p, LevelPermission plRank, Level lvl, string action)
         {
             if (p.IsConsole)
             {
@@ -330,8 +333,8 @@ namespace MCGalaxy
         }
         static string FormatMap(Player p, string map, bool showVisitable)
         {
-            RetrieveProps(map, out sbyte visitP, out sbyte buildP, out bool loadOnGoto);
-            sbyte maxPerm = visitP;
+            RetrieveProps(map, out LevelPermission visitP, out LevelPermission buildP, out bool loadOnGoto);
+            LevelPermission maxPerm = visitP;
             if (maxPerm < buildP)
             {
                 maxPerm = buildP;
@@ -347,11 +350,11 @@ namespace MCGalaxy
             }
             return Group.GetColor(maxPerm) + map + visit;
         }
-        static void RetrieveProps(string level, out sbyte visit,
-                                  out sbyte build, out bool loadOnGoto)
+        static void RetrieveProps(string level, out LevelPermission visit,
+                                  out LevelPermission build, out bool loadOnGoto)
         {
-            visit = 0;
-            build = 0;
+            visit = LevelPermission.Guest;
+            build = LevelPermission.Guest;
             loadOnGoto = true;
             string propsPath = PropsPath(level);
             SearchArgs args = new();

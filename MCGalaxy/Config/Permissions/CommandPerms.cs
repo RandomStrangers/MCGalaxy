@@ -23,7 +23,10 @@ namespace MCGalaxy.Commands
         public string CmdName;
         public override string ItemName => CmdName;
         static readonly List<CommandPerms> List = new();
-        public CommandPerms(string cmd, sbyte min) : base(min) => CmdName = cmd;
+        public CommandPerms(string cmd, LevelPermission min) : base(min)
+        {
+            CmdName = cmd;
+        }
         public CommandPerms Copy()
         {
             CommandPerms copy = new(CmdName, 0);
@@ -39,7 +42,7 @@ namespace MCGalaxy.Commands
             return null;
         }
         /// <summary> Gets or adds permissions for the given command. </summary>
-        public static CommandPerms GetOrAdd(string cmd, sbyte min)
+        public static CommandPerms GetOrAdd(string cmd, LevelPermission min)
         {
             CommandPerms perms = Find(cmd);
             if (perms != null) return perms;
@@ -101,13 +104,13 @@ namespace MCGalaxy.Commands
                 line.Replace(" ", "").FixedSplit(args, ':');
                 try
                 {
-                    Deserialise(args, 1, out sbyte min, out List<sbyte> allowed, out List<sbyte> disallowed);
+                    Deserialise(args, 1, out LevelPermission min, out List<LevelPermission> allowed, out List<LevelPermission> disallowed);
                     perms = GetOrAdd(args[0], min);
                     perms.Init(min, allowed, disallowed);
                 }
                 catch
                 {
-                    Logger.Log(6, "Hit an error on the command " + line); continue;
+                    Logger.Log(LogType.Warning, "Hit an error on the command " + line); continue;
                 }
             }
         }

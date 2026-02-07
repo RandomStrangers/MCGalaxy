@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.World
         public override string Name => "Save";
         public override string Type => CommandTypes.World;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandAlias[] Aliases => new[]
                 {
                     new CommandAlias("MapSave"),

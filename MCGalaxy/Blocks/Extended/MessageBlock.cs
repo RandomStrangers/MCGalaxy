@@ -28,7 +28,7 @@ namespace MCGalaxy.Blocks.Extended
             message = message.Replace("@p", p.name);
             if (message != p.prevMsg || alwaysRepeat || Server.Config.RepeatMBs)
             {
-                Execute(p, message, new(x, y, z));
+                Execute(p, message, new Vec3S32(x, y, z));
             }
             return true;
         }
@@ -37,7 +37,7 @@ namespace MCGalaxy.Blocks.Extended
             List<string> cmds = GetParts(message, out string text);
             if (text != null) p.Message(text);
             CommandData data = p.DefaultCmdData;
-            data.Context = 4;
+            data.Context = CommandContext.MessageBlock;
             data.MBCoords = mbCoords;
             if (cmds.Count == 1)
             {
@@ -76,11 +76,12 @@ namespace MCGalaxy.Blocks.Extended
             return false;
         }
         static readonly string[] sep = new string[] { " |/" };
+        const StringSplitOptions opts = StringSplitOptions.RemoveEmptyEntries;
         static readonly List<string> empty = new();
         static List<string> GetParts(string message, out string text)
         {
             if (message.IndexOf('|') == -1) return ParseSingle(message, out text);
-            string[] parts = message.Split(sep, StringSplitOptions.RemoveEmptyEntries);
+            string[] parts = message.Split(sep, opts);
             List<string> cmds = ParseSingle(parts[0], out text);
             if (parts.Length == 1) return cmds;
             if (text != null) cmds = new List<string>();
@@ -93,16 +94,11 @@ namespace MCGalaxy.Blocks.Extended
             message = Chat.ParseInput(message, out bool isCommand);
             if (isCommand)
             {
-                text = null; 
-                return new List<string>() 
-                { 
-                    message 
-                };
+                text = null; return new List<string>() { message };
             }
             else
             {
-                text = message;
-                return empty;
+                text = message; return empty;
             }
         }
         /// <summary> Returns whether a Messages table for the given map exists in the DB. </summary>
@@ -116,6 +112,21 @@ namespace MCGalaxy.Blocks.Extended
                                 record => coords.Add(Portal.ParseCoords(record)));
             return coords;
         }
+        /// <summary> Deletes all message blocks for the given map. </summary>
+        public static void DeleteAll(string map) => Database.DeleteTable("Messages" + map);
+        /// <summary> Copies all message blocks from the given map to another map. </summary>
+        public static void CopyAll(string src, string dst)
+        {
+            if (!ExistsInDB(src)) return;
+            Database.CreateTable("Messages" + dst, LevelDB.createMessages);
+            Database.CopyAllRows("Messages" + src, "Messages" + dst);
+        }
+        /// <summary> Moves all message blocks from the given map to another map. </summary>
+        public static void MoveAll(string src, string dst)
+        {
+            if (!ExistsInDB(src)) return;
+            Database.RenameTable("Messages" + src, "Messages" + dst);
+        }
         /// <summary> Returns the text for the given message block in the given map. </summary>
         public static string Get(string map, ushort x, ushort y, ushort z)
         {
@@ -125,6 +136,26 @@ namespace MCGalaxy.Blocks.Extended
             msg = msg.Trim().Replace("\\'", "\'");
             msg = msg.Cp437ToUnicode();
             return msg;
+        }
+        /// <summary> Deletes the given message block from the given map. </summary>
+        public static void Delete(string map, ushort x, ushort y, ushort z) => Database.DeleteRows("Messages" + map,
+                                "WHERE X=@0 AND Y=@1 AND Z=@2", x, y, z);
+        /// <summary> Creates or updates the given message block in the given map. </summary>
+        public static void Set(string map, ushort x, ushort y, ushort z, string contents)
+        {
+            contents = contents.Replace("'", "\\'");
+            contents = Colors.Escape(contents);
+            contents = contents.UnicodeToCp437();
+            Database.CreateTable("Messages" + map, LevelDB.createMessages);
+            object[] args = new object[] { x, y, z, contents };
+            int changed = Database.UpdateRows("Messages" + map, "Message=@3",
+                                             "WHERE X=@0 AND Y=@1 AND Z=@2", args);
+            if (changed == 0)
+            {
+                Database.AddRow("Messages" + map, "X,Y,Z, Message", args);
+            }
+            Level lvl = LevelInfo.FindExact(map);
+            if (lvl != null) lvl.hasMessageBlocks = true;
         }
     }
 }

@@ -55,6 +55,9 @@ namespace MCGalaxy.Blocks.Physics
         public sbyte CircuitID;
         public int detIndex = -1;
         public List<int> list = new();
-        public C4Data(sbyte num) => CircuitID = num;
+        public C4Data(sbyte num)
+        {
+            CircuitID = num;
+        }
     }
 }

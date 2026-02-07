@@ -20,7 +20,7 @@ namespace MCGalaxy.Commands.Moderation
         public override string Shortcut => "BanX";
         public override string Type => CommandTypes.Moderation;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("UBan", "-noip") };
         public override void Use(Player p, string message, CommandData data)
         {

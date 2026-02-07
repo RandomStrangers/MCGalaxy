@@ -21,7 +21,7 @@ namespace MCGalaxy.Commands.Building
     {
         public override string Name => "Fill";
         public override string Shortcut => "f";
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("F3D"), new CommandAlias("F2D", "2d"),
                     new CommandAlias("Fill3D"), new CommandAlias("Fill2D", "2d") };
         protected override int MarksCount => 1;

@@ -18,7 +18,7 @@ namespace MCGalaxy.Commands.Maintenance
     {
         public override string Name => "LowLag";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0 && Server.Config.PositionUpdateInterval > 1000)

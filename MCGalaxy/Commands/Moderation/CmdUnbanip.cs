@@ -20,7 +20,7 @@ namespace MCGalaxy.Commands.Moderation
     {
         public override string Name => "UnbanIP";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandAlias[] Aliases => new CommandAlias[] { new("UnIPBan") };
         public override void Use(Player p, string message, CommandData data)
         {
@@ -34,7 +34,7 @@ namespace MCGalaxy.Commands.Moderation
             string reason = args.Length > 1 ? args[1] : "";
             reason = ModActionCmd.ExpandReason(p, reason);
             if (reason == null) return;
-            ModAction action = new(addr, p, 3, reason);
+            ModAction action = new(addr, p, ModActionType.UnbanIP, reason);
             OnModActionEvent.Call(action);
         }
         public override void Help(Player p)

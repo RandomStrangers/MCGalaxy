@@ -12,11 +12,11 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.Platform;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using MCGalaxy.Platform;
 namespace MCGalaxy.SQL
 {
     public class SQLiteBackend : IDatabaseBackend
@@ -34,22 +34,20 @@ namespace MCGalaxy.SQL
         public override ISqlConnection CreateConnection() => new MCGSQLiteConnection();
         public override void LoadDependencies()
         {
-            if (IOperatingSystem.DetectOS().IsWindows)
+            // on macOS/Linux, system provided sqlite3 native library is used
+            if (!IOperatingSystem.DetectOS().IsWindows) return;
+            Server.CheckFile("sqlite3_x32.dll");
+            Server.CheckFile("sqlite3_x64.dll");
+            // sqlite3.dll is the .DLL that MCGalaxy will actually load on Windows
+            try
             {
-                Server.CheckFile("sqlite3_x32.dll");
-                Server.CheckFile("sqlite3_x64.dll");
-                try
-                {
-                    string dll = IntPtr.Size == 8 ? "sqlite3_x64.dll" : "sqlite3_x32.dll";
-                    if (File.Exists(dll))
-                    {
-                        FileIO.TryCopy(dll, "sqlite3.dll", true);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError("Error moving SQLite dll", ex);
-                }
+                string dll = IntPtr.Size == 8 ? "sqlite3_x64.dll" : "sqlite3_x32.dll";
+                if (File.Exists(dll)) FileIO.TryCopy(dll, "sqlite3.dll", true);
+            }
+            catch (Exception ex)
+            {
+                // e.g. can happen when multiple server instances running
+                Logger.LogError("Error moving SQLite dll", ex);
             }
         }
         public override void CreateDatabase() { }
@@ -57,13 +55,12 @@ namespace MCGalaxy.SQL
                                       "WHERE type='table' AND name=@0", table) > 0;
         public override List<string> AllTables()
         {
-            List<string> tables = GetStrings("SELECT name from sqlite_master WHERE type='table'");
+            const string sql = "SELECT name from sqlite_master WHERE type='table'";
+            List<string> tables = GetStrings(sql);
+            // exclude sqlite built-in database tables
             for (int i = tables.Count - 1; i >= 0; i--)
             {
-                if (tables[i].StartsWith("sqlite_"))
-                {
-                    tables.RemoveAt(i);
-                }
+                if (tables[i].StartsWith("sqlite_")) tables.RemoveAt(i);
             }
             return tables;
         }
@@ -84,25 +81,15 @@ namespace MCGalaxy.SQL
                 ColumnDesc col = columns[i];
                 sql.Append(col.Column).Append(' ');
                 sql.Append(col.FormatType());
+                // When the primary key isn't autoincrement, we use the same form as mysql
+                // Otherwise we have to use sqlite's 'PRIMARY KEY AUTO_INCREMENT' form
                 if (col.PrimaryKey)
                 {
-                    if (!col.AutoIncrement)
-                    {
-                        priKey = col.Column;
-                    }
-                    else
-                    {
-                        sql.Append(" PRIMARY KEY");
-                    }
+                    if (!col.AutoIncrement) priKey = col.Column;
+                    else sql.Append(" PRIMARY KEY");
                 }
-                if (col.AutoIncrement)
-                {
-                    sql.Append(" AUTOINCREMENT");
-                }
-                if (col.NotNull)
-                {
-                    sql.Append(" NOT NULL");
-                }
+                if (col.AutoIncrement) sql.Append(" AUTOINCREMENT");
+                if (col.NotNull) sql.Append(" NOT NULL");
                 if (i < columns.Length - 1)
                 {
                     sql.Append(',');

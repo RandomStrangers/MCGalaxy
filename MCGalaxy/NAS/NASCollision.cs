@@ -1,8 +1,11 @@
 using MCGalaxy.Blocks;
 using MCGalaxy.Maths;
+using NASBlockCollideAction =
+    MCGalaxy.NASAction<MCGalaxy.NASEntity,
+    MCGalaxy.NASBlock, bool, ushort, ushort, ushort>;
 namespace MCGalaxy
 {
-    public static class Collision
+    public static class NASCollision
     {
         public static void Setup() => SetupBlockBounds(Server.mainLevel);
         public static void SetupBlockBounds(Level lvl)
@@ -19,7 +22,7 @@ namespace MCGalaxy
             bool collides = true;
             AABB bounds;
             float fallDamageMultiplier = 1;
-            Action<NASEntity, NASBlock, bool, ushort, ushort, ushort> collideAction = NASBlock.DefaultSolidCollideAction();
+            NASBlockCollideAction collideAction = NASBlock.DefaultSolidCollideAction();
             BlockDefinition def = lvl.GetBlockDef(serverushort);
             if (def != null)
             {

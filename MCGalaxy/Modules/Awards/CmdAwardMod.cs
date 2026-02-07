@@ -18,7 +18,7 @@ namespace MCGalaxy.Modules.Awards
     {
         public override string Name => "AwardMod";
         public override string Type => CommandTypes.Economy;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         static readonly char[] awardArgs = new char[] { ':' };
         public override void Use(Player p, string message, CommandData data)
         {

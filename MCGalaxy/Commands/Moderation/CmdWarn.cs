@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.Moderation
     {
         public override string Name => "Warn";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -31,7 +31,7 @@ namespace MCGalaxy.Commands.Moderation
             if (reason == null) return;
             Group group = ModActionCmd.CheckTarget(p, data, "warn", target);
             if (group == null) return;
-            ModAction action = new(target, p, 8, reason);
+            ModAction action = new(target, p, ModActionType.Warned, reason);
             OnModActionEvent.Call(action);
         }
         public override void Help(Player p)

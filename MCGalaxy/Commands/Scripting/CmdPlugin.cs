@@ -20,7 +20,7 @@ namespace MCGalaxy.Commands.Scripting
     {
         public override string Name => "Plugin";
         public override string Type => CommandTypes.Other;
-        public override sbyte DefaultRank => 120;
+        public override LevelPermission DefaultRank => LevelPermission.Owner;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("PLoad", "load"), new CommandAlias("PUnload", "unload"),
                     new CommandAlias("Plugins", "list") };
         public override bool MessageBlockRestricted => true;

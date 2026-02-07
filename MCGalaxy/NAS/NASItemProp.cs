@@ -6,13 +6,13 @@ namespace MCGalaxy
         public string name,
             color,
             character;
-        public List<NASMaterial> materialsEffectiveAgainst;
+        public List<NASBlock.NASMaterial> materialsEffectiveAgainst;
         public int tier, recharge;
         public float percentageOfTimeSaved,
             baseHP, damage, armor, knockback;
         public Dictionary<string, bool> allowedEnchants = new();
         public static Dictionary<string, NASItemProp> props = new();
-        public NASItemProp(string description, Dictionary<string, bool> enchants = null, NASMaterial effectiveAgainst = NASMaterial.None, float percentageOfTimeSaved = 0, int tier = 1)
+        public NASItemProp(string description, Dictionary<string, bool> enchants = null, NASBlock.NASMaterial effectiveAgainst = NASBlock.NASMaterial.None, float percentageOfTimeSaved = 0, int tier = 1)
         {
             string[] descriptionBits = description.Split('|');
             name = descriptionBits[0];
@@ -37,7 +37,7 @@ namespace MCGalaxy
             {
                 allowedEnchants[x.Key] = x.Value;
             }
-            if (effectiveAgainst != NASMaterial.None)
+            if (effectiveAgainst != NASBlock.NASMaterial.None)
             {
                 materialsEffectiveAgainst = new()
                 {

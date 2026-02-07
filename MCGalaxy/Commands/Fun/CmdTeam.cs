@@ -16,13 +16,13 @@ using MCGalaxy.Games;
 using System;
 namespace MCGalaxy.Commands.Fun
 {
-    public sealed class CmdTeam : Command2
+    public sealed class CmdTeam : Command
     {
         public override string Name => "Team";
         public override string Type => CommandTypes.Games;
         public override bool SuperUseable => false;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(50, "can create teams") };
-        public override void Use(Player p, string message, CommandData data)
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.AdvBuilder, "can create teams") };
+        public override void Use(Player p, string message)
         {
             if (message.Length == 0) { Help(p); return; }
             string[] args = message.SplitSpaces(2);
@@ -31,8 +31,8 @@ namespace MCGalaxy.Commands.Fun
                 case "owner": HandleOwner(p, args); return;
                 case "kick": HandleKick(p, args); return;
                 case "color": HandleColor(p, args); return;
-                case "create": HandleCreate(p, args, data); return;
-                case "join": HandleJoin(p, args); return;
+                case "create": HandleCreate(p, args); return;
+                case "join": HandleJoin(p); return;
                 case "invite": HandleInvite(p, args); return;
                 case "leave": HandleLeave(p, args); return;
                 case "members": HandleMembers(p, args); return;
@@ -107,9 +107,9 @@ namespace MCGalaxy.Commands.Fun
             team.UpdatePrefix();
             Team.SaveList();
         }
-        void HandleCreate(Player p, string[] args, CommandData data)
+        void HandleCreate(Player p, string[] args)
         {
-            if (!CheckExtraPerm(p, data, 1)) return;
+            if (!CheckExtraPerm(p, 1)) return;
             Team team = p.Game.Team;
             if (team != null) { p.Message("You need to leave your current team before you can create one."); return; }
             if (args.Length == 1)
@@ -129,7 +129,7 @@ namespace MCGalaxy.Commands.Fun
             Team.SaveList();
             Chat.MessageFrom(p, "λNICK &Screated the &a" + args[1] + " &Steam");
         }
-        void HandleJoin(Player p, string[] _)
+        void HandleJoin(Player p)
         {
             Team team = p.Game.Team;
             if (p.Game.TeamInvite == null) { p.Message("You do not currently have any invitation to join a team."); return; }

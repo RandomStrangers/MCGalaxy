@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
-    public class ModelInfo
+    public struct ModelInfo
     {
         public readonly string Model;
         public readonly Vec3S32 BaseSize;

@@ -16,28 +16,30 @@ using MCGalaxy.Eco;
 using System;
 namespace MCGalaxy.Commands.Eco
 {
-    public sealed class CmdEconomy : Command2
+    public sealed class CmdEconomy : Command
     {
         public override string Name => "Economy";
         public override string Shortcut => "Eco";
         public override string Type => CommandTypes.Economy;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can setup the economy") };
-        public override void Use(Player p, string message, CommandData data)
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can setup the economy") };
+        public override void Use(Player p, string message)
         {
-            string[] raw = message.SplitSpaces();
-            string[] args = new string[] { "", "", "", "", "", "", "", "" };
+            string[] raw = message.SplitSpaces(),
+                args = new string[] { "", "", "", "", "", "", "", "" };
             for (int i = 0; i < Math.Min(args.Length, raw.Length); i++)
                 args[i] = raw[i];
-            if (!CheckExtraPerm(p, data, 1)) return;
+            if (!CheckExtraPerm(p, 1)) return;
             if (args[0].CaselessEq("enable"))
             {
                 p.Message("Economy is now &aenabled");
-                Economy.Enabled = true; Economy.Save();
+                Economy.Enabled = true; 
+                Economy.Save();
             }
             else if (args[0].CaselessEq("disable"))
             {
                 p.Message("Economy is now &cdisabled");
-                Economy.Enabled = false; Economy.Save();
+                Economy.Enabled = false; 
+                Economy.Save();
             }
             else
             {

@@ -1,5 +1,6 @@
 using MCGalaxy.Commands;
 using MCGalaxy.Commands.Moderation;
+using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Network;
 using Newtonsoft.Json;
 using System;
@@ -7,17 +8,17 @@ namespace MCGalaxy
 {
     public partial class NASPlugin
     {
-        static void OnPlayerCommand(Player p, string name, string message, CommandData data)
+        public static void OnPlayerCommand(Player p, string name, string message, CommandData data)
         {
             if (name.CaselessEq("setall"))
             {
-                if (p.Rank < 80)
+                if (p.Rank < LevelPermission.Operator)
                 {
                     return;
                 }
                 foreach (Command _cmd in Command.allCmds)
                 {
-                    Group group = Group.Find(80);
+                    Group group = Group.Find(LevelPermission.Operator);
                     group ??= Group.Find(p.Rank);
                     new CmdCmdSet().Use(p, _cmd.Name + " " + group.Name);
                 }
@@ -57,7 +58,7 @@ namespace MCGalaxy
             if (name.CaselessEq("gentree"))
             {
                 p.cancelcommand = true;
-                if (p.Rank < 80)
+                if (p.Rank < LevelPermission.Operator)
                 {
                     return;
                 }
@@ -208,7 +209,7 @@ namespace MCGalaxy
                     NASTimeCycle.cycleCurrentTime = time % NASTimeCycle.cycleMaxTime;
                 }
             }
-            if (name.CaselessEq("goto") && p.Rank < 80 && data.Context != 2)
+            if (name.CaselessEq("goto") && p.Rank < LevelPermission.Operator && data.Context != CommandContext.SendCmd)
             {
                 p.Message("You cannot use /goto manually. It is triggered automatically when you go to map borders.");
                 p.cancelcommand = true;
@@ -247,16 +248,16 @@ namespace MCGalaxy
             if (name.CaselessEq("smite"))
             {
                 p.cancelcommand = true;
-                if (p.Rank < 80)
+                if (p.Rank < LevelPermission.Operator)
                 {
                     return;
                 }
                 NASPlayer nw = NASPlayer.GetPlayer(PlayerInfo.FindMatches(p, message));
                 nw.lastAttackedPlayer = p;
-                nw.TakeDamage(50, 3, "@p &fwas smote by " + p.ColoredName);
+                nw.TakeDamage(50, NASEntity.NASDamageSource.Entity, "@p &fwas smote by " + p.ColoredName);
                 return;
             }
-            if (!name.CaselessEq("nas"))
+            if (!name.CaselessEq("NAS"))
             {
                 return;
             }
@@ -346,7 +347,7 @@ namespace MCGalaxy
                 return;
             }
         }
-        static void OnPlayerMessage(Player p, string message)
+        public static void OnPlayerMessage(Player p, string message)
         {
             NASPlayer np = NASPlayer.GetPlayer(p);
             if (np.isInserting)
@@ -378,7 +379,7 @@ namespace MCGalaxy
                 int x = np.interactCoords[0],
                     y = np.interactCoords[1],
                     z = np.interactCoords[2];
-                BlockEntity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
+                NASBlock.NASBlockEntity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
                 if (bEntity.drop == null)
                 {
                     np.inventory.SetAmount(nasBlock.parentID, -items, true, true);
@@ -388,7 +389,7 @@ namespace MCGalaxy
                     np.isInserting = false;
                     return;
                 }
-                foreach (BlockStack stack in bEntity.drop.blockStacks)
+                foreach (NASBlockStack stack in bEntity.drop.blockStacks)
                 {
                     if (stack.ID == nasBlock.parentID)
                     {
@@ -400,9 +401,9 @@ namespace MCGalaxy
                         return;
                     }
                 }
-                if (bEntity.drop.blockStacks.Count >= Container.BlockStackLimit)
+                if (bEntity.drop.blockStacks.Count >= NASBlock.NASContainer.BlockStackLimit)
                 {
-                    np.Message("It can't contain more than {0} stacks of blocks.", Container.BlockStackLimit);
+                    np.Message("It can't contain more than {0} stacks of blocks.", NASBlock.NASContainer.BlockStackLimit);
                     p.cancelchat = true;
                     p.SendMapMotd();
                     np.isInserting = false;
@@ -415,29 +416,31 @@ namespace MCGalaxy
                 np.isInserting = false;
             }
         }
-        static void OnLevelJoined(Player p, Level prevLevel, Level level, ref bool announce)
+        public static void OnLevelJoined(Player p, Level prevLevel, Level level, ref bool announce)
         {
             level.Config.SkyColor = NASTimeCycle.globalSkyColor;
             level.Config.CloudColor = NASTimeCycle.globalCloudColor;
             level.Config.LightColor = NASTimeCycle.globalSunColor;
         }
-        public void HandleSentMap(Player p, Level _, Level __)
+        public void HandleSentMap(Player p, Level prevLevel, Level level)
         {
             NASPlayer np = NASPlayer.GetPlayer(p);
-            if (np.SendingMap)
+            if (!np.SendingMap)
             {
-                np.inventory.p = p;
-                np.inventory.Setup(p);
-                np.SendingMap = false;
+                return;
             }
+            np.inventory.p = p;
+            np.inventory.Setup(p);
+            np.SendingMap = false;
         }
         public static bool Load(Player p, string file, out NASPlayer np)
         {
             try
             {
-                np = JsonConvert.DeserializeObject<NASPlayer>(FileIO.TryReadAllText(file));
+                string jsonString = FileIO.TryReadAllText(file);
+                np = JsonConvert.DeserializeObject<NASPlayer>(jsonString);
                 np.SetPlayer(p);
-                p.Extras[NASPlayer.PlayerKey] = np;
+                p.Extras[PlayerKey] = np;
                 Log("Loaded save file {0}!", file);
                 return true;
             }
@@ -447,7 +450,7 @@ namespace MCGalaxy
                 return false;
             }
         }
-        static void OnPlayerConnect(Player p)
+        public static void OnPlayerConnect(Player p)
         {
             string path = GetSavePath(p),
                 pathText = GetTextPath(p);
@@ -455,8 +458,8 @@ namespace MCGalaxy
             {
                 np = new(p);
                 Orientation rot = new(Server.mainLevel.rotx, Server.mainLevel.roty);
-                np.SetLocation(Server.mainLevel.name, Server.mainLevel.SpawnPos, rot);
-                p.Extras[NASPlayer.PlayerKey] = np;
+                NASEntity.SetLocation(np, Server.mainLevel.name, Server.mainLevel.SpawnPos, rot);
+                p.Extras[PlayerKey] = np;
                 Log("Created new save file for {0}!", p.name);
             }
             np.DisplayHealth();
@@ -466,22 +469,22 @@ namespace MCGalaxy
             {
                 np.UpdateValues();
             }
-            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar left◙", 16, 0, true));
-            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar right◙", 18, 0, true));
-            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar up◙", 200, 0, true));
-            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar down◙", 208, 0, true));
-            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar left◙", 203, 0, true));
-            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar right◙", 205, 0, true));
-            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar move◙", 50, 0, true));
-            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar inv◙", 19, 0, true));
-            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar delete◙", 45, 0, true));
-            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar confirmdelete◙", 25, 0, true));
-            np.Send(Packet.TextHotKey("NasHotkey", "/nas hotbar toolinfo◙", 23, 0, true));
+            np.Send(Packet.TextHotKey("NASHotkey", "/NAS hotbar left◙", 16, 0, true));
+            np.Send(Packet.TextHotKey("NASHotkey", "/NAS hotbar right◙", 18, 0, true));
+            np.Send(Packet.TextHotKey("NASHotkey", "/NAS hotbar up◙", 200, 0, true));
+            np.Send(Packet.TextHotKey("NASHotkey", "/NAS hotbar down◙", 208, 0, true));
+            np.Send(Packet.TextHotKey("NASHotkey", "/NAS hotbar left◙", 203, 0, true));
+            np.Send(Packet.TextHotKey("NASHotkey", "/NAS hotbar right◙", 205, 0, true));
+            np.Send(Packet.TextHotKey("NASHotkey", "/NAS hotbar move◙", 50, 0, true));
+            np.Send(Packet.TextHotKey("NASHotkey", "/NAS hotbar inv◙", 19, 0, true));
+            np.Send(Packet.TextHotKey("NASHotkey", "/NAS hotbar delete◙", 45, 0, true));
+            np.Send(Packet.TextHotKey("NASHotkey", "/NAS hotbar confirmdelete◙", 25, 0, true));
+            np.Send(Packet.TextHotKey("NASHotkey", "/NAS hotbar toolinfo◙", 23, 0, true));
             np.PlayerSavingScheduler ??= new("SavingScheduler" + p.name);
             np.PlayerSaveTask = np.PlayerSavingScheduler.QueueRepeat(np.SaveStatsTask, null, TimeSpan.FromSeconds(5));
         }
-        static void OnShutdown(bool restarting, string reason) => SaveAll(Player.Console);
-        static void OnPlayerDisconnect(Player p, string reason)
+        public static void OnShutdown(bool restarting, string reason) => SaveAll(NASConsole);
+        public static void OnPlayerDisconnect(Player p, string reason)
         {
             NASPlayer np = NASPlayer.GetPlayer(p);
             if (np != null)
@@ -491,36 +494,38 @@ namespace MCGalaxy
                 np.Save();
             }
         }
-        static void OnPlayerClick(Player p, int button,
-            int action, ushort yaw, ushort pitch, byte entity,
-            ushort x, ushort y, ushort z, int face)
+        public static void OnPlayerClick(Player p, MouseButton button,
+            MouseAction action, ushort yaw, ushort pitch, byte entity,
+            ushort x, ushort y, ushort z, TargetBlockFace face)
         {
             if (p.Level.Config.Deletable && p.Level.Config.Buildable)
             {
                 return;
             }
             NASPlayer.ClickOnPlayer(p, entity, button, action);
-            if (button == 0)
+            if (button == MouseButton.Left)
             {
                 NASBlockChange.HandleLeftClick(p, button, action, yaw, pitch, entity, x, y, z, face);
             }
             NASPlayer np = NASPlayer.GetPlayer(p);
-            if (button == 2 && action == 0)
+            if (button == MouseButton.Middle && action == MouseAction.Pressed)
             {
             }
-            if (button == 1 && action == 0)
+            if (button == MouseButton.Right && action == MouseAction.Pressed)
             {
             }
             if (!np.justBrokeOrPlaced)
             {
                 np.HandleInteraction(button, action, x, y, z, entity, face);
             }
-            if (action == 1)
+            if (action == MouseAction.Released)
             {
                 np.justBrokeOrPlaced = false;
             }
         }
-        static void OnPlayerMove(Player p, Position next, byte yaw, byte pitch, ref bool cancel)
+        public static void OnBlockChanging(Player p, ushort x, ushort y, ushort z, ushort block, bool placing, ref bool cancel) => NASBlockChange.PlaceBlock(p, x, y, z, block, placing, ref cancel);
+        public static void OnBlockChanged(Player p, ushort x, ushort y, ushort z, ChangeResult result) => NASBlockChange.OnBlockChanged(p, x, y, z, result);
+        public static void OnPlayerMove(Player p, Position next, byte yaw, byte pitch, ref bool cancel)
         {
             NASPlayer np = NASPlayer.GetPlayer(p);
             np.DisplayHealth();

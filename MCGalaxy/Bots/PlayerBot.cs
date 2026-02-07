@@ -42,13 +42,23 @@ namespace MCGalaxy
         {
             name = n; DisplayName = n; SkinName = n;
             color = "&1";
-            level = lvl;
+            Level = lvl;
             SetModel(Model);
             hasExtPositions = true;
             BotsScheduler.Activate();
         }
         public override bool CanSeeEntity(Entity other) => true;
-        public override Level Level => level;
+        public override Level Level 
+        {
+            get 
+            { 
+                return level; 
+            } 
+            set
+            { 
+                level = value; 
+            }
+        }
         public override bool RestrictsScale => false;
         public bool EditableBy(Player p, string attemptedAction = "modify")
         {
@@ -60,26 +70,26 @@ namespace MCGalaxy
         public static bool CanEditAny(Player p)
         {
             if (LevelInfo.IsRealmOwner(p.Level, p.name)) { return true; }
-            ItemPerms perms = CommandExtraPerms.Find("Bot", 1) ?? new ItemPerms(80);
+            ItemPerms perms = CommandExtraPerms.Find("Bot", 1) ?? new ItemPerms(LevelPermission.Operator);
             if (perms.UsableBy(p)) { return true; }
             return false;
         }
         public static void Add(PlayerBot bot, bool save = true)
         {
             // Lock to ensure that no two bots can end up with the same playerid
-            lock (bot.level.Bots.locker)
+            lock (bot.Level.Bots.locker)
             {
-                bot.level.Bots.Add(bot);
+                bot.Level.Bots.Add(bot);
             }
             bot.GlobalSpawn();
-            if (save) BotsFile.Save(bot.level);
+            if (save) BotsFile.Save(bot.Level);
         }
         public static void Remove(PlayerBot bot, bool save = true)
         {
-            bot.level.Bots.Remove(bot);
+            bot.Level.Bots.Remove(bot);
             bot.GlobalDespawn();
             bot.curJump = 0;
-            if (save) BotsFile.Save(bot.level);
+            if (save) BotsFile.Save(bot.Level);
         }
         internal static int RemoveLoadedBots(Level lvl, bool save)
         {
@@ -109,7 +119,7 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {
-                if (p.Level == level) Entities.Spawn(p, this);
+                if (p.Level == Level) Entities.Spawn(p, this);
             }
         }
         public void GlobalDespawn()
@@ -117,7 +127,7 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {
-                if (p.Level == level) Entities.Despawn(p, this);
+                if (p.Level == Level) Entities.Despawn(p, this);
             }
         }
         public void NextInstruction()
@@ -177,12 +187,12 @@ namespace MCGalaxy
         void RecalcDownExtent(ref AABB bb, int steps, int dx, int dz)
         {
             AABB downExtent = bb.Adjust(dx * steps, -32, dz * steps);
-            downsCount = AABB.FindIntersectingSolids(downExtent, level, ref downs);
+            downsCount = AABB.FindIntersectingSolids(downExtent, Level, ref downs);
         }
         void RecalcUpExtent(ref AABB bb, int steps, int dx, int dz)
         {
             AABB upExtent = bb.Adjust(dx * steps, 32, dz * steps);
-            upsCount = AABB.FindIntersectingSolids(upExtent, level, ref ups);
+            upsCount = AABB.FindIntersectingSolids(upExtent, Level, ref ups);
         }
         void PerformMovement()
         {
@@ -265,7 +275,7 @@ namespace MCGalaxy
                         );
             }
             if (string.IsNullOrEmpty(ClickedOnText)) return;
-            ItemPerms perms = CommandExtraPerms.Find("About", 1) ?? new ItemPerms(50);
+            ItemPerms perms = CommandExtraPerms.Find("About", 1) ?? new ItemPerms(LevelPermission.AdvBuilder);
             if (!perms.UsableBy(p)) return; //don't show bot's ClickedOnText if player isn't allowed to see message block contents
             p.Message("  Clicked-on text: {0}", ClickedOnText);
         }

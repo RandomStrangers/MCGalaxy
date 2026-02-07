@@ -21,7 +21,7 @@ namespace MCGalaxy.Commands.Building
         public override string Name => "Drill";
         public override string Type => CommandTypes.Building;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {

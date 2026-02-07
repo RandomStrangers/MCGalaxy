@@ -21,7 +21,7 @@ namespace MCGalaxy.Commands.Moderation
         public override string Name => "TempBan";
         public override string Shortcut => "tb";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -43,7 +43,7 @@ namespace MCGalaxy.Commands.Moderation
             if (span.TotalSeconds < 1) { p.Message("Cannot temp ban someone for less than a second."); return; }
             reason = ModActionCmd.ExpandReason(p, reason);
             if (reason == null) return;
-            ModAction action = new(target, p, 0, reason, span)
+            ModAction action = new(target, p, ModActionType.Ban, reason, span)
             {
                 targetGroup = group
             };

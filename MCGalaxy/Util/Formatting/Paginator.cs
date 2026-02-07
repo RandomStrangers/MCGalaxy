@@ -36,10 +36,11 @@ namespace MCGalaxy
             if (modifier.Length == 0)
             {
                 OutputPage(p, items, formatter, printer, cmd, type, 1, perPage);
-                if (total > perPage)
+                if (total <= perPage)
                 {
-                    p.Message("To see all {0}, use &T/{1} all", type, cmd);
+                    return;
                 }
+                p.Message("To see all {0}, use &T/{1} all", type, cmd);
             }
             else if (modifier.CaselessEq("all"))
             {

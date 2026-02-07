@@ -39,17 +39,17 @@ using MCGalaxy;
 public class Cmd{0} : Command
 {{
 \t// The command's name (what you put after a slash to use this command)
-\tpublic override string name {{ get {{ return ""{0}""; }} }}
+\tpublic override string Name {{ get {{ return ""{0}""; }} }}
 \t// Command's shortcut, can be left blank (e.g. ""/Copy"" has a shortcut of ""c"")
-\tpublic override string shortcut {{ get {{ return """"; }} }}
+\tpublic override string Shortcut {{ get {{ return """"; }} }}
 \t// Which submenu this command displays in under /Help
-\tpublic override string type {{ get {{ return ""other""; }} }}
+\tpublic override string Type {{ get {{ return ""other""; }} }}
 \t// Whether or not this command can be used in a museum. Block/map altering commands should return false to avoid errors.
-\tpublic override bool museumUsable {{ get {{ return true; }} }}
+\tpublic override bool MuseumUsable {{ get {{ return true; }} }}
 \t// The default rank required to use this command. Valid values are:
-\t//   0, 30, 50,
-\t//   80, 100, 120
-\tpublic override sbyte defaultRank {{ get {{ return 0; }} }}
+\t//   LevelPermission.Guest, LevelPermission.Builder, LevelPermission.AdvBuilder,
+\t//   LevelPermission.Operator, LevelPermission.Admin, LevelPermission.Owner
+\tpublic override LevelPermission DefaultRank {{ get {{ return LevelPermission.Guest; }} }}
 \t// This is for when a player executes this command by doing /{0}
 \t//   p is the player object for the player executing the command.
 \t//   message is the arguments given to the command. (e.g. for '/{0} this', message is ""this"")
@@ -74,13 +74,11 @@ namespace MCGalaxy
 \tpublic class {0} : Plugin
 \t{{
 \t\t// The plugin's name (i.e what shows in /Plugins)
-\t\tpublic override string name {{ get {{ return ""{0}""; }} }
+\t\tpublic override string Name {{ get {{ return ""{0}""; }} }
 \t\t// The oldest version of MCGalaxy this plugin is compatible with
 \t\tpublic override string MCGalaxy_Version {{ get {{ return ""{2}""; }} }}
-\t\t// Message displayed in server logs when this plugin is loaded
-\t\tpublic override string welcome {{ get {{ return ""Loaded Message!""; }} }}
 \t\t// Who created/authored this plugin
-\t\tpublic override string creator {{ get {{ return ""{1}""; }} }}
+\t\tpublic override string Creator {{ get {{ return ""{1}""; }} }}
 \t\t// Called when this plugin is being loaded (e.g. on server startup)
 \t\tpublic override void Load(bool startup)
 \t\t{{

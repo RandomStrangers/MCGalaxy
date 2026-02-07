@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.Building
         public override string Name => "CmdBind";
         public override string Shortcut => "cb";
         public override string Type => CommandTypes.Building;
-        public override sbyte DefaultRank => 30;
+        public override LevelPermission DefaultRank => LevelPermission.Builder;
         public override bool SuperUseable => false;
         public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)

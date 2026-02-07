@@ -41,7 +41,7 @@ namespace MCGalaxy
         }
         static void GenerateMain()
         {
-            Logger.Log(1, "main level not found, generating..");
+            Logger.Log(LogType.SystemActivity, "main level not found, generating..");
             mainLevel = new(Config.MainLevel, 128, 64, 128);
             MapGen.Find("Flat").Generate(Player.Console, mainLevel, "");
             mainLevel.Save();
@@ -104,7 +104,7 @@ namespace MCGalaxy
         {
             if (!IPAddress.TryParse(Config.ListenIP, out IPAddress ip))
             {
-                Logger.Log(6, "Unable to parse listen IP config key, listening on any IP");
+                Logger.Log(LogType.Warning, "Unable to parse listen IP config key, listening on any IP");
                 ip = IPAddress.Any;
             }
             Listener.Listen(ip, Config.Port);
@@ -123,7 +123,7 @@ namespace MCGalaxy
                                       TimeSpan.FromMilliseconds(BlockQueue.Interval));
             Critical.QueueRepeat(ServerTasks.TickPlayers, null,
                                  TimeSpan.FromMilliseconds(20));
-            Logger.Log(1, "Finished setting up server");
+            Logger.Log(LogType.SystemActivity, "Finished setting up server");
             SetupFinished = true;
         }
     }

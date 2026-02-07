@@ -5,44 +5,45 @@ namespace MCGalaxy.Generator.fCraft
     /// <summary> Contains parameters for advanced map generation. </summary>
     public sealed class FCraftMapGenArgs
     {
-        public string MapName, Biome = MapGenBiome.FOREST;
-        public int Seed,
-            MaxHeight = 20,
-            MaxDepth = 12,
-            MaxHeightVariation = 4,
-            MaxDepthVariation; // 0
-        public bool AddWater = true,
-            MatchWaterCoverage; // false
+        public string MapName;
+        public string Biome = MapGenBiome.FOREST;
+        public int Seed; // 0
+        public int MaxHeight = 20;
+        public int MaxDepth = 12;
+        public int MaxHeightVariation = 4;
+        public int MaxDepthVariation; // 0
+        public bool AddWater = true;
+        public bool MatchWaterCoverage; // false
         public int WaterLevel = 48;
         public float WaterCoverage = .5f;
-        public bool UseBias,
-            DelayBias;      // false
+        public bool UseBias;        // false
+        public bool DelayBias;      // false
         public float Bias;           // 0
-        public int RaisedCorners,
-            LoweredCorners,
-            MidPoint,
-            DetailScale = 7,
-            FeatureScale = 1;
+        public int RaisedCorners;  // 0
+        public int LoweredCorners; // 0
+        public int MidPoint;       // 0
+        public int DetailScale = 7;
+        public int FeatureScale = 1;
         public float Roughness = .5f;
-        public bool MarbledHeightmap,
-            InvertHeightmap;  // false
-        public float AboveFuncExponent = 1,
-            BelowFuncExponent = 1;
-        public bool AddTrees = true,
-            AddGiantTrees; // false
-        public int TreeSpacingMin = 7,
-            TreeSpacingMax = 11;
+        public bool MarbledHeightmap; // false
+        public bool InvertHeightmap;  // false
+        public float AboveFuncExponent = 1;
+        public float BelowFuncExponent = 1;
+        public bool AddTrees = true;
+        public bool AddGiantTrees; // false
+        public int TreeSpacingMin = 7;
+        public int TreeSpacingMax = 11;
         public bool AddSnow; // false
-        public int SnowAltitude = 70,
-            SnowTransition = 7;
+        public int SnowAltitude = 70;
+        public int SnowTransition = 7;
         public bool CliffSmoothing = true;
         public float CliffThreshold = 1;
         public bool AddBeaches; // false
-        public int BeachExtent = 6,
-            BeachHeight = 2;
-        public static FCraftMapGenArgs MakeTemplate(int template) => template switch
+        public int BeachExtent = 6;
+        public int BeachHeight = 2;
+        public static FCraftMapGenArgs MakeTemplate(MapGenTemplate template) => template switch
         {
-            0 => new FCraftMapGenArgs
+            MapGenTemplate.Archipelago => new FCraftMapGenArgs
             {
                 MaxHeight = 8,
                 MaxDepth = 20,
@@ -51,7 +52,7 @@ namespace MCGalaxy.Generator.fCraft
                 MatchWaterCoverage = true,
                 WaterCoverage = .85f
             },
-            1 => new FCraftMapGenArgs
+            MapGenTemplate.Atoll => new FCraftMapGenArgs
             {
                 //Biome = MapGenBiome.SANDY, TODO maybe?
                 MaxHeight = 2,
@@ -67,7 +68,7 @@ namespace MCGalaxy.Generator.fCraft
                 MatchWaterCoverage = true,
                 WaterCoverage = .95f
             },
-            2 => new FCraftMapGenArgs
+            MapGenTemplate.Bay => new FCraftMapGenArgs
             {
                 MaxHeight = 22,
                 MaxDepth = 12,
@@ -81,7 +82,7 @@ namespace MCGalaxy.Generator.fCraft
                 MarbledHeightmap = true,
                 DelayBias = true
             },
-            3 => new FCraftMapGenArgs
+            MapGenTemplate.Dunes => new FCraftMapGenArgs
             {
                 Biome = MapGenBiome.DESERT,
                 MaxHeight = 12,
@@ -92,7 +93,7 @@ namespace MCGalaxy.Generator.fCraft
                 MarbledHeightmap = true,
                 InvertHeightmap = true
             },
-            4 => new FCraftMapGenArgs
+            MapGenTemplate.Hills => new FCraftMapGenArgs
             {
                 Biome = MapGenBiome.PLAINS,
                 MaxHeight = 8,
@@ -101,7 +102,7 @@ namespace MCGalaxy.Generator.fCraft
                 TreeSpacingMin = 7,
                 TreeSpacingMax = 13
             },
-            5 => new FCraftMapGenArgs
+            MapGenTemplate.Ice => new FCraftMapGenArgs
             {
                 Biome = MapGenBiome.ARCTIC,
                 MaxHeight = 2,
@@ -114,7 +115,7 @@ namespace MCGalaxy.Generator.fCraft
                 WaterCoverage = .3f,
                 MaxHeightVariation = 0
             },
-            6 => new FCraftMapGenArgs
+            MapGenTemplate.Island2 => new FCraftMapGenArgs
             {
                 MaxHeight = 16,
                 MaxDepth = 39,
@@ -129,7 +130,7 @@ namespace MCGalaxy.Generator.fCraft
                 AddBeaches = true,
                 Roughness = 0.45f
             },
-            7 => new FCraftMapGenArgs
+            MapGenTemplate.Lake => new FCraftMapGenArgs
             {
                 MaxHeight = 14,
                 MaxDepth = 20,
@@ -142,7 +143,7 @@ namespace MCGalaxy.Generator.fCraft
                 MatchWaterCoverage = true,
                 WaterCoverage = .3f
             },
-            8 => new FCraftMapGenArgs
+            MapGenTemplate.Mountains2 => new FCraftMapGenArgs
             {
                 Biome = MapGenBiome.PLAINS,
                 MaxHeight = 40,
@@ -156,8 +157,8 @@ namespace MCGalaxy.Generator.fCraft
                 Roughness = .55f,
                 CliffThreshold = .9f
             },
-            10 => new FCraftMapGenArgs(),
-            11 => new FCraftMapGenArgs
+            MapGenTemplate.Random => new FCraftMapGenArgs(),
+            MapGenTemplate.River => new FCraftMapGenArgs
             {
                 MaxHeight = 22,
                 MaxDepth = 8,
@@ -167,7 +168,7 @@ namespace MCGalaxy.Generator.fCraft
                 MatchWaterCoverage = true,
                 WaterCoverage = .31f
             },
-            12 => new FCraftMapGenArgs
+            MapGenTemplate.Streams => new FCraftMapGenArgs
             {
                 MaxHeight = 5,
                 MaxDepth = 4,
@@ -180,7 +181,7 @@ namespace MCGalaxy.Generator.fCraft
                 TreeSpacingMin = 8,
                 TreeSpacingMax = 14
             },
-            9 => new FCraftMapGenArgs
+            MapGenTemplate.Peninsula => new FCraftMapGenArgs
             {
                 MaxHeight = 22,
                 MaxDepth = 12,

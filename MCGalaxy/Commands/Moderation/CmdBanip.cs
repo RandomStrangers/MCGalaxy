@@ -22,7 +22,7 @@ namespace MCGalaxy.Commands.Moderation
         public override string Name => "BanIP";
         public override string Shortcut => "bi";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandAlias[] Aliases => new CommandAlias[] { new("IPBan") };
         public override void Use(Player p, string message, CommandData data)
         {
@@ -39,7 +39,7 @@ namespace MCGalaxy.Commands.Moderation
             string reason = args.Length > 1 ? args[1] : "";
             reason = ModActionCmd.ExpandReason(p, reason);
             if (reason == null) return;
-            ModAction action = new(addr, p, 2, reason);
+            ModAction action = new(addr, p, ModActionType.BanIP, reason);
             OnModActionEvent.Call(action);
         }
         static bool CheckIP(Player p, CommandData data, string ip)
@@ -54,7 +54,7 @@ namespace MCGalaxy.Commands.Moderation
                 if (grp.Permission < data.Rank) continue;
                 p.Message("You can only IP ban IPs used by players with a lower rank.");
                 p.Message(name + "(" + grp.ColoredName + "&S) uses that IP.");
-                Logger.Log(4,
+                Logger.Log(LogType.SuspiciousActivity,
                            "{0} failed to ipban {1} - IP is also used by: {2}({3})", p.name, ip, name, grp.Name);
                 return false;
             }

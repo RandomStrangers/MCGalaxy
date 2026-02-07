@@ -21,10 +21,10 @@ namespace MCGalaxy.Commands.Misc
         public override string Shortcut => "s";
         public override string Type => CommandTypes.Other;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override bool SuperUseable => false;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("Fetch"), new CommandAlias("Bring"), new CommandAlias("BringAll", "all") };
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can summon all players") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can summon all players") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -34,11 +34,11 @@ namespace MCGalaxy.Commands.Misc
             }
             else
             {
-                if (!CheckExtraPerm(p, data, 1)) return;
+                if (!CheckExtraPerm(p, 1)) return;
                 Player[] players = PlayerInfo.Online.Items;
                 foreach (Player target in players)
                 {
-                    if (target.Level == p.Level && target != p && data.Rank > target.Rank)
+                    if (target.Level == p.Level && target != p && p.Rank > target.Rank)
                     {
                         target.AFKCooldown = DateTime.UtcNow.AddSeconds(2);
                         target.SendPosition(p.Pos, p.Rot);
@@ -71,23 +71,23 @@ namespace MCGalaxy.Commands.Misc
         }
         static bool CheckVisitPerm(Player p, Player target, bool confirmed)
         {
-            int result = p.Level.VisitAccess.Check(target.name, target.Rank);
-            if (result == 2) return true;
-            if (result == 0) return true;
-            if (result == 4 && confirmed) return true;
-            if (result == 3 && confirmed) return true;
-            if (result == 1)
+            AccessResult result = p.Level.VisitAccess.Check(target.name, target.Rank);
+            if (result == AccessResult.Accepted) return true;
+            if (result == AccessResult.Whitelisted) return true;
+            if (result == AccessResult.AboveMaxRank && confirmed) return true;
+            if (result == AccessResult.BelowMinRank && confirmed) return true;
+            if (result == AccessResult.Blacklisted)
             {
                 p.Message("{0} &Sis blacklisted from visiting this map.", p.FormatNick(target));
                 return false;
             }
-            else if (result == 3)
+            else if (result == AccessResult.BelowMinRank)
             {
                 p.Message("Only {0}&S+ may normally visit this map. {1}&S is ranked {2}",
                           Group.GetColoredName(p.Level.VisitAccess.Min),
                           p.FormatNick(target), target.group.ColoredName);
             }
-            else if (result == 4)
+            else if (result == AccessResult.AboveMaxRank)
             {
                 p.Message("Only {0}&S and below may normally visit this map. {1}&S is ranked {2}",
                           Group.GetColoredName(p.Level.VisitAccess.Max),

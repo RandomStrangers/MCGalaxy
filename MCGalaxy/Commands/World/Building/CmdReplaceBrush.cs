@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.Building
     {
         public override string Name => "ReplaceBrush";
         public override string Shortcut => "rb";
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         protected virtual bool ReplaceNot => false;
         protected override DrawOp GetDrawOp(DrawArgs dArgs)
         {

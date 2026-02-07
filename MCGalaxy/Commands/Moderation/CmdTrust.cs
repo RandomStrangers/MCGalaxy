@@ -18,7 +18,7 @@ namespace MCGalaxy.Commands.Moderation
     {
         public override string Name => "Trust";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0 || message.IndexOf(' ') != -1) { Help(p); return; }

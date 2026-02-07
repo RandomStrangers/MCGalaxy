@@ -28,7 +28,7 @@ namespace MCGalaxy.Commands.Misc
             {
                 p.Message("&WCan only wait for a minute at most."); return;
             }
-            if (data.Context != 4)
+            if (data.Context != CommandContext.MessageBlock)
             {
                 p.Message("&WThis command can only be used in message blocks."); return;
             }

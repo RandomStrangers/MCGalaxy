@@ -44,7 +44,7 @@ namespace MCGalaxy.Commands.Info
                 int perm = 0;
                 rankName = rankName.Substring(1);
                 if (!CommandParser.GetInt(p, rankName, "Permission level", ref perm)) return;
-                grp = Group.Find((sbyte)perm);
+                grp = Group.Find((LevelPermission)perm);
                 if (grp == null) p.Message("&WThere is no rank with permission level \"{0}\"", rankName);
             }
             if (grp == null) return;

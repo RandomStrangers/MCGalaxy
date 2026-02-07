@@ -21,7 +21,7 @@ namespace MCGalaxy.Commands.Moderation
         public override string Name => "SetRank";
         public override string Shortcut => "Rank";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("pr", "+up"), new CommandAlias("de", "-down"),
                     new CommandAlias("Promote", "+up"), new CommandAlias("Demote", "-down") };
         public override void Use(Player p, string message, CommandData data)
@@ -60,7 +60,7 @@ namespace MCGalaxy.Commands.Moderation
                 return;
             }
             if (!CanChangeRank(target, curRank, newRank, p, data, ref reason)) return;
-            ModAction action = new(target, p, 9, reason)
+            ModAction action = new(target, p, ModActionType.Rank, reason)
             {
                 targetGroup = curRank,
                 Metadata = newRank
@@ -109,7 +109,7 @@ namespace MCGalaxy.Commands.Moderation
             if (index > 0)
             {
                 Group next = Group.GroupList[index - 1];
-                if (next.Permission > -20) return next;
+                if (next.Permission > LevelPermission.Banned) return next;
             }
             p.Message("No lower ranks exist"); return null;
         }

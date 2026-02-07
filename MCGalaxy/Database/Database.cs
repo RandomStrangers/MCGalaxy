@@ -47,10 +47,7 @@ namespace MCGalaxy.SQL
         internal static string[] ParseFields(ISqlRecord record)
         {
             string[] field = new string[record.FieldCount];
-            for (int i = 0; i < field.Length; i++)
-            {
-                field[i] = record.GetStringValue(i);
-            }
+            for (int i = 0; i < field.Length; i++) { field[i] = record.GetStringValue(i); }
             return field;
         }
         /// <summary> Returns all columns of all rows read from the given table. </summary>
@@ -76,28 +73,32 @@ namespace MCGalaxy.SQL
         public static void CreateTable(string table, ColumnDesc[] columns)
         {
             SqlUtils.ValidateName(table);
-            Execute(Backend.CreateTableSql(table, columns), null);
+            string sql = Backend.CreateTableSql(table, columns);
+            Execute(sql, null);
         }
         /// <summary> Renames the source table to the given name. </summary>
         public static void RenameTable(string srcTable, string dstTable)
         {
             SqlUtils.ValidateName(srcTable);
             SqlUtils.ValidateName(dstTable);
-            Execute(Backend.RenameTableSql(srcTable, dstTable), null);
+            string sql = Backend.RenameTableSql(srcTable, dstTable);
+            Execute(sql, null);
         }
         /// <summary> Completely removes the given table. </summary>
         /// <remarks> Does nothing if no table with the given name exists. </remarks>
         public static void DeleteTable(string table)
         {
             SqlUtils.ValidateName(table);
-            Execute(Backend.DeleteTableSql(table), null);
+            string sql = Backend.DeleteTableSql(table);
+            Execute(sql, null);
         }
         /// <summary> Adds a new coloumn to the given table. </summary>
         /// <remarks> Note colAfter is only a hint - some database backends ignore this. </remarks>
         public static void AddColumn(string table, ColumnDesc col, string colAfter)
         {
             SqlUtils.ValidateName(table);
-            Execute(Backend.AddColumnSql(table, col, colAfter), null);
+            string sql = Backend.AddColumnSql(table, col, colAfter);
+            Execute(sql, null);
         }
         #endregion
         #region High level functions
@@ -108,7 +109,8 @@ namespace MCGalaxy.SQL
         {
             SqlUtils.ValidateName(srcTable);
             SqlUtils.ValidateName(dstTable);
-            return Execute(Backend.CopyAllRowsSql(srcTable, dstTable), null);
+            string sql = Backend.CopyAllRowsSql(srcTable, dstTable);
+            return Execute(sql, null);
         }
         /// <summary> Iterates over read rows for the given table. </summary>
         /// <param name="modifier"> Optional SQL to filter which rows are read,
@@ -117,7 +119,8 @@ namespace MCGalaxy.SQL
                                     ReaderCallback callback, string modifier = "", params object[] args)
         {
             SqlUtils.ValidateName(table);
-            Iterate(Backend.ReadRowsSql(table, columns, modifier), callback, args);
+            string sql = Backend.ReadRowsSql(table, columns, modifier);
+            Iterate(sql, callback, args);
         }
         /// <summary> Updates rows for the given table </summary>
         /// <param name="modifier"> Optional SQL to filter which rows are updated. Can be just "" </param>
@@ -126,7 +129,8 @@ namespace MCGalaxy.SQL
                                      string modifier, params object[] args)
         {
             SqlUtils.ValidateName(table);
-            return Execute(Backend.UpdateRowsSql(table, columns, modifier), args);
+            string sql = Backend.UpdateRowsSql(table, columns, modifier);
+            return Execute(sql, args);
         }
         /// <summary> Deletes rows for the given table. </summary>
         /// <param name="modifier"> Optional SQL to filter which rows are deleted. Can be just "" </param>
@@ -134,19 +138,22 @@ namespace MCGalaxy.SQL
         public static int DeleteRows(string table, string modifier, params object[] args)
         {
             SqlUtils.ValidateName(table);
-            return Execute(Backend.DeleteRowsSql(table, modifier), args);
+            string sql = Backend.DeleteRowsSql(table, modifier);
+            return Execute(sql, args);
         }
         /// <summary> Adds a row to the given table. </summary>
         public static void AddRow(string table, string columns, params object[] args)
         {
             SqlUtils.ValidateName(table);
-            Execute(Backend.AddRowSql(table, columns, args.Length), args);
+            string sql = Backend.AddRowSql(table, columns, args.Length);
+            Execute(sql, args);
         }
         /// <summary> Adds or replaces a row (same primary key) in the given table. </summary>
         public static void AddOrReplaceRow(string table, string columns, params object[] args)
         {
             SqlUtils.ValidateName(table);
-            Execute(Backend.AddOrReplaceRowSql(table, columns, args.Length), args);
+            string sql = Backend.AddOrReplaceRowSql(table, columns, args.Length);
+            Execute(sql, args);
         }
         #endregion
         #region Low level functions
@@ -173,29 +180,29 @@ namespace MCGalaxy.SQL
                 }
                 catch (Exception ex)
                 {
-                    e = ex;
+                    e = ex; // try yet again
                 }
             }
             Logger.LogError("Error executing SQL statement: " + sql, e);
             return 0;
         }
         #endregion
-        public static void UpdateActiveBackend() => Backend = Server.Config.UseMySQL ? MySQLBackend.Instance : SQLiteBackend.Instance;
+        public static void UpdateActiveBackend() =>
+            Backend = Server.Config.UseMySQL ? MySQLBackend.Instance : SQLiteBackend.Instance;
+
         internal static TimeSpan ParseOldDBTimeSpent(string value)
         {
             string[] parts = value.SplitSpaces();
-            int days = NumberUtils.ParseInt32(parts[0]),
-                hours = NumberUtils.ParseInt32(parts[1]),
-                mins = NumberUtils.ParseInt32(parts[2]),
-                secs = NumberUtils.ParseInt32(parts[3]);
-            return new(days, hours, mins, secs);
+            int days = NumberUtils.ParseInt32(parts[0]);
+            int hours = NumberUtils.ParseInt32(parts[1]);
+            int mins = NumberUtils.ParseInt32(parts[2]);
+            int secs = NumberUtils.ParseInt32(parts[3]);
+            return new TimeSpan(days, hours, mins, secs);
         }
         public static DateTime ParseDBDate(string value)
         {
-            if (value.TryParseInvariantDateString(out DateTime dt))
-            {
-                return dt;
-            }
+            // prefer the exact format
+            if (value.TryParseInvariantDateString(out DateTime dt)) return dt;
             return DateTime.Parse(value);
         }
     }

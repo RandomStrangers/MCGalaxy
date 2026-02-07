@@ -29,8 +29,8 @@ namespace MCGalaxy.DB
         public static void Lock()
         {
             Upgrading = true;
-            Logger.Log(1, "Kicking players and unloading levels..");
-            OnPlayerStartConnectingEvent.Register(ConnectingHandler, 4);
+            Logger.Log(LogType.SystemActivity, "Kicking players and unloading levels..");
+            OnPlayerStartConnectingEvent.Register(ConnectingHandler, Priority.System_Level);
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {
@@ -41,13 +41,13 @@ namespace MCGalaxy.DB
             {
                 lvl.Unload();
             }
-            Logger.Log(1, "Kicked all players and unloaded levels.");
+            Logger.Log(LogType.SystemActivity, "Kicked all players and unloaded levels.");
         }
         public static void Unlock()
         {
             OnPlayerStartConnectingEvent.Unregister(ConnectingHandler);
             Player.Console.MessageLines(CompactMessages);
-            Logger.Log(1, "&aUpgrade finished!");
+            Logger.Log(LogType.SystemActivity, "&aUpgrade finished!");
             Upgrading = false;
         }
         static void ConnectingHandler(Player p, string mppass)
@@ -69,7 +69,7 @@ namespace MCGalaxy.DB
             }
             current = 0;
             count = blockDBTables.Count;
-            Logger.Log(1, "Upgrading {0} tables. This may take several hours.", count);
+            Logger.Log(LogType.SystemActivity, "Upgrading {0} tables. This may take several hours.", count);
             BlockDBTableDumper dumper = new();
             foreach (string table in blockDBTables)
             {

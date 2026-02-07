@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Thresher IRC client library
  * Copyright (C) 2002 Aaron Hunter <thresher@sharkbite.org>
  *

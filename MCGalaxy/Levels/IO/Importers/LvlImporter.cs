@@ -25,11 +25,17 @@ namespace MCGalaxy.Levels.IO
     {
         public override string Extension => ".lvl";
         public override string Description => "MCDzienny/MCForge/MCGalaxy map";
-        public override Vec3U16 ReadDimensions(Stream src) => ReadHeader(new GZipStream(src, CompressionMode.Decompress, true), new byte[18]);
+        const int HEADER_SIZE = 18;
+        public override Vec3U16 ReadDimensions(Stream src)
+        {
+            using Stream gs = new GZipStream(src, CompressionMode.Decompress, true);
+            byte[] header = new byte[HEADER_SIZE];
+            return ReadHeader(gs, header);
+        }
         public override Level Read(Stream src, string name, bool metadata)
         {
             using Stream gs = new GZipStream(src, CompressionMode.Decompress, true);
-            byte[] header = new byte[18];
+            byte[] header = new byte[HEADER_SIZE];
             Vec3U16 dims = ReadHeader(gs, header);
             Level lvl = new(name, dims.X, dims.Y, dims.Z)
             {
@@ -48,110 +54,89 @@ namespace MCGalaxy.Levels.IO
                 int section = gs.ReadByte();
                 if (section == 0xFC)
                 { // 'ph'ysics 'c'hecks
-                    ReadPhysicsSection(lvl, gs);
-                    continue;
+                    ReadPhysicsSection(lvl, gs); continue;
                 }
                 if (section == 0x51)
                 { // 'z'one 'l'ist
-                    ReadZonesSection(lvl, gs); 
-                    continue;
+                    ReadZonesSection(lvl, gs); continue;
                 }
                 return lvl;
             }
         }
         static Vec3U16 ReadHeader(Stream gs, byte[] header)
         {
-            StreamUtils.ReadFully(gs, header, 0, 18);
-            if (MemUtils.ReadU16_LE(header, 0) != 1874)
-            {
+            StreamUtils.ReadFully(gs, header, 0, HEADER_SIZE);
+            int signature = MemUtils.ReadU16_LE(header, 0);
+            if (signature != 1874)
                 throw new InvalidDataException("Invalid .lvl map signature");
-            }
-            return new()
-            {
-                X = MemUtils.ReadU16_LE(header, 2),
-                Z = MemUtils.ReadU16_LE(header, 4),
-                Y = MemUtils.ReadU16_LE(header, 6)
-            };
+            Vec3U16 dims;
+            dims.X = MemUtils.ReadU16_LE(header, 2);
+            dims.Z = MemUtils.ReadU16_LE(header, 4);
+            dims.Y = MemUtils.ReadU16_LE(header, 6);
+            return dims;
         }
         static void ReadCustomBlocksSection(Level lvl, Stream gs)
         {
             byte[] data = new byte[1];
             int read = gs.Read(data, 0, 1);
-            if (read == 0 || data[0] != 0xBD)
-            {
-                return;
-            }
+            if (read == 0 || data[0] != 0xBD) return;
             int index = 0;
             for (int y = 0; y < lvl.ChunksY; y++)
-            {
                 for (int z = 0; z < lvl.ChunksZ; z++)
-                {
                     for (int x = 0; x < lvl.ChunksX; x++)
                     {
                         read = gs.Read(data, 0, 1);
                         if (read > 0 && data[0] == 1)
                         {
-                            byte[] chunk = new byte[4096];
+                            byte[] chunk = new byte[16 * 16 * 16];
                             StreamUtils.ReadFully(gs, chunk, 0, chunk.Length);
                             lvl.CustomBlocks[index] = chunk;
                         }
                         index++;
                     }
-                }
-            }
         }
         static void ReadPhysicsSection(Level lvl, Stream gs)
         {
-            int count = TryRead_I32(new byte[sizeof(int)], gs);
-            if (count != 0)
-            {
-                lvl.ListCheck.Count = count;
-                lvl.ListCheck.Items = new Check[count];
-                ReadPhysicsEntries(lvl, gs, count);
-            }
+            byte[] buffer = new byte[sizeof(int)];
+            int count = TryRead_I32(buffer, gs);
+            if (count == 0) return;
+            lvl.ListCheck.Count = count;
+            lvl.ListCheck.Items = new Check[count];
+            ReadPhysicsEntries(lvl, gs, count);
         }
         static void ReadPhysicsEntries(Level lvl, Stream gs, int count)
         {
             byte[] buffer = new byte[Math.Min(count, 1024) * 8];
             Check C;
             fixed (byte* ptr = buffer)
-            {
                 for (int i = 0; i < count; i += 1024)
                 {
-                    int entries = Math.Min(1024, count - i),
-                        read = gs.Read(buffer, 0, entries * 8);
-                    if (read < entries * 8)
-                    {
-                        return;
-                    }
+                    int entries = Math.Min(1024, count - i);
+                    int read = gs.Read(buffer, 0, entries * 8);
+                    if (read < entries * 8) return;
                     int* ptrInt = (int*)ptr;
                     for (int j = 0; j < entries; j++)
                     {
-                        C.Index = *ptrInt; 
-                        ptrInt++;
-                        C.data.Raw = (uint)*ptrInt; 
-                        ptrInt++;
+                        C.Index = *ptrInt; ptrInt++;
+                        C.data.Raw = (uint)*ptrInt; ptrInt++;
                         lvl.ListCheck.Items[i + j] = C;
                     }
                 }
-            }
         }
         static void ReadZonesSection(Level lvl, Stream gs)
         {
             byte[] buffer = new byte[sizeof(int)];
             int count = TryRead_I32(buffer, gs);
-            if (count != 0)
+            if (count == 0) return;
+            for (int i = 0; i < count; i++)
             {
-                for (int i = 0; i < count; i++)
+                try
                 {
-                    try
-                    {
-                        ParseZone(lvl, ref buffer, gs);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError("Error importing zone #" + i + " from MCSharp map", ex);
-                    }
+                    ParseZone(lvl, ref buffer, gs);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("Error importing zone #" + i + " from MCSharp map", ex);
                 }
             }
         }
@@ -171,17 +156,11 @@ namespace MCGalaxy.Levels.IO
             for (int j = 0; j < metaCount; j++)
             {
                 int size = Read_U16(buffer, gs);
-                if (size > buffer.Length)
-                {
-                    buffer = new byte[size + 16];
-                }
+                if (size > buffer.Length) buffer = new byte[size + 16];
                 StreamUtils.ReadFully(gs, buffer, 0, size);
                 string line = Encoding.UTF8.GetString(buffer, 0, size);
                 PropertiesFile.ParseLine(line, '=', out string key, out string value);
-                if (key == null)
-                {
-                    continue;
-                }
+                if (key == null) continue;
                 value = value.Trim();
                 ConfigElement.Parse(elems, z.Config, key, value);
             }
@@ -189,10 +168,8 @@ namespace MCGalaxy.Levels.IO
         }
         static int TryRead_I32(byte[] buffer, Stream gs)
         {
-            if (gs.Read(buffer, 0, sizeof(int)) < sizeof(int))
-            {
-                return 0;
-            }
+            int read = gs.Read(buffer, 0, sizeof(int));
+            if (read < sizeof(int)) return 0;
             return MemUtils.ReadI32_BE(buffer, 0);
         }
         static ushort Read_U16(byte[] buffer, Stream gs)

@@ -20,7 +20,7 @@ namespace MCGalaxy.Commands.Building
     {
         public override string Name => "WriteText";
         public override string Shortcut => "wrt";
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         protected override string SelectionType => "direction";
         protected override string PlaceMessage => "Place or break two blocks to determine direction.";
         protected override DrawOp GetDrawOp(DrawArgs dArgs)

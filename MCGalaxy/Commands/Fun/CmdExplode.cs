@@ -21,7 +21,7 @@ namespace MCGalaxy.Commands.Fun
         public override string Name => "Explode";
         public override string Shortcut => "ex";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }

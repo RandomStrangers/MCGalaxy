@@ -20,7 +20,7 @@ namespace MCGalaxy.Commands.CPE
         public override string Name => "CustomColors";
         public override string Shortcut => "ccols";
         public override string Type => CommandTypes.Chat;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();

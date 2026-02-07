@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.Fun
     {
         public override string Name => "Slap";
         public override string Type => CommandTypes.Other;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -66,8 +66,8 @@ namespace MCGalaxy.Commands.Fun
             for (; y <= lvl.Height; y++)
             {
                 ushort above = lvl.GetBlock(x, (ushort)(y + 1), z);
-                if (above == 0xff) continue;
-                if (!DefaultSet.IsSolid(lvl.CollideType(above))) continue;
+                if (above == Block.Invalid) continue;
+                if (!CollideType.IsSolid(lvl.CollideType(above))) continue;
                 int posY = (y + 1) * 32 - 6;
                 BlockDefinition def = lvl.GetBlockDef(above);
                 if (def != null) posY += def.MinZ * 2;

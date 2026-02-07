@@ -34,7 +34,7 @@ namespace MCGalaxy.Network
         byte chunkValue;
         ClassicProtocol session;
         byte[] data = new byte[1028];
-        public LevelChunkStream(ClassicProtocol s) => session = s;
+        public LevelChunkStream(ClassicProtocol s) { session = s; }
         public override void Close()
         {
             if (index > 0) WritePacket();
@@ -55,7 +55,9 @@ namespace MCGalaxy.Network
                 {
                     Buffer.BlockCopy(buffer, offset, data, index + 3, copy);
                 }
-                offset += copy; index += copy; count -= copy;
+                offset += copy; 
+                index += copy; 
+                count -= copy;
                 if (index != 1024) continue;
                 WritePacket();
                 data = new byte[1028];
@@ -105,7 +107,8 @@ namespace MCGalaxy.Network
         }
         static unsafe void CompressMapSimple(Level lvl, Stream stream, LevelChunkStream dst)
         {
-            byte[] buffer = new byte[64 * 1024];
+            int bufferSize = 64 * 1024;
+            byte[] buffer = new byte[bufferSize];
             int bIndex = 0;
             ClassicProtocol s = dst.session;
             byte[] blocks = lvl.blocks;
@@ -121,11 +124,11 @@ namespace MCGalaxy.Network
             {
                 buffer[bIndex] = conv[blocks[i]];
                 bIndex++;
-                if (bIndex == (64 * 1024))
+                if (bIndex == bufferSize)
                 {
                     // '0' to indicate this chunk has lower 8 bits of block ids
                     dst.chunkValue = s.hasExtBlocks ? (byte)0 : (byte)(i * progScale);
-                    stream.Write(buffer, 0, 64 * 1024); 
+                    stream.Write(buffer, 0, bufferSize);
                     bIndex = 0;
                 }
             }
@@ -133,15 +136,16 @@ namespace MCGalaxy.Network
         }
         static unsafe void CompressMap(Level lvl, Stream stream, LevelChunkStream dst)
         {
-            byte[] buffer = new byte[64 * 1024];
+            int bufferSize = 64 * 1024;
+            byte[] buffer = new byte[bufferSize];
             int bIndex = 0;
             ClassicProtocol s = dst.session;
             byte[] blocks = lvl.blocks;
             float progScale = 100.0f / blocks.Length;
             // Store on stack instead of performing function call for every block in map
             byte* conv = stackalloc byte[1024],
-                convExt = conv + 256; // 256 blocks per group/class
-            byte* convExt2 = conv + 256 * 2,
+                convExt = conv + 256,
+                convExt2 = conv + 256 * 2,
                 convExt3 = conv + 256 * 3;
             for (int j = 0; j < 1024; j++)
             {
@@ -172,9 +176,9 @@ namespace MCGalaxy.Network
                         buffer[bIndex] = conv[block];
                     }
                     bIndex++;
-                    if (bIndex == (64 * 1024))
+                    if (bIndex == bufferSize)
                     {
-                        stream.Write(buffer, 0, 64 * 1024);
+                        stream.Write(buffer, 0, bufferSize);
                         bIndex = 0;
                     }
                 }
@@ -186,11 +190,11 @@ namespace MCGalaxy.Network
                 using LevelChunkStream dst2 = new(s);
                 using Stream stream2 = dst2.CompressMapHeader(blocks.Length);
                 dst2.chunkValue = 1; // 'extended' blocks
-                byte[] buffer2 = new byte[64 * 1024];
+                byte[] buffer2 = new byte[bufferSize];
                 // Need to fill in all the upper 8 bits of blocks before this one with 0
-                for (int j = 0; j < i; j += 64 * 1024)
+                for (int j = 0; j < i; j += bufferSize)
                 {
-                    int len = Math.Min(64 * 1024, i - j);
+                    int len = Math.Min(bufferSize, i - j);
                     stream2.Write(buffer2, 0, len);
                 }
                 for (; i < blocks.Length; i++)
@@ -217,10 +221,10 @@ namespace MCGalaxy.Network
                         buffer2[bIndex] = 0;
                     }
                     bIndex++;
-                    if (bIndex == (64 * 1024))
+                    if (bIndex == bufferSize)
                     {
-                        stream.Write(buffer, 0, 64 * 1024);
-                        stream2.Write(buffer2, 0, 64 * 1024);
+                        stream.Write(buffer, 0, bufferSize);
+                        stream2.Write(buffer2, 0, bufferSize);
                         bIndex = 0;
                     }
                 }
@@ -248,10 +252,10 @@ namespace MCGalaxy.Network
                         buffer[bIndex] = conv[block];
                     }
                     bIndex++;
-                    if (bIndex == (64 * 1024))
+                    if (bIndex == bufferSize)
                     {
                         dst.chunkValue = (byte)(i * progScale);
-                        stream.Write(buffer, 0, 64 * 1024); 
+                        stream.Write(buffer, 0, bufferSize); 
                         bIndex = 0;
                     }
                 }

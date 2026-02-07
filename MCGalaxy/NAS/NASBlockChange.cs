@@ -1,4 +1,5 @@
 using MCGalaxy.Blocks;
+using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using MCGalaxy.Util.Imaging;
@@ -28,13 +29,17 @@ namespace MCGalaxy
             }
             if (!File.Exists(NASPlugin.Path + terrainImageName))
             {
-                Logger.Log(15, "Could not locate {0} (needed for block particle colors)", terrainImageName);
+                Logger.Log(LogType.Debug, "Could not locate {0} (needed for block particle colors)", terrainImageName);
                 return false;
             }
             breakScheduler ??= new("BlockBreakScheduler");
             repeaterScheduler ??= new("RepeaterScheduler");
             fishingScheduler ??= new("FishingScheduler");
-            byte[] data = File.ReadAllBytes(NASPlugin.Path + terrainImageName);
+            if (!FileIO.TryReadBytes(NASPlugin.Path + terrainImageName, out byte[] data))
+            {
+                Logger.Log(LogType.Debug, "Could not read {0} (needed for block particle colors)", NASPlugin.Path + terrainImageName);
+                return false;
+            }
             Bitmap2D terrain = ImageDecoder.DecodeFrom(data);
             terrain.Width /= 16;
             terrain.Height /= 16;
@@ -90,7 +95,7 @@ namespace MCGalaxy
             }
             if (nasBlock.parentID != 0)
             {
-                Drop drop = nasBlock.dropHandler(np, nasBlock.parentID);
+                NASDrop drop = nasBlock.dropHandler(np, nasBlock.parentID);
                 np.inventory.GetDrop(drop);
                 Random r = new();
                 np.GiveExp(r.Next(nasBlock.expGivenMin, nasBlock.expGivenMax + 1));
@@ -103,7 +108,7 @@ namespace MCGalaxy
             nasBlock.existAction?.Invoke(np, nasBlock, false, x, y, z);
             np.p.Level.BlockDB.Cache.Add(np.p, x, y, z, 1 << 0, here, 0);
             np.nl.SetBlock(x, y, z, 0);
-            foreach (Player pl in np.p.Level.GetPlayers())
+            foreach (Player pl in np.p.Level.Players)
             {
                 NASEffect.Define(pl, GetBreakID(), NASEffect.breakEffects[(int)nasBlock.material], blockColors[nasBlock.selfID]);
                 NASEffect.Spawn(pl, GetBreakID(), NASEffect.breakEffects[(int)nasBlock.material], x, y, z, x, y, z);
@@ -148,7 +153,7 @@ namespace MCGalaxy
             }
             if ((nasBlock.selfID == 10 || nasBlock.selfID == 476 || nasBlock.selfID == 178) && p.Level.name.Contains("0,0") && !p.Level.name.Contains("nether"))
             {
-                if (p.Rank < 100)
+                if (p.Rank < LevelPermission.Admin)
                 {
                     np.Message("&mCan't do that at 0,0.");
                     CancelPlacedBlock(p, x, y, z, np, ref cancel);
@@ -184,7 +189,7 @@ namespace MCGalaxy
             np.inventory.SetAmount(nasBlock.parentID, -nasBlock.resourceCost);
             np.justBrokeOrPlaced = true;
         }
-        public static void OnBlockChanged(Player p, ushort x, ushort y, ushort z, int _)
+        public static void OnBlockChanged(Player p, ushort x, ushort y, ushort z, ChangeResult _)
         {
             if (p.Level.Config.Deletable && p.Level.Config.Buildable)
             {
@@ -202,7 +207,7 @@ namespace MCGalaxy
         }
         public static void BreakTask(SchedulerTask task)
         {
-            BreakInfo breakInfo = (BreakInfo)task.State;
+            NASBreakInfo breakInfo = (NASBreakInfo)task.State;
             NASPlayer np = breakInfo.np;
             NASBlock nasBlock = breakInfo.nasBlock;
             bool coordsMatch =
@@ -234,14 +239,14 @@ namespace MCGalaxy
         }
         public static void MeterTask(SchedulerTask task)
         {
-            MeterInfo info = (MeterInfo)task.State;
+            NASMeterInfo info = (NASMeterInfo)task.State;
             Player p = info.p;
             int millisecs = info.milliseconds;
             millisecs -= 100;
             NASEffect.Define(p, BreakMeterID, NASEffect.breakMeter, new(255,255,255,255), (float)(millisecs / 1000.0f));
             NASEffect.Spawn(p, BreakMeterID, NASEffect.breakMeter, info.x, info.y, info.z, info.x, info.y, info.z);
         }
-        public class BreakInfo
+        public class NASBreakInfo
         {
             public NASPlayer np;
             public ushort x, y, z,
@@ -250,24 +255,24 @@ namespace MCGalaxy
             public int breakAttempt;
             public NASItem toolUsed;
         }
-        public class FishingInfo
+        public class NASFishingInfo
         {
             public Player p, who;
         }
-        public class InvInfo
+        public class NASInvInfo
         {
             public NASPlayer np;
             public bool inv;
         }
-        public class MeterInfo
+        public class NASMeterInfo
         {
             public Player p;
             public int milliseconds;
             public float x, y, z;
         }
-        public static void HandleLeftClick(Player p, int _,
-            int action, ushort __, ushort ___, byte ____,
-            ushort x, ushort y, ushort z, int face)
+        public static void HandleLeftClick(Player p, MouseButton _,
+            MouseAction action, ushort __, ushort ___, byte ____,
+            ushort x, ushort y, ushort z, TargetBlockFace face)
         {
             if (!p.agreed)
             {
@@ -275,14 +280,14 @@ namespace MCGalaxy
                 return;
             }
             NASPlayer np = NASPlayer.GetPlayer(p);
-            if (action == 1)
+            if (action == MouseAction.Released)
             {
                 np.ResetBreaking();
                 np.lastAirClickDate = null;
                 np.lastLeftClickReleaseDate = DateTime.UtcNow;
                 NASEffect.UndefineEffect(p, BreakMeterID);
             }
-            if (action == 0)
+            if (action == MouseAction.Pressed)
             {
                 if (x == ushort.MaxValue ||
                     y == ushort.MaxValue ||
@@ -314,7 +319,7 @@ namespace MCGalaxy
                 bool toolEffective = false;
                 if (heldItem.Prop.materialsEffectiveAgainst != null)
                 {
-                    foreach (NASMaterial mat in heldItem.Prop.materialsEffectiveAgainst)
+                    foreach (NASBlock.NASMaterial mat in heldItem.Prop.materialsEffectiveAgainst)
                     {
                         if (nasBlock.material == mat)
                         {
@@ -400,7 +405,7 @@ namespace MCGalaxy
                     }
                 }
                 np.lastAirClickDate = null;
-                BreakInfo breakInfo = new()
+                NASBreakInfo breakInfo = new()
                 {
                     np = np,
                     x = x,
@@ -413,7 +418,7 @@ namespace MCGalaxy
                 };
                 SchedulerTask taskBreakBlock;
                 taskBreakBlock = breakScheduler.QueueOnce(BreakTask, breakInfo, breakTime);
-                MeterInfo meterInfo = new()
+                NASMeterInfo meterInfo = new()
                 {
                     p = p,
                     milliseconds = millisecs,
@@ -428,27 +433,27 @@ namespace MCGalaxy
                 }
                 if (def != null)
                 {
-                    if (face == 0)
+                    if (face == TargetBlockFace.AwayX)
                     {
                         DoOffset(def.MaxX, true, ref meterInfo.x);
                     }
-                    if (face == 1)
+                    if (face == TargetBlockFace.TowardsX)
                     {
                         DoOffset(def.MinX, false, ref meterInfo.x);
                     }
-                    if (face == 2)
+                    if (face == TargetBlockFace.AwayY)
                     {
                         DoOffset(def.MaxZ, true, ref meterInfo.y);
                     }
-                    if (face == 3)
+                    if (face == TargetBlockFace.TowardsY)
                     {
                         DoOffset(def.MinZ, false, ref meterInfo.y);
                     }
-                    if (face == 4)
+                    if (face == TargetBlockFace.AwayZ)
                     {
                         DoOffset(def.MaxY, true, ref meterInfo.z);
                     }
-                    if (face == 5)
+                    if (face == TargetBlockFace.TowardsZ)
                     {
                         DoOffset(def.MinY, false, ref meterInfo.z);
                     }

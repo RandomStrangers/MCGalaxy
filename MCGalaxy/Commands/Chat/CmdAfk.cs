@@ -45,7 +45,7 @@ namespace MCGalaxy.Commands.Chatting
                     p.CheckForMessageSpam();
                 }
                 p.AFKCooldown = DateTime.UtcNow.AddSeconds(2);
-                OnPlayerActionEvent.Call(p, 3, null, cantSend);
+                OnPlayerActionEvent.Call(p, PlayerAction.AFK, null, cantSend);
             }
             else
             {
@@ -58,10 +58,14 @@ namespace MCGalaxy.Commands.Chatting
                     ShowMessage(p, "-λNICK&S- is no longer AFK");
                     p.CheckForMessageSpam();
                 }
-                OnPlayerActionEvent.Call(p, 4, null, cantSend);
+                OnPlayerActionEvent.Call(p, PlayerAction.UnAFK, null, cantSend);
             }
         }
-        static void ShowMessage(Player p, string message) => Chat.MessageFrom(p, message, Chat.FilterVisible(p), !p.hidden && Server.Config.IRCShowAFK);
+        static void ShowMessage(Player p, string message)
+        {
+            bool announce = !p.hidden && Server.Config.IRCShowAFK;
+            Chat.MessageFrom(p, message, Chat.FilterVisible(p), announce);
+        }
         public override void Help(Player p)
         {
             p.Message("&T/AFK <reason>");

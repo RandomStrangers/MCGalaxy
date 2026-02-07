@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.Moderation
     {
         public override string Name => "Unban";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -32,7 +32,7 @@ namespace MCGalaxy.Commands.Moderation
                 args[0] = Group.BannedRank.Players.FindMatches(p, args[0], "banned players", out _);
                 if (args[0] == null) return;
             }
-            ModAction action = new(args[0], p, 1, reason);
+            ModAction action = new(args[0], p, ModActionType.Unban, reason);
             OnModActionEvent.Call(action);
         }
         public override void Help(Player p)

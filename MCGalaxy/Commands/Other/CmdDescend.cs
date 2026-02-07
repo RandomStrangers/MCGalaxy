@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.Misc
     {
         public override string Name => "Descend";
         public override string Type => CommandTypes.Other;
-        public override sbyte DefaultRank => 30;
+        public override LevelPermission DefaultRank => LevelPermission.Builder;
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
@@ -61,11 +61,11 @@ namespace MCGalaxy.Commands.Misc
         {
             if (y >= lvl.Height) return false;
             ushort block = lvl.GetBlock(x, (ushort)y, z);
-            return DefaultSet.IsSolid(lvl.CollideType(block));
+            return CollideType.IsSolid(lvl.CollideType(block));
         }
         public override void Help(Player p)
         {
-            string name = Group.GetColoredName(80);
+            string name = Group.GetColoredName(LevelPermission.Operator);
             p.Message("&T/Descend");
             p.Message("&HTeleports you to the first free space below you.");
             p.Message("&H  Cannot be used on maps which have -hax in their motd. " +

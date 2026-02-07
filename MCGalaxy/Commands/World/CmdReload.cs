@@ -12,10 +12,9 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using MCGalaxy.Games;
 namespace MCGalaxy.Commands.World
 {
-    public sealed class CmdReload : Command2
+    public sealed class CmdReload : Command
     {
         public override string Name => "Reload";
         public override string Shortcut => "Reveal";
@@ -23,17 +22,13 @@ namespace MCGalaxy.Commands.World
         public override bool MuseumUsable => false;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("ReJoin"), new CommandAlias("rd"),
                     new CommandAlias("WFlush"), new CommandAlias("WorldFlush") };
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can reload for all players") };
-        public override void Use(Player p, string message, CommandData data)
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can reload for all players") };
+        public override void Use(Player p, string message)
         {
             if (CheckSuper(p, message, "level name")) return;
             if (message.Length == 0)
             {
-                if (!IGame.CheckAllowed(p, "use &T/Reload"))
-                {
-                    // messaging handled in CheckAllowed
-                }
-                else if (!Hacks.CanUseNoclip(p))
+                if (!Hacks.CanUseNoclip(p))
                 {
                     p.Message("You cannot use &T/Reload &Son this level");
                 }
@@ -44,7 +39,7 @@ namespace MCGalaxy.Commands.World
                 }
                 return;
             }
-            if (!CheckExtraPerm(p, data, 1)) return;
+            if (!CheckExtraPerm(p, 1)) return;
             Level lvl = p.Level;
             if (!message.CaselessEq("all"))
             {

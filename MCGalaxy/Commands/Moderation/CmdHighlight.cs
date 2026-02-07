@@ -24,7 +24,7 @@ namespace MCGalaxy.Commands.Moderation
         public override string Name => "Highlight";
         public override string Type => CommandTypes.Moderation;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override bool SuperUseable => false;
         public override CommandAlias[] Aliases => new CommandAlias[] { new("HighlightArea", "area") };
         public override void Use(Player p, string message, CommandData data)

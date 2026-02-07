@@ -21,7 +21,7 @@ namespace MCGalaxy.Commands.Building
     {
         public override string Name => "Torus";
         public override string Shortcut => "tor";
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("Donut"), new CommandAlias("Bagel") };
         protected override string PlaceMessage => "Place a block for the centre, then another for the radius.";
         protected override void GetMarks(DrawArgs dArgs, ref Vec3S32[] m)

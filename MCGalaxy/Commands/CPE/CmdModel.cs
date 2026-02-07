@@ -19,9 +19,9 @@ namespace MCGalaxy.Commands.CPE
     {
         public override string Name => "Model";
         public override string Type => CommandTypes.Other;
-        public override sbyte DefaultRank => 50;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can change the model of others"),
-                    new CommandPerm(80, "can change the model of bots") };
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can change the model of others"),
+                    new CommandPerm(LevelPermission.Operator, "can change the model of bots") };
         public override CommandAlias[] Aliases => new[] { new CommandAlias("XModel", "-own") };
         public override void Use(Player p, string message, CommandData data)
         {

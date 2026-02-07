@@ -21,7 +21,7 @@ namespace MCGalaxy.Commands.Chatting
         public override string Type => CommandTypes.Chat;
         public override bool UseableWhenFrozen => true;
         public override bool UpdatesLastCmd => false;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can read opchat messages") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can read opchat messages") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length > 0) { ChatModes.MessageOps(p, message); return; }

@@ -30,8 +30,8 @@ namespace MCGalaxy.Modules.Security
         readonly object ipsLock = new();
         public override void Load(bool startup)
         {
-            OnPlayerStartConnectingEvent.Register(HandleConnecting, 4);
-            OnConnectionReceivedEvent.Register(HandleConnectionReceived, 4);
+            OnPlayerStartConnectingEvent.Register(HandleConnecting, Priority.System_Level);
+            OnConnectionReceivedEvent.Register(HandleConnectionReceived, Priority.System_Level);
             clearTask = Server.Background.QueueRepeat(CleanupTask, null, TimeSpan.FromMinutes(10));
         }
         public override void Unload(bool shutdown)
@@ -51,7 +51,7 @@ namespace MCGalaxy.Modules.Security
             {
                 if (!ips.TryGetValue(ipStr, out IPThrottleEntry entry))
                 {
-                    entry = new();
+                    entry = new IPThrottleEntry();
                     ips[ipStr] = entry;
                 }
                 // Check if that IP is repeatedly trying to connect
@@ -70,30 +70,25 @@ namespace MCGalaxy.Modules.Security
             //  treat this as an automated DOS attempt by a bot
             if (failed > 15) cancel = true;
             // Log message so host is aware the server is being attacked
-            if ((failed % 1000) > 0)
-            {
-                Logger.Log(1, "Blocked {0} from connecting ({1} blocked attempts)", ipStr, failed);
-            }
+            if ((failed % 1000) != 0) return;
+            Logger.Log(LogType.SystemActivity, "Blocked {0} from connecting ({1} blocked attempts)", ipStr, failed);
         }
         void HandleConnecting(Player p, string mppass)
         {
-            if (Server.Config.IPSpamCheck)
+            if (!Server.Config.IPSpamCheck) return;
+            DateTime now = DateTime.UtcNow;
+            DateTime blockedUntil;
+            // Most of work is done on initial connection
+            lock (ipsLock)
             {
-                DateTime now = DateTime.UtcNow;
-                DateTime blockedUntil;
-                // Most of work is done on initial connection
-                lock (ipsLock)
-                {
-                    if (!ips.TryGetValue(p.ip, out IPThrottleEntry entry)) return;
-                    blockedUntil = entry.BlockedUntil;
-                }
-                if (blockedUntil >= now)
-                {
-                    TimeSpan delta = blockedUntil - now;
-                    p.Leave("Too many connections too quickly! Wait " + delta.Shorten(true) + " before joining");
-                    p.cancelconnecting = true;
-                }
+                if (!ips.TryGetValue(p.ip, out IPThrottleEntry entry)) return;
+                blockedUntil = entry.BlockedUntil;
             }
+            if (blockedUntil < now) return;
+            // do this outside lock since we want to minimise time spent locked
+            TimeSpan delta = blockedUntil - now;
+            p.Leave("Too many connections too quickly! Wait " + delta.Shorten(true) + " before joining");
+            p.cancelconnecting = true;
         }
         class IPThrottleEntry : List<DateTime>
         {
@@ -115,12 +110,10 @@ namespace MCGalaxy.Modules.Security
                     expired ??= new List<string>();
                     expired.Add(kvp.Key);
                 }
-                if (expired != null)
+                if (expired == null) return;
+                foreach (string ip in expired)
                 {
-                    foreach (string ip in expired)
-                    {
-                        ips.Remove(ip);
-                    }
+                    ips.Remove(ip);
                 }
             }
         }

@@ -17,9 +17,9 @@ using System.IO;
 using System.Text;
 using MCGalaxy.Commands.World;
 using MCGalaxy.DB;
-using MCGalaxy.Games;
 using MCGalaxy.Levels.IO;
 using MCGalaxy.Maths;
+using MCGalaxy.Network;
 namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdMapInfo : Command2
@@ -87,7 +87,6 @@ namespace MCGalaxy.Commands.Info
                       cfg.UseBlockDB ? "&aEnabled" : "&cDisabled", data.BlockDBEntries);
             ShowPermissions(p, data, cfg, showAll);
             p.Message("Use &T/mi env {0} &Sto see environment settings.", data.MapName);
-            ShowGameInfo(p, data, cfg);
         }
         void ShowPermissions(Player p, MapInfo data, LevelConfig cfg, bool showAll)
         {
@@ -115,24 +114,6 @@ namespace MCGalaxy.Commands.Info
             bool shortened = access.Describe(p, perms, shorten);
             p.Message(perms.ToString());
             return shortened;
-        }
-        void ShowGameInfo(Player p, MapInfo data, LevelConfig cfg)
-        {
-            IGame game = GetAssociatedGame(data.MapName);
-            if (game != null)
-            {
-                game.OutputMapSummary(p, data.MapName, cfg); // TODO: Always show this info?
-                game.OutputMapInfo(p, data.MapName, cfg);
-            }
-        }
-        static IGame GetAssociatedGame(string map)
-        {
-            IGame[] games = IGame.RunningGames.Items;
-            foreach (IGame game in games)
-            {
-                if (game.ClaimsMap(map)) return game;
-            }
-            return null;
         }
         void ShowEnv(Player p, MapInfo data, LevelConfig cfg)
         {
@@ -162,25 +143,25 @@ namespace MCGalaxy.Commands.Info
                 p.Message("Fancy colors: &eLavaLight {0}, &eLampLight {1}",
                           Color(cfg.LavaLightColor), Color(cfg.LampLightColor));
             }
-            if (cfg.LightingMode != 0)
+            if (cfg.LightingMode != Packet.LightingMode.None)
             {
                 p.Message("Lighting Mode: &b{0}{1}", cfg.LightingMode, cfg.LightingModeLocked ? "&c locked" : "");
             }
             p.Message("Water level: &b{0}&S, Bedrock offset: &b{1}&S, Clouds height: &b{2}&S, Max fog distance: &b{3}",
-                      data.Get(2), data.Get(9),
-                      data.Get(3), data.Get(4));
+                      data.Get(EnvProp.EdgeLevel), data.Get(EnvProp.SidesOffset),
+                      data.Get(EnvProp.CloudsLevel), data.Get(EnvProp.MaxFog));
             p.Message("Edge Block: &b{0}&S, Horizon Block: &b{1}",
-                      Block.GetName(p, (ushort)data.Get(0)),
-                      Block.GetName(p, (ushort)data.Get(1)));
+                      Block.GetName(p, (ushort)data.Get(EnvProp.SidesBlock)),
+                      Block.GetName(p, (ushort)data.Get(EnvProp.EdgeBlock)));
             p.Message("Clouds speed: &b{0}%&S, Weather speed: &b{1}%",
-                      (data.Get(5) / 256f).ToString("F2"),
-                      (data.Get(6) / 256f).ToString("F2"));
+                      (data.Get(EnvProp.CloudsSpeed) / 256f).ToString("F2"),
+                      (data.Get(EnvProp.WeatherSpeed) / 256f).ToString("F2"));
             p.Message("Weather fade rate: &b{0}%&S, Exponential fog: {1}",
-                      (data.Get(7) / 128f).ToString("F2"),
-                      data.Get(8) > 0 ? "&aON" : "&cOFF");
+                      (data.Get(EnvProp.WeatherFade) / 128f).ToString("F2"),
+                      data.Get(EnvProp.ExpFog) > 0 ? "&aON" : "&cOFF");
             p.Message("Skybox rotations: Horizontal &b{0}&S, Vertical &b{1}",
-                      data.GetSkybox(10),
-                      data.GetSkybox(11));
+                      data.GetSkybox(EnvProp.SkyboxHorSpeed),
+                      data.GetSkybox(EnvProp.SkyboxVerSpeed));
         }
         class MapInfo
         {
@@ -191,11 +172,8 @@ namespace MCGalaxy.Commands.Info
             public LevelConfig Config;
             public void FromLevel(Level lvl)
             {
-                Name = lvl.name; 
-                MapName = lvl.MapName;
-                Width = lvl.Width; 
-                Height = lvl.Height;
-                Length = lvl.Length;
+                Name = lvl.name; MapName = lvl.MapName;
+                Width = lvl.Width; Height = lvl.Height; Length = lvl.Length;
                 BlockDBEntries = lvl.BlockDB.TotalEntries();
                 Config = lvl.Config;
                 Visit = lvl.VisitAccess;
@@ -205,10 +183,8 @@ namespace MCGalaxy.Commands.Info
             {
                 Name = map; MapName = map;
                 string path = LevelInfo.MapPath(map);
-                Vec3U16 dims = IMapImporter.GetFor(path).ReadDimensions(FileIO.TryOpenRead(path));
-                Width = dims.X; 
-                Height = dims.Y; 
-                Length = dims.Z;
+                Vec3U16 dims = IMapImporter.GetFor(path).ReadDimensions(path);
+                Width = dims.X; Height = dims.Y; Length = dims.Z;
                 BlockDBEntries = BlockDBFile.CountEntries(map);
                 path = LevelInfo.PropsPath(map);
                 LevelConfig cfg = new();
@@ -217,8 +193,18 @@ namespace MCGalaxy.Commands.Info
                 Visit = new LevelAccessController(cfg, map, true);
                 Build = new LevelAccessController(cfg, map, false);
             }
-            public int Get(int i) => Config.GetEnvProp(i) != ((Config.GetEnvProp(i) == 1 || Config.GetEnvProp(i) == 0) ? 0xff : int.MaxValue) ? Config.GetEnvProp(i) : EnvConfig.DefaultEnvProp(i, Height);
-            public string GetSkybox(int i) => Get(i) == 0 ? "none" : (Get(i) / 1024.0).ToString("F3") + "/s";
+            public int Get(EnvProp i)
+            {
+                int value = Config.GetEnvProp(i);
+                bool block = i == EnvProp.EdgeBlock || i == EnvProp.SidesBlock;
+                int default_ = block ? Block.Invalid : EnvConfig.ENV_USE_DEFAULT;
+                return value != default_ ? value : EnvConfig.DefaultEnvProp(i, Height);
+            }
+            public string GetSkybox(EnvProp i)
+            {
+                int angle = Get(i);
+                return angle == 0 ? "none" : (angle / 1024.0).ToString("F3") + "/s";
+            }
         }
         static string Color(string src) => (src == null || src.Length == 0 || src == "-1") ? "&bnone" : "&b" + src;
         public override void Help(Player p)

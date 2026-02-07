@@ -23,7 +23,7 @@ namespace MCGalaxy.Commands.Maintenance
         public override string Name => "PlayerEdit";
         public override string Shortcut => "pe";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("SetInfo") };
         delegate void DBSetter(string name, string column, string data);
         const int type_norm = 0, type_lo = 1, type_hi = 2;

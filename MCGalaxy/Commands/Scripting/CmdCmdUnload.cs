@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.Scripting
     {
         public override string Name => "CmdUnload";
         public override string Type => CommandTypes.Other;
-        public override sbyte DefaultRank => 120;
+        public override LevelPermission DefaultRank => LevelPermission.Owner;
         public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string cmdName, CommandData data)
         {

@@ -222,12 +222,12 @@ namespace MCGalaxy.Commands.Info
                 p.Message("Active_lava and its fast counterparts flow horizontally through the map, active_hot_lava and magma kill players, " +
                                "magma flows upwards slowly if it is placed in a spot where it cannot flow then broken out.");
             }
-            int ai = props.AnimalAI;
-            if (ai == 3 || ai == 1 || ai == 2)
+            AnimalAI ai = props.AnimalAI;
+            if (ai == AnimalAI.KillerAir || ai == AnimalAI.Fly || ai == AnimalAI.FleeAir)
             {
                 p.Message("The bird blocks are different colored blocks that fly through the air if physics is on. Killer_phoenix kills players it touches");
             }
-            if (ai == 6 || ai == 4 || ai == 7 || ai == 5)
+            if (ai == AnimalAI.FleeLava || ai == AnimalAI.FleeWater || ai == AnimalAI.KillerLava || ai == AnimalAI.KillerWater)
             {
                 p.Message("The fish blocks are different colored blocks that swim around in active_water (lava_shark in active_lava), " +
                                "sharks and lava sharks eat players they touch.");

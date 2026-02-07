@@ -14,15 +14,15 @@
  */
 namespace MCGalaxy.Commands.World
 {
-    public sealed class CmdMap : Command2
+    public sealed class CmdMap : Command
     {
         public override string Name => "Map";
         public override string Type => CommandTypes.World;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can edit map options"),
-                    new CommandPerm(100, "can set realm owners") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can edit map options"),
+                    new CommandPerm(LevelPermission.Admin, "can set realm owners") };
         public override CommandAlias[] Aliases => new[] { new CommandAlias("ps", LevelOptions.Speed),
                     new CommandAlias("AllowGuns", "{args} " + LevelOptions.Guns) };
-        public override void Use(Player p, string message, CommandData data)
+        public override void Use(Player p, string message)
         {
             if (CheckSuper(p, message, "level name")) return;
             if (message.Length == 0)
@@ -55,9 +55,9 @@ namespace MCGalaxy.Commands.World
                 optName = args[1];
                 value = args.Length > 2 ? args[2] : "";
             }
-            if (!CheckExtraPerm(p, data, 1)) return;
-            if (optName.CaselessEq(LevelOptions.RealmOwner) && !CheckExtraPerm(p, data, 2)) return;
-            if (!LevelInfo.Check(p, data.Rank, lvl, "change map settings of this level")) return;
+            if (!CheckExtraPerm(p, 1)) return;
+            if (optName.CaselessEq(LevelOptions.RealmOwner) && !CheckExtraPerm(p, 2)) return;
+            if (!LevelInfo.Check(p, p.Rank, lvl, "change map settings of this level")) return;
             LevelOption opt = LevelOptions.Find(optName);
             if (opt == null)
             {
@@ -142,7 +142,7 @@ namespace MCGalaxy.Commands.World
             p.Message("&T-/+thirdperson &H- disallows/allows third person camera");
             p.Message("&T-/+speed &H- disallows/allows speeding");
             p.Message("&T-/+ophax &H- disallows/allows hacks for {0}&S+",
-                           Group.GetColoredName(80));
+                           Group.GetColoredName(LevelPermission.Operator));
             p.Message("&T-/+push &H- disallows/allows player pushing");
             p.Message("&Tjumpheight=[height] &H- sets max height users can jump up to");
             p.Message("&Thorspeed=[speed] &H- sets base horizontal speed users move at");

@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.Moderation
     {
         public override string Name => "Joker";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -28,7 +28,7 @@ namespace MCGalaxy.Commands.Moderation
             {
                 message = message.Remove(0, 1).Trim();
                 stealth = true;
-                Logger.Log(3, "Stealth joker attempted");
+                Logger.Log(LogType.UserActivity, "Stealth joker attempted");
             }
             Player who = PlayerInfo.FindMatches(p, message);
             if (who == null) return;

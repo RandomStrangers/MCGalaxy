@@ -24,14 +24,14 @@ namespace MCGalaxy.Commands.Building
         public override string Type => CommandTypes.Building;
         public override bool MuseumUsable => false;
         public override bool SuperUseable => false;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override void Use(Player p, string message, CommandData data)
         {
             BrushArgs args = new(p, message, p.GetHeldBlock());
             Brush brush = BrushFactory.Find("Replace").Construct(args);
             if (brush == null) return;
             Vec3S32 max = new(p.Level.MaxX, p.Level.MaxY, p.Level.MaxZ);
-            Vec3S32[] marks = new Vec3S32[] { new(0, 0, 0), max };
+            Vec3S32[] marks = new Vec3S32[] { Vec3S32.Zero, max };
             MeasureDrawOp measure = new();
             measure.Setup(p, p.Level, marks);
             measure.Perform(marks, brush, null);

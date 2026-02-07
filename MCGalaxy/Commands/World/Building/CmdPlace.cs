@@ -22,7 +22,7 @@ namespace MCGalaxy.Commands.Building
         public override bool MuseumUsable => false;
         public override string Type => CommandTypes.Building;
         public override bool SuperUseable => false;
-        public override int Parallelism => 0;
+        public override CommandParallelism Parallelism => CommandParallelism.NoAndSilent;
         public override void Use(Player p, string message, CommandData data)
         {
             ushort block = p.GetHeldBlock();

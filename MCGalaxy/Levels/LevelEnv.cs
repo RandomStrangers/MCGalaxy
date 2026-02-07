@@ -13,6 +13,7 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Commands;
+using MCGalaxy.Network;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
@@ -98,7 +99,7 @@ namespace MCGalaxy
             string[] args = value.SplitSpaces(2);
             string lightingMode = args[0];
             bool locked = args.Length > 1 && args[1].CaselessEq("locked");
-            if (!SetEnum(p, lightingMode, area, "lighting mode", 0, ref cfg.LightingMode)) return;
+            if (!SetEnum(p, lightingMode, area, "lighting mode", Packet.LightingMode.None, ref cfg.LightingMode)) return;
             cfg.LightingModeLocked = locked;
             if (locked) p.Message("Lighting mode for {0}&S was %clocked%S. Players will not be able to change lighting mode while inside.", area);
             if (!p.Supports(CpeExt.LightingMode)) p.Message("&WNote: Your client does not support lighting modes, so you will see no changes.");
@@ -116,7 +117,7 @@ namespace MCGalaxy
             if (IsResetString(value))
             {
                 p.Message("Reset weather for {0} &Sto 0 (Sun)", area);
-                weather = int.MaxValue;
+                weather = EnvConfig.ENV_USE_DEFAULT;
             }
             else
             {
@@ -149,7 +150,7 @@ namespace MCGalaxy
             if (IsResetString(value))
             {
                 p.Message("Reset smooth fog for {0} &Sto &cOFF", area);
-                cfg.ExpFog = int.MaxValue;
+                cfg.ExpFog = EnvConfig.ENV_USE_DEFAULT;
             }
             else
             {
@@ -183,7 +184,7 @@ namespace MCGalaxy
             if (IsResetString(input))
             {
                 p.Message("Reset {0} for {1} &Sto normal", type, area);
-                target = int.MaxValue;
+                target = EnvConfig.ENV_USE_DEFAULT;
             }
             else
             {
@@ -199,7 +200,7 @@ namespace MCGalaxy
             if (IsResetString(input))
             {
                 p.Message("Reset {0} for {1} &Sto normal", type, area);
-                target = int.MaxValue;
+                target = EnvConfig.ENV_USE_DEFAULT;
             }
             else
             {

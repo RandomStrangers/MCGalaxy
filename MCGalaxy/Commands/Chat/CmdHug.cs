@@ -17,7 +17,7 @@ namespace MCGalaxy.Commands.Chatting
     public class CmdHug : MessageCmd
     {
         public override string Name => "Hug";
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can death hug") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can death hug") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -33,7 +33,7 @@ namespace MCGalaxy.Commands.Chatting
             TryMessageAction(p, args[0], "λNICK &Sgave λTARGET &Sa " + hugType + " hug", false);
             if (hugType == "deadly")
             {
-                if (!CheckExtraPerm(p, data, 1)) return;
+                if (!CheckExtraPerm(p, 1)) return;
                 Player target = PlayerInfo.FindMatches(p, args[0]);
                 if (target == null) return;
                 if (!CheckRank(p, data, target, "&cdeath-hug&S", true)) return;

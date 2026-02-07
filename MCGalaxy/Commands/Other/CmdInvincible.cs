@@ -19,14 +19,14 @@ namespace MCGalaxy.Commands.Misc
         public override string Name => "Invincible";
         public override string Shortcut => "Inv";
         public override string Type => CommandTypes.Other;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandAlias[] Aliases => new CommandAlias[] { new("GodMode") };
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can toggle invinciblity of others") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can toggle invinciblity of others") };
         public override void Use(Player p, string message, CommandData data)
         {
             Player who = message.Length == 0 ? p : PlayerInfo.FindMatches(p, message);
             if (who == null) return;
-            if (p != who && !CheckExtraPerm(p, data, 1)) return;
+            if (p != who && !CheckExtraPerm(p, 1)) return;
             if (!CheckRank(p, data, who, "toggle invincibility", true)) return;
             who.invincible = !who.invincible;
             ShowPlayerMessage(p, who);

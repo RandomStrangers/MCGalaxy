@@ -82,10 +82,10 @@ namespace MCGalaxy.Events.LevelEvents
             CallCommon(pl => pl(lvl));
         }
     }
-    public delegate void OnPhysicsStateChanged(Level lvl, int state);
+    public delegate void OnPhysicsStateChanged(Level lvl, PhysicsState state);
     public sealed class OnPhysicsStateChangedEvent : IEvent<OnPhysicsStateChanged>
     {
-        public static void Call(Level lvl, int state)
+        public static void Call(Level lvl, PhysicsState state)
         {
             if (handlers.Count == 0) return;
             CallCommon(pl => pl(lvl, state));

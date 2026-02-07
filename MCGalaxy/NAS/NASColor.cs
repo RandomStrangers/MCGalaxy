@@ -35,10 +35,14 @@ namespace MCGalaxy
             }
             if (!File.Exists(NASPlugin.Path + selectorImageName))
             {
-                Logger.Log(15, "Could not locate {0} (needed for tool health/selection colors)", selectorImageName);
+                Logger.Log(LogType.Debug, "Could not locate {0} (needed for tool health/selection colors)", selectorImageName);
                 return false;
             }
-            byte[] data = File.ReadAllBytes(NASPlugin.Path + "selectorColors.png");
+            if (!FileIO.TryReadBytes(NASPlugin.Path + "selectorColors.png", out byte[] data))
+            {
+                Logger.Log(LogType.Debug, "Could not locate {0} (needed for tool health/selection colors)", selectorImageName);
+                return false;
+            }
             Bitmap2D colorImage = ImageDecoder.DecodeFrom(data);
             defaultColors = new ColorDesc[colorImage.Width];
             fullHealthColors = new ColorDesc[colorImage.Width];

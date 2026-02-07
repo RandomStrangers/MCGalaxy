@@ -19,7 +19,10 @@ namespace MCGalaxy.Eco
 {
     public sealed class LevelItem : Item
     {
-        public LevelItem() => Aliases = new string[] { "level", "levels", "map", "maps" };
+        public LevelItem()
+        {
+            Aliases = new string[] { "level", "levels", "map", "maps" };
+        }
         public override string Name => "Level";
         public List<LevelPreset> Presets = new();
         public class LevelPreset

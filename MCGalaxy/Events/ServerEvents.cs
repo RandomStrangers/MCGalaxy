@@ -67,11 +67,11 @@ namespace MCGalaxy.Events.ServerEvents
             }
         }
     }
-    public delegate void OnChatSys(int scope, ref string msg, object arg,
+    public delegate void OnChatSys(ChatScope scope, ref string msg, object arg,
                                    ref ChatMessageFilter filter, bool relay);
     public sealed class OnChatSysEvent : IEvent<OnChatSys>
     {
-        public static void Call(int scope, ref string msg, object arg,
+        public static void Call(ChatScope scope, ref string msg, object arg,
                                 ref ChatMessageFilter filter, bool relay)
         {
             IEvent<OnChatSys>[] items = handlers.Items;
@@ -82,11 +82,11 @@ namespace MCGalaxy.Events.ServerEvents
             }
         }
     }
-    public delegate void OnChatFrom(int scope, Player source, ref string msg,
+    public delegate void OnChatFrom(ChatScope scope, Player source, ref string msg,
                                     object arg, ref ChatMessageFilter filter, bool relay);
     public sealed class OnChatFromEvent : IEvent<OnChatFrom>
     {
-        public static void Call(int scope, Player source, ref string msg,
+        public static void Call(ChatScope scope, Player source, ref string msg,
                                 object arg, ref ChatMessageFilter filter, bool relay)
         {
             IEvent<OnChatFrom>[] items = handlers.Items;
@@ -97,11 +97,11 @@ namespace MCGalaxy.Events.ServerEvents
             }
         }
     }
-    public delegate void OnChat(int scope, Player source, ref string msg,
+    public delegate void OnChat(ChatScope scope, Player source, ref string msg,
                                 object arg, ref ChatMessageFilter filter, bool relay);
     public sealed class OnChatEvent : IEvent<OnChat>
     {
-        public static void Call(int scope, Player source, ref string msg,
+        public static void Call(ChatScope scope, Player source, ref string msg,
                                 object arg, ref ChatMessageFilter filter, bool relay)
         {
             IEvent<OnChat>[] items = handlers.Items;

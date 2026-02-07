@@ -22,7 +22,9 @@ namespace MCGalaxy.Network
         {
             public DateTime TimeSent, TimeRecv;
             public ushort Data;
-            public readonly double Latency => (TimeRecv - TimeSent).TotalMilliseconds * 0.5;
+            public readonly double Latency =>
+                    // Half, because received->reply time is actually twice time it takes to send data
+                    (TimeRecv - TimeSent).TotalMilliseconds * 0.5;
         }
         // Pings are stored using a circular array
         public PingEntry[] Entries = new PingEntry[10];
@@ -32,8 +34,8 @@ namespace MCGalaxy.Network
         internal void UnIgnorePosition(ushort data) => Interlocked.CompareExchange(ref ignorePositionData, -1, data);
         public ushort NextTwoWayPingData(bool startIgnoringPosition = false)
         {
-            int pingValue = Interlocked.Increment(ref pingCounter),
-                pingHead = (Interlocked.Increment(ref nextPingHead) - 1) % 10;
+            int pingValue = Interlocked.Increment(ref pingCounter);
+            int pingHead = (Interlocked.Increment(ref nextPingHead) - 1) % 10;
             Entries[pingHead].Data = (ushort)pingValue;
             Entries[pingHead].TimeRecv = default;
             Entries[pingHead].TimeSent = DateTime.UtcNow;
@@ -49,7 +51,11 @@ namespace MCGalaxy.Network
                 return;
             }
         }
-        bool Valid(int i) => Entries[i].TimeSent.Ticks != 0 && Entries[i].TimeRecv.Ticks != 0;
+        bool Valid(int i)
+        {
+            PingEntry e = Entries[i];
+            return e.TimeSent.Ticks != 0 && e.TimeRecv.Ticks != 0;
+        }
         public int Measures()
         {
             int measures = 0;
@@ -64,10 +70,7 @@ namespace MCGalaxy.Network
             double ms = 100000000;
             for (int i = 0; i < Entries.Length; i++)
             {
-                if (Valid(i)) 
-                { 
-                    ms = Math.Min(ms, Entries[i].Latency);
-                }
+                if (Valid(i)) { ms = Math.Min(ms, Entries[i].Latency); }
             }
             return (int)ms;
         }
@@ -77,10 +80,7 @@ namespace MCGalaxy.Network
             int measures = 0;
             for (int i = 0; i < Entries.Length; i++)
             {
-                if (Valid(i)) 
-                { 
-                    ms += Entries[i].Latency; measures++;
-                }
+                if (Valid(i)) { ms += Entries[i].Latency; measures++; }
             }
             return measures == 0 ? 0 : (int)(ms / measures);
         }
@@ -89,10 +89,7 @@ namespace MCGalaxy.Network
             double ms = 0;
             for (int i = 0; i < Entries.Length; i++)
             {
-                if (Valid(i)) 
-                { 
-                    ms = Math.Max(ms, Entries[i].Latency);
-                }
+                if (Valid(i)) { ms = Math.Max(ms, Entries[i].Latency); }
             }
             return (int)ms;
         }

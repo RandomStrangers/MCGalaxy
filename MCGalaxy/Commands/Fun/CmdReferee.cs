@@ -20,20 +20,20 @@ namespace MCGalaxy.Commands.Fun
         public override string Name => "Referee";
         public override string Shortcut => "Ref";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             if (p.Game.Referee)
             {
                 Chat.MessageFrom(p, "λNICK &Sis no longer a referee", Chat.FilterVisible(p));
-                OnPlayerActionEvent.Call(p, 2);
+                OnPlayerActionEvent.Call(p, PlayerAction.UnReferee);
                 p.Game.Referee = false;
             }
             else
             {
                 Chat.MessageFrom(p, "λNICK &Sis now a referee", Chat.FilterVisible(p));
-                OnPlayerActionEvent.Call(p, 1);
+                OnPlayerActionEvent.Call(p, PlayerAction.Referee);
                 p.Game.Referee = true;
             }
             p.SetPrefix();

@@ -14,31 +14,33 @@
  */
 namespace MCGalaxy.Commands.World
 {
-    public sealed class CmdDeleteLvl : Command2
+    public sealed class CmdDeleteLvl : Command
     {
         public override string Name => "DeleteLvl";
         public override string Type => CommandTypes.World;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
+        public const string BACKUP_FLAG = "*backup";
+        public static readonly CommandAlias BackupAlias = new("DeleteBackup", BACKUP_FLAG);
         public override CommandAlias[] Aliases => new[] {
                     new CommandAlias("WDelete"), new CommandAlias("WorldDelete"), new CommandAlias("WRemove"),
-                    new("DeleteBackup", "*backup")
+                    BackupAlias
                 };
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(120, "can delete backups of levels") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Owner, "can delete backups of levels") };
         public override bool MessageBlockRestricted => true;
-        public override void Use(Player p, string message, CommandData data)
+        public override void Use(Player p, string message)
         {
             if (message.Length == 0) { Help(p); return; }
             string[] words = message.SplitSpaces(2);
-            if (words[0].CaselessEq("*backup"))
+            if (words[0].CaselessEq(BACKUP_FLAG))
             {
-                if (!CheckExtraPerm(p, data, 1)) return;
+                if (!CheckExtraPerm(p, 1)) return;
                 UseBackup(p, words.Length >= 2 ? words[1] : "", false);
                 return;
             }
             if (words.Length > 1) { Help(p); return; }
             string map = Matcher.FindMaps(p, message);
             if (map == null) return;
-            if (!LevelInfo.Check(p, data.Rank, map, "delete this map", out LevelConfig cfg)) return;
+            if (!LevelInfo.Check(p, p.Rank, map, "delete this map", out LevelConfig cfg)) return;
             if (!LevelActions.Delete(p, map)) return;
             Chat.MessageGlobal("Level {0} &Swas deleted", cfg.Color + map);
         }
@@ -66,13 +68,13 @@ namespace MCGalaxy.Commands.World
                     backup, map);
                 if (os)
                 {
-                    p.Message("If you are sure, type &T/os delete *backup {0} confirm", backup);
+                    p.Message("If you are sure, type &T/os delete {0} {1} confirm", BACKUP_FLAG, backup);
                 }
                 else
                 {
                     // Don't use message, since they could have typed /deletebackup earth 1 derp
                     // and it should not tell you to type "[...] derp confirm"
-                    p.Message("If you are sure, type &T/DeleteBackup {0} {1} confirm", map, backup);
+                    p.Message("If you are sure, type &T/{0} {1} {2} confirm", BackupAlias.Trigger, map, backup);
                 }
                 return;
             }
@@ -87,7 +89,7 @@ namespace MCGalaxy.Commands.World
         }
         public static void HelpBackup(Player p)
         {
-            p.Message("&T/DeleteLvl *backup [level] [backup]");
+            p.Message("&T/DeleteLvl {0} [level] [backup]", BACKUP_FLAG);
             p.Message("&H-Permanently- deletes [backup] of [level].");
         }
     }

@@ -19,8 +19,8 @@ namespace MCGalaxy.Commands.Chatting
         public override string Name => "LoginMessage";
         public override string Shortcut => "LoginMsg";
         public override string Type => CommandTypes.Chat;
-        public override sbyte DefaultRank => 80;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can change the login message of others") };
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can change the login message of others") };
         public override void Use(Player p, string message, CommandData data) => UsePlayer(p, data, message, "login message");
         protected override void SetPlayerData(Player p, string target, string msg) => PlayerOperations.SetLoginMessage(p, target, msg);
         public override void Help(Player p)

@@ -56,14 +56,14 @@ namespace MCGalaxy.Modules.Relay.Discord
         public void Load()
         {
             // create default config file
-            if (!File.Exists("props/discordbot.properties")) Save();
+            if (!File.Exists(PROPS_PATH)) Save();
             cfg ??= ConfigElement.GetAll(typeof(DiscordConfig));
-            ConfigElement.ParseFile(cfg, "props/discordbot.properties", this);
+            ConfigElement.ParseFile(cfg, PROPS_PATH, this);
         }
         public void Save()
         {
             cfg ??= ConfigElement.GetAll(typeof(DiscordConfig));
-            using StreamWriter w = FileIO.CreateGuarded("props/discordbot.properties");
+            using StreamWriter w = FileIO.CreateGuarded(PROPS_PATH);
             w.WriteLine("# Discord relay bot configuration");
             w.WriteLine("# See https://github.com/ClassiCube/MCGalaxy/wiki/Discord-relay-bot/");
             w.WriteLine();
@@ -77,8 +77,8 @@ namespace MCGalaxy.Modules.Relay.Discord
         public override string Name => "DiscordRelay";
         public static DiscordConfig Config = new();
         public static DiscordBot Bot = new();
-        static readonly Command cmdDiscordBot = new CmdDiscordBot(),
-            cmdDiscordCtrls = new CmdDiscordControllers();
+        static readonly Command cmdDiscordBot = new CmdDiscordBot();
+        static readonly Command cmdDiscordCtrls = new CmdDiscordControllers();
         public override void Load(bool startup)
         {
             Server.EnsureDirectoryExists("text/discord");
@@ -86,7 +86,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             Bot.Config = Config;
             Bot.ReloadConfig();
             Bot.Connect();
-            OnConfigUpdatedEvent.Register(OnConfigUpdated, 0);
+            OnConfigUpdatedEvent.Register(OnConfigUpdated, Priority.Low);
         }
         public override void Unload(bool shutdown)
         {

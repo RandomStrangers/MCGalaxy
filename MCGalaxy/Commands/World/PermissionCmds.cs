@@ -18,7 +18,7 @@ namespace MCGalaxy.Commands.World
     {
         public override string Type => CommandTypes.World;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public static bool Do(Player p, string[] args, int offset, bool max,
                               AccessController access, CommandData data, Level lvl)
         {
@@ -137,7 +137,7 @@ namespace MCGalaxy.Commands.World
         public override string Shortcut => "WBuild";
         public override bool IsVisit => false;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("WorldBuild"), new CommandAlias("PerBuildMax", "-max") };
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "bypass max build rank restriction") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "bypass max build rank restriction") };
     }
     public sealed class CmdPermissionVisit : LevelPermissionCmd
     {
@@ -145,6 +145,6 @@ namespace MCGalaxy.Commands.World
         public override string Shortcut => "WAccess";
         public override bool IsVisit => true;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("WorldAccess"), new CommandAlias("PerVisitMax", "-max") };
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "bypass max visit rank restriction") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "bypass max visit rank restriction") };
     }
 }

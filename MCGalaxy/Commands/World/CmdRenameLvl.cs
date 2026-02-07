@@ -18,7 +18,7 @@ namespace MCGalaxy.Commands.World
     {
         public override string Name => "RenameLvl";
         public override string Type => CommandTypes.World;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("WRename"), new CommandAlias("WorldRename") };
         public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)

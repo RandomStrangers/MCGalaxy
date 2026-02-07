@@ -25,7 +25,10 @@ namespace MCGalaxy.Tasks
         readonly AutoResetEvent handle = new(false);
         readonly object taskLock = new();
         volatile SchedulerTask curTask; // for .ToString()
-        public Scheduler(string name) => Server.StartThread(out _, name, Loop);
+        public Scheduler(string name)
+        {
+            Server.StartThread(out _, name, Loop);
+        }
         /// <summary> Queues an action that is asynchronously executed one time, as soon as possible. </summary>
         public SchedulerTask QueueOnce(SchedulerCallback callback) => EnqueueTask(new SchedulerTask(callback, null, TimeSpan.Zero, false));
         /// <summary> Queues an action that is asynchronously executed one time, after a certain delay. </summary>

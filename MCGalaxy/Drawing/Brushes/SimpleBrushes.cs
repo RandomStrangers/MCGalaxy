@@ -18,7 +18,10 @@ namespace MCGalaxy.Drawing.Brushes
     public sealed class SolidBrush : Brush
     {
         readonly ushort block;
-        public SolidBrush(ushort block) => this.block = block;
+        public SolidBrush(ushort block)
+        {
+            this.block = block;
+        }
         public override string Name => "Normal";
         public override ushort NextBlock(DrawOp op) => block;
     }
@@ -47,7 +50,7 @@ namespace MCGalaxy.Drawing.Brushes
     public class CheckeredPaletteBrush : Brush
     {
         readonly ushort[] blocks;
-        public CheckeredPaletteBrush(ushort[] blocks) => this.blocks = blocks;
+        public CheckeredPaletteBrush(ushort[] blocks) { this.blocks = blocks; }
         public override string Name => "Checkered";
         public override ushort NextBlock(DrawOp op)
         {

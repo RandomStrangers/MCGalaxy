@@ -21,7 +21,7 @@ namespace MCGalaxy.Commands.Building
         public override string Name => "Palette";
         public override string Shortcut => "ImgPalette";
         public override string Type => CommandTypes.Building;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(5);

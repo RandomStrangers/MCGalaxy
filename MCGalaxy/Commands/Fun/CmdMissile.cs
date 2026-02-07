@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.Fun
     {
         public override string Name => "Missile";
         public override string Type => CommandTypes.Other;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
@@ -31,17 +31,17 @@ namespace MCGalaxy.Commands.Fun
             {
                 p.weapon.Disable(); return;
             }
-            int type = Weapon.ParseType(message);
-            if (type == 0) { Help(p); return; }
+            WeaponType type = Weapon.ParseType(message);
+            if (type == WeaponType.Invalid) { Help(p); return; }
             Missile missile = GetMissile(type);
             missile.type = type;
             missile.Enable(p);
         }
-        static Missile GetMissile(int type)
+        static Missile GetMissile(WeaponType type)
         {
-            if (type == 2) return new PenetrativeMissile();
-            if (type == 3) return new TeleportMissile();
-            if (type == 4) return new ExplosiveMissile();
+            if (type == WeaponType.Destroy) return new PenetrativeMissile();
+            if (type == WeaponType.Teleport) return new TeleportMissile();
+            if (type == WeaponType.Explode) return new ExplosiveMissile();
             return new Missile();
         }
         public override void Help(Player p)

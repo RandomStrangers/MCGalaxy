@@ -66,12 +66,12 @@ namespace MCGalaxy.Blocks.Physics
                 {
                     ushort block = GetSurvivalBlock(p, x, min.Y, z);
                     byte collide = p.Level.CollideType(block);
-                    allGas = allGas && collide == 0;
-                    if (!DefaultSet.IsSolid(collide)) continue;
+                    allGas = allGas && collide == CollideType.WalkThrough;
+                    if (!CollideType.IsSolid(collide)) continue;
                     int fallHeight = p.startFallY - bb.Min.Y;
                     if (fallHeight > p.Level.Config.FallHeight * 32)
                     {
-                        p.HandleDeath(0, null, false, true);
+                        p.HandleDeath(Block.Air, null, false, true);
                     }
                     p.startFallY = -1;
                     return;
@@ -105,7 +105,7 @@ namespace MCGalaxy.Blocks.Physics
             }
             else
             {
-                bool isGas = p.Level.CollideType(bHead) == 0;
+                bool isGas = p.Level.CollideType(bHead) == CollideType.WalkThrough;
                 // NOTE: Rope is a special case, it should always reset fall height
                 if (bHead == Block.Rope) isGas = false;
                 if (!isGas) p.startFallY = -1;

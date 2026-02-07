@@ -18,14 +18,13 @@ namespace MCGalaxy.Blocks.Physics
     {
         public static void Do(Level lvl, ref PhysInfo C)
         {
-            if (C.Data.Type1 != 7)
+            if (C.Data.Type1 != PhysicsArgs.Custom)
             {
-                C.Data.Data = 255; 
-                return;
+                C.Data.Data = PhysicsArgs.RemoveFromChecks; return;
             }
             if (C.Data.Data == 0)
             {
-                ushort block = (ushort)(C.Data.Value2 | (C.Data.ExtBlock << 8));
+                ushort block = (ushort)(C.Data.Value2 | (C.Data.ExtBlock << Block.ExtendedShift));
                 bool tdoor = lvl.Props[block].IsTDoor;
                 if (tdoor) TDoor(lvl, ref C);
                 else Door(lvl, ref C);
@@ -39,37 +38,37 @@ namespace MCGalaxy.Blocks.Physics
                 PhysicsArgs dArgs = default;
                 dArgs.ExtBlock = C.Data.ExtBlock;
                 lvl.AddUpdate(C.Index, C.Data.Value2, dArgs);
-                C.Data.Data = 255;
+                C.Data.Data = PhysicsArgs.RemoveFromChecks;
             }
         }
         // Change anys door blocks nearby into air forms
         static void Door(Level lvl, ref PhysInfo C)
         {
-            ushort x = C.X, y = C.Y, z = C.Z,
-                block = (ushort)(C.Data.Value2 | (C.Data.ExtBlock << 8));
-            bool instant = block == 164 || block == 165;
+            ushort x = C.X, y = C.Y, z = C.Z;
+            ushort block = (ushort)(C.Data.Value2 | (C.Data.ExtBlock << Block.ExtendedShift));
+            bool instant = block == Block.Door_Air || block == Block.Door_AirActivatable;
             ActivateablePhysics.DoDoors(lvl, (ushort)(x + 1), y, z, instant);
             ActivateablePhysics.DoDoors(lvl, (ushort)(x - 1), y, z, instant);
             ActivateablePhysics.DoDoors(lvl, x, y, (ushort)(z + 1), instant);
             ActivateablePhysics.DoDoors(lvl, x, y, (ushort)(z - 1), instant);
             ActivateablePhysics.DoDoors(lvl, x, (ushort)(y - 1), z, instant);
             ActivateablePhysics.DoDoors(lvl, x, (ushort)(y + 1), z, instant);
-            if (block == 119 && lvl.LevelPhysics != 5)
+            if (block == Block.Door_Green && lvl.LevelPhysics != 5)
             {
                 ActivateablePhysics.DoNeighbours(lvl, x, y, z);
             }
         }
         public static void ODoor(Level lvl, ref PhysInfo C)
         {
-            ushort x = C.X, y = C.Y, z = C.Z,
-                block = C.Block;
+            ushort x = C.X, y = C.Y, z = C.Z;
+            ushort block = C.Block;
             ActivateODoor(lvl, block, (ushort)(x - 1), y, z);
             ActivateODoor(lvl, block, (ushort)(x + 1), y, z);
             ActivateODoor(lvl, block, x, (ushort)(y - 1), z);
             ActivateODoor(lvl, block, x, (ushort)(y + 1), z);
             ActivateODoor(lvl, block, x, y, (ushort)(z - 1));
             ActivateODoor(lvl, block, x, y, (ushort)(z + 1));
-            C.Data.Data = 255;
+            C.Data.Data = PhysicsArgs.RemoveFromChecks;
         }
         static void ActivateODoor(Level lvl, ushort target, ushort x, ushort y, ushort z)
         {
@@ -96,7 +95,7 @@ namespace MCGalaxy.Blocks.Physics
             if (lvl.Props[block].IsTDoor)
             {
                 PhysicsArgs args = ActivateablePhysics.GetTDoorArgs(block);
-                lvl.AddUpdate(index, 0, args);
+                lvl.AddUpdate(index, Block.Air, args);
             }
         }
     }

@@ -1,3 +1,4 @@
+using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Modules.Warps;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
@@ -6,61 +7,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using NASBlockExistAction =
+    MCGalaxy.NASAction<MCGalaxy.NASPlayer,
+    MCGalaxy.NASBlock, bool, ushort, ushort, ushort>;
+using NASBlockInteraction =
+    MCGalaxy.NASAction<MCGalaxy.NASPlayer, MCGalaxy.Events.PlayerEvents.MouseButton, MCGalaxy.Events.PlayerEvents.MouseAction,
+    MCGalaxy.NASBlock, ushort, ushort, ushort>;
 namespace MCGalaxy
 {
-    public class Container
-    {
-        public const int ToolLimit = 30, BlockStackLimit = 30;
-        public NASType type;
-        public string Name => Enum.GetName(typeof(NASType), type);
-        public string Description
-        {
-            get
-            {
-                string desc = "&s";
-                desc += type switch
-                {
-                    NASType.Chest => Name + "s&S can store &btools&S, with a limit of " + ToolLimit + ".",
-                    NASType.Barrel or NASType.Crate or NASType.Dispenser => Name + "s&S can store &bblock&S stacks, with a limit of " + BlockStackLimit + ".",
-                    _ => throw new("Invalid value for Type"),
-                };
-                return desc;
-            }
-        }
-        public Container() { }
-        public Container(Container parent) => type = parent.type;
-    }
-    public class BlockEntity
-    {
-        public string lockedBy = "",
-            blockText = "";
-        public int strength = 0,
-            type = 0,
-            direction = 0;
-        public Drop drop = null;
-        [JsonIgnore]
-        public string FormattedNameOfLocker
-        {
-            get
-            {
-                if (lockedBy.Length == 0)
-                {
-                    return "no one";
-                }
-                Player locker = PlayerInfo.FindExact(lockedBy);
-                return locker == null ? lockedBy : locker.ColoredName;
-            }
-        }
-        public bool CanAccess(NASPlayer np) => lockedBy.Length == 0 || lockedBy == np.p.name;
-    }
-    public enum NASType
-    {
-        Chest, Barrel, Crate,
-        Gravestone, AutoCraft, Dispenser
-    }
     public partial class NASBlock
     {
-        public const string Path = NASPlayer.Path + "Blocks/";
+        public const string Path = NASPlugin.SavePath + "Blocks/";
         public static List<string> books = ReadAllLinesList("text/BookTitles.txt"),
             authors = ReadAllLinesList("text/BookAuthors.txt");
         public static ushort[] waffleSet = { 256 | 542, 256 | 543 },
@@ -85,44 +42,89 @@ namespace MCGalaxy
             return lines;
         }
         public static string GetTextPath(Player p) => Path + p.name + ".txt";
-        public static Action<NASPlayer,
-    NASBlock, bool, ushort, ushort, ushort> WaterExistAction() => (np, nasBlock, exists, x, y, z) =>
+        public class NASBlockEntity
+        {
+            public string lockedBy = "",
+                blockText = "";
+            public int strength = 0, 
+                type = 0,
+                direction = 0;
+            public NASDrop drop = null;
+            [JsonIgnore]
+            public string FormattedNameOfLocker
+            {
+                get
+                {
+                    if (lockedBy.Length == 0)
+                    {
+                        return "no one";
+                    }
+                    Player locker = PlayerInfo.FindExact(lockedBy);
+                    return locker == null ? lockedBy : locker.ColoredName;
+                }
+            }
+            public bool CanAccess(NASPlayer np) => lockedBy.Length == 0 || lockedBy == np.p.name;
+        }
+        public class NASContainer
+        {
+            public const int ToolLimit = 27, BlockStackLimit = 27;
+            public enum NASContainerType 
+            {
+                Chest, Barrel, Crate, 
+                Gravestone, AutoCraft, Dispenser 
+            }
+            public NASContainerType type;
+            public string Name => Enum.GetName(typeof(NASContainerType), type);
+            public string Description
+            {
+                get
+                {
+                    string desc = "&s";
+                    desc += type switch
+                    {
+                        NASContainerType.Chest => Name + "s&S can store &btools&S, with a limit of " + ToolLimit + ".",
+                        NASContainerType.Barrel or NASContainerType.Crate or NASContainerType.Dispenser => Name + "s&S can store &bblock&S stacks, with a limit of " + BlockStackLimit + ".",
+                        _ => throw new Exception("Invalid value for Type"),
+                    };
+                    return desc;
+                }
+            }
+            public NASContainer() { }
+            public NASContainer(NASContainer parent) => type = parent.type;
+        }
+        public static NASBlockExistAction WaterExistAction() => (np, nasBlock, exists, x, y, z) =>
                                                                          {
                                                                              if (exists)
                                                                              {
                                                                                  np.inventory.SetAmount(143, 1, false, false);
                                                                              }
                                                                          };
-        public static Action<NASPlayer,
-    NASBlock, bool, ushort, ushort, ushort> LavaExistAction() => (np, nasBlock, exists, x, y, z) =>
+        public static NASBlockExistAction LavaExistAction() => (np, nasBlock, exists, x, y, z) =>
                                                                         {
                                                                             if (exists)
                                                                             {
                                                                                 np.inventory.SetAmount(697, 1, false, false);
                                                                             }
                                                                         };
-        public static Action<NASPlayer, int, int,
-    NASBlock, ushort, ushort, ushort> BookshelfInteraction() => (np, button, action, nasBlock, x, y, z) =>
+        public static NASBlockInteraction BookshelfInteraction() => (np, button, action, nasBlock, x, y, z) =>
                                                                              {
-                                                                                 if (action == 0)
+                                                                                 if (action == MouseAction.Pressed)
                                                                                  {
                                                                                      return;
                                                                                  }
                                                                                  np.Message(books[r.Next(0, 99)] + " by " + authors[r.Next(0, 74)]);
                                                                              };
-        public static Action<NASPlayer, int, int,
-    NASBlock, ushort, ushort, ushort> CrateInteraction(string text) => (np, button, action, nasBlock, x, y, z) =>
+        public static NASBlockInteraction CrateInteraction(string text) => (np, button, action, nasBlock, x, y, z) =>
                                                                                     {
-                                                                                        if (action == 0)
+                                                                                        if (action == MouseAction.Pressed)
                                                                                         {
                                                                                             return;
                                                                                         }
                                                                                         np.Message(text);
                                                                                     };
-        public static Action<NASPlayer, int, int,
-    NASBlock, ushort, ushort, ushort> BedInteraction() => (np, button, action, nasBlock, x, y, z) =>
+        public static NASBlockInteraction BedInteraction() => (np, button, action, nasBlock, x, y, z) =>
                                                                        {
-                                                                           if (action == 0 || button != 1)
+                                                                           if (action == MouseAction.Pressed || button != MouseButton.Right)
                                                                            {
                                                                                return;
                                                                            }
@@ -157,10 +159,9 @@ namespace MCGalaxy
                                                                                Chat.MessageChat(np.p, "&fSay thanks to " + np.p.ColoredName + " &ffor skipping the night!", null, true);
                                                                            }
                                                                        };
-        public static Action<NASPlayer, int, int,
-    NASBlock, ushort, ushort, ushort> SmithingTableAction() => (np, button, action, nasBlock, x, y, z) =>
+        public static NASBlockInteraction SmithingTableAction() => (np, button, action, nasBlock, x, y, z) =>
                                                                             {
-                                                                                if (action == 0 || button != 1)
+                                                                                if (action == MouseAction.Pressed || button != MouseButton.Right)
                                                                                 {
                                                                                     return;
                                                                                 }
@@ -221,8 +222,7 @@ namespace MCGalaxy
                                                                                 }
                                                                                 np.Message("No valid recipes available.");
                                                                             };
-        public static Action<NASPlayer,
-    NASBlock, bool, ushort, ushort, ushort> BeaconInteractAction() => (np, nasBlock, exists, x, y, z) =>
+        public static NASBlockExistAction BeaconInteractAction() => (np, nasBlock, exists, x, y, z) =>
                                                                              {
                                                                                  if (exists)
                                                                                  {
@@ -235,7 +235,7 @@ namespace MCGalaxy
                                                                                      }
                                                                                      np.SendToMain();
                                                                                      np.lastGroundedLocation = new(Server.mainLevel.SpawnPos.X, Server.mainLevel.SpawnPos.Y, Server.mainLevel.SpawnPos.Z);
-                                                                                     NASBlockChange.InvInfo invInfo = new()
+                                                                                     NASBlockChange.NASInvInfo invInfo = new()
                                                                                      {
                                                                                          np = np,
                                                                                          inv = inv
@@ -245,13 +245,12 @@ namespace MCGalaxy
                                                                              };
         public static void InvTask(SchedulerTask task)
         {
-            if (!((NASBlockChange.InvInfo)task.State).inv)
+            if (!((NASBlockChange.NASInvInfo)task.State).inv)
             {
-                ((NASBlockChange.InvInfo)task.State).np.p.invincible = false;
+                ((NASBlockChange.NASInvInfo)task.State).np.p.invincible = false;
             }
         }
-        public static Action<NASPlayer,
-    NASBlock, bool, ushort, ushort, ushort> BedBeaconAction() => (np, nasBlock, exists, x, y, z) =>
+        public static NASBlockExistAction BedBeaconAction() => (np, nasBlock, exists, x, y, z) =>
                                                                         {
                                                                             if (exists)
                                                                             {
@@ -266,8 +265,7 @@ namespace MCGalaxy
                                                                                 np.Die("");
                                                                             }
                                                                         };
-        public static Action<NASPlayer,
-    NASBlock, bool, ushort, ushort, ushort> MessageExistAction() => (np, nasBlock, exists, x, y, z) =>
+        public static NASBlockExistAction MessageExistAction() => (np, nasBlock, exists, x, y, z) =>
                                                                            {
                                                                                if (exists)
                                                                                {
@@ -283,10 +281,9 @@ namespace MCGalaxy
                                                                                }
                                                                                np.nl.blockEntities.Remove(x + " " + y + " " + z);
                                                                            };
-        public static Action<NASPlayer, int, int,
-    NASBlock, ushort, ushort, ushort> StripInteraction(ushort toThis, string checkString = "Axe") => (np, button, action, nasBlock, x, y, z) =>
+        public static NASBlockInteraction StripInteraction(ushort toThis, string checkString = "Axe") => (np, button, action, nasBlock, x, y, z) =>
                                                                                                                   {
-                                                                                                                      if (action == 0 || button != 1)
+                                                                                                                      if (action == MouseAction.Pressed || button != MouseButton.Right)
                                                                                                                       {
                                                                                                                           return;
                                                                                                                       }
@@ -301,8 +298,7 @@ namespace MCGalaxy
                                                                                                                           np.nl.SetBlock(x, y, z, toThis);
                                                                                                                       }
                                                                                                                   };
-        public static Action<NASPlayer, int, int,
-    NASBlock, ushort, ushort, ushort> MessageInteraction() => (np, button, action, nasBlock, x, y, z) =>
+        public static NASBlockInteraction MessageInteraction() => (np, button, action, nasBlock, x, y, z) =>
                                                                            {
                                                                                string file = GetTextPath(np.p);
                                                                                if (!File.Exists(file))
@@ -315,16 +311,16 @@ namespace MCGalaxy
                                                                                    np.nl.blockEntities.Add(x + " " + y + " " + z, new());
                                                                                    np.Message("This sign's data got deleted. Now, it's a public sign!");
                                                                                }
-                                                                               BlockEntity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
-                                                                               if (action == 0 | button == 0)
+                                                                               NASBlockEntity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
+                                                                               if (action == MouseAction.Pressed | button == MouseButton.Left)
                                                                                {
                                                                                    return;
                                                                                }
-                                                                               if (button == 1)
+                                                                               if (button == MouseButton.Right)
                                                                                {
                                                                                    np.Message(bEntity.blockText);
                                                                                }
-                                                                               if ((button == 2) && (myText != ""))
+                                                                               if ((button == MouseButton.Middle) && (myText != ""))
                                                                                {
                                                                                    if (!bEntity.CanAccess(np))
                                                                                    {
@@ -335,8 +331,7 @@ namespace MCGalaxy
                                                                                    np.Message("Overwritten!");
                                                                                }
                                                                            };
-        public static Action<NASPlayer,
-    NASBlock, bool, ushort, ushort, ushort> LavaBarrelAction() => (np, nasBlock, exists, x, y, z) =>
+        public static NASBlockExistAction LavaBarrelAction() => (np, nasBlock, exists, x, y, z) =>
                                                                          {
                                                                              if (exists)
                                                                              {
@@ -395,8 +390,7 @@ namespace MCGalaxy
                                                                                  }
                                                                              }
                                                                          };
-        public static Action<NASPlayer,
-    NASBlock, bool, ushort, ushort, ushort> SmithingAction() => (np, nasBlock, exists, x, y, z) =>
+        public static NASBlockExistAction SmithingAction() => (np, nasBlock, exists, x, y, z) =>
                                                                        {
                                                                            if (exists)
                                                                            {
@@ -405,10 +399,9 @@ namespace MCGalaxy
                                                                                np.Message("Then right click with the tool you want to repair.");
                                                                            }
                                                                        };
-        public static Action<NASPlayer, int, int,
-    NASBlock, ushort, ushort, ushort> PortalInteraction() => (np, button, action, nasBlock, x, y, z) =>
+        public static NASBlockInteraction PortalInteraction() => (np, button, action, nasBlock, x, y, z) =>
                                                                           {
-                                                                              if (button != 1 || action == 0)
+                                                                              if (button != MouseButton.Right || action == MouseAction.Pressed)
                                                                               {
                                                                                   return;
                                                                               }
@@ -484,10 +477,9 @@ namespace MCGalaxy
                                                                               }
                                                                               np.NetherTravel(newLevel, new(np.p, levelX - lvlX, levelZ - lvlZ, withX, withY + dY, withZ));
                                                                           };
-        public static Action<NASPlayer,
-    NASBlock, bool, ushort, ushort, ushort> ContainerExistAction() => (np, nasBlock, exists, x, y, z) =>
+        public static NASBlockExistAction ContainerExistAction() => (np, nasBlock, exists, x, y, z) =>
                                                                              {
-                                                                                 if (exists && nasBlock.container.type == NASType.Barrel)
+                                                                                 if (exists && nasBlock.container.type == NASContainer.NASContainerType.Barrel)
                                                                                  {
                                                                                      if (
                                                                                          IsPartOfSet(waterSet, np.nl.GetBlock(x, y + 1, z)) != -1 ||
@@ -505,7 +497,7 @@ namespace MCGalaxy
                                                                                  }
                                                                                  if (exists)
                                                                                  {
-                                                                                     if (nasBlock.container.type == NASType.Gravestone)
+                                                                                     if (nasBlock.container.type == NASContainer.NASContainerType.Gravestone)
                                                                                      {
                                                                                          return;
                                                                                      }
@@ -522,18 +514,17 @@ namespace MCGalaxy
                                                                                  }
                                                                                  np.nl.blockEntities.Remove(x + " " + y + " " + z);
                                                                              };
-        public static Action<NASPlayer, int, int,
-    NASBlock, ushort, ushort, ushort> ChangeInteraction(ushort toggle) => (np, button, action, nasBlock, x, y, z) =>
+        public static NASBlockInteraction ChangeInteraction(ushort toggle) => (np, button, action, nasBlock, x, y, z) =>
                                                                                        {
                                                                                            if (!np.nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                                                                                            {
                                                                                                np.nl.blockEntities.Add(x + " " + y + " " + z, new());
                                                                                            }
-                                                                                           if (action == 0)
+                                                                                           if (action == MouseAction.Pressed)
                                                                                            {
                                                                                                return;
                                                                                            }
-                                                                                           if (button == 1)
+                                                                                           if (button == MouseButton.Right)
                                                                                            {
                                                                                                if (toggle == NASPlugin.FromRaw(675) || toggle == NASPlugin.FromRaw(196))
                                                                                                {
@@ -547,20 +538,19 @@ namespace MCGalaxy
                                                                                                return;
                                                                                            }
                                                                                        };
-        public static Action<NASPlayer, int, int,
-    NASBlock, ushort, ushort, ushort> AutoCraftInteraction() => (np, button, action, nasBlock, x, y, z) =>
+        public static NASBlockInteraction AutoCraftInteraction() => (np, button, action, nasBlock, x, y, z) =>
                                                                              {
-                                                                                 if (action == 0)
+                                                                                 if (action == MouseAction.Pressed)
                                                                                  {
                                                                                      return;
                                                                                  }
-                                                                                 BlockEntity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
-                                                                                 if (button == 2)
+                                                                                 NASBlockEntity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
+                                                                                 if (button == MouseButton.Middle)
                                                                                  {
                                                                                      CheckContents(np, nasBlock, bEntity);
                                                                                      return;
                                                                                  }
-                                                                                 if (button == 0)
+                                                                                 if (button == MouseButton.Left)
                                                                                  {
                                                                                      if (np.inventory.HeldItem.name == "Key")
                                                                                      {
@@ -569,37 +559,36 @@ namespace MCGalaxy
                                                                                      }
                                                                                      np.Message("You can right click to remove items from auto crafters.");
                                                                                  }
-                                                                                 if (button == 1)
+                                                                                 if (button == MouseButton.Right)
                                                                                  {
                                                                                      RemoveAll(np, bEntity, false);
                                                                                      return;
                                                                                  }
                                                                              };
-        public static Action<NASPlayer, int, int,
-    NASBlock, ushort, ushort, ushort> ContainerInteraction() => (np, button, action, nasBlock, x, y, z) =>
+        public static NASBlockInteraction ContainerInteraction() => (np, button, action, nasBlock, x, y, z) =>
                                                                              {
-                                                                                 if (action == 0)
+                                                                                 if (action == MouseAction.Pressed)
                                                                                  {
                                                                                      return;
                                                                                  }
                                                                                  if (np.nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                                                                                  {
-                                                                                     BlockEntity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
-                                                                                     if (!bEntity.CanAccess(np) && button != 2)
+                                                                                     NASBlockEntity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
+                                                                                     if (!bEntity.CanAccess(np) && button != MouseButton.Middle)
                                                                                      {
                                                                                          np.Message("This {0} is locked by {1}&S.", nasBlock.container.Name.ToLower(), bEntity.FormattedNameOfLocker);
                                                                                          return;
                                                                                      }
-                                                                                     if (button == 2)
+                                                                                     if (button == MouseButton.Middle)
                                                                                      {
                                                                                          CheckContents(np, nasBlock, bEntity);
                                                                                          return;
                                                                                      }
-                                                                                     if (button == 0)
+                                                                                     if (button == MouseButton.Left)
                                                                                      {
                                                                                          if (np.inventory.HeldItem.name == "Key")
                                                                                          {
-                                                                                             if (nasBlock.container.type == NASType.Gravestone || nasBlock.container.type == NASType.Dispenser)
+                                                                                             if (nasBlock.container.type == NASContainer.NASContainerType.Gravestone || nasBlock.container.type == NASContainer.NASContainerType.Dispenser)
                                                                                              {
                                                                                                  np.Message("You cannot lock gravestones or dispensers.");
                                                                                              }
@@ -610,12 +599,12 @@ namespace MCGalaxy
                                                                                                  return;
                                                                                              }
                                                                                          }
-                                                                                         if (nasBlock.container.type == NASType.Gravestone)
+                                                                                         if (nasBlock.container.type == NASContainer.NASContainerType.Gravestone)
                                                                                          {
                                                                                              np.Message("You can right click to extract from tombstones.");
                                                                                              return;
                                                                                          }
-                                                                                         if (nasBlock.container.type == NASType.Chest)
+                                                                                         if (nasBlock.container.type == NASContainer.NASContainerType.Chest)
                                                                                          {
                                                                                              AddTool(np, bEntity);
                                                                                          }
@@ -626,7 +615,7 @@ namespace MCGalaxy
                                                                                          np.nl.SimulateSetBlock(x, y, z);
                                                                                          return;
                                                                                      }
-                                                                                     if (button == 1)
+                                                                                     if (button == MouseButton.Right)
                                                                                      {
                                                                                          if (np.inventory.HeldItem.name == "Key")
                                                                                          {
@@ -637,15 +626,15 @@ namespace MCGalaxy
                                                                                                  return;
                                                                                              }
                                                                                          }
-                                                                                         if (nasBlock.container.type == NASType.Chest)
+                                                                                         if (nasBlock.container.type == NASContainer.NASContainerType.Chest)
                                                                                          {
                                                                                              RemoveTool(np, bEntity);
                                                                                          }
-                                                                                         else if (nasBlock.container.type == NASType.Barrel || nasBlock.container.type == NASType.Dispenser)
+                                                                                         else if (nasBlock.container.type == NASContainer.NASContainerType.Barrel || nasBlock.container.type == NASContainer.NASContainerType.Dispenser)
                                                                                          {
                                                                                              RemoveBlocks(np, bEntity);
                                                                                          }
-                                                                                         else if (nasBlock.container.type == NASType.Gravestone)
+                                                                                         else if (nasBlock.container.type == NASContainer.NASContainerType.Gravestone)
                                                                                          {
                                                                                              string file = NASPlugin.GetDeathPath(np.p.name);
                                                                                              if (!File.Exists(file))
@@ -670,18 +659,18 @@ namespace MCGalaxy
                                                                                      }
                                                                                      return;
                                                                                  }
-                                                                                 if (nasBlock.container.type != NASType.Gravestone)
+                                                                                 if (nasBlock.container.type != NASContainer.NASContainerType.Gravestone)
                                                                                  {
                                                                                      np.Message("(BUG) The data inside this {0} was lost, but you can make it functional again by &cdeleting&S then &breplacing&S it.",
                                                                                                   nasBlock.container.Name.ToLower());
                                                                                      np.nl.blockEntities.Add(x + " " + y + " " + z, new());
                                                                                  }
                                                                              };
-        public static void AddTool(NASPlayer np, BlockEntity bEntity)
+        public static void AddTool(NASPlayer np, NASBlockEntity bEntity)
         {
-            if (bEntity.drop != null && bEntity.drop.items.Count >= Container.ToolLimit)
+            if (bEntity.drop != null && bEntity.drop.items.Count >= NASContainer.ToolLimit)
             {
-                np.Message("There can only be {0} tools at most in a chest.", Container.ToolLimit);
+                np.Message("There can only be {0} tools at most in a chest.", NASContainer.ToolLimit);
                 return;
             }
             if (np.inventory.items[np.inventory.selectedItemIndex] == null)
@@ -701,14 +690,14 @@ namespace MCGalaxy
             np.inventory.items[np.inventory.selectedItemIndex] = null;
             np.inventory.UpdateItemDisplay();
         }
-        public static void RemoveTool(NASPlayer np, BlockEntity bEntity)
+        public static void RemoveTool(NASPlayer np, NASBlockEntity bEntity)
         {
             if (bEntity.drop == null)
             {
                 np.Message("There's no tools to extract.");
                 return;
             }
-            Drop taken = new(bEntity.drop.items[bEntity.drop.items.Count - 1]);
+            NASDrop taken = new(bEntity.drop.items[bEntity.drop.items.Count - 1]);
             bool fullInv = true;
             for (int i = 0; i < 27; i++)
             {
@@ -731,7 +720,7 @@ namespace MCGalaxy
         {
             ushort clientushort = np.ConvertBlock(np.p.ClientHeldBlock);
             NASBlock nasBlock = Get(clientushort);
-            BlockEntity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
+            NASBlockEntity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
             if (nasBlock.parentID == 0)
             {
                 np.Message("Select a block to store it.");
@@ -762,7 +751,7 @@ namespace MCGalaxy
                     bEntity.drop = new(nasBlock.parentID, amount);
                     return;
                 }
-                foreach (BlockStack stack in bEntity.drop.blockStacks)
+                foreach (NASBlockStack stack in bEntity.drop.blockStacks)
                 {
                     if (stack.ID == nasBlock.parentID)
                     {
@@ -771,16 +760,16 @@ namespace MCGalaxy
                         return;
                     }
                 }
-                if (bEntity.drop.blockStacks.Count >= Container.BlockStackLimit)
+                if (bEntity.drop.blockStacks.Count >= NASContainer.BlockStackLimit)
                 {
-                    np.Message("It can't contain more than {0} stacks of blocks.", Container.BlockStackLimit);
+                    np.Message("It can't contain more than {0} stacks of blocks.", NASContainer.BlockStackLimit);
                     return;
                 }
                 np.inventory.SetAmount(nasBlock.parentID, -amount, true, true);
                 bEntity.drop.blockStacks.Add(new(nasBlock.parentID, amount));
             }
         }
-        public static void RemoveBlocks(NASPlayer np, BlockEntity bEntity)
+        public static void RemoveBlocks(NASPlayer np, NASBlockEntity bEntity)
         {
             if (bEntity.drop != null && bEntity.drop.blockStacks != null)
             {
@@ -789,10 +778,10 @@ namespace MCGalaxy
                     np.Message("&cTHERE ARE 0 BLOCK STACKS INSIDE WARNING THIS SHOULD NEVER HAPPEN IT SHOULD BE NULL INSTEAD");
                     bEntity.drop.blockStacks = null;
                 }
-                BlockStack bs = null;
+                NASBlockStack bs = null;
                 ushort clientushort = np.ConvertBlock(np.p.ClientHeldBlock);
                 NASBlock nasBlock = Get(clientushort);
-                foreach (BlockStack stack in bEntity.drop.blockStacks)
+                foreach (NASBlockStack stack in bEntity.drop.blockStacks)
                 {
                     if (stack.ID == nasBlock.parentID)
                     {
@@ -823,7 +812,7 @@ namespace MCGalaxy
             }
             np.Message("There's no blocks to extract.");
         }
-        public static void RemoveAll(NASPlayer np, BlockEntity bEntity, bool message)
+        public static void RemoveAll(NASPlayer np, NASBlockEntity bEntity, bool message)
         {
             if (bEntity.drop != null)
             {
@@ -832,7 +821,7 @@ namespace MCGalaxy
             }
             np.Message("There's nothing to extract.");
         }
-        public static void CheckContents(NASPlayer np, NASBlock nb, BlockEntity blockEntity)
+        public static void CheckContents(NASPlayer np, NASBlock nb, NASBlockEntity blockEntity)
         {
             if (blockEntity.drop == null)
             {
@@ -846,20 +835,19 @@ namespace MCGalaxy
                 }
                 if (blockEntity.drop.blockStacks != null)
                 {
-                    foreach (BlockStack bs in blockEntity.drop.blockStacks)
+                    foreach (NASBlockStack bs in blockEntity.drop.blockStacks)
                     {
                         np.Message("There's &f{0} {1}&S inside.", bs.amount, blocks[bs.ID].GetName(np));
                     }
                 }
             }
-            if (nb.container.type == NASType.Gravestone)
+            if (nb.container.type == NASContainer.NASContainerType.Gravestone)
             {
                 return;
             }
             np.Message("&r(&fi&r)&S This {0} is &f{1}&S", nb.container.Name.ToLower(), blockEntity.lockedBy.Length > 0 ? "locked" : "not locked");
         }
-        public static Action<NASPlayer,
-    NASBlock, bool, ushort, ushort, ushort> CraftingExistAction() => (np, nasBlock, exists, x, y, z) =>
+        public static NASBlockExistAction CraftingExistAction() => (np, nasBlock, exists, x, y, z) =>
                                                                             {
                                                                                 if (exists)
                                                                                 {
@@ -871,8 +859,7 @@ namespace MCGalaxy
                                                                                     return;
                                                                                 }
                                                                             };
-        public static Action<NASPlayer,
-    NASBlock, bool, ushort, ushort, ushort> WireExistAction(int strength, int type) => (np, nasBlock, exists, x, y, z) =>
+        public static NASBlockExistAction WireExistAction(int strength, int type) => (np, nasBlock, exists, x, y, z) =>
                                                                                               {
                                                                                                   if (exists)
                                                                                                   {
@@ -888,8 +875,7 @@ namespace MCGalaxy
                                                                                                   np.nl.blockEntities.Remove(x + " " + y + " " + z);
                                                                                                   return;
                                                                                               };
-        public static Action<NASPlayer,
-    NASBlock, bool, ushort, ushort, ushort> WireBreakAction() => (np, nasBlock, exists, x, y, z) =>
+        public static NASBlockExistAction WireBreakAction() => (np, nasBlock, exists, x, y, z) =>
                                                                         {
                                                                             if (!exists)
                                                                             {
@@ -897,8 +883,7 @@ namespace MCGalaxy
                                                                                 return;
                                                                             }
                                                                         };
-        public static Action<NASPlayer,
-    NASBlock, bool, ushort, ushort, ushort> AutoCraftExistAction() => (np, nasBlock, exists, x, y, z) =>
+        public static NASBlockExistAction AutoCraftExistAction() => (np, nasBlock, exists, x, y, z) =>
                                                                              {
                                                                                  if (exists)
                                                                                  {
@@ -917,27 +902,26 @@ namespace MCGalaxy
                                                                                  np.nl.blockEntities.Remove(x + " " + y + " " + z);
                                                                                  return;
                                                                              };
-        public static Action<NASPlayer, int, int,
-    NASBlock, ushort, ushort, ushort> CraftingInteraction() => (np, button, action, nasBlock, x, y, z) =>
+        public static NASBlockInteraction CraftingInteraction() => (np, button, action, nasBlock, x, y, z) =>
                                                                             {
-                                                                                if (action == 0)
+                                                                                if (action == MouseAction.Pressed)
                                                                                 {
                                                                                     return;
                                                                                 }
-                                                                                Recipe recipe = Recipe.GetRecipe(np.nl, x, y, z, nasBlock.station);
+                                                                                NASCrafting.NASRecipe recipe = NASCrafting.GetRecipe(np.nl, x, y, z, nasBlock.station);
                                                                                 if (recipe == null)
                                                                                 {
                                                                                     nasBlock.station.ShowArea(np, x, y, z, new(255, 0, 0, 255), 500, 127);
                                                                                     return;
                                                                                 }
-                                                                                Drop dropClone = new(recipe.drop);
+                                                                                NASDrop dropClone = new(recipe.drop);
                                                                                 if (np.inventory.GetDrop(dropClone, true) != null)
                                                                                 {
                                                                                     return;
                                                                                 }
                                                                                 np.GiveExp(recipe.expGiven);
                                                                                 nasBlock.station.ShowArea(np, x, y, z, new(144, 238, 144, 255), 500);
-                                                                                bool clearCraftingArea = button == 0;
+                                                                                bool clearCraftingArea = button == MouseButton.Left;
                                                                                 Dictionary<ushort, int> patternCost = recipe.PatternCost;
                                                                                 foreach (KeyValuePair<ushort, int> pair in patternCost)
                                                                                 {
@@ -953,7 +937,7 @@ namespace MCGalaxy
                                                                                 }
                                                                                 if (clearCraftingArea)
                                                                                 {
-                                                                                    Crafting.ClearCraftingArea(np.nl, x, y, z, nasBlock.station.ori);
+                                                                                    NASCrafting.ClearCraftingArea(np.nl, x, y, z, nasBlock.station.ori);
                                                                                 }
                                                                                 else
                                                                                 {
@@ -966,10 +950,9 @@ namespace MCGalaxy
                                                                                     }
                                                                                 }
                                                                             };
-        public static Action<NASPlayer, int, int,
-    NASBlock, ushort, ushort, ushort> EatInteraction(ushort[] set, int index, float healthRestored, float chewSeconds = 2) => (np, button, action, nasBlock, x, y, z) =>
+        public static NASBlockInteraction EatInteraction(ushort[] set, int index, float healthRestored, float chewSeconds = 2) => (np, button, action, nasBlock, x, y, z) =>
                                                                                                                                            {
-                                                                                                                                               if (action == 0)
+                                                                                                                                               if (action == MouseAction.Pressed)
                                                                                                                                                {
                                                                                                                                                    return;
                                                                                                                                                }
@@ -979,7 +962,7 @@ namespace MCGalaxy
                                                                                                                                                }
                                                                                                                                                np.isChewing = true;
                                                                                                                                                SchedulerTask taskChew;
-                                                                                                                                               EatInfo eatInfo = new()
+                                                                                                                                               NASEatInfo eatInfo = new()
                                                                                                                                                {
                                                                                                                                                    np = np,
                                                                                                                                                    healthRestored = healthRestored
@@ -994,14 +977,14 @@ namespace MCGalaxy
                                                                                                                                                }
                                                                                                                                                np.nl.SetBlock(x, y, z, set[index + 1]);
                                                                                                                                            };
-        public class EatInfo
+        public class NASEatInfo
         {
             public NASPlayer np;
             public float healthRestored;
         }
         public static void CanEatAgainCallback(SchedulerTask task)
         {
-            EatInfo eatInfo = (EatInfo)task.State;
+            NASEatInfo eatInfo = (NASEatInfo)task.State;
             NASPlayer np = eatInfo.np;
             float healthRestored = eatInfo.healthRestored,
                 roundAdd = ((float)Math.Floor(np.HP * 2f) / 2f) - np.HP;
@@ -1013,7 +996,7 @@ namespace MCGalaxy
             }
             if (healthRestored < 0)
             {
-                np.TakeDamage(-healthRestored, 4);
+                np.TakeDamage(-healthRestored, NASEntity.NASDamageSource.None);
             }
             else
             {

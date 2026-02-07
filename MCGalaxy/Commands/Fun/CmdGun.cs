@@ -19,34 +19,28 @@ namespace MCGalaxy.Commands.Fun
     {
         public override string Name => "Gun";
         public override string Type => CommandTypes.Other;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             if (!p.Level.Config.Guns)
             {
-                p.Message("Guns cannot be used on this map!");
-                return;
+                p.Message("Guns cannot be used on this map!"); return;
             }
             if (p.weapon != null && message.Length == 0)
             {
-                p.weapon.Disable(); 
-                return;
+                p.weapon.Disable(); return;
             }
-            int type = Weapon.ParseType(message);
-            if (type == 0) 
-            { 
-                Help(p); 
-                return; 
-            }
+            WeaponType type = Weapon.ParseType(message);
+            if (type == WeaponType.Invalid) { Help(p); return; }
             GetGun(type).Enable(p);
         }
-        static Gun GetGun(int type)
+        static Gun GetGun(WeaponType type)
         {
-            if (type == 2) return new PenetrativeGun();
-            if (type == 3) return new TeleportGun();
-            if (type == 4) return new ExplosiveGun();
-            if (type == 5) return new LaserGun();
+            if (type == WeaponType.Destroy) return new PenetrativeGun();
+            if (type == WeaponType.Teleport) return new TeleportGun();
+            if (type == WeaponType.Explode) return new ExplosiveGun();
+            if (type == WeaponType.Laser) return new LaserGun();
             return new Gun();
         }
         public override void Help(Player p)

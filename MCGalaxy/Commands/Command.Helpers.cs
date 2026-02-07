@@ -24,10 +24,11 @@ namespace MCGalaxy
             return true;
         }
         protected void SuperRequiresArgs(Player p, string type) => p.Message("When using /{0} from {2}, you must provide a {1}.", Name, type, p.SuperName);
-        protected bool HasExtraPerm(sbyte plRank, int num) => CommandExtraPerms.Find(Name, num).UsableBy(plRank);
-        protected bool CheckExtraPerm(Player p, CommandData data, int num)
+        protected bool HasExtraPerm(string cmd, LevelPermission plRank, int num) => CommandExtraPerms.Find(cmd, num).UsableBy(plRank);
+        public bool HasExtraPerm(LevelPermission plRank, int num) => HasExtraPerm(Name, plRank, num);
+        public bool CheckExtraPerm(Player p, int num)
         {
-            if (HasExtraPerm(data.Rank, num)) return true;
+            if (HasExtraPerm(p.Rank, num)) return true;
             CommandExtraPerms perms = CommandExtraPerms.Find(Name, num);
             perms.MessageCannotUse(p);
             return false;
@@ -35,7 +36,7 @@ namespace MCGalaxy
         protected internal static bool CheckRank(Player p, CommandData data, Player target,
                                                  string action, bool canAffectOwnRank) => CheckRank(p, data, target.name, target.Rank, action, canAffectOwnRank);
         protected internal static bool CheckRank(Player p, CommandData data,
-                                                 string plName, sbyte plRank,
+                                                 string plName, LevelPermission plRank,
                                                  string action, bool canAffectOwnRank)
         {
             if (p.name.CaselessEq(plName)) return true;

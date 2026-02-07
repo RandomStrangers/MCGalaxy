@@ -63,7 +63,7 @@ namespace MCGalaxy
         public string ip;
         public string color;
         public Group group;
-        public sbyte hideRank = -20;
+        public LevelPermission hideRank = LevelPermission.Banned;
         public bool hidden;
         public bool painting;
         public bool checkingBotInfo;
@@ -185,7 +185,7 @@ namespace MCGalaxy
         public Level level;
         public bool Loading = true; //True if player is loading a map.
         internal int UsingGoto, GeneratingMap, LoadingMuseum;
-        public Vec3U16 lastClick = new(0, 0, 0);
+        public Vec3U16 lastClick = Vec3U16.Zero;
         public Position PreTeleportPos;
         public Orientation PreTeleportRot;
         public string PreTeleportMap;
@@ -196,7 +196,7 @@ namespace MCGalaxy
         internal DateTime cmdUnblocked;
         readonly List<DateTime> partialLog;
         public DateTime LastPatrol;
-        public sbyte Rank => group.Permission;
+        public LevelPermission Rank => group.Permission;
         /// <summary> Whether player has completed login process and has been sent initial map. </summary>
         public bool loggedIn;
         public bool verifiedName;

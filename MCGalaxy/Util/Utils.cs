@@ -21,22 +21,6 @@ namespace MCGalaxy
 {
     public static class Utils
     {
-        public static DateTime Floor(this DateTime date, TimeSpan span) => new((date.Ticks / span.Ticks) * span.Ticks);
-        public static bool IsNullOrWhiteSpace(this string value)
-        {
-            if (value as object is null)
-            {
-                return true;
-            }
-            for (int i = 0; i < value.Length; i++)
-            {
-                if (!char.IsWhiteSpace(value[i]))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
         public static string Hex(byte r, byte g, byte b) => "#" + r.ToString("X2") + g.ToString("X2") + b.ToString("X2");
         public static string ToHexString(byte[] data)
         {
@@ -119,7 +103,7 @@ namespace MCGalaxy
                 uint* srcU32 = (uint*)srcByte;
                 while (bytes >= 4)
                 {
-                    *srcU32 = valueU32;
+                    *srcU32 = valueU32; 
                     srcU32++; 
                     bytes -= 4;
                 }
@@ -127,7 +111,7 @@ namespace MCGalaxy
             }
             for (int i = 0; i < bytes; i++)
             {
-                *srcByte = value;
+                *srcByte = value; 
                 srcByte++;
             }
         }

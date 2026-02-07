@@ -62,7 +62,7 @@ namespace MCGalaxy
             cfg ??= ConfigElement.GetAll(typeof(NASEffect));
             if (!ConfigElement.ParseFile(cfg, fileName, this))
             {
-                Logger.Log(15, "NAS: Could not find required effect file {0}", effectName);
+                Logger.Log(LogType.Debug, "NAS: Could not find required effect file {0}", effectName);
                 return false;
             }
             offset = pixelSize / 32;
@@ -70,7 +70,7 @@ namespace MCGalaxy
         }
         public const string Path = NASPlugin.Path + "Effects/";
         public static NASEffect breakMeter, breakEarth, breakLeaves;
-        public static NASEffect[] breakEffects = new NASEffect[(int)NASMaterial.Count];
+        public static NASEffect[] breakEffects = new NASEffect[(int)NASBlock.NASMaterial.Count];
         public static bool Setup()
         {
             breakMeter = new();
@@ -88,11 +88,11 @@ namespace MCGalaxy
             {
                 return false;
             }
-            for (int i = 0; i < (int)NASMaterial.Count; i++)
+            for (int i = 0; i < (int)NASBlock.NASMaterial.Count; i++)
             {
                 breakEffects[i] = breakEarth;
             }
-            breakEffects[(int)NASMaterial.Leaves] = breakLeaves;
+            breakEffects[(int)NASBlock.NASMaterial.Leaves] = breakLeaves;
             return true;
         }
         public static void Define(Player p, byte ID, NASEffect effect, Pixel? color = null, float? lifetime = null)
@@ -149,18 +149,19 @@ namespace MCGalaxy
                                       ));
         public static void Spawn(Player p, byte ID, NASEffect effect, float x, float y, float z, float originX, float originY, float originZ)
         {
-            if (p.Supports(CpeExt.CustomParticles))
+            if (!p.Supports(CpeExt.CustomParticles))
             {
-                x += 0.5f;
-                y += 0.5f;
-                z += 0.5f;
-                y -= effect.offset;
-                originX += 0.5f;
-                originY += 0.5f;
-                originZ += 0.5f;
-                originY -= effect.offset;
-                p.Send(Packet.SpawnEffect(ID, x, y, z, originX, originY, originZ));
+                return;
             }
+            x += 0.5f;
+            y += 0.5f;
+            z += 0.5f;
+            y -= effect.offset;
+            originX += 0.5f;
+            originY += 0.5f;
+            originZ += 0.5f;
+            originY -= effect.offset;
+            p.Send(Packet.SpawnEffect(ID, x, y, z, originX, originY, originZ));
         }
     }
 }

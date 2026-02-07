@@ -12,7 +12,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using MCGalaxy.Games;
 namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdWhere : Command2
@@ -35,10 +34,6 @@ namespace MCGalaxy.Commands.Info
                 if (message.Length == 0) message = p.name;
                 target = PlayerInfo.FindMatches(p, message);
                 if (target == null) return;
-                if (IGame.GameOn(target.Level) != null && !(p.IsSuper || p.Game.Referee))
-                {
-                    p.Message("You can only use /where on people in games when you are in referee mode."); return;
-                }
                 targetName = p.FormatNick((Player)target);
             }
             Entities.DisplayPosition(p, target, targetName);

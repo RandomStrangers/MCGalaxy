@@ -21,7 +21,7 @@ namespace MCGalaxy.Blocks.Physics
         {
             if (lvl.IsAirAt((ushort)x, (ushort)y, (ushort)z, out int index))
             {
-                lvl.AddUpdate(index, 54, default(PhysicsArgs));
+                lvl.AddUpdate(index, Block.Fire, default(PhysicsArgs));
                 return true;
             }
             return false;
@@ -30,24 +30,24 @@ namespace MCGalaxy.Blocks.Physics
                                    int dx, int dy, int dz)
         {
             ushort block = lvl.GetBlock((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz));
-            if (block == 0 || !lvl.Props[block].LavaKills) return;
+            if (block == Block.Air || !lvl.Props[block].LavaKills) return;
             if (dx != 0)
-                lvl.AddUpdate(lvl.PosToInt((ushort)(x + dx), y, z), 54, default(PhysicsArgs));
+                lvl.AddUpdate(lvl.PosToInt((ushort)(x + dx), y, z), Block.Fire, default(PhysicsArgs));
             if (dy != 0)
-                lvl.AddUpdate(lvl.PosToInt(x, (ushort)(y + dy), z), 54, default(PhysicsArgs));
+                lvl.AddUpdate(lvl.PosToInt(x, (ushort)(y + dy), z), Block.Fire, default(PhysicsArgs));
             if (dz != 0)
-                lvl.AddUpdate(lvl.PosToInt(x, y, (ushort)(z + dz)), 54, default(PhysicsArgs));
+                lvl.AddUpdate(lvl.PosToInt(x, y, (ushort)(z + dz)), Block.Fire, default(PhysicsArgs));
         }
         static void ExpandAvanced(Level lvl, int x, int y, int z)
         {
             ushort block = lvl.GetBlock((ushort)x, (ushort)y, (ushort)z, out int index);
-            if (block == 46)
+            if (block == Block.TNT)
             {
                 lvl.MakeExplosion((ushort)x, (ushort)y, (ushort)z, -1);
             }
-            else if (block != 0 && lvl.Props[block].LavaKills)
+            else if (block != Block.Air && lvl.Props[block].LavaKills)
             {
-                lvl.AddUpdate(index, 54, default(PhysicsArgs));
+                lvl.AddUpdate(index, Block.Fire, default(PhysicsArgs));
             }
         }
         public static void Do(Level lvl, ref PhysInfo C)
@@ -108,23 +108,19 @@ namespace MCGalaxy.Blocks.Physics
                 int dropType = rand.Next(1, 10);
                 if (dropType <= 2)
                 {
-                    lvl.AddUpdate(C.Index, 16, default(PhysicsArgs));
-                    C.Data.Type1 = 4; 
-                    C.Data.Value1 = 63;
-                    C.Data.Type2 = 3; 
-                    C.Data.Value2 = 10;
+                    lvl.AddUpdate(C.Index, Block.CoalOre, default(PhysicsArgs));
+                    C.Data.Type1 = PhysicsArgs.Drop; C.Data.Value1 = 63;
+                    C.Data.Type2 = PhysicsArgs.Dissipate; C.Data.Value2 = 10;
                 }
                 else if (dropType <= 4)
                 {
-                    lvl.AddUpdate(C.Index, 49, default(PhysicsArgs));
-                    C.Data.Type1 = 4; 
-                    C.Data.Value1 = 63;
-                    C.Data.Type2 = 3; 
-                    C.Data.Value2 = 10;
+                    lvl.AddUpdate(C.Index, Block.Obsidian, default(PhysicsArgs));
+                    C.Data.Type1 = PhysicsArgs.Drop; C.Data.Value1 = 63;
+                    C.Data.Type2 = PhysicsArgs.Dissipate; C.Data.Value2 = 10;
                 }
                 else if (dropType <= 8)
                 {
-                    lvl.AddUpdate(C.Index, 0, default(PhysicsArgs));
+                    lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
                 }
                 else
                 {

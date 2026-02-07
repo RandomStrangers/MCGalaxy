@@ -1,5 +1,4 @@
 using MCGalaxy.Events.PlayerEvents;
-using MCGalaxy.Maths;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using MCGalaxy.Util.Imaging;
@@ -14,7 +13,7 @@ namespace MCGalaxy
         [JsonIgnore] public bool placePortal = false;
         [JsonIgnore] public int round = 0;
         [JsonIgnore] public bool atBorder = true;
-        [JsonIgnore] public TransferInfo transferInfo = null;
+        [JsonIgnore] public NASTransferInfo transferInfo = null;
         [JsonIgnore]
         public bool CanDoStuffBasedOnPosition
         {
@@ -35,7 +34,7 @@ namespace MCGalaxy
                 }
             }
         }
-        public static void Register() => OnPlayerSpawningEvent.Register(OnPlayerSpawning, 2);
+        public static void Register() => OnPlayerSpawningEvent.Register(OnPlayerSpawning, Priority.High);
         public static void Unregister() => OnPlayerSpawningEvent.Unregister(OnPlayerSpawning);
         public static void OnPlayerSpawning(Player p, ref Position pos, ref byte yaw, ref byte pitch, bool respawning)
         {
@@ -109,13 +108,13 @@ namespace MCGalaxy
                     inventory.DisplayHeldBlock(NASBlock.Default, 0);
                 }
                 CommandData data = p.DefaultCmdData;
-                data.Context = 2;
+                data.Context = CommandContext.SendCmd;
                 Orientation rot = new(Server.mainLevel.rotx, Server.mainLevel.roty);
-                SetLocation(spawnMap, spawnCoords, rot);
+                SetLocation(this, spawnMap, spawnCoords, rot);
                 Log("Teleporting {0} to {1} bed!", p.truename, p.Pronouns.Object);
                 if (!headingToBed)
                 {
-                    SendCpeMessage(100, "&cY O U  D I E D");
+                    SendCpeMessage(CpeMessageType.Announcement, "&cY O U  D I E D");
                     Chat.MessageChat(p, reason, null, true);
                     curFogColor = new(0, 0, 0, 255);
                     curRenderDistance = 1;
@@ -182,7 +181,7 @@ namespace MCGalaxy
             {
                 return;
             }
-            if (NASBlock.Get(Collision.ConvertToClientushort(oldBlock)).collideAction != NASBlock.DefaultSolidCollideAction())
+            if (NASBlock.Get(NASCollision.ConvertToClientushort(oldBlock)).collideAction != NASBlock.DefaultSolidCollideAction())
             {
                 nl.SetBlock(x, y, z, block);
                 nl.lvl.BlockDB.Cache.Add(p, (ushort)x, (ushort)y, (ushort)z, 1 << 2, oldBlock, block);
@@ -213,63 +212,12 @@ namespace MCGalaxy
             {
                 Log("{0}: trying to use /goto to move to the map they logged out in", p.truename);
                 CommandData data = p.DefaultCmdData;
-                data.Context = 2;
+                data.Context = CommandContext.SendCmd;
                 p.HandleCommand("goto", levelName, data);
                 return;
             }
             hasBeenSpawned = true;
             Log("{0}: hasBeenSpawned set to {1}", p.truename, hasBeenSpawned);
-        }
-        public void DoNasBlockCollideActions(Position entityPos)
-        {
-            if (nl != null)
-            {
-                AABB worldAABB = bounds.OffsetPosition(entityPos);
-                worldAABB.Min.X++;
-                worldAABB.Min.Y++;
-                worldAABB.Min.Z++;
-                AABB eyeAABB = eyeBounds.OffsetPosition(entityPos);
-                eyeAABB.Min.X++;
-                eyeAABB.Min.Y++;
-                eyeAABB.Min.Z++;
-                worldAABB = worldAABB.Expand(-1);
-                Vec3S32 min = worldAABB.BlockMin, max = worldAABB.BlockMax;
-                for (int y = min.Y; y <= max.Y; y++)
-                {
-                    for (int z = min.Z; z <= max.Z; z++)
-                    {
-                        for (int x = min.X; x <= max.X; x++)
-                        {
-                            foreach (Player pl in PlayerInfo.Online.Items)
-                            {
-                                ushort xP = (ushort)x, yP = (ushort)y, zP = (ushort)z;
-                                nl.lvl ??= pl.Level;
-                                ushort block = nl.lvl.GetBlock(xP, yP, zP);
-                                if (block == 0)
-                                {
-                                    block = 0;
-                                }
-                                if (block == 0xff)
-                                {
-                                    continue;
-                                }
-                                NASBlock nb = NASBlock.blocksIndexedByServerushort[block];
-                                AABB blockBB = nb.bounds.Offset(x * 32, y * 32, z * 32);
-                                if (!AABB.Intersects(ref worldAABB, ref blockBB))
-                                {
-                                    continue;
-                                }
-                                if (nb == null || nb.collideAction == null)
-                                {
-                                    continue;
-                                }
-                                bool surroundsHead = AABB.Intersects(ref eyeAABB, ref blockBB);
-                                nb.collideAction(this, nb, surroundsHead, xP, yP, zP);
-                            }
-                        }
-                    }
-                }
-            }
         }
         public void DoMovement(Position next, byte _, byte __)
         {
@@ -281,7 +229,7 @@ namespace MCGalaxy
             CheckMapCrossing(p.Pos);
             if (CanDoStuffBasedOnPosition)
             {
-                DoNasBlockCollideActions(next);
+                DoNASBlockCollideActions(next);
             }
             if (CanDoStuffBasedOnPosition)
             {
@@ -305,7 +253,7 @@ namespace MCGalaxy
             }
             Position below = next;
             below.Y -= 2;
-            if (Collision.TouchesGround(p.Level, bounds, below, out float fallDamageMultiplier))
+            if (NASCollision.TouchesGround(p.Level, bounds, below, out float fallDamageMultiplier))
             {
                 float fallHeight = lastGroundedLocation.Y - next.Y;
                 if (!CanDoStuffBasedOnPosition && fallHeight > 0 && !hasBeenSpawned)
@@ -320,7 +268,7 @@ namespace MCGalaxy
                     {
                         float damage = (int)fallHeight * 2;
                         damage /= 4;
-                        TakeDamage(damage * fallDamageMultiplier, 0);
+                        TakeDamage(damage * fallDamageMultiplier, NASDamageSource.Falling);
                     }
                 }
                 lastGroundedLocation = new(next.X, next.Y, next.Z);
@@ -371,7 +319,7 @@ namespace MCGalaxy
             {
                 transferInfo = new(p, dirX, dirZ, -1, -1, -1);
                 CommandData data = p.DefaultCmdData;
-                data.Context = 2;
+                data.Context = CommandContext.SendCmd;
                 p.HandleCommand("goto", mapName, data);
                 return true;
             }
@@ -382,7 +330,7 @@ namespace MCGalaxy
                     Message("&cA map is already generating!");
                     return false;
                 }
-                GenInfo info = new()
+                NASGenInfo info = new()
                 {
                     p = p,
                     mapName = mapName,
@@ -393,7 +341,7 @@ namespace MCGalaxy
                 return false;
             }
         }
-        public bool NetherTravel(string map, TransferInfo trans)
+        public bool NetherTravel(string map, NASTransferInfo trans)
         {
             if (atBorder)
             {
@@ -414,7 +362,7 @@ namespace MCGalaxy
                 transferInfo = trans;
                 placePortal = true;
                 CommandData data = p.DefaultCmdData;
-                data.Context = 2;
+                data.Context = CommandContext.SendCmd;
                 p.HandleCommand("goto", mapName, data);
                 return true;
             }
@@ -425,7 +373,7 @@ namespace MCGalaxy
                     Message("&cA map is already generating!");
                     return false;
                 }
-                GenInfo info = new()
+                NASGenInfo info = new()
                 {
                     p = p,
                     mapName = mapName,
@@ -436,18 +384,18 @@ namespace MCGalaxy
                 return false;
             }
         }
-        public class GenInfo
+        public class NASGenInfo
         {
             public Player p;
             public string mapName, seed;
         }
         public static void GenTask(SchedulerTask task)
         {
-            GenInfo info = (GenInfo)task.State;
+            NASGenInfo info = (NASGenInfo)task.State;
             info.p.Message("Seed is {0}", info.seed);
             GenMap(info);
         }
-        public static void GenMap(GenInfo info)
+        public static void GenMap(NASGenInfo info)
         {
             Level lvl = null;
             try
@@ -468,14 +416,14 @@ namespace MCGalaxy
                 Server.DoGC();
             }
         }
-        public class TransferInfo
+        public class NASTransferInfo
         {
             [JsonIgnore] public Position posBeforeMapChange;
             [JsonIgnore] public byte yawBeforeMapChange, pitchBeforeMapChange;
             [JsonIgnore]
             public int chunkOffsetX, chunkOffsetZ,
                 travelX = -1, travelY = -1, travelZ = -1;
-            public TransferInfo(Player p, int chunkOffsetX, int chunkOffsetZ, int x, int y, int z)
+            public NASTransferInfo(Player p, int chunkOffsetX, int chunkOffsetZ, int x, int y, int z)
             {
                 posBeforeMapChange = p.Pos;
                 yawBeforeMapChange = p.Rot.RotY;
@@ -517,7 +465,7 @@ namespace MCGalaxy
                 }
             }
             curFogColor = ScaleColor(curFogColor, targetFogColor);
-            Send(Packet.EnvMapProperty(4, (int)curRenderDistance));
+            Send(Packet.EnvMapProperty(EnvProp.MaxFog, (int)curRenderDistance));
             Send(Packet.EnvColor(2, curFogColor.R, curFogColor.G, curFogColor.B));
             NASLevel nl = NASLevel.all[p.Level.name];
             int z = next.BlockZ;
@@ -562,7 +510,7 @@ namespace MCGalaxy
                 targetFogColor = new(255, 255, 255, 255);
                 expFog = 0;
             }
-            Send(Packet.EnvMapProperty(8, expFog));
+            Send(Packet.EnvMapProperty(EnvProp.ExpFog, expFog));
         }
         public static Pixel ScaleColor(Pixel cur, Pixel goal)
         {

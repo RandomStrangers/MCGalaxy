@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.Eco
     public sealed class CmdTake : MoneyCmd
     {
         public override string Name => "Take";
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
         {

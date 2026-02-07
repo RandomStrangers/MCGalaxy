@@ -38,17 +38,17 @@ namespace MCGalaxy
         public byte rotx, roty;
         public ushort spawnx, spawny, spawnz;
         public Position SpawnPos => new(16 + spawnx * 32, 32 + spawny * 32, 16 + spawnz * 32);
-        public BlockDefinition[] CustomBlockDefs = new BlockDefinition[1024];
-        public BlockProps[] Props = new BlockProps[1024];
+        public BlockDefinition[] CustomBlockDefs = new BlockDefinition[Block.SUPPORTED_COUNT];
+        public BlockProps[] Props = new BlockProps[Block.SUPPORTED_COUNT];
         public ExtrasCollection Extras = new();
         public VolatileArray<PlayerBot> Bots = new();
         bool unloadedBots;
-        public HandleDelete[] DeleteHandlers = new HandleDelete[1024];
-        public HandlePlace[] PlaceHandlers = new HandlePlace[1024];
-        public HandleWalkthrough[] WalkthroughHandlers = new HandleWalkthrough[1024];
-        public HandlePhysics[] PhysicsHandlers = new HandlePhysics[1024];
-        internal HandlePhysics[] physicsDoorsHandlers = new HandlePhysics[1024];
-        internal AABB[] blockAABBs = new AABB[1024];
+        public HandleDelete[] DeleteHandlers = new HandleDelete[Block.SUPPORTED_COUNT];
+        public HandlePlace[] PlaceHandlers = new HandlePlace[Block.SUPPORTED_COUNT];
+        public HandleWalkthrough[] WalkthroughHandlers = new HandleWalkthrough[Block.SUPPORTED_COUNT];
+        public HandlePhysics[] PhysicsHandlers = new HandlePhysics[Block.SUPPORTED_COUNT];
+        internal HandlePhysics[] physicsDoorsHandlers = new HandlePhysics[Block.SUPPORTED_COUNT];
+        internal AABB[] blockAABBs = new AABB[Block.SUPPORTED_COUNT];
         /// <summary> The width of this level (Number of blocks across in X dimension) </summary>
         public ushort Width;
         /// <summary> The height of this level (Number of blocks tall in Y dimension) </summary>
@@ -93,9 +93,6 @@ namespace MCGalaxy
         bool physThreadStarted = false;
         internal DateTime lastBackup;
         public List<C4Data> C4list = new();
-        public bool CanPlace => Config.Buildable && Config.BuildType != 2;
-        public bool CanDelete => Config.Deletable && Config.BuildType != 2;
-        public int WinChance => Config.RoundsPlayed == 0 ? 100 : Config.RoundsHumanWon * 100 / Config.RoundsPlayed;
         public bool hasPortals, hasMessageBlocks;
     }
 }

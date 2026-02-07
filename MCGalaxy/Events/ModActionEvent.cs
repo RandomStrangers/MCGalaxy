@@ -34,7 +34,7 @@ namespace MCGalaxy.Events
         /// <summary> Player performing the action (e.g. person who is banning). </summary>
         public Player Actor;
         /// <summary> Type of this action. </summary>
-        public int Type;
+        public ModActionType Type;
         /// <summary> Reason provided for the action, can be empty string. Never null. </summary>
         public string Reason;
         /// <summary> Whether the moderation action should be announced publicly to chat, IRC, etc. </summary>
@@ -54,7 +54,7 @@ namespace MCGalaxy.Events
         public TimeSpan Duration;
         /// <summary> Action-specific metadata, see remarks in ModerationActionType for what is in this. </summary>
         public object Metadata;
-        public ModAction(string target, Player actor, int type,
+        public ModAction(string target, Player actor, ModActionType type,
                                 string reason = null, TimeSpan duration = default)
         {
             Target = target;
@@ -67,6 +67,39 @@ namespace MCGalaxy.Events
         }
     }
     public delegate void OnModAction(ModAction action);
+    /// <summary> Types of moderation actions that can occur. To make a mod action logged to /notes, add a new NoteAcronym in NotesPlugin NoteAcronym. </summary>
+    public enum ModActionType
+    {
+        /// <summary> Player was banned. </summary>
+        Ban,
+        /// <summary> Player was unbanned. </summary>
+        Unban,
+        /// <summary> IP address was banned. </summary>
+        BanIP,
+        /// <summary> IP address was unbanned. </summary>
+        UnbanIP,
+        /// <summary> Player was muted. </summary>
+        Muted,
+        /// <summary> Player was unmuted. </summary>
+        Unmuted,
+        /// <summary> Player was frozen. </summary>
+        Frozen,
+        /// <summary> Player was unfrozen. </summary>
+        Unfrozen,
+        /// <summary> Player was given a warning. </summary>
+        Warned,
+        /// <summary> Player has their rank changed. </summary>
+        /// <remarks> Metadata is Group of new rank. </remarks>
+        Rank,
+        /// <summary> Player was kicked from the server. </summary>
+        Kicked,
+        /// <summary> Player was reported </summary>
+        Reported,
+        /// <summary> Player was given a note </summary>
+        Noted,
+        /// <summary> Player was given a note that only operators may read </summary>
+        OpNoted,
+    }
     /// <summary> Raised when a moderation action occurs. </summary>
     public sealed class OnModActionEvent : IEvent<OnModAction>
     {

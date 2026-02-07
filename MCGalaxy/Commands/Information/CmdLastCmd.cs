@@ -20,7 +20,7 @@ namespace MCGalaxy.Commands.Info
         public override string Name => "LastCmd";
         public override string Shortcut => "Last";
         public override string Type => CommandTypes.Information;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override bool UpdatesLastCmd => false;
         public override void Use(Player p, string message, CommandData data)
         {

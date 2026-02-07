@@ -23,7 +23,11 @@ namespace MCGalaxy.Levels.IO
     {
         public override string Extension => ".fcm";
         public override string Description => "fCraft/800Craft/ProCraft map";
-        public override Vec3U16 ReadDimensions(Stream src) => ReadHeader(new(src));
+        public override Vec3U16 ReadDimensions(Stream src)
+        {
+            BinaryReader reader = new(src);
+            return ReadHeader(reader);
+        }
         public override Level Read(Stream src, string name, bool metadata)
         {
             BinaryReader reader = new(src);
@@ -43,12 +47,12 @@ namespace MCGalaxy.Levels.IO
             int metaSize = reader.ReadInt32();
             using (DeflateStream ds = new(src, CompressionMode.Decompress))
             {
-                reader = new(ds);
+                reader = new BinaryReader(ds);
                 for (int i = 0; i < metaSize; i++)
                 {
-                    string group = ReadString(reader),
-                        key = ReadString(reader),
-                        value = ReadString(reader);
+                    string group = ReadString(reader);
+                    string key = ReadString(reader);
+                    string value = ReadString(reader);
                     if (group != "zones") continue;
                     try
                     {
@@ -70,18 +74,23 @@ namespace MCGalaxy.Levels.IO
             {
                 throw new InvalidDataException("Unexpected constant in .fcm file");
             }
-            return new()
-            {
-                X = reader.ReadUInt16(),
-                Y = reader.ReadUInt16(),
-                Z = reader.ReadUInt16()
-            };
+            Vec3U16 dims;
+            dims.X = reader.ReadUInt16();
+            dims.Y = reader.ReadUInt16();
+            dims.Z = reader.ReadUInt16();
+            return dims;
         }
-        static string ReadString(BinaryReader reader) => Encoding.ASCII.GetString(reader.ReadBytes(reader.ReadUInt16()));
+        static string ReadString(BinaryReader reader)
+        {
+            int length = reader.ReadUInt16();
+            byte[] data = reader.ReadBytes(length);
+            return Encoding.ASCII.GetString(data);
+        }
+        static readonly char[] comma = new char[] { ',' };
         static void ParseZone(Level lvl, string raw)
         {
-            string[] parts = raw.Split(new char[] { ',' }),
-                header = parts[0].SplitSpaces();
+            string[] parts = raw.Split(comma);
+            string[] header = parts[0].SplitSpaces();
             Zone zone = new();
             // fCraft uses Z for height
             zone.Config.Name = header[0];

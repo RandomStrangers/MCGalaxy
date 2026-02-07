@@ -12,7 +12,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using MCGalaxy.Games;
 namespace MCGalaxy.Commands.World
 {
     public sealed class CmdSpawn : Command2
@@ -27,7 +26,6 @@ namespace MCGalaxy.Commands.World
                 p.Message("You cannot use &T/Spawn &Son this map.");
                 p.isFlying = false; return;
             }
-            if (!IGame.CheckAllowed(p, "use &T/Spawn")) return;
             if (message.Length > 0) { Help(p); return; }
             PlayerActions.RespawnAt(p, p.Level.SpawnPos, p.Level.rotx, p.Level.roty);
         }

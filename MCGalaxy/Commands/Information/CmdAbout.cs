@@ -27,7 +27,7 @@ namespace MCGalaxy.Commands.Info
         public override bool MuseumUsable => false;
         public override bool SuperUseable => false;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("BInfo"), new CommandAlias("WhoDid") };
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(50, "can see portal/MB data of a block") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.AdvBuilder, "can see portal/MB data of a block") };
         public override void Use(Player p, string message, CommandData data)
         {
             p.Message("Break/build a block to display information.");

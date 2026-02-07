@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using System.Threading;
+using SQLiteErrorCode = System.Int32;
 namespace MCGalaxy.SQL
 {
     [SuppressUnmanagedCodeSecurity]
@@ -18,15 +19,15 @@ namespace MCGalaxy.SQL
     {
         const string lib = "sqlite3";
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sqlite3_open_v2(byte[] utf8Filename, ref IntPtr db, int flags, IntPtr vfs);
+        internal static extern SQLiteErrorCode sqlite3_open_v2(byte[] utf8Filename, ref IntPtr db, int flags, IntPtr vfs);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sqlite3_close_v2(IntPtr db); /* 3.7.14+ */
+        internal static extern SQLiteErrorCode sqlite3_close_v2(IntPtr db); /* 3.7.14+ */
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sqlite3_exec(IntPtr db, byte[] strSql, IntPtr pvCallback, IntPtr pvParam, ref IntPtr errMsg);
+        internal static extern SQLiteErrorCode sqlite3_exec(IntPtr db, byte[] strSql, IntPtr pvCallback, IntPtr pvParam, ref IntPtr errMsg);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sqlite3_prepare_v2(IntPtr db, byte[] strSql, int nBytes, ref IntPtr stmt, ref IntPtr ptrRemain);
+        internal static extern SQLiteErrorCode sqlite3_prepare_v2(IntPtr db, byte[] strSql, int nBytes, ref IntPtr stmt, ref IntPtr ptrRemain);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sqlite3_busy_timeout(IntPtr db, int ms);
+        internal static extern SQLiteErrorCode sqlite3_busy_timeout(IntPtr db, int ms);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
         internal static extern long sqlite3_last_insert_rowid(IntPtr db);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
@@ -34,17 +35,17 @@ namespace MCGalaxy.SQL
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int sqlite3_get_autocommit(IntPtr db);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sqlite3_bind_double(IntPtr stmt, int index, double value);
+        internal static extern SQLiteErrorCode sqlite3_bind_double(IntPtr stmt, int index, double value);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sqlite3_bind_int(IntPtr stmt, int index, int value);
+        internal static extern SQLiteErrorCode sqlite3_bind_int(IntPtr stmt, int index, int value);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sqlite3_bind_int64(IntPtr stmt, int index, long value);
+        internal static extern SQLiteErrorCode sqlite3_bind_int64(IntPtr stmt, int index, long value);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sqlite3_bind_null(IntPtr stmt, int index);
+        internal static extern SQLiteErrorCode sqlite3_bind_null(IntPtr stmt, int index);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sqlite3_bind_blob(IntPtr stmt, int index, byte[] value, int nSize, IntPtr nTransient);
+        internal static extern SQLiteErrorCode sqlite3_bind_blob(IntPtr stmt, int index, byte[] value, int nSize, IntPtr nTransient);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sqlite3_bind_text(IntPtr stmt, int index, byte[] value, int nlen, IntPtr pvReserved);
+        internal static extern SQLiteErrorCode sqlite3_bind_text(IntPtr stmt, int index, byte[] value, int nlen, IntPtr pvReserved);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int sqlite3_bind_parameter_count(IntPtr stmt);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
@@ -70,19 +71,19 @@ namespace MCGalaxy.SQL
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr sqlite3_next_stmt(IntPtr db, IntPtr stmt);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sqlite3_step(IntPtr stmt);
+        internal static extern SQLiteErrorCode sqlite3_step(IntPtr stmt);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sqlite3_reset(IntPtr stmt);
+        internal static extern SQLiteErrorCode sqlite3_reset(IntPtr stmt);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sqlite3_finalize(IntPtr stmt);
+        internal static extern SQLiteErrorCode sqlite3_finalize(IntPtr stmt);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr sqlite3_errmsg(IntPtr db);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sqlite3_errcode(IntPtr db);
+        internal static extern SQLiteErrorCode sqlite3_errcode(IntPtr db);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int sqlite3_extended_errcode(IntPtr db);
+        internal static extern SQLiteErrorCode sqlite3_extended_errcode(IntPtr db);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern IntPtr sqlite3_errstr(int rc); /* 3.7.15+ */
+        internal static extern IntPtr sqlite3_errstr(SQLiteErrorCode rc); /* 3.7.15+ */
     }
     public abstract class SQLiteConnection : ISqlConnection
     {
@@ -117,12 +118,12 @@ namespace MCGalaxy.SQL
                 return Interop.sqlite3_get_autocommit(handle) == 1;
             }
         }
-        public int ResultCode()
+        public SQLiteErrorCode ResultCode()
         {
             if (handle == IntPtr.Zero) throw new InvalidOperationException("Database connection closed");
             return Interop.sqlite3_errcode(handle);
         }
-        public int ExtendedResultCode()
+        public SQLiteErrorCode ExtendedResultCode()
         {
             if (handle == IntPtr.Zero) throw new InvalidOperationException("Database connection closed");
             return Interop.sqlite3_extended_errcode(handle);
@@ -139,14 +140,14 @@ namespace MCGalaxy.SQL
             while (true)
             {
                 IntPtr stmt = IntPtr.Zero, ptr = IntPtr.Zero;
-                int n = Interop.sqlite3_prepare_v2(handle, b, b.Length - 1, ref stmt, ref ptr);
-                if (n == 0)
+                SQLiteErrorCode n = Interop.sqlite3_prepare_v2(handle, b, b.Length - 1, ref stmt, ref ptr);
+                if (n == SQLiteErrorCodes.Ok)
                 {
                     strRemain = SQLiteConvert.FromUTF8(ptr, -1);
                     if (stmt != IntPtr.Zero) return new SQLiteStatement(this, stmt);
                     return null;
                 }
-                else if (n == 6 || n == 5)
+                else if (n == SQLiteErrorCodes.Locked || n == SQLiteErrorCodes.Busy)
                 {
                     // Locked -- delay a small amount before retrying
                     SQLiteConvert.TrySleep(this, n, start);
@@ -167,8 +168,9 @@ namespace MCGalaxy.SQL
                 if (handle == IntPtr.Zero)
                 {
                     IntPtr db = IntPtr.Zero;
-                    int n = Interop.sqlite3_open_v2(SQLiteConvert.ToUTF8(DBPath), ref db, 4 | 2, IntPtr.Zero);
-                    if (n != 0) throw new SQLiteException(n, null);
+                    const int flags = 4 | 2; // CREATE(4) | READ_WRITE(2)
+                    SQLiteErrorCode n = Interop.sqlite3_open_v2(SQLiteConvert.ToUTF8(DBPath), ref db, flags, IntPtr.Zero);
+                    if (n != SQLiteErrorCodes.Ok) throw new SQLiteException(n, null);
                     handle = db;
                 }
                 SetTimeout(0);
@@ -182,8 +184,8 @@ namespace MCGalaxy.SQL
         void SetTimeout(int timeoutMS)
         {
             if (handle == IntPtr.Zero) throw new SQLiteException("no connection handle available");
-            int n = Interop.sqlite3_busy_timeout(handle, timeoutMS);
-            if (n != 0) throw new SQLiteException(n, GetLastError());
+            SQLiteErrorCode n = Interop.sqlite3_busy_timeout(handle, timeoutMS);
+            if (n != SQLiteErrorCodes.Ok) throw new SQLiteException(n, GetLastError());
         }
         internal static void Check(SQLiteConnection connection)
         {
@@ -203,9 +205,9 @@ namespace MCGalaxy.SQL
             } while (stmt != IntPtr.Zero);
             // NOTE: Is a transaction NOT pending on the connection?
             if (AutoCommit) return true;
-            int n = Interop.sqlite3_exec(handle, SQLiteConvert.ToUTF8("ROLLBACK"),
+            SQLiteErrorCode n = Interop.sqlite3_exec(handle, SQLiteConvert.ToUTF8("ROLLBACK"),
                                                      IntPtr.Zero, IntPtr.Zero, ref stmt);
-            if (n == 0) return true;
+            if (n == SQLiteErrorCodes.Ok) return true;
             if (canThrow) throw new SQLiteException(n, GetLastError());
             return false;
         }
@@ -229,6 +231,7 @@ namespace MCGalaxy.SQL
             _transactionLevel = 0;
         }
         static readonly Queue<IntPtr> pool = new();
+        const int MaxPoolSize = 300;
         static readonly object poolLocker = new();
         static void LimitPool(int max)
         {
@@ -245,7 +248,7 @@ namespace MCGalaxy.SQL
         {
             lock (poolLocker)
             {
-                LimitPool(299);
+                LimitPool(MaxPoolSize - 1);
                 pool.Enqueue(handle);
             }
         }
@@ -329,8 +332,10 @@ namespace MCGalaxy.SQL
     static class SQLiteConvert
     {
         static readonly string[] _datetimeFormats = new string[] {
-            "yyyy-MM-dd HH:mm:ssK", "yyyy-MM-dd HH:mm:ss"
+            DATEFORMAT_UTC, DATEFORMAT_LOCAL
         };
+        const string DATEFORMAT_UTC = "yyyy-MM-dd HH:mm:ssK";
+        const string DATEFORMAT_LOCAL = "yyyy-MM-dd HH:mm:ss";
         static readonly Encoding utf8 = new UTF8Encoding();
         public static byte[] ToUTF8(string text)
         {
@@ -358,13 +363,14 @@ namespace MCGalaxy.SQL
                 DateTimeStyles.None), DateTimeKind.Unspecified);
         public static string ToString(DateTime value)
         {
-            string format = (value.Kind == DateTimeKind.Utc) ? "yyyy-MM-dd HH:mm:ssK" : "yyyy-MM-dd HH:mm:ss";
+            string format = (value.Kind == DateTimeKind.Utc) ? DATEFORMAT_UTC : DATEFORMAT_LOCAL;
             return value.ToString(format, CultureInfo.InvariantCulture);
         }
+        public const int Timeout = 30;
         static uint seed = 123456789;
-        internal static void TrySleep(SQLiteConnection conn, int n, uint start)
+        internal static void TrySleep(SQLiteConnection conn, SQLiteErrorCode n, uint start)
         {
-            if ((uint)Environment.TickCount > start + (30 * 1000))
+            if ((uint)Environment.TickCount > start + (Timeout * 1000))
             {
                 throw new SQLiteException(n, conn.GetLastError());
             }
@@ -390,7 +396,10 @@ namespace MCGalaxy.SQL
         SQLiteStatement stmt;
         int readState, rowsAffected, columns;
         string[] fieldNames;
-        internal SQLiteDataReader(SQLiteCommand cmd) => _command = cmd;
+        internal SQLiteDataReader(SQLiteCommand cmd)
+        {
+            _command = cmd;
+        }
         public override void Dispose() => Close();
         public override void Close()
         {
@@ -530,10 +539,10 @@ namespace MCGalaxy.SQL
     }
     sealed class SQLiteException : ExternalException
     {
-        public SQLiteException(int code, string message)
+        public SQLiteException(SQLiteErrorCode code, string message)
             : base(FormatError(code, message)) { }
-        public SQLiteException(string message) : this(-1, message) { }
-        static string FormatError(int code, string message)
+        public SQLiteException(string message) : this(SQLiteErrorCodes.Unknown, message) { }
+        static string FormatError(SQLiteErrorCode code, string message)
         {
             string msg = GetErrorString(code) + Environment.NewLine + message;
             return msg.Trim();
@@ -569,7 +578,7 @@ namespace MCGalaxy.SQL
             /* SQLITE_NOTICE      */ "notification message",
             /* SQLITE_WARNING     */ "warning message"
         };
-        internal static string GetErrorString(int rc)
+        internal static string GetErrorString(SQLiteErrorCode rc)
         {
             try
             {
@@ -584,9 +593,19 @@ namespace MCGalaxy.SQL
                 // do nothing.
             }
             if (rc < 0 || rc >= errors.Length)
-                rc = 1;
+                rc = SQLiteErrorCodes.Error;
             return errors[rc];
         }
+    }
+    static class SQLiteErrorCodes
+    {
+        public const int Unknown = -1;
+        public const int Ok = 0;
+        public const int Error = 1;
+        public const int Busy = 5;
+        public const int Locked = 6;
+        public const int Row = 100;
+        public const int Done = 101;
     }
     sealed class SQLiteStatement : IDisposable
     {
@@ -622,25 +641,29 @@ namespace MCGalaxy.SQL
             uint start = (uint)Environment.TickCount;
             while (true)
             {
-                int n = Interop.sqlite3_step(handle);
-                if (n == 100) return true;
-                if (n == 101) return false;
-                if (n == 0) continue;
+                SQLiteErrorCode n = Interop.sqlite3_step(handle);
+                if (n == SQLiteErrorCodes.Row) return true;
+                if (n == SQLiteErrorCodes.Done) return false;
+                if (n == SQLiteErrorCodes.Ok) continue;
                 // An error occurred, attempt to reset the statement. If it errored because
                 // the database is locked, then keep retrying until the command timeout occurs.
                 n = Interop.sqlite3_reset(handle);
-                if (n == 6 || n == 5)
+                if (n == SQLiteErrorCodes.Locked || n == SQLiteErrorCodes.Busy)
                 {
                     SQLiteConvert.TrySleep(conn, n, start);
                 }
-                else if (n != 0)
+                else if (n != SQLiteErrorCodes.Ok)
                 {
                     throw new SQLiteException(n, conn.GetLastError());
                 }
             }
         }
         internal int ColumnCount() => Interop.sqlite3_column_count(handle);
-        internal string ColumnName(int index) => SQLiteConvert.FromUTF8(Interop.sqlite3_column_name(handle, index), -1);
+        internal string ColumnName(int index)
+        {
+            IntPtr p = Interop.sqlite3_column_name(handle, index);
+            return SQLiteConvert.FromUTF8(p, -1);
+        }
         internal TypeAffinity ColumnAffinity(int index) => Interop.sqlite3_column_type(handle, index);
         internal void BindAll(List<string> names, List<object> values)
         {
@@ -649,8 +672,8 @@ namespace MCGalaxy.SQL
             {
                 int i = FindParameter(names[idx]);
                 if (i == -1) continue;
-                int n = BindParameter(i + 1, values[idx]);
-                if (n != 0) throw new SQLiteException(n, conn.GetLastError());
+                SQLiteErrorCode n = BindParameter(i + 1, values[idx]);
+                if (n != SQLiteErrorCodes.Ok) throw new SQLiteException(n, conn.GetLastError());
             }
         }
         int FindParameter(string name)
@@ -662,7 +685,7 @@ namespace MCGalaxy.SQL
             }
             return -1;
         }
-        int BindParameter(int i, object obj)
+        SQLiteErrorCode BindParameter(int i, object obj)
         {
             if (obj == null || obj == DBNull.Value)
             {
@@ -693,10 +716,14 @@ namespace MCGalaxy.SQL
                 _ => Bind_Text(i, obj.ToString()),
             };
         }
-        int Bind_Int32(int index, int value) => Interop.sqlite3_bind_int(handle, index, value);
-        int Bind_Int64(int index, long value) => Interop.sqlite3_bind_int64(handle, index, value);
-        int Bind_Text(int index, string value) => Interop.sqlite3_bind_text(handle, index, SQLiteConvert.ToUTF8(value), SQLiteConvert.ToUTF8(value).Length - 1, (IntPtr)(-1));
-        int Bind_DateTime(int index, DateTime dt) => Bind_Text(index, SQLiteConvert.ToString(dt));
+        SQLiteErrorCode Bind_Int32(int index, int value) => Interop.sqlite3_bind_int(handle, index, value);
+        SQLiteErrorCode Bind_Int64(int index, long value) => Interop.sqlite3_bind_int64(handle, index, value);
+        SQLiteErrorCode Bind_Text(int index, string value)
+        {
+            byte[] b = SQLiteConvert.ToUTF8(value);
+            return Interop.sqlite3_bind_text(handle, index, b, b.Length - 1, (IntPtr)(-1));
+        }
+        SQLiteErrorCode Bind_DateTime(int index, DateTime dt) => Bind_Text(index, SQLiteConvert.ToString(dt));
         internal object GetValue(int index, TypeAffinity affinity) => affinity switch
         {
             TypeAffinity.Blob => GetBytes(index),

@@ -21,9 +21,9 @@ namespace MCGalaxy.Commands.Moderation
     {
         public override string Name => "Patrol";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override bool SuperUseable => false;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(30, "are not patrolled") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Builder, "are not patrolled") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length > 0) { Help(p); return; }

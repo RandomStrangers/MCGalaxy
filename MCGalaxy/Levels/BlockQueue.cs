@@ -22,8 +22,11 @@ namespace MCGalaxy
     public sealed class BlockQueue : List<ulong>
     {
         /// <summary> Time in milliseconds between ticks. </summary>
-        public static int Interval = 100, UpdatesPerTick = 750;
+        public static int Interval = 100;
+        /// <summary> Maximum number of block updates broadcasted in one tick. </summary>
+        public static int UpdatesPerTick = 750;
         static readonly BufferedBlockSender bulkSender = new();
+        const int posShift = 32;
         readonly object locker = new();
         /// <summary> Flushes the block updates queue for each loaded level. </summary>
         public static void Loop(SchedulerTask task)
@@ -45,7 +48,7 @@ namespace MCGalaxy
             // Bit packing format
             // 32-63: index
             // 0-31 : block type
-            ulong flags = (ulong)index << 32;
+            ulong flags = (ulong)index << posShift;
             flags |= block;
             lock (locker) Add(flags);
         }
@@ -63,7 +66,7 @@ namespace MCGalaxy
                 for (int i = 0; i < count; i++)
                 {
                     ulong flags = this[i];
-                    int index = (int)(flags >> 32);
+                    int index = (int)(flags >> posShift);
                     ushort block = (ushort)flags;
                     bulkSender.Add(index, block);
                 }
@@ -73,7 +76,7 @@ namespace MCGalaxy
             catch (Exception e)
             {
                 Logger.LogError(e);
-                Logger.Log(6, "Failed to flush block queue on {0}. {1} lost.", lvl.name, Count);
+                Logger.Log(LogType.Warning, "Failed to flush block queue on {0}. {1} lost.", lvl.name, Count);
                 Clear();
             }
         }

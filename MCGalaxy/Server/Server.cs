@@ -21,7 +21,6 @@ using MCGalaxy.Eco;
 using MCGalaxy.Events.LevelEvents;
 using MCGalaxy.Events.ServerEvents;
 using MCGalaxy.Games;
-using MCGalaxy.Generator;
 using MCGalaxy.Modules.Awards;
 using MCGalaxy.Network;
 using MCGalaxy.Platform;
@@ -45,13 +44,16 @@ namespace MCGalaxy
             {
                 return;
             }
-            Logger.Log(1, file + " doesn't exist, Downloading..");
+            Logger.Log(LogType.SystemActivity, file + " doesn't exist, Downloading..");
             try
             {
-                new WebClient().DownloadFile("https://raw.githubusercontent.com/ClassiCube/MCGalaxy/master/" + file, file);
+                using (WebClient client = HttpUtil.CreateWebClient())
+                {
+                    client.DownloadFile("https://raw.githubusercontent.com/ClassiCube/MCGalaxy/master/" + file, file);
+                }
                 if (File.Exists(file))
                 {
-                    Logger.Log(1, file + " download succesful!");
+                    Logger.Log(LogType.SystemActivity, file + " download succesful!");
                 }
             }
             catch (Exception ex)
@@ -67,7 +69,7 @@ namespace MCGalaxy
             zoneConfig = ConfigElement.GetAll(typeof(ZoneConfig));
             IOperatingSystem.DetectOS();
             StartTime = DateTime.UtcNow;
-            Logger.Log(1, "Starting Server");
+            Logger.Log(LogType.SystemActivity, "Starting Server");
             ServicePointManager.Expect100Continue = false;
             ForceEnableTLS();
             ExtraAuthenticator.SetActive(new DefaultPassAuthenticator());
@@ -78,7 +80,6 @@ namespace MCGalaxy
             LoadAllSettings(true);
             InitDatabase();
             Economy.LoadDatabase();
-            MapGen.Init();
             Background.QueueOnce(LoadMainLevel);
             Background.QueueOnce(LoadAllPlugins);
             Background.QueueOnce(LoadAutoloadMaps);
@@ -114,6 +115,7 @@ namespace MCGalaxy
         }
         static void EnsureFilesExist()
         {
+            FileIO.TryDeleteDirectory("properties", true);
             EnsureDirectoryExists("props");
             EnsureDirectoryExists("levels");
             EnsureDirectoryExists("bots");
@@ -141,7 +143,9 @@ namespace MCGalaxy
                 Logger.LogError("Creating directory " + dir, ex);
             }
         }
-        public static void LoadAllSettings(bool commands = false)
+        public static void LoadAllSettings() => LoadAllSettings(false);
+        // TODO rethink this
+        static void LoadAllSettings(bool commands)
         {
             Colors.Load();
             Alias.LoadCustom();
@@ -192,7 +196,7 @@ namespace MCGalaxy
         {
             try
             {
-                Logger.Log(1, "Server shutting down ({0})", msg);
+                Logger.Log(LogType.SystemActivity, "Server shutting down ({0})", msg);
             }
             catch
             {
@@ -217,7 +221,7 @@ namespace MCGalaxy
                 INetSocket[] pending = INetSocket.pending.Items;
                 foreach (INetSocket p in pending)
                 {
-                    p.Send(kick, 0x00);
+                    p.Send(kick, SendFlags.None);
                 }
             }
             catch (Exception ex)
@@ -231,6 +235,7 @@ namespace MCGalaxy
                 string autoload = SaveAllLevels();
                 if (SetupFinished && !Config.AutoLoadMaps)
                 {
+                    //File.WriteAllText("text/autoload.txt", autoload);
                     FileIO.TryWriteAllText("text/autoload.txt", autoload);
                 }
             }
@@ -240,7 +245,7 @@ namespace MCGalaxy
             }
             try
             {
-                Logger.Log(1, "Server shutdown completed");
+                Logger.Log(LogType.SystemActivity, "Server shutdown completed");
             }
             catch
             {
@@ -267,7 +272,7 @@ namespace MCGalaxy
             {
                 if (!lvl.SaveChanges)
                 {
-                    Logger.Log(1, "Skipping save for level {0}", lvl.ColoredName);
+                    Logger.Log(LogType.SystemActivity, "Skipping save for level {0}", lvl.ColoredName);
                     continue;
                 }
                 autoload = autoload + lvl.name + "=" + lvl.LevelPhysics + Environment.NewLine;
@@ -300,7 +305,8 @@ namespace MCGalaxy
         public static bool SetMainLevel(string map)
         {
             OnMainLevelChangingEvent.Call(ref map);
-            if (map.CaselessEq(mainLevel != null ? mainLevel.name : Config.MainLevel))
+            string main = mainLevel != null ? mainLevel.name : Config.MainLevel;
+            if (map.CaselessEq(main))
             {
                 return false;
             }
@@ -330,7 +336,7 @@ namespace MCGalaxy
             {
                 return;
             }
-            Logger.Log(0, "GC performed in {0:F2} ms (tracking {1:F2} KB, freed {2:F2} KB)",
+            Logger.Log(LogType.BackgroundActivity, "GC performed in {0:F2} ms (tracking {1:F2} KB, freed {2:F2} KB)",
                        sw.Elapsed.TotalMilliseconds, end / 1024.0, deltaKB);
         }
         public static void StartThread(out Thread thread, string name, ThreadStart threadFunc)
@@ -363,7 +369,7 @@ namespace MCGalaxy
                 }
                 str[i] = (char)one[0]; i++;
             }
-            return new(str);
+            return new string(str);
         }
         static readonly System.Text.ASCIIEncoding enc = new();
         static readonly MD5CryptoServiceProvider md5 = new();

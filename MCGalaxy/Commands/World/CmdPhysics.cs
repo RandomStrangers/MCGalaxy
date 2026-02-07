@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.World
         public override string Name => "Physics";
         public override string Type => CommandTypes.World;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandAlias[] Aliases => new CommandAlias[] { new("KillPhysics", "kill") };
         public override void Use(Player p, string message, CommandData data)
         {
@@ -67,7 +67,7 @@ namespace MCGalaxy.Commands.World
             lvl.Message("Physics are now " + stateDesc + " &Son " + lvl.ColoredName);
             stateDesc = stateDesc.Substring(2);
             string logInfo = "Physics are now " + stateDesc + " on " + lvl.name;
-            Logger.Log(1, logInfo);
+            Logger.Log(LogType.SystemActivity, logInfo);
             lvl.SaveSettings();
         }
         public override void Help(Player p)

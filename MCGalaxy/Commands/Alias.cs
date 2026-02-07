@@ -18,8 +18,8 @@ namespace MCGalaxy.Commands
 {
     public class Alias
     {
-        public static List<Alias> coreAliases = new(),
-            aliases = new();
+        public static List<Alias> coreAliases = new();
+        public static List<Alias> aliases = new();
         public string Trigger, Target, Format;
         public Alias(string trigger, string target)
         {

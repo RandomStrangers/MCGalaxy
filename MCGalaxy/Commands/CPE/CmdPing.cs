@@ -15,20 +15,20 @@
 using MCGalaxy.Network;
 namespace MCGalaxy.Commands.Chatting
 {
-    public sealed class CmdPing : Command2
+    public sealed class CmdPing : Command
     {
         public override string Name => "Ping";
         public override string Type => CommandTypes.Information;
         public override bool UseableWhenFrozen => true;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can see ping of other players") };
-        public override void Use(Player p, string message, CommandData data)
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can see ping of other players") };
+        public override void Use(Player p, string message)
         {
             if (!message.CaselessEq("all"))
             {
                 if (message.Length == 0) message = p.name;
                 Player who = PlayerInfo.FindMatches(p, message);
                 if (who == null) return;
-                if (p != who && !CheckExtraPerm(p, data, 1)) return;
+                if (p != who && !CheckExtraPerm(p, 1)) return;
                 PingList ping = who.Session.Ping;
                 if (!who.Supports(CpeExt.TwoWayPing))
                 {
@@ -46,12 +46,12 @@ namespace MCGalaxy.Commands.Chatting
             }
             else
             {
-                if (!CheckExtraPerm(p, data, 1)) return;
+                if (!CheckExtraPerm(p, 1)) return;
                 Player[] players = PlayerInfo.Online.Items;
                 p.Message("Ping/latency list of online players: (&aLo&S:&7Avg&S:&cHi&S)ms");
                 foreach (Player target in players)
                 {
-                    if (!p.CanSee(target, data.Rank)) continue;
+                    if (!p.CanSee(target, p.Rank)) continue;
                     PingList ping = target.Session.Ping;
                     if (ping.Measures() == 0) continue;
                     p.Message(ping.FormatAll() + " &S- " + p.FormatNick(target));

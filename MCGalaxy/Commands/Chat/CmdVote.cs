@@ -21,7 +21,7 @@ namespace MCGalaxy.Commands.Chatting
         public override string Name => "Vote";
         public override string Shortcut => "vo";
         public override string Type => CommandTypes.Chat;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }

@@ -19,7 +19,7 @@ namespace MCGalaxy
     public static class TabList
     {
         // Want higher ranks at top of tab list, banned at bottom of tab list
-        const sbyte offset = 127;
+        const LevelPermission offset = LevelPermission.Console;
         /// <summary> Adds the given player to that player's tab list (if their client supports it). </summary>
         public static void Add(Player dst, Player p)
         {

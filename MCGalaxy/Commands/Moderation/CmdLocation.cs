@@ -19,14 +19,14 @@ using System;
 using System.Net;
 namespace MCGalaxy.Commands.Moderation
 {
-    public class CmdLocation : Command
+    public class CmdLocation : Command2
     {
         public override string Name => "Location";
         public override string Shortcut => "GeoIP";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 100;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(100, "can see state/province") };
-        public override void Use(Player p, string message)
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Admin, "can see state/province") };
+        public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0)
             {
@@ -58,7 +58,7 @@ namespace MCGalaxy.Commands.Moderation
             obj.TryGetValue("country", out object country);
             string fullName = CountryUtils.GetName(country.ToString());
             if (fullName != null) country = fullName;
-            string suffix = HasExtraPerm(p.Rank, 1) ? "&b{1}&S/&b{2}" : "&b{2}";
+            string suffix = HasExtraPerm(data.Rank, 1) ? "&b{1}&S/&b{2}" : "&b{2}";
             string nick = name == null ? ip : "of " + p.FormatNick(name);
             p.Message("The IP {0} &Straces to: " + suffix, nick, region, country);
         }

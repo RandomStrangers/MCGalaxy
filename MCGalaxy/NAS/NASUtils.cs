@@ -1,18 +1,38 @@
 using MCGalaxy.Commands;
+using MCGalaxy.DB;
+using MCGalaxy.Generator;
 using MCGalaxy.Maths;
-using MCGalaxy.Platform;
-using MCGalaxy.SQL;
 using Newtonsoft.Json;
 using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Threading;
 namespace MCGalaxy
 {
+    public class NASConsolePlayer : Player
+    {
+        public NASConsolePlayer() : base("(NAS)")
+        {
+            group = new()
+            {
+                Permission = LevelPermission.Console,
+                DrawLimit = int.MaxValue,
+                MaxUndo = TimeSpan.MaxValue,
+                Name = "NAS",
+                Color = "&S",
+                GenVolume = int.MaxValue,
+                OverseerMaps = int.MaxValue,
+            };
+            color = "&S";
+            SuperName = "NAS";
+        }
+        public override string FullName => "NAS [" + Server.Config.ConsoleName + "&S]";
+        public override void Message(string message) => Logger.Log(LogType.Debug, message);
+    }
     public partial class NASPlugin
     {
+        public static Player NASConsole = new NASConsolePlayer();
         public static ushort Convert(ushort block) => block switch
         {
             70 => 39,
@@ -150,37 +170,40 @@ namespace MCGalaxy
         public static ushort ToRaw(ushort raw) => raw < 66 ? raw : (ushort)(raw - 256);
         public static ushort FromRaw(ushort raw) => raw < 66 ? raw : (ushort)(raw + 256);
         public static bool HasExtraPerm(NASPlayer np, string cmd, int num) => CommandExtraPerms.Find(cmd, num).UsableBy(np.p.Rank);
-        static void SaveAll(Player p)
+        public static void SaveAll(Player p)
         {
             Level[] loaded = LevelInfo.Loaded.Items;
             foreach (Level lvl in loaded)
             {
-                if (!lvl.SaveChanges)
-                {
-                    p.Message("Saving {0} &Sis currently disabled (most likely because a game is or was running on the level)", lvl.ColoredName);
-                }
-                else
-                {
-                    NASLevel nl = NASLevel.Get(lvl.name);
-                    string jsonString = JsonConvert.SerializeObject(nl, Formatting.Indented),
-                        fileName = NASLevel.GetFileName(nl.lvl.name);
-                    bool saved = lvl.Save(true) && FileIO.TryWriteAllText(fileName, jsonString);
-                    if (!saved)
-                    {
-                        p.Message("Saving of level {0} &Swas cancelled", lvl.ColoredName);
-                    }
-                }
+                TrySave(p, lvl);
             }
             Chat.MessageGlobal("All levels have been saved.");
         }
-        static void GenLevel()
+        public static bool TrySave(Player p, Level lvl)
+        {
+            if (!lvl.SaveChanges)
+            {
+                p.Message("Saving {0} &Sis currently disabled (most likely because a game is or was running on the level)", lvl.ColoredName);
+                return false;
+            }
+            NASLevel nl = NASLevel.Get(lvl.name);
+            string jsonString = JsonConvert.SerializeObject(nl, Formatting.Indented),
+                fileName = NASLevel.GetFileName(nl.lvl.name);
+            bool saved = lvl.Save(true) && FileIO.TryWriteAllText(fileName, jsonString);            
+            if (!saved)
+            {
+                p.Message("Saving of level {0} &Swas cancelled", lvl.ColoredName);
+            }
+            return saved;
+        }
+        public static void GenLevel()
         {
             int chunkOffsetX = 0, chunkOffsetZ = 0;
             string seed = "DEFAULT";
             if (!NASGen.GetSeedAndChunkOffset(Server.mainLevel.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ))
             {
-                Log("NAS: {0} is not a valid NAS level, generating a new NAS level to replace it!", Server.mainLevel.name);
-                seed = new NameGenerator().MakeName().ToLower();
+                Log("NAS: {0} is not a NAS level, generating a NAS level to replace it!", Server.mainLevel.name);
+                seed = new NASNameGenerator().MakeName().ToLower();
                 string mapName = seed + "_0,0";
                 NASLevel.GenerateMap(Player.Console,
                                            mapName,
@@ -190,12 +213,12 @@ namespace MCGalaxy
                                            seed);
                 Server.Config.MainLevel = mapName;
                 SrvProperties.Save();
-                Chat.Message(0, "A server restart is required to initialize NAS plugin.", null, null, true);
+                Chat.Message(ChatScope.All, "A server restart is required to initialize NAS plugin.", null, null, true);
                 Thread.Sleep(TimeSpan.FromSeconds(5));
                 Server.Stop(true, "A server restart is required to initialize NAS plugin.");
             }
         }
-        static void LoadFirstTime()
+        public static void LoadFirstTime()
         {
             Server.Config.DefaultTexture = "https://github.com/RandomStrangers/MCGalaxy/raw/NAS/Uploads/texturepack.zip";
             Server.Config.DefaultColor = "&7";
@@ -208,7 +231,7 @@ namespace MCGalaxy
             Server.Config.ShadowColor = "#888899";
             SrvProperties.Save();
         }
-        static void EnsureDirectoriesExists(params string[] paths)
+        public static void EnsureDirectoriesExists(params string[] paths)
         {
             foreach (string path in paths)
             {
@@ -218,9 +241,11 @@ namespace MCGalaxy
                 }
             }
         }
-        public static string GetSavePath(Player p) => NASPlayer.Path + p.name + ".json";
+        public static string GetSavePath(Player p) => SavePath + p.name + ".json";
         public static string GetDeathPath(string name) => NASPlayer.DeathsPath + name + ".txt";
-        public static string GetTextPath(Player p) => NASPlayer.Path + p.name + ".txt";
+        public static string GetTextPath(Player p) => SavePath + p.name + ".txt";
+        public static bool IsDev(Player p) => Devs.CaselessContains(p.truename);
+        public static bool IsDev(PlayerData data) => Devs.CaselessContains(data.Name);
         public static void DisposeErrorResponse(Exception ex)
         {
             try
@@ -243,7 +268,10 @@ namespace MCGalaxy
             Log("{0} doesn't exist, Downloading..", file);
             try
             {
-                new WebClient().DownloadFile(url, file);
+                using (WebClient client = new())
+                {
+                    client.DownloadFile(url, file);
+                }
                 if (File.Exists(file))
                 {
                     Log("{0} download successful!", file);
@@ -273,25 +301,25 @@ namespace MCGalaxy
                 Command.Register(cmd);
             }
         }
-        public static void Log(string format, params object[] args) => Logger.Log(15, string.Format(format, args));
-        public static bool HandleErrorResponse(WebException ex, string msg, long retry)
+        public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
+        public static string GetErrorResponse(Exception ex)
         {
-            string err = null;
             try
             {
                 if (ex is WebException webEx && webEx.Response != null)
                 {
-                    err = new StreamReader(webEx.Response.GetResponseStream()).ReadToEnd().Trim();
+                    return new StreamReader(webEx.Response.GetResponseStream()).ReadToEnd().Trim();
                 }
             }
-            catch
-            {
+            catch 
+            { 
             }
-            HttpStatusCode status = 0;
-            if (ex.Response != null)
-            {
-                status = ((HttpWebResponse)ex.Response).StatusCode;
-            }
+            return null;
+        }
+        public static bool HandleErrorResponse(WebException ex, string msg, long retry)
+        {
+            string err = GetErrorResponse(ex);
+            HttpStatusCode status = GetStatus(ex);
             if (status == (HttpStatusCode)429)
             {
                 Sleep();
@@ -313,21 +341,32 @@ namespace MCGalaxy
                 LogWarning(ex);
                 return retry < 2;
             }
-            Logger.Log(6, "Error sending request to Github API {0}: {1}", msg, ex.Message);
+            LogWarning(ex, msg);
             LogResponse(err);
             return false;
         }
-        public static void LogWarning(Exception ex) => Logger.Log(6, "Error sending request to Github API - {0}", ex.Message);
+        public static HttpStatusCode GetStatus(WebException ex)
+        {
+            if (ex.Response == null)
+            {
+                return 0;
+            }
+            return ((HttpWebResponse)ex.Response).StatusCode;
+        }
+        public static void LogWarning(Exception ex, string target) => Logger.Log(LogType.Warning, "Error sending request to Github API {0}: {1}", target, ex.Message);
+        public static void LogWarning(string message) => Logger.Log(LogType.Warning, message);
+        public static void LogWarning(Exception ex) => Logger.Log(LogType.Warning, "Error sending request to Github API - {0}", ex.Message);
         public static void LogResponse(string err)
         {
-            if (!string.IsNullOrEmpty(err))
+            if (string.IsNullOrEmpty(err))
             {
-                if (err.Length > 200)
-                {
-                    err = err.Substring(0, 200) + "...";
-                }
-                Logger.Log(6, "Github API returned: " + err);
+                return;
             }
+            if (err.Length > 200)
+            {
+                err = err.Substring(0, 200) + "...";
+            }
+            LogWarning("Github API returned: " + err);
         }
         public static void Sleep()
         {
@@ -404,8 +443,26 @@ namespace MCGalaxy
             return true;
         }
     }
-    public delegate void Action<T1, T2, T3, T4, T5>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5);
-    public delegate void Action<T1, T2, T3, T4, T5, T6>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6);
-    public delegate void Action<T1, T2, T3, T4, T5, T6, T7>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7);
-    public delegate TResult Func<T1, T2, out TResult>(T1 arg1, T2 arg2);
+    public partial class NASLevel
+    {
+        public static Level GenerateMap(Player p, string mapName, string width, string height, string length, string seed)
+        {
+            string[] args = new string[] { mapName, width, height, length, seed };
+            MapGen gen = MapGen.Find("NASGen");
+            ushort x = 0, y = 0, z = 0;
+            if (!MapGen.GetDimensions(p, args, 1, ref x, ref y, ref z, false))
+            {
+                return null;
+            }
+            return MapGen.Generate(p, gen, mapName, x, y, z, seed);
+        }
+    }
+    public delegate void NASAction<T1>(T1 arg1);
+    public delegate void NASAction<T1, T2>(T1 arg1, T2 arg2);
+    public delegate void NASAction<T1, T2, T3>(T1 arg1, T2 arg2, T3 arg3);
+    public delegate void NASAction<T1, T2, T3, T4>(T1 arg1, T2 arg2, T3 arg3, T4 arg4);
+    public delegate void NASAction<T1, T2, T3, T4, T5>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5);
+    public delegate void NASAction<T1, T2, T3, T4, T5, T6>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6);
+    public delegate void NASAction<T1, T2, T3, T4, T5, T6, T7>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7);
+    public delegate TResult NASFunc<T1, T2, out TResult>(T1 arg1, T2 arg2);
 }

@@ -20,9 +20,9 @@ namespace MCGalaxy.Commands.Chatting
         public override string Name => "Nick";
         public override string Shortcut => "Nickname";
         public override string Type => CommandTypes.Chat;
-        public override sbyte DefaultRank => 80;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can change the nick of others"),
-                    new CommandPerm(80, "can change the nick of bots") };
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can change the nick of others"),
+                    new CommandPerm(LevelPermission.Operator, "can change the nick of bots") };
         public override CommandAlias[] Aliases => new CommandAlias[] { new("xnick", "-own") };
         public override void Use(Player p, string message, CommandData data) => UseBotOrPlayer(p, data, message, "nick");
         protected override void SetBotData(Player p, PlayerBot bot, string nick)

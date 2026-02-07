@@ -28,7 +28,7 @@ namespace MCGalaxy.Commands.Building
         public override string Shortcut => "Img";
         public override string Type => CommandTypes.Building;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override bool SuperUseable => false;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("ImgPrint"), new CommandAlias("PrintImg"),
                     new CommandAlias("ImgDraw"), new CommandAlias("DrawImg"),
@@ -101,7 +101,10 @@ namespace MCGalaxy.Commands.Building
                     p.Message("{0} does not exist", path);
                     return;
                 }
-                FileIO.TryReadBytes(path, out dArgs.Data);
+                if (!FileIO.TryReadBytes(path, out dArgs.Data))
+                {
+                    p.Message("Error reading file {0}.", path);
+                }
             }
             p.Message("Place or break two blocks to determine direction.");
             p.MakeSelection(2, "Selecting direction for &SImagePrint", dArgs, DoImage);

@@ -20,20 +20,20 @@ namespace MCGalaxy.Blocks.Physics
     {
         public static bool DoDoorsOnly(Level lvl, ref PhysInfo C)
         {
-            if (!C.Data.HasWait && C.Block == 0)
+            if (!C.Data.HasWait && C.Block == Block.Air)
                 C.Data.ResetTypes();
             if (!C.Data.HasWait) return false;
             int waitTime = 0;
-            if (C.Data.Type1 == 1) waitTime = C.Data.Value1;
-            if (C.Data.Type2 == 1) waitTime = C.Data.Value2;
+            if (C.Data.Type1 == PhysicsArgs.Wait) waitTime = C.Data.Value1;
+            if (C.Data.Type2 == PhysicsArgs.Wait) waitTime = C.Data.Value2;
             if (C.Data.Data <= waitTime) { C.Data.Data++; return true; }
-            if (C.Data.Type1 == 1) C.Data.Type1 = 0;
-            if (C.Data.Type2 == 1) C.Data.Type2 = 0;
+            if (C.Data.Type1 == PhysicsArgs.Wait) C.Data.Type1 = 0;
+            if (C.Data.Type2 == PhysicsArgs.Wait) C.Data.Type2 = 0;
             return false;
         }
         public static bool DoNormal(Level lvl, ref PhysInfo C)
         {
-            if (!C.Data.HasWait && C.Block == 0)
+            if (!C.Data.HasWait && C.Block == Block.Air)
                 C.Data.ResetTypes();
             ExtraInfoArgs args = default;
             ParseType(C.Data.Type1, ref args, C.Data.Value1);
@@ -42,8 +42,8 @@ namespace MCGalaxy.Blocks.Physics
             if (args.Wait)
             {
                 if (C.Data.Data <= args.WaitTime) { C.Data.Data++; return true; }
-                if (C.Data.Type1 == 1) C.Data.Type1 = 0;
-                if (C.Data.Type2 == 1) C.Data.Type2 = 0;
+                if (C.Data.Type1 == PhysicsArgs.Wait) C.Data.Type1 = 0;
+                if (C.Data.Type2 == PhysicsArgs.Wait) C.Data.Type2 = 0;
             }
             DoOther(lvl, ref C, ref args);
             return false;
@@ -55,30 +55,18 @@ namespace MCGalaxy.Blocks.Physics
         {
             switch (type)
             {
-                case 1:
-                    args.Wait = true; 
-                    args.WaitTime = value; 
-                    break;
-                case 4:
-                    args.Drop = true; 
-                    args.DropNum = value; 
-                    break;
-                case 3:
-                    args.Dissipate = true; 
-                    args.DissipateNum = value; 
-                    break;
-                case 2:
-                    args.Revert = true; 
-                    args.RevertType = value;
-                    break;
-                case 5:
-                    args.Explode = true; 
-                    args.ExplodeNum = value; 
-                    break;
-                case 6:
-                    args.Rainbow = true;
-                    args.RainbowNum = value; 
-                    break;
+                case PhysicsArgs.Wait:
+                    args.Wait = true; args.WaitTime = value; break;
+                case PhysicsArgs.Drop:
+                    args.Drop = true; args.DropNum = value; break;
+                case PhysicsArgs.Dissipate:
+                    args.Dissipate = true; args.DissipateNum = value; break;
+                case PhysicsArgs.Revert:
+                    args.Revert = true; args.RevertType = value; break;
+                case PhysicsArgs.Explode:
+                    args.Explode = true; args.ExplodeNum = value; break;
+                case PhysicsArgs.Rainbow:
+                    args.Rainbow = true; args.RainbowNum = value; break;
             }
         }
         static void DoOther(Level lvl, ref PhysInfo C, ref ExtraInfoArgs args)
@@ -96,7 +84,7 @@ namespace MCGalaxy.Blocks.Physics
                 revertArgs.ExtBlock = args.ExtBlock;
                 lvl.AddUpdate(C.Index, args.RevertType, revertArgs);
                 C.Data.ResetTypes();
-                C.Data.Data = 255;
+                C.Data.Data = PhysicsArgs.RemoveFromChecks;
             }
             ushort x = C.X, y = C.Y, z = C.Z;
             // Not setting drop = false can cause occasional leftover blocks, since C.extraInfo is emptied, so
@@ -105,7 +93,7 @@ namespace MCGalaxy.Blocks.Physics
             {
                 if (!lvl.listUpdateExists.Get(x, y, z))
                 {
-                    lvl.AddUpdate(C.Index, 0, default(PhysicsArgs));
+                    lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
                     C.Data.ResetTypes();
                     args.Drop = false;
                 }
@@ -128,28 +116,28 @@ namespace MCGalaxy.Blocks.Physics
             if (rainbownum > 2)
             {
                 ushort block = C.Block;
-                if (block < 21 || block > 33)
+                if (block < Block.Red || block > Block.Pink)
                 {
-                    lvl.AddUpdate(C.Index, 21, C.Data);
+                    lvl.AddUpdate(C.Index, Block.Red, C.Data);
                 }
                 else
                 {
-                    ushort next = block == 33 ? (ushort)21 : (ushort)(block + 1);
+                    ushort next = block == Block.Pink ? Block.Red : (ushort)(block + 1);
                     lvl.AddUpdate(C.Index, next, default(PhysicsArgs));
                 }
             }
             else
             {
-                lvl.AddUpdate(C.Index, (ushort)rand.Next(21, 34), default(PhysicsArgs));
+                lvl.AddUpdate(C.Index, (ushort)rand.Next(Block.Red, Block.Pink + 1), default(PhysicsArgs));
             }
         }
         static void DoDrop(Level lvl, ref PhysInfo C, Random rand, int dropnum, ushort x, ushort y, ushort z)
         {
             ushort below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
-            if (!(below == 0 || below == 10 || below == 8)) return;
+            if (!(below == Block.Air || below == Block.Lava || below == Block.Water)) return;
             if (rand.Next(1, 100) < dropnum && lvl.AddUpdate(index, C.Block, C.Data))
             {
-                lvl.AddUpdate(C.Index, 0, default(PhysicsArgs));
+                lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
                 C.Data.ResetTypes();
             }
         }

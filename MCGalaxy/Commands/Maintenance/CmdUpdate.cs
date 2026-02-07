@@ -13,37 +13,66 @@
     permissions and limitations under the Licenses.
  */
 using System;
+using System.IO;
+using System.Net;
 namespace MCGalaxy.Commands.Maintenance
 {
     public class CmdUpdate : Command
     {
         public override string Name => "Update";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 120;
+        public override LevelPermission DefaultRank => LevelPermission.Owner;
         public override void Use(Player p, string message)
         {
-            if (!Updater.SetupDone)
-            {
-                Updater.Setup();
-            }
             if (message.CaselessEq("check"))
             {
                 p.Message("Checking for updates..");
-                p.Message("Server {0}", Updater.NeedsUpdating() ? "&cneeds updating" : "&ais up to date");
-                if (Updater.NeedsUpdating())
+                string latest = new WebClient().DownloadString("https://raw.githubusercontent.com/RandomStrangers/MCGalaxy/NAS/Uploads/version.txt");
+                bool needsUpdate = true;
+                if (!string.IsNullOrEmpty(latest))
                 {
-                    if (!string.IsNullOrEmpty(Updater.Latest))
-                    {
-                        p.Message("Current version: {0}.", Server.Version);
-                        p.Message("Latest version: {0}.", Updater.Latest);
-                    }
+                    needsUpdate = new Version(latest) > new Version(Server.Version);
+                }
+                p.Message("Server {0}", needsUpdate ? "&cneeds updating" : "&ais up to date");
+                if (needsUpdate)
+                {
+                    p.Message("Current version: {0}.", Server.Version);
+                    p.Message("Latest version: {0}.", latest);
                 }
             }
             else if (message.CaselessEq("latest"))
             {
                 if (Environment.Version.Major == 4)
                 {
-                    Updater.PerformUpdate();
+                    try
+                    {
+                        try
+                        {
+                            FileIO.TryDelete("MCGalaxy.update");
+                            FileIO.TryDelete("Prev_MCGalaxy.exe");
+                        }
+                        catch
+                        {
+                        }
+                        Logger.Log(LogType.SystemActivity, "Downloading NAS update files");
+                        WebClient client = new();
+                        Logger.Log(LogType.SystemActivity, "Downloading {0} to {1}",
+                            "https://raw.githubusercontent.com/RandomStrangers/MCGalaxy/NAS/Uploads/MCGalaxy.exe", Path.GetFileName("MCGalaxy.update"));
+                        client.DownloadFile("https://raw.githubusercontent.com/RandomStrangers/MCGalaxy/NAS/Uploads/MCGalaxy.exe", "MCGalaxy.update");
+                        Server.SaveAllLevels();
+                        Player[] players = PlayerInfo.Online.Items;
+                        foreach (Player pl in players)
+                        {
+                            pl.SaveStats();
+                        }
+                        FileIO.TryMove("MCGalaxy.exe", "Prev_MCGalaxy.exe");
+                        FileIO.TryMove("MCGalaxy.update", "MCGalaxy.exe");
+                        Server.Stop(true, "Updating server.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError("Error performing update", ex);
+                    }
                 }
             }
             else

@@ -18,7 +18,7 @@ namespace MCGalaxy.Commands.Building
     public sealed class CmdOutline : DrawCmd
     {
         public override string Name => "Outline";
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         protected override DrawOp GetDrawOp(DrawArgs dArgs)
         {
             Player p = dArgs.Player;

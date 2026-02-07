@@ -39,7 +39,7 @@ namespace MCGalaxy.Eco
         {
             if (!File.Exists(Paths.EconomyPropsFile))
             {
-                Logger.Log(1, "Economy properties don't exist, creating");
+                Logger.Log(LogType.SystemActivity, "Economy properties don't exist, creating");
                 Save();
             }
             using StreamReader r = new(Paths.EconomyPropsFile);

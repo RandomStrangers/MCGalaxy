@@ -3,6 +3,13 @@ using MCGalaxy.Generator.Foliage;
 using System;
 namespace MCGalaxy.Generator.fCraft
 {
+    /// <summary> Map generator template. Templates define landscape shapes and features. </summary>
+    public enum MapGenTemplate
+    {
+        Archipelago, Atoll, Bay, Dunes, Hills, Ice, Island2,
+        Lake, Mountains2, Peninsula, Random, River, Streams,
+        Count
+    }
     /// <summary> Provides functionality for generating map files. </summary>
     public sealed class FCraftMapGen
     {
@@ -15,12 +22,13 @@ namespace MCGalaxy.Generator.fCraft
         // theme-dependent vars
         byte bGroundSurface, bWater, bGround, bSeaFloor, bBedrock, bCliff;
         int groundThickness = 5;
+        const int SeaFloorThickness = 3;
         Tree tree;
         public FCraftMapGen(FCraftMapGenArgs generatorArgs)
         {
             args = generatorArgs;
-            rand = new(args.Seed);
-            noise = new(args.Seed, 1);
+            rand = new Random(args.Seed);
+            noise = new Noise(args.Seed, NoiseInterpolationMode.Bicubic);
         }
         public void Generate(Level map)
         {
@@ -30,7 +38,7 @@ namespace MCGalaxy.Generator.fCraft
             GenerateHeightmap(map);
             GenerateMap(map);
         }
-        void ReportProgress(int _, string message) => Logger.Log(1, message);
+        void ReportProgress(int _, string message) => Logger.Log(LogType.SystemActivity, message);
         void ApplyBiome(Level _)
         {
             MapGenBiome biome = MapGenBiome.Get(args.Biome);
@@ -95,10 +103,7 @@ namespace MCGalaxy.Generator.fCraft
             float midpoint = args.MidPoint * args.Bias;
             // shuffle corners
             int[] keys = new int[corners.Length];
-            for (int i = 0; i < corners.Length; i++) 
-            { 
-                keys[i] = rand.Next(); 
-            }
+            for (int i = 0; i < corners.Length; i++) { keys[i] = rand.Next(); }
             Array.Sort(keys, corners);
             // overlay the bias
             Noise.ApplyBias(heightmap, _width, _length,
@@ -139,7 +144,7 @@ namespace MCGalaxy.Generator.fCraft
                 ReportProgress(5, "Heightmap Processing: Randomizing");
                 altmap = new float[_width * _length];
                 int blendmapDetailSize = (int)Math.Log(Math.Max(_width, _length), 2) - 2;
-                new Noise(rand.Next(), 0)
+                new Noise(rand.Next(), NoiseInterpolationMode.Cosine)
                     .PerlinNoise(altmap, _width, _length, 3, blendmapDetailSize, 0.5f);
                 Noise.Normalize(altmap, -1, 1);
             }
@@ -162,7 +167,6 @@ namespace MCGalaxy.Generator.fCraft
             int snowStartThreshold = args.SnowAltitude - args.SnowTransition;
             int snowThreshold = args.SnowAltitude;
             for (int x = 0, i = 0; x < width; x++)
-            {
                 for (int z = 0; z < length; z++, i++)
                 {
                     int level;
@@ -195,7 +199,7 @@ namespace MCGalaxy.Generator.fCraft
                             {
                                 index -= length * width;
                                 if (yy >= mapHeight) continue;
-                                if (level - yy < 3)
+                                if (level - yy < SeaFloorThickness)
                                 {
                                     map.blocks[index] = bSeaFloor;
                                 }
@@ -299,15 +303,12 @@ namespace MCGalaxy.Generator.fCraft
                         }
                     }
                 }
-            }
         }
         void AddBeaches(Level map)
         {
             int beachExtentSqr = (args.BeachExtent + 1) * (args.BeachExtent + 1);
             for (int x = 0; x < map.Width; x++)
-            {
                 for (int z = 0; z < map.Length; z++)
-                {
                     for (int y = args.WaterLevel; y <= args.WaterLevel + args.BeachHeight; y++)
                     {
                         if (map.GetBlock((ushort)x, (ushort)y, (ushort)z) != bGroundSurface) continue;
@@ -335,21 +336,18 @@ namespace MCGalaxy.Generator.fCraft
                             }
                         }
                     }
-                }
-            }
         }
         void GenerateTrees(Level map)
         {
-            int minTrunkPadding = args.TreeSpacingMin,
-                maxTrunkPadding = args.TreeSpacingMax;
+            int minTrunkPadding = args.TreeSpacingMin;
+            int maxTrunkPadding = args.TreeSpacingMax;
             Random rn = new();
             int width = _width, length = _length;
             for (int x = 0; x < width; x += rn.Next(minTrunkPadding, maxTrunkPadding + 1))
-            {
                 for (int z = 0; z < length; z += rn.Next(minTrunkPadding, maxTrunkPadding + 1))
                 {
-                    int nx = x + rn.Next(-(minTrunkPadding / 2), (maxTrunkPadding / 2) + 1),
-                        nz = z + rn.Next(-(minTrunkPadding / 2), (maxTrunkPadding / 2) + 1);
+                    int nx = x + rn.Next(-(minTrunkPadding / 2), (maxTrunkPadding / 2) + 1);
+                    int nz = z + rn.Next(-(minTrunkPadding / 2), (maxTrunkPadding / 2) + 1);
                     if (nx < 0 || nx >= width || nz < 0 || nz >= length) continue;
                     int ny = surfaceMap[nx * length + nz];
                     if ((map.GetBlock((ushort)nx, (ushort)ny, (ushort)nz) == bGroundSurface) && slopemap[nx * length + nz] < .5)
@@ -366,28 +364,27 @@ namespace MCGalaxy.Generator.fCraft
                                       });
                     }
                 }
-            }
         }
         #endregion
         public static void RegisterGenerators()
         {
             // TODO this doesn't support later dynamically added themes
-            string names = MapGenBiome.Biomes.Join(b => b.Key),
-                desc = "&HSeed specifies biome of the map. " +
+            string names = MapGenBiome.Biomes.Join(b => b.Key);
+            string desc = "&HSeed specifies biome of the map. " +
                  "It must be one of the following: &f" + names;
-            for (int type = 0; type < 13; type++)
+            for (MapGenTemplate type = 0; type < MapGenTemplate.Count; type++)
             {
                 // Because of the way C# implements for loop closures, '=> Gen(p, lvl, seed, theme_)'
                 //  captures the variable from the LAST iteration, not the current one
                 // Hence this causes an error to get thrown later, because 'Gen' is always executed
                 //  with 'MapGenTheme.Count' theme instead of the expected theme
                 // Using a local variable copy fixes this
-                int type_ = type;
-                MapGen.Register(type_.ToString(), 1,
+                MapGenTemplate type_ = type;
+                MapGen.Register(type_.ToString(), GenType.fCraft,
                                 (p, lvl, args) => Gen(p, lvl, args, type_), desc);
             }
         }
-        static bool Gen(Player p, Level lvl, MapGenArgs gen_args, int type)
+        static bool Gen(Player p, Level lvl, MapGenArgs gen_args, MapGenTemplate type)
         {
             FCraftMapGenArgs args = FCraftMapGenArgs.MakeTemplate(type);
             gen_args.Biome = args.Biome;

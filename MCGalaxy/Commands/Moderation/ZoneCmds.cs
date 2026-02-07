@@ -26,7 +26,7 @@ namespace MCGalaxy.Commands.Moderation
         public override string Type => CommandTypes.Moderation;
         public override bool MuseumUsable => false;
         public override bool SuperUseable => false;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("ZRemove", "del"), new CommandAlias("ZDelete", "del"),
                     new CommandAlias("ZAdd"), new CommandAlias("ZEdit", "perbuild") };
         public override void Use(Player p, string message, CommandData data)
@@ -217,8 +217,9 @@ namespace MCGalaxy.Commands.Moderation
                 Zone z = zones[i];
                 if (!z.Contains(P.X, P.Y, P.Z)) continue;
                 found = true;
+                AccessResult status = z.Access.Check(p.name, data.Rank);
                 bool allowed = z.Access.CheckAllowed(p);
-                p.Message("  Zone {0} &S- {1}{2}", z.ColoredName, allowed ? "&a" : "&c", z.Access.Check(p.name, data.Rank));
+                p.Message("  Zone {0} &S- {1}{2}", z.ColoredName, allowed ? "&a" : "&c", status);
             }
             if (!found) { p.Message("No zones affect this block."); }
             return true;

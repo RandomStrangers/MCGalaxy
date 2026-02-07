@@ -20,9 +20,9 @@ namespace MCGalaxy.Commands.CPE
     {
         public override string Name => "Skin";
         public override string Type => CommandTypes.Other;
-        public override sbyte DefaultRank => 80;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can change the skin of others"),
-                    new CommandPerm(80, "can change the skin of bots") };
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can change the skin of others"),
+                    new CommandPerm(LevelPermission.Operator, "can change the skin of bots") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.IndexOf(' ') == -1)

@@ -24,7 +24,7 @@ namespace MCGalaxy.Commands.Moderation
         public override string Shortcut => "RestoreSelection";
         public override string Type => CommandTypes.Moderation;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }

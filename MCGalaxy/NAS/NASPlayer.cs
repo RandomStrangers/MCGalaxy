@@ -1,4 +1,5 @@
 using MCGalaxy.DB;
+using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Maths;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
@@ -10,246 +11,6 @@ using System.IO;
 using System.Text;
 namespace MCGalaxy
 {
-    public abstract class NASCommand : Command
-    {
-        public override string Type => "NAS";
-        public override bool SuperUseable => false;
-        public override bool MuseumUsable => false;
-        public override bool MessageBlockRestricted => true;
-        public override sbyte DefaultRank => 0;
-        public override void Use(Player p, string message)
-        {
-            Use(NASPlayer.GetPlayer(p), message);
-        }
-        public abstract void Use(NASPlayer np, string message);
-    }
-    public abstract class NASCommand2 : NASCommand
-    {
-        public override void Use(NASPlayer np, string message) => Execute(np.p, message);
-        public abstract void Execute(Player p, string message);
-    }
-    public class CmdGravestones : NASCommand2
-    {
-        public override string Name => "Gravestones";
-        public override sbyte DefaultRank => 80;
-        public override bool SuperUseable => true;
-        public bool IsSuper(Player p, string message, string type)
-        {
-            if (message.Length > 0 || !p.IsSuper)
-            {
-                return false;
-            }
-            SuperNeedsArgs(p, type);
-            return true;
-        }
-        public void SuperNeedsArgs(Player p, string type) => p.Message("When using /{0} from {2}, you must provide a {1}.", Name, type, p.SuperName);
-        public override void Execute(Player p, string message)
-        {
-            string PlayerName;
-            if (!IsSuper(p, message, "player name"))
-            {
-                if (string.IsNullOrEmpty(message))
-                {
-                    PlayerName = p.name;
-                }
-                else
-                {
-                    PlayerData target = PlayerDB.Match(p, message);
-                    if (target != null)
-                    {
-                        PlayerName = target.Name;
-                    }
-                    else
-                    {
-                        return;
-                    }
-                }
-                string file = NASPlugin.GetDeathPath(PlayerName);
-                if (!File.Exists(file))
-                {
-                    p.Message("{0}&S has no gravestones recorded!", PlayerName);
-                }
-                else
-                {
-                    string[] deaths = FileIO.TryReadAllLines(file),
-                        deaths2 = FileIO.TryReadAllLines(file);
-                    long count = deaths2.LongLength;
-                    for (long i = 0; i < deaths2.LongLength; i++)
-                    {
-                        if (!deaths2[i].IsNullOrWhiteSpace())
-                        {
-                            foreach (char c in deaths2[i])
-                            {
-                                if (char.IsWhiteSpace(c))
-                                {
-                                    deaths2[i] = deaths2[i].Replace(c.ToString(), "");
-                                }
-                            }
-                        }
-                        if (deaths2[i].IsNullOrWhiteSpace())
-                        {
-                            deaths2[i] = null;
-                            count--;
-                        }
-                    }
-                    if (count <= 0)
-                    {
-                        p.Message("{0}&S has no gravestones recorded!", PlayerName);
-                    }
-                    else
-                    {
-                        p.Message("{0}&S's gravestones:", PlayerName);
-                        p.MessageLines(deaths);
-                    }
-                }
-            }
-        }
-        public override void Help(Player p) => p.Message("&T/Gravestones [name] &H- Views the location of the player's gravestones");
-    }
-    public class CmdMyGravestones : NASCommand
-    {
-        public override string Name => "MyGravestones";
-        public override void Use(NASPlayer np, string message)
-        {
-            string file = NASPlugin.GetDeathPath(np.p.name);
-            if (!File.Exists(file))
-            {
-                np.Message("You have no gravestones recorded!");
-            }
-            else
-            {
-                string[] deaths = FileIO.TryReadAllLines(file),
-                    deaths2 = FileIO.TryReadAllLines(file);
-                long count = deaths2.LongLength;
-                for (long i = 0; i < deaths2.LongLength; i++)
-                {
-                    if (!deaths2[i].IsNullOrWhiteSpace())
-                    {
-                        foreach (char c in deaths2[i])
-                        {
-                            if (char.IsWhiteSpace(c))
-                            {
-                                deaths2[i] = deaths2[i].Replace(c.ToString(), "");
-                            }
-                        }
-                    }
-                    if (deaths2[i].IsNullOrWhiteSpace())
-                    {
-                        deaths2[i] = null;
-                        count--;
-                    }
-                }
-                if (count <= 0)
-                {
-                    np.Message("&SYou have no gravestones recorded!");
-                }
-                else
-                {
-                    np.Message("Your gravestones:");
-                    np.MessageLines(deaths);
-                }
-            }
-        }
-        public override void Help(Player p) => p.Message("&T/MyGravestones &H- Views the location of the your own gravestones");
-    }
-    public class CmdPVP : NASCommand
-    {
-        public override string Name => "PvP";
-        public override void Use(NASPlayer np, string message)
-        {
-            if (message.CaselessEq("on") || message.CaselessEq("enable"))
-            {
-                if (!np.pvpEnabled)
-                {
-                    np.Message("You can now attack and be attacked by other players.");
-                    np.pvpEnabled = true;
-                    np.pvpCooldown = DateTime.UtcNow + new TimeSpan(1, 0, 0);
-                }
-                else
-                {
-                    np.Message("PvP is already enabled");
-                }
-            }
-            else if (message.CaselessEq("off") || message.CaselessEq("disable"))
-            {
-                if (!np.pvpEnabled)
-                {
-                    np.Message("PvP is already disabled");
-                    return;
-                }
-                if (np.pvpCooldown > DateTime.UtcNow)
-                {
-                    TimeSpan remaining = np.pvpCooldown - DateTime.UtcNow;
-                    np.Message("Please wait " + remaining.Minutes + " minutes and " + remaining.Seconds + " seconds before using this command");
-                    return;
-                }
-                np.Message("You can no longer attack and be attacked by other players.");
-                np.pvpEnabled = false;
-            }
-            else
-            {
-                Help(np.p);
-            }
-        }
-        public override void Help(Player p)
-        {
-            p.Message("&T/PvP [on/off]");
-            p.Message("&HToggles PvP, but once you turn it on, you can't turn it off for an hour.");
-        }
-    }
-    public class CmdNASSpawn : NASCommand
-    {
-        public override string Name => "NASSpawn";
-        public override sbyte DefaultRank => 100;
-        public override void Use(NASPlayer np, string message)
-        {
-            if ((!message.CaselessContains("confirm") || string.IsNullOrEmpty(message)) && np.hasBeenSpawned)
-            {
-                np.Message("&HHasBeenSpawned is currently true. If you want to turn off HasBeenSpawned, type &T/NASSpawn &Hconfirm");
-            }
-            else if (message.CaselessContains("confirm") && np.hasBeenSpawned)
-            {
-                np.Message("HasBeenSpawned set to false. Use &T/NASSpawn &Hto turn it back on.");
-                np.hasBeenSpawned = false;
-            }
-            else if (!np.hasBeenSpawned)
-            {
-                np.hasBeenSpawned = true;
-                np.Message("HasBeenSpawned set to true.");
-            }
-        }
-        public override void Help(Player p) => p.Message("&T/NASSpawn &H- Toggles hasBeenSpawned");
-    }
-    public class CmdSpawnDungeon : NASCommand
-    {
-        public override string Name => "SpawnDungeon";
-        public override string Shortcut => "GenerateDungeon";
-        public override sbyte DefaultRank => 100;
-        public override void Use(NASPlayer np, string message) => NASGen.GenInstance.GenerateDungeon(np, np.p.Pos.BlockCoords.X, np.p.Pos.BlockCoords.Y, np.p.Pos.BlockCoords.Z, np.p.Level, NASLevel.Get(np.p.Level.name));
-        public override void Help(Player p) => p.Message("&T/SpawnDungeon &H- Generates a dungeon.");
-    }
-    public class CmdBarrelMode : NASCommand
-    {
-        public override string Name => "BarrelMode";
-        public override void Use(NASPlayer np, string message)
-        {
-            if (np.oldBarrel)
-            {
-                np.Message("You now have to input the amount of items you want to put into the barrel manually.");
-                np.oldBarrel = false;
-            }
-            else
-            {
-                np.Message("Half of the items you're holding will now be put into the barrel.");
-                np.oldBarrel = true;
-            }
-        }
-        public override void Help(Player p)
-        {
-            p.Message("&T/BarrelMode");
-            p.Message("&HToggles how you enter items into barrels.");
-        }
-    }
     public partial class NASPlayer : NASEntity
     {
         public static byte[] fallback = new byte[256];
@@ -266,8 +27,7 @@ namespace MCGalaxy
             isInserting = false;
         [JsonIgnore] public int[] interactCoords;
         [JsonIgnore] public bool SendingMap = false;
-        [JsonIgnore] public const string Path = NASPlugin.Path + "PlayerData/",
-            DeathsPath = Path + "deaths/", PlayerKey = "NAS_NasPlayer";
+        [JsonIgnore] public const string DeathsPath = NASPlugin.SavePath + "deaths/";
         [JsonIgnore] public Scheduler PlayerSavingScheduler;
         [JsonIgnore] public SchedulerTask PlayerSaveTask;
         [JsonIgnore]
@@ -283,11 +43,11 @@ namespace MCGalaxy
         [JsonIgnore] public bool SetInventoryNotif = false;
         [JsonIgnore] public Player lastAttackedPlayer = null;
         [JsonIgnore] public string reason = null;
-        [JsonIgnore] public int whereHealthIsDisplayed = 12;
+        [JsonIgnore] public CpeMessageType whereHealthIsDisplayed = CpeMessageType.BottomRight2;
         public bool bigUpdate = false, 
             oldBarrel = true,
             pvpEnabled = false;
-        public Inventory inventory;
+        public NASInventory inventory;
         public Position spawnCoords;
         public int[] bedCoords;
         public string spawnMap;
@@ -299,7 +59,7 @@ namespace MCGalaxy
         public static Dictionary<string, DateTime> cooldowns = new();
         public void Message(string message, params object[] args) => p.Message(string.Format(message, args));
         public void MessageLines(IEnumerable<string> lines) => p.MessageLines(lines);
-        public void Send(byte[] buffer) => p.Socket.Send(buffer, 0x00);
+        public void Send(byte[] buffer) => p.Socket.Send(buffer, SendFlags.None);
         public void ResetBreaking()
         {
             breakX = breakY = breakZ = ushort.MaxValue;
@@ -308,18 +68,18 @@ namespace MCGalaxy
                 NASBlockChange.breakScheduler.Cancel((SchedulerTask)p.Extras["nas_taskDisplayMeter"]);
             }
         }
-        public static void Log(string format, params object[] args) => Logger.Log(15, string.Format(format, args));
+        public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
         public static NASPlayer GetPlayer(Player p)
         {
-            if (!p.Extras.Contains(PlayerKey))
+            if (!p.Extras.Contains(NASPlugin.PlayerKey))
             {
                 NASPlayer np = new(p);
                 Orientation rot = new(Server.mainLevel.rotx, Server.mainLevel.roty);
-                np.SetLocation(Server.mainLevel.name, Server.mainLevel.SpawnPos, rot);
-                p.Extras[PlayerKey] = np;
+                SetLocation(np, Server.mainLevel.name, Server.mainLevel.SpawnPos, rot);
+                p.Extras[NASPlugin.PlayerKey] = np;
                 return np;
             }
-            return (NASPlayer)p.Extras[PlayerKey];
+            return (NASPlayer)p.Extras[NASPlugin.PlayerKey];
         }
         public bool CanDamage()
         {
@@ -328,15 +88,6 @@ namespace MCGalaxy
                 return false;
             }
             return true;
-        }
-        public void SetLocation(string lvlName, Position pos, Orientation rot)
-        {
-            levelName = lvlName;
-            location.X = pos.X;
-            location.Y = pos.Y;
-            location.Z = pos.Z;
-            yaw = rot.RotY;
-            pitch = rot.HeadX;
         }
         public NASPlayer(Player p)
         {
@@ -357,34 +108,34 @@ namespace MCGalaxy
             this.p = p;
             inventory.p = p;
         }
-        public void HandleInteraction(int button, int action, ushort x, ushort y, ushort z, byte _, int face)
+        public void HandleInteraction(MouseButton button, MouseAction action, ushort x, ushort y, ushort z, byte _, TargetBlockFace face)
         {
-            if (button == 1 && p.ClientHeldBlock != 0)
+            if (button == MouseButton.Right && p.ClientHeldBlock != 0)
             {
                 ushort xPlacing = x,
                     yPlacing = y,
                     zPlacing = z;
-                if (face == 0)
+                if (face == TargetBlockFace.AwayX)
                 {
                     xPlacing++;
                 }
-                if (face == 1)
+                if (face == TargetBlockFace.TowardsX)
                 {
                     xPlacing--;
                 }
-                if (face == 2)
+                if (face == TargetBlockFace.AwayY)
                 {
                     yPlacing++;
                 }
-                if (face == 3)
+                if (face == TargetBlockFace.TowardsY)
                 {
                     yPlacing--;
                 }
-                if (face == 4)
+                if (face == TargetBlockFace.AwayZ)
                 {
                     zPlacing++;
                 }
-                if (face == 5)
+                if (face == TargetBlockFace.TowardsZ)
                 {
                     zPlacing--;
                 }
@@ -406,7 +157,7 @@ namespace MCGalaxy
             {
                 if (!CanDoStuffBasedOnPosition)
                 {
-                    if (action == 1)
+                    if (action == MouseAction.Released)
                     {
                         Message("&cPlease wait a moment before interacting with blocks");
                     }
@@ -415,7 +166,14 @@ namespace MCGalaxy
                 nasBlock.interaction(this, button, action, nasBlock, x, y, z);
             }
         }
-        public static void StartCooldown(Player p, int milli) => cooldowns[p.name] = DateTime.UtcNow.AddMilliseconds(milli % 1000).AddSeconds(milli / 1000);
+        public static void StartCooldown(Player p, int milli)
+        {
+            int milliseconds = milli % 1000,
+                seconds = milli / 1000;
+            DateTime expires = DateTime.UtcNow.AddMilliseconds(milliseconds);
+            expires = expires.AddSeconds(seconds);
+            cooldowns[p.name] = expires;
+        }
         public void UpdateValues()
         {
             spawnCoords = Server.mainLevel.SpawnPos;
@@ -503,14 +261,14 @@ namespace MCGalaxy
             }
             return exp + (int)(4.5 * Math.Pow(levels, 2) - 162.5 * levels + 2220);
         }
-        public static void ClickOnPlayer(Player p, byte entity, int button, int action)
+        public static void ClickOnPlayer(Player p, byte entity, MouseButton button, MouseAction action)
         {
             NASPlayer np = GetPlayer(p);
             if (entity == 0xFF)
             {
                 return;
             }
-            if ((button == 1 && np.inventory.HeldItem.Prop.knockback >= 0) || (button == 0 && np.inventory.HeldItem.Prop.knockback < 0) || button == 2 || action == 0)
+            if ((button == MouseButton.Right && np.inventory.HeldItem.Prop.knockback >= 0) || (button == MouseButton.Left && np.inventory.HeldItem.Prop.knockback < 0) || button == MouseButton.Middle || action == MouseAction.Pressed)
             {
                 return;
             }
@@ -588,7 +346,7 @@ namespace MCGalaxy
                 np.inventory.UpdateItemDisplay();
                 NASPlayer w = GetPlayer(who);
                 w.lastAttackedPlayer = p;
-                if (!w.CanTakeDamage(5) || !w.CanTakeDamage(3))
+                if (!w.CanTakeDamage(NASDamageSource.Murder) || !w.CanTakeDamage(NASDamageSource.Entity))
                 {
                     string reason = "";
                     if (w.p.Game.Referee)
@@ -633,8 +391,8 @@ namespace MCGalaxy
                         added += 1;
                     }
                     added += np.inventory.HeldItem.Enchant("Sharpness") * 0.5f;
-                    w.TakeDamage(np.inventory.HeldItem.Prop.damage + added, 3, "@p %f" + who.Pronouns.PastVerb + " slain by " + p.ColoredName + " %fusing " + np.inventory.HeldItem.displayName);
-                    NASBlockChange.FishingInfo info = new()
+                    w.TakeDamage(np.inventory.HeldItem.Prop.damage + added, NASDamageSource.Entity, "@p %f" + who.Pronouns.PastVerb + " slain by " + p.ColoredName + " %fusing " + np.inventory.HeldItem.displayName);
+                    NASBlockChange.NASFishingInfo info = new()
                     {
                         p = p,
                         who = who
@@ -645,8 +403,8 @@ namespace MCGalaxy
         }
         public void Knockback(SchedulerTask task)
         {
-            Player who = ((NASBlockChange.FishingInfo)task.State).who,
-                p = ((NASBlockChange.FishingInfo)task.State).p;
+            Player who = ((NASBlockChange.NASFishingInfo)task.State).who,
+                p = ((NASBlockChange.NASFishingInfo)task.State).p;
             int srcHeight = ModelInfo.CalcEyeHeight(p),
                 dstHeight = ModelInfo.CalcEyeHeight(who),
                 dx = p.Pos.X - who.Pos.X,
@@ -670,17 +428,9 @@ namespace MCGalaxy
                 p.Message("Please update to the latest ClassiCube build to hit with knockback.");
             }
         }
-        public void ChangeHealth(float diff)
+        public override void ChangeHealth(float diff)
         {
-            HP += diff;
-            if (HP < 0)
-            {
-                HP = 0;
-            }
-            if (HP > maxHP)
-            {
-                HP = maxHP;
-            }
+            base.ChangeHealth(diff);
             DisplayHealth();
         }
         public float DamageSaved(bool takeDamage = false)
@@ -745,9 +495,9 @@ namespace MCGalaxy
             }
             return saved;
         }
-        public override bool CanTakeDamage(int source)
+        public override bool CanTakeDamage(NASDamageSource source)
         {
-            if (!pvpEnabled && (source == 5 || source == 3))
+            if (!pvpEnabled && (source == NASDamageSource.Murder || source == NASDamageSource.Entity))
             {
                 return false;
             }
@@ -768,7 +518,7 @@ namespace MCGalaxy
                 Message("If you get this message for more than 5 seconds, rejoin.");
                 return false;
             }
-            if (source == 1)
+            if (source == NASDamageSource.Suffocating)
             {
                 TimeSpan timeSinceSuffocation = DateTime.UtcNow.Subtract(lastSuffocationDate);
                 if (timeSinceSuffocation.TotalMilliseconds < SuffocationMilliseconds)
@@ -779,17 +529,7 @@ namespace MCGalaxy
             }
             return true;
         }
-        public static string DeathReason(int source, Player p) => source switch
-        {
-            3 => "@p &cdied.",
-            0 => "@p &cfell to " + p.Pronouns.Object + " death.",
-            1 => "@p &esuffocated.",
-            2 => "@p &rdrowned.",
-            4 => "@p &adied from unknown causes.",
-            5 => "@p &8" + p.Pronouns.PastVerb + "&8 murdered by &S@s",
-            _ => "@p &adied from unknown causes.",
-        };
-        public override bool TakeDamage(float damage, int source, string customDeathReason = "")
+        public override bool TakeDamage(float damage, NASDamageSource source, string customDeathReason = "")
         {
             if (HP > maxHP)
             {
@@ -803,7 +543,7 @@ namespace MCGalaxy
             {
                 return false;
             }
-            if (source != 2)
+            if (source != NASDamageSource.Drowning)
             {
                 damage *= 1 - ((1 - (damage / 50)) * (DamageSaved(true) * 0.04f));
                 damage *= 1 - (EnchantLevels("Protection") * 0.04f);
@@ -812,7 +552,7 @@ namespace MCGalaxy
                     damage = (float)Math.Round(damage * 2f) / 2f;
                 }
             }
-            if (source == 0 && EnchantLevels("Feather Falling") > 0)
+            if (source == NASDamageSource.Falling && EnchantLevels("Feather Falling") > 0)
             {
                 damage = Math.Max(0, damage - EnchantLevels("Feather Falling"));
             }
@@ -859,7 +599,7 @@ namespace MCGalaxy
                 {
                     customDeathReason = DeathReason(source, p);
                 }
-                if (source == 3)
+                if (source == NASDamageSource.Entity)
                 {
                     GetPlayer(lastAttackedPlayer).kills++;
                     GetPlayer(lastAttackedPlayer).GiveLevels(levels / 2);
@@ -877,23 +617,6 @@ namespace MCGalaxy
             NASPlayer np = (NASPlayer)task.State;
             np.DisplayHealth();
         }
-        public string OxygenString()
-        {
-            if (Air == maxAir)
-            {
-                return "";
-            }
-            if (Air == 0)
-            {
-                return "&r?";
-            }
-            StringBuilder builder = new("", (int)maxAir + 6);
-            for (int i = 0; i < Air; ++i)
-            {
-                builder.Append('�');
-            }
-            return builder.ToString();
-        }
         public void Die(string thing)
         {
             hasBeenSpawned = false;
@@ -905,7 +628,7 @@ namespace MCGalaxy
         }
         public void TryDropGravestone()
         {
-            Drop deathDrop = new(inventory);
+            NASDrop deathDrop = new(inventory);
             if (deathDrop.blockStacks == null && deathDrop.items == null)
             {
                 return;
@@ -941,13 +664,13 @@ namespace MCGalaxy
                 }
             }
             nl.SetBlock(x, y, z, NASPlugin.FromRaw(647));
-            BlockEntity blockEntity = new()
+            NASBlock.NASBlockEntity blockEntity = new()
             {
                 drop = deathDrop
             };
             nl.blockEntities.Add(x + " " + y + " " + z, blockEntity);
-            Message("You dropped a gravestone at {0} {1} {2} in {3}", x, y, z, p.level.name);
-            FileIO.TryAppendAllText(NASPlugin.GetDeathPath(p.name), x + " " + y + " " + z + " in " + p.level.name);
+            Message("You dropped a gravestone at {0} {1} {2} in {3}", x, y, z, p.Level.name);
+            FileIO.TryAppendAllText(NASPlugin.GetDeathPath(p.name), x + " " + y + " " + z + " in " + p.Level.name);
             nl.blockEntities[x + " " + y + " " + z].lockedBy = p.name;
             nl.blockEntities[x + " " + y + " " + z].drop.exp = GetExp();
         }
@@ -956,7 +679,7 @@ namespace MCGalaxy
             ushort here = nl.GetBlock(x, y, z);
             return NASBlock.CanPhysicsKillThis(here) || NASBlock.IsThisLiquid(here);
         }
-        public void SendCpeMessage(int type, string message) => p.SendCpeMessage(type, message);
+        public void SendCpeMessage(CpeMessageType type, string message) => p.SendCpeMessage(type, message);
         public void DisplayHealth(string healthColor = "p", string prefix = "&7[", string suffix = "&7]¼") => SendCpeMessage(whereHealthIsDisplayed, OxygenString() + " " + prefix + HealthString(healthColor) + suffix + ArmorDisplay() + " " + ExpDisplay() + " " + AttackRecharge());
         public string HealthString(string healthColor)
         {
@@ -1031,29 +754,9 @@ namespace MCGalaxy
             string final = builder.ToString();
             return final;
         }
-        public void UpdateAir()
+        public override void UpdateAir()
         {
-            AirPrev = Air;
-            if (holdingBreath)
-            {
-                Air -= 0.03125f;
-                if (Air < 0)
-                {
-                    Air = 0;
-                }
-            }
-            else
-            {
-                Air += 0.03125f;
-                if (Air > maxAir)
-                {
-                    Air = maxAir;
-                }
-            }
-            if (Air == 0)
-            {
-                TakeDamage(0.125f, 2);
-            }
+            base.UpdateAir();
             if (Air != AirPrev && Air == Math.Floor(Air))
             {
                 DisplayHealth();
@@ -1140,6 +843,251 @@ namespace MCGalaxy
             else
             {
                 PlayerActions.ChangeMap(p, Server.mainLevel);
+            }
+        }
+        public abstract class NASCommand : Command
+        {
+            public override string Type => "NAS";
+            public override bool SuperUseable => false;
+            public override bool MuseumUsable => false;
+            public override bool MessageBlockRestricted => true;
+            public override LevelPermission DefaultRank => LevelPermission.Guest;
+            public override void Use(Player p, string message) => Use(GetPlayer(p), message);
+            public abstract void Use(NASPlayer np, string message);
+        }
+        public abstract class NASCommand2 : NASCommand
+        {
+            public override void Use(NASPlayer np, string message) => Execute(np.p, message);
+            public abstract void Execute(Player p, string message);
+        }
+        public class CmdGravestones : NASCommand2
+        {
+            public override string Name => "Gravestones";
+            public override LevelPermission DefaultRank => LevelPermission.Operator;
+            public override bool SuperUseable => true;
+            public bool IsSuper(Player p, string message, string type)
+            {
+                if (message.Length > 0 || !p.IsSuper)
+                {
+                    return false;
+                }
+                SuperNeedsArgs(p, type);
+                return true;
+            }
+            public void SuperNeedsArgs(Player p, string type) => p.Message("When using /{0} from {2}, you must provide a {1}.", Name, type, p.SuperName);
+            public override void Execute(Player p, string message)
+            {
+                string PlayerName;
+                if (IsSuper(p, message, "player name"))
+                {
+                    return;
+                }
+                if (string.IsNullOrEmpty(message))
+                {
+                    PlayerName = p.name;
+                }
+                else
+                {
+                    PlayerData target = PlayerDB.Match(p, message);
+                    if (target != null)
+                    {
+                        PlayerName = target.Name;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                string file = NASPlugin.GetDeathPath(PlayerName);
+                if (!File.Exists(file))
+                {
+                    p.Message("{0}&S has no gravestones recorded!", PlayerName);
+                    return;
+                }
+                string[] deaths = FileIO.TryReadAllLines(file),
+                    deaths2 = FileIO.TryReadAllLines(file);
+                long count = deaths2.LongLength;
+                for (long i = 0; i < deaths2.LongLength; i++)
+                {
+                    if (!deaths2[i].IsNullOrWhiteSpace())
+                    {
+                        foreach (char c in deaths2[i])
+                        {
+                            string cString = c.ToString();
+                            if (char.IsWhiteSpace(c))
+                            {
+                                deaths2[i] = deaths2[i].Replace(cString, "");
+                            }
+                        }
+                    }
+                    if (deaths2[i].IsNullOrWhiteSpace())
+                    {
+                        deaths2[i] = null;
+                        count--;
+                    }
+                }
+                if (count <= 0)
+                {
+                    p.Message("{0}&S has no gravestones recorded!", PlayerName);
+                    return;
+                }
+                p.Message("{0}&S's gravestones:", PlayerName);
+                p.MessageLines(deaths);
+            }
+            public override void Help(Player p) => p.Message("&T/Gravestones [name] &H- Views the location of the player's gravestones");
+        }
+        public class CmdMyGravestones : NASCommand
+        {
+            public override string Name => "MyGravestones";
+            public override void Use(NASPlayer np, string message)
+            {
+                string file = NASPlugin.GetDeathPath(np.p.name);
+                if (!File.Exists(file))
+                {
+                    np.Message("You have no gravestones recorded!");
+                    return;
+                }
+                string[] deaths = FileIO.TryReadAllLines(file),
+                    deaths2 = FileIO.TryReadAllLines(file);
+                long count = deaths2.LongLength;
+                for (long i = 0; i < deaths2.LongLength; i++)
+                {
+                    if (!deaths2[i].IsNullOrWhiteSpace())
+                    {
+                        foreach (char c in deaths2[i])
+                        {
+                            string cString = c.ToString();
+                            if (char.IsWhiteSpace(c))
+                            {
+                                deaths2[i] = deaths2[i].Replace(cString, "");
+                            }
+                        }
+                    }
+                    if (deaths2[i].IsNullOrWhiteSpace())
+                    {
+                        deaths2[i] = null;
+                        count--;
+                    }
+                }
+                if (count <= 0)
+                {
+                    np.Message("&SYou have no gravestones recorded!");
+                    return;
+                }
+                np.Message("Your gravestones:");
+                np.MessageLines(deaths);
+            }
+            public override void Help(Player p) => p.Message("&T/MyGravestones &H- Views the location of the your own gravestones");
+        }
+        public class CmdPVP : NASCommand
+        {
+            public override string Name => "PvP";
+            public override void Use(NASPlayer np, string message)
+            {
+                if (message.CaselessEq("on") || message.CaselessEq("enable"))
+                {
+                    if (!np.pvpEnabled)
+                    {
+                        np.Message("You can now attack and be attacked by other players.");
+                        np.pvpEnabled = true;
+                        np.pvpCooldown = DateTime.UtcNow + new TimeSpan(1, 0, 0);
+                        return;
+                    }
+                    else
+                    {
+                        np.Message("PvP is already enabled");
+                        return;
+                    }
+                }
+                if (message.CaselessEq("off") || message.CaselessEq("disable"))
+                {
+                    if (!np.pvpEnabled)
+                    {
+                        np.Message("PvP is already disabled");
+                        return;
+                    }
+                    if (np.pvpCooldown > DateTime.UtcNow)
+                    {
+                        TimeSpan remaining = np.pvpCooldown - DateTime.UtcNow;
+                        np.Message("Please wait " + remaining.Minutes + " minutes and " + remaining.Seconds + " seconds before using this command");
+                        return;
+                    }
+                    np.Message("You can no longer attack and be attacked by other players.");
+                    np.pvpEnabled = false;
+                    return;
+                }
+                Help(np.p);
+                return;
+            }
+            public override void Help(Player p)
+            {
+                p.Message("&T/PvP [on/off]");
+                p.Message("&HToggles PvP, but once you turn it on, you can't turn it off for an hour.");
+            }
+        }
+        public class CmdNASSpawn : NASCommand
+        {
+            public override string Name => "NASSpawn";
+            public override LevelPermission DefaultRank => LevelPermission.Admin;
+            public override void Use(NASPlayer np, string message)
+            {
+                if ((!message.CaselessContains("confirm") || string.IsNullOrEmpty(message)) && np.hasBeenSpawned)
+                {
+                    np.Message("&HHasBeenSpawned is currently true. If you want to turn off HasBeenSpawned, type &T/NASSpawn &Hconfirm");
+                    return;
+                }
+                else if (message.CaselessContains("confirm") && np.hasBeenSpawned)
+                {
+                    np.Message("HasBeenSpawned set to false. Use &T/NASSpawn &Hto turn it back on.");
+                    np.hasBeenSpawned = false;
+                    return;
+                }
+                else if (!np.hasBeenSpawned)
+                {
+                    np.hasBeenSpawned = true;
+                    np.Message("HasBeenSpawned set to true.");
+                    return;
+                }
+            }
+            public override void Help(Player p) => p.Message("&T/NASSpawn &H- Toggles hasBeenSpawned");
+        }
+        public class CmdSpawnDungeon : NASCommand
+        {
+            public override string Name => "SpawnDungeon";
+            public override string Shortcut => "GenerateDungeon";
+            public override LevelPermission DefaultRank => LevelPermission.Admin;
+            public override void Use(NASPlayer np, string message)
+            {
+                np.Message("Generating dungeon.");
+                Vec3S32 P = np.p.Pos.BlockCoords;
+                NASGen.NASGenInstance.GenerateDungeon(np, P.X, P.Y, P.Z, np.p.Level, NASLevel.Get(np.p.Level.name));
+            }
+            public override void Help(Player p)
+            {
+                p.Message("&T/SpawnDungeon");
+                p.Message("&HGenerates a dungeon.");
+            }
+        }
+        public class CmdBarrelMode : NASCommand
+        {
+            public override string Name => "BarrelMode";
+            public override void Use(NASPlayer np, string message)
+            {
+                if (np.oldBarrel)
+                {
+                    np.Message("You now have to input the amount of items you want to put into the barrel manually.");
+                    np.oldBarrel = false;
+                }
+                else
+                {
+                    np.Message("Half of the items you're holding will now be put into the barrel.");
+                    np.oldBarrel = true;
+                }
+            }
+            public override void Help(Player p)
+            {
+                p.Message("&T/BarrelMode");
+                p.Message("&HToggles how you enter items into barrels.");
             }
         }
     }

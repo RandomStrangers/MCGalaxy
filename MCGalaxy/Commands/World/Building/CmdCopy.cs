@@ -26,7 +26,7 @@ namespace MCGalaxy.Commands.Building
         public override string Name => "Copy";
         public override string Shortcut => "c";
         public override string Type => CommandTypes.Building;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override bool SuperUseable => false;
         public override CommandAlias[] Aliases => new CommandAlias[]
                 {

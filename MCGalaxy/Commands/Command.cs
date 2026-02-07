@@ -44,7 +44,7 @@ namespace MCGalaxy
         /// <remarks> Level altering (e.g. places a block) commands should return false </remarks>
         public virtual bool MuseumUsable => true;
         /// <summary> The default minimum rank that is required to use this command </summary>
-        public virtual sbyte DefaultRank => 0;
+        public virtual LevelPermission DefaultRank => LevelPermission.Guest;
         public abstract void Use(Player p, string message);
         public virtual void Use(Player p, string message, CommandData data) => Use(p, message);
         public abstract void Help(Player p);
@@ -63,7 +63,7 @@ namespace MCGalaxy
         /// <summary> Whether this commands updates the 'most recent command used' by players </summary>
         /// <remarks> return false to prevent this command showing in /last (e.g. /pass, /hide) </remarks>
         public virtual bool UpdatesLastCmd => true;
-        public virtual int Parallelism => Type.CaselessEq(CommandTypes.Information) ? 1 : 2;
+        public virtual CommandParallelism Parallelism => Type.CaselessEq(CommandTypes.Information) ? CommandParallelism.NoAndWarn : CommandParallelism.Yes;
         public CommandPerms Permissions;
         public static List<Command> allCmds = new();
         public static bool IsCore(Command cmd) => cmd.GetType().Assembly == Assembly.GetExecutingAssembly(); // TODO common method
@@ -106,8 +106,7 @@ namespace MCGalaxy
             RegisterCore(new CmdBuy(), new CmdEconomy(), new CmdGive(), new CmdBalance(),
                          new CmdPay(), new CmdStore(), new CmdTake());
             RegisterCore(new CmdExplode(), new CmdFlipHead(), new CmdFlipHeads(), new CmdGun(),
-                         new CmdMissile(), new CmdReferee(), new CmdSlap(), new CmdTeam(),
-                         new CmdLike(), new CmdDislike());
+                         new CmdMissile(), new CmdReferee(), new CmdSlap(), new CmdTeam());
             RegisterCore(new CmdAbout(), new CmdBanInfo(), new CmdBlocks(), new CmdClones(),
                          new CmdCommands(), new CmdFaq(), new CmdHasirc(), new CmdHelp(),
                          new CmdRankInfo(), new CmdServerInfo(), new CmdLastCmd(), new CmdLoaded(),
@@ -147,10 +146,8 @@ namespace MCGalaxy
         {
             foreach (Command cmd in cmds)
             {
-                if (!Server.Config.DisabledCommands.CaselessContains(cmd.Name))
-                {
-                    Register(cmd);
-                }
+                if (Server.Config.DisabledCommands.CaselessContains(cmd.Name)) continue;
+                Register(cmd);
             }
         }
         public static void Register(params Command[] commands)
@@ -181,7 +178,7 @@ namespace MCGalaxy
             {
                 if (Find(cmd.Name) != null) continue;
                 Register(cmd);
-                if (announce) Logger.Log(1, "Command /{0} loaded", cmd.Name);
+                if (announce) Logger.Log(LogType.SystemActivity, "Command /{0} loaded", cmd.Name);
             }
         }
         public static bool Unregister(Command cmd)
@@ -196,7 +193,11 @@ namespace MCGalaxy
         {
             foreach (Command cmd in commands) Unregister(cmd);
         }
-        public static string GetColoredName(Command cmd) => Group.GetColor(cmd.Permissions.MinRank) + cmd.Name;
+        public static string GetColoredName(Command cmd)
+        {
+            LevelPermission perm = cmd.Permissions.MinRank;
+            return Group.GetColor(perm) + cmd.Name;
+        }
         public static Command Find(string name)
         {
             foreach (Command cmd in allCmds)
@@ -233,10 +234,14 @@ namespace MCGalaxy
             cmdArgs = cmdArgs.Trim();
         }
     }
+    public enum CommandContext : byte
+    {
+        Normal, Static, SendCmd, Purchase, MessageBlock
+    }
     public struct CommandData
     {
-        public sbyte Rank;
-        public int Context;
+        public LevelPermission Rank;
+        public CommandContext Context;
         public Vec3S32 MBCoords;
     }
     // Clunky design, but needed to stay backwards compatible with custom commands
@@ -244,14 +249,18 @@ namespace MCGalaxy
     {
         public override void Use(Player p, string message) => Use(p, message, p.DefaultCmdData);
     }
+    public enum CommandParallelism
+    {
+        NoAndSilent, NoAndWarn, Yes
+    }
 }
 namespace MCGalaxy.Commands
 {
     public struct CommandPerm
     {
-        public sbyte Perm;
+        public LevelPermission Perm;
         public string Description;
-        public CommandPerm(sbyte perm, string desc)
+        public CommandPerm(LevelPermission perm, string desc)
         {
             Perm = perm; Description = desc;
         }

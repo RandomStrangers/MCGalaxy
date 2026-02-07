@@ -43,7 +43,7 @@ namespace MCGalaxy.Eco
                                 record => outdated.Add(ParseOld(record)),
                                 "WHERE money > 0");
             if (outdated.Count == 0) return;
-            Logger.Log(1, "Upgrading economy stats..");
+            Logger.Log(LogType.SystemActivity, "Upgrading economy stats..");
             foreach (EcoStats stats in outdated)
             {
                 UpdateMoney(stats.Player, stats.__unused);

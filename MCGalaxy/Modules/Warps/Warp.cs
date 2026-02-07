@@ -61,7 +61,7 @@ namespace MCGalaxy.Modules.Warps
             Make(warp, warp.Name, p);
             Save();
         }
-        public void Remove(Warp warp, Player _)
+        public void Remove(Warp warp)
         {
             Items.Remove(warp);
             Save();

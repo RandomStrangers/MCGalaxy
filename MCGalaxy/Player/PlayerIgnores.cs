@@ -30,7 +30,7 @@ namespace MCGalaxy
                 string[] lines = FileIO.TryReadAllLines(path);
                 foreach (string line in lines)
                 {
-                    if (line == "&global") { All = true; continue; }
+                    if (line == "&global") continue; // deprecated /ignore global
                     if (line == "&all") { All = true; continue; }
                     if (line == "&irc") { IRC = true; continue; }
                     if (line == "&titles") { Titles = true; continue; }

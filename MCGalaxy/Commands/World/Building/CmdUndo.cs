@@ -20,14 +20,14 @@ using MCGalaxy.Undo;
 using System;
 namespace MCGalaxy.Commands.Building
 {
-    public class CmdUndo : Command2
+    public class CmdUndo : Command
     {
         public override string Name => "Undo";
         public override string Shortcut => "u";
         public override string Type => CommandTypes.Building;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can undo physics") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can undo physics") };
         public override bool MessageBlockRestricted => true;
-        public override void Use(Player p, string message, CommandData data)
+        public override void Use(Player p, string message)
         {
             if (message.Length == 0) { UndoLastDrawOp(p); return; }
             string[] parts = message.SplitSpaces();
@@ -38,7 +38,7 @@ namespace MCGalaxy.Commands.Building
                 p.Message("If you are trying to undo another player, use &T/UndoPlayer");
                 return;
             }
-            if (undoPhysics) { UndoPhysics(p, data, delta); }
+            if (undoPhysics) { UndoPhysics(p, delta); }
             else { UndoSelf(p, delta); }
         }
         void UndoLastDrawOp(Player p)
@@ -70,9 +70,9 @@ namespace MCGalaxy.Commands.Building
                                "past 50 draw operations are &T/Undo &Sor &T/Undo [timespan]");
             p.Message("Try using &T/Undo [timespan] &Sinstead");
         }
-        void UndoPhysics(Player p, CommandData data, TimeSpan delta)
+        void UndoPhysics(Player p, TimeSpan delta)
         {
-            if (!CheckExtraPerm(p, data, 1)) return;
+            if (!CheckExtraPerm(p, 1)) return;
             if (!p.CanUse("Physics"))
             {
                 p.Message("&WYou can only undo physics if you can use &T/Physics"); return;
@@ -84,7 +84,7 @@ namespace MCGalaxy.Commands.Building
             };
             DrawOpPerformer.Do(op, null, p, new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal });
             p.Level.Message("Physics were undone &b" + delta.Shorten());
-            Logger.Log(3, "Physics were undone &b" + delta.Shorten());
+            Logger.Log(LogType.UserActivity, "Physics were undone &b" + delta.Shorten());
             p.Level.Save(true);
         }
         void UndoSelf(Player p, TimeSpan delta)
@@ -99,7 +99,7 @@ namespace MCGalaxy.Commands.Building
             if (op.found)
             {
                 p.Message("Undid your changes for the past &b{0}", delta.Shorten(true));
-                Logger.Log(3, "{0} undid their own actions for the past {1}",
+                Logger.Log(LogType.UserActivity, "{0} undid their own actions for the past {1}",
                            p.name, delta.Shorten(true));
             }
             else

@@ -6,23 +6,28 @@ namespace MCGalaxy
 {
     public partial class NASTimeCycle
     {
-        public const string Path = NASPlugin.Path + "CoreData/";
         public static float globalCurrentTime;
+        public static NASDayCycles globalCurrentDayCycle;
         public static JsonSerializer serializer = new();
         public static Scheduler weatherScheduler;
         public static SchedulerTask task;
         public static string globalSkyColor, globalCloudColor,
             globalSunColor, globalShadowColor, 
-            TimeFilePath = Path + "time.json";
-        public static int globalCurrentDayCycle,
-            dayCycle = 0,
-            cycleCurrentTime = 0,
+            TimeFilePath = NASPlugin.CoreSavePath + "time.json";
+        public static NASDayCycles dayCycle = NASDayCycles.Sunrise;
+        public NASDayCycles cycle = NASDayCycles.Sunrise;
+        public static int cycleCurrentTime = 0,
             cycleMaxTime = 14400,
             hourMinutes = 600,
             gameday = 0;
-        public int cycle = 0, day = 0, minutes = 7 * hourMinutes;
+        public int day = 0, minutes = 7 * hourMinutes;
+        public enum NASDayCycles
+        {
+            Sunrise, Day, Sunset, Night, Midnight
+        }
         public static NASTimeCycle cyc = new();
-        public static void StoreTimeData(int day, int minutes, int cycle)
+        public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
+        public static void StoreTimeData(int day, int minutes, NASDayCycles cycle)
         {
             cyc.day = day;
             cyc.minutes = minutes;
@@ -30,26 +35,27 @@ namespace MCGalaxy
             if (!File.Exists(TimeFilePath))
             {
                 File.Create(TimeFilePath).Dispose();
-                Logger.Log(15, "Created new json time file {0}!", TimeFilePath);
+                Log("Created new json time file {0}!", TimeFilePath);
             }
             using StreamWriter sw = new(TimeFilePath);
-            using JsonTextWriter writer = new(sw);
+            using JsonWriter writer = new JsonTextWriter(sw);
             serializer.Serialize(writer, cyc);
         }
         public static void Setup()
         {
             weatherScheduler ??= new("WeatherScheduler");
             task = weatherScheduler.QueueRepeat(Update, null, new(0, 0, 7));
-            dayCycle = 0;
+            dayCycle = NASDayCycles.Sunrise;
             if (!File.Exists(TimeFilePath))
             {
                 File.Create(TimeFilePath).Dispose();
-                Logger.Log(15, "Created new json time file {0}!", TimeFilePath);
+                Log("Created new json time file {0}!", TimeFilePath);
                 using StreamWriter sw = new(TimeFilePath);
-                using JsonTextWriter writer = new(sw);
+                using JsonWriter writer = new JsonTextWriter(sw);
                 serializer.Serialize(writer, cyc);
             }
-            NASTimeCycle ntc = JsonConvert.DeserializeObject<NASTimeCycle>(FileIO.TryReadAllText(TimeFilePath));
+            string jsonString = FileIO.TryReadAllText(TimeFilePath);
+            NASTimeCycle ntc = JsonConvert.DeserializeObject<NASTimeCycle>(jsonString);
             dayCycle = ntc.cycle;
             gameday = ntc.day;
             cycleCurrentTime = ntc.minutes;
@@ -71,51 +77,51 @@ namespace MCGalaxy
             }
             if (cycleCurrentTime >= 7 * hourMinutes & cycleCurrentTime < 8 * hourMinutes)
             {
-                dayCycle = 0;
+                dayCycle = NASDayCycles.Sunrise;
             }
             if (cycleCurrentTime >= 8 * hourMinutes & cycleCurrentTime < 19 * hourMinutes)
             {
-                dayCycle = 1;
+                dayCycle = NASDayCycles.Day;
             }
             if (cycleCurrentTime >= 19 * hourMinutes & cycleCurrentTime < 20 * hourMinutes)
             {
-                dayCycle = 2;
+                dayCycle = NASDayCycles.Sunset;
             }
             if (cycleCurrentTime >= 20 * hourMinutes & cycleCurrentTime < 24 * hourMinutes)
             {
-                dayCycle = 3;
+                dayCycle = NASDayCycles.Night;
             }
             if (cycleCurrentTime == 24 * hourMinutes | cycleCurrentTime == 0 | cycleCurrentTime < 7 * hourMinutes)
             {
-                dayCycle = 4;
+                dayCycle = NASDayCycles.Midnight;
             }
             switch (dayCycle)
             {
-                case 0:
+                case NASDayCycles.Sunrise:
                     globalCloudColor = "#ff8c00";
                     globalSkyColor = "#FFA500";
                     globalSunColor = "#a9a9a9";
                     globalShadowColor = "#828282";
                     break;
-                case 1:
+                case NASDayCycles.Day:
                     globalCloudColor = "#ffffff";
                     globalSkyColor = "#ADD8E6";
                     globalSunColor = "#ffffff";
                     globalShadowColor = "#9B9B9B";
                     break;
-                case 2:
+                case NASDayCycles.Sunset:
                     globalCloudColor = "#cf5c00";
                     globalSkyColor = "#FFB500";
                     globalSunColor = "#a9a9a9";
                     globalShadowColor = "#828282";
                     break;
-                case 3:
+                case NASDayCycles.Night:
                     globalCloudColor = "#808080";
                     globalSkyColor = "#404040";
                     globalSunColor = "#808080";
                     globalShadowColor = "#595959";
                     break;
-                case 4:
+                case NASDayCycles.Midnight:
                     globalCloudColor = "#404040";
                     globalSkyColor = "#000000";
                     globalSunColor = "#404040";

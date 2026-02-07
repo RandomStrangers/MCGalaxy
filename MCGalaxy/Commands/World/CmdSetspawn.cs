@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.World
         public override string Name => "SetSpawn";
         public override string Type => CommandTypes.World;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {

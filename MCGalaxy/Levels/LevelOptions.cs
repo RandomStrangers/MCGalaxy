@@ -63,7 +63,6 @@ namespace MCGalaxy
              new LevelOption(Drawing,   SetDrawing,   "&HWhether drawing commands (e.g /z) can be used on this map."),
              new LevelOption(LoadDelay, SetLoadDelay, "&HSets the delay before the end of the map is sent. " +
                              "Only useful for forcing players to see the map's MOTD at the loading screen."),
-             new LevelOption(Authors, SetAuthors, "&HSets authors of map. Only shown when running games"),
         };
         public static LevelOption Find(string opt)
         {
@@ -173,7 +172,7 @@ namespace MCGalaxy
         {
             int raw = 0;
             if (!CommandParser.GetInt(p, value, "Physics overload", ref raw, 500)) return;
-            if (p.Rank < 100 && raw > 2500)
+            if (p.Rank < LevelPermission.Admin && raw > 2500)
             {
                 p.Message("Only SuperOPs may set physics overload higher than 2500"); return;
             }
@@ -206,11 +205,6 @@ namespace MCGalaxy
                 if (pl.Level != lvl || pl.weapon == null) continue;
                 pl.weapon.Disable();
             }
-        }
-        static void SetAuthors(Player p, Level lvl, string value)
-        {
-            lvl.Config.Authors = value.Replace(", ", ",").Replace(" ", ",");
-            p.Message("Map authors set to: &b" + lvl.Config.Authors);
         }
         static void TogglePerms(Player p, Level lvl, ref bool target, string name)
         {

@@ -43,12 +43,12 @@ namespace MCGalaxy
             BlockDefinition def = lvl.GetBlockDef(block);
             if (def != null)
             {
-                return new(def.MinX * 2, def.MinZ * 2, def.MinY * 2,
+                return new AABB(def.MinX * 2, def.MinZ * 2, def.MinY * 2,
                                 def.MaxX * 2, def.MaxZ * 2, def.MaxY * 2);
             }
-            if (block >= 256) return new(0, 0, 0, 32, 32, 32);
+            if (block >= Extended) return new AABB(0, 0, 0, 32, 32, 32);
             ushort core = Convert(block);
-            return new(0, 0, 0, 32, DefaultSet.Height(core) * 2, 32);
+            return new AABB(0, 0, 0, 32, DefaultSet.Height(core) * 2, 32);
         }
         public static void SetBlocks()
         {
@@ -81,15 +81,15 @@ namespace MCGalaxy
             }
         }
         /// <summary> Converts a raw/client block ID to a server block ID </summary>
-        public static ushort FromRaw(ushort raw) => raw < 66 ? raw : (ushort)(raw + 256);
+        public static ushort FromRaw(ushort raw) => raw < CPE_COUNT ? raw : (ushort)(raw + Extended);
         /// <summary> Converts a server block ID to a raw/client block ID </summary>
         /// <remarks> Undefined behaviour for physics block IDs </remarks>
-        public static ushort ToRaw(ushort raw) => raw < 66 ? raw : (ushort)(raw - 256);
+        public static ushort ToRaw(ushort raw) => raw < CPE_COUNT ? raw : (ushort)(raw - Extended);
         public static ushort MapOldRaw(ushort raw) =>
             // old raw form was: 0 - 65 core block ids, 66 - 255 custom block ids
             // 256+ remain unchanged
-            IsPhysicsType(raw) ? ((ushort)(raw + 256)) : raw;
-        public static bool IsPhysicsType(ushort block) => block >= 66 && block < 256;
+            IsPhysicsType(raw) ? ((ushort)(raw + Extended)) : raw;
+        public static bool IsPhysicsType(ushort block) => block >= CPE_COUNT && block < Extended;
         public static bool VisuallyEquals(ushort a, ushort b) => Convert(a) == Convert(b);
     }
 }

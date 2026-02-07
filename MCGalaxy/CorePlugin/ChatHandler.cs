@@ -17,20 +17,20 @@ namespace MCGalaxy.Core
 {
     internal static class ChatHandler
     {
-        internal static void HandleOnChat(int scope, Player source, ref string msg,
+        internal static void HandleOnChat(ChatScope scope, Player source, ref string msg,
                                           object _, ref ChatMessageFilter __, bool ___)
         {
             string text = msg.Replace("λFULL", source.name).Replace("λNICK", source.name);
-            int logType = 9;
-            if (scope == 4)
+            LogType logType = LogType.PlayerChat;
+            if (scope == ChatScope.Perms)
             {
-                logType = 12;
+                logType = LogType.StaffChat;
             }
-            else if (scope == 3)
+            else if (scope == ChatScope.Rank)
             {
-                logType = 14;
+                logType = LogType.RankChat;
             }
-            if (scope != 5) Logger.Log(logType, text);
+            if (scope != ChatScope.PM) Logger.Log(logType, text);
         }
         internal static void HandleCommand(Player p, string cmd, string _, CommandData __)
         {
@@ -44,7 +44,7 @@ namespace MCGalaxy.Core
                 if (used < 2)
                 {
                     Chat.MessageFrom(p, "λNICK &Sjust so happens to be a proud brony! Everyone give λNICK &Sa brohoof!");
-                    Logger.Log(8, "{0} used /{1}", p.name, cmd);
+                    Logger.Log(LogType.CommandUsage, "{0} used /{1}", p.name, cmd);
                 }
                 else
                 {
@@ -60,7 +60,7 @@ namespace MCGalaxy.Core
                 if (used < 2)
                 {
                     Chat.MessageGlobal("&4T&6H&eI&aS&3 S&9E&1R&4V&6E&eR &aJ&3U&9S&1T &4G&6O&eT &a2&30 &9P&1E&4R&6C&eE&aN&3T &9C&1O&4O&6L&eE&aR&3!");
-                    Logger.Log(8, "{0} used /{1}", p.name, cmd);
+                    Logger.Log(LogType.CommandUsage, "{0} used /{1}", p.name, cmd);
                 }
                 else
                 {

@@ -18,7 +18,7 @@ namespace MCGalaxy.Commands.Moderation
     {
         public override string Name => "Possess";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override bool SuperUseable => false;
         static void Unpossess(Player target)
         {

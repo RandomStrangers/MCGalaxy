@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.CPE
         public override string Name => "Environment";
         public override string Shortcut => "Env";
         public override string Type => CommandTypes.World;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.CaselessEq("preset"))
@@ -42,7 +42,8 @@ namespace MCGalaxy.Commands.CPE
             if (cfg == null)
             {
                 if (p.IsSuper) { p.Message("&WWhen using &T/Env &Wfrom {0}, only &T/Env Global &Wis supported", p.SuperName); return; }
-                lvl = p.Level; cfg = lvl.Config;
+                lvl = p.Level; 
+                cfg = lvl.Config;
                 area = lvl.ColoredName;
                 if (!LevelInfo.Check(p, data.Rank, lvl, "set env settings of this level")) return;
             }

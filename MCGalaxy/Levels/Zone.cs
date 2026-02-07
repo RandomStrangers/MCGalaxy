@@ -32,13 +32,16 @@ namespace MCGalaxy
     public sealed class ZoneAccessController : AccessController
     {
         readonly ZoneConfig cfg;
-        public ZoneAccessController(ZoneConfig cfg) => this.cfg = cfg;
-        public override sbyte Min
+        public ZoneAccessController(ZoneConfig cfg)
+        {
+            this.cfg = cfg;
+        }
+        public override LevelPermission Min
         {
             get { return cfg.BuildMin; }
             set { cfg.BuildMin = value; }
         }
-        public override sbyte Max
+        public override LevelPermission Max
         {
             get { return cfg.BuildMax; }
             set { cfg.BuildMax = value; }
@@ -54,21 +57,22 @@ namespace MCGalaxy
         {
             lvl.Save(true);
             msg += " &Sin " + ColoredName;
-            Logger.Log(3, "{0} &Son {1}", msg, lvl.name);
+            Logger.Log(LogType.UserActivity, "{0} &Son {1}", msg, lvl.name);
             lvl.Message(Chat.LocalPrefix + msg);
             if (p.Level != lvl) p.Message("{0} &Son {1} &Sby you", msg, lvl.ColoredName);
         }
     }
     public class Zone
     {
-        public ushort MinX, MinY, MinZ, MaxX, MaxY, MaxZ;
+        public ushort MinX, MinY, MinZ;
+        public ushort MaxX, MaxY, MaxZ;
         public ZoneConfig Config;
         public ZoneAccessController Access;
         public string ColoredName => Config.Color + Config.Name;
         public Zone()
         {
-            Config = new();
-            Access = new(Config);
+            Config = new ZoneConfig();
+            Access = new ZoneAccessController(Config);
         }
         public bool Contains(int x, int y, int z) => x >= MinX && x <= MaxX && y >= MinY && y <= MaxY && z >= MinZ && z <= MaxZ;
         public bool CoversMap(Level lvl) => MinX == 0 && MinY == 0 && MinZ == 0 &&
@@ -76,14 +80,12 @@ namespace MCGalaxy
         public bool Shows => Config.ShowAlpha != 0 && Config.ShowColor.Length > 0;
         public void Show(Player p)
         {
-            if (Shows)
-            {
-                Colors.TryParseHex(Config.ShowColor, out ColorDesc color);
-                color.A = (byte)Config.ShowAlpha;
-                Vec3U16 min = new(MinX, MinY, MinZ),
-                    max = new((ushort)(MaxX + 1), (ushort)(MaxY + 1), (ushort)(MaxZ + 1));
-                p.AddVisibleSelection(Config.Name, min, max, color, this);
-            }
+            if (!Shows) return;
+            Colors.TryParseHex(Config.ShowColor, out ColorDesc color);
+            color.A = (byte)Config.ShowAlpha;
+            Vec3U16 min = new(MinX, MinY, MinZ);
+            Vec3U16 max = new((ushort)(MaxX + 1), (ushort)(MaxY + 1), (ushort)(MaxZ + 1));
+            p.AddVisibleSelection(Config.Name, min, max, color, this);
         }
         public void ShowAll(Level lvl)
         {

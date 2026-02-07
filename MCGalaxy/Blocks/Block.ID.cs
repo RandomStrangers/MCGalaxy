@@ -41,21 +41,21 @@ namespace MCGalaxy
         // E.g. 0x080 = class 00, value 128 = physics block 128
         // E.g. 0x180 = class 01, value 128 =  custom block 128
         public const ushort MaxRaw = 767;
-        internal const int SUPPORTED_COUNT = 256 * 4;
-        internal static ushort[] ExtendedBase = new ushort[CORE_COUNT];
+        internal const int SUPPORTED_COUNT = 1024;
+        internal static ushort[] ExtendedBase = new ushort[256];
         internal static byte[] ExtendedClass = new byte[4];
         static Block()
         {
-            ExtendedBase[custom_block] = Extended;
-            ExtendedBase[custom_block_2] = Extended * 2;
-            ExtendedBase[custom_block_3] = Extended * 3;
-            ExtendedClass[0] = Air;
-            ExtendedClass[1] = custom_block;
-            ExtendedClass[2] = custom_block_2;
-            ExtendedClass[3] = custom_block_3;
+            ExtendedBase[163] = 256;
+            ExtendedBase[198] = 512;
+            ExtendedBase[199] = 768;
+            ExtendedClass[0] = 0;
+            ExtendedClass[1] = 163;
+            ExtendedClass[2] = 198;
+            ExtendedClass[3] = 199;
         }
         // non-const for external code (SUPPORTED_COUNT value differs when TEN_BIT_BLOCKS)
-        public static readonly int ExtendedCount = SUPPORTED_COUNT;
+        public static readonly int ExtendedCount = 1024;
         // Original blocks
         public const byte Air = 0;
         public const byte Stone = 1;

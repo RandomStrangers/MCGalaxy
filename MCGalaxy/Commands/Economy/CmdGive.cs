@@ -20,7 +20,7 @@ namespace MCGalaxy.Commands.Eco
     {
         public override string Name => "Give";
         public override string Shortcut => "Gib";
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
         {

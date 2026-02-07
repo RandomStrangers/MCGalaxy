@@ -12,7 +12,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using MCGalaxy.Games;
 using MCGalaxy.Maths;
 namespace MCGalaxy.Commands.Misc
 {
@@ -98,12 +97,6 @@ namespace MCGalaxy.Commands.Misc
                 p.Message("{0} &Sis in a museum.", p.FormatNick(target)); return false;
             }
             if (!Server.Config.HigherRankTP && !CheckRank(p, data, target, "teleport to", true)) return false;
-            IGame game = IGame.GameOn(target.Level);
-            if (!p.Game.Referee && game != null)
-            {
-                p.Message("You can only teleport to players in " +
-                               "a game when you are in referee mode."); return false;
-            }
             return true;
         }
         public override void Help(Player p)

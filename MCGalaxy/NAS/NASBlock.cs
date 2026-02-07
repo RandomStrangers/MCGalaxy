@@ -1,28 +1,39 @@
 using MCGalaxy.Maths;
+using System;
 using System.Collections.Generic;
+using NASBlockAction = MCGalaxy.NASAction<MCGalaxy.NASLevel, MCGalaxy.NASBlock, int, int, int>;
+using NASBlockCollideAction =
+    MCGalaxy.NASAction<MCGalaxy.NASEntity,
+    MCGalaxy.NASBlock, bool, ushort, ushort, ushort>;
+using NASBlockExistAction =
+    MCGalaxy.NASAction<MCGalaxy.NASPlayer,
+    MCGalaxy.NASBlock, bool, ushort, ushort, ushort>;
+using NASBlockInteraction =
+    MCGalaxy.NASAction<MCGalaxy.NASPlayer, MCGalaxy.Events.PlayerEvents.MouseButton, MCGalaxy.Events.PlayerEvents.MouseAction,
+    MCGalaxy.NASBlock, ushort, ushort, ushort>;
 namespace MCGalaxy
 {
-    public enum NASMaterial
-    {
-        None,
-        Gas,
-        Stone,
-        Earth,
-        Wood,
-        Plant,
-        Leaves,
-        Organic,
-        Glass,
-        Metal,
-        Liquid,
-        Lava,
-        Count
-    }
     public partial class NASBlock
     {
         public static NASBlock[] blocks = new NASBlock[768], blocksIndexedByServerushort;
         public static NASBlock Default;
         public static int[] DefaultDurabilities = new int[(int)NASMaterial.Count];
+        public enum NASMaterial
+        {
+            None,
+            Gas,
+            Stone,
+            Earth,
+            Wood,
+            Plant,
+            Leaves,
+            Organic,
+            Glass,
+            Metal,
+            Liquid,
+            Lava,
+            Count
+        }
         public ushort selfID,
             parentID,
             alternateID;
@@ -33,26 +44,23 @@ namespace MCGalaxy
             resourceCost,
             expGivenMax = 0,
             expGivenMin = 0;
-        public NASType type;
+        public Type type;
         public float damageDoneToTool,
             fallDamageMultiplier = -1,
             disturbDelayMax = 0f,
             disturbDelayMin = 0f,
             beginDelayMax = 0f,
             beginDelayMin = 0f;
-        public Func<NASPlayer, ushort, Drop> dropHandler;
-        public Station station;
-        public Container container;
+        public NASFunc<NASPlayer, ushort, NASDrop> dropHandler;
+        public NASCrafting.NASStation station;
+        public NASContainer container;
         public bool collides = true;
         public AABB bounds;
-        public Action<NASLevel, NASBlock, int, int, int> disturbedAction = null,
+        public NASBlockAction disturbedAction = null,
             instantAction = null;
-        public Action<NASPlayer, int, int,
-    NASBlock, ushort, ushort, ushort> interaction = null;
-        public Action<NASPlayer,
-    NASBlock, bool, ushort, ushort, ushort> existAction = null;
-        public Action<NASEntity,
-    NASBlock, bool, ushort, ushort, ushort> collideAction = null;
+        public NASBlockInteraction interaction = null;
+        public NASBlockExistAction existAction = null;
+        public NASBlockCollideAction collideAction = null;
         public NASBlock(ushort id, NASMaterial mat)
         {
             selfID = id;
@@ -148,6 +156,6 @@ namespace MCGalaxy
             }
             return name.Split('-')[0];
         }
-        public static Drop DefaultDropHandler(NASPlayer np, ushort id) => new(id);
+        public static NASDrop DefaultDropHandler(NASPlayer np, ushort id) => new(id);
     }
 }

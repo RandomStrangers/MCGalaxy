@@ -25,7 +25,12 @@ namespace MCGalaxy.Levels.IO
     {
         public override string Extension => ".mcf";
         public override string Description => "MCForge redux map";
-        public override Vec3U16 ReadDimensions(Stream src) => ReadHeader(new byte[16], new GZipStream(src, CompressionMode.Decompress, true));
+        public override Vec3U16 ReadDimensions(Stream src)
+        {
+            using Stream gs = new GZipStream(src, CompressionMode.Decompress, true);
+            byte[] header = new byte[16];
+            return ReadHeader(header, gs);
+        }
         public override Level Read(Stream src, string name, bool metadata)
         {
             using Stream gs = new GZipStream(src, CompressionMode.Decompress);
@@ -39,28 +44,24 @@ namespace MCGalaxy.Levels.IO
                 rotx = header[12],
                 roty = header[13]
             };
+            // 2 bytes for perbuild and pervisit
             byte[] blocks = new byte[2 * lvl.blocks.Length];
             gs.Read(blocks, 0, blocks.Length);
             for (int i = 0; i < blocks.Length / 2; ++i)
-            {
                 lvl.blocks[i] = blocks[i * 2];
-            }
             return lvl;
         }
         static Vec3U16 ReadHeader(byte[] header, Stream gs)
         {
             StreamUtils.ReadFully(gs, header, 0, 2);
             if (MemUtils.ReadU16_LE(header, 0) != 1874)
-            {
                 throw new InvalidDataException(".mcf files must have a version of 1874");
-            }
             StreamUtils.ReadFully(gs, header, 0, 16);
-            return new()
-            {
-                X = MemUtils.ReadU16_LE(header, 0),
-                Z = MemUtils.ReadU16_LE(header, 2),
-                Y = MemUtils.ReadU16_LE(header, 4)
-            };
+            Vec3U16 dims;
+            dims.X = MemUtils.ReadU16_LE(header, 0);
+            dims.Z = MemUtils.ReadU16_LE(header, 2);
+            dims.Y = MemUtils.ReadU16_LE(header, 4);
+            return dims;
         }
     }
 }

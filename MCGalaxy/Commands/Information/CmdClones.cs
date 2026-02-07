@@ -21,7 +21,7 @@ namespace MCGalaxy.Commands.Info
         public override string Name => "Clones";
         public override string Shortcut => "Alts";
         public override string Type => CommandTypes.Information;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override bool UseableWhenFrozen => true;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("WhoIP") };
         public override void Use(Player p, string message, CommandData data)

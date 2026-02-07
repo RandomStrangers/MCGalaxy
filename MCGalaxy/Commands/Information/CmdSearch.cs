@@ -20,7 +20,7 @@ namespace MCGalaxy.Commands.Info
     {
         public override string Name => "Search";
         public override string Type => CommandTypes.Information;
-        public override sbyte DefaultRank => 30;
+        public override LevelPermission DefaultRank => LevelPermission.Builder;
         public override bool UseableWhenFrozen => true;
         public override void Use(Player p, string message, CommandData data)
         {

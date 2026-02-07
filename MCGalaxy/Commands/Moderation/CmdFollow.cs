@@ -18,7 +18,7 @@ namespace MCGalaxy.Commands.Moderation
     {
         public override string Name => "Follow";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {

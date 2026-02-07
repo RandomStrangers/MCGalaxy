@@ -22,7 +22,7 @@ namespace MCGalaxy.Eco
         /// <summary> Simple name for this item. </summary>
         public abstract string Name { get; }
         /// <summary> The minimum permission/rank required to purchase this item. </summary>
-        public sbyte PurchaseRank = 0;
+        public LevelPermission PurchaseRank = LevelPermission.Guest;
         /// <summary> Simple name displayed in /shop, defaults to item name. </summary>
         public virtual string ShopName => Name;
         /// <summary> Other common names for this item. </summary>
@@ -38,7 +38,7 @@ namespace MCGalaxy.Eco
             }
             else if (prop.CaselessEq("purchaserank"))
             {
-                PurchaseRank = (sbyte)NumberUtils.ParseInt32(value);
+                PurchaseRank = (LevelPermission)NumberUtils.ParseInt32(value);
             }
             else
             {

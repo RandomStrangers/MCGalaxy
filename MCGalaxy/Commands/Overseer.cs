@@ -29,7 +29,7 @@ namespace MCGalaxy.Commands.World
         static void UseCommand(Player p, string cmd, string args)
         {
             CommandData data = default;
-            data.Rank = 120;
+            data.Rank = LevelPermission.Owner;
             Command.Find(cmd).Use(p, args, data);
         }
         static void AnnounceRenamed(Player p, string oldName, string newName) => p.Message("Note that &T/{0} {1}&S has been renamed to &T/{0} {2}",
@@ -84,7 +84,7 @@ namespace MCGalaxy.Commands.World
             else if (bits.Length < 3) message = "128 128 128 " + message;
             string[] genArgs = (level + " " + message.TrimEnd()).SplitSpaces(6);
             CmdNewLvl newLvl = (CmdNewLvl)Command.Find("NewLvl"); // TODO: this is a nasty hack, find a better way
-            Level lvl = newLvl.GenerateMap(p, genArgs, p.DefaultCmdData);
+            Level lvl = newLvl.GenerateMap(p, genArgs);
             if (lvl == null) return;
             MapGen.SetRealmPerms(p, lvl);
             p.Message("Use &T/{0} allow [name] &Sto allow other players to build in the map.", commandShortcut);
@@ -100,12 +100,12 @@ namespace MCGalaxy.Commands.World
         }
         static readonly string[] deleteHelp = new string[] {
             "&T/os delete &H- Deletes your map.",
-            "&T/os delete *backup [backup]",
+            "&T/os delete "+CmdDeleteLvl.BACKUP_FLAG+" [backup]",
             "&H  -Permanently- deletes [backup] from your map.",
         };
         static void HandleDelete(Player p, string message)
         {
-            if (message.CaselessStarts("*backup"))
+            if (message.CaselessStarts(CmdDeleteLvl.BACKUP_FLAG))
             {
                 string[] args = message.SplitSpaces(2); //"flag", "other args"
                 if (args.Length == 1)
@@ -348,7 +348,7 @@ namespace MCGalaxy.Commands.World
             AccessController access = p.Level.VisitAccess;
             if (!access.Whitelisted.CaselessContains(p.name))
             {
-                access.Whitelist(Player.Console, 127, p.Level, p.name);
+                access.Whitelist(Player.Console, LevelPermission.Console, p.Level, p.name);
             }
             if (message.Length == 0)
             {
@@ -393,6 +393,11 @@ namespace MCGalaxy.Commands.World
             "&T/os setspawn &H- Sets the map's spawn point to your current position.",
         };
         static void HandleSpawn(Player p, string unused) => UseCommand(p, "SetSpawn", "");
+        static readonly string[] plotHelp = new string[] {
+            "&T/os plot [args]",
+            "&H  Plots are zones that can change permissions and environment." +
+            "&H  See &T/Help zone &Hto learn what args you can use.",
+        };
         static void HandlePlotHelp(Player p, string message) => Moderation.CmdZone.HelpName(p, "os plot", message);
         static void HandlePlot(Player p, string raw)
         {
@@ -428,13 +433,14 @@ namespace MCGalaxy.Commands.World
                 p.Message("This server does not allow renaming os realms.");
                 return;
             }
-            if (args.Length > 0 && !Formatter.IsValidName(p, args, "os name", "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890._"))
+            if (args.Length > 0 && !Formatter.IsValidName(p, args, "os name", Player.USERNAME_ALPHABET))
             {
                 return;
             }
-            if (args.Length > 16)
+            const int MAX_LENGTH = 16;
+            if (args.Length > MAX_LENGTH)
             {
-                p.Message("Your os name must be {0} characters or fewer.", 16);
+                p.Message("Your os name must be {0} characters or fewer.", MAX_LENGTH);
                 return;
             }
             UseCommand(p, "RenameLvl", p.Level.name + " " + GetLevelName(p, args));

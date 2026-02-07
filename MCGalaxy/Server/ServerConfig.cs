@@ -54,10 +54,10 @@ namespace MCGalaxy
         public bool WhitelistedOnly = false;
         [ConfigBool("admin-verification", "Security", true)]
         public bool verifyadmins = true;
-        [ConfigPerm("verify-admin-perm", "Security", 80)]
-        public sbyte VerifyAdminsRank = 80;
-        [ConfigPerm("reset-password-perm", "Security", 120)]
-        public sbyte ResetPasswordRank = 120;
+        [ConfigPerm("verify-admin-perm", "Security", LevelPermission.Operator)]
+        public LevelPermission VerifyAdminsRank = LevelPermission.Operator;
+        [ConfigPerm("reset-password-perm", "Security", LevelPermission.Owner)]
+        public LevelPermission ResetPasswordRank = LevelPermission.Owner;
         [ConfigBool("support-web-client", "Webclient", true)]
         public bool WebClient = true;
         [ConfigBool("allow-ip-forwarding", "Webclient", true)]
@@ -128,8 +128,8 @@ namespace MCGalaxy
         public float DrawReloadThreshold = 0.001f;
         [ConfigBool("allow-tp-to-higher-ranks", "Other", true)]
         public bool HigherRankTP = true;
-        [ConfigPerm("os-perbuild-default", "Other", 120)]
-        public sbyte OSPerbuildDefault = 120;
+        [ConfigPerm("os-perbuild-default", "Other", LevelPermission.Owner)]
+        public LevelPermission OSPerbuildDefault = LevelPermission.Owner;
         [ConfigBool("os-rename-allowed", "Other", true)]
         public bool OSRenameAllowed = true;
         [ConfigBool("protect-staff-ips", "Other", true)]
@@ -194,8 +194,8 @@ namespace MCGalaxy
         public string IRCCommandPrefix = ".x";
         [ConfigEnum("irc-controller-verify", "IRC bot", IRCControllerVerify.HalfOp, typeof(IRCControllerVerify))]
         public IRCControllerVerify IRCVerify = IRCControllerVerify.HalfOp;
-        [ConfigPerm("irc-controller-rank", "IRC bot", 100)]
-        public sbyte IRCControllerRank = 100;
+        [ConfigPerm("irc-controller-rank", "IRC bot", LevelPermission.Admin)]
+        public LevelPermission IRCControllerRank = LevelPermission.Admin;
         [ConfigBool("tablist-rank-sorted", "Tablist", true)]
         public bool TablistRankSorted = true;
         [ConfigBool("tablist-global", "Tablist", true)]

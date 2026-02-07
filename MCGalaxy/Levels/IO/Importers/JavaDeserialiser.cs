@@ -71,15 +71,32 @@ namespace MCGalaxy.Levels.IO
         public long ReadInt64() => IPAddress.HostToNetworkOrder(src.ReadInt64());
         public string ReadUtf8() => Encoding.UTF8.GetString(src.ReadBytes(ReadUInt16()));
         public object ReadObject() => ReadObject(ReadUInt8());
+        const byte TC_NULL = 0x70;
+        const byte TC_REFERENCE = 0x71;
+        const byte TC_CLASSDESC = 0x72;
+        const byte TC_OBJECT = 0x73;
+        const byte TC_STRING = 0x74;
+        const byte TC_ARRAY = 0x75;
+        const byte TC_CLASS = 0x76;
+        const byte TC_BLOCKDATA = 0x77;
+        const byte TC_ENDBLOCKDATA = 0x78;
+        const byte TC_RESET = 0x79; // Unimplemented
+        const byte TC_BLOCKDATALONG = 0x7A; // Unimplemented
+        const byte TC_EXCEPTION = 0x7B; // Unimplemented
+        const byte TC_LONGSTRING = 0x7C; // Unimplemented
+        const byte TC_PROXYCLASSDESC = 0x7D; // Unimplemented
+        const byte TC_ENUM = 0x7E;
+        const int baseWireHandle = 0x7E0000;
+        const byte SC_WRITE_METHOD = 0x01, SC_SERIALIZABLE = 0x02;
         object ReadObject(byte typeCode) => typeCode switch
         {
-            0x74 => NewString(),
-            0x70 => null,
-            0x71 => PrevObject(),
-            0x73 => NewObject(),
-            0x75 => NewArray(),
-            0x7E => NewEnum(),
-            0x76 => NewClass(),
+            TC_STRING => NewString(),
+            TC_NULL => null,
+            TC_REFERENCE => PrevObject(),
+            TC_OBJECT => NewObject(),
+            TC_ARRAY => NewArray(),
+            TC_ENUM => NewEnum(),
+            TC_CLASS => NewClass(),
             _ => throw new InvalidDataException("Invalid typecode: " + typeCode),
         };
         string NewString()
@@ -90,7 +107,7 @@ namespace MCGalaxy.Levels.IO
         }
         object PrevObject()
         {
-            int handle = ReadInt32() - 0x7E0000;
+            int handle = ReadInt32() - baseWireHandle;
             if (handle >= 0 && handle < handles.Count) return handles[handle];
             throw new InvalidDataException("Invalid stream handle: " + handle);
         }
@@ -181,14 +198,14 @@ namespace MCGalaxy.Levels.IO
         JClassDesc ClassDesc()
         {
             byte typeCode = ReadUInt8();
-            if (typeCode == 0x72) return NewClassDesc();
-            if (typeCode == 0x70) return null;
-            if (typeCode == 0x71) return (JClassDesc)PrevObject();
+            if (typeCode == TC_CLASSDESC) return NewClassDesc();
+            if (typeCode == TC_NULL) return null;
+            if (typeCode == TC_REFERENCE) return (JClassDesc)PrevObject();
             throw new InvalidDataException("Invalid type code: " + typeCode);
         }
         JClassData ClassData(JClassDesc desc)
         {
-            if ((desc.Flags & 0x02) == 0)
+            if ((desc.Flags & SC_SERIALIZABLE) == 0)
             {
                 throw new InvalidDataException("Invalid class data flags: " + desc.Flags);
             }
@@ -200,7 +217,7 @@ namespace MCGalaxy.Levels.IO
             {
                 data.Values[i] = Value(desc.Fields[i].Type);
             }
-            if ((desc.Flags & 0x01) != 0)
+            if ((desc.Flags & SC_WRITE_METHOD) != 0)
             {
                 SkipAnnotation();
             }
@@ -210,16 +227,8 @@ namespace MCGalaxy.Levels.IO
         {
             if (type == 'B') return ReadUInt8();
             if (type == 'C') return (char)ReadUInt16();
-            if (type == 'D') 
-            { 
-                long tmp = ReadInt64(); 
-                return *(double*)&tmp;
-            }
-            if (type == 'F') 
-            { 
-                int tmp = ReadInt32(); 
-                return *(float*)&tmp; 
-            }
+            if (type == 'D') { long tmp = ReadInt64(); return *(double*)&tmp; }
+            if (type == 'F') { int tmp = ReadInt32(); return *(float*)&tmp; }
             if (type == 'I') return ReadInt32();
             if (type == 'J') return ReadInt64();
             if (type == 'S') return ReadInt16();
@@ -251,9 +260,9 @@ namespace MCGalaxy.Levels.IO
         void SkipAnnotation()
         {
             byte typeCode;
-            while ((typeCode = ReadUInt8()) != 0x78)
+            while ((typeCode = ReadUInt8()) != TC_ENDBLOCKDATA)
             {
-                if (typeCode == 0x77)
+                if (typeCode == TC_BLOCKDATA)
                 {
                     ReadBytes(ReadUInt8());
                 }

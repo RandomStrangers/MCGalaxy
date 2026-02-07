@@ -22,7 +22,7 @@ namespace MCGalaxy.Commands.Maintenance
     {
         public override string Name => "InfoSwap";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 120;
+        public override LevelPermission DefaultRank => LevelPermission.Owner;
         public override void Use(Player p, string text, CommandData data)
         {
             string[] args = text.SplitSpaces();

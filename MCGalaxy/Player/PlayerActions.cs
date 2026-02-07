@@ -31,11 +31,9 @@ namespace MCGalaxy
             }
             Server.skins.Save();
             Player who = PlayerInfo.FindExact(target);
-            if (who != null)
-            {
-                who.SkinName = skin;
-                Entities.GlobalRespawn(who);
-            }
+            if (who == null) return;
+            who.SkinName = skin;
+            Entities.GlobalRespawn(who);
         }
         public static bool ChangeMap(Player p, string name) => ChangeMap(p, null, name);
         public static bool ChangeMap(Player p, Level lvl) => ChangeMap(p, lvl, null);
@@ -49,7 +47,7 @@ namespace MCGalaxy
             bool didJoin = false;
             try
             {
-                didJoin = name == null ? GotoLevel(p, lvl) : GotoMap(p, name);
+                didJoin = name == null ? GotoLevel(p, lvl, false) : GotoMap(p, name);
             }
             finally
             {
@@ -63,13 +61,13 @@ namespace MCGalaxy
         static bool GotoMap(Player p, string name)
         {
             Level lvl = LevelInfo.FindExact(name);
-            if (lvl != null) return GotoLevel(p, lvl);
+            if (lvl != null) return GotoLevel(p, lvl, false);
             if (Server.Config.AutoLoadMaps)
             {
                 string map = Matcher.FindMaps(p, name);
                 if (map == null) return false;
                 lvl = LevelInfo.FindExact(map);
-                if (lvl != null) return GotoLevel(p, lvl);
+                if (lvl != null) return GotoLevel(p, lvl, false);
                 return LoadOfflineLevel(p, map);
             }
             else
@@ -81,7 +79,7 @@ namespace MCGalaxy
                     Command.Find("Search").Use(p, "levels " + name);
                     return false;
                 }
-                return GotoLevel(p, lvl);
+                return GotoLevel(p, lvl, false);
             }
         }
         static bool LoadOfflineLevel(Player p, string map)
@@ -96,15 +94,15 @@ namespace MCGalaxy
             }
             AccessController visitAccess = new LevelAccessController(cfg, map, true);
             bool skip = p.summonedMap != null && p.summonedMap.CaselessEq(map);
-            sbyte plRank = skip ? (sbyte)127 : p.Rank;
+            LevelPermission plRank = skip ? LevelPermission.Console : p.Rank;
             if (!visitAccess.CheckDetailed(p, plRank)) return false;
             LevelActions.Load(p, map, false);
             Level lvl = LevelInfo.FindExact(map);
-            if (lvl != null) return GotoLevel(p, lvl);
+            if (lvl != null) return GotoLevel(p, lvl, true);
             p.Message("Level \"{0}\" failed to be auto-loaded.", map);
             return false;
         }
-        static bool GotoLevel(Player p, Level lvl)
+        static bool GotoLevel(Player p, Level lvl, bool _)
         {
             if (p.Level == lvl) { p.Message("You are already in {0}&S.", lvl.ColoredName); return false; }
             bool canJoin = lvl.CanJoin(p);
@@ -112,8 +110,8 @@ namespace MCGalaxy
             if (!canJoin) return false;
             p.Loading = true;
             Entities.DespawnEntities(p);
-            Level prev = p.Level; p.level = lvl;
-            p.SendRawMap(prev);
+            Level prev = p.Level; p.Level = lvl;
+            p.SendRawMap(prev, lvl);
             PostSentMap(p, prev, lvl, true);
             p.Loading = false;
             return true;
@@ -124,7 +122,7 @@ namespace MCGalaxy
         {
             p.Loading = true;
             Entities.DespawnEntities(p);
-            p.SendRawMap(p.Level);
+            p.SendRawMap(p.Level, p.Level);
             Entities.SpawnEntities(p, p.Pos, p.Rot);
             p.Loading = false;
         }
@@ -133,22 +131,20 @@ namespace MCGalaxy
             Position pos = lvl.SpawnPos;
             Orientation rot = p.Rot;
             byte yaw = lvl.rotx, pitch = lvl.roty;
-            if (!p.Socket.Disconnected)
-            {
-                OnPlayerSpawningEvent.Call(p, ref pos, ref yaw, ref pitch, false);
-                rot.RotY = yaw; rot.HeadX = pitch;
-                p.Pos = pos;
-                p.SetYawPitch(yaw, pitch);
-                if (!p.Socket.Disconnected)
-                {
-                    Entities.SpawnEntities(p, pos, rot);
-                    OnJoinedLevelEvent.Call(p, prev, lvl, ref announce);
-                    if (!announce || !Server.Config.ShowWorldChanges) return;
-                    announce = !p.hidden && Server.Config.IRCShowWorldChanges;
-                    Chat.MessageFrom(0, p, (p.Level.IsMuseum ? "λNICK &Swent to the " : "λNICK &Swent to ") + lvl.ColoredName,
-                                     null, FilterGoto(p, prev, lvl), announce);
-                }
-            }
+            // in case player disconnected mid-way through loading map
+            if (p.Socket.Disconnected) return;
+            OnPlayerSpawningEvent.Call(p, ref pos, ref yaw, ref pitch, false);
+            rot.RotY = yaw; rot.HeadX = pitch;
+            p.Pos = pos;
+            p.SetYawPitch(yaw, pitch);
+            if (p.Socket.Disconnected) return;
+            Entities.SpawnEntities(p, pos, rot);
+            OnJoinedLevelEvent.Call(p, prev, lvl, ref announce);
+            if (!announce || !Server.Config.ShowWorldChanges) return;
+            announce = !p.hidden && Server.Config.IRCShowWorldChanges;
+            string msg = p.Level.IsMuseum ? "λNICK &Swent to the " : "λNICK &Swent to ";
+            Chat.MessageFrom(ChatScope.All, p, msg + lvl.ColoredName,
+                             null, FilterGoto(p, prev, lvl), announce);
         }
         static ChatMessageFilter FilterGoto(Player source, Level prev, Level lvl) => (pl, obj) =>
                                                                                                   pl.CanSee(source) && !pl.Ignores.WorldChanges &&
@@ -156,18 +152,18 @@ namespace MCGalaxy
         public static void Respawn(Player p)
         {
             bool cpSpawn = p.useCheckpointSpawn;
-            Position pos = new()
-            {
-                X = 16 + (cpSpawn ? p.checkpointX : p.Level.spawnx) * 32,
-                Y = 32 + (cpSpawn ? p.checkpointY : p.Level.spawny) * 32,
-                Z = 16 + (cpSpawn ? p.checkpointZ : p.Level.spawnz) * 32
-            };
-            RespawnAt(p, pos, cpSpawn ? p.checkpointRotX : p.Level.rotx, cpSpawn ? p.checkpointRotY : p.Level.roty);
+            Position pos;
+            pos.X = 16 + (cpSpawn ? p.checkpointX : p.Level.spawnx) * 32;
+            pos.Y = 32 + (cpSpawn ? p.checkpointY : p.Level.spawny) * 32;
+            pos.Z = 16 + (cpSpawn ? p.checkpointZ : p.Level.spawnz) * 32;
+            byte yaw = cpSpawn ? p.checkpointRotX : p.Level.rotx;
+            byte pitch = cpSpawn ? p.checkpointRotY : p.Level.roty;
+            RespawnAt(p, pos, yaw, pitch);
         }
         public static void RespawnAt(Player p, Position pos, byte yaw, byte pitch)
         {
             OnPlayerSpawningEvent.Call(p, ref pos, ref yaw, ref pitch, true);
-            p.SendAndSetPos(pos, new(yaw, pitch));
+            p.SendAndSetPos(pos, new Orientation(yaw, pitch));
         }
     }
 }

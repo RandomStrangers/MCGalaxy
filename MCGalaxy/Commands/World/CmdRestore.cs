@@ -20,7 +20,7 @@ namespace MCGalaxy.Commands.World
         public override string Name => "Restore";
         public override string Type => CommandTypes.World;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
         {
@@ -67,7 +67,7 @@ namespace MCGalaxy.Commands.World
             }
             else
             {
-                Logger.Log(6, "Restore nulled");
+                Logger.Log(LogType.Warning, "Restore nulled");
                 //File.Copy(LevelInfo.MapPath(lvl.name) + ".backup", LevelInfo.MapPath(lvl.name), true);
                 FileIO.TryCopy(LevelInfo.MapPath(lvl.name) + ".backup", LevelInfo.MapPath(lvl.name), true);
             }

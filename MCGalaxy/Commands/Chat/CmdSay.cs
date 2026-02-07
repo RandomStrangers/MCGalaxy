@@ -19,12 +19,12 @@ namespace MCGalaxy.Commands.Chatting
         public override string Name => "Say";
         public override string Shortcut => "Broadcast";
         public override string Type => CommandTypes.Chat;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
             message = Colors.Escape(message);
-            Chat.Message(1, message, null, null, true);
+            Chat.Message(ChatScope.Global, message, null, null, true);
         }
         public override void Help(Player p)
         {

@@ -36,11 +36,11 @@ namespace MCGalaxy
             48
         };
         public static bool currentlyGenerating = false;
-        public static void Log(string format, params object[] args) => Logger.Log(15, string.Format(format, args));
+        public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
         public static void Setup()
         {
             genScheduler ??= new("MapGenScheduler");
-            MapGen.Register("NASGen", 2, Gen, "hello?");
+            MapGen.Register("NASGen", GenType.Advanced, Gen, "hello?");
             string coalFog = "#BCC9E8",
                 ironFog = "#A1A3A8",
                 goldFog = "#7A706A",
@@ -130,7 +130,7 @@ namespace MCGalaxy
             };
             Random r = new(adjNoise.Seed);
             DateTime dateStart = DateTime.UtcNow;
-            GenInstance instance = new()
+            NASGenInstance instance = new()
             {
                 p = p,
                 lvl = lvl,
@@ -158,7 +158,7 @@ namespace MCGalaxy
             currentlyGenerating = false;
             return true;
         }
-        public class GenInstance
+        public class NASGenInstance
         {
             public Player p;
             public Level lvl;
@@ -1124,7 +1124,6 @@ namespace MCGalaxy
                 Random rng = new(MakeInt(level.name));
                 if (np.p != null)
                 {
-                    np.Message("Generating dungeon.");
                     GenerateDungeon(rng, x + 2, y, z + 2, level, nsl, true, np.p);
                 }
             }
@@ -1264,7 +1263,7 @@ namespace MCGalaxy
                         }
                     }
                     level.SetBlock((ushort)(x + 4), (ushort)(y + 3), (ushort)(z + 4), NASPlugin.FromRaw(171));
-                    BlockEntity bEntity = new()
+                    NASBlock.NASBlockEntity bEntity = new()
                     {
                         blockText = "&mCongratulations. You touched grass."
                     };
@@ -1276,11 +1275,17 @@ namespace MCGalaxy
                     return;
                 }
             }
-            public static void GenerateDungeon(Random rng, Level level, NASLevel nsl) => GenerateDungeon(rng, rng.Next(10, mapWideness - 10), rng.Next(0, 15), rng.Next(10, mapWideness - 10), level, nsl, false, Player.Console);
+            public static void GenerateDungeon(Random rng, Level level, NASLevel nsl)
+            {
+                int genX = rng.Next(10, mapWideness - 10),
+                    genZ = rng.Next(10, mapWideness - 10),
+                    genY = rng.Next(0, 15);
+                GenerateDungeon(rng, genX, genY, genZ, level, nsl, false, Player.Console);
+            }
             public static void GenLoot(int x, int y, int z, Level level, Random rng, NASLevel nsl, bool forced, Player p)
             {
                 level.SetBlock((ushort)x, (ushort)y, (ushort)z, NASPlugin.FromRaw(647));
-                BlockEntity bEntity = new()
+                NASBlock.NASBlockEntity bEntity = new()
                 {
                     drop = new(41, rng.Next(1, 5))
                 };

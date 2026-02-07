@@ -20,7 +20,7 @@ namespace MCGalaxy.Commands.Moderation
         public override string Name => "Kick";
         public override string Shortcut => "k";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -40,7 +40,7 @@ namespace MCGalaxy.Commands.Moderation
                 Chat.MessageFrom(p, "λNICK &Stried to kick " + who.ColoredName + " &Sbut failed.");
                 return;
             }
-            ModAction action = new(who.name, p, 10, reason);
+            ModAction action = new(who.name, p, ModActionType.Kicked, reason);
             OnModActionEvent.Call(action);
             who.Kick(kickMsg, "Kicked " + kickMsg);
         }

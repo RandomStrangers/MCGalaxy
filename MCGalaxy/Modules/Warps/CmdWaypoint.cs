@@ -18,8 +18,8 @@ namespace MCGalaxy.Modules.Warps
     {
         public override string Name => "Waypoint";
         public override string Shortcut => "wp";
-        public override sbyte DefaultRank => 30;
-        public override void Use(Player p, string message, CommandData data)
+        public override LevelPermission DefaultRank => LevelPermission.Builder;
+        public override void Use(Player p, string message)
         {
             if (!p.Extras.Contains("MCG_WAYPOINTS"))
             {
@@ -27,7 +27,7 @@ namespace MCGalaxy.Modules.Warps
             }
             // TODO: Better thread safety
             WarpList waypoints = (WarpList)p.Extras["MCG_WAYPOINTS"];
-            UseCore(p, message, data, waypoints, "Waypoint");
+            UseCore(p, message, waypoints, "Waypoint");
         }
         public override void Help(Player p)
         {

@@ -18,31 +18,123 @@ using System.IO;
 using System.Runtime.InteropServices;
 namespace MCGalaxy.Platform
 {
-    public class CPUTime
+    /// <summary> Summarises resource usage of all CPU cores in the system </summary>
+    public struct CPUTime
     {
-        public CPUTime(ulong idle, ulong kern, ulong user)
-        {
-            IdleTime = idle;
-            KernelTime = kern;
-            UserTime = user;
-        }
-        public ulong IdleTime, KernelTime, UserTime;
-        public ulong ProcessorTime => KernelTime + UserTime;
+        /// <summary> Total time spent being idle / not executing code </summary>
+        public ulong IdleTime;
+        /// <summary> Total time spent executing code in Kernel mode </summary>
+        public ulong KernelTime;
+        /// <summary> Total time spent executing code in User mode </summary>
+        public ulong UserTime;
+        /// <summary> Total time spent executing code </summary>
+        public readonly ulong ProcessorTime => KernelTime + UserTime;
     }
-    public class ProcInfo
+    /// <summary> Summarises resource usage of current process </summary>
+    public struct ProcInfo
     {
-        public ProcInfo(TimeSpan processorTime) 
-        {
-            ProcessorTime = processorTime;
-        }
         public TimeSpan ProcessorTime;
         public long PrivateMemorySize;
         public int NumThreads;
     }
     public abstract class IOperatingSystem
     {
+        /// <summary> Whether the operating system currently being run on is Windows </summary>
         public abstract bool IsWindows { get; }
-        public virtual void RestartProcess()
+        public virtual void Init()
+        {
+        }
+        public virtual void RestartProcess() => Process.Start(Server.GetPath());
+        public abstract CPUTime MeasureAllCPUTime();
+        public virtual ProcInfo MeasureResourceUsage(Process proc, bool all)
+        {
+            ProcInfo info = default;
+            info.ProcessorTime = proc.TotalProcessorTime;
+            if (all)
+            {
+                info.PrivateMemorySize = proc.PrivateMemorySize64;
+                info.NumThreads = proc.Threads.Count;
+            }
+            return info;
+        }
+        static bool IsWindowsPlatform(PlatformID platform) => platform switch
+        {
+            PlatformID.Win32S => true,
+            PlatformID.WinCE => true,
+            PlatformID.Win32Windows => true,
+            PlatformID.Win32NT => true,
+            PlatformID.Xbox => true,
+            _ => false,
+        };
+        public static unsafe IOperatingSystem DetectOS()
+        {
+            if (Server.RunningOnMono())
+            {
+                return new MonoOS();
+            }
+            else
+            {
+                PlatformID platform = Environment.OSVersion.Platform;
+                IOperatingSystem winOS = new WindowsOS(),
+                    unixOS = new UnixOS(),
+                    linuxOS = new LinuxOS(),
+                    mac = new MacOS();
+                if (IsWindowsPlatform(platform))
+                {
+                    return winOS;
+                }
+                else if (platform == PlatformID.MacOSX)
+                {
+                    return mac;
+                }
+                else
+                {
+                    sbyte* utsname = stackalloc sbyte[8192];
+                    uname(utsname);
+                    string kernel = new(utsname);
+                    if (kernel.CaselessContains("linux"))
+                    {
+                        return linuxOS;
+                    }
+                    else if (kernel.CaselessContains("freeBSD"))
+                    {
+                        return new FreeBSD_OS();
+                    }
+                    else if (kernel.CaselessContains("netBSD"))
+                    {
+                        return new NetBSD_OS();
+                    }
+                    else if (kernel.CaselessContains("darwin"))
+                    {
+                        return mac;
+                    }
+                    else
+                    {
+                        return unixOS;
+                    }
+                }
+            }
+        }
+        [DllImport("libc")]
+        static extern unsafe void uname(sbyte* uname_struct);
+    }
+    class WindowsOS : IOperatingSystem
+    {
+        public override bool IsWindows => true;
+        public override CPUTime MeasureAllCPUTime()
+        {
+            CPUTime all = new();
+            GetSystemTimes(out all.IdleTime, out all.KernelTime, out all.UserTime);
+            all.KernelTime -= all.IdleTime;
+            return all;
+        }
+        [DllImport("kernel32.dll")]
+        static extern int GetSystemTimes(out ulong idleTime, out ulong kernelTime, out ulong userTime);
+    }
+    class UnixOS : IOperatingSystem
+    {
+        public override bool IsWindows => false;
+        public override void RestartProcess()
         {
             string runtime = Server.GetRuntimeExePath(),
                 exePath = Server.GetPath();
@@ -54,90 +146,11 @@ namespace MCGalaxy.Platform
                 Console.Out.WriteLine("execvp mono failed: {0}", Marshal.GetLastWin32Error());
             }
         }
-        public abstract CPUTime MeasureAllCPUTime();
-        public virtual ProcInfo MeasureResourceUsage(Process proc, bool all)
-        {
-            ProcInfo info = new(proc.TotalProcessorTime);
-            if (all)
-            {
-                info.PrivateMemorySize = proc.PrivateMemorySize64;
-                info.NumThreads = proc.Threads.Count;
-            }
-            return info;
-        }
-        public static unsafe IOperatingSystem DetectOS()
-        {
-            if (Server.RunningOnMono())
-            {
-                return new MonoOS();
-            }
-            PlatformID platform = Environment.OSVersion.Platform;
-            IOperatingSystem winOS = new WindowsOS(),
-                unixOS = new UnixOS(),
-                linuxOS = new LinuxOS(),
-                mac = new MacOS();
-            static bool IsWin(PlatformID platform) => platform switch
-            {
-                PlatformID.Win32S => true,
-                PlatformID.WinCE => true,
-                PlatformID.Win32Windows => true,
-                PlatformID.Win32NT => true,
-                PlatformID.Xbox => true,
-                _ => false,
-            };
-            if (IsWin(platform))
-            {
-                return winOS;
-            }
-            else if (platform == PlatformID.MacOSX)
-            {
-                return mac;
-            }
-            else
-            {
-                sbyte* utsname = stackalloc sbyte[8192];
-                uname(utsname);
-                string kernel = new(utsname);
-                if (kernel.CaselessContains("linux"))
-                {
-                    return linuxOS;
-                }
-                else if (kernel.CaselessContains("freeBSD"))
-                {
-                    return new FreeBSD_OS();
-                }
-                else if (kernel.CaselessContains("netBSD"))
-                {
-                    return new NetBSD_OS();
-                }
-                else if (kernel.CaselessContains("darwin"))
-                {
-                    return mac;
-                }
-                else
-                {
-                    return unixOS;
-                }
-            }
-        }
         [DllImport("libc", SetLastError = true)]
-        public static extern int execvp(string path, string[] argv);
-        [DllImport("libc")]
-        static extern unsafe void uname(sbyte* uname_struct);
-    }
-    class WindowsOS : IOperatingSystem
-    {
-        public override bool IsWindows => true;
-        public override void RestartProcess() => Process.Start(Server.GetPath());
-        public override CPUTime MeasureAllCPUTime()
-        {
-            CPUTime all = new(2, 2, 2);
-            GetSystemTimes(out all.IdleTime, out all.KernelTime, out all.UserTime);
-            all.KernelTime -= all.IdleTime;
-            return all;
-        }
-        [DllImport("kernel32.dll")]
-        static extern int GetSystemTimes(out ulong idleTime, out ulong kernelTime, out ulong userTime);
+        protected static extern int execvp(string path, string[] argv);
+        public override CPUTime MeasureAllCPUTime() => default;
+        [DllImport("libc", SetLastError = true)]
+        protected static extern unsafe int sysctlbyname(string name, void* oldp, IntPtr* oldlenp, IntPtr newp, IntPtr newlen);
     }
     public class MonoOS : IOperatingSystem
     {
@@ -155,49 +168,104 @@ namespace MCGalaxy.Platform
             execvp("mono", new string[] { "mono", Server.GetPath(), null });
             Console.Out.WriteLine("execvp mono failed: {0}", Marshal.GetLastWin32Error());
         }
+        static CPUTime ParseCpuLine(string line)
+        {
+            line = line.Replace("  ", " ");
+            string[] bits = line.SplitSpaces();
+            ulong user = ulong.Parse(bits[1]),
+                nice = ulong.Parse(bits[2]),
+                kern = ulong.Parse(bits[3]),
+                idle = ulong.Parse(bits[4]);
+            return new()
+            {
+                UserTime = user + nice,
+                KernelTime = kern,
+                IdleTime = idle
+            };
+        }
         public override CPUTime MeasureAllCPUTime()
         {
             try
             {
-                string line = new StreamReader("/proc/stat").ReadLine();
+                using StreamReader r = new("/proc/stat");
+                string line = r.ReadLine();
                 if (line.StartsWith("cpu "))
                 {
-                    string[] bits = line.Replace("  ", " ").SplitSpaces();
-                    return new(ulong.Parse(bits[4]), ulong.Parse(bits[3]), ulong.Parse(bits[1]) + ulong.Parse(bits[2]));
+                    return ParseCpuLine(line);
                 }
-                return new(2, 2, 2);
+                return new()
+                {
+                    IdleTime = 2,
+                    KernelTime = 2,
+                    UserTime = 2,
+                };
             }
             catch
             {
-                return new(2, 2, 2);
+                return new()
+                {
+                    IdleTime = 2,
+                    KernelTime = 2,
+                    UserTime = 2,
+                };
             }
         }
         static string[] GetProcessCommandLineArgs()
         {
-            string[] args = new StreamReader("/proc/self/cmdline").ReadToEnd().Split('\0');
+            using StreamReader r = new("/proc/self/cmdline");
+            string[] args = r.ReadToEnd().Split('\0');
             args[args.Length - 1] = null;
             return args;
         }
-    }
-    class UnixOS : IOperatingSystem
-    {
-        public override bool IsWindows => false;
-        public override CPUTime MeasureAllCPUTime() => new(2, 2, 2);
+        [DllImport("libc", SetLastError = true)]
+        static extern int execvp(string path, string[] argv);
     }
     class LinuxOS : UnixOS
     {
         public override CPUTime MeasureAllCPUTime()
         {
-            string line = new StreamReader("/proc/stat").ReadLine();
-            if (line.StartsWith("cpu "))
+            using (StreamReader r = new("/proc/stat"))
             {
-                string[] bits = line.Replace("  ", " ").SplitSpaces();
-                return new(ulong.Parse(bits[4]), ulong.Parse(bits[3]), ulong.Parse(bits[1]) + ulong.Parse(bits[2]));
+                string line = r.ReadLine();
+                if (line.StartsWith("cpu "))
+                {
+                    return ParseCpuLine(line);
+                }
             }
-            return new(2, 2, 2);
+            return new()
+            {
+                IdleTime = 2,
+                KernelTime = 2,
+                UserTime = 2,
+            };
+        }
+        static CPUTime ParseCpuLine(string line)
+        {
+            line = line.Replace("  ", " ");
+            string[] bits = line.SplitSpaces();
+            ulong user = ulong.Parse(bits[1]),
+                nice = ulong.Parse(bits[2]),
+                kern = ulong.Parse(bits[3]),
+                idle = ulong.Parse(bits[4]);
+            return new()
+            {
+                UserTime = user + nice,
+                KernelTime = kern,
+                IdleTime = idle
+            };
         }
         public override void RestartProcess()
         {
+            try
+            {
+                string exe = Server.GetRuntimeExePath();
+                string[] args = GetProcessCommandLineArgs();
+                execvp(exe, args);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Restarting process", ex);
+            }
             try
             {
                 execvp(Server.GetRuntimeExePath(), GetProcessCommandLineArgs());
@@ -206,10 +274,13 @@ namespace MCGalaxy.Platform
             {
                 Logger.LogError("Restarting process", ex);
             }
+            execvp("mono", new string[] { "mono", Server.GetPath(), null });
+            Console.Out.WriteLine("execvp mono failed: {0}", Marshal.GetLastWin32Error());
         }
         static string[] GetProcessCommandLineArgs()
         {
-            string[] args = new StreamReader("/proc/self/cmdline").ReadToEnd().Split('\0');
+            using StreamReader r = new("/proc/self/cmdline");
+            string[] args = r.ReadToEnd().Split('\0');
             args[args.Length - 1] = null;
             return args;
         }
@@ -221,10 +292,13 @@ namespace MCGalaxy.Platform
             UIntPtr* states = stackalloc UIntPtr[5];
             IntPtr size = (IntPtr)(5 * IntPtr.Size);
             sysctlbyname("kern.cp_time", states, &size, IntPtr.Zero, IntPtr.Zero);
-            return new(states[4].ToUInt64(), states[2].ToUInt64(), states[0].ToUInt64() + states[1].ToUInt64());
+            return new()
+            {
+                UserTime = states[0].ToUInt64() + states[1].ToUInt64(),
+                KernelTime = states[2].ToUInt64(),
+                IdleTime = states[4].ToUInt64()
+            };
         }
-        [DllImport("libc", SetLastError = true)]
-        static extern unsafe int sysctlbyname(string name, void* oldp, IntPtr* oldlenp, IntPtr newp, IntPtr newlen);
     }
     class NetBSD_OS : UnixOS
     {
@@ -233,19 +307,27 @@ namespace MCGalaxy.Platform
             ulong* states = stackalloc ulong[5];
             IntPtr size = (IntPtr)(5 * sizeof(ulong));
             sysctlbyname("kern.cp_time", states, &size, IntPtr.Zero, IntPtr.Zero);
-            return new(states[4], states[2], states[0] + states[1]);
+            return new()
+            {
+                UserTime = states[0] + states[1],
+                KernelTime = states[2],
+                IdleTime = states[4] 
+            };
         }
-        [DllImport("libc", SetLastError = true)]
-        static extern unsafe int sysctlbyname(string name, void* oldp, IntPtr* oldlenp, IntPtr newp, IntPtr newlen);
     }
     class MacOS : UnixOS
     {
         public override CPUTime MeasureAllCPUTime()
         {
-            uint[] info = new uint[4];
-            uint count = 4;
+            uint[] info = new uint[4]; 
+            uint count = 4; 
             host_statistics(mach_host_self(), 3, info, ref count);
-            return new(info[2], info[1], info[0] + info[3]);
+            return new()
+            {
+                IdleTime = info[2],
+                UserTime = info[0] + info[3],
+                KernelTime = info[1]
+            };
         }
         [DllImport("libc")]
         static extern IntPtr mach_host_self();

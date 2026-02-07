@@ -17,7 +17,7 @@ namespace MCGalaxy.Modules.Relay
     public abstract class BotControllersCmd : Command2
     {
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         protected abstract RelayBot Bot { get; }
         public override void Use(Player p, string message, CommandData data)
         {

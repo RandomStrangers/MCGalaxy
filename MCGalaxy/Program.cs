@@ -36,16 +36,16 @@ namespace MCGalaxy
             {
                 return;
             }
-            Chat.MessageChat(1, p, "λFULL: &f" + text, null, null, true);
+            Chat.MessageChat(ChatScope.Global, p, "λFULL: &f" + text, null, null, true);
         }
         public static void RepeatCommand()
         {
             if (lastCMD.Length == 0)
             {
-                Logger.Log(8, "(console): Cannot repeat command - no commands used yet.");
+                Logger.Log(LogType.CommandUsage, "(console): Cannot repeat command - no commands used yet.");
                 return;
             }
-            Logger.Log(8, "Repeating &T/" + lastCMD);
+            Logger.Log(LogType.CommandUsage, "Repeating &T/" + lastCMD);
             HandleCommand(lastCMD);
         }
         public static void HandleCommand(string text)
@@ -56,7 +56,7 @@ namespace MCGalaxy
             }
             if (string.IsNullOrEmpty(text))
             {
-                Logger.Log(8, "(console): Whitespace commands are not allowed.");
+                Logger.Log(LogType.CommandUsage, "(console): Whitespace commands are not allowed.");
                 return;
             }
             if (text[0] == '/' && text.Length > 1)
@@ -73,12 +73,12 @@ namespace MCGalaxy
             Command cmd = Command.Find(name);
             if (cmd == null)
             {
-                Logger.Log(8, "(console): Unknown command \"{0}\"", name);
+                Logger.Log(LogType.CommandUsage, "(console): Unknown command \"{0}\"", name);
                 return;
             }
             if (!cmd.SuperUseable)
             {
-                Logger.Log(8, "(console): /{0} can only be used in-game.", cmd.Name);
+                Logger.Log(LogType.CommandUsage, "(console): /{0} can only be used in-game.", cmd.Name);
                 return;
             }
             Server.StartThread(out Thread thread, "ConsoleCMD_" + name,
@@ -89,17 +89,17 @@ namespace MCGalaxy
                         cmd.Use(Player.Console, args);
                         if (args.Length == 0)
                         {
-                            Logger.Log(8, "(console) used /" + cmd.Name);
+                            Logger.Log(LogType.CommandUsage, "(console) used /" + cmd.Name);
                         }
                         else
                         {
-                            Logger.Log(8, "(console) used /" + cmd.Name + " " + args);
+                            Logger.Log(LogType.CommandUsage, "(console) used /" + cmd.Name + " " + args);
                         }
                     }
                     catch (Exception ex)
                     {
                         Logger.LogError(ex);
-                        Logger.Log(8, "(console): FAILED COMMAND");
+                        Logger.Log(LogType.CommandUsage, "(console): FAILED COMMAND");
                     }
                 });
             Utils.SetBackgroundMode(thread);
@@ -155,7 +155,7 @@ namespace MCGalaxy
             {
                 Console.Out.WriteLine("Cannot start server as {0} is missing from {1}",
                                   GetFilename(ex.FileName), Environment.CurrentDirectory);
-                Console.Out.WriteLine("Download from https://github.com/RandomStrangers/MCGalaxy/tree/rework/Uploads");
+                Console.Out.WriteLine("Download from https://github.com/RandomStrangers/MCGalaxy/tree/NAS/Uploads");
                 Console.Out.WriteLine("Press any key to exit...");
                 Console.ReadKey(true);
                 return;
@@ -233,19 +233,19 @@ namespace MCGalaxy
             }
         }
         static void GlobalExHandler(object sender, UnhandledExceptionEventArgs e) => LogAndRestart((Exception)e.ExceptionObject);
-        static void LogMessage(int type, string message)
+        static void LogMessage(LogType type, string message)
         {
-            if (Server.Config.ConsoleLogging[type])
+            if (Server.Config.ConsoleLogging[(int)type])
             {
                 switch (type)
                 {
-                    case 7:
+                    case LogType.Error:
                         Write("&c!!!Error" + ExtractErrorMessage(message)
                               + " - See " + FileLogger.err.Path + " for more details.");
                         break;
-                    case 0:
+                    case LogType.BackgroundActivity:
                         break;
-                    case 6:
+                    case LogType.Warning:
                         Write("&e" + DateTime.Now.ToString("(HH:mm:ss) ") + message);
                         break;
                     default:

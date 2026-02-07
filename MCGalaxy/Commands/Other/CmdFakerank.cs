@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.Misc
         public override string Name => "FakeRank";
         public override string Shortcut => "frk";
         public override string Type => CommandTypes.Other;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
@@ -32,7 +32,7 @@ namespace MCGalaxy.Commands.Misc
         }
         internal static void DoFakerank(Player _, Player who, Group newRank)
         {
-            if (newRank.Permission == -20)
+            if (newRank.Permission == LevelPermission.Banned)
             {
                 Chat.MessageGlobal("{0} &Swas &8banned&S.", who.ColoredName);
             }

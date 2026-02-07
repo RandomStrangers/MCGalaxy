@@ -21,7 +21,7 @@ namespace MCGalaxy.Commands.Info
         public override string Shortcut => "WhoWas";
         public override string Type => CommandTypes.Information;
         public override bool UseableWhenFrozen => true;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can see sensitive player information (e.g. IP)") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can see sensitive player information (e.g. IP)") };
         public override CommandAlias[] Aliases => new CommandAlias[] { new("Info"), new("i") };
         public override void Use(Player p, string message, CommandData data)
         {

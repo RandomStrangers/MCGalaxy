@@ -30,19 +30,24 @@ namespace MCGalaxy.Util
         }
         public void EnsureExists()
         {
-            if (!File.Exists(Filename))
+            if (File.Exists(Filename))
             {
-                Logger.Log(1, Filename + " does not exist, creating");
-                if (DefaultText != null)
-                {
-                    for (int i = 0; i < DefaultText.Length; i++)
-                    {
-                        new StreamWriter(Filename).WriteLine(DefaultText[i]);
-                    }
-                }
+                return;
+            }
+            Logger.Log(LogType.SystemActivity, Filename + " does not exist, creating");
+            using StreamWriter w = new(Filename);
+            if (DefaultText == null)
+            {
+                return;
+            }
+            for (int i = 0; i < DefaultText.Length; i++)
+            {
+                w.WriteLine(DefaultText[i]);
             }
         }
-        public string[] GetText() => FileIO.TryReadAllLines(Filename);
+        public string[] GetText() =>
+            //return File.ReadAllLines(Filename);
+            FileIO.TryReadAllLines(Filename);
         /// <summary>
         /// Returns all text lines in the file that do not begin with # and are not empty.
         /// </summary>
@@ -60,6 +65,12 @@ namespace MCGalaxy.Util
                 text.Add(line);
             }
             return text;
+        }
+        public void SetText(string[] text)
+        {
+            //File.WriteAllLines(Filename, text);
+            FileIO.TryWriteAllLines(Filename, text);
+            OnTextChanged?.Invoke();
         }
         public static Dictionary<string, TextFile> Files = new()
         {

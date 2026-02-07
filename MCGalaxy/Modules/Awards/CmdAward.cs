@@ -18,7 +18,7 @@ namespace MCGalaxy.Modules.Awards
     {
         public override string Name => "Award";
         public override string Type => CommandTypes.Economy;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
             bool take = false;

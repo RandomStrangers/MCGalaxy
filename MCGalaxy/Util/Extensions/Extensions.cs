@@ -33,6 +33,22 @@ namespace MCGalaxy
         /// <summary> Same as value.Split(' ', maxParts), but doesn't allocate ' ' each time. </summary>
         /// <example> "abc def xyz".SplitSpaces(2) becomes "abc", "def xyz" </example>
         public static string[] SplitSpaces(this string value, int maxParts) => value.Split(space, maxParts);
+        public static DateTime Floor(this DateTime date, TimeSpan span) => new((date.Ticks / span.Ticks) * span.Ticks);
+        public static bool IsNullOrWhiteSpace(this string value)
+        {
+            if (value as object is null)
+            {
+                return true;
+            }
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (!char.IsWhiteSpace(value[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
         /// <summary> Works like value.Split(' '), removing first 'startCount' and last 'endCount' elements,
         /// then joining the leftover elements together again. </summary>
         /// <example> "abc def ghi xyz".Splice(1, 1) becomes "def ghi" </example>
@@ -122,10 +138,11 @@ namespace MCGalaxy
         public static byte[] Decompress(this byte[] gzip, int capacity)
         {
             using GZipStream src = new(new MemoryStream(gzip), CompressionMode.Decompress);
-            byte[] buffer = new byte[4096];
+            const int size = 4096;
+            byte[] buffer = new byte[size];
             using MemoryStream dst = new(capacity);
             int count = 0;
-            while ((count = src.Read(buffer, 0, 4096)) > 0)
+            while ((count = src.Read(buffer, 0, size)) > 0)
             {
                 dst.Write(buffer, 0, count);
             }
@@ -172,15 +189,16 @@ namespace MCGalaxy
             }
             return builder.ToString();
         }
-        public static bool CaselessEq(this string a, string b) => a.Equals(b, StringComparison.OrdinalIgnoreCase);
-        public static bool CaselessStarts(this string a, string b) => a.StartsWith(b, StringComparison.OrdinalIgnoreCase);
-        public static bool CaselessEnds(this string a, string b) => a.EndsWith(b, StringComparison.OrdinalIgnoreCase);
-        public static bool CaselessContains(this string a, string b) => a.IndexOf(b, StringComparison.OrdinalIgnoreCase) >= 0;
+        const StringComparison comp = StringComparison.OrdinalIgnoreCase;
+        public static bool CaselessEq(this string a, string b) => a.Equals(b, comp);
+        public static bool CaselessStarts(this string a, string b) => a.StartsWith(b, comp);
+        public static bool CaselessEnds(this string a, string b) => a.EndsWith(b, comp);
+        public static bool CaselessContains(this string a, string b) => a.IndexOf(b, comp) >= 0;
         public static bool CaselessContains(this List<string> items, string value)
         {
             foreach (string item in items)
             {
-                if (item.Equals(value, StringComparison.OrdinalIgnoreCase))
+                if (item.Equals(value, comp))
                 {
                     return true;
                 }
@@ -191,7 +209,7 @@ namespace MCGalaxy
         {
             for (int i = 0; i < items.Length; i++)
             {
-                if (items[i].Equals(value, StringComparison.OrdinalIgnoreCase))
+                if (items[i].Equals(value, comp))
                 {
                     return true;
                 }
@@ -202,7 +220,7 @@ namespace MCGalaxy
         {
             for (int i = 0; i < items.Count; i++)
             {
-                if (!items[i].Equals(value, StringComparison.OrdinalIgnoreCase))
+                if (!items[i].Equals(value, comp))
                 {
                     continue;
                 }
@@ -215,7 +233,7 @@ namespace MCGalaxy
         {
             for (int i = 0; i < items.Count; i++)
             {
-                if (items[i].Equals(value, StringComparison.OrdinalIgnoreCase))
+                if (items[i].Equals(value, comp))
                 {
                     return i;
                 }

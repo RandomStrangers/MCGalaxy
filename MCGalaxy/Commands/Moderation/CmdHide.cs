@@ -15,17 +15,17 @@
 using MCGalaxy.Events.PlayerEvents;
 namespace MCGalaxy.Commands.Moderation
 {
-    public sealed class CmdHide : Command2
+    public sealed class CmdHide : Command
     {
         public override string Name => "Hide";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override bool SuperUseable => false;
         public override bool UpdatesLastCmd => false;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(100, "can hide silently") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Admin, "can hide silently") };
         public override CommandAlias[] Aliases => new CommandAlias[] { new("XHide", "silent") };
-        static void AnnounceOps(Player p, string msg) => Chat.MessageFrom(4, p, msg, new ItemPerms(p.hideRank), null, true);
-        public override void Use(Player p, string message, CommandData data)
+        static void AnnounceOps(Player p, string msg) => Chat.MessageFrom(ChatScope.Perms, p, msg, new ItemPerms(p.hideRank), null, true);
+        public override void Use(Player p, string message)
         {
             if (message.Length > 0 && p.possess.Length > 0)
             {
@@ -34,7 +34,7 @@ namespace MCGalaxy.Commands.Moderation
             bool silent = false;
             if (message.CaselessEq("silent"))
             {
-                if (!CheckExtraPerm(p, data, 1)) return;
+                if (!CheckExtraPerm(p, 1)) return;
                 silent = true;
             }
             Command adminchat = Find("AdminChat");
@@ -43,28 +43,30 @@ namespace MCGalaxy.Commands.Moderation
             p.hidden = !p.hidden;
             if (p.hidden)
             {
-                p.hideRank = data.Rank;
+                p.hideRank = p.Rank;
                 AnnounceOps(p, "To Ops -λNICK&S- is now &finvisible");
                 if (!silent)
                 {
-                    Chat.MessageFrom(0, p, "&c- λFULL &S" + PlayerInfo.GetLogoutMessage(p), null, null, true);
+                    string leaveMsg = "&c- λFULL &S" + PlayerInfo.GetLogoutMessage(p);
+                    Chat.MessageFrom(ChatScope.All, p, leaveMsg, null, null, true);
                 }
-                if (!p.opchat) opchat.Use(p, "", data);
+                if (!p.opchat) opchat.Use(p, "");
                 Server.hidden.Add(p.name);
-                OnPlayerActionEvent.Call(p, 5);
+                OnPlayerActionEvent.Call(p, PlayerAction.Hide);
             }
             else
             {
                 AnnounceOps(p, "To Ops -λNICK&S- is now &fvisible");
-                p.hideRank = -20;
+                p.hideRank = LevelPermission.Banned;
                 if (!silent)
                 {
-                    Chat.MessageFrom(0, p, "&a+ λFULL &S" + PlayerInfo.GetLoginMessage(p), null, null, true);
+                    string joinMsg = "&a+ λFULL &S" + PlayerInfo.GetLoginMessage(p);
+                    Chat.MessageFrom(ChatScope.All, p, joinMsg, null, null, true);
                 }
-                if (p.opchat) opchat.Use(p, "", data);
-                if (p.adminchat) adminchat.Use(p, "", data);
+                if (p.opchat) opchat.Use(p, "");
+                if (p.adminchat) adminchat.Use(p, "");
                 Server.hidden.Remove(p.name);
-                OnPlayerActionEvent.Call(p, 6);
+                OnPlayerActionEvent.Call(p, PlayerAction.Unhide);
             }
             Entities.GlobalSpawn(p, false);
             TabList.Add(p, p);

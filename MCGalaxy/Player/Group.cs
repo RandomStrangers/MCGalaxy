@@ -23,16 +23,18 @@ namespace MCGalaxy
     /// <summary> This is the group object, where ranks and their data are stored </summary>
     public sealed class Group
     {
-        public static Group BannedRank => Find(-20);
-        public static Group GuestRank => Find(0);
+        public static Group BannedRank => Find(LevelPermission.Banned);
+        public static Group GuestRank => Find(LevelPermission.Guest);
         public static Group DefaultRank;
-        public static Group ConsoleRank = new(127, int.MaxValue, TimeSpan.MaxValue, "Console", "&0", int.MaxValue, 16);
+        public static Group ConsoleRank = new(LevelPermission.Console, int.MaxValue, TimeSpan.MaxValue, "Console", "&0", int.MaxValue, int.MaxValue);
         public static List<Group> GroupList = new();
         public static List<Group> AllRanks = new();
         static bool reloading;
+        const int GEN_ADMIN = 225 * 1000 * 1000;
+        const int GEN_LIMIT = 30 * 1000 * 1000;
         public string Name;
-        [ConfigPerm("Permission", null, -106)]
-        public sbyte Permission = -106;
+        [ConfigPerm("Permission", null, LevelPermission.Null)]
+        public LevelPermission Permission = LevelPermission.Null;
         [ConfigColor("Color", null, "&f")]
         public string Color;
         public string ColoredName => Color + Name;
@@ -42,8 +44,8 @@ namespace MCGalaxy
         public TimeSpan MaxUndo;
         [ConfigString("MOTD", null, "", true)]
         public string MOTD = "";
-        [ConfigInt("GenVolume", null, 30 * 1000 * 1000)]
-        public int GenVolume = 30 * 1000 * 1000;
+        [ConfigInt("GenVolume", null, (225 * 1000 * 1000))]
+        public int GenVolume = 225 * 1000 * 1000;
         [ConfigInt("OSMaps", null, 3, 0)]
         public int OverseerMaps = 3;
         [ConfigBool("AfkKicked", null, true)]
@@ -60,9 +62,9 @@ namespace MCGalaxy
         public bool[] CanPlace = new bool[Block.SUPPORTED_COUNT];
         public bool[] CanDelete = new bool[Block.SUPPORTED_COUNT];
         public Group() { }
-        private Group(sbyte perm, int drawLimit, TimeSpan undoMins, string name, string color, int volume, int realms)
+        private Group(LevelPermission perm, int drawLimit, TimeSpan undoMins, string name, string color, int volume, int realms)
         {
-            int afkMins = perm <= 50 ? 45 : 60;
+            int afkMins = perm <= LevelPermission.AdvBuilder ? 45 : 60;
             Permission = perm;
             DrawLimit = drawLimit;
             MaxUndo = undoMins;
@@ -106,9 +108,9 @@ namespace MCGalaxy
         {
             if (name.CaselessEq("op")) name = "operator";
         }
-        public static Group Find(sbyte perm)
+        public static Group Find(LevelPermission perm)
         {
-            if (perm == 127) return ConsoleRank;
+            if (perm == LevelPermission.Console) return ConsoleRank;
             return GroupList.Find(grp => grp.Permission == perm);
         }
         public static Group GroupIn(string playerName)
@@ -119,7 +121,7 @@ namespace MCGalaxy
             }
             return DefaultRank;
         }
-        public static string GetColoredName(sbyte perm)
+        public static string GetColoredName(LevelPermission perm)
         {
             Group grp = Find(perm);
             if (grp != null) return grp.ColoredName;
@@ -133,17 +135,17 @@ namespace MCGalaxy
         }
         /// <summary> Returns the color of the group with the given permission level </summary>
         /// <remarks> Returns white if no such group exists </remarks>
-        public static string GetColor(sbyte perm)
+        public static string GetColor(LevelPermission perm)
         {
             Group grp = Find(perm);
             if (grp != null) return grp.Color;
             return "&f";
         }
-        public static sbyte ParsePermOrName(string value, sbyte defPerm)
+        public static LevelPermission ParsePermOrName(string value, LevelPermission defPerm)
         {
             if (value == null) return defPerm;
             if (NumberUtils.TryParseInt8(value, out sbyte perm))
-                return (sbyte)perm;
+                return (LevelPermission)perm;
             Group grp = Find(value);
             return grp != null ? grp.Permission : defPerm;
         }
@@ -156,7 +158,7 @@ namespace MCGalaxy
             return name;
         }
         public string GetFormattedName() => Color + GetPlural(Name);
-        static void Add(sbyte perm, int drawLimit, int undoMins, string name, string color, int volume, int realms) => Register(new Group(perm, drawLimit, TimeSpan.FromMinutes(undoMins), name, color, volume, realms));
+        static void Add(LevelPermission perm, int drawLimit, int undoMins, string name, string color, int volume, int realms) => Register(new Group(perm, drawLimit, TimeSpan.FromMinutes(undoMins), name, color, volume, realms));
         public static void Register(Group grp)
         {
             GroupList.Add(grp);
@@ -177,16 +179,16 @@ namespace MCGalaxy
             else
             {
                 // Add some default ranks
-                Add(30, 4096, 5, "Builder", "&2", 30 * 1000 * 1000, 3); // 16^3 draw volume
-                Add(50, 262144, 15, "AdvBuilder", "&3", 30 * 1000 * 1000, 5); // 64^3
-                Add(80, 2097152, 90, "Operator", "&c", 30 * 1000 * 1000, 8); // 128^3
-                Add(100, 16777216, 21024000, "Admin", "&e", 225 * 1000 * 1000, 32); // 256^3
-                Add(120, 134217728, 21024000, "Owner", "&4", 225 * 1000 * 1000, 256); // 512^3
+                Add(LevelPermission.Builder, 4096, 5, "Builder", "&2", GEN_LIMIT, 3); // 16^3 draw volume
+                Add(LevelPermission.AdvBuilder, 262144, 15, "AdvBuilder", "&3", GEN_LIMIT, 5); // 64^3
+                Add(LevelPermission.Operator, 2097152, 90, "Operator", "&c", GEN_LIMIT, 8); // 128^3
+                Add(LevelPermission.Admin, 16777216, 21024000, "Admin", "&e", GEN_ADMIN, 32); // 256^3
+                Add(LevelPermission.Owner, 134217728, 21024000, "Owner", "&4", GEN_ADMIN, 256); // 512^3
             }
             if (BannedRank == null)
-                Add(-20, 1, 0, "Banned", "&8", 30 * 1000 * 1000, 0);
+                Add(LevelPermission.Banned, 1, 0, "Banned", "&8", GEN_LIMIT, 0);
             if (GuestRank == null)
-                Add(0, 1, 2, "Guest", "&7", 30 * 1000 * 1000, 3);
+                Add(LevelPermission.Guest, 1, 2, "Guest", "&7", GEN_LIMIT, 3);
             GroupList.Sort((a, b) => a.Permission.CompareTo(b.Permission));
             DefaultRank = Find(Server.Config.DefaultRankName);
             DefaultRank ??= GuestRank;
@@ -301,25 +303,25 @@ namespace MCGalaxy
             // Try to rename conflicing ranks first
             if (name.CaselessEq("op") || name.CaselessEq("Console"))
             {
-                Logger.Log(6, "Cannot have a rank named 'op' or 'console'", name);
+                Logger.Log(LogType.Warning, "Cannot have a rank named 'op' or 'console'", name);
                 temp.Name = "RENAMED_" + name;
             }
             else if (Find(name) != null)
             {
-                Logger.Log(6, "Cannot add the rank {0} twice", name);
+                Logger.Log(LogType.Warning, "Cannot add the rank {0} twice", name);
                 temp.Name = "RENAMED_" + name;
             }
             if (Find(temp.Name) != null)
             {
-                Logger.Log(6, "Cannot add the rank {0} twice", temp.Name);
+                Logger.Log(LogType.Warning, "Cannot add the rank {0} twice", temp.Name);
             }
             else if (Find(temp.Permission) != null)
             {
-                Logger.Log(6, "Cannot have 2 ranks set at permission level " + (int)temp.Permission);
+                Logger.Log(LogType.Warning, "Cannot have 2 ranks set at permission level " + (int)temp.Permission);
             }
-            else if (temp.Permission > 120)
-            { // also handles 150
-                Logger.Log(6, "Invalid permission level for rank {0}", temp.Name);
+            else if (temp.Permission > LevelPermission.Owner)
+            { // also handles LevelPermission.Null
+                Logger.Log(LogType.Warning, "Invalid permission level for rank {0}", temp.Name);
             }
             else
             {

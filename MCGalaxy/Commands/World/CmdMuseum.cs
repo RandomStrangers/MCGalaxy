@@ -21,14 +21,15 @@ namespace MCGalaxy.Commands.World
         public override string Name => "Museum";
         public override string Type => CommandTypes.World;
         public override bool SuperUseable => false;
+        const string CURRENT_FLAG = "*current";
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { LevelOperations.OutputBackups(p, p.Level); return; }
             string[] args = message.ToLower().SplitSpaces();
-            string mapArg = args.Length > 1 ? args[0] : p.Level.MapName,
-                backupArg = args.Length > 1 ? args[1] : args[0],
-                path;
-            if (backupArg == "*current")
+            string mapArg = args.Length > 1 ? args[0] : p.Level.MapName;
+            string backupArg = args.Length > 1 ? args[1] : args[0];
+            string path;
+            if (backupArg == CURRENT_FLAG)
             {
                 path = LevelInfo.MapPath(mapArg);
                 if (!LevelInfo.MapExists(mapArg))
@@ -50,7 +51,7 @@ namespace MCGalaxy.Commands.World
                 if (!LevelInfo.GetBackupPath(p, mapArg, backupArg, out path)) return;
             }
             string formattedMuseumName;
-            if (backupArg == "*current")
+            if (backupArg == CURRENT_FLAG)
             {
                 formattedMuseumName = "&cMuseum &S(" + mapArg + ")";
             }
@@ -60,17 +61,15 @@ namespace MCGalaxy.Commands.World
             }
             if (p.Level.name.CaselessEq(formattedMuseumName))
             {
-                p.Message("You are already in this museum."); 
-                return;
+                p.Message("You are already in this museum."); return;
             }
             if (Interlocked.CompareExchange(ref p.LoadingMuseum, 1, 0) == 1)
             {
-                p.Message("You are already loading a museum level."); 
-                return;
+                p.Message("You are already loading a museum level."); return;
             }
             try
             {
-                Level lvl = LevelActions.LoadMuseum(formattedMuseumName, mapArg, path);
+                Level lvl = LevelActions.LoadMuseum(p, formattedMuseumName, mapArg, path);
                 PlayerActions.ChangeMap(p, lvl);
             }
             finally
@@ -82,9 +81,9 @@ namespace MCGalaxy.Commands.World
         {
             p.Message("&T/Museum <level> [backup]");
             p.Message("&HVisits the [backup] of <level>");
-            p.Message("&T/Museum <level> *latest");
+            p.Message("&T/Museum <level> {0}", LevelInfo.LATEST_MUSEUM_FLAG);
             p.Message("&HVisits the latest backup of <level>");
-            p.Message("&T/Museum <level> *current");
+            p.Message("&T/Museum <level> {0}", CURRENT_FLAG);
             p.Message("&HVisits <level> as it is currently stored on disk.");
             p.Message("&HIf <level> is not given, the current level is used.");
         }

@@ -83,7 +83,7 @@ namespace MCGalaxy.DB
         }
         public static void ResizeBackingFile(BlockDB db, string path)
         {
-            Logger.Log(0, "Resizing BlockDB for " + db.MapName);
+            Logger.Log(LogType.BackgroundActivity, "Resizing BlockDB for " + db.MapName);
             string tempPath = TempPath(db.MapName);
             using (Stream src = FileIO.TryOpenRead(path), dst = File.Create(tempPath))
             {

@@ -22,7 +22,7 @@ namespace MCGalaxy.Commands.Maintenance
         public override string Name => "Server";
         public override string Shortcut => "Serv";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
@@ -43,14 +43,14 @@ namespace MCGalaxy.Commands.Maintenance
         {
             Server.Config.Public = true;
             p.Message("Server is now public!");
-            Logger.Log(1, "Server is now public!");
+            Logger.Log(LogType.SystemActivity, "Server is now public!");
             SrvProperties.Save();
         }
         void SetPrivate(Player p)
         {
             Server.Config.Public = false;
             p.Message("Server is now private!");
-            Logger.Log(1, "Server is now private!");
+            Logger.Log(LogType.SystemActivity, "Server is now private!");
             SrvProperties.Save();
         }
         void DoReload(Player p)

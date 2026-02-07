@@ -45,11 +45,7 @@ namespace MCGalaxy.Commands.Building
         protected override void GetMarks(DrawArgs dArgs, ref Vec3S32[] m)
         {
             Player p = dArgs.Player;
-            if (m[0].X == m[1].X && m[0].Y == m[1].Y && m[0].Z == m[1].Z) 
-            {
-                p.Message("No direction was selected"); 
-                m = null; 
-            }
+            if (m[0] == m[1]) { p.Message("No direction was selected"); m = null; }
         }
         protected override void GetBrush(DrawArgs dArgs)
         {

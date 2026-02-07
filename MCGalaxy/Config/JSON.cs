@@ -147,7 +147,7 @@ namespace MCGalaxy.Config
     public class JsonWriter
     {
         readonly TextWriter w;
-        public JsonWriter(TextWriter dst) => w = dst;
+        public JsonWriter(TextWriter dst) { w = dst; }
         static char Hex(char c, int shift)
         {
             int x = (c >> shift) & 0x0F;
@@ -256,7 +256,7 @@ namespace MCGalaxy.Config
     public class JsonConfigWriter : JsonWriter
     {
         readonly ConfigElement[] elems;
-        public JsonConfigWriter(TextWriter dst, ConfigElement[] cfg) : base(dst) => elems = cfg;
+        public JsonConfigWriter(TextWriter dst, ConfigElement[] cfg) : base(dst) { elems = cfg; }
         // Only ever write an object
         protected override void WriteValue(object value) => WriteObject(value);
         void WriteConfigValue(ConfigAttribute a, string value)

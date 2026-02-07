@@ -74,12 +74,12 @@ namespace MCGalaxy
             }
             if (auto)
             {
-                Logger.Log(1, "Backup {1} saved for {0}", map, backup);
+                Logger.Log(LogType.SystemActivity, "Backup {1} saved for {0}", map, backup);
                 lvl.Message("Backup " + backup + " saved for " + lvl.ColoredName);
             }
             else
             {
-                Logger.Log(1, "{0} had a backup created named &b{1}", map, backup);
+                Logger.Log(LogType.SystemActivity, "{0} had a backup created named &b{1}", map, backup);
                 lvl.Message(lvl.ColoredName + " &Shad a backup created named &b" + backup);
             }
             return true;

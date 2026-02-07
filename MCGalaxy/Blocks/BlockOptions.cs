@@ -13,6 +13,7 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Commands;
+using System;
 using System.Collections.Generic;
 namespace MCGalaxy.Blocks
 {
@@ -40,7 +41,7 @@ namespace MCGalaxy.Blocks
             new BlockOption("DeathMessage", SetDeathMsg, "&HSets or removes the death message for this block " +
                             "(Note: &S@p &His a placeholder for name of player who dies"),
             new BlockOption("AnimalAI",   SetAI,     "&HSets the flying or swimming animal AI for this block. " +
-                            "Types: &fNone, Fly, FleeAir, KillerAir, FleeWater, KillerWater, FleeLava, KillerLava"),
+                            "Types: &f" + Enum.GetNames(typeof(AnimalAI)).Join()),
             new BlockOption("StackBlock", SetStackId,"&HSets the block this block is changed into, when placed on top " +
                             "of itself (e.g. placing a slab on top of another slab turns into a double slab)"),
             new BlockOption("OPBlock",    SetOPBlock,"&HMarks the block as being on OP block. OP blocks can't be " +
@@ -87,7 +88,7 @@ namespace MCGalaxy.Blocks
             if (props[block].IsMessageBlock) return "message block";
             if (props[block].IsPortal) return "portal";
             if (props[block].IsTDoor) return "tDoor";
-            if (props[block].oDoorBlock != 0xff) return "oDoor";
+            if (props[block].oDoorBlock != Block.Invalid) return "oDoor";
             if (props[block].IsDoor) return "door";
             return null;
         }
@@ -112,8 +113,8 @@ namespace MCGalaxy.Blocks
         }
         static void SetAI(Player p, BlockProps[] scope, ushort block, string msg)
         {
-            int ai = 0;
-            if (!CommandParser.GetInt(p, msg, "Animal AI", ref ai, 0, 7)) return;
+            AnimalAI ai = AnimalAI.None;
+            if (!CommandParser.GetEnum(p, msg, "Animal AI", ref ai)) return;
             scope[block].AnimalAI = ai;
             string name = BlockProps.ScopedName(scope, p, block);
             p.Message("Animal AI for {0} set to: {1}", name, ai);
@@ -137,7 +138,7 @@ namespace MCGalaxy.Blocks
             ushort stackBlock;
             if (msg.Length == 0)
             {
-                stackBlock = 0;
+                stackBlock = Block.Air;
             }
             else
             {
@@ -145,7 +146,7 @@ namespace MCGalaxy.Blocks
             }
             scope[block].StackBlock = stackBlock;
             string name = BlockProps.ScopedName(scope, p, block);
-            if (stackBlock == 0)
+            if (stackBlock == Block.Air)
             {
                 p.Message("Removed stack block for {0}", name);
             }
@@ -161,7 +162,7 @@ namespace MCGalaxy.Blocks
             string name = BlockProps.ScopedName(scope, p, block);
             if (msg.Length == 0)
             {
-                target = 0xff;
+                target = Block.Invalid;
                 p.Message("{1} for {0} removed.", name, type);
             }
             else

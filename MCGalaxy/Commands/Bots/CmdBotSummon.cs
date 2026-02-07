@@ -21,7 +21,7 @@ namespace MCGalaxy.Commands.Bots
         public override string Name => "BotSummon";
         public override string Type => CommandTypes.Moderation;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {

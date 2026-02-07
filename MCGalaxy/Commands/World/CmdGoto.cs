@@ -25,7 +25,7 @@ namespace MCGalaxy.Commands.World
         public override CommandAlias[] Aliases => new[] { new CommandAlias("j"), new CommandAlias("Join"), new CommandAlias("gr", "-random"),
                     new CommandAlias("GotoRandom", "-random"), new CommandAlias("JoinRandom", "-random") };
         public override bool SuperUseable => false;
-        public override int Parallelism => 1;
+        public override CommandParallelism Parallelism => CommandParallelism.NoAndWarn;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }

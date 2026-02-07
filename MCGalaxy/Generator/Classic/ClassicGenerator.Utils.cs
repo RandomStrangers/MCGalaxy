@@ -80,7 +80,7 @@ namespace MCGalaxy.Generator.Classic
         long seed;
         const long value = 0x5DEECE66DL;
         const long mask = (1L << 48) - 1;
-        public JavaRandom(int seed) => SetSeed(seed);
+        public JavaRandom(int seed) { SetSeed(seed); }
         public void SetSeed(int seed) => this.seed = (seed ^ value) & mask;
         public int Next(int min, int max) => min + Next(max - min);
         public int Next(int n)

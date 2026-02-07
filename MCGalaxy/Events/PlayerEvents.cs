@@ -16,6 +16,11 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy.Events.PlayerEvents
 {
+    public enum PlayerAction { Me, Referee, UnReferee, AFK, UnAFK, Hide, Unhide };
+    public enum MouseButton { Left, Right, Middle }
+    public enum MouseAction { Pressed, Released }
+    public enum TargetBlockFace { AwayX, TowardsX, AwayY, TowardsY, AwayZ, TowardsZ, None }
+    public enum NotifyActionType { BlockListSelected, BlockListToggled, LevelSaved, Respawned, SpawnUpdated, TexturePackChanged, TexturePromptResponded, ThirdPersonChanged }
     public delegate void OnPlayerChat(Player p, string message);
     /// <summary> Called whenever a player sends chat to the server </summary>
     /// <remarks> You must cancel this event to prevent the message being sent to the user (and others). </remarks>
@@ -166,11 +171,11 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-    public delegate void OnBlockChanged(Player p, ushort x, ushort y, ushort z, int result);
+    public delegate void OnBlockChanged(Player p, ushort x, ushort y, ushort z, ChangeResult result);
     /// <summary> Called whenever a player has manually placed or deleted a block </summary>
     public sealed class OnBlockChangedEvent : IEvent<OnBlockChanged>
     {
-        public static void Call(Player p, ushort x, ushort y, ushort z, int result)
+        public static void Call(Player p, ushort x, ushort y, ushort z, ChangeResult result)
         {
             IEvent<OnBlockChanged>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
@@ -180,15 +185,15 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-    public delegate void OnPlayerClick(Player p, int button, int action,
+    public delegate void OnPlayerClick(Player p, MouseButton button, MouseAction action,
                                        ushort yaw, ushort pitch, byte entity,
-                                       ushort x, ushort y, ushort z, int face);
+                                       ushort x, ushort y, ushort z, TargetBlockFace face);
     /// <summary> Called whenever a player clicks their mouse </summary>
     public sealed class OnPlayerClickEvent : IEvent<OnPlayerClick>
     {
-        public static void Call(Player p, int btn, int action,
+        public static void Call(Player p, MouseButton btn, MouseAction action,
                                 ushort yaw, ushort pitch, byte entityID,
-                                ushort x, ushort y, ushort z, int face)
+                                ushort x, ushort y, ushort z, TargetBlockFace face)
         {
             IEvent<OnPlayerClick>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
@@ -198,11 +203,11 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-    public delegate void OnNotifyAction(Player p, int action, short value);
+    public delegate void OnNotifyAction(Player p, NotifyActionType action, short value);
     /// <summary> Called whenever a player triggers a certain client event </summary>
     public sealed class OnNotifyActionEvent : IEvent<OnNotifyAction>
     {
-        public static void Call(Player p, int action, short value)
+        public static void Call(Player p, NotifyActionType action, short value)
         {
             IEvent<OnNotifyAction>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
@@ -212,11 +217,11 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-    public delegate void OnNotifyPositionAction(Player p, int action, ushort x, ushort y, ushort z);
+    public delegate void OnNotifyPositionAction(Player p, NotifyActionType action, ushort x, ushort y, ushort z);
     /// <summary> Called whenever a player triggers a respawn/setspawn client event </summary>
     public sealed class OnNotifyPositionActionEvent : IEvent<OnNotifyPositionAction>
     {
-        public static void Call(Player p, int action, ushort x, ushort y, ushort z)
+        public static void Call(Player p, NotifyActionType action, ushort x, ushort y, ushort z)
         {
             IEvent<OnNotifyPositionAction>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
@@ -281,12 +286,12 @@ namespace MCGalaxy.Events.PlayerEvents
             }
         }
     }
-    public delegate void OnPlayerAction(Player p, int action,
+    public delegate void OnPlayerAction(Player p, PlayerAction action,
                                         string message, bool stealth);
     /// <summary> Called when a player performs an action. </summary>
     public sealed class OnPlayerActionEvent : IEvent<OnPlayerAction>
     {
-        public static void Call(Player p, int action,
+        public static void Call(Player p, PlayerAction action,
                                 string message = null, bool stealth = false)
         {
             if (handlers.Count == 0) return;
@@ -377,11 +382,11 @@ namespace MCGalaxy.Events.PlayerEvents
             CallCommon(pl => pl(p));
         }
     }
-    public delegate void OnGettingCanSee(Player p, sbyte plRank, ref bool canSee, Player target);
+    public delegate void OnGettingCanSee(Player p, LevelPermission plRank, ref bool canSee, Player target);
     /// <summary> Called when code is checking if this player can see the given player </summary>
     public sealed class OnGettingCanSeeEvent : IEvent<OnGettingCanSee>
     {
-        public static void Call(Player p, sbyte plRank, ref bool canSee, Player target)
+        public static void Call(Player p, LevelPermission plRank, ref bool canSee, Player target)
         {
             IEvent<OnGettingCanSee>[] items = handlers.Items;
             // Can't use CallCommon because we need to pass arguments by ref

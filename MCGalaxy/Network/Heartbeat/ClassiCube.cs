@@ -40,7 +40,7 @@ namespace MCGalaxy.Network
             // Replace www, as otherwise the 'Finding www.classicube.net url..'
             //  message appears as a clickable link in the Logs textbox in GUI
             hostUrl = hostUrl.Replace("www.", "");
-            Logger.Log(1, "Finding " + hostUrl + " url..");
+            Logger.Log(LogType.SystemActivity, "Finding " + hostUrl + " url..");
         }
         protected override string GetHeartbeatData()
         {
@@ -94,9 +94,9 @@ namespace MCGalaxy.Network
         {
             text = Truncate(text);
             FileIO.TryWriteAllText("text/externalurl.txt", text);
-            Logger.Log(1, "Server URL found: " + text);
+            Logger.Log(LogType.SystemActivity, "Server URL found: " + text);
         }
-        static void OnError(string error) => Logger.Log(6, Truncate(error));
+        static void OnError(string error) => Logger.Log(LogType.Warning, Truncate(error));
         static string GetError(string json)
         {
             JsonReader reader = new(json);

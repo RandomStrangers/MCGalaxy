@@ -19,25 +19,25 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy.Modules.Moderation.Review
 {
-    class CmdReview : Command2
+    class CmdReview : Command
     {
         public override string Name => "Review";
         public override string Shortcut => "rvw";
         public override string Type => CommandTypes.Moderation;
         public override CommandPerm[] ExtraPerms => new[] {
-                    new CommandPerm(80, "can see the review queue"),
-                    new CommandPerm(80, "can teleport to next in review queue"),
-                    new CommandPerm(80, "can clear the review queue"),
+                    new CommandPerm(LevelPermission.Operator, "can see the review queue"),
+                    new CommandPerm(LevelPermission.Operator, "can teleport to next in review queue"),
+                    new CommandPerm(LevelPermission.Operator, "can clear the review queue"),
                 };
-        public override void Use(Player p, string message, CommandData data)
+        public override void Use(Player p, string message)
         {
             if (message.Length == 0 || message.CaselessEq("enter"))
             {
-                HandleEnter(p, data);
+                HandleEnter(p);
             }
             else if (IsListAction(message))
             {
-                HandleView(p, data);
+                HandleView(p);
             }
             else if (message.CaselessEq("leave"))
             {
@@ -45,18 +45,18 @@ namespace MCGalaxy.Modules.Moderation.Review
             }
             else if (message.CaselessEq("next"))
             {
-                HandleNext(p, data);
+                HandleNext(p);
             }
             else if (message.CaselessEq("clear"))
             {
-                HandleClear(p, data);
+                HandleClear(p);
             }
             else
             {
                 Help(p);
             }
         }
-        void HandleEnter(Player p, CommandData data)
+        void HandleEnter(Player p)
         {
             if (p.IsSuper) { p.Message("{0} cannot enter the review queue.", p.SuperName); return; }
             TimeSpan delta = p.NextReviewTime - DateTime.UtcNow;
@@ -68,15 +68,17 @@ namespace MCGalaxy.Modules.Moderation.Review
             }
             if (Server.reviewlist.Contains(p.name))
             {
-                p.Message("You are already in the review queue!"); return;
+                p.Message("You are already in the review queue!");
+                return;
             }
             ItemPerms nextPerms = CommandExtraPerms.Find("Review", 2);
             bool anyStaff = false;
-            foreach (Player pl in PlayerInfo.GetOnlineCanSee(p, data.Rank))
+            foreach (Player pl in PlayerInfo.GetOnlineCanSee(p, p.Rank))
             {
                 if (nextPerms.UsableBy(pl))
                 {
-                    anyStaff = true; break;
+                    anyStaff = true;
+                    break;
                 }
             }
             Server.reviewlist.Add(p.name);
@@ -86,28 +88,25 @@ namespace MCGalaxy.Modules.Moderation.Review
                 "The online staff have been notified. Someone should be with you shortly." :
                 "There are currently no staff online. Staff will be notified when they join the server.";
             p.Message(msg);
-            Chat.MessageFrom(4, p,
+            Chat.MessageFrom(ChatScope.Perms, p,
                              "λNICK &Srequested a review! &c(Total " + pos + " waiting)", nextPerms, null, true);
             p.NextReviewTime = DateTime.UtcNow.Add(Server.Config.ReviewCooldown);
         }
-        void HandleView(Player p, CommandData data)
+        void HandleView(Player p)
         {
-            if (CheckExtraPerm(p, data, 1))
+            if (!CheckExtraPerm(p, 1)) return;
+            List<string> inQueue = Server.reviewlist.All();
+            if (inQueue.Count == 0)
             {
-                List<string> inQueue = Server.reviewlist.All();
-                if (inQueue.Count == 0)
-                {
-                    p.Message("There are no players in the review queue.");
-                    return;
-                }
-                p.Message("&9Players in the review queue:");
-                int pos = 1;
-                foreach (string name in inQueue)
-                {
-                    Group grp = PlayerInfo.GetGroup(name);
-                    p.Message("&a" + pos + ". &f" + name + " &a- Current Rank: " + grp.ColoredName);
-                    pos++;
-                }
+                p.Message("There are no players in the review queue."); return;
+            }
+            p.Message("&9Players in the review queue:");
+            int pos = 1;
+            foreach (string name in inQueue)
+            {
+                Group grp = PlayerInfo.GetGroup(name);
+                p.Message("&a" + pos + ". &f" + name + " &a- Current Rank: " + grp.ColoredName);
+                pos++;
             }
         }
         void HandleLeave(Player p)
@@ -122,36 +121,32 @@ namespace MCGalaxy.Modules.Moderation.Review
                 p.Message("You weren't in the review queue to begin with.");
             }
         }
-        void HandleNext(Player p, CommandData data)
+        void HandleNext(Player p)
         {
             if (p.IsSuper) { p.Message("{0} cannot answer the review queue.", p.SuperName); return; }
-            if (CheckExtraPerm(p, data, 2))
+            if (!CheckExtraPerm(p, 2)) return;
+            string user = Server.reviewlist.GetAt(0);
+            if (user == null)
             {
-                string user = Server.reviewlist.GetAt(0);
-                if (user == null)
-                {
-                    p.Message("There are no players in the review queue."); return;
-                }
-                Player target = PlayerInfo.FindExact(user);
-                Server.reviewlist.Remove(user);
-                if (target == null)
-                {
-                    p.Message("Player " + user + " is offline, and was removed from the review queue");
-                    return;
-                }
-                Find("TP").Use(p, target.name, data);
-                p.Message("You have been teleported to " + p.FormatNick(target));
-                target.Message("Your review request has been answered by {0}.", target.FormatNick(p));
-                AnnounceQueueChanged();
+                p.Message("There are no players in the review queue."); return;
             }
+            Player target = PlayerInfo.FindExact(user);
+            Server.reviewlist.Remove(user);
+            if (target == null)
+            {
+                p.Message("Player " + user + " is offline, and was removed from the review queue");
+                return;
+            }
+            Find("TP").Use(p, target.name);
+            p.Message("You have been teleported to " + p.FormatNick(target));
+            target.Message("Your review request has been answered by {0}.", target.FormatNick(p));
+            AnnounceQueueChanged();
         }
-        void HandleClear(Player p, CommandData data)
+        void HandleClear(Player p)
         {
-            if (CheckExtraPerm(p, data, 3))
-            {
-                Server.reviewlist.Clear();
-                p.Message("The review queue has been cleared");
-            }
+            if (!CheckExtraPerm(p, 3)) return;
+            Server.reviewlist.Clear();
+            p.Message("The review queue has been cleared");
         }
         static void AnnounceQueueChanged()
         {

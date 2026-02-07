@@ -19,7 +19,7 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to instantly teleport to a position. </summary>
     public class TeleportInstruction : BotInstruction
     {
-        public TeleportInstruction() => Name = "teleport";
+        public TeleportInstruction() { Name = "teleport"; }
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             Coords coords = (Coords)data.Metadata;
@@ -56,7 +56,7 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to gradually move towards a position. </summary>
     public class MoveInstruction : TeleportInstruction
     {
-        public MoveInstruction() => Name = "move";
+        public MoveInstruction() { Name = "move"; }
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             Coords target = (Coords)data.Metadata;
@@ -82,7 +82,7 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to gradually walk towards to a position. </summary>
     public sealed class WalkInstruction : MoveInstruction
     {
-        public WalkInstruction() => Name = "walk";
+        public WalkInstruction() { Name = "walk"; }
         protected override void StartMoving(PlayerBot bot) => bot.FaceTowards(bot.Pos, bot.TargetPos);
         public override string[] Help => help;
         static readonly string[] help = new string[] {
@@ -94,7 +94,7 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to begin jumping. </summary>
     public sealed class JumpInstruction : BotInstruction
     {
-        public JumpInstruction() => Name = "jump";
+        public JumpInstruction() { Name = "jump"; }
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             if (bot.curJump <= 0) bot.curJump = 1;
@@ -111,7 +111,7 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to change how fast it moves. </summary>
     public sealed class SpeedInstruction : BotInstruction
     {
-        public SpeedInstruction() => Name = "speed";
+        public SpeedInstruction() { Name = "speed"; }
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             bot.movementSpeed = (int)Math.Round(3m * (short)data.Metadata / 100m);

@@ -44,7 +44,7 @@ namespace MCGalaxy
                 return false;
             TimeSpan oldestDelta = DateTime.UtcNow - blockLog[0];
             Chat.MessageFromOps(p, "λNICK &Wwas kicked from " + p.Level.name + " for suspected griefing.");
-            Logger.Log(4,
+            Logger.Log(LogType.SuspiciousActivity,
                        "{0} was kicked from {1} for block spam ({2} blocks in {3} seconds)",
                        p.name, p.Level.name, blockLog.Count, oldestDelta);
             p.Kick("You were kicked by antigrief system. Slow down.");
@@ -59,7 +59,7 @@ namespace MCGalaxy
                 if (chatLog.AddSpamEntry(Server.Config.ChatSpamCount, Server.Config.ChatSpamInterval))
                     return false;
                 TimeSpan duration = Server.Config.ChatSpamMuteTime;
-                ModAction action = new(p.name, Player.Console, 4, "&0Auto mute for spamming", duration);
+                ModAction action = new(p.name, Player.Console, ModActionType.Muted, "&0Auto mute for spamming", duration);
                 OnModActionEvent.Call(action);
                 return true;
             }

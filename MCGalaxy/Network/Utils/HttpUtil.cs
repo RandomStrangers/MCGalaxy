@@ -22,6 +22,7 @@ namespace MCGalaxy.Network
     /// <summary> Static class for assisting with making web requests. </summary>
     public static class HttpUtil
     {
+        public static WebClient CreateWebClient() => new CustomWebClient();
         public static HttpWebRequest CreateRequest(string uri)
         {
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(uri);
@@ -35,7 +36,11 @@ namespace MCGalaxy.Network
             using Stream w = request.GetRequestStream();
             w.Write(data, 0, data.Length);
         }
-        public static string GetResponseText(WebResponse response) => new StreamReader(response.GetResponseStream()).ReadToEnd().Trim();
+        public static string GetResponseText(WebResponse response)
+        {
+            using StreamReader r = new(response.GetResponseStream());
+            return r.ReadToEnd().Trim();
+        }
         /// <summary> Attempts to read the WebResponse in the given exception into a string </summary>
         /// <remarks> Returns null if the exception did not contain a readable WebResponse </remarks>
         public static string GetErrorResponse(Exception ex)
@@ -58,6 +63,16 @@ namespace MCGalaxy.Network
             }
             catch { }
         }
+        class CustomWebClient : WebClient
+        {
+            protected override WebRequest GetWebRequest(Uri address)
+            {
+                HttpWebRequest req = (HttpWebRequest)base.GetWebRequest(address);
+                req.ServicePoint.BindIPEndPointDelegate = BindIPEndPointCallback;
+                req.UserAgent = Server.SoftwareNameVersioned;
+                return req;
+            }
+        }
         static IPEndPoint BindIPEndPointCallback(ServicePoint servicePoint, IPEndPoint remoteEP, int retryCount)
         {
             IPAddress localIP;
@@ -73,12 +88,18 @@ namespace MCGalaxy.Network
             if (remoteEP.AddressFamily != localIP.AddressFamily) return null;
             return new IPEndPoint(localIP, 0);
         }
+        // TLS 1.1/1.2 do not exist in .NET 4.0 and cause a compilation failure
+        public const SslProtocols TLS_11 = (SslProtocols)768;
+        public const SslProtocols TLS_12 = (SslProtocols)3072;
+        public const SslProtocols TLS_ALL = SslProtocols.Tls | TLS_11 | TLS_12;
         public static SslStream WrapSSLStream(Stream source, string host)
         {
             SslStream wrapped = new(source);
-            wrapped.AuthenticateAsClient(host, null, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false);
+            wrapped.AuthenticateAsClient(host, null, TLS_ALL, false);
             return wrapped;
         }
+        const string DROPBOX_HTTP_PREFIX = "http://www.dropbox";
+        const string DROPBOX_HTTPS_PREFIX = "https://www.dropbox";
         /// <summary>
         /// Performs Modern MC skin conversion and filters the url as needed (dropbox, add http://)
         /// </summary>
@@ -92,9 +113,9 @@ namespace MCGalaxy.Network
             {
                 FilterURL(ref skin);
             }
-            if (skin.Length > 64)
+            if (skin.Length > NetUtils.StringSize)
             {
-                p.Message("&WThe skin must be 64 characters or less.");
+                p.Message("&WThe skin must be " + NetUtils.StringSize + " characters or less.");
                 return null;
             }
             return skin;
@@ -105,13 +126,13 @@ namespace MCGalaxy.Network
             if (!url.CaselessStarts("http://") && !url.CaselessStarts("https://"))
                 url = "http://" + url;
             // a lot of people try linking to the dropbox page instead of directly to file, so auto correct
-            if (url.CaselessStarts("http://www.dropbox"))
+            if (url.CaselessStarts(DROPBOX_HTTP_PREFIX))
             {
-                url = AdjustDropbox(url, "http://www.dropbox".Length);
+                url = AdjustDropbox(url, DROPBOX_HTTP_PREFIX.Length);
             }
-            else if (url.CaselessStarts("https://www.dropbox"))
+            else if (url.CaselessStarts(DROPBOX_HTTPS_PREFIX))
             {
-                url = AdjustDropbox(url, "https://www.dropbox".Length);
+                url = AdjustDropbox(url, DROPBOX_HTTPS_PREFIX.Length);
             }
             url = url.Replace("dl.dropboxusercontent.com", "dl.dropbox.com");
         }
@@ -158,7 +179,7 @@ namespace MCGalaxy.Network
             byte[] data = null;
             try
             {
-                using (WebClient client = new())
+                using (WebClient client = CreateWebClient())
                 {
                     p.Message("Downloading file from: &f" + url);
                     data = client.DownloadData(uri);
@@ -178,7 +199,7 @@ namespace MCGalaxy.Network
                 {
                     // known error, so just log a warning
                     string logMsg = msg + url + Environment.NewLine + ex.Message;
-                    Logger.Log(6, "Error downloading " + logMsg);
+                    Logger.Log(LogType.Warning, "Error downloading " + logMsg);
                 }
                 p.Message("&WFailed to download {0}&f{1}", msg, url);
                 return null;
@@ -213,12 +234,6 @@ namespace MCGalaxy.Network
             {
                 return null;
             }
-        }
-        public static string LookupExternalIP()
-        {
-            HttpWebRequest req = CreateRequest("http://classicube.net/api/myip/");
-            using WebResponse response = req.GetResponse();
-            return GetResponseText(response);
         }
     }
 }

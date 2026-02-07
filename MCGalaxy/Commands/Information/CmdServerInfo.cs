@@ -25,8 +25,8 @@ namespace MCGalaxy.Commands.Info
         public override string Shortcut => "SInfo";
         public override string Type => CommandTypes.Information;
         public override bool UseableWhenFrozen => true;
-        public override CommandAlias[] Aliases => new[] { new CommandAlias("Host"), new("ZAll")};
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(100, "can see server host, operating system, CPU and memory usage") };
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("Host"), new("ZAll") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Admin, "can see server host, operating system, CPU and memory usage") };
         public override void Use(Player p, string message)
         {
             p.Message("About &b{0}&S", Server.Config.Name);

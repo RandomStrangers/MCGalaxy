@@ -50,7 +50,7 @@ namespace MCGalaxy.Scripting
             {
                 return match;
             }
-            Logger.Log(6, "{0} [{1}] tried to load [{2}], but it could not be found",
+            Logger.Log(LogType.Warning, "{0} [{1}] tried to load [{2}], but it could not be found",
                        IsPluginDLL(source) ? "Custom command/plugin" : "Assembly",
                        source == null ? "(unknown)" : source.FullName,
                        args.Name);
@@ -77,7 +77,7 @@ namespace MCGalaxy.Scripting
                 {
                     return assem;
                 }
-            }
+            };
             return null;
         }
         static bool IsPluginDLL(Assembly a) => string.IsNullOrEmpty(a.Location);
@@ -95,7 +95,7 @@ namespace MCGalaxy.Scripting
                 object instance = Activator.CreateInstance(t);
                 if (instance == null)
                 {
-                    Logger.Log(6, "{0} \"{1}\" could not be loaded", typeof(T).Name, t.Name);
+                    Logger.Log(LogType.Warning, "{0} \"{1}\" could not be loaded", typeof(T).Name, t.Name);
                     throw new BadImageFormatException();
                 }
                 instances.Add((T)instance);
@@ -182,7 +182,7 @@ namespace MCGalaxy.Scripting
                 Logger.LogError("Error loading commands from " + path, ex);
                 return;
             }
-            Logger.Log(1, "AUTOLOAD: Loaded {0} from {1}",
+            Logger.Log(LogType.SystemActivity, "AUTOLOAD: Loaded {0} from {1}",
                        cmds.Join(c => "/" + c.Name), Path.GetFileName(path));
         }
         /// <summary> Loads and registers all the commands from the given .dll path </summary>

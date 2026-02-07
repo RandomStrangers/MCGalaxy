@@ -5,28 +5,21 @@ using Newtonsoft.Json;
 using System;
 namespace MCGalaxy
 {
-    public class DisplayInfo
-    {
-        public Inventory inv;
-        public NASBlock nasBlock;
-        public int amountChanged;
-        public bool showToNormalChat;
-    }
-    public partial class Inventory
+    public partial class NASInventory
     {
         [JsonIgnore] public Player p;
-        [JsonIgnore] public int whereHeldBlockIsDisplayed = 13;
+        [JsonIgnore] public CpeMessageType whereHeldBlockIsDisplayed = CpeMessageType.BottomRight3;
         public int[] blocks = new int[768];
         public void Message(string message, params object[] args) => p.Message(string.Format(message, args));
-        public void Send(byte[] buffer) => p.Socket.Send(buffer, 0x00);
-        public void SendCpeMessage(int type, string message) => p.SendCpeMessage(type, message);
+        public void Send(byte[] buffer) => p.Socket.Send(buffer, SendFlags.None);
+        public void SendCpeMessage(CpeMessageType type, string message) => p.SendCpeMessage(type, message);
         public void Setup(Player p)
         {
             this.p = p;
             NASPlayer np = NASPlayer.GetPlayer(p);
             if (!np.SetInventoryNotif)
             {
-                Logger.Log(15, "Setting up inventory for {0}", np.p.truename);
+                Logger.Log(LogType.Debug, "Setting up inventory for {0}", np.p.truename);
                 np.SetInventoryNotif = true;
             }
             for (ushort clientushort = 1; clientushort <= 767; clientushort++)
@@ -50,7 +43,7 @@ namespace MCGalaxy
                 Send(Packet.SetHotbar(0, i, true));
             }
         }
-        public Drop GetDrop(Drop drop, bool showToNormalChat = false, bool overrideBool = false)
+        public NASDrop GetDrop(NASDrop drop, bool showToNormalChat = false, bool overrideBool = false)
         {
             if (drop == null)
             {
@@ -65,9 +58,9 @@ namespace MCGalaxy
             {
                 for (int i = 0; i < drop.blockStacks.Count; i++)
                 {
-                    BlockStack bs = drop.blockStacks[i];
+                    NASBlockStack bs = drop.blockStacks[i];
                     SetAmount(bs.ID, bs.amount, false);
-                    DisplayInfo info = new()
+                    NASDisplayInfo info = new()
                     {
                         inv = this,
                         nasBlock = NASBlock.Get(bs.ID),
@@ -85,7 +78,7 @@ namespace MCGalaxy
                     taskDisplayHeldBlock = Server.MainScheduler.QueueOnce(DisplayHeldBlockTask, info, TimeSpan.FromMilliseconds(i * 125));
                 }
             }
-            Drop leftovers = null;
+            NASDrop leftovers = null;
             if (drop.items != null)
             {
                 foreach (NASItem item in drop.items)
@@ -153,9 +146,16 @@ namespace MCGalaxy
             string hand = amount <= 0 ? "┤" : "╕¼";
             return "[" + amount + "] " + nasBlock.GetName(np) + " " + hand;
         }
+        public class NASDisplayInfo
+        {
+            public NASInventory inv;
+            public NASBlock nasBlock;
+            public int amountChanged;
+            public bool showToNormalChat;
+        }
         public static void DisplayHeldBlockTask(SchedulerTask task)
         {
-            DisplayInfo info = (DisplayInfo)task.State;
+            NASDisplayInfo info = (NASDisplayInfo)task.State;
             info.inv.DisplayHeldBlock(info.nasBlock, info.amountChanged, info.showToNormalChat);
         }
         public void HideBlock(ushort clientushort)

@@ -20,7 +20,7 @@ namespace MCGalaxy.Commands
         {
             if (message.CaselessStarts("bot "))
             {
-                UseBot(p, data, message, type);
+                UseBot(p, message, type);
             }
             else
             {
@@ -31,20 +31,20 @@ namespace MCGalaxy.Commands
         {
             if (message.CaselessStarts("bot "))
             {
-                UseBot(p, data, message, type);
+                UseBot(p, message, type);
             }
             else
             {
                 UsePlayer(p, data, message, type);
             }
         }
-        void UseBot(Player p, CommandData data, string message, string type)
+        void UseBot(Player p, string message, string type)
         {
             string[] args = message.SplitSpaces(3);
             PlayerBot bot = Matcher.FindBots(p, args[1]);
             if (bot == null) return;
-            if (!CheckExtraPerm(p, data, 2)) return;
-            if (!LevelInfo.Check(p, data.Rank, p.Level, "change the " + type + " of that bot")) return;
+            if (!CheckExtraPerm(p, 2)) return;
+            if (!LevelInfo.Check(p, p.Rank, p.Level, "change the " + type + " of that bot")) return;
             if (!bot.EditableBy(p, "change the " + type + " of")) { return; }
             SetBotData(p, bot, args.Length > 2 ? args[2] : "");
         }
@@ -56,7 +56,7 @@ namespace MCGalaxy.Commands
             if (name == null) return;
             Player who = PlayerInfo.FindMatches(p, name);
             if (who == null) return;
-            if (p != who && !CheckExtraPerm(p, data, 1)) return;
+            if (p != who && !CheckExtraPerm(p, 1)) return;
             if (!CheckRank(p, data, who, "change the " + type + " of", true)) return;
             SetOnlineData(p, who, args.Length > 1 ? args[1] : "");
         }
@@ -68,8 +68,8 @@ namespace MCGalaxy.Commands
             if (target == null) return;
             target = PlayerInfo.FindMatchesPreferOnline(p, target);
             if (target == null) return;
-            if (p.name != target && !CheckExtraPerm(p, data, 1)) return;
-            sbyte rank = Group.GroupIn(target).Permission;
+            if (p.name != target && !CheckExtraPerm(p, 1)) return;
+            LevelPermission rank = Group.GroupIn(target).Permission;
             if (!CheckRank(p, data, target, rank, "change the " + type + " of", true)) return;
             SetPlayerData(p, target, args.Length > 1 ? args[1] : "");
         }

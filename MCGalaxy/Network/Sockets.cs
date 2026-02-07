@@ -18,6 +18,12 @@ using System.Net;
 using System.Net.Sockets;
 namespace MCGalaxy.Network
 {
+    public enum SendFlags
+    {
+        None = 0x00,
+        Synchronous = 0x01,
+        LowPriority = 0x02,
+    }
     public delegate INetProtocol ProtocolConstructor(INetSocket socket);
     /// <summary> Abstracts sending to/receiving from a network socket </summary>
     public abstract class INetSocket
@@ -34,7 +40,7 @@ namespace MCGalaxy.Network
         /// <summary> Initialises state to begin asynchronously sending and receiving data </summary>
         public abstract void Init();
         /// <summary> Sends a block of data </summary>
-        public abstract void Send(byte[] buffer, int flags);
+        public abstract void Send(byte[] buffer, SendFlags flags);
         /// <summary> Closes this network socket </summary>
         public abstract void Close();
         protected void HandleReceived(byte[] data, int len)
@@ -81,12 +87,12 @@ namespace MCGalaxy.Network
             ProtocolConstructor cons = Protocols[opcode];
             if (cons != null) protocol = cons(this);
             if (protocol != null) return;
-            Logger.Log(3, "Disconnected {0} (unknown opcode {1})", IP, opcode);
+            Logger.Log(LogType.UserActivity, "Disconnected {0} (unknown opcode {1})", IP, opcode);
             Close();
         }
         static INetSocket()
         {
-            Protocols[0] = ConstructClassic;
+            Protocols[Opcode.Handshake] = ConstructClassic;
             Protocols['G'] = ConstructWebsocket;
         }
         static INetProtocol ConstructClassic(INetSocket socket) => new ClassicProtocol(socket);
@@ -162,15 +168,15 @@ namespace MCGalaxy.Network
             }
         }
         static readonly EventHandler<SocketAsyncEventArgs> sendCallback = SendCallback;
-        public override void Send(byte[] buffer, int flags)
+        public override void Send(byte[] buffer, SendFlags flags)
         {
             if (Disconnected || !socket.Connected) return;
             // TODO: Low priority sending support
             try
             {
-                if ((flags & 0x01) != 0)
+                if ((flags & SendFlags.Synchronous) != 0)
                 {
-                    socket.Send(buffer, 0, buffer.Length, 0);
+                    socket.Send(buffer, 0, buffer.Length, SocketFlags.None);
                     return;
                 }
                 lock (sendLock)
@@ -278,13 +284,13 @@ namespace MCGalaxy.Network
         readonly INetSocket s;
         // websocket connection may be a proxied connection
         IPAddress clientIP;
-        public WebSocket(INetSocket socket) => s = socket;
+        public WebSocket(INetSocket socket) { s = socket; }
         // Init taken care by underlying socket
         public override void Init() { }
         public override IPAddress IP => clientIP ?? s.IP;
         public override bool LowLatency { set { s.LowLatency = value; } }
-        protected override void SendRaw(byte[] data, int flags) => s.Send(data, flags);
-        public override void Send(byte[] buffer, int flags) => s.Send(WrapData(buffer), flags);
+        protected override void SendRaw(byte[] data, SendFlags flags) => s.Send(data, flags);
+        public override void Send(byte[] buffer, SendFlags flags) => s.Send(WrapData(buffer), flags);
         protected override void HandleData(byte[] data, int len) => HandleReceived(data, len);
         protected override void OnDisconnected(int reason)
         {
@@ -298,7 +304,7 @@ namespace MCGalaxy.Network
             base.OnGotHeader(name, value);
             if (name == "X-Real-IP" && Server.Config.AllowIPForwarding && IsTrustedForwarderIP())
             {
-                Logger.Log(1, "{0} is forwarding a connection from {1}", IP, value);
+                Logger.Log(LogType.SystemActivity, "{0} is forwarding a connection from {1}", IP, value);
                 IPAddress.TryParse(value, out clientIP);
             }
         }

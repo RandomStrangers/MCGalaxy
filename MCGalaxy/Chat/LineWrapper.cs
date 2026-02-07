@@ -61,7 +61,9 @@ namespace MCGalaxy
         public static List<string> Wordwrap(char[] message, int messageLen, bool supportsEmotes)
         {
             List<string> lines = new();
-            char[] line = new char[65];
+            const int limit = NetUtils.StringSize; // max characters on one line
+            const int maxLineLen = limit + 1; // +1 because need to know if length of line overshot limit
+            char[] line = new char[maxLineLen];
             bool firstLine = true;
             char lastColor = 'f';
             for (int offset = 0; offset < messageLen;)
@@ -94,7 +96,7 @@ namespace MCGalaxy
                 // Also trim leading spaces on subsequent lines
                 // (note that first line is NOT trimmed for spaces)
                 bool foundStart = firstLine;
-                for (; length < 65 && offset < messageLen;)
+                for (; length < maxLineLen && offset < messageLen;)
                 {
                     char c = message[offset++];
                     if (c != ' ' || foundStart)
@@ -103,7 +105,7 @@ namespace MCGalaxy
                         foundStart = true;
                     }
                 }
-                int lineLength = 64;
+                int lineLength = limit;
                 bool emotePad = false;
                 // Check if need to add a padding ' to line end
                 // (Lines ending in emote are trimmed by minecraft classic client)
@@ -123,7 +125,7 @@ namespace MCGalaxy
                 }
                 firstLine = false;
                 // Try to split up this line nicely
-                for (int i = lineLength - 1; i > 44; i--)
+                for (int i = lineLength - 1; i > limit - 20; i--)
                 {
                     if (!IsWrapper(line, i)) continue;
                     i++; // include line wrapper character on this line

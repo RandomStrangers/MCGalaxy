@@ -20,7 +20,7 @@ namespace MCGalaxy.Commands.World
         public override string Shortcut => "ld";
         public override string Type => CommandTypes.Other;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("WLock"), new CommandAlias("WUnlock") };
         public override void Use(Player p, string map, CommandData data)
         {

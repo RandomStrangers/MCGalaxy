@@ -22,7 +22,7 @@ namespace MCGalaxy.Commands.World
     {
         public override string Name => "Import";
         public override string Type => CommandTypes.World;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }

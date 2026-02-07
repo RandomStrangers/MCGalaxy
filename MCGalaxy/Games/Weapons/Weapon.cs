@@ -33,8 +33,8 @@ namespace MCGalaxy.Games
         {
             if (!hookedEvents)
             {
-                OnPlayerClickEvent.Register(PlayerClickCallback, 0);
-                OnBlockChangingEvent.Register(BlockChangingCallback, 0);
+                OnPlayerClickEvent.Register(PlayerClickCallback, Priority.Low);
+                OnBlockChangingEvent.Register(BlockChangingCallback, Priority.Low);
                 hookedEvents = true;
             }
             p.weaponBuffer ??= new BufferedBlockSender();
@@ -80,13 +80,13 @@ namespace MCGalaxy.Games
             Vec3F32 dir = DirUtils.GetDirVector(p.Rot.RotY, p.Rot.HeadX);
             weapon.OnActivated(dir, block);
         }
-        static void PlayerClickCallback(Player p, int btn, int action,
-                                        ushort yaw, ushort pitch, byte _,
-                                        ushort __, ushort ___, ushort ____, int _____)
+        static void PlayerClickCallback(Player p, MouseButton btn, MouseAction action,
+                                        ushort yaw, ushort pitch, byte entity,
+                                        ushort x, ushort y, ushort z, TargetBlockFace face)
         {
             Weapon weapon = p.weapon;
-            if (weapon == null || action != 0) return;
-            if (!(btn == 0 || btn == 1)) return;
+            if (weapon == null || action != MouseAction.Pressed) return;
+            if (!(btn == MouseButton.Left || btn == MouseButton.Right)) return;
             if (!p.Level.Config.Guns) { weapon.Disable(); return; }
             ushort held = p.ClientHeldBlock;
             if (!CommandParser.IsBlockAllowed(p, "use", held)) return;
@@ -109,17 +109,18 @@ namespace MCGalaxy.Games
             }
             return null;
         }
-        public static int ParseType(string type)
+        public static WeaponType ParseType(string type)
         {
-            if (type.Length == 0) return 1;
-            if (type.CaselessEq("destroy")) return 2;
-            if (type.CaselessEq("tp")) return 3;
-            if (type.CaselessEq("teleport")) return 3;
-            if (type.CaselessEq("explode")) return 4;
-            if (type.CaselessEq("laser")) return 5;
-            return 0;
+            if (type.Length == 0) return WeaponType.Normal;
+            if (type.CaselessEq("destroy")) return WeaponType.Destroy;
+            if (type.CaselessEq("tp")) return WeaponType.Teleport;
+            if (type.CaselessEq("teleport")) return WeaponType.Teleport;
+            if (type.CaselessEq("explode")) return WeaponType.Explode;
+            if (type.CaselessEq("laser")) return WeaponType.Laser;
+            return WeaponType.Invalid;
         }
     }
+    public enum WeaponType { Invalid, Normal, Destroy, Teleport, Explode, Laser };
     public class AmmunitionData
     {
         public ushort block;
@@ -177,9 +178,9 @@ namespace MCGalaxy.Games
         {
             Player p = player;
             Vec3F32 dir = DirUtils.GetDirVector(p.Rot.RotY, p.Rot.HeadX);
-            ushort x = (ushort)Math.Round(p.Pos.BlockX + dir.X * 3),
-                y = (ushort)Math.Round(p.Pos.BlockY + dir.Y * 3),
-                z = (ushort)Math.Round(p.Pos.BlockZ + dir.Z * 3);
+            ushort x = (ushort)Math.Round(p.Pos.BlockX + dir.X * 3);
+            ushort y = (ushort)Math.Round(p.Pos.BlockY + dir.Y * 3);
+            ushort z = (ushort)Math.Round(p.Pos.BlockZ + dir.Z * 3);
             int dx = Math.Sign(dir.X) >= 0 ? 1 : -1, dz = Math.Sign(dir.Z) >= 0 ? 1 : -1;
             Check(p.Level, x, y, z);
             Check(p.Level, x + dx, y, z);

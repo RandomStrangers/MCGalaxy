@@ -19,14 +19,10 @@ namespace MCGalaxy.Modules.Moderation.Notes
     public sealed class NotesPlugin : Plugin
     {
         public override string Name => "Notes";
-        static readonly Command[] cmds = new Command[] 
-        { 
-            new CmdNotes(), new CmdMyNotes(), 
-            new CmdNote(), new CmdOpNote(), 
-        };
+        static readonly Command[] cmds = new Command[] { new CmdNotes(), new CmdMyNotes(), new CmdNote(), new CmdOpNote(), };
         public override void Load(bool startup)
         {
-            OnModActionEvent.Register(HandleModerationAction, 0);
+            OnModActionEvent.Register(HandleModerationAction, Priority.Low);
             Command.Register(cmds);
             NoteAcronym.Init();
         }
@@ -38,18 +34,17 @@ namespace MCGalaxy.Modules.Moderation.Notes
         static void HandleModerationAction(ModAction action)
         {
             string acronym = NoteAcronym.GetAcronym(action);
-            if (acronym != null)
-            {
-                AddNote(action, acronym);
-            }
+            if (acronym == null) return;
+            AddNote(action, acronym);
         }
         static void AddNote(ModAction e, string type)
         {
-            if (Server.Config.LogNotes)
-            {
-                Server.Notes.Append(e.Target + " " + type + " " + e.Actor.name + " " + DateTime.UtcNow.ToString("dd/MM/yyyy") + " " +
-                              e.Reason.Replace(" ", "%20") + " " + e.Duration.Ticks);
-            }
+            if (!Server.Config.LogNotes) return;
+            string src = e.Actor.name;
+            string time = DateTime.UtcNow.ToString("dd/MM/yyyy");
+            string data = e.Target + " " + type + " " + src + " " + time + " " +
+                          e.Reason.Replace(" ", "%20") + " " + e.Duration.Ticks;
+            Server.Notes.Append(data);
         }
     }
     /// <summary>
@@ -57,7 +52,8 @@ namespace MCGalaxy.Modules.Moderation.Notes
     /// </summary>
     public class NoteAcronym
     {
-        public readonly string Acronym, Action;
+        public readonly string Acronym;
+        public readonly string Action;
         private NoteAcronym(string acronym, string action)
         {
             Acronym = acronym;
@@ -67,32 +63,26 @@ namespace MCGalaxy.Modules.Moderation.Notes
         private static readonly NoteAcronym Kicked = new("K", "Kicked");
         private static readonly NoteAcronym Muted = new("M", "Muted");
         private static readonly NoteAcronym Banned = new("B", "Banned");
-        private static readonly NoteAcronym Jailed = new("J", "Jailed");
+        private static readonly NoteAcronym Jailed = new("J", "Jailed"); // Jailing was removed, but still appears in notes for historical reasons
         private static readonly NoteAcronym Frozen = new("F", "Frozen");
         private static readonly NoteAcronym TempBanned = new("T", "Temp-Banned");
         private static readonly NoteAcronym Noted = new("N", "Noted");
         public static readonly NoteAcronym OpNoted = new("O", "OpNoted");
         static NoteAcronym[] All;
-        internal static void Init() => All = new NoteAcronym[] 
-        { 
-            Warned, Kicked, Muted, Banned, Jailed, Frozen, TempBanned, Noted, OpNoted 
-        };
+        internal static void Init() => All = new NoteAcronym[] { Warned, Kicked, Muted, Banned, Jailed, Frozen, TempBanned, Noted, OpNoted };
         /// <summary>
         /// Returns the appropriate Acronym to log when a mod action occurs.
         /// </summary>
         public static string GetAcronym(ModAction action)
         {
-            if (action.Type == 0)
+            if (action.Type == ModActionType.Ban)
             {
                 return action.Duration.Ticks != 0 ? TempBanned.Acronym : Banned.Acronym;
             }
             string modActionString = action.Type.ToString();
             foreach (NoteAcronym na in All)
             {
-                if (na.Action == modActionString) 
-                {
-                    return na.Acronym; 
-                }
+                if (na.Action == modActionString) { return na.Acronym; }
             }
             return null;
         }
@@ -103,10 +93,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
         {
             foreach (NoteAcronym na in All)
             {
-                if (na.Acronym == acronym)
-                {
-                    return na.Action;
-                }
+                if (na.Acronym == acronym) { return na.Action; }
             }
             return acronym;
         }

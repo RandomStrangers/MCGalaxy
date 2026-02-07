@@ -18,7 +18,7 @@ namespace MCGalaxy.Commands.Fun
     {
         public override string Name => "FlipHeads";
         public override string Type => CommandTypes.Other;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
             Server.flipHead = !Server.flipHead;

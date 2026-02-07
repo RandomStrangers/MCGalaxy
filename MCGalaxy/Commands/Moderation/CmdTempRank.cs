@@ -22,7 +22,7 @@ namespace MCGalaxy.Commands.Moderation
         public override string Name => "TempRank";
         public override string Shortcut => "tr";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("dtr", "delete"), new CommandAlias("trl", "list") };
         public override void Use(Player p, string message, CommandData data)
         {
@@ -68,7 +68,7 @@ namespace MCGalaxy.Commands.Moderation
             Group curRank = PlayerInfo.GetGroup(target);
             string reason = args.Length > 3 ? args[3] : "assigning temp rank";
             if (!CmdSetRank.CanChangeRank(target, curRank, newRank, p, data, ref reason)) return;
-            ModAction action = new(target, p, 9, reason, duration)
+            ModAction action = new(target, p, ModActionType.Rank, reason, duration)
             {
                 targetGroup = curRank,
                 Metadata = newRank
@@ -89,7 +89,7 @@ namespace MCGalaxy.Commands.Moderation
             if (oldRank == null) return;
             string reason = "temp rank unassigned";
             if (!CmdSetRank.CanChangeRank(target, curRank, oldRank, p, data, ref reason)) return;
-            ModAction action = new(target, p, 9, reason)
+            ModAction action = new(target, p, ModActionType.Rank, reason)
             {
                 Metadata = oldRank,
                 targetGroup = curRank

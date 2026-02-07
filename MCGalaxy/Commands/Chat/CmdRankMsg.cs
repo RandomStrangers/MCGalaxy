@@ -20,7 +20,7 @@ namespace MCGalaxy.Commands.Chatting
         public override string Name => "RankMsg";
         public override string Shortcut => "rm";
         public override string Type => CommandTypes.Chat;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override bool UseableWhenFrozen => true;
         public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
@@ -33,7 +33,7 @@ namespace MCGalaxy.Commands.Chatting
             Group grp = Matcher.FindRanks(p, rank);
             if (grp == null) return;
             string msg = grp.Color + "<" + grp.Name + ">λNICK: &f" + text;
-            Chat.MessageChat(3, p, msg, grp.Permission, null);
+            Chat.MessageChat(ChatScope.Rank, p, msg, grp.Permission, null);
         }
         public override void Help(Player p)
         {

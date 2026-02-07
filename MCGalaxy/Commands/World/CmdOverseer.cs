@@ -19,10 +19,10 @@ namespace MCGalaxy.Commands.World
         public override string Name => "Overseer";
         public override string Shortcut => Overseer.commandShortcut;
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 30;
+        public override LevelPermission DefaultRank => LevelPermission.Builder;
         public override bool SuperUseable => false;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("Realm"), new CommandAlias("MyRealm") };
-        public override int Parallelism => 1;
+        public override CommandParallelism Parallelism => CommandParallelism.NoAndWarn;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }

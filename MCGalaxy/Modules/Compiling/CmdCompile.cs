@@ -21,7 +21,7 @@ namespace MCGalaxy.Modules.Compiling
     {
         public override string Name => "Compile";
         public override string Type => CommandTypes.Other;
-        public override sbyte DefaultRank => 120;
+        public override LevelPermission DefaultRank => LevelPermission.Owner;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("PCompile", "plugin") };
         public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)

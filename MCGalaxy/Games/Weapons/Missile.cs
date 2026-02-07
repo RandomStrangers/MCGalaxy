@@ -24,7 +24,7 @@ namespace MCGalaxy.Games
     public class Missile : Weapon
     {
         public override string Name => "Missile";
-        public int type;
+        public WeaponType type;
         protected override void OnDisabled(Player p) { }
         protected override void OnActivated(Vec3F32 dir, ushort block)
         {
@@ -41,7 +41,7 @@ namespace MCGalaxy.Games
         }
         protected class MissileData : AmmunitionData
         {
-            public int type;
+            public WeaponType type;
             public Vec3U16 pos;
             public List<Vec3S32> buffer = new();
         }
@@ -58,7 +58,7 @@ namespace MCGalaxy.Games
             {
                 Vec3U16 pos = args.visible[0];
                 args.visible.RemoveAt(0);
-                p.Level.Blockchange(pos.X, pos.Y, pos.Z, 0, true);
+                p.Level.Blockchange(pos.X, pos.Y, pos.Z, Block.Air, true);
             }
             task.Repeating = args.visible.Count > 0;
         }
@@ -83,8 +83,8 @@ namespace MCGalaxy.Games
             {
                 Vec3U16 target = args.PosAt(i);
                 ushort block = p.Level.GetBlock(target.X, target.Y, target.Z);
-                if (block == 0xff) break;
-                if (block != 0 && !args.all.Contains(target)) break;
+                if (block == Block.Invalid) break;
+                if (block != Block.Air && !args.all.Contains(target)) break;
                 Player hit = PlayerAt(p, target, true);
                 if (hit != null) return (Vec3U16)hit.Pos.BlockCoords;
             }
@@ -93,13 +93,13 @@ namespace MCGalaxy.Games
         bool MoveMissile(MissileData args, Vec3U16 pos, Vec3U16 target)
         {
             ushort block = p.Level.GetBlock(pos.X, pos.Y, pos.Z);
-            if (block != 0 && !args.all.Contains(pos) && OnHitBlock(args, pos, block))
+            if (block != Block.Air && !args.all.Contains(pos) && OnHitBlock(args, pos, block))
                 return false;
             p.Level.Blockchange(pos.X, pos.Y, pos.Z, args.block);
             args.visible.Add(pos);
             args.all.Add(pos);
             if (HitsPlayer(args, pos)) return false;
-            if (pos.X == target.X && pos.Y == target.Y && pos.Z == target.Z && p.Level.LevelPhysics >= 3 && args.type >= 4)
+            if (pos == target && p.Level.LevelPhysics >= 3 && args.type >= WeaponType.Explode)
             {
                 p.Level.MakeExplosion(target.X, target.Y, target.Z, 2);
                 return false;
@@ -107,7 +107,7 @@ namespace MCGalaxy.Games
             if (args.visible.Count > 12)
             {
                 pos = args.visible[0];
-                p.Level.Blockchange(pos.X, pos.Y, pos.Z, 0, true);
+                p.Level.Blockchange(pos.X, pos.Y, pos.Z, Block.Air, true);
                 args.visible.RemoveAt(0);
             }
             return true;
@@ -123,9 +123,7 @@ namespace MCGalaxy.Games
         {
             LineDrawOp.DrawLine(pos.X, pos.Y, pos.Z, 2, lookedAt.X, lookedAt.Y, lookedAt.Z, buffer);
             Vec3U16 end = (Vec3U16)buffer[buffer.Count - 1];
-            pos.X = end.X; 
-            pos.Y = end.Y; 
-            pos.Z = end.Z;
+            pos.X = end.X; pos.Y = end.Y; pos.Z = end.Z;
             buffer.Clear();
         }
     }
@@ -137,7 +135,7 @@ namespace MCGalaxy.Games
             if (p.Level.LevelPhysics < 2) return true;
             if (!p.Level.Props[block].LavaKills) return true;
             // Penetrative missile goes through blocks lava can go through
-            p.Level.Blockchange(pos.X, pos.Y, pos.Z, 0);
+            p.Level.Blockchange(pos.X, pos.Y, pos.Z, Block.Air);
             return false;
         }
     }
@@ -148,7 +146,7 @@ namespace MCGalaxy.Games
         {
             if (pl.Level.LevelPhysics >= 3)
             {
-                pl.HandleDeath(4, "@p &Swas blown up by " + p.ColoredName, true);
+                pl.HandleDeath(Block.Cobblestone, "@p &Swas blown up by " + p.ColoredName, true);
             }
             else
             {

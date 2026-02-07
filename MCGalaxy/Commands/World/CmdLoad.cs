@@ -18,7 +18,7 @@ namespace MCGalaxy.Commands.World
     {
         public override string Name => "Load";
         public override string Type => CommandTypes.World;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("MapLoad"), new CommandAlias("WLoad") };
         public override void Use(Player p, string message, CommandData data)
         {

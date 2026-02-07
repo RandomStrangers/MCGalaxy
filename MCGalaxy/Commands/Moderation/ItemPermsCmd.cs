@@ -17,7 +17,7 @@ namespace MCGalaxy.Commands.Moderation
     public abstract class ItemPermsCmd : Command2
     {
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         protected string SetPerms(Player p, string[] args, CommandData data, ItemPerms perms, string type,
                                 string actionNoun, string actionAdjective)
         {

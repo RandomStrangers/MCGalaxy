@@ -12,7 +12,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using MCGalaxy.Games;
 namespace MCGalaxy.Commands.World
 {
     public sealed class CmdMain : Command2
@@ -20,7 +19,7 @@ namespace MCGalaxy.Commands.World
         public override string Name => "Main";
         public override string Shortcut => "h";
         public override string Type => CommandTypes.World;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(100, "can change the main level") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Admin, "can change the main level") };
         public override CommandAlias[] Aliases => new[] { new CommandAlias("WMain"), new CommandAlias("WorldMain") };
         public override void Use(Player p, string message, CommandData data)
         {
@@ -32,10 +31,7 @@ namespace MCGalaxy.Commands.World
                 }
                 else if (p.Level == Server.mainLevel)
                 {
-                    if (IGame.CheckAllowed(p, "use &T/Main"))
-                    {
-                        PlayerActions.Respawn(p);
-                    }
+                    PlayerActions.Respawn(p);
                 }
                 else
                 {
@@ -44,32 +40,37 @@ namespace MCGalaxy.Commands.World
             }
             else
             {
-                if (CheckExtraPerm(p, data, 1))
+                if (!CheckExtraPerm(p, 1))
                 {
-                    if (Formatter.ValidMapName(p, message))
-                    {
-                        if (LevelInfo.Check(p, data.Rank, Server.mainLevel, "set main to another map"))
-                        {
-                            if (data.Context == 4)
-                            {
-                                p.Message("&WSetting the main map with a message block is not allowed.", Name);
-                                return;
-                            }
-                            string map = Matcher.FindMaps(p, message);
-                            if (map != null)
-                            {
-                                if (LevelInfo.Check(p, data.Rank, map, "set main to this map", out _))
-                                {
-                                    Server.SetMainLevel(map);
-                                    Server.Config.MainLevel = map;
-                                    SrvProperties.Save();
-                                    p.Message("Set main level to {0}",
-                                              LevelInfo.GetConfig(map).Color + map);
-                                }
-                            }
-                        }
-                    }
+                    return;
                 }
+                if (!Formatter.ValidMapName(p, message))
+                {
+                    return;
+                }
+                if (!LevelInfo.Check(p, p.Rank, Server.mainLevel, "set main to another map"))
+                {
+                    return;
+                }
+                if (data.Context == CommandContext.MessageBlock)
+                {
+                    p.Message("&WSetting the main map with a message block is not allowed.", Name);
+                    return;
+                }
+                string map = Matcher.FindMaps(p, message);
+                if (map == null)
+                {
+                    return;
+                }
+                if (!LevelInfo.Check(p, p.Rank, map, "set main to this map"))
+                {
+                    return;
+                }
+                Server.SetMainLevel(map);
+                Server.Config.MainLevel = map;
+                SrvProperties.Save();
+                p.Message("Set main level to {0}",
+                          LevelInfo.GetConfig(map).Color + map);
             }
         }
         public override void Help(Player p)

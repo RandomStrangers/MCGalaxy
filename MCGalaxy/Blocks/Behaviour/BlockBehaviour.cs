@@ -17,10 +17,10 @@ namespace MCGalaxy.Blocks
 {
     /// <summary> Handles the player deleting a block at the given coordinates. </summary>
     /// <remarks> Use p.ChangeBlock to do a normal player block change (adds to BlockDB, updates dirt/grass beneath) </remarks>
-    public delegate int HandleDelete(Player p, ushort oldBlock, ushort x, ushort y, ushort z);
+    public delegate ChangeResult HandleDelete(Player p, ushort oldBlock, ushort x, ushort y, ushort z);
     /// <summary> Handles the player placing a block at the given coordinates. </summary>
     /// <remarks> Use p.ChangeBlock to do a normal player block change (adds to BlockDB, updates dirt/grass beneath) </remarks>
-    public delegate int HandlePlace(Player p, ushort newBlock, ushort x, ushort y, ushort z);
+    public delegate ChangeResult HandlePlace(Player p, ushort newBlock, ushort x, ushort y, ushort z);
     /// <summary> Returns whether this block handles the player walking through this block at the given coordinates. </summary>
     /// <remarks> If this returns false, continues trying other walkthrough blocks the player is touching. </remarks>
     public delegate bool HandleWalkthrough(Player p, ushort block, ushort x, ushort y, ushort z);
@@ -33,12 +33,12 @@ namespace MCGalaxy.Blocks
         {
             switch (block)
             {
-                case 74: return PlaceBehaviour.C4;
-                case 75: return PlaceBehaviour.C4Det;
+                case Block.C4: return PlaceBehaviour.C4;
+                case Block.C4Detonator: return PlaceBehaviour.C4Det;
             }
-            if (props[block].GrassBlock != 0xff) return PlaceBehaviour.DirtGrow;
-            if (props[block].DirtBlock != 0xff) return PlaceBehaviour.GrassDie;
-            if (props[block].StackBlock != 0) return PlaceBehaviour.Stack;
+            if (props[block].GrassBlock != Block.Invalid) return PlaceBehaviour.DirtGrow;
+            if (props[block].DirtBlock != Block.Invalid) return PlaceBehaviour.GrassDie;
+            if (props[block].StackBlock != Block.Air) return PlaceBehaviour.Stack;
             return null;
         }
         // NOTE: These static declarations are just to save a few memory allocations
@@ -53,18 +53,18 @@ namespace MCGalaxy.Blocks
         {
             switch (block)
             {
-                case 187: return DeleteBehaviour.RocketStart;
-                case 189: return DeleteBehaviour.Firework;
-                case 75: return DeleteBehaviour.C4Det;
-                case 201: return DB_revert;
-                case 212: return DB_revert;
-                case 211: return DB_revert;
+                case Block.RocketStart: return DeleteBehaviour.RocketStart;
+                case Block.Fireworks: return DeleteBehaviour.Firework;
+                case Block.C4Detonator: return DeleteBehaviour.C4Det;
+                case Block.Door_Log_air: return DB_revert;
+                case Block.Door_TNT_air: return DB_revert;
+                case Block.Door_Green_air: return DB_revert;
             }
             // NOTE: If this gets changed, make sure to change BlockOptions.cs too
             if (props[block].IsMessageBlock) return DeleteBehaviour.DoMessageBlock;
             if (props[block].IsPortal) return DeleteBehaviour.DoPortal;
             if (props[block].IsTDoor) return DB_revert;
-            if (props[block].oDoorBlock != 0xff) return DB_oDoor;
+            if (props[block].oDoorBlock != Block.Invalid) return DB_oDoor;
             if (props[block].IsDoor) return DB_Door;
             return null;
         }
@@ -73,11 +73,11 @@ namespace MCGalaxy.Blocks
         {
             switch (block)
             {
-                case 197: return WalkthroughBehaviour.Checkpoint;
-                case 165: return WalkthroughBehaviour.Door;
-                case 166: return WalkthroughBehaviour.Door;
-                case 167: return WalkthroughBehaviour.Door;
-                case 230: return WalkthroughBehaviour.Train;
+                case Block.Checkpoint: return WalkthroughBehaviour.Checkpoint;
+                case Block.Door_AirActivatable: return WalkthroughBehaviour.Door;
+                case Block.Door_Water: return WalkthroughBehaviour.Door;
+                case Block.Door_Lava: return WalkthroughBehaviour.Door;
+                case Block.Train: return WalkthroughBehaviour.Train;
             }
             if (props[block].IsMessageBlock && nonSolid) return WalkthroughBehaviour.DoMessageBlock;
             if (props[block].IsPortal && nonSolid) return WalkthroughBehaviour.DoPortal;
@@ -92,77 +92,77 @@ namespace MCGalaxy.Blocks
         {
             switch (block)
             {
-                case 201: return PH_do_Door;
-                case 212: return PH_do_Door;
-                case 211: return PH_do_Door;
-                case 252: return SnakePhysics.DoTail;
-                case 251: return SnakePhysics.Do;
-                case 188: return RocketPhysics.Do;
-                case 189: return FireworkPhysics.Do;
-                case 232: return ZombiePhysics.Do;
-                case 233: return ZombiePhysics.DoHead;
-                case 231: return ZombiePhysics.Do;
-                case 8: return SimpleLiquidPhysics.DoWater;
-                case 193: return SimpleLiquidPhysics.DoWater;
-                case 10: return SimpleLiquidPhysics.DoLava;
-                case 194: return SimpleLiquidPhysics.DoLava;
-                case 140: return ExtLiquidPhysics.DoWaterfall;
-                case 141: return ExtLiquidPhysics.DoLavafall;
-                case 143:
+                case Block.Door_Log_air: return PH_do_Door;
+                case Block.Door_TNT_air: return PH_do_Door;
+                case Block.Door_Green_air: return PH_do_Door;
+                case Block.SnakeTail: return SnakePhysics.DoTail;
+                case Block.Snake: return SnakePhysics.Do;
+                case Block.RocketHead: return RocketPhysics.Do;
+                case Block.Fireworks: return FireworkPhysics.Do;
+                case Block.ZombieBody: return ZombiePhysics.Do;
+                case Block.ZombieHead: return ZombiePhysics.DoHead;
+                case Block.Creeper: return ZombiePhysics.Do;
+                case Block.Water: return SimpleLiquidPhysics.DoWater;
+                case Block.Deadly_ActiveWater: return SimpleLiquidPhysics.DoWater;
+                case Block.Lava: return SimpleLiquidPhysics.DoLava;
+                case Block.Deadly_ActiveLava: return SimpleLiquidPhysics.DoLava;
+                case Block.WaterDown: return ExtLiquidPhysics.DoWaterfall;
+                case Block.LavaDown: return ExtLiquidPhysics.DoLavafall;
+                case Block.WaterFaucet:
                     return (Level lvl, ref PhysInfo C) =>
-                    ExtLiquidPhysics.DoFaucet(lvl, ref C, 140);
-                case 144:
+                    ExtLiquidPhysics.DoFaucet(lvl, ref C, Block.WaterDown);
+                case Block.LavaFaucet:
                     return (Level lvl, ref PhysInfo C) =>
-                    ExtLiquidPhysics.DoFaucet(lvl, ref C, 141);
-                case 145: return FinitePhysics.DoWaterOrLava;
-                case 146: return FinitePhysics.DoWaterOrLava;
-                case 147: return FinitePhysics.DoFaucet;
-                case 195: return ExtLiquidPhysics.DoMagma;
-                case 196: return ExtLiquidPhysics.DoGeyser;
-                case 112: return SimpleLiquidPhysics.DoFastLava;
-                case 73: return SimpleLiquidPhysics.DoFastLava;
-                case 0: return AirPhysics.DoAir;
-                case 18: return LeafPhysics.DoLeaf;
-                case 17: return LeafPhysics.DoLog;
-                case 6: return OtherPhysics.DoShrub;
-                case 54: return FirePhysics.Do;
-                case 185: return FirePhysics.Do;
-                case 12: return OtherPhysics.DoFalling;
-                case 13: return OtherPhysics.DoFalling;
-                case 110: return OtherPhysics.DoFloatwood;
-                case 19:
+                    ExtLiquidPhysics.DoFaucet(lvl, ref C, Block.LavaDown);
+                case Block.FiniteWater: return FinitePhysics.DoWaterOrLava;
+                case Block.FiniteLava: return FinitePhysics.DoWaterOrLava;
+                case Block.FiniteFaucet: return FinitePhysics.DoFaucet;
+                case Block.Magma: return ExtLiquidPhysics.DoMagma;
+                case Block.Geyser: return ExtLiquidPhysics.DoGeyser;
+                case Block.FastLava: return SimpleLiquidPhysics.DoFastLava;
+                case Block.Deadly_FastLava: return SimpleLiquidPhysics.DoFastLava;
+                case Block.Air: return AirPhysics.DoAir;
+                case Block.Leaves: return LeafPhysics.DoLeaf;
+                case Block.Log: return LeafPhysics.DoLog;
+                case Block.Sapling: return OtherPhysics.DoShrub;
+                case Block.Fire: return FirePhysics.Do;
+                case Block.LavaFire: return FirePhysics.Do;
+                case Block.Sand: return OtherPhysics.DoFalling;
+                case Block.Gravel: return OtherPhysics.DoFalling;
+                case Block.FloatWood: return OtherPhysics.DoFloatwood;
+                case Block.Sponge:
                     return (Level lvl, ref PhysInfo C) =>
                     OtherPhysics.DoSponge(lvl, ref C, false);
-                case 109:
+                case Block.LavaSponge:
                     return (Level lvl, ref PhysInfo C) =>
                     OtherPhysics.DoSponge(lvl, ref C, true);
                 // Special blocks that are not saved
-                case 200:
+                case Block.Air_Flood:
                     return (Level lvl, ref PhysInfo C) =>
-                    AirPhysics.DoFlood(lvl, ref C, 0, 200);
-                case 202:
+                    AirPhysics.DoFlood(lvl, ref C, AirFlood.Full, Block.Air_Flood);
+                case Block.Air_FloodLayer:
                     return (Level lvl, ref PhysInfo C) =>
-                    AirPhysics.DoFlood(lvl, ref C, 1, 202);
-                case 203:
+                    AirPhysics.DoFlood(lvl, ref C, AirFlood.Layer, Block.Air_FloodLayer);
+                case Block.Air_FloodDown:
                     return (Level lvl, ref PhysInfo C) =>
-                    AirPhysics.DoFlood(lvl, ref C, 2, 203);
-                case 204:
+                    AirPhysics.DoFlood(lvl, ref C, AirFlood.Down, Block.Air_FloodDown);
+                case Block.Air_FloodUp:
                     return (Level lvl, ref PhysInfo C) =>
-                    AirPhysics.DoFlood(lvl, ref C, 3, 204);
-                case 182: return TntPhysics.DoSmallTnt;
-                case 183: return TntPhysics.DoBigTnt;
-                case 186: return TntPhysics.DoNukeTnt;
-                case 184: return TntPhysics.DoTntExplosion;
-                case 230: return TrainPhysics.Do;
+                    AirPhysics.DoFlood(lvl, ref C, AirFlood.Up, Block.Air_FloodUp);
+                case Block.TNT_Small: return TntPhysics.DoSmallTnt;
+                case Block.TNT_Big: return TntPhysics.DoBigTnt;
+                case Block.TNT_Nuke: return TntPhysics.DoNukeTnt;
+                case Block.TNT_Explosion: return TntPhysics.DoTntExplosion;
+                case Block.Train: return TrainPhysics.Do;
             }
             HandlePhysics animalAI = AnimalAIHandler(props[block].AnimalAI);
             if (animalAI != null) return animalAI;
-            if (props[block].oDoorBlock != 0xff) return PH_do_oDoor;
-            if (props[block].GrassBlock != 0xff) return OtherPhysics.DoDirtGrow;
-            if (props[block].DirtBlock != 0xff) return OtherPhysics.DoGrassDie;
+            if (props[block].oDoorBlock != Block.Invalid) return PH_do_oDoor;
+            if (props[block].GrassBlock != Block.Invalid) return OtherPhysics.DoDirtGrow;
+            if (props[block].DirtBlock != Block.Invalid) return OtherPhysics.DoGrassDie;
             // TODO: should this be checking WaterKills/LavaKills
             // Adv physics updating anything placed next to water or lava
-            if ((block >= 21 && block <= 40) || block == 5 || block == 17 || block == 47)
+            if ((block >= Block.Red && block <= Block.RedMushroom) || block == Block.Wood || block == Block.Log || block == Block.Bookshelf)
             {
                 return PH_do_Other;
             }
@@ -171,39 +171,39 @@ namespace MCGalaxy.Blocks
         /// <summary> Retrieves the default physics block handler for the given block. </summary>
         internal static HandlePhysics GetPhysicsDoorsHandler(ushort block, BlockProps[] props)
         {
-            if (block == 0) return PH_do_Door;
-            if (block == 201) return PH_do_Door;
-            if (block == 212) return PH_do_Door;
-            if (block == 211) return PH_do_Door;
-            if (props[block].oDoorBlock != 0xff) return PH_do_oDoor;
+            if (block == Block.Air) return PH_do_Door;
+            if (block == Block.Door_Log_air) return PH_do_Door;
+            if (block == Block.Door_TNT_air) return PH_do_Door;
+            if (block == Block.Door_Green_air) return PH_do_Door;
+            if (props[block].oDoorBlock != Block.Invalid) return PH_do_oDoor;
             return null;
         }
-        static HandlePhysics AnimalAIHandler(int ai)
+        static HandlePhysics AnimalAIHandler(AnimalAI ai)
         {
-            if (ai == 1) return BirdPhysics.Do;
-            if (ai == 2)
+            if (ai == AnimalAI.Fly) return BirdPhysics.Do;
+            if (ai == AnimalAI.FleeAir)
             {
-                return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, 0, -1);
+                return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, Block.Air, -1);
             }
-            else if (ai == 4)
+            else if (ai == AnimalAI.FleeWater)
             {
-                return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, 8, -1);
+                return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, Block.Water, -1);
             }
-            else if (ai == 6)
+            else if (ai == AnimalAI.FleeLava)
             {
-                return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, 10, -1);
+                return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, Block.Lava, -1);
             }
-            if (ai == 3)
+            if (ai == AnimalAI.KillerAir)
             {
-                return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, 0, 1);
+                return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, Block.Air, 1);
             }
-            else if (ai == 5)
+            else if (ai == AnimalAI.KillerWater)
             {
-                return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, 8, 1);
+                return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, Block.Water, 1);
             }
-            else if (ai == 7)
+            else if (ai == AnimalAI.KillerLava)
             {
-                return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, 10, 1);
+                return (Level lvl, ref PhysInfo C) => HunterPhysics.Do(lvl, ref C, Block.Lava, 1);
             }
             return null;
         }

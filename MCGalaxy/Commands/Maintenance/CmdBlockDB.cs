@@ -20,7 +20,7 @@ namespace MCGalaxy.Commands.Maintenance
         public override string Name => "BlockDB";
         public override string Type => CommandTypes.World;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("ClearBlockChanges", "clear"),
                     new CommandAlias("cbc", "clear") };
         public override bool MessageBlockRestricted => true;

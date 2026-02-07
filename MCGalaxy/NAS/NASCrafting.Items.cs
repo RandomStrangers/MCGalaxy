@@ -1,10 +1,10 @@
 namespace MCGalaxy
 {
-    public partial class Crafting
+    public partial class NASCrafting
     {
         public static void SetupItems()
         {
-            Recipe woodPickaxe = new(new("Wood Pickaxe"))
+            NASRecipe woodPickaxe = new(new("Wood Pickaxe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -13,7 +13,7 @@ namespace MCGalaxy
                     {  0, 78, 0 }
                 }
             };
-            Recipe stonePickaxe = new(new("Stone Pickaxe"))
+            NASRecipe stonePickaxe = new(new("Stone Pickaxe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -22,7 +22,7 @@ namespace MCGalaxy
                     {  0, 78, 0 }
                 }
             };
-            Recipe stoneShovel = new(new("Stone Shovel"))
+            NASRecipe stoneShovel = new(new("Stone Shovel"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -31,7 +31,7 @@ namespace MCGalaxy
                     {  78 }
                 }
             };
-            Recipe stoneAxe = new(new("Stone Axe"))
+            NASRecipe stoneAxe = new(new("Stone Axe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -40,7 +40,7 @@ namespace MCGalaxy
                     {  0, 78 }
                 }
             };
-            Recipe stoneSword = new(new("Stone Sword"))
+            NASRecipe stoneSword = new(new("Stone Sword"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -49,7 +49,7 @@ namespace MCGalaxy
                     { 78 }
                 }
             };
-            Recipe ironPickaxe = new(new("Iron Pickaxe"))
+            NASRecipe ironPickaxe = new(new("Iron Pickaxe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -58,7 +58,7 @@ namespace MCGalaxy
                     {  0, 78, 0 }
                 }
             };
-            Recipe ironShovel = new(new("Iron Shovel"))
+            NASRecipe ironShovel = new(new("Iron Shovel"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -67,7 +67,7 @@ namespace MCGalaxy
                     {  78 }
                 }
             };
-            Recipe ironAxe = new(new("Iron Axe"))
+            NASRecipe ironAxe = new(new("Iron Axe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -76,7 +76,7 @@ namespace MCGalaxy
                     {  0, 78 }
                 }
             };
-            Recipe ironSword = new(new("Iron Sword"))
+            NASRecipe ironSword = new(new("Iron Sword"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -85,14 +85,14 @@ namespace MCGalaxy
                     { 78 }
                 }
             };
-            Recipe ironhelm = new(new("Iron Helmet"))
+            NASRecipe ironhelm = new(new("Iron Helmet"))
             {
                 pattern = new ushort[,] {
                     { 42, 42, 42 },
                     { 42, 0, 42 },
                 }
             };
-            Recipe ironchest = new(new("Iron Chestplate"))
+            NASRecipe ironchest = new(new("Iron Chestplate"))
             {
                 pattern = new ushort[,] {
                     { 42, 0, 42 },
@@ -100,7 +100,7 @@ namespace MCGalaxy
                     { 42, 42, 42 },
                 }
             };
-            Recipe ironlegs = new(new("Iron Leggings"))
+            NASRecipe ironlegs = new(new("Iron Leggings"))
             {
                 pattern = new ushort[,] {
                     { 42, 42, 42 },
@@ -108,14 +108,14 @@ namespace MCGalaxy
                     { 42, 0, 42 },
                 }
             };
-            Recipe ironboots = new(new("Iron Boots"))
+            NASRecipe ironboots = new(new("Iron Boots"))
             {
                 pattern = new ushort[,] {
                     { 42, 0, 42 },
                     { 42, 0, 42 },
                 }
             };
-            Recipe goldPickaxe = new(new("Gold Pickaxe"))
+            NASRecipe goldPickaxe = new(new("Gold Pickaxe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -124,7 +124,7 @@ namespace MCGalaxy
                     {  0, 78, 0 }
                 }
             };
-            Recipe goldShovel = new(new("Gold Shovel"))
+            NASRecipe goldShovel = new(new("Gold Shovel"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -133,7 +133,7 @@ namespace MCGalaxy
                     {  78 }
                 }
             };
-            Recipe goldAxe = new(new("Gold Axe"))
+            NASRecipe goldAxe = new(new("Gold Axe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -142,7 +142,7 @@ namespace MCGalaxy
                     {  0, 78 }
                 }
             };
-            Recipe goldSword = new(new("Gold Sword"))
+            NASRecipe goldSword = new(new("Gold Sword"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -151,14 +151,14 @@ namespace MCGalaxy
                     { 78 }
                 }
             };
-            Recipe goldhelm = new(new("Gold Helmet"))
+            NASRecipe goldhelm = new(new("Gold Helmet"))
             {
                 pattern = new ushort[,] {
                     { 41, 41, 41 },
                     { 41, 0, 41 },
                 }
             };
-            Recipe goldchest = new(new("Gold Chestplate"))
+            NASRecipe goldchest = new(new("Gold Chestplate"))
             {
                 pattern = new ushort[,] {
                     { 41, 0, 41 },
@@ -166,7 +166,7 @@ namespace MCGalaxy
                     { 41, 41, 41 },
                 }
             };
-            Recipe goldlegs = new(new("Gold Leggings"))
+            NASRecipe goldlegs = new(new("Gold Leggings"))
             {
                 pattern = new ushort[,] {
                     { 41, 41, 41 },
@@ -174,14 +174,14 @@ namespace MCGalaxy
                     { 41, 0, 41 },
                 }
             };
-            Recipe goldboots = new(new("Gold Boots"))
+            NASRecipe goldboots = new(new("Gold Boots"))
             {
                 pattern = new ushort[,] {
                     { 41, 0, 41 },
                     { 41, 0, 41 },
                 }
             };
-            Recipe diamondPickaxe = new(new("Diamond Pickaxe"))
+            NASRecipe diamondPickaxe = new(new("Diamond Pickaxe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -190,7 +190,7 @@ namespace MCGalaxy
                     {  0, 78, 0 }
                 }
             };
-            Recipe diamondShovel = new(new("Diamond Shovel"))
+            NASRecipe diamondShovel = new(new("Diamond Shovel"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -199,7 +199,7 @@ namespace MCGalaxy
                     {  78 }
                 }
             };
-            Recipe diamondAxe = new(new("Diamond Axe"))
+            NASRecipe diamondAxe = new(new("Diamond Axe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -208,7 +208,7 @@ namespace MCGalaxy
                     {  0, 78 }
                 }
             };
-            Recipe diamondSword = new(new("Diamond Sword"))
+            NASRecipe diamondSword = new(new("Diamond Sword"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -217,14 +217,14 @@ namespace MCGalaxy
                     { 78 }
                 }
             };
-            Recipe diamondhelm = new(new("Diamond Helmet"))
+            NASRecipe diamondhelm = new(new("Diamond Helmet"))
             {
                 pattern = new ushort[,] {
                     { 631, 631, 631 },
                     { 631, 0, 631 },
                 }
             };
-            Recipe diamondchest = new(new("Diamond Chestplate"))
+            NASRecipe diamondchest = new(new("Diamond Chestplate"))
             {
                 pattern = new ushort[,] {
                     { 631, 0, 631 },
@@ -232,7 +232,7 @@ namespace MCGalaxy
                     { 631, 631, 631 },
                 }
             };
-            Recipe diamondlegs = new(new("Diamond Leggings"))
+            NASRecipe diamondlegs = new(new("Diamond Leggings"))
             {
                 pattern = new ushort[,] {
                     { 631, 631, 631 },
@@ -240,14 +240,14 @@ namespace MCGalaxy
                     { 631, 0, 631 },
                 }
             };
-            Recipe diamondboots = new(new("Diamond Boots"))
+            NASRecipe diamondboots = new(new("Diamond Boots"))
             {
                 pattern = new ushort[,] {
                     { 631, 0, 631 },
                     { 631, 0, 631 },
                 }
             };
-            Recipe emeraldPickaxe = new(new("Emerald Pickaxe"))
+            NASRecipe emeraldPickaxe = new(new("Emerald Pickaxe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -256,7 +256,7 @@ namespace MCGalaxy
                     {  0, 78, 0 }
                 }
             };
-            Recipe emeraldShovel = new(new("Emerald Shovel"))
+            NASRecipe emeraldShovel = new(new("Emerald Shovel"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -265,7 +265,7 @@ namespace MCGalaxy
                     {  78 }
                 }
             };
-            Recipe emeraldAxe = new(new("Emerald Axe"))
+            NASRecipe emeraldAxe = new(new("Emerald Axe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -274,7 +274,7 @@ namespace MCGalaxy
                     {  0, 78 }
                 }
             };
-            Recipe emeraldSword = new(new("Emerald Sword"))
+            NASRecipe emeraldSword = new(new("Emerald Sword"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -283,14 +283,14 @@ namespace MCGalaxy
                     { 78 }
                 }
             };
-            Recipe emeraldhelm = new(new("Emerald Helmet"))
+            NASRecipe emeraldhelm = new(new("Emerald Helmet"))
             {
                 pattern = new ushort[,] {
                     { 650, 650, 650 },
                     { 650, 0, 650 },
                 }
             };
-            Recipe emeraldchest = new(new("Emerald Chestplate"))
+            NASRecipe emeraldchest = new(new("Emerald Chestplate"))
             {
                 pattern = new ushort[,] {
                     { 650, 0, 650 },
@@ -298,7 +298,7 @@ namespace MCGalaxy
                     { 650, 650, 650 },
                 }
             };
-            Recipe emeraldlegs = new(new("Emerald Leggings"))
+            NASRecipe emeraldlegs = new(new("Emerald Leggings"))
             {
                 pattern = new ushort[,] {
                     { 650, 650, 650 },
@@ -306,14 +306,14 @@ namespace MCGalaxy
                     { 650, 0, 650 },
                 }
             };
-            Recipe emeraldboots = new(new("Emerald Boots"))
+            NASRecipe emeraldboots = new(new("Emerald Boots"))
             {
                 pattern = new ushort[,] {
                     { 650, 0, 650 },
                     { 650, 0, 650 },
                 }
             };
-            Recipe key = new(new("Key"))
+            NASRecipe key = new(new("Key"))
             {
                 usesParentID = true,
                 pattern = new ushort[,] {
@@ -322,14 +322,14 @@ namespace MCGalaxy
                     {  149, 148,  0  }
                 }
             };
-            Recipe shears = new(new("Shears"))
+            NASRecipe shears = new(new("Shears"))
             {
                 pattern = new ushort[,] {
                     {  0, 42 },
                     {  42, 0 }
                 }
             };
-            Recipe fishing = new(new("Fishing Rod"))
+            NASRecipe fishing = new(new("Fishing Rod"))
             {
                 usesParentID = true,
                 usesAlternateID = true,

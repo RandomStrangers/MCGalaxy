@@ -15,21 +15,21 @@
 using MCGalaxy.Bots;
 namespace MCGalaxy.Commands.Bots
 {
-    public sealed class CmdBotSet : Command2
+    public sealed class CmdBotSet : Command
     {
         public override string Name => "BotSet";
         public override string Type => CommandTypes.Other;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override bool SuperUseable => false;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can set bots to be killer") };
-        public override void Use(Player p, string message, CommandData data)
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can set bots to be killer") };
+        public override void Use(Player p, string message)
         {
             if (message.Length == 0) { Help(p); return; }
             string[] args = message.SplitSpaces();
             PlayerBot bot = Matcher.FindBots(p, args[0]);
             if (bot == null) return;
-            if (!LevelInfo.Check(p, data.Rank, p.Level, "change AI of bots in this level")) return;
+            if (!LevelInfo.Check(p, p.Rank, p.Level, "change AI of bots in this level")) return;
             if (!bot.EditableBy(p, "change the AI of")) { return; }
             if (args.Length == 1)
             {
@@ -55,7 +55,7 @@ namespace MCGalaxy.Commands.Bots
             }
             else if (ai.CaselessEq("kill"))
             {
-                if (!CheckExtraPerm(p, data, 1)) return;
+                if (!CheckExtraPerm(p, 1)) return;
                 bot.kill = !bot.kill;
                 UpdateBot(p, bot, "'s kill instinct: " + bot.kill);
                 return;
@@ -66,7 +66,7 @@ namespace MCGalaxy.Commands.Bots
         static void UpdateBot(Player p, PlayerBot bot, string msg)
         {
             p.Message(bot.ColoredName + "&S" + msg);
-            Logger.Log(3, bot.name + msg);
+            Logger.Log(LogType.UserActivity, bot.name + msg);
             BotsFile.Save(p.Level);
         }
         public override void Help(Player p)

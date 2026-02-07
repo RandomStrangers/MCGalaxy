@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.Moderation
         public override string Name => "BanEdit";
         public override string Shortcut => "be";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(2);

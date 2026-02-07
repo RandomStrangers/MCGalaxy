@@ -41,7 +41,7 @@ namespace MCGalaxy
                 def = BlockDefinition.GlobalDefs[block];
             }
             if (def != null) return def.Name.Replace(" ", "");
-            return block < 66 ? coreNames[block] : ToRaw(block).ToString();
+            return block < CPE_COUNT ? coreNames[block] : ToRaw(block).ToString();
         }
         public static ushort Parse(Player p, string input)
         {
@@ -49,7 +49,7 @@ namespace MCGalaxy
             // raw ID is treated specially, before names
             if (ushort.TryParse(input, out ushort block))
             {
-                if (block < 66 || (block <= MaxRaw && defs[FromRaw(block)] != null))
+                if (block < CPE_COUNT || (block <= MaxRaw && defs[FromRaw(block)] != null))
                 {
                     return FromRaw(block);
                 } // TODO redo to use ExistsFor?

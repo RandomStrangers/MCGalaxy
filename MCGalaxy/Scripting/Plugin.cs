@@ -34,6 +34,10 @@ namespace MCGalaxy
         public abstract string Name { get; }
         /// <summary> The oldest version of MCGalaxy this plugin is compatible with. </summary>
         public virtual string MCGalaxy_Version => null;
+        /// <summary> Version of this plugin. </summary>
+        public virtual int Build => 0;
+        /// <summary> The creator/author of this plugin. (Your name) </summary>
+        public virtual string Creator => "";
         /// <summary> Whether or not to auto load this plugin on server startup. </summary>
         public virtual bool LoadAtStartup => true;
         /// <summary> List of plugins/modules included in the server software </summary>
@@ -63,15 +67,19 @@ namespace MCGalaxy
                 if (pl.LoadAtStartup || !auto)
                 {
                     pl.Load(auto);
-                    Logger.Log(1, "Plugin {0} loaded", pl.Name);
+                    Logger.Log(LogType.SystemActivity, "Plugin {0} loaded...build: {1}", pl.Name, pl.Build);
                 }
                 else
                 {
-                    Logger.Log(1, "Plugin {0} was not loaded, you can load it with /pload", pl.Name);
+                    Logger.Log(LogType.SystemActivity, "Plugin {0} was not loaded, you can load it with /pload", pl.Name);
                 }
             }
             catch
             {
+                if (!string.IsNullOrEmpty(pl.Creator))
+                {
+                    Logger.Log(LogType.Warning, "You can go bug {0} about {1} failing to load.", pl.Creator, pl.Name);
+                }
                 if (custom.Contains(pl))
                 {
                     custom.Remove(pl);
@@ -124,12 +132,7 @@ namespace MCGalaxy
             LoadCorePlugin(new Modules.Security.IPThrottler());
             LoadCorePlugin(new Modules.Warps.WarpsPlugin());
             LoadCorePlugin(new Modules.Compiling.CompilerPlugin());
-            LoadCorePlugin(new Modules.Games.Countdown.CountdownPlugin());
-            LoadCorePlugin(new Modules.Games.CTF.CTFPlugin());
-            LoadCorePlugin(new Modules.Games.LS.LSPlugin());
-            LoadCorePlugin(new Modules.Games.TW.TWPlugin());
-            LoadCorePlugin(new Modules.Games.ZS.ZSPlugin());
-            LoadCorePlugin(new NASPlugin());
+            Load(new NASPlugin(), true);
             IScripting.AutoloadPlugins();
         }
         static void LoadCorePlugin(Plugin plugin)

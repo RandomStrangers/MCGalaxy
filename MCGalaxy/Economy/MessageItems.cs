@@ -17,7 +17,10 @@ namespace MCGalaxy.Eco
 {
     public sealed class LoginMessageItem : SimpleItem
     {
-        public LoginMessageItem() => Aliases = new string[] { "login", "loginmsg", "loginmessage" };
+        public LoginMessageItem()
+        {
+            Aliases = new string[] { "login", "loginmsg", "loginmessage" };
+        }
         public override string Name => "LoginMessage";
         public override void OnPurchase(Player p, string msg)
         {
@@ -32,17 +35,20 @@ namespace MCGalaxy.Eco
             {
                 p.Message("&WYou already have that login message."); return;
             }
-            if (msg.Length > 64)
+            if (msg.Length > NetUtils.StringSize)
             {
                 p.Message("&WLogin message must be 64 characters or less."); return;
             }
             if (!PlayerOperations.SetLoginMessage(p, p.name, msg)) return;
-            Economy.MakePurchase(p, Price, "&3LoginMessage: &f" + msg);
+            Economy.MakePurchase(p, Price, "%3LoginMessage: %f" + msg);
         }
     }
     public sealed class LogoutMessageItem : SimpleItem
     {
-        public LogoutMessageItem() => Aliases = new string[] { "logout", "logoutmsg", "logoutmessage" };
+        public LogoutMessageItem()
+        {
+            Aliases = new string[] { "logout", "logoutmsg", "logoutmessage" };
+        }
         public override string Name => "LogoutMessage";
         public override void OnPurchase(Player p, string msg)
         {
@@ -57,12 +63,12 @@ namespace MCGalaxy.Eco
             {
                 p.Message("&WYou already have that logout message."); return;
             }
-            if (msg.Length > 64)
+            if (msg.Length > NetUtils.StringSize)
             {
                 p.Message("&WLogin message must be 64 characters or less."); return;
             }
             if (!PlayerOperations.SetLogoutMessage(p, p.name, msg)) return;
-            Economy.MakePurchase(p, Price, "&3LogoutMessage: &f" + msg);
+            Economy.MakePurchase(p, Price, "%3LogoutMessage: %f" + msg);
         }
     }
 }

@@ -62,7 +62,7 @@ namespace MCGalaxy
             }
             else if (key.CaselessEq("afk-kick-perm"))
             {
-                perms.afkKickMax = Group.ParsePermOrName(value, 50);
+                perms.afkKickMax = Group.ParsePermOrName(value, LevelPermission.AdvBuilder);
             }
             else
             {
@@ -74,7 +74,7 @@ namespace MCGalaxy
         {
             public int opchatPerm = -1, adminchatPerm = -1,
                 mapGenLimit = -1, mapGenLimitAdmin = -1, afkKickMins = -1;
-            public sbyte afkKickMax = -20;
+            public LevelPermission afkKickMax = LevelPermission.Banned;
         }
         internal static void FixupOldPerms()
         {
@@ -105,11 +105,11 @@ namespace MCGalaxy
             // Apply backwards compatibility
             if (old.opchatPerm != -1)
             {
-                Chat.OpchatPerms.MinRank = (sbyte)old.opchatPerm;
+                Chat.OpchatPerms.MinRank = (LevelPermission)old.opchatPerm;
             }
             if (old.adminchatPerm != -1)
             {
-                Chat.AdminchatPerms.MinRank = (sbyte)old.adminchatPerm;
+                Chat.AdminchatPerms.MinRank = (LevelPermission)old.adminchatPerm;
             }
             CommandExtraPerms.Save();
         }
@@ -117,7 +117,7 @@ namespace MCGalaxy
         {
             foreach (Group grp in Group.GroupList)
             {
-                if (grp.Permission < 100)
+                if (grp.Permission < LevelPermission.Admin)
                 {
                     grp.GenVolume = old.mapGenLimit;
                 }
@@ -127,7 +127,7 @@ namespace MCGalaxy
         {
             foreach (Group grp in Group.GroupList)
             {
-                if (grp.Permission >= 100)
+                if (grp.Permission >= LevelPermission.Admin)
                 {
                     grp.GenVolume = old.mapGenLimitAdmin;
                 }
@@ -149,7 +149,8 @@ namespace MCGalaxy
             {
                 lock (saveLock)
                 {
-                    SaveProps(FileIO.CreateGuarded(Paths.ServerPropsFile));
+                    using StreamWriter w = FileIO.CreateGuarded(Paths.ServerPropsFile);
+                    SaveProps(w);
                 }
             }
             catch (Exception ex)

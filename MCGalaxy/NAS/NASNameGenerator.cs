@@ -1,7 +1,7 @@
 using System;
 namespace MCGalaxy
 {
-    public class NameGenerator
+    public class NASNameGenerator
     {
         public long[] numSyllables = new long[] { 1, 2, 3, 4, 5 },
             numSyllablesChance = new long[] { 150, 500, 80, 10, 1 },
@@ -32,6 +32,7 @@ namespace MCGalaxy
             }
             return 0;
         }
+        public string MakeSyllable() => MakeConsonantBlock() + MakeVowelBlock() + MakeConsonantBlock();
         public string MakeConsonantBlock()
         {
             string newName = "";
@@ -58,7 +59,7 @@ namespace MCGalaxy
             string newName = "";
             for (long i = 0; i < numberSyllables; i++)
             {
-                newName += MakeConsonantBlock() + MakeVowelBlock() + MakeConsonantBlock();
+                newName += MakeSyllable();
             }
             return char.ToUpper(newName[0]) + newName.Substring(1);
         }

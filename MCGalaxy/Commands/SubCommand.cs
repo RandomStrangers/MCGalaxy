@@ -41,7 +41,10 @@ namespace MCGalaxy.Commands
         /// Construct a SubCommand with custom help behavior (e.g. this subcommand needs help that changes based on help args)
         /// </summary>
         public SubCommand(string name, Behavior behavior, HelpBehavior helpBehavior, bool mapOnly = true, string[] aliases = null)
-                            : this(name, behavior, mapOnly, aliases) => this.helpBehavior = helpBehavior;
+                            : this(name, behavior, mapOnly, aliases)
+        {
+            this.helpBehavior = helpBehavior;
+        }
         /// <summary>
         /// Construct a SubCommand without help
         /// </summary>

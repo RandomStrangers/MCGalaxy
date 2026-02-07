@@ -24,17 +24,17 @@ namespace MCGalaxy.Config
         {
             if (!NumberUtils.TryParseInt32(raw, out int value))
             {
-                Logger.Log(6, "Config key \"{0}\" has invalid integer '{2}', using default of {1}", Name, def, raw);
+                Logger.Log(LogType.Warning, "Config key \"{0}\" has invalid integer '{2}', using default of {1}", Name, def, raw);
                 value = def;
             }
             if (value < min)
             {
-                Logger.Log(6, "Config key \"{0}\" is too small an integer, using {1}", Name, min);
+                Logger.Log(LogType.Warning, "Config key \"{0}\" is too small an integer, using {1}", Name, min);
                 value = min;
             }
             if (value > max)
             {
-                Logger.Log(6, "Config key \"{0}\" is too big an integer, using {1}", Name, max);
+                Logger.Log(LogType.Warning, "Config key \"{0}\" is too big an integer, using {1}", Name, max);
                 value = max;
             }
             return value;
@@ -60,7 +60,7 @@ namespace MCGalaxy.Config
         readonly ushort defBlock;
         public ConfigBlockAttribute() : this(null, null, Block.Air) { }
         public ConfigBlockAttribute(string name, string section, ushort def)
-            : base(name, section) => defBlock = def;
+            : base(name, section) { defBlock = def; }
         public override object Parse(string raw)
         {
             ushort block = (ushort)ParseInteger(raw, defBlock, 0, Block.SUPPORTED_COUNT - 1);
@@ -88,17 +88,17 @@ namespace MCGalaxy.Config
         {
             if (!NumberUtils.TryParseDouble(raw, out double value))
             {
-                Logger.Log(6, "Config key \"{0}\" has invalid number '{2}', using default of {1}", Name, def, raw);
+                Logger.Log(LogType.Warning, "Config key \"{0}\" has invalid number '{2}', using default of {1}", Name, def, raw);
                 value = def;
             }
             if (value < min)
             {
-                Logger.Log(6, "Config key \"{0}\" is too small a number, using {1}", Name, min);
+                Logger.Log(LogType.Warning, "Config key \"{0}\" is too small a number, using {1}", Name, min);
                 value = min;
             }
             if (value > max)
             {
-                Logger.Log(6, "Config key \"{0}\" is too big a number, using {1}", Name, max);
+                Logger.Log(LogType.Warning, "Config key \"{0}\" is too big a number, using {1}", Name, max);
                 value = max;
             }
             return value;

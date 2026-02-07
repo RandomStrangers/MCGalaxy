@@ -25,7 +25,7 @@ namespace MCGalaxy.Commands.Moderation
         public override string Name => "UndoPlayer";
         public override string Shortcut => "up";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("XUndo","{args} all"),
                     new CommandAlias("UndoArea", "-area"), new CommandAlias("ua", "-area") };
         public override void Use(Player p, string message, CommandData data)
@@ -84,7 +84,7 @@ namespace MCGalaxy.Commands.Moderation
                     op.Setup(p, lvl, marks);
                     DrawOpPerformer.Execute(p, op, null, marks);
                 }
-                p.level = null;
+                p.Level = null;
             }
             else
             {
@@ -94,7 +94,7 @@ namespace MCGalaxy.Commands.Moderation
             if (op.found)
             { // TODO bug assumes no other queued drawops
                 Chat.MessageGlobal("Undid {1}&S's changes for the past &b{0}", delta.Shorten(true), namesStr);
-                Logger.Log(3, "Actions of {0} for the past {1} were undone.", names.Join(), delta.Shorten(true));
+                Logger.Log(LogType.UserActivity, "Actions of {0} for the past {1} were undone.", names.Join(), delta.Shorten(true));
             }
             else
             {

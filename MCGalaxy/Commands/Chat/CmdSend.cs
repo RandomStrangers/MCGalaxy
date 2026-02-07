@@ -21,9 +21,9 @@ namespace MCGalaxy.Commands.Chatting
     {
         public override string Name => "Send";
         public override string Type => CommandTypes.Chat;
-        public override sbyte DefaultRank => 30;
+        public override LevelPermission DefaultRank => LevelPermission.Builder;
         public override bool UseableWhenFrozen => true;
-        public override int Parallelism => 1;
+        public override CommandParallelism Parallelism => CommandParallelism.NoAndWarn;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] parts = message.SplitSpaces(2);

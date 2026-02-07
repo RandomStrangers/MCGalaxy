@@ -235,7 +235,7 @@ namespace MCGalaxy.Generator.Foliage
             bool mangrove = this is MangroveTree;
             float startrad;
             // Make the root buttresses, if indicated
-            if (true || mangrove)
+            if (ROOT_BUTTRESSES || mangrove)
             {
                 // The start radius of the trunk should be a little smaller if we are using root buttresses.
                 startrad = trunkradius * 0.8f;

@@ -88,7 +88,10 @@ namespace MCGalaxy.Authentication
         }
         static bool Authenticate(AuthService auth, Player p)
         {
-            lock (ip_cache.GetLocker(p.ip))
+            object locker = ip_cache.GetLocker(p.ip);
+            // if a player from an IP is spamming login attempts,
+            //  prevent that from spamming Mojang's authentication servers too
+            lock (locker)
             {
                 if (!HasJoined(p))
                 {
@@ -98,11 +101,13 @@ namespace MCGalaxy.Authentication
             auth.AcceptPlayer(p);
             return true;
         }
+        const string HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?username={0}&serverId={1}";
         public static bool HasJoined(Player p)
         {
+            string url = string.Format(HAS_JOINED_URL, p.truename, GetServerID(p));
             try
             {
-                HttpWebRequest req = HttpUtil.CreateRequest("https://sessionserver.mojang.com/session/minecraft/hasJoined?username=" + p.truename + "&serverId=" + Utils.ToHexString(new SHA1Managed().ComputeHash(Encoding.UTF8.GetBytes(p.ip))));
+                HttpWebRequest req = HttpUtil.CreateRequest(url);
                 req.Timeout = 5 * 1000;
                 req.ReadWriteTimeout = 5 * 1000;
                 using HttpWebResponse response = (HttpWebResponse)req.GetResponse();
@@ -114,6 +119,12 @@ namespace MCGalaxy.Authentication
                 Logger.LogError("Verifying Mojang session for " + p.truename, ex);
             }
             return false;
+        }
+        static string GetServerID(Player p)
+        {
+            byte[] data = Encoding.UTF8.GetBytes(p.ip),
+                hash = new SHA1Managed().ComputeHash(data);
+            return Utils.ToHexString(hash);
         }
     }
 }

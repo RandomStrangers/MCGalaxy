@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 namespace MCGalaxy
 {
-    public partial class Inventory
+    public partial class NASInventory
     {
         [JsonIgnore] public ColorDesc[] selectorColors = NASColor.defaultColors;
         [JsonIgnore] public NASItem HeldItem => items[selectedItemIndex] ?? NASItem.Fist;
@@ -41,16 +41,16 @@ namespace MCGalaxy
             if (bagOpen)
             {
                 p.Send(Packet.Motd(p, "-hax horspeed=0.000001"));
-                whereHeldBlockIsDisplayed = 2;
-                np.whereHealthIsDisplayed = 3;
+                whereHeldBlockIsDisplayed = CpeMessageType.Status2;
+                np.whereHealthIsDisplayed = CpeMessageType.Status3;
             }
             else
             {
                 p.SendMapMotd();
-                SendCpeMessage(2, "");
-                SendCpeMessage(3, "");
-                whereHeldBlockIsDisplayed = 13;
-                np.whereHealthIsDisplayed = 12;
+                SendCpeMessage(CpeMessageType.Status2, "");
+                SendCpeMessage(CpeMessageType.Status3, "");
+                whereHeldBlockIsDisplayed = CpeMessageType.BottomRight3;
+                np.whereHealthIsDisplayed = CpeMessageType.BottomRight2;
             }
             if (slotToMoveTo != -1)
             {
@@ -141,15 +141,15 @@ namespace MCGalaxy
             selectorColors = HeldItem.HealthColors;
             if (bagOpen)
             {
-                DisplayItemBar(0, "&7↑ª", "&7ª↑", 13);
-                DisplayItemBar(9, "&7←¥", "&7₧→", 12);
-                DisplayItemBar(18, "&7↓º", "&7º↓", 11);
+                DisplayItemBar(0, "&7↑ª", "&7ª↑", CpeMessageType.BottomRight3);
+                DisplayItemBar(9, "&7←¥", "&7₧→", CpeMessageType.BottomRight2);
+                DisplayItemBar(18, "&7↓º", "&7º↓", CpeMessageType.BottomRight1);
                 return;
             }
             DisplayItemBar();
         }
         public void DisplayItemBar(int offset = 0, string prefix = "&7←«", string suffix = "%7»→",
-                                   int location = 11)
+                                   CpeMessageType location = CpeMessageType.BottomRight1)
         {
             StringBuilder builder = new(prefix);
             for (int i = offset; i < 9 + offset; i++)

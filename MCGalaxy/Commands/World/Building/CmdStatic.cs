@@ -20,7 +20,7 @@ namespace MCGalaxy.Commands.Building
         public override string Shortcut => "t";
         public override string Type => CommandTypes.Building;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override bool SuperUseable => false;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("zz", "cuboid") };
         public override void Use(Player p, string message, CommandData data)
@@ -29,7 +29,7 @@ namespace MCGalaxy.Commands.Building
             p.ClearBlockchange();
             p.Message("Static mode: &a" + p.staticCommands);
             if (message.Length == 0 || !p.staticCommands) return;
-            data.Context = 1;
+            data.Context = CommandContext.Static;
             string[] parts = message.SplitSpaces(2);
             string cmd = parts[0], args = parts.Length > 1 ? parts[1] : "";
             p.HandleCommand(cmd, args, data);

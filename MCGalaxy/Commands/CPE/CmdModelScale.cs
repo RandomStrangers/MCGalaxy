@@ -19,9 +19,9 @@ namespace MCGalaxy.Commands.CPE
     {
         public override string Name => "ModelScale";
         public override string Type => CommandTypes.Other;
-        public override sbyte DefaultRank => 50;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can change the model scale of others"),
-                    new CommandPerm(80, "can change the model scale of bots") };
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can change the model scale of others"),
+                    new CommandPerm(LevelPermission.Operator, "can change the model scale of bots") };
         public override void Use(Player p, string message, CommandData data) => UseBotOrOnline(p, data, message, "model scale");
         protected override void SetBotData(Player p, PlayerBot bot, string args)
         {

@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.Moderation
     {
         public override string Name => "Ban";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandAlias[] Aliases => new CommandAlias[] { new("KickBan"), new("kb") };
         public override void Use(Player p, string message, CommandData data)
         {
@@ -32,12 +32,12 @@ namespace MCGalaxy.Commands.Moderation
             if (reason == null) return;
             Group group = ModActionCmd.CheckTarget(p, data, "ban", target);
             if (group == null) return;
-            if (group.Permission == -20)
+            if (group.Permission == LevelPermission.Banned)
             {
                 p.Message("{0} &Sis already banned.", p.FormatNick(target));
                 return;
             }
-            ModAction action = new(target, p, 0, reason)
+            ModAction action = new(target, p, ModActionType.Ban, reason)
             {
                 targetGroup = group
             };

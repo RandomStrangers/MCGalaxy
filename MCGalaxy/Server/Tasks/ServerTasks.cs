@@ -170,7 +170,7 @@ namespace MCGalaxy.Tasks
                         if (backup != null)
                         {
                             lvl.Message("Backup " + backup + " saved.");
-                            Logger.Log(0, "Backup {0} saved for {1}", backup, lvl.name);
+                            Logger.Log(LogType.BackgroundActivity, "Backup {0} saved for {1}", backup, lvl.name);
                         }
                     }
                 }
@@ -205,13 +205,13 @@ namespace MCGalaxy.Tasks
             string all = players.Join(p => p.name);
             if (all.Length > 0)
             {
-                Logger.Log(0, "!PLAYERS ONLINE: " + all);
+                Logger.Log(LogType.BackgroundActivity, "!PLAYERS ONLINE: " + all);
             }
             levels = LevelInfo.Loaded.Items;
             all = levels.Join(l => l.name);
             if (all.Length > 0)
             {
-                Logger.Log(0, "!LEVELS ONLINE: " + all);
+                Logger.Log(LogType.BackgroundActivity, "!LEVELS ONLINE: " + all);
             }
         }
     }

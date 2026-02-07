@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.Bots
         public override string Name => "Bots";
         public override string Shortcut => "BotList";
         public override string Type => CommandTypes.Other;
-        public override sbyte DefaultRank => 30;
+        public override LevelPermission DefaultRank => LevelPermission.Builder;
         public override void Use(Player p, string message, CommandData data)
         {
             Level lvl = p.IsSuper ? null : p.Level;

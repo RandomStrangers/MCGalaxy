@@ -15,7 +15,6 @@
 using MCGalaxy.Blocks;
 using MCGalaxy.Blocks.Extended;
 using MCGalaxy.Maths;
-using MCGalaxy.SQL;
 using MCGalaxy.Util;
 using System.Collections.Generic;
 namespace MCGalaxy.Commands.Building
@@ -26,7 +25,7 @@ namespace MCGalaxy.Commands.Building
         public override string Shortcut => "o";
         public override string Type => CommandTypes.Building;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
@@ -119,17 +118,7 @@ namespace MCGalaxy.Commands.Building
                 object locker = ThreadSafeCache.DBCache.GetLocker(map);
                 lock (locker)
                 {
-                    Database.CreateTable("Portals" + map, LevelDB.createPortals);
-                    if (Database.UpdateRows("Portals" + map, "ExitX=@3, ExitY=@4, ExitZ=@5, ExitMap=@6",
-                                                      "WHERE EntryX=@0 AND EntryY=@1 AND EntryZ=@2", new object[] { P.x, P.y, P.z, x, y, z, exitMap }) == 0)
-                    {
-                        Database.AddRow("Portals" + map, "EntryX,EntryY,EntryZ, ExitX,ExitY,ExitZ, ExitMap", new object[] { P.x, P.y, P.z, x, y, z, exitMap });
-                    }
-                    Level lvl = LevelInfo.FindExact(map);
-                    if (lvl != null)
-                    {
-                        lvl.hasPortals = true;
-                    }
+                    Portal.Set(map, P.x, P.y, P.z, x, y, z, exitMap);
                 }
             }
             p.Message("&3Exit &Sblock placed");

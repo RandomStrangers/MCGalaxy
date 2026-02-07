@@ -19,9 +19,9 @@ namespace MCGalaxy.Commands.Chatting
     {
         public override string Name => "Color";
         public override string Type => CommandTypes.Chat;
-        public override sbyte DefaultRank => 80;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can change the color of others"),
-                    new CommandPerm(80, "can change the color of bots") };
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can change the color of others"),
+                    new CommandPerm(LevelPermission.Operator, "can change the color of bots") };
         public override CommandAlias[] Aliases => new[] { new CommandAlias("Colour"), new CommandAlias("XColor", "-own") };
         public override void Use(Player p, string message, CommandData data) => UseBotOrPlayer(p, data, message, "color");
         protected override void SetBotData(Player p, PlayerBot bot, string colName)

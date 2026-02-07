@@ -18,7 +18,7 @@ namespace MCGalaxy.Commands.Moderation
     {
         public override string Name => "VIP";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { List(p, ""); return; }

@@ -21,24 +21,25 @@ namespace MCGalaxy
     /// <summary> Utility methods for backing up and restoring a server. </summary>
     public static class Backup
     {
+        const string zipPath = "MCGalaxy_NAS.zip", sqlPath = "SQL_NAS.sql";
         public static void Perform(Player p, bool files, bool db, bool lite, bool compress)
         {
             if (db)
             {
-                Logger.Log(1, "Backing up the database...");
-                using (StreamWriter sql = new("SQL.sql"))
+                Logger.Log(LogType.SystemActivity, "Backing up the database...");
+                using (StreamWriter sql = new(sqlPath))
                     BackupDatabase(sql);
-                Logger.Log(1, "Backed up the database to SQL.sql");
+                Logger.Log(LogType.SystemActivity, "Backed up the database to " + sqlPath);
             }
             List<string> filesList = null;
             if (files)
             {
-                Logger.Log(1, "Determining which files to backup...");
+                Logger.Log(LogType.SystemActivity, "Determining which files to backup...");
                 filesList = GetAllFiles(lite);
-                Logger.Log(1, "Finished determining included files");
+                Logger.Log(LogType.SystemActivity, "Finished determining included files");
             }
-            Logger.Log(1, "Creating compressed backup...");
-            using (Stream stream = File.Create("MCGalaxy.zip"))
+            Logger.Log(LogType.SystemActivity, "Creating compressed backup...");
+            using (Stream stream = File.Create(zipPath))
             {
                 ZipWriter writer = new(stream);
                 if (files)
@@ -51,10 +52,10 @@ namespace MCGalaxy
                 }
                 writer.FinishEntries();
                 writer.WriteFooter();
-                Logger.Log(1, "Compressed all data!");
+                Logger.Log(LogType.SystemActivity, "Compressed all data!");
             }
             p.Message("Backup of (" + (files ? "everything" + (db ? "" : " but database") : "database") + ") complete!");
-            Logger.Log(1, "Server backed up!");
+            Logger.Log(LogType.SystemActivity, "Server backed up!");
         }
         static List<string> GetAllFiles(bool lite)
         {
@@ -65,23 +66,23 @@ namespace MCGalaxy
                 string path = all[i];
                 // convert to zip entry form
                 path = path.Replace('\\', '/').Replace("./", "");
-                if (lite && path.Contains("extra/undo/"))
+                if (lite && path.Contains("Extra/Undo/"))
                 {
                     continue;
                 }
-                if (lite && path.Contains("extra/undoPrevious/"))
+                if (lite && path.Contains("Extra/UndoPrevious/"))
                 {
                     continue;
                 }
-                if (lite && path.Contains("levels/prev"))
+                if (lite && path.Contains("Levels/Prev"))
                 {
                     continue;
                 }
-                if (lite && path.Contains("levels/backups/"))
+                if (lite && path.Contains("Levels/Backups/"))
                 {
                     continue;
                 }
-                if (lite && path.Contains("blockdb/"))
+                if (lite && path.Contains("BlockDB/"))
                 {
                     continue;
                 }
@@ -96,7 +97,7 @@ namespace MCGalaxy
         }
         static void SaveFiles(ZipWriter writer, List<string> paths, bool compress)
         {
-            Logger.Log(1, "Compressing {0} files...", paths.Count);
+            Logger.Log(LogType.SystemActivity, "Compressing {0} files...", paths.Count);
             for (int i = 0; i < paths.Count; i++)
             {
                 string path = paths[i];
@@ -104,6 +105,7 @@ namespace MCGalaxy
                 bool compressThis = compress && !path.CaselessContains(".lvl");
                 try
                 {
+                    //using Stream src = File.OpenRead(path);
                     using Stream src = FileIO.TryOpenRead(path);
                     writer.WriteEntry(src, path, compressThis);
                 }
@@ -115,22 +117,24 @@ namespace MCGalaxy
                 {
                     continue;
                 }
-                Logger.Log(1, "Backed up {0}/{1} files", i, paths.Count);
+                Logger.Log(LogType.SystemActivity, "Backed up {0}/{1} files", i, paths.Count);
             }
         }
         static void SaveDatabase(ZipWriter writer, bool compress)
         {
-            Logger.Log(1, "Compressing Database...");
-            using (Stream src = FileIO.TryOpenRead("SQL.sql"))
+            Logger.Log(LogType.SystemActivity, "Compressing Database...");
+            //using (Stream src = File.OpenRead(sqlPath))
+            using (Stream src = FileIO.TryOpenRead(sqlPath))
             {
-                writer.WriteEntry(src, "SQL.sql", compress);
+                writer.WriteEntry(src, sqlPath, compress);
             }
-            Logger.Log(1, "Database compressed");
+            Logger.Log(LogType.SystemActivity, "Database compressed");
         }
         public static void Extract(Player p)
         {
             int errors = 0;
-            using (FileStream src = FileIO.TryOpenRead("MCGalaxy.zip"))
+            //using (FileStream src = File.OpenRead(zipPath))
+            using (FileStream src = FileIO.TryOpenRead(zipPath))
             {
                 ZipReader reader = new(src);
                 reader.FindFooter();
@@ -141,9 +145,9 @@ namespace MCGalaxy
                     string path = ExtractItem(reader, i, ref errors);
                     if (i > 0 && (i % 100) == 0)
                     {
-                        Logger.Log(1, "Restored {0}/{1} files", i, entries);
+                        Logger.Log(LogType.SystemActivity, "Restored {0}/{1} files", i, entries);
                     }
-                    if (!path.CaselessEq("SQL.sql"))
+                    if (!path.CaselessEq(sqlPath))
                     {
                         continue;
                     }
@@ -189,7 +193,7 @@ namespace MCGalaxy
                 catch (IOException e)
                 {
                     Logger.LogError(e);
-                    Logger.Log(6, "&WError extracting {0}, continuing with rest.", path);
+                    Logger.Log(LogType.Warning, "&WError extracting {0}, continuing with rest.", path);
                     errors++;
                     return "";
                 }
@@ -222,7 +226,7 @@ namespace MCGalaxy
         }
         static void ReplaceDatabase(Stream sql)
         {
-            using (Stream backup = File.Create("backup.sql"))
+            using (Stream backup = File.Create("NAS_Backup.sql"))
                 BackupDatabase(new StreamWriter(backup));
             List<string> tables = Database.Backend.AllTables();
             foreach (string table in tables)

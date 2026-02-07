@@ -15,7 +15,7 @@
 using MCGalaxy.Maths;
 namespace MCGalaxy.Modules.Warps
 {
-    abstract class WarpCommand : Command2
+    abstract class WarpCommand : Command
     {
         public override string Type => CommandTypes.World;
         public override bool MuseumUsable => false;
@@ -26,8 +26,8 @@ namespace MCGalaxy.Modules.Warps
             p.Message("{0} - ({1}, {2}, {3}) on {4}",
                       warp.Name, pos.X, pos.Y, pos.Z, warp.Level);
         }
-        protected void UseCore(Player p, string message, CommandData data,
-                               WarpList warps, string group)
+        protected void UseCore(Player p, string message,
+            WarpList warps, string group)
         {
             string[] args = message.SplitSpaces();
             string cmd = args[0];
@@ -49,22 +49,22 @@ namespace MCGalaxy.Modules.Warps
             string name = args[1];
             if (IsCreateAction(cmd))
             {
-                if (checkExtraPerms && !CheckExtraPerm(p, data, 1)) return;
+                if (checkExtraPerms && !CheckExtraPerm(p, 1)) return;
                 if (warps.Exists(name)) { p.Message("{0} already exists", group); return; }
                 warps.Create(name, p);
                 p.Message("{0} {1} created.", group, name);
             }
             else if (IsDeleteAction(cmd))
             {
-                if (checkExtraPerms && !CheckExtraPerm(p, data, 1)) return;
+                if (checkExtraPerms && !CheckExtraPerm(p, 1)) return;
                 Warp warp = warps.FindMatch(p, name);
                 if (warp == null) return;
-                warps.Remove(warp, p);
+                warps.Remove(warp);
                 p.Message("{0} {1} deleted.", group, warp.Name);
             }
             else if (IsEditAction(cmd))
             {
-                if (checkExtraPerms && !CheckExtraPerm(p, data, 1)) return;
+                if (checkExtraPerms && !CheckExtraPerm(p, 1)) return;
                 Warp warp = warps.FindMatch(p, name);
                 if (warp == null) return;
                 warps.Update(warp, p);

@@ -1,22 +1,22 @@
 using System.Collections.Generic;
 namespace MCGalaxy
 {
-    public class Drop
+    public class NASDrop
     {
-        public List<BlockStack> blockStacks = null;
+        public List<NASBlockStack> blockStacks = null;
         public List<NASItem> items = null;
         public int exp = 0;
-        public Drop()
+        public NASDrop()
         {
         }
-        public Drop(Drop parent)
+        public NASDrop(NASDrop parent)
         {
             if (parent.blockStacks != null)
             {
                 blockStacks = new();
-                foreach (BlockStack bs in parent.blockStacks)
+                foreach (NASBlockStack bs in parent.blockStacks)
                 {
-                    BlockStack bsClone = new(bs.ID, bs.amount);
+                    NASBlockStack bsClone = new(bs.ID, bs.amount);
                     blockStacks.Add(bsClone);
                 }
             }
@@ -30,19 +30,19 @@ namespace MCGalaxy
                 }
             }
         }
-        public Drop(ushort clientushort, int amount = 1)
+        public NASDrop(ushort clientushort, int amount = 1)
         {
-            BlockStack bs = new(clientushort, amount);
+            NASBlockStack bs = new(clientushort, amount);
             blockStacks = new()
             {
                 bs
             };
         }
-        public Drop(NASItem item) => items = new()
+        public NASDrop(NASItem item) => items = new()
             {
                 item
             };
-        public Drop(Inventory inv)
+        public NASDrop(NASInventory inv)
         {
             blockStacks = new();
             for (int i = 0; i < inv.blocks.Length; i++)
@@ -72,11 +72,11 @@ namespace MCGalaxy
             }
         }
     }
-    public class BlockStack
+    public class NASBlockStack
     {
         public int amount;
         public ushort ID;
-        public BlockStack(ushort ID, int amount = 1)
+        public NASBlockStack(ushort ID, int amount = 1)
         {
             this.ID = ID;
             this.amount = amount;

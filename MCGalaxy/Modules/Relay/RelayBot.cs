@@ -105,7 +105,7 @@ namespace MCGalaxy.Modules.Relay
             }
             catch (Exception e)
             {
-                Logger.Log(5, "Failed to connect to {0}!", RelayName);
+                Logger.Log(LogType.RelayActivity, "Failed to connect to {0}!", RelayName);
                 Logger.LogError(e);
                 return "failed to connect - " + e.Message;
             }
@@ -130,7 +130,7 @@ namespace MCGalaxy.Modules.Relay
         }
         protected void OnReady()
         {
-            Logger.Log(5, "Connected to {0}!", RelayName);
+            Logger.Log(LogType.RelayActivity, "Connected to {0}!", RelayName);
             retries = 0;
         }
         void IOThreadCore()
@@ -140,13 +140,13 @@ namespace MCGalaxy.Modules.Relay
             {
                 try
                 {
-                    Logger.Log(5, "Connecting to {0}...", RelayName);
+                    Logger.Log(LogType.RelayActivity, "Connecting to {0}...", RelayName);
                     DoConnect();
                     DoReadLoop();
                 }
                 catch (SocketException ex)
                 {
-                    Logger.Log(6, "Disconnected from {0} ({1}), retrying in {2} seconds..",
+                    Logger.Log(LogType.Warning, "Disconnected from {0} ({1}), retrying in {2} seconds..",
                                RelayName, ex.Message, 30);
                     // SocketException is usually due to complete connection dropout
                     retries = 0;
@@ -155,12 +155,12 @@ namespace MCGalaxy.Modules.Relay
                 catch (IOException ex)
                 {
                     // IOException is an expected error, so don't log full details
-                    Logger.Log(6, "{0} read error ({1})", RelayName, ex.Message);
+                    Logger.Log(LogType.Warning, "{0} read error ({1})", RelayName, ex.Message);
                 }
                 catch (ObjectDisposedException ex)
                 {
                     // ObjectDisposedException is an expected error, so don't log full details
-                    Logger.Log(6, "{0} read error ({1})", RelayName, ex.Message);
+                    Logger.Log(LogType.Warning, "{0} read error ({1})", RelayName, ex.Message);
                 }
                 catch (Exception ex)
                 {
@@ -175,7 +175,7 @@ namespace MCGalaxy.Modules.Relay
                 {
                     Logger.LogError("Disconnecting from " + RelayName, ex);
                 }
-                Logger.Log(5, "Disconnected from {0}!", RelayName);
+                Logger.Log(LogType.RelayActivity, "Disconnected from {0}!", RelayName);
             }
             OnStop();
         }
@@ -215,6 +215,7 @@ namespace MCGalaxy.Modules.Relay
             BannedCommands = new List<string>() { "IRCBot", "DiscordBot", "OpRules", "IRCControllers", "DiscordControllers" };
             if (!File.Exists("text/irccmdblacklist.txt"))
             {
+                //File.WriteAllLines("text/irccmdblacklist.txt", new string[] {
                 FileIO.TryWriteAllLines("text/irccmdblacklist.txt", new string[] {
                                        "# Here you can put commands that cannot be used from the IRC bot.",
                                        "# Lines starting with \"#\" are ignored." });
@@ -226,10 +227,10 @@ namespace MCGalaxy.Modules.Relay
         }
         protected virtual void OnStart()
         {
-            OnChatEvent.Register(OnChat, 0);
-            OnChatSysEvent.Register(OnChatSys, 0);
-            OnChatFromEvent.Register(OnChatFrom, 0);
-            OnShuttingDownEvent.Register(OnShutdown, 0);
+            OnChatEvent.Register(OnChat, Priority.Low);
+            OnChatSysEvent.Register(OnChatSys, Priority.Low);
+            OnChatFromEvent.Register(OnChatFrom, Priority.Low);
+            OnShuttingDownEvent.Register(OnShutdown, Priority.Low);
         }
         protected virtual void OnStop()
         {
@@ -240,21 +241,20 @@ namespace MCGalaxy.Modules.Relay
         }
         static bool FilterIRC(Player pl, object arg) => !pl.Ignores.IRC && !pl.Ignores.IRCNicks.Contains((string)arg);
         static readonly ChatMessageFilter filterIRC = FilterIRC;
-        public static void MessageInGame(string srcNick, string message) => Chat.Message(1, message, srcNick, filterIRC);
+        public static void MessageInGame(string srcNick, string message) => Chat.Message(ChatScope.Global, message, srcNick, filterIRC);
         string Unescape(Player p, string msg) => msg
                 .Replace("λFULL", UnescapeFull(p))
                 .Replace("λNICK", UnescapeNick(p));
         protected virtual string UnescapeFull(Player p) => Server.Config.IRCShowPlayerTitles ? p.FullName : p.group.Prefix + p.ColoredName;
         protected virtual string UnescapeNick(Player p) => p.ColoredName;
         protected virtual string PrepareMessage(string msg) => msg;
-        void MessageToRelay(int scope, string msg, object arg, ChatMessageFilter filter)
+        void MessageToRelay(ChatScope scope, string msg, object arg, ChatMessageFilter filter)
         {
-            ChatMessageFilter scopeFilter = Chat.scopeFilters[scope];
+            ChatMessageFilter scopeFilter = Chat.scopeFilters[(int)scope];
             fakeGuest.group = Group.DefaultRank;
             if (scopeFilter(fakeGuest, arg) && (filter == null || filter(fakeGuest, arg)))
             {
-                SendPublicMessage(msg); 
-                return;
+                SendPublicMessage(msg); return;
             }
             fakeStaff.group = GetControllerRank();
             if (scopeFilter(fakeStaff, arg) && (filter == null || filter(fakeStaff, arg)))
@@ -262,29 +262,26 @@ namespace MCGalaxy.Modules.Relay
                 SendStaffMessage(msg);
             }
         }
-        void OnChatSys(int scope, ref string msg, object arg,
+        void OnChatSys(ChatScope scope, ref string msg, object arg,
                            ref ChatMessageFilter filter, bool relay)
         {
-            if (relay)
-            {
-                MessageToRelay(scope, PrepareMessage(msg), arg, filter);
-            }
+            if (!relay) return;
+            string text = PrepareMessage(msg);
+            MessageToRelay(scope, text, arg, filter);
         }
-        void OnChatFrom(int scope, Player source, ref string msg,
+        void OnChatFrom(ChatScope scope, Player source, ref string msg,
                             object arg, ref ChatMessageFilter filter, bool relay)
         {
-            if (relay)
-            {
-                MessageToRelay(scope, Unescape(source, PrepareMessage(msg)), arg, filter);
-            }
+            if (!relay) return;
+            string text = PrepareMessage(msg);
+            MessageToRelay(scope, Unescape(source, text), arg, filter);
         }
-        void OnChat(int scope, Player source, ref string msg,
+        void OnChat(ChatScope scope, Player source, ref string msg,
                         object arg, ref ChatMessageFilter filter, bool relay)
         {
-            if (relay)
-            {
-                MessageToRelay(scope, Unescape(source, PrepareMessage(msg)), arg, filter);
-            }
+            if (!relay) return;
+            string text = PrepareMessage(msg);
+            MessageToRelay(scope, Unescape(source, text), arg, filter);
         }
         void OnShutdown(bool restarting, string message) => Disconnect(restarting ? "Server is restarting" : "Server is shutting down");
         /// <summary> Simplifies some fancy characters (e.g. simplifies ” to ") </summary>
@@ -300,72 +297,55 @@ namespace MCGalaxy.Modules.Relay
         /// <summary> Handles a direct message written by the given user </summary>
         protected void HandleDirectMessage(RelayUser user, string channel, string message)
         {
-            if (!IgnoredUsers.CaselessContains(user.ID))
+            if (IgnoredUsers.CaselessContains(user.ID)) return;
+            message = ParseMessage(message).TrimEnd();
+            if (message.Length == 0) return;
+            bool cancel = false;
+            OnDirectMessageEvent.Call(this, channel, user, message, ref cancel);
+            if (cancel) return;
+            string[] parts = message.SplitSpaces(2);
+            string cmdName = parts[0].ToLower();
+            string cmdArgs = parts.Length > 1 ? parts[1] : "";
+            if (HandleListPlayers(user, channel, cmdName, false)) return;
+            Command.Search(ref cmdName, ref cmdArgs);
+            if (!CanUseCommand(user, cmdName, out string error))
             {
-                message = ParseMessage(message).TrimEnd();
-                if (message.Length != 0)
-                {
-                    bool cancel = false;
-                    OnDirectMessageEvent.Call(this, channel, user, message, ref cancel);
-                    if (!cancel)
-                    {
-                        string[] parts = message.SplitSpaces(2);
-                        string cmdName = parts[0].ToLower();
-                        string cmdArgs = parts.Length > 1 ? parts[1] : "";
-                        if (!HandleListPlayers(user, channel, cmdName, false))
-                        {
-                            Command.Search(ref cmdName, ref cmdArgs);
-                            if (!CanUseCommand(user, cmdName, out string error))
-                            {
-                                if (error != null) SendMessage(channel, error);
-                                return;
-                            }
-                            ExecuteCommand(user, channel, cmdName, cmdArgs);
-                        }
-                    }
-                }
+                if (error != null) SendMessage(channel, error);
+                return;
             }
+            ExecuteCommand(user, channel, cmdName, cmdArgs);
         }
         /// <summary> Handles a message written by the given user on the given channel </summary>
         protected void HandleChannelMessage(RelayUser user, string channel, string message)
         {
-            if (!IgnoredUsers.CaselessContains(user.ID))
+            if (IgnoredUsers.CaselessContains(user.ID)) return;
+            message = ParseMessage(message).TrimEnd();
+            if (message.Length == 0) return;
+            bool cancel = false;
+            OnChannelMessageEvent.Call(this, channel, user, message, ref cancel);
+            if (cancel) return;
+            string[] parts = message.SplitSpaces(3);
+            string rawCmd = parts[0].ToLower();
+            bool chat = Channels.CaselessContains(channel);
+            bool opchat = OpChannels.CaselessContains(channel);
+            // Only reply to .who on channels configured to listen on
+            if ((chat || opchat) && HandleListPlayers(user, channel, rawCmd, opchat)) return;
+            if (rawCmd.CaselessEq(Server.Config.IRCCommandPrefix))
             {
-                message = ParseMessage(message).TrimEnd();
-                if (message.Length != 0)
-                {
-                    bool cancel = false;
-                    OnChannelMessageEvent.Call(this, channel, user, message, ref cancel);
-                    if (!cancel)
-                    {
-                        string[] parts = message.SplitSpaces(3);
-                        string rawCmd = parts[0].ToLower();
-                        bool chat = Channels.CaselessContains(channel);
-                        bool opchat = OpChannels.CaselessContains(channel);
-                        // Only reply to .who on channels configured to listen on
-                        if ((chat || opchat) && HandleListPlayers(user, channel, rawCmd, opchat)) return;
-                        if (rawCmd.CaselessEq(Server.Config.IRCCommandPrefix))
-                        {
-                            if (!HandleCommand(user, channel, message, parts))
-                            { 
-                                return;
-                            }
-                        }
-                        string msg = user.GetMessagePrefix() + message;
-                        if (opchat)
-                        {
-                            Logger.Log(10, "(OPs): ({0}) {1}: {2}", RelayName, user.Nick, msg);
-                            Chat.MessageOps(string.Format("To Ops &f-&I({0}) {1}&f- {2}", RelayName, user.Nick,
-                                                          Server.Config.ProfanityFiltering ? ProfanityFilter.Parse(msg) : msg));
-                        }
-                        else if (chat)
-                        {
-                            Logger.Log(10, "({0}) {1}: {2}", RelayName, user.Nick, msg);
-                            MessageInGame(user.Nick, string.Format("&I({0}) {1}: &f{2}", RelayName, user.Nick,
-                                                                   Server.Config.ProfanityFiltering ? ProfanityFilter.Parse(msg) : msg));
-                        }
-                    }
-                }
+                if (!HandleCommand(user, channel, message, parts)) return;
+            }
+            string msg = user.GetMessagePrefix() + message;
+            if (opchat)
+            {
+                Logger.Log(LogType.RelayChat, "(OPs): ({0}) {1}: {2}", RelayName, user.Nick, msg);
+                Chat.MessageOps(string.Format("To Ops &f-&I({0}) {1}&f- {2}", RelayName, user.Nick,
+                                              Server.Config.ProfanityFiltering ? ProfanityFilter.Parse(msg) : msg));
+            }
+            else if (chat)
+            {
+                Logger.Log(LogType.RelayChat, "({0}) {1}: {2}", RelayName, user.Nick, msg);
+                MessageInGame(user.Nick, string.Format("&I({0}) {1}: &f{2}", RelayName, user.Nick,
+                                                       Server.Config.ProfanityFiltering ? ProfanityFilter.Parse(msg) : msg));
             }
         }
         bool HandleListPlayers(RelayUser user, string channel, string cmd, bool opchat)
@@ -409,7 +389,7 @@ namespace MCGalaxy.Modules.Relay
             Player p = new RelayPlayer(channel, user, this);
             if (cmd == null) { p.Message("Unknown command \"{0}\"", cmdName); return false; }
             string logCmd = cmdArgs.Length == 0 ? cmdName : cmdName + " " + cmdArgs;
-            Logger.Log(8, "/{0} (by {1} from {2})", logCmd, user.Nick, RelayName);
+            Logger.Log(LogType.CommandUsage, "/{0} (by {1} from {2})", logCmd, user.Nick, RelayName);
             try
             {
                 if (!p.CanUse(cmd))
@@ -457,7 +437,7 @@ namespace MCGalaxy.Modules.Relay
         protected abstract bool CheckController(string userID, ref string error);
         protected Group GetControllerRank()
         {
-            sbyte perm = Server.Config.IRCControllerRank;
+            LevelPermission perm = Server.Config.IRCControllerRank;
             // find highest rank <= IRC controller rank
             for (int i = Group.GroupList.Count - 1; i >= 0; i--)
             {

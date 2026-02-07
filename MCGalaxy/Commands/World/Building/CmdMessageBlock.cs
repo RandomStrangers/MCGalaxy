@@ -15,21 +15,20 @@
 using MCGalaxy.Blocks;
 using MCGalaxy.Blocks.Extended;
 using MCGalaxy.Maths;
-using MCGalaxy.SQL;
 using MCGalaxy.Util;
 using System.Collections.Generic;
 namespace MCGalaxy.Commands.Building
 {
-    public sealed class CmdMessageBlock : Command2
+    public sealed class CmdMessageBlock : Command
     {
         public override string Name => "MB";
         public override string Shortcut => "MessageBlock";
         public override string Type => CommandTypes.Building;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override bool SuperUseable => false;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(100, "can use moderation commands in MBs") };
-        public override void Use(Player p, string message, CommandData data)
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Admin, "can use moderation commands in MBs") };
+        public override void Use(Player p, string message)
         {
             if (message.Length == 0) { Help(p); return; }
             bool allMessage = false;
@@ -51,7 +50,7 @@ namespace MCGalaxy.Commands.Building
             {
                 mbArgs.Message = args[1];
             }
-            bool allCmds = HasExtraPerm(data.Rank, 1);
+            bool allCmds = HasExtraPerm(p.Rank, 1);
             if (!MessageBlock.Validate(p, mbArgs.Message, allCmds)) return;
             p.Message("Place where you wish the message block to go.");
             p.MakeSelection(1, mbArgs, PlacedMark);
@@ -102,22 +101,10 @@ namespace MCGalaxy.Commands.Building
         void UpdateDatabase(Player p, MBArgs args, ushort x, ushort y, ushort z)
         {
             string map = p.Level.name;
-            lock (ThreadSafeCache.DBCache.GetLocker(map))
+            object locker = ThreadSafeCache.DBCache.GetLocker(map);
+            lock (locker)
             {
-                args.Message = args.Message.Replace("'", "\\'");
-                args.Message = Colors.Escape(args.Message);
-                args.Message = args.Message.UnicodeToCp437();
-                Database.CreateTable("Messages" + map, LevelDB.createMessages);
-                if (Database.UpdateRows("Messages" + map, "Message=@3",
-                                                 "WHERE X=@0 AND Y=@1 AND Z=@2", new object[] { x, y, z, args.Message }) == 0)
-                {
-                    Database.AddRow("Messages" + map, "X,Y,Z, Message", new object[] { x, y, z, args.Message });
-                }
-                Level lvl = LevelInfo.FindExact(map);
-                if (lvl != null)
-                {
-                    lvl.hasMessageBlocks = true;
-                }
+                MessageBlock.Set(map, x, y, z, args.Message);
             }
         }
         class MBArgs { public string Message; public ushort Block; }

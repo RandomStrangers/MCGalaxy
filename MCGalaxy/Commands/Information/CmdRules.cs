@@ -15,23 +15,23 @@
 using MCGalaxy.Util;
 namespace MCGalaxy.Commands.Info
 {
-    public sealed class CmdRules : Command2
+    public sealed class CmdRules : Command
     {
         public override string Name => "Rules";
         public override string Type => CommandTypes.Information;
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(30, "can send rules to others") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Builder, "can send rules to others") };
         public override CommandAlias[] Aliases => new[] { new CommandAlias("Agree", "agree"), new CommandAlias("Disagree", "disagree") };
         public override bool UseableWhenFrozen => true;
-        public override void Use(Player p, string message, CommandData data)
+        public override void Use(Player p, string message)
         {
             TextFile rulesFile = TextFile.Files["Rules"];
             rulesFile.EnsureExists();
             if (message.CaselessEq("agree")) { Agree(p); return; }
-            if (message.CaselessEq("disagree")) { Disagree(p, data); return; }
+            if (message.CaselessEq("disagree")) { Disagree(p); return; }
             Player target = p;
             if (message.Length > 0)
             {
-                if (!CheckExtraPerm(p, data, 1)) return;
+                if (!CheckExtraPerm(p, 1)) return;
                 target = PlayerInfo.FindMatches(p, message);
                 if (target == null) return;
             }
@@ -61,11 +61,11 @@ namespace MCGalaxy.Commands.Info
                 Server.agreed.Save(false);
             }
         }
-        void Disagree(Player p, CommandData data)
+        void Disagree(Player p)
         {
             if (p.IsSuper) { p.Message("Only in-game players can disagree with the rules."); return; }
             if (!Server.Config.AgreeToRulesOnEntry) { p.Message("agree-to-rules-on-entry is not enabled."); return; }
-            if (data.Rank > 0)
+            if (p.Rank > LevelPermission.Guest)
             {
                 p.Message("Your awesomeness prevents you from using this command"); return;
             }

@@ -42,7 +42,7 @@ namespace MCGalaxy.Commands.Info
                 OutputBlocks(p, "complex", modifier,
                              b => Block.IsPhysicsType(b));
             }
-            else if ((block = Block.Parse(p, type)) != 0xff)
+            else if ((block = Block.Parse(p, type)) != Block.Invalid)
             {
                 OutputBlockInfo(p, block);
             }
@@ -64,8 +64,8 @@ namespace MCGalaxy.Commands.Info
         }
         static void OutputBlocks(Player p, string type, string modifier, Predicate<ushort> selector)
         {
-            List<ushort> blocks = new(1024);
-            for (ushort b = 0; b < 1024; b++)
+            List<ushort> blocks = new(Block.SUPPORTED_COUNT);
+            for (ushort b = 0; b < Block.SUPPORTED_COUNT; b++)
             {
                 if (Block.ExistsFor(p, b) && selector(b)) blocks.Add(b);
             }
@@ -83,7 +83,7 @@ namespace MCGalaxy.Commands.Info
                 OutputPhysicsInfo(p, scope, block); return;
             }
             string msg = "";
-            for (ushort b = 66; b < 256; b++)
+            for (ushort b = Block.CPE_COUNT; b < Block.CORE_COUNT; b++)
             {
                 if (Block.Convert(b) != block) continue;
                 msg += Block.GetColoredName(p, b) + ", ";
@@ -117,7 +117,11 @@ namespace MCGalaxy.Commands.Info
             if (Block.Walkthrough(conv)) p.Message("  Can be walked through");
             if (Mover(scope, conv)) p.Message("  Can be activated by walking through it");
         }
-        static bool Mover(BlockProps[] scope, ushort conv) => BlockBehaviour.GetWalkthroughHandler(conv, scope, Block.Walkthrough(conv)) != null;
+        static bool Mover(BlockProps[] scope, ushort conv)
+        {
+            bool nonSolid = Block.Walkthrough(conv);
+            return BlockBehaviour.GetWalkthroughHandler(conv, scope, nonSolid) != null;
+        }
         static bool Physics(BlockProps[] scope, ushort b)
         {
             if (scope[b].IsMessageBlock || scope[b].IsPortal) return false;

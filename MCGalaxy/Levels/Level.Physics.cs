@@ -15,36 +15,36 @@
 using MCGalaxy.Blocks;
 using MCGalaxy.Blocks.Physics;
 using MCGalaxy.Events.LevelEvents;
+using MCGalaxy.Network;
 using System;
 using System.Threading;
 namespace MCGalaxy
 {
+    public enum PhysicsState { Stopped, Warning, Other }
     public sealed partial class Level : IDisposable
     {
         public void SetPhysics(int level)
         {
-            if (!IsMuseum)
+            if (IsMuseum) return;
+            if (LevelPhysics == 0 && level != 0 && blocks != null)
             {
-                if (LevelPhysics == 0 && level != 0 && blocks != null)
+                for (int i = 0; i < blocks.Length; i++)
                 {
-                    for (int i = 0; i < blocks.Length; i++)
-                    {
-                        // Optimization hack, since no blocks under 183 ever need a restart
-                        if (blocks[i] > 183 && Block.NeedRestart(blocks[i]))
-                            AddCheck(i);
-                    }
+                    // Optimization hack, since no blocks under 183 ever need a restart
+                    if (blocks[i] > 183 && Block.NeedRestart(blocks[i]))
+                        AddCheck(i);
                 }
-                if (LevelPhysics != level) OnPhysicsLevelChangedEvent.Call(this, level);
-                if (level > 0 && LevelPhysics == 0) StartPhysics();
-                Physicsint = level;
-                Config.Physics = level;
             }
+            if (LevelPhysics != level) OnPhysicsLevelChangedEvent.Call(this, level);
+            if (level > 0 && LevelPhysics == 0) StartPhysics();
+            Physicsint = level;
+            Config.Physics = level;
         }
         public void StartPhysics()
         {
             lock (physThreadLock)
             {
-                if (physThread != null && physThread.ThreadState == 0) return;
+                if (physThread != null && physThread.ThreadState == ThreadState.Running) return;
                 if (ListCheck.Count == 0 || physThreadStarted) return;
                 Server.StartThread(out physThread, "Physics_" + name,
                                    PhysicsLoop);
@@ -97,15 +97,15 @@ namespace MCGalaxy
                             if (!Server.Config.PhysicsRestart) SetPhysics(0);
                             ClearPhysics();
                             Chat.MessageGlobal("Physics shutdown on {0}", ColoredName);
-                            Logger.Log(6, "Physics shutdown on " + name);
-                            OnPhysicsStateChangedEvent.Call(this, 0);
+                            Logger.Log(LogType.Warning, "Physics shutdown on " + name);
+                            OnPhysicsStateChangedEvent.Call(this, PhysicsState.Stopped);
                             wait = Config.PhysicsSpeed;
                         }
                         else
                         {
                             Message("Physics warning!");
-                            Logger.Log(6, "Physics warning on " + name);
-                            OnPhysicsStateChangedEvent.Call(this, 1);
+                            Logger.Log(LogType.Warning, "Physics warning on " + name);
+                            OnPhysicsStateChangedEvent.Call(this, PhysicsState.Warning);
                         }
                     }
                 }
@@ -116,7 +116,6 @@ namespace MCGalaxy
             }
             lastCheck = 0;
             physThreadStarted = false;
-
         }
         public PhysicsArgs FoundInfo(ushort x, ushort y, ushort z)
         {
@@ -146,8 +145,7 @@ namespace MCGalaxy
             {
                 Check chk = ListCheck.Items[i];
                 IntToPos(chk.Index, out C.X, out C.Y, out C.Z);
-                C.Index = chk.Index; 
-                C.Data = chk.data;
+                C.Index = chk.Index; C.Data = chk.data;
                 try
                 {
                     if (OnPhysicsUpdateEvent.handlers.Count > 0)
@@ -182,7 +180,7 @@ namespace MCGalaxy
             RemoveExpiredChecks();
             lastUpdate = ListUpdate.Count;
             if (ListUpdate.Count > 0 && bulkSender == null)
-                bulkSender = new(this);
+                bulkSender = new BufferedBlockSender(this);
             for (int i = 0; i < ListUpdate.Count; i++)
             {
                 Update U = ListUpdate.Items[i];
@@ -202,7 +200,7 @@ namespace MCGalaxy
                 }
                 catch
                 {
-                    Logger.Log(6, "Phys update issue");
+                    Logger.Log(LogType.Warning, "Phys update issue");
                 }
             }
             bulkSender?.Flush();
@@ -231,8 +229,7 @@ namespace MCGalaxy
                     for (int i = 0; i < count; i++)
                     {
                         if (items[i].Index != index) continue;
-                        items[i].data = data; 
-                        return;
+                        items[i].data = data; return;
                     }
                     //Dont need to check physics here because if the list is active, then physics is active :)
                 }
@@ -286,11 +283,7 @@ namespace MCGalaxy
                     return false;
                 }
                 data.Data = (byte)block;
-                Update update = new()
-                {
-                    Index = index,
-                    data = data
-                };                
+                Update update; update.Index = index; update.data = data;
                 ListUpdate.Add(update);
                 if (!physThreadStarted && LevelPhysics > 0)
                     StartPhysics();
@@ -334,10 +327,8 @@ namespace MCGalaxy
         }
         void ClearPhysicsLists()
         {
-            ListCheck.Count = 0; 
-            listCheckExists.Clear();
-            ListUpdate.Count = 0; 
-            listUpdateExists.Clear();
+            ListCheck.Count = 0; listCheckExists.Clear();
+            ListUpdate.Count = 0; listUpdateExists.Clear();
         }
         public void ClearPhysics()
         {
@@ -356,8 +347,7 @@ namespace MCGalaxy
                 case 202:
                 case 203:
                 case 204:
-                    blocks[C.Index] = 0; 
-                    break;
+                    blocks[C.Index] = 0; break;
             }
             try
             {

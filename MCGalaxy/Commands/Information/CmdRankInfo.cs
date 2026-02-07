@@ -21,7 +21,7 @@ namespace MCGalaxy.Commands.Info
         public override string Name => "RankInfo";
         public override string Shortcut => "ri";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override bool UseableWhenFrozen => true;
         public override bool MessageBlockRestricted => false;
         public override void Use(Player p, string name, CommandData data)

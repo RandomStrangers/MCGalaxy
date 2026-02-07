@@ -1,6 +1,7 @@
 using MCGalaxy.Maths;
 using System;
 using System.Collections.Generic;
+using NASBlockAction = MCGalaxy.NASAction<MCGalaxy.NASLevel, MCGalaxy.NASBlock, int, int, int>;
 namespace MCGalaxy
 {
     public partial class NASBlock
@@ -266,7 +267,7 @@ namespace MCGalaxy
             256|452,
             256|451
         };
-        public static Action<NASLevel, NASBlock, int, int, int> FloodAction(ushort[] set) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction FloodAction(ushort[] set) => (nl, nasBlock, x, y, z) =>
                                                                            {
                                                                                if (CanInfiniteFloodKillThis(nl, x, y - 1, z, set))
                                                                                {
@@ -355,7 +356,7 @@ namespace MCGalaxy
             }
             return false;
         }
-        public static Action<NASLevel, NASBlock, int, int, int> LimitedFloodAction(ushort[] set, int index) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction LimitedFloodAction(ushort[] set, int index) => (nl, nasBlock, x, y, z) =>
                                                                                              {
                                                                                                  if (y >= 200 && set == waterSet)
                                                                                                  {
@@ -547,7 +548,7 @@ namespace MCGalaxy
             }
             canFlowDir = false;
         }
-        public class FloodSim
+        public class NASFloodSim
         {
             public NASLevel nl;
             public int xO,
@@ -559,7 +560,7 @@ namespace MCGalaxy
             public ushort[] liquidSet;
             public bool[,] waterAtSpot;
             public List<Vec3S32> holes;
-            public FloodSim(NASLevel nl, int xO, int yO, int zO, int totalDistance, ushort[] set)
+            public NASFloodSim(NASLevel nl, int xO, int yO, int zO, int totalDistance, ushort[] set)
             {
                 this.nl = nl;
                 this.xO = xO;
@@ -646,10 +647,10 @@ namespace MCGalaxy
         }
         public static List<Vec3S32> HolesInRange(NASLevel nl, int x, int y, int z, int totalDistance, ushort[] set, out int distance)
         {
-            FloodSim sim = new(nl, x, y, z, totalDistance, set);
+            NASFloodSim sim = new(nl, x, y, z, totalDistance, set);
             return sim.GetHoles(out distance);
         }
-        public static Action<NASLevel, NASBlock, int, int, int> FallingBlockAction(ushort serverushort) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction FallingBlockAction(ushort serverushort) => (nl, nasBlock, x, y, z) =>
                                                                                          {
                                                                                              ushort blockUnder = nl.GetBlock(x, y - 1, z);
                                                                                              if (nl.GetBlock(x, y - 2, z) == NASPlugin.FromRaw(703))
@@ -662,7 +663,7 @@ namespace MCGalaxy
                                                                                                  nl.SetBlock(x, y - 1, z, serverushort);
                                                                                              }
                                                                                          };
-        public static Action<NASLevel, NASBlock, int, int, int> GrassBlockAction(ushort grass, ushort dirt) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction GrassBlockAction(ushort grass, ushort dirt) => (nl, nasBlock, x, y, z) =>
                                                                                              {
                                                                                                  if (grass == NASPlugin.FromRaw(139) && nl.biome != 2)
                                                                                                  {
@@ -674,7 +675,7 @@ namespace MCGalaxy
                                                                                                      nl.SetBlock(x, y, z, dirt);
                                                                                                  }
                                                                                              };
-        public static Action<NASLevel, NASBlock, int, int, int> DirtBlockAction(ushort[] grassSet, ushort _) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction DirtBlockAction(ushort[] grassSet, ushort _) => (nl, nasBlock, x, y, z) =>
                                                                                               {
                                                                                                   ushort aboveHere = nl.GetBlock(x, y + 1, z);
                                                                                                   if (!nl.lvl.LightPasses(aboveHere))
@@ -771,7 +772,7 @@ namespace MCGalaxy
                                                                                                   }
                                                                                                   return;
                                                                                               };
-        public static Action<NASLevel, NASBlock, int, int, int> ObserverActivateAction(int type) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction ObserverActivateAction(int type) => (nl, nasBlock, x, y, z) =>
                                                                                   {
                                                                                       if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                                                                                       {
@@ -781,7 +782,7 @@ namespace MCGalaxy
                                                                                       nl.blockEntities[x + " " + y + " " + z].strength = 15;
                                                                                       nl.SetBlock(x, y, z, (ushort)(nl.lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z) + 6));
                                                                                   };
-        public static Action<NASLevel, NASBlock, int, int, int> ObserverDeactivateAction(int type) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction ObserverDeactivateAction(int type) => (nl, nasBlock, x, y, z) =>
                                                                                     {
                                                                                         if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                                                                                         {
@@ -791,7 +792,7 @@ namespace MCGalaxy
                                                                                         nl.blockEntities[x + " " + y + " " + z].strength = 0;
                                                                                         nl.SetBlock(x, y, z, (ushort)(nl.lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z) - 6));
                                                                                     };
-        public static Action<NASLevel, NASBlock, int, int, int> LeafBlockAction(ushort[] _, ushort leaf) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction LeafBlockAction(ushort[] _, ushort leaf) => (nl, nasBlock, x, y, z) =>
                                                                                           {
                                                                                               bool canLive = false;
                                                                                               int iteration = 1;
@@ -818,7 +819,7 @@ namespace MCGalaxy
                                                                                                   }
                                                                                               }
                                                                                           };
-        public static Action<NASLevel, NASBlock, int, int, int> GrowAction(ushort grow) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction GrowAction(ushort grow) => (nl, nasBlock, x, y, z) =>
                                                                          {
                                                                              if (grow == NASPlugin.FromRaw(667))
                                                                              {
@@ -861,7 +862,7 @@ namespace MCGalaxy
                                                                              }
                                                                              nl.SetBlock(x, y + 1, z, grow);
                                                                          };
-        public static Action<NASLevel, NASBlock, int, int, int> VineGrowAction(ushort grow) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction VineGrowAction(ushort grow) => (nl, nasBlock, x, y, z) =>
                                                                              {
                                                                                  if (nl.GetBlock(x, y + 1, z) == grow && nl.GetBlock(x, y + 2, z) == grow)
                                                                                  {
@@ -872,14 +873,14 @@ namespace MCGalaxy
                                                                                      nl.SetBlock(x, y - 1, z, grow);
                                                                                  }
                                                                              };
-        public static Action<NASLevel, NASBlock, int, int, int> VineDeathAction() => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction VineDeathAction() => (nl, nasBlock, x, y, z) =>
                                                                    {
                                                                        if (IsPartOfSet(blocksPhysicsCanKill, nl.GetBlock(x, y + 1, z)) != -1)
                                                                        {
                                                                            nl.SetBlock(x, y, z, 0);
                                                                        }
                                                                    };
-        public static Action<NASLevel, NASBlock, int, int, int> LilyAction() => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction LilyAction() => (nl, nasBlock, x, y, z) =>
                                                               {
                                                                   if (IsPartOfSet(waterSet, nl.GetBlock(x, y - 1, z)) == -1)
                                                                   {
@@ -914,7 +915,7 @@ namespace MCGalaxy
             IsThereLog(nl, x, y - 1, z, leaf, iteration, ref canLive);
             IsThereLog(nl, x, y, z - 1, leaf, iteration, ref canLive);
         }
-        public static Action<NASLevel, NASBlock, int, int, int> FireAction() => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction FireAction() => (nl, nasBlock, x, y, z) =>
                                                               {
                                                                   if (IsPartOfSet(infinifire, nl.GetBlock(x, y - 1, z)) == -1)
                                                                   {
@@ -928,9 +929,9 @@ namespace MCGalaxy
                                                                       }
                                                                   }
                                                               };
-        public static Action<NASLevel, NASBlock, int, int, int> LampAction(ushort on, ushort off, ushort me) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction LampAction(ushort on, ushort off, ushort me) => (nl, nasBlock, x, y, z) =>
                                                                                               {
-                                                                                                  BlockEntity[] b = new BlockEntity[6];
+                                                                                                  NASBlockEntity[] b = new NASBlockEntity[6];
                                                                                                   if (nl.blockEntities.ContainsKey(x + " " + (y - 1) + " " + z))
                                                                                                   {
                                                                                                       b[0] = nl.blockEntities[x + " " + (y - 1) + " " + z];
@@ -977,9 +978,9 @@ namespace MCGalaxy
                                                                                                       }
                                                                                                   }
                                                                                               };
-        public static Action<NASLevel, NASBlock, int, int, int> UnrefinedGoldAction(ushort on, ushort off, ushort me) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction UnrefinedGoldAction(ushort on, ushort off, ushort me) => (nl, nasBlock, x, y, z) =>
                                                                                                        {
-                                                                                                           BlockEntity[] b = new BlockEntity[6];
+                                                                                                           NASBlockEntity[] b = new NASBlockEntity[6];
                                                                                                            if (nl.blockEntities.ContainsKey(x + " " + (y - 1) + " " + z))
                                                                                                            {
                                                                                                                b[0] = nl.blockEntities[x + " " + (y - 1) + " " + z];
@@ -1036,7 +1037,7 @@ namespace MCGalaxy
                                                                                                                }
                                                                                                            }
                                                                                                        };
-        public static Action<NASLevel, NASBlock, int, int, int> SidewaysPistonAction(string type, string axis, int dir, ushort[] pistonSet, bool sticky = false) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction SidewaysPistonAction(string type, string axis, int dir, ushort[] pistonSet, bool sticky = false) => (nl, nasBlock, x, y, z) =>
                                                                                                                                                   {
                                                                                                                                                       int changeX = 0,
                                                                                                                                                       changeZ = 0,
@@ -1069,7 +1070,7 @@ namespace MCGalaxy
                                                                                                                                                       }
                                                                                                                                                       if (type.CaselessEq("off"))
                                                                                                                                                       {
-                                                                                                                                                          BlockEntity[] b = new BlockEntity[6];
+                                                                                                                                                          NASBlockEntity[] b = new NASBlockEntity[6];
                                                                                                                                                           if (nl.blockEntities.ContainsKey(x + " " + (y + 1) + " " + z))
                                                                                                                                                           {
                                                                                                                                                               b[0] = nl.blockEntities[x + " " + (y + 1) + " " + z];
@@ -1246,7 +1247,7 @@ namespace MCGalaxy
                                                                                                                                                                   Vec3F32 posH = who.Pos.BlockCoords;
                                                                                                                                                                   if (who.Pos.FeetBlockCoords == new Vec3S32(x + (push + 1) * changeX, y + (push + 1) * changeY, z + (push + 1) * changeZ) || who.Pos.BlockCoords == new Vec3S32(x + (push + 1) * changeX, y + (push + 1) * changeY, z + (push + 1) * changeZ))
                                                                                                                                                                   {
-                                                                                                                                                                      if (Get(Collision.ConvertToClientushort(nl.GetBlock((int)posH.X + changeX, (int)posH.Y + changeY, (int)posH.Z + changeZ))).collideAction != DefaultSolidCollideAction())
+                                                                                                                                                                      if (Get(NASCollision.ConvertToClientushort(nl.GetBlock((int)posH.X + changeX, (int)posH.Y + changeY, (int)posH.Z + changeZ))).collideAction != DefaultSolidCollideAction())
                                                                                                                                                                       {
                                                                                                                                                                           Position posit = who.Pos;
                                                                                                                                                                           posit.X += changeX * 32;
@@ -1260,7 +1261,7 @@ namespace MCGalaxy
                                                                                                                                                       }
                                                                                                                                                       if (type.CaselessEq("body"))
                                                                                                                                                       {
-                                                                                                                                                          BlockEntity[] b = new BlockEntity[6];
+                                                                                                                                                          NASBlockEntity[] b = new NASBlockEntity[6];
                                                                                                                                                           if (nl.blockEntities.ContainsKey(x + " " + (y + 1) + " " + z))
                                                                                                                                                           {
                                                                                                                                                               b[0] = nl.blockEntities[x + " " + (y + 1) + " " + z];
@@ -1330,7 +1331,7 @@ namespace MCGalaxy
                                                                                                                                                           }
                                                                                                                                                       }
                                                                                                                                                   };
-        public static Action<NASLevel, NASBlock, int, int, int> PistonAction(string type, int changeX, int changeY, int changeZ, ushort[] pistonSet) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction PistonAction(string type, int changeX, int changeY, int changeZ, ushort[] pistonSet) => (nl, nasBlock, x, y, z) =>
                                                                                                                                       {
                                                                                                                                           ushort[] dontpush =
                                                                                                                                           {
@@ -1345,7 +1346,7 @@ namespace MCGalaxy
                                                                                                                                           };
                                                                                                                                           if (type.CaselessEq("off"))
                                                                                                                                           {
-                                                                                                                                              BlockEntity[] b = new BlockEntity[5];
+                                                                                                                                              NASBlockEntity[] b = new NASBlockEntity[5];
                                                                                                                                               if (nl.blockEntities.ContainsKey(x + " " + (y - changeY) + " " + z))
                                                                                                                                               {
                                                                                                                                                   b[0] = nl.blockEntities[x + " " + (y - changeY) + " " + z];
@@ -1517,7 +1518,7 @@ namespace MCGalaxy
                                                                                                                                                       Vec3F32 posH = who.Pos.BlockCoords;
                                                                                                                                                       if (who.Pos.FeetBlockCoords == new Vec3S32(x + (push + 1) * changeX, y + (push + 1) * changeY, z + (push + 1) * changeZ) || who.Pos.BlockCoords == new Vec3S32(x + (push + 1) * changeX, y + (push + 1) * changeY, z + (push + 1) * changeZ))
                                                                                                                                                       {
-                                                                                                                                                          if (Get(Collision.ConvertToClientushort(nl.GetBlock((int)posH.X + changeX, (int)posH.Y + changeY, (int)posH.Z + changeZ))).collideAction != DefaultSolidCollideAction())
+                                                                                                                                                          if (Get(NASCollision.ConvertToClientushort(nl.GetBlock((int)posH.X + changeX, (int)posH.Y + changeY, (int)posH.Z + changeZ))).collideAction != DefaultSolidCollideAction())
                                                                                                                                                           {
                                                                                                                                                               Position posit = who.Pos;
                                                                                                                                                               posit.X += changeX * 32;
@@ -1531,7 +1532,7 @@ namespace MCGalaxy
                                                                                                                                           }
                                                                                                                                           if (type.CaselessEq("body"))
                                                                                                                                           {
-                                                                                                                                              BlockEntity[] b = new BlockEntity[5];
+                                                                                                                                              NASBlockEntity[] b = new NASBlockEntity[5];
                                                                                                                                               if (nl.blockEntities.ContainsKey(x + " " + (y - changeY) + " " + z))
                                                                                                                                               {
                                                                                                                                                   b[0] = nl.blockEntities[x + " " + (y - changeY) + " " + z];
@@ -1576,7 +1577,7 @@ namespace MCGalaxy
                                                                                                                                               }
                                                                                                                                           }
                                                                                                                                       };
-        public static Action<NASLevel, NASBlock, int, int, int> StickyPistonAction(string type, int changeX, int changeY, int changeZ, ushort[] pistonSet) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction StickyPistonAction(string type, int changeX, int changeY, int changeZ, ushort[] pistonSet) => (nl, nasBlock, x, y, z) =>
                                                                                                                                             {
                                                                                                                                                 ushort[] dontpush =
                                                                                                                                                 {
@@ -1589,7 +1590,7 @@ namespace MCGalaxy
                     NASPlugin.FromRaw(406),
                     NASPlugin.FromRaw(412),
                                                                                                                                                 };
-                                                                                                                                                BlockEntity[] b = new BlockEntity[5];
+                                                                                                                                                NASBlockEntity[] b = new NASBlockEntity[5];
                                                                                                                                                 if (nl.blockEntities.ContainsKey(x + " " + (y - changeY) + " " + z))
                                                                                                                                                 {
                                                                                                                                                     b[0] = nl.blockEntities[x + " " + (y - changeY) + " " + z];
@@ -1761,7 +1762,7 @@ namespace MCGalaxy
                                                                                                                                                             Vec3F32 posH = who.Pos.BlockCoords;
                                                                                                                                                             if (who.Pos.FeetBlockCoords == new Vec3S32(x + (push + 1) * changeX, y + (push + 1) * changeY, z + (push + 1) * changeZ) || who.Pos.BlockCoords == new Vec3S32(x + (push + 1) * changeX, y + (push + 1) * changeY, z + (push + 1) * changeZ))
                                                                                                                                                             {
-                                                                                                                                                                if (Get(Collision.ConvertToClientushort(nl.GetBlock((int)posH.X + changeX, (int)posH.Y + changeY, (int)posH.Z + changeZ))).collideAction != DefaultSolidCollideAction())
+                                                                                                                                                                if (Get(NASCollision.ConvertToClientushort(nl.GetBlock((int)posH.X + changeX, (int)posH.Y + changeY, (int)posH.Z + changeZ))).collideAction != DefaultSolidCollideAction())
                                                                                                                                                                 {
                                                                                                                                                                     Position posit = who.Pos;
                                                                                                                                                                     posit.X += changeX * 32;
@@ -1871,7 +1872,7 @@ namespace MCGalaxy
             }
             return returnedBlock;
         }
-        public static Action<NASLevel, NASBlock, int, int, int> PowerSourceAction(int direction) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction PowerSourceAction(int direction) => (nl, nasBlock, x, y, z) =>
                                                                                   {
                                                                                       if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                                                                                       {
@@ -1881,7 +1882,7 @@ namespace MCGalaxy
                                                                                           nl.SimulateSetBlock(x, y, z);
                                                                                       }
                                                                                   };
-        public static Action<NASLevel, NASBlock, int, int, int> WireAction(ushort[] actSet, ushort[] inactSet, int direction, ushort hereBlock) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction WireAction(ushort[] actSet, ushort[] inactSet, int direction, ushort hereBlock) => (nl, nasBlock, x, y, z) =>
                                                                                                                                  {
                                                                                                                                      int type = 0;
                                                                                                                                      if (IsPartOfSet(actSet, hereBlock) != -1)
@@ -1902,7 +1903,7 @@ namespace MCGalaxy
                                                                                                                                          nl.blockEntities[x + " " + y + " " + z].strength = 0;
                                                                                                                                          nl.blockEntities[x + " " + y + " " + z].type = type;
                                                                                                                                      }
-                                                                                                                                     BlockEntity b = nl.blockEntities[x + " " + y + " " + z],
+                                                                                                                                     NASBlockEntity b = nl.blockEntities[x + " " + y + " " + z],
                                                                                                                                      strength1 = new(),
                                                                                                                                      strength2 = new();
                                                                                                                                      int strength0 = b.strength;
@@ -1910,7 +1911,7 @@ namespace MCGalaxy
                                                                                                                                      {
                                                                                                                                          if (nl.blockEntities.ContainsKey(x + 1 + " " + y + " " + z))
                                                                                                                                          {
-                                                                                                                                             BlockEntity bEntity = nl.blockEntities[x + 1 + " " + y + " " + z];
+                                                                                                                                             NASBlockEntity bEntity = nl.blockEntities[x + 1 + " " + y + " " + z];
                                                                                                                                              int checkType = bEntity.type;
                                                                                                                                              if (checkType < 5 || checkType == 10 || checkType == 11)
                                                                                                                                              {
@@ -1919,7 +1920,7 @@ namespace MCGalaxy
                                                                                                                                          }
                                                                                                                                          if (nl.blockEntities.ContainsKey(x - 1 + " " + y + " " + z))
                                                                                                                                          {
-                                                                                                                                             BlockEntity bEntity = nl.blockEntities[x - 1 + " " + y + " " + z];
+                                                                                                                                             NASBlockEntity bEntity = nl.blockEntities[x - 1 + " " + y + " " + z];
                                                                                                                                              int checkType = bEntity.type;
                                                                                                                                              if (checkType < 5 || checkType == 8 || checkType == 11)
                                                                                                                                              {
@@ -1931,7 +1932,7 @@ namespace MCGalaxy
                                                                                                                                      {
                                                                                                                                          if (nl.blockEntities.ContainsKey(x + " " + (y + 1) + " " + z))
                                                                                                                                          {
-                                                                                                                                             BlockEntity bEntity = nl.blockEntities[x + " " + (y + 1) + " " + z];
+                                                                                                                                             NASBlockEntity bEntity = nl.blockEntities[x + " " + (y + 1) + " " + z];
                                                                                                                                              int checkType = bEntity.type;
                                                                                                                                              if (checkType <= 5 || checkType == 12)
                                                                                                                                              {
@@ -1940,7 +1941,7 @@ namespace MCGalaxy
                                                                                                                                          }
                                                                                                                                          if (nl.blockEntities.ContainsKey(x + " " + (y - 1) + " " + z))
                                                                                                                                          {
-                                                                                                                                             BlockEntity bEntity = nl.blockEntities[x + " " + (y - 1) + " " + z];
+                                                                                                                                             NASBlockEntity bEntity = nl.blockEntities[x + " " + (y - 1) + " " + z];
                                                                                                                                              int checkType = bEntity.type;
                                                                                                                                              if (checkType < 5 || checkType == 6 || checkType == 12)
                                                                                                                                              {
@@ -1952,7 +1953,7 @@ namespace MCGalaxy
                                                                                                                                      {
                                                                                                                                          if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z + 1)))
                                                                                                                                          {
-                                                                                                                                             BlockEntity bEntity = nl.blockEntities[x + " " + y + " " + (z + 1)];
+                                                                                                                                             NASBlockEntity bEntity = nl.blockEntities[x + " " + y + " " + (z + 1)];
                                                                                                                                              int checkType = bEntity.type;
                                                                                                                                              if (checkType < 5 || checkType == 7 || checkType == 13)
                                                                                                                                              {
@@ -1961,7 +1962,7 @@ namespace MCGalaxy
                                                                                                                                          }
                                                                                                                                          if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z - 1)))
                                                                                                                                          {
-                                                                                                                                             BlockEntity bEntity = nl.blockEntities[x + " " + y + " " + (z - 1)];
+                                                                                                                                             NASBlockEntity bEntity = nl.blockEntities[x + " " + y + " " + (z - 1)];
                                                                                                                                              int checkType = bEntity.type;
                                                                                                                                              if (checkType < 5 || checkType == 9 || checkType == 13)
                                                                                                                                              {
@@ -2008,7 +2009,7 @@ namespace MCGalaxy
                                                                                                                                          }
                                                                                                                                      }
                                                                                                                                  };
-        public static Action<NASLevel, NASBlock, int, int, int> PressurePlateAction() => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction PressurePlateAction() => (nl, nasBlock, x, y, z) =>
                                                                        {
                                                                            bool stoodOn = false;
                                                                            Player[] players = PlayerInfo.Online.Items;
@@ -2030,7 +2031,7 @@ namespace MCGalaxy
                                                                                nl.SimulateSetBlock(x, y, z);
                                                                            }
                                                                        };
-        public static Action<NASLevel, NASBlock, int, int, int> RepeaterAction(int direction, ushort hereBlock) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction RepeaterAction(int direction, ushort hereBlock) => (nl, nasBlock, x, y, z) =>
                                                                                                  {
                                                                                                      int type = 0;
                                                                                                      if (IsPartOfSet(repeaterSetActive, hereBlock) != -1)
@@ -2047,7 +2048,7 @@ namespace MCGalaxy
                                                                                                          nl.blockEntities[x + " " + y + " " + z].strength = 0;
                                                                                                          nl.blockEntities[x + " " + y + " " + z].type = direction;
                                                                                                      }
-                                                                                                     BlockEntity b = nl.blockEntities[x + " " + y + " " + z],
+                                                                                                     NASBlockEntity b = nl.blockEntities[x + " " + y + " " + z],
                                                                                                      strength1 = new();
                                                                                                      if (direction == 5)
                                                                                                      {
@@ -2091,7 +2092,7 @@ namespace MCGalaxy
                                                                                                              strength1 = nl.blockEntities[x + 1 + " " + y + " " + z];
                                                                                                          }
                                                                                                      }
-                                                                                                     QueuedBlockUpdate qb = new()
+                                                                                                     NASLevel.NASQueuedBlockUpdate qb = new()
                                                                                                      {
                                                                                                          x = x,
                                                                                                          y = y,
@@ -2104,9 +2105,9 @@ namespace MCGalaxy
                                                                                                      qb.da = ContRepeaterTask(type, strength1, direction);
                                                                                                      nl.tickQueue.Enqueue(qb, qb.date);
                                                                                                  };
-        public static Action<NASLevel, NASBlock, int, int, int> ContRepeaterTask(int type, BlockEntity strength1, int direction) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction ContRepeaterTask(int type, NASBlockEntity strength1, int direction) => (nl, nasBlock, x, y, z) =>
                                                                                                              {
-                                                                                                                 BlockEntity b = nl.blockEntities[x + " " + y + " " + z];
+                                                                                                                 NASBlockEntity b = nl.blockEntities[x + " " + y + " " + z];
                                                                                                                  if (!(strength1.type < 5 || strength1.type == b.type || (strength1.type == 11 && (b.type == 10 || b.type == 8)) ||
                                                                                                                        (strength1.type == 12 && (b.type == 5 || b.type == 6)) ||
                                                                                                                        (strength1.type == 13 && (b.type == 9 || b.type == 7))))
@@ -2124,7 +2125,7 @@ namespace MCGalaxy
                                                                                                                      b.strength = 0;
                                                                                                                  }
                                                                                                              };
-        public static Action<NASLevel, NASBlock, int, int, int> TurnOffAction() => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction TurnOffAction() => (nl, nasBlock, x, y, z) =>
                                                                  {
                                                                      if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                                                                      {
@@ -2133,9 +2134,9 @@ namespace MCGalaxy
                                                                      nl.SetBlock(x, y, z, NASPlugin.FromRaw(195));
                                                                      nl.blockEntities[x + " " + y + " " + z].strength = 0;
                                                                  };
-        public static Action<NASLevel, NASBlock, int, int, int> DispenserAction(int changeX, int changeY, int changeZ) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction DispenserAction(int changeX, int changeY, int changeZ) => (nl, nasBlock, x, y, z) =>
                                                                                                         {
-                                                                                                            BlockEntity[] b = new BlockEntity[6];
+                                                                                                            NASBlockEntity[] b = new NASBlockEntity[6];
                                                                                                             if (nl.blockEntities.ContainsKey(x + " " + (y + 1) + " " + z) && (changeY != 1))
                                                                                                             {
                                                                                                                 b[0] = nl.blockEntities[x + " " + (y + 1) + " " + z];
@@ -2186,12 +2187,12 @@ namespace MCGalaxy
                                                                                                                 {
                                                                                                                     return;
                                                                                                                 }
-                                                                                                                BlockEntity bEntity = nl.blockEntities[x + " " + y + " " + z];
+                                                                                                                NASBlockEntity bEntity = nl.blockEntities[x + " " + y + " " + z];
                                                                                                                 if (bEntity.drop == null || bEntity.drop.blockStacks == null)
                                                                                                                 {
                                                                                                                     return;
                                                                                                                 }
-                                                                                                                BlockStack bs = bEntity.drop.blockStacks[bEntity.drop.blockStacks.Count - 1];
+                                                                                                                NASBlockStack bs = bEntity.drop.blockStacks[bEntity.drop.blockStacks.Count - 1];
                                                                                                                 if (bs.ID == 7)
                                                                                                                 {
                                                                                                                     return;
@@ -2251,7 +2252,7 @@ namespace MCGalaxy
                                                                                                                     bEntity.drop = new(addedushort);
                                                                                                                     return;
                                                                                                                 }
-                                                                                                                foreach (BlockStack stack in bEntity.drop.blockStacks)
+                                                                                                                foreach (NASBlockStack stack in bEntity.drop.blockStacks)
                                                                                                                 {
                                                                                                                     if (stack.ID == addedushort)
                                                                                                                     {
@@ -2267,7 +2268,7 @@ namespace MCGalaxy
                                                                                                                         return;
                                                                                                                     }
                                                                                                                 }
-                                                                                                                if (bEntity.drop.blockStacks.Count >= Container.BlockStackLimit)
+                                                                                                                if (bEntity.drop.blockStacks.Count >= NASContainer.BlockStackLimit)
                                                                                                                 {
                                                                                                                     return;
                                                                                                                 }
@@ -2282,7 +2283,7 @@ namespace MCGalaxy
                                                                                                                 }
                                                                                                             }
                                                                                                         };
-        public static Action<NASLevel, NASBlock, int, int, int> SpongeAction() => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction SpongeAction() => (nl, nasBlock, x, y, z) =>
                                                                 {
                                                                     bool absorbed = false;
                                                                     for (int xOff = -3; xOff <= 3; xOff++)
@@ -2304,15 +2305,15 @@ namespace MCGalaxy
                                                                         nl.SetBlock(x, y, z, NASPlugin.FromRaw(428));
                                                                     }
                                                                 };
-        public static Action<NASLevel, NASBlock, int, int, int> NeedsSupportAction() => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction NeedsSupportAction() => (nl, nasBlock, x, y, z) =>
                                                                       {
                                                                           IsSupported(nl, x, y, z);
                                                                       };
-        public static Action<NASLevel, NASBlock, int, int, int> GenericPlantAction() => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction GenericPlantAction() => (nl, nasBlock, x, y, z) =>
                                                                       {
                                                                           GenericPlantSurvived(nl, x, y, z);
                                                                       };
-        public static Action<NASLevel, NASBlock, int, int, int> OakSaplingAction() => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction OakSaplingAction() => (nl, nasBlock, x, y, z) =>
                                                                     {
                                                                         if (!GenericPlantSurvived(nl, x, y, z))
                                                                         {
@@ -2321,7 +2322,7 @@ namespace MCGalaxy
                                                                         nl.SetBlock(x, y, z, 0);
                                                                         NASTree.GenOakTree(nl, r, x, y, z, true);
                                                                     };
-        public static Action<NASLevel, NASBlock, int, int, int> BirchSaplingAction() => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction BirchSaplingAction() => (nl, nasBlock, x, y, z) =>
                                                                       {
                                                                           if (!GenericPlantSurvived(nl, x, y, z))
                                                                           {
@@ -2330,7 +2331,7 @@ namespace MCGalaxy
                                                                           nl.SetBlock(x, y, z, 0);
                                                                           NASTree.GenBirchTree(nl, r, x, y, z, true);
                                                                       };
-        public static Action<NASLevel, NASBlock, int, int, int> SwampSaplingAction() => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction SwampSaplingAction() => (nl, nasBlock, x, y, z) =>
                                                                       {
                                                                           if (!GenericPlantSurvived(nl, x, y, z))
                                                                           {
@@ -2339,7 +2340,7 @@ namespace MCGalaxy
                                                                           nl.SetBlock(x, y, z, 0);
                                                                           NASTree.GenSwampTree(nl, r, x, y, z, true);
                                                                       };
-        public static Action<NASLevel, NASBlock, int, int, int> SpruceSaplingAction() => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction SpruceSaplingAction() => (nl, nasBlock, x, y, z) =>
                                                                        {
                                                                            if (!GenericPlantSurvived(nl, x, y, z))
                                                                            {
@@ -2348,7 +2349,7 @@ namespace MCGalaxy
                                                                            nl.SetBlock(x, y, z, 0);
                                                                            NASTree.GenSpruceTree(nl, r, x, y, z, true);
                                                                        };
-        public static Action<NASLevel, NASBlock, int, int, int> CropAction(ushort[] cropSet, int index) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction CropAction(ushort[] cropSet, int index) => (nl, nasBlock, x, y, z) =>
                                                                                          {
                                                                                              if (!CropSurvived(nl, x, y, z))
                                                                                              {
@@ -2360,7 +2361,7 @@ namespace MCGalaxy
                                                                                              }
                                                                                              nl.SetBlock(x, y, z, cropSet[index + 1]);
                                                                                          };
-        public static Action<NASLevel, NASBlock, int, int, int> IronCropAction(ushort[] cropSet, int index) => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction IronCropAction(ushort[] cropSet, int index) => (nl, nasBlock, x, y, z) =>
                                                                                              {
                                                                                                  if (!IronCropSurvived(nl, x, y, z))
                                                                                                  {
@@ -2372,9 +2373,9 @@ namespace MCGalaxy
                                                                                                  }
                                                                                                  nl.SetBlock(x, y, z, cropSet[index + 1]);
                                                                                              };
-        public static Action<NASLevel, NASBlock, int, int, int> AutoCraftingAction() => (nl, nasBlock, x, y, z) =>
+        public static NASBlockAction AutoCraftingAction() => (nl, nasBlock, x, y, z) =>
                                                                       {
-                                                                          BlockEntity[] b = new BlockEntity[5];
+                                                                          NASBlockEntity[] b = new NASBlockEntity[5];
                                                                           if (nl.blockEntities.ContainsKey(x + " " + (y - 1) + " " + z))
                                                                           {
                                                                               b[0] = nl.blockEntities[x + " " + (y - 1) + " " + z];
@@ -2411,14 +2412,14 @@ namespace MCGalaxy
                                                                               return;
                                                                           }
                                                                           nl.blockEntities[x + " " + y + " " + z].type = 1;
-                                                                          Recipe recipe = Recipe.GetRecipe(nl, (ushort)x, (ushort)y, (ushort)z, nasBlock.station);
+                                                                          NASCrafting.NASRecipe recipe = NASCrafting.GetRecipe(nl, (ushort)x, (ushort)y, (ushort)z, nasBlock.station);
                                                                           if (recipe == null)
                                                                           {
                                                                               return;
                                                                           }
-                                                                          Drop dropClone = new(recipe.drop);
-                                                                          Crafting.ClearCraftingArea(nl, (ushort)x, (ushort)y, (ushort)z, nasBlock.station.ori);
-                                                                          BlockEntity bEntity = nl.blockEntities[x + " " + y + " " + z];
+                                                                          NASDrop dropClone = new(recipe.drop);
+                                                                          NASCrafting.ClearCraftingArea(nl, (ushort)x, (ushort)y, (ushort)z, nasBlock.station.ori);
+                                                                          NASBlockEntity bEntity = nl.blockEntities[x + " " + y + " " + z];
                                                                           if (bEntity.drop == null)
                                                                           {
                                                                               bEntity.drop = dropClone;
@@ -2434,10 +2435,10 @@ namespace MCGalaxy
                                                                           if (dropClone.blockStacks != null)
                                                                           {
                                                                               bool exists = false;
-                                                                              foreach (BlockStack stack in dropClone.blockStacks)
+                                                                              foreach (NASBlockStack stack in dropClone.blockStacks)
                                                                               {
                                                                                   exists = false;
-                                                                                  foreach (BlockStack otherStack in bEntity.drop.blockStacks)
+                                                                                  foreach (NASBlockStack otherStack in bEntity.drop.blockStacks)
                                                                                   {
                                                                                       if (stack.ID == otherStack.ID)
                                                                                       {

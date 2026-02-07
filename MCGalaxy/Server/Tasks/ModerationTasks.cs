@@ -43,10 +43,18 @@ namespace MCGalaxy.Tasks
         }
         internal static void FreezeCheckTask(SchedulerTask task) => DoTask(task, Server.frozen, FreezeCallback);
         internal static void FreezeCalcNextRun() => CalcNextRun(freezeTask, Server.frozen);
-        static void FreezeCallback(string[] args) => OnModActionEvent.Call(new(args[0], Player.Console, 7, "auto unfreeze"));
+        static void FreezeCallback(string[] args)
+        {
+            ModAction action = new(args[0], Player.Console, ModActionType.Unfrozen, "auto unfreeze");
+            OnModActionEvent.Call(action);
+        }
         internal static void MuteCheckTask(SchedulerTask task) => DoTask(task, Server.muted, MuteCallback);
         internal static void MuteCalcNextRun() => CalcNextRun(muteTask, Server.muted);
-        static void MuteCallback(string[] args) => OnModActionEvent.Call(new(args[0], Player.Console, 5, "auto unmute"));
+        static void MuteCallback(string[] args)
+        {
+            ModAction action = new(args[0], Player.Console, ModActionType.Unmuted, "auto unmute");
+            OnModActionEvent.Call(action);
+        }
         static void DoTask(SchedulerTask task, PlayerExtList list, Action<string[]> callback)
         {
             List<string> lines = list.AllLines();

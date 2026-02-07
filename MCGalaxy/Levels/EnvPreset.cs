@@ -18,21 +18,18 @@ namespace MCGalaxy
 {
     public sealed class EnvPreset
     {
-        public readonly string Fog, Sky, Clouds, Sun, Shadow,
-            LavaLight = "", LampLight = "";
+        const string FOLDER = "presets";
+        const string FILE_EXTENSION = ".env";
+        public readonly string Fog, Sky, Clouds, Sun, Shadow;
+        public readonly string LavaLight = "", LampLight = "";
         public EnvPreset(string raw)
         {
             string[] args = raw.SplitSpaces();
-            Fog = args[0]; 
-            Sky = args[1]; 
-            Clouds = args[2]; 
-            Sun = args[3]; 
-            Shadow = args[4];
+            Fog = args[0]; Sky = args[1]; Clouds = args[2]; Sun = args[3]; Shadow = args[4];
             LavaLight = args.Length > 5 ? args[5] : "";
             LampLight = args.Length > 6 ? args[6] : "";
         }
-        static readonly Dictionary<string, string> Presets = new() 
-        {
+        static readonly Dictionary<string, string> Presets = new() {
                         //   fog   sky   clouds   sun   shadow
             { "Cartoon",  "00FFFF 1E90FF 00BFFF F5DEB3 F4A460" },
             { "Noir",     "000000 1F1F1F 000000 696969 1F1F1F" },
@@ -49,9 +46,11 @@ namespace MCGalaxy
         {
             EnvPreset preset = FindDefault(value);
             if (preset != null) return preset;
-            if (File.Exists("presets/" + value.ToLower() + ".env"))
+            if (File.Exists(FOLDER + "/" + value.ToLower() + FILE_EXTENSION))
             {
-                return new(FileIO.TryReadAllText("presets/ " + value.ToLower() + ".env"));
+                //string text = File.ReadAllText(FOLDER + "/" + value.ToLower() + FILE_EXTENSION);
+                string text = FileIO.TryReadAllText(FOLDER + "/" + value.ToLower() + FILE_EXTENSION);
+                return new EnvPreset(text);
             }
             return null;
         }
@@ -59,19 +58,17 @@ namespace MCGalaxy
         {
             foreach (KeyValuePair<string, string> kvp in Presets)
             {
-                if (kvp.Key.CaselessEq(name)) return new(kvp.Value);
+                if (kvp.Key.CaselessEq(name)) return new EnvPreset(kvp.Value);
             }
             return null;
         }
         public static void ListFor(Player p)
         {
             p.Message("&HPresets: &f{0}", Presets.Join(pr => pr.Key));
-            string[] files = FileIO.TryGetFiles("presets", "*.env");
-            if (files != null)
-            {
-                string all = files.Join(f => Path.GetFileNameWithoutExtension(f));
-                if (all.Length > 0) p.Message("&HCustom presets: &f" + all);
-            }
+            string[] files = FileIO.TryGetFiles(FOLDER, "*" + FILE_EXTENSION);
+            if (files == null) return;
+            string all = files.Join(f => Path.GetFileNameWithoutExtension(f));
+            if (all.Length > 0) p.Message("&HCustom presets: &f" + all);
         }
     }
 }

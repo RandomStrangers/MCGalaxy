@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.Building
     {
         public override string Name => "Mirror";
         public override string Type => CommandTypes.Building;
-        public override sbyte DefaultRank => 50;
+        public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override bool SuperUseable => false;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("Flip") };
         public override void Use(Player p, string message, CommandData data)

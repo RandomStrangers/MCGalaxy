@@ -190,7 +190,7 @@ namespace MCGalaxy.Commands.CPE
         static bool DoCopy(Player p, BlockDefinitionsArgs args, bool keepOrder,
                            BlockDefinition srcDef, ushort src, ushort dst)
         {
-            if (srcDef == null && src < 66)
+            if (srcDef == null && src < Block.CPE_COUNT)
             {
                 srcDef = DefaultSet.MakeCustomBlock(src);
             }
@@ -440,7 +440,7 @@ namespace MCGalaxy.Commands.CPE
         static bool DoEdit(Player p, string[] parts, BlockDefinitionsArgs args, ushort block)
         {
             BlockDefinition def = args.defs[block], globalDef = BlockDefinition.GlobalDefs[block];
-            if (def == null && block < 66)
+            if (def == null && block < Block.CPE_COUNT)
             {
                 def = DefaultSet.MakeCustomBlock(block);
                 UpdateBlock(p, args, def);
@@ -669,7 +669,7 @@ namespace MCGalaxy.Commands.CPE
             // Start from opposite ends to avoid overlap
             if (args.global)
             {
-                for (ushort b = 66; b <= 767; b++)
+                for (ushort b = Block.CPE_COUNT; b <= Block.MaxRaw; b++)
                 {
                     ushort block = Block.FromRaw(b);
                     if (defs[block] == null) return block;
@@ -677,7 +677,7 @@ namespace MCGalaxy.Commands.CPE
             }
             else
             {
-                for (ushort b = 767; b >= 66; b--)
+                for (ushort b = Block.MaxRaw; b >= Block.CPE_COUNT; b--)
                 {
                     ushort block = Block.FromRaw(b);
                     if (defs[block] == null) return block;
@@ -935,7 +935,7 @@ namespace MCGalaxy.Commands.CPE
         public override string Name => "GlobalBlock";
         public override string Shortcut => "gb";
         public override string Type => CommandTypes.Building;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override void Use(Player p, string message, CommandData data) => CustomBlockCommand.Execute(p, message, data, true, "/gb");
         public override void Help(Player p) => CustomBlockCommand.Help(p, "/gb");
         public override void Help(Player p, string message) => CustomBlockCommand.Help(p, "/gb", message);
@@ -945,7 +945,7 @@ namespace MCGalaxy.Commands.CPE
         public override string Name => "LevelBlock";
         public override string Shortcut => "lb";
         public override string Type => CommandTypes.Building;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data) => CustomBlockCommand.Execute(p, message, data, false, "/lb");
         public override void Help(Player p) => CustomBlockCommand.Help(p, "/lb");

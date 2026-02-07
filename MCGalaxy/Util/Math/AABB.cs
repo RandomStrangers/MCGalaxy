@@ -34,6 +34,11 @@ namespace MCGalaxy.Maths
             Max.Y = y2;
             Max.Z = z2;
         }
+        public AABB(Vec3S32 min, Vec3S32 max)
+        {
+            Min = min;
+            Max = max;
+        }
         public static AABB Make(Vec3S32 pos, Vec3S32 size) => new(pos.X - size.X / 2, pos.Y, pos.Z - size.Z / 2,
                 pos.X + size.X / 2, pos.Y + size.Y, pos.Z + size.Z / 2);
         public readonly AABB OffsetPosition(Position pos) => Offset(pos.X, pos.Y - Entities.CharacterHeight, pos.Z);
@@ -102,6 +107,7 @@ namespace MCGalaxy.Maths
             }
             return false;
         }
+        public override readonly string ToString() => Min + " : " + Max;
         public static bool IntersectsSolidBlocks(AABB bb, Level lvl)
         {
             Vec3S32 min = bb.BlockMin, max = bb.BlockMax;
@@ -120,7 +126,7 @@ namespace MCGalaxy.Maths
                         BlockDefinition def = lvl.GetBlockDef(block);
                         if (def != null)
                         {
-                            if (DefaultSet.IsSolid(def.CollideType))
+                            if (CollideType.IsSolid(def.CollideType))
                             {
                                 return true;
                             }
@@ -172,7 +178,7 @@ namespace MCGalaxy.Maths
                         bool solid;
                         if (def != null)
                         {
-                            solid = DefaultSet.IsSolid(def.CollideType);
+                            solid = CollideType.IsSolid(def.CollideType);
                         }
                         else
                         {

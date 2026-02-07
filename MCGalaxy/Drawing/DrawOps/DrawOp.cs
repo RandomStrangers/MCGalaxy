@@ -100,7 +100,7 @@ namespace MCGalaxy.Drawing.Ops
             Coords.Block = block;
             return Coords;
         }
-        Vec3S32 clip = new(ushort.MaxValue, ushort.MaxValue, ushort.MaxValue);
+        Vec3S32 clip = new(ushort.MaxValue);
         protected Vec3U16 Clamp(Vec3S32 pos)
         {
             pos.X = Math.Max(0, Math.Min(pos.X, clip.X));

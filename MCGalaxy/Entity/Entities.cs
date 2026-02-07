@@ -45,10 +45,8 @@ namespace MCGalaxy
                 }
                 else if (p == other && self)
                 {
-                    other.Pos = pos; 
-                    other.SetYawPitch(rot.RotY, rot.HeadX);
-                    other._lastPos = other.Pos; 
-                    other._lastRot = other.Rot;
+                    other.Pos = pos; other.SetYawPitch(rot.RotY, rot.HeadX);
+                    other._lastPos = other.Pos; other._lastRot = other.Rot;
                     Spawn(other, p, pos, rot, possession);
                 }
             }
@@ -84,8 +82,8 @@ namespace MCGalaxy
         public static void Spawn(Player dst, Player p, Position pos,
                                  Orientation rot, string possession = "")
         {
-            string name = p.color + p.truename + possession,
-                skin = p.SkinName, model = p.Model;
+            string name = p.color + p.truename + possession;
+            string skin = p.SkinName, model = p.Model;
             OnEntitySpawnedEvent.Call(p, ref name, ref skin, ref model, dst);
             SpawnRaw(dst, p, pos, rot, skin, name, model);
         }
@@ -101,14 +99,9 @@ namespace MCGalaxy
                 Spawn(p, other);
             }
             GlobalSpawn(p, pos, rot, true);
-            if (bots)
-            {
-                PlayerBot[] botsList = p.Level.Bots.Items;
-                foreach (PlayerBot b in botsList) 
-                { 
-                    Spawn(p, b); 
-                }
-            }
+            if (!bots) return;
+            PlayerBot[] botsList = p.Level.Bots.Items;
+            foreach (PlayerBot b in botsList) { Spawn(p, b); }
         }
         /// <summary> Despawns this player to all other players, and despawns all others players to this player. </summary>
         internal static void DespawnEntities(Player p, bool bots = true)
@@ -119,21 +112,16 @@ namespace MCGalaxy
                 if (p.Level == other.Level && p != other) Despawn(p, other);
             }
             GlobalDespawn(p, true);
-            if (bots)
-            {
-                PlayerBot[] botsList = p.Level.Bots.Items;
-                foreach (PlayerBot b in botsList) 
-                { 
-                    Despawn(p, b); 
-                }
-            }
+            if (!bots) return;
+            PlayerBot[] botsList = p.Level.Bots.Items;
+            foreach (PlayerBot b in botsList) { Despawn(p, b); }
         }
         public static void Spawn(Player dst, PlayerBot b)
         {
             string name = Chat.Format(b.color + b.DisplayName, dst, true, false);
             if (b.DisplayName.CaselessEq("empty")) name = "";
-            string skin = Chat.Format(b.SkinName, dst, true, false),
-                model = Chat.Format(b.Model, dst, true, false);
+            string skin = Chat.Format(b.SkinName, dst, true, false);
+            string model = Chat.Format(b.Model, dst, true, false);
             OnEntitySpawnedEvent.Call(b, ref name, ref skin, ref model, dst);
             SpawnRaw(dst, b, b.Pos, b.Rot, skin, name, model);
         }
@@ -188,26 +176,26 @@ namespace MCGalaxy
         /// <summary>
         /// Sets the rot of the given entity on the given axis to the given degrees, then broadcasts it to everyone who can see it.
         /// </summary>
-        public static void UpdateEntityRot(Entity e, int prop, int degrees)
+        public static void UpdateEntityRot(Entity e, EntityProp prop, int degrees)
         {
-            if (!(prop == 0 || prop == 1 || prop == 2))
+            if (!(prop == EntityProp.RotX || prop == EntityProp.RotY || prop == EntityProp.RotZ))
             {
-                throw new ArgumentException("You may only pass 0, 1, or 2 to UpdateEntityRot");
+                throw new ArgumentException("You may only pass EntityProp.RotX, EntityProp.RotY, or EntityProp.RotZ to UpdateEntityRot");
             }
             Orientation rot = e.Rot;
             byte packedDeg = Orientation.DegreesToPacked(degrees);
-            if (prop == 0) rot.RotX = packedDeg;
-            if (prop == 1) rot.RotY = packedDeg;
-            if (prop == 2) rot.RotZ = packedDeg;
+            if (prop == EntityProp.RotX) rot.RotX = packedDeg;
+            if (prop == EntityProp.RotY) rot.RotY = packedDeg;
+            if (prop == EntityProp.RotZ) rot.RotZ = packedDeg;
             e.Rot = rot;
-            if (prop == 1) e.SetYawPitch(rot.RotY, rot.HeadX);
+            if (prop == EntityProp.RotY) e.SetYawPitch(rot.RotY, rot.HeadX);
             degrees = Orientation.PackedToDegrees(packedDeg);
             BroadcastEntityProp(e, prop, degrees);
         }
         /// <summary>
         /// Broadcasts the given prop for this entity for everyone who can see it. Does not update any server-side fields for the given entity.
         /// </summary>
-        public static void BroadcastEntityProp(Entity e, int prop, int value)
+        public static void BroadcastEntityProp(Entity e, EntityProp prop, int value)
         {
             Player[] players = PlayerInfo.Online.Items;
             Level lvl = e.Level;
@@ -237,8 +225,7 @@ namespace MCGalaxy
             }
             foreach (Player p in players)
             {
-                p._lastPos = p._positionUpdatePos; 
-                p._lastRot = p.Rot;
+                p._lastPos = p._positionUpdatePos; p._lastRot = p.Rot;
             }
             PlayerBot.GlobalPostBroadcastPosition(); //Need to set bot's _lastPos and _lastRot
         }

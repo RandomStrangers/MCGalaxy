@@ -20,7 +20,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
     {
         public override string Name => "Notes";
         public override string Type => CommandTypes.Moderation;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
@@ -98,7 +98,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
         public override string Name => "MyNotes";
         public override string Type => CommandTypes.Other;
         public override bool SuperUseable => false;
-        public override sbyte DefaultRank => 0;
+        public override LevelPermission DefaultRank => LevelPermission.Guest;
         public override void Use(Player p, string message, CommandData data) => PrintNotes(p, "MyNotes", p.name, message);
         public override void Help(Player p)
         {

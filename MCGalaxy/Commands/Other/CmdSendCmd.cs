@@ -19,7 +19,7 @@ namespace MCGalaxy.Commands.Misc
     {
         public override string Name => "SendCmd";
         public override string Type => CommandTypes.Other;
-        public override sbyte DefaultRank => 120;
+        public override LevelPermission DefaultRank => LevelPermission.Owner;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(3);
@@ -35,7 +35,7 @@ namespace MCGalaxy.Commands.Misc
             {
                 p.Message("Unknown command \"{0}\".", cmdName); return;
             }
-            data.Context = 2;
+            data.Context = CommandContext.SendCmd;
             data.Rank = p.Rank;
             cmd.Use(target, cmdArgs, data);
         }

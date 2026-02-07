@@ -29,13 +29,14 @@ namespace MCGalaxy
             {
                 extraPerms.Clear();
             }
-            if (extraPerms.Count != 0)
+            if (extraPerms.Count == 0)
             {
-                p.Message("&TExtra permissions:");
-                foreach (CommandExtraPerms extra in extraPerms)
-                {
-                    p.Message("{0}) {1} {2}", extra.Num, extra.Describe(), extra.Desc);
-                }
+                return;
+            }
+            p.Message("&TExtra permissions:");
+            foreach (CommandExtraPerms extra in extraPerms)
+            {
+                p.Message("{0}) {1} {2}", extra.Num, extra.Describe(), extra.Desc);
             }
         }
         static void PrintAliases(Player p, Command cmd)
@@ -47,10 +48,11 @@ namespace MCGalaxy
             }
             FindAliases(Alias.coreAliases, cmd, dst);
             FindAliases(Alias.aliases, cmd, dst);
-            if (dst.Length != "Shortcuts: &T".Length)
+            if (dst.Length == "Shortcuts: &T".Length)
             {
-                p.Message(dst.ToString(0, dst.Length - 2));
+                return;
             }
+            p.Message(dst.ToString(0, dst.Length - 2));
         }
         static void FindAliases(List<Alias> aliases, Command cmd, StringBuilder dst)
         {
@@ -76,11 +78,15 @@ namespace MCGalaxy
                 dst.Append(", ");
             }
         }
-        public static void MessageNeedMinPerm(Player p, string action, sbyte perm) => p.Message("Only {0}&S{1}", Group.GetColoredName(perm), action);
-        public static bool ValidName(Player p, string name, string type) => IsValidName(p, name, type, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890._+");
+        public static void MessageNeedMinPerm(Player p, string action, LevelPermission perm) => p.Message("Only {0}&S{1}", Group.GetColoredName(perm), action);
+        public static bool ValidName(Player p, string name, string type)
+        {
+            const string alphabet = Player.USERNAME_ALPHABET + "+"; // compatibility with ClassiCubeAccountPlus
+            return IsValidName(p, name, type, alphabet);
+        }
         public static bool ValidPlayerName(Player p, string name)
         {
-            string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890._+"; // compatibility with ClassiCubeAccountPlus
+            string alphabet = Player.USERNAME_ALPHABET + "+"; // compatibility with ClassiCubeAccountPlus
             foreach (AuthService service in AuthService.Services)
             {
                 alphabet += service.NameSuffix;

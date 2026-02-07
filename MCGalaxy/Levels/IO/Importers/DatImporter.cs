@@ -29,7 +29,7 @@ namespace MCGalaxy.Levels.IO
             Level lvl = new(name, 0, 0, 0);
             JavaReader r = new()
             {
-                src = new(s)
+                src = new BinaryReader(s)
             };
             int signature = r.ReadInt32();
             // Format version 0 - preclassic to classic 0.12
@@ -53,13 +53,15 @@ namespace MCGalaxy.Levels.IO
                 _ => throw new InvalidDataException("Invalid .dat map version"),
             };
         }
+        // Map 'format' is just the 256x64x256 blocks of the level
+        const int PC_WIDTH = 256, PC_HEIGHT = 64, PC_LENGTH = 256;
         static Level ReadFormat0(Level lvl, Stream s)
         {
-            lvl.Width = 256;
-            lvl.Height = 64;
-            lvl.Length = 256;
+            lvl.Width = PC_WIDTH;
+            lvl.Height = PC_HEIGHT;
+            lvl.Length = PC_LENGTH;
             // First 4 bytes were already read earlier as signature
-            byte[] blocks = new byte[256 * 64 * 256];
+            byte[] blocks = new byte[PC_WIDTH * PC_HEIGHT * PC_LENGTH];
             blocks[0] = 1;
             blocks[1] = 1;
             blocks[2] = 1;
@@ -68,8 +70,8 @@ namespace MCGalaxy.Levels.IO
             lvl.blocks = blocks;
             SetupClassic013(lvl);
             // Similiar env to how it appears in preclassic client
-            lvl.Config.EdgeBlock = 0;
-            lvl.Config.HorizonBlock = 0;
+            lvl.Config.EdgeBlock = Block.Air;
+            lvl.Config.HorizonBlock = Block.Air;
             return lvl;
         }
         static Level ReadFormat1(Level lvl, JavaReader r)

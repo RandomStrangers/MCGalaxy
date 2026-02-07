@@ -21,7 +21,7 @@ namespace MCGalaxy.Commands.Building
     {
         public override string Type => CommandTypes.Building;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 30;
+        public override LevelPermission DefaultRank => LevelPermission.Builder;
         public override bool SuperUseable => false;
         protected virtual int MarksCount => 2;
         protected virtual string SelectionType => "region";

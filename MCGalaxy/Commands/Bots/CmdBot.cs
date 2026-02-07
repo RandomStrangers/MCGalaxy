@@ -22,14 +22,14 @@ namespace MCGalaxy.Commands.Bots
         public override string Name => "Bot";
         public override string Type => CommandTypes.Moderation;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 100;
+        public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override bool SuperUseable => false;
         public override CommandAlias[] Aliases => new[] {
                     new CommandAlias("BotAdd", "add"),
                     new CommandAlias("BotRemove", "remove"),
                     new CommandAlias("BotInfo", "info")
                 };
-        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can modify bots that do not belong to them") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can modify bots that do not belong to them") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -141,7 +141,7 @@ namespace MCGalaxy.Commands.Bots
                     else
                     {
                         p.Message("Removed {0} bot{1}.", removedCount, removedCount.Plural());
-                        BotsFile.Save(p.Level);
+                        BotsFile.Save(p.Level       );
                     }
                 }
                 else
@@ -158,7 +158,7 @@ namespace MCGalaxy.Commands.Bots
                 p.Message("Removed bot {0}", bot.ColoredName);
             }
         }
-        void SetBotText(Player p, string botName, string text, sbyte plRank)
+        void SetBotText(Player p, string botName, string text, LevelPermission plRank)
         {
             PlayerBot bot = Matcher.FindBots(p, botName);
             if (bot == null) return;
@@ -170,8 +170,7 @@ namespace MCGalaxy.Commands.Bots
             }
             else
             {
-                
-                bool allCmds = CommandExtraPerms.Find("MB", 1).UsableBy(plRank);
+                bool allCmds = HasExtraPerm("MB", plRank, 1);
                 if (!MessageBlock.Validate(p, text, allCmds)) return;
                 p.Message("Set text shown when bot {0} &Sis clicked on to {1}", bot.ColoredName, text);
                 bot.ClickedOnText = text;

@@ -27,7 +27,10 @@ namespace MCGalaxy.Network
         public int count;
         public BufferedBlockSender() { }
         /// <summary> Constructs a bulk sender that will send block changes to all players on that level </summary>
-        public BufferedBlockSender(Level level) => this.level = level;
+        public BufferedBlockSender(Level level)
+        {
+            this.level = level;
+        }
         /// <summary> Constructs a bulk sender that will only send block changes to that player </summary>
         public BufferedBlockSender(Player player)
         {
@@ -67,7 +70,7 @@ namespace MCGalaxy.Network
                 if (p.Level != level) continue;
                 byte[] packet = MakePacket(p, ref bulk, ref normal,
                                            ref classic, ref ext, ref extBulk);
-                p.Socket.Send(packet, 0x02);
+                p.Socket.Send(packet, SendFlags.LowPriority);
             }
         }
         void SendPlayer()
@@ -76,7 +79,7 @@ namespace MCGalaxy.Network
                 classic = null, ext = null, extBulk = null,
                 packet = MakePacket(player, ref bulk, ref normal,
                                        ref classic, ref ext, ref extBulk);
-            player.Socket.Send(packet, 0x02);
+            player.Socket.Send(packet, SendFlags.LowPriority);
         }
         #region Packet construction
         byte[] MakePacket(Player p, ref byte[] bulk, ref byte[] normal,

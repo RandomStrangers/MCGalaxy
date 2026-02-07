@@ -127,14 +127,14 @@ namespace MCGalaxy.Modules.Relay.Discord
             string target = "(" + msg.Method + " " + msg.Path + ")";
             Logger.LogError("Error sending request to Discord API " + target, ex);
         }
-        static void LogWarning(Exception ex) => Logger.Log(6, "Error sending request to Discord API - " + ex.Message);
+        static void LogWarning(Exception ex) => Logger.Log(LogType.Warning, "Error sending request to Discord API - " + ex.Message);
         static void LogResponse(string err)
         {
             if (string.IsNullOrEmpty(err)) return;
             // Discord sometimes returns <html>..</html> responses for internal server errors
             //  most of this is useless content, so just truncate these particular errors
             if (err.Length > 200) err = err.Substring(0, 200) + "...";
-            Logger.Log(6, "Discord API returned: " + err);
+            Logger.Log(LogType.Warning, "Discord API returned: " + err);
         }
         static void SleepForRetryPeriod(WebResponse res)
         {
@@ -153,7 +153,7 @@ namespace MCGalaxy.Modules.Relay.Discord
                 // No recommended retry delay.. 30 seconds is a good bet
                 delay = 30;
             }
-            Logger.Log(1, "Discord bot ratelimited! Trying again in {0} seconds..", delay);
+            Logger.Log(LogType.SystemActivity, "Discord bot ratelimited! Trying again in {0} seconds..", delay);
             Thread.Sleep(TimeSpan.FromSeconds(delay + 0.5f));
         }
     }

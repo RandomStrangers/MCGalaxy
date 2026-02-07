@@ -20,7 +20,7 @@ namespace MCGalaxy.Commands.Misc
     {
         public override string Name => "Timer";
         public override string Type => CommandTypes.Other;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
             if (p.cmdTimer) { p.Message("Can only have one timer at a time. Use /abort to cancel your previous timer."); return; }

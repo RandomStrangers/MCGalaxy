@@ -22,6 +22,7 @@ namespace MCGalaxy.Generator.Foliage
     public sealed class AshTree : Tree
     {
         int branchBaseHeight, branchAmount;
+        const int maxExtent = 5, maxBranchHeight = 10, maxCluster = 3;
         readonly List<Vec3S32> branch = new();
         public override long EstimateBlocksAffected() => (long)height * height * height;
         public override int DefaultSize(Random rnd) => rnd.Next(5, 10);
@@ -29,7 +30,7 @@ namespace MCGalaxy.Generator.Foliage
         {
             this.rnd = rnd;
             height = value;
-            size = 8;
+            size = maxExtent + maxCluster;
             branchBaseHeight = height / 4;
             branchAmount = rnd.Next(10, 25);
         }
@@ -46,20 +47,20 @@ namespace MCGalaxy.Generator.Foliage
         }
         void DoBranch(int x, int y, int z, TreeOutput output)
         {
-            int dx = rnd.Next(-5, 5),
-                dz = rnd.Next(-5, 5),
-                clusterSize = rnd.Next(1, 3),
-                branchStart = rnd.Next(branchBaseHeight, height),
-                branchMax = branchStart + rnd.Next(3, 10);
-            Vec3S32 p1 = new(x, y + branchStart, z),
-                p2 = new(x + dx, y + branchMax, z + dz);
+            int dx = rnd.Next(-maxExtent, maxExtent);
+            int dz = rnd.Next(-maxExtent, maxExtent);
+            int clusterSize = rnd.Next(1, maxCluster);
+            int branchStart = rnd.Next(branchBaseHeight, height);
+            int branchMax = branchStart + rnd.Next(3, maxBranchHeight);
+            Vec3S32 p1 = new(x, y + branchStart, z);
+            Vec3S32 p2 = new(x + dx, y + branchMax, z + dz);
             Line(p1, p2, output);
             int R = clusterSize;
             Vec3S32[] marks = new Vec3S32[] {
                 new(x + dx - R, y + branchMax - R, z + dz - R),
                 new(x + dx + R, y + branchMax + R, z + dz + R) };
             DrawOp op = new EllipsoidDrawOp();
-            Brush brush = new SolidBrush(18);
+            Brush brush = new SolidBrush(Block.Leaves);
             op.SetMarks(marks);
             op.Perform(marks, brush, b => output(b.X, b.Y, b.Z, b.Block));
         }
@@ -68,7 +69,7 @@ namespace MCGalaxy.Generator.Foliage
             LineDrawOp.DrawLine(p1.X, p1.Y, p1.Z, 10000, p2.X, p2.Y, p2.Z, branch);
             foreach (Vec3S32 P in branch)
             {
-                output((ushort)P.X, (ushort)P.Y, (ushort)P.Z, 17);
+                output((ushort)P.X, (ushort)P.Y, (ushort)P.Z, Block.Log);
             }
             branch.Clear();
         }

@@ -21,7 +21,7 @@ namespace MCGalaxy.Blocks.Physics
         {
             Random rand = lvl.physRandom;
             ushort x = C.X, y = C.Y, z = C.Z;
-            if (lvl.GetBlock(x, (ushort)(y - 1), z) != 11)
+            if (lvl.GetBlock(x, (ushort)(y - 1), z) != Block.StillLava)
                 return;
             if (lvl.IsAirAt(x, (ushort)(y + 1), z))
             {
@@ -35,12 +35,10 @@ namespace MCGalaxy.Blocks.Physics
                     if (unblocked)
                     {
                         PhysicsArgs args = default;
-                        args.Type1 = 1;
-                        args.Value1 = 1;
-                        args.Type2 = 3; 
-                        args.Value2 = 100;
-                        lvl.AddUpdate(bAbove, 189, default(PhysicsArgs));
-                        lvl.AddUpdate(C.Index, 11, args);
+                        args.Type1 = PhysicsArgs.Wait; args.Value1 = 1;
+                        args.Type2 = PhysicsArgs.Dissipate; args.Value2 = 100;
+                        lvl.AddUpdate(bAbove, Block.Fireworks, default(PhysicsArgs));
+                        lvl.AddUpdate(C.Index, Block.StillLava, args);
                         args.Data = C.Data.Data;
                         C.Data = args;
                         return;
@@ -51,31 +49,25 @@ namespace MCGalaxy.Blocks.Physics
         }
         static void Firework(ref PhysInfo C, int size, Level lvl, Random rand)
         {
-            int rand1 = rand.Next(21, 36),
-                rand2 = rand.Next(21, 36),
-                min = Math.Min(rand1, rand2), max = Math.Max(rand1, rand2);
+            int rand1 = rand.Next(Block.Red, Block.White);
+            int rand2 = rand.Next(Block.Red, Block.White);
+            int min = Math.Min(rand1, rand2), max = Math.Max(rand1, rand2);
             // Not using override, since override = true makes it more likely that a colored block will be
             // generated with no extraInfo, because it sets a Check for that position with no extraInfo.
-            lvl.AddUpdate(C.Index, 0, default(PhysicsArgs));
+            lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
             ushort x = C.X, y = C.Y, z = C.Z;
             for (int yy = y - (size + 1); yy <= y + (size + 1); ++yy)
-            {
                 for (int zz = z - (size + 1); zz <= z + (size + 1); ++zz)
-                {
                     for (int xx = x - (size + 1); xx <= x + (size + 1); ++xx)
                     {
                         if (lvl.IsAirAt((ushort)xx, (ushort)yy, (ushort)zz, out int index) && rand.Next(1, 40) < 2)
                         {
                             PhysicsArgs args = default;
-                            args.Type1 = 4;
-                            args.Value1 = 100;
-                            args.Type2 = 3; 
-                            args.Value2 = 25;
+                            args.Type1 = PhysicsArgs.Drop; args.Value1 = 100;
+                            args.Type2 = PhysicsArgs.Dissipate; args.Value2 = 25;
                             lvl.AddUpdate(index, (byte)rand.Next(min, max), args);
                         }
                     }
-                }
-            }
         }
     }
 }

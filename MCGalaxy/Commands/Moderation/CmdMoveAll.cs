@@ -20,7 +20,7 @@ namespace MCGalaxy.Commands.Moderation
         public override string Shortcut => "ma";
         public override string Type => CommandTypes.Moderation;
         public override bool MuseumUsable => false;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
             Level level = Matcher.FindLevels(p, message);

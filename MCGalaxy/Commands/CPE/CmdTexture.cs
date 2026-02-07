@@ -19,14 +19,10 @@ namespace MCGalaxy.Commands.CPE
     {
         public override string Name => "Texture";
         public override string Type => CommandTypes.Other;
-        public override sbyte DefaultRank => 80;
+        public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) 
-            {
-                Help(p);
-                return; 
-            }
+            if (message.Length == 0) { Help(p); return; }
             string[] args = message.SplitSpaces();
             string scope = args[0].ToLower();
             if (scope == "local") scope = "level";
@@ -55,13 +51,11 @@ namespace MCGalaxy.Commands.CPE
                 HttpUtil.FilterURL(ref url);
                 if (!(url.CaselessContains(".png") || url.CaselessContains(".zip")))
                 {
-                    p.Message("URL must contain either .png (for terrain) or .zip (for texture pack)");
-                    return;
+                    p.Message("URL must contain either .png (for terrain) or .zip (for texture pack)"); return;
                 }
-                if (url.Length > 128)
+                if (url.Length > (NetUtils.StringSize * 2))
                 {
-                    p.Message("The URL must be 128 characters or less."); 
-                    return;
+                    p.Message("The URL must be " + (NetUtils.StringSize * 2) + " characters or less."); return;
                 }
             }
             if (scope == "global" || scope == "globalzip")
