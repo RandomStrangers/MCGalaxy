@@ -28,6 +28,7 @@ namespace MCGalaxy.Maths
             Z = z;
         }
         public static explicit operator Vec3U16(Vec3S32 a) => new((ushort)a.X, (ushort)a.Y, (ushort)a.Z);
+        public override readonly string ToString() => X + ", " + Y + ", " + Z;
     }
     /// <summary> 3 component vector (signed 32 bit integer) </summary>
     public struct Vec3S32
@@ -91,6 +92,7 @@ namespace MCGalaxy.Maths
             hashCode += 1000000021 * Z;
             return hashCode;
         }
+        public override readonly string ToString() => X + ", " + Y + ", " + Z;
     }
     /// <summary> 3 component vector (32 bit floating point) </summary>
     public struct Vec3F32
@@ -125,5 +127,6 @@ namespace MCGalaxy.Maths
         public static Vec3F32 operator -(Vec3F32 a, Vec3F32 b) => new(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
         public static Vec3F32 operator +(Vec3F32 a, Vec3F32 b) => new(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
         public static implicit operator Vec3F32(Vec3S32 a) => new(a.X, a.Y, a.Z);
+        public override readonly string ToString() => X + "," + Y + "," + Z;
     }
 }
