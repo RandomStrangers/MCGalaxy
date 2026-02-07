@@ -46,3 +46,4 @@ namespace MCGalaxy.Commands.World
         }
     }
 }
+
