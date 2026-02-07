@@ -32,6 +32,22 @@
     <BaseAddress>4194304</BaseAddress>
     <Prefer32Bit>True</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DefineConstants></DefineConstants>
+    <ErrorReport>Prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DebugSymbols>False</DebugSymbols>
+    <PlatformTarget>x86</PlatformTarget>
+    <Prefer32Bit>True</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <StartAction>Project</StartAction>
+  </PropertyGroup>
   <PropertyGroup>
     <StartupObject>MCGalaxy.Cli.Program</StartupObject>
   </PropertyGroup>
