@@ -17,7 +17,6 @@ jobs:
         id: compile
         run: |
           msbuild MCGalaxy.sln /p:Configuration=Release
-          msbuild MCGalaxy/MCGalaxy.csproj /p:Configuration=Release
       - uses: ./.github/actions/notify_success
         if: ${{ always() && steps.compile.outcome == 'success' }}
         with:
