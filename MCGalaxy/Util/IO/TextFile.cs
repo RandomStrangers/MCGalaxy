@@ -1,0 +1,118 @@
+/*
+    Copyright 2015-2024 MCGalaxy
+    Dual-licensed under the Educational Community License, Version 2.0 and
+    the GNU General Public License, Version 3 (the "Licenses"); you may
+    not use this file except in compliance with the Licenses. You may
+    obtain a copy of the Licenses at
+    https://opensource.org/license/ecl-2-0/
+    https://www.gnu.org/licenses/gpl-3.0.html
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the Licenses are distributed on an "AS IS"
+    BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+    or implied. See the Licenses for the specific language governing
+    permissions and limitations under the Licenses.
+ */
+using System.Collections.Generic;
+using System.IO;
+namespace MCGalaxy.Util
+{
+    public delegate void TextFileChanged();
+    /// <summary> Represents a text file and associated data for it </summary>
+    public sealed class TextFile
+    {
+        public readonly string Filename;
+        public readonly string[] DefaultText;
+        public TextFileChanged OnTextChanged;
+        public TextFile(string filename, params string[] defaultText)
+        {
+            Filename = filename;
+            DefaultText = defaultText;
+        }
+        public void EnsureExists()
+        {
+            if (!File.Exists(Filename))
+            {
+                Logger.Log(1, Filename + " does not exist, creating");
+                if (DefaultText != null)
+                {
+                    for (int i = 0; i < DefaultText.Length; i++)
+                    {
+                        new StreamWriter(Filename).WriteLine(DefaultText[i]);
+                    }
+                }
+            }
+        }
+        public string[] GetText() => FileIO.TryReadAllLines(Filename);
+        /// <summary>
+        /// Returns all text lines in the file that do not begin with # and are not empty.
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetTextWithoutComments()
+        {
+            string[] lines = GetText();
+            List<string> text = new();
+            foreach (string line in lines)
+            {
+                if (line.StartsWith("#") || line.Trim().Length == 0)
+                {
+                    continue;
+                }
+                text.Add(line);
+            }
+            return text;
+        }
+        public static Dictionary<string, TextFile> Files = new()
+        {
+            {
+                "News", new(Paths.NewsFile, "News have not been created. Put News in '" + Paths.NewsFile + "'.")
+            },
+            {
+                "FAQ", new(Paths.FaqFile, "Example: What does this server run on? This server runs on &b" + Server.SoftwareName)
+            },
+            {
+                "Rules", new(Paths.RulesFile, "No rules entered yet!")
+            },
+            {
+                "OpRules", new(Paths.OprulesFile, "No oprules entered yet!")
+            },
+            {
+                "Custom $s", new(Paths.CustomTokensFile,
+                    "// This is used to create custom chat tokens",
+                    "// Lines starting with // are ignored",
+                    "// Lines should be formatted like this:",
+                    "// $website:http://example.org",
+                    "// That would replace '$website' in any message to 'http://example.org'")
+            },
+            {
+                "Welcome", new(Paths.WelcomeFile, "Welcome to my server!")
+            },
+            {
+                "Eat", new(Paths.EatMessagesFile, "guzzled a grape", "chewed a cherry", "ate an avocado")
+            },
+            {
+                "Profanity filter", new(Paths.BadWordsFile,
+                    "# This file is a list of words to remove via the profanity filter",
+                    "# Each word to remove must be on an individual line")
+            },
+            {
+                "Profanity filter exceptions", new(Paths.BadWordsExceptionsFile,
+                    "# This file is a list of words that the profanity filter will not filter,",
+                    "# even when part of the word has been added to " + Paths.BadWordsFile,
+                    "# This allows mitigation of the \"Scunthorpe problem\" on a case-by-case basis.",
+                    "# For instance, one may want to block the word \"Thor\", but allow the word \"Scunthorpe\".",
+                    "# Each word to allow must be on an individual line")
+            },
+            {
+                "Announcements", new(Paths.AnnouncementsFile, null)
+            },
+            {
+                "Joker", new(Paths.JokerFile, null)
+            },
+            {
+                "8ball", new(Paths.EightBallFile,
+                    "Not likely.", "Very likely.", "Impossible!", "No.",
+                    "Yes.", "Definitely!", "Do some more thinking.")
+            },
+        };
+    }
+}

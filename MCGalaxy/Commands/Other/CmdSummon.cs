@@ -1,0 +1,107 @@
+/*
+    Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
+    Dual-licensed under the    Educational Community License, Version 2.0 and
+    the GNU General Public License, Version 3 (the "Licenses"); you may
+    not use this file except in compliance with the Licenses. You may
+    obtain a copy of the Licenses at
+    https://opensource.org/license/ecl-2-0/
+    https://www.gnu.org/licenses/gpl-3.0.html
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the Licenses are distributed on an "AS IS"
+    BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+    or implied. See the Licenses for the specific language governing
+    permissions and limitations under the Licenses.
+ */
+using System;
+namespace MCGalaxy.Commands.Misc
+{
+    public sealed class CmdSummon : Command2
+    {
+        public override string Name => "Summon";
+        public override string Shortcut => "s";
+        public override string Type => CommandTypes.Other;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 80;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("Fetch"), new CommandAlias("Bring"), new CommandAlias("BringAll", "all") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can summon all players") };
+        public override void Use(Player p, string message, CommandData data)
+        {
+            if (message.Length == 0) { Help(p); return; }
+            if (!message.CaselessEq("all"))
+            {
+                SummonPlayer(p, message, data);
+            }
+            else
+            {
+                if (!CheckExtraPerm(p, data, 1)) return;
+                Player[] players = PlayerInfo.Online.Items;
+                foreach (Player target in players)
+                {
+                    if (target.Level == p.Level && target != p && data.Rank > target.Rank)
+                    {
+                        target.AFKCooldown = DateTime.UtcNow.AddSeconds(2);
+                        target.SendPosition(p.Pos, p.Rot);
+                        target.Message("You were summoned by {0}&S.", target.FormatNick(p));
+                    }
+                }
+                Chat.MessageFromLevel(p, "λNICK &Ssummoned everyone");
+            }
+        }
+        static void SummonPlayer(Player p, string message, CommandData data)
+        {
+            string[] args = message.SplitSpaces();
+            bool confirmed = args.Length > 1 && args[1].CaselessEq("confirm");
+            Player target = PlayerInfo.FindMatches(p, args[0]);
+            if (target == null) return;
+            if (!CheckRank(p, data, target, "summon", true)) return;
+            if (p.Level != target.Level)
+            {
+                if (!CheckVisitPerm(p, target, confirmed)) return;
+                p.Message("{0} &Sis in a different level, moving them..", p.FormatNick(target));
+                target.summonedMap = p.Level.name;
+                PlayerActions.ChangeMap(target, p.Level);
+                target.summonedMap = null;
+                p.BlockUntilLoad(10); // wait for them to load
+            }
+            if (p.Level != target.Level) return; // in case they were unable to move to this level
+            target.AFKCooldown = DateTime.UtcNow.AddSeconds(2);
+            target.SendPosition(p.Pos, p.Rot);
+            target.Message("You were summoned by {0}&S.", target.FormatNick(p));
+        }
+        static bool CheckVisitPerm(Player p, Player target, bool confirmed)
+        {
+            int result = p.Level.VisitAccess.Check(target.name, target.Rank);
+            if (result == 2) return true;
+            if (result == 0) return true;
+            if (result == 4 && confirmed) return true;
+            if (result == 3 && confirmed) return true;
+            if (result == 1)
+            {
+                p.Message("{0} &Sis blacklisted from visiting this map.", p.FormatNick(target));
+                return false;
+            }
+            else if (result == 3)
+            {
+                p.Message("Only {0}&S+ may normally visit this map. {1}&S is ranked {2}",
+                          Group.GetColoredName(p.Level.VisitAccess.Min),
+                          p.FormatNick(target), target.group.ColoredName);
+            }
+            else if (result == 4)
+            {
+                p.Message("Only {0}&S and below may normally visit this map. {1}&S is ranked {2}",
+                          Group.GetColoredName(p.Level.VisitAccess.Max),
+                          p.FormatNick(target), target.group.ColoredName);
+            }
+            p.Message("If you still want to summon them, type &T/Summon {0} confirm", target.name);
+            return false;
+        }
+        public override void Help(Player p)
+        {
+            p.Message("&T/Summon [player]");
+            p.Message("&HSummons [player] to your position.");
+            p.Message("&T/Summon all");
+            p.Message("&HSummons all players in your map");
+        }
+    }
+}
