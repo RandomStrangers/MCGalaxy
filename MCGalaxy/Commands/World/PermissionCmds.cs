@@ -16,9 +16,9 @@ namespace MCGalaxy.Commands.World
 {
     public abstract class PermissionCmd : Command2
     {
-        public override string type { get { return CommandTypes.World; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Type => CommandTypes.World;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 80;
         public static bool Do(Player p, string[] args, int offset, bool max,
                               AccessController access, CommandData data, Level lvl)
         {
@@ -91,7 +91,7 @@ namespace MCGalaxy.Commands.World
                 }
                 else
                 {
-                    UpdatePerms(p, p.level.name, data, args, max);
+                    UpdatePerms(p, p.Level.name, data, args, max);
                 }
                 return;
             }
@@ -121,42 +121,30 @@ namespace MCGalaxy.Commands.World
         {
             string action = IsVisit ? "visit" : "build on";
             string verb = IsVisit ? "visit" : "build";
-            p.Message("&T/{0} [level] [rank]", name);
+            p.Message("&T/{0} [level] [rank]", Name);
             p.Message("&HSets the lowest rank able to {0} the given level.", action);
-            p.Message("&T/{0} -max [level] [Rank]", name);
+            p.Message("&T/{0} -max [level] [Rank]", Name);
             p.Message("&HSets the highest rank able to {0} the given level.", action);
-            p.Message("&T/{0} [level] +[name]", name);
+            p.Message("&T/{0} [level] +[name]", Name);
             p.Message("&HAllows [name] to {0}, even if their rank cannot.", verb);
-            p.Message("&T/{0} [level] -[name]", name);
+            p.Message("&T/{0} [level] -[name]", Name);
             p.Message("&HPrevents [name] from {0}ing, even if their rank can.", verb);
         }
     }
     public sealed class CmdPermissionBuild : LevelPermissionCmd
     {
-        public override string name { get { return "PerBuild"; } }
-        public override string shortcut { get { return "WBuild"; } }
-        public override bool IsVisit { get { return false; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("WorldBuild"), new CommandAlias("PerBuildMax", "-max") }; }
-        }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "bypass max build rank restriction") }; }
-        }
+        public override string Name => "PerBuild";
+        public override string Shortcut => "WBuild";
+        public override bool IsVisit => false;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("WorldBuild"), new CommandAlias("PerBuildMax", "-max") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "bypass max build rank restriction") };
     }
     public sealed class CmdPermissionVisit : LevelPermissionCmd
     {
-        public override string name { get { return "PerVisit"; } }
-        public override string shortcut { get { return "WAccess"; } }
-        public override bool IsVisit { get { return true; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("WorldAccess"), new CommandAlias("PerVisitMax", "-max") }; }
-        }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "bypass max visit rank restriction") }; }
-        }
+        public override string Name => "PerVisit";
+        public override string Shortcut => "WAccess";
+        public override bool IsVisit => true;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("WorldAccess"), new CommandAlias("PerVisitMax", "-max") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "bypass max visit rank restriction") };
     }
 }

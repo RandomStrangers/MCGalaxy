@@ -16,11 +16,11 @@ namespace MCGalaxy.Commands.CPE
 {
     public sealed class CmdReachDistance : Command2
     {
-        public override string name { get { return "ReachDistance"; } }
-        public override string shortcut { get { return "Reach"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "ReachDistance";
+        public override string Shortcut => "Reach";
+        public override string Type => CommandTypes.Building;
+        public override sbyte DefaultRank => 50;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0)

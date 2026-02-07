@@ -60,22 +60,22 @@ namespace MCGalaxy.Core
                 p.isFlying = false;
             }
         }
-        internal static void HandlePlayerClick(Player p, MouseButton _, MouseAction action, ushort __, ushort ___,
-                                               byte id, ushort x, ushort y, ushort z, TargetBlockFace ____)
+        internal static void HandlePlayerClick(Player p, int _, int action, ushort __, ushort ___,
+                                               byte id, ushort x, ushort y, ushort z, int ____)
         {
-            if (action != MouseAction.Pressed) return;
-            if (id != Entities.SelfID && ClickOnBot(p, id)) return;
+            if (action != 0) return;
+            if (id != 0xFF && ClickOnBot(p, id)) return;
             // if Deletable is enabled, handle MBs/Portals in SetBlock instead
-            if (p.level.Config.Deletable || !p.level.IsValidPos(x, y, z)) return;
-            ushort block = p.level.GetBlock(x, y, z);
-            bool isMB = p.level.Props[block].IsMessageBlock;
-            bool isPortal = p.level.Props[block].IsPortal;
+            if (p.Level.Config.Deletable || !p.Level.IsValidPos(x, y, z)) return;
+            ushort block = p.Level.GetBlock(x, y, z);
+            bool isMB = p.Level.Props[block].IsMessageBlock,
+                isPortal = p.Level.Props[block].IsPortal;
             if (isMB) { MessageBlock.Handle(p, x, y, z, true); }
             if (isPortal) { Portal.Handle(p, x, y, z); }
         }
         static bool ClickOnBot(Player p, byte id)
         {
-            PlayerBot[] bots = p.level.Bots.Items;
+            PlayerBot[] bots = p.Level.Bots.Items;
             for (int i = 0; i < bots.Length; i++)
             {
                 if (!p.EntityList.GetID(bots[i], out byte botID)) continue;

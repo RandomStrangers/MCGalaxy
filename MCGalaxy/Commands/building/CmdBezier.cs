@@ -17,15 +17,12 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdBezier : DrawCmd
     {
-        public override string name { get { return "Bezier"; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new CommandAlias[] { new("Curve") }; }
-        }
-        protected override int MarksCount { get { return 3; } }
-        protected override string SelectionType { get { return "points"; } }
-        protected override string PlaceMessage { get { return "Place or break two blocks to determine the endpoints, then another for the control point"; } }
-        protected override DrawOp GetDrawOp(DrawArgs dArgs) { return new BezierDrawOp(); }
+        public override string Name => "Bezier";
+        public override CommandAlias[] Aliases => new CommandAlias[] { new("Curve") };
+        protected override int MarksCount => 3;
+        protected override string SelectionType => "points";
+        protected override string PlaceMessage => "Place or break two blocks to determine the endpoints, then another for the control point";
+        protected override DrawOp GetDrawOp(DrawArgs dArgs) => new BezierDrawOp();
         public override void Help(Player p)
         {
             p.Message("&T/Bezier <brush args>");

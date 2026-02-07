@@ -18,12 +18,6 @@ using System.Net;
 using System.Net.Sockets;
 namespace MCGalaxy.Network
 {
-    public enum SendFlags
-    {
-        None = 0x00,
-        Synchronous = 0x01,
-        LowPriority = 0x02,
-    }
     public delegate INetProtocol ProtocolConstructor(INetSocket socket);
     /// <summary> Abstracts sending to/receiving from a network socket </summary>
     public abstract class INetSocket
@@ -40,7 +34,7 @@ namespace MCGalaxy.Network
         /// <summary> Initialises state to begin asynchronously sending and receiving data </summary>
         public abstract void Init();
         /// <summary> Sends a block of data </summary>
-        public abstract void Send(byte[] buffer, SendFlags flags);
+        public abstract void Send(byte[] buffer, int flags);
         /// <summary> Closes this network socket </summary>
         public abstract void Close();
         protected void HandleReceived(byte[] data, int len)
@@ -87,18 +81,15 @@ namespace MCGalaxy.Network
             ProtocolConstructor cons = Protocols[opcode];
             if (cons != null) protocol = cons(this);
             if (protocol != null) return;
-            Logger.Log(LogType.UserActivity, "Disconnected {0} (unknown opcode {1})", IP, opcode);
+            Logger.Log(3, "Disconnected {0} (unknown opcode {1})", IP, opcode);
             Close();
         }
         static INetSocket()
         {
-            Protocols[Opcode.Handshake] = ConstructClassic;
+            Protocols[0] = ConstructClassic;
             Protocols['G'] = ConstructWebsocket;
         }
-        static INetProtocol ConstructClassic(INetSocket socket)
-        {
-            return new ClassicProtocol(socket);
-        }
+        static INetProtocol ConstructClassic(INetSocket socket) => new ClassicProtocol(socket);
         static INetProtocol ConstructWebsocket(INetSocket socket)
         {
             if (!Server.Config.WebClient) return null;
@@ -136,10 +127,7 @@ namespace MCGalaxy.Network
             sendArgs.Completed += sendCallback;
             ReceiveNextAsync();
         }
-        public override IPAddress IP
-        {
-            get { return SocketUtil.GetIP(socket); }
-        }
+        public override IPAddress IP => SocketUtil.GetIP(socket);
         public override bool LowLatency { set { socket.NoDelay = value; } }
         static readonly EventHandler<SocketAsyncEventArgs> recvCallback = RecvCallback;
         void ReceiveNextAsync()
@@ -174,15 +162,15 @@ namespace MCGalaxy.Network
             }
         }
         static readonly EventHandler<SocketAsyncEventArgs> sendCallback = SendCallback;
-        public override void Send(byte[] buffer, SendFlags flags)
+        public override void Send(byte[] buffer, int flags)
         {
             if (Disconnected || !socket.Connected) return;
             // TODO: Low priority sending support
             try
             {
-                if ((flags & SendFlags.Synchronous) != 0)
+                if ((flags & 0x01) != 0)
                 {
-                    socket.Send(buffer, 0, buffer.Length, SocketFlags.None);
+                    socket.Send(buffer, 0, buffer.Length, 0);
                     return;
                 }
                 lock (sendLock)
@@ -290,36 +278,27 @@ namespace MCGalaxy.Network
         readonly INetSocket s;
         // websocket connection may be a proxied connection
         IPAddress clientIP;
-        public WebSocket(INetSocket socket) { s = socket; }
+        public WebSocket(INetSocket socket) => s = socket;
         // Init taken care by underlying socket
         public override void Init() { }
-        public override IPAddress IP { get { return clientIP ?? s.IP; } }
+        public override IPAddress IP => clientIP ?? s.IP;
         public override bool LowLatency { set { s.LowLatency = value; } }
-        protected override void SendRaw(byte[] data, SendFlags flags)
-        {
-            s.Send(data, flags);
-        }
-        public override void Send(byte[] buffer, SendFlags flags)
-        {
-            s.Send(WrapData(buffer), flags);
-        }
-        protected override void HandleData(byte[] data, int len)
-        {
-            HandleReceived(data, len);
-        }
+        protected override void SendRaw(byte[] data, int flags) => s.Send(data, flags);
+        public override void Send(byte[] buffer, int flags) => s.Send(WrapData(buffer), flags);
+        protected override void HandleData(byte[] data, int len) => HandleReceived(data, len);
         protected override void OnDisconnected(int reason)
         {
             protocol?.Disconnect();
             s.Close();
         }
-        public override void Close() { s.Close(); }
+        public override void Close() => s.Close();
         // Websocket proxying support
         protected override void OnGotHeader(string name, string value)
         {
             base.OnGotHeader(name, value);
             if (name == "X-Real-IP" && Server.Config.AllowIPForwarding && IsTrustedForwarderIP())
             {
-                Logger.Log(LogType.SystemActivity, "{0} is forwarding a connection from {1}", IP, value);
+                Logger.Log(1, "{0} is forwarding a connection from {1}", IP, value);
                 IPAddress.TryParse(value, out clientIP);
             }
         }
@@ -333,152 +312,4 @@ namespace MCGalaxy.Network
             return IPAddress.IsLoopback(ip) || ip.Equals(ccnetIP);
         }
     }
-    // TODO avoid copying so much of TcpSocket
-#if NET_20
-    /// <summary> Backwards compatible socket for older Windows versions where Recv/SendAsync doesn't work </summary>
-    public sealed class TcpLegacySocket : INetSocket
-    {
-        readonly Socket socket;
-        readonly byte[] recvBuffer = new byte[256];
-        readonly byte[] sendBuffer = new byte[4096];
-        readonly object sendLock = new();
-        readonly Queue<byte[]> sendQueue = new(64);
-        volatile bool sendInProgress;
-        public TcpLegacySocket(Socket s) { socket = s; }
-        public override void Init()
-        {
-            ReceiveNextAsync();
-        }
-        public override IPAddress IP
-        {
-            get { return SocketUtil.GetIP(socket); }
-        }
-        public override bool LowLatency { set { socket.NoDelay = value; } }
-        static readonly AsyncCallback recvCallback = RecvCallback;
-        void ReceiveNextAsync()
-        {
-            socket.BeginReceive(recvBuffer, 0, recvBuffer.Length, 0, recvCallback, this);
-        }
-        static void RecvCallback(IAsyncResult result)
-        {
-            TcpLegacySocket s = (TcpLegacySocket)result.AsyncState;
-            if (s.Disconnected) return;
-            try
-            {
-                // If received 0, means socket was closed
-                int recvLen = s.socket.EndReceive(result);
-                if (recvLen == 0) { s.Disconnect(); return; }
-                s.HandleReceived(s.recvBuffer, recvLen);
-                if (!s.Disconnected) s.ReceiveNextAsync();
-            }
-            catch (SocketException)
-            {
-                s.Disconnect();
-            }
-            catch (ObjectDisposedException)
-            {
-                // Socket was closed by another thread, mark as disconnected
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-                s.Disconnect();
-            }
-        }
-        static readonly AsyncCallback sendCallback = SendCallback;
-        public override void Send(byte[] buffer, SendFlags flags)
-        {
-            if (Disconnected || !socket.Connected) return;
-            // TODO: Low priority sending support
-            try
-            {
-                if ((flags & SendFlags.Synchronous) != 0)
-                {
-                    socket.Send(buffer, 0, buffer.Length, SocketFlags.None);
-                    return;
-                }
-                lock (sendLock)
-                {
-                    if (sendInProgress)
-                    {
-                        sendQueue.Enqueue(buffer);
-                    }
-                    else
-                    {
-                        TrySendAsync(buffer);
-                    }
-                }
-            }
-            catch (SocketException)
-            {
-                Disconnect();
-            }
-            catch (ObjectDisposedException)
-            {
-                // Socket was already closed by another thread
-            }
-        }
-        void TrySendAsync(byte[] buffer)
-        {
-            // BlockCopy has some overhead, not worth it for very small data
-            if (buffer.Length <= 16)
-            {
-                for (int i = 0; i < buffer.Length; i++)
-                {
-                    sendBuffer[i] = buffer[i];
-                }
-            }
-            else
-            {
-                Buffer.BlockCopy(buffer, 0, sendBuffer, 0, buffer.Length);
-            }
-            sendInProgress = true;
-            socket.BeginSend(sendBuffer, 0, buffer.Length, 0, sendCallback, this);
-        }
-        static void SendCallback(IAsyncResult result)
-        {
-            TcpLegacySocket s = (TcpLegacySocket)result.AsyncState;
-            try
-            {
-                lock (s.sendLock)
-                {
-                    s.socket.EndSend(result);
-                    s.sendInProgress = false;
-                    if (s.sendQueue.Count > 0)
-                    {
-                        s.TrySendAsync(s.sendQueue.Dequeue());
-                        if (s.Disconnected) s.sendQueue.Clear();
-                    }
-                }
-            }
-            catch (SocketException)
-            {
-                s.Disconnect();
-            }
-            catch (ObjectDisposedException)
-            {
-                // Socket was already closed by another thread
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex);
-            }
-        }
-        // Close while also notifying higher level (i.e. show 'X disconnected' in chat)
-        void Disconnect()
-        {
-            protocol?.Disconnect();
-            Close();
-        }
-        public override void Close()
-        {
-            Disconnected = true;
-            pending.Remove(this);
-            // swallow errors as connection is being closed anyways
-            try { socket.Shutdown(SocketShutdown.Both); } catch { }
-            try { socket.Close(); } catch { }
-            lock (sendLock) { sendQueue.Clear(); }
-        }
-    }
-#endif
 }

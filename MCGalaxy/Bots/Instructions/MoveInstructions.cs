@@ -19,7 +19,7 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to instantly teleport to a position. </summary>
     public class TeleportInstruction : BotInstruction
     {
-        public TeleportInstruction() { Name = "teleport"; }
+        public TeleportInstruction() => Name = "teleport";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             Coords coords = (Coords)data.Metadata;
@@ -40,16 +40,13 @@ namespace MCGalaxy.Bots
             data.Metadata = coords;
             return data;
         }
-        public override void Output(Player p, string[] args, TextWriter w)
-        {
-            w.WriteLine(Name + " " + p.Pos.X + " " + p.Pos.Y + " " + p.Pos.Z + " " + p.Rot.RotY + " " + p.Rot.HeadX);
-        }
+        public override void Output(Player p, string[] args, TextWriter w) => w.WriteLine(Name + " " + p.Pos.X + " " + p.Pos.Y + " " + p.Pos.Z + " " + p.Rot.RotY + " " + p.Rot.HeadX);
         protected struct Coords
         {
             public int X, Y, Z;
             public byte RotX, RotY;
         }
-        public override string[] Help { get { return help; } }
+        public override string[] Help => help;
         static readonly string[] help = new string[] {
             "&T/BotAI add [name] teleport",
             "&HCauses the bot to instantly teleport to a position.",
@@ -59,7 +56,7 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to gradually move towards a position. </summary>
     public class MoveInstruction : TeleportInstruction
     {
-        public MoveInstruction() { Name = "move"; }
+        public MoveInstruction() => Name = "move";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             Coords target = (Coords)data.Metadata;
@@ -75,7 +72,7 @@ namespace MCGalaxy.Bots
             return true;
         }
         protected virtual void StartMoving(PlayerBot bot) { }
-        public override string[] Help { get { return help; } }
+        public override string[] Help => help;
         static readonly string[] help = new string[] {
             "&T/BotAI add [name] move",
             "&HCauses the bot to move towards to a position.",
@@ -85,12 +82,9 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to gradually walk towards to a position. </summary>
     public sealed class WalkInstruction : MoveInstruction
     {
-        public WalkInstruction() { Name = "walk"; }
-        protected override void StartMoving(PlayerBot bot)
-        {
-            bot.FaceTowards(bot.Pos, bot.TargetPos);
-        }
-        public override string[] Help { get { return help; } }
+        public WalkInstruction() => Name = "walk";
+        protected override void StartMoving(PlayerBot bot) => bot.FaceTowards(bot.Pos, bot.TargetPos);
+        public override string[] Help => help;
         static readonly string[] help = new string[] {
             "&T/BotAI add [name] walk",
             "&HCauses the bot to walk towards to a position.",
@@ -100,13 +94,13 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to begin jumping. </summary>
     public sealed class JumpInstruction : BotInstruction
     {
-        public JumpInstruction() { Name = "jump"; }
+        public JumpInstruction() => Name = "jump";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             if (bot.curJump <= 0) bot.curJump = 1;
             bot.NextInstruction(); return false;
         }
-        public override string[] Help { get { return help; } }
+        public override string[] Help => help;
         static readonly string[] help = new string[] {
             "&T/BotAI add [name] jump",
             "&HCauses the bot to perform a jump.",
@@ -117,7 +111,7 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to change how fast it moves. </summary>
     public sealed class SpeedInstruction : BotInstruction
     {
-        public SpeedInstruction() { Name = "speed"; }
+        public SpeedInstruction() => Name = "speed";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             bot.movementSpeed = (int)Math.Round(3m * (short)data.Metadata / 100m);
@@ -135,7 +129,7 @@ namespace MCGalaxy.Bots
             string time = args.Length > 3 ? args[3] : "10";
             w.WriteLine(Name + " " + short.Parse(time));
         }
-        public override string[] Help { get { return help; } }
+        public override string[] Help => help;
         static readonly string[] help = new string[] {
             "&T/BotAI add [name] speed [percentage]",
             "&HSets how fast the bot moves, relative to its normal speed.",

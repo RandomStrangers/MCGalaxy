@@ -16,9 +16,9 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdVIP : Command2
     {
-        public override string name { get { return "VIP"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
+        public override string Name => "VIP";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 100;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { List(p, ""); return; }
@@ -80,10 +80,7 @@ namespace MCGalaxy.Commands.Moderation
                 vip?.Message("You are no longer a VIP!");
             }
         }
-        static void List(Player p, string modifier)
-        {
-            Server.vip.Output(p, "VIPs", "VIP list", modifier);
-        }
+        static void List(Player p, string modifier) => Server.vip.Output(p, "VIPs", "VIP list", modifier);
         public override void Help(Player p)
         {
             p.Message("&T/VIP add/remove [player]");

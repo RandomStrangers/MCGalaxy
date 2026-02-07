@@ -30,21 +30,18 @@ namespace MCGalaxy.Modules.Games.LS
     {
         LSMapConfig cfg = new();
         public LSConfig Config = new();
-        public override string GameName { get { return "Lava survival"; } }
-        public override RoundsGameConfig GetConfig() { return Config; }
-        protected override string WelcomeMessage
-        {
-            get { return "&cLava Survival &Sis running! Type &T/LS go &Sto join"; }
-        }
+        public override string GameName => "Lava survival";
+        public override RoundsGameConfig GetConfig() => Config;
+        protected override string WelcomeMessage => "&cLava Survival &Sis running! Type &T/LS go &Sto join";
         bool flooded, fastMode, waterMode, layerMode, floodUp;
         ushort floodBlock;
-        LSFloodMode floodMode;
+        int floodMode;
         int curLayer, spreadDelay;
         int roundTotalSecs, floodDelaySecs, layerIntervalSecs;
         byte destroyDelay, dissipateChance, burnChance;
         static bool hooked;
         public static LSGame Instance = new();
-        public LSGame() { Picker = new SimpleLevelPicker(); }
+        public LSGame() => Picker = new SimpleLevelPicker();
         public static LSData Get(Player p)
         {
             if (!p.Extras.TryGet("MCG_LS_DATA", out object data))
@@ -79,7 +76,7 @@ namespace MCGalaxy.Modules.Games.LS
             layerIntervalSecs = (int)Config.GetLayerInterval(cfg).TotalSeconds;
             SetFloodMode(RandomFloodMode(rnd));
         }
-        LSFloodMode RandomFloodMode(Random rnd)
+        int RandomFloodMode(Random rnd)
         {
             int likelihood = rnd.Next(1, 101);
             int threshold = 0;
@@ -89,11 +86,11 @@ namespace MCGalaxy.Modules.Games.LS
             for (int i = 0; i < chances.Length; i++)
             {
                 threshold += chances[i];
-                if (likelihood <= threshold) return (LSFloodMode)i;
+                if (likelihood <= threshold) return i;
             }
-            return LSFloodMode.Calm;
+            return 0;
         }
-        public void SetFloodMode(LSFloodMode mode)
+        public void SetFloodMode(int mode)
         {
             floodMode = mode;
             destroyDelay = GetDestroyDelay();
@@ -101,14 +98,8 @@ namespace MCGalaxy.Modules.Games.LS
             burnChance = GetBurnChance();
             if (RoundInProgress) UpdatePhysicsLevel();
         }
-        void UpdatePhysicsLevel()
-        {
-            Map.SetPhysics(floodMode > LSFloodMode.Calm ? 2 : 1);
-        }
-        protected override List<Player> GetPlayers()
-        {
-            return Map.getPlayers();
-        }
+        void UpdatePhysicsLevel() => Map.SetPhysics(floodMode > 0 ? 2 : 1);
+        protected override List<Player> GetPlayers() => Map.GetPlayers();
         protected override void StartGame()
         {
             ResetPlayerDeaths();
@@ -140,7 +131,7 @@ namespace MCGalaxy.Modules.Games.LS
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {
-                if (p.level != Map) continue;
+                if (p.Level != Map) continue;
                 AddLives(p, Get(p).TimesDied, true);
             }
         }
@@ -155,25 +146,16 @@ namespace MCGalaxy.Modules.Games.LS
             data.WaterLeft = 30;
             data.DoorsLeft = 0;
         }
-        bool InSafeZone(ushort x, ushort y, ushort z)
-        {
-            return x >= cfg.SafeZoneMin.X && x <= cfg.SafeZoneMax.X && y >= cfg.SafeZoneMin.Y
+        bool InSafeZone(ushort x, ushort y, ushort z) => x >= cfg.SafeZoneMin.X && x <= cfg.SafeZoneMax.X && y >= cfg.SafeZoneMin.Y
                 && y <= cfg.SafeZoneMax.Y && z >= cfg.SafeZoneMin.Z && z <= cfg.SafeZoneMax.Z;
-        }
         Vec3U16 CurrentLayerPos()
         {
             Vec3U16 pos = cfg.LayerPos;
             pos.Y = (ushort)(pos.Y + ((cfg.LayerHeight * curLayer) - 1));
             return pos;
         }
-        string FloodBlockName()
-        {
-            return waterMode ? "water" : "lava";
-        }
-        public bool IsPlayerDead(Player p)
-        {
-            return Config.MaxLives > 0 && Get(p).TimesDied >= Config.MaxLives;
-        }
+        string FloodBlockName() => waterMode ? "water" : "lava";
+        public bool IsPlayerDead(Player p) => Config.MaxLives > 0 && Get(p).TimesDied >= Config.MaxLives;
         public string DescribeLives(Player p)
         {
             if (Config.MaxLives <= 0) return "have &ainfinite &Slives";
@@ -193,10 +175,6 @@ namespace MCGalaxy.Modules.Games.LS
             p.Message("&4You can still watch, but you cannot build.");
             // TODO: Buy life message
         }
-        protected override string FormatStatus1(Player p)
-        {
-            string money = "&a" + p.money + " &S" + Server.Config.Currency;
-            return money + ", you " + DescribeLives(p);
-        }
+        protected override string FormatStatus1(Player p) => "&a" + p.money + " &S" + Server.Config.Currency + ", you " + DescribeLives(p);
     }
 }

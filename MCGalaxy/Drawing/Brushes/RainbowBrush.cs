@@ -18,7 +18,7 @@ namespace MCGalaxy.Drawing.Brushes
 {
     public sealed class RainbowBrush : CheckeredPaletteBrush
     {
-        public override string Name { get { return "Rainbow"; } }
+        public override string Name => "Rainbow";
         public RainbowBrush() : base(blocks) { }
         internal static ushort[] blocks = new ushort[] {
             Block.Red,   Block.Orange,  Block.Yellow,
@@ -29,7 +29,7 @@ namespace MCGalaxy.Drawing.Brushes
     }
     public sealed class BWRainbowBrush : CheckeredPaletteBrush
     {
-        public override string Name { get { return "BWRainbow"; } }
+        public override string Name => "BWRainbow";
         public BWRainbowBrush() : base(blocks) { }
         internal static ushort[] blocks = new ushort[] {
             Block.Iron,  Block.White,    Block.Gray,
@@ -40,11 +40,8 @@ namespace MCGalaxy.Drawing.Brushes
     {
         readonly Random rnd = new();
         readonly ushort[] blocks;
-        public override string Name { get { return "RandomRainbow"; } }
-        public RandomRainbowBrush(ushort[] list) { blocks = list; }
-        public override ushort NextBlock(DrawOp op)
-        {
-            return blocks[rnd.Next(blocks.Length)];
-        }
+        public override string Name => "RandomRainbow";
+        public RandomRainbowBrush(ushort[] list) => blocks = list;
+        public override ushort NextBlock(DrawOp op) => blocks[rnd.Next(blocks.Length)];
     }
 }

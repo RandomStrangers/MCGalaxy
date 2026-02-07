@@ -22,13 +22,10 @@ namespace MCGalaxy.Modules.Games.TW
 {
     sealed class CmdTntWars : RoundsGameCmd
     {
-        public override string name { get { return "TntWars"; } }
-        public override string shortcut { get { return "tw"; } }
-        protected override RoundsGame Game { get { return TWGame.Instance; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can manage TNT wars") }; }
-        }
+        public override string Name => "TntWars";
+        public override string Shortcut => "tw";
+        protected override RoundsGame Game => TWGame.Instance;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can manage TNT wars") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.CaselessEq("scores"))
@@ -66,7 +63,7 @@ namespace MCGalaxy.Modules.Games.TW
             string prop = args[1], value = args[2];
             if (prop.CaselessEq("spawn"))
             {
-                if (gameCfg.Mode == TWGameMode.FFA)
+                if (gameCfg.Mode == 0)
                 {
                     p.Message("&WCannot set spawns in Free For All mode"); return;
                 }
@@ -108,9 +105,9 @@ namespace MCGalaxy.Modules.Games.TW
             {
                 if (value.CaselessEq("tdm"))
                 {
-                    if (gameCfg.Mode == TWGameMode.FFA)
+                    if (gameCfg.Mode == 0)
                     {
-                        if (p.level != game.Map) { p.Message("Changed gamemode to Team Deathmatch"); }
+                        if (p.Level != game.Map) { p.Message("Changed gamemode to Team Deathmatch"); }
                         game.ModeTDM();
                     }
                     else
@@ -120,9 +117,9 @@ namespace MCGalaxy.Modules.Games.TW
                 }
                 else if (value.CaselessEq("ffa"))
                 {
-                    if (gameCfg.Mode == TWGameMode.TDM)
+                    if (gameCfg.Mode == 1)
                     {
-                        if (p.level != game.Map) { p.Message("Changed gamemode to Free For All"); }
+                        if (p.Level != game.Map) { p.Message("Changed gamemode to Free For All"); }
                         game.ModeFFA();
                     }
                     else
@@ -137,8 +134,8 @@ namespace MCGalaxy.Modules.Games.TW
             }
             else if (prop.CaselessEq("difficulty"))
             {
-                TWDifficulty diff = TWDifficulty.Easy;
-                if (!CommandParser.GetEnum(p, value, "Difficulty", ref diff)) return;
+                int diff = 0;
+                if (!CommandParser.GetInt(p, value, "Difficulty", ref diff, 0, 3)) return;
                 SetDifficulty(game, diff, p);
             }
             else if (prop.CaselessEq("score"))
@@ -193,7 +190,7 @@ namespace MCGalaxy.Modules.Games.TW
             p.Message("Assists: {0} &S(at {1} points)",
                            GetBool(cfg.AssistScore > 0), cfg.AssistScore);
         }
-        static string GetBool(bool value) { return value ? "&aEnabled" : "&cDisabled"; }
+        static string GetBool(bool value) => value ? "&aEnabled" : "&cDisabled";
         bool HandleSetScore(Player p, TWMapConfig cfg, string[] args)
         {
             string opt = args[2], value = args[3];
@@ -339,9 +336,9 @@ namespace MCGalaxy.Modules.Games.TW
             }
             return false;
         }
-        static void SetDifficulty(TWGame game, TWDifficulty diff, Player p)
+        static void SetDifficulty(TWGame game, int diff, Player p)
         {
-            if (p.level != game.Map)
+            if (p.Level != game.Map)
                 p.Message("Changed TNT wars difficulty to {0}", diff);
             game.SetDifficulty(diff);
         }

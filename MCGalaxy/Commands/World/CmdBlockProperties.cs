@@ -18,10 +18,10 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdBlockProperties : Command2
     {
-        public override string name { get { return "BlockProperties"; } }
-        public override string shortcut { get { return "BlockProps"; } }
-        public override string type { get { return CommandTypes.World; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
+        public override string Name => "BlockProperties";
+        public override string Shortcut => "BlockProps";
+        public override string Type => CommandTypes.World;
+        public override sbyte DefaultRank => 100;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -34,7 +34,7 @@ namespace MCGalaxy.Commands.World
                 ListProps(p, scope, args); return;
             }
             ushort block = GetBlock(p, scope, args[1]);
-            if (block == Block.Invalid) return;
+            if (block == 0xff) return;
             if (args.Length < 3) { Help(p); return; }
             string opt = args[2];
             if (opt.CaselessEq("copy"))
@@ -56,8 +56,8 @@ namespace MCGalaxy.Commands.World
             if (scope.CaselessEq("level"))
             {
                 if (p.IsSuper) { p.Message("Cannot use level scope from {0}.", p.SuperName); return null; }
-                if (!LevelInfo.Check(p, data.Rank, p.level, "change properties of blocks in this level")) return null;
-                return p.level.Props;
+                if (!LevelInfo.Check(p, data.Rank, p.Level, "change properties of blocks in this level")) return null;
+                return p.Level.Props;
             }
             p.Message("&WScope must be: global or level");
             return null;
@@ -66,7 +66,7 @@ namespace MCGalaxy.Commands.World
         {
             Player pScope = scope == Block.Props ? Player.Console : p;
             ushort block = Block.Parse(pScope, str);
-            if (block == Block.Invalid)
+            if (block == 0xff)
             {
                 p.Message("&WThere is no block \"{0}\".", str);
             }
@@ -81,7 +81,7 @@ namespace MCGalaxy.Commands.World
             if (props.DeathMessage != null) p.Message("  Death message: &S" + props.DeathMessage);
             if (props.IsDoor) p.Message("  Is an ordinary door");
             if (props.IsTDoor) p.Message("  Is a tdoor (allows other blocks through when open)");
-            if (props.oDoorBlock != Block.Invalid)
+            if (props.oDoorBlock != 0xff)
                 p.Message("  Is an odoor (can be toggled by doors, and toggles other odoors)");
             if (props.IsPortal) p.Message("  Can be used as a &T/Portal");
             if (props.IsMessageBlock) p.Message("  Can be used as a &T/MessageBlock");
@@ -89,22 +89,22 @@ namespace MCGalaxy.Commands.World
             if (props.LavaKills) p.Message("  Is destroyed by flooding lava");
             if (props.OPBlock) p.Message("  Is not affected by explosions");
             if (props.IsRails) p.Message("  Can be used as rails for &T/Train");
-            if (props.AnimalAI != AnimalAI.None)
+            if (props.AnimalAI != 0)
             {
                 p.Message("  Has the {0} AI behaviour", props.AnimalAI);
             }
-            if (props.StackBlock != Block.Air)
+            if (props.StackBlock != 0)
             {
                 p.Message("  Stacks as {0} when placed on top of itself",
                           BlockProps.ScopedName(scope, p, props.StackBlock));
             }
             if (props.Drownable) p.Message("&H  Players can drown in this block");
-            if (props.GrassBlock != Block.Invalid)
+            if (props.GrassBlock != 0xff)
             {
                 p.Message("  Grows into {0} when in sunlight",
                           BlockProps.ScopedName(scope, p, props.GrassBlock));
             }
-            if (props.DirtBlock != Block.Invalid)
+            if (props.DirtBlock != 0xff)
             {
                 p.Message("  Decays into {0} when in shadow",
                           BlockProps.ScopedName(scope, p, props.DirtBlock));
@@ -133,20 +133,20 @@ namespace MCGalaxy.Commands.World
         {
             if (args.Length < 4) { Help(p); return; }
             ushort dst = GetBlock(p, scope, args[3]);
-            if (dst == Block.Invalid) return;
+            if (dst == 0xff) return;
             scope[dst] = scope[block];
             scope[dst].ChangedScope |= BlockProps.ScopeId(scope);
             p.Message("Copied properties of {0} to {1}",
                       BlockProps.ScopedName(scope, p, block),
                       BlockProps.ScopedName(scope, p, dst));
-            BlockProps.ApplyChanges(scope, p.level, block, true);
+            BlockProps.ApplyChanges(scope, p.Level, block, true);
         }
         void ResetProps(Player p, BlockProps[] scope, ushort block)
         {
-            scope[block] = BlockProps.MakeDefault(scope, p.level, block);
+            scope[block] = BlockProps.MakeDefault(scope, p.Level, block);
             string name = BlockProps.ScopedName(scope, p, block);
             p.Message("Reset properties of {0} to default", name);
-            BlockProps.ApplyChanges(scope, p.level, block, true);
+            BlockProps.ApplyChanges(scope, p.Level, block, true);
         }
         void SetProps(Player p, BlockProps[] scope, ushort block, string[] args)
         {
@@ -155,7 +155,7 @@ namespace MCGalaxy.Commands.World
             string value = args.Length > 3 ? args[3] : "";
             opt.SetFunc(p, scope, block, value);
             scope[block].ChangedScope |= BlockProps.ScopeId(scope);
-            BlockProps.ApplyChanges(scope, p.level, block, true);
+            BlockProps.ApplyChanges(scope, p.Level, block, true);
         }
         public override void Help(Player p)
         {

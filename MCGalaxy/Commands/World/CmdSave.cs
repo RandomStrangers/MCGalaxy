@@ -16,22 +16,16 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdSave : Command2
     {
-        public override string name { get { return "Save"; } }
-        public override string type { get { return CommandTypes.World; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new[]
+        public override string Name => "Save";
+        public override string Type => CommandTypes.World;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 80;
+        public override CommandAlias[] Aliases => new[]
                 {
                     new CommandAlias("MapSave"),
                     new CommandAlias("WSave"),
                     new CommandAlias("WorldSave")
                 };
-            }
-        }
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.CaselessEq("all"))
@@ -47,7 +41,7 @@ namespace MCGalaxy.Commands.World
                 }
                 else
                 {
-                    Save(p, p.level, "");
+                    Save(p, p.Level, "");
                 }
                 return;
             }

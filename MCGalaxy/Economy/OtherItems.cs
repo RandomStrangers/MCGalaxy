@@ -23,7 +23,7 @@ namespace MCGalaxy.Eco
             Aliases = new string[] { "snack" };
             Price = 0;
         }
-        public override string Name { get { return "Snack"; } }
+        public override string Name => "Snack";
         public override void OnPurchase(Player p, string args)
         {
             if (DateTime.UtcNow < p.NextEat)

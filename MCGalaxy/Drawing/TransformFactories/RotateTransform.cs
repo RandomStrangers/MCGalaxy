@@ -17,8 +17,8 @@ namespace MCGalaxy.Drawing.Transforms
 {
     public sealed class RotateTransformFactory : TransformFactory
     {
-        public override string Name { get { return "Rotate"; } }
-        public override string[] Help { get { return HelpString; } }
+        public override string Name => "Rotate";
+        public override string[] Help => HelpString;
         static readonly string[] HelpString = new string[] {
             "&TArguments: [angleX] [angleY] [angleZ]",
             "&HRotates the output of the draw operation around its bottom left corner",
@@ -52,9 +52,6 @@ namespace MCGalaxy.Drawing.Transforms
             }
             return true;
         }
-        static bool IsCentre(string input)
-        {
-            return input.CaselessEq("centre") || input.CaselessEq("center");
-        }
+        static bool IsCentre(string input) => input.CaselessEq("centre") || input.CaselessEq("center");
     }
 }

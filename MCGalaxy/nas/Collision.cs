@@ -1,30 +1,25 @@
-#if NAS && TEN_BIT_BLOCKS
-using MCGalaxy;
 using MCGalaxy.Blocks;
 using MCGalaxy.Maths;
-using NasBlockCollideAction =
-    NotAwesomeSurvival.Action<NotAwesomeSurvival.NasEntity,
-    NotAwesomeSurvival.NasBlock, bool, ushort, ushort, ushort>;
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
     public static class Collision
     {
         public static void Setup() => SetupBlockBounds(Server.mainLevel);
         public static void SetupBlockBounds(Level lvl)
         {
-            NasBlock.blocksIndexedByServerushort = new NasBlock[1024];
+            NASBlock.blocksIndexedByServerushort = new NASBlock[1024];
             for (ushort blockID = 0; blockID < 1024; blockID++)
             {
-                NasBlock.blocksIndexedByServerushort[blockID] = GetNasBlockAndFillInCollisionInformation(blockID, lvl);
+                NASBlock.blocksIndexedByServerushort[blockID] = GetNasBlockAndFillInCollisionInformation(blockID, lvl);
             }
-            NasLevel.OnLevelLoaded(lvl);
+            NASLevel.OnLevelLoaded(lvl);
         }
-        public static NasBlock GetNasBlockAndFillInCollisionInformation(ushort serverushort, Level lvl)
+        public static NASBlock GetNasBlockAndFillInCollisionInformation(ushort serverushort, Level lvl)
         {
             bool collides = true;
             AABB bounds;
             float fallDamageMultiplier = 1;
-            NasBlockCollideAction collideAction = NasBlock.DefaultSolidCollideAction();
+            Action<NASEntity, NASBlock, bool, ushort, ushort, ushort> collideAction = NASBlock.DefaultSolidCollideAction();
             BlockDefinition def = lvl.GetBlockDef(serverushort);
             if (def != null)
             {
@@ -32,14 +27,14 @@ namespace NotAwesomeSurvival
                                 def.MaxX * 2, def.MaxZ * 2, def.MaxY * 2);
                 switch (def.CollideType)
                 {
-                    case CollideType.ClimbRope:
-                    case CollideType.LiquidWater:
-                    case CollideType.SwimThrough:
+                    case 7:
+                    case 5:
+                    case 1:
                         bounds.Max.Y -= 4;
                         fallDamageMultiplier = 0;
                         collideAction = null;
                         break;
-                    case CollideType.WalkThrough:
+                    case 0:
                         collideAction = null;
                         collides = false;
                         break;
@@ -53,10 +48,10 @@ namespace NotAwesomeSurvival
             }
             else
             {
-                ushort core = Nas.Convert(serverushort);
+                ushort core = NASPlugin.Convert(serverushort);
                 bounds = new(0, 0, 0, 32, DefaultSet.Height(core) * 2, 32);
             }
-            NasBlock nb = NasBlock.Get(ConvertToClientushort(serverushort));
+            NASBlock nb = NASBlock.Get(ConvertToClientushort(serverushort));
             if (nb.fallDamageMultiplier == -1)
             {
                 nb.collides = collides;
@@ -71,11 +66,11 @@ namespace NotAwesomeSurvival
             ushort clientushort;
             if (serverushort >= 256)
             {
-                clientushort = Nas.ToRaw(serverushort);
+                clientushort = NASPlugin.ToRaw(serverushort);
             }
             else
             {
-                clientushort = Nas.Convert(serverushort);
+                clientushort = NASPlugin.Convert(serverushort);
                 if (clientushort >= 66)
                 {
                     clientushort = 2;
@@ -124,7 +119,7 @@ namespace NotAwesomeSurvival
             {
                 return false;
             }
-            NasBlock nasBlock = NasBlock.blocksIndexedByServerushort[serverushort];
+            NASBlock nasBlock = NASBlock.blocksIndexedByServerushort[serverushort];
             if (!nasBlock.collides)
             {
                 return false;
@@ -141,4 +136,3 @@ namespace NotAwesomeSurvival
         }
     }
 }
-#endif

@@ -1,7 +1,6 @@
-#if NAS && TEN_BIT_BLOCKS
 using System;
 using System.Collections.Generic;
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
     public interface IPriorityQueue<TItem, in TPriority> : IEnumerable<TItem>
         where TPriority : IComparable<TPriority>
@@ -16,4 +15,3 @@ namespace NotAwesomeSurvival
         int Count { get; }
     }
 }
-#endif

@@ -42,17 +42,17 @@ namespace MCGalaxy.DB
         }
         public static void OutputMessageBlock(Player p, ushort block, ushort x, ushort y, ushort z)
         {
-            if (!p.level.Props[block].IsMessageBlock) return;
-            if (!MessageBlock.ExistsInDB(p.level.MapName)) return;
-            string message = MessageBlock.Get(p.level.MapName, x, y, z);
+            if (!p.Level.Props[block].IsMessageBlock) return;
+            if (!MessageBlock.ExistsInDB(p.Level.MapName)) return;
+            string message = MessageBlock.Get(p.Level.MapName, x, y, z);
             if (message == null) return;
             p.Message("Message Block contents: {0}", message);
         }
         public static void OutputPortal(Player p, ushort block, ushort x, ushort y, ushort z)
         {
-            if (!p.level.Props[block].IsPortal) return;
-            if (!Portal.ExistsInDB(p.level.MapName)) return;
-            PortalExit exit = Portal.Get(p.level.MapName, x, y, z);
+            if (!p.Level.Props[block].IsPortal) return;
+            if (!Portal.ExistsInDB(p.Level.MapName)) return;
+            PortalExit exit = Portal.Get(p.Level.MapName, x, y, z);
             if (exit == null) return;
             p.Message("Portal destination: ({0}, {1}, {2}) in {3}",
                            exit.X, exit.Y, exit.Z, exit.Map);

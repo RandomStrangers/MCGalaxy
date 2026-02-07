@@ -19,7 +19,7 @@ namespace MCGalaxy.Drawing.Ops
 {
     public class SPlaceDrawOp : DrawOp
     {
-        public override string Name { get { return "SPlace"; } }
+        public override string Name => "SPlace";
         public int Distance, Interval;
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {

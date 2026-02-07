@@ -20,19 +20,19 @@ namespace MCGalaxy.Core
 {
     public sealed class CorePlugin : Plugin
     {
-        public override string name { get { return "CorePlugin"; } }
+        public override string Name => "CorePlugin";
         public override void Load(bool startup)
         {
-            OnPlayerConnectEvent.Register(ConnectHandler.HandleConnect, Priority.Critical);
-            OnPlayerCommandEvent.Register(ChatHandler.HandleCommand, Priority.Critical);
-            OnChatEvent.Register(ChatHandler.HandleOnChat, Priority.Critical);
-            OnPlayerStartConnectingEvent.Register(ConnectingHandler.HandleConnecting, Priority.Critical);
-            OnSentMapEvent.Register(MiscHandlers.HandleSentMap, Priority.Critical);
-            OnPlayerMoveEvent.Register(MiscHandlers.HandlePlayerMove, Priority.Critical);
-            OnPlayerClickEvent.Register(MiscHandlers.HandlePlayerClick, Priority.Critical);
-            OnChangedZoneEvent.Register(MiscHandlers.HandleChangedZone, Priority.Critical);
-            OnEcoTransactionEvent.Register(EcoHandlers.HandleEcoTransaction, Priority.Critical);
-            OnModActionEvent.Register(ModActionHandler.HandleModAction, Priority.Critical);
+            OnPlayerConnectEvent.Register(ConnectHandler.HandleConnect, 3);
+            OnPlayerCommandEvent.Register(ChatHandler.HandleCommand, 3);
+            OnChatEvent.Register(ChatHandler.HandleOnChat, 3);
+            OnPlayerStartConnectingEvent.Register(ConnectingHandler.HandleConnecting, 3);
+            OnSentMapEvent.Register(MiscHandlers.HandleSentMap, 3);
+            OnPlayerMoveEvent.Register(MiscHandlers.HandlePlayerMove, 3);
+            OnPlayerClickEvent.Register(MiscHandlers.HandlePlayerClick, 3);
+            OnChangedZoneEvent.Register(MiscHandlers.HandleChangedZone, 3);
+            OnEcoTransactionEvent.Register(EcoHandlers.HandleEcoTransaction, 3);
+            OnModActionEvent.Register(ModActionHandler.HandleModAction, 3);
         }
         public override void Unload(bool shutdown)
         {

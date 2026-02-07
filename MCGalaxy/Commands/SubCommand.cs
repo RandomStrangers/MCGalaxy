@@ -41,10 +41,7 @@ namespace MCGalaxy.Commands
         /// Construct a SubCommand with custom help behavior (e.g. this subcommand needs help that changes based on help args)
         /// </summary>
         public SubCommand(string name, Behavior behavior, HelpBehavior helpBehavior, bool mapOnly = true, string[] aliases = null)
-                            : this(name, behavior, mapOnly, aliases)
-        {
-            this.helpBehavior = helpBehavior;
-        }
+                            : this(name, behavior, mapOnly, aliases) => this.helpBehavior = helpBehavior;
         /// <summary>
         /// Construct a SubCommand without help
         /// </summary>
@@ -79,7 +76,7 @@ namespace MCGalaxy.Commands
         }
         public bool Allowed(Player p, string parentCommandName)
         {
-            if (MapOnly && !LevelInfo.IsRealmOwner(p.level, p.name))
+            if (MapOnly && !LevelInfo.IsRealmOwner(p.Level, p.name))
             {
                 p.Message("You may only use &T/{0} {1}&S after you join your map.", parentCommandName, Name.ToLower());
                 return false;
@@ -122,10 +119,7 @@ namespace MCGalaxy.Commands
             }
             subCommands.Add(subCmd);
         }
-        public void Unregister(SubCommand subCmd)
-        {
-            subCommands.Remove(subCmd);
-        }
+        public void Unregister(SubCommand subCmd) => subCommands.Remove(subCmd);
         public UsageResult Use(Player p, string message, bool alertNoneFound = true)
         {
             string[] args = message.SplitExact(2);

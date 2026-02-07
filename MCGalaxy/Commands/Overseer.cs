@@ -24,29 +24,17 @@ namespace MCGalaxy.Commands.World
     public static class Overseer
     {
         public static readonly string commandShortcut = "os";
-        public static void RegisterSubCommand(SubCommand subCmd)
-        {
-            subCommandGroup.Register(subCmd);
-        }
-        public static void UnregisterSubCommand(SubCommand subCmd)
-        {
-            subCommandGroup.Unregister(subCmd);
-        }
+        public static void RegisterSubCommand(SubCommand subCmd) => subCommandGroup.Register(subCmd);
+        public static void UnregisterSubCommand(SubCommand subCmd) => subCommandGroup.Unregister(subCmd);
         static void UseCommand(Player p, string cmd, string args)
         {
             CommandData data = default;
-            data.Rank = LevelPermission.Owner;
+            data.Rank = 120;
             Command.Find(cmd).Use(p, args, data);
         }
-        static void AnnounceRenamed(Player p, string oldName, string newName)
-        {
-            p.Message("Note that &T/{0} {1}&S has been renamed to &T/{0} {2}",
+        static void AnnounceRenamed(Player p, string oldName, string newName) => p.Message("Note that &T/{0} {1}&S has been renamed to &T/{0} {2}",
                       commandShortcut, oldName, newName);
-        }
-        static string GetLevelName(Player p, string mapSubName)
-        {
-            return p.name.ToLower() + mapSubName;
-        }
+        static string GetLevelName(Player p, string mapSubName) => p.name.ToLower() + mapSubName;
         static string NextLevel(Player p)
         {
             string[] allMaps = LevelInfo.AllMapNames();
@@ -112,12 +100,12 @@ namespace MCGalaxy.Commands.World
         }
         static readonly string[] deleteHelp = new string[] {
             "&T/os delete &H- Deletes your map.",
-            "&T/os delete "+CmdDeleteLvl.BACKUP_FLAG+" [backup]",
+            "&T/os delete *backup [backup]",
             "&H  -Permanently- deletes [backup] from your map.",
         };
         static void HandleDelete(Player p, string message)
         {
-            if (message.CaselessStarts(CmdDeleteLvl.BACKUP_FLAG))
+            if (message.CaselessStarts("*backup"))
             {
                 string[] args = message.SplitSpaces(2); //"flag", "other args"
                 if (args.Length == 1)
@@ -127,7 +115,7 @@ namespace MCGalaxy.Commands.World
                     p.Message("See &T/{0} restore &7to display backups.", commandShortcut);
                     return;
                 }
-                CmdDeleteLvl.UseBackup(p, p.level.MapName + " " + args[1], true);
+                CmdDeleteLvl.UseBackup(p, p.Level.MapName + " " + args[1], true);
                 return;
             }
             if (message.Length > 0)
@@ -135,40 +123,28 @@ namespace MCGalaxy.Commands.World
                 p.Message("To delete your current map, type &T/{0} delete", commandShortcut);
                 return;
             }
-            UseCommand(p, "DeleteLvl", p.level.name);
+            UseCommand(p, "DeleteLvl", p.Level.name);
         }
         static readonly string[] allowHelp = new string[] {
             "&T/os allow [player]",
             "&H  Allows [player] to build in your map.",
         };
-        static void HandleAllow(Player p, string message)
-        {
-            HandlePerm(p, message, "allow", "perbuild", "+");
-        }
+        static void HandleAllow(Player p, string message) => HandlePerm(p, message, "allow", "perbuild", "+");
         static readonly string[] disallowHelp = new string[] {
             "&T/os disallow [player]",
             "&H  Disallows [player] from building in your map.",
         };
-        static void HandleDisallow(Player p, string message)
-        {
-            HandlePerm(p, message, "disallow", "perbuild", "-");
-        }
+        static void HandleDisallow(Player p, string message) => HandlePerm(p, message, "disallow", "perbuild", "-");
         static readonly string[] banHelp = new string[] {
             "&T/os ban [player]",
             "&H  Bans [player] from visiting your map.",
         };
-        static void HandleBan(Player p, string message)
-        {
-            HandlePerm(p, message, "ban", "pervisit", "-");
-        }
+        static void HandleBan(Player p, string message) => HandlePerm(p, message, "ban", "pervisit", "-");
         static readonly string[] unbanHelp = new string[] {
             "&T/os unban [player]",
             "&H  Unbans [player] from visiting your map.",
         };
-        static void HandleUnban(Player p, string message)
-        {
-            HandlePerm(p, message, "unban", "pervisit", "+");
-        }
+        static void HandleUnban(Player p, string message) => HandlePerm(p, message, "unban", "pervisit", "+");
         static void HandlePerm(Player p, string message, string action, string cmd, string prefix)
         {
             if (message.Length == 0) { p.Message("&WYou need to type a player name to {0}.", action); return; }
@@ -197,7 +173,7 @@ namespace MCGalaxy.Commands.World
         static void HandleEnv(Player p, string raw)
         {
             string[] args = raw.SplitExact(2);
-            Level lvl = p.level;
+            Level lvl = p.Level;
             if (CmdEnvironment.Handle(p, lvl, args[0], args[1], lvl.Config, lvl.ColoredName)) return;
             p.MessageLines(envHelp);
         }
@@ -239,7 +215,7 @@ namespace MCGalaxy.Commands.World
             if (name.Length == 0) { p.Message("You must specify a player to kick."); return; }
             Player pl = PlayerInfo.FindMatches(p, name);
             if (pl == null) return;
-            if (pl.level == p.level)
+            if (pl.Level == p.Level)
             {
                 PlayerActions.ChangeMap(pl, Server.mainLevel);
             }
@@ -256,7 +232,7 @@ namespace MCGalaxy.Commands.World
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                if (pl.level == p.level && pl != p)
+                if (pl.Level == p.Level && pl != p)
                     PlayerActions.ChangeMap(pl, Server.mainLevel);
             }
         }
@@ -265,10 +241,7 @@ namespace MCGalaxy.Commands.World
             "&H  Use &T/Help lb &Hfor how to use this command.",
             "&H  Remember to substitute /lb for /os lb when using the command based on the help",
         };
-        static void HandleLevelBlock(Player p, string lbArgs)
-        {
-            CustomBlockCommand.Execute(p, lbArgs, p.DefaultCmdData, false, "/os lb");
-        }
+        static void HandleLevelBlock(Player p, string lbArgs) => CustomBlockCommand.Execute(p, lbArgs, p.DefaultCmdData, false, "/os lb");
         static readonly string[] mapHelp = new string[] {
             "&T/os map [option] <value> &H- Toggles that map option.",
             "&H  See &T/Help map &Hfor a list of map options",
@@ -296,24 +269,20 @@ namespace MCGalaxy.Commands.World
                 p.Message("&WYou cannot change the {0} map option via /{1} map.", opt.Name, commandShortcut);
                 return;
             }
-            if (!LevelInfo.IsRealmOwner(p.level, p.name))
+            if (!LevelInfo.IsRealmOwner(p.Level, p.name))
             {
                 p.Message("You may only use &T/{0} map {1}&S after you join your map.", commandShortcut, opt.Name);
                 return;
             }
-            opt.SetFunc(p, p.level, value);
-            p.level.SaveSettings();
+            opt.SetFunc(p, p.Level, value);
+            p.Level.SaveSettings();
         }
-        static bool DisallowedMapOption(string opt)
-        {
-            return
-                opt == LevelOptions.Speed || opt == LevelOptions.Overload || opt == LevelOptions.RealmOwner ||
+        static bool DisallowedMapOption(string opt) => opt == LevelOptions.Speed || opt == LevelOptions.Overload || opt == LevelOptions.RealmOwner ||
                 opt == LevelOptions.Goto || opt == LevelOptions.Unload;
-        }
         static void MapMoved(Player p, string message, string name, SubCommand.Behavior behaviour, bool mapOnly = true)
         {
             AnnounceRenamed(p, "map " + name, name);
-            if (mapOnly && !LevelInfo.IsRealmOwner(p.level, p.name))
+            if (mapOnly && !LevelInfo.IsRealmOwner(p.Level, p.name))
             {
                 p.Message("You may only use &T/{0} {1}&S after you join your map.", commandShortcut, name);
                 return;
@@ -348,7 +317,7 @@ namespace MCGalaxy.Commands.World
             }
             int level = 0;
             if (!CommandParser.GetInt(p, message, "Physics level", ref level, 0, 5)) return;
-            CmdPhysics.SetPhysics(p.level, level);
+            CmdPhysics.SetPhysics(p.Level, level);
         }
         static readonly string[] resizeHelp = new string[] {
             "&T/os resize [width] [height] [length]",
@@ -356,7 +325,7 @@ namespace MCGalaxy.Commands.World
         };
         static void HandleResize(Player p, string message)
         {
-            message = p.level.name + " " + message;
+            message = p.Level.name + " " + message;
             string[] args = message.SplitSpaces();
             if (args.Length < 4)
             {
@@ -376,17 +345,17 @@ namespace MCGalaxy.Commands.World
         static void HandlePervisit(Player p, string message)
         {
             // Older realm maps didn't put you on visit whitelist, so make sure we put the owner here
-            AccessController access = p.level.VisitAccess;
+            AccessController access = p.Level.VisitAccess;
             if (!access.Whitelisted.CaselessContains(p.name))
             {
-                access.Whitelist(Player.Console, LevelPermission.Console, p.level, p.name);
+                access.Whitelist(Player.Console, 127, p.Level, p.name);
             }
             if (message.Length == 0)
             {
                 p.Message("See &T/help pervisit &Sfor how to use this command, but don't include [level].");
                 return;
             }
-            message = p.level.name + " " + message;
+            message = p.Level.name + " " + message;
             UseCommand(p, "PerVisit", message);
         }
         static readonly string[] perbuildHelp = new string[] {
@@ -400,7 +369,7 @@ namespace MCGalaxy.Commands.World
                 p.Message("See &T/help perbuild &Sfor how to use this command, but don't include [level].");
                 return;
             }
-            message = p.level.name + " " + message;
+            message = p.Level.name + " " + message;
             UseCommand(p, "PerBuild", message);
         }
         static readonly string[] textureHelp = new string[] {
@@ -423,19 +392,8 @@ namespace MCGalaxy.Commands.World
         static readonly string[] spawnHelp = new string[] {
             "&T/os setspawn &H- Sets the map's spawn point to your current position.",
         };
-        static void HandleSpawn(Player p, string unused)
-        {
-            UseCommand(p, "SetSpawn", "");
-        }
-        static readonly string[] plotHelp = new string[] {
-            "&T/os plot [args]",
-            "&H  Plots are zones that can change permissions and environment." +
-            "&H  See &T/Help zone &Hto learn what args you can use.",
-        };
-        static void HandlePlotHelp(Player p, string message)
-        {
-            Moderation.CmdZone.HelpName(p, "os plot", message);
-        }
+        static void HandleSpawn(Player p, string unused) => UseCommand(p, "SetSpawn", "");
+        static void HandlePlotHelp(Player p, string message) => Moderation.CmdZone.HelpName(p, "os plot", message);
         static void HandlePlot(Player p, string raw)
         {
             string[] args = raw.SplitSpaces(2);
@@ -456,10 +414,7 @@ namespace MCGalaxy.Commands.World
             "&H  Your map is saved automatically, so this is only useful",
             "&H  If you want to save a specific state to restore later.",
         };
-        static void HandleSave(Player p, string unused)
-        {
-            UseCommand(p, "Save", "");
-        }
+        static void HandleSave(Player p, string unused) => UseCommand(p, "Save", "");
         static readonly string[] renameHelp = new string[] {
             "&T/os rename <name>",
             "&H  Renames your current map. Your player name is always kept as prefix.",
@@ -473,27 +428,23 @@ namespace MCGalaxy.Commands.World
                 p.Message("This server does not allow renaming os realms.");
                 return;
             }
-            if (args.Length > 0 && !Formatter.IsValidName(p, args, "os name", Player.USERNAME_ALPHABET))
+            if (args.Length > 0 && !Formatter.IsValidName(p, args, "os name", "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890._"))
             {
                 return;
             }
-            const int MAX_LENGTH = 16;
-            if (args.Length > MAX_LENGTH)
+            if (args.Length > 16)
             {
-                p.Message("Your os name must be {0} characters or fewer.", MAX_LENGTH);
+                p.Message("Your os name must be {0} characters or fewer.", 16);
                 return;
             }
-            UseCommand(p, "RenameLvl", p.level.name + " " + GetLevelName(p, args));
+            UseCommand(p, "RenameLvl", p.Level.name + " " + GetLevelName(p, args));
         }
         static readonly string[] restoreHelp = new string[] {
             "&T/os restore <number>",
             "&H  Restores a backup of your map.",
             "&H  Use without a number to see total backup count.",
         };
-        static void HandleRestore(Player p, string args)
-        {
-            UseCommand(p, "Restore", args);
-        }
+        static void HandleRestore(Player p, string args) => UseCommand(p, "Restore", args);
         static readonly string[] listHelp = new string[] {
             "&T/os list <player>",
             "&H  Lists all the os realms for <player>",
@@ -533,7 +484,7 @@ namespace MCGalaxy.Commands.World
                     return;
                 }
             }
-            Level curLevel = p.level; // Cache in case another thread changes it
+            Level curLevel = p.Level; // Cache in case another thread changes it
             string[] owners = curLevel.Config.RealmOwner.SplitComma();
             string curLevelOwner = null;
             foreach (string owner in owners)

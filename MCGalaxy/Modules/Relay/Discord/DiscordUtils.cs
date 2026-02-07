@@ -41,23 +41,17 @@ namespace MCGalaxy.Modules.Relay.Discord
         public const string CODE = "\uEDC4"; // `
         public const string SPOILER = "\uEDC5\uEDC5"; // ||
         public const string STRIKETHROUGH = "\uEDC2\uEDC2"; // ~~
-        public static string MarkdownToSpecial(string input)
-        {
-            return input
+        public static string MarkdownToSpecial(string input) => input
                 .Replace('_', UNDERSCORE)
                 .Replace('~', TILDE)
                 .Replace('*', STAR)
                 .Replace('`', GRAVE)
                 .Replace('|', BAR);
-        }
-        public static string SpecialToMarkdown(string input)
-        {
-            return input
+        public static string SpecialToMarkdown(string input) => input
                 .Replace(UNDERSCORE, '_')
                 .Replace(TILDE, '~')
                 .Replace(STAR, '*')
                 .Replace(GRAVE, '`')
                 .Replace(BAR, '|');
-        }
     }
 }

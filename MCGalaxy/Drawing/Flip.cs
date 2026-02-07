@@ -91,19 +91,16 @@ namespace MCGalaxy.Drawing
             return flipped;
         }
         const int posX = 0, negX = 1, posY = 2, negY = 3, posZ = 4, negZ = 5;
-        static int Rotate(int row, int x, int y, int z, CopyState state)
+        static int Rotate(int row, int x, int y, int z, CopyState state) => row switch
         {
-            return row switch
-            {
-                posX => x,
-                negX => state.Width - 1 - x,
-                posY => y,
-                negY => state.Height - 1 - y,
-                posZ => z,
-                negZ => state.Length - 1 - z,
-                _ => 0,
-            };
-        }
+            posX => x,
+            negX => state.Width - 1 - x,
+            posY => y,
+            negY => state.Height - 1 - y,
+            posZ => z,
+            negZ => state.Length - 1 - z,
+            _ => 0,
+        };
         static CopyState Clone(CopyState state)
         {
             CopyState newState = new(state.X, state.Y, state.Z,

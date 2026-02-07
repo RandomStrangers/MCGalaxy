@@ -16,10 +16,10 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdWhoNick : Command2
     {
-        public override string name { get { return "WhoNick"; } }
-        public override string shortcut { get { return "RealName"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override bool UseableWhenFrozen { get { return true; } }
+        public override string Name => "WhoNick";
+        public override string Shortcut => "RealName";
+        public override string Type => CommandTypes.Information;
+        public override bool UseableWhenFrozen => true;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -45,7 +45,7 @@ namespace MCGalaxy.Commands.Info
         static void ForBot(Player p, string nick)
         {
             nick = Colors.Strip(nick);
-            PlayerBot[] bots = p.level.Bots.Items;
+            PlayerBot[] bots = p.Level.Bots.Items;
             PlayerBot match = Matcher.Find(p, nick, out int matches, bots, bot => true,
                                            bot => Colors.Strip(bot.DisplayName),
                                            bot => bot.ColoredName + " &S(" + bot.name + ")",

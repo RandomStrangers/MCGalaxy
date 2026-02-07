@@ -30,14 +30,8 @@ namespace MCGalaxy.Tasks
             muteTask = Server.MainScheduler.QueueRepeat(
                 MuteCheckTask, null, NextRun(Server.muted));
         }
-        internal static void TemprankCheckTask(SchedulerTask task)
-        {
-            DoTask(task, Server.tempRanks, TemprankCallback);
-        }
-        internal static void TemprankCalcNextRun()
-        {
-            CalcNextRun(temprankTask, Server.tempRanks);
-        }
+        internal static void TemprankCheckTask(SchedulerTask task) => DoTask(task, Server.tempRanks, TemprankCallback);
+        internal static void TemprankCalcNextRun() => CalcNextRun(temprankTask, Server.tempRanks);
         static void TemprankCallback(string[] args)
         {
             CmdTempRank.Delete(Player.Console, args[0], Player.Console.DefaultCmdData);
@@ -47,32 +41,12 @@ namespace MCGalaxy.Tasks
                 Server.tempRanks.Save();
             }
         }
-        internal static void FreezeCheckTask(SchedulerTask task)
-        {
-            DoTask(task, Server.frozen, FreezeCallback);
-        }
-        internal static void FreezeCalcNextRun()
-        {
-            CalcNextRun(freezeTask, Server.frozen);
-        }
-        static void FreezeCallback(string[] args)
-        {
-            ModAction action = new(args[0], Player.Console, ModActionType.Unfrozen, "auto unfreeze");
-            OnModActionEvent.Call(action);
-        }
-        internal static void MuteCheckTask(SchedulerTask task)
-        {
-            DoTask(task, Server.muted, MuteCallback);
-        }
-        internal static void MuteCalcNextRun()
-        {
-            CalcNextRun(muteTask, Server.muted);
-        }
-        static void MuteCallback(string[] args)
-        {
-            ModAction action = new(args[0], Player.Console, ModActionType.Unmuted, "auto unmute");
-            OnModActionEvent.Call(action);
-        }
+        internal static void FreezeCheckTask(SchedulerTask task) => DoTask(task, Server.frozen, FreezeCallback);
+        internal static void FreezeCalcNextRun() => CalcNextRun(freezeTask, Server.frozen);
+        static void FreezeCallback(string[] args) => OnModActionEvent.Call(new(args[0], Player.Console, 7, "auto unfreeze"));
+        internal static void MuteCheckTask(SchedulerTask task) => DoTask(task, Server.muted, MuteCallback);
+        internal static void MuteCalcNextRun() => CalcNextRun(muteTask, Server.muted);
+        static void MuteCallback(string[] args) => OnModActionEvent.Call(new(args[0], Player.Console, 5, "auto unmute"));
         static void DoTask(SchedulerTask task, PlayerExtList list, Action<string[]> callback)
         {
             List<string> lines = list.AllLines();

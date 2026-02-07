@@ -17,13 +17,13 @@ namespace MCGalaxy.Commands.Fun
 {
     public sealed class CmdMissile : Command2
     {
-        public override string name { get { return "Missile"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Missile";
+        public override string Type => CommandTypes.Other;
+        public override sbyte DefaultRank => 50;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (!p.level.Config.Guns)
+            if (!p.Level.Config.Guns)
             {
                 p.Message("Missiles cannot be used on this map!"); return;
             }
@@ -31,17 +31,17 @@ namespace MCGalaxy.Commands.Fun
             {
                 p.weapon.Disable(); return;
             }
-            WeaponType type = Weapon.ParseType(message);
-            if (type == WeaponType.Invalid) { Help(p); return; }
+            int type = Weapon.ParseType(message);
+            if (type == 0) { Help(p); return; }
             Missile missile = GetMissile(type);
             missile.type = type;
             missile.Enable(p);
         }
-        static Missile GetMissile(WeaponType type)
+        static Missile GetMissile(int type)
         {
-            if (type == WeaponType.Destroy) return new PenetrativeMissile();
-            if (type == WeaponType.Teleport) return new TeleportMissile();
-            if (type == WeaponType.Explode) return new ExplosiveMissile();
+            if (type == 2) return new PenetrativeMissile();
+            if (type == 3) return new TeleportMissile();
+            if (type == 4) return new ExplosiveMissile();
             return new Missile();
         }
         public override void Help(Player p)

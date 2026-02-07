@@ -21,12 +21,9 @@ namespace MCGalaxy.Commands
     public sealed class CommandPerms : ItemPerms
     {
         public string CmdName;
-        public override string ItemName { get { return CmdName; } }
+        public override string ItemName => CmdName;
         static readonly List<CommandPerms> List = new();
-        public CommandPerms(string cmd, LevelPermission min) : base(min)
-        {
-            CmdName = cmd;
-        }
+        public CommandPerms(string cmd, sbyte min) : base(min) => CmdName = cmd;
         public CommandPerms Copy()
         {
             CommandPerms copy = new(CmdName, 0);
@@ -42,7 +39,7 @@ namespace MCGalaxy.Commands
             return null;
         }
         /// <summary> Gets or adds permissions for the given command. </summary>
-        public static CommandPerms GetOrAdd(string cmd, LevelPermission min)
+        public static CommandPerms GetOrAdd(string cmd, sbyte min)
         {
             CommandPerms perms = Find(cmd);
             if (perms != null) return perms;
@@ -50,10 +47,7 @@ namespace MCGalaxy.Commands
             List.Add(perms);
             return perms;
         }
-        public void MessageCannotUse(Player p)
-        {
-            p.Message("Only {0} can use &T/{1}", Describe(), CmdName);
-        }
+        public void MessageCannotUse(Player p) => p.Message("Only {0} can use &T/{1}", Describe(), CmdName);
         static readonly object ioLock = new();
         /// <summary> Saves list of command permissions to disc. </summary>
         public static void Save()
@@ -107,13 +101,13 @@ namespace MCGalaxy.Commands
                 line.Replace(" ", "").FixedSplit(args, ':');
                 try
                 {
-                    Deserialise(args, 1, out LevelPermission min, out List<LevelPermission> allowed, out List<LevelPermission> disallowed);
+                    Deserialise(args, 1, out sbyte min, out List<sbyte> allowed, out List<sbyte> disallowed);
                     perms = GetOrAdd(args[0], min);
                     perms.Init(min, allowed, disallowed);
                 }
                 catch
                 {
-                    Logger.Log(LogType.Warning, "Hit an error on the command " + line); continue;
+                    Logger.Log(6, "Hit an error on the command " + line); continue;
                 }
             }
         }

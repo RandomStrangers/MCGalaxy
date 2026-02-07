@@ -24,9 +24,9 @@ namespace MCGalaxy.Blocks.Physics
             // Make zombie fall down
             if (lvl.IsAirAt(x, (ushort)(y - 1), z))
             {
-                lvl.AddUpdate(C.Index, Block.ZombieHead);
+                lvl.AddUpdate(C.Index, 233);
                 lvl.AddUpdate(lvl.IntOffset(C.Index, 0, -1, 0), C.Block);
-                lvl.AddUpdate(lvl.IntOffset(C.Index, 0, 1, 0), Block.Air);
+                lvl.AddUpdate(lvl.IntOffset(C.Index, 0, 1, 0), 0);
                 return;
             }
             bool checkTime = true;
@@ -87,15 +87,16 @@ namespace MCGalaxy.Blocks.Physics
                     if (dirsVisited >= 4) return;
                     goto case 1;
             }
-            lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
-            lvl.AddUpdate(lvl.IntOffset(C.Index, 0, 1, 0), Block.Air, default(PhysicsArgs));
+            lvl.AddUpdate(C.Index, 0, default(PhysicsArgs));
+            lvl.AddUpdate(lvl.IntOffset(C.Index, 0, 1, 0), 0, default(PhysicsArgs));
         }
         public static void DoHead(Level lvl, ref PhysInfo C)
         {
             ushort below = lvl.GetBlock(C.X, (ushort)(C.Y - 1), C.Z);
-            if (below != Block.ZombieBody && below != Block.Creeper)
+            if (below != 232 && below != 231)
             {
-                C.Data.Type1 = PhysicsArgs.Revert; C.Data.Value1 = Block.Air;
+                C.Data.Type1 = 2; 
+                C.Data.Value1 = 0;
             }
         }
         static bool MoveZombie(Level lvl, ref PhysInfo C, ushort x, ushort y, ushort z)
@@ -116,9 +117,9 @@ namespace MCGalaxy.Blocks.Physics
             }
             if (lvl.AddUpdate(index, C.Block))
             {
-                lvl.AddUpdate(lvl.IntOffset(index, 0, 1, 0), Block.ZombieHead, default(PhysicsArgs));
-                lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
-                lvl.AddUpdate(lvl.IntOffset(C.Index, 0, 1, 0), Block.Air, default(PhysicsArgs));
+                lvl.AddUpdate(lvl.IntOffset(index, 0, 1, 0), 233, default(PhysicsArgs));
+                lvl.AddUpdate(C.Index, 0, default(PhysicsArgs));
+                lvl.AddUpdate(lvl.IntOffset(C.Index, 0, 1, 0), 0, default(PhysicsArgs));
                 return true;
             }
             return false;

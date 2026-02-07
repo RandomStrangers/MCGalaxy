@@ -18,42 +18,11 @@ using System.Collections.Generic;
 using System.Text;
 namespace MCGalaxy
 {
-    public enum ChatScope
-    {
-        /// <summary> Messages all players on the server </summary>
-        All,
-        /// <summary> Messages all players on levels which see server-wide chat </summary>
-        /// <remarks> Excludes players who are ignoring all chat </remarks>
-        Global,
-        /// <summary> Messages all players on a particular level </summary>
-        /// <remarks> Excludes players who are ignoring all chat </remarks>
-        Level,
-        /// <summary> Messages all players of a given rank </summary>
-        Rank,
-        /// <summary> Messages all players who can use an ItemPerms argument. </summary>
-        Perms,
-        /// <summary> Message to a specific player </summary>
-        PM,
-    }
     public delegate bool ChatMessageFilter(Player pl, object arg);
     public static class Chat
     {
-        public static ItemPerms OpchatPerms
-        {
-            get
-            {
-                ItemPerms perms = CommandExtraPerms.Find("OpChat", 1);
-                return perms ?? new ItemPerms(LevelPermission.Operator);
-            }
-        }
-        public static ItemPerms AdminchatPerms
-        {
-            get
-            {
-                ItemPerms perms = CommandExtraPerms.Find("AdminChat", 1);
-                return perms ?? new ItemPerms(LevelPermission.Admin);
-            }
-        }
+        public static ItemPerms OpchatPerms => CommandExtraPerms.Find("OpChat", 1) ?? new ItemPerms(80);
+        public static ItemPerms AdminchatPerms => CommandExtraPerms.Find("AdminChat", 1) ?? new ItemPerms(100);
         public static string Format(string message, Player dst, bool tokens = true, bool emotes = true)
         {
             message = Colors.Escape(message);
@@ -75,46 +44,28 @@ namespace MCGalaxy
             if (target.Ignores.All) return source != target; // don't ignore messages from self
             return source != null && target.Ignores.Names.CaselessContains(source.name);
         }
-        public static bool FilterAll(Player pl, object arg) { return true; }
-        public static bool FilterGlobal(Player pl, object arg)
-        {
-            return pl.IsSuper || (pl.level.SeesServerWideChat && !pl.Ignores.All);
-        }
-        public static bool FilterLevel(Player pl, object arg)
-        {
-            return pl.level == arg && !pl.Ignores.All;
-        }
-        public static bool FilterRank(Player pl, object arg) { return pl.Rank == (LevelPermission)arg; }
-        public static bool FilterPerms(Player pl, object arg) { return ((ItemPerms)arg).UsableBy(pl); }
-        public static bool FilterPM(Player pl, object arg) { return pl == arg; }
+        public static bool FilterAll(Player pl, object arg) => true;
+        public static bool FilterGlobal(Player pl, object arg) => pl.IsSuper || (pl.Level.SeesServerWideChat && !pl.Ignores.All);
+        public static bool FilterLevel(Player pl, object arg) => pl.Level == arg && !pl.Ignores.All;
+        public static bool FilterRank(Player pl, object arg) => pl.Rank == (sbyte)arg;
+        public static bool FilterPerms(Player pl, object arg) => ((ItemPerms)arg).UsableBy(pl);
+        public static bool FilterPM(Player pl, object arg) => pl == arg;
         public static ChatMessageFilter[] scopeFilters = new ChatMessageFilter[] {
             FilterAll, FilterGlobal, FilterLevel,
             FilterRank, FilterPerms, FilterPM,
         };
         /// <summary> Filters chat to only players that can see the source player. </summary>
-        public static ChatMessageFilter FilterVisible(Player source)
-        {
-            return (pl, obj) => pl.CanSee(source);
-        }
-        public static void MessageAll(string msg) { Message(ChatScope.All, msg, null, null); }
-        public static void MessageGlobal(string msg) { Message(ChatScope.Global, msg, null, null); }
-        public static void MessageOps(string msg)
-        {
-            Message(ChatScope.Perms, msg, OpchatPerms, null);
-        }
-        public static void MessageGlobal(string message, object a0)
-        {
-            MessageGlobal(string.Format(message, a0));
-        }
-        public static void MessageGlobal(string message, object a0, object a1)
-        {
-            MessageGlobal(string.Format(message, a0, a1));
-        }
-        public static void Message(ChatScope scope, string msg, object arg,
+        public static ChatMessageFilter FilterVisible(Player source) => (pl, obj) => pl.CanSee(source);
+        public static void MessageAll(string msg) => Message(0, msg, null, null);
+        public static void MessageGlobal(string msg) => Message(1, msg, null, null);
+        public static void MessageOps(string msg) => Message(4, msg, OpchatPerms, null);
+        public static void MessageGlobal(string message, object a0) => MessageGlobal(string.Format(message, a0));
+        public static void MessageGlobal(string message, object a0, object a1) => MessageGlobal(string.Format(message, a0, a1));
+        public static void Message(int scope, string msg, object arg,
                                    ChatMessageFilter filter, bool relay = false)
         {
             Player[] players = PlayerInfo.Online.Items;
-            ChatMessageFilter scopeFilter = scopeFilters[(int)scope];
+            ChatMessageFilter scopeFilter = scopeFilters[scope];
             OnChatSysEvent.Call(scope, ref msg, arg, ref filter, relay);
             foreach (Player pl in players)
             {
@@ -123,37 +74,30 @@ namespace MCGalaxy
                 pl.Message(msg);
             }
         }
-        public static void MessageFromLevel(Player source, string msg)
-        {
-            MessageFrom(ChatScope.Level, source, msg, source.level, null);
-        }
-        public static void MessageFromOps(Player source, string msg)
-        {
-            MessageFrom(ChatScope.Perms, source, msg, OpchatPerms, null);
-        }
+        public static void MessageFromLevel(Player source, string msg) => MessageFrom(2, source, msg, source.Level, null);
+        public static void MessageFromOps(Player source, string msg) => MessageFrom(4, source, msg, OpchatPerms, null);
         public const string LocalPrefix = "<Local>";
         public static void MessageFrom(Player source, string msg,
                                        ChatMessageFilter filter = null, bool relay = false)
         {
             // super players don't have a level
-            if (source.level == null || source.level.SeesServerWideChat)
+            if (source.Level == null || source.Level.SeesServerWideChat)
             {
-                MessageFrom(ChatScope.Global, source, msg, null, filter, relay);
+                MessageFrom(1, source, msg, null, filter, relay);
             }
             else
             {
-                string prefix = Server.Config.ServerWideChat ? LocalPrefix : "";
-                MessageFrom(ChatScope.Level, source, prefix + msg, source.level, filter);
+                MessageFrom(2, source, (Server.Config.ServerWideChat ? LocalPrefix : "") + msg, source.Level, filter);
             }
         }
         /// <summary> Sends a message from the given player (e.g. message when requesting a review) </summary>
         /// <remarks> For player chat type messages, Chat.MessageChat is more appropriate to use. </remarks>
         /// <remarks> Only players not ignoring the given player will see this message. </remarks>
-        public static void MessageFrom(ChatScope scope, Player source, string msg, object arg,
+        public static void MessageFrom(int scope, Player source, string msg, object arg,
                                        ChatMessageFilter filter, bool relay = false)
         {
             Player[] players = PlayerInfo.Online.Items;
-            ChatMessageFilter scopeFilter = scopeFilters[(int)scope];
+            ChatMessageFilter scopeFilter = scopeFilters[scope];
             OnChatFromEvent.Call(scope, source, ref msg, arg, ref filter, relay);
             foreach (Player pl in players)
             {
@@ -167,25 +111,24 @@ namespace MCGalaxy
                                        ChatMessageFilter filter = null, bool relay = false)
         {
             // super players don't have a level
-            if (source.level == null || source.level.SeesServerWideChat)
+            if (source.Level == null || source.Level.SeesServerWideChat)
             {
-                MessageChat(ChatScope.Global, source, msg, null, filter, relay);
+                MessageChat(1, source, msg, null, filter, relay);
             }
             else
             {
-                string prefix = Server.Config.ServerWideChat ? LocalPrefix : "";
-                MessageChat(ChatScope.Level, source, prefix + msg, source.level, filter);
+                MessageChat(2, source, (Server.Config.ServerWideChat ? LocalPrefix : "") + msg, source.Level, filter);
             }
         }
         /// <summary> Sends a chat message from the given player (e.g. regular player chat or /me) </summary>
         /// <remarks> Chat messages will increase player's total messages sent in /info,
         /// and count towards triggering automute for chat spamming </remarks>
         /// <remarks> Only players not ignoring the given player will see this message. </remarks>
-        public static void MessageChat(ChatScope scope, Player source, string msg, object arg,
+        public static void MessageChat(int scope, Player source, string msg, object arg,
                                        ChatMessageFilter filter, bool relay = false)
         {
             Player[] players = PlayerInfo.Online.Items;
-            ChatMessageFilter scopeFilter = scopeFilters[(int)scope];
+            ChatMessageFilter scopeFilter = scopeFilters[scope];
             bool counted = false;
             // Filter out bad words
             if (Server.Config.ProfanityFiltering) msg = ProfanityFilter.Parse(msg);
@@ -203,7 +146,7 @@ namespace MCGalaxy
                 else
                 {
                     // don't send PM back to self
-                    if (scope == ChatScope.PM) continue;
+                    if (scope == 5) continue;
                 }
                 pl.Message(UnescapeMessage(pl, source, msg));
             }
@@ -242,13 +185,13 @@ namespace MCGalaxy
         class PersistentMessage
         {
             public string message;
-            public PersistentMessagePriority priority;
+            public int priority;
         }
         readonly object locker = new();
-        readonly Dictionary<CpeMessageType, List<PersistentMessage>> persistentMsgs =
+        readonly Dictionary<int, List<PersistentMessage>> persistentMsgs =
             new();
         /// <returns> false if there is currently a higher priority persistent message set for the given type </returns>
-        public bool Handle(CpeMessageType type, ref string message, PersistentMessagePriority priority)
+        public bool Handle(int type, ref string message, int priority)
         {
             if (!IsPersistent(type)) return true;
             lock (locker)
@@ -294,12 +237,8 @@ namespace MCGalaxy
             }
             return true;
         }
-        static bool IsPersistent(CpeMessageType type)
-        {
-            return
-                type == CpeMessageType.Status1 || type == CpeMessageType.Status2 || type == CpeMessageType.Status3 ||
-                type == CpeMessageType.BottomRight1 || type == CpeMessageType.BottomRight2 || type == CpeMessageType.BottomRight3;
-        }
+        static bool IsPersistent(int type) => type == 1 || type == 2 || type == 3 ||
+                type == 11 || type == 12 || type == 13;
     }
     public enum PersistentMessagePriority
     {

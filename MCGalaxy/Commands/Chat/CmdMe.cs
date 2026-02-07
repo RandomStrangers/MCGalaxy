@@ -16,10 +16,10 @@ namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdMe : Command2
     {
-        public override string name { get { return "Me"; } }
-        public override string type { get { return CommandTypes.Chat; } }
-        public override bool MessageBlockRestricted { get { return true; } }
-        public override bool UseableWhenFrozen { get { return true; } }
+        public override string Name => "Me";
+        public override string Type => CommandTypes.Chat;
+        public override bool MessageBlockRestricted => true;
+        public override bool UseableWhenFrozen => true;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { p.Message("You"); return; }
@@ -28,9 +28,6 @@ namespace MCGalaxy.Commands.Chatting
             string msg = p.color + "*" + Colors.StripUsed(p.DisplayName) + " " + message;
             Chat.MessageChat(p, msg, null, true);
         }
-        public override void Help(Player p)
-        {
-            p.Message("What do you need help with, m'boy?! Are you stuck down a well?!");
-        }
+        public override void Help(Player p) => p.Message("What do you need help with, m'boy?! Are you stuck down a well?!");
     }
 }

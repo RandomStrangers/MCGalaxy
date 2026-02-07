@@ -17,22 +17,13 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdReload : Command2
     {
-        public override string name { get { return "Reload"; } }
-        public override string shortcut { get { return "Reveal"; } }
-        public override string type { get { return CommandTypes.World; } }
-        public override bool museumUsable { get { return false; } }
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new[] { new CommandAlias("ReJoin"), new CommandAlias("rd"),
+        public override string Name => "Reload";
+        public override string Shortcut => "Reveal";
+        public override string Type => CommandTypes.World;
+        public override bool MuseumUsable => false;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("ReJoin"), new CommandAlias("rd"),
                     new CommandAlias("WFlush"), new CommandAlias("WorldFlush") };
-            }
-        }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can reload for all players") }; }
-        }
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can reload for all players") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (CheckSuper(p, message, "level name")) return;
@@ -54,7 +45,7 @@ namespace MCGalaxy.Commands.World
                 return;
             }
             if (!CheckExtraPerm(p, data, 1)) return;
-            Level lvl = p.level;
+            Level lvl = p.Level;
             if (!message.CaselessEq("all"))
             {
                 lvl = Matcher.FindLevels(p, message);

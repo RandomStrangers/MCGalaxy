@@ -51,20 +51,16 @@ namespace MCGalaxy.Games
         public int VoteTime = 20;
         internal string Candidate1 = "", Candidate2 = "", Candidate3 = "";
         internal int Votes1, Votes2, Votes3;
-        const int MIN_MAPS = 3;
-        public override List<string> GetCandidateMaps(RoundsGame game)
-        {
-            return new List<string>(game.GetConfig().Maps);
-        }
+        public override List<string> GetCandidateMaps(RoundsGame game) => new(game.GetConfig().Maps);
         public override string ChooseNextLevel(RoundsGame game)
         {
             if (QueuedMap != null) return QueuedMap;
             try
             {
                 List<string> maps = GetCandidateMaps(game);
-                if (maps.Count < MIN_MAPS)
+                if (maps.Count < 3)
                 {
-                    Logger.Log(LogType.Warning, "You must have 3 or more maps configured to change levels in " + game.GameName);
+                    Logger.Log(6, "You must have 3 or more maps configured to change levels in " + game.GameName);
                     return null;
                 }
                 if (maps == null) return null;
@@ -91,12 +87,12 @@ namespace MCGalaxy.Games
             List<string> recent = RecentMaps;
             for (int i = recent.Count - 1; i >= 0; i--)
             {
-                if (maps.Count > MIN_MAPS) maps.CaselessRemove(recent[i]);
+                if (maps.Count > 3) maps.CaselessRemove(recent[i]);
             }
             // Try to avoid maps voted last round if possible
-            if (maps.Count > MIN_MAPS) maps.CaselessRemove(Candidate1);
-            if (maps.Count > MIN_MAPS) maps.CaselessRemove(Candidate2);
-            if (maps.Count > MIN_MAPS) maps.CaselessRemove(Candidate3);
+            if (maps.Count > 3) maps.CaselessRemove(Candidate1);
+            if (maps.Count > 3) maps.CaselessRemove(Candidate2);
+            if (maps.Count > 3) maps.CaselessRemove(Candidate3);
         }
         void DoLevelVote(IGame game)
         {
@@ -104,7 +100,7 @@ namespace MCGalaxy.Games
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                if (pl.level != game.Map) continue;
+                if (pl.Level != game.Map) continue;
                 SendVoteMessage(pl);
             }
             VoteCountdown(game);
@@ -116,7 +112,7 @@ namespace MCGalaxy.Games
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                if (pl.level != game.Map || pl.Supports(CpeExt.MessageTypes)) continue;
+                if (pl.Level != game.Map || pl.Supports(CpeExt.MessageTypes)) continue;
                 pl.Message("You have " + VoteTime + " seconds to vote for the next map");
             }
             Level map = game.Map;
@@ -126,16 +122,16 @@ namespace MCGalaxy.Games
                 if (!game.Running) break;
                 foreach (Player pl in players)
                 {
-                    if (pl.level != map || !pl.Supports(CpeExt.MessageTypes)) continue;
+                    if (pl.Level != map || !pl.Supports(CpeExt.MessageTypes)) continue;
                     string timeLeft = "&e" + (VoteTime - i) + "s &Sleft to vote";
-                    pl.SendCpeMessage(CpeMessageType.BottomRight1, timeLeft);
+                    pl.SendCpeMessage(11, timeLeft);
                 }
                 Thread.Sleep(1000);
             }
             players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                if (pl.level == map) ResetVoteMessage(pl);
+                if (pl.Level == map) ResetVoteMessage(pl);
             }
         }
         string NextLevel(Random _, List<string> __)
@@ -165,24 +161,22 @@ namespace MCGalaxy.Games
         }
         public override void SendVoteMessage(Player p)
         {
-            const string line1 = "&eLevel vote - type &a1&e, &b2&e or &c3";
-            string line2 = "&a" + Candidate1 + "&e, &b" + Candidate2 + "&e, &c" + Candidate3;
             if (p.Supports(CpeExt.MessageTypes))
             {
-                p.SendCpeMessage(CpeMessageType.BottomRight3, line1);
-                p.SendCpeMessage(CpeMessageType.BottomRight2, line2);
+                p.SendCpeMessage(13, "&eLevel vote - type &a1&e, &b2&e or &c3");
+                p.SendCpeMessage(12, "&a" + Candidate1 + "&e, &b" + Candidate2 + "&e, &c" + Candidate3);
             }
             else
             {
-                p.Message(line1);
-                p.Message(line2);
+                p.Message("&eLevel vote - type &a1&e, &b2&e or &c3");
+                p.Message("&a" + Candidate1 + "&e, &b" + Candidate2 + "&e, &c" + Candidate3);
             }
         }
         public override void ResetVoteMessage(Player p)
         {
-            p.SendCpeMessage(CpeMessageType.BottomRight3, "");
-            p.SendCpeMessage(CpeMessageType.BottomRight2, "");
-            p.SendCpeMessage(CpeMessageType.BottomRight1, "");
+            p.SendCpeMessage(13, "");
+            p.SendCpeMessage(12, "");
+            p.SendCpeMessage(11, "");
         }
     }
 }

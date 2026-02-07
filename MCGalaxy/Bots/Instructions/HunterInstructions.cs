@@ -20,7 +20,7 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to move towards the closest player, within a defined search radius. </summary>
     public sealed class HuntInstruction : BotInstruction
     {
-        public HuntInstruction() { Name = "hunt"; }
+        public HuntInstruction() => Name = "hunt";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             int search = 75;
@@ -38,7 +38,7 @@ namespace MCGalaxy.Bots
             Player closest = null;
             foreach (Player p in players)
             {
-                if (p.level != bot.level || p.invincible || p.hidden) continue;
+                if (p.Level != bot.level || p.invincible || p.hidden) continue;
                 int dx = p.Pos.X - bot.Pos.X, dy = p.Pos.Y - bot.Pos.Y, dz = p.Pos.Z - bot.Pos.Z;
                 int playerDist = Math.Abs(dx) + Math.Abs(dy) + Math.Abs(dz);
                 if (playerDist >= maxDist) continue;
@@ -84,7 +84,7 @@ namespace MCGalaxy.Bots
                 w.WriteLine(Name);
             }
         }
-        public override string[] Help { get { return help; } }
+        public override string[] Help => help;
         static readonly string[] help = new string[] {
             "&T/BotAI add [name] hunt <radius>",
             "&HCauses the bot to move towards the closest player in the search radius.",
@@ -94,13 +94,13 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to kill nearby players. </summary>
     public sealed class KillInstruction : BotInstruction
     {
-        public KillInstruction() { Name = "kill"; }
+        public KillInstruction() => Name = "kill";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {
-                if (p.level != bot.level || p.invincible) continue;
+                if (p.Level != bot.level || p.invincible) continue;
                 int dx = Math.Abs(bot.Pos.X - p.Pos.X);
                 int dy = Math.Abs(bot.Pos.Y - p.Pos.Y);
                 int dz = Math.Abs(bot.Pos.Z - p.Pos.Z);
@@ -112,7 +112,7 @@ namespace MCGalaxy.Bots
             }
             bot.NextInstruction(); return true;
         }
-        public override string[] Help { get { return help; } }
+        public override string[] Help => help;
         static readonly string[] help = new string[] {
             "&T/BotAI add [name] kill",
             "&HCauses the bot to kill any players it is touching.",
@@ -120,7 +120,7 @@ namespace MCGalaxy.Bots
     }
     public sealed class StareInstruction : BotInstruction
     {
-        public StareInstruction() { Name = "stare"; }
+        public StareInstruction() => Name = "stare";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             int search = 1000;
@@ -156,7 +156,7 @@ namespace MCGalaxy.Bots
             dstPos.Y += ModelInfo.CalcEyeHeight(p);
             bot.FaceTowards(srcPos, dstPos);
         }
-        public override string[] Help { get { return help; } }
+        public override string[] Help => help;
         static readonly string[] help = new string[] {
             "&T/BotAI add [name] stare <radius>",
             "&HCauses the bot to stare at the closest player in the search radius.",

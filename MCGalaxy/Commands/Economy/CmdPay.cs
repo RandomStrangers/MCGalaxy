@@ -18,8 +18,8 @@ namespace MCGalaxy.Commands.Eco
 {
     public sealed class CmdPay : MoneyCmd
     {
-        public override string name { get { return "Pay"; } }
-        public override bool MessageBlockRestricted { get { return true; } }
+        public override string Name => "Pay";
+        public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
         {
             bool all = false;

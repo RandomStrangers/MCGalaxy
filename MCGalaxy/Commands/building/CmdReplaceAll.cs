@@ -19,21 +19,21 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdReplaceAll : Command2
     {
-        public override string name { get { return "ReplaceAll"; } }
-        public override string shortcut { get { return "ra"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override bool museumUsable { get { return false; } }
-        public override bool SuperUseable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
+        public override string Name => "ReplaceAll";
+        public override string Shortcut => "ra";
+        public override string Type => CommandTypes.Building;
+        public override bool MuseumUsable => false;
+        public override bool SuperUseable => false;
+        public override sbyte DefaultRank => 100;
         public override void Use(Player p, string message, CommandData data)
         {
             BrushArgs args = new(p, message, p.GetHeldBlock());
             Brush brush = BrushFactory.Find("Replace").Construct(args);
             if (brush == null) return;
-            Vec3S32 max = new(p.level.MaxX, p.level.MaxY, p.level.MaxZ);
-            Vec3S32[] marks = new Vec3S32[] { Vec3S32.Zero, max };
+            Vec3S32 max = new(p.Level.MaxX, p.Level.MaxY, p.Level.MaxZ);
+            Vec3S32[] marks = new Vec3S32[] { new(0, 0, 0), max };
             MeasureDrawOp measure = new();
-            measure.Setup(p, p.level, marks);
+            measure.Setup(p, p.Level, marks);
             measure.Perform(marks, brush, null);
             if (measure.Total > p.group.DrawLimit)
             {
@@ -50,8 +50,8 @@ namespace MCGalaxy.Commands.Building
         }
         class MeasureDrawOp : DrawOp
         {
-            public override string Name { get { return null; } }
-            public override long BlocksAffected(Level lvl, Vec3S32[] marks) { return 0; }
+            public override string Name => null;
+            public override long BlocksAffected(Level lvl, Vec3S32[] marks) => 0;
             public int Total = 0;
             public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
             {

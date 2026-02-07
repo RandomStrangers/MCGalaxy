@@ -18,11 +18,11 @@ namespace MCGalaxy.Commands.Building
 {
     public class CmdWriteText : DrawCmd
     {
-        public override string name { get { return "WriteText"; } }
-        public override string shortcut { get { return "wrt"; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        protected override string SelectionType { get { return "direction"; } }
-        protected override string PlaceMessage { get { return "Place or break two blocks to determine direction."; } }
+        public override string Name => "WriteText";
+        public override string Shortcut => "wrt";
+        public override sbyte DefaultRank => 50;
+        protected override string SelectionType => "direction";
+        protected override string PlaceMessage => "Place or break two blocks to determine direction.";
         protected override DrawOp GetDrawOp(DrawArgs dArgs)
         {
             Player p = dArgs.Player;
@@ -49,7 +49,7 @@ namespace MCGalaxy.Commands.Building
             dArgs.Player.Message("No direction was selected");
             m = null;
         }
-        protected override void GetBrush(DrawArgs dArgs) { dArgs.BrushArgs = ""; }
+        protected override void GetBrush(DrawArgs dArgs) => dArgs.BrushArgs = "";
         public override void Help(Player p)
         {
             p.Message("&T/WriteText [scale] [spacing] [message]");
@@ -59,7 +59,7 @@ namespace MCGalaxy.Commands.Building
     }
     public sealed class CmdWrite : CmdWriteText
     {
-        public override string name { get { return "Write"; } }
+        public override string Name => "Write";
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }

@@ -30,14 +30,8 @@ namespace MCGalaxy.DB
         public byte NewRaw;
         /// <summary> Flags for the block change. </summary>
         public ushort Flags;
-        public readonly ushort OldBlock
-        {
-            get { return (ushort)(OldRaw | ((Flags & BlockDBFlags.OldExtended) >> 6) | ((Flags & BlockDBFlags.OldExtended2) >> 3)); }
-        }
-        public readonly ushort NewBlock
-        {
-            get { return (ushort)(NewRaw | ((Flags & BlockDBFlags.NewExtended) >> 7) | ((Flags & BlockDBFlags.NewExtended2) >> 4)); }
-        }
+        public readonly ushort OldBlock => (ushort)(OldRaw | ((Flags & BlockDBFlags.OldExtended) >> 6) | ((Flags & BlockDBFlags.OldExtended2) >> 3));
+        public readonly ushort NewBlock => (ushort)(NewRaw | ((Flags & BlockDBFlags.NewExtended) >> 7) | ((Flags & BlockDBFlags.NewExtended2) >> 4));
     }
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct BlockDBCacheEntry

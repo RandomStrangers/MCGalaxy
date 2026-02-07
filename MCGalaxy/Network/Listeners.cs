@@ -90,14 +90,12 @@ namespace MCGalaxy.Network
             catch (Exception ex)
             {
                 Logger.LogError(ex);
-                Logger.Log(LogType.Warning, "Failed to start listening on port {0} ({1})", port, ex.Message);
-                string msg = string.Format("Failed to start listening. Is another server or instance of {0} already running on port {1}?",
-                                           Server.SoftwareName, port);
-                Server.UpdateUrl(msg);
-                socket = null; return;
+                Logger.Log(6, "Failed to start listening on port {0} ({1})", port, ex.Message);
+                socket = null; 
+                return;
             }
             Listening = true;
-            Logger.Log(LogType.SystemActivity, "Started listening on port {0}... ", port);
+            Logger.Log(1, "Started listening on port {0}... ", port);
         }
         void AcceptNextAsync()
         {
@@ -132,13 +130,8 @@ namespace MCGalaxy.Network
                 }
                 else
                 {
-#if NET_20
-                    // TODO better non-hardcoded detection? move to OperatingSystem?
-                    s = Environment.OSVersion.Platform == PlatformID.Win32Windows ? new TcpLegacySocket(raw) : new TcpSocket(raw);
-#else
                     s = new TcpSocket(raw);
-#endif
-                    if (announce) Logger.Log(LogType.UserActivity, s.IP + " connected to the server.");
+                    if (announce) Logger.Log(3, s.IP + " connected to the server.");
                     s.Init();
                 }
             }

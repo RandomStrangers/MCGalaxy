@@ -17,18 +17,12 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdWhois : Command2
     {
-        public override string name { get { return "WhoIs"; } }
-        public override string shortcut { get { return "WhoWas"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override bool UseableWhenFrozen { get { return true; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can see sensitive player information (e.g. IP)") }; }
-        }
-        public override CommandAlias[] Aliases
-        {
-            get { return new CommandAlias[] { new("Info"), new("i") }; }
-        }
+        public override string Name => "WhoIs";
+        public override string Shortcut => "WhoWas";
+        public override string Type => CommandTypes.Information;
+        public override bool UseableWhenFrozen => true;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can see sensitive player information (e.g. IP)") };
+        public override CommandAlias[] Aliases => new CommandAlias[] { new("Info"), new("i") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0)

@@ -26,7 +26,7 @@ namespace MCGalaxy.Modules.Games.ZS
             Enabled = true;
             Price = 1;
         }
-        public override string Name { get { return "10Blocks"; } }
+        public override string Name => "10Blocks";
         public override void OnPurchase(Player p, string args)
         {
             int count = 1;
@@ -52,7 +52,7 @@ namespace MCGalaxy.Modules.Games.ZS
             Enabled = true;
             Price = 150;
         }
-        public override string Name { get { return "QueueLevel"; } }
+        public override string Name => "QueueLevel";
         public override void OnPurchase(Player p, string args)
         {
             if (ZSGame.Instance.Picker.QueuedMap != null)
@@ -80,7 +80,7 @@ namespace MCGalaxy.Modules.Games.ZS
             Enabled = true;
             Price = 150;
         }
-        public override string Name { get { return "InfectMessage"; } }
+        public override string Name => "InfectMessage";
         public override void OnPurchase(Player p, string msg)
         {
             if (msg.Length == 0) { OnStoreCommand(p); return; }
@@ -115,7 +115,7 @@ namespace MCGalaxy.Modules.Games.ZS
             Enabled = true;
             Price = 3;
         }
-        public override string Name { get { return "Invisibility"; } }
+        public override string Name => "Invisibility";
         public override void OnPurchase(Player p, string args)
         {
             if (!CheckPrice(p, Price, "an invisibility potion")) return;
@@ -163,7 +163,7 @@ namespace MCGalaxy.Modules.Games.ZS
             Enabled = true;
             Price = 7;
         }
-        public override string Name { get { return "Revive"; } }
+        public override string Name => "Revive";
         public override void OnPurchase(Player p, string args)
         {
             if (!CheckPrice(p, Price, "a revive potion")) return;

@@ -46,10 +46,7 @@ namespace MCGalaxy
             }
             return elems.ToArray();
         }
-        public static bool ParseFile(ConfigElement[] elements, string path, object instance)
-        {
-            return PropertiesFile.Read(path, (k, v) => Parse(elements, instance, k, v));
-        }
+        public static bool ParseFile(ConfigElement[] elements, string path, object instance) => PropertiesFile.Read(path, (k, v) => Parse(elements, instance, k, v));
         public static void Parse(ConfigElement[] elems, object instance, string k, string v)
         {
             foreach (ConfigElement elem in elems)

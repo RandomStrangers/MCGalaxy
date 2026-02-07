@@ -27,15 +27,12 @@ namespace MCGalaxy.Modules.Games.TW
 {
     public partial class TWGame : RoundsGame
     {
-        void UpdateBlockHandlers()
-        {
-            Map.UpdateBlockHandlers(Block.TNT);
-        }
+        void UpdateBlockHandlers() => Map.UpdateBlockHandlers(46);
         void HandleBlockHandlersUpdated(Level lvl, ushort block)
         {
-            if (!Running || lvl != Map || block != Block.TNT) return;
-            lvl.PlaceHandlers[Block.TNT] = HandleTNTPlace;
-            lvl.PhysicsHandlers[Block.TNT] = HandleTNTPhysics;
+            if (!Running || lvl != Map || block != 46) return;
+            lvl.PlaceHandlers[46] = HandleTNTPlace;
+            lvl.PhysicsHandlers[46] = HandleTNTPhysics;
         }
         bool CheckTNTPlace(Player p, TWData data, ushort x, ushort y, ushort z)
         {
@@ -54,28 +51,28 @@ namespace MCGalaxy.Modules.Games.TW
             }
             return true;
         }
-        ChangeResult HandleTNTPlace(Player p, ushort newBlock, ushort x, ushort y, ushort z)
+        int HandleTNTPlace(Player p, ushort _, ushort x, ushort y, ushort z)
         {
             TWData data = Get(p);
             if (!CheckTNTPlace(p, data, x, y, z))
-                return ChangeResult.Unchanged;
+                return 0;
             data.TNTCounter++;
             int delay = 1250;
             switch (Config.Difficulty)
             {
-                case TWDifficulty.Easy: delay = 3250; break;
-                case TWDifficulty.Normal: delay = 2250; break;
+                case 0: delay = 3250; break;
+                case 1: delay = 2250; break;
             }
             AddTntCheck(Map.PosToInt(x, y, z), p);
             Server.MainScheduler.QueueOnce(AllowMoreTntTask, data,
                                            TimeSpan.FromMilliseconds(delay));
-            return p.ChangeBlock(x, y, z, Block.TNT);
+            return p.ChangeBlock(x, y, z, 46);
         }
         void AddTntCheck(int b, Player p)
         {
             PhysicsArgs args = default;
             int sessionID = p.Session.ID;
-            args.Type1 = PhysicsArgs.Custom;
+            args.Type1 = 7;
             args.Value1 = (byte)sessionID;
             args.Value2 = (byte)(sessionID >> 8);
             args.Data = (byte)(sessionID >> 16);
@@ -90,13 +87,13 @@ namespace MCGalaxy.Modules.Games.TW
         {
             ushort x = C.X, y = C.Y, z = C.Z;
             Player p = GetPlayer(ref C.Data);
-            if (p == null) { C.Data.Data = PhysicsArgs.RemoveFromChecks; return; }
+            if (p == null) { C.Data.Data = 255; return; }
             int power = 2, threshold = 3;
             switch (Config.Difficulty)
             {
-                case TWDifficulty.Easy: threshold = 7; break;
-                case TWDifficulty.Normal: threshold = 5; break;
-                case TWDifficulty.Extreme: power = 3; break;
+                case 0: threshold = 7; break;
+                case 1: threshold = 5; break;
+                case 3: power = 3; break;
             }
             if ((C.Data.Data >> 4) < threshold)
             {
@@ -121,7 +118,7 @@ namespace MCGalaxy.Modules.Games.TW
         }
         static Player GetPlayer(ref PhysicsArgs args)
         {
-            if (args.Type1 != PhysicsArgs.Custom) return null;
+            if (args.Type1 != 7) return null;
             int id = args.Value1 | args.Value2 << 8 | (args.Data & 0xF) << 16;
             Player[] players = PlayerInfo.Online.Items;
             for (int i = 0; i < players.Length; i++)
@@ -134,8 +131,8 @@ namespace MCGalaxy.Modules.Games.TW
         {
             List<Player> killed = new();
             int damage = 1, kills = 0, penalty = 0;
-            TWDifficulty diff = Config.Difficulty;
-            if (diff == TWDifficulty.Hard || diff == TWDifficulty.Extreme)
+            int diff = Config.Difficulty;
+            if (diff == 2 || diff == 3)
             {
                 damage = 2;
             }
@@ -201,7 +198,7 @@ namespace MCGalaxy.Modules.Games.TW
                 else if (data.KillStreak >= cfg.StreakTwoAmount && data.KillStreak < cfg.StreakThreeAmount && data.LastKillStreakAnnounced != cfg.StreakTwoAmount)
                 {
                     killer.Message("TNT Wars: Kill streak of " + data.KillStreak + " (Multiplier of " + cfg.StreakTwoMultiplier + " and a bigger explosion!)");
-                    Map.Message(killer.ColoredName + " &Shas a kill streak of " + data.KillStreak + " and now has a bigger explosion for " + killer.pronouns.Object + " TNT!");
+                    Map.Message(killer.ColoredName + " &Shas a kill streak of " + data.KillStreak + " and now has a bigger explosion for " + killer.Pronouns.Object + " TNT!");
                     data.ScoreMultiplier = cfg.StreakTwoMultiplier;
                     data.LastKillStreakAnnounced = cfg.StreakTwoAmount;
                 }
@@ -211,7 +208,7 @@ namespace MCGalaxy.Modules.Games.TW
                     Map.Message(killer.ColoredName + " &Shas a kill streak of " + data.KillStreak + " and now has 1 extra health!");
                     data.ScoreMultiplier = cfg.StreakThreeMultiplier;
                     data.LastKillStreakAnnounced = cfg.StreakThreeAmount;
-                    if (diff == TWDifficulty.Hard || diff == TWDifficulty.Extreme)
+                    if (diff == 2 || diff == 3)
                     {
                         data.Health += 2;
                     }

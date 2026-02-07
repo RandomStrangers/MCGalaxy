@@ -65,10 +65,7 @@ namespace MCGalaxy
             }
             return files;
         }
-        public static bool MapExists(string name)
-        {
-            return File.Exists(MapPath(name));
-        }
+        public static bool MapExists(string name) => File.Exists(MapPath(name));
         public static string GetExt(string levelName)
         {
             bool mcf = File.Exists("levels/" + levelName.ToLower() + ".mcf"),
@@ -121,20 +118,11 @@ namespace MCGalaxy
             }
         }
         /// <summary> Relative path of a level's map file </summary>
-        public static string MapPath(string name, string ext = ".lvl")
-        {
-            return "levels/" + Name(name, ext);
-        }
+        public static string MapPath(string name, string ext = ".lvl") => "levels/" + Name(name, ext);
         /// <summary> Relative path of a level's backup folder </summary>
-        public static string BackupBasePath(string name)
-        {
-            return Server.Config.BackupDirectory + "/" + name;
-        }
+        public static string BackupBasePath(string name) => Server.Config.BackupDirectory + "/" + name;
         /// <summary> Relative path of a level's backup map directory </summary>
-        public static string BackupDirPath(string name, string backup)
-        {
-            return BackupBasePath(name) + "/" + backup;
-        }
+        public static string BackupDirPath(string name, string backup) => BackupBasePath(name) + "/" + backup;
         /// <summary> Relative path of a level's backup map file </summary>
         public static string BackupFilePath(string name, string backup, string ext = ".lvl")
         {
@@ -165,10 +153,7 @@ namespace MCGalaxy
                 }
             }
         }
-        public static string BackupNameFrom(string path)
-        {
-            return path.Substring(path.LastIndexOf(Path.DirectorySeparatorChar) + 1);
-        }
+        public static string BackupNameFrom(string path) => path.Substring(path.LastIndexOf(Path.DirectorySeparatorChar) + 1);
         public static int LatestBackup(string map)
         {
             string root = BackupBasePath(map);
@@ -187,11 +172,9 @@ namespace MCGalaxy
         }
         public static string NextBackup(string map)
         {
-            string root = BackupBasePath(map);
-            Directory.CreateDirectory(root);
+            Directory.CreateDirectory(BackupBasePath(map));
             return (LatestBackup(map) + 1).ToString();
         }
-        public const string LATEST_MUSEUM_FLAG = "*latest";
         /// <summary>
         /// Returns true if a file was found for the given map with the given backup number.
         /// Supports LATEST_FLAG as backup number to return latest backup path.
@@ -204,7 +187,7 @@ namespace MCGalaxy
                 path = null;
                 return false;
             }
-            if (backupNumber == LATEST_MUSEUM_FLAG)
+            if (backupNumber == "*latest")
             {
                 int latest = LatestBackup(map);
                 if (latest == 0)
@@ -225,14 +208,8 @@ namespace MCGalaxy
             return true;
         }
         /// <summary> Relative path of a level's property file </summary>
-        public static string PropsPath(string name)
-        {
-            return "levels/level properties/" + name + ".properties";
-        }
-        public static LevelConfig GetConfig(string map)
-        {
-            return GetConfig(map, out _);
-        }
+        public static string PropsPath(string name) => "levels/level properties/" + name + ".properties";
+        public static LevelConfig GetConfig(string map) => GetConfig(map, out _);
         internal static LevelConfig GetConfig(string map, out Level lvl)
         {
             lvl = FindExact(map);
@@ -245,7 +222,7 @@ namespace MCGalaxy
             cfg.Load(propsPath);
             return cfg;
         }
-        public static bool Check(Player p, LevelPermission plRank, string map, string action, out LevelConfig cfg)
+        public static bool Check(Player p, sbyte plRank, string map, string action, out LevelConfig cfg)
         {
             cfg = GetConfig(map, out Level lvl);
             if (p.IsConsole)
@@ -265,11 +242,7 @@ namespace MCGalaxy
             }
             return true;
         }
-        public static bool Check(Player p, LevelPermission plRank, string map, string action)
-        {
-            return Check(p, plRank, map, action, out _);
-        }
-        public static bool Check(Player p, LevelPermission plRank, Level lvl, string action)
+        public static bool Check(Player p, sbyte plRank, Level lvl, string action)
         {
             if (p.IsConsole)
             {
@@ -298,10 +271,7 @@ namespace MCGalaxy
             LevelConfig cfg = GetConfig(map);
             return IsRealmOwner(map, cfg, name);
         }
-        public static bool IsRealmOwner(Level lvl, string name)
-        {
-            return IsRealmOwner(lvl.name, lvl.Config, name);
-        }
+        public static bool IsRealmOwner(Level lvl, string name) => IsRealmOwner(lvl.name, lvl.Config, name);
         public static bool IsRealmOwner(string map, LevelConfig cfg, string name)
         {
             string[] owners = cfg.RealmOwner.SplitComma();
@@ -334,10 +304,7 @@ namespace MCGalaxy
         /// <summary>
         /// If playerName owns levelName and levelName begins with playerName.
         /// </summary>
-        internal static bool IsPersonalRealmOwner(string playerName, string levelName)
-        {
-            return levelName.CaselessStarts(playerName) && IsRealmOwner(playerName, levelName);
-        }
+        internal static bool IsPersonalRealmOwner(string playerName, string levelName) => levelName.CaselessStarts(playerName) && IsRealmOwner(playerName, levelName);
         /// <summary>
         /// Returns all the os maps personally(level name begins with player name) owned by p, sorted alphabetically.
         /// </summary>
@@ -363,8 +330,8 @@ namespace MCGalaxy
         }
         static string FormatMap(Player p, string map, bool showVisitable)
         {
-            RetrieveProps(map, out LevelPermission visitP, out LevelPermission buildP, out bool loadOnGoto);
-            LevelPermission maxPerm = visitP;
+            RetrieveProps(map, out sbyte visitP, out sbyte buildP, out bool loadOnGoto);
+            sbyte maxPerm = visitP;
             if (maxPerm < buildP)
             {
                 maxPerm = buildP;
@@ -380,11 +347,11 @@ namespace MCGalaxy
             }
             return Group.GetColor(maxPerm) + map + visit;
         }
-        static void RetrieveProps(string level, out LevelPermission visit,
-                                  out LevelPermission build, out bool loadOnGoto)
+        static void RetrieveProps(string level, out sbyte visit,
+                                  out sbyte build, out bool loadOnGoto)
         {
-            visit = LevelPermission.Guest;
-            build = LevelPermission.Guest;
+            visit = 0;
+            build = 0;
             loadOnGoto = true;
             string propsPath = PropsPath(level);
             SearchArgs args = new();

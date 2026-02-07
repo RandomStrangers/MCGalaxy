@@ -16,9 +16,9 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdLoaded : Command2
     {
-        public override string name { get { return "Loaded"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override bool UseableWhenFrozen { get { return true; } }
+        public override string Name => "Loaded";
+        public override string Type => CommandTypes.Information;
+        public override bool UseableWhenFrozen => true;
         public override void Use(Player p, string message, CommandData data)
         {
             Level[] loaded = LevelInfo.Loaded.Items;
@@ -30,7 +30,7 @@ namespace MCGalaxy.Commands.Info
         static string FormatMap(Player p, Level lvl)
         {
             bool canVisit = p.IsSuper || lvl.VisitAccess.CheckAllowed(p);
-            string physics = " [" + lvl.physics + "]";
+            string physics = " [" + lvl.LevelPhysics + "]";
             string visit = canVisit ? "" : " &c[no]";
             return lvl.ColoredName + physics + visit;
         }

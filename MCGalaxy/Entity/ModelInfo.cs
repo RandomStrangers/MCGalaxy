@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
-    public struct ModelInfo
+    public class ModelInfo
     {
         public readonly string Model;
         public readonly Vec3S32 BaseSize;
@@ -70,10 +70,7 @@ namespace MCGalaxy
             if (model.CaselessStarts("hold|") && scale > 1) scale = 1;
             return scale;
         }
-        public static float DefaultMaxScale(string model)
-        {
-            return model.CaselessEq("chibi") ? 3 : 2;
-        }
+        public static float DefaultMaxScale(string model) => model.CaselessEq("chibi") ? 3 : 2;
         public static float MaxScale(Entity entity, string model)
         {
             if (!entity.RestrictsScale) return float.MaxValue;

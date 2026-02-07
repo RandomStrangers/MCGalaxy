@@ -13,7 +13,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-#if !MCG_STANDALONE
 using System.IO;
 namespace MCGalaxy.Modules.Compiling
 {
@@ -109,4 +108,3 @@ namespace MCGalaxy.Modules.Compiling
         }
     }
 }
-#endif

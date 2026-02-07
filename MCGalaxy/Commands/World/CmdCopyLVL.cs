@@ -15,17 +15,14 @@
 */
 namespace MCGalaxy.Commands.World
 {
-    public class CmdCopyLvl : Command2
+    public class CmdCopyLvl : Command
     {
-        public override string name { get { return "CopyLvl"; } }
-        public override string type { get { return CommandTypes.World; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("WCopy"), new CommandAlias("WorldCopy") }; }
-        }
-        public override bool MessageBlockRestricted { get { return true; } }
-        public override void Use(Player p, string message, CommandData data)
+        public override string Name => "CopyLvl";
+        public override string Type => CommandTypes.World;
+        public override sbyte DefaultRank => 100;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("WCopy"), new CommandAlias("WorldCopy") };
+        public override bool MessageBlockRestricted => true;
+        public override void Use(Player p, string message)
         {
             if (message.Length == 0) { Help(p); return; }
             string[] args = message.ToLower().SplitSpaces();
@@ -35,7 +32,7 @@ namespace MCGalaxy.Commands.World
             }
             string src = Matcher.FindMaps(p, args[0]);
             if (src == null) return;
-            if (!LevelInfo.Check(p, data.Rank, src, "copy this map", out LevelConfig cfg)) return;
+            if (!LevelInfo.Check(p, p.Rank, src, "copy this map", out LevelConfig cfg)) return;
             string dst = args[1];
             if (!Formatter.ValidMapName(p, dst)) return;
             if (!LevelActions.Copy(p, src, dst)) return;

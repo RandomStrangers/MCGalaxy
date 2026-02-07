@@ -21,23 +21,17 @@ namespace MCGalaxy.Modules.Games.ZS
 {
     sealed class CmdZombieSurvival : RoundsGameCmd
     {
-        public override string name { get { return "ZombieSurvival"; } }
-        public override string shortcut { get { return "ZS"; } }
-        protected override RoundsGame Game { get { return ZSGame.Instance; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("ZG"), new CommandAlias("RoundTime", "set roundtime") }; }
-        }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can manage zombie survival") }; }
-        }
+        public override string Name => "ZombieSurvival";
+        public override string Shortcut => "ZS";
+        protected override RoundsGame Game => ZSGame.Instance;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("ZG"), new CommandAlias("RoundTime", "set roundtime") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can manage zombie survival") };
         protected override void HandleSet(Player p, RoundsGame game_, string[] args)
         {
             ZSGame game = (ZSGame)game_;
             ZSConfig cfg = game.Config;
             string prop = args[1];
-            LevelConfig lCfg = p.level.Config;
+            LevelConfig lCfg = p.Level.Config;
             if (prop.CaselessEq("map"))
             {
                 p.Message("Pillaring allowed: &b" + lCfg.Pillaring);
@@ -67,7 +61,7 @@ namespace MCGalaxy.Modules.Games.ZS
             else if (prop.CaselessEq("build"))
             {
                 if (!CommandParser.GetEnum(p, args[2], "Build type", ref lCfg.BuildType)) return;
-                p.level.UpdateBlockPermissions();
+                p.Level.UpdateBlockPermissions();
                 p.Message("Set build type to &b" + lCfg.BuildType);
                 game.UpdateAllStatus2();
             }
@@ -79,7 +73,7 @@ namespace MCGalaxy.Modules.Games.ZS
             {
                 Help(p, "set"); return;
             }
-            p.level.SaveSettings();
+            p.Level.SaveSettings();
         }
         static bool ParseTimespan(Player p, string arg, string[] args, ref TimeSpan span)
         {

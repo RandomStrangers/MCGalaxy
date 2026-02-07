@@ -1,5 +1,4 @@
-#if NAS && TEN_BIT_BLOCKS
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
     public partial class Crafting
     {
@@ -343,4 +342,3 @@ namespace NotAwesomeSurvival
         }
     }
 }
-#endif

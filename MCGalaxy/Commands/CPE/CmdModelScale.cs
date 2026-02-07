@@ -17,27 +17,18 @@ namespace MCGalaxy.Commands.CPE
 {
     public class CmdModelScale : EntityPropertyCmd
     {
-        public override string name { get { return "ModelScale"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get
-            {
-                return new[] { new CommandPerm(LevelPermission.Operator, "can change the model scale of others"),
-                    new CommandPerm(LevelPermission.Operator, "can change the model scale of bots") };
-            }
-        }
-        public override void Use(Player p, string message, CommandData data)
-        {
-            UseBotOrOnline(p, data, message, "model scale");
-        }
+        public override string Name => "ModelScale";
+        public override string Type => CommandTypes.Other;
+        public override sbyte DefaultRank => 50;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can change the model scale of others"),
+                    new CommandPerm(80, "can change the model scale of bots") };
+        public override void Use(Player p, string message, CommandData data) => UseBotOrOnline(p, data, message, "model scale");
         protected override void SetBotData(Player p, PlayerBot bot, string args)
         {
             if (!ParseArgs(p, bot, args, out string axis)) return;
             bot.UpdateModel(bot.Model);
             p.Message("You changed the {1} scale of bot {0}", bot.ColoredName, axis);
-            BotsFile.Save(p.level);
+            BotsFile.Save(p.Level);
         }
         protected override void SetOnlineData(Player p, Player who, string args)
         {
@@ -45,7 +36,7 @@ namespace MCGalaxy.Commands.CPE
             who.UpdateModel(who.Model);
             if (p != who)
             {
-                Chat.MessageFrom(who, "λNICK &Shad " + who.pronouns.Object + " " + axis + " scale changed");
+                Chat.MessageFrom(who, "λNICK &Shad " + who.Pronouns.Object + " " + axis + " scale changed");
             }
             else
             {

@@ -18,12 +18,12 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdFixGrass : Command2
     {
-        public override string name { get { return "FixGrass"; } }
-        public override string shortcut { get { return "fg"; } }
-        public override string type { get { return CommandTypes.World; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "FixGrass";
+        public override string Shortcut => "fg";
+        public override string Type => CommandTypes.World;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 80;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             FixGrassDrawOp op = new();

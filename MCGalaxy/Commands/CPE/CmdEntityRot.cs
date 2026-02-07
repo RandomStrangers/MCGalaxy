@@ -17,18 +17,12 @@ namespace MCGalaxy.Commands.CPE
 {
     public class CmdEntityRot : EntityPropertyCmd
     {
-        public override string name { get { return "EntityRot"; } }
-        public override string shortcut { get { return "EntRot"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get
-            {
-                return new[] { new CommandPerm(LevelPermission.Operator, "can change the rotation of others"),
-                    new CommandPerm(LevelPermission.Operator, "can change the rotation of bots") };
-            }
-        }
+        public override string Name => "EntityRot";
+        public override string Shortcut => "EntRot";
+        public override string Type => CommandTypes.Other;
+        public override sbyte DefaultRank => 50;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can change the rotation of others"),
+                    new CommandPerm(80, "can change the rotation of bots") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.IndexOf(' ') == -1)
@@ -40,41 +34,47 @@ namespace MCGalaxy.Commands.CPE
         }
         protected override void SetBotData(Player p, PlayerBot bot, string args)
         {
-            if (!ParseArgs(p, args, bot)) return;
-            BotsFile.Save(p.level);
+            if (ParseArgs(p, args, bot))
+            {
+                BotsFile.Save(p.Level);
+            }
         }
         protected override void SetOnlineData(Player p, Player who, string args)
         {
-            if (!ParseArgs(p, args, who)) return;
-            Server.rotations.Update(who.name, who.Rot.RotX + " " + who.Rot.RotZ);
-            Server.rotations.Save();
+            if (ParseArgs(p, args, who))
+            {
+                Server.rotations.Update(who.name, who.Rot.RotX + " " + who.Rot.RotZ);
+                Server.rotations.Save();
+            }
         }
         static bool ParseArgs(Player p, string args, Entity entity)
         {
             if (args.Length == 0)
             {
-                Entities.UpdateEntityRot(entity, EntityProp.RotX, 0);
-                Entities.UpdateEntityRot(entity, EntityProp.RotZ, 0);
+                Entities.UpdateEntityRot(entity, 0, 0);
+                Entities.UpdateEntityRot(entity, 2, 0);
                 return true;
             }
             string[] bits = args.SplitSpaces();
             if (bits.Length != 2)
             {
-                p.Message("You need to provide an axis name and angle."); return false;
+                p.Message("You need to provide an axis name and angle."); 
+                return false;
             }
             int angle = 0;
             if (!CommandParser.GetInt(p, bits[1], "Angle", ref angle, -360, 360)) return false;
             if (bits[0].CaselessEq("x"))
             {
-                Entities.UpdateEntityRot(entity, EntityProp.RotX, angle);
+                Entities.UpdateEntityRot(entity, 0, angle);
             }
             else if (bits[0].CaselessEq("z"))
             {
-                Entities.UpdateEntityRot(entity, EntityProp.RotZ, angle);
+                Entities.UpdateEntityRot(entity, 2, angle);
             }
             else
             {
-                p.Message("Axis name must be X or Z."); return false;
+                p.Message("Axis name must be X or Z."); 
+                return false;
             }
             return true;
         }

@@ -17,14 +17,11 @@ namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdIgnore : Command2
     {
-        public override string name { get { return "Ignore"; } }
-        public override string type { get { return CommandTypes.Chat; } }
-        public override bool SuperUseable { get { return false; } }
-        public override bool MessageBlockRestricted { get { return true; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("Deafen", "all") }; }
-        }
+        public override string Name => "Ignore";
+        public override string Type => CommandTypes.Chat;
+        public override bool SuperUseable => false;
+        public override bool MessageBlockRestricted => true;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("Deafen", "all") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }

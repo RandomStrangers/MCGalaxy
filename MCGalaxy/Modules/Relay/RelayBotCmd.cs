@@ -16,8 +16,8 @@ namespace MCGalaxy.Modules.Relay
 {
     public abstract class RelayBotCmd : Command2
     {
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 100;
         protected abstract RelayBot Bot { get; }
         public override void Use(Player p, string message, CommandData data)
         {
@@ -43,7 +43,7 @@ namespace MCGalaxy.Modules.Relay
         }
         public override void Help(Player p)
         {
-            string cmd = name;
+            string cmd = Name;
             string relay = Bot.RelayName;
             p.Message("&T/{0} connect", cmd);
             p.Message("&HCauses the {0} bot to connect to {0}.", relay);

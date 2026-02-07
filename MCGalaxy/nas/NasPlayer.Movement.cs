@@ -1,15 +1,14 @@
-#if NAS && TEN_BIT_BLOCKS
-using MCGalaxy;
 using MCGalaxy.Events.PlayerEvents;
+using MCGalaxy.Maths;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using MCGalaxy.Util.Imaging;
 using Newtonsoft.Json;
 using System;
 using System.IO;
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
-    public partial class NasPlayer
+    public partial class NASPlayer
     {
         [JsonIgnore] public DateTime datePositionCheckingIsAllowed = DateTime.MinValue;
         [JsonIgnore] public bool placePortal = false;
@@ -36,12 +35,12 @@ namespace NotAwesomeSurvival
                 }
             }
         }
-        public static void Register() => OnPlayerSpawningEvent.Register(OnPlayerSpawning, Priority.High);
+        public static void Register() => OnPlayerSpawningEvent.Register(OnPlayerSpawning, 2);
         public static void Unregister() => OnPlayerSpawningEvent.Unregister(OnPlayerSpawning);
         public static void OnPlayerSpawning(Player p, ref Position pos, ref byte yaw, ref byte pitch, bool respawning)
         {
-            NasPlayer np = GetNasPlayer(p);
-            np.nl = NasLevel.Get(p.Level.name);
+            NASPlayer np = GetPlayer(p);
+            np.nl = NASLevel.Get(p.Level.name);
             np.SpawnPlayer(p.Level, ref pos, ref yaw, ref pitch);
         }
         public ushort ConvertBlock(ushort block)
@@ -49,11 +48,11 @@ namespace NotAwesomeSurvival
             ushort raw;
             if (block >= 256)
             {
-                raw = Nas.ToRaw(block);
+                raw = NASPlugin.ToRaw(block);
             }
             else
             {
-                raw = Nas.Convert(block);
+                raw = NASPlugin.Convert(block);
                 if (raw >= 66)
                 {
                     raw = 22;
@@ -83,13 +82,13 @@ namespace NotAwesomeSurvival
             if (this != null)
             {
                 string jsonString = JsonConvert.SerializeObject(this, Formatting.Indented);
-                FileUtils.TryWriteAllText(Nas.GetSavePath(p), jsonString);
-                FileUtils.TryWriteAllText(Nas.GetTextPath(p), jsonString);
+                FileIO.TryWriteAllText(NASPlugin.GetSavePath(p), jsonString);
+                FileIO.TryWriteAllText(NASPlugin.GetTextPath(p), jsonString);
             }
         }
         public void SpawnPlayer(Level level, ref Position spawnPos, ref byte yaw, ref byte pitch)
         {
-            if (!NasLevel.IsNasLevel(level))
+            if (!NASLevel.IsNASLevel(level))
             {
                 return;
             }
@@ -107,16 +106,16 @@ namespace NotAwesomeSurvival
                     exp = 0;
                     levels = 0;
                     inventory.Setup(p);
-                    inventory.DisplayHeldBlock(NasBlock.Default, 0);
+                    inventory.DisplayHeldBlock(NASBlock.Default, 0);
                 }
                 CommandData data = p.DefaultCmdData;
-                data.Context = CommandContext.SendCmd;
+                data.Context = 2;
                 Orientation rot = new(Server.mainLevel.rotx, Server.mainLevel.roty);
-                SetLocation(this, spawnMap, spawnCoords, rot);
-                Log("Teleporting {0} to {1} bed!", p.truename, p.pronouns.Object);
+                SetLocation(spawnMap, spawnCoords, rot);
+                Log("Teleporting {0} to {1} bed!", p.truename, p.Pronouns.Object);
                 if (!headingToBed)
                 {
-                    SendCpeMessage(CpeMessageType.Announcement, "&cY O U  D I E D");
+                    SendCpeMessage(100, "&cY O U  D I E D");
                     Chat.MessageChat(p, reason, null, true);
                     curFogColor = new(0, 0, 0, 255);
                     curRenderDistance = 1;
@@ -153,8 +152,8 @@ namespace NotAwesomeSurvival
                         int orX = transferInfo.travelX,
                             orY = transferInfo.travelY,
                             orZ = transferInfo.travelZ;
-                        SetSafetyBlock(orX, orY - 1, orZ, Nas.FromRaw(162));
-                        SetSafetyBlock(orX, orY + 2, orZ, Nas.FromRaw(162));
+                        SetSafetyBlock(orX, orY - 1, orZ, NASPlugin.FromRaw(162));
+                        SetSafetyBlock(orX, orY + 2, orZ, NASPlugin.FromRaw(162));
                         ushort temp = nl.GetBlock(orX, orY + 1, orZ);
                         if (temp != 0 && !nl.blockEntities.ContainsKey(orX + " " + (orY + 1) + " " + orZ))
                         {
@@ -162,10 +161,10 @@ namespace NotAwesomeSurvival
                             nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, 1 << 2, temp, 0);
                         }
                         temp = nl.GetBlock(orX, orY, orZ);
-                        if (temp != Nas.FromRaw(457) && !nl.blockEntities.ContainsKey(orX + " " + orY + " " + orZ))
+                        if (temp != NASPlugin.FromRaw(457) && !nl.blockEntities.ContainsKey(orX + " " + orY + " " + orZ))
                         {
-                            nl.SetBlock(orX, orY, orZ, Nas.FromRaw(457));
-                            nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, 1 << 2, temp, Nas.FromRaw(457));
+                            nl.SetBlock(orX, orY, orZ, NASPlugin.FromRaw(457));
+                            nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, 1 << 2, temp, NASPlugin.FromRaw(457));
                         }
                         placePortal = false;
                     }
@@ -183,7 +182,7 @@ namespace NotAwesomeSurvival
             {
                 return;
             }
-            if (NasBlock.Get(Collision.ConvertToClientushort(oldBlock)).collideAction != NasBlock.DefaultSolidCollideAction())
+            if (NASBlock.Get(Collision.ConvertToClientushort(oldBlock)).collideAction != NASBlock.DefaultSolidCollideAction())
             {
                 nl.SetBlock(x, y, z, block);
                 nl.lvl.BlockDB.Cache.Add(p, (ushort)x, (ushort)y, (ushort)z, 1 << 2, oldBlock, block);
@@ -214,12 +213,63 @@ namespace NotAwesomeSurvival
             {
                 Log("{0}: trying to use /goto to move to the map they logged out in", p.truename);
                 CommandData data = p.DefaultCmdData;
-                data.Context = CommandContext.SendCmd;
+                data.Context = 2;
                 p.HandleCommand("goto", levelName, data);
                 return;
             }
             hasBeenSpawned = true;
             Log("{0}: hasBeenSpawned set to {1}", p.truename, hasBeenSpawned);
+        }
+        public void DoNasBlockCollideActions(Position entityPos)
+        {
+            if (nl != null)
+            {
+                AABB worldAABB = bounds.OffsetPosition(entityPos);
+                worldAABB.Min.X++;
+                worldAABB.Min.Y++;
+                worldAABB.Min.Z++;
+                AABB eyeAABB = eyeBounds.OffsetPosition(entityPos);
+                eyeAABB.Min.X++;
+                eyeAABB.Min.Y++;
+                eyeAABB.Min.Z++;
+                worldAABB = worldAABB.Expand(-1);
+                Vec3S32 min = worldAABB.BlockMin, max = worldAABB.BlockMax;
+                for (int y = min.Y; y <= max.Y; y++)
+                {
+                    for (int z = min.Z; z <= max.Z; z++)
+                    {
+                        for (int x = min.X; x <= max.X; x++)
+                        {
+                            foreach (Player pl in PlayerInfo.Online.Items)
+                            {
+                                ushort xP = (ushort)x, yP = (ushort)y, zP = (ushort)z;
+                                nl.lvl ??= pl.Level;
+                                ushort block = nl.lvl.GetBlock(xP, yP, zP);
+                                if (block == 0)
+                                {
+                                    block = 0;
+                                }
+                                if (block == 0xff)
+                                {
+                                    continue;
+                                }
+                                NASBlock nb = NASBlock.blocksIndexedByServerushort[block];
+                                AABB blockBB = nb.bounds.Offset(x * 32, y * 32, z * 32);
+                                if (!AABB.Intersects(ref worldAABB, ref blockBB))
+                                {
+                                    continue;
+                                }
+                                if (nb == null || nb.collideAction == null)
+                                {
+                                    continue;
+                                }
+                                bool surroundsHead = AABB.Intersects(ref eyeAABB, ref blockBB);
+                                nb.collideAction(this, nb, surroundsHead, xP, yP, zP);
+                            }
+                        }
+                    }
+                }
+            }
         }
         public void DoMovement(Position next, byte _, byte __)
         {
@@ -270,7 +320,7 @@ namespace NotAwesomeSurvival
                     {
                         float damage = (int)fallHeight * 2;
                         damage /= 4;
-                        TakeDamage(damage * fallDamageMultiplier, DamageSource.Falling);
+                        TakeDamage(damage * fallDamageMultiplier, 0);
                     }
                 }
                 lastGroundedLocation = new(next.X, next.Y, next.Z);
@@ -309,7 +359,7 @@ namespace NotAwesomeSurvival
             atBorder = true;
             int chunkOffsetX = 0, chunkOffsetZ = 0;
             string seed = "DEFAULT";
-            if (!NasGen.GetSeedAndChunkOffset(p.Level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ))
+            if (!NASGen.GetSeedAndChunkOffset(p.Level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ))
             {
                 return false;
             }
@@ -317,17 +367,17 @@ namespace NotAwesomeSurvival
             chunkOffsetX += dirX;
             chunkOffsetZ += dirZ;
             mapName = seed + "_" + chunkOffsetX + "," + chunkOffsetZ;
-            if (File.Exists(NasLevel.GetFileName(mapName)))
+            if (File.Exists(NASLevel.GetFileName(mapName)))
             {
                 transferInfo = new(p, dirX, dirZ, -1, -1, -1);
                 CommandData data = p.DefaultCmdData;
-                data.Context = CommandContext.SendCmd;
+                data.Context = 2;
                 p.HandleCommand("goto", mapName, data);
                 return true;
             }
             else
             {
-                if (NasGen.currentlyGenerating)
+                if (NASGen.currentlyGenerating)
                 {
                     Message("&cA map is already generating!");
                     return false;
@@ -339,7 +389,7 @@ namespace NotAwesomeSurvival
                     seed = seed
                 };
                 SchedulerTask taskGenMap;
-                taskGenMap = NasGen.genScheduler.QueueOnce(GenTask, info, new TimeSpan(0, 0, 5));
+                taskGenMap = NASGen.genScheduler.QueueOnce(GenTask, info, new TimeSpan(0, 0, 5));
                 return false;
             }
         }
@@ -352,25 +402,25 @@ namespace NotAwesomeSurvival
             atBorder = true;
             int chunkOffsetX = 0, chunkOffsetZ = 0;
             string seed = "DEFAULT";
-            if (!NasGen.GetSeedAndChunkOffset(p.Level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ)) 
+            if (!NASGen.GetSeedAndChunkOffset(p.Level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ)) 
             { 
                 return false; 
             }
             string mapName;
             mapName = map;
-            NasGen.GetSeedAndChunkOffset(map, ref seed, ref chunkOffsetX, ref chunkOffsetZ);
-            if (File.Exists(NasLevel.GetFileName(mapName)))
+            NASGen.GetSeedAndChunkOffset(map, ref seed, ref chunkOffsetX, ref chunkOffsetZ);
+            if (File.Exists(NASLevel.GetFileName(mapName)))
             {
                 transferInfo = trans;
                 placePortal = true;
                 CommandData data = p.DefaultCmdData;
-                data.Context = CommandContext.SendCmd;
+                data.Context = 2;
                 p.HandleCommand("goto", mapName, data);
                 return true;
             }
             else
             {
-                if (NasGen.currentlyGenerating)
+                if (NASGen.currentlyGenerating)
                 {
                     Message("&cA map is already generating!");
                     return false;
@@ -382,7 +432,7 @@ namespace NotAwesomeSurvival
                     seed = seed
                 };
                 SchedulerTask taskGenMap;
-                taskGenMap = NasGen.genScheduler.QueueOnce(GenTask, info, new TimeSpan(0, 0, 5));
+                taskGenMap = NASGen.genScheduler.QueueOnce(GenTask, info, new TimeSpan(0, 0, 5));
                 return false;
             }
         }
@@ -402,10 +452,10 @@ namespace NotAwesomeSurvival
             Level lvl = null;
             try
             {
-                string width = NasGen.mapWideness.ToString(),
-                    height = NasGen.mapTallness.ToString(),
-                    length = NasGen.mapWideness.ToString();
-                lvl = NasLevel.GenerateMap(info.p, info.mapName, width, height, length, info.seed);
+                string width = NASGen.mapWideness.ToString(),
+                    height = NASGen.mapTallness.ToString(),
+                    length = NASGen.mapWideness.ToString();
+                lvl = NASLevel.GenerateMap(info.p, info.mapName, width, height, length, info.seed);
                 if (lvl == null)
                 {
                     return;
@@ -438,15 +488,15 @@ namespace NotAwesomeSurvival
             }
             public void CalcNewPos()
             {
-                int xOffset = chunkOffsetX * NasGen.mapWideness * 32,
-                    zOffset = chunkOffsetZ * NasGen.mapWideness * 32;
+                int xOffset = chunkOffsetX * NASGen.mapWideness * 32,
+                    zOffset = chunkOffsetZ * NASGen.mapWideness * 32;
                 posBeforeMapChange.X -= xOffset;
                 posBeforeMapChange.Z -= zOffset;
             }
         }
         public void UpdateCaveFog(Position next)
         {
-            if (!NasLevel.all.ContainsKey(p.Level.name))
+            if (!NASLevel.all.ContainsKey(p.Level.name))
             {
                 return;
             }
@@ -467,9 +517,9 @@ namespace NotAwesomeSurvival
                 }
             }
             curFogColor = ScaleColor(curFogColor, targetFogColor);
-            Send(Packet.EnvMapProperty(EnvProp.MaxFog, (int)curRenderDistance));
+            Send(Packet.EnvMapProperty(4, (int)curRenderDistance));
             Send(Packet.EnvColor(2, curFogColor.R, curFogColor.G, curFogColor.B));
-            NasLevel nl = NasLevel.all[p.Level.name];
+            NASLevel nl = NASLevel.all[p.Level.name];
             int z = next.BlockZ;
             z = Utils.Clamp(z, 0, (ushort)(p.Level.Length - 1));
             ushort height = (ushort)Utils.Clamp(z, 0, (ushort)(p.Level.Height - 1));
@@ -477,33 +527,33 @@ namespace NotAwesomeSurvival
             {
                 return;
             }
-            if (height < NasGen.oceanHeight)
+            if (height < NASGen.oceanHeight)
             {
-                height = NasGen.oceanHeight;
+                height = NASGen.oceanHeight;
             }
             int distanceBelow = nl.biome < 0 ? 0 : height - next.BlockY, expFog;
-            if (distanceBelow >= NasGen.diamondDepth)
+            if (distanceBelow >= NASGen.diamondDepth)
             {
                 targetRenderDistance = 128;
-                targetFogColor = NasGen.diamondFogColor;
+                targetFogColor = NASGen.diamondFogColor;
                 expFog = 1;
             }
-            else if (distanceBelow >= NasGen.goldDepth)
+            else if (distanceBelow >= NASGen.goldDepth)
             {
                 targetRenderDistance = 192;
-                targetFogColor = NasGen.goldFogColor;
+                targetFogColor = NASGen.goldFogColor;
                 expFog = 1;
             }
-            else if (distanceBelow >= NasGen.ironDepth)
+            else if (distanceBelow >= NASGen.ironDepth)
             {
                 targetRenderDistance = 192;
-                targetFogColor = NasGen.ironFogColor;
+                targetFogColor = NASGen.ironFogColor;
                 expFog = 1;
             }
-            else if (distanceBelow >= NasGen.coalDepth)
+            else if (distanceBelow >= NASGen.coalDepth)
             {
                 targetRenderDistance = 256;
-                targetFogColor = NasGen.coalFogColor;
+                targetFogColor = NASGen.coalFogColor;
                 expFog = 1;
             }
             else
@@ -512,7 +562,7 @@ namespace NotAwesomeSurvival
                 targetFogColor = new(255, 255, 255, 255);
                 expFog = 0;
             }
-            Send(Packet.EnvMapProperty(EnvProp.ExpFog, expFog));
+            Send(Packet.EnvMapProperty(8, expFog));
         }
         public static Pixel ScaleColor(Pixel cur, Pixel goal)
         {
@@ -535,4 +585,3 @@ namespace NotAwesomeSurvival
         }
     }
 }
-#endif

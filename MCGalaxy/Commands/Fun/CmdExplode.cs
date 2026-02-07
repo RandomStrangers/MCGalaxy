@@ -18,10 +18,10 @@ namespace MCGalaxy.Commands.Fun
 {
     public sealed class CmdExplode : Command2
     {
-        public override string name { get { return "Explode"; } }
-        public override string shortcut { get { return "ex"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "Explode";
+        public override string Shortcut => "ex";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 80;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -33,7 +33,7 @@ namespace MCGalaxy.Commands.Fun
                 Player target = PlayerInfo.FindMatches(p, args[0]);
                 if (target == null) return;
                 P = target.Pos.BlockCoords;
-                if (DoExplode(p, target.level, ref P))
+                if (DoExplode(p, target.Level, ref P))
                 {
                     p.Message("{0} &Shas been exploded!", p.FormatNick(target));
                 }
@@ -41,7 +41,7 @@ namespace MCGalaxy.Commands.Fun
             else if (args.Length == 3)
             {
                 if (!CommandParser.GetCoords(p, args, 0, ref P)) return;
-                if (DoExplode(p, p.level, ref P))
+                if (DoExplode(p, p.Level, ref P))
                 {
                     p.Message("An explosion was made at ({0}, {1}, {2}).", P.X, P.Y, P.Z);
                 }
@@ -53,7 +53,7 @@ namespace MCGalaxy.Commands.Fun
         }
         static bool DoExplode(Player p, Level lvl, ref Vec3S32 pos)
         {
-            if (lvl.physics < 3 || lvl.physics == 5)
+            if (lvl.LevelPhysics < 3 || lvl.LevelPhysics == 5)
             {
                 p.Message("&WThe physics on {0} &Ware not sufficient for exploding!", lvl.ColoredName);
                 return false;

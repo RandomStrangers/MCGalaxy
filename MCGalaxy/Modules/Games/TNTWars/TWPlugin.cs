@@ -17,7 +17,7 @@ namespace MCGalaxy.Modules.Games.TW
 {
     public sealed class TWPlugin : Plugin
     {
-        public override string name { get { return "TW"; } }
+        public override string Name => "TW";
         static readonly Command cmdTW = new CmdTntWars();
         public override void Load(bool startup)
         {
@@ -26,7 +26,7 @@ namespace MCGalaxy.Modules.Games.TW
             game.Config.Path = "props/tntwars.properties";
             game.ReloadConfig();
             game.AutoStart();
-            OnConfigUpdatedEvent.Register(game.ReloadConfig, Priority.Low);
+            OnConfigUpdatedEvent.Register(game.ReloadConfig, 0);
         }
         public override void Unload(bool shutdown)
         {

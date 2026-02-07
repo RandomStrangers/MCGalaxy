@@ -29,17 +29,11 @@ namespace MCGalaxy
             return desc.Undefined ? null : "&" + desc.Code;
         }
         /// <summary> Finds partial matches of 'name' against the list of bots in same level as player. </summary>
-        public static PlayerBot FindBots(Player p, string name)
-        {
-            return Find(p, name, out int matches, p.level.Bots.Items,
+        public static PlayerBot FindBots(Player p, string name) => Find(p, name, out int matches, p.Level.Bots.Items,
                         null, b => b.name, "bots");
-        }
         /// <summary> Find partial matches of 'name' against the list of loaded maps/levels. </summary>
-        public static Level FindLevels(Player p, string name)
-        {
-            return Find(p, name, out int matches, LevelInfo.Loaded.Items,
+        public static Level FindLevels(Player p, string name) => Find(p, name, out int matches, LevelInfo.Loaded.Items,
                         null, l => l.name, l => l.ColoredName, "loaded levels");
-        }
         /// <summary> Find partial matches of 'name' against the list of all map files. </summary>
         public static string FindMaps(Player pl, string name)
         {
@@ -58,18 +52,12 @@ namespace MCGalaxy
                         null, g => Colors.Strip(g.Name), g => g.ColoredName, "ranks");
         }
         /// <summary> Find partial matches of 'name' against the list of zones in a map. </summary>
-        public static Zone FindZones(Player p, Level lvl, string name)
-        {
-            return Find(p, name, out int matches, lvl.Zones.Items,
+        public static Zone FindZones(Player p, Level lvl, string name) => Find(p, name, out int matches, lvl.Zones.Items,
                         null, z => z.Config.Name, "zones");
-        }
         /// <summary> Finds partial matches of 'name' against the names of the items in the 'items' enumerable. </summary>
         /// <returns> If exactly one match, the matching item. </returns>
         public static T Find<T>(Player p, string name, out int matches, IEnumerable<T> items,
-                                Predicate<T> filter, StringFormatter<T> nameGetter, string group, int limit = 5)
-        {
-            return Find(p, name, out matches, items, filter, nameGetter, nameGetter, group, limit);
-        }
+                                Predicate<T> filter, StringFormatter<T> nameGetter, string group, int limit = 5) => Find(p, name, out matches, items, filter, nameGetter, nameGetter, group, limit);
         /// <summary> Finds partial matches of 'name' against the names of the items in the 'items' enumerable. </summary>
         /// <returns> If exactly one match, the matching item. </returns>
         public static T Find<T>(Player p, string name, out int matches, IEnumerable<T> items,

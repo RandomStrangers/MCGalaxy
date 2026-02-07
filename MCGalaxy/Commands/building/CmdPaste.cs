@@ -20,16 +20,13 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdPaste : Command2
     {
-        public override string name { get { return "Paste"; } }
-        public override string shortcut { get { return "v"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("PasteNot", "not"), new CommandAlias("pn", "not") }; }
-        }
+        public override string Name => "Paste";
+        public override string Shortcut => "v";
+        public override string Type => CommandTypes.Building;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 50;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("PasteNot", "not"), new CommandAlias("pn", "not") };
         public override void Use(Player p, string message, CommandData data)
         {
             BrushArgs args = new(p, message, Block.Air);

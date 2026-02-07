@@ -23,21 +23,15 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdCopy : Command2
     {
-        public override string name { get { return "Copy"; } }
-        public override string shortcut { get { return "c"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new CommandAlias[]
+        public override string Name => "Copy";
+        public override string Shortcut => "c";
+        public override string Type => CommandTypes.Building;
+        public override sbyte DefaultRank => 50;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new CommandAlias[]
                 {
                     new("Cut", "cut")
                 };
-            }
-        }
         public override void Use(Player p, string message, CommandData data)
         {
             int offsetIndex = message.IndexOf('@');
@@ -188,7 +182,7 @@ namespace MCGalaxy.Commands.Building
                 {
                     for (ushort x = minX; x <= maxX; ++x)
                     {
-                        block = p.level.GetBlock(x, y, z);
+                        block = p.Level.GetBlock(x, y, z);
                         if (!p.group.CanPlace[block])
                         {
                             index++;
@@ -211,7 +205,7 @@ namespace MCGalaxy.Commands.Building
                 p.ClearSelection();
                 return;
             }
-            cState.CopySource = "level " + p.level.name;
+            cState.CopySource = "level " + p.Level.name;
             p.CurrentCopy = cState;
             DrawCmd.DrawMessage(p, "Copied &a{0} &Sblocks, origin at ({1}, {2}, {3}) corner", cState.UsedBlocks,
                       cState.OriginX == cState.X ? "Min" : "Max",
@@ -230,10 +224,7 @@ namespace MCGalaxy.Commands.Building
                 CompleteCopy(p, m, cArgs);
             }
         }
-        bool DoCopy(Player p, Vec3S32[] m, object state, ushort block)
-        {
-            return false;
-        }
+        bool DoCopy(Player p, Vec3S32[] m, object state, ushort block) => false;
         class CopyArgs
         {
             public int offsetIndex;

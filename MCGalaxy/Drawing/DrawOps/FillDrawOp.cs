@@ -28,11 +28,8 @@ namespace MCGalaxy.Drawing.Ops
             Flags = BlockDBFlags.Filled;
             AffectedByTransform = false;
         }
-        public override string Name { get { return "Fill"; } }
-        public override long BlocksAffected(Level lvl, Vec3S32[] marks)
-        {
-            return Positions.Count;
-        }
+        public override string Name => "Fill";
+        public override long BlocksAffected(Level lvl, Vec3S32[] marks) => Positions.Count;
         public override bool CanDraw(Vec3S32[] marks, Player p, long affected)
         {
             if (affected > p.group.DrawLimit)
@@ -54,7 +51,7 @@ namespace MCGalaxy.Drawing.Ops
         }
         public static unsafe List<int> FloodFill(Player p, int index, ushort block, DrawMode mode)
         {
-            Level lvl = p.level;
+            Level lvl = p.Level;
             SparseBitSet bits = new(lvl.Width, lvl.Height, lvl.Length);
             List<int> buffer = new();
             Queue<int> temp = new();

@@ -17,78 +17,67 @@ namespace MCGalaxy.Blocks
 {
     internal static class PlaceBehaviour
     {
-        static bool SkipGrassDirt(Player p, ushort block)
-        {
-            Level lvl = p.level;
-            return !lvl.Config.GrassGrow || p.ModeBlock == block || !(lvl.physics == 0 || lvl.physics == 5);
-        }
-        internal static ChangeResult GrassDie(Player p, ushort block, ushort x, ushort y, ushort z)
+        static bool SkipGrassDirt(Player p, ushort block) => !p.Level.Config.GrassGrow || p.ModeBlock == block || !(p.Level.LevelPhysics == 0 || p.Level.LevelPhysics == 5);
+        internal static int GrassDie(Player p, ushort block, ushort x, ushort y, ushort z)
         {
             if (SkipGrassDirt(p, block)) return p.ChangeBlock(x, y, z, block);
-            Level lvl = p.level;
-            ushort above = lvl.GetBlock(x, (ushort)(y + 1), z);
-            if (above != Block.Invalid && !lvl.LightPasses(above))
+            if (p.Level.GetBlock(x, (ushort)(y + 1), z) != 0xff && !p.Level.LightPasses(p.Level.GetBlock(x, (ushort)(y + 1), z)))
             {
-                block = p.level.Props[block].DirtBlock;
+                block = p.Level.Props[block].DirtBlock;
             }
             return p.ChangeBlock(x, y, z, block);
         }
-        internal static ChangeResult DirtGrow(Player p, ushort block, ushort x, ushort y, ushort z)
+        internal static int DirtGrow(Player p, ushort block, ushort x, ushort y, ushort z)
         {
             if (SkipGrassDirt(p, block)) return p.ChangeBlock(x, y, z, block);
-            Level lvl = p.level;
-            ushort above = lvl.GetBlock(x, (ushort)(y + 1), z);
-            if (above == Block.Invalid || lvl.LightPasses(above))
+            if (p.Level.GetBlock(x, (ushort)(y + 1), z) == 0xff || p.Level.LightPasses(p.Level.GetBlock(x, (ushort)(y + 1), z)))
             {
-                block = p.level.Props[block].GrassBlock;
+                block = p.Level.Props[block].GrassBlock;
             }
             return p.ChangeBlock(x, y, z, block);
         }
-        internal static ChangeResult Stack(Player p, ushort block, ushort x, ushort y, ushort z)
+        internal static int Stack(Player p, ushort block, ushort x, ushort y, ushort z)
         {
-            if (p.level.GetBlock(x, (ushort)(y - 1), z) != block)
+            if (p.Level.GetBlock(x, (ushort)(y - 1), z) != block)
             {
                 return p.ChangeBlock(x, y, z, block);
             }
-            p.SendBlockchange(x, y, z, Block.Air); // send the air block back only to the user
-            ushort stack = p.level.Props[block].StackBlock;
-            p.ChangeBlock(x, (ushort)(y - 1), z, stack);
-            return ChangeResult.Modified;
+            p.SendBlockchange(x, y, z, 0); // send the air block back only to the user
+            p.ChangeBlock(x, (ushort)(y - 1), z, p.Level.Props[block].StackBlock);
+            return 2;
         }
-        internal static ChangeResult C4(Player p, ushort _, ushort x, ushort y, ushort z)
+        internal static int C4(Player p, ushort _, ushort x, ushort y, ushort z)
         {
-            if (p.level.physics == 0 || p.level.physics == 5) return ChangeResult.Unchanged;
+            if (p.Level.LevelPhysics == 0 || p.Level.LevelPhysics == 5) return 0;
             // Use red wool to detonate c4
-            ushort held = p.BlockBindings[p.ClientHeldBlock];
-            if (held == Block.Red)
+            if (p.BlockBindings[p.ClientHeldBlock] == 21)
             {
                 p.Message("Placed detonator block, delete it to detonate.");
-                return C4Det(p, Block.C4Detonator, x, y, z);
+                return C4Det(p, 75, x, y, z);
             }
             if (p.c4circuitNumber == -1)
             {
-                sbyte num = C4Physics.NextCircuit(p.level);
-                p.level.C4list.Add(new C4Data(num));
+                sbyte num = C4Physics.NextCircuit(p.Level);
+                p.Level.C4list.Add(new(num));
                 p.c4circuitNumber = num;
-                string detonatorName = Block.GetName(p, Block.Red);
                 p.Message("Place more blocks for more c4, then place a &c{0} &Sblock for the detonator.",
-                               detonatorName);
+                               Block.GetName(p, 21));
             }
-            C4Data c4 = C4Physics.Find(p.level, p.c4circuitNumber);
-            c4?.list.Add(p.level.PosToInt(x, y, z));
-            return p.ChangeBlock(x, y, z, Block.C4);
+            C4Data c4 = C4Physics.Find(p.Level, p.c4circuitNumber);
+            c4?.list.Add(p.Level.PosToInt(x, y, z));
+            return p.ChangeBlock(x, y, z, 74);
         }
-        internal static ChangeResult C4Det(Player p, ushort _, ushort x, ushort y, ushort z)
+        internal static int C4Det(Player p, ushort _, ushort x, ushort y, ushort z)
         {
-            if (p.level.physics == 0 || p.level.physics == 5)
+            if (p.Level.LevelPhysics == 0 || p.Level.LevelPhysics == 5)
             {
                 p.c4circuitNumber = -1;
-                return ChangeResult.Unchanged;
+                return 0;
             }
-            C4Data c4 = C4Physics.Find(p.level, p.c4circuitNumber);
-            if (c4 != null) c4.detIndex = p.level.PosToInt(x, y, z);
+            C4Data c4 = C4Physics.Find(p.Level, p.c4circuitNumber);
+            if (c4 != null) c4.detIndex = p.Level.PosToInt(x, y, z);
             p.c4circuitNumber = -1;
-            return p.ChangeBlock(x, y, z, Block.C4Detonator);
+            return p.ChangeBlock(x, y, z, 75);
         }
     }
 }

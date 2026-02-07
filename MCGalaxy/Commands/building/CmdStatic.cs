@@ -16,23 +16,20 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdStatic : Command2
     {
-        public override string name { get { return "Static"; } }
-        public override string shortcut { get { return "t"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("zz", "cuboid") }; }
-        }
+        public override string Name => "Static";
+        public override string Shortcut => "t";
+        public override string Type => CommandTypes.Building;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 50;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("zz", "cuboid") };
         public override void Use(Player p, string message, CommandData data)
         {
             p.staticCommands = !p.staticCommands;
             p.ClearBlockchange();
             p.Message("Static mode: &a" + p.staticCommands);
             if (message.Length == 0 || !p.staticCommands) return;
-            data.Context = CommandContext.Static;
+            data.Context = 1;
             string[] parts = message.SplitSpaces(2);
             string cmd = parts[0], args = parts.Length > 1 ? parts[1] : "";
             p.HandleCommand(cmd, args, data);

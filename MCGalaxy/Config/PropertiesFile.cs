@@ -47,7 +47,7 @@ namespace MCGalaxy
                 catch (Exception ex)
                 {
                     Logger.LogError(ex);
-                    Logger.Log(LogType.Warning, "Line \"{0}\" in {1} caused an error", line, path);
+                    Logger.Log(6, "Line \"{0}\" in {1} caused an error", line, path);
                 }
             }
             return true;

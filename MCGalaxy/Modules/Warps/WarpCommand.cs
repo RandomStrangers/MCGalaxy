@@ -17,9 +17,9 @@ namespace MCGalaxy.Modules.Warps
 {
     abstract class WarpCommand : Command2
     {
-        public override string type { get { return CommandTypes.World; } }
-        public override bool museumUsable { get { return false; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Type => CommandTypes.World;
+        public override bool MuseumUsable => false;
+        public override bool SuperUseable => false;
         static void PrintWarp(Player p, Warp warp)
         {
             Vec3S32 pos = warp.Pos.BlockCoords;

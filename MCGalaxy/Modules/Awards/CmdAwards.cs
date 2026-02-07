@@ -17,8 +17,8 @@ namespace MCGalaxy.Modules.Awards
 {
     public sealed class CmdAwards : Command2
     {
-        public override string name { get { return "Awards"; } }
-        public override string type { get { return CommandTypes.Economy; } }
+        public override string Name => "Awards";
+        public override string Type => CommandTypes.Economy;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();

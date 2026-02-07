@@ -36,10 +36,7 @@ namespace MCGalaxy.Util.Imaging
             buf_offset = 0;
             buf_length = src.Length;
         }
-        protected static void Fail(string reason)
-        {
-            throw new InvalidDataException(reason);
-        }
+        protected static void Fail(string reason) => throw new InvalidDataException(reason);
         protected static bool MatchesSignature(byte[] data, byte[] sig)
         {
             if (data.Length < sig.Length)

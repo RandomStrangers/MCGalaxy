@@ -18,10 +18,10 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdP2P : Command2
     {
-        public override string name { get { return "P2P"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "P2P";
+        public override string Type => CommandTypes.Moderation;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 80;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }

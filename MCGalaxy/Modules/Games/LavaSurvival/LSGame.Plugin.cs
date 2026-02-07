@@ -16,7 +16,6 @@ using MCGalaxy.Events.EconomyEvents;
 using MCGalaxy.Events.LevelEvents;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Games;
-using MCGalaxy.Maths;
 using System;
 namespace MCGalaxy.Modules.Games.LS
 {
@@ -24,12 +23,12 @@ namespace MCGalaxy.Modules.Games.LS
     {
         protected override void HookEventHandlers()
         {
-            OnJoinedLevelEvent.Register(HandleJoinedLevel, Priority.High);
-            OnPlayerDyingEvent.Register(HandlePlayerDying, Priority.High);
-            OnPlayerDiedEvent.Register(HandlePlayerDied, Priority.High);
-            OnBlockHandlersUpdatedEvent.Register(HandleBlockHandlersUpdated, Priority.High);
-            OnBlockChangingEvent.Register(HandleBlockChanging, Priority.High);
-            OnMoneyChangedEvent.Register(HandleMoneyChanged, Priority.High);
+            OnJoinedLevelEvent.Register(HandleJoinedLevel, 2);
+            OnPlayerDyingEvent.Register(HandlePlayerDying, 2);
+            OnPlayerDiedEvent.Register(HandlePlayerDied, 2);
+            OnBlockHandlersUpdatedEvent.Register(HandleBlockHandlersUpdated, 2);
+            OnBlockChangingEvent.Register(HandleBlockChanging, 2);
+            OnMoneyChangedEvent.Register(HandleMoneyChanged, 2);
             base.HookEventHandlers();
         }
         protected override void UnhookEventHandlers()
@@ -44,46 +43,43 @@ namespace MCGalaxy.Modules.Games.LS
         }
         void HandleMoneyChanged(Player p)
         {
-            if (p.level != Map) return;
-            UpdateStatus1(p);
+            if (p.Level == Map)
+            {
+                UpdateStatus1(p);
+            }
         }
         void HandleJoinedLevel(Player p, Level prevLevel, Level level, ref bool announce)
         {
             HandleJoinedCommon(p, prevLevel, level, ref announce);
-            if (Map != level) return;
-            ResetRoundState(p, Get(p)); // TODO: Check for /reload case?
-            OutputMapSummary(p, Map.name, Map.Config);
-            if (RoundInProgress) OutputStatus(p);
+            if (Map == level)
+            {
+                ResetRoundState(p, Get(p)); // TODO: Check for /reload case?
+                OutputMapSummary(p, Map.name, Map.Config);
+                if (RoundInProgress) OutputStatus(p);
+            }
         }
         void HandlePlayerDying(Player p, ushort block, ref bool cancel)
         {
-            if (p.level == Map && IsPlayerDead(p)) cancel = true;
+            if (p.Level == Map && IsPlayerDead(p)) cancel = true;
         }
         void HandlePlayerDied(Player p, ushort block, ref TimeSpan cooldown)
         {
-            if (p.level != Map || IsPlayerDead(p)) return;
+            if (p.Level != Map || IsPlayerDead(p)) return;
             cooldown = TimeSpan.FromSeconds(30);
             AddLives(p, -1, false);
         }
         void HandleBlockChanging(Player p, ushort x, ushort y, ushort z, ushort block, bool placing, ref bool cancel)
         {
-            if (p.level != Map || !(placing || p.painting)) return;
+            if (p.Level != Map || !(placing || p.painting)) return;
             if (Config.SpawnProtection && NearLavaSpawn(x, y, z))
             {
                 p.Message("You can't place blocks so close to the {0} spawn", FloodBlockName());
                 p.RevertBlock(x, y, z);
-                cancel = true; return;
+                cancel = true; 
+                return;
             }
         }
-        bool NearLavaSpawn(ushort x, ushort y, ushort z)
-        {
-            Vec3U16 pos = layerMode ? CurrentLayerPos() : cfg.FloodPos;
-            int dist = Config.SpawnProtectionRadius;
-            int dx = Math.Abs(x - pos.X);
-            int dy = Math.Abs(y - pos.Y);
-            int dz = Math.Abs(z - pos.Z);
-            return dx <= dist && dy <= dist && dz <= dist;
-        }
+        bool NearLavaSpawn(ushort x, ushort y, ushort z) => Math.Abs(x - (layerMode ? CurrentLayerPos() : cfg.FloodPos).X) <= Config.SpawnProtectionRadius && Math.Abs(y - (layerMode ? CurrentLayerPos() : cfg.FloodPos).Y) <= Config.SpawnProtectionRadius && Math.Abs(z - (layerMode ? CurrentLayerPos() : cfg.FloodPos).Z) <= Config.SpawnProtectionRadius;
         bool TryPlaceBlock(Player p, ref int blocksLeft, string type,
                            ushort block, ushort x, ushort y, ushort z)
         {
@@ -93,7 +89,7 @@ namespace MCGalaxy.Modules.Games.LS
                 p.RevertBlock(x, y, z);
                 return false;
             }
-            if (p.ChangeBlock(x, y, z, block) == ChangeResult.Unchanged)
+            if (p.ChangeBlock(x, y, z, block) == 0)
                 return false;
             if (p.Game.Referee) return true;
             blocksLeft--;

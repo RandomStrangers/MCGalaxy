@@ -19,9 +19,9 @@ namespace MCGalaxy.Commands.Maintenance
 {
     public sealed class CmdShutdown : Command2
     {
-        public override string name { get { return "Shutdown"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
+        public override string Name => "Shutdown";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 100;
         static SchedulerTask shutdownTask;
         public override void Use(Player p, string message, CommandData data)
         {
@@ -77,7 +77,7 @@ namespace MCGalaxy.Commands.Maintenance
         static void Log(string message)
         {
             Chat.MessageAll("&4" + message);
-            Logger.Log(LogType.SystemActivity, message);
+            Logger.Log(1, message);
         }
         static void ShutdownCallback(SchedulerTask task)
         {

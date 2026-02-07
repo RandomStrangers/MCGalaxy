@@ -16,11 +16,11 @@ namespace MCGalaxy.Commands.CPE
 {
     public sealed class CmdHold : Command2
     {
-        public override string name { get { return "Hold"; } }
-        public override string shortcut { get { return "HoldThis"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Hold";
+        public override string Shortcut => "HoldThis";
+        public override string Type => CommandTypes.Building;
+        public override sbyte DefaultRank => 50;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }

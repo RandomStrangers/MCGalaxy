@@ -18,20 +18,14 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdNewLvl : Command2
     {
-        public override string name { get { return "NewLvl"; } }
-        public override string shortcut { get { return "Gen"; } }
-        public override string type { get { return CommandTypes.World; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get
-            {
-                return new[]
+        public override string Name => "NewLvl";
+        public override string Shortcut => "Gen";
+        public override string Type => CommandTypes.World;
+        public override sbyte DefaultRank => 100;
+        public override CommandPerm[] ExtraPerms => new[]
                 {
-                    new CommandPerm(LevelPermission.Admin, "can generate maps with advanced themes")
+                    new CommandPerm(100, "can generate maps with advanced themes")
                 };
-            }
-        }
         public override void Use(Player p, string message, CommandData data)
         {
             string ext = ".lvl";
@@ -90,7 +84,7 @@ namespace MCGalaxy.Commands.World
             {
                 return null;
             }
-            if (gen != null && gen.Type == GenType.Advanced && !CheckExtraPerm(p, data, 1))
+            if (gen != null && gen.Type == 2 && !CheckExtraPerm(p, data, 1))
             {
                 return null;
             }

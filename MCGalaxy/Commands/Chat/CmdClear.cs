@@ -16,41 +16,36 @@ namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdClear : Command2
     {
-        public override string name { get { return "Clear"; } }
-        public override string shortcut { get { return "cls"; } }
-        public override string type { get { return CommandTypes.Chat; } }
-        public override bool UseableWhenFrozen { get { return true; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("PlayerCLS"), new CommandAlias("GlobalCLS", "global"), new CommandAlias("gcls", "global") }; }
-        }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Admin, "can clear chat for everyone") }; }
-        }
+        public override string Name => "Clear";
+        public override string Shortcut => "cls";
+        public override string Type => CommandTypes.Chat;
+        public override bool UseableWhenFrozen => true;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("PlayerCLS"), new CommandAlias("GlobalCLS", "global"), new CommandAlias("gcls", "global") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(100, "can clear chat for everyone") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (!message.CaselessEq("global"))
             {
-                ClearChat(p);
+                for (int i = 0; i < 30; i++)
+                {
+                    p.Session.SendMessage(0, "");
+                }
                 p.Message("&4Chat cleared.");
             }
             else
             {
-                if (!CheckExtraPerm(p, data, 1)) return;
-                Player[] players = PlayerInfo.Online.Items;
-                foreach (Player pl in players)
+                if (CheckExtraPerm(p, data, 1))
                 {
-                    ClearChat(pl);
+                    Player[] players = PlayerInfo.Online.Items;
+                    foreach (Player pl in players)
+                    {
+                        for (int i = 0; i < 30; i++)
+                        {
+                            pl.Session.SendMessage(0, "");
+                        }
+                    }
+                    Chat.MessageAll("&4Global Chat cleared.");
                 }
-                Chat.MessageAll("&4Global Chat cleared.");
-            }
-        }
-        static void ClearChat(Player p)
-        {
-            for (int i = 0; i < 30; i++)
-            {
-                p.Session.SendMessage(CpeMessageType.Normal, "");
             }
         }
         public override void Help(Player p)

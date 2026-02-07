@@ -23,7 +23,7 @@ namespace MCGalaxy.Modules.Games.LS
             Enabled = true;
             Price = 20;
         }
-        public override string Name { get { return "Life"; } }
+        public override string Name => "Life";
         public override void OnPurchase(Player p, string args)
         {
             if (!LSGame.Instance.RoundInProgress)
@@ -45,7 +45,7 @@ namespace MCGalaxy.Modules.Games.LS
             Enabled = true;
             Price = 2;
         }
-        public override string Name { get { return "Sponges"; } }
+        public override string Name => "Sponges";
         public override void OnPurchase(Player p, string args)
         {
             if (!LSGame.Instance.RoundInProgress)
@@ -69,7 +69,7 @@ namespace MCGalaxy.Modules.Games.LS
             Enabled = true;
             Price = 2;
         }
-        public override string Name { get { return "Water"; } }
+        public override string Name => "Water";
         public override void OnPurchase(Player p, string args)
         {
             if (!LSGame.Instance.RoundInProgress)
@@ -93,7 +93,7 @@ namespace MCGalaxy.Modules.Games.LS
             Enabled = true;
             Price = 2;
         }
-        public override string Name { get { return "Door"; } }
+        public override string Name => "Door";
         public override void OnPurchase(Player p, string args)
         {
             if (!LSGame.Instance.RoundInProgress)

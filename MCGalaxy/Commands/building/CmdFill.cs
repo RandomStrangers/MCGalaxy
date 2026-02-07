@@ -19,20 +19,14 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdFill : DrawCmd
     {
-        public override string name { get { return "Fill"; } }
-        public override string shortcut { get { return "f"; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new[] { new CommandAlias("F3D"), new CommandAlias("F2D", "2d"),
+        public override string Name => "Fill";
+        public override string Shortcut => "f";
+        public override sbyte DefaultRank => 50;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("F3D"), new CommandAlias("F2D", "2d"),
                     new CommandAlias("Fill3D"), new CommandAlias("Fill2D", "2d") };
-            }
-        }
-        protected override int MarksCount { get { return 1; } }
-        protected override string SelectionType { get { return "origin"; } }
-        protected override string PlaceMessage { get { return "Place or break a block to mark the area you wish to fill."; } }
+        protected override int MarksCount => 1;
+        protected override string SelectionType => "origin";
+        protected override string PlaceMessage => "Place or break a block to mark the area you wish to fill.";
         protected override DrawMode GetMode(string[] parts)
         {
             string msg = parts[0];
@@ -45,7 +39,7 @@ namespace MCGalaxy.Commands.Building
             if (msg == "2d") return DrawMode.volcano;
             return DrawMode.normal;
         }
-        protected override DrawOp GetDrawOp(DrawArgs dArg) { return new FillDrawOp(); }
+        protected override DrawOp GetDrawOp(DrawArgs dArg) => new FillDrawOp();
         protected override void GetBrush(DrawArgs dArgs)
         {
             int endCount = 0;
@@ -56,15 +50,15 @@ namespace MCGalaxy.Commands.Building
         {
             DrawArgs dArgs = (DrawArgs)state;
             ushort x = (ushort)marks[0].X, y = (ushort)marks[0].Y, z = (ushort)marks[0].Z;
-            ushort old = p.level.GetBlock(x, y, z);
+            ushort old = p.Level.GetBlock(x, y, z);
             if (!CommandParser.IsBlockAllowed(p, "fill over", old)) return false;
             bool is2D = dArgs.Mode == DrawMode.volcano;
             if (is2D) dArgs.Mode = Calc2DFill(p, marks);
             FillDrawOp op = (FillDrawOp)dArgs.Op;
-            op.Positions = FillDrawOp.FloodFill(p, p.level.PosToInt(x, y, z), old, dArgs.Mode);
+            op.Positions = FillDrawOp.FloodFill(p, p.Level.PosToInt(x, y, z), old, dArgs.Mode);
             int count = op.Positions.Count;
             bool confirmed = IsConfirmed(dArgs.Message), success = true;
-            if (count < p.group.DrawLimit && count > p.level.ReloadThreshold && !confirmed)
+            if (count < p.group.DrawLimit && count > p.Level.ReloadThreshold && !confirmed)
             {
                 p.Message("This fill would affect {0} blocks.", count);
                 p.Message("If you still want to fill, type &T/Fill {0} confirm", dArgs.Message);
@@ -85,10 +79,7 @@ namespace MCGalaxy.Commands.Building
             if (lenY >= lenX && lenY >= lenZ) return DrawMode.layer;
             return lenX >= lenZ ? DrawMode.verticalX : DrawMode.verticalZ;
         }
-        static bool IsConfirmed(string message)
-        {
-            return message.CaselessEq("confirm") || message.CaselessEnds(" confirm");
-        }
+        static bool IsConfirmed(string message) => message.CaselessEq("confirm") || message.CaselessEnds(" confirm");
         public override void Help(Player p)
         {
             p.Message("&T/Fill <brush args>");

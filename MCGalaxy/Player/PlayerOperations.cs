@@ -176,11 +176,11 @@ namespace MCGalaxy
         {
             // TODO: this needs to be compoletely rethought
             bool global = who == null || actor.IsSuper
-                            || (!actor.level.SeesServerWideChat && actor.level != who.level);
+                            || (!actor.Level.SeesServerWideChat && actor.Level != who.Level);
             if (actor == who)
             {
                 message = message.Replace("λACTOR", "λNICK")
-                                 .Replace("λTARGET", actor.pronouns.Object);
+                                 .Replace("λTARGET", actor.Pronouns.Object);
                 Chat.MessageFrom(who, message);
             }
             else if (!global)
@@ -210,13 +210,13 @@ namespace MCGalaxy
                 p.Message("Waiting for {0} &Sto spawn..", p.FormatNick(target));
                 target.BlockUntilLoad(10);
             }
-            if (p.level != lvl && !PlayerActions.ChangeMap(p, lvl.name)) return;
+            if (p.Level != lvl && !PlayerActions.ChangeMap(p, lvl.name)) return;
             p.BlockUntilLoad(10); // Wait for player to spawn in new map
             p.SendPosition(dst.Pos, dst.Rot);
         }
         static void SavePreTeleportState(Player p)
         {
-            p.PreTeleportMap = p.level.name;
+            p.PreTeleportMap = p.Level.name;
             p.PreTeleportPos = p.Pos;
             p.PreTeleportRot = p.Rot;
         }

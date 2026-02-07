@@ -1,6 +1,5 @@
-#if NAS && TEN_BIT_BLOCKS
 using System;
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
     public interface IFixedSizePriorityQueue<TItem, in TPriority> : IPriorityQueue<TItem, TPriority>
         where TPriority : IComparable<TPriority>
@@ -10,4 +9,3 @@ namespace NotAwesomeSurvival
         void ResetNode(TItem node);
     }
 }
-#endif

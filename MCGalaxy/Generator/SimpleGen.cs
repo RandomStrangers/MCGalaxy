@@ -20,12 +20,11 @@ namespace MCGalaxy.Generator
         delegate byte NextBlock();
         public static void RegisterGenerators()
         {
-            const GenType type = GenType.Simple;
-            MapGen.Register("Flat", type, GenFlat, "&HSeed specifies grass height (default half of level height)");
-            MapGen.Register("Pixel", type, GenPixel, "&HSeed does nothing");
-            MapGen.Register("Empty", type, GenEmpty, "&HSeed does nothing");
-            MapGen.Register("Space", type, GenSpace, MapGen.DEFAULT_HELP);
-            MapGen.Register("Rainbow", type, GenRainbow, MapGen.DEFAULT_HELP);
+            MapGen.Register("Flat", 0, GenFlat, "&HSeed specifies grass height (default half of level height)");
+            MapGen.Register("Pixel", 0, GenPixel, "&HSeed does nothing");
+            MapGen.Register("Empty", 0, GenEmpty, "&HSeed does nothing");
+            MapGen.Register("Space", 0, GenSpace, "&HSeed affects how terrain is generated. If seed is the same, the generated level will be the same.");
+            MapGen.Register("Rainbow", 0, GenRainbow, "&HSeed affects how terrain is generated. If seed is the same, the generated level will be the same.");
         }
         static unsafe bool GenFlat(Player p, Level lvl, MapGenArgs args)
         {
@@ -46,17 +45,12 @@ namespace MCGalaxy.Generator
             return true;
         }
         static unsafe void MapSet(int width, int length, byte* ptr,
-                                  int yBeg, int yEnd, byte block)
-        {
-            int beg = yBeg * length * width;
-            int end = (yEnd * length + (length - 1)) * width + (width - 1);
-            MemUtils.memset((IntPtr)ptr, block, beg, end - beg + 1);
-        }
+                                  int yBeg, int yEnd, byte block) => MemUtils.Memset((IntPtr)ptr, block, yBeg * length * width, (yEnd * length + (length - 1)) * width + (width - 1) - (yBeg * length * width) + 1);
         static bool GenEmpty(Player p, Level lvl, MapGenArgs args)
         {
             if (!args.ParseArgs(p)) return false;
             int maxX = lvl.Width - 1, maxZ = lvl.Length - 1;
-            Cuboid(lvl, 0, 0, 0, maxX, 0, maxZ, () => Block.Bedrock);
+            Cuboid(lvl, 0, 0, 0, maxX, 0, maxZ, () => 7);
             lvl.Config.EdgeLevel = 1;
             return true;
         }
@@ -64,14 +58,14 @@ namespace MCGalaxy.Generator
         {
             if (!args.ParseArgs(p)) return false;
             int maxX = lvl.Width - 1, maxY = lvl.Height - 1, maxZ = lvl.Length - 1;
-            static byte nextBlock() => Block.White;
+            static byte nextBlock() => 36;
             // Cuboid the four walls
             Cuboid(lvl, 0, 1, 0, maxX, maxY, 0, nextBlock);
             Cuboid(lvl, 0, 1, maxZ, maxX, maxY, maxZ, nextBlock);
             Cuboid(lvl, 0, 1, 0, 0, maxY, maxZ, nextBlock);
             Cuboid(lvl, maxX, 1, 0, maxX, maxY, maxZ, nextBlock);
             // Cuboid base
-            Cuboid(lvl, 0, 0, 0, maxX, 0, maxZ, () => Block.Bedrock);
+            Cuboid(lvl, 0, 0, 0, maxX, 0, maxZ, () => 7);
             return true;
         }
         static bool GenSpace(Player p, Level lvl, MapGenArgs args)
@@ -88,7 +82,7 @@ namespace MCGalaxy.Generator
             Cuboid(lvl, 0, 2, 0, 0, maxY, maxZ, nextBlock);
             Cuboid(lvl, maxX, 2, 0, maxX, maxY, maxZ, nextBlock);
             // Cuboid base and top
-            Cuboid(lvl, 0, 0, 0, maxX, 0, maxZ, () => Block.Bedrock);
+            Cuboid(lvl, 0, 0, 0, maxX, 0, maxZ, () => 7);
             Cuboid(lvl, 0, 1, 0, maxX, 1, maxZ, nextBlock);
             Cuboid(lvl, 0, maxY, 0, maxX, maxY, maxZ, nextBlock);
             lvl.Config.EdgeLevel = 1;
@@ -99,7 +93,7 @@ namespace MCGalaxy.Generator
             if (!args.ParseArgs(p)) return false;
             int maxX = lvl.Width - 1, maxY = lvl.Height - 1, maxZ = lvl.Length - 1;
             Random rng = new(args.Seed);
-            byte nextBlock() => (byte)rng.Next(Block.Red, Block.White);
+            byte nextBlock() => (byte)rng.Next(21, 36);
             // Cuboid the four walls
             Cuboid(lvl, 0, 1, 0, maxX, maxY, 0, nextBlock);
             Cuboid(lvl, 0, 1, maxZ, maxX, maxY, maxZ, nextBlock);
@@ -118,11 +112,15 @@ namespace MCGalaxy.Generator
             // space theme uses maxY = 2, but map might only be 1 block high
             maxY = Math.Min(maxY, lvl.MaxY);
             for (int y = minY; y <= maxY; y++)
+            {
                 for (int z = minZ; z <= maxZ; z++)
+                {
                     for (int x = minX; x <= maxX; x++)
                     {
                         blocks[x + width * (z + y * length)] = nextBlock();
                     }
+                }
+            }
         }
     }
 }

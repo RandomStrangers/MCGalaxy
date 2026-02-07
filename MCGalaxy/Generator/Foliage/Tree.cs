@@ -24,9 +24,9 @@ namespace MCGalaxy.Generator.Foliage
         protected internal int height, size;
         protected Random rnd;
         /// <summary> Minimum allowed size (usually means height) for this tree. </summary>
-        public virtual int MinSize { get { return 3; } }
+        public virtual int MinSize => 3;
         /// <summary> Maximum allowed size (usually means height) for this tree. </summary>
-        public virtual int MaxSize { get { return 4096; } }
+        public virtual int MaxSize => 4096;
         /// <summary> Estimated the maximum number of blocks affected by this tree. </summary>
         public abstract long EstimateBlocksAffected();
         /// <summary> Calculates a random default size (usually means height) for this tree. </summary>
@@ -55,7 +55,7 @@ namespace MCGalaxy.Generator.Foliage
             { "Oak", () => new OakTree() },       { "Ash", () => new AshTree() },
             { "Round", () => new RoundTree() },   { "Cone", () => new ConeTree() },
             { "Rainforest", () => new RainforestTree() }, { "Mangrove", () => new MangroveTree() },
-            { "fCraft", () => new fCraftTree() }
+            { "fCraft", () => new FCraftTree() }
         };
         public static Tree Find(string name)
         {

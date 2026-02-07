@@ -16,22 +16,13 @@ namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdLogoutMessage : EntityPropertyCmd
     {
-        public override string name { get { return "LogoutMessage"; } }
-        public override string shortcut { get { return "LogoutMsg"; } }
-        public override string type { get { return CommandTypes.Chat; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can change the logout message of others") }; }
-        }
-        public override void Use(Player p, string message, CommandData data)
-        {
-            UsePlayer(p, data, message, "logout message");
-        }
-        protected override void SetPlayerData(Player p, string target, string msg)
-        {
-            PlayerOperations.SetLogoutMessage(p, target, msg);
-        }
+        public override string Name => "LogoutMessage";
+        public override string Shortcut => "LogoutMsg";
+        public override string Type => CommandTypes.Chat;
+        public override sbyte DefaultRank => 80;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can change the logout message of others") };
+        public override void Use(Player p, string message, CommandData data) => UsePlayer(p, data, message, "logout message");
+        protected override void SetPlayerData(Player p, string target, string msg) => PlayerOperations.SetLogoutMessage(p, target, msg);
         public override void Help(Player p)
         {
             p.Message("&T/LogoutMessage [player] [message]");

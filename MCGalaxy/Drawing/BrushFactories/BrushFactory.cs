@@ -23,7 +23,7 @@ namespace MCGalaxy.Drawing.Brushes
         /// returning null if invalid arguments are specified. </summary>
         public abstract Brush Construct(BrushArgs args);
         /// <summary> Validates the given arguments, returning false if they are invalid. </summary>
-        public virtual bool Validate(BrushArgs args) { return Construct(args) != null; }
+        public virtual bool Validate(BrushArgs args) => Construct(args) != null;
         public static List<BrushFactory> Brushes = new() {
             new SolidBrushFactory(),    new CheckeredBrushFactory(),
             new StripedBrushFactory(),  new PasteBrushFactory(),
@@ -48,10 +48,7 @@ namespace MCGalaxy.Drawing.Brushes
             if (match == null && matches == 0) List(p);
             return match;
         }
-        public static void List(Player p)
-        {
-            p.Message("&HAvailable brushes: &f" + Brushes.Join(b => b.Name));
-        }
+        public static void List(Player p) => p.Message("&HAvailable brushes: &f" + Brushes.Join(b => b.Name));
     }
     public struct BrushArgs
     {

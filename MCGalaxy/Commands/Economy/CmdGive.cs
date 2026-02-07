@@ -18,10 +18,10 @@ namespace MCGalaxy.Commands.Eco
 {
     public sealed class CmdGive : MoneyCmd
     {
-        public override string name { get { return "Give"; } }
-        public override string shortcut { get { return "Gib"; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-        public override bool MessageBlockRestricted { get { return true; } }
+        public override string Name => "Give";
+        public override string Shortcut => "Gib";
+        public override sbyte DefaultRank => 100;
+        public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
         {
             bool all = false;

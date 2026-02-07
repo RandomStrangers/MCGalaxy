@@ -16,16 +16,16 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdUnflood : Command2
     {
-        public override string name { get { return "Unflood"; } }
-        public override string type { get { return CommandTypes.World; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Unflood";
+        public override string Type => CommandTypes.World;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 80;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
             if (!message.CaselessEq("all") && !CommandParser.GetBlock(p, message, out _)) return;
-            Level lvl = p.level;
+            Level lvl = p.Level;
             if (!LevelInfo.Check(p, data.Rank, lvl, "unflood this level")) return;
             // TODO: Probably should look at lvl.physTickLock here
             bool paused = lvl.PhysicsPaused;

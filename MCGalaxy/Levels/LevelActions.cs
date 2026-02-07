@@ -12,7 +12,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using MCGalaxy.Blocks.Extended;
 using MCGalaxy.Bots;
 using MCGalaxy.DB;
 using MCGalaxy.Events.LevelEvents;
@@ -26,14 +25,8 @@ namespace MCGalaxy
 {
     public static class LevelActions
     {
-        static string BlockPropsLvlPath(string map)
-        {
-            return Paths.BlockPropsPath("_" + map);
-        }
-        static string BlockPropsOldPath(string map)
-        {
-            return Paths.BlockPropsPath("lvl_" + map);
-        }
+        static string BlockPropsLvlPath(string map) => Paths.BlockPropsPath("_" + map);
+        static string BlockPropsOldPath(string map) => Paths.BlockPropsPath("lvl_" + map);
         public static bool Backup(string map, string backupName, string ext = ".lvl")
         {
             if (ext.CaselessContains(".lvl"))
@@ -73,7 +66,7 @@ namespace MCGalaxy
             List<Player> players = null;
             if (lvl != null)
             {
-                players = lvl.getPlayers();
+                players = lvl.GetPlayers();
             }
             if (lvl != null && !lvl.Unload())
             {
@@ -109,8 +102,14 @@ namespace MCGalaxy
             {
                 lock (dstLocker)
                 {
-                    Portal.MoveAll(src, dst);
-                    MessageBlock.MoveAll(src, dst);
+                    if (Database.TableExists("Portals" + src))
+                    {
+                        Database.RenameTable("Portals" + src, "Portals" + dst);
+                    }
+                    if (Database.TableExists("Messages" + src))
+                    {
+                        Database.RenameTable("Messages" + src, "Messages" + dst);
+                    }
                     if (Database.TableExists("Zone" + src))
                     {
                         Database.RenameTable("Zone" + src, "Zone" + dst);
@@ -174,29 +173,27 @@ namespace MCGalaxy
         /// </summary>
         public static void DeleteBackup(Player p, string map, string backup)
         {
-            if (!LevelInfo.GetBackupPath(p, map, backup, out _))
+            if (LevelInfo.GetBackupPath(p, map, backup, out _))
             {
-                return;
-            }
-            foreach (Player pl in PlayerInfo.Online.Items)
-            {
-                if (pl.level.MapName.CaselessEq(map) && pl.level.IsMuseum)
+                foreach (Player pl in PlayerInfo.Online.Items)
                 {
-                    pl.level.MovePlayersToMain();
-                    pl.level.Unload(true, false);
+                    if (pl.Level.MapName.CaselessEq(map) && pl.Level.IsMuseum)
+                    {
+                        pl.Level.MovePlayersToMain();
+                        pl.Level.Unload(true, false);
+                    }
                 }
+                FileIO.TryDeleteDirectory(LevelInfo.BackupDirPath(map, backup), true);
+                p.Message("Deleted backup {0}.", backup);
             }
-            FileIO.TryDeleteDirectory(LevelInfo.BackupDirPath(map, backup), true);
-            p.Message("Deleted backup {0}.", backup);
         }
         static void DeleteDatabaseTables(string map)
         {
             Database.DeleteTable("Block" + map);
-            object locker = ThreadSafeCache.DBCache.GetLocker(map);
-            lock (locker)
+            lock (ThreadSafeCache.DBCache.GetLocker(map))
             {
-                Portal.DeleteAll(map);
-                MessageBlock.DeleteAll(map);
+                Database.DeleteTable("Portals" + map);
+                Database.DeleteTable("Messages" + map);
                 Database.DeleteTable("Zone" + map);
             }
         }
@@ -211,7 +208,7 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                if (pl.level != old)
+                if (pl.Level != old)
                 {
                     continue;
                 }
@@ -246,14 +243,21 @@ namespace MCGalaxy
         }
         static void CopyDatabaseTables(string src, string dst)
         {
-            object srcLocker = ThreadSafeCache.DBCache.GetLocker(src),
-                dstLocker = ThreadSafeCache.DBCache.GetLocker(dst);
-            lock (srcLocker)
+            lock (ThreadSafeCache.DBCache.GetLocker(src))
             {
-                lock (dstLocker)
+                lock (ThreadSafeCache.DBCache.GetLocker(dst))
                 {
-                    Portal.CopyAll(src, dst);
-                    MessageBlock.CopyAll(src, dst);
+                    if (Database.TableExists("Portals" + src))
+                    {
+                        Database.CreateTable("Portals" + dst, LevelDB.createPortals);
+                        Database.CopyAllRows("Portals" + src, "Portals" + dst);
+                        Database.Execute(SqlUtils.WithTable("UPDATE {table} SET ExitMap=@1 WHERE ExitMap=@0", "Portals" + dst), src, dst);
+                    }
+                    if (Database.TableExists("Messages" + src))
+                    {
+                        Database.CreateTable("Messages" + dst, LevelDB.createMessages);
+                        Database.CopyAllRows("Messages" + src, "Messages" + dst);
+                    }
                 }
             }
         }
@@ -265,7 +269,7 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {
-                if (p.level != lvl)
+                if (p.Level != lvl)
                 {
                     continue;
                 }
@@ -356,12 +360,10 @@ namespace MCGalaxy
                     return null;
                 }
                 LevelInfo.Add(lvl);
-                if (!announce)
+                if (announce)
                 {
-                    return lvl;
+                    Chat.Message(0, "Level " + lvl.ColoredName + " &Sloaded.", null, Chat.FilterVisible(p));
                 }
-                string autoloadMsg = "Level " + lvl.ColoredName + " &Sloaded.";
-                Chat.Message(ChatScope.All, autoloadMsg, null, Chat.FilterVisible(p));
                 return lvl;
             }
             finally
@@ -371,7 +373,7 @@ namespace MCGalaxy
         }
         static Level ReadBackup(Player p, string map, string path, string type)
         {
-            Logger.Log(LogType.Warning, "Attempting to load {1} for {0}", map, type);
+            Logger.Log(6, "Attempting to load {1} for {0}", map, type);
             Level lvl = Level.Load(map, path);
             if (lvl != null)
             {
@@ -407,8 +409,7 @@ namespace MCGalaxy
             string backupDir = LevelInfo.BackupBasePath(map);
             if (Directory.Exists(backupDir))
             {
-                int latest = LevelInfo.LatestBackup(map);
-                path = LevelInfo.BackupFilePath(map, latest.ToString());
+                path = LevelInfo.BackupFilePath(map, LevelInfo.LatestBackup(map).ToString());
                 lvl = ReadBackup(p, map, path, "latest backup");
             }
             else
@@ -417,13 +418,13 @@ namespace MCGalaxy
             }
             return lvl;
         }
-        public static Level LoadMuseum(Player _, string name, string mapName, string path)
+        public static Level LoadMuseum(string name, string mapName, string path)
         {
             Level lvl = GetMuseum(name, path);
             lvl.MapName = mapName;
             lvl.IsMuseum = true;
             Level.LoadMetadata(lvl);
-            lvl.BuildAccess.Min = LevelPermission.Console;
+            lvl.BuildAccess.Min = 127;
             lvl.Config.Physics = 0;
             return lvl;
         }
@@ -432,7 +433,7 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                Level lvl = pl.level;
+                Level lvl = pl.Level;
                 if (!lvl.IsMuseum || lvl.name != name)
                 {
                     continue;
@@ -500,7 +501,7 @@ namespace MCGalaxy
             {
                 lvl.Backup(true);
                 res.Zones = lvl.Zones;
-                lvl.Zones = new VolatileArray<Zone>();
+                lvl.Zones = new();
                 IMapExporter.Encode(LevelInfo.MapPath(lvl.name), res);
                 lvl.SaveChanges = false;
             }

@@ -21,17 +21,14 @@ namespace MCGalaxy.Modules.Games.Countdown
         public VolatileArray<Player> Players = new();
         public VolatileArray<Player> Remaining = new();
         public CountdownConfig Config = new();
-        public override string GameName { get { return "Countdown"; } }
-        public override RoundsGameConfig GetConfig() { return Config; }
-        protected override string WelcomeMessage
-        {
-            get { return "&aCountdown &Sis running! Type &T/CD join &Sto join"; }
-        }
+        public override string GameName => "Countdown";
+        public override RoundsGameConfig GetConfig() => Config;
+        protected override string WelcomeMessage => "&aCountdown &Sis running! Type &T/CD join &Sto join";
         public bool FreezeMode;
         public int Interval;
         public CountdownSpeed SpeedType;
         public static CountdownGame Instance = new();
-        public CountdownGame() { Picker = new SimpleLevelPicker(); }
+        public CountdownGame() => Picker = new SimpleLevelPicker();
         public override void UpdateMapConfig() { }
         protected override List<Player> GetPlayers()
         {
@@ -90,7 +87,7 @@ namespace MCGalaxy.Modules.Games.Countdown
         {
             if (!Players.Contains(p))
             {
-                if (p.level != Map && !PlayerActions.ChangeMap(p, "countdown")) return;
+                if (p.Level != Map && !PlayerActions.ChangeMap(p, "countdown")) return;
                 Players.Add(p);
                 p.Message("You've joined countdown!");
                 Chat.MessageFrom(p, "λNICK &Sjoined countdown!");
@@ -105,14 +102,8 @@ namespace MCGalaxy.Modules.Games.Countdown
             Players.Remove(p);
             OnPlayerDied(p);
         }
-        protected override string FormatStatus1(Player p)
-        {
-            return RoundInProgress ? squaresLeft.Count + " squares left" : "";
-        }
-        protected override string FormatStatus2(Player p)
-        {
-            return RoundInProgress ? Remaining.Count + " players left" : "";
-        }
+        protected override string FormatStatus1(Player p) => RoundInProgress ? squaresLeft.Count + " squares left" : "";
+        protected override string FormatStatus2(Player p) => RoundInProgress ? Remaining.Count + " players left" : "";
         public void SetSpeed(CountdownSpeed speed)
         {
             switch (speed)

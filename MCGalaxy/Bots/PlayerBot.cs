@@ -27,7 +27,7 @@ namespace MCGalaxy
         public string ClickedOnText;
         public string DeathMessage;
         public string Owner;
-        public string ColoredName { get { return color + DisplayName; } }
+        public string ColoredName => color + DisplayName;
         public Level level;
         public int cur = 0;
         public int countdown = 0;
@@ -47,9 +47,9 @@ namespace MCGalaxy
             hasExtPositions = true;
             BotsScheduler.Activate();
         }
-        public override bool CanSeeEntity(Entity other) { return true; }
-        public override Level Level { get { return level; } }
-        public override bool RestrictsScale { get { return false; } }
+        public override bool CanSeeEntity(Entity other) => true;
+        public override Level Level => level;
+        public override bool RestrictsScale => false;
         public bool EditableBy(Player p, string attemptedAction = "modify")
         {
             if (CanEditAny(p)) { return true; }
@@ -59,8 +59,8 @@ namespace MCGalaxy
         }
         public static bool CanEditAny(Player p)
         {
-            if (LevelInfo.IsRealmOwner(p.level, p.name)) { return true; }
-            ItemPerms perms = CommandExtraPerms.Find("Bot", 1) ?? new ItemPerms(LevelPermission.Operator);
+            if (LevelInfo.IsRealmOwner(p.Level, p.name)) { return true; }
+            ItemPerms perms = CommandExtraPerms.Find("Bot", 1) ?? new ItemPerms(80);
             if (perms.UsableBy(p)) { return true; }
             return false;
         }
@@ -109,7 +109,7 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {
-                if (p.level == level) Entities.Spawn(p, this);
+                if (p.Level == level) Entities.Spawn(p, this);
             }
         }
         public void GlobalDespawn()
@@ -117,7 +117,7 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {
-                if (p.level == level) Entities.Despawn(p, this);
+                if (p.Level == level) Entities.Despawn(p, this);
             }
         }
         public void NextInstruction()
@@ -265,7 +265,7 @@ namespace MCGalaxy
                         );
             }
             if (string.IsNullOrEmpty(ClickedOnText)) return;
-            ItemPerms perms = CommandExtraPerms.Find("About", 1) ?? new ItemPerms(LevelPermission.AdvBuilder);
+            ItemPerms perms = CommandExtraPerms.Find("About", 1) ?? new ItemPerms(50);
             if (!perms.UsableBy(p)) return; //don't show bot's ClickedOnText if player isn't allowed to see message block contents
             p.Message("  Clicked-on text: {0}", ClickedOnText);
         }

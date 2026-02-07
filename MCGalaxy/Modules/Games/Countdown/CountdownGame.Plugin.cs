@@ -20,10 +20,10 @@ namespace MCGalaxy.Modules.Games.Countdown
     {
         protected override void HookEventHandlers()
         {
-            OnPlayerMoveEvent.Register(HandlePlayerMove, Priority.High);
-            OnPlayerSpawningEvent.Register(HandlePlayerSpawning, Priority.High);
-            OnJoinedLevelEvent.Register(HandleOnJoinedLevel, Priority.High);
-            OnGettingMotdEvent.Register(HandleGettingMotd, Priority.High);
+            OnPlayerMoveEvent.Register(HandlePlayerMove, 2);
+            OnPlayerSpawningEvent.Register(HandlePlayerSpawning, 2);
+            OnJoinedLevelEvent.Register(HandleOnJoinedLevel, 2);
+            OnGettingMotdEvent.Register(HandleGettingMotd, 2);
             base.HookEventHandlers();
         }
         protected override void UnhookEventHandlers()
@@ -37,17 +37,19 @@ namespace MCGalaxy.Modules.Games.Countdown
         void HandlePlayerMove(Player p, Position next, byte yaw, byte pitch, ref bool cancel)
         {
             if (!RoundInProgress || !FreezeMode) return;
-            if (!Remaining.Contains(p)) return;
-            int freezeX = p.Extras.GetInt("MCG_CD_X");
-            int freezeZ = p.Extras.GetInt("MCG_CD_Z");
-            if (next.X != freezeX || next.Z != freezeZ)
+            if (Remaining.Contains(p))
             {
-                next.X = freezeX; next.Z = freezeZ;
-                p.SendPosition(next, new Orientation(yaw, pitch));
+                int freezeX = p.Extras.GetInt("MCG_CD_X"),
+                    freezeZ = p.Extras.GetInt("MCG_CD_Z");
+                if (next.X != freezeX || next.Z != freezeZ)
+                {
+                    next.X = freezeX; next.Z = freezeZ;
+                    p.SendPosition(next, new(yaw, pitch));
+                }
+                p.Pos = next;
+                p.SetYawPitch(yaw, pitch);
+                cancel = true;
             }
-            p.Pos = next;
-            p.SetYawPitch(yaw, pitch);
-            cancel = true;
         }
         void HandlePlayerSpawning(Player p, ref Position pos, ref byte yaw, ref byte pitch, bool respawning)
         {
@@ -55,13 +57,10 @@ namespace MCGalaxy.Modules.Games.Countdown
             Map.Message(p.ColoredName + " &Sis out of countdown!");
             OnPlayerDied(p);
         }
-        void HandleOnJoinedLevel(Player p, Level prevLevel, Level level, ref bool announce)
-        {
-            HandleJoinedCommon(p, prevLevel, level, ref announce);
-        }
+        void HandleOnJoinedLevel(Player p, Level prevLevel, Level level, ref bool announce) => HandleJoinedCommon(p, prevLevel, level, ref announce);
         void HandleGettingMotd(Player p, ref string motd)
         {
-            if (p.level != Map || !FreezeMode || !RoundInProgress) return;
+            if (p.Level != Map || !FreezeMode || !RoundInProgress) return;
             motd += " horspeed=0";
         }
     }

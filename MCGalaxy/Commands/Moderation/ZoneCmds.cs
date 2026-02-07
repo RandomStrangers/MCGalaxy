@@ -22,19 +22,13 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdZone : Command2
     {
-        public override string name { get { return "Zone"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override bool museumUsable { get { return false; } }
-        public override bool SuperUseable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new[] { new CommandAlias("ZRemove", "del"), new CommandAlias("ZDelete", "del"),
+        public override string Name => "Zone";
+        public override string Type => CommandTypes.Moderation;
+        public override bool MuseumUsable => false;
+        public override bool SuperUseable => false;
+        public override sbyte DefaultRank => 80;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("ZRemove", "del"), new CommandAlias("ZDelete", "del"),
                     new CommandAlias("ZAdd"), new CommandAlias("ZEdit", "perbuild") };
-            }
-        }
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(4);
@@ -53,7 +47,7 @@ namespace MCGalaxy.Commands.Moderation
             else if (opt.CaselessEq("perbuild") || opt.CaselessEq("set"))
             {
                 if (args.Length <= 2) { Help(p); return; }
-                Zone zone = Matcher.FindZones(p, p.level, args[1]);
+                Zone zone = Matcher.FindZones(p, p.Level, args[1]);
                 if (zone == null) return;
                 if (!zone.Access.CheckDetailed(p, data.Rank))
                 {
@@ -75,19 +69,19 @@ namespace MCGalaxy.Commands.Moderation
         }
         void CreateZone(Player p, string[] args, CommandData data, int offset)
         {
-            if (p.level.FindZoneExact(args[offset]) != null)
+            if (p.Level.FindZoneExact(args[offset]) != null)
             {
                 p.Message("A zone with that name already exists. Use &T/zedit &Sto change it.");
                 return;
             }
-            if (!LevelInfo.Check(p, data.Rank, p.level, "create zones in this level")) return;
+            if (!LevelInfo.Check(p, data.Rank, p.Level, "create zones in this level")) return;
             Zone z = new();
-            z.Access.Min = p.level.BuildAccess.Min;
-            z.Access.Max = p.level.BuildAccess.Max;
+            z.Access.Min = p.Level.BuildAccess.Min;
+            z.Access.Max = p.Level.BuildAccess.Max;
             // TODO readd once performance issues with massive zone build blacklists are fixed
-            //z.Access.CloneAccess(p.level.BuildAccess);
+            //z.Access.CloneAccess(p.Level.BuildAccess);
             z.Config.Name = args[offset];
-            if (!PermissionCmd.Do(p, args, offset + 1, false, z.Access, data, p.level)) return;
+            if (!PermissionCmd.Do(p, args, offset + 1, false, z.Access, data, p.Level)) return;
             p.Message("Creating zone " + z.ColoredName);
             p.Message("Place or break two blocks to determine the edges.");
             p.MakeSelection(2, "Selecting region for &SNew zone", z, AddZone);
@@ -101,14 +95,14 @@ namespace MCGalaxy.Commands.Moderation
             zone.MaxX = (ushort)Math.Max(marks[0].X, marks[1].X);
             zone.MaxY = (ushort)Math.Max(marks[0].Y, marks[1].Y);
             zone.MaxZ = (ushort)Math.Max(marks[0].Z, marks[1].Z);
-            zone.AddTo(p.level);
-            p.level.Save(true);
+            zone.AddTo(p.Level);
+            p.Level.Save(true);
             p.Message("Created zone " + zone.ColoredName);
             return false;
         }
         void DeleteZone(Player p, string[] args, CommandData data)
         {
-            Level lvl = p.level;
+            Level lvl = p.Level;
             Zone zone = Matcher.FindZones(p, lvl, args[1]);
             if (zone == null) return;
             if (!zone.Access.CheckDetailed(p, data.Rank))
@@ -119,10 +113,7 @@ namespace MCGalaxy.Commands.Moderation
             p.Message("Zone {0} &Sdeleted", zone.ColoredName);
             lvl.Save(true);
         }
-        void EditZone(Player p, string[] args, CommandData data, Zone zone)
-        {
-            PermissionCmd.Do(p, args, 2, false, zone.Access, data, p.level);
-        }
+        void EditZone(Player p, string[] args, CommandData data, Zone zone) => PermissionCmd.Do(p, args, 2, false, zone.Access, data, p.Level);
         void SetZoneProp(Player p, string[] args, Zone zone)
         {
             ColorDesc desc = default;
@@ -136,22 +127,22 @@ namespace MCGalaxy.Commands.Moderation
             {
                 float alpha = 0;
                 if (!CommandParser.GetReal(p, value, "Alpha", ref alpha, 0, 1)) return;
-                zone.UnshowAll(p.level);
+                zone.UnshowAll(p.Level);
                 zone.Config.ShowAlpha = (byte)(alpha * 255);
-                zone.ShowAll(p.level);
+                zone.ShowAll(p.Level);
             }
             else if (opt.CaselessEq("col") || opt.CaselessEq("color") || opt.CaselessEq("colour"))
             {
                 if (!CommandParser.GetHex(p, value, ref desc)) return;
                 zone.Config.ShowColor = value;
-                zone.ShowAll(p.level);
+                zone.ShowAll(p.Level);
             }
             else if (opt.CaselessEq("motd"))
             {
                 zone.Config.MOTD = value;
                 OnChangedZone(zone);
             }
-            else if (CmdEnvironment.Handle(p, p.level, opt, value, zone.Config, "zone " + zone.ColoredName))
+            else if (CmdEnvironment.Handle(p, p.Level, opt, value, zone.Config, "zone " + zone.ColoredName))
             {
                 OnChangedZone(zone);
             }
@@ -159,7 +150,7 @@ namespace MCGalaxy.Commands.Moderation
             {
                 Help(p, "properties"); return;
             }
-            p.level.Save(true);
+            p.Level.Save(true);
         }
         void OnChangedZone(Zone zone)
         {
@@ -169,14 +160,8 @@ namespace MCGalaxy.Commands.Moderation
                 if (pl.ZoneIn == zone) OnChangedZoneEvent.Call(pl);
             }
         }
-        public override void Help(Player p)
-        {
-            HelpName(p, name);
-        }
-        public override void Help(Player p, string message)
-        {
-            HelpName(p, name, message);
-        }
+        public override void Help(Player p) => HelpName(p, Name);
+        public override void Help(Player p, string message) => HelpName(p, Name, message);
         internal static void HelpName(Player p, string cmdName)
         {
             p.Message("&T/{0} add [name] <permissions>", cmdName);
@@ -211,10 +196,10 @@ namespace MCGalaxy.Commands.Moderation
     }
     public sealed class CmdZoneTest : Command2
     {
-        public override string name { get { return "ZoneTest"; } }
-        public override string shortcut { get { return "ZTest"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "ZoneTest";
+        public override string Shortcut => "ZTest";
+        public override string Type => CommandTypes.Moderation;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             p.Message("Place or delete a block where you would like to check for zones.");
@@ -223,7 +208,7 @@ namespace MCGalaxy.Commands.Moderation
         bool TestZone(Player p, Vec3S32[] marks, object state, ushort block)
         {
             Vec3S32 P = marks[0];
-            Level lvl = p.level;
+            Level lvl = p.Level;
             bool found = false;
             CommandData data = (CommandData)state;
             Zone[] zones = lvl.Zones.Items;
@@ -232,53 +217,40 @@ namespace MCGalaxy.Commands.Moderation
                 Zone z = zones[i];
                 if (!z.Contains(P.X, P.Y, P.Z)) continue;
                 found = true;
-                AccessResult status = z.Access.Check(p.name, data.Rank);
                 bool allowed = z.Access.CheckAllowed(p);
-                p.Message("  Zone {0} &S- {1}{2}", z.ColoredName, allowed ? "&a" : "&c", status);
+                p.Message("  Zone {0} &S- {1}{2}", z.ColoredName, allowed ? "&a" : "&c", z.Access.Check(p.name, data.Rank));
             }
             if (!found) { p.Message("No zones affect this block."); }
             return true;
         }
-        public override void Help(Player p)
-        {
-            p.Message("&T/ZoneTest &H- Lists all zones affecting a block");
-        }
+        public override void Help(Player p) => p.Message("&T/ZoneTest &H- Lists all zones affecting a block");
     }
     public sealed class CmdZoneList : Command2
     {
-        public override string name { get { return "ZoneList"; } }
-        public override string shortcut { get { return "Zones"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override bool SuperUseable { get { return false; } }
-        public override bool UseableWhenFrozen { get { return true; } }
+        public override string Name => "ZoneList";
+        public override string Shortcut => "Zones";
+        public override string Type => CommandTypes.Moderation;
+        public override bool SuperUseable => false;
+        public override bool UseableWhenFrozen => true;
         public override void Use(Player p, string message, CommandData data)
         {
-            Zone[] zones = p.level.Zones.Items;
+            Zone[] zones = p.Level.Zones.Items;
             Paginator.Output(p, zones, PrintZone,
                              "ZoneList", "zones", message);
         }
-        static void PrintZone(Player p, Zone zone)
-        {
-            p.Message("{0} &b- ({1}, {2}, {3}) to ({4}, {5}, {6})",
+        static void PrintZone(Player p, Zone zone) => p.Message("{0} &b- ({1}, {2}, {3}) to ({4}, {5}, {6})",
                       zone.ColoredName,
                       zone.MinX, zone.MinY, zone.MinZ,
                       zone.MaxX, zone.MaxY, zone.MaxZ);
-        }
-        public override void Help(Player p)
-        {
-            p.Message("&T/ZoneList &H- Lists all zones in current level");
-        }
+        public override void Help(Player p) => p.Message("&T/ZoneList &H- Lists all zones in current level");
     }
     public sealed class CmdZoneMark : Command2
     {
-        public override string name { get { return "ZoneMark"; } }
-        public override string shortcut { get { return "ZMark"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("zm") }; }
-        }
+        public override string Name => "ZoneMark";
+        public override string Shortcut => "ZMark";
+        public override string Type => CommandTypes.Building;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("zm") };
         public override void Use(Player p, string message, CommandData data)
         {
             Zone z;
@@ -289,7 +261,7 @@ namespace MCGalaxy.Commands.Moderation
             }
             else
             {
-                z = Matcher.FindZones(p, p.level, message);
+                z = Matcher.FindZones(p, p.Level, message);
                 if (z == null) return;
             }
             if (!CmdMark.DoMark(p, z.MinX, z.MinY, z.MinZ))

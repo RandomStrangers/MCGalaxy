@@ -1,5 +1,4 @@
-#if NAS && TEN_BIT_BLOCKS
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
     public class GenericPriorityQueueNode<TPriority>
     {
@@ -9,4 +8,3 @@ namespace NotAwesomeSurvival
         public object Queue { get; set; }
     }
 }
-#endif

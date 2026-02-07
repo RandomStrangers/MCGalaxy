@@ -16,11 +16,8 @@ namespace MCGalaxy.Commands.Chatting
 {
     public class CmdHug : MessageCmd
     {
-        public override string name { get { return "Hug"; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can death hug") }; }
-        }
+        public override string Name => "Hug";
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can death hug") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }

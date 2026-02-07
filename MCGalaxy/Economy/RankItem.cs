@@ -18,26 +18,27 @@ namespace MCGalaxy.Eco
 {
     public sealed class RankItem : Item
     {
-        public RankItem()
-        {
-            Aliases = new string[] { "rank", "ranks", "rankup" };
-        }
-        public override string Name { get { return "Rank"; } }
-        public override string ShopName { get { return "Rankup"; } }
+        public RankItem() => Aliases = new string[] { "rank", "ranks", "rankup" };
+        public override string Name => "Rank";
+        public override string ShopName => "Rankup";
         public List<RankEntry> Ranks = new();
         public class RankEntry
         {
-            public LevelPermission Perm;
+            public sbyte Perm;
             public int Price = 1000;
         }
         public override void Parse(string prop, string value)
         {
-            if (!prop.CaselessEq("price")) return;
-            string[] args = value.Split(':');
-            LevelPermission perm = Group.ParsePermOrName(args[0], LevelPermission.Null);
-            if (perm == LevelPermission.Null) return;
-            RankEntry rank = GetOrAdd(perm);
-            rank.Price = NumberUtils.ParseInt32(args[1]);
+            if (prop.CaselessEq("price"))
+            {
+                string[] args = value.Split(':');
+                sbyte perm = Group.ParsePermOrName(args[0], -106);
+                if (perm != -106)
+                {
+                    RankEntry rank = GetOrAdd(perm);
+                    rank.Price = NumberUtils.ParseInt32(args[1]);
+                }
+            }
         }
         public override void Serialise(List<string> cfg)
         {
@@ -46,18 +47,18 @@ namespace MCGalaxy.Eco
                 cfg.Add("price:" + (int)rank.Perm + ":" + rank.Price);
             }
         }
-        public RankEntry GetOrAdd(LevelPermission perm)
+        public RankEntry GetOrAdd(sbyte perm)
         {
             RankEntry rank = Find(perm);
             if (rank != null) return rank;
-            rank = new RankEntry
+            rank = new()
             {
                 Perm = perm
             }; Ranks.Add(rank);
             Ranks.Sort((a, b) => a.Perm.CompareTo(b.Perm));
             return rank;
         }
-        public RankEntry Find(LevelPermission perm)
+        public RankEntry Find(sbyte perm)
         {
             foreach (RankEntry rank in Ranks)
             {
@@ -65,7 +66,7 @@ namespace MCGalaxy.Eco
             }
             return null;
         }
-        public bool Remove(LevelPermission perm) { return Ranks.Remove(Find(perm)); }
+        public bool Remove(sbyte perm) => Ranks.Remove(Find(perm));
         RankEntry NextRank(Player p)
         {
             if (p.IsSuper) return null;
@@ -151,7 +152,7 @@ namespace MCGalaxy.Eco
             {
                 p.Message("&WNo ranks have been setup be buyable. See &T/eco help rank"); return;
             }
-            LevelPermission maxRank = Ranks[Ranks.Count - 1].Perm;
+            sbyte maxRank = Ranks[Ranks.Count - 1].Perm;
             p.Message("&fThe highest buyable rank is: {0}", Group.GetColoredName(maxRank));
             p.Message("&WYou can only buy ranks one at a time, in sequential order.");
             foreach (RankEntry rank in Ranks)

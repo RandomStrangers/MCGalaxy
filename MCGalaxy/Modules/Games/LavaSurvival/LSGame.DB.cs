@@ -36,14 +36,8 @@ namespace MCGalaxy.Modules.Games.LS
         static readonly Item itemSponges = new SpongesItem();
         static readonly Item itemWater = new WaterItem();
         static readonly Item itemDoors = new DoorsItem();
-        static void HookCommands()
-        {
-            Command.TryRegister(true, cmdLives);
-        }
-        static void UnhookCommands()
-        {
-            Command.Unregister(cmdLives);
-        }
+        static void HookCommands() => Command.TryRegister(true, cmdLives);
+        static void UnhookCommands() => Command.Unregister(cmdLives);
         static readonly Command cmdLives = new CmdLives();
     }
 }

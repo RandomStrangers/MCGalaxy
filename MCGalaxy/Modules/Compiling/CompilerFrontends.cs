@@ -13,46 +13,21 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-#if !MCG_STANDALONE
 using System.Collections.Generic;
 namespace MCGalaxy.Modules.Compiling
 {
     public sealed class CSCompiler : ICompiler
     {
-        public override string FileExtension { get { return ".cs"; } }
-        public override string ShortName { get { return "C#"; } }
-        public override string FullName { get { return "CSharp"; } }
-#if !MCG_DOTNET
+        public override string FileExtension => ".cs";
+        public override string ShortName => "C#";
+        public override string FullName => "CSharp";
         protected override ICompilerErrors DoCompile(string[] srcPaths, string dstPath)
         {
             List<string> referenced = ProcessInput(srcPaths, "//");
             CommandLineCompiler compiler = new ClassicCSharpCompiler();
             return compiler.Compile(srcPaths, dstPath, referenced);
         }
-#else
-        protected override ICompilerErrors DoCompile(string[] srcPaths, string dstPath)
-        {
-            List<string> referenced = ProcessInput(srcPaths, "//");
-            referenced.Add("System.Collections.dll");    // needed for List<> etc
-            referenced.Add("System.IO.Compression.dll"); // needed for GZip compression
-            referenced.Add("System.Net.Primitives.dll"); // needed for IPAddress etc
-            CommandLineCompiler compiler = new RoslynCSharpCompiler();
-            return compiler.Compile(srcPaths, dstPath, referenced);
-        }
-        protected override void ProcessInputLine(string line, List<string> referenced)
-        {
-            if (!line.CaselessStarts("//dotnetref"))
-            {
-                return;
-            }
-            referenced.Add(GetDLL(line));
-        }
-#endif
-        public override string CommandSkeleton
-        {
-            get
-            {
-                return @"//\tAuto-generated command skeleton class
+        public override string CommandSkeleton => @"//\tAuto-generated command skeleton class
 //\tUse this as a basis for custom MCGalaxy commands
 //\tNaming should be kept consistent (e.g. /update command should have a class name of 'CmdUpdate' and a filename of 'CmdUpdate.cs')
 // As a note, MCGalaxy is designed for .NET 4.0
@@ -72,9 +47,9 @@ public class Cmd{0} : Command
 \t// Whether or not this command can be used in a museum. Block/map altering commands should return false to avoid errors.
 \tpublic override bool museumUsable {{ get {{ return true; }} }}
 \t// The default rank required to use this command. Valid values are:
-\t//   LevelPermission.Guest, LevelPermission.Builder, LevelPermission.AdvBuilder,
-\t//   LevelPermission.Operator, LevelPermission.Admin, LevelPermission.Owner
-\tpublic override LevelPermission defaultRank {{ get {{ return LevelPermission.Guest; }} }}
+\t//   0, 30, 50,
+\t//   80, 100, 120
+\tpublic override sbyte defaultRank {{ get {{ return 0; }} }}
 \t// This is for when a player executes this command by doing /{0}
 \t//   p is the player object for the player executing the command.
 \t//   message is the arguments given to the command. (e.g. for '/{0} this', message is ""this"")
@@ -88,13 +63,7 @@ public class Cmd{0} : Command
 \t\tp.Message(""/{0} - Does stuff. Example command."");
 \t}}
 }}";
-            }
-        }
-        public override string PluginSkeleton
-        {
-            get
-            {
-                return @"//\tAuto-generated plugin skeleton class
+        public override string PluginSkeleton => @"//\tAuto-generated plugin skeleton class
 //\tUse this as a basis for custom MCGalaxy plugins
 // To reference other assemblies, put a ""//reference [assembly filename]"" at the top of the file
 //   e.g. to reference the System.Data assembly, put ""//reference System.Data.dll""
@@ -129,8 +98,5 @@ namespace MCGalaxy
 \t\t}}
 \t}}
 }}";
-            }
-        }
     }
 }
-#endif

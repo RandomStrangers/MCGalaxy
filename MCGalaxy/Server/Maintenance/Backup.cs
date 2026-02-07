@@ -21,25 +21,24 @@ namespace MCGalaxy
     /// <summary> Utility methods for backing up and restoring a server. </summary>
     public static class Backup
     {
-        const string zipPath = "MCGalaxy.zip", sqlPath = "SQL.sql";
         public static void Perform(Player p, bool files, bool db, bool lite, bool compress)
         {
             if (db)
             {
-                Logger.Log(LogType.SystemActivity, "Backing up the database...");
-                using (StreamWriter sql = new(sqlPath))
+                Logger.Log(1, "Backing up the database...");
+                using (StreamWriter sql = new("SQL.sql"))
                     BackupDatabase(sql);
-                Logger.Log(LogType.SystemActivity, "Backed up the database to " + sqlPath);
+                Logger.Log(1, "Backed up the database to SQL.sql");
             }
             List<string> filesList = null;
             if (files)
             {
-                Logger.Log(LogType.SystemActivity, "Determining which files to backup...");
+                Logger.Log(1, "Determining which files to backup...");
                 filesList = GetAllFiles(lite);
-                Logger.Log(LogType.SystemActivity, "Finished determining included files");
+                Logger.Log(1, "Finished determining included files");
             }
-            Logger.Log(LogType.SystemActivity, "Creating compressed backup...");
-            using (Stream stream = File.Create(zipPath))
+            Logger.Log(1, "Creating compressed backup...");
+            using (Stream stream = File.Create("MCGalaxy.zip"))
             {
                 ZipWriter writer = new(stream);
                 if (files)
@@ -52,14 +51,13 @@ namespace MCGalaxy
                 }
                 writer.FinishEntries();
                 writer.WriteFooter();
-                Logger.Log(LogType.SystemActivity, "Compressed all data!");
+                Logger.Log(1, "Compressed all data!");
             }
             p.Message("Backup of (" + (files ? "everything" + (db ? "" : " but database") : "database") + ") complete!");
-            Logger.Log(LogType.SystemActivity, "Server backed up!");
+            Logger.Log(1, "Server backed up!");
         }
         static List<string> GetAllFiles(bool lite)
         {
-            //string[] all = Directory.GetFiles("./", "*", SearchOption.AllDirectories);
             string[] all = FileIO.TryGetFiles("./", "*", SearchOption.AllDirectories);
             List<string> paths = new();
             for (int i = 0; i < all.Length; i++)
@@ -87,18 +85,6 @@ namespace MCGalaxy
                 {
                     continue;
                 }
-                /*if (path.Contains(zipPath))
-                {
-                    continue;
-                }
-                if (path.Contains(sqlPath))
-                {
-                    continue;
-                }
-                if (path.Contains(dbPath))
-                {
-                    continue;
-                }*/
                 // ignore files in root folder
                 if (path.IndexOf('/') == -1)
                 {
@@ -110,7 +96,7 @@ namespace MCGalaxy
         }
         static void SaveFiles(ZipWriter writer, List<string> paths, bool compress)
         {
-            Logger.Log(LogType.SystemActivity, "Compressing {0} files...", paths.Count);
+            Logger.Log(1, "Compressing {0} files...", paths.Count);
             for (int i = 0; i < paths.Count; i++)
             {
                 string path = paths[i];
@@ -118,7 +104,6 @@ namespace MCGalaxy
                 bool compressThis = compress && !path.CaselessContains(".lvl");
                 try
                 {
-                    //using Stream src = File.OpenRead(path);
                     using Stream src = FileIO.TryOpenRead(path);
                     writer.WriteEntry(src, path, compressThis);
                 }
@@ -130,24 +115,22 @@ namespace MCGalaxy
                 {
                     continue;
                 }
-                Logger.Log(LogType.SystemActivity, "Backed up {0}/{1} files", i, paths.Count);
+                Logger.Log(1, "Backed up {0}/{1} files", i, paths.Count);
             }
         }
         static void SaveDatabase(ZipWriter writer, bool compress)
         {
-            Logger.Log(LogType.SystemActivity, "Compressing Database...");
-            //using (Stream src = File.OpenRead(sqlPath))
-            using (Stream src = FileIO.TryOpenRead(sqlPath))
+            Logger.Log(1, "Compressing Database...");
+            using (Stream src = FileIO.TryOpenRead("SQL.sql"))
             {
-                writer.WriteEntry(src, sqlPath, compress);
+                writer.WriteEntry(src, "SQL.sql", compress);
             }
-            Logger.Log(LogType.SystemActivity, "Database compressed");
+            Logger.Log(1, "Database compressed");
         }
         public static void Extract(Player p)
         {
             int errors = 0;
-            //using (FileStream src = File.OpenRead(zipPath))
-            using (FileStream src = FileIO.TryOpenRead(zipPath))
+            using (FileStream src = FileIO.TryOpenRead("MCGalaxy.zip"))
             {
                 ZipReader reader = new(src);
                 reader.FindFooter();
@@ -158,9 +141,9 @@ namespace MCGalaxy
                     string path = ExtractItem(reader, i, ref errors);
                     if (i > 0 && (i % 100) == 0)
                     {
-                        Logger.Log(LogType.SystemActivity, "Restored {0}/{1} files", i, entries);
+                        Logger.Log(1, "Restored {0}/{1} files", i, entries);
                     }
-                    if (!path.CaselessEq(sqlPath))
+                    if (!path.CaselessEq("SQL.sql"))
                     {
                         continue;
                     }
@@ -206,7 +189,7 @@ namespace MCGalaxy
                 catch (IOException e)
                 {
                     Logger.LogError(e);
-                    Logger.Log(LogType.Warning, "&WError extracting {0}, continuing with rest.", path);
+                    Logger.Log(6, "&WError extracting {0}, continuing with rest.", path);
                     errors++;
                     return "";
                 }

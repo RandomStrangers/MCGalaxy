@@ -57,12 +57,12 @@ namespace MCGalaxy.Drawing.Ops
     public class PyramidSolidDrawOp : PyramidDrawOp
     {
         public PyramidSolidDrawOp() : base(new CuboidDrawOp(), 1) { }
-        public override string Name { get { return "Pyramid solid"; } }
+        public override string Name => "Pyramid solid";
     }
     public class PyramidHollowDrawOp : PyramidDrawOp
     {
         public PyramidHollowDrawOp() : base(new CuboidWallsDrawOp(), 1) { }
-        public override string Name { get { return "Pyramid hollow"; } }
+        public override string Name => "Pyramid hollow";
     }
     public class PyramidReverseDrawOp : PyramidDrawOp
     {
@@ -73,7 +73,7 @@ namespace MCGalaxy.Drawing.Ops
             wallOp = new CuboidWallsDrawOp();
             airBrush = new SolidBrush(Block.Air);
         }
-        public override string Name { get { return "Pyramid reverse"; } }
+        public override string Name => "Pyramid reverse";
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             Vec3U16 p1 = Clamp(Min), p2 = Clamp(Max);

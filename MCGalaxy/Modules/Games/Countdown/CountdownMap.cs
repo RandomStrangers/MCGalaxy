@@ -26,8 +26,8 @@ namespace MCGalaxy.Modules.Games.Countdown
             MakeViewAreaFloor(lvl);
             MakeChutesAndElevators(lvl);
             MakeSquares(lvl);
-            lvl.VisitAccess.Min = LevelPermission.Guest;
-            lvl.BuildAccess.Min = LevelPermission.Owner;
+            lvl.VisitAccess.Min = 0;
+            lvl.BuildAccess.Min = 120;
             lvl.Config.Deletable = false;
             lvl.Config.Buildable = false;
             lvl.Config.MOTD = "Welcome to the Countdown map! -hax";

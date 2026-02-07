@@ -19,19 +19,13 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdGoto : Command2
     {
-        public override string name { get { return "Goto"; } }
-        public override string shortcut { get { return "g"; } }
-        public override string type { get { return CommandTypes.World; } }
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new[] { new CommandAlias("j"), new CommandAlias("Join"), new CommandAlias("gr", "-random"),
+        public override string Name => "Goto";
+        public override string Shortcut => "g";
+        public override string Type => CommandTypes.World;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("j"), new CommandAlias("Join"), new CommandAlias("gr", "-random"),
                     new CommandAlias("GotoRandom", "-random"), new CommandAlias("JoinRandom", "-random") };
-            }
-        }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandParallelism Parallelism { get { return CommandParallelism.NoAndWarn; } }
+        public override bool SuperUseable => false;
+        public override int Parallelism => 1;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -78,7 +72,7 @@ namespace MCGalaxy.Commands.World
                 map = files[r.Next(files.Length)];
                 map = Path.GetFileNameWithoutExtension(map);
             }
-            if (p.level.name == map)
+            if (p.Level.name == map)
             {
                 // try again silently
                 return GrResult.NoPermission;

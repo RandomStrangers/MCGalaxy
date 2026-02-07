@@ -44,7 +44,7 @@ namespace MCGalaxy.Drawing.Ops
         public static bool Do(DrawOp op, Brush brush, Player p,
                               Vec3S32[] marks, bool checkLimit = true)
         {
-            Level lvl = p.level;
+            Level lvl = p.Level;
             op.Setup(p, lvl, marks);
             if (lvl != null && !lvl.Config.Drawing && !op.AlwaysUsable)
             {
@@ -153,12 +153,8 @@ namespace MCGalaxy.Drawing.Ops
                 if (b.X >= lvl.Width || b.Y >= lvl.Height || b.Z >= lvl.Length) return;
                 int index = b.X + lvl.Width * (b.Z + b.Y * lvl.Length);
                 ushort old = lvl.blocks[index];
-#if TEN_BIT_BLOCKS
                 ushort extended = Block.ExtendedBase[old];
                 if (extended > 0) old = (ushort)(extended | lvl.FastGetExtTile(b.X, b.Y, b.Z));
-#else
-                if (old == Block.custom_block) old = (ushort)(Block.Extended | lvl.FastGetExtTile(b.X, b.Y, b.Z));
-#endif
                 // Check to make sure the block is actually different
                 if (old == b.Block) return;
                 // And check that the block can be used
@@ -179,11 +175,7 @@ namespace MCGalaxy.Drawing.Ops
                 lvl.Changed = true;
                 if (b.Block >= Block.Extended)
                 {
-#if TEN_BIT_BLOCKS
                     lvl.blocks[index] = Block.ExtendedClass[b.Block >> Block.ExtendedShift];
-#else
-                    lvl.blocks[index] = Block.custom_block;
-#endif
                     lvl.FastSetExtTile(b.X, b.Y, b.Z, (byte)b.Block);
                 }
                 else
@@ -211,7 +203,7 @@ namespace MCGalaxy.Drawing.Ops
                     {
                         lvl.blockqueue.Add(index, b.Block);
                     }
-                    if (lvl.physics > 0)
+                    if (lvl.LevelPhysics > 0)
                     {
                         if (old == Block.Sponge && b.Block != Block.Sponge)
                             OtherPhysics.DoSpongeRemoved(lvl, index, false);

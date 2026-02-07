@@ -92,8 +92,8 @@ namespace MCGalaxy.Drawing.Brushes
     }
     public sealed class RandomBrushFactory : BrushFactory
     {
-        public override string Name { get { return "Random"; } }
-        public override string[] Help { get { return HelpString; } }
+        public override string Name => "Random";
+        public override string[] Help => HelpString;
         static readonly string[] HelpString = new string[] {
             "&TArguments: [block1/frequency] [block2]..",
             "&HDraws by randomly selecting blocks from the given [blocks].",
@@ -111,8 +111,8 @@ namespace MCGalaxy.Drawing.Brushes
     }
     public sealed class GradientBrushFactory : BrushFactory
     {
-        public override string Name { get { return "Gradient"; } }
-        public override string[] Help { get { return HelpString; } }
+        public override string Name => "Gradient";
+        public override string[] Help => HelpString;
         static readonly string[] HelpString = new string[] {
             "&TArguments: <axis> [block1/frequency] [block2]..",
             "&HDraws by linearly selecting blocks from the given [blocks].",

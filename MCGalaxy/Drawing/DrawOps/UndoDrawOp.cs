@@ -21,15 +21,12 @@ namespace MCGalaxy.Drawing.Ops
 {
     public class UndoSelfDrawOp : UndoDrawOp
     {
-        public UndoSelfDrawOp()
-        {
-            Flags = BlockDBFlags.UndoSelf;
-        }
-        public override string Name { get { return "UndoSelf"; } }
+        public UndoSelfDrawOp() => Flags = BlockDBFlags.UndoSelf;
+        public override string Name => "UndoSelf";
     }
     public class UndoDrawOp : DrawOp
     {
-        public override string Name { get { return "Undo"; } }
+        public override string Name => "Undo";
         /// <summary> Point in time that the /undo should go backwards up to. </summary>
         public DateTime Start = DateTime.MinValue;
         /// <summary> Point in time that the /undo should start updating blocks. </summary>
@@ -42,7 +39,7 @@ namespace MCGalaxy.Drawing.Ops
             Flags = BlockDBFlags.UndoOther;
             AffectedByTransform = false;
         }
-        public override long BlocksAffected(Level lvl, Vec3S32[] marks) { return -1; }
+        public override long BlocksAffected(Level lvl, Vec3S32[] marks) => -1;
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             this.output = output;

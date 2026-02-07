@@ -5,7 +5,7 @@ namespace MCGalaxy.Levels.IO
     //UCL -> UnCompressedLevel
     public class UclExporter : IMapExporter
     {
-        public override string Extension { get { return ".ucl"; } }
+        public override string Extension => ".ucl";
         public override void Write(Stream dst, Level lvl)
         {
             byte[] header = new byte[16];

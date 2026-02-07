@@ -122,18 +122,12 @@ namespace MCGalaxy.Modules.Games.ZS
                 Database.AddRow("ZombieStats", "TotalRounds,MaxRounds, TotalInfected,MaxInfected, Name", args);
             }
         }
-        static void HookCommands()
-        {
-            Command.TryRegister(true, cmdAka, cmdAlive, cmdBounties, cmdBounty,
+        static void HookCommands() => Command.TryRegister(true, cmdAka, cmdAlive, cmdBounties, cmdBounty,
                                 cmdDisinfect, cmdHuman, cmdInfect, cmdInfected,
                                 cmdLastLevels, cmdQueue, cmdShowQueue);
-        }
-        static void UnhookCommands()
-        {
-            Command.Unregister(cmdAka, cmdAlive, cmdBounties, cmdBounty,
+        static void UnhookCommands() => Command.Unregister(cmdAka, cmdAlive, cmdBounties, cmdBounty,
                                cmdDisinfect, cmdHuman, cmdInfect, cmdInfected,
                                cmdLastLevels, cmdQueue, cmdShowQueue);
-        }
         static readonly Command cmdAka = new CmdAka();
         static readonly Command cmdAlive = new CmdAlive();
         static readonly Command cmdBounties = new CmdBounties();

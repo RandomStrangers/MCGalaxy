@@ -17,10 +17,10 @@ namespace MCGalaxy.Commands.Eco
 {
     public sealed class CmdBuy : Command2
     {
-        public override string name { get { return "Buy"; } }
-        public override string shortcut { get { return "Purchase"; } }
-        public override string type { get { return CommandTypes.Economy; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Buy";
+        public override string Shortcut => "Purchase";
+        public override string Type => CommandTypes.Economy;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             if (!Economy.CheckIsEnabled(p, this)) return;

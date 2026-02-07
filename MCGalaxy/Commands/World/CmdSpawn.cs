@@ -17,9 +17,9 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdSpawn : Command2
     {
-        public override string name { get { return "Spawn"; } }
-        public override string type { get { return CommandTypes.World; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Spawn";
+        public override string Type => CommandTypes.World;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             if (!Hacks.CanUseRespawn(p))
@@ -29,7 +29,7 @@ namespace MCGalaxy.Commands.World
             }
             if (!IGame.CheckAllowed(p, "use &T/Spawn")) return;
             if (message.Length > 0) { Help(p); return; }
-            PlayerActions.RespawnAt(p, p.level.SpawnPos, p.level.rotx, p.level.roty);
+            PlayerActions.RespawnAt(p, p.Level.SpawnPos, p.Level.rotx, p.Level.roty);
         }
         public override void Help(Player p)
         {

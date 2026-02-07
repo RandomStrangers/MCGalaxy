@@ -33,7 +33,6 @@ namespace MCGalaxy
             {
                 Server.Config.BackupDirectory = "levels/backups";
             }
-            Server.SettingsUpdate();
             Database.UpdateActiveBackend();
             Server.SetMainLevel(Server.Config.MainLevel);
         }
@@ -63,7 +62,7 @@ namespace MCGalaxy
             }
             else if (key.CaselessEq("afk-kick-perm"))
             {
-                perms.afkKickMax = Group.ParsePermOrName(value, LevelPermission.AdvBuilder);
+                perms.afkKickMax = Group.ParsePermOrName(value, 50);
             }
             else
             {
@@ -75,7 +74,7 @@ namespace MCGalaxy
         {
             public int opchatPerm = -1, adminchatPerm = -1,
                 mapGenLimit = -1, mapGenLimitAdmin = -1, afkKickMins = -1;
-            public LevelPermission afkKickMax = LevelPermission.Banned;
+            public sbyte afkKickMax = -20;
         }
         internal static void FixupOldPerms()
         {
@@ -106,11 +105,11 @@ namespace MCGalaxy
             // Apply backwards compatibility
             if (old.opchatPerm != -1)
             {
-                Chat.OpchatPerms.MinRank = (LevelPermission)old.opchatPerm;
+                Chat.OpchatPerms.MinRank = (sbyte)old.opchatPerm;
             }
             if (old.adminchatPerm != -1)
             {
-                Chat.AdminchatPerms.MinRank = (LevelPermission)old.adminchatPerm;
+                Chat.AdminchatPerms.MinRank = (sbyte)old.adminchatPerm;
             }
             CommandExtraPerms.Save();
         }
@@ -118,7 +117,7 @@ namespace MCGalaxy
         {
             foreach (Group grp in Group.GroupList)
             {
-                if (grp.Permission < LevelPermission.Admin)
+                if (grp.Permission < 100)
                 {
                     grp.GenVolume = old.mapGenLimit;
                 }
@@ -128,7 +127,7 @@ namespace MCGalaxy
         {
             foreach (Group grp in Group.GroupList)
             {
-                if (grp.Permission >= LevelPermission.Admin)
+                if (grp.Permission >= 100)
                 {
                     grp.GenVolume = old.mapGenLimitAdmin;
                 }
@@ -150,8 +149,7 @@ namespace MCGalaxy
             {
                 lock (saveLock)
                 {
-                    using StreamWriter w = FileIO.CreateGuarded(Paths.ServerPropsFile);
-                    SaveProps(w);
+                    SaveProps(FileIO.CreateGuarded(Paths.ServerPropsFile));
                 }
             }
             catch (Exception ex)

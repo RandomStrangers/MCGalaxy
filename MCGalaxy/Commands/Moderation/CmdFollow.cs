@@ -16,10 +16,10 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdFollow : Command2
     {
-        public override string name { get { return "Follow"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Follow";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 80;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             if (p.possessed) { p.Message("You're currently being &4possessed&S!"); return; }
@@ -74,7 +74,7 @@ namespace MCGalaxy.Commands.Moderation
                           p.FormatNick(target), p.FormatNick(target.following)); return;
             }
             if (!p.hidden) Find("Hide").Use(p, "", data);
-            if (p.level != target.level) Find("TP").Use(p, target.name, data);
+            if (p.Level != target.Level) Find("TP").Use(p, target.name, data);
             if (p.following.Length > 0)
             {
                 Player old = PlayerInfo.FindExact(p.following);

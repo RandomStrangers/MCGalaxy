@@ -16,13 +16,10 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
-    /// <summary> Stores extra information for/about a player/level/server. </summary>
-    /// <example> Storing a "lives" value for a player. </example>
     public sealed class ExtrasCollection
     {
         readonly Dictionary<string, object> dict = new();
         readonly object locker = new();
-        public int Count { get { lock (locker) { return dict.Count; } } }
         public object this[string key]
         {
             get { lock (locker) { return dict[key]; } }
@@ -61,11 +58,7 @@ namespace MCGalaxy
             TryGet(key, out object value);
             return value;
         }
-        public bool GetBoolean(string key)
-        {
-            return GetBoolean(key, false);
-        }
-        public bool GetBoolean(string key, bool defaultValue)
+        public bool GetBoolean(string key, bool defaultValue = false)
         {
             if (TryGet(key, out object value))
             {
@@ -79,11 +72,7 @@ namespace MCGalaxy
             }
             return defaultValue;
         }
-        public int GetInt(string key)
-        {
-            return GetInt(key, 0);
-        }
-        public int GetInt(string key, int defaultValue)
+        public int GetInt(string key, int defaultValue = 0)
         {
             if (TryGet(key, out object value))
             {
@@ -97,11 +86,7 @@ namespace MCGalaxy
             }
             return defaultValue;
         }
-        public string GetString(string key)
-        {
-            return GetString(key, null);
-        }
-        public string GetString(string key, string defaultValue)
+        public string GetString(string key, string defaultValue = null)
         {
             if (TryGet(key, out object value))
             {

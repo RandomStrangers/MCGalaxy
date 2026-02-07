@@ -24,17 +24,17 @@ namespace MCGalaxy.Config
         {
             if (!NumberUtils.TryParseInt32(raw, out int value))
             {
-                Logger.Log(LogType.Warning, "Config key \"{0}\" has invalid integer '{2}', using default of {1}", Name, def, raw);
+                Logger.Log(6, "Config key \"{0}\" has invalid integer '{2}', using default of {1}", Name, def, raw);
                 value = def;
             }
             if (value < min)
             {
-                Logger.Log(LogType.Warning, "Config key \"{0}\" is too small an integer, using {1}", Name, min);
+                Logger.Log(6, "Config key \"{0}\" is too small an integer, using {1}", Name, min);
                 value = min;
             }
             if (value > max)
             {
-                Logger.Log(LogType.Warning, "Config key \"{0}\" is too big an integer, using {1}", Name, max);
+                Logger.Log(6, "Config key \"{0}\" is too big an integer, using {1}", Name, max);
                 value = max;
             }
             return value;
@@ -53,17 +53,14 @@ namespace MCGalaxy.Config
         public ConfigIntAttribute(string name, string section, int def,
                                   int min = int.MinValue, int max = int.MaxValue)
             : base(name, section) { defValue = def; minValue = min; maxValue = max; }
-        public override object Parse(string value)
-        {
-            return ParseInteger(value, defValue, minValue, maxValue);
-        }
+        public override object Parse(string value) => ParseInteger(value, defValue, minValue, maxValue);
     }
     public sealed class ConfigBlockAttribute : ConfigIntegerAttribute
     {
         readonly ushort defBlock;
         public ConfigBlockAttribute() : this(null, null, Block.Air) { }
         public ConfigBlockAttribute(string name, string section, ushort def)
-            : base(name, section) { defBlock = def; }
+            : base(name, section) => defBlock = def;
         public override object Parse(string raw)
         {
             ushort block = (ushort)ParseInteger(raw, defBlock, 0, Block.SUPPORTED_COUNT - 1);
@@ -75,19 +72,13 @@ namespace MCGalaxy.Config
     {
         public ConfigByteAttribute() : this(null, null) { }
         public ConfigByteAttribute(string name, string section) : base(name, section) { }
-        public override object Parse(string raw)
-        {
-            return (byte)ParseInteger(raw, 0, 0, byte.MaxValue);
-        }
+        public override object Parse(string raw) => (byte)ParseInteger(raw, 0, 0, byte.MaxValue);
     }
     public class ConfigUShortAttribute : ConfigIntegerAttribute
     {
         public ConfigUShortAttribute() : this(null, null) { }
         public ConfigUShortAttribute(string name, string section) : base(name, section) { }
-        public override object Parse(string raw)
-        {
-            return (ushort)ParseInteger(raw, 0, 0, ushort.MaxValue);
-        }
+        public override object Parse(string raw) => (ushort)ParseInteger(raw, 0, 0, ushort.MaxValue);
     }
     public abstract class ConfigRealAttribute : ConfigAttribute
     {
@@ -97,17 +88,17 @@ namespace MCGalaxy.Config
         {
             if (!NumberUtils.TryParseDouble(raw, out double value))
             {
-                Logger.Log(LogType.Warning, "Config key \"{0}\" has invalid number '{2}', using default of {1}", Name, def, raw);
+                Logger.Log(6, "Config key \"{0}\" has invalid number '{2}', using default of {1}", Name, def, raw);
                 value = def;
             }
             if (value < min)
             {
-                Logger.Log(LogType.Warning, "Config key \"{0}\" is too small a number, using {1}", Name, min);
+                Logger.Log(6, "Config key \"{0}\" is too small a number, using {1}", Name, min);
                 value = min;
             }
             if (value > max)
             {
-                Logger.Log(LogType.Warning, "Config key \"{0}\" is too big a number, using {1}", Name, max);
+                Logger.Log(6, "Config key \"{0}\" is too big a number, using {1}", Name, max);
                 value = max;
             }
             return value;
@@ -127,10 +118,7 @@ namespace MCGalaxy.Config
         public ConfigFloatAttribute(string name, string section, float def,
                                     float min = float.NegativeInfinity, float max = float.PositiveInfinity)
             : base(name, section) { defValue = def; minValue = min; maxValue = max; }
-        public override object Parse(string raw)
-        {
-            return (float)ParseReal(raw, defValue, minValue, maxValue);
-        }
+        public override object Parse(string raw) => (float)ParseReal(raw, defValue, minValue, maxValue);
     }
     public class ConfigTimespanAttribute : ConfigRealAttribute
     {

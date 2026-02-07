@@ -17,22 +17,19 @@ namespace MCGalaxy.Commands.Bots
 {
     public sealed class CmdBotSet : Command2
     {
-        public override string name { get { return "BotSet"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can set bots to be killer") }; }
-        }
+        public override string Name => "BotSet";
+        public override string Type => CommandTypes.Other;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 50;
+        public override bool SuperUseable => false;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can set bots to be killer") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
             string[] args = message.SplitSpaces();
             PlayerBot bot = Matcher.FindBots(p, args[0]);
             if (bot == null) return;
-            if (!LevelInfo.Check(p, data.Rank, p.level, "change AI of bots in this level")) return;
+            if (!LevelInfo.Check(p, data.Rank, p.Level, "change AI of bots in this level")) return;
             if (!bot.EditableBy(p, "change the AI of")) { return; }
             if (args.Length == 1)
             {
@@ -69,8 +66,8 @@ namespace MCGalaxy.Commands.Bots
         static void UpdateBot(Player p, PlayerBot bot, string msg)
         {
             p.Message(bot.ColoredName + "&S" + msg);
-            Logger.Log(LogType.UserActivity, bot.name + msg);
-            BotsFile.Save(p.level);
+            Logger.Log(3, bot.name + msg);
+            BotsFile.Save(p.Level);
         }
         public override void Help(Player p)
         {

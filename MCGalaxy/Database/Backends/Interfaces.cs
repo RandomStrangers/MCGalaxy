@@ -64,10 +64,7 @@ namespace MCGalaxy.SQL
         public abstract object GetValue(int i);
         public abstract string GetStringValue(int col);
         public abstract string DumpValue(int col);
-        public string GetText(int col)
-        {
-            return IsDBNull(col) ? "" : GetString(col);
-        }
+        public string GetText(int col) => IsDBNull(col) ? "" : GetString(col);
         public string GetText(string name)
         {
             int col = GetOrdinal(name);

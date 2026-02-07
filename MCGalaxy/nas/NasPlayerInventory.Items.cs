@@ -1,21 +1,19 @@
-#if NAS && TEN_BIT_BLOCKS
-using MCGalaxy;
 using MCGalaxy.Network;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Text;
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
     public partial class Inventory
     {
-        [JsonIgnore] public ColorDesc[] selectorColors = DynamicColor.defaultColors;
-        [JsonIgnore] public Item HeldItem => items[selectedItemIndex] ?? Item.Fist;
+        [JsonIgnore] public ColorDesc[] selectorColors = NASColor.defaultColors;
+        [JsonIgnore] public NASItem HeldItem => items[selectedItemIndex] ?? NASItem.Fist;
         [JsonIgnore] public bool bagOpen = false;
         [JsonIgnore] public int slotToMoveTo = -1;
         [JsonIgnore] public bool deleting = false;
-        public Item[] items = new Item[27];
+        public NASItem[] items = new NASItem[27];
         public int selectedItemIndex = 0;
-        public bool GetItem(Item item)
+        public bool GetItem(NASItem item)
         {
             if (items[selectedItemIndex] == null)
             {
@@ -38,21 +36,21 @@ namespace NotAwesomeSurvival
         public void ToggleBagOpen()
         {
             deleting = false;
-            NasPlayer np = NasPlayer.GetNasPlayer(p);
+            NASPlayer np = NASPlayer.GetPlayer(p);
             bagOpen = !bagOpen;
             if (bagOpen)
             {
                 p.Send(Packet.Motd(p, "-hax horspeed=0.000001"));
-                whereHeldBlockIsDisplayed = CpeMessageType.Status2;
-                np.whereHealthIsDisplayed = CpeMessageType.Status3;
+                whereHeldBlockIsDisplayed = 2;
+                np.whereHealthIsDisplayed = 3;
             }
             else
             {
                 p.SendMapMotd();
-                SendCpeMessage(CpeMessageType.Status2, "");
-                SendCpeMessage(CpeMessageType.Status3, "");
-                whereHeldBlockIsDisplayed = CpeMessageType.BottomRight3;
-                np.whereHealthIsDisplayed = CpeMessageType.BottomRight2;
+                SendCpeMessage(2, "");
+                SendCpeMessage(3, "");
+                whereHeldBlockIsDisplayed = 13;
+                np.whereHealthIsDisplayed = 12;
             }
             if (slotToMoveTo != -1)
             {
@@ -79,7 +77,7 @@ namespace NotAwesomeSurvival
         }
         public void FinalizeItemMove()
         {
-            Item gettingMoved = items[selectedItemIndex],
+            NASItem gettingMoved = items[selectedItemIndex],
                 to = items[slotToMoveTo];
             items[selectedItemIndex] = to;
             items[slotToMoveTo] = gettingMoved;
@@ -88,13 +86,13 @@ namespace NotAwesomeSurvival
         }
         public void MoveItemBarSelection(int direction)
         {
-            NasPlayer np = NasPlayer.GetNasPlayer(p);
+            NASPlayer np = NASPlayer.GetPlayer(p);
             if (!np.hasBeenSpawned)
             {
                 Message("&chasBeenSpawned is &cfalse&S, this shouldn't happen if you didn't just die.");
                 Message("&bPlease report to randomstrangers on Discord what you were doing before this happened");
             }
-            Item heldItemBeforeScrolled = HeldItem;
+            NASItem heldItemBeforeScrolled = HeldItem;
             deleting = false;
             if (slotToMoveTo != -1)
             {
@@ -104,9 +102,9 @@ namespace NotAwesomeSurvival
             MoveBar(direction, ref selectedItemIndex);
             if (heldItemBeforeScrolled != HeldItem)
             {
-                NasPlayer.StartCooldown(p, np.inventory.HeldItem.Prop.recharge);
+                NASPlayer.StartCooldown(p, np.inventory.HeldItem.Prop.recharge);
                 np.ResetBreaking();
-                NasEffect.UndefineEffect(p, NasBlockChange.BreakMeterID);
+                NASEffect.UndefineEffect(p, NASBlockChange.BreakMeterID);
             }
         }
         public void MoveBar(int direction, ref int selection)
@@ -143,15 +141,15 @@ namespace NotAwesomeSurvival
             selectorColors = HeldItem.HealthColors;
             if (bagOpen)
             {
-                DisplayItemBar(0, "&7↑ª", "&7ª↑", CpeMessageType.BottomRight3);
-                DisplayItemBar(9, "&7←¥", "&7₧→", CpeMessageType.BottomRight2);
-                DisplayItemBar(18, "&7↓º", "&7º↓", CpeMessageType.BottomRight1);
+                DisplayItemBar(0, "&7↑ª", "&7ª↑", 13);
+                DisplayItemBar(9, "&7←¥", "&7₧→", 12);
+                DisplayItemBar(18, "&7↓º", "&7º↓", 11);
                 return;
             }
             DisplayItemBar();
         }
         public void DisplayItemBar(int offset = 0, string prefix = "&7←«", string suffix = "%7»→",
-                                   CpeMessageType location = CpeMessageType.BottomRight1)
+                                   int location = 11)
         {
             StringBuilder builder = new(prefix);
             for (int i = offset; i < 9 + offset; i++)
@@ -173,7 +171,7 @@ namespace NotAwesomeSurvival
                     }
                     else
                     {
-                        Item item2 = items[itemIndex];
+                        NASItem item2 = items[itemIndex];
                         if (item2 != null && item2.Prop.color == "`")
                         {
                             builder.Append("&`ƒ");
@@ -196,7 +194,7 @@ namespace NotAwesomeSurvival
                 {
                     itemIndex = slotToMoveTo;
                 }
-                Item item = items[itemIndex];
+                NASItem item = items[itemIndex];
                 if (item == null)
                 {
                     if (itemIndex > 22)
@@ -256,7 +254,7 @@ namespace NotAwesomeSurvival
             {
                 return;
             }
-            Item item = items[selectedItemIndex];
+            NASItem item = items[selectedItemIndex];
             if (item == null)
             {
                 return;
@@ -284,7 +282,7 @@ namespace NotAwesomeSurvival
             deleting = true;
             UpdateItemDisplay();
         }
-        public void BreakItem(ref Item item)
+        public void BreakItem(ref NASItem item)
         {
             for (int i = 0; i < 27; i++)
             {
@@ -311,7 +309,7 @@ namespace NotAwesomeSurvival
                 {9,"IX"},
                 {10,"X"},
             };
-            Item item = items[selectedItemIndex];
+            NASItem item = items[selectedItemIndex];
             if (item == null)
             {
                 return;
@@ -328,4 +326,3 @@ namespace NotAwesomeSurvival
         }
     }
 }
-#endif

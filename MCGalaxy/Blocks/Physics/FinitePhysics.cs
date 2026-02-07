@@ -78,10 +78,7 @@ namespace MCGalaxy.Blocks.Physics
                 }
             }
         }
-        static bool Expand(Level lvl, ushort x, ushort y, ushort z)
-        {
-            return lvl.IsAirAt(x, y, z, out int index) && lvl.AddUpdate(index, 145, default(PhysicsArgs));
-        }
+        static bool Expand(Level lvl, ushort x, ushort y, ushort z) => lvl.IsAirAt(x, y, z, out int index) && lvl.AddUpdate(index, 145, default(PhysicsArgs));
         public static unsafe void DoFaucet(Level lvl, ref PhysInfo C)
         {
             Random rand = lvl.physRandom;

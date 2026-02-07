@@ -20,16 +20,13 @@ namespace MCGalaxy.Drawing.Transforms
 {
     public sealed class NoTransform : Transform
     {
-        public override string Name { get { return "None"; } }
+        public override string Name => "None";
         public static NoTransform Instance = new();
-        public override void Perform(Vec3S32[] marks, DrawOp op, Brush brush, DrawOpOutput output)
-        {
-            op.Perform(marks, brush, output);
-        }
+        public override void Perform(Vec3S32[] marks, DrawOp op, Brush brush, DrawOpOutput output) => op.Perform(marks, brush, output);
     }
     public sealed class ScaleTransform : Transform
     {
-        public override string Name { get { return "Scale"; } }
+        public override string Name => "Scale";
         public bool CentreOrigin;
         public int XMul, XDiv, YMul, YDiv, ZMul, ZDiv;
         int dirX, dirY, dirZ, signX, signY, signZ;

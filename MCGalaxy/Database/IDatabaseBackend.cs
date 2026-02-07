@@ -65,10 +65,7 @@ namespace MCGalaxy.SQL
         }
         protected abstract void CreateTableColumns(StringBuilder sql, ColumnDesc[] columns);
         /// <summary> Returns SQL for completely removing the given table. </summary>
-        public virtual string DeleteTableSql(string table)
-        {
-            return "DROP TABLE if exists `" + table + "`";
-        }
+        public virtual string DeleteTableSql(string table) => "DROP TABLE if exists `" + table + "`";
         /// <summary> Prints/dumps the table schema of the given table. </summary>
         public abstract void PrintSchema(string table, TextWriter w);
         /// <summary> Returns SQL for adding a new column to the given table. </summary>
@@ -76,10 +73,7 @@ namespace MCGalaxy.SQL
         public abstract string AddColumnSql(string table, ColumnDesc col, string colAfter);
         // == Higher level functions ==
         /// <summary> Returns SQL for copying all the rows from the source table into the destination table. </summary>
-        public virtual string CopyAllRowsSql(string srcTable, string dstTable)
-        {
-            return "INSERT INTO `" + dstTable + "` SELECT * FROM `" + srcTable + "`";
-        }
+        public virtual string CopyAllRowsSql(string srcTable, string dstTable) => "INSERT INTO `" + dstTable + "` SELECT * FROM `" + srcTable + "`";
         /// <summary> Returns SQL for reading rows from the given table. </summary>
         public virtual string ReadRowsSql(string table, string columns, string modifier)
         {
@@ -102,10 +96,7 @@ namespace MCGalaxy.SQL
             return sql;
         }
         /// <summary> Returns SQL for adding a row to the given table. </summary>
-        public virtual string AddRowSql(string table, string columns, int numArgs)
-        {
-            return InsertSql("INSERT INTO", table, columns, numArgs);
-        }
+        public virtual string AddRowSql(string table, string columns, int numArgs) => InsertSql("INSERT INTO", table, columns, numArgs);
         /// <summary> Returns SQL for adding or replacing a row (same primary key) in the given table. </summary>
         public abstract string AddOrReplaceRowSql(string table, string columns, int numArgs);
         protected string InsertSql(string cmd, string table, string columns, int numArgs)

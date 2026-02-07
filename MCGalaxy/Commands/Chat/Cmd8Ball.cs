@@ -20,16 +20,16 @@ namespace MCGalaxy.Commands.Chatting
 {
     public sealed class Cmd8Ball : Command2
     {
-        public override string name { get { return "8ball"; } }
-        public override string shortcut { get { return ""; } }
-        public override string type { get { return CommandTypes.Chat; } }
-        public override bool SuperUseable { get { return false; } }
-        public override bool UseableWhenFrozen { get { return true; } }
+        public override string Name => "8ball";
+        public override string Shortcut => "";
+        public override string Type => CommandTypes.Chat;
+        public override bool SuperUseable => false;
+        public override bool UseableWhenFrozen => true;
         static DateTime nextUse;
         static TimeSpan delay = TimeSpan.FromSeconds(2);
         public override void Use(Player p, string question, CommandData data)
         {
-            if (!MessageCmd.CanSpeak(p, name)) return;
+            if (!MessageCmd.CanSpeak(p, Name)) return;
             if (question.Length == 0) { Help(p); return; }
             TimeSpan delta = nextUse - DateTime.UtcNow;
             if (delta.TotalSeconds > 0)
@@ -45,7 +45,7 @@ namespace MCGalaxy.Commands.Chatting
                 if (char.IsLetterOrDigit(c)) builder.Append(c);
             }
             string msg = p.ColoredName + " &Sasked the &b8-Ball: &f" + question;
-            Chat.Message(ChatScope.Global, msg, null, Filter8Ball);
+            Chat.Message(1, msg, null, Filter8Ball);
             string final = builder.ToString();
             Server.MainScheduler.QueueOnce(EightBallCallback, final, delay);
         }
@@ -57,9 +57,9 @@ namespace MCGalaxy.Commands.Chatting
             file.EnsureExists();
             string[] messages = file.GetText();
             string msg = "The &b8-Ball &Ssays: &f" + messages[random.Next(messages.Length)];
-            Chat.Message(ChatScope.Global, msg, null, Filter8Ball);
+            Chat.Message(1, msg, null, Filter8Ball);
         }
-        static bool Filter8Ball(Player p, object arg) { return !p.Ignores.EightBall; }
+        static bool Filter8Ball(Player p, object arg) => !p.Ignores.EightBall;
         public override void Help(Player p)
         {
             p.Message("&T/8ball [yes or no question]");

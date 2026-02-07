@@ -18,15 +18,15 @@ namespace MCGalaxy.Commands.Bots
 {
     public sealed class CmdBotSummon : Command2
     {
-        public override string name { get { return "BotSummon"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "BotSummon";
+        public override string Type => CommandTypes.Moderation;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 100;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
-            if (!LevelInfo.Check(p, data.Rank, p.level, "summon that bot")) return;
+            if (!LevelInfo.Check(p, data.Rank, p.Level, "summon that bot")) return;
             string[] args = message.SplitSpaces(2);
             PlayerBot bot = Matcher.FindBots(p, args[0]);
             if (bot == null) return;
@@ -43,7 +43,7 @@ namespace MCGalaxy.Commands.Bots
                 if (!CmdTp.GetTeleportCoords(p, bot, args, false, out pos, out yaw, out pitch)) return;
             }
             bot.Pos = pos; bot.SetYawPitch(yaw, pitch);
-            BotsFile.Save(p.level);
+            BotsFile.Save(p.Level);
         }
         public override void Help(Player p)
         {

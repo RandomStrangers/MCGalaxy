@@ -16,15 +16,12 @@ namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdOpChat : Command2
     {
-        public override string name { get { return "OpChat"; } }
-        public override string shortcut { get { return "Op"; } }
-        public override string type { get { return CommandTypes.Chat; } }
-        public override bool UseableWhenFrozen { get { return true; } }
-        public override bool UpdatesLastCmd { get { return false; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can read opchat messages") }; }
-        }
+        public override string Name => "OpChat";
+        public override string Shortcut => "Op";
+        public override string Type => CommandTypes.Chat;
+        public override bool UseableWhenFrozen => true;
+        public override bool UpdatesLastCmd => false;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can read opchat messages") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length > 0) { ChatModes.MessageOps(p, message); return; }

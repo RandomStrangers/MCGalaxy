@@ -47,7 +47,7 @@ namespace MCGalaxy.Tasks
             if (p.following.Length > 0)
             {
                 Player who = PlayerInfo.FindExact(p.following);
-                if (who == null || who.level != p.level)
+                if (who == null || who.Level != p.Level)
                 {
                     p.following = "";
                     p.possessed = false;
@@ -62,7 +62,7 @@ namespace MCGalaxy.Tasks
             else if (p.possess.Length > 0)
             {
                 Player who = PlayerInfo.FindExact(p.possess);
-                if (who == null || who.level != p.level)
+                if (who == null || who.Level != p.Level)
                 {
                     p.possess = "";
                 }
@@ -170,7 +170,7 @@ namespace MCGalaxy.Tasks
                         if (backup != null)
                         {
                             lvl.Message("Backup " + backup + " saved.");
-                            Logger.Log(LogType.BackgroundActivity, "Backup {0} saved for {1}", backup, lvl.name);
+                            Logger.Log(0, "Backup {0} saved for {1}", backup, lvl.name);
                         }
                     }
                 }
@@ -205,13 +205,13 @@ namespace MCGalaxy.Tasks
             string all = players.Join(p => p.name);
             if (all.Length > 0)
             {
-                Logger.Log(LogType.BackgroundActivity, "!PLAYERS ONLINE: " + all);
+                Logger.Log(0, "!PLAYERS ONLINE: " + all);
             }
             levels = LevelInfo.Loaded.Items;
             all = levels.Join(l => l.name);
             if (all.Length > 0)
             {
-                Logger.Log(LogType.BackgroundActivity, "!LEVELS ONLINE: " + all);
+                Logger.Log(0, "!LEVELS ONLINE: " + all);
             }
         }
     }

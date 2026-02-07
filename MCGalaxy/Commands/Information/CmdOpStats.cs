@@ -19,9 +19,9 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdOpStats : Command2
     {
-        public override string name { get { return "OpStats"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override bool UseableWhenFrozen { get { return true; } }
+        public override string Name => "OpStats";
+        public override string Type => CommandTypes.Information;
+        public override bool UseableWhenFrozen => true;
         public override void Use(Player p, string message, CommandData data)
         {
             string end = DateTime.Now.ToInvariantDateString();
@@ -91,10 +91,7 @@ namespace MCGalaxy.Commands.Info
                            reviews, ranks + promotesOld + demotesOld,
                            promotes + promotesOld, demotes + demotesOld);
         }
-        static bool ValidTimespan(string value)
-        {
-            return value == "today" || value == "yesterday" || value == "thismonth" || value == "lastmonth" || value == "all";
-        }
+        static bool ValidTimespan(string value) => value == "today" || value == "yesterday" || value == "thismonth" || value == "lastmonth" || value == "all";
         static int Count(string start, string end, string name, string cmd, string msg = "!=''")
         {
             const string whereSQL = "WHERE Time >= @0 AND Time < @1 AND Name LIKE @2 AND Cmd LIKE @3 AND Cmdmsg ";

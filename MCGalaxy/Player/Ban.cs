@@ -128,8 +128,8 @@ namespace MCGalaxy
             int year = NumberUtils.ParseInt32(date[3]);
             return new DateTime(year, month, day, hour, min, 0).ToUniversalTime();
         }
-        public static bool DeleteBan(string name) { return DeleteInfo(name, bans); }
-        public static bool DeleteUnban(string name) { return DeleteInfo(name, unbans); }
+        public static bool DeleteBan(string name) => DeleteInfo(name, bans);
+        public static bool DeleteUnban(string name) => DeleteInfo(name, unbans);
         static bool DeleteInfo(string name, PlayerMetaList list)
         {
             name = name.ToLower();
@@ -150,14 +150,7 @@ namespace MCGalaxy
             if (found) FileIO.TryWriteAllText(list.file, sb.ToString());
             return found;
         }
-        public static bool ChangeBanReason(string who, string reason)
-        {
-            return ChangeReason(who, reason, bans);
-        }
-        public static bool ChangeUnbanReason(string who, string reason)
-        {
-            return ChangeReason(who, reason, unbans);
-        }
+        public static bool ChangeBanReason(string who, string reason) => ChangeReason(who, reason, bans);
         static bool ChangeReason(string who, string reason, PlayerMetaList list)
         {
             who = who.ToLower();

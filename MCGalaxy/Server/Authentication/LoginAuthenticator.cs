@@ -88,10 +88,7 @@ namespace MCGalaxy.Authentication
         }
         static bool Authenticate(AuthService auth, Player p)
         {
-            object locker = ip_cache.GetLocker(p.ip);
-            // if a player from an IP is spamming login attempts,
-            //  prevent that from spamming Mojang's authentication servers too
-            lock (locker)
+            lock (ip_cache.GetLocker(p.ip))
             {
                 if (!HasJoined(p))
                 {
@@ -101,13 +98,11 @@ namespace MCGalaxy.Authentication
             auth.AcceptPlayer(p);
             return true;
         }
-        const string HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?username={0}&serverId={1}";
         public static bool HasJoined(Player p)
         {
-            string url = string.Format(HAS_JOINED_URL, p.truename, GetServerID(p));
             try
             {
-                HttpWebRequest req = HttpUtil.CreateRequest(url);
+                HttpWebRequest req = HttpUtil.CreateRequest("https://sessionserver.mojang.com/session/minecraft/hasJoined?username=" + p.truename + "&serverId=" + Utils.ToHexString(new SHA1Managed().ComputeHash(Encoding.UTF8.GetBytes(p.ip))));
                 req.Timeout = 5 * 1000;
                 req.ReadWriteTimeout = 5 * 1000;
                 using HttpWebResponse response = (HttpWebResponse)req.GetResponse();
@@ -120,17 +115,5 @@ namespace MCGalaxy.Authentication
             }
             return false;
         }
-#if MCG_DOTNET
-#pragma warning disable SYSLIB0021
-#endif
-        static string GetServerID(Player p)
-        {
-            byte[] data = Encoding.UTF8.GetBytes(p.ip),
-                hash = new SHA1Managed().ComputeHash(data);
-            return Utils.ToHexString(hash);
-        }
-#if MCG_DOTNET
-#pragma warning restore SYSLIB0021
-#endif
     }
 }

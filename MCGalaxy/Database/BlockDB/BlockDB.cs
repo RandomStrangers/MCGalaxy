@@ -29,7 +29,7 @@ namespace MCGalaxy.DB
         /// <summary> Base point in time that all time deltas are offset from.</summary>
         public static DateTime Epoch = new(2010, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         /// <summary> The path of this BlockDB's backing file on disc. </summary>
-        public string FilePath { get { return BlockDBFile.FilePath(MapName); } }
+        public string FilePath => BlockDBFile.FilePath(MapName);
         /// <summary> In-memory list of recent BlockDB changes. </summary>
         public BlockDBCache Cache = new();
         /// <summary> Used to synchronise access to the in-memory and on-disc BlockDB entries. </summary>
@@ -190,13 +190,7 @@ namespace MCGalaxy.DB
             }
             return format;
         }
-        static FileStream OpenWrite(string path)
-        {
-            return new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
-        }
-        static FileStream OpenRead(string path)
-        {
-            return new FileStream(path, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
-        }
+        static FileStream OpenWrite(string path) => new(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+        static FileStream OpenRead(string path) => new(path, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
     }
 }

@@ -14,12 +14,11 @@
  */
 namespace MCGalaxy.Blocks.Physics
 {
-    public enum AirFlood { Full, Layer, Down, Up, }
     public static class AirPhysics
     {
         public static void DoAir(Level lvl, ref PhysInfo C)
         {
-            if (C.Data.Type1 == PhysicsArgs.Custom)
+            if (C.Data.Type1 == 7)
             {
                 DoorPhysics.Do(lvl, ref C); return;
             }
@@ -31,21 +30,21 @@ namespace MCGalaxy.Blocks.Physics
             {
                 int edgeLevel = lvl.GetEdgeLevel();
                 int sidesOffset = lvl.Config.SidesOffset;
-                if (sidesOffset == EnvConfig.ENV_USE_DEFAULT) sidesOffset = -2; // EnvConfig.DefaultEnvProp(EnvProp.SidesOffset, lvl.Height);
+                if (sidesOffset == int.MaxValue) sidesOffset = -2; // EnvConfig.DefaultEnvProp(EnvProp.SidesOffset, lvl.Height);
                 if (y < edgeLevel && y >= (edgeLevel + sidesOffset))
                 {
                     ushort horizon = lvl.Config.HorizonBlock;
-                    lvl.AddUpdate(C.Index, horizon == Block.Invalid ? Block.Water : horizon);
+                    lvl.AddUpdate(C.Index, horizon == 0xff ? (ushort)8 : horizon);
                 }
             }
-            if (!C.Data.HasWait) C.Data.Data = PhysicsArgs.RemoveFromChecks;
+            if (!C.Data.HasWait) C.Data.Data = 255;
         }
-        public static void DoFlood(Level lvl, ref PhysInfo C, AirFlood mode, ushort block)
+        public static void DoFlood(Level lvl, ref PhysInfo C, int mode, ushort block)
         {
             if (C.Data.Data >= 1)
             {
-                lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
-                C.Data.Data = PhysicsArgs.RemoveFromChecks; return;
+                lvl.AddUpdate(C.Index, 0, default(PhysicsArgs));
+                C.Data.Data = 255; return;
             }
             ushort x = C.X, y = C.Y, z = C.Z;
             FloodAir(lvl, (ushort)(x + 1), y, z, block);
@@ -54,16 +53,16 @@ namespace MCGalaxy.Blocks.Physics
             FloodAir(lvl, x, y, (ushort)(z - 1), block);
             switch (mode)
             {
-                case AirFlood.Full:
+                case 0:
                     FloodAir(lvl, x, (ushort)(y - 1), z, block);
                     FloodAir(lvl, x, (ushort)(y + 1), z, block);
                     break;
-                case AirFlood.Layer:
+                case 1:
                     break;
-                case AirFlood.Down:
+                case 2:
                     FloodAir(lvl, x, (ushort)(y - 1), z, block);
                     break;
-                case AirFlood.Up:
+                case 3:
                     FloodAir(lvl, x, (ushort)(y + 1), z, block);
                     break;
             }
@@ -72,7 +71,7 @@ namespace MCGalaxy.Blocks.Physics
         static void FloodAir(Level lvl, ushort x, ushort y, ushort z, ushort block)
         {
             ushort curBlock = Block.Convert(lvl.GetBlock(x, y, z, out int index));
-            if (curBlock == Block.Water || curBlock == Block.Lava)
+            if (curBlock == 8 || curBlock == 10)
             {
                 lvl.AddUpdate(index, block);
             }

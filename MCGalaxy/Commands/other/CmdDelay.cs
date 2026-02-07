@@ -18,8 +18,8 @@ namespace MCGalaxy.Commands.Misc
 {
     public sealed class CmdDelay : Command2
     {
-        public override string name { get { return "Delay"; } }
-        public override string type { get { return CommandTypes.Other; } }
+        public override string Name => "Delay";
+        public override string Type => CommandTypes.Other;
         public override void Use(Player p, string message, CommandData data)
         {
             TimeSpan duration = TimeSpan.Zero;
@@ -28,7 +28,7 @@ namespace MCGalaxy.Commands.Misc
             {
                 p.Message("&WCan only wait for a minute at most."); return;
             }
-            if (data.Context != CommandContext.MessageBlock)
+            if (data.Context != 4)
             {
                 p.Message("&WThis command can only be used in message blocks."); return;
             }

@@ -19,48 +19,36 @@ namespace MCGalaxy
 {
     public static partial class Block
     {
-        public static bool Walkthrough(ushort block)
-        {
-            return block == Air || block == Sapling || block == Snow
+        public static bool Walkthrough(ushort block) => block == Air || block == Sapling || block == Snow
                 || block == Fire || block == Rope
                 || (block >= Water && block <= StillLava)
                 || (block >= Dandelion && block <= RedMushroom);
-        }
-        public static bool AllowBreak(ushort block)
+        public static bool AllowBreak(ushort block) => block switch
         {
-            return block switch
-            {
-                Portal_Blue or Portal_Orange or MB_White or MB_Black or Door_Log or Door_Obsidian or Door_Glass or Door_Stone or Door_Leaves or Door_Sand or Door_Wood or Door_Green or Door_TNT or Door_Slab or Door_Iron or Door_Gold or Door_Dirt or Door_Grass or Door_Blue or Door_Bookshelf or Door_Cobblestone or Door_Red or Door_Orange or Door_Yellow or Door_Lime or Door_Teal or Door_Aqua or Door_Cyan or Door_Indigo or Door_Purple or Door_Magenta or Door_Pink or Door_Black or Door_Gray or Door_White or C4 or TNT_Small or TNT_Big or TNT_Nuke or RocketStart or Fireworks or ZombieBody or Creeper or ZombieHead => true,
-                _ => false,
-            };
-        }
-        public static bool LightPass(ushort block)
+            Portal_Blue or Portal_Orange or MB_White or MB_Black or Door_Log or Door_Obsidian or Door_Glass or Door_Stone or Door_Leaves or Door_Sand or Door_Wood or Door_Green or Door_TNT or Door_Slab or Door_Iron or Door_Gold or Door_Dirt or Door_Grass or Door_Blue or Door_Bookshelf or Door_Cobblestone or Door_Red or Door_Orange or Door_Yellow or Door_Lime or Door_Teal or Door_Aqua or Door_Cyan or Door_Indigo or Door_Purple or Door_Magenta or Door_Pink or Door_Black or Door_Gray or Door_White or C4 or TNT_Small or TNT_Big or TNT_Nuke or RocketStart or Fireworks or ZombieBody or Creeper or ZombieHead => true,
+            _ => false,
+        };
+        public static bool LightPass(ushort block) => Convert(block) switch
         {
-            return Convert(block) switch
-            {
-                Air or Glass or Leaves or Rose or Dandelion or Mushroom or RedMushroom or Sapling or Rope => true,
-                _ => false,
-            };
-        }
-        public static bool NeedRestart(ushort block)
+            Air or Glass or Leaves or Rose or Dandelion or Mushroom or RedMushroom or Sapling or Rope => true,
+            _ => false,
+        };
+        public static bool NeedRestart(ushort block) => block switch
         {
-            return block switch
-            {
-                Train or Snake or SnakeTail or Air_Flood or Air_FloodDown or Air_FloodUp or Air_FloodLayer or LavaFire or RocketHead or Fireworks or Creeper or ZombieBody or ZombieHead or Bird_Black or Bird_Blue or Bird_Killer or Bird_Lava or Bird_Red or Bird_Water or Bird_White or Fish_Betta or Fish_Gold or Fish_Salmon or Fish_Shark or Fish_LavaShark or Fish_Sponge or TNT_Explosion => true,
-                _ => false,
-            };
-        }
+            Train or Snake or SnakeTail or Air_Flood or Air_FloodDown or Air_FloodUp or Air_FloodLayer or LavaFire or RocketHead or Fireworks or Creeper or ZombieBody or ZombieHead or Bird_Black or Bird_Blue or Bird_Killer or Bird_Lava or Bird_Red or Bird_Water or Bird_White or Fish_Betta or Fish_Gold or Fish_Salmon or Fish_Shark or Fish_LavaShark or Fish_Sponge or TNT_Explosion => true,
+            _ => false,
+        };
         public static AABB BlockAABB(ushort block, Level lvl)
         {
             BlockDefinition def = lvl.GetBlockDef(block);
             if (def != null)
             {
-                return new AABB(def.MinX * 2, def.MinZ * 2, def.MinY * 2,
+                return new(def.MinX * 2, def.MinZ * 2, def.MinY * 2,
                                 def.MaxX * 2, def.MaxZ * 2, def.MaxY * 2);
             }
-            if (block >= Extended) return new AABB(0, 0, 0, 32, 32, 32);
+            if (block >= 256) return new(0, 0, 0, 32, 32, 32);
             ushort core = Convert(block);
-            return new AABB(0, 0, 0, 32, DefaultSet.Height(core) * 2, 32);
+            return new(0, 0, 0, 32, DefaultSet.Height(core) * 2, 32);
         }
         public static void SetBlocks()
         {
@@ -93,29 +81,15 @@ namespace MCGalaxy
             }
         }
         /// <summary> Converts a raw/client block ID to a server block ID </summary>
-        public static ushort FromRaw(ushort raw)
-        {
-            return raw < CPE_COUNT ? raw : (ushort)(raw + Extended);
-        }
+        public static ushort FromRaw(ushort raw) => raw < 66 ? raw : (ushort)(raw + 256);
         /// <summary> Converts a server block ID to a raw/client block ID </summary>
         /// <remarks> Undefined behaviour for physics block IDs </remarks>
-        public static ushort ToRaw(ushort raw)
-        {
-            return raw < CPE_COUNT ? raw : (ushort)(raw - Extended);
-        }
-        public static ushort MapOldRaw(ushort raw)
-        {
+        public static ushort ToRaw(ushort raw) => raw < 66 ? raw : (ushort)(raw - 256);
+        public static ushort MapOldRaw(ushort raw) =>
             // old raw form was: 0 - 65 core block ids, 66 - 255 custom block ids
             // 256+ remain unchanged
-            return IsPhysicsType(raw) ? ((ushort)(raw + Extended)) : raw;
-        }
-        public static bool IsPhysicsType(ushort block)
-        {
-            return block >= CPE_COUNT && block < Extended;
-        }
-        public static bool VisuallyEquals(ushort a, ushort b)
-        {
-            return Convert(a) == Convert(b);
-        }
+            IsPhysicsType(raw) ? ((ushort)(raw + 256)) : raw;
+        public static bool IsPhysicsType(ushort block) => block >= 66 && block < 256;
+        public static bool VisuallyEquals(ushort a, ushort b) => Convert(a) == Convert(b);
     }
 }

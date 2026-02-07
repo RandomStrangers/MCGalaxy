@@ -54,19 +54,14 @@ namespace MCGalaxy
             // TODO: This probably needs to account for colour codes
             return (c == '-' || c == '\\') && line[i - 1] != ' ';
         }
-        static bool StartsWithColor(char[] message, int messageLen, int offset)
-        {
-            return message[offset] == '&'
+        static bool StartsWithColor(char[] message, int messageLen, int offset) => message[offset] == '&'
                 && (offset + 1) < messageLen
                 && Colors.Lookup(message[offset + 1]) != '\0';
-        }
         // TODO: Add outputLine argument, instead of returning string list
         public static List<string> Wordwrap(char[] message, int messageLen, bool supportsEmotes)
         {
             List<string> lines = new();
-            const int limit = NetUtils.StringSize; // max characters on one line
-            const int maxLineLen = limit + 1; // +1 because need to know if length of line overshot limit
-            char[] line = new char[maxLineLen];
+            char[] line = new char[65];
             bool firstLine = true;
             char lastColor = 'f';
             for (int offset = 0; offset < messageLen;)
@@ -99,7 +94,7 @@ namespace MCGalaxy
                 // Also trim leading spaces on subsequent lines
                 // (note that first line is NOT trimmed for spaces)
                 bool foundStart = firstLine;
-                for (; length < maxLineLen && offset < messageLen;)
+                for (; length < 65 && offset < messageLen;)
                 {
                     char c = message[offset++];
                     if (c != ' ' || foundStart)
@@ -108,7 +103,7 @@ namespace MCGalaxy
                         foundStart = true;
                     }
                 }
-                int lineLength = limit;
+                int lineLength = 64;
                 bool emotePad = false;
                 // Check if need to add a padding ' to line end
                 // (Lines ending in emote are trimmed by minecraft classic client)
@@ -128,7 +123,7 @@ namespace MCGalaxy
                 }
                 firstLine = false;
                 // Try to split up this line nicely
-                for (int i = lineLength - 1; i > limit - 20; i--)
+                for (int i = lineLength - 1; i > 44; i--)
                 {
                     if (!IsWrapper(line, i)) continue;
                     i++; // include line wrapper character on this line

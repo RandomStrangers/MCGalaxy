@@ -22,13 +22,10 @@ namespace MCGalaxy.Modules.Games.Countdown
 {
     sealed class CmdCountdown : RoundsGameCmd
     {
-        public override string name { get { return "CountDown"; } }
-        public override string shortcut { get { return "CD"; } }
-        protected override RoundsGame Game { get { return CountdownGame.Instance; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can manage countdown") }; }
-        }
+        public override string Name => "CountDown";
+        public override string Shortcut => "CD";
+        protected override RoundsGame Game => CountdownGame.Instance;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can manage countdown") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.CaselessEq("join"))

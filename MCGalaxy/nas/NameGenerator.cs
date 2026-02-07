@@ -1,6 +1,5 @@
-#if NAS && TEN_BIT_BLOCKS
 using System;
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
     public class NameGenerator
     {
@@ -33,7 +32,6 @@ namespace NotAwesomeSurvival
             }
             return 0;
         }
-        public string MakeSyllable() => MakeConsonantBlock() + MakeVowelBlock() + MakeConsonantBlock();
         public string MakeConsonantBlock()
         {
             string newName = "";
@@ -60,10 +58,9 @@ namespace NotAwesomeSurvival
             string newName = "";
             for (long i = 0; i < numberSyllables; i++)
             {
-                newName += MakeSyllable();
+                newName += MakeConsonantBlock() + MakeVowelBlock() + MakeConsonantBlock();
             }
             return char.ToUpper(newName[0]) + newName.Substring(1);
         }
     }
 }
-#endif

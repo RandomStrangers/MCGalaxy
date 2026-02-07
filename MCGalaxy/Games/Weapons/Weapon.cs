@@ -33,8 +33,8 @@ namespace MCGalaxy.Games
         {
             if (!hookedEvents)
             {
-                OnPlayerClickEvent.Register(PlayerClickCallback, Priority.Low);
-                OnBlockChangingEvent.Register(BlockChangingCallback, Priority.Low);
+                OnPlayerClickEvent.Register(PlayerClickCallback, 0);
+                OnBlockChangingEvent.Register(BlockChangingCallback, 0);
                 hookedEvents = true;
             }
             p.weaponBuffer ??= new BufferedBlockSender();
@@ -60,15 +60,9 @@ namespace MCGalaxy.Games
             p.weapon = null;
         }
         /// <summary> Called when the given player engages/equips this weapon </summary>
-        protected virtual void OnEnabled(Player p, bool clickToActivate)
-        {
-            p.Message("{0} engaged, {1}fire at will", Name, clickToActivate ? "click to " : "");
-        }
+        protected virtual void OnEnabled(Player p, bool clickToActivate) => p.Message("{0} engaged, {1}fire at will", Name, clickToActivate ? "click to " : "");
         /// <summary> Called when given player disengages/releases this weapon </summary>
-        protected virtual void OnDisabled(Player p)
-        {
-            p.Message(Name + " disabled");
-        }
+        protected virtual void OnDisabled(Player p) => p.Message(Name + " disabled");
         /// <summary> Called when the player fires this weapon. </summary>
         /// <remarks> Activated by clicking through either PlayerClick or on a glass box around the player. </remarks>
         protected abstract void OnActivated(Vec3F32 dir, ushort block);
@@ -81,19 +75,19 @@ namespace MCGalaxy.Games
             cancel = true;
             // Defer to player click handler if PlayerClick supported
             if (weapon.aimer == null) return;
-            if (!p.level.Config.Guns) { weapon.Disable(); return; }
+            if (!p.Level.Config.Guns) { weapon.Disable(); return; }
             if (!CommandParser.IsBlockAllowed(p, "use", block)) return;
             Vec3F32 dir = DirUtils.GetDirVector(p.Rot.RotY, p.Rot.HeadX);
             weapon.OnActivated(dir, block);
         }
-        static void PlayerClickCallback(Player p, MouseButton btn, MouseAction action,
-                                        ushort yaw, ushort pitch, byte entity,
-                                        ushort x, ushort y, ushort z, TargetBlockFace face)
+        static void PlayerClickCallback(Player p, int btn, int action,
+                                        ushort yaw, ushort pitch, byte _,
+                                        ushort __, ushort ___, ushort ____, int _____)
         {
             Weapon weapon = p.weapon;
-            if (weapon == null || action != MouseAction.Pressed) return;
-            if (!(btn == MouseButton.Left || btn == MouseButton.Right)) return;
-            if (!p.level.Config.Guns) { weapon.Disable(); return; }
+            if (weapon == null || action != 0) return;
+            if (!(btn == 0 || btn == 1)) return;
+            if (!p.Level.Config.Guns) { weapon.Disable(); return; }
             ushort held = p.ClientHeldBlock;
             if (!CommandParser.IsBlockAllowed(p, "use", held)) return;
             Vec3F32 dir = DirUtils.GetDirVectorExt(yaw, pitch);
@@ -104,7 +98,7 @@ namespace MCGalaxy.Games
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                if (pl.level != p.level) continue;
+                if (pl.Level != p.Level) continue;
                 if (p == pl && skipSelf) continue;
                 if (Math.Abs(pl.Pos.BlockX - pos.X) <= 1
                     && Math.Abs(pl.Pos.BlockY - pos.Y) <= 1
@@ -115,18 +109,17 @@ namespace MCGalaxy.Games
             }
             return null;
         }
-        public static WeaponType ParseType(string type)
+        public static int ParseType(string type)
         {
-            if (type.Length == 0) return WeaponType.Normal;
-            if (type.CaselessEq("destroy")) return WeaponType.Destroy;
-            if (type.CaselessEq("tp")) return WeaponType.Teleport;
-            if (type.CaselessEq("teleport")) return WeaponType.Teleport;
-            if (type.CaselessEq("explode")) return WeaponType.Explode;
-            if (type.CaselessEq("laser")) return WeaponType.Laser;
-            return WeaponType.Invalid;
+            if (type.Length == 0) return 1;
+            if (type.CaselessEq("destroy")) return 2;
+            if (type.CaselessEq("tp")) return 3;
+            if (type.CaselessEq("teleport")) return 3;
+            if (type.CaselessEq("explode")) return 4;
+            if (type.CaselessEq("laser")) return 5;
+            return 0;
         }
     }
-    public enum WeaponType { Invalid, Normal, Destroy, Teleport, Explode, Laser };
     public class AmmunitionData
     {
         public ushort block;
@@ -175,7 +168,7 @@ namespace MCGalaxy.Games
             if (p.aiming) { Update(); return; }
             foreach (Vec3U16 pos in lastGlass)
             {
-                if (!p.level.IsValidPos(pos)) continue;
+                if (!p.Level.IsValidPos(pos)) continue;
                 p.RevertBlock(pos.X, pos.Y, pos.Z);
             }
             task.Repeating = false;
@@ -184,20 +177,20 @@ namespace MCGalaxy.Games
         {
             Player p = player;
             Vec3F32 dir = DirUtils.GetDirVector(p.Rot.RotY, p.Rot.HeadX);
-            ushort x = (ushort)Math.Round(p.Pos.BlockX + dir.X * 3);
-            ushort y = (ushort)Math.Round(p.Pos.BlockY + dir.Y * 3);
-            ushort z = (ushort)Math.Round(p.Pos.BlockZ + dir.Z * 3);
+            ushort x = (ushort)Math.Round(p.Pos.BlockX + dir.X * 3),
+                y = (ushort)Math.Round(p.Pos.BlockY + dir.Y * 3),
+                z = (ushort)Math.Round(p.Pos.BlockZ + dir.Z * 3);
             int dx = Math.Sign(dir.X) >= 0 ? 1 : -1, dz = Math.Sign(dir.Z) >= 0 ? 1 : -1;
-            Check(p.level, x, y, z);
-            Check(p.level, x + dx, y, z);
-            Check(p.level, x, y, z + dz);
-            Check(p.level, x + dx, y, z + dz);
+            Check(p.Level, x, y, z);
+            Check(p.Level, x + dx, y, z);
+            Check(p.Level, x, y, z + dz);
+            Check(p.Level, x + dx, y, z + dz);
             // Revert all glass blocks now not in the ray from the player's direction
             for (int i = 0; i < lastGlass.Count; i++)
             {
                 Vec3U16 pos = lastGlass[i];
                 if (curGlass.Contains(pos)) continue;
-                if (p.level.IsValidPos(pos))
+                if (p.Level.IsValidPos(pos))
                     p.RevertBlock(pos.X, pos.Y, pos.Z);
                 lastGlass.RemoveAt(i); i--;
             }

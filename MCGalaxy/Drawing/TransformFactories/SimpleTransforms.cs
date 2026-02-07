@@ -18,21 +18,18 @@ namespace MCGalaxy.Drawing.Transforms
 {
     public sealed class NoTransformFactory : TransformFactory
     {
-        public override string Name { get { return "None"; } }
-        public override string[] Help { get { return HelpString; } }
+        public override string Name => "None";
+        public override string[] Help => HelpString;
         static readonly string[] HelpString = new string[] {
             "&TArguments: none",
             "&HDoes not affect the output of draw operations.",
         };
-        public override Transform Construct(Player p, string message)
-        {
-            return NoTransform.Instance;
-        }
+        public override Transform Construct(Player p, string message) => NoTransform.Instance;
     }
     public sealed class ScaleTransformFactory : TransformFactory
     {
-        public override string Name { get { return "Scale"; } }
-        public override string[] Help { get { return HelpString; } }
+        public override string Name => "Scale";
+        public override string[] Help => HelpString;
         static readonly string[] HelpString = new string[] {
             "&TArguments: [scaleX] [scaleY] [scaleZ] <centre>",
             "&TAlternatively: [scale] <centre>",

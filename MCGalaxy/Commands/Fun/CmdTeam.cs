@@ -18,13 +18,10 @@ namespace MCGalaxy.Commands.Fun
 {
     public sealed class CmdTeam : Command2
     {
-        public override string name { get { return "Team"; } }
-        public override string type { get { return CommandTypes.Games; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.AdvBuilder, "can create teams") }; }
-        }
+        public override string Name => "Team";
+        public override string Type => CommandTypes.Games;
+        public override bool SuperUseable => false;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(50, "can create teams") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }

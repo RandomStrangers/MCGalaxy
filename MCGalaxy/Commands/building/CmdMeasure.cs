@@ -19,10 +19,10 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdMeasure : Command2
     {
-        public override string name { get { return "Measure"; } }
-        public override string shortcut { get { return "ms"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Measure";
+        public override string Shortcut => "ms";
+        public override string Type => CommandTypes.Building;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             List<ushort> toCount = null;
@@ -49,7 +49,7 @@ namespace MCGalaxy.Commands.Building
                 for (ushort z = (ushort)min.Z; z <= (ushort)max.Z; z++)
                     for (ushort x = (ushort)min.X; x <= (ushort)max.X; x++)
                     {
-                        counts[p.level.FastGetBlock(x, y, z)]++;
+                        counts[p.Level.FastGetBlock(x, y, z)]++;
                     }
             int width = max.X - min.X + 1, height = max.Y - min.Y + 1, length = max.Z - min.Z + 1;
             int volume = width * height * length;
@@ -86,10 +86,7 @@ namespace MCGalaxy.Commands.Building
             }
             return mostFrequent;
         }
-        static string FormatCount(int count, int volume)
-        {
-            return ": " + count + " (" + (int)(count * 100.0 / volume) + "%)";
-        }
+        static string FormatCount(int count, int volume) => ": " + count + " (" + (int)(count * 100.0 / volume) + "%)";
         public override void Help(Player p)
         {
             p.Message("&T/Measure <block1> <block2>..");

@@ -340,16 +340,10 @@ namespace LibNoise
         /// <summary>
         /// Returns the linear interpolation of two values with the given alpha.
         /// </summary>
-        static double LinearInterpolate(double n0, double n1, double a)
-        {
-            return ((1.0 - a) * n0) + (a * n1);
-        }
+        static double LinearInterpolate(double n0, double n1, double a) => ((1.0 - a) * n0) + (a * n1);
         /// <summary>
         /// Returns the given value mapped onto a cubic S-curve.
         /// </summary>
-        static double SCurve3(double a)
-        {
-            return a * a * (3.0 - 2.0 * a);
-        }
+        static double SCurve3(double a) => a * a * (3.0 - 2.0 * a);
     }
 }

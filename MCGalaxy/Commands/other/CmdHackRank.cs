@@ -19,10 +19,10 @@ namespace MCGalaxy.Commands.Misc
 {
     public sealed class CmdHackRank : Command2
     {
-        public override string name { get { return "HackRank"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override bool MessageBlockRestricted { get { return true; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "HackRank";
+        public override string Type => CommandTypes.Other;
+        public override bool MessageBlockRestricted => true;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }

@@ -1,8 +1,4 @@
-#if NAS && TEN_BIT_BLOCKS
-using MCGalaxy;
 using MCGalaxy.Commands;
-using MCGalaxy.DB;
-using MCGalaxy.Generator;
 using MCGalaxy.Maths;
 using MCGalaxy.Platform;
 using MCGalaxy.SQL;
@@ -12,224 +8,11 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Threading;
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
-    public static class FileUtils
+    public partial class NASPlugin
     {
-        public static string TryReadAllText(string path)
-        {
-            try
-            {
-                return File.ReadAllText(path);
-            }
-            catch (FileNotFoundException)
-            {
-                return null;
-            }
-        }
-        public static string[] TryReadAllLines(string path)
-        {
-            try
-            {
-                return File.ReadAllLines(path);
-            }
-            catch (FileNotFoundException)
-            {
-                return null;
-            }
-        }
-        public static bool TryWriteAllText(string path, string contents)
-        {
-            try
-            {
-                File.WriteAllText(path, contents);
-                return true;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return false;
-            }
-        }
-        public static bool TryAppendAllText(string path, string contents)
-        {
-            try
-            {
-                File.AppendAllText(path, contents);
-                return true;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return false;
-            }
-        }
-        public static bool TryWriteAllLines(string path, string[] contents)
-        {
-            try
-            {
-                File.WriteAllLines(path, contents);
-                return true;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return false;
-            }
-        }
-    }
-    public static class OS
-    {
-        public static unsafe string Get()
-        {
-            string bitType, name;
-            if (IntPtr.Size == 8)
-            {
-                bitType = " 64-bit";
-            }
-            else if (IntPtr.Size == 4)
-            {
-                bitType = " 32-bit";
-            }
-            else if (IntPtr.Size == 2)
-            {
-                bitType = " 16-bit";
-            }
-            else
-            {
-                bitType = " unknown bit type (IntPtr size is " + IntPtr.Size + ")";
-            }
-            if (Server.RunningOnMono())
-            {
-                name = "Mono";
-            }
-            else
-            {
-                PlatformID platform = Environment.OSVersion.Platform;
-                if (platform == PlatformID.Win32S 
-                    || platform == PlatformID.Win32Windows
-                    || platform == PlatformID.Win32NT
-                    || platform == PlatformID.WinCE
-                    || platform == PlatformID.Xbox) 
-                {
-                    name = "Windows";
-                }
-                else if (platform == PlatformID.MacOSX)
-                {
-                    name = "Mac";
-                }
-                else
-                {
-                    sbyte* utsname = stackalloc sbyte[8192];
-                    uname(utsname);
-                    string kernel = new(utsname);
-                    if (kernel.CaselessContains("linux"))
-                    {
-                        name = "Linux";
-                    }
-                    else if (kernel.CaselessContains("freeBSD"))
-                    {
-                        name = "FreeBSD";
-                    }
-                    else if (kernel.CaselessContains("netBSD"))
-                    {
-                        name = "NetBSD";
-                    }
-                    else if (kernel.CaselessContains("darwin"))
-                    {
-                        name = "Mac";
-                    }
-                    else
-                    {
-                        name = "Unix";
-                    }
-                }
-            }
-            return name + bitType;
-        }
-        [DllImport("libc")]
-        static extern unsafe void uname(sbyte* uname_struct);
-    }
-    public class MonoOS : IOperatingSystem
-    {
-        public override bool IsWindows => false;
-        public override void RestartProcess()
-        {
-            try
-            {
-                execvp(Server.GetRuntimeExePath(), GetProcessCommandLineArgs());
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Restarting process", ex);
-            }
-            execvp("mono", new string[] { "mono", Server.GetServerExePath(), null });
-            Console.Out.WriteLine("execvp mono failed: {0}", Marshal.GetLastWin32Error());
-        }
-        static CPUTime ParseCpuLine(string line)
-        {
-            line = line.Replace("  ", " ");
-            string[] bits = line.SplitSpaces();
-            ulong user = ulong.Parse(bits[1]),
-                nice = ulong.Parse(bits[2]),
-                kern = ulong.Parse(bits[3]),
-                idle = ulong.Parse(bits[4]);
-            return new()
-            {
-                UserTime = user + nice,
-                KernelTime = kern,
-                IdleTime = idle
-            };
-        }
-        public override CPUTime MeasureAllCPUTime()
-        {
-            try
-            {
-                using StreamReader r = new("/proc/stat");
-                string line = r.ReadLine();
-                if (line.StartsWith("cpu "))
-                {
-                    return ParseCpuLine(line);
-                }
-                return new();
-            }
-            catch
-            {
-                return new();
-            }
-        }
-        static string[] GetProcessCommandLineArgs()
-        {
-            using StreamReader r = new("/proc/self/cmdline");
-            string[] args = r.ReadToEnd().Split('\0');
-            args[args.Length - 1] = null;
-            return args;
-        }
-        [DllImport("libc", SetLastError = true)]
-        static extern int execvp(string path, string[] argv);
-    }
-    public class NasConsolePlayer : Player
-    {
-        public NasConsolePlayer() : base("(NAS)")
-        {
-            group = new()
-            {
-                Permission = LevelPermission.Console,
-                DrawLimit = int.MaxValue,
-                MaxUndo = TimeSpan.MaxValue,
-                Name = "NAS",
-                Color = "&S",
-                GenVolume = int.MaxValue,
-                OverseerMaps = int.MaxValue,
-            };
-            color = "&S";
-            SuperName = "NAS";
-        }
-        public override string FullName => "NAS [" + Server.Config.ConsoleName + "&S]";
-        public override void Message(string message) => Logger.Log(LogType.Debug, message);
-    }
-    public partial class Nas
-    {
-        public static Player NasConsole = new NasConsolePlayer();
         public static ushort Convert(ushort block) => block switch
         {
             70 => 39,
@@ -366,140 +149,55 @@ namespace NotAwesomeSurvival
         };
         public static ushort ToRaw(ushort raw) => raw < 66 ? raw : (ushort)(raw - 256);
         public static ushort FromRaw(ushort raw) => raw < 66 ? raw : (ushort)(raw + 256);
-        public static bool IsPhysicsType(ushort block) => block >= 66 && block < 256;
-        public class CmdNewServerInfo : Command
-        {
-            public override string name => "NewServerInfo";
-            public override string shortcut => "SInfo";
-            public override string type => CommandTypes.Information;
-            public override bool UseableWhenFrozen => true;
-            public override CommandAlias[] Aliases => new[] { new CommandAlias("Host"), new("ZAll"), new("ServerInfo") };
-            public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Admin, "can see server host, operating system, CPU and memory usage") };
-            public override void Use(Player p, string message)
-            {
-                p.Message("About &b{0}&S", Server.Config.Name);
-                p.Message("  &a{0} &Splayers total. (&a{1} &Sonline, &8{2} banned&S)",
-                          Database.CountRows("Players"), PlayerInfo.GetOnlineCanSee(p, p.Rank).Count, Group.BannedRank.Players.Count);
-                p.Message("  &a{0} &Slevels total (&a{1} &Sloaded). Currency is &3{2}&S.",
-                          LevelInfo.AllMapFiles().Length, LevelInfo.Loaded.Count, Server.Config.Currency);
-                TimeSpan up = DateTime.UtcNow - Server.StartTime;
-                p.Message("  Been up for &a{0}&S, running &b{1} &a{2}",
-                          up.Shorten(true), Server.SoftwareName, NasVersion);
-                p.Message("&f" + NASUpdater.SourceURL);
-                int updateInterval = 1000 / Server.Config.PositionUpdateInterval;
-                p.Message("  Player positions are updated &a{0} &Stimes/second", updateInterval);
-                string owner = Server.Config.OwnerName;
-                if (!owner.CaselessEq("Notch") && !owner.CaselessEq("the owner"))
-                {
-                    p.Message("  Owner is &3{0}", owner);
-                }
-                if (HasExtraPerm(p, p.Rank, 1))
-                {
-                    OutputResourceUsage(p);
-                }
-            }
-            static DateTime startTime;
-            static ProcInfo startUsg;
-            static void OutputResourceUsage(Player p)
-            {
-                p.Message("Host: {0}", Environment.MachineName);
-                p.Message("OS: {0}", OS.Get());
-                Process proc = Process.GetCurrentProcess();
-                p.Message("Measuring resource usage...one second");
-                IOperatingSystem os = IOperatingSystem.DetectOS();
-                if (Server.RunningOnMono())
-                {
-                    os = new MonoOS();
-                }
-                if (startTime == default)
-                {
-                    startTime = DateTime.UtcNow;
-                    startUsg = os.MeasureResourceUsage(proc, false);
-                }
-                CPUTime allBeg = os.MeasureAllCPUTime();
-                ProcInfo begUsg = os.MeasureResourceUsage(proc, false);
-                Thread.Sleep(1000);
-                ProcInfo endUsg = os.MeasureResourceUsage(proc, true);
-                CPUTime allEnd = os.MeasureAllCPUTime();
-                p.Message("&a{0}% &SCPU usage now, &a{1}% &Soverall",
-                    MeasureCPU(begUsg.ProcessorTime, endUsg.ProcessorTime, TimeSpan.FromSeconds(1)),
-                    MeasureCPU(startUsg.ProcessorTime, endUsg.ProcessorTime, DateTime.UtcNow - startTime));
-                ulong idl = allEnd.IdleTime - allBeg.IdleTime,
-                    sys = allEnd.ProcessorTime - allBeg.ProcessorTime;
-                double cpu = sys * 100.0 / (sys + idl);
-                int cores = Environment.ProcessorCount;
-                p.Message("  &a{0}% &Sby all processes across {1} CPU core{2}",
-                    double.IsNaN(cpu) ? "(unknown)" : cpu.ToString("F2"),
-                    cores, cores.Plural());
-                int memory = (int)Math.Round(endUsg.PrivateMemorySize / 1048576.0);
-                p.Message("&a{0} &Sthreads, using &a{1} &Smegabytes of memory",
-                    endUsg.NumThreads, memory);
-            }
-            static string MeasureCPU(TimeSpan beg, TimeSpan end, TimeSpan interval)
-            {
-                if (end < beg)
-                {
-                    return "0.00";
-                }
-                int cores = Math.Max(1, Environment.ProcessorCount);
-                TimeSpan used = end - beg;
-                double elapsed = 100.0 * (used.TotalSeconds / interval.TotalSeconds);
-                return (elapsed / cores).ToString("F2");
-            }
-            public override void Help(Player p) => p.Message("&T/ServerInfo &H- Displays the server information.");
-        }
-        public static bool HasExtraPerm(NasPlayer np, string cmd, int num) => CommandExtraPerms.Find(cmd, num).UsableBy(np.p.Rank);
-        public static void SaveAll(Player p)
+        public static bool HasExtraPerm(NASPlayer np, string cmd, int num) => CommandExtraPerms.Find(cmd, num).UsableBy(np.p.Rank);
+        static void SaveAll(Player p)
         {
             Level[] loaded = LevelInfo.Loaded.Items;
             foreach (Level lvl in loaded)
             {
-                TrySave(p, lvl);
+                if (!lvl.SaveChanges)
+                {
+                    p.Message("Saving {0} &Sis currently disabled (most likely because a game is or was running on the level)", lvl.ColoredName);
+                }
+                else
+                {
+                    NASLevel nl = NASLevel.Get(lvl.name);
+                    string jsonString = JsonConvert.SerializeObject(nl, Formatting.Indented),
+                        fileName = NASLevel.GetFileName(nl.lvl.name);
+                    bool saved = lvl.Save(true) && FileIO.TryWriteAllText(fileName, jsonString);
+                    if (!saved)
+                    {
+                        p.Message("Saving of level {0} &Swas cancelled", lvl.ColoredName);
+                    }
+                }
             }
             Chat.MessageGlobal("All levels have been saved.");
         }
-        public static bool TrySave(Player p, Level lvl)
-        {
-            if (!lvl.SaveChanges)
-            {
-                p.Message("Saving {0} &Sis currently disabled (most likely because a game is or was running on the level)", lvl.ColoredName);
-                return false;
-            }
-            NasLevel nl = NasLevel.Get(lvl.name);
-            string jsonString = JsonConvert.SerializeObject(nl, Formatting.Indented),
-                fileName = NasLevel.GetFileName(nl.lvl.name);
-            bool saved = lvl.Save(true) && FileUtils.TryWriteAllText(fileName, jsonString);            
-            if (!saved)
-            {
-                p.Message("Saving of level {0} &Swas cancelled", lvl.ColoredName);
-            }
-            return saved;
-        }
-        public static void GenLevel()
+        static void GenLevel()
         {
             int chunkOffsetX = 0, chunkOffsetZ = 0;
             string seed = "DEFAULT";
-            if (!NasGen.GetSeedAndChunkOffset(Server.mainLevel.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ))
+            if (!NASGen.GetSeedAndChunkOffset(Server.mainLevel.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ))
             {
-                Log("NAS: {0} is not a NAS level, generating a NAS level to replace it!", Server.mainLevel.name);
+                Log("NAS: {0} is not a valid NAS level, generating a new NAS level to replace it!", Server.mainLevel.name);
                 seed = new NameGenerator().MakeName().ToLower();
                 string mapName = seed + "_0,0";
-                NasLevel.GenerateMap(NasConsole,
+                NASLevel.GenerateMap(Player.Console,
                                            mapName,
-                                           NasGen.mapWideness.ToString(),
-                                           NasGen.mapTallness.ToString(),
-                                           NasGen.mapWideness.ToString(),
+                                           NASGen.mapWideness.ToString(),
+                                           NASGen.mapTallness.ToString(),
+                                           NASGen.mapWideness.ToString(),
                                            seed);
                 Server.Config.MainLevel = mapName;
                 SrvProperties.Save();
-                Chat.Message(ChatScope.All, "A server restart is required to initialize NAS plugin.", null, null, true);
+                Chat.Message(0, "A server restart is required to initialize NAS plugin.", null, null, true);
                 Thread.Sleep(TimeSpan.FromSeconds(5));
                 Server.Stop(true, "A server restart is required to initialize NAS plugin.");
             }
         }
-        public static void LoadFirstTime()
+        static void LoadFirstTime()
         {
-            Server.Config.DefaultTexture = textureURL;
+            Server.Config.DefaultTexture = "https://github.com/RandomStrangers/MCGalaxy/raw/NAS/Uploads/texturepack.zip";
             Server.Config.DefaultColor = "&7";
             Server.Config.verifyadmins = false;
             Server.Config.EdgeLevel = 60;
@@ -510,7 +208,7 @@ namespace NotAwesomeSurvival
             Server.Config.ShadowColor = "#888899";
             SrvProperties.Save();
         }
-        public static void EnsureDirectoriesExists(params string[] paths)
+        static void EnsureDirectoriesExists(params string[] paths)
         {
             foreach (string path in paths)
             {
@@ -520,11 +218,9 @@ namespace NotAwesomeSurvival
                 }
             }
         }
-        public static string GetSavePath(Player p) => SavePath + p.name + ".json";
-        public static string GetDeathPath(string name) => NasPlayer.DeathsPath + name + ".txt";
-        public static string GetTextPath(Player p) => SavePath + p.name + ".txt";
-        public static bool IsDev(Player p) => Devs.CaselessContains(p.truename);
-        public static bool IsDev(PlayerData data) => Devs.CaselessContains(data.Name);
+        public static string GetSavePath(Player p) => NASPlayer.Path + p.name + ".json";
+        public static string GetDeathPath(string name) => NASPlayer.DeathsPath + name + ".txt";
+        public static string GetTextPath(Player p) => NASPlayer.Path + p.name + ".txt";
         public static void DisposeErrorResponse(Exception ex)
         {
             try
@@ -547,10 +243,7 @@ namespace NotAwesomeSurvival
             Log("{0} doesn't exist, Downloading..", file);
             try
             {
-                using (WebClient client = new())
-                {
-                    client.DownloadFile(url, file);
-                }
+                new WebClient().DownloadFile(url, file);
                 if (File.Exists(file))
                 {
                     Log("{0} download successful!", file);
@@ -559,7 +252,7 @@ namespace NotAwesomeSurvival
             }
             catch (Exception ex)
             {
-                bool canRetry = HandleErrorResponse(ex, url, 30);
+                bool canRetry = HandleErrorResponse((WebException)ex, url, 30);
                 DisposeErrorResponse(ex);
                 if (!canRetry)
                 {
@@ -580,26 +273,25 @@ namespace NotAwesomeSurvival
                 Command.Register(cmd);
             }
         }
-        public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
-        public static string GetErrorResponse(Exception ex)
+        public static void Log(string format, params object[] args) => Logger.Log(15, string.Format(format, args));
+        public static bool HandleErrorResponse(WebException ex, string msg, long retry)
         {
+            string err = null;
             try
             {
                 if (ex is WebException webEx && webEx.Response != null)
                 {
-                    return new StreamReader(webEx.Response.GetResponseStream()).ReadToEnd().Trim();
+                    err = new StreamReader(webEx.Response.GetResponseStream()).ReadToEnd().Trim();
                 }
             }
-            catch 
-            { 
+            catch
+            {
             }
-            return null;
-        }
-        public static bool HandleErrorResponse(Exception ex, string msg, long retry) => HandleErrorResponse((WebException)ex, msg, retry);
-        public static bool HandleErrorResponse(WebException ex, string msg, long retry)
-        {
-            string err = GetErrorResponse(ex);
-            HttpStatusCode status = GetStatus(ex);
+            HttpStatusCode status = 0;
+            if (ex.Response != null)
+            {
+                status = ((HttpWebResponse)ex.Response).StatusCode;
+            }
             if (status == (HttpStatusCode)429)
             {
                 Sleep();
@@ -621,32 +313,21 @@ namespace NotAwesomeSurvival
                 LogWarning(ex);
                 return retry < 2;
             }
-            LogWarning(ex, msg);
+            Logger.Log(6, "Error sending request to Github API {0}: {1}", msg, ex.Message);
             LogResponse(err);
             return false;
         }
-        public static HttpStatusCode GetStatus(WebException ex)
-        {
-            if (ex.Response == null)
-            {
-                return 0;
-            }
-            return ((HttpWebResponse)ex.Response).StatusCode;
-        }
-        public static void LogWarning(Exception ex, string target) => Logger.Log(LogType.Warning, "Error sending request to Github API {0}: {1}", target, ex.Message);
-        public static void LogWarning(string message) => Logger.Log(LogType.Warning, message);
-        public static void LogWarning(Exception ex) => Logger.Log(LogType.Warning, "Error sending request to Github API - {0}", ex.Message);
+        public static void LogWarning(Exception ex) => Logger.Log(6, "Error sending request to Github API - {0}", ex.Message);
         public static void LogResponse(string err)
         {
-            if (err.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(err))
             {
-                return;
+                if (err.Length > 200)
+                {
+                    err = err.Substring(0, 200) + "...";
+                }
+                Logger.Log(6, "Github API returned: " + err);
             }
-            if (err.Length > 200)
-            {
-                err = err.Substring(0, 200) + "...";
-            }
-            LogWarning("Github API returned: " + err);
         }
         public static void Sleep()
         {
@@ -654,7 +335,7 @@ namespace NotAwesomeSurvival
             Thread.Sleep(TimeSpan.FromSeconds(30 + 0.5f));
         }
     }
-    public partial class NasPlayer
+    public partial class NASPlayer
     {
         public static bool GetCoords(Player p, string[] args, int argsOffset, ref Vec3S32 P) => GetCoordInt(p, args[argsOffset + 0], "X coordinate", ref P.X) &&
                 GetCoordInt(p, args[argsOffset + 1], "Y coordinate", ref P.Y) &&
@@ -723,54 +404,8 @@ namespace NotAwesomeSurvival
             return true;
         }
     }
-    public partial class NasLevel
-    {
-        public static Level GenerateMap(Player p, string mapName, string width, string height, string length, string seed)
-        {
-            string[] args = new string[] { mapName, width, height, length, seed };
-            MapGen gen = MapGen.Find("NASGen");
-            ushort x = 0, y = 0, z = 0;
-            if (!MapGen.GetDimensions(p, args, 1, ref x, ref y, ref z, false))
-            {
-                return null;
-            }
-            return MapGen.Generate(p, gen, mapName, x, y, z, seed);
-        }
-    }
-    public static class Extensions
-    {
-        public static DateTime Floor(this DateTime date, TimeSpan span) => new((date.Ticks / span.Ticks) * span.Ticks);
-        public static bool IsNullOrWhiteSpace(this string value)
-        {
-            if (value as object is null)
-            {
-                return true;
-            }
-            for (int i = 0; i < value.Length; i++)
-            {
-                if (!char.IsWhiteSpace(value[i]))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-        public static bool IsNullOrEmpty(this string value)
-        {
-            if (value as object is not null)
-            {
-                return value.Length == 0;
-            }
-            return true;
-        }
-    }
-    public delegate void Action<T1>(T1 arg1);
-    public delegate void Action<T1, T2>(T1 arg1, T2 arg2);
-    public delegate void Action<T1, T2, T3>(T1 arg1, T2 arg2, T3 arg3);
-    public delegate void Action<T1, T2, T3, T4>(T1 arg1, T2 arg2, T3 arg3, T4 arg4);
     public delegate void Action<T1, T2, T3, T4, T5>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5);
     public delegate void Action<T1, T2, T3, T4, T5, T6>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6);
     public delegate void Action<T1, T2, T3, T4, T5, T6, T7>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7);
     public delegate TResult Func<T1, T2, out TResult>(T1 arg1, T2 arg2);
 }
-#endif

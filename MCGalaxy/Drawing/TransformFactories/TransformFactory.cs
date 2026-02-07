@@ -43,9 +43,6 @@ namespace MCGalaxy.Drawing.Transforms
             if (match == null && matches == 0) List(p);
             return match;
         }
-        public static void List(Player p)
-        {
-            p.Message("&HAvailable transforms: &f" + Transforms.Join(t => t.Name));
-        }
+        public static void List(Player p) => p.Message("&HAvailable transforms: &f" + Transforms.Join(t => t.Name));
     }
 }

@@ -16,11 +16,8 @@ namespace MCGalaxy.Eco
 {
     public sealed class TitleItem : SimpleItem
     {
-        public TitleItem()
-        {
-            Aliases = new string[] { "titles", "title" };
-        }
-        public override string Name { get { return "Title"; } }
+        public TitleItem() => Aliases = new string[] { "titles", "title" };
+        public override string Name => "Title";
         public override void OnPurchase(Player p, string title)
         {
             if (title.Length == 0)
@@ -39,11 +36,8 @@ namespace MCGalaxy.Eco
     }
     public sealed class NickItem : SimpleItem
     {
-        public NickItem()
-        {
-            Aliases = new string[] { "nickname", "nick", "name" };
-        }
-        public override string Name { get { return "Nickname"; } }
+        public NickItem() => Aliases = new string[] { "nickname", "nick", "name" };
+        public override string Name => "Nickname";
         public override void OnPurchase(Player p, string nick)
         {
             if (nick.Length == 0)
@@ -66,11 +60,8 @@ namespace MCGalaxy.Eco
     }
     public sealed class TitleColorItem : SimpleItem
     {
-        public TitleColorItem()
-        {
-            Aliases = new string[] { "tcolor", "tcolour", "titlecolor", "titlecolour" };
-        }
-        public override string Name { get { return "TitleColor"; } }
+        public TitleColorItem() => Aliases = new string[] { "tcolor", "tcolour", "titlecolor", "titlecolour" };
+        public override string Name => "TitleColor";
         public override void OnPurchase(Player p, string args)
         {
             if (args.Length == 0) { OnStoreCommand(p); return; }
@@ -88,11 +79,8 @@ namespace MCGalaxy.Eco
     }
     public sealed class ColorItem : SimpleItem
     {
-        public ColorItem()
-        {
-            Aliases = new string[] { "color", "colour" };
-        }
-        public override string Name { get { return "Color"; } }
+        public ColorItem() => Aliases = new string[] { "color", "colour" };
+        public override string Name => "Color";
         public override void OnPurchase(Player p, string args)
         {
             if (args.Length == 0) { OnStoreCommand(p); return; }

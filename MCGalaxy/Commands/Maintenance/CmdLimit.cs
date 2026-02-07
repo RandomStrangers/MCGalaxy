@@ -17,9 +17,9 @@ namespace MCGalaxy.Commands.Maintenance
 {
     public sealed class CmdLimit : Command2
     {
-        public override string name { get { return "Limit"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
+        public override string Name => "Limit";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 100;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();

@@ -18,17 +18,11 @@ namespace MCGalaxy.Commands.CPE
 {
     public class CmdSkin : EntityPropertyCmd
     {
-        public override string name { get { return "Skin"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get
-            {
-                return new[] { new CommandPerm(LevelPermission.Operator, "can change the skin of others"),
-                    new CommandPerm(LevelPermission.Operator, "can change the skin of bots") };
-            }
-        }
+        public override string Name => "Skin";
+        public override string Type => CommandTypes.Other;
+        public override sbyte DefaultRank => 80;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can change the skin of others"),
+                    new CommandPerm(80, "can change the skin of bots") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.IndexOf(' ') == -1)
@@ -46,12 +40,9 @@ namespace MCGalaxy.Commands.CPE
             p.Message("You changed the skin of bot " + bot.ColoredName + " &Sto &c" + skin);
             bot.GlobalDespawn();
             bot.GlobalSpawn();
-            BotsFile.Save(p.level);
+            BotsFile.Save(p.Level);
         }
-        protected override void SetPlayerData(Player p, string target, string skin)
-        {
-            PlayerOperations.SetSkin(p, target, skin);
-        }
+        protected override void SetPlayerData(Player p, string target, string skin) => PlayerOperations.SetSkin(p, target, skin);
         public override void Help(Player p)
         {
             p.Message("&T/Skin [name] [skin] &H- Sets the skin of that player.");

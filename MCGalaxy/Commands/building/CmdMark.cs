@@ -18,18 +18,12 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdMark : Command2
     {
-        public override string name { get { return "Mark"; } }
-        public override string shortcut { get { return "click"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new[] { new CommandAlias("m"), new CommandAlias("x"),
+        public override string Name => "Mark";
+        public override string Shortcut => "click";
+        public override string Type => CommandTypes.Building;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("m"), new CommandAlias("x"),
                     new CommandAlias("MarkAll", "all"), new CommandAlias("ma", "all") };
-            }
-        }
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.CaselessEq("all"))
@@ -40,7 +34,7 @@ namespace MCGalaxy.Commands.Building
                 }
                 else
                 {
-                    Level lvl = p.level;
+                    Level lvl = p.Level;
                     DoMark(p, lvl.MaxX, lvl.MaxY, lvl.MaxZ);
                 }
                 return;
@@ -48,13 +42,13 @@ namespace MCGalaxy.Commands.Building
             Vec3S32 P = p.Pos.BlockCoords;
             P.Y = (p.Pos.Y - 32) / 32;
             if (message.Length > 0 && !ParseCoords(message, p, ref P)) return;
-            P = p.level.ClampPos(P);
+            P = p.Level.ClampPos(P);
             if (DoMark(p, P.X, P.Y, P.Z)) return;
             Vec3U16 mark = (Vec3U16)P;
             // We only want to activate blocks in the world
-            ushort old = p.level.GetBlock(mark.X, mark.Y, mark.Z);
+            ushort old = p.Level.GetBlock(mark.X, mark.Y, mark.Z);
             if (!p.CheckManualChange(old, true)) return;
-            HandleDelete handler = p.level.DeleteHandlers[old];
+            HandleDelete handler = p.Level.DeleteHandlers[old];
             if (handler != null)
             {
                 handler(p, old, mark.X, mark.Y, mark.Z);

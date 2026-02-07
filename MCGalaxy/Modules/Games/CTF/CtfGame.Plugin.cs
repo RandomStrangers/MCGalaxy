@@ -24,14 +24,14 @@ namespace MCGalaxy.Modules.Games.CTF
     {
         protected override void HookEventHandlers()
         {
-            OnPlayerDiedEvent.Register(HandlePlayerDied, Priority.High);
-            OnPlayerChatEvent.Register(HandlePlayerChat, Priority.High);
-            OnPlayerCommandEvent.Register(HandlePlayerCommand, Priority.High);
-            OnBlockChangingEvent.Register(HandleBlockChanging, Priority.High);
-            OnPlayerSpawningEvent.Register(HandlePlayerSpawning, Priority.High);
-            OnTabListEntryAddedEvent.Register(HandleTabListEntryAdded, Priority.High);
-            OnSentMapEvent.Register(HandleSentMap, Priority.High);
-            OnJoinedLevelEvent.Register(HandleJoinedLevel, Priority.High);
+            OnPlayerDiedEvent.Register(HandlePlayerDied, 2);
+            OnPlayerChatEvent.Register(HandlePlayerChat, 2);
+            OnPlayerCommandEvent.Register(HandlePlayerCommand, 2);
+            OnBlockChangingEvent.Register(HandleBlockChanging, 2);
+            OnPlayerSpawningEvent.Register(HandlePlayerSpawning, 2);
+            OnTabListEntryAddedEvent.Register(HandleTabListEntryAdded, 2);
+            OnSentMapEvent.Register(HandleSentMap, 2);
+            OnJoinedLevelEvent.Register(HandleJoinedLevel, 2);
             base.HookEventHandlers();
         }
         protected override void UnhookEventHandlers()
@@ -48,23 +48,24 @@ namespace MCGalaxy.Modules.Games.CTF
         }
         void HandlePlayerDied(Player p, ushort deathblock, ref TimeSpan cooldown)
         {
-            if (p.level != Map || !Get(p).HasFlag) return;
+            if (p.Level != Map || !Get(p).HasFlag) return;
             CtfTeam team = TeamOf(p);
             if (team != null) DropFlag(p, team);
         }
         void HandlePlayerChat(Player p, string message)
         {
-            if (p.level != Map || !Get(p).TeamChatting) return;
+            if (p.Level != Map || !Get(p).TeamChatting) return;
             CtfTeam team = TeamOf(p);
-            if (team == null) return;
-            string prefix = team.Color + " - to " + team.Name;
-            Chat.MessageChat(ChatScope.Level, p, prefix + " - λNICK: &f" + message,
-                             Map, (pl, arg) => pl.Game.Referee || TeamOf(pl) == team);
-            p.cancelchat = true;
+            if (team != null)
+            {
+                Chat.MessageChat(2, p, team.Color + " - to " + team.Name + " - λNICK: &f" + message,
+                                 Map, (pl, arg) => pl.Game.Referee || TeamOf(pl) == team);
+                p.cancelchat = true;
+            }
         }
         void HandlePlayerCommand(Player p, string cmd, string args, CommandData data)
         {
-            if (p.level != Map || cmd != "teamchat") return;
+            if (p.Level != Map || cmd != "teamchat") return;
             CtfData data_ = Get(p);
             if (data_.TeamChatting)
             {
@@ -79,38 +80,43 @@ namespace MCGalaxy.Modules.Games.CTF
         }
         void HandleBlockChanging(Player p, ushort x, ushort y, ushort z, ushort block, bool placing, ref bool cancel)
         {
-            if (p.level != Map) return;
-            CtfTeam team = TeamOf(p);
-            if (team == null)
+            if (p.Level == Map)
             {
-                p.RevertBlock(x, y, z);
-                cancel = true;
-                p.Message("You are not on a team!");
-                return;
-            }
-            Vec3U16 pos = new(x, y, z);
-            if (pos == Opposing(team).FlagPos && !Map.IsAirAt(x, y, z))
-            {
-                TakeFlag(p, team);
-            }
-            if (pos == team.FlagPos && !Map.IsAirAt(x, y, z))
-            {
-                ReturnFlag(p, team);
-                cancel = true;
+                CtfTeam team = TeamOf(p);
+                if (team == null)
+                {
+                    p.RevertBlock(x, y, z);
+                    cancel = true;
+                    p.Message("You are not on a team!");
+                    return;
+                }
+                if (x == Opposing(team).FlagPos.X && y == Opposing(team).FlagPos.Y && z == Opposing(team).FlagPos.Z && !Map.IsAirAt(x, y, z))
+                {
+                    TakeFlag(p, team);
+                }
+                if (x == team.FlagPos.X && y == team.FlagPos.Y && z == team.FlagPos.Z && !Map.IsAirAt(x, y, z))
+                {
+                    ReturnFlag(p, team);
+                    cancel = true;
+                }
             }
         }
         void HandlePlayerSpawning(Player p, ref Position pos, ref byte yaw, ref byte pitch, bool respawning)
         {
-            if (p.level != Map) return;
-            CtfTeam team = TeamOf(p);
-            if (team == null) return;
-            if (respawning) DropFlag(p, team);
-            Vec3U16 coords = team.SpawnPos;
-            pos = Position.FromFeetBlockCoords(coords.X, coords.Y, coords.Z);
+            if (p.Level == Map)
+            {
+                CtfTeam team = TeamOf(p);
+                if (team != null)
+                {
+                    if (respawning) DropFlag(p, team);
+                    Vec3U16 coords = team.SpawnPos;
+                    pos = Position.FromFeetBlockCoords(coords.X, coords.Y, coords.Z);
+                }
+            }
         }
         void HandleTabListEntryAdded(Entity entity, ref string tabName, ref string tabGroup, Player dst)
         {
-            if (entity is not Player p || p.level != Map) return;
+            if (entity is not Player p || p.Level != Map) return;
             CtfTeam team = TeamOf(p);
             if (p.Game.Referee)
             {
@@ -125,15 +131,14 @@ namespace MCGalaxy.Modules.Games.CTF
                 tabGroup = "&7Spectators";
             }
         }
-        void HandleSentMap(Player p, Level prevLevel, Level level)
+        void HandleSentMap(Player p, Level _, Level level)
         {
-            if (level != Map) return;
-            OutputMapSummary(p, Map.name, Map.Config);
-            if (TeamOf(p) == null) AutoAssignTeam(p);
+            if (level == Map)
+            {
+                OutputMapSummary(p, Map.name, Map.Config);
+                if (TeamOf(p) == null) AutoAssignTeam(p);
+            }
         }
-        void HandleJoinedLevel(Player p, Level prevLevel, Level level, ref bool announce)
-        {
-            HandleJoinedCommon(p, prevLevel, level, ref announce);
-        }
+        void HandleJoinedLevel(Player p, Level prevLevel, Level level, ref bool announce) => HandleJoinedCommon(p, prevLevel, level, ref announce);
     }
 }

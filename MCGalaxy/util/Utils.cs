@@ -21,10 +21,23 @@ namespace MCGalaxy
 {
     public static class Utils
     {
-        public static string Hex(byte r, byte g, byte b)
+        public static DateTime Floor(this DateTime date, TimeSpan span) => new((date.Ticks / span.Ticks) * span.Ticks);
+        public static bool IsNullOrWhiteSpace(this string value)
         {
-            return "#" + r.ToString("X2") + g.ToString("X2") + b.ToString("X2");
+            if (value as object is null)
+            {
+                return true;
+            }
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (!char.IsWhiteSpace(value[i]))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
+        public static string Hex(byte r, byte g, byte b) => "#" + r.ToString("X2") + g.ToString("X2") + b.ToString("X2");
         public static string ToHexString(byte[] data)
         {
             char[] hex = new char[data.Length * 2];
@@ -36,19 +49,10 @@ namespace MCGalaxy
             }
             return new string(hex);
         }
-        static char HexEncode(int i)
-        {
-            return i < 10 ? (char)(i + '0') : (char)(i - 10 + 'a');
-        }
-        public static int Clamp(int value, int lo, int hi)
-        {
-            return Math.Max(Math.Min(value, hi), lo);
-        }
+        static char HexEncode(int i) => i < 10 ? (char)(i + '0') : (char)(i - 10 + 'a');
+        public static int Clamp(int value, int lo, int hi) => Math.Max(Math.Min(value, hi), lo);
         /// <summary> Divides x by y, rounding up if there is a remainder. </summary>
-        public static int CeilDiv(int x, int y)
-        {
-            return (x + (y - 1)) / y;
-        }
+        public static int CeilDiv(int x, int y) => (x + (y - 1)) / y;
         public static List<string> ReadAllLinesList(string path)
         {
             List<string> lines = new();
@@ -78,33 +82,23 @@ namespace MCGalaxy
     public static class MemUtils
     {
         /// <summary> Reads an unsigned 16 bit little endian integer. </summary>
-        public static ushort ReadU16_LE(byte[] array, int offset)
-        {
-            return (ushort)(array[offset] | array[offset + 1] << 8);
-        }
+        public static ushort ReadU16_LE(byte[] array, int offset) => (ushort)(array[offset] | array[offset + 1] << 8);
         /// <summary> Reads a signed 16 bit big endian integer. </summary>
-        public static short ReadI16_BE(byte[] array, int offset)
-        {
-            return (short)(array[offset] << 8 | array[offset + 1]);
-        }
+        public static short ReadI16_BE(byte[] array, int offset) => (short)(array[offset] << 8 | array[offset + 1]);
         /// <summary> Reads an unsigned 16 bit big endian integer. </summary>
-        public static ushort ReadU16_BE(byte[] array, int offset)
-        {
-            return (ushort)(array[offset] << 8 | array[offset + 1]);
-        }
+        public static ushort ReadU16_BE(byte[] array, int offset) => (ushort)(array[offset] << 8 | array[offset + 1]);
         /// <summary> Reads a signed 32 bit big endian integer. </summary>
-        public static int ReadI32_BE(byte[] array, int offset)
-        {
-            return array[offset] << 24 | array[offset + 1] << 16
+        public static int ReadI32_BE(byte[] array, int offset) => array[offset] << 24 | array[offset + 1] << 16
                 | array[offset + 2] << 8 | array[offset + 3];
-        }
-        public static unsafe void memset(IntPtr srcPtr, byte value, int startIndex, int bytes)
+        public static unsafe void Memset(IntPtr srcPtr, byte value, int startIndex, int bytes)
         {
             byte* srcByte = (byte*)srcPtr + startIndex;
             // Make sure that aligned write/read is used for the bulk copy
             while (bytes > 0 && (startIndex & 0x7) != 0)
             {
-                *srcByte = value; srcByte++; bytes--;
+                *srcByte = value; 
+                srcByte++; 
+                bytes--;
                 startIndex++;
             }
             uint valueU32 = (uint)((value << 24) | (value << 16) | (value << 8) | value);
@@ -114,7 +108,9 @@ namespace MCGalaxy
                 ulong* srcU64 = (ulong*)srcByte;
                 while (bytes >= 8)
                 {
-                    *srcU64 = valueU64; srcU64++; bytes -= 8;
+                    *srcU64 = valueU64; 
+                    srcU64++; 
+                    bytes -= 8;
                 }
                 srcByte = (byte*)srcU64;
             }
@@ -123,13 +119,16 @@ namespace MCGalaxy
                 uint* srcU32 = (uint*)srcByte;
                 while (bytes >= 4)
                 {
-                    *srcU32 = valueU32; srcU32++; bytes -= 4;
+                    *srcU32 = valueU32;
+                    srcU32++; 
+                    bytes -= 4;
                 }
                 srcByte = (byte*)srcU32;
             }
             for (int i = 0; i < bytes; i++)
             {
-                *srcByte = value; srcByte++;
+                *srcByte = value;
+                srcByte++;
             }
         }
     }

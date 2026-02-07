@@ -18,18 +18,12 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdSetRank : Command2
     {
-        public override string name { get { return "SetRank"; } }
-        public override string shortcut { get { return "Rank"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new[] { new CommandAlias("pr", "+up"), new CommandAlias("de", "-down"),
+        public override string Name => "SetRank";
+        public override string Shortcut => "Rank";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 80;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("pr", "+up"), new CommandAlias("de", "-down"),
                     new CommandAlias("Promote", "+up"), new CommandAlias("Demote", "-down") };
-            }
-        }
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(3);
@@ -66,7 +60,7 @@ namespace MCGalaxy.Commands.Moderation
                 return;
             }
             if (!CanChangeRank(target, curRank, newRank, p, data, ref reason)) return;
-            ModAction action = new(target, p, ModActionType.Rank, reason)
+            ModAction action = new(target, p, 9, reason)
             {
                 targetGroup = curRank,
                 Metadata = newRank
@@ -115,7 +109,7 @@ namespace MCGalaxy.Commands.Moderation
             if (index > 0)
             {
                 Group next = Group.GroupList[index - 1];
-                if (next.Permission > LevelPermission.Banned) return next;
+                if (next.Permission > -20) return next;
             }
             p.Message("No lower ranks exist"); return null;
         }

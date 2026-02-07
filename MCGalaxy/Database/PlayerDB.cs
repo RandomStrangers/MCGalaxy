@@ -20,8 +20,8 @@ namespace MCGalaxy.DB
     /// <summary> Stores per-player persistent data. </summary>
     public static class PlayerDB
     {
-        static string LoginPath(string name) { return "text/login/" + name.ToLower() + ".txt"; }
-        static string LogoutPath(string name) { return "text/logout/" + name.ToLower() + ".txt"; }
+        static string LoginPath(string name) => "text/login/" + name.ToLower() + ".txt";
+        static string LogoutPath(string name) => "text/logout/" + name.ToLower() + ".txt";
         const string NICK_PREFIX = "Nick = ";
         public static string LoadNick(string name)
         {
@@ -74,19 +74,10 @@ namespace MCGalaxy.DB
                 FileIO.TryDelete(path);
             }
         }
-        public static void SetLoginMessage(string name, string msg)
-        {
-            SetMessage(LoginPath(name), msg);
-        }
-        public static void SetLogoutMessage(string name, string msg)
-        {
-            SetMessage(LogoutPath(name), msg);
-        }
+        public static void SetLoginMessage(string name, string msg) => SetMessage(LoginPath(name), msg);
+        public static void SetLogoutMessage(string name, string msg) => SetMessage(LogoutPath(name), msg);
         /// <summary> Returns the fields of the row whose Name field caselessly equals the given name </summary>
-        public static PlayerData FindData(string name)
-        {
-            return FindExact(name, "*", PlayerData.Parse);
-        }
+        public static PlayerData FindData(string name) => FindExact(name, "*", PlayerData.Parse);
         /// <summary> Returns the Name field of the row whose Name field caselessly equals the given name </summary>
         public static string FindName(string name)
         {
@@ -105,10 +96,7 @@ namespace MCGalaxy.DB
             ip = match?[1];
             return match?[0];
         }
-        public static void Update(string name, string column, string value)
-        {
-            Database.UpdateRows("Players", column + "=@1", "WHERE Name=@0", name, value);
-        }
+        public static void Update(string name, string column, string value) => Database.UpdateRows("Players", column + "=@1", "WHERE Name=@0", name, value);
         public static string FindColor(Player p)
         {
             string raw = Database.ReadString("Players", "Color", "WHERE ID=@0", p.DatabaseID);

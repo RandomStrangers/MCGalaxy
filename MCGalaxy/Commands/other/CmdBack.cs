@@ -16,16 +16,16 @@ namespace MCGalaxy.Commands.Misc
 {
     public sealed class CmdBack : Command2
     {
-        public override string name { get { return "Back"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Back";
+        public override string Type => CommandTypes.Other;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             if (p.PreTeleportMap == null)
             {
                 p.Message("You have not teleported anywhere yet"); return;
             }
-            if (!p.level.name.CaselessEq(p.PreTeleportMap))
+            if (!p.Level.name.CaselessEq(p.PreTeleportMap))
                 PlayerActions.ChangeMap(p, p.PreTeleportMap);
             p.SendPosition(p.PreTeleportPos, p.PreTeleportRot);
         }

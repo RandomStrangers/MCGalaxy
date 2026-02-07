@@ -16,11 +16,11 @@ namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdWhisper : Command2
     {
-        public override string name { get { return "Whisper"; } }
-        public override string type { get { return CommandTypes.Chat; } }
-        public override bool SuperUseable { get { return false; } }
-        public override bool UseableWhenFrozen { get { return true; } }
-        public override bool MessageBlockRestricted { get { return true; } }
+        public override string Name => "Whisper";
+        public override string Type => CommandTypes.Chat;
+        public override bool SuperUseable => false;
+        public override bool UseableWhenFrozen => true;
+        public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0)

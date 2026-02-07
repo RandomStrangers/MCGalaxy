@@ -16,26 +16,20 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdOverseer : Command2
     {
-        public override string name { get { return "Overseer"; } }
-        public override string shortcut { get { return Overseer.commandShortcut; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Builder; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("Realm"), new CommandAlias("MyRealm") }; }
-        }
-        public override CommandParallelism Parallelism { get { return CommandParallelism.NoAndWarn; } }
+        public override string Name => "Overseer";
+        public override string Shortcut => Overseer.commandShortcut;
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 30;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("Realm"), new CommandAlias("MyRealm") };
+        public override int Parallelism => 1;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
             if (Overseer.deprecatedSubCommandGroup.Use(p, message, false) != SubCommandGroup.UsageResult.NoneFound) return;
             Overseer.subCommandGroup.Use(p, message);
         }
-        public override void Help(Player p, string message)
-        {
-            Overseer.subCommandGroup.DisplayHelpFor(p, message);
-        }
+        public override void Help(Player p, string message) => Overseer.subCommandGroup.DisplayHelpFor(p, message);
         public override void Help(Player p)
         {
             p.Message("&T/os [command] [args]");

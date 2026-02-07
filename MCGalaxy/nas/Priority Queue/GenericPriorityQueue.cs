@@ -1,8 +1,7 @@
-#if NAS && TEN_BIT_BLOCKS
 using System;
 using System.Collections;
 using System.Collections.Generic;
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
     public class GenericPriorityQueue<TItem, TPriority> : IFixedSizePriorityQueue<TItem, TPriority>
         where TItem : GenericPriorityQueueNode<TPriority>
@@ -376,4 +375,3 @@ namespace NotAwesomeSurvival
         }
     }
 }
-#endif

@@ -17,17 +17,11 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdCuboid : DrawCmd
     {
-        public override string name { get { return "Cuboid"; } }
-        public override string shortcut { get { return "z"; } }
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new[] { new CommandAlias("cw", "wire"),
+        public override string Name => "Cuboid";
+        public override string Shortcut => "z";
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("cw", "wire"),
                     new CommandAlias("ch", "hollow"), new CommandAlias("Walls", "walls"),
                     new CommandAlias("box"), new CommandAlias("hbox", "hollow") };
-            }
-        }
         protected override DrawMode GetMode(string[] parts)
         {
             string msg = parts[0];
@@ -39,18 +33,15 @@ namespace MCGalaxy.Commands.Building
             if (msg == "random") return DrawMode.random;
             return DrawMode.normal;
         }
-        protected override DrawOp GetDrawOp(DrawArgs dArgs)
+        protected override DrawOp GetDrawOp(DrawArgs dArgs) => dArgs.Mode switch
         {
-            return dArgs.Mode switch
-            {
-                DrawMode.hollow => new CuboidHollowsDrawOp(),
-                DrawMode.walls => new CuboidWallsDrawOp(),
-                DrawMode.holes => new CuboidDrawOp(),
-                DrawMode.wire => new CuboidWireframeDrawOp(),
-                DrawMode.random => new CuboidDrawOp(),
-                _ => new CuboidDrawOp(),
-            };
-        }
+            DrawMode.hollow => new CuboidHollowsDrawOp(),
+            DrawMode.walls => new CuboidWallsDrawOp(),
+            DrawMode.holes => new CuboidDrawOp(),
+            DrawMode.wire => new CuboidWireframeDrawOp(),
+            DrawMode.random => new CuboidDrawOp(),
+            _ => new CuboidDrawOp(),
+        };
         protected override void GetBrush(DrawArgs dArgs)
         {
             if (dArgs.Mode == DrawMode.solid) dArgs.BrushName = "Normal";

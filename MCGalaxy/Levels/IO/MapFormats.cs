@@ -22,17 +22,7 @@ namespace MCGalaxy.Levels.IO
     {
         public abstract string Extension { get; }
         public abstract string Description { get; }
-        public virtual Level Read(string path, string name, bool metadata)
-        {
-            using FileStream fs = FileIO.TryOpenRead(path);
-            return Read(fs, name, metadata);
-        }
         public abstract Level Read(Stream src, string name, bool metadata);
-        public virtual Vec3U16 ReadDimensions(string path)
-        {
-            using FileStream fs = FileIO.TryOpenRead(path);
-            return ReadDimensions(fs);
-        }
         public abstract Vec3U16 ReadDimensions(Stream src);
         protected static void ConvertCustom(Level lvl)
         {
@@ -80,22 +70,17 @@ namespace MCGalaxy.Levels.IO
             IMapImporter imp = GetFor(path);
             if (imp == null)
             {
-                Logger.Log(LogType.Warning, "No importer found for {0}!", path);
-                Logger.Log(LogType.Warning, "Using default importer.");
+                Logger.Log(6, "No importer found for {0}!", path);
+                Logger.Log(6, "Using default importer.");
                 imp = defaultImporter;
             }
-            return imp.Read(path, name, metadata);
+            return imp.Read(FileIO.TryOpenRead(path), name, metadata);
         }
     }
     /// <summary> Writes/Saves block data (and potentially metadata) encoded in a particular format. </summary>
     public abstract class IMapExporter
     {
         public abstract string Extension { get; }
-        public void Write(string path, Level lvl)
-        {
-            using FileStream fs = File.Create(path);
-            Write(fs, lvl);
-        }
         public static IMapExporter defaultExporter = new LvlExporter();
         public abstract void Write(Stream dst, Level lvl);
         public static List<IMapExporter> Formats = new()
@@ -121,12 +106,12 @@ namespace MCGalaxy.Levels.IO
             IMapExporter exp = GetFor(path);
             if (exp == null)
             {
-                Logger.Log(LogType.Warning, "No exporter found for {0}, cannot save level!", path);
+                Logger.Log(6, "No exporter found for {0}, cannot save level!", path);
                 return;
             }
             else
             {
-                exp.Write(path, lvl);
+                exp.Write(File.Create(path), lvl);
             }
         }
     }

@@ -78,7 +78,7 @@ namespace MCGalaxy.Commands.Moderation
         static void ChangeOnlineRank(Player who, Group newRank)
         {
             who.group = newRank;
-            who.AllowBuild = who.level.BuildAccess.CheckAllowed(who);
+            who.AllowBuild = who.Level.BuildAccess.CheckAllowed(who);
             if (who.hidden && who.hideRank < who.Rank) who.hideRank = who.Rank;
             who.SetColor(PlayerInfo.DefaultColor(who));
             who.SetPrefix();
@@ -172,11 +172,9 @@ namespace MCGalaxy.Commands.Moderation
                 return reason.Substring(0, reason.Length - " confirm".Length);
             return null;
         }
-        static bool ValidIP(string str)
-        {
+        static bool ValidIP(string str) =>
             // IPAddress.TryParse returns "0.0.0.123" for "123", we do not want that behaviour
-            return str.IndexOf(':') >= 0 || str.Split('.').Length == 4;
-        }
+            str.IndexOf(':') >= 0 || str.Split('.').Length == 4;
         /// <summary> Attempts to either parse the message directly as an IP,
         /// or finds the IP of the account whose name matches the message. </summary>
         /// <remarks> "@input" can be used to always find IP by matching account name. <br/>

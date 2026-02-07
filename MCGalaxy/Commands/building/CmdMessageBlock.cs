@@ -15,22 +15,20 @@
 using MCGalaxy.Blocks;
 using MCGalaxy.Blocks.Extended;
 using MCGalaxy.Maths;
+using MCGalaxy.SQL;
 using MCGalaxy.Util;
 using System.Collections.Generic;
 namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdMessageBlock : Command2
     {
-        public override string name { get { return "MB"; } }
-        public override string shortcut { get { return "MessageBlock"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Admin, "can use moderation commands in MBs") }; }
-        }
+        public override string Name => "MB";
+        public override string Shortcut => "MessageBlock";
+        public override string Type => CommandTypes.Building;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 50;
+        public override bool SuperUseable => false;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(100, "can use moderation commands in MBs") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -53,7 +51,7 @@ namespace MCGalaxy.Commands.Building
             {
                 mbArgs.Message = args[1];
             }
-            bool allCmds = HasExtraPerm(p, data.Rank, 1);
+            bool allCmds = HasExtraPerm(data.Rank, 1);
             if (!MessageBlock.Validate(p, mbArgs.Message, allCmds)) return;
             p.Message("Place where you wish the message block to go.");
             p.MakeSelection(1, mbArgs, PlacedMark);
@@ -62,7 +60,7 @@ namespace MCGalaxy.Commands.Building
         {
             if (name == "show") { ShowMessageBlocks(p); return Block.Invalid; }
             ushort block = Block.Parse(p, name);
-            if (block != Block.Invalid && p.level.Props[block].IsMessageBlock)
+            if (block != Block.Invalid && p.Level.Props[block].IsMessageBlock)
                 return block;
             // Hardcoded aliases for backwards compatibility
             block = Block.MB_White;
@@ -72,7 +70,7 @@ namespace MCGalaxy.Commands.Building
             if (name == "water") block = Block.MB_Water;
             if (name == "lava") block = Block.MB_Lava;
             allMessage = block == Block.MB_White && name != "white";
-            if (p.level.Props[block].IsMessageBlock) return block;
+            if (p.Level.Props[block].IsMessageBlock) return block;
             Help(p); return Block.Invalid;
         }
         static bool IsMBBlock(Level lvl, Vec3U16 pos)
@@ -84,10 +82,10 @@ namespace MCGalaxy.Commands.Building
         {
             ushort x = (ushort)marks[0].X, y = (ushort)marks[0].Y, z = (ushort)marks[0].Z;
             MBArgs args = (MBArgs)state;
-            ushort old = p.level.GetBlock(x, y, z);
-            if (p.level.CheckAffect(p, x, y, z, old, args.Block))
+            ushort old = p.Level.GetBlock(x, y, z);
+            if (p.Level.CheckAffect(p, x, y, z, old, args.Block))
             {
-                p.level.UpdateBlock(p, x, y, z, args.Block);
+                p.Level.UpdateBlock(p, x, y, z, args.Block);
                 UpdateDatabase(p, args, x, y, z);
                 p.Message("Message block created.");
                 if (!p.staticCommands)
@@ -103,23 +101,35 @@ namespace MCGalaxy.Commands.Building
         }
         void UpdateDatabase(Player p, MBArgs args, ushort x, ushort y, ushort z)
         {
-            string map = p.level.name;
-            object locker = ThreadSafeCache.DBCache.GetLocker(map);
-            lock (locker)
+            string map = p.Level.name;
+            lock (ThreadSafeCache.DBCache.GetLocker(map))
             {
-                MessageBlock.Set(map, x, y, z, args.Message);
+                args.Message = args.Message.Replace("'", "\\'");
+                args.Message = Colors.Escape(args.Message);
+                args.Message = args.Message.UnicodeToCp437();
+                Database.CreateTable("Messages" + map, LevelDB.createMessages);
+                if (Database.UpdateRows("Messages" + map, "Message=@3",
+                                                 "WHERE X=@0 AND Y=@1 AND Z=@2", new object[] { x, y, z, args.Message }) == 0)
+                {
+                    Database.AddRow("Messages" + map, "X,Y,Z, Message", new object[] { x, y, z, args.Message });
+                }
+                Level lvl = LevelInfo.FindExact(map);
+                if (lvl != null)
+                {
+                    lvl.hasMessageBlocks = true;
+                }
             }
         }
         class MBArgs { public string Message; public ushort Block; }
         void ShowMessageBlocks(Player p)
         {
             p.showMBs = !p.showMBs;
-            List<Vec3U16> coords = MessageBlock.GetAllCoords(p.level.MapName);
+            List<Vec3U16> coords = MessageBlock.GetAllCoords(p.Level.MapName);
             foreach (Vec3U16 pos in coords)
             {
                 if (p.showMBs)
                 {
-                    ushort block = IsMBBlock(p.level, pos) ? Block.Green : Block.Black;
+                    ushort block = IsMBBlock(p.Level, pos) ? Block.Green : Block.Black;
                     p.SendBlockchange(pos.X, pos.Y, pos.Z, block);
                 }
                 else
@@ -144,7 +154,7 @@ namespace MCGalaxy.Commands.Building
         static List<string> SupportedBlocks(Player p)
         {
             List<string> names = new();
-            BlockProps[] props = p.IsSuper ? Block.Props : p.level.Props;
+            BlockProps[] props = p.IsSuper ? Block.Props : p.Level.Props;
             for (int i = 0; i < props.Length; i++)
             {
                 string name = Format((ushort)i, p, props);

@@ -24,10 +24,7 @@ namespace LibNoise
     public sealed class Voronoi : IModule
     {
         public double Displacement;
-        public Voronoi()
-        {
-            Displacement = 1.0;
-        }
+        public Voronoi() => Displacement = 1.0;
         public override double GetValue(double x, double y, double z)
         {
             x *= Frequency;

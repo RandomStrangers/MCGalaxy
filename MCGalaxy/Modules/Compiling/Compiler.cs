@@ -13,7 +13,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-#if !MCG_STANDALONE
 using MCGalaxy.Scripting;
 using System.Collections.Generic;
 using System.IO;
@@ -39,14 +38,8 @@ namespace MCGalaxy.Modules.Compiling
         public abstract string CommandSkeleton { get; }
         /// <summary> Returns source code for an example Plugin </summary>
         public abstract string PluginSkeleton { get; }
-        public string CommandPath(string name)
-        {
-            return COMMANDS_SOURCE_DIR + "Cmd" + name + FileExtension;
-        }
-        public string PluginPath(string name)
-        {
-            return PLUGINS_SOURCE_DIR + name + FileExtension;
-        }
+        public string CommandPath(string name) => COMMANDS_SOURCE_DIR + "Cmd" + name + FileExtension;
+        public string PluginPath(string name) => PLUGINS_SOURCE_DIR + name + FileExtension;
         public static List<ICompiler> Compilers = new()
         {
             new CSCompiler()
@@ -66,10 +59,7 @@ namespace MCGalaxy.Modules.Compiling
         }
         /// <summary> Generates source code for an example plugin,
         /// preformatted with the given name and creator </summary>
-        public string GenExamplePlugin(string plugin, string creator)
-        {
-            return FormatSource(PluginSkeleton, plugin, creator, Server.InternalVersion);
-        }
+        public string GenExamplePlugin(string plugin, string creator) => FormatSource(PluginSkeleton, plugin, creator, Server.InternalVersion);
         /// <summary> Attempts to compile the given source code files to a .dll file. </summary>
         /// <param name="logErrors"> Whether to log compile errors to ERROR_LOG_PATH </param>
         public ICompilerErrors Compile(string[] srcPaths, string dstPath, bool logErrors)
@@ -129,7 +119,7 @@ namespace MCGalaxy.Modules.Compiling
                 AddReferences(path, commentPrefix, referenced);
                 srcPaths[i] = path;
             }
-            referenced.Add(Server.GetServerDLLPath());
+            referenced.Add(Server.GetPath());
             return referenced;
         }
         void AddReferences(string path, string commentPrefix, List<string> referenced)
@@ -166,13 +156,7 @@ namespace MCGalaxy.Modules.Compiling
     }
     public class ICompilerErrors : List<ICompilerError>
     {
-        public bool HasErrors
-        {
-            get
-            {
-                return FindIndex(ce => !ce.IsWarning) >= 0;
-            }
-        }
+        public bool HasErrors => FindIndex(ce => !ce.IsWarning) >= 0;
     }
     public class ICompilerError
     {
@@ -225,4 +209,3 @@ namespace MCGalaxy.Modules.Compiling
         }
     }
 }
-#endif

@@ -26,12 +26,12 @@ namespace MCGalaxy.Modules.Games.TW
 {
     public sealed class TWConfig : RoundsGameConfig
     {
-        public override bool AllowAutoload { get { return false; } }
-        protected override string GameName { get { return "TNT Wars"; } }
-        [ConfigEnum("Mode", "Defaults", TWGameMode.TDM, typeof(TWGameMode))]
-        public TWGameMode Mode = TWGameMode.TDM;
-        [ConfigEnum("Difficulty", "Defaults", TWDifficulty.Normal, typeof(TWDifficulty))]
-        public TWDifficulty Difficulty = TWDifficulty.Normal;
+        public override bool AllowAutoload => false;
+        protected override string GameName => "TNT Wars";
+        [ConfigInt("Mode", "Defaults", 1, 0, 1)]
+        public int Mode = 1;
+        [ConfigInt("Difficulty", "Defaults", 1, 0, 3)]
+        public int Difficulty = 1;
     }
     public sealed class TWMapConfig : RoundsGameMapConfig
     {
@@ -61,27 +61,28 @@ namespace MCGalaxy.Modules.Games.TW
         public float StreakTwoMultiplier = 1.5f;
         public int StreakThreeAmount = 7;
         public float StreakThreeMultiplier = 2f;
-        [ConfigVec3("red-spawn", null)] public Vec3U16 RedSpawn;
-        [ConfigVec3("blue-spawn", null)] public Vec3U16 BlueSpawn;
-        const string propsDir = "props/tntwars/";
+        [ConfigVec3("red-spawn", null)] 
+        public Vec3U16 RedSpawn;
+        [ConfigVec3("blue-spawn", null)] 
+        public Vec3U16 BlueSpawn;
         static ConfigElement[] cfg;
         public override void Load(string map)
         {
             cfg ??= ConfigElement.GetAll(typeof(TWMapConfig));
-            LoadFrom(cfg, propsDir, map);
+            LoadFrom(cfg, "props/tntwars/", map);
         }
         public override void Save(string map)
         {
             cfg ??= ConfigElement.GetAll(typeof(TWMapConfig));
-            SaveTo(cfg, propsDir, map);
+            SaveTo(cfg, "props/tntwars/", map);
         }
         public override void SetDefaults(Level lvl)
         {
-            ushort midX = (ushort)(lvl.Width / 2);
-            ushort midY = (ushort)(lvl.Height / 2 + 1);
-            ushort maxZ = (ushort)(lvl.Length - 1);
-            RedSpawn = new Vec3U16(midX, midY, 0);
-            BlueSpawn = new Vec3U16(midX, midY, maxZ);
+            ushort midX = (ushort)(lvl.Width / 2),
+                midY = (ushort)(lvl.Height / 2 + 1),
+                maxZ = (ushort)(lvl.Length - 1);
+            RedSpawn = new(midX, midY, 0);
+            BlueSpawn = new(midX, midY, maxZ);
         }
     }
 }

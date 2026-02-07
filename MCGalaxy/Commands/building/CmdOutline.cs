@@ -17,8 +17,8 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdOutline : DrawCmd
     {
-        public override string name { get { return "Outline"; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
+        public override string Name => "Outline";
+        public override sbyte DefaultRank => 50;
         protected override DrawOp GetDrawOp(DrawArgs dArgs)
         {
             Player p = dArgs.Player;
@@ -53,15 +53,10 @@ namespace MCGalaxy.Commands.Building
             return OutlineDrawOp.Side.Unspecified;
         }
         // Parts is just Command.Use's message.SplitSpaces()
-        protected override DrawMode GetMode(string[] parts)
-        {
+        protected override DrawMode GetMode(string[] parts) =>
             // Need to return "normal" if a unique side was typed, otherwise "not normal". This tells the ModeArgsCount how to work correctly
-            return GetSides(parts) == OutlineDrawOp.Side.Unspecified ? DrawMode.normal : DrawMode.solid;
-        }
-        protected override void GetBrush(DrawArgs dArgs)
-        {
-            dArgs.BrushArgs = dArgs.Message.Splice(dArgs.ModeArgsCount + 1, 0);
-        }
+            GetSides(parts) == OutlineDrawOp.Side.Unspecified ? DrawMode.normal : DrawMode.solid;
+        protected override void GetBrush(DrawArgs dArgs) => dArgs.BrushArgs = dArgs.Message.Splice(dArgs.ModeArgsCount + 1, 0);
         public override void Help(Player p)
         {
             p.Message("&T/Outline [block] <brush args>");

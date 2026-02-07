@@ -12,12 +12,11 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
 */
-#if !MCG_STANDALONE
 namespace MCGalaxy.Modules.Compiling
 {
     public sealed class CompilerPlugin : Plugin
     {
-        public override string name { get { return "Compiler"; } }
+        public override string Name => "Compiler";
         readonly Command cmdCreate = new CmdCmdCreate(),
             cmdCompile = new CmdCompile(),
             cmdCompLoad = new CmdCompLoad();
@@ -26,10 +25,6 @@ namespace MCGalaxy.Modules.Compiling
             Server.EnsureDirectoryExists(ICompiler.COMMANDS_SOURCE_DIR);
             Command.Register(cmdCreate, cmdCompile, cmdCompLoad);
         }
-        public override void Unload(bool shutdown)
-        {
-            Command.Unregister(cmdCreate, cmdCompile, cmdCompLoad);
-        }
+        public override void Unload(bool shutdown) => Command.Unregister(cmdCreate, cmdCompile, cmdCompLoad);
     }
 }
-#endif

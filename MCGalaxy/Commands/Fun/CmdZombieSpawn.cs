@@ -24,7 +24,7 @@ namespace MCGalaxy
         public override string type { get { return CommandTypes.Games; } }
         public override bool museumUsable { get { return false; } }
         public override bool SuperUseable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override sbyte defaultRank { get { return 80; } }
         public int wavesNum, wavesLength, zombiesNum, thex, they, thez;
         public bool isRandom;
         public void ZombieMob(object person)
@@ -42,19 +42,19 @@ namespace MCGalaxy
                 xBegin = thex - ((zombiesNum - 1) / 2);
                 zBegin = thez - ((zombiesNum - 1) / 2);
             }
-            p.level.Message("&aInitiating zombie attack!");
-            p.level.Message("&a" + wavesNum + " wave(s)");
-            p.level.Message("&a" + wavesLength + " second(s) each wave");
+            p.Level.Message("&aInitiating zombie attack!");
+            p.Level.Message("&a" + wavesNum + " wave(s)");
+            p.Level.Message("&a" + wavesLength + " second(s) each wave");
             for (int num = 1; num <= wavesNum; num++)
             {
                 if (isRandom)
                     RandomZombies(p);
                 else
                     PlacedZombies(p, xBegin, zBegin);
-                p.level.Message("&aZombie wave # " + num);
+                p.Level.Message("&aZombie wave # " + num);
                 Thread.Sleep(wavesLength * 1000);
             }
-            p.level.Message("&aZombie attack is over.");
+            p.Level.Message("&aZombie attack is over.");
         }
         public void RandomZombies(Player p)
         {
@@ -62,10 +62,10 @@ namespace MCGalaxy
             int x, y, z;
             for (int i = 0; i < zombiesNum; i++)
             {
-                x = randomCoord.Next(0, p.level.Width);
-                y = randomCoord.Next(p.level.Height / 2, p.level.Height);
-                z = randomCoord.Next(0, p.level.Length);
-                p.level.Blockchange((ushort)x, (ushort)y, (ushort)z, Block.ZombieBody);
+                x = randomCoord.Next(0, p.Level.Width);
+                y = randomCoord.Next(p.Level.Height / 2, p.Level.Height);
+                z = randomCoord.Next(0, p.Level.Length);
+                p.Level.Blockchange((ushort)x, (ushort)y, (ushort)z, Block.ZombieBody);
             }
         }
         public void PlacedZombies(Player p, int xBegin, int zBegin)
@@ -74,7 +74,7 @@ namespace MCGalaxy
             {
                 for (int z = zBegin; z < zBegin + zombiesNum; z++)
                 {
-                    p.level.Blockchange((ushort)x, (ushort)they, (ushort)z, Block.ZombieBody);
+                    p.Level.Blockchange((ushort)x, (ushort)they, (ushort)z, Block.ZombieBody);
                 }
             }
         }

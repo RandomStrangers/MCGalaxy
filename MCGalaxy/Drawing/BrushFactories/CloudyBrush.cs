@@ -18,8 +18,8 @@ namespace MCGalaxy.Drawing.Brushes
 {
     public sealed class CloudyBrushFactory : BrushFactory
     {
-        public override string Name { get { return "Cloudy"; } }
-        public override string[] Help { get { return HelpString; } }
+        public override string Name => "Cloudy";
+        public override string[] Help => HelpString;
         static readonly string[] HelpString = new string[] {
             "&TArguments: [block1/frequency] [block2] <args>..",
             "&HDraws by selecting blocks from the given [blocks] using perlin noise.",
@@ -45,7 +45,7 @@ namespace MCGalaxy.Drawing.Brushes
             return new CloudyBrush(toAffect, freqs, n);
         }
         // Only want to handle non block options.
-        static bool Filter(string arg) { return arg.Length >= 2 && (arg[1] == '_' || arg[1] == '='); }
+        static bool Filter(string arg) => arg.Length >= 2 && (arg[1] == '_' || arg[1] == '=');
         static bool Handler(string arg, Player p, ref NoiseArgs args)
         {
             char opt = arg[0];

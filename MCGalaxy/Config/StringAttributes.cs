@@ -19,7 +19,7 @@ namespace MCGalaxy.Config
     {
         readonly string defCol;
         public ConfigColorAttribute(string name, string section, string def)
-            : base(name, section) { defCol = def; }
+            : base(name, section) => defCol = def;
         public override object Parse(string raw)
         {
             // colour code without & provided
@@ -28,7 +28,7 @@ namespace MCGalaxy.Config
             if (col.Length != 0) return col;
             col = Colors.Name(raw);
             if (col.Length > 0) return raw;
-            Logger.Log(LogType.Warning, "Config key \"{0}\" has invalid color '{2}', using default of {1}", Name, defCol, raw);
+            Logger.Log(6, "Config key \"{0}\" has invalid color '{2}', using default of {1}", Name, defCol, raw);
             return defCol;
         }
     }
@@ -43,14 +43,14 @@ namespace MCGalaxy.Config
         public ConfigStringAttribute(string name, string section, string def, bool empty)
             : base(name, section) { defValue = def; allowEmpty = empty; }
         public ConfigStringAttribute(string name, string section, string def)
-            : base(name, section) { defValue = def; }
+            : base(name, section) => defValue = def;
         public ConfigStringAttribute()
-            : base(null, null) { allowEmpty = true; }
+            : base(null, null) => allowEmpty = true;
         public override object Parse(string value)
         {
             if (string.IsNullOrEmpty(value) && !allowEmpty)
             {
-                Logger.Log(LogType.Warning, "Config key \"{0}\" has no value, using default of {1}", Name, defValue);
+                Logger.Log(6, "Config key \"{0}\" has no value, using default of {1}", Name, defValue);
                 return defValue;
             }
             if (allowedChars != null) value = Constrain(value);
@@ -62,7 +62,7 @@ namespace MCGalaxy.Config
             {
                 if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) continue;
                 if (allowedChars.IndexOf(c) >= 0) continue;
-                Logger.Log(LogType.Warning, "Config key \"{0}\" contains non-allowed character \"{2}\", using default of {1}",
+                Logger.Log(6, "Config key \"{0}\" contains non-allowed character \"{2}\", using default of {1}",
                            Name, defValue, c);
                 return defValue;
             }
@@ -73,10 +73,7 @@ namespace MCGalaxy.Config
     {
         public ConfigStringListAttribute(string name, string section)
             : base(name, section) { }
-        public override object Parse(string value)
-        {
-            return new List<string>(value.SplitComma());
-        }
+        public override object Parse(string value) => new List<string>(value.SplitComma());
         public override string Serialise(object value)
         {
             List<string> elements = (List<string>)value;

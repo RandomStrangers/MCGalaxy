@@ -33,16 +33,13 @@ namespace MCGalaxy.Drawing
         /// <summary> Origin of this copy/where this copy came from </summary>
         /// <example> "level example1", "file example2" </example>
         public string CopySource;
-        internal int OppositeOriginX { get { return OriginX == X ? X + Width - 1 : X; } }
-        internal int OppositeOriginY { get { return OriginY == Y ? Y + Height - 1 : Y; } }
-        internal int OppositeOriginZ { get { return OriginZ == Z ? Z + Length - 1 : Z; } }
+        internal int OppositeOriginX => OriginX == X ? X + Width - 1 : X;
+        internal int OppositeOriginY => OriginY == Y ? Y + Height - 1 : Y;
+        internal int OppositeOriginZ => OriginZ == Z ? Z + Length - 1 : Z;
         const int chunkSize = 0x1000, chunkShift = 12, chunkMask = 0xFFF;
-        public int Volume { get { return Width * Height * Length; } }
-        public int ExtChunks { get { return (Volume + (chunkSize - 1)) / chunkSize; } }
-        public string Summary
-        {
-            get { return Volume + " blocks from " + CopySource + ", " + (DateTime.UtcNow - CopyTime).Shorten(true) + " ago"; }
-        }
+        public int Volume => Width * Height * Length;
+        public int ExtChunks => (Volume + (chunkSize - 1)) / chunkSize;
+        public string Summary => Volume + " blocks from " + CopySource + ", " + (DateTime.UtcNow - CopyTime).Shorten(true) + " ago";
         public CopyState(int x, int y, int z, int width, int height, int length)
         {
             Init(x, y, z, width, height, length);
@@ -69,33 +66,20 @@ namespace MCGalaxy.Drawing
             index -= z * Width;
             x = (ushort)index;
         }
-        public int GetIndex(int x, int y, int z)
-        {
-            return (y * Length + z) * Width + x;
-        }
+        public int GetIndex(int x, int y, int z) => (y * Length + z) * Width + x;
         public ushort Get(int index)
         {
             byte raw = blocks[index];
-#if TEN_BIT_BLOCKS
             ushort extended = Block.ExtendedBase[raw];
             if (extended == 0) return raw;
             byte[] chunk = extBlocks[index >> chunkShift];
             return chunk == null ? Block.Air : (ushort)(extended | chunk[index & chunkMask]);
-#else
-            if (raw != Block.custom_block) return raw;
-            byte[] chunk = extBlocks[index >> chunkShift];
-            return chunk == null ? Block.Air : (ushort)(Block.Extended | chunk[index & chunkMask]);
-#endif
         }
         public void Set(ushort block, int index)
         {
             if (block >= Block.Extended)
             {
-#if TEN_BIT_BLOCKS
                 blocks[index] = Block.ExtendedClass[block >> Block.ExtendedShift];
-#else
-                blocks[index] = Block.custom_block;
-#endif
                 byte[] chunk = extBlocks[index >> chunkShift];
                 if (chunk == null)
                 {
@@ -109,10 +93,7 @@ namespace MCGalaxy.Drawing
                 blocks[index] = (byte)block;
             }
         }
-        public void Set(ushort block, int x, int y, int z)
-        {
-            Set(block, (y * Length + z) * Width + x);
-        }
+        public void Set(ushort block, int x, int y, int z) => Set(block, (y * Length + z) * Width + x);
         const int identifier1 = 0x434F5059; // version 1, 'COPY' (copy)
         const int identifier2 = 0x434F5043; // 'COPC' (copy compressed)
         const int identifier3 = 0x434F504F; // 'COPO' (copy optimised)

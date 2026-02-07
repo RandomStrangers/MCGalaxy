@@ -21,7 +21,7 @@ namespace MCGalaxy.Games
     /// <summary> Represents a gun weapon that fires in a straight line from where player is looking. </remarks>
     public class Gun : Weapon
     {
-        public override string Name { get { return "Gun"; } }
+        public override string Name => "Gun";
         protected override void OnActivated(Vec3F32 dir, ushort block)
         {
             AmmunitionData args = MakeArgs(dir, block);
@@ -41,14 +41,14 @@ namespace MCGalaxy.Games
         }
         protected void BufferedRevert(Vec3U16 pos, BufferedBlockSender buffer)
         {
-            ushort block = p.level.GetBlock(pos.X, pos.Y, pos.Z, out int index);
+            ushort block = p.Level.GetBlock(pos.X, pos.Y, pos.Z, out int index);
             if (index == -1) return;
             buffer.Add(index, block);
         }
         protected void GunCallback(SchedulerTask task)
         {
             BufferedBlockSender buffer = p.weaponBuffer;
-            buffer.level = p.level;
+            buffer.level = p.Level;
             AmmunitionData args = (AmmunitionData)task.State;
             if (args.moving)
             {
@@ -66,11 +66,11 @@ namespace MCGalaxy.Games
             {
                 Vec3U16 pos = args.PosAt(args.iterations);
                 args.iterations++;
-                ushort cur = p.level.GetBlock(pos.X, pos.Y, pos.Z);
+                ushort cur = p.Level.GetBlock(pos.X, pos.Y, pos.Z);
                 if (cur == Block.Invalid) return false;
                 if (cur != Block.Air && !args.all.Contains(pos) && OnHitBlock(args, pos, cur))
                     return false;
-                buffer.Add(p.level.PosToInt(pos.X, pos.Y, pos.Z), args.block);
+                buffer.Add(p.Level.PosToInt(pos.X, pos.Y, pos.Z), args.block);
                 args.visible.Add(pos);
                 args.all.Add(pos);
                 Player pl = PlayerAt(p, pos, true);
@@ -101,39 +101,33 @@ namespace MCGalaxy.Games
         }
         /// <summary> Called when a bullet has collided with a block. </summary>
         /// <returns> true if this block stops the bullet, false if it should continue moving. </returns>
-        protected virtual bool OnHitBlock(AmmunitionData args, Vec3U16 pos, ushort block)
-        {
-            return true;
-        }
+        protected virtual bool OnHitBlock(AmmunitionData args, Vec3U16 pos, ushort block) => true;
         /// <summary> Called when a bullet has collided with a player. </summary>
-        protected virtual void OnHitPlayer(AmmunitionData args, Player pl)
-        {
-            pl.HandleDeath(Block.Cobblestone, "@p &Swas shot by " + p.ColoredName);
-        }
+        protected virtual void OnHitPlayer(AmmunitionData args, Player pl) => pl.HandleDeath(Block.Cobblestone, "@p &Swas shot by " + p.ColoredName);
     }
     public class PenetrativeGun : Gun
     {
-        public override string Name { get { return "Penetrative gun"; } }
+        public override string Name => "Penetrative gun";
         protected override bool OnHitBlock(AmmunitionData args, Vec3U16 pos, ushort block)
         {
-            if (p.level.physics < 2) return true;
-            if (!p.level.Props[block].LavaKills) return true;
+            if (p.Level.LevelPhysics < 2) return true;
+            if (!p.Level.Props[block].LavaKills) return true;
             // Penetrative gun goes through blocks lava can go through
-            p.level.Blockchange(pos.X, pos.Y, pos.Z, Block.Air);
+            p.Level.Blockchange(pos.X, pos.Y, pos.Z, Block.Air);
             return false;
         }
     }
     public class ExplosiveGun : Gun
     {
-        public override string Name { get { return "Explosive gun"; } }
+        public override string Name => "Explosive gun";
         protected override bool OnHitBlock(AmmunitionData args, Vec3U16 pos, ushort block)
         {
-            if (p.level.physics >= 3) p.level.MakeExplosion(pos.X, pos.Y, pos.Z, 1);
+            if (p.Level.LevelPhysics >= 3) p.Level.MakeExplosion(pos.X, pos.Y, pos.Z, 1);
             return true;
         }
         protected override void OnHitPlayer(AmmunitionData args, Player pl)
         {
-            if (pl.level.physics >= 3)
+            if (pl.Level.LevelPhysics >= 3)
             {
                 pl.HandleDeath(Block.Cobblestone, "@p &Swas blown up by " + p.ColoredName, true);
             }
@@ -145,12 +139,10 @@ namespace MCGalaxy.Games
     }
     public class LaserGun : ExplosiveGun
     {
-        public override string Name { get { return "Laser"; } }
-        protected override bool TickMove(AmmunitionData args, BufferedBlockSender buffer)
-        {
+        public override string Name => "Laser";
+        protected override bool TickMove(AmmunitionData args, BufferedBlockSender buffer) =>
             // laser immediately strikes target
-            return false;
-        }
+            false;
         protected override bool TickRevert(SchedulerTask task, BufferedBlockSender buffer)
         {
             AmmunitionData args = (AmmunitionData)task.State;
@@ -173,11 +165,8 @@ namespace MCGalaxy.Games
     }
     public class TeleportGun : Gun
     {
-        public override string Name { get { return "Teleporter gun"; } }
-        protected override void OnHitPlayer(AmmunitionData args, Player pl)
-        {
-            args.DoTeleport(p);
-        }
+        public override string Name => "Teleporter gun";
+        protected override void OnHitPlayer(AmmunitionData args, Player pl) => args.DoTeleport(p);
         protected override bool OnHitBlock(AmmunitionData args, Vec3U16 pos, ushort block)
         {
             args.DoTeleport(p);

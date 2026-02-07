@@ -29,7 +29,7 @@ namespace MCGalaxy.Modules.Games.CTF
     sealed class CtfTeam
     {
         public string Name, Color;
-        public string ColoredName { get { return Color + Name; } }
+        public string ColoredName => Color + Name;
         public int Captures;
         public Vec3U16 FlagPos, SpawnPos;
         public ushort FlagBlock;
@@ -45,16 +45,13 @@ namespace MCGalaxy.Modules.Games.CTF
     {
         CTFMapConfig cfg = new();
         public CTFConfig Config = new();
-        public override string GameName { get { return "CTF"; } }
-        public override RoundsGameConfig GetConfig() { return Config; }
+        public override string GameName => "CTF";
+        public override RoundsGameConfig GetConfig() => Config;
         readonly CtfTeam Red = new("Red", Colors.red);
         readonly CtfTeam Blue = new("Blue", Colors.blue);
         public static CTFGame Instance = new();
-        public CTFGame() { Picker = new SimpleLevelPicker(); }
-        protected override string WelcomeMessage
-        {
-            get { return "&9Capture the Flag &Sis running! Type &T/CTF go &Sto join"; }
-        }
+        public CTFGame() => Picker = new SimpleLevelPicker();
+        protected override string WelcomeMessage => "&9Capture the Flag &Sis running! Type &T/CTF go &Sto join";
         const string ctfExtrasKey = "MCG_CTF_DATA";
         internal static CtfData Get(Player p)
         {
@@ -123,7 +120,7 @@ namespace MCGalaxy.Modules.Games.CTF
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {
-                if (p.level != Map) continue;
+                if (p.Level != Map) continue;
                 CtfData data = Get(p);
                 if (!data.HasFlag) continue;
                 data.HasFlag = false;
@@ -180,9 +177,6 @@ namespace MCGalaxy.Modules.Games.CTF
             if (Blue.Members.Contains(p)) return Blue;
             return null;
         }
-        CtfTeam Opposing(CtfTeam team)
-        {
-            return team == Red ? Blue : Red;
-        }
+        CtfTeam Opposing(CtfTeam team) => team == Red ? Blue : Red;
     }
 }

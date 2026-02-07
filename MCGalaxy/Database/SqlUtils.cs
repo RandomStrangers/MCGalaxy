@@ -30,18 +30,11 @@ namespace MCGalaxy.SQL
             ValidateName(name);
             return "`" + name + "`";
         }
-        public static string WithTable(string sql, string table)
-        {
-            return sql.Replace("{table}", QuoteName(table));
-        }
-        public static bool ValidNameChar(char c)
-        {
-            return
-                c > ' ' && c != '"' && c != '%' && c != '&' &&
+        public static string WithTable(string sql, string table) => sql.Replace("{table}", QuoteName(table));
+        public static bool ValidNameChar(char c) => c > ' ' && c != '"' && c != '%' && c != '&' &&
                 c != '\'' && c != '*' && c != '/' && c != ':' &&
                 c != '<' && c != '>' && c != '?' && c != '\\' &&
                 c != '`' && c != '|' && c <= '~';
-        }
         public static void ValidateName(string table)
         {
             foreach (char c in table)

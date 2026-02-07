@@ -18,13 +18,10 @@ namespace MCGalaxy.Commands.Eco
 {
     public sealed class CmdEconomy : Command2
     {
-        public override string name { get { return "Economy"; } }
-        public override string shortcut { get { return "Eco"; } }
-        public override string type { get { return CommandTypes.Economy; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can setup the economy") }; }
-        }
+        public override string Name => "Economy";
+        public override string Shortcut => "Eco";
+        public override string Type => CommandTypes.Economy;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can setup the economy") };
         public override void Use(Player p, string message, CommandData data)
         {
             string[] raw = message.SplitSpaces();

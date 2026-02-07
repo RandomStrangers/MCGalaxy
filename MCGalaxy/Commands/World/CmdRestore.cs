@@ -17,14 +17,14 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdRestore : Command2
     {
-        public override string name { get { return "Restore"; } }
-        public override string type { get { return CommandTypes.World; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override bool MessageBlockRestricted { get { return true; } }
+        public override string Name => "Restore";
+        public override string Type => CommandTypes.World;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 80;
+        public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { LevelOperations.OutputBackups(p, p.level); return; }
+            if (message.Length == 0) { LevelOperations.OutputBackups(p, p.Level); return; }
             Level lvl;
             string[] args = message.SplitSpaces();
             if (args.Length >= 2)
@@ -38,7 +38,7 @@ namespace MCGalaxy.Commands.World
                 {
                     SuperRequiresArgs(p, "level name"); return;
                 }
-                lvl = p.level;
+                lvl = p.Level;
             }
             if (!LevelInfo.Check(p, data.Rank, lvl, "restore a backup of this level")) return;
             string path = LevelInfo.BackupFilePath(lvl.name, args[0]);
@@ -67,7 +67,7 @@ namespace MCGalaxy.Commands.World
             }
             else
             {
-                Logger.Log(LogType.Warning, "Restore nulled");
+                Logger.Log(6, "Restore nulled");
                 //File.Copy(LevelInfo.MapPath(lvl.name) + ".backup", LevelInfo.MapPath(lvl.name), true);
                 FileIO.TryCopy(LevelInfo.MapPath(lvl.name) + ".backup", LevelInfo.MapPath(lvl.name), true);
             }

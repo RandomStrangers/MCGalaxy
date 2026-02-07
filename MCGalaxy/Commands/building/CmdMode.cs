@@ -16,13 +16,10 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdMode : Command2
     {
-        public override string name { get { return "Mode"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new CommandAlias[] { new("TNT", "tnt") }; }
-        }
+        public override string Name => "Mode";
+        public override string Type => CommandTypes.Building;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new CommandAlias[] { new("TNT", "tnt") };
         public override void Use(Player p, string message, CommandData data)
         {
             // Special handling for the old TNT command

@@ -17,8 +17,8 @@ namespace MCGalaxy.Drawing.Brushes
 {
     public class ReplaceBrushBrushFactory : BrushFactory
     {
-        public override string Name { get { return "ReplaceBrush"; } }
-        public override string[] Help { get { return HelpString; } }
+        public override string Name => "ReplaceBrush";
+        public override string[] Help => HelpString;
         static readonly string[] HelpString = new string[] {
             "&TArguments: [block] [brush name] <brush args>",
             "&HDraws by replacing existing blocks that are the given [block] with the output of the given brush"
@@ -44,8 +44,8 @@ namespace MCGalaxy.Drawing.Brushes
     }
     public class ReplaceNotBrushBrushFactory : ReplaceBrushBrushFactory
     {
-        public override string Name { get { return "ReplaceNotBrush"; } }
-        public override string[] Help { get { return HelpString; } }
+        public override string Name => "ReplaceNotBrush";
+        public override string[] Help => HelpString;
         static readonly string[] HelpString = new string[] {
             "&TArguments: [block] [brush name] <brush args>",
             "&HDraws by replacing existing blocks that not the given [block] with the output of the given brush"

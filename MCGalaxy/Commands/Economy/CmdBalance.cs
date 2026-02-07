@@ -18,9 +18,9 @@ namespace MCGalaxy.Commands.Eco
 {
     public sealed class CmdBalance : Command2
     {
-        public override string name { get { return "Balance"; } }
-        public override string shortcut { get { return "Money"; } }
-        public override string type { get { return CommandTypes.Economy; } }
+        public override string Name => "Balance";
+        public override string Shortcut => "Money";
+        public override string Type => CommandTypes.Economy;
         public override void Use(Player p, string message, CommandData data)
         {
             if (CheckSuper(p, message, "player name")) return;

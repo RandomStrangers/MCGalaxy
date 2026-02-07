@@ -26,7 +26,7 @@ namespace MCGalaxy.Drawing.Brushes
             this.blocks = blocks;
             this.axis = axis;
         }
-        public override string Name { get { return "Gradient"; } }
+        public override string Name => "Gradient";
         public override void Configure(DrawOp op, Player p)
         {
             xLen = op.SizeX; yLen = op.SizeY; zLen = op.SizeZ;

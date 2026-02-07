@@ -6,7 +6,7 @@ namespace MCGalaxy.Levels.IO
 {
     public unsafe class MapExporter : IMapExporter
     {
-        public override string Extension { get { return ".map"; } }
+        public override string Extension => ".map";
         public override void Write(Stream dst, Level lvl)
         {
             using Stream gs = new GZipStream(dst, CompressionMode.Compress);
@@ -80,72 +80,67 @@ namespace MCGalaxy.Levels.IO
         {
             short count = (short)lvl.ListCheck.Count;
             Check[] checks = lvl.ListCheck.Items;
-            if (count == 0)
+            if (count != 0)
             {
-                return;
-            }
-            gs.WriteByte(0xFC);
-            NetUtils.WriteI16(count, buffer, 0);
-            gs.Write(buffer, 0, sizeof(short));
-            fixed (byte* ptr = buffer)
-            {
-                int entries = 0;
-                int* ptrInt = (int*)ptr;
-                for (int i = 0; i < count; i++)
+                gs.WriteByte(0xFC);
+                NetUtils.WriteI16(count, buffer, 0);
+                gs.Write(buffer, 0, sizeof(short));
+                fixed (byte* ptr = buffer)
                 {
-                    Check C = checks[i];
-                    *ptrInt = C.Index;
-                    ptrInt++;
-                    *ptrInt = (int)C.data.Raw;
-                    ptrInt++;
-                    entries++;
-                    if (entries != 8192)
+                    int entries = 0;
+                    int* ptrInt = (int*)ptr;
+                    for (int i = 0; i < count; i++)
                     {
-                        continue;
+                        Check C = checks[i];
+                        *ptrInt = C.Index;
+                        ptrInt++;
+                        *ptrInt = (int)C.data.Raw;
+                        ptrInt++;
+                        entries++;
+                        if (entries != 8192)
+                        {
+                            continue;
+                        }
+                        ptrInt = (int*)ptr;
+                        gs.Write(buffer, 0, entries * 8);
+                        entries = 0;
                     }
-                    ptrInt = (int*)ptr;
+                    if (entries == 0)
+                    {
+                        return;
+                    }
                     gs.Write(buffer, 0, entries * 8);
-                    entries = 0;
                 }
-                if (entries == 0)
-                {
-                    return;
-                }
-                gs.Write(buffer, 0, entries * 8);
             }
         }
-        public static void WriteU8(byte value, byte[] array, int index)
-        {
-            array[index++] = value;
-        }
+        public static void WriteU8(byte value, byte[] array, int index) => array[index++] = value;
         public static void WriteZonesSection(Level lvl, Stream gs, byte[] buffer)
         {
             Zone[] zones = lvl.Zones.Items;
-            if (zones.Length == 0)
+            if (zones.Length != 0)
             {
-                return;
-            }
-            gs.WriteByte(0x51);
-            NetUtils.WriteI16((short)zones.Length, buffer, 0);
-            gs.Write(buffer, 0, sizeof(short));
-            foreach (Zone z in zones)
-            {
-                WriteU8((byte)z.MinX, buffer, 0 * 2);
-                WriteU8((byte)z.MaxX, buffer, 1 * 2);
-                WriteU8((byte)z.MinY, buffer, 2 * 2);
-                WriteU8((byte)z.MaxY, buffer, 3 * 2);
-                WriteU8((byte)z.MinZ, buffer, 4 * 2);
-                WriteU8((byte)z.MaxZ, buffer, 5 * 2);
-                gs.Write(buffer, 0, 6 * 2);
-                ConfigElement[] elem = Server.zoneConfig;
-                NetUtils.WriteI16((short)elem.Length, buffer, 0);
+                gs.WriteByte(0x51);
+                NetUtils.WriteI16((short)zones.Length, buffer, 0);
                 gs.Write(buffer, 0, sizeof(short));
-                for (int i = 0; i < elem.Length; i++)
+                foreach (Zone z in zones)
                 {
-                    string value = elem[i].Format(z.Config);
-                    int count = Encoding.UTF8.GetBytes(value, 0, value.Length, buffer, 2);
-                    WriteU8((byte)count, buffer, 0);
-                    gs.Write(buffer, 0, count + 2);
+                    WriteU8((byte)z.MinX, buffer, 0 * 2);
+                    WriteU8((byte)z.MaxX, buffer, 1 * 2);
+                    WriteU8((byte)z.MinY, buffer, 2 * 2);
+                    WriteU8((byte)z.MaxY, buffer, 3 * 2);
+                    WriteU8((byte)z.MinZ, buffer, 4 * 2);
+                    WriteU8((byte)z.MaxZ, buffer, 5 * 2);
+                    gs.Write(buffer, 0, 6 * 2);
+                    ConfigElement[] elem = Server.zoneConfig;
+                    NetUtils.WriteI16((short)elem.Length, buffer, 0);
+                    gs.Write(buffer, 0, sizeof(short));
+                    for (int i = 0; i < elem.Length; i++)
+                    {
+                        string value = elem[i].Format(z.Config);
+                        int count = Encoding.UTF8.GetBytes(value, 0, value.Length, buffer, 2);
+                        WriteU8((byte)count, buffer, 0);
+                        gs.Write(buffer, 0, count + 2);
+                    }
                 }
             }
         }

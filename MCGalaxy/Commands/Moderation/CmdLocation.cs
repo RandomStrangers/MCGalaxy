@@ -19,17 +19,14 @@ using System;
 using System.Net;
 namespace MCGalaxy.Commands.Moderation
 {
-    public class CmdLocation : Command2
+    public class CmdLocation : Command
     {
-        public override string name { get { return "Location"; } }
-        public override string shortcut { get { return "GeoIP"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Admin, "can see state/province") }; }
-        }
-        public override void Use(Player p, string message, CommandData data)
+        public override string Name => "Location";
+        public override string Shortcut => "GeoIP";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 100;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(100, "can see state/province") };
+        public override void Use(Player p, string message)
         {
             if (message.Length == 0)
             {
@@ -61,7 +58,7 @@ namespace MCGalaxy.Commands.Moderation
             obj.TryGetValue("country", out object country);
             string fullName = CountryUtils.GetName(country.ToString());
             if (fullName != null) country = fullName;
-            string suffix = HasExtraPerm(p, data.Rank, 1) ? "&b{1}&S/&b{2}" : "&b{2}";
+            string suffix = HasExtraPerm(p.Rank, 1) ? "&b{1}&S/&b{2}" : "&b{2}";
             string nick = name == null ? ip : "of " + p.FormatNick(name);
             p.Message("The IP {0} &Straces to: " + suffix, nick, region, country);
         }

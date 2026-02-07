@@ -13,20 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using System;
-// kept in this namespace for backwards compatbility
-namespace MCGalaxy
-{
-    /// <summary> Importance of an event handler (See IEvent). </summary>
-    /// <remarks> Higher priority handlers are called before lower priority handlers. </remarks>
-    public enum Priority : byte
-    {
-        Low = 0,
-        Normal = 1,
-        High = 2,
-        Critical = 3,
-        System_Level = 4
-    }
-}
 namespace MCGalaxy.Events
 {
     /// <summary> Represents an abstract event. </summary>
@@ -36,11 +22,11 @@ namespace MCGalaxy.Events
     {
         protected internal static VolatileArray<IEvent<IMethod>> handlers = new();
         public IMethod method;
-        public Priority priority;
+        public int priority;
         /// <summary> Registers the given handler to this event. </summary>
         /// <param name="priority"> The priority (imporantance) of the given handler. </param>
         /// <param name="bypass"> Whether the given handler is able to be registered multiple times. </param>
-        public static void Register(IMethod method, Priority priority, bool bypass = false)
+        public static void Register(IMethod method, int priority, bool bypass = false)
         {
             IEvent<IMethod> handler = Find(method);
             if (handler != null && !bypass)

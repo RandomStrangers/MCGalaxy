@@ -33,22 +33,22 @@ namespace MCGalaxy
         /// Same as MapName, unless <cref>IsMuseum</cref>, then it will be prefixed and suffixed to denote museum.
         /// </summary>
         public string name;
-        public string ColoredName { get { return Config.Color + name; } }
+        public string ColoredName => Config.Color + name;
         public LevelConfig Config = new();
         public byte rotx, roty;
         public ushort spawnx, spawny, spawnz;
-        public Position SpawnPos { get { return new Position(16 + spawnx * 32, 32 + spawny * 32, 16 + spawnz * 32); } }
-        public BlockDefinition[] CustomBlockDefs = new BlockDefinition[Block.SUPPORTED_COUNT];
-        public BlockProps[] Props = new BlockProps[Block.SUPPORTED_COUNT];
+        public Position SpawnPos => new(16 + spawnx * 32, 32 + spawny * 32, 16 + spawnz * 32);
+        public BlockDefinition[] CustomBlockDefs = new BlockDefinition[1024];
+        public BlockProps[] Props = new BlockProps[1024];
         public ExtrasCollection Extras = new();
         public VolatileArray<PlayerBot> Bots = new();
         bool unloadedBots;
-        public HandleDelete[] DeleteHandlers = new HandleDelete[Block.SUPPORTED_COUNT];
-        public HandlePlace[] PlaceHandlers = new HandlePlace[Block.SUPPORTED_COUNT];
-        public HandleWalkthrough[] WalkthroughHandlers = new HandleWalkthrough[Block.SUPPORTED_COUNT];
-        public HandlePhysics[] PhysicsHandlers = new HandlePhysics[Block.SUPPORTED_COUNT];
-        internal HandlePhysics[] physicsDoorsHandlers = new HandlePhysics[Block.SUPPORTED_COUNT];
-        internal AABB[] blockAABBs = new AABB[Block.SUPPORTED_COUNT];
+        public HandleDelete[] DeleteHandlers = new HandleDelete[1024];
+        public HandlePlace[] PlaceHandlers = new HandlePlace[1024];
+        public HandleWalkthrough[] WalkthroughHandlers = new HandleWalkthrough[1024];
+        public HandlePhysics[] PhysicsHandlers = new HandlePhysics[1024];
+        internal HandlePhysics[] physicsDoorsHandlers = new HandlePhysics[1024];
+        internal AABB[] blockAABBs = new AABB[1024];
         /// <summary> The width of this level (Number of blocks across in X dimension) </summary>
         public ushort Width;
         /// <summary> The height of this level (Number of blocks tall in Y dimension) </summary>
@@ -57,22 +57,19 @@ namespace MCGalaxy
         public ushort Length;
         /// <summary> Whether this level should be treated as a readonly museum </summary>
         public bool IsMuseum;
-        public int ReloadThreshold
-        {
-            get { return Math.Max(10000, (int)(Server.Config.DrawReloadThreshold * Width * Height * Length)); }
-        }
+        public int ReloadThreshold => Math.Max(10000, (int)(Server.Config.DrawReloadThreshold * Width * Height * Length));
         /// <summary> Maximum valid X coordinate (Width - 1) </summary>
-        public int MaxX { get { return Width - 1; } }
+        public int MaxX => Width - 1;
         /// <summary> Maximum valid Y coordinate (Height - 1) </summary>
-        public int MaxY { get { return Height - 1; } }
+        public int MaxY => Height - 1;
         /// <summary> Maximum valid Z coordinate (Length - 1) </summary>
-        public int MaxZ { get { return Length - 1; } }
+        public int MaxZ => Length - 1;
         public bool Changed;
         /// <summary> Whether block changes made on this level should be saved to the BlockDB and .lvl files. </summary>
         public bool SaveChanges = true;
         public bool ChangedSinceBackup;
         /// <summary> Whether players on this level sees server-wide chat. </summary>
-        public bool SeesServerWideChat { get { return Config.ServerWideChat && Server.Config.ServerWideChat; } }
+        public bool SeesServerWideChat => Config.ServerWideChat && Server.Config.ServerWideChat;
         internal readonly object saveLock = new(), botsIOLock = new();
         public BlockQueue blockqueue = new();
         BufferedBlockSender bulkSender;
@@ -81,7 +78,7 @@ namespace MCGalaxy
         public BlockDB BlockDB;
         public LevelAccessController VisitAccess, BuildAccess;
         // Physics fields and settings
-        public int physics { get { return Physicsint; } }
+        public int LevelPhysics => Physicsint;
         int Physicsint;
         public int currentUndo;
         public int lastCheck, lastUpdate;
@@ -96,12 +93,9 @@ namespace MCGalaxy
         bool physThreadStarted = false;
         internal DateTime lastBackup;
         public List<C4Data> C4list = new();
-        public bool CanPlace { get { return Config.Buildable && Config.BuildType != BuildType.NoModify; } }
-        public bool CanDelete { get { return Config.Deletable && Config.BuildType != BuildType.NoModify; } }
-        public int WinChance
-        {
-            get { return Config.RoundsPlayed == 0 ? 100 : Config.RoundsHumanWon * 100 / Config.RoundsPlayed; }
-        }
+        public bool CanPlace => Config.Buildable && Config.BuildType != 2;
+        public bool CanDelete => Config.Deletable && Config.BuildType != 2;
+        public int WinChance => Config.RoundsPlayed == 0 ? 100 : Config.RoundsHumanWon * 100 / Config.RoundsPlayed;
         public bool hasPortals, hasMessageBlocks;
     }
 }

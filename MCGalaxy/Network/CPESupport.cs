@@ -17,25 +17,6 @@ using System.Collections.Generic;
 using System.IO;
 namespace MCGalaxy
 {
-    public enum CpeMessageType : byte
-    {
-        Normal = 0, Status1 = 1, Status2 = 2, Status3 = 3,
-        BottomRight1 = 11, BottomRight2 = 12, BottomRight3 = 13,
-        Announcement = 100, BigAnnouncement = 101, SmallAnnouncement = 102
-    }
-    public enum EnvProp : byte
-    {
-        SidesBlock = 0, EdgeBlock = 1, EdgeLevel = 2,
-        CloudsLevel = 3, MaxFog = 4, CloudsSpeed = 5,
-        WeatherSpeed = 6, WeatherFade = 7, ExpFog = 8,
-        SidesOffset = 9, SkyboxHorSpeed = 10, SkyboxVerSpeed = 11,
-        Max,
-        Weather = 255, // this is internal, not an official env prop
-    }
-    public enum EntityProp : byte
-    {
-        RotX = 0, RotY = 1, RotZ = 2, ScaleX = 3, ScaleY = 4, ScaleZ = 5,
-    }
     public class CpeExt
     {
         /// <summary> Name of the CPE extension (e.g. ExtPlayerList) </summary>
@@ -47,7 +28,6 @@ namespace MCGalaxy
         public const string ClickDistance = "ClickDistance";
         public const string CustomBlocks = "CustomBlocks";
         public const string HeldBlock = "HeldBlock";
-        public const string TextHotkey = "TextHotKey";
         public const string ExtPlayerList = "ExtPlayerList";
         public const string EnvColors = "EnvColors";
         public const string SelectionCuboid = "SelectionCuboid";
@@ -74,17 +54,12 @@ namespace MCGalaxy
         public const string FastMap = "FastMap";
         public const string ExtBlocks = "ExtendedBlocks";
         public const string ExtTextures = "ExtendedTextures";
-        public const string SetHotbar = "SetHotbar";
         public const string SetSpawnpoint = "SetSpawnpoint";
         public const string VelocityControl = "VelocityControl";
         public const string CustomParticles = "CustomParticles";
         public const string CustomModels = "CustomModels";
-        public const string PluginMessages = "PluginMessages";
         public const string ExtEntityTeleport = "ExtEntityTeleport";
         public const string LightingMode = "LightingMode";
-        public const string CinematicGui = "CinematicGui";
-        public const string NotifyAction = "NotifyAction";
-        public const string ToggleBlockList = "ToggleBlockList";
     }
     public sealed class CpeExtension
     {
@@ -109,7 +84,6 @@ namespace MCGalaxy
             new(CpeExt.ClickDistance,       "Allows controlling how far away blocks can be placed/deleted (/Reach)"),
             new(CpeExt.CustomBlocks,        "Allows showing blocks 50 - 65 (Cobblestone Slab - Stone Brick)"),
             new(CpeExt.HeldBlock,           "Allows setting currently held block/block in hand"),
-            new(CpeExt.TextHotkey,          "Allows defining custom hotkeys"),
             new(CpeExt.ExtPlayerList,       "Allows separating tab list from entities in current map", 2),
             new(CpeExt.EnvColors,           "Allows customing environment colors such as sky color (/Env)"),
             new(CpeExt.SelectionCuboid,     "Allows showing colored boxes in the map (/Zone set"),
@@ -135,19 +109,12 @@ namespace MCGalaxy
             new(CpeExt.InstantMOTD,         "Allows sending MOTD packets without also needing to resend map"),
             new(CpeExt.FastMap,             "Allows sending maps in a faster way"),
             new(CpeExt.ExtTextures,         "Allows using texture IDs over 255 in block definitions"),
-            new(CpeExt.SetHotbar,           "Allows setting blocks in hotbar (the bar with 9 blocks)"),
             new(CpeExt.SetSpawnpoint,       "Allows changing spawn point of players without teleporting them"),
             new(CpeExt.VelocityControl,     "Allows adjusting velocity of players"),
             new(CpeExt.CustomParticles,     "Allows defining and spawning custom particles"),
-            new(CpeExt.CustomModels,        "Allows defining custom models for entities", 2),
-            new(CpeExt.PluginMessages,      "Allows sending and receiving plugin messages from clients"),
             new(CpeExt.ExtEntityTeleport,   "Allows sending more precisely controlled teleports"),
             new(CpeExt.LightingMode,        "Allows changing how the client lights worlds"),
-            new(CpeExt.CinematicGui,        "Allows changing the visibility of some GUI components"),
-            new(CpeExt.NotifyAction,        "Allows server to be notified of certain client events"),
-            #if TEN_BIT_BLOCKS
             new(CpeExt.ExtBlocks,           "Allows using block IDs over 255 in block definitions"),
-            #endif
         };
         internal static CpeExt[] Empty = new CpeExt[0];
         /// <summary> Retrieves a list of all supported and enabled CPE extensions </summary>
@@ -160,7 +127,7 @@ namespace MCGalaxy
             {
                 CpeExtension e = all[i];
                 if (!e.Enabled) continue;
-                exts.Add(new CpeExt() { Name = e.Name, ServerVersion = e.Version });
+                exts.Add(new() { Name = e.Name, ServerVersion = e.Version });
             }
             return exts.ToArray();
         }

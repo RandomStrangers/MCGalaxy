@@ -26,15 +26,9 @@ namespace MCGalaxy.Bots
         /// next instruction in the same tick. </returns>
         public abstract bool Execute(PlayerBot bot, InstructionData data);
         /// <summary> Parses the given arguments which contains the data for this instruction. </summary>
-        public virtual InstructionData Parse(string[] args)
-        {
-            return default;
-        }
+        public virtual InstructionData Parse(string[] args) => default;
         /// <summary> Writes the data for this instruction to the given AI file. </summary>
-        public virtual void Output(Player p, string[] args, TextWriter w)
-        {
-            w.WriteLine(Name);
-        }
+        public virtual void Output(Player p, string[] args, TextWriter w) => w.WriteLine(Name);
         /// <summary> Returns the help for this instruction. n</summary>
         public abstract string[] Help { get; }
         /// <summary> All instructions that bots can execute. </summary>

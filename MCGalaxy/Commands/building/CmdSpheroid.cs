@@ -17,12 +17,9 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdSpheroid : DrawCmd
     {
-        public override string name { get { return "Spheroid"; } }
-        public override string shortcut { get { return "e"; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("eh", "hollow"), new CommandAlias("Cone", "cone"), new CommandAlias("Cylinder", "cylinder") }; }
-        }
+        public override string Name => "Spheroid";
+        public override string Shortcut => "e";
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("eh", "hollow"), new CommandAlias("Cone", "cone"), new CommandAlias("Cylinder", "cylinder") };
         protected override void GetBrush(DrawArgs dArgs)
         {
             if (dArgs.Mode == DrawMode.solid) dArgs.BrushName = "Normal";
@@ -38,16 +35,13 @@ namespace MCGalaxy.Commands.Building
             if (msg == "cone") return DrawMode.cone;
             return DrawMode.normal;
         }
-        protected override DrawOp GetDrawOp(DrawArgs dArgs)
+        protected override DrawOp GetDrawOp(DrawArgs dArgs) => dArgs.Mode switch
         {
-            return dArgs.Mode switch
-            {
-                DrawMode.hollow => new EllipsoidHollowDrawOp(),
-                DrawMode.vertical => new CylinderDrawOp(),
-                DrawMode.cone => new ConeDrawOp(),
-                _ => new EllipsoidDrawOp(),
-            };
-        }
+            DrawMode.hollow => new EllipsoidHollowDrawOp(),
+            DrawMode.vertical => new CylinderDrawOp(),
+            DrawMode.cone => new ConeDrawOp(),
+            _ => new EllipsoidDrawOp(),
+        };
         public override void Help(Player p)
         {
             p.Message("&T/Spheroid <brush args>");

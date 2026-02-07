@@ -17,25 +17,13 @@ namespace MCGalaxy.Commands.Chatting
 {
     public class CmdColor : EntityPropertyCmd
     {
-        public override string name { get { return "Color"; } }
-        public override string type { get { return CommandTypes.Chat; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get
-            {
-                return new[] { new CommandPerm(LevelPermission.Operator, "can change the color of others"),
-                    new CommandPerm(LevelPermission.Operator, "can change the color of bots") };
-            }
-        }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("Colour"), new CommandAlias("XColor", "-own") }; }
-        }
-        public override void Use(Player p, string message, CommandData data)
-        {
-            UseBotOrPlayer(p, data, message, "color");
-        }
+        public override string Name => "Color";
+        public override string Type => CommandTypes.Chat;
+        public override sbyte DefaultRank => 80;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can change the color of others"),
+                    new CommandPerm(80, "can change the color of bots") };
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("Colour"), new CommandAlias("XColor", "-own") };
+        public override void Use(Player p, string message, CommandData data) => UseBotOrPlayer(p, data, message, "color");
         protected override void SetBotData(Player p, PlayerBot bot, string colName)
         {
             string color = colName.Length == 0 ? "&1" : Matcher.FindColor(p, colName);
@@ -45,12 +33,9 @@ namespace MCGalaxy.Commands.Chatting
             bot.color = color;
             bot.GlobalDespawn();
             bot.GlobalSpawn();
-            BotsFile.Save(p.level);
+            BotsFile.Save(p.Level);
         }
-        protected override void SetPlayerData(Player p, string target, string colName)
-        {
-            PlayerOperations.SetColor(p, target, colName);
-        }
+        protected override void SetPlayerData(Player p, string target, string colName) => PlayerOperations.SetColor(p, target, colName);
         public override void Help(Player p)
         {
             p.Message("&T/Color [player] [color]");

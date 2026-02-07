@@ -16,11 +16,11 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdDoNotMark : Command2
     {
-        public override string name { get { return "DoNotMark"; } }
-        public override string shortcut { get { return "dnm"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases { get { return new[] { new CommandAlias("dm") }; } }
+        public override string Name => "DoNotMark";
+        public override string Shortcut => "dnm";
+        public override string Type => CommandTypes.Building;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("dm") };
         public override void Use(Player p, string message, CommandData data)
         {
             p.ClickToMark = !p.ClickToMark;

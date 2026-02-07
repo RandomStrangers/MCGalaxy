@@ -99,38 +99,14 @@ namespace MCGalaxy
             new ChatToken("$level", "Name of level/map player is on", TokenLevel),
             new ChatToken("$currency", "Name of server currency", TokenCurrency),
         };
-        static string TokenDate(Player p)
-        {
-            return DateTime.Now.ToString("yyyy-MM-dd");
-        }
-        static string TokenTime(Player p)
-        {
-            return DateTime.Now.ToString("hh:mm tt");
-        }
-        static string TokenIRC(Player p)
-        {
-            return Server.Config.IRCServer + " > " + Server.Config.IRCChannels;
-        }
-        static string TokenBanned(Player p)
-        {
-            return NumberUtils.StringifyInt(Group.BannedRank.Players.Count);
-        }
-        static string TokenServerName(Player p)
-        {
-            return Server.Config.Name;
-        }
-        static string TokenServerMOTD(Player p)
-        {
-            return Server.Config.MOTD;
-        }
-        static string TokenLoaded(Player p)
-        {
-            return NumberUtils.StringifyInt(LevelInfo.Loaded.Count);
-        }
-        static string TokenWorlds(Player p)
-        {
-            return NumberUtils.StringifyInt(LevelInfo.AllMapFiles().Length);
-        }
+        static string TokenDate(Player p) => DateTime.Now.ToString("yyyy-MM-dd");
+        static string TokenTime(Player p) => DateTime.Now.ToString("hh:mm tt");
+        static string TokenIRC(Player p) => Server.Config.IRCServer + " > " + Server.Config.IRCChannels;
+        static string TokenBanned(Player p) => NumberUtils.StringifyInt(Group.BannedRank.Players.Count);
+        static string TokenServerName(Player p) => Server.Config.Name;
+        static string TokenServerMOTD(Player p) => Server.Config.MOTD;
+        static string TokenLoaded(Player p) => NumberUtils.StringifyInt(LevelInfo.Loaded.Count);
+        static string TokenWorlds(Player p) => NumberUtils.StringifyInt(LevelInfo.AllMapFiles().Length);
         static string TokenOnline(Player p)
         {
             Player[] players = PlayerInfo.Online.Items;
@@ -141,78 +117,24 @@ namespace MCGalaxy
             }
             return NumberUtils.StringifyInt(count);
         }
-        static string TokenName(Player p)
-        {
-            return (Server.Config.DollarNames ? "$" : "") + Colors.StripUsed(p.DisplayName);
-        }
-        static string TokenTrueName(Player p)
-        {
-            return (Server.Config.DollarNames ? "$" : "") + p.truename;
-        }
-        static string TokenColor(Player p)
-        {
-            return p.color;
-        }
-        static string TokenRank(Player p)
-        {
-            return p.group.Name;
-        }
-        static string TokenDeaths(Player p)
-        {
-            return NumberUtils.StringifyInt(p.TimesDied);
-        }
-        static string TokenMoney(Player p)
-        {
-            return NumberUtils.StringifyInt(p.money);
-        }
-        static string TokenBlocks(Player p)
-        {
-            return p.TotalModified.ToString();
-        }
-        static string TokenPlaced(Player p)
-        {
-            return p.TotalPlaced.ToString();
-        }
-        static string TokenDeleted(Player p)
-        {
-            return p.TotalDeleted.ToString();
-        }
-        static string TokenDrawn(Player p)
-        {
-            return p.TotalDrawn.ToString();
-        }
-        static string TokenPlaytime(Player p)
-        {
-            return p.TotalTime.Shorten();
-        }
-        static string TokenFirst(Player p)
-        {
-            return p.FirstLogin.ToString();
-        }
-        static string TokenVisits(Player p)
-        {
-            return NumberUtils.StringifyInt(p.TimesVisited);
-        }
-        static string TokenKicked(Player p)
-        {
-            return NumberUtils.StringifyInt(p.TimesBeenKicked);
-        }
-        static string TokenModel(Player p)
-        {
-            return p.Model;
-        }
-        static string TokenSkin(Player p)
-        {
-            return p.SkinName;
-        }
-        static string TokenLevel(Player p)
-        {
-            return p.level?.name;
-        }
-        static string TokenCurrency(Player p)
-        {
-            return Server.Config.Currency;
-        }
+        static string TokenName(Player p) => (Server.Config.DollarNames ? "$" : "") + Colors.StripUsed(p.DisplayName);
+        static string TokenTrueName(Player p) => (Server.Config.DollarNames ? "$" : "") + p.truename;
+        static string TokenColor(Player p) => p.color;
+        static string TokenRank(Player p) => p.group.Name;
+        static string TokenDeaths(Player p) => NumberUtils.StringifyInt(p.TimesDied);
+        static string TokenMoney(Player p) => NumberUtils.StringifyInt(p.money);
+        static string TokenBlocks(Player p) => p.TotalModified.ToString();
+        static string TokenPlaced(Player p) => p.TotalPlaced.ToString();
+        static string TokenDeleted(Player p) => p.TotalDeleted.ToString();
+        static string TokenDrawn(Player p) => p.TotalDrawn.ToString();
+        static string TokenPlaytime(Player p) => p.TotalTime.Shorten();
+        static string TokenFirst(Player p) => p.FirstLogin.ToString();
+        static string TokenVisits(Player p) => NumberUtils.StringifyInt(p.TimesVisited);
+        static string TokenKicked(Player p) => NumberUtils.StringifyInt(p.TimesBeenKicked);
+        static string TokenModel(Player p) => p.Model;
+        static string TokenSkin(Player p) => p.SkinName;
+        static string TokenLevel(Player p) => p.Level?.name;
+        static string TokenCurrency(Player p) => Server.Config.Currency;
         public static List<ChatToken> Custom = new();
         static bool hookedCustom;
         internal static void LoadCustom()

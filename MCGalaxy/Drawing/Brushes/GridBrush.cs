@@ -28,7 +28,7 @@ namespace MCGalaxy.Drawing.Brushes
             gridSize = counts[0];
             blocksCount = counts[0] + counts[1];
         }
-        public override string Name { get { return "Grid"; } }
+        public override string Name => "Grid";
         public override ushort NextBlock(DrawOp op)
         {
             int dx = (op.Coords.X - op.Min.X) % blocksCount; if (dx < 0) dx += blocksCount;

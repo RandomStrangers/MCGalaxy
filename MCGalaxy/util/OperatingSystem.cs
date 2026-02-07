@@ -16,54 +16,48 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-#if MCG_STANDALONE
-using System.Reflection;
-#endif
 namespace MCGalaxy.Platform
 {
-    /// <summary> Summarises resource usage of all CPU cores in the system </summary>
-    public struct CPUTime
+    public class CPUTime
     {
-        /// <summary> Total time spent being idle / not executing code </summary>
-        public ulong IdleTime;
-        /// <summary> Total time spent executing code in Kernel mode </summary>
-        public ulong KernelTime;
-        /// <summary> Total time spent executing code in User mode </summary>
-        public ulong UserTime;
-        /// <summary> Total time spent executing code </summary>
-        public readonly ulong ProcessorTime { get { return KernelTime + UserTime; } }
+        public CPUTime(ulong idle, ulong kern, ulong user)
+        {
+            IdleTime = idle;
+            KernelTime = kern;
+            UserTime = user;
+        }
+        public ulong IdleTime, KernelTime, UserTime;
+        public ulong ProcessorTime => KernelTime + UserTime;
     }
-    /// <summary> Summarises resource usage of current process </summary>
-    public struct ProcInfo
+    public class ProcInfo
     {
+        public ProcInfo(TimeSpan processorTime) 
+        {
+            ProcessorTime = processorTime;
+        }
         public TimeSpan ProcessorTime;
         public long PrivateMemorySize;
         public int NumThreads;
     }
     public abstract class IOperatingSystem
     {
-        /// <summary> Whether the operating system currently being run on is Windows </summary>
         public abstract bool IsWindows { get; }
-        public virtual string StandaloneName { get { return "UNSUPPORTED"; } }
-        public virtual void Init()
-        {
-        }
-        /// <summary> Attempts to restart the current process </summary>
-        /// <remarks> Does not return if the restart is performed in-place
-        /// (since the current process image is replaced) </remarks>
         public virtual void RestartProcess()
         {
-            string path = Server.GetServerExePath(),
-                exe = DotNetBackend.GetExePath(path);
-            Process.Start(exe);
+            string runtime = Server.GetRuntimeExePath(),
+                exePath = Server.GetPath();
+            execvp(runtime, new string[] { runtime, exePath, null });
+            Console.Out.WriteLine("execvp {0} failed: {1}", runtime, Marshal.GetLastWin32Error());
+            if (Server.RunningOnMono())
+            {
+                execvp("mono", new string[] { "mono", exePath, null });
+                Console.Out.WriteLine("execvp mono failed: {0}", Marshal.GetLastWin32Error());
+            }
         }
-        /// <summary> Measures CPU use by all processes in the system </summary>
         public abstract CPUTime MeasureAllCPUTime();
-        /// <summary> Measures resource usage by the current process </summary>
         public virtual ProcInfo MeasureResourceUsage(Process proc, bool all)
         {
-            ProcInfo info = default;
-            info.ProcessorTime = proc.TotalProcessorTime;
+            ProcInfo info = new(proc.TotalProcessorTime);
             if (all)
             {
                 info.PrivateMemorySize = proc.PrivateMemorySize64;
@@ -71,32 +65,27 @@ namespace MCGalaxy.Platform
             }
             return info;
         }
-        static IOperatingSystem detectedOS;
-        public static IOperatingSystem DetectOS()
+        public static unsafe IOperatingSystem DetectOS()
         {
-            detectedOS ??= DoDetectOS();
-            return detectedOS;
-        }
-        public static bool IsWindowsPlatform(PlatformID platform)
-        {
-            return platform switch
+            if (Server.RunningOnMono())
             {
-                PlatformID.Win32S => true,
-                PlatformID.WinCE => true,
-                PlatformID.Win32Windows => true,
-                PlatformID.Win32NT => true,
-                PlatformID.Xbox => true,// Xbox 360 is based on Windows 2000, so return true
-                _ => false,
-            };
-        }
-        static unsafe IOperatingSystem DoDetectOS()
-        {
+                return new MonoOS();
+            }
             PlatformID platform = Environment.OSVersion.Platform;
             IOperatingSystem winOS = new WindowsOS(),
                 unixOS = new UnixOS(),
                 linuxOS = new LinuxOS(),
                 mac = new MacOS();
-            if (IsWindowsPlatform(platform))
+            static bool IsWin(PlatformID platform) => platform switch
+            {
+                PlatformID.Win32S => true,
+                PlatformID.WinCE => true,
+                PlatformID.Win32Windows => true,
+                PlatformID.Win32NT => true,
+                PlatformID.Xbox => true,
+                _ => false,
+            };
+            if (IsWin(platform))
             {
                 return winOS;
             }
@@ -131,247 +120,132 @@ namespace MCGalaxy.Platform
                 }
             }
         }
+        [DllImport("libc", SetLastError = true)]
+        public static extern int execvp(string path, string[] argv);
         [DllImport("libc")]
         static extern unsafe void uname(sbyte* uname_struct);
-        protected static string GetProcessExePath()
-        {
-            return Process.GetCurrentProcess().MainModule.FileName;
-        }
     }
     class WindowsOS : IOperatingSystem
     {
-        public override bool IsWindows { get { return true; } }
-        public override string StandaloneName
-        {
-            get { return IntPtr.Size == 8 ? "win64" : "win32"; }
-        }
+        public override bool IsWindows => true;
+        public override void RestartProcess() => Process.Start(Server.GetPath());
         public override CPUTime MeasureAllCPUTime()
         {
-            CPUTime all = default;
+            CPUTime all = new(2, 2, 2);
             GetSystemTimes(out all.IdleTime, out all.KernelTime, out all.UserTime);
-            // https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getsystemtimes
-            // lpKernelTime - "... This time value also includes the amount of time the system has been idle."
             all.KernelTime -= all.IdleTime;
             return all;
         }
         [DllImport("kernel32.dll")]
         static extern int GetSystemTimes(out ulong idleTime, out ulong kernelTime, out ulong userTime);
     }
-    class UnixOS : IOperatingSystem
+    public class MonoOS : IOperatingSystem
     {
-        public override bool IsWindows { get { return false; } }
+        public override bool IsWindows => false;
         public override void RestartProcess()
         {
-            if (!Server.CLIMode)
-            {
-                base.RestartProcess();
-                return;
-            }
-            RestartInPlace();
-            // If restarting in place fails, it's better to let the server die
-            //  instead of allowing a new instance to be spun up which will
-            //  be spammed with constant errors
-        }
-        protected virtual void RestartInPlace()
-        {
-            // With using normal Process.Start with mono, after Environment.Exit
-            //  is called, all FDs (including standard input) are also closed.
-            // Unfortunately, this causes the new server process to constantly error with
-            //   Type: IOException
-            //   Message: Invalid handle to path "server_folder_path/[Unknown]"
-            //   Trace:   at System.IO.FileStream.ReadData (System.Runtime.InteropServices.SafeHandle safeHandle, System.Byte[] buf, System.Int32 offset, System.Int32 count) [0x0002d]
-            //     at System.IO.FileStream.ReadInternal (System.Byte[] dest, System.Int32 offset, System.Int32 count) [0x00026]
-            //     at System.IO.FileStream.Read (System.Byte[] array, System.Int32 offset, System.Int32 count) [0x000a1]
-            //     at System.IO.StreamReader.ReadBuffer () [0x000b3]
-            //     at System.IO.StreamReader.Read () [0x00028]
-            //     at System.TermInfoDriver.GetCursorPosition () [0x0000d]
-            //     at System.TermInfoDriver.ReadUntilConditionInternal (System.Boolean haltOnNewLine) [0x0000e]
-            //     at System.TermInfoDriver.ReadLine () [0x00000]
-            //     at System.ConsoleDriver.ReadLine () [0x00000]
-            //     at System.Console.ReadLine () [0x00013]
-            //     at MCGalaxy.Cli.CLI.ConsoleLoop () [0x00002]
-            // (this errors multiple times a second and can quickly fill up tons of disk space)
-            // And also causes console to be spammed with '1R3;1R3;1R3;' or '363;1R;363;1R;'
-            //
-            // Note this issue does NOT happen with GUI mode for some reason - and also
-            // don't want to use excevp in GUI mode, otherwise the X socket FDs pile up
-            //
-            //
-            // a similar issue occurs with dotnet, but errors with this instead
-            //  "IOException with 'I/O error' message
-            //     ...
-            //     at System.IO.StdInReader.ReadKey()
-            // try to exec using actual runtime path first
-            //   e.g. /usr/bin/mono-sgen, /home/test/.dotnet/dotnet
-            string runtime = Server.GetRuntimeExePath(),
-                exePath = Server.GetServerExePath();
-            execvp(runtime, new string[] { runtime, exePath, null });
-            Console.Out.WriteLine("execvp {0} failed: {1}", runtime, Marshal.GetLastWin32Error());
-            if (Server.RunningOnMono())
-            {
-                // .. and fallback to mono if that doesn't work for some reason
-                execvp("mono", new string[] { "mono", exePath, null });
-                Console.Out.WriteLine("execvp mono failed: {0}", Marshal.GetLastWin32Error());
-            }
-        }
-        [DllImport("libc", SetLastError = true)]
-        protected static extern int execvp(string path, string[] argv);
-        public override CPUTime MeasureAllCPUTime()
-        {
-            return default;
-        }
-        [DllImport("libc", SetLastError = true)]
-        protected static extern unsafe int sysctlbyname(string name, void* oldp, IntPtr* oldlenp, IntPtr newp, IntPtr newlen);
-    }
-    class LinuxOS : UnixOS
-    {
-        public override string StandaloneName
-        {
-            get { return IntPtr.Size == 8 ? "linux64" : "linux32"; }
-        }
-        public override void Init()
-        {
-            base.Init();
-#if MCG_STANDALONE
-            if (!Directory.Exists("certs"))
-            {
-                return;
-            }
-            // by default mono looks in these directories for SSL/TLS certificates:
-            //  - ~/.config/.mono/new-certs/Trust
-            //  - /usr/share/.mono/new-certs/Trust
-            // but that won't work when distributed in a standalone build - so in this case, have to
-            //  modify internal runtime state to make it look elsewhere for certifcates on Linux
             try
             {
-                Type settingsType = Type.GetType("Mono.Security.Interface.MonoTlsSettings, Mono.Security, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756");
-                PropertyInfo defSettingsProp = settingsType.GetProperty("DefaultSettings", BindingFlags.Static | BindingFlags.Public);
-                object defSettings = defSettingsProp.GetValue(null, null);
-                Type settingsObjType = defSettings.GetType();
-                PropertyInfo pathsProp = settingsObjType.GetProperty("CertificateSearchPaths", BindingFlags.Instance | BindingFlags.NonPublic);
-                pathsProp.SetValue(defSettings, new string[] { "@pem:certs", "@trusted" }, null);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Changing SSL/TLS certificates folder", ex);
-            }
-#endif
-        }
-        // https://stackoverflow.com/questions/15145241/is-there-an-equivalent-to-the-windows-getsystemtimes-function-in-linux
-        public override CPUTime MeasureAllCPUTime()
-        {
-            using (StreamReader r = new("/proc/stat"))
-            {
-                string line = r.ReadLine();
-                if (line.StartsWith("cpu "))
-                {
-                    return ParseCpuLine(line);
-                }
-            }
-            return default;
-        }
-        static CPUTime ParseCpuLine(string line)
-        {
-            // "cpu  [USER TIME] [NICE TIME] [SYSTEM TIME] [IDLE TIME] [I/O WAIT TIME] [IRQ TIME] [SW IRQ TIME]"
-            line = line.Replace("  ", " ");
-            string[] bits = line.SplitSpaces();
-            ulong user = ulong.Parse(bits[1]),
-                nice = ulong.Parse(bits[2]),
-                kern = ulong.Parse(bits[3]),
-                idle = ulong.Parse(bits[4]);
-            // TODO interrupt time too?
-            CPUTime all = new()
-            {
-                UserTime = user + nice,
-                KernelTime = kern,
-                IdleTime = idle
-            };
-            return all;
-        }
-        protected override void RestartInPlace()
-        {
-            try
-            {
-                // try to restart using process's original command line arguments so that they are preserved
-                // e.g. for "mono --debug MCGalaxyCLI.exe"
-                string exe = Server.GetRuntimeExePath();
-                string[] args = GetProcessCommandLineArgs();
-                execvp(exe, args);
+                execvp(Server.GetRuntimeExePath(), GetProcessCommandLineArgs());
             }
             catch (Exception ex)
             {
                 Logger.LogError("Restarting process", ex);
             }
-            base.RestartInPlace();
+            execvp("mono", new string[] { "mono", Server.GetPath(), null });
+            Console.Out.WriteLine("execvp mono failed: {0}", Marshal.GetLastWin32Error());
+        }
+        public override CPUTime MeasureAllCPUTime()
+        {
+            try
+            {
+                string line = new StreamReader("/proc/stat").ReadLine();
+                if (line.StartsWith("cpu "))
+                {
+                    string[] bits = line.Replace("  ", " ").SplitSpaces();
+                    return new(ulong.Parse(bits[4]), ulong.Parse(bits[3]), ulong.Parse(bits[1]) + ulong.Parse(bits[2]));
+                }
+                return new(2, 2, 2);
+            }
+            catch
+            {
+                return new(2, 2, 2);
+            }
         }
         static string[] GetProcessCommandLineArgs()
         {
-            // /proc/self/cmdline returns the command line arguments
-            //   of the process separated by NUL characters
-            using StreamReader r = new("/proc/self/cmdline");
-            string[] args = r.ReadToEnd().Split('\0');
-            // last argument will be a 0 length string - replace with null for execvp
+            string[] args = new StreamReader("/proc/self/cmdline").ReadToEnd().Split('\0');
+            args[args.Length - 1] = null;
+            return args;
+        }
+    }
+    class UnixOS : IOperatingSystem
+    {
+        public override bool IsWindows => false;
+        public override CPUTime MeasureAllCPUTime() => new(2, 2, 2);
+    }
+    class LinuxOS : UnixOS
+    {
+        public override CPUTime MeasureAllCPUTime()
+        {
+            string line = new StreamReader("/proc/stat").ReadLine();
+            if (line.StartsWith("cpu "))
+            {
+                string[] bits = line.Replace("  ", " ").SplitSpaces();
+                return new(ulong.Parse(bits[4]), ulong.Parse(bits[3]), ulong.Parse(bits[1]) + ulong.Parse(bits[2]));
+            }
+            return new(2, 2, 2);
+        }
+        public override void RestartProcess()
+        {
+            try
+            {
+                execvp(Server.GetRuntimeExePath(), GetProcessCommandLineArgs());
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Restarting process", ex);
+            }
+        }
+        static string[] GetProcessCommandLineArgs()
+        {
+            string[] args = new StreamReader("/proc/self/cmdline").ReadToEnd().Split('\0');
             args[args.Length - 1] = null;
             return args;
         }
     }
     class FreeBSD_OS : UnixOS
     {
-        // https://stackoverflow.com/questions/5329149/using-system-calls-from-c-how-do-i-get-the-utilization-of-the-cpus
         public override unsafe CPUTime MeasureAllCPUTime()
         {
             UIntPtr* states = stackalloc UIntPtr[5];
             IntPtr size = (IntPtr)(5 * IntPtr.Size);
             sysctlbyname("kern.cp_time", states, &size, IntPtr.Zero, IntPtr.Zero);
-            CPUTime all = new()
-            {
-                UserTime = states[0].ToUInt64() + states[1].ToUInt64(), // CP_USER + CP_NICE
-                KernelTime = states[2].ToUInt64(), // CP_SYS
-                IdleTime = states[4].ToUInt64() // CP_IDLE
-            };
-            // TODO interrupt time too?
-            return all;
+            return new(states[4].ToUInt64(), states[2].ToUInt64(), states[0].ToUInt64() + states[1].ToUInt64());
         }
+        [DllImport("libc", SetLastError = true)]
+        static extern unsafe int sysctlbyname(string name, void* oldp, IntPtr* oldlenp, IntPtr newp, IntPtr newlen);
     }
     class NetBSD_OS : UnixOS
     {
-        // https://man.netbsd.org/sysctl.7
         public override unsafe CPUTime MeasureAllCPUTime()
         {
             ulong* states = stackalloc ulong[5];
             IntPtr size = (IntPtr)(5 * sizeof(ulong));
             sysctlbyname("kern.cp_time", states, &size, IntPtr.Zero, IntPtr.Zero);
-            CPUTime all = new()
-            {
-                UserTime = states[0] + states[1], // CP_USER + CP_NICE
-                KernelTime = states[2], // CP_SYS
-                IdleTime = states[4] // CP_IDLE
-            };
-            // TODO interrupt time too?
-            return all;
+            return new(states[4], states[2], states[0] + states[1]);
         }
+        [DllImport("libc", SetLastError = true)]
+        static extern unsafe int sysctlbyname(string name, void* oldp, IntPtr* oldlenp, IntPtr newp, IntPtr newlen);
     }
     class MacOS : UnixOS
     {
-        public override string StandaloneName
-        {
-            get { return IntPtr.Size == 8 ? "mac64" : "mac32"; }
-        }
-        // https://stackoverflow.com/questions/20471920/how-to-get-total-cpu-idle-time-in-objective-c-c-on-os-x
-        // /usr/include/mach/host_info.h, /usr/include/mach/machine.h, /usr/include/mach/mach_host.h
         public override CPUTime MeasureAllCPUTime()
         {
-            uint[] info = new uint[4]; // CPU_STATE_MAX
-            uint count = 4; // HOST_CPU_LOAD_INFO_COUNT
-            int flavor = 3; // HOST_CPU_LOAD_INFO
-            host_statistics(mach_host_self(), flavor, info, ref count);
-            CPUTime all = new()
-            {
-                IdleTime = info[2], // CPU_STATE_IDLE
-                UserTime = info[0] + info[3], // CPU_STATE_USER + CPU_STATE_NICE
-                KernelTime = info[1] // CPU_STATE_SYSTEM
-            };
-            return all;
+            uint[] info = new uint[4];
+            uint count = 4;
+            host_statistics(mach_host_self(), 3, info, ref count);
+            return new(info[2], info[1], info[0] + info[3]);
         }
         [DllImport("libc")]
         static extern IntPtr mach_host_self();

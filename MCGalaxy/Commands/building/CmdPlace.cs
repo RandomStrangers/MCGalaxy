@@ -17,12 +17,12 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdPlace : Command2
     {
-        public override string name { get { return "Place"; } }
-        public override string shortcut { get { return "pl"; } }
-        public override bool museumUsable { get { return false; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandParallelism Parallelism { get { return CommandParallelism.NoAndSilent; } }
+        public override string Name => "Place";
+        public override string Shortcut => "pl";
+        public override bool MuseumUsable => false;
+        public override string Type => CommandTypes.Building;
+        public override bool SuperUseable => false;
+        public override int Parallelism => 0;
         public override void Use(Player p, string message, CommandData data)
         {
             ushort block = p.GetHeldBlock();
@@ -46,8 +46,8 @@ namespace MCGalaxy.Commands.Building
                     Help(p); return;
             }
             if (!CommandParser.IsBlockAllowed(p, "place", block)) return;
-            P = p.level.ClampPos(P);
-            p.level.UpdateBlock(p, (ushort)P.X, (ushort)P.Y, (ushort)P.Z, block);
+            P = p.Level.ClampPos(P);
+            p.Level.UpdateBlock(p, (ushort)P.X, (ushort)P.Y, (ushort)P.Z, block);
             string blockName = Block.GetName(p, block);
             if (!p.Ignores.DrawOutput)
             {

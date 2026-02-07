@@ -16,15 +16,15 @@ namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdSay : Command2
     {
-        public override string name { get { return "Say"; } }
-        public override string shortcut { get { return "Broadcast"; } }
-        public override string type { get { return CommandTypes.Chat; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "Say";
+        public override string Shortcut => "Broadcast";
+        public override string Type => CommandTypes.Chat;
+        public override sbyte DefaultRank => 80;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
             message = Colors.Escape(message);
-            Chat.Message(ChatScope.Global, message, null, null, true);
+            Chat.Message(1, message, null, null, true);
         }
         public override void Help(Player p)
         {

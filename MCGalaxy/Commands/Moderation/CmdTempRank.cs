@@ -19,14 +19,11 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdTempRank : Command2
     {
-        public override string name { get { return "TempRank"; } }
-        public override string shortcut { get { return "tr"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("dtr", "delete"), new CommandAlias("trl", "list") }; }
-        }
+        public override string Name => "TempRank";
+        public override string Shortcut => "tr";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 80;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("dtr", "delete"), new CommandAlias("trl", "list") };
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(4);
@@ -71,7 +68,7 @@ namespace MCGalaxy.Commands.Moderation
             Group curRank = PlayerInfo.GetGroup(target);
             string reason = args.Length > 3 ? args[3] : "assigning temp rank";
             if (!CmdSetRank.CanChangeRank(target, curRank, newRank, p, data, ref reason)) return;
-            ModAction action = new(target, p, ModActionType.Rank, reason, duration)
+            ModAction action = new(target, p, 9, reason, duration)
             {
                 targetGroup = curRank,
                 Metadata = newRank
@@ -92,7 +89,7 @@ namespace MCGalaxy.Commands.Moderation
             if (oldRank == null) return;
             string reason = "temp rank unassigned";
             if (!CmdSetRank.CanChangeRank(target, curRank, oldRank, p, data, ref reason)) return;
-            ModAction action = new(target, p, ModActionType.Rank, reason)
+            ModAction action = new(target, p, 9, reason)
             {
                 Metadata = oldRank,
                 targetGroup = curRank

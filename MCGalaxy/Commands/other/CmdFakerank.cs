@@ -16,10 +16,10 @@ namespace MCGalaxy.Commands.Misc
 {
     public sealed class CmdFakeRank : Command2
     {
-        public override string name { get { return "FakeRank"; } }
-        public override string shortcut { get { return "frk"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
+        public override string Name => "FakeRank";
+        public override string Shortcut => "frk";
+        public override string Type => CommandTypes.Other;
+        public override sbyte DefaultRank => 100;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
@@ -32,7 +32,7 @@ namespace MCGalaxy.Commands.Misc
         }
         internal static void DoFakerank(Player _, Player who, Group newRank)
         {
-            if (newRank.Permission == LevelPermission.Banned)
+            if (newRank.Permission == -20)
             {
                 Chat.MessageGlobal("{0} &Swas &8banned&S.", who.ColoredName);
             }

@@ -1,14 +1,12 @@
-#if NAS && TEN_BIT_BLOCKS
 using LibNoise;
-using MCGalaxy;
 using MCGalaxy.Generator;
 using MCGalaxy.Tasks;
 using MCGalaxy.Util.Imaging;
 using System;
 using System.IO;
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
-    public static class NasGen
+    public static class NASGen
     {
         public const int mapWideness = 384,
             mapTallness = 256;
@@ -38,11 +36,11 @@ namespace NotAwesomeSurvival
             48
         };
         public static bool currentlyGenerating = false;
-        public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
+        public static void Log(string format, params object[] args) => Logger.Log(15, string.Format(format, args));
         public static void Setup()
         {
             genScheduler ??= new("MapGenScheduler");
-            MapGen.Register("NASGen", GenType.Advanced, Gen, "hello?");
+            MapGen.Register("NASGen", 2, Gen, "hello?");
             string coalFog = "#BCC9E8",
                 ironFog = "#A1A3A8",
                 goldFog = "#7A706A",
@@ -107,9 +105,9 @@ namespace NotAwesomeSurvival
             }
             return true;
         }
-        public static bool Gen(Player p, Level lvl, MapGenArgs args) => Gen(p, lvl, args.Seed.ToString());
-        public static bool Gen(Player p, Level lvl, string seed)
+        public static bool Gen(Player p, Level lvl, MapGenArgs args)
         {
+            string seed = args.Seed.ToString();
             if (File.Exists("levels/" + lvl.name + ".lvl") 
                 || File.Exists("levels/" + lvl.name + ".mcf") 
                 || File.Exists("levels/" + lvl.name + ".map") 
@@ -164,7 +162,7 @@ namespace NotAwesomeSurvival
         {
             public Player p;
             public Level lvl;
-            public NasLevel nl;
+            public NASLevel nl;
             public Perlin adjNoise;
             public float[,] temps;
             public int offsetX, offsetZ, biome;
@@ -194,7 +192,7 @@ namespace NotAwesomeSurvival
                     GenDungeons();
                 }
                 nl.dungeons = true;
-                NasLevel.Unload(lvl.name, nl);
+                NASLevel.Unload(lvl.name, nl);
             }
             public void CalcTemps()
             {
@@ -379,7 +377,7 @@ namespace NotAwesomeSurvival
                         for (ushort y = 1; y < lvl.Height; ++y)
                         {
                             ushort curBlock = lvl.FastGetBlock(x, y, z);
-                            if (NasBlock.IsPartOfSet(stoneTypes, curBlock) == -1)
+                            if (NASBlock.IsPartOfSet(stoneTypes, curBlock) == -1)
                             {
                                 nl.heightmap[x, z] = (ushort)(y - 1);
                                 break;
@@ -412,8 +410,8 @@ namespace NotAwesomeSurvival
                             {
                                 soil = 3;
                             }
-                            if (NasBlock.IsPartOfSet(stoneTypes, lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z)) != -1 && (
-                                NasBlock.IsPartOfSet(stoneTypes, lvl.FastGetBlock((ushort)x, (ushort)(y + 1), (ushort)z)) == -1)
+                            if (NASBlock.IsPartOfSet(stoneTypes, lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z)) != -1 && (
+                                NASBlock.IsPartOfSet(stoneTypes, lvl.FastGetBlock((ushort)x, (ushort)(y + 1), (ushort)z)) == -1)
                                         && ShouldThereBeSoil(x, y, z))
                             {
                                 soil = GetSoilType();
@@ -580,7 +578,7 @@ namespace NotAwesomeSurvival
                             double value = adjNoise.GetValue(xVal, yVal, zVal);
                             if (value > threshold)
                             {
-                                lvl.SetBlock((ushort)x, (ushort)y, (ushort)z, Nas.FromRaw(451));
+                                lvl.SetBlock((ushort)x, (ushort)y, (ushort)z, NASPlugin.FromRaw(451));
                             }
                         }
                     }
@@ -616,7 +614,7 @@ namespace NotAwesomeSurvival
                                     }
                                     if (r.Next(0, 320) == 0)
                                     {
-                                        lvl.SetBlock(x, (ushort)(y + 1), z, Nas.FromRaw(456));
+                                        lvl.SetBlock(x, (ushort)(y + 1), z, NASPlugin.FromRaw(456));
                                     }
                                 }
                             }
@@ -642,7 +640,7 @@ namespace NotAwesomeSurvival
                             }
                             if (biome == 2)
                             {
-                                topSoil = Nas.FromRaw(139);
+                                topSoil = NASPlugin.FromRaw(139);
                             }
                             if ((lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z) == 3 || (lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z) == 12 && biome == 1)) &&
                                 lvl.FastGetBlock((ushort)x, (ushort)(y + 1), (ushort)z) == 0)
@@ -747,7 +745,7 @@ namespace NotAwesomeSurvival
                     {
                         for (int x = 0; x < width; ++x)
                         {
-                            if (NasBlock.IsPartOfSet(NasBlock.waterSet, lvl.FastGetBlock((ushort)x, oceanHeight - 1, (ushort)z)) != -1)
+                            if (NASBlock.IsPartOfSet(NASBlock.waterSet, lvl.FastGetBlock((ushort)x, oceanHeight - 1, (ushort)z)) != -1)
                             {
                                 if (lvl.FastGetBlock((ushort)x, oceanHeight, (ushort)z) != 0)
                                 {
@@ -755,7 +753,7 @@ namespace NotAwesomeSurvival
                                 }
                                 if (r.NextDouble() <= 0.05)
                                 {
-                                    lvl.SetBlock((ushort)x, oceanHeight, (ushort)z, Nas.FromRaw(449));
+                                    lvl.SetBlock((ushort)x, oceanHeight, (ushort)z, NASPlugin.FromRaw(449));
                                 }
                             }
                         }
@@ -771,7 +769,7 @@ namespace NotAwesomeSurvival
                     {
                         return;
                     }
-                    NasTree.GenBirchTree(nl, r, x, y, z);
+                    NASTree.GenBirchTree(nl, r, x, y, z);
                     return;
                 }
                 if (biome == 4)
@@ -780,7 +778,7 @@ namespace NotAwesomeSurvival
                     {
                         return;
                     }
-                    NasTree.GenOakTree(nl, r, x, y, z);
+                    NASTree.GenOakTree(nl, r, x, y, z);
                     return;
                 }
                 if (biome == 6)
@@ -793,7 +791,7 @@ namespace NotAwesomeSurvival
                     {
                         return;
                     }
-                    NasTree.GenSwampTree(nl, r, x, y, z);
+                    NASTree.GenSwampTree(nl, r, x, y, z);
                     return;
                 }
                 if (biome == 1)
@@ -810,18 +808,18 @@ namespace NotAwesomeSurvival
                 {
                     if (biome == 2)
                     {
-                        NasTree.GenSpruceTree(nl, r, x, y, z);
+                        NASTree.GenSpruceTree(nl, r, x, y, z);
                     }
                     else
                     {
                         topSoil = 3;
                         if (r.Next(5) == 0)
                         {
-                            NasTree.GenBirchTree(nl, r, x, y, z);
+                            NASTree.GenBirchTree(nl, r, x, y, z);
                         }
                         else
                         {
-                            NasTree.GenOakTree(nl, r, x, y, z);
+                            NASTree.GenOakTree(nl, r, x, y, z);
                         }
                     }
                 }
@@ -843,7 +841,7 @@ namespace NotAwesomeSurvival
                         for (int x = 0; x < lvl.Width; ++x)
                         {
                             ushort curBlock = lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z);
-                            if (NasBlock.IsPartOfSet(stoneTypes, curBlock) == -1)
+                            if (NASBlock.IsPartOfSet(stoneTypes, curBlock) == -1)
                             {
                                 continue;
                             }
@@ -877,7 +875,7 @@ namespace NotAwesomeSurvival
                             {
                                 if (lvl.FastGetBlock(xPl, yPl, zPl) == 1 || lvl.FastGetBlock(xPl, yPl, zPl) == 48)
                                 {
-                                    lvl.SetBlock(xPl, yPl, zPl, biome >= 0 ? Nas.FromRaw(429) : Nas.FromRaw(452));
+                                    lvl.SetBlock(xPl, yPl, zPl, biome >= 0 ? NASPlugin.FromRaw(429) : NASPlugin.FromRaw(452));
                                 }
                             }
                         }
@@ -967,7 +965,7 @@ namespace NotAwesomeSurvival
                 ushort hereBlock = lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z);
                 if (hereBlock == 1 || hereBlock == 52 || hereBlock == 48)
                 {
-                    lvl.SetBlock((ushort)x, (ushort)y, (ushort)z, Nas.FromRaw(oreID));
+                    lvl.SetBlock((ushort)x, (ushort)y, (ushort)z, NASPlugin.FromRaw(oreID));
                 }
                 else
                 {
@@ -1013,21 +1011,21 @@ namespace NotAwesomeSurvival
                     lvl.CustomBlockDefs[8].FogR = 72;
                     lvl.CustomBlockDefs[8].FogG = 94;
                     lvl.CustomBlockDefs[8].FogB = 24;
-                    lvl.CustomBlockDefs[Nas.FromRaw(129)] = BlockDefinition.GlobalDefs[Nas.FromRaw(129)].Copy();
-                    lvl.CustomBlockDefs[Nas.FromRaw(129)].Name = "#Grass";
-                    lvl.CustomBlockDefs[Nas.FromRaw(129)].FogR = 176;
-                    lvl.CustomBlockDefs[Nas.FromRaw(129)].FogG = 191;
-                    lvl.CustomBlockDefs[Nas.FromRaw(129)].FogB = 176;
+                    lvl.CustomBlockDefs[NASPlugin.FromRaw(129)] = BlockDefinition.GlobalDefs[NASPlugin.FromRaw(129)].Copy();
+                    lvl.CustomBlockDefs[NASPlugin.FromRaw(129)].Name = "#Grass";
+                    lvl.CustomBlockDefs[NASPlugin.FromRaw(129)].FogR = 176;
+                    lvl.CustomBlockDefs[NASPlugin.FromRaw(129)].FogG = 191;
+                    lvl.CustomBlockDefs[NASPlugin.FromRaw(129)].FogB = 176;
                     lvl.CustomBlockDefs[3] = BlockDefinition.GlobalDefs[3].Copy();
                     lvl.CustomBlockDefs[3].Name = "#Dirt";
                     lvl.CustomBlockDefs[3].FogR = 176;
                     lvl.CustomBlockDefs[3].FogG = 191;
                     lvl.CustomBlockDefs[3].FogB = 176;
-                    lvl.CustomBlockDefs[Nas.FromRaw(130)] = BlockDefinition.GlobalDefs[Nas.FromRaw(130)].Copy();
-                    lvl.CustomBlockDefs[Nas.FromRaw(130)].Name = "#Tall grass";
-                    lvl.CustomBlockDefs[Nas.FromRaw(130)].FogR = 176;
-                    lvl.CustomBlockDefs[Nas.FromRaw(130)].FogG = 191;
-                    lvl.CustomBlockDefs[Nas.FromRaw(130)].FogB = 176;
+                    lvl.CustomBlockDefs[NASPlugin.FromRaw(130)] = BlockDefinition.GlobalDefs[NASPlugin.FromRaw(130)].Copy();
+                    lvl.CustomBlockDefs[NASPlugin.FromRaw(130)].Name = "#Tall grass";
+                    lvl.CustomBlockDefs[NASPlugin.FromRaw(130)].FogR = 176;
+                    lvl.CustomBlockDefs[NASPlugin.FromRaw(130)].FogG = 191;
+                    lvl.CustomBlockDefs[NASPlugin.FromRaw(130)].FogB = 176;
                     BlockDefinition.Save(false, lvl);
                 }
                 for (int y = 0; y < lvl.Height - 1; y++)
@@ -1044,7 +1042,7 @@ namespace NotAwesomeSurvival
                                     nl.blocksThatMustBeDisturbed.Add(new(x, y, z));
                                 }
                             }
-                            if (NasBlock.IsPartOfSet(stoneTypes, curBlock) == -1)
+                            if (NASBlock.IsPartOfSet(stoneTypes, curBlock) == -1)
                             {
                                 continue;
                             }
@@ -1052,7 +1050,7 @@ namespace NotAwesomeSurvival
                             {
                                 if (BlockExposed(x, y, z))
                                 {
-                                    if (NasBlock.IsPartOfSet(stoneTypes, lvl.FastGetBlock((ushort)x, (ushort)(y + 1), (ushort)z)) == -1)
+                                    if (NASBlock.IsPartOfSet(stoneTypes, lvl.FastGetBlock((ushort)x, (ushort)(y + 1), (ushort)z)) == -1)
                                     {
                                         continue;
                                     }
@@ -1121,15 +1119,16 @@ namespace NotAwesomeSurvival
                     GenerateDungeon(r, lvl, nl);
                 }
             }
-            public static void GenerateDungeon(NasPlayer np, int x, int y, int z, Level level, NasLevel nsl)
+            public static void GenerateDungeon(NASPlayer np, int x, int y, int z, Level level, NASLevel nsl)
             {
                 Random rng = new(MakeInt(level.name));
                 if (np.p != null)
                 {
+                    np.Message("Generating dungeon.");
                     GenerateDungeon(rng, x + 2, y, z + 2, level, nsl, true, np.p);
                 }
             }
-            public static void GenerateDungeon(Random rng, int x, int y, int z, Level level, NasLevel nsl, bool forced, Player p)
+            public static void GenerateDungeon(Random rng, int x, int y, int z, Level level, NASLevel nsl, bool forced, Player p)
             {
                 for (int dx = 0; dx < 9; dx++)
                 {
@@ -1139,7 +1138,7 @@ namespace NotAwesomeSurvival
                         {
                             if (rng.Next(0, 3) == 0)
                             {
-                                level.SetBlock((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz), Nas.FromRaw(180));
+                                level.SetBlock((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz), NASPlugin.FromRaw(180));
                             }
                             else
                             {
@@ -1165,7 +1164,7 @@ namespace NotAwesomeSurvival
                     {
                         for (int dz = 2; dz < 7; dz++)
                         {
-                            level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), Nas.FromRaw(476));
+                            level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), NASPlugin.FromRaw(476));
                         }
                     }
                     level.SetTile((ushort)(x + 3), (ushort)(y + 2), (ushort)(z + 4), 0);
@@ -1188,11 +1187,11 @@ namespace NotAwesomeSurvival
                     level.SetTile((ushort)(x + 2), (ushort)(y + 1), (ushort)(z + 6), 48);
                     level.SetTile((ushort)(x + 6), (ushort)(y + 1), (ushort)(z + 2), 48);
                     level.SetTile((ushort)(x + 6), (ushort)(y + 1), (ushort)(z + 6), 48);
-                    level.SetBlock((ushort)(x + 2), (ushort)(y + 1), (ushort)(z + 4), Nas.FromRaw(469));
-                    level.SetBlock((ushort)(x + 6), (ushort)(y + 1), (ushort)(z + 4), Nas.FromRaw(469));
-                    level.SetBlock((ushort)(x + 4), (ushort)(y + 1), (ushort)(z + 2), Nas.FromRaw(469));
-                    level.SetBlock((ushort)(x + 4), (ushort)(y + 1), (ushort)(z + 6), Nas.FromRaw(469));
-                    level.SetBlock((ushort)(x + 4), (ushort)(y + 2), (ushort)(z + 4), Nas.FromRaw(457));
+                    level.SetBlock((ushort)(x + 2), (ushort)(y + 1), (ushort)(z + 4), NASPlugin.FromRaw(469));
+                    level.SetBlock((ushort)(x + 6), (ushort)(y + 1), (ushort)(z + 4), NASPlugin.FromRaw(469));
+                    level.SetBlock((ushort)(x + 4), (ushort)(y + 1), (ushort)(z + 2), NASPlugin.FromRaw(469));
+                    level.SetBlock((ushort)(x + 4), (ushort)(y + 1), (ushort)(z + 6), NASPlugin.FromRaw(469));
+                    level.SetBlock((ushort)(x + 4), (ushort)(y + 2), (ushort)(z + 4), NASPlugin.FromRaw(457));
                     GenLoot(x + 1, y + 2, z + 1, level, rng, nsl, forced, p);
                     GenLoot(x + 7, y + 2, z + 7, level, rng, nsl, forced, p);
                     return;
@@ -1210,7 +1209,7 @@ namespace NotAwesomeSurvival
                     {
                         for (int dz = 1; dz < 8; dz++)
                         {
-                            level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), (rng.Next(2) == 0) ? (ushort)65 : Nas.FromRaw(685));
+                            level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), (rng.Next(2) == 0) ? (ushort)65 : NASPlugin.FromRaw(685));
                         }
                     }
                     GenLoot(x + 4, y + 3, z + 4, level, rng, nsl, forced, p);
@@ -1222,13 +1221,13 @@ namespace NotAwesomeSurvival
                     {
                         int dx = rng.Next(1, 8),
                             dz = rng.Next(1, 8);
-                        level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), Nas.FromRaw(604));
+                        level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), NASPlugin.FromRaw(604));
                     }
                     for (int count = 0; count < 4; count++)
                     {
                         int dx = rng.Next(1, 8),
                             dz = rng.Next(1, 8);
-                        level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), Nas.FromRaw(653));
+                        level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), NASPlugin.FromRaw(653));
                     }
                     GenLoot(x + 4, y + 2, z + 4, level, rng, nsl, forced, p);
                     return;
@@ -1261,11 +1260,11 @@ namespace NotAwesomeSurvival
                     {
                         for (int dz = 1; dz < 8; dz++)
                         {
-                            level.SetBlock((ushort)(x + dx), (ushort)(y + 1), (ushort)(z + dz), Nas.FromRaw(129));
+                            level.SetBlock((ushort)(x + dx), (ushort)(y + 1), (ushort)(z + dz), NASPlugin.FromRaw(129));
                         }
                     }
-                    level.SetBlock((ushort)(x + 4), (ushort)(y + 3), (ushort)(z + 4), Nas.FromRaw(171));
-                    NasBlock.Entity bEntity = new()
+                    level.SetBlock((ushort)(x + 4), (ushort)(y + 3), (ushort)(z + 4), NASPlugin.FromRaw(171));
+                    BlockEntity bEntity = new()
                     {
                         blockText = "&mCongratulations. You touched grass."
                     };
@@ -1277,17 +1276,11 @@ namespace NotAwesomeSurvival
                     return;
                 }
             }
-            public static void GenerateDungeon(Random rng, Level level, NasLevel nsl)
+            public static void GenerateDungeon(Random rng, Level level, NASLevel nsl) => GenerateDungeon(rng, rng.Next(10, mapWideness - 10), rng.Next(0, 15), rng.Next(10, mapWideness - 10), level, nsl, false, Player.Console);
+            public static void GenLoot(int x, int y, int z, Level level, Random rng, NASLevel nsl, bool forced, Player p)
             {
-                int genX = rng.Next(10, mapWideness - 10),
-                    genZ = rng.Next(10, mapWideness - 10),
-                    genY = rng.Next(0, 15);
-                GenerateDungeon(rng, genX, genY, genZ, level, nsl, false, Nas.NasConsole);
-            }
-            public static void GenLoot(int x, int y, int z, Level level, Random rng, NasLevel nsl, bool forced, Player p)
-            {
-                level.SetBlock((ushort)x, (ushort)y, (ushort)z, Nas.FromRaw(647));
-                NasBlock.Entity bEntity = new()
+                level.SetBlock((ushort)x, (ushort)y, (ushort)z, NASPlugin.FromRaw(647));
+                BlockEntity bEntity = new()
                 {
                     drop = new(41, rng.Next(1, 5))
                 };
@@ -1324,4 +1317,3 @@ namespace NotAwesomeSurvival
         }
     }
 }
-#endif

@@ -17,14 +17,14 @@ namespace MCGalaxy.Commands.Fun
 {
     public class CmdLike : Command2
     {
-        public override string name { get { return "Like"; } }
-        public override string type { get { return CommandTypes.Games; } }
-        public override bool SuperUseable { get { return false; } }
-        public override void Use(Player p, string message, CommandData data) { RateMap(p, true); }
+        public override string Name => "Like";
+        public override string Type => CommandTypes.Games;
+        public override bool SuperUseable => false;
+        public override void Use(Player p, string message, CommandData data) => RateMap(p, true);
         protected bool RateMap(Player p, bool like)
         {
             string prefix = like ? "" : "dis";
-            IGame game = IGame.GameOn(p.level);
+            IGame game = IGame.GameOn(p.Level);
             if (game == null)
             {
                 p.Message("Can only {0}like this map when a game is running on it.", prefix); return false;
@@ -45,7 +45,7 @@ namespace MCGalaxy.Commands.Fun
         }
         protected static bool CheckIsAuthor(Player p)
         {
-            string[] authors = p.level.Config.Authors.SplitComma();
+            string[] authors = p.Level.Config.Authors.SplitComma();
             return authors.CaselessContains(p.name);
         }
         public override void Help(Player p)
@@ -56,8 +56,8 @@ namespace MCGalaxy.Commands.Fun
     }
     public sealed class CmdDislike : CmdLike
     {
-        public override string name { get { return "Dislike"; } }
-        public override void Use(Player p, string message, CommandData data) { RateMap(p, false); }
+        public override string Name => "Dislike";
+        public override void Use(Player p, string message, CommandData data) => RateMap(p, false);
         public override void Help(Player p)
         {
             p.Message("&T/Dislike");

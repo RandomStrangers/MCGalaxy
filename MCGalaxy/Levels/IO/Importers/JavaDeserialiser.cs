@@ -52,7 +52,7 @@ namespace MCGalaxy.Levels.IO
     {
         public JClassDesc Desc;
         public object Name;
-        public override string ToString() { return Desc.Name + "." + Name; }
+        public override string ToString() => Desc.Name + "." + Name;
     }
     // Java serialised objects are quite complicated and annoying to parse
     //  http://www.javaworld.com/article/2072752/the-java-serialization-algorithm-revealed.html
@@ -63,45 +63,25 @@ namespace MCGalaxy.Levels.IO
     {
         public BinaryReader src;
         public List<object> handles = new();
-        public byte[] ReadBytes(int count) { return src.ReadBytes(count); }
-        public byte ReadUInt8() { return src.ReadByte(); }
-        public short ReadInt16() { return IPAddress.HostToNetworkOrder(src.ReadInt16()); }
-        public ushort ReadUInt16() { return (ushort)IPAddress.HostToNetworkOrder(src.ReadInt16()); }
-        public int ReadInt32() { return IPAddress.HostToNetworkOrder(src.ReadInt32()); }
-        public long ReadInt64() { return IPAddress.HostToNetworkOrder(src.ReadInt64()); }
-        public string ReadUtf8() { return Encoding.UTF8.GetString(src.ReadBytes(ReadUInt16())); }
-        public object ReadObject() { return ReadObject(ReadUInt8()); }
-        const byte TC_NULL = 0x70;
-        const byte TC_REFERENCE = 0x71;
-        const byte TC_CLASSDESC = 0x72;
-        const byte TC_OBJECT = 0x73;
-        const byte TC_STRING = 0x74;
-        const byte TC_ARRAY = 0x75;
-        const byte TC_CLASS = 0x76;
-        const byte TC_BLOCKDATA = 0x77;
-        const byte TC_ENDBLOCKDATA = 0x78;
-        const byte TC_RESET = 0x79; // Unimplemented
-        const byte TC_BLOCKDATALONG = 0x7A; // Unimplemented
-        const byte TC_EXCEPTION = 0x7B; // Unimplemented
-        const byte TC_LONGSTRING = 0x7C; // Unimplemented
-        const byte TC_PROXYCLASSDESC = 0x7D; // Unimplemented
-        const byte TC_ENUM = 0x7E;
-        const int baseWireHandle = 0x7E0000;
-        const byte SC_WRITE_METHOD = 0x01, SC_SERIALIZABLE = 0x02;
-        object ReadObject(byte typeCode)
+        public byte[] ReadBytes(int count) => src.ReadBytes(count);
+        public byte ReadUInt8() => src.ReadByte();
+        public short ReadInt16() => IPAddress.HostToNetworkOrder(src.ReadInt16());
+        public ushort ReadUInt16() => (ushort)IPAddress.HostToNetworkOrder(src.ReadInt16());
+        public int ReadInt32() => IPAddress.HostToNetworkOrder(src.ReadInt32());
+        public long ReadInt64() => IPAddress.HostToNetworkOrder(src.ReadInt64());
+        public string ReadUtf8() => Encoding.UTF8.GetString(src.ReadBytes(ReadUInt16()));
+        public object ReadObject() => ReadObject(ReadUInt8());
+        object ReadObject(byte typeCode) => typeCode switch
         {
-            return typeCode switch
-            {
-                TC_STRING => NewString(),
-                TC_NULL => null,
-                TC_REFERENCE => PrevObject(),
-                TC_OBJECT => NewObject(),
-                TC_ARRAY => NewArray(),
-                TC_ENUM => NewEnum(),
-                TC_CLASS => NewClass(),
-                _ => throw new InvalidDataException("Invalid typecode: " + typeCode),
-            };
-        }
+            0x74 => NewString(),
+            0x70 => null,
+            0x71 => PrevObject(),
+            0x73 => NewObject(),
+            0x75 => NewArray(),
+            0x7E => NewEnum(),
+            0x76 => NewClass(),
+            _ => throw new InvalidDataException("Invalid typecode: " + typeCode),
+        };
         string NewString()
         {
             string value = ReadUtf8();
@@ -110,7 +90,7 @@ namespace MCGalaxy.Levels.IO
         }
         object PrevObject()
         {
-            int handle = ReadInt32() - baseWireHandle;
+            int handle = ReadInt32() - 0x7E0000;
             if (handle >= 0 && handle < handles.Count) return handles[handle];
             throw new InvalidDataException("Invalid stream handle: " + handle);
         }
@@ -201,14 +181,14 @@ namespace MCGalaxy.Levels.IO
         JClassDesc ClassDesc()
         {
             byte typeCode = ReadUInt8();
-            if (typeCode == TC_CLASSDESC) return NewClassDesc();
-            if (typeCode == TC_NULL) return null;
-            if (typeCode == TC_REFERENCE) return (JClassDesc)PrevObject();
+            if (typeCode == 0x72) return NewClassDesc();
+            if (typeCode == 0x70) return null;
+            if (typeCode == 0x71) return (JClassDesc)PrevObject();
             throw new InvalidDataException("Invalid type code: " + typeCode);
         }
         JClassData ClassData(JClassDesc desc)
         {
-            if ((desc.Flags & SC_SERIALIZABLE) == 0)
+            if ((desc.Flags & 0x02) == 0)
             {
                 throw new InvalidDataException("Invalid class data flags: " + desc.Flags);
             }
@@ -220,7 +200,7 @@ namespace MCGalaxy.Levels.IO
             {
                 data.Values[i] = Value(desc.Fields[i].Type);
             }
-            if ((desc.Flags & SC_WRITE_METHOD) != 0)
+            if ((desc.Flags & 0x01) != 0)
             {
                 SkipAnnotation();
             }
@@ -230,8 +210,16 @@ namespace MCGalaxy.Levels.IO
         {
             if (type == 'B') return ReadUInt8();
             if (type == 'C') return (char)ReadUInt16();
-            if (type == 'D') { long tmp = ReadInt64(); return *(double*)&tmp; }
-            if (type == 'F') { int tmp = ReadInt32(); return *(float*)&tmp; }
+            if (type == 'D') 
+            { 
+                long tmp = ReadInt64(); 
+                return *(double*)&tmp;
+            }
+            if (type == 'F') 
+            { 
+                int tmp = ReadInt32(); 
+                return *(float*)&tmp; 
+            }
             if (type == 'I') return ReadInt32();
             if (type == 'J') return ReadInt64();
             if (type == 'S') return ReadInt16();
@@ -263,9 +251,9 @@ namespace MCGalaxy.Levels.IO
         void SkipAnnotation()
         {
             byte typeCode;
-            while ((typeCode = ReadUInt8()) != TC_ENDBLOCKDATA)
+            while ((typeCode = ReadUInt8()) != 0x78)
             {
-                if (typeCode == TC_BLOCKDATA)
+                if (typeCode == 0x77)
                 {
                     ReadBytes(ReadUInt8());
                 }

@@ -17,7 +17,7 @@ namespace MCGalaxy.Modules.Games.LS
 {
     public sealed class LSPlugin : Plugin
     {
-        public override string name { get { return "LS"; } }
+        public override string Name => "LS";
         static readonly Command cmdLS = new CmdLavaSurvival();
         public override void Load(bool startup)
         {
@@ -26,7 +26,7 @@ namespace MCGalaxy.Modules.Games.LS
             game.Config.Path = "props/lavasurvival.properties";
             game.ReloadConfig();
             game.AutoStart();
-            OnConfigUpdatedEvent.Register(game.ReloadConfig, Priority.Low);
+            OnConfigUpdatedEvent.Register(game.ReloadConfig, 0);
         }
         public override void Unload(bool shutdown)
         {

@@ -17,11 +17,8 @@ namespace MCGalaxy.Modules.Warps
 {
     class CmdWarp : WarpCommand
     {
-        public override string name { get { return "Warp"; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can manage warps") }; }
-        }
+        public override string Name => "Warp";
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can manage warps") };
         public override void Use(Player p, string message, CommandData data)
         {
             WarpList.Global ??= LoadList("extra/warps.save");

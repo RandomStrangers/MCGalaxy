@@ -41,11 +41,8 @@ namespace MCGalaxy.Util.Imaging
             dc_huff_tables = new HuffmanTable[4];
         JpegComponent[] comps;
         byte lowestHor = 1, lowestVer = 1;
-        public static bool DetectHeader(byte[] data)
-        {
-            return MatchesSignature(data, jfifSig)
+        public static bool DetectHeader(byte[] data) => MatchesSignature(data, jfifSig)
                 || MatchesSignature(data, exifSig);
-        }
         public override Bitmap2D Decode(byte[] src)
         {
             SetBuffer(src);
@@ -255,7 +252,6 @@ namespace MCGalaxy.Util.Imaging
                     tables = src[offset++];
                 SetHuffTables(compID, tables);
             }
-            offset += 3;
         }
         void SetHuffTables(byte compID, byte tables)
         {

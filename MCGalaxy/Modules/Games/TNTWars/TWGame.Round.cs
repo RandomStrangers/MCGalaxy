@@ -39,25 +39,25 @@ namespace MCGalaxy.Modules.Games.TW
             //Announcing Etc.
             // TODO: tidy up
             string Gamemode = "Free For All";
-            if (Config.Mode == TWGameMode.TDM) Gamemode = "Team Deathmatch";
+            if (Config.Mode == 1) Gamemode = "Team Deathmatch";
             string difficulty = "Normal";
             string HitsToDie = "2";
             string explosiontime = "medium";
             string explosionsize = "normal";
             switch (Config.Difficulty)
             {
-                case TWDifficulty.Easy:
+                case 0:
                     difficulty = "Easy";
                     explosiontime = "long";
                     break;
-                case TWDifficulty.Normal:
+                case 1:
                     difficulty = "Normal";
                     break;
-                case TWDifficulty.Hard:
+                case 2:
                     HitsToDie = "1";
                     difficulty = "Hard";
                     break;
-                case TWDifficulty.Extreme:
+                case 3:
                     HitsToDie = "1";
                     explosiontime = "short";
                     explosionsize = "big";
@@ -71,14 +71,14 @@ namespace MCGalaxy.Modules.Games.TW
                                " &Sexplosion delay and with a &3" + explosionsize + " &Sexplosion size)" +
                                ", team killing is &3" + teamkillling + " &Sand you can place &3" + cfg.MaxActiveTnt
                                + " &STNT at a time and there is a score limit of &3" + cfg.ScoreRequired + "&S!!");
-            if (Config.Mode == TWGameMode.TDM)
+            if (Config.Mode == 1)
             {
                 Map.Message("Start your message with ':' to send it to team only!");
             }
             UpdateBlockHandlers(); // TODO: Move to after GracePeriod?
             GracePeriod();
             RoundInProgress = true;
-            MessageMap(CpeMessageType.Announcement, "&4TNT Wars has started!");
+            MessageMap(100, "&4TNT Wars has started!");
             while (Running && RoundInProgress && !HasSomeoneWon())
             {
                 Thread.Sleep(250);
@@ -86,7 +86,7 @@ namespace MCGalaxy.Modules.Games.TW
         }
         bool HasSomeoneWon()
         {
-            if (Config.Mode == TWGameMode.TDM)
+            if (Config.Mode == 1)
             {
                 return Red.Score >= cfg.ScoreRequired || Blue.Score >= cfg.ScoreRequired;
             }
@@ -99,19 +99,25 @@ namespace MCGalaxy.Modules.Games.TW
         }
         void GracePeriod()
         {
-            if (!cfg.GracePeriod) return;
-            int duration = (int)cfg.GracePeriodTime.TotalSeconds;
-            Map.Message("Grace period of &a" + duration + " &Sseconds");
-            Map.Message("Building is disabled during this time!");
-            if (!Running) return;
-            Map.Config.Buildable = false;
-            Map.Config.Deletable = false;
-            Map.UpdateBlockPermissions();
-            DoCountdown("&b{0} &Sseconds left", duration, 15);
-            if (!Running) return;
-            Map.Message("Grace period is over!");
-            Map.Message("You can now &aplace &cTNT!");
-            RestoreBuildPerms();
+            if (cfg.GracePeriod)
+            {
+                int duration = (int)cfg.GracePeriodTime.TotalSeconds;
+                Map.Message("Grace period of &a" + duration + " &Sseconds");
+                Map.Message("Building is disabled during this time!");
+                if (Running)
+                {
+                    Map.Config.Buildable = false;
+                    Map.Config.Deletable = false;
+                    Map.UpdateBlockPermissions();
+                    DoCountdown("&b{0} &Sseconds left", duration, 15);
+                    if (Running)
+                    {
+                        Map.Message("Grace period is over!");
+                        Map.Message("You can now &aplace &cTNT!");
+                        RestoreBuildPerms();
+                    }
+                }
+            }
         }
         protected override bool SetMap(string map)
         {
@@ -125,41 +131,40 @@ namespace MCGalaxy.Modules.Games.TW
         }
         public override void EndRound()
         {
-            if (!RoundInProgress) return;
-            RoundInProgress = false;
-            RestoreBuildPerms();
-            Player[] all = allPlayers.Items;
-            foreach (Player p in all)
+            if (RoundInProgress)
             {
-                PlayerActions.Respawn(p);
-            }
-            if (Config.Mode == TWGameMode.TDM)
-            {
-                if (Red.Score > Blue.Score)
+                RoundInProgress = false;
+                RestoreBuildPerms();
+                Player[] all = allPlayers.Items;
+                foreach (Player p in all)
                 {
-                    int amount = Red.Score - Blue.Score;
-                    Map.Message(Red.ColoredName + " &Swon &cTNT Wars &Sby &f" + amount + " &Spoints!");
+                    PlayerActions.Respawn(p);
                 }
-                else if (Blue.Score > Red.Score)
+                if (Config.Mode == 1)
                 {
-                    int amount = Blue.Score - Red.Score;
-                    Map.Message(Blue.ColoredName + " &Swon &cTNT Wars &Sby &f" + amount + " &Spoints!");
+                    if (Red.Score > Blue.Score)
+                    {
+                        Map.Message(Red.ColoredName + " &Swon &cTNT Wars &Sby &f" + (Red.Score - Blue.Score) + " &Spoints!");
+                    }
+                    else if (Blue.Score > Red.Score)
+                    {
+                        Map.Message(Blue.ColoredName + " &Swon &cTNT Wars &Sby &f" + (Blue.Score - Red.Score) + " &Spoints!");
+                    }
+                    else
+                    {
+                        Map.Message("The round ended in a tie!");
+                    }
                 }
-                else
+                Map.Message("&aTop player scores:");
+                PlayerAndScore[] top = SortedByScore();
+                for (int i = 0; i < Math.Min(top.Length, 3); i++)
                 {
-                    Map.Message("The round ended in a tie!");
+                    Map.Message(FormatTopScore(top, i));
                 }
-            }
-            Map.Message("&aTop player scores:");
-            PlayerAndScore[] top = SortedByScore();
-            int count = Math.Min(top.Length, 3);
-            for (int i = 0; i < count; i++)
-            {
-                Map.Message(FormatTopScore(top, i));
-            }
-            foreach (Player p in all)
-            {
-                p.Message("TNT Wars: You scored &f" + Get(p).Score + " points");
+                foreach (Player p in all)
+                {
+                    p.Message("TNT Wars: You scored &f" + Get(p).Score + " points");
+                }
             }
         }
         bool buildable = true, deletable = true;

@@ -52,24 +52,12 @@ namespace MCGalaxy.Modules.Games.LS
         public int ExtremeChance = 0;
         [ConfigInt("sponge-life-ticks", "Sponges", 200, 0)]
         public int SpongeLife = 200;
-        public override bool AllowAutoload { get { return false; } }
-        protected override string GameName { get { return "Lava Survival"; } }
-        public TimeSpan GetRoundTime(LSMapConfig mapCfg)
-        {
-            return GetTimespan(mapCfg._RoundTime, DefaultRoundTime);
-        }
-        public TimeSpan GetFloodTime(LSMapConfig mapCfg)
-        {
-            return GetTimespan(mapCfg._FloodTime, DefaultFloodTime);
-        }
-        public TimeSpan GetLayerInterval(LSMapConfig mapCfg)
-        {
-            return GetTimespan(mapCfg._LayerInterval, DefaultLayerInterval);
-        }
-        static TimeSpan GetTimespan(TimeSpan? mapValue, TimeSpan defaultValue)
-        {
-            return mapValue ?? defaultValue;
-        }
+        public override bool AllowAutoload => false;
+        protected override string GameName => "Lava Survival";
+        public TimeSpan GetRoundTime(LSMapConfig mapCfg) => GetTimespan(mapCfg._RoundTime, DefaultRoundTime);
+        public TimeSpan GetFloodTime(LSMapConfig mapCfg) => GetTimespan(mapCfg._FloodTime, DefaultFloodTime);
+        public TimeSpan GetLayerInterval(LSMapConfig mapCfg) => GetTimespan(mapCfg._LayerInterval, DefaultLayerInterval);
+        static TimeSpan GetTimespan(TimeSpan? mapValue, TimeSpan defaultValue) => mapValue ?? defaultValue;
     }
     public sealed class LSMapConfig : RoundsGameMapConfig
     {

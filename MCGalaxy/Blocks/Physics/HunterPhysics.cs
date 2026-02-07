@@ -103,7 +103,7 @@ namespace MCGalaxy.Blocks.Physics
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {
-                if (p.level != lvl || p.invincible) continue;
+                if (p.Level != lvl || p.invincible) continue;
                 Position pos = p.Pos;
                 int curDist = Math.Abs(pos.BlockX - x) + Math.Abs(pos.BlockY - y) + Math.Abs(pos.BlockZ - z);
                 if (curDist < closestDist)

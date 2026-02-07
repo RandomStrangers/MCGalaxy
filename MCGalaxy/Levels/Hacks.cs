@@ -26,32 +26,21 @@ namespace MCGalaxy
             return packet[1] != 0 && packet[2] != 0 && packet[3] != 0 && packet[4] != 0 && packet[5] != 0;
         }
         /// <summary> Returns whether the player is currently able to fly. </summary>
-        public static bool CanUseFly(Player p)
-        {
-            return MakeHackControl(p, p.GetMotd())[1] != 0;
-        }
+        public static bool CanUseFly(Player p) => MakeHackControl(p, p.GetMotd())[1] != 0;
         /// <summary> Returns whether the player is currently able to use noclip. </summary>
-        public static bool CanUseNoclip(Player p)
-        {
-            return MakeHackControl(p, p.GetMotd())[2] != 0;
-        }
+        public static bool CanUseNoclip(Player p) => MakeHackControl(p, p.GetMotd())[2] != 0;
         /// <summary> Returns whether the player is currently able to move at faster speeds. </summary>
-        public static bool CanUseSpeed(Player p)
-        {
-            return MakeHackControl(p, p.GetMotd())[3] != 0;
-        }
+        public static bool CanUseSpeed(Player p) => MakeHackControl(p, p.GetMotd())[3] != 0;
         /// <summary> Returns whether the player is currently able to respawn. </summary>
-        public static bool CanUseRespawn(Player p)
-        {
-            return MakeHackControl(p, p.GetMotd())[4] != 0;
-        }
+        public static bool CanUseRespawn(Player p) => MakeHackControl(p, p.GetMotd())[4] != 0;
         /// <summary> Parses the MOTD flags and returns resulting HackControl packet. </summary>
-        ///<remarks> "+ophax" permission is determined by p.Rank >= LevelPermission.Operator </remarks>
+        ///<remarks> "+ophax" permission is determined by p.Rank >= 80 </remarks>
         public static byte[] MakeHackControl(Player p, string motd)
         {
             motd = Colors.Strip(motd);
-            bool isOp = p.Rank >= LevelPermission.Operator;
-            bool fly = true, noclip = true, speed = true, respawn = true, thirdPerson = true;
+            bool isOp = p.Rank >= 80,
+                fly = true, noclip = true, speed = true, 
+                respawn = true, thirdPerson = true;
             short maxJump = -1;
             string[] parts = motd.SplitSpaces();
             for (int i = 0; i < parts.Length; i++)
@@ -59,22 +48,60 @@ namespace MCGalaxy
                 string part = parts[i];
                 if (part.CaselessEq("-hax") || (part.CaselessEq("-ophax") && isOp))
                 {
-                    fly = false; noclip = false; speed = false; respawn = false; thirdPerson = false;
+                    fly = false; 
+                    noclip = false; 
+                    speed = false; 
+                    respawn = false; 
+                    thirdPerson = false;
                 }
                 else if (part.CaselessEq("+hax") || (part.CaselessEq("+ophax") && isOp))
                 {
-                    fly = true; noclip = true; speed = true; respawn = true; thirdPerson = true;
+                    fly = true;
+                    noclip = true; 
+                    speed = true;
+                    respawn = true;
+                    thirdPerson = true;
                 }
-                else if (part.CaselessEq("+noclip")) { noclip = true; }
-                else if (part.CaselessEq("+fly")) { fly = true; }
-                else if (part.CaselessEq("+speed")) { speed = true; }
-                else if (part.CaselessEq("+respawn")) { respawn = true; }
-                else if (part.CaselessEq("+thirdperson")) { thirdPerson = true; }
-                else if (part.CaselessEq("-noclip")) { noclip = false; }
-                else if (part.CaselessEq("-fly")) { fly = false; }
-                else if (part.CaselessEq("-speed")) { speed = false; }
-                else if (part.CaselessEq("-respawn")) { respawn = false; }
-                else if (part.CaselessEq("-thirdperson")) { thirdPerson = false; }
+                else if (part.CaselessEq("+noclip")) 
+                { 
+                    noclip = true; 
+                }
+                else if (part.CaselessEq("+fly")) 
+                { 
+                    fly = true;
+                }
+                else if (part.CaselessEq("+speed")) 
+                { 
+                    speed = true;
+                }
+                else if (part.CaselessEq("+respawn")) 
+                { 
+                    respawn = true;
+                }
+                else if (part.CaselessEq("+thirdperson")) 
+                {
+                    thirdPerson = true; 
+                }
+                else if (part.CaselessEq("-noclip")) 
+                { 
+                    noclip = false; 
+                }
+                else if (part.CaselessEq("-fly")) 
+                { 
+                    fly = false; 
+                }
+                else if (part.CaselessEq("-speed")) 
+                { 
+                    speed = false;
+                }
+                else if (part.CaselessEq("-respawn")) 
+                { 
+                    respawn = false; 
+                }
+                else if (part.CaselessEq("-thirdperson")) 
+                { 
+                    thirdPerson = false;
+                }
                 if (!part.CaselessStarts("jumpheight=")) continue;
                 string heightPart = part.Substring(part.IndexOf('=') + 1);
                 if (NumberUtils.TryParseSingle(heightPart, out float value))

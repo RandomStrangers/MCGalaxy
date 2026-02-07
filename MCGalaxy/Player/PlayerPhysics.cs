@@ -27,24 +27,24 @@ namespace MCGalaxy.Blocks.Physics
                     for (int x = min.X; x <= max.X; x++)
                     {
                         ushort xP = (ushort)x, yP = (ushort)y, zP = (ushort)z;
-                        ushort block = p.level.GetBlock(xP, yP, zP);
+                        ushort block = p.Level.GetBlock(xP, yP, zP);
                         if (block == Block.Invalid) continue;
-                        AABB blockBB = p.level.blockAABBs[block].Offset(x * 32, y * 32, z * 32);
+                        AABB blockBB = p.Level.blockAABBs[block].Offset(x * 32, y * 32, z * 32);
                         if (!AABB.Intersects(ref bb, ref blockBB)) continue;
                         // We can activate only one walkthrough block per movement
                         if (!hitWalkthrough)
                         {
-                            HandleWalkthrough handler = p.level.WalkthroughHandlers[block];
+                            HandleWalkthrough handler = p.Level.WalkthroughHandlers[block];
                             if (handler != null && handler(p, block, xP, yP, zP))
                             {
-                                p.lastWalkthrough = p.level.PosToInt(xP, yP, zP);
+                                p.lastWalkthrough = p.Level.PosToInt(xP, yP, zP);
                                 hitWalkthrough = true;
                             }
                         }
                         // Some blocks will cause death of players
-                        if (!p.level.Props[block].KillerBlock) continue;
+                        if (!p.Level.Props[block].KillerBlock) continue;
                         if (block == Block.Train && p.trainInvincible) continue;
-                        if (p.level.Config.KillerBlocks) p.HandleDeath(block);
+                        if (p.Level.Config.KillerBlocks) p.HandleDeath(block);
                     }
             if (!hitWalkthrough) p.lastWalkthrough = -1;
         }
@@ -65,13 +65,13 @@ namespace MCGalaxy.Blocks.Physics
                 for (int x = min.X; x <= max.X; x++)
                 {
                     ushort block = GetSurvivalBlock(p, x, min.Y, z);
-                    byte collide = p.level.CollideType(block);
-                    allGas = allGas && collide == CollideType.WalkThrough;
-                    if (!CollideType.IsSolid(collide)) continue;
+                    byte collide = p.Level.CollideType(block);
+                    allGas = allGas && collide == 0;
+                    if (!DefaultSet.IsSolid(collide)) continue;
                     int fallHeight = p.startFallY - bb.Min.Y;
-                    if (fallHeight > p.level.Config.FallHeight * 32)
+                    if (fallHeight > p.Level.Config.FallHeight * 32)
                     {
-                        p.HandleDeath(Block.Air, null, false, true);
+                        p.HandleDeath(0, null, false, true);
                     }
                     p.startFallY = -1;
                     return;
@@ -88,14 +88,14 @@ namespace MCGalaxy.Blocks.Physics
             Vec3S32 P = bb.BlockMax;
             ushort bHead = GetSurvivalBlock(p, P.X, P.Y, P.Z);
             if (Block.IsPhysicsType(bHead)) bHead = Block.Convert(bHead);
-            if (p.level.Props[bHead].Drownable)
+            if (p.Level.Props[bHead].Drownable)
             {
                 p.startFallY = -1;
                 DateTime now = DateTime.UtcNow;
                 // level drown is in 10ths of a second
                 if (p.drownTime == DateTime.MaxValue)
                 {
-                    p.drownTime = now.AddSeconds(p.level.Config.DrownTime / 10.0);
+                    p.drownTime = now.AddSeconds(p.Level.Config.DrownTime / 10.0);
                 }
                 if (now > p.drownTime)
                 {
@@ -105,7 +105,7 @@ namespace MCGalaxy.Blocks.Physics
             }
             else
             {
-                bool isGas = p.level.CollideType(bHead) == CollideType.WalkThrough;
+                bool isGas = p.Level.CollideType(bHead) == 0;
                 // NOTE: Rope is a special case, it should always reset fall height
                 if (bHead == Block.Rope) isGas = false;
                 if (!isGas) p.startFallY = -1;
@@ -115,8 +115,8 @@ namespace MCGalaxy.Blocks.Physics
         static ushort GetSurvivalBlock(Player p, int x, int y, int z)
         {
             if (y < 0) return Block.Bedrock;
-            if (y >= p.level.Height) return Block.Air;
-            return p.level.GetBlock((ushort)x, (ushort)y, (ushort)z);
+            if (y >= p.Level.Height) return Block.Air;
+            return p.Level.GetBlock((ushort)x, (ushort)y, (ushort)z);
         }
     }
 }

@@ -61,8 +61,8 @@ namespace MCGalaxy
         /// If false, uses the lavalight environment color
         /// </summary>
         [ConfigBool] public bool UseLampBrightness;
-        public ushort GetBlock() { return Block.FromRaw(RawID); }
-        public void SetBlock(ushort b) { RawID = Block.ToRaw(b); }
+        public ushort GetBlock() => Block.FromRaw(RawID);
+        public void SetBlock(ushort b) => RawID = Block.ToRaw(b);
         public const string GlobalPath = "blockdefs/global.json", GlobalBackupPath = "blockdefs/global.json.bak";
         public static BlockDefinition[] GlobalDefs;
         public BlockDefinition Copy()
@@ -104,12 +104,11 @@ namespace MCGalaxy
         static ConfigElement[] elems;
         public static BlockDefinition[] Load(string path)
         {
-            BlockDefinition[] defs = new BlockDefinition[Block.SUPPORTED_COUNT];
+            BlockDefinition[] defs = new BlockDefinition[1024];
             if (!File.Exists(path)) return defs;
             elems ??= ConfigElement.GetAll(typeof(BlockDefinition));
             try
             {
-                //string json = File.ReadAllText(path);
                 string json = FileIO.TryReadAllText(path);
                 JsonReader reader = new(json)
                 {
@@ -130,14 +129,14 @@ namespace MCGalaxy
                     ushort block = def.GetBlock();
                     if (block >= defs.Length)
                     {
-                        Logger.Log(LogType.Warning, "Invalid block ID: " + def.RawID);
+                        Logger.Log(6, "Invalid block ID: " + def.RawID);
                     }
                     else
                     {
                         defs[block] = def;
                     }
                     // In case user manually edited fallback in the json file
-                    def.FallBack = Math.Min(def.FallBack, Block.CPE_MAX_BLOCK);
+                    def.FallBack = Math.Min(def.FallBack, (byte)65);
                     // Sync Brightness setting it has not been set before
                     if (def.Brightness == -1)
                     {
@@ -184,13 +183,10 @@ namespace MCGalaxy
         {
             BlockDefinition[] oldDefs = GlobalDefs;
             GlobalDefs = Load(GlobalPath);
-            GlobalDefs[Block.Air] = null;
+            GlobalDefs[0] = null;
             try
             {
                 FileIO.TryCopy(GlobalPath, GlobalBackupPath, true);
-                //if (File.Exists(GlobalPath)) {
-                //File.Copy(GlobalPath, GlobalBackupPath, true);
-                //}
             }
             catch (Exception ex)
             {
@@ -228,8 +224,8 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                if (!global && pl.level != level) continue;
-                if (global && pl.level.CustomBlockDefs[block] != GlobalDefs[block]) continue;
+                if (!global && pl.Level != level) continue;
+                if (global && pl.Level.CustomBlockDefs[block] != GlobalDefs[block]) continue;
                 pl.Session.SendDefineBlock(def);
             }
         }
@@ -244,8 +240,8 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                if (!global && pl.level != level) continue;
-                if (global && pl.level.CustomBlockDefs[block] != null) continue;
+                if (!global && pl.Level != level) continue;
+                if (global && pl.Level.CustomBlockDefs[block] != null) continue;
                 pl.Session.SendUndefineBlock(def);
             }
         }
@@ -254,7 +250,7 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                if (!global && pl.level != level) continue;
+                if (!global && pl.Level != level) continue;
                 if (!pl.Supports(CpeExt.InventoryOrder) || def.RawID > pl.Session.MaxRawBlock) continue;
                 SendLevelInventoryOrder(pl);
             }
@@ -271,16 +267,17 @@ namespace MCGalaxy
         public void SetAllTex(ushort id)
         {
             SetSideTex(id);
-            TopTex = id; BottomTex = id;
+            TopTex = id; 
+            BottomTex = id;
         }
         public void SetSideTex(ushort id)
         {
-            LeftTex = id; RightTex = id; FrontTex = id; BackTex = id;
+            LeftTex = id; 
+            RightTex = id; 
+            FrontTex = id; 
+            BackTex = id;
         }
-        public void SetFullBright(bool fullBright)
-        {
-            SetBrightness(fullBright ? 15 : 0, false);
-        }
+        public void SetFullBright(bool fullBright) => SetBrightness(fullBright ? 15 : 0, false);
         /// <summary>
         /// Does not validate that the range falls within 0-15
         /// </summary>
@@ -288,11 +285,18 @@ namespace MCGalaxy
         {
             Brightness = brightness;
             UseLampBrightness = lamp;
-            if (Brightness > 0) { FullBright = true; } else { FullBright = false; }
+            if (Brightness > 0) 
+            { 
+                FullBright = true; 
+            } 
+            else 
+            { 
+                FullBright = false; 
+            }
         }
         internal static void SendLevelCustomBlocks(Player pl)
         {
-            BlockDefinition[] defs = pl.level.CustomBlockDefs;
+            BlockDefinition[] defs = pl.Level.CustomBlockDefs;
             for (int i = 0; i < defs.Length; i++)
             {
                 BlockDefinition def = defs[i];
@@ -302,12 +306,11 @@ namespace MCGalaxy
         }
         internal static unsafe void SendLevelInventoryOrder(Player pl)
         {
-            BlockDefinition[] defs = pl.level.CustomBlockDefs;
-            int maxRaw = pl.Session.MaxRawBlock;
-            int count = maxRaw + 1;
-            int* order_to_blocks = stackalloc int[Block.SUPPORTED_COUNT];
-            int* block_to_orders = stackalloc int[Block.SUPPORTED_COUNT];
-            for (int b = 0; b < Block.SUPPORTED_COUNT; b++)
+            BlockDefinition[] defs = pl.Level.CustomBlockDefs;
+            int maxRaw = pl.Session.MaxRawBlock, count = maxRaw + 1;
+            int* order_to_blocks = stackalloc int[1024],
+                block_to_orders = stackalloc int[1024];
+            for (int b = 0; b < 1024; b++)
             {
                 order_to_blocks[b] = -1;
                 block_to_orders[b] = -1;
@@ -330,7 +333,7 @@ namespace MCGalaxy
             {
                 BlockDefinition def = defs[i];
                 int raw = def != null ? def.RawID : i;
-                if (raw > maxRaw || (def == null && raw >= Block.CPE_COUNT)) continue;
+                if (raw > maxRaw || (def == null && raw >= 66)) continue;
                 if (def != null && def.InventoryOrder >= 0) continue;
                 if (order_to_blocks[raw] == -1)
                 {
@@ -343,7 +346,7 @@ namespace MCGalaxy
             {
                 BlockDefinition def = defs[i];
                 int raw = def != null ? def.RawID : i;
-                if (raw > maxRaw || (def == null && raw >= Block.CPE_COUNT)) continue;
+                if (raw > maxRaw || (def == null && raw >= 66)) continue;
                 if (block_to_orders[raw] != -1) continue;
                 for (int slot = count - 1; slot >= 1; slot--)
                 {
@@ -358,7 +361,7 @@ namespace MCGalaxy
                 int order = block_to_orders[raw];
                 if (order == -1) order = 0;
                 BlockDefinition def = defs[Block.FromRaw((ushort)raw)];
-                if (def == null && raw >= Block.CPE_COUNT) continue;
+                if (def == null && raw >= 66) continue;
                 // Special case, don't want 255 getting hidden by default
                 if (raw == 255 && def.InventoryOrder == -1) continue;
                 pl.Send(Packet.SetInventoryOrder((ushort)raw, (ushort)order, pl.Session.hasExtBlocks));
@@ -369,11 +372,11 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                if (!global && pl.level != level) continue;
+                if (!global && pl.Level != level) continue;
                 if (pl.Session.hasBlockDefs) continue;
                 // If custom block is replacing core block, need to always reload for fallback
                 // But if level doesn't use custom blocks, don't need to reload for the player
-                if (block >= Block.CPE_COUNT && !pl.level.MightHaveCustomBlocks()) continue;
+                if (block >= 66 && !pl.Level.MightHaveCustomBlocks()) continue;
                 PlayerActions.ReloadMap(pl);
             }
         }

@@ -14,7 +14,6 @@
  */
 using MCGalaxy.Config;
 using MCGalaxy.Modules.Games.ZS;
-using MCGalaxy.Network;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,7 +31,7 @@ namespace MCGalaxy
             //  doing that for backwards compatibility
             // (would have been better to use "" for default, but too late now)
             int num = ParseInteger(value, -1, minValue, maxValue);
-            if (num == -1) num = EnvConfig.ENV_USE_DEFAULT;
+            if (num == -1) num = int.MaxValue;
             return num;
         }
         public override string Serialise(object value)
@@ -40,7 +39,7 @@ namespace MCGalaxy
             int num = (int)value;
             // -1 is already used for "use default", so use this instead
             if (num == -1) return "-1.0";
-            if (num == EnvConfig.ENV_USE_DEFAULT) num = -1;
+            if (num == int.MaxValue) num = -1;
             return NumberUtils.StringifyInt(num);
         }
     }
@@ -56,47 +55,45 @@ namespace MCGalaxy
     }
     public abstract class EnvConfig
     {
-        public const int ENV_USE_DEFAULT = int.MaxValue;
-        const int envRange = 0xFFFFFF;
         // Environment settings
         [ConfigEnvInt("Weather", -1, 2)]
-        public int Weather = ENV_USE_DEFAULT;
+        public int Weather = int.MaxValue;
         /// <summary> Elevation of the "ocean" that surrounds maps. Default is map height / 2. </summary>
-        [ConfigEnvInt("EdgeLevel", -envRange, envRange)]
-        public int EdgeLevel = ENV_USE_DEFAULT;
+        [ConfigEnvInt("EdgeLevel", -0xFFFFFF, 0xFFFFFF)]
+        public int EdgeLevel = int.MaxValue;
         /// <summary> Offset of the "bedrock" that surrounds map sides from edge level. Default is -2. </summary>
-        [ConfigEnvInt("SidesOffset", -envRange, envRange)]
-        public int SidesOffset = ENV_USE_DEFAULT;
+        [ConfigEnvInt("SidesOffset", -0xFFFFFF, 0xFFFFFF)]
+        public int SidesOffset = int.MaxValue;
         /// <summary> Elevation of the clouds. Default is map height + 2. </summary>
-        [ConfigEnvInt("CloudsHeight", -envRange, envRange)]
-        public int CloudsHeight = ENV_USE_DEFAULT;
+        [ConfigEnvInt("CloudsHeight", -0xFFFFFF, 0xFFFFFF)]
+        public int CloudsHeight = int.MaxValue;
         /// <summary> Max fog distance the client can see. Default is 0, means use client-side defined max fog distance. </summary>
-        [ConfigEnvInt("MaxFog", -envRange, envRange)]
-        public int MaxFogDistance = ENV_USE_DEFAULT;
+        [ConfigEnvInt("MaxFog", -0xFFFFFF, 0xFFFFFF)]
+        public int MaxFogDistance = int.MaxValue;
         /// <summary> Clouds speed, in units of 256ths. Default is 256 (1 speed). </summary>
-        [ConfigEnvInt("clouds-speed", -envRange, envRange)]
-        public int CloudsSpeed = ENV_USE_DEFAULT;
+        [ConfigEnvInt("clouds-speed", -0xFFFFFF, 0xFFFFFF)]
+        public int CloudsSpeed = int.MaxValue;
         /// <summary> Weather speed, in units of 256ths. Default is 256 (1 speed). </summary>
-        [ConfigEnvInt("weather-speed", -envRange, envRange)]
-        public int WeatherSpeed = ENV_USE_DEFAULT;
+        [ConfigEnvInt("weather-speed", -0xFFFFFF, 0xFFFFFF)]
+        public int WeatherSpeed = int.MaxValue;
         /// <summary> Weather fade, in units of 256ths. Default is 256 (1 speed). </summary>
-        [ConfigEnvInt("weather-fade", -envRange, envRange)]
-        public int WeatherFade = ENV_USE_DEFAULT;
+        [ConfigEnvInt("weather-fade", -0xFFFFFF, 0xFFFFFF)]
+        public int WeatherFade = int.MaxValue;
         /// <summary> Skybox horizontal speed, in units of 1024ths. Default is 0 (0 speed). </summary>
-        [ConfigEnvInt("skybox-hor-speed", -envRange, envRange)]
-        public int SkyboxHorSpeed = ENV_USE_DEFAULT;
+        [ConfigEnvInt("skybox-hor-speed", -0xFFFFFF, 0xFFFFFF)]
+        public int SkyboxHorSpeed = int.MaxValue;
         /// <summary> Skybox vertical speed, in units of 1024ths. Default is 0 (0 speed). </summary>
-        [ConfigEnvInt("skybox-ver-speed", -envRange, envRange)]
-        public int SkyboxVerSpeed = ENV_USE_DEFAULT;
+        [ConfigEnvInt("skybox-ver-speed", -0xFFFFFF, 0xFFFFFF)]
+        public int SkyboxVerSpeed = int.MaxValue;
         /// <summary> The block which will be displayed on the horizon. </summary>
-        [ConfigBlock("HorizonBlock", "Env", Block.Invalid)]
-        public ushort HorizonBlock = Block.Invalid;
+        [ConfigBlock("HorizonBlock", "Env", 0xff)]
+        public ushort HorizonBlock = 0xff;
         /// <summary> The block which will be displayed on the edge of the map. </summary>
-        [ConfigBlock("EdgeBlock", "Env", Block.Invalid)]
-        public ushort EdgeBlock = Block.Invalid;
+        [ConfigBlock("EdgeBlock", "Env", 0xff)]
+        public ushort EdgeBlock = 0xff;
         /// <summary> Whether exponential fog mode is used client-side. </summary>
         [ConfigExpFog("ExpFog")]
-        public int ExpFog = ENV_USE_DEFAULT;
+        public int ExpFog = int.MaxValue;
         /// <summary> Color of the clouds (Hex RGB color). Set to "" to use client defaults. </summary>
         [ConfigString("CloudColor", "Env", "", true)]
         public string CloudColor = "";
@@ -121,26 +118,26 @@ namespace MCGalaxy
         /// <summary> Color emitted by bright artificial blocks (Hex RGB color). Set to "" to use client defaults. </summary>
         [ConfigString("LampLightColor", "Env", "", true)]
         public string LampLightColor = "";
-        [ConfigEnum("LightingMode", "Env", Packet.LightingMode.None, typeof(Packet.LightingMode))]
-        public Packet.LightingMode LightingMode;
+        [ConfigInt("LightingMode", "Env", 0, 0,2)]
+        public int LightingMode;
         [ConfigBool("LightingModeLocked", "Env", false)]
         public bool LightingModeLocked = false;
         public void ResetEnv()
         {
             // TODO: Rewrite using ConfigElement somehow
-            Weather = ENV_USE_DEFAULT;
-            EdgeLevel = ENV_USE_DEFAULT;
-            SidesOffset = ENV_USE_DEFAULT;
-            CloudsHeight = ENV_USE_DEFAULT;
-            MaxFogDistance = ENV_USE_DEFAULT;
-            CloudsSpeed = ENV_USE_DEFAULT;
-            WeatherSpeed = ENV_USE_DEFAULT;
-            WeatherFade = ENV_USE_DEFAULT;
-            SkyboxHorSpeed = ENV_USE_DEFAULT;
-            SkyboxVerSpeed = ENV_USE_DEFAULT;
-            HorizonBlock = Block.Invalid;
-            EdgeBlock = Block.Invalid;
-            ExpFog = ENV_USE_DEFAULT;
+            Weather = int.MaxValue;
+            EdgeLevel = int.MaxValue;
+            SidesOffset = int.MaxValue;
+            CloudsHeight = int.MaxValue;
+            MaxFogDistance = int.MaxValue;
+            CloudsSpeed = int.MaxValue;
+            WeatherSpeed = int.MaxValue;
+            WeatherFade = int.MaxValue;
+            SkyboxHorSpeed = int.MaxValue;
+            SkyboxVerSpeed = int.MaxValue;
+            HorizonBlock = 0xff;
+            EdgeBlock = 0xff;
+            ExpFog = int.MaxValue;
             CloudColor = "";
             FogColor = "";
             SkyColor = "";
@@ -149,10 +146,9 @@ namespace MCGalaxy
             SkyboxColor = "";
             LavaLightColor = "";
             LampLightColor = "";
-            LightingMode = Packet.LightingMode.None;
+            LightingMode = 0;
             LightingModeLocked = false;
         }
-        internal const int ENV_COLOR_COUNT = 7;
         public string GetColor(int i)
         {
             if (i == 0) return SkyColor;
@@ -165,34 +161,34 @@ namespace MCGalaxy
             if (i == 7) return LampLightColor;
             return null;
         }
-        public int GetEnvProp(EnvProp i)
+        public int GetEnvProp(int i)
         {
-            if (i == EnvProp.SidesBlock) return EdgeBlock;
-            if (i == EnvProp.EdgeBlock) return HorizonBlock;
-            if (i == EnvProp.EdgeLevel) return EdgeLevel;
-            if (i == EnvProp.CloudsLevel) return CloudsHeight;
-            if (i == EnvProp.MaxFog) return MaxFogDistance;
-            if (i == EnvProp.CloudsSpeed) return CloudsSpeed;
-            if (i == EnvProp.WeatherSpeed) return WeatherSpeed;
-            if (i == EnvProp.WeatherFade) return WeatherFade;
-            if (i == EnvProp.ExpFog) return ExpFog;
-            if (i == EnvProp.SidesOffset) return SidesOffset;
-            if (i == EnvProp.SkyboxHorSpeed) return SkyboxHorSpeed;
-            if (i == EnvProp.SkyboxVerSpeed) return SkyboxVerSpeed;
-            if (i == EnvProp.Weather) return Weather;
-            return ENV_USE_DEFAULT;
+            if (i == 0) return EdgeBlock;
+            if (i == 1) return HorizonBlock;
+            if (i == 2) return EdgeLevel;
+            if (i == 3) return CloudsHeight;
+            if (i == 4) return MaxFogDistance;
+            if (i == 5) return CloudsSpeed;
+            if (i == 6) return WeatherSpeed;
+            if (i == 7) return WeatherFade;
+            if (i == 8) return ExpFog;
+            if (i == 9) return SidesOffset;
+            if (i == 10) return SkyboxHorSpeed;
+            if (i == 11) return SkyboxVerSpeed;
+            if (i == 255) return Weather;
+            return int.MaxValue;
         }
         /// <summary> Calculates the default value for the given env property </summary>
-        public static int DefaultEnvProp(EnvProp i, int height)
+        public static int DefaultEnvProp(int i, int height)
         {
-            if (i == EnvProp.SidesBlock) return Block.Bedrock;
-            if (i == EnvProp.EdgeBlock) return Block.Water;
-            if (i == EnvProp.EdgeLevel) return height / 2;
-            if (i == EnvProp.CloudsLevel) return height + 2;
-            if (i == EnvProp.CloudsSpeed) return 256;
-            if (i == EnvProp.WeatherSpeed) return 256;
-            if (i == EnvProp.WeatherFade) return 128;
-            if (i == EnvProp.SidesOffset) return -2;
+            if (i == 0) return 7;
+            if (i == 1) return 8;
+            if (i == 2) return height / 2;
+            if (i == 3) return height + 2;
+            if (i == 5) return 256;
+            if (i == 6) return 256;
+            if (i == 7) return 128;
+            if (i == 9) return -2;
             return 0;
         }
     }
@@ -205,10 +201,10 @@ namespace MCGalaxy
         public bool Buildable = true;
         [ConfigBool("Deletable", "Permissions", true)]
         public bool Deletable = true;
-        [ConfigPerm("PerBuild", "Permissions", LevelPermission.Guest)]
-        public LevelPermission BuildMin = LevelPermission.Guest;
-        [ConfigPerm("PerBuildMax", "Permissions", LevelPermission.Owner)]
-        public LevelPermission BuildMax = LevelPermission.Owner;
+        [ConfigPerm("PerBuild", "Permissions", 0)]
+        public sbyte BuildMin = 0;
+        [ConfigPerm("PerBuildMax", "Permissions", 120)]
+        public sbyte BuildMax = 120;
         // Other blacklists/whitelists
         [ConfigStringList("BuildWhitelist", "Permissions")]
         public List<string> BuildWhitelist = new();
@@ -239,10 +235,10 @@ namespace MCGalaxy
         // Permission settings
         [ConfigString("RealmOwner", "Permissions", "", true)]
         public string RealmOwner = "";
-        [ConfigPerm("PerVisit", "Permissions", LevelPermission.Guest)]
-        public LevelPermission VisitMin = LevelPermission.Guest;
-        [ConfigPerm("PerVisitMax", "Permissions", LevelPermission.Owner)]
-        public LevelPermission VisitMax = LevelPermission.Owner;
+        [ConfigPerm("PerVisit", "Permissions", 0)]
+        public sbyte VisitMin = 0;
+        [ConfigPerm("PerVisitMax", "Permissions", 120)]
+        public sbyte VisitMax = 120;
         // Other blacklists/whitelists
         [ConfigStringList("VisitWhitelist", "Permissions")]
         public List<string> VisitWhitelist = new();
@@ -291,8 +287,8 @@ namespace MCGalaxy
         public string Authors = "";
         [ConfigBool("Pillaring", "Game", false)]
         public bool Pillaring = !ZSGame.Instance.Config.NoPillaring;
-        [ConfigEnum("BuildType", "Game", BuildType.Normal, typeof(BuildType))]
-        public BuildType BuildType = BuildType.Normal;
+        [ConfigInt("BuildType", "Game", 0, 0, 2)]
+        public int BuildType = 0;
         [ConfigTimespan("MinRoundTime", "Game", 4, true)]
         public TimeSpan RoundTime = TimeSpan.FromMinutes(5);
         [ConfigBool("DrawingAllowed", "Game", true)]
@@ -306,16 +302,13 @@ namespace MCGalaxy
         {
             get
             {
-                LevelPermission maxPerm = VisitMin;
+                sbyte maxPerm = VisitMin;
                 if (maxPerm < BuildMin) maxPerm = BuildMin;
                 return Group.GetColor(maxPerm);
             }
         }
-        public bool Load(string path)
-        {
-            return ConfigElement.ParseFile(Server.levelConfig, path, this);
-        }
-        public void SaveFor(string map) { Save(LevelInfo.PropsPath(map), map); }
+        public bool Load(string path) => ConfigElement.ParseFile(Server.levelConfig, path, this);
+        public void SaveFor(string map) => Save(LevelInfo.PropsPath(map), map);
         public void Save(string path, string map)
         {
             try

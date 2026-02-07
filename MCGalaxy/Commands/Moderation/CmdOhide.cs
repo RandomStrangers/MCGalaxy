@@ -17,9 +17,9 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdOHide : Command2
     {
-        public override string name { get { return "OHide"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "OHide";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 80;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }

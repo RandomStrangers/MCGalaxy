@@ -22,9 +22,9 @@ namespace MCGalaxy.Eco
         /// <summary> Simple name for this item. </summary>
         public abstract string Name { get; }
         /// <summary> The minimum permission/rank required to purchase this item. </summary>
-        public LevelPermission PurchaseRank = LevelPermission.Guest;
+        public sbyte PurchaseRank = 0;
         /// <summary> Simple name displayed in /shop, defaults to item name. </summary>
-        public virtual string ShopName { get { return Name; } }
+        public virtual string ShopName => Name;
         /// <summary> Other common names for this item. </summary>
         public string[] Aliases;
         /// <summary> Whether this item can currently be bought in the economy. </summary>
@@ -38,7 +38,7 @@ namespace MCGalaxy.Eco
             }
             else if (prop.CaselessEq("purchaserank"))
             {
-                PurchaseRank = (LevelPermission)NumberUtils.ParseInt32(value);
+                PurchaseRank = (sbyte)NumberUtils.ParseInt32(value);
             }
             else
             {
@@ -121,11 +121,8 @@ namespace MCGalaxy.Eco
                 Price = NumberUtils.ParseInt32(value);
             }
         }
-        public override void Serialise(List<string> cfg)
-        {
-            cfg.Add("price:" + Price);
-        }
-        protected bool CheckPrice(Player p) { return CheckPrice(p, Price, "a " + Name); }
+        public override void Serialise(List<string> cfg) => cfg.Add("price:" + Price);
+        protected bool CheckPrice(Player p) => CheckPrice(p, Price, "a " + Name);
         protected internal override void OnSetup(Player p, string[] args)
         {
             if (args[1].CaselessEq("price"))

@@ -13,7 +13,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using MCGalaxy.Blocks;
 using MCGalaxy.Events;
 using MCGalaxy.Events.EconomyEvents;
 using MCGalaxy.Events.EntityEvents;
@@ -26,16 +25,16 @@ namespace MCGalaxy.Modules.Games.ZS
     {
         protected override void HookEventHandlers()
         {
-            OnEntitySpawnedEvent.Register(HandleEntitySpawned, Priority.High);
-            OnTabListEntryAddedEvent.Register(HandleTabListEntryAdded, Priority.High);
-            OnMoneyChangedEvent.Register(HandleMoneyChanged, Priority.High);
-            OnBlockChangingEvent.Register(HandleBlockChanging, Priority.High);
-            OnSendingModelEvent.Register(HandleSendingModel, Priority.High);
-            OnPlayerMoveEvent.Register(HandlePlayerMove, Priority.High);
-            OnPlayerDiedEvent.Register(HandlePlayerDied, Priority.High);
-            OnJoinedLevelEvent.Register(HandleJoinedLevel, Priority.High);
-            OnPlayerChatEvent.Register(HandlePlayerChat, Priority.High);
-            OnGettingCanSeeEntityEvent.Register(HandleCanSeeEntity, Priority.High);
+            OnEntitySpawnedEvent.Register(HandleEntitySpawned, 2);
+            OnTabListEntryAddedEvent.Register(HandleTabListEntryAdded, 2);
+            OnMoneyChangedEvent.Register(HandleMoneyChanged, 2);
+            OnBlockChangingEvent.Register(HandleBlockChanging, 2);
+            OnSendingModelEvent.Register(HandleSendingModel, 2);
+            OnPlayerMoveEvent.Register(HandlePlayerMove, 2);
+            OnPlayerDiedEvent.Register(HandlePlayerDied, 2);
+            OnJoinedLevelEvent.Register(HandleJoinedLevel, 2);
+            OnPlayerChatEvent.Register(HandlePlayerChat, 2);
+            OnGettingCanSeeEntityEvent.Register(HandleCanSeeEntity, 2);
             base.HookEventHandlers();
         }
         protected override void UnhookEventHandlers()
@@ -56,7 +55,7 @@ namespace MCGalaxy.Modules.Games.ZS
         {
             if (!canSee || p.Game.Referee || other is not Player target) return;
             ZSData data = TryGet(target);
-            if (data == null || target.level != Map) return;
+            if (data == null || target.Level != Map) return;
             canSee = !(target.Game.Referee || data.Invisible);
         }
         void HandleSendingModel(Entity e, ref string model, Player dst)
@@ -66,7 +65,7 @@ namespace MCGalaxy.Modules.Games.ZS
         }
         void HandleTabListEntryAdded(Entity e, ref string tabName, ref string tabGroup, Player dst)
         {
-            if (e is not Player p || p.level != Map) return;
+            if (e is not Player p || p.Level != Map) return;
             if (p.Game.Referee)
             {
                 tabGroup = "&2Referees";
@@ -90,8 +89,10 @@ namespace MCGalaxy.Modules.Games.ZS
         }
         void HandleMoneyChanged(Player p)
         {
-            if (p.level != Map) return;
-            UpdateStatus3(p);
+            if (p.Level == Map)
+            {
+                UpdateStatus3(p);
+            }
         }
         void HandleEntitySpawned(Entity e, ref string name, ref string skin, ref string model, Player dst)
         {
@@ -105,16 +106,16 @@ namespace MCGalaxy.Modules.Games.ZS
         }
         void HandlePlayerMove(Player p, Position next, byte rotX, byte rotY, ref bool cancel)
         {
-            if (!RoundInProgress || p.level != Map) return;
+            if (!RoundInProgress || p.Level != Map) return;
             // TODO: Maybe tidy this up?
-            p.Game.Noclip ??= new NoclipDetector(p);
-            p.Game.Speed ??= new SpeedhackDetector(p);
+            p.Game.Noclip ??= new(p);
+            p.Game.Speed ??= new(p);
             bool reverted = p.Game.Noclip.Detect(next) || p.Game.Speed.Detect(next, Config.MaxMoveDist);
             if (reverted) cancel = true;
         }
         void HandlePlayerDied(Player p, ushort cause, ref TimeSpan cooldown)
         {
-            if (p.level != Map || !Config.InfectUponDeath) return;
+            if (p.Level != Map || !Config.InfectUponDeath) return;
             if (!p.Game.Referee && RoundInProgress && !IsInfected(p))
             {
                 InfectPlayer(p, null);
@@ -124,44 +125,46 @@ namespace MCGalaxy.Modules.Games.ZS
         {
             HandleJoinedCommon(p, prevLevel, level, ref announce);
             p.SetPrefix(); // TODO: Kinda hacky, not sure if needed
-            if (level != Map) return;
-            ZSData data = Get(p);
-            data.PledgeSurvive = false;
-            p.SetPrefix();
-            if (prevLevel == null && Alive.Contains(p))
+            if (level == Map)
             {
-                // Fixes players who login at very end of 'round countdown' being added to
-                //  Alive list, but then becoming auto infected after level is finished sending
-                // TODO redo Player.Login.cs to not add to PlayerInfo.Online so early ??
+                ZSData data = Get(p);
+                data.PledgeSurvive = false;
+                p.SetPrefix();
+                if (prevLevel == null && Alive.Contains(p))
+                {
+                    // Fixes players who login at very end of 'round countdown' being added to
+                    //  Alive list, but then becoming auto infected after level is finished sending
+                    // TODO redo Player.Login.cs to not add to PlayerInfo.Online so early ??
+                }
+                else if (RoundInProgress)
+                {
+                    p.Message("You joined in the middle of a round. &cYou are now infected!");
+                    data.BlocksLeft = 25;
+                    InfectPlayer(p, null);
+                }
+                double startLeft = (RoundStart - DateTime.UtcNow).TotalSeconds;
+                if (startLeft >= 0)
+                {
+                    p.Message("&a{0} &Sseconds left until the round starts. &aRun!", (int)startLeft);
+                }
+                OutputMapSummary(p, Map.name, Map.Config);
+                p.Message("This map's win chance is &a{0}&S%", Map.WinChance);
             }
-            else if (RoundInProgress)
-            {
-                p.Message("You joined in the middle of a round. &cYou are now infected!");
-                data.BlocksLeft = 25;
-                InfectPlayer(p, null);
-            }
-            double startLeft = (RoundStart - DateTime.UtcNow).TotalSeconds;
-            if (startLeft >= 0)
-            {
-                p.Message("&a{0} &Sseconds left until the round starts. &aRun!", (int)startLeft);
-            }
-            OutputMapSummary(p, Map.name, Map.Config);
-            p.Message("This map's win chance is &a{0}&S%", Map.WinChance);
         }
         void HandlePlayerChat(Player p, string message)
         {
-            if (p.level != Map || message.Length <= 1) return;
+            if (p.Level != Map || message.Length <= 1) return;
             if (message[0] == '~')
             {
                 message = message.Substring(1);
                 if (IsInfected(p))
                 {
-                    Chat.MessageChat(ChatScope.Level, p, "&c- to zombies - λNICK: &f" + message,
+                    Chat.MessageChat(2, p, "&c- to zombies - λNICK: &f" + message,
                                     Map, (pl, arg) => pl.Game.Referee || IsInfected(pl));
                 }
                 else
                 {
-                    Chat.MessageChat(ChatScope.Level, p, "&a- to humans - λNICK: &f" + message,
+                    Chat.MessageChat(2, p, "&a- to humans - λNICK: &f" + message,
                                     Map, (pl, arg) => pl.Game.Referee || !IsInfected(pl));
                 }
                 p.cancelchat = true;
@@ -181,61 +184,72 @@ namespace MCGalaxy.Modules.Games.ZS
         }
         void HandleBlockChanging(Player p, ushort x, ushort y, ushort z, ushort block, bool placing, ref bool cancel)
         {
-            if (p.level != Map) return;
-            ushort old = Map.GetBlock(x, y, z);
-            ZSData data = Get(p);
-            bool nonReplacable = Map.Config.BuildType == BuildType.NoModify ||
-                                 Map.Config.BuildType == BuildType.ModifyOnly && Map.Props[old].OPBlock;
-            // Check pillaring
-            if (placing && !Map.Config.Pillaring && !p.Game.Referee)
+            if (p.Level == Map)
             {
-                if (NotPillaring(block, old))
+                ushort old = Map.GetBlock(x, y, z);
+                ZSData data = Get(p);
+                bool nonReplacable = Map.Config.BuildType == 2 ||
+                                     Map.Config.BuildType == 1 && Map.Props[old].OPBlock;
+                // Check pillaring
+                if (placing && !Map.Config.Pillaring && !p.Game.Referee)
                 {
-                    data.BlocksStacked = 0;
+                    if (NotPillaring(block, old))
+                    {
+                        data.BlocksStacked = 0;
+                    }
+                    else if (CheckCoords(p, data, x, y, z))
+                    {
+                        data.BlocksStacked++;
+                    }
+                    else
+                    {
+                        data.BlocksStacked = 0;
+                    }
+                    if (WarnPillaring(p, data, x, y, z, nonReplacable)) 
+                    { 
+                        cancel = true; 
+                        return; 
+                    }
                 }
-                else if (CheckCoords(p, data, x, y, z))
+                data.LastX = x;
+                data.LastY = y;
+                data.LastZ = z;
+                if (nonReplacable)
                 {
-                    data.BlocksStacked++;
+                    p.RevertBlock(x, y, z); cancel = true;
+                    return;
                 }
-                else
+                if (!p.Game.Referee)
                 {
-                    data.BlocksStacked = 0;
-                }
-                if (WarnPillaring(p, data, x, y, z, nonReplacable)) { cancel = true; return; }
-            }
-            data.LastX = x; data.LastY = y; data.LastZ = z;
-            if (nonReplacable)
-            {
-                p.RevertBlock(x, y, z); cancel = true; return;
-            }
-            if (p.Game.Referee) return;
-            if (placing || (!placing && p.painting))
-            {
-                if (data.BlocksLeft <= 0)
-                {
-                    p.Message("You have no blocks left.");
-                    p.RevertBlock(x, y, z); cancel = true; return;
-                }
-                data.BlocksLeft--;
-                if ((data.BlocksLeft % 10) == 0 || data.BlocksLeft <= 10)
-                {
-                    p.Message("Blocks Left: &4" + data.BlocksLeft);
+                    if (placing || (!placing && p.painting))
+                    {
+                        if (data.BlocksLeft <= 0)
+                        {
+                            p.Message("You have no blocks left.");
+                            p.RevertBlock(x, y, z); cancel = true; 
+                            return;
+                        }
+                        data.BlocksLeft--;
+                        if ((data.BlocksLeft % 10) == 0 || data.BlocksLeft <= 10)
+                        {
+                            p.Message("Blocks Left: &4" + data.BlocksLeft);
+                        }
+                    }
                 }
             }
         }
         bool NotPillaring(ushort b, ushort old)
         {
             byte collide = Map.CollideType(b);
-            if (collide == CollideType.WalkThrough) return true;
+            if (collide == 0) return true;
             collide = Map.CollideType(old);
-            return collide == CollideType.SwimThrough || collide == CollideType.LiquidWater
-                || collide == CollideType.LiquidLava;
+            return collide == 1 || collide == 5 || collide == 6;
         }
         static bool CheckCoords(Player p, ZSData data, ushort x, ushort y, ushort z)
         {
             if (data.LastY != y - 1 || data.LastX != x || data.LastZ != z) return false;
-            int minX = (p.Pos.X - 8) / 32, minZ = (p.Pos.Z - 8) / 32;
-            int maxX = (p.Pos.X + 8) / 32, maxZ = (p.Pos.Z + 8) / 32;
+            int minX = (p.Pos.X - 8) / 32, minZ = (p.Pos.Z - 8) / 32,
+                maxX = (p.Pos.X + 8) / 32, maxZ = (p.Pos.Z + 8) / 32;
             // Check the four possible coords/blocks the player could be pillaring up on
             return (minX == x && minZ == z) || (minX == x && maxZ == z)
                 || (maxX == x && minZ == z) || (maxX == x && maxZ == z);
@@ -263,8 +277,7 @@ namespace MCGalaxy.Modules.Games.ZS
                 }
                 else
                 {
-                    ModAction action = new(p.name, Player.Console, ModActionType.Kicked, "Auto kick for pillaring");
-                    OnModActionEvent.Call(action);
+                    OnModActionEvent.Call(new(p.name, Player.Console, 10, "Auto kick for pillaring"));
                     p.Kick("No pillaring allowed!");
                 }
                 p.RevertBlock(x, y, z);

@@ -18,16 +18,16 @@ namespace MCGalaxy.Modules.Relay.IRC
 {
     public sealed class IRCPlugin : Plugin
     {
-        public override string name { get { return "IRCRelay"; } }
+        public override string Name => "IRCRelay";
         public static IRCBot Bot = new();
-        static readonly Command cmdIrcBot = new CmdIRCBot();
-        static readonly Command cmdIrcCtrls = new CmdIrcControllers();
+        static readonly Command cmdIrcBot = new CmdIRCBot(),
+            cmdIrcCtrls = new CmdIrcControllers();
         public override void Load(bool startup)
         {
             Command.Register(cmdIrcBot, cmdIrcCtrls);
             Bot.ReloadConfig();
             Bot.Connect();
-            OnConfigUpdatedEvent.Register(OnConfigUpdated, Priority.Low);
+            OnConfigUpdatedEvent.Register(OnConfigUpdated, 0);
         }
         public override void Unload(bool shutdown)
         {
@@ -35,21 +35,18 @@ namespace MCGalaxy.Modules.Relay.IRC
             OnConfigUpdatedEvent.Unregister(OnConfigUpdated);
             Bot.Disconnect("Disconnecting IRC bot");
         }
-        void OnConfigUpdated() { Bot.ReloadConfig(); }
+        void OnConfigUpdated() => Bot.ReloadConfig();
     }
     sealed class CmdIRCBot : RelayBotCmd
     {
-        public override string name { get { return "IRCBot"; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("ResetBot", "reset"), new CommandAlias("ResetIRC", "reset") }; }
-        }
-        protected override RelayBot Bot { get { return IRCPlugin.Bot; } }
+        public override string Name => "IRCBot";
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("ResetBot", "reset"), new CommandAlias("ResetIRC", "reset") };
+        protected override RelayBot Bot => IRCPlugin.Bot;
     }
     sealed class CmdIrcControllers : BotControllersCmd
     {
-        public override string name { get { return "IRCControllers"; } }
-        public override string shortcut { get { return "IRCCtrl"; } }
-        protected override RelayBot Bot { get { return IRCPlugin.Bot; } }
+        public override string Name => "IRCControllers";
+        public override string Shortcut => "IRCCtrl";
+        protected override RelayBot Bot => IRCPlugin.Bot;
     }
 }

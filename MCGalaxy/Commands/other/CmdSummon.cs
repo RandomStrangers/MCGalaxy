@@ -17,20 +17,14 @@ namespace MCGalaxy.Commands.Misc
 {
     public sealed class CmdSummon : Command2
     {
-        public override string name { get { return "Summon"; } }
-        public override string shortcut { get { return "s"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("Fetch"), new CommandAlias("Bring"), new CommandAlias("BringAll", "all") }; }
-        }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can summon all players") }; }
-        }
+        public override string Name => "Summon";
+        public override string Shortcut => "s";
+        public override string Type => CommandTypes.Other;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 80;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("Fetch"), new CommandAlias("Bring"), new CommandAlias("BringAll", "all") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can summon all players") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -44,7 +38,7 @@ namespace MCGalaxy.Commands.Misc
                 Player[] players = PlayerInfo.Online.Items;
                 foreach (Player target in players)
                 {
-                    if (target.level == p.level && target != p && data.Rank > target.Rank)
+                    if (target.Level == p.Level && target != p && data.Rank > target.Rank)
                     {
                         target.AFKCooldown = DateTime.UtcNow.AddSeconds(2);
                         target.SendPosition(p.Pos, p.Rot);
@@ -61,42 +55,42 @@ namespace MCGalaxy.Commands.Misc
             Player target = PlayerInfo.FindMatches(p, args[0]);
             if (target == null) return;
             if (!CheckRank(p, data, target, "summon", true)) return;
-            if (p.level != target.level)
+            if (p.Level != target.Level)
             {
                 if (!CheckVisitPerm(p, target, confirmed)) return;
                 p.Message("{0} &Sis in a different level, moving them..", p.FormatNick(target));
-                target.summonedMap = p.level.name;
-                PlayerActions.ChangeMap(target, p.level);
+                target.summonedMap = p.Level.name;
+                PlayerActions.ChangeMap(target, p.Level);
                 target.summonedMap = null;
                 p.BlockUntilLoad(10); // wait for them to load
             }
-            if (p.level != target.level) return; // in case they were unable to move to this level
+            if (p.Level != target.Level) return; // in case they were unable to move to this level
             target.AFKCooldown = DateTime.UtcNow.AddSeconds(2);
             target.SendPosition(p.Pos, p.Rot);
             target.Message("You were summoned by {0}&S.", target.FormatNick(p));
         }
         static bool CheckVisitPerm(Player p, Player target, bool confirmed)
         {
-            AccessResult result = p.level.VisitAccess.Check(target.name, target.Rank);
-            if (result == AccessResult.Accepted) return true;
-            if (result == AccessResult.Whitelisted) return true;
-            if (result == AccessResult.AboveMaxRank && confirmed) return true;
-            if (result == AccessResult.BelowMinRank && confirmed) return true;
-            if (result == AccessResult.Blacklisted)
+            int result = p.Level.VisitAccess.Check(target.name, target.Rank);
+            if (result == 2) return true;
+            if (result == 0) return true;
+            if (result == 4 && confirmed) return true;
+            if (result == 3 && confirmed) return true;
+            if (result == 1)
             {
                 p.Message("{0} &Sis blacklisted from visiting this map.", p.FormatNick(target));
                 return false;
             }
-            else if (result == AccessResult.BelowMinRank)
+            else if (result == 3)
             {
                 p.Message("Only {0}&S+ may normally visit this map. {1}&S is ranked {2}",
-                          Group.GetColoredName(p.level.VisitAccess.Min),
+                          Group.GetColoredName(p.Level.VisitAccess.Min),
                           p.FormatNick(target), target.group.ColoredName);
             }
-            else if (result == AccessResult.AboveMaxRank)
+            else if (result == 4)
             {
                 p.Message("Only {0}&S and below may normally visit this map. {1}&S is ranked {2}",
-                          Group.GetColoredName(p.level.VisitAccess.Max),
+                          Group.GetColoredName(p.Level.VisitAccess.Max),
                           p.FormatNick(target), target.group.ColoredName);
             }
             p.Message("If you still want to summon them, type &T/Summon {0} confirm", target.name);

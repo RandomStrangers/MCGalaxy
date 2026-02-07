@@ -29,8 +29,8 @@ namespace MCGalaxy.DB
         public static void Lock()
         {
             Upgrading = true;
-            Logger.Log(LogType.SystemActivity, "Kicking players and unloading levels..");
-            OnPlayerStartConnectingEvent.Register(ConnectingHandler, Priority.System_Level);
+            Logger.Log(1, "Kicking players and unloading levels..");
+            OnPlayerStartConnectingEvent.Register(ConnectingHandler, 4);
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {
@@ -41,13 +41,13 @@ namespace MCGalaxy.DB
             {
                 lvl.Unload();
             }
-            Logger.Log(LogType.SystemActivity, "Kicked all players and unloaded levels.");
+            Logger.Log(1, "Kicked all players and unloaded levels.");
         }
         public static void Unlock()
         {
             OnPlayerStartConnectingEvent.Unregister(ConnectingHandler);
             Player.Console.MessageLines(CompactMessages);
-            Logger.Log(LogType.SystemActivity, "&aUpgrade finished!");
+            Logger.Log(1, "&aUpgrade finished!");
             Upgrading = false;
         }
         static void ConnectingHandler(Player p, string mppass)
@@ -56,7 +56,7 @@ namespace MCGalaxy.DB
             p.cancelconnecting = true;
         }
         internal static int current, count;
-        internal static string Progress { get { return current + " / " + count; } }
+        internal static string Progress => current + " / " + count;
         public static void Upgrade()
         {
             List<string> tables = Database.Backend.AllTables();
@@ -69,7 +69,7 @@ namespace MCGalaxy.DB
             }
             current = 0;
             count = blockDBTables.Count;
-            Logger.Log(LogType.SystemActivity, "Upgrading {0} tables. This may take several hours.", count);
+            Logger.Log(1, "Upgrading {0} tables. This may take several hours.", count);
             BlockDBTableDumper dumper = new();
             foreach (string table in blockDBTables)
             {

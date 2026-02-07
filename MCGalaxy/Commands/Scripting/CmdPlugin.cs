@@ -12,26 +12,18 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-#if !MCG_STANDALONE
 using MCGalaxy.Modules.Compiling;
-#endif
 using MCGalaxy.Scripting;
 namespace MCGalaxy.Commands.Scripting
 {
     public sealed class CmdPlugin : Command2
     {
-        public override string name { get { return "Plugin"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Owner; } }
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new[] { new CommandAlias("PLoad", "load"), new CommandAlias("PUnload", "unload"),
+        public override string Name => "Plugin";
+        public override string Type => CommandTypes.Other;
+        public override sbyte DefaultRank => 120;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("PLoad", "load"), new CommandAlias("PUnload", "unload"),
                     new CommandAlias("Plugins", "list") };
-            }
-        }
-        public override bool MessageBlockRestricted { get { return true; } }
+        public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(2);
@@ -39,7 +31,7 @@ namespace MCGalaxy.Commands.Scripting
             {
                 string modifier = args.Length > 1 ? args[1] : "";
                 p.Message("Loaded plugins:");
-                Paginator.Output(p, Plugin.custom, pl => pl.name,
+                Paginator.Output(p, Plugin.custom, pl => pl.Name,
                                  "Plugins", "plugins", modifier);
                 return;
             }
@@ -64,15 +56,11 @@ namespace MCGalaxy.Commands.Scripting
             }
             else if (cmd.CaselessEq("create"))
             {
-#if !MCG_STANDALONE
                 new CmdCmdCreate().Use(p, "plugin " + name, data);
-#endif
             }
             else if (cmd.CaselessEq("compile"))
             {
-#if !MCG_STANDALONE
                 new CmdCompile().Use(p, "plugin " + name, data);
-#endif
             }
             else
             {
@@ -82,7 +70,7 @@ namespace MCGalaxy.Commands.Scripting
         static void UnloadPlugin(Player p, string name)
         {
             Plugin plugin = Matcher.Find(p, name, out int matches, Plugin.custom,
-                                         null, pln => pln.name, "plugins");
+                                         null, pln => pln.Name, "plugins");
             if (plugin == null)
             {
                 return;

@@ -111,15 +111,14 @@ namespace MCGalaxy
                                  listCmd, "players", modifier);
             }
         }
-        public void Save() { Save(true); }
-        public void Save(bool log)
+        public void Save(bool log = true)
         {
             lock (saveLocker)
             {
                 using StreamWriter w = new(Path);
                 SaveEntries(w);
             }
-            if (log) Logger.Log(LogType.BackgroundActivity, "SAVED: " + Path);
+            if (log) Logger.Log(0, "SAVED: " + Path);
         }
         void SaveEntries(StreamWriter w)
         {
@@ -137,7 +136,7 @@ namespace MCGalaxy
             if (!File.Exists(path))
             {
                 File.Create(path).Close();
-                Logger.Log(LogType.SystemActivity, "CREATED NEW: " + path);
+                Logger.Log(1, "CREATED NEW: " + path);
                 return list;
             }
             using (StreamReader r = new(path, Encoding.UTF8))

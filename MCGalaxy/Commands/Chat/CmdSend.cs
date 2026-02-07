@@ -19,11 +19,11 @@ namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdSend : Command2
     {
-        public override string name { get { return "Send"; } }
-        public override string type { get { return CommandTypes.Chat; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Builder; } }
-        public override bool UseableWhenFrozen { get { return true; } }
-        public override CommandParallelism Parallelism { get { return CommandParallelism.NoAndWarn; } }
+        public override string Name => "Send";
+        public override string Type => CommandTypes.Chat;
+        public override sbyte DefaultRank => 30;
+        public override bool UseableWhenFrozen => true;
+        public override int Parallelism => 1;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] parts = message.SplitSpaces(2);

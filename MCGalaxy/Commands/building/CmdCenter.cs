@@ -18,9 +18,9 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdCenter : Command2
     {
-        public override string name { get { return "Center"; } }
-        public override string shortcut { get { return "Centre"; } }
-        public override string type { get { return CommandTypes.Building; } }
+        public override string Name => "Center";
+        public override string Shortcut => "Centre";
+        public override string Type => CommandTypes.Building;
         public override void Use(Player p, string message, CommandData data)
         {
             p.Message("Place or break two blocks to determine the edges.");
@@ -45,10 +45,7 @@ namespace MCGalaxy.Commands.Building
             p.Message("Gold blocks were placed at ({0}, {1}, {2}).", x, y, z);
             return true;
         }
-        static void Place(Player p, int x, int y, int z)
-        {
-            p.level.UpdateBlock(p, (ushort)x, (ushort)y, (ushort)z, Block.Gold, BlockDBFlags.Drawn);
-        }
+        static void Place(Player p, int x, int y, int z) => p.Level.UpdateBlock(p, (ushort)x, (ushort)y, (ushort)z, Block.Gold, BlockDBFlags.Drawn);
         public override void Help(Player p)
         {
             p.Message("&T/Center");

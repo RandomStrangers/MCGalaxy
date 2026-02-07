@@ -20,12 +20,9 @@ namespace MCGalaxy.Levels.IO
 {
     public sealed class McLevelImporter : IMapImporter
     {
-        public override string Extension { get { return ".mclevel"; } }
-        public override string Description { get { return "Minecraft Indev map"; } }
-        public override Vec3U16 ReadDimensions(Stream src)
-        {
-            throw new NotSupportedException();
-        }
+        public override string Extension => ".mclevel";
+        public override string Description => "Minecraft Indev map";
+        public override Vec3U16 ReadDimensions(Stream src) => throw new NotSupportedException();
         public override Level Read(Stream src, string name, bool metadata)
         {
             NbtFile file = new();
@@ -38,11 +35,11 @@ namespace MCGalaxy.Levels.IO
         void ReadData(NbtCompound root, string name, out Level lvl)
         {
             NbtCompound map = (NbtCompound)root["Map"];
-            ushort width = (ushort)map["Width"].ShortValue;
-            ushort height = (ushort)map["Height"].ShortValue;
-            ushort length = (ushort)map["Length"].ShortValue;
+            ushort width = (ushort)map["Width"].ShortValue,
+                height = (ushort)map["Height"].ShortValue,
+                length = (ushort)map["Length"].ShortValue;
             byte[] blocks = map["Blocks"].ByteArrayValue;
-            lvl = new Level(name, width, height, length, blocks);
+            lvl = new(name, width, height, length, blocks);
             NbtList spawn = (NbtList)map["Spawn"];
             lvl.spawnx = (ushort)spawn.Tags[0].ShortValue;
             lvl.spawny = (ushort)spawn.Tags[1].ShortValue;
@@ -51,17 +48,14 @@ namespace MCGalaxy.Levels.IO
         void ReadMetadata(NbtCompound root, Level lvl)
         {
             NbtCompound env = (NbtCompound)root["Environment"];
-            // TODO: Work out sun/shadow color from Skylight and TimeOfDay
             lvl.Config.SkyColor = env["SkyColor"].IntValue.ToString("X6");
             lvl.Config.FogColor = env["FogColor"].IntValue.ToString("X6");
             lvl.Config.CloudColor = env["CloudColor"].IntValue.ToString("X6");
             lvl.Config.CloudsHeight = env["CloudHeight"].ShortValue;
-            // TODO: These don't seem right still. do more testing.
             lvl.Config.HorizonBlock = env["SurroundingWaterType"].ByteValue;
             lvl.Config.EdgeLevel = env["SurroundingWaterHeight"].ShortValue;
             lvl.Config.EdgeBlock = env["SurroundingGroundType"].ByteValue;
-            int borderHeight = env["SurroundingGroundHeight"].ShortValue;
-            lvl.Config.SidesOffset = borderHeight - lvl.Config.EdgeLevel;
+            lvl.Config.SidesOffset = env["SurroundingGroundHeight"].ShortValue - lvl.Config.EdgeLevel;
         }
     }
 }

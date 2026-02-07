@@ -19,7 +19,7 @@ namespace MCGalaxy.Drawing.Ops
 {
     public class WriteDrawOp : DrawOp
     {
-        public override string Name { get { return "Write"; } }
+        public override string Name => "Write";
         public string Text;
         public byte Scale, Spacing;
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)

@@ -16,18 +16,12 @@ namespace MCGalaxy.Commands.Misc
 {
     public sealed class CmdInvincible : Command2
     {
-        public override string name { get { return "Invincible"; } }
-        public override string shortcut { get { return "Inv"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new CommandAlias[] { new("GodMode") }; }
-        }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can toggle invinciblity of others") }; }
-        }
+        public override string Name => "Invincible";
+        public override string Shortcut => "Inv";
+        public override string Type => CommandTypes.Other;
+        public override sbyte DefaultRank => 80;
+        public override CommandAlias[] Aliases => new CommandAlias[] { new("GodMode") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can toggle invinciblity of others") };
         public override void Use(Player p, string message, CommandData data)
         {
             Player who = message.Length == 0 ? p : PlayerInfo.FindMatches(p, message);

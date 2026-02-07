@@ -18,8 +18,8 @@ namespace MCGalaxy.Drawing.Brushes
 {
     public sealed class SolidBrushFactory : BrushFactory
     {
-        public override string Name { get { return "Normal"; } }
-        public override string[] Help { get { return HelpString; } }
+        public override string Name => "Normal";
+        public override string[] Help => HelpString;
         static readonly string[] HelpString = new string[] {
             "&TArguments: [block]",
             "&HDraws using the specified block.",
@@ -46,8 +46,8 @@ namespace MCGalaxy.Drawing.Brushes
     }
     public sealed class CheckeredBrushFactory : BrushFactory
     {
-        public override string Name { get { return "Checkered"; } }
-        public override string[] Help { get { return HelpString; } }
+        public override string Name => "Checkered";
+        public override string[] Help => HelpString;
         static readonly string[] HelpString = new string[] {
             "&TArguments: [block1] [block2] <block3>..",
             "&HDraws an alternating pattern of blocks.",
@@ -75,8 +75,8 @@ namespace MCGalaxy.Drawing.Brushes
     }
     public sealed class GridBrushFactory : BrushFactory
     {
-        public override string Name { get { return "Grid"; } }
-        public override string[] Help { get { return HelpString; } }
+        public override string Name => "Grid";
+        public override string[] Help => HelpString;
         static readonly string[] HelpString = new string[] {
             "&TArguments: [grid block]/<size> [cell block]/<size> <border>",
             "&HDraws an gridline pattern of blocks.",
@@ -93,8 +93,8 @@ namespace MCGalaxy.Drawing.Brushes
     }
     public sealed class PasteBrushFactory : BrushFactory
     {
-        public override string Name { get { return "Paste"; } }
-        public override string[] Help { get { return HelpString; } }
+        public override string Name => "Paste";
+        public override string[] Help => HelpString;
         static readonly string[] HelpString = new string[] {
             "&TArguments: none",
             "&HDraws by pasting blocks from current &T/Copy.",
@@ -134,8 +134,8 @@ namespace MCGalaxy.Drawing.Brushes
     }
     public sealed class StripedBrushFactory : BrushFactory
     {
-        public override string Name { get { return "Striped"; } }
-        public override string[] Help { get { return HelpString; } }
+        public override string Name => "Striped";
+        public override string[] Help => HelpString;
         static readonly string[] HelpString = new string[] {
             "&TArguments: [block1] [block2]",
             "&HDraws a diagonally-alternating pattern of block1 and block2.",
@@ -160,8 +160,8 @@ namespace MCGalaxy.Drawing.Brushes
     }
     public sealed class RainbowBrushFactory : BrushFactory
     {
-        public override string Name { get { return "Rainbow"; } }
-        public override string[] Help { get { return HelpString; } }
+        public override string Name => "Rainbow";
+        public override string[] Help => HelpString;
         static readonly string[] HelpString = new string[] {
             "&TArguments: none or 'random'",
             "&HIf no arguments are given, draws a diagonally repeating rainbow",
@@ -176,8 +176,8 @@ namespace MCGalaxy.Drawing.Brushes
     }
     public sealed class BWRainbowBrushFactory : BrushFactory
     {
-        public override string Name { get { return "BWRainbow"; } }
-        public override string[] Help { get { return HelpString; } }
+        public override string Name => "BWRainbow";
+        public override string[] Help => HelpString;
         static readonly string[] HelpString = new string[] {
             "&TArguments: none or 'random'",
             "&HIf no arguments are given, draws a diagonally repeating black-white rainbow",

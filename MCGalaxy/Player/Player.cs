@@ -23,7 +23,6 @@ using MCGalaxy.Games;
 using MCGalaxy.Maths;
 using MCGalaxy.Network;
 using MCGalaxy.SQL;
-using MCGalaxy.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -38,14 +37,8 @@ namespace MCGalaxy
             color = "&S";
             SuperName = "Console";
         }
-        public override string FullName
-        {
-            get { return "Console [&a" + Server.Config.ConsoleName + "&S]"; }
-        }
-        public override void Message(string message)
-        {
-            Logger.Log(LogType.ConsoleMessage, message);
-        }
+        public override string FullName => "Console [&a" + Server.Config.ConsoleName + "&S]";
+        public override void Message(string message) => Logger.Log(16, message);
     }
     public partial class Player : Entity, IDisposable
     {
@@ -61,28 +54,27 @@ namespace MCGalaxy
             SetIP(IPAddress.Loopback);
             IsSuper = true;
         }
-        const int SESSION_ID_MASK = (1 << 20) - 1;
         public Player(INetSocket socket, IGameSession session)
         {
             Socket = socket;
             Session = session;
             SetIP(Socket.IP);
-            EntityList = new EntityList(this, (byte)Session.MaxEntityID);
-            CriticalTasks = new VolatileArray<SchedulerTask>();
-            spamChecker = new SpamChecker(this);
-            partialLog = new List<DateTime>(20);
-            session.ID = Interlocked.Increment(ref sessionCounter) & SESSION_ID_MASK;
+            EntityList = new(this, (byte)Session.MaxEntityID);
+            CriticalTasks = new();
+            spamChecker = new(this);
+            partialLog = new(20);
+            session.ID = Interlocked.Increment(ref sessionCounter) & (1 << 20) - 1;
             for (int b = 0; b < BlockBindings.Length; b++)
             {
                 BlockBindings[b] = (ushort)b;
             }
         }
-        public override Level Level { get { return level; } }
-        public override bool RestrictsScale { get { return true; } }
+        public override Level Level => level;
+        public override bool RestrictsScale => true;
         /// <summary> Whether this player can see the given player. </summary>
-        public bool CanSee(Player target) { return CanSee(target, Rank); }
+        public bool CanSee(Player target) => CanSee(target, Rank);
         /// <summary> Whether this player can see the given player, as if they were the given rank. </summary>
-        public bool CanSee(Player target, LevelPermission plRank)
+        public bool CanSee(Player target, sbyte plRank)
         {
             if (target == this || target == null) return true;
             bool canSee = !target.hidden || plRank >= target.hideRank;
@@ -98,7 +90,7 @@ namespace MCGalaxy
         }
         public ushort GetHeldBlock()
         {
-            if (ModeBlock != Block.Invalid) return ModeBlock;
+            if (ModeBlock != 0xff) return ModeBlock;
             return BlockBindings[ClientHeldBlock];
         }
         public string GetMotd()
@@ -106,7 +98,7 @@ namespace MCGalaxy
             Zone zone = ZoneIn;
             string motd = zone == null ? "ignore" : zone.Config.MOTD;
             // fallback to level MOTD, then rank MOTD, then server MOTD
-            if (motd == "ignore") motd = level.Config.MOTD;
+            if (motd == "ignore") motd = Level.Config.MOTD;
             if (motd == "ignore") motd = string.IsNullOrEmpty(group.MOTD) ? Server.Config.MOTD : group.MOTD;
             OnGettingMotdEvent.Call(this, ref motd);
             return motd;
@@ -120,7 +112,7 @@ namespace MCGalaxy
             };
             Team team = Game.Team;
             prefixes.Add(team == null ? "" : "<" + team.Color + team.Name + color + "> ");
-            IGame game = IGame.GameOn(level);
+            IGame game = IGame.GameOn(Level);
             prefixes.Add(game == null ? "" : game.GetPrefix(this));
             bool devPrefix = Server.Config.SoftwareStaffPrefixes &&
                              Server.Devs.CaselessContains(truename);
@@ -129,10 +121,7 @@ namespace MCGalaxy
             OnSettingPrefixEvent.Call(this, prefixes);
             prefix = prefixes.Join("");
         }
-        internal string MakeTitle(string title, string titleCol)
-        {
-            return color + "[" + titleCol + title + color + "] ";
-        }
+        internal string MakeTitle(string title, string titleCol) => color + "[" + titleCol + title + color + "] ";
         /// <summary> Raises OnSettingColorEvent then sets color. </summary>
         public void SetColor(string col)
         {
@@ -145,44 +134,44 @@ namespace MCGalaxy
         {
             string prevCol = color;
             SetColor(col);
-            if (prevCol == color) return;
-            Entities.GlobalRespawn(this);
-            SetPrefix();
+            if (prevCol != color)
+            {
+                Entities.GlobalRespawn(this);
+                SetPrefix();
+            }
         }
         public bool IsLikelyInsideBlock()
         {
             AABB bb = ModelBB.OffsetPosition(Pos);
-            // client collision is very slightly more precise than server
-            // so move slightly in to avoid false positives
             bb = bb.Expand(-1);
-            return AABB.IntersectsSolidBlocks(bb, level);
+            return AABB.IntersectsSolidBlocks(bb, Level);
         }
         public void SaveStats()
         {
             bool cancel = false;
             OnInfoSaveEvent.Call(this, ref cancel);
-            if (cancel) return;
-            // Player disconnected before SQL data was retrieved
-            if (!gotSQLData) return;
-            long blocks = PlayerData.Pack(TotalPlaced, TotalModified);
-            long drawn = PlayerData.Pack(TotalDeleted, TotalDrawn);
-            Database.UpdateRows("Players", "IP=@0, LastLogin=@1, totalLogin=@2, totalDeaths=@3, Money=@4, " +
-                                "totalBlocks=@5, totalCuboided=@6, totalKicked=@7, TimeSpent=@8, Messages=@9", "WHERE Name=@10",
-                                ip, LastLogin.ToInvariantDateString(),
-                                TimesVisited, TimesDied, money, blocks,
-                                drawn, TimesBeenKicked, (long)TotalTime.TotalSeconds, TotalMessagesSent, name);
+            if (!cancel)
+            {
+                // Player disconnected before SQL data was retrieved
+                if (gotSQLData)
+                {
+                    long blocks = PlayerData.Pack(TotalPlaced, TotalModified);
+                    long drawn = PlayerData.Pack(TotalDeleted, TotalDrawn);
+                    Database.UpdateRows("Players", "IP=@0, LastLogin=@1, totalLogin=@2, totalDeaths=@3, Money=@4, " +
+                                        "totalBlocks=@5, totalCuboided=@6, totalKicked=@7, TimeSpent=@8, Messages=@9", "WHERE Name=@10",
+                                        ip, LastLogin.ToInvariantDateString(),
+                                        TimesVisited, TimesDied, money, blocks,
+                                        drawn, TimesBeenKicked, (long)TotalTime.TotalSeconds, TotalMessagesSent, name);
+                }
+            }
         }
         public void SetIP(IPAddress addr)
         {
             IP = addr;
             ip = addr.ToString();
         }
-        public bool CanUse(Command cmd) { return cmd.Permissions.UsableBy(this); }
-        public bool CanUse(string cmdName)
-        {
-            Command cmd = Command.Find(cmdName);
-            return cmd != null && CanUse(cmd);
-        }
+        public bool CanUse(Command cmd) => cmd.Permissions.UsableBy(this);
+        public bool CanUse(string cmdName) => Command.Find(cmdName) != null && CanUse(Command.Find(cmdName));
         public bool MarkPossessed(string marker = "")
         {
             if (marker.Length > 0)
@@ -198,16 +187,13 @@ namespace MCGalaxy
         #region == DISCONNECTING ==
         /// <summary> Disconnects the player from the server,
         /// with their default logout message shown in chat. </summary>
-        public void Disconnect() { LeaveServer(PlayerInfo.GetLogoutMessage(this), "disconnected", false); }
+        public void Disconnect() => LeaveServer(PlayerInfo.GetLogoutMessage(this), "disconnected", false);
         /// <summary> Kicks the player from the server,
         /// with the given messages shown in chat and in the disconnect packet. </summary>
-        public void Kick(string chatMsg, string discMsg, bool sync = false)
-        {
-            LeaveServer(chatMsg, discMsg, true, sync);
-        }
+        public void Kick(string chatMsg, string discMsg, bool sync = false) => LeaveServer(chatMsg, discMsg, true, sync);
         /// <summary> Kicks the player from the server,
         /// with the given message shown in both chat and in the disconnect packet. </summary>
-        public void Kick(string discMsg) { Kick(discMsg, false); }
+        public void Kick(string discMsg) => Kick(discMsg, false);
         public void Kick(string discMsg, bool sync = false)
         {
             string chatMsg = discMsg;
@@ -216,17 +202,11 @@ namespace MCGalaxy
         }
         /// <summary> Disconnects the players from the server,
         /// with the given messages shown in chat and in the disconnect packet. </summary>
-        public void Leave(string chatMsg, string discMsg, bool sync = false)
-        {
-            LeaveServer(chatMsg, discMsg, false, sync);
-        }
+        public void Leave(string chatMsg, string discMsg, bool sync = false) => LeaveServer(chatMsg, discMsg, false, sync);
         /// <summary> Disconnects the players from the server,
         /// with the same message shown in chat and in the disconnect packet. </summary>
-        public void Leave(string msg) { Leave(msg, false); }
-        public void Leave(string msg, bool sync = false)
-        {
-            LeaveServer(msg, msg, false, sync);
-        }
+        public void Leave(string msg) => Leave(msg, false);
+        public void Leave(string msg, bool sync = false) => LeaveServer(msg, msg, false, sync);
         bool leftServer = false;
         void LeaveServer(string chatMsg, string discMsg, bool isKick, bool sync = false)
         {
@@ -238,7 +218,7 @@ namespace MCGalaxy
             if (name == null)
             {
                 Socket?.Close();
-                Logger.Log(LogType.UserActivity, "{0} disconnected.", IP);
+                Logger.Log(3, "{0} disconnected.", IP);
                 return;
             }
             Server.reviewlist.Remove(name);
@@ -260,7 +240,7 @@ namespace MCGalaxy
                 if (!loggedIn)
                 {
                     PlayerInfo.Online.Remove(this);
-                    Logger.Log(LogType.UserActivity, "{0} ({1}) disconnected. ({2})", truename, IP, discMsg);
+                    Logger.Log(3, "{0} ({1}) disconnected. ({2})", truename, IP, discMsg);
                     return;
                 }
                 Entities.DespawnEntities(this, false);
@@ -268,7 +248,7 @@ namespace MCGalaxy
                 SaveStats();
                 PlayerInfo.Online.Remove(this);
                 OnPlayerDisconnectEvent.Call(this, discMsg);
-                level.AutoUnload();
+                Level.AutoUnload();
                 Dispose();
             }
             catch (Exception e)
@@ -286,17 +266,17 @@ namespace MCGalaxy
             if (!isKick)
             {
                 string leaveMsg = "&c- λFULL &S" + chatMsg;
-                if (Server.Config.GuestLeavesNotify || Rank > LevelPermission.Guest)
+                if (Server.Config.GuestLeavesNotify || Rank > 0)
                 {
-                    Chat.MessageFrom(ChatScope.All, this, leaveMsg, null, Chat.FilterVisible(this), !hidden);
+                    Chat.MessageFrom(0, this, leaveMsg, null, Chat.FilterVisible(this), !hidden);
                 }
-                Logger.Log(LogType.UserActivity, "{0} disconnected ({1}&S).", truename, chatMsg);
+                Logger.Log(3, "{0} disconnected ({1}&S).", truename, chatMsg);
             }
             else
             {
                 string leaveMsg = "&c- λFULL &Skicked &S" + chatMsg;
-                Chat.MessageFrom(ChatScope.All, this, leaveMsg, null, null, true);
-                Logger.Log(LogType.UserActivity, "{0} kicked ({1}&S).", truename, chatMsg);
+                Chat.MessageFrom(0, this, leaveMsg, null, null, true);
+                Logger.Log(3, "{0} kicked ({1}&S).", truename, chatMsg);
             }
         }
         public void Dispose()
@@ -313,14 +293,10 @@ namespace MCGalaxy
         }
         #endregion
         #region == OTHER ==
-        public const string USERNAME_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890._";
-        internal byte UserType() { return group.CanPlace[Block.Bedrock] ? (byte)100 : (byte)0; }
+        internal byte UserType() => group.CanPlace[Block.Bedrock] ? (byte)100 : (byte)0;
         #endregion
         /// <summary> Returns whether the player is currently allowed to talk. </summary>
-        public bool CanSpeak()
-        {
-            return IsConsole || (!muted && !Unverified && (voice || !Server.chatmod));
-        }
+        public bool CanSpeak() => IsConsole || (!muted && !Unverified && (voice || !Server.chatmod));
         public bool CheckCanSpeak(string action)
         {
             if (IsConsole) return true;
@@ -368,16 +344,12 @@ namespace MCGalaxy
         /// <summary> Blocks calling thread until all 'new map loaded' packets have been sent. </summary>
         public void BlockUntilLoad(int sleep)
         {
-            while (Loading)
-                Thread.Sleep(sleep);
+            while (Loading) Thread.Sleep(sleep);
         }
         /// <summary> Sends a block change packet to the user containing the current block at the given coordinates. </summary>
         /// <remarks> Vanilla client always assumes block place/delete succeeds, so this is usually used to echo back the
         /// old block. (e.g. insufficient permission to change that block, used as mark for draw operations) </remarks>
-        public void RevertBlock(ushort x, ushort y, ushort z)
-        {
-            SendBlockchange(x, y, z, level.GetBlock(x, y, z));
-        }
+        public void RevertBlock(ushort x, ushort y, ushort z) => SendBlockchange(x, y, z, Level.GetBlock(x, y, z));
         public void SetMoney(int amount)
         {
             money = amount;
@@ -398,10 +370,7 @@ namespace MCGalaxy
             }
             return true;
         }
-        public void CheckForMessageSpam()
-        {
-            spamChecker?.CheckChatSpam();
-        }
+        public void CheckForMessageSpam() => spamChecker?.CheckChatSpam();
         internal void SetBaseTotalModified(long modified)
         {
             long adjust = modified - TotalModified;
@@ -432,10 +401,7 @@ namespace MCGalaxy
                 else ResetSelectionHUD();
             }
         }
-        public void MakeSelection(int marks, object state, SelectionHandler callback)
-        {
-            MakeSelection(marks, null, state, callback);
-        }
+        public void MakeSelection(int marks, object state, SelectionHandler callback) => MakeSelection(marks, null, state, callback);
         public void ClearSelection()
         {
             lock (selLock)
@@ -457,46 +423,46 @@ namespace MCGalaxy
                 selMarks[selIndex] = new Vec3S32(x, y, z);
                 selMarkCallback?.Invoke(p, selMarks, selIndex, selState, block);
                 // Mark callback cancelled selection
-                if (selCallback == null) return;
-                selIndex++;
-                if (selIndex == 1 && selTitle != null)
+                if (selCallback != null)
                 {
-                    SendCpeMessage(CpeMessageType.BottomRight2, "Mark #1" + FormatSelectionMark(selMarks[0]));
-                }
-                else if (selIndex == 2 && selTitle != null)
-                {
-                    SendCpeMessage(CpeMessageType.BottomRight1, "Mark #2" + FormatSelectionMark(selMarks[1]));
-                }
-                if (selIndex != selMarks.Length) return;
-                string title = selTitle;
-                object state = selState;
-                SelectionMarkHandler markCallback = selMarkCallback;
-                SelectionHandler callback = selCallback;
-                ClearSelection();
-                block = p.BlockBindings[block];
-                bool canRepeat = callback(this, selMarks, state, block);
-                if (canRepeat && staticCommands)
-                {
-                    MakeSelection(selIndex, title, state, callback, markCallback);
+                    selIndex++;
+                    if (selIndex == 1 && selTitle != null)
+                    {
+                        SendCpeMessage(12, "Mark #1" + FormatSelectionMark(selMarks[0]));
+                    }
+                    else if (selIndex == 2 && selTitle != null)
+                    {
+                        SendCpeMessage(11, "Mark #2" + FormatSelectionMark(selMarks[1]));
+                    }
+                    if (selIndex == selMarks.Length)
+                    {
+                        string title = selTitle;
+                        object state = selState;
+                        SelectionMarkHandler markCallback = selMarkCallback;
+                        SelectionHandler callback = selCallback;
+                        ClearSelection();
+                        block = p.BlockBindings[block];
+                        bool canRepeat = callback(this, selMarks, state, block);
+                        if (canRepeat && staticCommands)
+                        {
+                            MakeSelection(selIndex, title, state, callback, markCallback);
+                        }
+                    }
                 }
             }
         }
-        string FormatSelectionMark(Vec3S32 P)
-        {
-            return ": &S(" + P.X + ", " + P.Y + ", " + P.Z + ")";
-        }
+        string FormatSelectionMark(Vec3S32 P) => ": &S(" + P.X + ", " + P.Y + ", " + P.Z + ")";
         void InitSelectionHUD()
         {
-            SendCpeMessage(CpeMessageType.BottomRight3, selTitle);
-            SendCpeMessage(CpeMessageType.BottomRight2, "Mark #1: &S(Not yet set)");
-            string mark2Msg = selMarks.Length >= 2 ? "Mark #2: &S(Not yet set)" : "";
-            SendCpeMessage(CpeMessageType.BottomRight1, mark2Msg);
+            SendCpeMessage(13, selTitle);
+            SendCpeMessage(12, "Mark #1: &S(Not yet set)");
+            SendCpeMessage(11, selMarks.Length >= 2 ? "Mark #2: &S(Not yet set)" : "");
         }
         void ResetSelectionHUD()
         {
-            SendCpeMessage(CpeMessageType.BottomRight3, "");
-            SendCpeMessage(CpeMessageType.BottomRight2, "");
-            SendCpeMessage(CpeMessageType.BottomRight1, "");
+            SendCpeMessage(13, "");
+            SendCpeMessage(12, "");
+            SendCpeMessage(11, "");
         }
     }
 }

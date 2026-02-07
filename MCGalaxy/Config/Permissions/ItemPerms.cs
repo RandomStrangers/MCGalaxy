@@ -20,28 +20,25 @@ namespace MCGalaxy
     /// <summary> Represents which ranks are allowed (and which are disallowed) to use an item. </summary>
     public class ItemPerms
     {
-        public virtual string ItemName { get { return ""; } }
-        public LevelPermission MinRank;
-        public List<LevelPermission> Allowed, Disallowed;
-        public ItemPerms(LevelPermission min) { MinRank = min; }
-        protected void Init(LevelPermission min, List<LevelPermission> allowed,
-                            List<LevelPermission> disallowed)
+        public virtual string ItemName => "";
+        public sbyte MinRank;
+        public List<sbyte> Allowed, Disallowed;
+        public ItemPerms(sbyte min) => MinRank = min;
+        protected void Init(sbyte min, List<sbyte> allowed,
+                            List<sbyte> disallowed)
         {
             MinRank = min; Allowed = allowed; Disallowed = disallowed;
         }
         public void CopyPermissionsTo(ItemPerms dst)
         {
             dst.MinRank = MinRank;
-            dst.Allowed = Allowed == null ? null : new List<LevelPermission>(Allowed);
-            dst.Disallowed = Disallowed == null ? null : new List<LevelPermission>(Disallowed);
+            dst.Allowed = Allowed == null ? null : new List<sbyte>(Allowed);
+            dst.Disallowed = Disallowed == null ? null : new List<sbyte>(Disallowed);
         }
-        public bool UsableBy(LevelPermission perm)
-        {
-            return (perm >= MinRank || (Allowed != null && Allowed.Contains(perm)))
+        public bool UsableBy(sbyte perm) => (perm >= MinRank || (Allowed != null && Allowed.Contains(perm)))
                 && (Disallowed == null || !Disallowed.Contains(perm));
-        }
-        public bool UsableBy(Player p) { return UsableBy(p.group.Permission); }
-        public void Allow(LevelPermission rank)
+        public bool UsableBy(Player p) => UsableBy(p.group.Permission);
+        public void Allow(sbyte rank)
         {
             if (Disallowed != null && Disallowed.Contains(rank))
             {
@@ -49,11 +46,11 @@ namespace MCGalaxy
             }
             else if (Allowed == null || !Allowed.Contains(rank))
             {
-                Allowed ??= new List<LevelPermission>();
+                Allowed ??= new List<sbyte>();
                 Allowed.Add(rank);
             }
         }
-        public void Disallow(LevelPermission rank)
+        public void Disallow(sbyte rank)
         {
             if (Allowed != null && Allowed.Contains(rank))
             {
@@ -61,7 +58,7 @@ namespace MCGalaxy
             }
             else if (Disallowed == null || !Disallowed.Contains(rank))
             {
-                Disallowed ??= new List<LevelPermission>();
+                Disallowed ??= new List<sbyte>();
                 Disallowed.Add(rank);
             }
         }
@@ -70,7 +67,7 @@ namespace MCGalaxy
             builder.Append(Group.GetColoredName(MinRank) + "&S+");
             if (Allowed != null && Allowed.Count > 0)
             {
-                foreach (LevelPermission perm in Allowed)
+                foreach (sbyte perm in Allowed)
                 {
                     builder.Append(", " + Group.GetColoredName(perm));
                 }
@@ -79,7 +76,7 @@ namespace MCGalaxy
             if (Disallowed != null && Disallowed.Count > 0)
             {
                 builder.Append(" (except ");
-                foreach (LevelPermission perm in Disallowed)
+                foreach (sbyte perm in Disallowed)
                 {
                     builder.Append(Group.GetColoredName(perm) + ", ");
                 }
@@ -122,32 +119,32 @@ namespace MCGalaxy
             AppendPerms(sb, Allowed);
             return sb.ToString();
         }
-        static void AppendPerms(StringBuilder sb, List<LevelPermission> list)
+        static void AppendPerms(StringBuilder sb, List<sbyte> list)
         {
             if (list == null || list.Count == 0) return;
             string prefix = "";
-            foreach (LevelPermission perm in list)
+            foreach (sbyte perm in list)
             {
                 sb.Append(prefix);
                 sb.Append(NumberUtils.StringifyInt((int)perm));
                 prefix = ",";
             }
         }
-        protected static void Deserialise(string[] args, int idx, out LevelPermission min,
-                                          out List<LevelPermission> allowed,
-                                          out List<LevelPermission> disallowed)
+        protected static void Deserialise(string[] args, int idx, out sbyte min,
+                                          out List<sbyte> allowed,
+                                          out List<sbyte> disallowed)
         {
-            min = (LevelPermission)NumberUtils.ParseInt32(args[idx]);
+            min = (sbyte)NumberUtils.ParseInt32(args[idx]);
             disallowed = ExpandPerms(args[idx + 1]);
             allowed = ExpandPerms(args[idx + 2]);
         }
-        static List<LevelPermission> ExpandPerms(string input)
+        static List<sbyte> ExpandPerms(string input)
         {
             if (input == null || input.Length == 0) return null;
-            List<LevelPermission> perms = new();
+            List<sbyte> perms = new();
             foreach (string perm in input.SplitComma())
             {
-                perms.Add((LevelPermission)NumberUtils.ParseInt32(perm));
+                perms.Add((sbyte)NumberUtils.ParseInt32(perm));
             }
             return perms;
         }

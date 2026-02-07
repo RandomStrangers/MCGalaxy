@@ -18,11 +18,11 @@ namespace MCGalaxy.Modules.Moderation.Notes
 {
     public class CmdNote : Command2
     {
-        public override string name { get { return "Note"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        protected virtual bool Announce { get { return true; } }
-        protected virtual ModActionType ModActionType { get { return ModActionType.Noted; } }
+        public override string Name => "Note";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 50;
+        protected virtual bool Announce => true;
+        protected virtual int ModActionType => 12;
         public override void Use(Player p, string message, CommandData data)
         {
             if (!Server.Config.LogNotes)
@@ -33,7 +33,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
             string[] args = message.SplitSpaces(2);
             if (args.Length == 1) { p.Message("&WYou must provide text for the note."); return; }
             string note = args[1];
-            string target = ModActionCmd.FindName(p, "note", "/" + name, "", args[0], ref note);
+            string target = ModActionCmd.FindName(p, "note", "/" + Name, "", args[0], ref note);
             if (target == null) return;
             note = ModActionCmd.ExpandReason(p, note);
             if (note == null) return;
@@ -54,10 +54,10 @@ namespace MCGalaxy.Modules.Moderation.Notes
     }
     public class CmdOpNote : CmdNote
     {
-        public override string name { get { return "OpNote"; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        protected override bool Announce { get { return false; } }
-        protected override ModActionType ModActionType { get { return ModActionType.OpNoted; } }
+        public override string Name => "OpNote";
+        public override sbyte DefaultRank => 80;
+        protected override bool Announce => false;
+        protected override int ModActionType => 13;
         public override void Help(Player p)
         {
             p.Message("&T/OpNote [player] [text]");

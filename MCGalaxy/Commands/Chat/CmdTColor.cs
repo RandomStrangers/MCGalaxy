@@ -16,25 +16,13 @@ namespace MCGalaxy.Commands.Chatting
 {
     public class CmdTColor : EntityPropertyCmd
     {
-        public override string name { get { return "TColor"; } }
-        public override string type { get { return CommandTypes.Chat; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can change the title color of others") }; }
-        }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("TColour"), new CommandAlias("XTColor", "-own") }; }
-        }
-        public override void Use(Player p, string message, CommandData data)
-        {
-            UsePlayer(p, data, message, "title color");
-        }
-        protected override void SetPlayerData(Player p, string target, string colName)
-        {
-            PlayerOperations.SetTitleColor(p, target, colName);
-        }
+        public override string Name => "TColor";
+        public override string Type => CommandTypes.Chat;
+        public override sbyte DefaultRank => 100;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can change the title color of others") };
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("TColour"), new CommandAlias("XTColor", "-own") };
+        public override void Use(Player p, string message, CommandData data) => UsePlayer(p, data, message, "title color");
+        protected override void SetPlayerData(Player p, string target, string colName) => PlayerOperations.SetTitleColor(p, target, colName);
         public override void Help(Player p)
         {
             p.Message("&T/TColor [player] [color]");

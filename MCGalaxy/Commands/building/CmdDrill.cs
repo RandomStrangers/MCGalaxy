@@ -18,11 +18,11 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdDrill : Command2
     {
-        public override string name { get { return "Drill"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Drill";
+        public override string Type => CommandTypes.Building;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 80;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             ushort dist = 20;
@@ -33,7 +33,7 @@ namespace MCGalaxy.Commands.Building
         bool DoDrill(Player p, Vec3S32[] marks, object state, ushort block)
         {
             ushort x = (ushort)marks[0].X, y = (ushort)marks[0].Y, z = (ushort)marks[0].Z;
-            block = p.level.GetBlock(x, y, z);
+            block = p.Level.GetBlock(x, y, z);
             int dist = (ushort)state, numBlocks = 3 * 3 * dist;
             if (numBlocks > p.group.DrawLimit)
             {
@@ -42,7 +42,7 @@ namespace MCGalaxy.Commands.Building
                 return false;
             }
             DirUtils.FourYaw(p.Rot.RotY, out int dx, out int dz);
-            Level lvl = p.level;
+            Level lvl = p.Level;
             if (dx != 0)
             {
                 for (int depth = 0; depth < dist; x += (ushort)dx, depth++)
@@ -75,7 +75,7 @@ namespace MCGalaxy.Commands.Building
             ushort cur = lvl.GetBlock(x, y, z);
             if (cur == block)
             {
-                p.level.UpdateBlock(p, x, y, z, Block.Air, BlockDBFlags.Drawn, true);
+                p.Level.UpdateBlock(p, x, y, z, Block.Air, BlockDBFlags.Drawn, true);
             }
         }
         public override void Help(Player p)

@@ -22,16 +22,10 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdReport : Command2
     {
-        public override string name { get { return "Report"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can manage reports") }; }
-        }
-        public override CommandAlias[] Aliases
-        {
-            get { return new CommandAlias[] { new("Reports", "list") }; }
-        }
+        public override string Name => "Report";
+        public override string Type => CommandTypes.Moderation;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can manage reports") };
+        public override CommandAlias[] Aliases => new CommandAlias[] { new("Reports", "list") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -92,7 +86,6 @@ namespace MCGalaxy.Commands.Moderation
             {
                 p.Message("{0} &Shas not been reported.", nick); return;
             }
-            //string[] reports = File.ReadAllLines("extra/reported/" + target + ".txt");
             string[] reports = FileIO.TryReadAllLines("extra/reported/" + target + ".txt");
             p.MessageLines(reports);
         }
@@ -115,7 +108,7 @@ namespace MCGalaxy.Commands.Moderation
             DeleteReport(target);
             p.Message("Reports on {0} &Swere deleted.", nick);
             Chat.MessageFromOps(p, "λNICK &Sdeleted reports on " + nick);
-            Logger.Log(LogType.UserActivity, "Reports on {1} were deleted by {0}", p.name, target);
+            Logger.Log(3, "Reports on {1} were deleted by {0}", p.name, target);
         }
         void HandleClear(Player p, string[] _, CommandData data)
         {
@@ -126,7 +119,7 @@ namespace MCGalaxy.Commands.Moderation
             foreach (string user in users) { DeleteReport(user); }
             p.Message("&aYou have cleared all reports!");
             Chat.MessageFromOps(p, "λNICK &ccleared ALL reports!");
-            Logger.Log(LogType.UserActivity, p.name + " cleared ALL reports!");
+            Logger.Log(3, p.name + " cleared ALL reports!");
         }
         void HandleAdd(Player p, string[] args)
         {
@@ -142,39 +135,31 @@ namespace MCGalaxy.Commands.Moderation
             {
                 reports = Utils.ReadAllLinesList(ReportPath(target));
             }
-            ItemPerms checkPerms = CommandExtraPerms.Find(name, 1);
+            ItemPerms checkPerms = CommandExtraPerms.Find(Name, 1);
             if (reports.Count >= 5)
             {
                 p.Message("{0} &Walready has 5 reports! Please wait until an {1} &Whas reviewed these reports first!",
-                          nick, CommandExtraPerms.Find(name, 1).Describe());
+                          nick, CommandExtraPerms.Find(Name, 1).Describe());
                 return;
             }
             string reason = ModActionCmd.ExpandReason(p, args[1]);
             if (reason == null) return;
             reports.Add(reason + " - Reported by " + p.name + " at " + DateTime.Now);
-            //File.WriteAllLines(ReportPath(target), reports.ToArray());
             FileIO.TryWriteAllLines(ReportPath(target), reports.ToArray());
             p.Message("&aReport sent! It should be viewed when a {0} &ais online",
                       checkPerms.Describe());
-            ModAction action = new(target, p, ModActionType.Reported, reason);
+            ModAction action = new(target, p, 11, reason);
             OnModActionEvent.Call(action);
             if (!action.Announce) return;
             string opsMsg = "λNICK &Sreported " + nick + "&S. Reason: " + reason;
-            Chat.MessageFrom(ChatScope.Perms, p, opsMsg, checkPerms, null, true);
+            Chat.MessageFrom(4, p, opsMsg, checkPerms, null, true);
             string allMsg = "Use &T/Report check " + target + " &Sto see all of " + Pronouns.GetFor(target)[0].Object + " reports";
-            Chat.MessageFrom(ChatScope.Perms, p, allMsg, checkPerms, null, true);
+            Chat.MessageFrom(4, p, allMsg, checkPerms, null, true);
         }
-        static bool HasReports(string user)
-        {
-            return File.Exists(ReportPath(user));
-        }
-        static string ReportPath(string user)
-        {
-            return "extra/reported/" + user + ".txt";
-        }
+        static bool HasReports(string user) => File.Exists(ReportPath(user));
+        static string ReportPath(string user) => "extra/reported/" + user + ".txt";
         static string[] GetReportedUsers()
         {
-            //string[] users = Directory.GetFiles("extra/reported", "*.txt");
             string[] users = FileIO.TryGetFiles("extra/reported", "*.txt");
             for (int i = 0; i < users.Length; i++)
             {
@@ -184,10 +169,8 @@ namespace MCGalaxy.Commands.Moderation
         }
         static void DeleteReport(string user)
         {
-            string backup = "extra/reportedbackups/" + user + ".txt";
-            FileIO.TryDelete(backup);
-            //File.Move(ReportPath(user), backup);
-            FileIO.TryMove(ReportPath(user), backup);
+            FileIO.TryDelete("extra/reportedbackups/" + user + ".txt");
+            FileIO.TryMove(ReportPath(user), "extra/reportedbackups/" + user + ".txt");
         }
         public override void Help(Player p)
         {

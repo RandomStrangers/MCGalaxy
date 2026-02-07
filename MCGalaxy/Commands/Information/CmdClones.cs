@@ -18,15 +18,12 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdClones : Command2
     {
-        public override string name { get { return "Clones"; } }
-        public override string shortcut { get { return "Alts"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool UseableWhenFrozen { get { return true; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("WhoIP") }; }
-        }
+        public override string Name => "Clones";
+        public override string Shortcut => "Alts";
+        public override string Type => CommandTypes.Information;
+        public override sbyte DefaultRank => 50;
+        public override bool UseableWhenFrozen => true;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("WhoIP") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0)

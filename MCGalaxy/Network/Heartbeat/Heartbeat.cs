@@ -25,8 +25,6 @@ namespace MCGalaxy.Network
     /// <summary> Repeatedly sends a heartbeat request every certain interval to a web server. </summary>
     public abstract class Heartbeat
     {
-        /// <summary> The max number of retries attempted for a request </summary>
-        public const int MAX_RETRIES = 3;
         /// <summary> List of all heartbeats to pump </summary>
         public static List<Heartbeat> Heartbeats = new();
         /// <summary> The URL this heartbeat is sent to </summary
@@ -60,7 +58,7 @@ namespace MCGalaxy.Network
             byte[] data = Encoding.ASCII.GetBytes(GetHeartbeatData());
             Exception lastEx = null;
             string lastResp = null;
-            for (int i = 0; i < MAX_RETRIES; i++)
+            for (int i = 0; i < 3; i++)
             {
                 try
                 {
@@ -84,45 +82,47 @@ namespace MCGalaxy.Network
                 }
             }
             OnFailure(lastResp);
-            Logger.Log(LogType.Warning, "Failed to send heartbeat to {0} ({1})", GetHost(), lastEx.Message);
+            Logger.Log(6, "Failed to send heartbeat to {0} ({1})", GetHost(), lastEx.Message);
         }
         /// <summary> Adds the given heartbeat to the list of automatically pumped heartbeats </summary>
-        public static void Register(Heartbeat beat)
-        {
-            Heartbeats.Add(beat);
-        }
+        public static void Register(Heartbeat beat) => Heartbeats.Add(beat);
         /// <summary> Starts pumping heartbeats </summary>
         public static void Start()
         {
-            string hosts = Heartbeats.Join(hb => hb.GetHost().Replace("www.", ""));
-            Server.UpdateUrl("Finding " + hosts + " url..");
             OnBeat(null); // immedately call so URL is shown as soon as possible in console
             Server.Heartbeats.QueueRepeat(OnBeat, null, TimeSpan.FromSeconds(30));
         }
         static void OnBeat(SchedulerTask task)
         {
             // no point if can't accept connections anyways
-            if (!Server.Listener.Listening) return;
-            foreach (Heartbeat beat in Heartbeats) { beat.Pump(); }
+            if (Server.Listener.Listening)
+            {
+                foreach (Heartbeat beat in Heartbeats) 
+                { 
+                    beat.Pump(); 
+                }
+            }
         }
         static string lastUrls;
         internal static void ReloadDefault()
         {
             string urls = Server.Config.HeartbeatURL;
             // don't reload heartbeats unless absolutely have to
-            if (urls == lastUrls) return;
-            lastUrls = urls;
-            // TODO only reload default heartbeats, don't clear all
-            Heartbeats.Clear();
-            foreach (string url in urls.SplitComma())
+            if (urls != lastUrls)
             {
-                AuthService service = AuthService.GetOrCreate(url);
-                Heartbeat beat = new ClassiCubeBeat
+                lastUrls = urls;
+                // TODO only reload default heartbeats, don't clear all
+                Heartbeats.Clear();
+                foreach (string url in urls.SplitComma())
                 {
-                    URL = url,
-                    Auth = service
-                };
-                Register(beat);
+                    AuthService service = AuthService.GetOrCreate(url);
+                    Heartbeat beat = new ClassiCubeBeat
+                    {
+                        URL = url,
+                        Auth = service
+                    };
+                    Register(beat);
+                }
             }
         }
         // e.g. classicube.net only supports ipv4 servers, so we need to make

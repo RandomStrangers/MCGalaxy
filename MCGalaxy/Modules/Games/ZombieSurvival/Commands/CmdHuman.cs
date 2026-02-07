@@ -18,9 +18,9 @@ namespace MCGalaxy.Modules.Games.ZS
 {
     sealed class CmdHuman : Command2
     {
-        public override string name { get { return "Human"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Human";
+        public override string Type => CommandTypes.Moderation;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data_)
         {
             ZSData data = ZSGame.Get(p);
@@ -48,7 +48,7 @@ namespace MCGalaxy.Modules.Games.ZS
             }
             data.PledgeSurvive = true;
             ZSGame.Instance.Map
-                .Message(p.ColoredName + " &Spledges that " + p.pronouns.Subject + " will not succumb to the infection!");
+                .Message(p.ColoredName + " &Spledges that " + p.Pronouns.Subject + " will not succumb to the infection!");
         }
         public override void Help(Player p)
         {

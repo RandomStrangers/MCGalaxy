@@ -17,14 +17,11 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdLevels : Command2
     {
-        public override string name { get { return "Levels"; } }
-        public override string shortcut { get { return "Worlds"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override bool UseableWhenFrozen { get { return true; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("Maps") }; }
-        }
+        public override string Name => "Levels";
+        public override string Shortcut => "Worlds";
+        public override string Type => CommandTypes.Information;
+        public override bool UseableWhenFrozen => true;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("Maps") };
         public override void Use(Player p, string message, CommandData data)
         {
             string[] files = LevelInfo.AllMapNames();

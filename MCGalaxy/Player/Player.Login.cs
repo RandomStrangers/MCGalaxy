@@ -32,7 +32,7 @@ namespace MCGalaxy
             name = user; truename = user;
             SkinName = user; DisplayName = user;
             // TODO move to ClassicProtocol (SetRawName)
-            if (Session.ProtocolVersion > Server.VERSION_0030)
+            if (Session.ProtocolVersion > 7)
             {
                 Leave(null, "Unsupported protocol version " + Session.ProtocolVersion, true); return false;
             }
@@ -40,7 +40,7 @@ namespace MCGalaxy
             {
                 Leave(null, "Usernames must be between 1 and 16 characters", true); return false;
             }
-            if (!user.ContainsAllIn(USERNAME_ALPHABET))
+            if (!user.ContainsAllIn("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890._"))
             {
                 Leave(null, "Invalid player name", true); return false;
             }
@@ -75,8 +75,7 @@ namespace MCGalaxy
             }
             if (clone != null && (verifiedName || Server.Config.VerifyNames))
             {
-                string reason = ip == clone.ip ? "(Reconnecting)" : "(Reconnecting from a different IP)";
-                clone.Leave(reason);
+                clone.Leave(ip == clone.ip ? "(Reconnecting)" : "(Reconnecting from a different IP)");
             }
             else if (clone != null)
             {
@@ -84,7 +83,7 @@ namespace MCGalaxy
             }
             deathCooldown = DateTime.UtcNow.AddSeconds(2);
             LoadCpeData();
-            SendRawMap(null, level);
+            SendRawMap(null);
             if (Socket.Disconnected) return;
             loggedIn = true;
             GetPlayerStats();
@@ -107,11 +106,11 @@ namespace MCGalaxy
             Server.Background.QueueOnce(ShowAltsTask, name, TimeSpan.Zero);
             string joinMsg = "&a+ λFULL &S" + PlayerInfo.GetLoginMessage(this);
             if (hidden) joinMsg = "&8(hidden)" + joinMsg;
-            if (Server.Config.GuestJoinsNotify || Rank > LevelPermission.Guest)
+            if (Server.Config.GuestJoinsNotify || Rank > 0)
             {
-                Chat.MessageFrom(ChatScope.All, this, joinMsg, null, Chat.FilterVisible(this), !hidden);
+                Chat.MessageFrom(0, this, joinMsg, null, Chat.FilterVisible(this), !hidden);
             }
-            if (Server.Config.AgreeToRulesOnEntry && Rank == LevelPermission.Guest && !Server.agreed.Contains(name))
+            if (Server.Config.AgreeToRulesOnEntry && Rank == 0 && !Server.agreed.Contains(name))
             {
                 Message("&9You must read the &c/Rules &9and &c/Agree &9to them before you can build and use commands!");
                 agreed = false;
@@ -127,8 +126,8 @@ namespace MCGalaxy
             }
             if (Server.Config.PositionUpdateInterval > 1000)
                 Message("Lowlag mode is currently &aON.");
-            Logger.Log(LogType.UserActivity, "{0} [{1}] connected using {2}.", truename, IP, Session.ClientName());
-            PlayerActions.PostSentMap(this, null, level, false);
+            Logger.Log(3, "{0} [{1}] connected using {2}.", truename, IP, Session.ClientName());
+            PlayerActions.PostSentMap(this, null, Level, false);
             Loading = false;
         }
         static Player FindClone(string name)
@@ -147,8 +146,7 @@ namespace MCGalaxy
             try
             {
                 welcomeFile.EnsureExists();
-                string[] welcome = welcomeFile.GetText();
-                MessageLines(welcome);
+                MessageLines(welcomeFile.GetText());
             }
             catch (Exception ex)
             {
@@ -227,19 +225,20 @@ namespace MCGalaxy
             string name = (string)task.State;
             Player p = PlayerInfo.FindExact(name);
             if (p == null || p.Socket.Disconnected) return;
-            // Server host is exempt from alt listing
-            if (IPAddress.IsLoopback(p.IP)) return;
-            List<string> alts = PlayerInfo.FindAccounts(p.ip);
-            // in older versions it was possible for your name to appear multiple times in DB
-            while (alts.CaselessRemove(p.name)) { }
-            if (alts.Count == 0) return;
-            ItemPerms opchat = Chat.OpchatPerms;
-            string altsMsg = "λNICK &Sis lately known as: " + alts.Join();
-            Chat.MessageFrom(p, altsMsg,
-                             (pl, obj) => pl.CanSee(p) && opchat.UsableBy(pl));
-            //IRCBot.Say(temp, true); //Tells people in op channel on IRC
-            altsMsg = altsMsg.Replace("λNICK", name);
-            Logger.Log(LogType.UserActivity, altsMsg);
+            if (!IPAddress.IsLoopback(p.IP))
+            {
+                List<string> alts = PlayerInfo.FindAccounts(p.ip);
+                while (alts.CaselessRemove(p.name)) { }
+                if (alts.Count != 0)
+                {
+                    string altsMsg = "λNICK &Sis lately known as: " + alts.Join();
+                    Chat.MessageFrom(p, altsMsg,
+                                     (pl, obj) => pl.CanSee(p) && Chat.OpchatPerms.UsableBy(pl));
+                    //IRCBot.Say(temp, true); //Tells people in op channel on IRC
+                    altsMsg = altsMsg.Replace("λNICK", name);
+                    Logger.Log(3, altsMsg);
+                }
+            }
         }
     }
 }

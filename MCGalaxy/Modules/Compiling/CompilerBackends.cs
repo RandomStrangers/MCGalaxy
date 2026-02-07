@@ -22,7 +22,6 @@
 // The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 //
 // THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-#if !MCG_STANDALONE
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -79,10 +78,7 @@ namespace MCGalaxy.Modules.Compiling
             }
         }
         protected abstract void AddReferencedAssemblies(StringBuilder sb, List<string> referenced);
-        protected static string Quote(string value)
-        {
-            return "\"" + value.Trim() + "\"";
-        }
+        protected static string Quote(string value) => "\"" + value.Trim() + "\"";
         protected abstract string GetExecutable();
         protected abstract string GetCompilerArgs(string exe, string args);
         static int Compile(string path, string args, List<string> output)
@@ -151,7 +147,6 @@ namespace MCGalaxy.Modules.Compiling
             errors.Add(ce);
         }
     }
-#if !MCG_DOTNET
     internal class ClassicCSharpCompiler : CommandLineCompiler
     {
         protected override void AddCoreAssembly(StringBuilder sb)
@@ -192,83 +187,6 @@ namespace MCGalaxy.Modules.Compiling
             }
             return paths[0];
         }
-        protected override string GetCompilerArgs(string exe, string args)
-        {
-            return args;
-        }
+        protected override string GetCompilerArgs(string exe, string args) => args;
     }
-#else
-    /// <summary> Compiles C# source code files, using Roslyn for the compiler </summary>
-    public class RoslynCSharpCompiler : CommandLineCompiler
-    {
-        protected override string GetExecutable()
-        {
-            string path = Server.GetRuntimeExePath();
-            if (path.EndsWith("dotnet"))
-            {
-                return path;
-            }
-            path = Environment.GetEnvironmentVariable("MCG_DOTNET_PATH");
-            if (string.IsNullOrEmpty(path))
-            {
-                throw new InvalidOperationException("Env variable 'MCG_DOTNET_PATH' must specify the path to 'dotnet' executable - e.g. /home/test/.dotnet/dotnet");
-            }
-            using (Stream tmp = FileIO.TryOpenRead(path))
-            {
-            }
-            return path;
-        }
-        protected override string GetCompilerArgs(string dotnetPath, string args)
-        {
-            ProcessStartInfo psi = CreateStartInfo(dotnetPath, "--list-sdks");
-            string rootFolder = Path.GetDirectoryName(dotnetPath);
-            using Process p = new();
-            p.StartInfo = psi;
-            p.Start();
-            string sdk = p.StandardOutput.ReadLine();
-            p.WaitForExit();
-            string compileArgs = Path.Combine(rootFolder, "sdk", sdk, "Roslyn", "bincore", "csc.dll");
-            return "exec " + Quote(compileArgs) + " " + args;
-        }
-        protected override void AddReferencedAssemblies(StringBuilder sb, List<string> referenced)
-        {
-            string[] sysAssemblyPaths = GetSystemAssemblyPaths();
-            referenced.Add("System.Runtime.dll");
-            referenced.Add("netstandard.dll");
-            referenced.Add("System.Collections.dll");
-            referenced.Add("System.IO.Compression.dll");
-            referenced.Add("System.Net.Primitives.dll");
-            foreach (string path in referenced)
-            {
-                AddReferencedAssembly(sb, sysAssemblyPaths, path);
-            }
-        }
-        static string[] GetSystemAssemblyPaths()
-        {
-            string assemblies = AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES") as string;
-            if (string.IsNullOrEmpty(assemblies))
-            {
-                return new string[0];
-            }
-            return assemblies.Split(Path.PathSeparator);
-        }
-        static void AddReferencedAssembly(StringBuilder sb, string[] sysAssemblyPaths, string path)
-        {
-            path = MapAssembly(sysAssemblyPaths, path);
-            sb.AppendFormat("/R:{0} ", Quote(path));
-        }
-        static string MapAssembly(string[] sysAssemblyPaths, string file)
-        {
-            foreach (string sysPath in sysAssemblyPaths)
-            {
-                if (file == Path.GetFileName(sysPath))
-                {
-                    return sysPath;
-                }
-            }
-            return file;
-        }
-    }
-#endif
 }
-#endif

@@ -1,5 +1,4 @@
-#if NAS && TEN_BIT_BLOCKS
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
     public partial class Crafting
     {
@@ -571,7 +570,7 @@ namespace NotAwesomeSurvival
             };
             Recipe charcoal = new(49, 2)
             {
-                stationType = Station.Type.Furnace,
+                stationType = 2,
                 shapeless = true,
                 usesParentID = true,
                 usesAlternateID = true,
@@ -601,7 +600,7 @@ namespace NotAwesomeSurvival
             };
             Recipe iron = new(42, 1)
             {
-                stationType = Station.Type.Furnace,
+                stationType = 2,
                 expGiven = 4,
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -627,7 +626,7 @@ namespace NotAwesomeSurvival
             };
             Recipe ironRefine = new(42, 1)
             {
-                stationType = Station.Type.Furnace,
+                stationType = 2,
                 expGiven = 2,
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -638,7 +637,7 @@ namespace NotAwesomeSurvival
             };
             Recipe goldRefine = new(41, 1)
             {
-                stationType = Station.Type.Furnace,
+                stationType = 2,
                 expGiven = 3,
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -649,7 +648,7 @@ namespace NotAwesomeSurvival
             };
             Recipe oldIron = new(148, 3)
             {
-                stationType = Station.Type.Furnace,
+                stationType = 2,
                 expGiven = 2,
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -660,7 +659,7 @@ namespace NotAwesomeSurvival
             };
             Recipe oldgold = new(672, 3)
             {
-                stationType = Station.Type.Furnace,
+                stationType = 2,
                 expGiven = 3,
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -714,7 +713,7 @@ namespace NotAwesomeSurvival
             };
             Recipe gold = new(41, 1)
             {
-                stationType = Station.Type.Furnace,
+                stationType = 2,
                 expGiven = 6,
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -725,7 +724,7 @@ namespace NotAwesomeSurvival
             };
             Recipe diamond = new(631, 1)
             {
-                stationType = Station.Type.Furnace,
+                stationType = 2,
                 expGiven = 10,
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -736,7 +735,7 @@ namespace NotAwesomeSurvival
             };
             Recipe emerald = new(650, 1)
             {
-                stationType = Station.Type.Furnace,
+                stationType = 2,
                 expGiven = 15,
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -747,7 +746,7 @@ namespace NotAwesomeSurvival
             };
             Recipe glass = new(20, 1)
             {
-                stationType = Station.Type.Furnace,
+                stationType = 2,
                 pattern = new ushort[,] {
                     { 12 }
                 }
@@ -798,7 +797,7 @@ namespace NotAwesomeSurvival
             };
             Recipe bread = new(640, 1)
             {
-                stationType = Station.Type.Furnace,
+                stationType = 2,
                 expGiven = 4,
                 shapeless = true,
                 usesParentID = true,
@@ -810,7 +809,7 @@ namespace NotAwesomeSurvival
             };
             Recipe waffle = new(542, 1)
             {
-                stationType = Station.Type.Furnace,
+                stationType = 2,
                 expGiven = 4,
                 shapeless = true,
                 usesParentID = true,
@@ -1358,7 +1357,7 @@ namespace NotAwesomeSurvival
                 shapeless = true,
                 expGiven = 8,
                 usesParentID = true,
-                stationType = Station.Type.Furnace,
+                stationType = 2,
                 pattern = new ushort[,] {
                     {  648, 648, 0 },
                     {  667, 667, 0 },
@@ -1370,7 +1369,7 @@ namespace NotAwesomeSurvival
                 shapeless = true,
                 expGiven = 8,
                 usesParentID = true,
-                stationType = Station.Type.Furnace,
+                stationType = 2,
                 pattern = new ushort[,] {
                     {  702, 702, 0 },
                     {  667, 667, 0 },
@@ -1621,7 +1620,7 @@ namespace NotAwesomeSurvival
             };
             Recipe drysponge = new(427, 1)
             {
-                stationType = Station.Type.Furnace,
+                stationType = 2,
                 shapeless = true,
                 pattern = new ushort[,] {
                     {  428, 49 }
@@ -1629,7 +1628,7 @@ namespace NotAwesomeSurvival
             };
             Recipe cobbledDeep = new(429, 1)
             {
-                stationType = Station.Type.Furnace,
+                stationType = 2,
                 pattern = new ushort[,] {
                     {  430 }
                 }
@@ -1725,7 +1724,7 @@ namespace NotAwesomeSurvival
             };
             Recipe crackedBlack = new(474, 1)
             {
-                stationType = Station.Type.Furnace,
+                stationType = 2,
                 pattern = new ushort[,] {
                     { 466 },
                 }
@@ -1750,4 +1749,3 @@ namespace NotAwesomeSurvival
         }
     }
 }
-#endif

@@ -18,14 +18,11 @@ namespace MCGalaxy.Commands.Misc
 {
     public sealed class CmdTp : Command2
     {
-        public override string name { get { return "TP"; } }
-        public override string shortcut { get { return "Move"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("Teleport"), new CommandAlias("TPP", "-precise") }; }
-        }
+        public override string Name => "TP";
+        public override string Shortcut => "Move";
+        public override string Type => CommandTypes.Other;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("Teleport"), new CommandAlias("TPP", "-precise") };
         const string precisePrefix = "-precise ";
         public override void Use(Player p, string message, CommandData data)
         {
@@ -96,12 +93,12 @@ namespace MCGalaxy.Commands.Misc
         }
         static bool CheckPlayer(Player p, Player target, CommandData data)
         {
-            if (target.level.IsMuseum)
+            if (target.Level.IsMuseum)
             {
                 p.Message("{0} &Sis in a museum.", p.FormatNick(target)); return false;
             }
             if (!Server.Config.HigherRankTP && !CheckRank(p, data, target, "teleport to", true)) return false;
-            IGame game = IGame.GameOn(target.level);
+            IGame game = IGame.GameOn(target.Level);
             if (!p.Game.Referee && game != null)
             {
                 p.Message("You can only teleport to players in " +

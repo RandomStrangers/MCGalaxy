@@ -56,14 +56,14 @@ namespace MCGalaxy.Modules.Relay.Discord
         public void Load()
         {
             // create default config file
-            if (!File.Exists(PROPS_PATH)) Save();
+            if (!File.Exists("props/discordbot.properties")) Save();
             cfg ??= ConfigElement.GetAll(typeof(DiscordConfig));
-            ConfigElement.ParseFile(cfg, PROPS_PATH, this);
+            ConfigElement.ParseFile(cfg, "props/discordbot.properties", this);
         }
         public void Save()
         {
             cfg ??= ConfigElement.GetAll(typeof(DiscordConfig));
-            using StreamWriter w = FileIO.CreateGuarded(PROPS_PATH);
+            using StreamWriter w = FileIO.CreateGuarded("props/discordbot.properties");
             w.WriteLine("# Discord relay bot configuration");
             w.WriteLine("# See https://github.com/ClassiCube/MCGalaxy/wiki/Discord-relay-bot/");
             w.WriteLine();
@@ -74,11 +74,11 @@ namespace MCGalaxy.Modules.Relay.Discord
     public enum PresenceActivity { Playing = 0, Listening = 2, Watching = 3, Custom = 4, Competing = 5 }
     public sealed class DiscordPlugin : Plugin
     {
-        public override string name { get { return "DiscordRelay"; } }
+        public override string Name => "DiscordRelay";
         public static DiscordConfig Config = new();
         public static DiscordBot Bot = new();
-        static readonly Command cmdDiscordBot = new CmdDiscordBot();
-        static readonly Command cmdDiscordCtrls = new CmdDiscordControllers();
+        static readonly Command cmdDiscordBot = new CmdDiscordBot(),
+            cmdDiscordCtrls = new CmdDiscordControllers();
         public override void Load(bool startup)
         {
             Server.EnsureDirectoryExists("text/discord");
@@ -86,7 +86,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             Bot.Config = Config;
             Bot.ReloadConfig();
             Bot.Connect();
-            OnConfigUpdatedEvent.Register(OnConfigUpdated, Priority.Low);
+            OnConfigUpdatedEvent.Register(OnConfigUpdated, 0);
         }
         public override void Unload(bool shutdown)
         {
@@ -94,16 +94,16 @@ namespace MCGalaxy.Modules.Relay.Discord
             OnConfigUpdatedEvent.Unregister(OnConfigUpdated);
             Bot.Disconnect("Disconnecting Discord bot");
         }
-        void OnConfigUpdated() { Bot.ReloadConfig(); }
+        void OnConfigUpdated() => Bot.ReloadConfig();
     }
     sealed class CmdDiscordBot : RelayBotCmd
     {
-        public override string name { get { return "DiscordBot"; } }
-        protected override RelayBot Bot { get { return DiscordPlugin.Bot; } }
+        public override string Name => "DiscordBot";
+        protected override RelayBot Bot => DiscordPlugin.Bot;
     }
     sealed class CmdDiscordControllers : BotControllersCmd
     {
-        public override string name { get { return "DiscordControllers"; } }
-        protected override RelayBot Bot { get { return DiscordPlugin.Bot; } }
+        public override string Name => "DiscordControllers";
+        protected override RelayBot Bot => DiscordPlugin.Bot;
     }
 }

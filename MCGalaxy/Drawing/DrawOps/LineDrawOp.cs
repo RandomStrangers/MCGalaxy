@@ -20,7 +20,7 @@ namespace MCGalaxy.Drawing.Ops
 {
     public class LineDrawOp : DrawOp
     {
-        public override string Name { get { return "Line"; } }
+        public override string Name => "Line";
         public bool WallsMode;
         public int MaxLength = int.MaxValue;
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)

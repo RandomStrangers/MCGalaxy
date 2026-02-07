@@ -64,27 +64,11 @@ namespace MCGalaxy.Modules.Relay.Discord
         TcpClient client;
         SslStream stream;
         bool readable;
-        public const int DEFAULT_INTENTS = INTENT_GUILD_MESSAGES | INTENT_DIRECT_MESSAGES | INTENT_MESSAGE_CONTENT;
-        const int INTENT_GUILD_MESSAGES = 1 << 9;
-        const int INTENT_DIRECT_MESSAGES = 1 << 12;
-        const int INTENT_MESSAGE_CONTENT = 1 << 15;
-        const int OPCODE_DISPATCH = 0;
-        const int OPCODE_HEARTBEAT = 1;
-        const int OPCODE_IDENTIFY = 2;
-        const int OPCODE_STATUS_UPDATE = 3;
-        const int OPCODE_VOICE_STATE_UPDATE = 4;
-        const int OPCODE_RESUME = 6;
-        const int OPCODE_REQUEST_SERVER_MEMBERS = 8;
-        const int OPCODE_INVALID_SESSION = 9;
-        const int OPCODE_HELLO = 10;
-        const int OPCODE_HEARTBEAT_ACK = 11;
-        public DiscordWebsocket(string apiPath)
-        {
-            path = apiPath;
-        }
+        public const int DEFAULT_INTENTS = (1 << 9) | (1 << 12) | (1 << 15);
+        public DiscordWebsocket(string apiPath) => path = apiPath;
         // stubs
         public override bool LowLatency { set { } }
-        public override IPAddress IP { get { return null; } }
+        public override IPAddress IP => null;
         public void Connect()
         {
             client = new TcpClient();
@@ -112,19 +96,17 @@ namespace MCGalaxy.Modules.Relay.Discord
                 // ignore errors when closing socket
             }
         }
-        const int REASON_INVALID_TOKEN = 4004;
-        const int REASON_DENIED_INTENT = 4014;
         protected override void OnDisconnected(int reason)
         {
             SentIdentify = false;
-            if (readable) Logger.Log(LogType.SystemActivity, "Discord relay bot closing: " + reason);
+            if (readable) Logger.Log(1, "Discord relay bot closing: " + reason);
             Close();
-            if (reason == REASON_INVALID_TOKEN)
+            if (reason == 4004)
             {
                 CanReconnect = false;
                 throw new InvalidOperationException("Discord relay: Invalid bot token provided - unable to connect");
             }
-            else if (reason == REASON_DENIED_INTENT)
+            else if (reason == 4014)
             {
                 // privileged intent since August 2022 https://support-dev.discord.com/hc/en-us/articles/4404772028055
                 CanReconnect = false;
@@ -155,22 +137,22 @@ namespace MCGalaxy.Modules.Relay.Discord
         }
         void DispatchPacket(int opcode, JsonObject obj)
         {
-            if (opcode == OPCODE_DISPATCH)
+            if (opcode == 0)
             {
                 HandleDispatch(obj);
             }
-            else if (opcode == OPCODE_HELLO)
+            else if (opcode == 10)
             {
                 HandleHello(obj);
             }
-            else if (opcode == OPCODE_INVALID_SESSION)
+            else if (opcode == 9)
             {
                 // See notes at https://discord.com/developers/docs/topics/gateway#resuming
                 //  (note that in this implementation, if resume fails, the bot just
                 //   gives up altogether instead of trying to resume again later)
                 Session.ID = null;
                 Session.LastSeq = null;
-                Logger.Log(LogType.Warning, "Discord relay: Resuming failed, trying again in 5 seconds");
+                Logger.Log(6, "Discord relay: Resuming failed, trying again in 5 seconds");
                 Thread.Sleep(5 * 1000);
                 Identify();
             }
@@ -228,9 +210,9 @@ namespace MCGalaxy.Modules.Relay.Discord
         public void SendMessage(JsonObject obj)
         {
             string str = Json.SerialiseObject(obj);
-            Send(Encoding.UTF8.GetBytes(str), SendFlags.None);
+            Send(Encoding.UTF8.GetBytes(str), 0x00);
         }
-        protected override void SendRaw(byte[] data, SendFlags flags)
+        protected override void SendRaw(byte[] data, int _)
         {
             lock (sendLock) stream.Write(data);
         }
@@ -238,7 +220,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         {
             JsonObject obj = new()
             {
-                ["op"] = OPCODE_HEARTBEAT
+                ["op"] = 1
             };
             if (Session.LastSeq != null)
             {
@@ -254,28 +236,25 @@ namespace MCGalaxy.Modules.Relay.Discord
         {
             if (Session.ID != null && Session.LastSeq != null)
             {
-                SendMessage(OPCODE_RESUME, MakeResume());
+                SendMessage(6, MakeResume());
             }
             else
             {
-                SendMessage(OPCODE_IDENTIFY, MakeIdentify());
+                SendMessage(2, MakeIdentify());
             }
             SentIdentify = true;
         }
         public void UpdateStatus()
         {
             JsonObject data = MakePresence();
-            SendMessage(OPCODE_STATUS_UPDATE, data);
+            SendMessage(3, data);
         }
-        JsonObject MakeResume()
-        {
-            return new JsonObject()
+        JsonObject MakeResume() => new()
             {
                 { "token",      Token },
                 { "session_id", Session.ID },
                 { "seq",        NumberUtils.ParseInt32(Session.LastSeq) }
             };
-        }
         JsonObject MakeIdentify()
         {
             JsonObject props = new()

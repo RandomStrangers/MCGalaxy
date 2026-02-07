@@ -16,15 +16,15 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdUnload : Command2
     {
-        public override string name { get { return "Unload"; } }
-        public override string type { get { return CommandTypes.World; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "Unload";
+        public override string Type => CommandTypes.World;
+        public override sbyte DefaultRank => 80;
         public override void Use(Player p, string message, CommandData data)
         {
             if (CheckSuper(p, message, "level name")) return;
             if (message.Length == 0)
             {
-                if (!p.level.Unload())
+                if (!p.Level.Unload())
                 {
                     p.Message("You cannot unload this level.");
                 }

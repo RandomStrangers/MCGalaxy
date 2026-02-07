@@ -20,17 +20,11 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdHelp : Command2
     {
-        public override string name { get { return "Help"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override bool UseableWhenFrozen { get { return true; } }
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new[] { new CommandAlias("CmdHelp"), new CommandAlias("Ranks", "ranks"),
+        public override string Name => "Help";
+        public override string Type => CommandTypes.Information;
+        public override bool UseableWhenFrozen => true;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("CmdHelp"), new CommandAlias("Ranks", "ranks"),
                     new CommandAlias("Colors", "colors"), new CommandAlias("Emotes", "emotes") };
-            }
-        }
         public override void Use(Player p, string message, CommandData data)
         {
             bool cancel = false;
@@ -148,7 +142,7 @@ namespace MCGalaxy.Commands.Info
         }
         void DescribePhysics(Player p, string _, ushort b)
         {
-            BlockProps props = p.IsSuper ? Block.Props[b] : p.level.Props[b];
+            BlockProps props = p.IsSuper ? Block.Props[b] : p.Level.Props[b];
             if (props.IsDoor)
             {
                 p.Message("Door can be used as an 'openable' block if physics are enabled, will automatically toggle back to closed after a few seconds. " +
@@ -228,12 +222,12 @@ namespace MCGalaxy.Commands.Info
                 p.Message("Active_lava and its fast counterparts flow horizontally through the map, active_hot_lava and magma kill players, " +
                                "magma flows upwards slowly if it is placed in a spot where it cannot flow then broken out.");
             }
-            AnimalAI ai = props.AnimalAI;
-            if (ai == AnimalAI.KillerAir || ai == AnimalAI.Fly || ai == AnimalAI.FleeAir)
+            int ai = props.AnimalAI;
+            if (ai == 3 || ai == 1 || ai == 2)
             {
                 p.Message("The bird blocks are different colored blocks that fly through the air if physics is on. Killer_phoenix kills players it touches");
             }
-            if (ai == AnimalAI.FleeLava || ai == AnimalAI.FleeWater || ai == AnimalAI.KillerLava || ai == AnimalAI.KillerWater)
+            if (ai == 6 || ai == 4 || ai == 7 || ai == 5)
             {
                 p.Message("The fish blocks are different colored blocks that swim around in active_water (lava_shark in active_lava), " +
                                "sharks and lava sharks eat players they touch.");
@@ -246,9 +240,6 @@ namespace MCGalaxy.Commands.Info
             pl.Help(p);
             return true;
         }
-        public override void Help(Player p)
-        {
-            p.Message("...really? Wow. Just...wow.");
-        }
+        public override void Help(Player p) => p.Message("...really? Wow. Just...wow.");
     }
 }

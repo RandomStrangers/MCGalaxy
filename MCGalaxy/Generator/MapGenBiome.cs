@@ -188,10 +188,7 @@ namespace MCGalaxy.Generator
             if (match.Key == null && matches == 0) ListBiomes(p);
             return match.Key;
         }
-        public static void ListBiomes(Player p)
-        {
-            p.Message("&HAvailable biomes: &f" + Biomes.Join(b => b.Key));
-        }
+        public static void ListBiomes(Player p) => p.Message("&HAvailable biomes: &f" + Biomes.Join(b => b.Key));
         public static Dictionary<string, MapGenBiome> Biomes = new()
         {
             { FOREST, forest }, { ARCTIC, arctic }, { DESERT, desert },

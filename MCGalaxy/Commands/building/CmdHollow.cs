@@ -17,7 +17,7 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdHollow : DrawCmd
     {
-        public override string name { get { return "Hollow"; } }
+        public override string Name => "Hollow";
         protected override DrawOp GetDrawOp(DrawArgs dArgs)
         {
             ushort skip = Block.Invalid;
@@ -31,7 +31,7 @@ namespace MCGalaxy.Commands.Building
             };
             return op;
         }
-        protected override void GetBrush(DrawArgs dArgs) { dArgs.BrushName = "Normal"; }
+        protected override void GetBrush(DrawArgs dArgs) => dArgs.BrushName = "Normal";
         public override void Help(Player p)
         {
             p.Message("&T/Hollow");

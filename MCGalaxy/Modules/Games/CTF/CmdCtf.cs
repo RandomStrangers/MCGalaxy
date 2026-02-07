@@ -20,13 +20,10 @@ namespace MCGalaxy.Modules.Games.CTF
 {
     sealed class CmdCTF : RoundsGameCmd
     {
-        public override string name { get { return "CTF"; } }
-        public override string shortcut { get { return "CTFSetup"; } }
-        protected override RoundsGame Game { get { return CTFGame.Instance; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can manage CTF") }; }
-        }
+        public override string Name => "CTF";
+        public override string Shortcut => "CTFSetup";
+        protected override RoundsGame Game => CTFGame.Instance;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can manage CTF") };
         protected override void HandleSet(Player p, RoundsGame game, string[] args)
         {
             string prop = args[1];
@@ -71,7 +68,7 @@ namespace MCGalaxy.Modules.Games.CTF
             Vec3U16 P = (Vec3U16)marks[0];
             cfg.BlueFlagPos = P;
             p.Message("Set flag position of blue team to ({0})", P);
-            block = p.level.GetBlock(P.X, P.Y, P.Z);
+            block = p.Level.GetBlock(P.X, P.Y, P.Z);
             if (block == Block.Air) block = Block.Blue;
             cfg.BlueFlagBlock = block;
             p.Message("Set flag block of blue team to {0}", Block.GetName(p, block));
@@ -84,7 +81,7 @@ namespace MCGalaxy.Modules.Games.CTF
             Vec3U16 P = (Vec3U16)marks[0];
             cfg.RedFlagPos = P;
             p.Message("Set flag position of red team to ({0})", P);
-            block = p.level.GetBlock(P.X, P.Y, P.Z);
+            block = p.Level.GetBlock(P.X, P.Y, P.Z);
             if (block == Block.Air) block = Block.Red;
             cfg.RedFlagBlock = block;
             p.Message("Set flag block of red team to {0}", Block.GetName(p, block));

@@ -16,11 +16,11 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdDelete : Command2
     {
-        public override string name { get { return "Delete"; } }
-        public override string shortcut { get { return "d"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Delete";
+        public override string Shortcut => "d";
+        public override string Type => CommandTypes.Building;
+        public override sbyte DefaultRank => 50;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length > 0) { Help(p); return; }

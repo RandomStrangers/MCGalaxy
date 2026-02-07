@@ -42,7 +42,7 @@ namespace MCGalaxy.Blocks.Physics
                 default:
                     // Adv physics kills flowers and mushrooms in water
                     if (!lvl.Props[block].WaterKills) break;
-                    if (lvl.physics > 1 && !lvl.CheckSpongeWater(x, y, z))
+                    if (lvl.LevelPhysics > 1 && !lvl.CheckSpongeWater(x, y, z))
                     {
                         lvl.AddUpdate(index, Block.Air, default(PhysicsArgs));
                     }
@@ -68,7 +68,7 @@ namespace MCGalaxy.Blocks.Physics
                     }
                     break;
                 case Block.Sand:
-                    if (lvl.physics > 1)
+                    if (lvl.LevelPhysics > 1)
                     { //Adv physics changes sand to glass next to lava
                         lvl.AddUpdate(index, Block.Glass, default(PhysicsArgs));
                     }
@@ -82,7 +82,7 @@ namespace MCGalaxy.Blocks.Physics
                 default:
                     //Adv physics kills flowers, wool, mushrooms, and wood type blocks in lava
                     if (!lvl.Props[block].LavaKills) break;
-                    if (lvl.physics > 1 && !lvl.CheckSpongeLava(x, y, z))
+                    if (lvl.LevelPhysics > 1 && !lvl.CheckSpongeLava(x, y, z))
                     {
                         lvl.AddUpdate(index, Block.Air, default(PhysicsArgs));
                     }

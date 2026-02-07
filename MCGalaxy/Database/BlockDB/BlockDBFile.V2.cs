@@ -21,14 +21,8 @@ namespace MCGalaxy.DB
     {
         const int BlockSize = BulkEntries;
         /* TODO: Last chunk in file may only be partially filled. need to prepend these entries when compressing more. */
-        public override void WriteEntries(Stream s, FastList<BlockDBEntry> entries)
-        {
-            throw new NotImplementedException();
-        }
-        public override void WriteEntries(Stream s, BlockDBCache cache)
-        {
-            throw new NotImplementedException();
-        }
+        public override void WriteEntries(Stream s, FastList<BlockDBEntry> entries) => throw new NotImplementedException();
+        public override void WriteEntries(Stream s, BlockDBCache cache) => throw new NotImplementedException();
         public override long CountEntries(Stream s)
         {
             byte[] data = new byte[8];
@@ -123,9 +117,6 @@ namespace MCGalaxy.DB
             }
             return count;
         }
-        static int ReadInt32(byte[] bulk, int idx)
-        {
-            return bulk[idx] | (bulk[idx + 1] << 8) | (bulk[idx + 2] << 16) | (bulk[idx + 3] << 24);
-        }
+        static int ReadInt32(byte[] bulk, int idx) => bulk[idx] | (bulk[idx + 1] << 8) | (bulk[idx + 2] << 16) | (bulk[idx + 3] << 24);
     }
 }

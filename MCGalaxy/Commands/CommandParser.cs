@@ -154,13 +154,9 @@ namespace MCGalaxy.Commands
             col = tmp; return true;
         }
         /// <summary> Attempts to parse the 3 given arguments as coordinates. </summary>
-        public static bool GetCoords(Player p, string[] args, int argsOffset, ref Vec3S32 P)
-        {
-            return
-                GetCoordInt(p, args[argsOffset + 0], "X coordinate", ref P.X) &&
+        public static bool GetCoords(Player p, string[] args, int argsOffset, ref Vec3S32 P) => GetCoordInt(p, args[argsOffset + 0], "X coordinate", ref P.X) &&
                 GetCoordInt(p, args[argsOffset + 1], "Y coordinate", ref P.Y) &&
                 GetCoordInt(p, args[argsOffset + 2], "Z coordinate", ref P.Z);
-        }
         static bool ParseRelative(ref string arg)
         {
             // ~ is preferred for compatibility with modern minecraft command syntax

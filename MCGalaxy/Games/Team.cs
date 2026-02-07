@@ -29,21 +29,19 @@ namespace MCGalaxy.Games
         }
         public void Message(Player source, string message)
         {
-            message = "&9- to team - λNICK: &f" + message;
-            if (!source.CheckCanSpeak("send teamchat")) return;
-            Chat.MessageChat(ChatScope.All, source, message, this,
-                             (pl, arg) => pl.Game.Team == arg);
+            if (source.CheckCanSpeak("send teamchat"))
+            {
+                Chat.MessageChat(0, source, "&9- to team - λNICK: &f" + message, this,
+                                 (pl, arg) => pl.Game.Team == arg);
+            }
         }
         public void Action(Player source, string message)
         {
             message = "Team - λNICK &S" + message;
-            Chat.MessageFrom(ChatScope.All, source, message, this,
+            Chat.MessageFrom(0, source, message, this,
                              (pl, arg) => pl.Game.Team == arg);
         }
-        public bool Remove(string name)
-        {
-            return Members.CaselessRemove(name);
-        }
+        public bool Remove(string name) => Members.CaselessRemove(name);
         public void DeleteIfEmpty()
         {
             if (Members.Count > 0) return;
@@ -100,13 +98,15 @@ namespace MCGalaxy.Games
         }
         public static void LoadList()
         {
-            if (!File.Exists("extra/teams.txt")) return;
-            Team tmp = new();
-            lock (ioLock)
+            if (File.Exists("extra/teams.txt"))
             {
-                Teams.Clear();
-                PropertiesFile.Read("extra/teams.txt", ref tmp, LineProcessor, '=');
-                if (tmp.Name != null) Add(tmp);
+                Team tmp = new();
+                lock (ioLock)
+                {
+                    Teams.Clear();
+                    PropertiesFile.Read("extra/teams.txt", ref tmp, LineProcessor, '=');
+                    if (tmp.Name != null) Add(tmp);
+                }
             }
         }
         static void LineProcessor(string key, string value, ref Team tmp)

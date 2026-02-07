@@ -17,9 +17,9 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdOpRules : Command2
     {
-        public override string name { get { return "OpRules"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override bool UseableWhenFrozen { get { return true; } }
+        public override string Name => "OpRules";
+        public override string Type => CommandTypes.Information;
+        public override bool UseableWhenFrozen => true;
         public override void Use(Player p, string message, CommandData data)
         {
             TextFile oprulesFile = TextFile.Files["OpRules"];

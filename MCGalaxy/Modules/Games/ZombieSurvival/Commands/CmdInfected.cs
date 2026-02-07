@@ -17,9 +17,9 @@ namespace MCGalaxy.Modules.Games.ZS
 {
     sealed class CmdInfected : Command2
     {
-        public override string name { get { return "Infected"; } }
-        public override string shortcut { get { return "dead"; } }
-        public override string type { get { return CommandTypes.Games; } }
+        public override string Name => "Infected";
+        public override string Shortcut => "dead";
+        public override string Type => CommandTypes.Games;
         public override void Use(Player p, string message, CommandData data)
         {
             List<Player> infected = PlayerInfo.OnlyCanSee(p, data.Rank,

@@ -18,10 +18,10 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdPalette : Command2
     {
-        public override string name { get { return "Palette"; } }
-        public override string shortcut { get { return "ImgPalette"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
+        public override string Name => "Palette";
+        public override string Shortcut => "ImgPalette";
+        public override string Type => CommandTypes.Building;
+        public override sbyte DefaultRank => 100;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(5);
@@ -148,10 +148,7 @@ namespace MCGalaxy.Commands.Building
             Paginator.Output(p, palette.Entries, PrintEntry,
                              "Palette entries", "entries", modifer);
         }
-        static void PrintEntry(Player p, PaletteEntry e)
-        {
-            p.Message("{0} - {1}", Block.GetName(p, e.Block), Utils.Hex(e.R, e.G, e.B));
-        }
+        static void PrintEntry(Player p, PaletteEntry e) => p.Message("{0} - {1}", Block.GetName(p, e.Block), Utils.Hex(e.R, e.G, e.B));
         public override void Help(Player p)
         {
             p.Message("&T/Palette create/delete [name]");

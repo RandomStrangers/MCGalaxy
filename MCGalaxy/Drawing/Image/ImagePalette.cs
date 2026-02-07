@@ -20,7 +20,7 @@ namespace MCGalaxy.Drawing
     public sealed class ImagePalette
     {
         public string Name;
-        public string FileName { get { return "extra/palettes/" + Name + ".pal"; } }
+        public string FileName => "extra/palettes/" + Name + ".pal";
         public PaletteEntry[] Entries;
         public ImagePalette(string name, PaletteEntry[] entries)
         {

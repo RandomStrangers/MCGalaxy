@@ -17,9 +17,9 @@ namespace MCGalaxy.Modules.Games.ZS
 {
     sealed class CmdLastLevels : Command2
     {
-        public override string name { get { return "LastLevels"; } }
-        public override string shortcut { get { return "ll"; } }
-        public override string type { get { return CommandTypes.Games; } }
+        public override string Name => "LastLevels";
+        public override string Shortcut => "ll";
+        public override string Type => CommandTypes.Games;
         public override void Use(Player p, string message, CommandData data)
         {
             List<string> recent = ZSGame.Instance.Picker.RecentMaps;

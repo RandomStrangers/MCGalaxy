@@ -34,8 +34,6 @@ namespace MCGalaxy
         {
             lock (locker) return new List<string>(lines);
         }
-        /// <summary> Returns number of names that are in this list. </summary>
-        public int Count { get { lock (locker) return names.Count; } }
         /// <summary> Sets the data associated with the given name. </summary>
         public void Update(string name, string data)
         {
@@ -83,7 +81,7 @@ namespace MCGalaxy
                 return idx == -1 ? "" : line.Substring(idx + 1);
             }
         }
-        public void Save() { Save(true); }
+        public void Save() => Save(true);
         public void Save(bool log)
         {
             lock (saveLocker)
@@ -91,7 +89,7 @@ namespace MCGalaxy
                 using StreamWriter w = new(Path);
                 SaveEntries(w);
             }
-            if (log) Logger.Log(LogType.BackgroundActivity, "SAVED: " + Path);
+            if (log) Logger.Log(0, "SAVED: " + Path);
         }
         void SaveEntries(StreamWriter w)
         {
@@ -110,7 +108,7 @@ namespace MCGalaxy
             if (!File.Exists(path))
             {
                 File.Create(path).Close();
-                Logger.Log(LogType.SystemActivity, "CREATED NEW: " + path);
+                Logger.Log(1, "CREATED NEW: " + path);
                 return list;
             }
             using (StreamReader r = new(path, Encoding.UTF8))

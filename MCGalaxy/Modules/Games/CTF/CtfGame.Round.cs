@@ -30,17 +30,14 @@ namespace MCGalaxy.Modules.Games.CTF
                 Thread.Sleep(Config.CollisionsCheckInterval);
             }
         }
-        bool HasSomeoneWon()
-        {
-            return Blue.Captures >= cfg.RoundPoints || Red.Captures >= cfg.RoundPoints;
-        }
+        bool HasSomeoneWon() => Blue.Captures >= cfg.RoundPoints || Red.Captures >= cfg.RoundPoints;
         void Tick()
         {
             int dist = (int)(Config.TagDistance * 32);
             Player[] online = PlayerInfo.Online.Items;
             foreach (Player p in online)
             {
-                if (p.level != Map) continue;
+                if (p.Level != Map) continue;
                 CtfTeam team = TeamOf(p);
                 CtfData data = Get(p);
                 // Draw flag above player head
@@ -74,10 +71,12 @@ namespace MCGalaxy.Modules.Games.CTF
         void DrawPlayerFlag(Player p, CtfData data)
         {
             Vec3S32 coords = p.Pos.BlockCoords; coords.Y += 3;
-            if (coords == data.LastHeadPos) return;
+            if (coords.X == data.LastHeadPos.X && coords.Y == data.LastHeadPos.Y && coords.Z == data.LastHeadPos.Z) return;
             ResetPlayerFlag(p, data);
             data.LastHeadPos = coords;
-            ushort x = (ushort)coords.X, y = (ushort)coords.Y, z = (ushort)coords.Z;
+            ushort x = (ushort)coords.X, 
+                y = (ushort)coords.Y, 
+                z = (ushort)coords.Z;
             CtfTeam opposing = Opposing(TeamOf(p));
             Map.BroadcastChange(x, y, z, opposing.FlagBlock);
         }

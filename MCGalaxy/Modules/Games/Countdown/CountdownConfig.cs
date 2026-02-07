@@ -24,8 +24,8 @@ namespace MCGalaxy.Modules.Games.Countdown
         public int RewardMin = 5;
         [ConfigInt("winner-reward-max", "Rewards", 10, 0)]
         public int RewardMax = 10;
-        public override bool AllowAutoload { get { return true; } }
-        protected override string GameName { get { return "Countdown"; } }
+        public override bool AllowAutoload => true;
+        protected override string GameName => "Countdown";
         public override void Load()
         {
             base.Load();

@@ -20,13 +20,10 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdBlocks : Command2
     {
-        public override string name { get { return "Blocks"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override bool UseableWhenFrozen { get { return true; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("Materials") }; }
-        }
+        public override string Name => "Blocks";
+        public override string Type => CommandTypes.Information;
+        public override bool UseableWhenFrozen => true;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("Materials") };
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
@@ -45,7 +42,7 @@ namespace MCGalaxy.Commands.Info
                 OutputBlocks(p, "complex", modifier,
                              b => Block.IsPhysicsType(b));
             }
-            else if ((block = Block.Parse(p, type)) != Block.Invalid)
+            else if ((block = Block.Parse(p, type)) != 0xff)
             {
                 OutputBlockInfo(p, block);
             }
@@ -67,8 +64,8 @@ namespace MCGalaxy.Commands.Info
         }
         static void OutputBlocks(Player p, string type, string modifier, Predicate<ushort> selector)
         {
-            List<ushort> blocks = new(Block.SUPPORTED_COUNT);
-            for (ushort b = 0; b < Block.SUPPORTED_COUNT; b++)
+            List<ushort> blocks = new(1024);
+            for (ushort b = 0; b < 1024; b++)
             {
                 if (Block.ExistsFor(p, b) && selector(b)) blocks.Add(b);
             }
@@ -78,7 +75,7 @@ namespace MCGalaxy.Commands.Info
         static void OutputBlockInfo(Player p, ushort block)
         {
             string name = Block.GetName(p, block);
-            BlockProps[] scope = p.IsSuper ? Block.Props : p.level.Props;
+            BlockProps[] scope = p.IsSuper ? Block.Props : p.Level.Props;
             CmdBlockProperties.Detail(p, scope, block);
             if (Block.IsPhysicsType(block))
             {
@@ -86,7 +83,7 @@ namespace MCGalaxy.Commands.Info
                 OutputPhysicsInfo(p, scope, block); return;
             }
             string msg = "";
-            for (ushort b = Block.CPE_COUNT; b < Block.CORE_COUNT; b++)
+            for (ushort b = 66; b < 256; b++)
             {
                 if (Block.Convert(b) != block) continue;
                 msg += Block.GetColoredName(p, b) + ", ";
@@ -120,11 +117,7 @@ namespace MCGalaxy.Commands.Info
             if (Block.Walkthrough(conv)) p.Message("  Can be walked through");
             if (Mover(scope, conv)) p.Message("  Can be activated by walking through it");
         }
-        static bool Mover(BlockProps[] scope, ushort conv)
-        {
-            bool nonSolid = Block.Walkthrough(conv);
-            return BlockBehaviour.GetWalkthroughHandler(conv, scope, nonSolid) != null;
-        }
+        static bool Mover(BlockProps[] scope, ushort conv) => BlockBehaviour.GetWalkthroughHandler(conv, scope, Block.Walkthrough(conv)) != null;
         static bool Physics(BlockProps[] scope, ushort b)
         {
             if (scope[b].IsMessageBlock || scope[b].IsPortal) return false;

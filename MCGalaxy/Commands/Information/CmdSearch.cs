@@ -18,10 +18,10 @@ namespace MCGalaxy.Commands.Info
 {
     public class CmdSearch : Command2
     {
-        public override string name { get { return "Search"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Builder; } }
-        public override bool UseableWhenFrozen { get { return true; } }
+        public override string Name => "Search";
+        public override string Type => CommandTypes.Information;
+        public override sbyte DefaultRank => 30;
+        public override bool UseableWhenFrozen => true;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(3);
@@ -77,10 +77,10 @@ namespace MCGalaxy.Commands.Info
         }
         static void SearchCommands(Player p, string keyword, string modifier)
         {
-            List<string> commands = Wildcard.Filter(allCmds, keyword, cmd => cmd.name,
+            List<string> commands = Wildcard.Filter(allCmds, keyword, cmd => cmd.Name,
                                                      null, GetColoredName);
-            List<string> shortcuts = Wildcard.Filter(allCmds, keyword, cmd => cmd.shortcut,
-                                                     cmd => !string.IsNullOrEmpty(cmd.shortcut),
+            List<string> shortcuts = Wildcard.Filter(allCmds, keyword, cmd => cmd.Shortcut,
+                                                     cmd => !string.IsNullOrEmpty(cmd.Shortcut),
                                                      GetColoredName);
             // Match both names and shortcuts
             foreach (string shortcutCmd in shortcuts)

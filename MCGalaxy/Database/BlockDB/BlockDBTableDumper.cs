@@ -67,15 +67,13 @@ namespace MCGalaxy.DB
                 if (stream == null)
                 {
                     stream = File.Create(BlockDBFile.DumpPath(mapName));
-                    string lvlPath = LevelInfo.MapPath(mapName);
-                    dims = IMapImporter.GetFor(lvlPath).ReadDimensions(lvlPath);
+                    dims = IMapImporter.GetFor(LevelInfo.MapPath(mapName)).ReadDimensions(FileIO.TryOpenRead(LevelInfo.MapPath(mapName)));
                     BlockDBFile.WriteHeader(stream, dims);
                 }
                 entriesWritten++;
                 if (entriesWritten == 10)
                 {
-                    string progress = " (" + DBUpgrader.Progress + ")";
-                    Logger.Log(LogType.SystemActivity, "Dumping BlockDB for " + mapName + progress);
+                    Logger.Log(1, "Dumping BlockDB for " + mapName + " (" + DBUpgrader.Progress + ")");
                 }
                 UpdateBlock(record);
                 UpdateCoords(record);

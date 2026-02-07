@@ -18,12 +18,11 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdMute : Command2
     {
-        public override string name { get { return "Mute"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "Mute";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 80;
         const string UNMUTE_FLAG = "-unmute";
-        public override CommandAlias[] Aliases
-        { get { return new[] { new CommandAlias("Unmute", UNMUTE_FLAG) }; } }
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("Unmute", UNMUTE_FLAG) };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -66,7 +65,7 @@ namespace MCGalaxy.Commands.Moderation
             string reason = args.Length > 2 ? args[2] : "";
             reason = ModActionCmd.ExpandReason(p, reason);
             if (reason == null) return;
-            ModAction action = new(target, p, ModActionType.Muted, reason, duration);
+            ModAction action = new(target, p, 4, reason, duration);
             OnModActionEvent.Call(action);
         }
         void DoUnmute(Player p, string target, string reason)
@@ -74,7 +73,7 @@ namespace MCGalaxy.Commands.Moderation
             reason = ModActionCmd.ExpandReason(p, reason);
             if (reason == null) return;
             if (p.name == target) { p.Message("You cannot unmute yourself."); return; }
-            ModAction action = new(target, p, ModActionType.Unmuted, reason);
+            ModAction action = new(target, p, 5, reason);
             OnModActionEvent.Call(action);
         }
         public override void Help(Player p)

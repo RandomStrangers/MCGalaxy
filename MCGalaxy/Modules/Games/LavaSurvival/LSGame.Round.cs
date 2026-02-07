@@ -23,63 +23,71 @@ namespace MCGalaxy.Modules.Games.LS
         int roundSecs, layerSecs;
         protected override void DoRound()
         {
-            if (!Running) return;
-            roundSecs = 0;
-            layerSecs = 0;
-            curLayer = 1;
-            Player[] players = PlayerInfo.Online.Items;
-            foreach (Player p in players)
+            if (Running)
             {
-                if (p.level != Map) continue;
-                ResetRoundState(p, Get(p));
-                OutputRoundInfo(p);
-            }
-            ResetPlayerDeaths();
-            RoundStart = DateTime.UtcNow;
-            RoundInProgress = true;
-            UpdateBlockHandlers();
-            UpdatePhysicsLevel();
-            while (RoundInProgress && roundSecs < roundTotalSecs)
-            {
-                if (!Running) return;
-                if (!flooded) AnnounceFloodTime();
-                if (roundSecs >= floodDelaySecs)
+                roundSecs = 0;
+                layerSecs = 0;
+                curLayer = 1;
+                Player[] players = PlayerInfo.Online.Items;
+                foreach (Player p in players)
                 {
-                    if (!layerMode && roundSecs == floodDelaySecs)
-                    {
-                        FloodFrom(cfg.FloodPos);
-                    }
-                    else if (layerMode && (layerSecs % layerIntervalSecs) == 0 && curLayer <= cfg.LayerCount)
-                    {
-                        FloodFrom(CurrentLayerPos());
-                        curLayer++;
-                    }
-                    layerSecs++;
+                    if (p.Level != Map) continue;
+                    ResetRoundState(p, Get(p));
+                    OutputRoundInfo(p);
                 }
-                roundSecs++;
-                Thread.Sleep(1000);
+                ResetPlayerDeaths();
+                RoundStart = DateTime.UtcNow;
+                RoundInProgress = true;
+                UpdateBlockHandlers();
+                UpdatePhysicsLevel();
+                while (RoundInProgress && roundSecs < roundTotalSecs)
+                {
+                    if (Running)
+                    {
+                        if (!flooded) AnnounceFloodTime();
+                        if (roundSecs >= floodDelaySecs)
+                        {
+                            if (!layerMode && roundSecs == floodDelaySecs)
+                            {
+                                FloodFrom(cfg.FloodPos);
+                            }
+                            else if (layerMode && (layerSecs % layerIntervalSecs) == 0 && curLayer <= cfg.LayerCount)
+                            {
+                                FloodFrom(CurrentLayerPos());
+                                curLayer++;
+                            }
+                            layerSecs++;
+                        }
+                        roundSecs++;
+                        Thread.Sleep(1000);
+                    }
+                }
             }
         }
         void FloodFrom(Vec3U16 pos)
         {
             Map.Blockchange(pos.X, pos.Y, pos.Z, floodBlock, true);
-            if (flooded) return;
-            Map.Message("&4Look out, here comes the flood!");
-            Logger.Log(LogType.GameActivity, "[Lava Survival] Starting map flood.");
-            flooded = true;
+            if (!flooded)
+            {
+                Map.Message("&4Look out, here comes the flood!");
+                Logger.Log(2, "[Lava Survival] Starting map flood.");
+                flooded = true;
+            }
         }
         void RewardPlayer(Player p, Random rnd)
         {
-            if (IsPlayerDead(p)) return;
-            if (p.Pos.FeetBlockCoords.Y >= Map.GetEdgeLevel())
+            if (!IsPlayerDead(p))
             {
-                AwardMoney(p, Config.ASL_RewardMin, Config.ASL_RewardMax,
-                           rnd, 0);
-            }
-            else
-            {
-                AwardMoney(p, Config.BSL_RewardMin, Config.BSL_RewardMax,
-                           rnd, 0);
+                if (p.Pos.FeetBlockCoords.Y >= Map.GetEdgeLevel())
+                {
+                    AwardMoney(p, Config.ASL_RewardMin, Config.ASL_RewardMax,
+                               rnd, 0);
+                }
+                else
+                {
+                    AwardMoney(p, Config.BSL_RewardMin, Config.BSL_RewardMax,
+                               rnd, 0);
+                }
             }
         }
         void AnnounceFloodTime()
@@ -87,7 +95,7 @@ namespace MCGalaxy.Modules.Games.LS
             int left = floodDelaySecs - roundSecs;
             if (left == 0)
             {
-                MessageMap(CpeMessageType.Announcement, "");
+                MessageMap(100, "");
             }
             else if (left <= 10)
             {
@@ -100,40 +108,25 @@ namespace MCGalaxy.Modules.Games.LS
         }
         public override void EndRound()
         {
-            if (!RoundInProgress) return;
-            RoundInProgress = false;
-            flooded = false;
-            Map.SetPhysics(0);
-            Map.Message("The round has ended!");
-            Random rnd = new();
-            Player[] players = PlayerInfo.Online.Items;
-            foreach (Player p in players)
+            if (RoundInProgress)
             {
-                if (p.level == Map) RewardPlayer(p, rnd);
+                RoundInProgress = false;
+                flooded = false;
+                Map.SetPhysics(0);
+                Map.Message("The round has ended!");
+                Random rnd = new();
+                Player[] players = PlayerInfo.Online.Items;
+                foreach (Player p in players)
+                {
+                    if (p.Level == Map) RewardPlayer(p, rnd);
+                }
             }
         }
-        string FloodTimeLeftMessage()
-        {
-            TimeSpan left = TimeSpan.FromSeconds(floodDelaySecs - roundSecs);
-            return "&3" + left.Shorten(true) + " &Suntil the flood starts";
-        }
-        string RoundTimeLeftMessage()
-        {
-            TimeSpan left = TimeSpan.FromSeconds(roundTotalSecs - roundSecs);
-            return "&3" + left.Shorten(true) + " &Suntil the round ends";
-        }
-        string ModeMessage(string block)
-        {
-            LSFloodMode mode = floodMode;
-            return block.Capitalize() + " will be &c" + mode + " &Sthis round";
-        }
+        string FloodTimeLeftMessage() => "&3" + TimeSpan.FromSeconds(floodDelaySecs - roundSecs).Shorten(true) + " &Suntil the flood starts";
+        string RoundTimeLeftMessage() => "&3" + TimeSpan.FromSeconds(roundTotalSecs - roundSecs).Shorten(true) + " &Suntil the round ends";
+        string ModeMessage(string block) => block.Capitalize() + " will be &c" + floodMode + " &Sthis round";
         public override void OutputStatus(Player p)
         {
-            // TODO: send these messages if player is op
-            //if (data.layer) {
-            //    Map.ChatLevelOps("There will be " + mapSettings.LayerCount + " layers, each " + mapSettings.LayerHeight + " blocks high.");
-            //    Map.ChatLevelOps("There will be another layer every " + mapSettings.layerInterval + " minutes.");
-            //}
             OutputRoundInfo(p);
             OutputTimeInfo(p);
         }

@@ -19,11 +19,8 @@ namespace MCGalaxy.Eco
 {
     public sealed class LevelItem : Item
     {
-        public LevelItem()
-        {
-            Aliases = new string[] { "level", "levels", "map", "maps" };
-        }
-        public override string Name { get { return "Level"; } }
+        public LevelItem() => Aliases = new string[] { "level", "levels", "map", "maps" };
+        public override string Name => "Level";
         public List<LevelPreset> Presets = new();
         public class LevelPreset
         {
@@ -201,10 +198,7 @@ namespace MCGalaxy.Eco
             p.Message("&T/Eco level edit [name] [name/x/y/z/type/price] [value]");
             p.Message("&HAdds, removes, or edits a level preset.");
         }
-        protected internal override void OnStoreOverview(Player p)
-        {
-            p.Message("&6Maps &S- see &T/Store maps");
-        }
+        protected internal override void OnStoreOverview(Player p) => p.Message("&6Maps &S- see &T/Store maps");
         protected internal override void OnStoreCommand(Player p)
         {
             p.Message("&aAvailable maps to buy:");

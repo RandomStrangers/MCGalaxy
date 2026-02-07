@@ -22,9 +22,9 @@ namespace MCGalaxy.Maths
         /// <summary> Fixed-point max coordinate of this bounding box. </summary>
         public Vec3S32 Max;
         /// <summary> World/block coordinate of the min coordinate of this bounding box. </summary>
-        public readonly Vec3S32 BlockMin { get { return new(Min.X >> 5, Min.Y >> 5, Min.Z >> 5); } }
+        public readonly Vec3S32 BlockMin => new(Min.X >> 5, Min.Y >> 5, Min.Z >> 5);
         /// <summary> World/block coordinate of the max coordinate of this bounding box. </summary>
-        public readonly Vec3S32 BlockMax { get { return new(Max.X >> 5, Max.Y >> 5, Max.Z >> 5); } }
+        public readonly Vec3S32 BlockMax => new(Max.X >> 5, Max.Y >> 5, Max.Z >> 5);
         public AABB(int x1, int y1, int z1, int x2, int y2, int z2)
         {
             Min.X = x1;
@@ -34,20 +34,9 @@ namespace MCGalaxy.Maths
             Max.Y = y2;
             Max.Z = z2;
         }
-        public AABB(Vec3S32 min, Vec3S32 max)
-        {
-            Min = min;
-            Max = max;
-        }
-        public static AABB Make(Vec3S32 pos, Vec3S32 size)
-        {
-            return new(pos.X - size.X / 2, pos.Y, pos.Z - size.Z / 2,
+        public static AABB Make(Vec3S32 pos, Vec3S32 size) => new(pos.X - size.X / 2, pos.Y, pos.Z - size.Z / 2,
                 pos.X + size.X / 2, pos.Y + size.Y, pos.Z + size.Z / 2);
-        }
-        public readonly AABB OffsetPosition(Position pos)
-        {
-            return Offset(pos.X, pos.Y - Entities.CharacterHeight, pos.Z);
-        }
+        public readonly AABB OffsetPosition(Position pos) => Offset(pos.X, pos.Y - Entities.CharacterHeight, pos.Z);
         public readonly AABB Offset(int x, int y, int z)
         {
             AABB bb = this;
@@ -113,10 +102,6 @@ namespace MCGalaxy.Maths
             }
             return false;
         }
-        public override readonly string ToString()
-        {
-            return Min + " : " + Max;
-        }
         public static bool IntersectsSolidBlocks(AABB bb, Level lvl)
         {
             Vec3S32 min = bb.BlockMin, max = bb.BlockMax;
@@ -135,7 +120,7 @@ namespace MCGalaxy.Maths
                         BlockDefinition def = lvl.GetBlockDef(block);
                         if (def != null)
                         {
-                            if (CollideType.IsSolid(def.CollideType))
+                            if (DefaultSet.IsSolid(def.CollideType))
                             {
                                 return true;
                             }
@@ -187,7 +172,7 @@ namespace MCGalaxy.Maths
                         bool solid;
                         if (def != null)
                         {
-                            solid = CollideType.IsSolid(def.CollideType);
+                            solid = DefaultSet.IsSolid(def.CollideType);
                         }
                         else
                         {

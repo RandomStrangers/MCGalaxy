@@ -15,11 +15,6 @@
 using System.IO;
 namespace MCGalaxy.Blocks
 {
-    /// <summary> Type of animal this block behaves as. </summary>
-    public enum AnimalAI : byte
-    {
-        None, Fly, FleeAir, KillerAir, FleeWater, KillerWater, FleeLava, KillerLava,
-    }
     /// <summary> Extended and physics properties of a block. </summary>
     public struct BlockProps
     {
@@ -46,7 +41,7 @@ namespace MCGalaxy.Blocks
         /// <summary> Whether this block should allow trains to go over them. </summary>
         public bool IsRails;
         /// <summary> Animal AI behaviour of this block. </summary>
-        public AnimalAI AnimalAI;
+        public int AnimalAI;
         /// <summary> Block ID that is placed when two of this block are placed on top of each other. </summary>
         /// <remarks> e.g. slabs and cobblestone slabs. </remarks>
         public ushort StackBlock;
@@ -59,14 +54,12 @@ namespace MCGalaxy.Blocks
         /// <summary> Whether the properties for this block have been modified and hence require saving. </summary>
         /// <remarks> bit 0 set means modified at global scope, bit 1 set means modified at level scope</remarks>
         public byte ChangedScope;
-        public const byte SCOPE_GLOBAL = 0x01;
-        public const byte SCOPE_LEVEL = 0x02;
         public static BlockProps MakeEmpty()
         {
             BlockProps props = default;
-            props.oDoorBlock = Block.Invalid;
-            props.GrassBlock = Block.Invalid;
-            props.DirtBlock = Block.Invalid;
+            props.oDoorBlock = 0xff;
+            props.GrassBlock = 0xff;
+            props.DirtBlock = 0xff;
             return props;
         }
         public static void Save(string group, BlockProps[] list, byte scope)
@@ -112,7 +105,6 @@ namespace MCGalaxy.Blocks
         }
         static void LoadCore(string path, BlockProps[] list, byte scope, bool mapOld)
         {
-            //string[] lines = File.ReadAllLines(path);
             string[] lines = FileIO.TryReadAllLines(path);
             for (int i = 0; i < lines.Length; i++)
             {
@@ -121,18 +113,18 @@ namespace MCGalaxy.Blocks
                 string[] parts = line.Split(':');
                 if (parts.Length < 10)
                 {
-                    Logger.Log(LogType.Warning, "Invalid line \"{0}\" in {1}", line, path);
+                    Logger.Log(6, "Invalid line \"{0}\" in {1}", line, path);
                     continue;
                 }
                 if (!ushort.TryParse(parts[0], out ushort b))
                 {
-                    Logger.Log(LogType.Warning, "Invalid line \"{0}\" in {1}", line, path);
+                    Logger.Log(6, "Invalid line \"{0}\" in {1}", line, path);
                     continue;
                 }
                 if (mapOld) b = Block.MapOldRaw(b);
                 if (b >= list.Length)
                 {
-                    Logger.Log(LogType.Warning, "Invalid block ID: " + b);
+                    Logger.Log(6, "Invalid block ID: " + b);
                     continue;
                 }
                 bool.TryParse(parts[1], out list[b].IsRails);
@@ -150,7 +142,7 @@ namespace MCGalaxy.Blocks
                 if (parts.Length > 10)
                 {
                     byte.TryParse(parts[10], out byte ai);
-                    list[b].AnimalAI = (AnimalAI)ai;
+                    list[b].AnimalAI = ai;
                 }
                 if (parts.Length > 11)
                 {
@@ -184,10 +176,7 @@ namespace MCGalaxy.Blocks
             if (scope == Block.Props) return Block.MakeDefaultProps(block);
             return IsDefaultBlock(lvl, block) ? Block.Props[block] : MakeEmpty();
         }
-        static bool IsDefaultBlock(Level lvl, ushort b)
-        {
-            return Block.IsPhysicsType(b) || lvl.CustomBlockDefs[b] == BlockDefinition.GlobalDefs[b];
-        }
+        static bool IsDefaultBlock(Level lvl, ushort b) => Block.IsPhysicsType(b) || lvl.CustomBlockDefs[b] == BlockDefinition.GlobalDefs[b];
         public static void ApplyChanges(BlockProps[] scope, Level lvl_, ushort block, bool save)
         {
             byte scopeId = ScopeId(scope);
@@ -198,7 +187,7 @@ namespace MCGalaxy.Blocks
                 Level[] loaded = LevelInfo.Loaded.Items;
                 foreach (Level lvl in loaded)
                 {
-                    if ((lvl.Props[block].ChangedScope & SCOPE_LEVEL) != 0) continue;
+                    if ((lvl.Props[block].ChangedScope & 0x02) != 0) continue;
                     if (!IsDefaultBlock(lvl, block)) continue;
                     lvl.Props[block] = scope[block];
                     lvl.UpdateBlockHandlers(block);
@@ -211,10 +200,7 @@ namespace MCGalaxy.Blocks
             }
             if (save) Save(path, scope, scopeId);
         }
-        internal static byte ScopeId(BlockProps[] scope) { return scope == Block.Props ? (byte)1 : (byte)2; }
-        public static string ScopedName(BlockProps[] scope, Player p, ushort block)
-        {
-            return scope == Block.Props ? Block.GetName(Player.Console, block) : Block.GetName(p, block);
-        }
+        internal static byte ScopeId(BlockProps[] scope) => scope == Block.Props ? (byte)1 : (byte)2;
+        public static string ScopedName(BlockProps[] scope, Player p, ushort block) => scope == Block.Props ? Block.GetName(Player.Console, block) : Block.GetName(p, block);
     }
 }

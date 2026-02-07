@@ -19,7 +19,7 @@ namespace MCGalaxy.Drawing.Ops
 {
     public class BezierDrawOp : DrawOp
     {
-        public override string Name { get { return "Bezier"; } }
+        public override string Name => "Bezier";
         public bool WallsMode;
         public int MaxLength = int.MaxValue;
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
@@ -27,7 +27,7 @@ namespace MCGalaxy.Drawing.Ops
             Vec3S32 p0 = marks[0], p2 = marks[1], p1 = marks[2];
             return (long)((p1 - p0).Length + (p1 - p2).Length);
         }
-        static Vec3F32 offset = new(0.5f);
+        static Vec3F32 offset = new(0.5f, 0.5f, 0.5f);
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             points.Clear();

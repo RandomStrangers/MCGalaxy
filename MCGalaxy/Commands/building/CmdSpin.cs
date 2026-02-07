@@ -17,14 +17,11 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdSpin : Command2
     {
-        public override string name { get { return "Spin"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("Rotate") }; }
-        }
+        public override string Name => "Spin";
+        public override string Type => CommandTypes.Building;
+        public override sbyte DefaultRank => 50;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("Rotate") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) message = "y";
@@ -34,7 +31,7 @@ namespace MCGalaxy.Commands.Building
             }
             CopyState cState = p.CurrentCopy;
             string opt = message.ToLower();
-            BlockDefinition[] defs = p.level.CustomBlockDefs;
+            BlockDefinition[] defs = p.Level.CustomBlockDefs;
             // /Mirror used to be part of spin
             if (opt.CaselessStarts("mirror"))
             {

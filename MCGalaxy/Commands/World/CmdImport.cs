@@ -20,9 +20,9 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdImport : Command2
     {
-        public override string name { get { return "Import"; } }
-        public override string type { get { return CommandTypes.World; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "Import";
+        public override string Type => CommandTypes.World;
+        public override sbyte DefaultRank => 80;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }

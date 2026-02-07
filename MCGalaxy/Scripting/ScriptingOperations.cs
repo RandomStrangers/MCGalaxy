@@ -31,7 +31,7 @@ namespace MCGalaxy.Scripting
             {
                 List<Command> cmds = IScripting.LoadCommands(path);
                 p.Message("Successfully loaded &T{0}",
-                          cmds.Join(c => "/" + c.name));
+                          cmds.Join(c => "/" + c.Name));
                 return true;
             }
             catch (AlreadyLoadedException ex)
@@ -57,7 +57,7 @@ namespace MCGalaxy.Scripting
             {
                 List<Plugin> plugins = IScripting.LoadPlugin(path, false);
                 p.Message("Plugin {0} loaded successfully",
-                          plugins.Join(pl => pl.name));
+                          plugins.Join(pl => pl.Name));
                 return true;
             }
             catch (AlreadyLoadedException ex)
@@ -76,11 +76,11 @@ namespace MCGalaxy.Scripting
         {
             if (Command.IsCore(cmd))
             {
-                p.Message("&T/{0} &Sis a core command, you cannot unload it.", cmd.name);
+                p.Message("&T/{0} &Sis a core command, you cannot unload it.", cmd.Name);
                 return false;
             }
             Command.Unregister(cmd);
-            p.Message("Command &T/{0} &Sunloaded successfully", cmd.name);
+            p.Message("Command &T/{0} &Sunloaded successfully", cmd.Name);
             return true;
         }
         public static bool UnloadPlugin(Player p, Plugin plugin)
@@ -90,7 +90,7 @@ namespace MCGalaxy.Scripting
                 p.Message("&WError unloading plugin. See error logs for more information.");
                 return false;
             }
-            p.Message("Plugin {0} &Sunloaded successfully", plugin.name);
+            p.Message("Plugin {0} &Sunloaded successfully", plugin.Name);
             return true;
         }
     }

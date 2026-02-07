@@ -32,7 +32,6 @@ namespace MCGalaxy
         public static string lastMSG = "";
         internal PersistentMessages persistentMessages = new();
         public Zone ZoneIn;
-        public CinematicGui CinematicGui = new();
         //TpA
         internal bool Request;
         internal string senderName = "";
@@ -57,14 +56,14 @@ namespace MCGalaxy
         /// <remarks> Use 'truename' for displaying/logging, use 'name' for storing data </remarks>
         public string name;
         public string DisplayName;
-        public Pronouns pronouns { get { return pronounsList[0]; } }
+        public Pronouns Pronouns => pronounsList[0];
         internal List<Pronouns> pronounsList = new() { Pronouns.Default };
         public int warn;
         public IPAddress IP;
         public string ip;
         public string color;
         public Group group;
-        public LevelPermission hideRank = LevelPermission.Banned;
+        public sbyte hideRank = -20;
         public bool hidden;
         public bool painting;
         public bool checkingBotInfo;
@@ -84,10 +83,10 @@ namespace MCGalaxy
         /// <summary> Whether this player is a 'Super' player (Console, IRC, etc) </summary>
         public readonly bool IsSuper;
         /// <summary> Whether this player is the console player instance. </summary>
-        public bool IsConsole { get { return this == Console; } }
-        public virtual string FullName { get { return color + prefix + DisplayName; } }
-        public string ColoredName { get { return color + DisplayName; } }
-        public string GroupPrefix { get { return group.Prefix.Length == 0 ? "" : "&f" + group.Prefix; } }
+        public bool IsConsole => this == Console;
+        public virtual string FullName => color + prefix + DisplayName;
+        public string ColoredName => color + DisplayName;
+        public string GroupPrefix => group.Prefix.Length == 0 ? "" : "&f" + group.Prefix;
         public bool deleteMode;
         /// <summary> Whether automatic blockspam detection should be skipped for this player </summary>
         public bool ignoreGrief;
@@ -113,7 +112,7 @@ namespace MCGalaxy
         public int TimesVisited, TimesBeenKicked, TimesDied;
         public int TotalMessagesSent;
         long startModified;
-        public long SessionModified { get { return TotalModified - startModified; } }
+        public long SessionModified => TotalModified - startModified;
         DateTime startTime;
         public TimeSpan TotalTime
         {
@@ -186,7 +185,7 @@ namespace MCGalaxy
         public Level level;
         public bool Loading = true; //True if player is loading a map.
         internal int UsingGoto, GeneratingMap, LoadingMuseum;
-        public Vec3U16 lastClick = Vec3U16.Zero;
+        public Vec3U16 lastClick = new(0, 0, 0);
         public Position PreTeleportPos;
         public Orientation PreTeleportRot;
         public string PreTeleportMap;
@@ -197,7 +196,7 @@ namespace MCGalaxy
         internal DateTime cmdUnblocked;
         readonly List<DateTime> partialLog;
         public DateTime LastPatrol;
-        public LevelPermission Rank { get { return group.Permission; } }
+        public sbyte Rank => group.Permission;
         /// <summary> Whether player has completed login process and has been sent initial map. </summary>
         public bool loggedIn;
         public bool verifiedName;
@@ -213,7 +212,7 @@ namespace MCGalaxy
         /// <summary> Called when a player removes or places a block.
         /// NOTE: Currently this prevents the OnBlockChange event from being called. </summary>
         public event SelectionBlockChange Blockchange;
-        public void ClearBlockchange() { ClearSelection(); }
+        public void ClearBlockchange() => ClearSelection();
         public object blockchangeObject;
         /// <summary> Called when the player has finished providing all the marks for a selection. </summary>
         /// <returns> Whether to repeat this selection, if /static mode is enabled. </returns>

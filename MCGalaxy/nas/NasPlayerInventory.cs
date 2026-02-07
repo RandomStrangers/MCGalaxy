@@ -1,27 +1,32 @@
-#if NAS && TEN_BIT_BLOCKS
-using MCGalaxy;
 using MCGalaxy.Blocks;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using Newtonsoft.Json;
 using System;
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
+    public class DisplayInfo
+    {
+        public Inventory inv;
+        public NASBlock nasBlock;
+        public int amountChanged;
+        public bool showToNormalChat;
+    }
     public partial class Inventory
     {
         [JsonIgnore] public Player p;
-        [JsonIgnore] public CpeMessageType whereHeldBlockIsDisplayed = CpeMessageType.BottomRight3;
+        [JsonIgnore] public int whereHeldBlockIsDisplayed = 13;
         public int[] blocks = new int[768];
         public void Message(string message, params object[] args) => p.Message(string.Format(message, args));
-        public void Send(byte[] buffer) => p.Socket.Send(buffer, SendFlags.None);
-        public void SendCpeMessage(CpeMessageType type, string message) => p.SendCpeMessage(type, message);
+        public void Send(byte[] buffer) => p.Socket.Send(buffer, 0x00);
+        public void SendCpeMessage(int type, string message) => p.SendCpeMessage(type, message);
         public void Setup(Player p)
         {
             this.p = p;
-            NasPlayer np = NasPlayer.GetNasPlayer(p);
+            NASPlayer np = NASPlayer.GetPlayer(p);
             if (!np.SetInventoryNotif)
             {
-                Logger.Log(LogType.Debug, "Setting up inventory for {0}", np.p.truename);
+                Logger.Log(15, "Setting up inventory for {0}", np.p.truename);
                 np.SetInventoryNotif = true;
             }
             for (ushort clientushort = 1; clientushort <= 767; clientushort++)
@@ -53,7 +58,7 @@ namespace NotAwesomeSurvival
             }
             if (drop.exp > 0)
             {
-                NasPlayer.GetNasPlayer(p).GiveExp(drop.exp);
+                NASPlayer.GetPlayer(p).GiveExp(drop.exp);
                 drop.exp = 0;
             }
             if (drop.blockStacks != null)
@@ -65,7 +70,7 @@ namespace NotAwesomeSurvival
                     DisplayInfo info = new()
                     {
                         inv = this,
-                        nasBlock = NasBlock.Get(bs.ID),
+                        nasBlock = NASBlock.Get(bs.ID),
                         amountChanged = bs.amount
                     };
                     if (drop.blockStacks.Count == 1 || overrideBool)
@@ -83,7 +88,7 @@ namespace NotAwesomeSurvival
             Drop leftovers = null;
             if (drop.items != null)
             {
-                foreach (Item item in drop.items)
+                foreach (NASItem item in drop.items)
                 {
                     if (!GetItem(item))
                     {
@@ -106,7 +111,7 @@ namespace NotAwesomeSurvival
             blocks[clientushort] += amount;
             if (displayChange)
             {
-                NasBlock nb = NasBlock.Get(clientushort);
+                NASBlock nb = NASBlock.Get(clientushort);
                 DisplayHeldBlock(nb, amount, showToNormalChat);
             }
             if (blocks[clientushort] > 0)
@@ -120,7 +125,7 @@ namespace NotAwesomeSurvival
             }
         }
         public int GetAmount(ushort clientushort) => blocks[clientushort];
-        public void DisplayHeldBlock(NasBlock nasBlock, int amountChanged = 0, bool showToNormalChat = false)
+        public void DisplayHeldBlock(NASBlock nasBlock, int amountChanged = 0, bool showToNormalChat = false)
         {
             string display = DisplayedBlockString(nasBlock);
             if (amountChanged > 0)
@@ -137,9 +142,9 @@ namespace NotAwesomeSurvival
             }
             SendCpeMessage(whereHeldBlockIsDisplayed, display);
         }
-        public string DisplayedBlockString(NasBlock nasBlock)
+        public string DisplayedBlockString(NASBlock nasBlock)
         {
-            NasPlayer np = NasPlayer.GetNasPlayer(p);
+            NASPlayer np = NASPlayer.GetPlayer(p);
             if (nasBlock.parentID == 0)
             {
                 return "┤";
@@ -147,13 +152,6 @@ namespace NotAwesomeSurvival
             int amount = GetAmount(nasBlock.parentID);
             string hand = amount <= 0 ? "┤" : "╕¼";
             return "[" + amount + "] " + nasBlock.GetName(np) + " " + hand;
-        }
-        public class DisplayInfo
-        {
-            public Inventory inv;
-            public NasBlock nasBlock;
-            public int amountChanged;
-            public bool showToNormalChat;
         }
         public static void DisplayHeldBlockTask(SchedulerTask task)
         {
@@ -164,7 +162,7 @@ namespace NotAwesomeSurvival
         {
             Send(Packet.BlockPermission(clientushort, false, false, true));
             Send(Packet.SetInventoryOrder(clientushort, 0, true));
-            NasBlock nasBlock = NasBlock.blocks[clientushort];
+            NASBlock nasBlock = NASBlock.blocks[clientushort];
             if (nasBlock.childIDs != null)
             {
                 foreach (ushort childID in nasBlock.childIDs)
@@ -176,10 +174,10 @@ namespace NotAwesomeSurvival
         }
         public void UnhideBlock(ushort clientushort)
         {
-            BlockDefinition def = BlockDefinition.GlobalDefs[Nas.FromRaw(clientushort)];
+            BlockDefinition def = BlockDefinition.GlobalDefs[NASPlugin.FromRaw(clientushort)];
             if (def == null && clientushort < 66)
             {
-                def = DefaultSet.MakeCustomBlock(Nas.FromRaw(clientushort));
+                def = DefaultSet.MakeCustomBlock(NASPlugin.FromRaw(clientushort));
             }
             if (def == null)
             {
@@ -187,15 +185,15 @@ namespace NotAwesomeSurvival
             }
             Send(Packet.BlockPermission(clientushort, true, false, true));
             Send(Packet.SetInventoryOrder(clientushort, (def.InventoryOrder == -1) ? clientushort : (ushort)def.InventoryOrder, true));
-            NasBlock nasBlock = NasBlock.blocks[clientushort];
+            NASBlock nasBlock = NASBlock.blocks[clientushort];
             if (nasBlock.childIDs != null)
             {
                 foreach (ushort childID in nasBlock.childIDs)
                 {
-                    def = BlockDefinition.GlobalDefs[Nas.FromRaw(childID)];
+                    def = BlockDefinition.GlobalDefs[NASPlugin.FromRaw(childID)];
                     if (def == null && childID < 66)
                     {
-                        def = DefaultSet.MakeCustomBlock(Nas.FromRaw(childID));
+                        def = DefaultSet.MakeCustomBlock(NASPlugin.FromRaw(childID));
                     }
                     if (def == null)
                     {
@@ -208,4 +206,3 @@ namespace NotAwesomeSurvival
         }
     }
 }
-#endif

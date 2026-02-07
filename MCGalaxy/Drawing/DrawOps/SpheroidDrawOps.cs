@@ -19,33 +19,21 @@ namespace MCGalaxy.Drawing.Ops
 {
     public abstract class ShapedDrawOp : DrawOp
     {
-        public double XRadius { get { return (Max.X - Min.X) / 2.0 + 0.25; } }
-        public double YRadius { get { return (Max.Y - Min.Y) / 2.0 + 0.25; } }
-        public double ZRadius { get { return (Max.Z - Min.Z) / 2.0 + 0.25; } }
-        public double XCentre { get { return (Min.X + Max.X) / 2.0; } }
-        public double YCentre { get { return (Min.Y + Max.Y) / 2.0; } }
-        public double ZCentre { get { return (Min.Z + Max.Z) / 2.0; } }
-        public int Height { get { return Max.Y - Min.Y + 1; } }
-        public static double EllipsoidVolume(double rx, double ry, double rz)
-        {
-            return Math.PI * 4.0 / 3.0 * (rx * ry * rz);
-        }
-        public static double ConeVolume(double rx, double rz, double height)
-        {
-            return Math.PI / 3.0 * (rx * rz * height);
-        }
-        public static double CylinderVolume(double rx, double rz, double height)
-        {
-            return Math.PI * (rx * rz * height);
-        }
+        public double XRadius => (Max.X - Min.X) / 2.0 + 0.25;
+        public double YRadius => (Max.Y - Min.Y) / 2.0 + 0.25;
+        public double ZRadius => (Max.Z - Min.Z) / 2.0 + 0.25;
+        public double XCentre => (Min.X + Max.X) / 2.0;
+        public double YCentre => (Min.Y + Max.Y) / 2.0;
+        public double ZCentre => (Min.Z + Max.Z) / 2.0;
+        public int Height => Max.Y - Min.Y + 1;
+        public static double EllipsoidVolume(double rx, double ry, double rz) => Math.PI * 4.0 / 3.0 * (rx * ry * rz);
+        public static double ConeVolume(double rx, double rz, double height) => Math.PI / 3.0 * (rx * rz * height);
+        public static double CylinderVolume(double rx, double rz, double height) => Math.PI * (rx * rz * height);
     }
     public class EllipsoidDrawOp : ShapedDrawOp
     {
-        public override string Name { get { return "Ellipsoid"; } }
-        public override long BlocksAffected(Level lvl, Vec3S32[] marks)
-        {
-            return (long)EllipsoidVolume(XRadius, YRadius, ZRadius);
-        }
+        public override string Name => "Ellipsoid";
+        public override long BlocksAffected(Level lvl, Vec3S32[] marks) => (long)EllipsoidVolume(XRadius, YRadius, ZRadius);
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             /* Courtesy of fCraft's awesome Open-Source'ness :D */
@@ -65,7 +53,7 @@ namespace MCGalaxy.Drawing.Ops
     }
     public class EllipsoidHollowDrawOp : ShapedDrawOp
     {
-        public override string Name { get { return "Ellipsoid Hollow"; } }
+        public override string Name => "Ellipsoid Hollow";
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
             double rx = XRadius, ry = YRadius, rz = ZRadius;
@@ -100,7 +88,7 @@ namespace MCGalaxy.Drawing.Ops
     }
     public class CylinderDrawOp : ShapedDrawOp
     {
-        public override string Name { get { return "Cylinder"; } }
+        public override string Name => "Cylinder";
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
             double rx = XRadius, rz = ZRadius, h = Height;
@@ -134,12 +122,9 @@ namespace MCGalaxy.Drawing.Ops
     public class ConeDrawOp : ShapedDrawOp
     {
         public bool Invert;
-        public override string Name { get { return "Cone"; } }
-        public ConeDrawOp(bool invert = false) { Invert = invert; }
-        public override long BlocksAffected(Level lvl, Vec3S32[] marks)
-        {
-            return (long)ConeVolume(XRadius, ZRadius, Height);
-        }
+        public override string Name => "Cone";
+        public ConeDrawOp(bool invert = false) => Invert = invert;
+        public override long BlocksAffected(Level lvl, Vec3S32[] marks) => (long)ConeVolume(XRadius, ZRadius, Height);
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             Vec3U16 p1 = Clamp(Min), p2 = Clamp(Max);

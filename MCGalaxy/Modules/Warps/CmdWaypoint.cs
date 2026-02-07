@@ -16,9 +16,9 @@ namespace MCGalaxy.Modules.Warps
 {
     sealed class CmdWaypoint : WarpCommand
     {
-        public override string name { get { return "Waypoint"; } }
-        public override string shortcut { get { return "wp"; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Builder; } }
+        public override string Name => "Waypoint";
+        public override string Shortcut => "wp";
+        public override sbyte DefaultRank => 30;
         public override void Use(Player p, string message, CommandData data)
         {
             if (!p.Extras.Contains("MCG_WAYPOINTS"))

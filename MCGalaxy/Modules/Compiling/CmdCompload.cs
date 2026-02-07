@@ -12,16 +12,15 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
 */
-#if !MCG_STANDALONE
 using MCGalaxy.Commands;
 using MCGalaxy.Scripting;
 namespace MCGalaxy.Modules.Compiling
 {
     sealed class CmdCompLoad : CmdCompile
     {
-        public override string name { get { return "CompLoad"; } }
-        public override string shortcut { get { return "cml"; } }
-        public override CommandAlias[] Aliases { get { return null; } }
+        public override string Name => "CompLoad";
+        public override string Shortcut => "cml";
+        public override CommandAlias[] Aliases => null;
         protected override void CompilePlugin(Player p, string[] paths, ICompiler compiler)
         {
             string pln = paths[0],
@@ -67,4 +66,3 @@ namespace MCGalaxy.Modules.Compiling
         }
     }
 }
-#endif

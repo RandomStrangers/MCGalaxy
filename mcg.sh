@@ -116,36 +116,23 @@ case "$1" in
 		fi
 ;;
 	*)
-		if [ -f "${mcgdir}/MCGalaxy_.update" ]; then
-			if [ -f "${mcgdir}/MCGalaxy.update" ]; then
+		if [ -f "${mcgdir}/MCGalaxy.update" ]; then
 				echo
 				echo Update Found!
 				echo -n Applying update:
 				rm ${mcgdir}/MCGalaxy.exe
-				rm ${mcgdir}/MCGalaxy_.dll
 				mv ${mcgdir}/MCGalaxy.update ${mcgdir}/MCGalaxy.exe
-				mv ${mcgdir}/MCGalaxy_.update ${mcgdir}/MCGalaxy_.dll
-				if [ -f "${mcgdir}/MCGalaxy_.update" ]; then
-					if [ -f "${mcgdir}/MCGalaxy.update" ]; then
-						echo -e FAILED!
-						if [ -f "${mcgdir}/MCGalaxy_.dll" ]; then
+				if [ -f "${mcgdir}/MCGalaxy.update" ]; then
+
 							if [ -f "${mcgdir}/MCGalaxy.exe" ]; then
 								$0 ${default}
 							fi
-						else
-							echo -e Update totally derped, files missing. Please Re-download!
-							exit 1
-						fi
-					fi
 				else
-					if [ -f "${mcgdir}/MCGalaxy_.dll" ]; then
 						if [ -f "${mcgdir}/MCGalaxy.exe" ]; then
 							echo -e SUCCESS!
 							$0 ${default}
 						fi
-					fi
 				fi
-			fi
 		else
 			echo
 			echo "No Update found or automatic update not enabled"

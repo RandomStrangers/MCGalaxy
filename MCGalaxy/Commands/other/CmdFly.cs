@@ -20,10 +20,10 @@ namespace MCGalaxy.Commands.Misc
 {
     public sealed class CmdFly : Command2
     {
-        public override string name { get { return "Fly"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Fly";
+        public override string Type => CommandTypes.Other;
+        public override sbyte DefaultRank => 80;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             if (!Hacks.CanUseFly(p))
@@ -63,7 +63,10 @@ namespace MCGalaxy.Commands.Misc
         static void DoFly(FlyState state)
         {
             Player p = state.player;
-            if (p.Pos == state.oldPos) return;
+            if (p.Pos.X == state.oldPos.X && p.Pos.Y == state.oldPos.Y && p.Pos.Z == state.oldPos.Z)
+            {
+                return;
+            }
             int x = p.Pos.BlockX, z = p.Pos.BlockZ;
             int y = (p.Pos.Y - 60) / 32;
             for (int yy = y - 1; yy <= y; yy++)
@@ -72,7 +75,7 @@ namespace MCGalaxy.Commands.Misc
                     {
                         Vec3U16 pos;
                         pos.X = (ushort)xx; pos.Y = (ushort)yy; pos.Z = (ushort)zz;
-                        if (p.level.IsAirAt(pos.X, pos.Y, pos.Z)) state.glassCoords.Add(pos);
+                        if (p.Level.IsAirAt(pos.X, pos.Y, pos.Z)) state.glassCoords.Add(pos);
                     }
             foreach (Vec3U16 P in state.glassCoords)
             {
@@ -92,7 +95,7 @@ namespace MCGalaxy.Commands.Misc
         }
         public override void Help(Player p)
         {
-            string name = Group.GetColoredName(LevelPermission.Operator);
+            string name = Group.GetColoredName(80);
             p.Message("&T/Fly");
             p.Message("&HCreates a glass platform underneath you that moves with you.");
             p.Message("&H  May not work if you have high latency.");

@@ -19,14 +19,11 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdPatrol : Command2
     {
-        public override string name { get { return "Patrol"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Builder, "are not patrolled") }; }
-        }
+        public override string Name => "Patrol";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 50;
+        public override bool SuperUseable => false;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(30, "are not patrolled") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length > 0) { Help(p); return; }
@@ -46,7 +43,7 @@ namespace MCGalaxy.Commands.Moderation
         List<Player> GetPatrolCandidates(Player p, CommandData data)
         {
             List<Player> candidates = new();
-            ItemPerms except = CommandExtraPerms.Find(name, 1);
+            ItemPerms except = CommandExtraPerms.Find(Name, 1);
             Player[] players = PlayerInfo.Online.Items;
             DateTime cutoff = DateTime.UtcNow.AddSeconds(-15);
             foreach (Player target in players)
@@ -60,7 +57,7 @@ namespace MCGalaxy.Commands.Moderation
         public override void Help(Player p)
         {
             p.Message("&T/Patrol");
-            ItemPerms except = CommandExtraPerms.Find(name, 1);
+            ItemPerms except = CommandExtraPerms.Find(Name, 1);
             p.Message("&HTeleports you to a random player. {0} &Hare not patrolled", except.Describe());
             p.Message("&HPlayers patrolled within the last 15 seconds are ignored");
         }

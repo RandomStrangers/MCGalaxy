@@ -17,13 +17,10 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdBan : Command2
     {
-        public override string name { get { return "Ban"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new CommandAlias[] { new("KickBan"), new("kb") }; }
-        }
+        public override string Name => "Ban";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 80;
+        public override CommandAlias[] Aliases => new CommandAlias[] { new("KickBan"), new("kb") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -35,12 +32,12 @@ namespace MCGalaxy.Commands.Moderation
             if (reason == null) return;
             Group group = ModActionCmd.CheckTarget(p, data, "ban", target);
             if (group == null) return;
-            if (group.Permission == LevelPermission.Banned)
+            if (group.Permission == -20)
             {
                 p.Message("{0} &Sis already banned.", p.FormatNick(target));
                 return;
             }
-            ModAction action = new(target, p, ModActionType.Ban, reason)
+            ModAction action = new(target, p, 0, reason)
             {
                 targetGroup = group
             };

@@ -17,7 +17,7 @@ namespace MCGalaxy.Modules.Games.Countdown
 {
     public sealed class CountdownPlugin : Plugin
     {
-        public override string name { get { return "Countdown"; } }
+        public override string Name => "Countdown";
         static readonly Command cmdCD = new CmdCountdown();
         public override void Load(bool startup)
         {
@@ -26,7 +26,7 @@ namespace MCGalaxy.Modules.Games.Countdown
             game.Config.Path = "props/countdown.properties";
             game.ReloadConfig();
             game.AutoStart();
-            OnConfigUpdatedEvent.Register(game.ReloadConfig, Priority.Low);
+            OnConfigUpdatedEvent.Register(game.ReloadConfig, 0);
         }
         public override void Unload(bool shutdown)
         {

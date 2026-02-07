@@ -32,7 +32,7 @@ namespace MCGalaxy.Commands.CPE
         public static void Execute(Player p, string message, CommandData data, bool global, string cmd)
         {
             string[] parts = message.SplitSpaces(4);
-            Level lvl = p.IsSuper ? null : p.level;
+            Level lvl = p.IsSuper ? null : p.Level;
             BlockDefinitionsArgs args = new()
             {
                 global = global,
@@ -190,7 +190,7 @@ namespace MCGalaxy.Commands.CPE
         static bool DoCopy(Player p, BlockDefinitionsArgs args, bool keepOrder,
                            BlockDefinition srcDef, ushort src, ushort dst)
         {
-            if (srcDef == null && src < Block.CPE_COUNT)
+            if (srcDef == null && src < 66)
             {
                 srcDef = DefaultSet.MakeCustomBlock(src);
             }
@@ -284,10 +284,7 @@ namespace MCGalaxy.Commands.CPE
             Paginator.Output(p, defsInScope, PrintBlock,
                              args.cmd.Substring(1) + " list", "custom blocks", modifier);
         }
-        static void PrintBlock(Player p, BlockDefinition def)
-        {
-            p.Message("Custom block &T{0} &Shas name &T{1}", def.RawID, def.Name);
-        }
+        static void PrintBlock(Player p, BlockDefinition def) => p.Message("Custom block &T{0} &Shas name &T{1}", def.RawID, def.Name);
         static void RemoveHandler(Player p, string[] parts, BlockDefinitionsArgs args)
         {
             if (parts.Length <= 1) { Help(p, args.cmd); return; }
@@ -443,7 +440,7 @@ namespace MCGalaxy.Commands.CPE
         static bool DoEdit(Player p, string[] parts, BlockDefinitionsArgs args, ushort block)
         {
             BlockDefinition def = args.defs[block], globalDef = BlockDefinition.GlobalDefs[block];
-            if (def == null && block < Block.CPE_COUNT)
+            if (def == null && block < 66)
             {
                 def = DefaultSet.MakeCustomBlock(block);
                 UpdateBlock(p, args, def);
@@ -672,7 +669,7 @@ namespace MCGalaxy.Commands.CPE
             // Start from opposite ends to avoid overlap
             if (args.global)
             {
-                for (ushort b = Block.CPE_COUNT; b <= Block.MaxRaw; b++)
+                for (ushort b = 66; b <= 767; b++)
                 {
                     ushort block = Block.FromRaw(b);
                     if (defs[block] == null) return block;
@@ -680,7 +677,7 @@ namespace MCGalaxy.Commands.CPE
             }
             else
             {
-                for (ushort b = Block.MaxRaw; b >= Block.CPE_COUNT; b--)
+                for (ushort b = 767; b >= 66; b--)
                 {
                     ushort block = Block.FromRaw(b);
                     if (defs[block] == null) return block;
@@ -782,10 +779,7 @@ namespace MCGalaxy.Commands.CPE
             scope[block] = BlockProps.MakeDefault(scope, lvl, block);
             BlockProps.ApplyChanges(scope, lvl, block, false);
         }
-        static int GetStep(Player p, BlockDefinitionsArgs args)
-        {
-            return args.global ? p.gbStep : p.lbStep;
-        }
+        static int GetStep(Player p, BlockDefinitionsArgs args) => args.global ? p.gbStep : p.lbStep;
         static void SetBD(Player p, BlockDefinitionsArgs args, BlockDefinition def)
         {
             if (args.global) p.gbBlock = def;
@@ -796,10 +790,7 @@ namespace MCGalaxy.Commands.CPE
             if (args.global) p.gbStep = step;
             else p.lbStep = step;
         }
-        static bool ExistsInScope(BlockDefinition def, ushort block, BlockDefinitionsArgs args)
-        {
-            return def != null && (args.global || def != BlockDefinition.GlobalDefs[block]);
-        }
+        static bool ExistsInScope(BlockDefinition def, ushort block, BlockDefinitionsArgs args) => def != null && (args.global || def != BlockDefinition.GlobalDefs[block]);
         static void SendStepHelp(Player p, BlockDefinitionsArgs args)
         {
             int step = GetStep(p, args);
@@ -941,41 +932,23 @@ namespace MCGalaxy.Commands.CPE
     }
     public sealed class CmdGlobalBlock : Command2
     {
-        public override string name { get { return "GlobalBlock"; } }
-        public override string shortcut { get { return "gb"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-        public override void Use(Player p, string message, CommandData data)
-        {
-            CustomBlockCommand.Execute(p, message, data, true, "/gb");
-        }
-        public override void Help(Player p)
-        {
-            CustomBlockCommand.Help(p, "/gb");
-        }
-        public override void Help(Player p, string message)
-        {
-            CustomBlockCommand.Help(p, "/gb", message);
-        }
+        public override string Name => "GlobalBlock";
+        public override string Shortcut => "gb";
+        public override string Type => CommandTypes.Building;
+        public override sbyte DefaultRank => 100;
+        public override void Use(Player p, string message, CommandData data) => CustomBlockCommand.Execute(p, message, data, true, "/gb");
+        public override void Help(Player p) => CustomBlockCommand.Help(p, "/gb");
+        public override void Help(Player p, string message) => CustomBlockCommand.Help(p, "/gb", message);
     }
     public sealed class CmdLevelBlock : Command2
     {
-        public override string name { get { return "LevelBlock"; } }
-        public override string shortcut { get { return "lb"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-        public override bool SuperUseable { get { return false; } }
-        public override void Use(Player p, string message, CommandData data)
-        {
-            CustomBlockCommand.Execute(p, message, data, false, "/lb");
-        }
-        public override void Help(Player p)
-        {
-            CustomBlockCommand.Help(p, "/lb");
-        }
-        public override void Help(Player p, string message)
-        {
-            CustomBlockCommand.Help(p, "/lb", message);
-        }
+        public override string Name => "LevelBlock";
+        public override string Shortcut => "lb";
+        public override string Type => CommandTypes.Building;
+        public override sbyte DefaultRank => 100;
+        public override bool SuperUseable => false;
+        public override void Use(Player p, string message, CommandData data) => CustomBlockCommand.Execute(p, message, data, false, "/lb");
+        public override void Help(Player p) => CustomBlockCommand.Help(p, "/lb");
+        public override void Help(Player p, string message) => CustomBlockCommand.Help(p, "/lb", message);
     }
 }

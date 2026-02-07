@@ -23,9 +23,9 @@ namespace MCGalaxy.Commands
     {
         public string CmdName, Desc = "";
         public int Num;
-        public override string ItemName { get { return CmdName + ":" + Num; } }
+        public override string ItemName => CmdName + ":" + Num;
         static readonly List<CommandExtraPerms> list = new();
-        public CommandExtraPerms(string cmd, int num, string desc, LevelPermission min) : base(min)
+        public CommandExtraPerms(string cmd, int num, string desc, sbyte min) : base(min)
         {
             CmdName = cmd; Num = num; Desc = desc;
         }
@@ -52,7 +52,7 @@ namespace MCGalaxy.Commands
             return all;
         }
         /// <summary> Gets or adds the nth extra permission for the given command. </summary>
-        public static CommandExtraPerms GetOrAdd(string cmd, int num, LevelPermission min)
+        public static CommandExtraPerms GetOrAdd(string cmd, int num, sbyte min)
         {
             CommandExtraPerms perms = Find(cmd, num);
             if (perms != null) return perms;
@@ -60,10 +60,7 @@ namespace MCGalaxy.Commands
             list.Add(perms);
             return perms;
         }
-        public void MessageCannotUse(Player p)
-        {
-            p.Message("Only {0} {1}", Describe(), Desc);
-        }
+        public void MessageCannotUse(Player p) => p.Message("Only {0} {1}", Describe(), Desc);
         static readonly object ioLock = new();
         /// <summary> Saves list of extra permissions to disc. </summary>
         public static void Save()
@@ -109,12 +106,12 @@ namespace MCGalaxy.Commands
                 line.Replace(" ", "").FixedSplit(args, ':');
                 try
                 {
-                    LevelPermission min;
-                    List<LevelPermission> allowed, disallowed;
+                    sbyte min;
+                    List<sbyte> allowed, disallowed;
                     // Old format - Name:Num : Lowest : Description
                     if (IsDescription(args[3]))
                     {
-                        min = (LevelPermission)NumberUtils.ParseInt32(args[2]);
+                        min = (sbyte)NumberUtils.ParseInt32(args[2]);
                         allowed = null; disallowed = null;
                     }
                     else
@@ -126,7 +123,7 @@ namespace MCGalaxy.Commands
                 }
                 catch (Exception ex)
                 {
-                    Logger.Log(LogType.Warning, "Hit an error on the extra command perms " + line);
+                    Logger.Log(6, "Hit an error on the extra command perms " + line);
                     Logger.LogError(ex);
                 }
             }

@@ -47,15 +47,9 @@ namespace MCGalaxy
         public const string ImportsDir = "extra/import/";
         public const string WAYPOINTS_DIR = "extra/Waypoints/";
         /// <summary> Relative path of the file containing a map's bots. </summary>
-        public static string BotsPath(string map)
-        {
-            return "extra/bots/" + map + ".json";
-        }
+        public static string BotsPath(string map) => "extra/bots/" + map + ".json";
         /// <summary> Relative path of the file containing a map's block definitions. </summary>
-        public static string MapBlockDefs(string map)
-        {
-            return "blockdefs/lvl_" + map + ".json";
-        }
+        public static string MapBlockDefs(string map) => "blockdefs/lvl_" + map + ".json";
         /// <summary> Relative path of a deleted level's map file. </summary>
         public static string DeletedMapFile(string level)
         {
@@ -103,9 +97,6 @@ namespace MCGalaxy
             }
         }
         /// <summary> Relative path of a block properties file. </summary>
-        public static string BlockPropsPath(string group)
-        {
-            return "blockprops/" + group + ".txt";
-        }
+        public static string BlockPropsPath(string group) => "blockprops/" + group + ".txt";
     }
 }

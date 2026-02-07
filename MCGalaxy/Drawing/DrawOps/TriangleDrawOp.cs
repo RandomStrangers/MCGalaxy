@@ -19,7 +19,7 @@ namespace MCGalaxy.Drawing.Ops
 {
     public class TriangleDrawOp : DrawOp
     {
-        public override string Name { get { return "Triangle"; } }
+        public override string Name => "Triangle";
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
             // calculate area of triangle using Heron's Formula

@@ -85,10 +85,7 @@ namespace Sharkbite.Irc
         public bool Connected;
         /// <summary> Respond to IRC keep-alives. </summary>
         /// <param name="message">The message that should be echoed back</param>
-        void KeepAlive(string message)
-        {
-            SendPong(message);
-        }
+        void KeepAlive(string message) => SendPong(message);
         void MyNickChanged(string user, string newNick)
         {
             string nick = ExtractNick(user);
@@ -209,17 +206,11 @@ namespace Sharkbite.Irc
         /// <summary> Test if the message contains CTCP commands. </summary>
         /// <param name="message">The raw message from the IRC server</param>
         /// <returns>True if this is a Ctcp request or reply.</returns>
-        static bool IsCtcpMessage(string message)
-        {
-            return ctcpRegex.IsMatch(message);
-        }
+        static bool IsCtcpMessage(string message) => ctcpRegex.IsMatch(message);
         /// <summary> Test if the message contains a DCC request. </summary>
         /// <param name="message">The raw message from the IRC server</param>
         /// <returns>True if this is a DCC request.</returns>
-        static bool IsDccRequest(string message)
-        {
-            return dccMatchRegex.IsMatch(message);
-        }
+        static bool IsDccRequest(string message) => dccMatchRegex.IsMatch(message);
         #region Sending
         /// <summary> Send a message to the IRC server. </summary>
         void SendCommand(string command)
@@ -260,11 +251,9 @@ namespace Sharkbite.Irc
             }
             return parts;
         }
-        void SendUser()
-        {
+        void SendUser() =>
             // 4 = IRC mode mask (invisible and not receive wallops)
             SendCommand("USER " + UserName + " 4 * :" + RealName);
-        }
         void SendQuit(string reason)
         {
             if (IsEmpty(reason))
@@ -273,14 +262,8 @@ namespace Sharkbite.Irc
             }
             SendCommand("QUIT :" + reason);
         }
-        void SendPong(string message)
-        {
-            SendCommand("PONG " + message);
-        }
-        void SendPass(string password)
-        {
-            SendCommand("PASS " + password);
-        }
+        void SendPong(string message) => SendCommand("PONG " + message);
+        void SendPass(string password) => SendCommand("PASS " + password);
         public void SendJoin(string channel)
         {
             if (IsEmpty(channel))
@@ -623,10 +606,7 @@ namespace Sharkbite.Irc
         /// <summary>
         /// Strip off the trailing CTCP quote.
         /// </summary>
-        static string RemoveTrailingQuote(string text)
-        {
-            return text.Substring(0, text.Length - 1);
-        }
+        static string RemoveTrailingQuote(string text) => text.Substring(0, text.Length - 1);
         #endregion
         #region Utilities
         public static string ExtractNick(string fullUserName)
@@ -668,14 +648,8 @@ namespace Sharkbite.Irc
             }
             return nickRegex.IsMatch(nick);
         }
-        static bool IsEmpty(string str)
-        {
-            return str == null || str.Trim().Length == 0;
-        }
-        static bool HasSpace(string str)
-        {
-            return str.IndexOf(' ') != -1;
-        }
+        static bool IsEmpty(string str) => str == null || str.Trim().Length == 0;
+        static bool HasSpace(string str) => str.IndexOf(' ') != -1;
         #endregion
     }
 }

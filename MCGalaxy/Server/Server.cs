@@ -21,6 +21,7 @@ using MCGalaxy.Eco;
 using MCGalaxy.Events.LevelEvents;
 using MCGalaxy.Events.ServerEvents;
 using MCGalaxy.Games;
+using MCGalaxy.Generator;
 using MCGalaxy.Modules.Awards;
 using MCGalaxy.Network;
 using MCGalaxy.Platform;
@@ -32,40 +33,25 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Threading;
 namespace MCGalaxy
 {
     public sealed partial class Server
     {
-        public Server()
-        {
-            s = this;
-        }
-        //True = cancel event
-        //False = don't cancel event
-        public static bool Check(string cmd, string message)
-        {
-            ConsoleCommand?.Invoke(cmd, message);
-            return cancelcommand;
-        }
         public static void CheckFile(string file)
         {
             if (File.Exists(file))
             {
                 return;
             }
-            Logger.Log(LogType.SystemActivity, file + " doesn't exist, Downloading..");
+            Logger.Log(1, file + " doesn't exist, Downloading..");
             try
             {
-                using (WebClient client = HttpUtil.CreateWebClient())
-                {
-                    client.DownloadFile("https://raw.githubusercontent.com/ClassiCube/MCGalaxy/master/" + file, file);
-                }
+                new WebClient().DownloadFile("https://raw.githubusercontent.com/ClassiCube/MCGalaxy/master/" + file, file);
                 if (File.Exists(file))
                 {
-                    Logger.Log(LogType.SystemActivity, file + " download succesful!");
+                    Logger.Log(1, file + " download succesful!");
                 }
             }
             catch (Exception ex)
@@ -79,22 +65,20 @@ namespace MCGalaxy
             serverConfig = ConfigElement.GetAll(typeof(ServerConfig));
             levelConfig = ConfigElement.GetAll(typeof(LevelConfig));
             zoneConfig = ConfigElement.GetAll(typeof(ZoneConfig));
-            DotNetBackend.Init();
-            IOperatingSystem.DetectOS().Init();
+            IOperatingSystem.DetectOS();
             StartTime = DateTime.UtcNow;
-            Logger.Log(LogType.SystemActivity, "Starting Server");
+            Logger.Log(1, "Starting Server");
             ServicePointManager.Expect100Continue = false;
             ForceEnableTLS();
             ExtraAuthenticator.SetActive(new DefaultPassAuthenticator());
             SQLiteBackend.Instance.LoadDependencies();
-#if !MCG_STANDALONE
             MySQLBackend.Instance.LoadDependencies();
-#endif
             EnsureFilesExist();
             IScripting.Init();
             LoadAllSettings(true);
             InitDatabase();
             Economy.LoadDatabase();
+            MapGen.Init();
             Background.QueueOnce(LoadMainLevel);
             Background.QueueOnce(LoadAllPlugins);
             Background.QueueOnce(LoadAutoloadMaps);
@@ -130,7 +114,6 @@ namespace MCGalaxy
         }
         static void EnsureFilesExist()
         {
-            FileIO.TryDeleteDirectory("properties", true);
             EnsureDirectoryExists("props");
             EnsureDirectoryExists("levels");
             EnsureDirectoryExists("bots");
@@ -158,12 +141,7 @@ namespace MCGalaxy
                 Logger.LogError("Creating directory " + dir, ex);
             }
         }
-        public static void LoadAllSettings()
-        {
-            LoadAllSettings(false);
-        }
-        // TODO rethink this
-        static void LoadAllSettings(bool commands)
+        public static void LoadAllSettings(bool commands = false)
         {
             Colors.Load();
             Alias.LoadCustom();
@@ -214,7 +192,7 @@ namespace MCGalaxy
         {
             try
             {
-                Logger.Log(LogType.SystemActivity, "Server shutting down ({0})", msg);
+                Logger.Log(1, "Server shutting down ({0})", msg);
             }
             catch
             {
@@ -239,7 +217,7 @@ namespace MCGalaxy
                 INetSocket[] pending = INetSocket.pending.Items;
                 foreach (INetSocket p in pending)
                 {
-                    p.Send(kick, SendFlags.None);
+                    p.Send(kick, 0x00);
                 }
             }
             catch (Exception ex)
@@ -253,7 +231,6 @@ namespace MCGalaxy
                 string autoload = SaveAllLevels();
                 if (SetupFinished && !Config.AutoLoadMaps)
                 {
-                    //File.WriteAllText("text/autoload.txt", autoload);
                     FileIO.TryWriteAllText("text/autoload.txt", autoload);
                 }
             }
@@ -263,7 +240,7 @@ namespace MCGalaxy
             }
             try
             {
-                Logger.Log(LogType.SystemActivity, "Server shutdown completed");
+                Logger.Log(1, "Server shutdown completed");
             }
             catch
             {
@@ -290,38 +267,19 @@ namespace MCGalaxy
             {
                 if (!lvl.SaveChanges)
                 {
-                    Logger.Log(LogType.SystemActivity, "Skipping save for level {0}", lvl.ColoredName);
+                    Logger.Log(1, "Skipping save for level {0}", lvl.ColoredName);
                     continue;
                 }
-                autoload = autoload + lvl.name + "=" + lvl.physics + Environment.NewLine;
+                autoload = autoload + lvl.name + "=" + lvl.LevelPhysics + Environment.NewLine;
                 lvl.Save();
                 lvl.SaveBlockDBChanges();
             }
             return autoload;
         }
-        /// <summary> Returns the full path to the server core DLL </summary>
-        public static string GetServerDLLPath()
-        {
-#if MCG_STANDALONE
-            return GetRuntimeExePath();
-#else
-            return Assembly.GetExecutingAssembly().Location;
-#endif
-        }
         /// <summary> Returns the full path to the server executable </summary>
-        public static string GetServerExePath()
-        {
-#if MCG_STANDALONE
-            return GetRuntimeExePath();
-#else
-            return RestartPath;
-#endif
-        }
+        public static string GetPath() => RestartPath;
         /// <summary> Returns the full path to the runtime executable </summary>
-        public static string GetRuntimeExePath()
-        {
-            return Process.GetCurrentProcess().MainModule.FileName;
-        }
+        public static string GetRuntimeExePath() => Process.GetCurrentProcess().MainModule.FileName;
         static bool checkedOnMono, runningOnMono;
         public static bool RunningOnMono()
         {
@@ -332,10 +290,6 @@ namespace MCGalaxy
             }
             return runningOnMono;
         }
-        public static void UpdateUrl(string url)
-        {
-            OnURLChange?.Invoke(url);
-        }
         static void RandomMessage(SchedulerTask task)
         {
             if (PlayerInfo.Online.Count > 0 && announcements.Length > 0)
@@ -343,15 +297,10 @@ namespace MCGalaxy
                 Chat.MessageGlobal(announcements[new Random().Next(0, announcements.Length)]);
             }
         }
-        internal static void SettingsUpdate()
-        {
-            OnSettingsUpdate?.Invoke();
-        }
         public static bool SetMainLevel(string map)
         {
             OnMainLevelChangingEvent.Call(ref map);
-            string main = mainLevel != null ? mainLevel.name : Config.MainLevel;
-            if (map.CaselessEq(main))
+            if (map.CaselessEq(mainLevel != null ? mainLevel.name : Config.MainLevel))
             {
                 return false;
             }
@@ -381,7 +330,7 @@ namespace MCGalaxy
             {
                 return;
             }
-            Logger.Log(LogType.BackgroundActivity, "GC performed in {0:F2} ms (tracking {1:F2} KB, freed {2:F2} KB)",
+            Logger.Log(0, "GC performed in {0:F2} ms (tracking {1:F2} KB, freed {2:F2} KB)",
                        sw.Elapsed.TotalMilliseconds, end / 1024.0, deltaKB);
         }
         public static void StartThread(out Thread thread, string name, ThreadStart threadFunc)
@@ -397,11 +346,8 @@ namespace MCGalaxy
             thread.Start();
         }
         // only want ASCII alphanumerical characters for salt
-        static bool AcceptableSaltChar(char c)
-        {
-            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+        static bool AcceptableSaltChar(char c) => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
                 || (c >= '0' && c <= '9');
-        }
         /// <summary> Generates a random salt that is used for calculating mppasses. </summary>
         public static string GenerateSalt()
         {
@@ -417,17 +363,11 @@ namespace MCGalaxy
                 }
                 str[i] = (char)one[0]; i++;
             }
-            return new string(str);
+            return new(str);
         }
-#if MCG_DOTNET
-#pragma warning disable SYSLIB0021
-#endif
         static readonly System.Text.ASCIIEncoding enc = new();
         static readonly MD5CryptoServiceProvider md5 = new();
         static readonly object md5Lock = new();
-#if MCG_DOTNET
-#pragma warning restore SYSLIB0021
-#endif
         /// <summary> Calculates mppass (verification token) for the given username. </summary>
         public static string CalcMppass(string name, string salt)
         {

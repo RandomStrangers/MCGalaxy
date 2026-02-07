@@ -18,11 +18,11 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdTree : DrawCmd
     {
-        public override string name { get { return "Tree"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        protected override int MarksCount { get { return 1; } }
-        protected override string SelectionType { get { return "location"; } }
-        protected override string PlaceMessage { get { return "Select where you wish your tree to grow"; } }
+        public override string Name => "Tree";
+        public override string Type => CommandTypes.Building;
+        protected override int MarksCount => 1;
+        protected override string SelectionType => "location";
+        protected override string PlaceMessage => "Select where you wish your tree to grow";
         protected override DrawOp GetDrawOp(DrawArgs dArgs)
         {
             string[] args = dArgs.Message.SplitSpaces(3);

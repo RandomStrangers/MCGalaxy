@@ -19,10 +19,10 @@ namespace MCGalaxy.Commands.Misc
 {
     public sealed class CmdRide : Command2
     {
-        public override string name { get { return "Ride"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override bool museumUsable { get { return false; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Ride";
+        public override string Type => CommandTypes.Other;
+        public override bool MuseumUsable => false;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             p.onTrain = !p.onTrain;
@@ -50,7 +50,7 @@ namespace MCGalaxy.Commands.Misc
                     for (int dz = -1; dz <= 1; dz++)
                     {
                         ushort xx = (ushort)(P.X + dx), yy = (ushort)(P.Y + dy), zz = (ushort)(P.Z + dz);
-                        if (p.level.GetBlock(xx, yy, zz) != Block.Train) continue;
+                        if (p.Level.GetBlock(xx, yy, zz) != Block.Train) continue;
                         p.trainGrab = true;
                         Vec3F32 dir = new(dx, 0, dz);
                         DirUtils.GetYawPitch(dir, out byte yaw, out byte pitch);

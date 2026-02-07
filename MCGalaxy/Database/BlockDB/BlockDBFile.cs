@@ -25,9 +25,9 @@ namespace MCGalaxy.DB
         public const int HeaderEntries = 1;
         public const int BulkEntries = 4096;
         public static BlockDBFile V1 = new BlockDBFile_V1();
-        public static string FilePath(string map) { return "blockdb/" + map + ".cbdb"; }
-        public static string DumpPath(string map) { return "blockdb/" + map + ".dump"; }
-        public static string TempPath(string map) { return "blockdb/" + map + ".temp"; }
+        public static string FilePath(string map) => "blockdb/" + map + ".cbdb";
+        public static string DumpPath(string map) => "blockdb/" + map + ".dump";
+        public static string TempPath(string map) => "blockdb/" + map + ".temp";
         public static void WriteHeader(Stream s, Vec3U16 dims)
         {
             byte[] header = new byte[EntrySize * HeaderEntries * 4];
@@ -83,7 +83,7 @@ namespace MCGalaxy.DB
         }
         public static void ResizeBackingFile(BlockDB db, string path)
         {
-            Logger.Log(LogType.BackgroundActivity, "Resizing BlockDB for " + db.MapName);
+            Logger.Log(0, "Resizing BlockDB for " + db.MapName);
             string tempPath = TempPath(db.MapName);
             using (Stream src = FileIO.TryOpenRead(path), dst = File.Create(tempPath))
             {
@@ -174,10 +174,7 @@ namespace MCGalaxy.DB
             }
             return false;
         }
-        static ushort ReadU16(byte[] array, int offset)
-        {
-            return (ushort)(array[offset] | array[offset + 1] << 8);
-        }
+        static ushort ReadU16(byte[] array, int offset) => (ushort)(array[offset] | array[offset + 1] << 8);
         static void WriteU16(ushort value, byte[] array, int index)
         {
             array[index++] = (byte)value;

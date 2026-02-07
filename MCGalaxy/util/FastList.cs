@@ -20,14 +20,8 @@ namespace MCGalaxy.Util
     {
         public T[] Items;
         public int Count;
-        public FastList()
-        {
-            Items = new T[4];
-        }
-        public FastList(int capacity)
-        {
-            Items = new T[capacity];
-        }
+        public FastList() => Items = new T[4];
+        public FastList(int capacity) => Items = new T[capacity];
         public void Add(T item)
         {
             if (Count == Items.Length)

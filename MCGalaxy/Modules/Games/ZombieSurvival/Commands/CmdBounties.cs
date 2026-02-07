@@ -16,8 +16,8 @@ namespace MCGalaxy.Modules.Games.ZS
 {
     sealed class CmdBounties : Command2
     {
-        public override string name { get { return "Bounties"; } }
-        public override string type { get { return CommandTypes.Games; } }
+        public override string Name => "Bounties";
+        public override string Type => CommandTypes.Games;
         public override void Use(Player p, string message, CommandData data)
         {
             BountyData[] bounties = BountyData.Bounties.Items;

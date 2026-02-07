@@ -16,10 +16,10 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdBanEdit : Command2
     {
-        public override string name { get { return "BanEdit"; } }
-        public override string shortcut { get { return "be"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "BanEdit";
+        public override string Shortcut => "be";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 80;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(2);

@@ -20,7 +20,7 @@ namespace MCGalaxy.Drawing.Ops
 {
     public class RedoSelfDrawOp : DrawOp
     {
-        public override string Name { get { return "RedoSelf"; } }
+        public override string Name => "RedoSelf";
         /// <summary> Point in time that the /undo should go backwards up to. </summary>
         public DateTime Start = DateTime.MinValue;
         /// <summary> Point in time that the /undo should start updating blocks. </summary>
@@ -30,7 +30,7 @@ namespace MCGalaxy.Drawing.Ops
             Flags = BlockDBFlags.RedoSelf;
             AffectedByTransform = false;
         }
-        public override long BlocksAffected(Level lvl, Vec3S32[] marks) { return -1; }
+        public override long BlocksAffected(Level lvl, Vec3S32[] marks) => -1;
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             int[] ids = NameConverter.FindIds(Player.name);

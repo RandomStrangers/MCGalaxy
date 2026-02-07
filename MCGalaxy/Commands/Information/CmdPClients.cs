@@ -18,10 +18,10 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdPClients : Command2
     {
-        public override string name { get { return "PClients"; } }
-        public override string shortcut { get { return "Clients"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override bool UseableWhenFrozen { get { return true; } }
+        public override string Name => "PClients";
+        public override string Shortcut => "Clients";
+        public override string Type => CommandTypes.Information;
+        public override bool UseableWhenFrozen => true;
         public override void Use(Player p, string message, CommandData data)
         {
             Dictionary<string, List<Player>> clients = new();

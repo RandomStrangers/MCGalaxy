@@ -18,12 +18,12 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdRankInfo : Command2
     {
-        public override string name { get { return "RankInfo"; } }
-        public override string shortcut { get { return "ri"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool UseableWhenFrozen { get { return true; } }
-        public override bool MessageBlockRestricted { get { return false; } }
+        public override string Name => "RankInfo";
+        public override string Shortcut => "ri";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 50;
+        public override bool UseableWhenFrozen => true;
+        public override bool MessageBlockRestricted => false;
         public override void Use(Player p, string name, CommandData data)
         {
             if (CheckSuper(p, name, "player name")) return;

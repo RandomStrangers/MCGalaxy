@@ -12,15 +12,16 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using System.Collections.Generic;
 using System.Text;
 using MCGalaxy.Commands;
-namespace MCGalaxy {
+namespace MCGalaxy
+{
     /// <summary> Encapuslates access permissions (visit or build) for a level/zone. </summary>
-    public abstract class AccessController {
-        public abstract LevelPermission Min { get; set; }
-        public abstract LevelPermission Max { get; set; }
+    public abstract class AccessController
+    {
+        public abstract sbyte Min { get; set; }
+        public abstract sbyte Max { get; set; }
         /// <summary> List of players who are always allowed to access. </summary>
         public abstract List<string> Whitelisted { get; }
         /// <summary> List of players who are never allowd to access. </summary>
@@ -32,61 +33,63 @@ namespace MCGalaxy {
         protected abstract string MaxCmd { get; }
         /// <summary> Replaces this instance's access permissions
         /// with a copy of the source's access permissions </summary>
-        public void CloneAccess(AccessController source)  {
+        public void CloneAccess(AccessController source)
+        {
             Min = source.Min;
             Max = source.Max;
-            // TODO this sould be atomic
-            Whitelisted.Clear(); Whitelisted.AddRange(source.Whitelisted);
-            Blacklisted.Clear(); Blacklisted.AddRange(source.Blacklisted);
+            Whitelisted.Clear(); 
+            Whitelisted.AddRange(source.Whitelisted);
+            Blacklisted.Clear();
+            Blacklisted.AddRange(source.Blacklisted);
         }
-        public bool CheckAllowed(Player p) {
-            AccessResult access = Check(p.name, p.Rank);
-            return access == AccessResult.Accepted || access == AccessResult.Whitelisted;
-        }
-        public AccessResult Check(string name, LevelPermission rank) {
-            if (Blacklisted.CaselessContains(name)) return AccessResult.Blacklisted;
-            if (Whitelisted.CaselessContains(name)) return AccessResult.Whitelisted;
-            if (rank < Min) return AccessResult.BelowMinRank;
-            if (rank > Max && MaxCmd != null && !CommandExtraPerms.Find(MaxCmd, 1).UsableBy(rank)) {
-                return AccessResult.AboveMaxRank;
+        public bool CheckAllowed(Player p) => Check(p.name, p.Rank) == 2 || Check(p.name, p.Rank) == 0;
+        public int Check(string name, sbyte rank)
+        {
+            if (Blacklisted.CaselessContains(name)) return 1;
+            if (Whitelisted.CaselessContains(name)) return 0;
+            if (rank < Min) return 3;
+            if (rank > Max && MaxCmd != null && !CommandExtraPerms.Find(MaxCmd, 1).UsableBy(rank))
+            {
+                return 4;
             }
-            return AccessResult.Accepted;
+            return 2;
         }
-        public bool CheckDetailed(Player p) { return CheckDetailed(p, p.Rank); }
-        public bool CheckDetailed(Player p, LevelPermission plRank) {
-            AccessResult access = Check(p.name, plRank);
-            if (access == AccessResult.Accepted) return true;
-            if (access == AccessResult.Whitelisted) return true;
-            if (access == AccessResult.Blacklisted) {
+        public bool CheckDetailed(Player p) => CheckDetailed(p, p.Rank);
+        public bool CheckDetailed(Player p, sbyte plRank)
+        {
+            int access = Check(p.name, plRank);
+            if (access == 2) return true;
+            if (access == 0) return true;
+            if (access == 1)
+            {
                 p.Message("You are blacklisted from {0} {1}", ActionIng, ColoredName);
                 return false;
             }
             string whitelist = "";
-            if (Whitelisted.Count > 0) {
+            if (Whitelisted.Count > 0)
+            {
                 whitelist = "(and " + Whitelisted.Join(pl => p.FormatNick(pl)) + "&S) ";
             }
-            if (access == AccessResult.BelowMinRank) {
+            if (access == 3)
+            {
                 p.Message("Only {2}&S+ {3}may {0} {1}",
                                Action, ColoredName, Group.GetColoredName(Min), whitelist);
-            } else if (access == AccessResult.AboveMaxRank) {
+            }
+            else if (access == 4)
+            {
                 p.Message("Only {2} &Sand below {3}may {0} {1}",
                                Action, ColoredName, Group.GetColoredName(Max), whitelist);
             }
             return false;
         }
         /// <summary>
-        /// For binary compatibility with plugins
+        /// Returns true if shortening occured (more than 5 in a list)
         /// </summary>
-        public void Describe(Player p, StringBuilder perms) {
-            Describe(p, perms, false);
-        }
-        const int DESCRIBE_LIMIT = 5;
-        /// <summary>
-        /// Returns true if shortening occured (more than <see cref="DESCRIBE_LIMIT"/> in a list)
-        /// </summary>
-        public bool Describe(Player p, StringBuilder perms, bool shorten) {
+        public bool Describe(Player p, StringBuilder perms, bool shorten)
+        {
             perms.Append(Group.GetColoredName(Min) + "&S+");
-            if (Max < LevelPermission.Owner) {
+            if (Max < 120)
+            {
                 perms.Append(" up to " + Group.GetColoredName(Max));
             }
             bool shortened = false;
@@ -99,94 +102,113 @@ namespace MCGalaxy {
             perms.Append("&S)");
             return shortened;
         }
-        static void DescribeList(Player p, StringBuilder perms, List<string> list, string format, bool shorten, ref bool shortened) {
+        static void DescribeList(Player p, StringBuilder perms, List<string> list, string format, bool shorten, ref bool shortened)
+        {
             int displayCount = list.Count;
-            if (shorten && list.Count > DESCRIBE_LIMIT) displayCount = DESCRIBE_LIMIT;
-            for (int i = 0; i < displayCount; i++) {
+            if (shorten && list.Count > 5) displayCount = 5;
+            for (int i = 0; i < displayCount; i++)
+            {
                 string name = list[i];
                 perms.Append(string.Format(format, p.FormatNick(name)));
             }
-            if (list.Count > displayCount) {
+            if (list.Count > displayCount)
+            {
                 shortened = true;
                 //perms.Append(" &Sand " + (list.Count - displayCount) + " more");
                 perms.Append(string.Format(format, "&Sand " + (list.Count - displayCount) + " more"));
             }
         }
-        public bool SetMin(Player p, LevelPermission plRank, Level lvl, Group grp) {
+        public bool SetMin(Player p, sbyte plRank, Level lvl, Group grp)
+        {
             if (!CheckRank(p, plRank, grp.Permission, false)) return false;
             Min = grp.Permission;
             OnPermissionChanged(p, lvl, grp, "Min ");
             return true;
         }
-        public bool SetMax(Player p, LevelPermission plRank, Level lvl, Group grp) {
+        public bool SetMax(Player p, sbyte plRank, Level lvl, Group grp)
+        {
             if (!CheckRank(p, plRank, grp.Permission, true)) return false;
             Max = grp.Permission;
             OnPermissionChanged(p, lvl, grp, "Max ");
             return true;
         }
-        public bool Whitelist(Player p, LevelPermission plRank, Level lvl, string target) {
+        public bool Whitelist(Player p, sbyte plRank, Level lvl, string target)
+        {
             if (!CheckList(p, plRank, target, true)) return false;
-            if (Whitelisted.CaselessContains(target)) {
+            if (Whitelisted.CaselessContains(target))
+            {
                 p.Message("{0} &Sis already whitelisted.", p.FormatNick(target));
                 return true;
             }
             bool removed = true;
-            if (!Blacklisted.CaselessRemove(target)) {
+            if (!Blacklisted.CaselessRemove(target))
+            {
                 Whitelisted.Add(target);
                 removed = false;
             }
             OnListChanged(p, lvl, target, true, removed);
             return true;
         }
-        public bool Blacklist(Player p, LevelPermission plRank, Level lvl, string target) {
+        public bool Blacklist(Player p, sbyte plRank, Level lvl, string target)
+        {
             if (!CheckList(p, plRank, target, false)) return false;
-            if (Blacklisted.CaselessContains(target)) {
+            if (Blacklisted.CaselessContains(target))
+            {
                 p.Message("{0} &Sis already blacklisted.", p.FormatNick(target));
                 return true;
             }
             bool removed = true;
-            if (!Whitelisted.CaselessRemove(target)) {
+            if (!Whitelisted.CaselessRemove(target))
+            {
                 Blacklisted.Add(target);
                 removed = false;
             }
             OnListChanged(p, lvl, target, false, removed);
             return true;
         }
-        public void OnPermissionChanged(Player p, Level lvl, Group grp, string type) {
-            string msg = type + Type + " rank changed to " + grp.ColoredName;
-            ApplyChanges(p, lvl, msg);
-        }
-        public void OnListChanged(Player p, Level lvl, string name, bool whitelist, bool removedFromOpposite) {
+        public void OnPermissionChanged(Player p, Level lvl, Group grp, string type) => ApplyChanges(p, lvl, type + Type + " rank changed to " + grp.ColoredName);
+        public void OnListChanged(Player p, Level lvl, string name, bool whitelist, bool removedFromOpposite)
+        {
             string msg = p.FormatNick(name);
-            if (removedFromOpposite) {
+            if (removedFromOpposite)
+            {
                 msg += " &Swas removed from the " + Type + (whitelist ? " blacklist" : " whitelist");
-            } else {
+            }
+            else
+            {
                 msg += " &Swas " + Type + (whitelist ? " whitelisted" : " blacklisted");
             }
             ApplyChanges(p, lvl, msg);
         }
         protected abstract void ApplyChanges(Player p, Level lvl, string msg);
-        bool CheckRank(Player p, LevelPermission plRank, LevelPermission perm, bool max) {
+        bool CheckRank(Player p, sbyte plRank, sbyte perm, bool max)
+        {
             string mode = max ? "max" : "min";
-            if (!CheckDetailed(p, plRank)) {
+            if (!CheckDetailed(p, plRank))
+            {
                 p.Message("&WHence you cannot change the {1} {0} rank.", Type, mode); return false;
             }
-            if (perm <= plRank || max && perm == LevelPermission.Nobody) return true;
+            if (perm <= plRank || max && perm == 120) return true;
             p.Message("&WYou cannot change the {1} {0} rank of {2} &Wto a rank higher than yours.",
                       Type, mode, ColoredName);
             return false;
         }
-        bool CheckList(Player p, LevelPermission plRank, string name, bool whitelist) {
-            if (!CheckDetailed(p, plRank)) {
+        bool CheckList(Player p, sbyte plRank, string name, bool whitelist)
+        {
+            if (!CheckDetailed(p, plRank))
+            {
                 string mode = whitelist ? "whitelist" : "blacklist";
                 p.Message("&WHence you cannot modify the {0} {1}.", Type, mode); return false;
             }
             Group group = PlayerInfo.GetGroup(name);
             if (group.Permission <= plRank) return true;
-            if (!whitelist) {
+            if (!whitelist)
+            {
                 p.Message("&WYou cannot blacklist players of a higher rank.");
                 return false;
-            } else if (Check(name, group.Permission) == AccessResult.Blacklisted) {
+            }
+            else if (Check(name, group.Permission) == 1)
+            {
                 p.Message("{0} &Sis blacklisted from {1} {2}&S.",
                           p.FormatNick(name), ActionIng, ColoredName);
                 return false;
@@ -195,76 +217,74 @@ namespace MCGalaxy {
         }
     }
     /// <summary> Encapuslates access permissions (visit or build) for a level. </summary>
-    public sealed class LevelAccessController : AccessController {
+    public sealed class LevelAccessController : AccessController
+    {
         readonly bool isVisit;
         readonly LevelConfig cfg;
         readonly string lvlName;
-        public LevelAccessController(LevelConfig cfg, string levelName, bool isVisit) {
+        public LevelAccessController(LevelConfig cfg, string levelName, bool isVisit)
+        {
             this.cfg = cfg;
-            this.lvlName = levelName;
+            lvlName = levelName;
             this.isVisit = isVisit;
         }
-        public override LevelPermission Min {
+        public override sbyte Min
+        {
             get { return isVisit ? cfg.VisitMin : cfg.BuildMin; }
-            set {
+            set
+            {
                 if (isVisit) cfg.VisitMin = value;
                 else cfg.BuildMin = value;
             }
         }
-        public override LevelPermission Max {
+        public override sbyte Max
+        {
             get { return isVisit ? cfg.VisitMax : cfg.BuildMax; }
-            set {
+            set
+            {
                 if (isVisit) cfg.VisitMax = value;
                 else cfg.BuildMax = value;
             }
         }
-        public override List<string> Whitelisted {
-            get { return isVisit ? cfg.VisitWhitelist : cfg.BuildWhitelist; }
-        }
-        public override List<string> Blacklisted {
-            get { return isVisit ? cfg.VisitBlacklist : cfg.BuildBlacklist; }
-        }
-        protected override string ColoredName { get { return cfg.Color + lvlName; } }
-        protected override string Action { get { return isVisit ? "go to" : "build in"; } }
-        protected override string ActionIng { get { return isVisit ? "going to" : "building in"; } }
-        protected override string Type { get { return isVisit ? "visit" : "build"; } }
-        protected override string MaxCmd { get { return isVisit ? "PerVisit" : "PerBuild"; } }
-        protected override void ApplyChanges(Player p, Level lvl, string msg) {
+        public override List<string> Whitelisted => isVisit ? cfg.VisitWhitelist : cfg.BuildWhitelist;
+        public override List<string> Blacklisted => isVisit ? cfg.VisitBlacklist : cfg.BuildBlacklist;
+        protected override string ColoredName => cfg.Color + lvlName;
+        protected override string Action => isVisit ? "go to" : "build in";
+        protected override string ActionIng => isVisit ? "going to" : "building in";
+        protected override string Type => isVisit ? "visit" : "build";
+        protected override string MaxCmd => isVisit ? "PerVisit" : "PerBuild";
+        protected override void ApplyChanges(Player p, Level lvl, string msg)
+        {
             Update(lvl);
-            Logger.Log(LogType.UserActivity, "{0} &Son {1}", msg, lvlName);
+            Logger.Log(3, "{0} &Son {1}", msg, lvlName);
             lvl?.Message(Chat.LocalPrefix + msg);
-            if (p != Player.Console && p.level != lvl) {
+            if (p != Player.Console && p.Level != lvl)
+            {
                 p.Message("{0} &Son {1} &Sby you.", msg, ColoredName);
             }
         }
-        void Update(Level lvl) {
+        void Update(Level lvl)
+        {
             cfg.SaveFor(lvlName);
-            if (lvl == null) return;
-            if (isVisit && lvl == Server.mainLevel) return;
-            Player[] players = PlayerInfo.Online.Items;
-            foreach (Player p in players)
+            if (lvl != null)
             {
-                if (p.level != lvl) continue;
-                bool allowed = CheckAllowed(p);
-                if (!isVisit) {
-                    p.AllowBuild = allowed;
-                } else if (!allowed) {
-                    p.Message("&WNo longer allowed to visit &S{0}", ColoredName);
-                    PlayerActions.ChangeMap(p, Server.mainLevel);
+                if (isVisit && lvl == Server.mainLevel) return;
+                Player[] players = PlayerInfo.Online.Items;
+                foreach (Player p in players)
+                {
+                    if (p.Level != lvl) continue;
+                    bool allowed = CheckAllowed(p);
+                    if (!isVisit)
+                    {
+                        p.AllowBuild = allowed;
+                    }
+                    else if (!allowed)
+                    {
+                        p.Message("&WNo longer allowed to visit &S{0}", ColoredName);
+                        PlayerActions.ChangeMap(p, Server.mainLevel);
+                    }
                 }
             }
         }
-    }
-    public enum AccessResult {
-        /// <summary> The player is whitelisted and always allowed. </summary>
-        Whitelisted,
-        /// <summary> The player is blacklisted and never allowed. </summary>
-        Blacklisted,
-        /// <summary> The player is allowed (by their rank) </summary>
-        Accepted,
-        /// <summary> The player's rank is below the minimum rank allowed. </summary>
-        BelowMinRank,
-        /// <summary> The player's rank is above the maximum rank allowed. </summary>
-        AboveMaxRank,
     }
 }

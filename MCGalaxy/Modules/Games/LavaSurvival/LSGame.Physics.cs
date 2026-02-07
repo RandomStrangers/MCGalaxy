@@ -49,36 +49,36 @@ namespace MCGalaxy.Modules.Games.LS
                     lvl.PlaceHandlers[block] = PlaceDoor; break;
             }
         }
-        ChangeResult PlaceSponge(Player p, ushort newBlock, ushort x, ushort y, ushort z)
+        int PlaceSponge(Player p, ushort _, ushort x, ushort y, ushort z)
         {
             LSData data = Get(p);
             bool placed = TryPlaceBlock(p, ref data.SpongesLeft, "Sponges", Block.Sponge, x, y, z);
-            if (!placed) return ChangeResult.Unchanged;
+            if (!placed) return 0;
             PhysInfo C = default;
             C.X = x; C.Y = y; C.Z = z;
             OtherPhysics.DoSponge(Map, ref C, !waterMode);
-            return ChangeResult.Modified;
+            return 2;
         }
-        ChangeResult PlaceWater(Player p, ushort newBlock, ushort x, ushort y, ushort z)
+        int PlaceWater(Player p, ushort _, ushort x, ushort y, ushort z)
         {
             LSData data = Get(p);
-            bool placed = TryPlaceBlock(p, ref data.WaterLeft, "Water blocks", Block.StillWater, x, y, z);
-            if (!placed) return ChangeResult.Unchanged;
-            return ChangeResult.Modified;
+            bool placed = TryPlaceBlock(p, ref data.WaterLeft, "Water blocks", 9, x, y, z);
+            if (!placed) return 0;
+            return 2;
         }
-        ChangeResult PlaceDoor(Player p, ushort newBlock, ushort x, ushort y, ushort z)
+        int PlaceDoor(Player p, ushort _, ushort x, ushort y, ushort z)
         {
             LSData data = Get(p);
-            bool placed = TryPlaceBlock(p, ref data.DoorsLeft, "Door blocks", Block.Door_Log, x, y, z);
-            if (!placed) return ChangeResult.Unchanged;
-            return ChangeResult.Modified;
+            bool placed = TryPlaceBlock(p, ref data.DoorsLeft, "Door blocks", 111, x, y, z);
+            if (!placed) return 0;
+            return 2;
         }
         void DoSponge(Level lvl, ref PhysInfo C)
         {
             if (C.Data.Value2++ < Config.SpongeLife) return;
             lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
             OtherPhysics.DoSpongeRemoved(lvl, C.Index, !waterMode);
-            C.Data.Data = PhysicsArgs.RemoveFromChecks;
+            C.Data.Data = 255;
         }
         void DoWater(Level lvl, ref PhysInfo C)
         {
@@ -95,16 +95,17 @@ namespace MCGalaxy.Modules.Games.LS
             }
             else
             { //was placed near sponge
-                lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
+                lvl.AddUpdate(C.Index, 0, default(PhysicsArgs));
             }
-            C.Data.Data = PhysicsArgs.RemoveFromChecks;
+            C.Data.Data = 255;
         }
         void DoLava(Level lvl, ref PhysInfo C)
         {
             ushort x = C.X, y = C.Y, z = C.Z;
             if (C.Data.Data < spreadDelay)
             {
-                C.Data.Data++; return;
+                C.Data.Data++; 
+                return;
             }
             if (!lvl.CheckSpongeWater(x, y, z))
             {
@@ -120,7 +121,7 @@ namespace MCGalaxy.Modules.Games.LS
             { //was placed near sponge
                 lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
             }
-            C.Data.Data = PhysicsArgs.RemoveFromChecks;
+            C.Data.Data = 255;
         }
         void SpreadWater(Level lvl, ushort x, ushort y, ushort z, ushort type)
         {
@@ -128,27 +129,27 @@ namespace MCGalaxy.Modules.Games.LS
             if (InSafeZone(x, y, z)) return;
             switch (block)
             {
-                case Block.Air:
+                case 0:
                     if (!lvl.CheckSpongeWater(x, y, z))
                     {
                         lvl.AddUpdate(index, type);
                     }
                     break;
-                case Block.Lava:
-                case Block.FastLava:
-                case Block.Deadly_ActiveLava:
+                case 10:
+                case 112:
+                case 194:
                     if (!lvl.CheckSpongeWater(x, y, z))
                     {
-                        lvl.AddUpdate(index, Block.Stone, default(PhysicsArgs));
+                        lvl.AddUpdate(index, 1, default(PhysicsArgs));
                     }
                     break;
-                case Block.Sand:
-                case Block.Gravel:
-                case Block.FloatWood:
+                case 12:
+                case 13:
+                case 110:
                     lvl.AddCheck(index); break;
-                case Block.CoalOre: // TODO
-                case Block.Water:
-                case Block.Deadly_ActiveWater:
+                case 16: // TODO
+                case 8:
+                case 193:
                     break;
                 default:
                     SpreadLiquid(lvl, x, y, z, index, block, true);
@@ -162,35 +163,35 @@ namespace MCGalaxy.Modules.Games.LS
             // in LS, sponge should stop lava too
             switch (block)
             {
-                case Block.Air:
+                case 0:
                     if (!lvl.CheckSpongeWater(x, y, z))
                     {
                         lvl.AddUpdate(index, type);
                     }
                     break;
-                case Block.Water:
-                case Block.Deadly_ActiveWater:
+                case 8:
+                case 193:
                     if (!lvl.CheckSpongeWater(x, y, z))
                     {
-                        lvl.AddUpdate(index, Block.Stone, default(PhysicsArgs));
+                        lvl.AddUpdate(index, 1, default(PhysicsArgs));
                     }
                     break;
-                case Block.Sand:
-                    if (lvl.physics > 1)
+                case 12:
+                    if (lvl.LevelPhysics > 1)
                     { //Adv physics changes sand to glass next to lava
-                        lvl.AddUpdate(index, Block.Glass, default(PhysicsArgs));
+                        lvl.AddUpdate(index, 20, default(PhysicsArgs));
                     }
                     else
                     {
                         lvl.AddCheck(index);
                     }
                     break;
-                case Block.Gravel:
+                case 13:
                     lvl.AddCheck(index); break;
-                case Block.CoalOre: // TODO
-                case Block.Lava:
-                case Block.FastLava:
-                case Block.Deadly_ActiveLava:
+                case 16: // TODO
+                case 10:
+                case 112:
+                case 194:
                     break;
                 default:
                     SpreadLiquid(lvl, x, y, z, index, block, false);
@@ -200,48 +201,50 @@ namespace MCGalaxy.Modules.Games.LS
         void SpreadLiquid(Level lvl, ushort x, ushort y, ushort z, int index,
                           ushort block, bool isWater)
         {
-            if (floodMode == LSFloodMode.Calm) return;
+            if (floodMode == 0) return;
             Random rand = lvl.physRandom;
             bool instaKills = isWater ?
                 lvl.Props[block].WaterKills : lvl.Props[block].LavaKills;
             // TODO need to kill less often
-            if (instaKills && floodMode > LSFloodMode.Disturbed)
+            if (instaKills && floodMode > 1)
             {
                 if (!lvl.CheckSpongeWater(x, y, z))
                 {
-                    lvl.AddUpdate(index, Block.Air, default(PhysicsArgs));
+                    lvl.AddUpdate(index, 0, default(PhysicsArgs));
                 }
             }
             else if (!lvl.Props[block].OPBlock && rand.Next(1, 101) <= burnChance)
             {
                 PhysicsArgs C = default;
-                C.Type1 = PhysicsArgs.Wait; C.Value1 = destroyDelay;
-                C.Type2 = PhysicsArgs.Dissipate; C.Value2 = dissipateChance;
-                lvl.AddUpdate(index, Block.CoalOre, C);
+                C.Type1 = 1; 
+                C.Value1 = destroyDelay;
+                C.Type2 = 3; 
+                C.Value2 = dissipateChance;
+                lvl.AddUpdate(index, 16, C);
             }
         }
         byte GetDestroyDelay()
         {
-            LSFloodMode mode = floodMode;
-            if (mode == LSFloodMode.Disturbed) return 200;
-            if (mode == LSFloodMode.Furious) return 100;
-            if (mode == LSFloodMode.Wild) return 50;
+            int mode = floodMode;
+            if (mode == 1) return 200;
+            if (mode == 2) return 100;
+            if (mode == 3) return 50;
             return 10;
         }
         byte GetDissipateChance()
         {
-            LSFloodMode mode = floodMode;
-            if (mode == LSFloodMode.Disturbed) return 50;
-            if (mode == LSFloodMode.Furious) return 65;
-            if (mode == LSFloodMode.Wild) return 80;
+            int mode = floodMode;
+            if (mode == 1) return 50;
+            if (mode == 2) return 65;
+            if (mode == 3) return 80;
             return 100;
         }
         byte GetBurnChance()
         {
-            LSFloodMode mode = floodMode;
-            if (mode == LSFloodMode.Disturbed) return 50;
-            if (mode == LSFloodMode.Furious) return 70;
-            if (mode == LSFloodMode.Wild) return 85;
+            int mode = floodMode;
+            if (mode == 1) return 50;
+            if (mode == 2) return 70;
+            if (mode == 3) return 85;
             return 100;
         }
     }

@@ -14,8 +14,6 @@
  */
 namespace MCGalaxy.Util.Imaging
 {
-    public delegate Pixel PixelGet(int x, int y);
-    public delegate void PixelSet(int x, int y, Pixel pixel);
     public struct Pixel
     {
         public byte A, R, G, B;
@@ -27,22 +25,12 @@ namespace MCGalaxy.Util.Imaging
             A = a;
         }
         public static Pixel BLACK = new(0, 0, 0, 255);
-        public override readonly string ToString()
-        {
-            return string.Format("R={0}, G={1}, B={2}, A={3}", R, G, B, A);
-        }
     }
     public sealed class Bitmap2D
     {
         public int Width, Height;
         public Pixel[] Pixels;
-        public void AllocatePixels()
-        {
-            Pixels = new Pixel[Width * Height];
-        }
-        public Pixel Get(int x, int y)
-        {
-            return Pixels[y * Width + x];
-        }
+        public void AllocatePixels() => Pixels = new Pixel[Width * Height];
+        public Pixel Get(int x, int y) => Pixels[y * Width + x];
     }
 }

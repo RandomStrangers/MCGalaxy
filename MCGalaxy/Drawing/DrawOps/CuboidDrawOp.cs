@@ -19,11 +19,8 @@ namespace MCGalaxy.Drawing.Ops
 {
     public class CuboidDrawOp : DrawOp
     {
-        public override string Name { get { return "Cuboid"; } }
-        public override long BlocksAffected(Level lvl, Vec3S32[] marks)
-        {
-            return SizeX * SizeY * SizeZ;
-        }
+        public override string Name => "Cuboid";
+        public override long BlocksAffected(Level lvl, Vec3S32[] marks) => SizeX * SizeY * SizeZ;
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             Vec3U16 p1 = Clamp(Min), p2 = Clamp(Max);
@@ -37,7 +34,7 @@ namespace MCGalaxy.Drawing.Ops
     }
     public class CuboidHollowsDrawOp : DrawOp
     {
-        public override string Name { get { return "Cuboid Hollow"; } }
+        public override string Name => "Cuboid Hollow";
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
             int lenX = SizeX, lenY = SizeY, lenZ = SizeZ;
@@ -95,7 +92,7 @@ namespace MCGalaxy.Drawing.Ops
     }
     public class CuboidWallsDrawOp : CuboidHollowsDrawOp
     {
-        public override string Name { get { return "Cuboid Walls"; } }
+        public override string Name => "Cuboid Walls";
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
             int lenX = SizeX, lenY = SizeY, lenZ = SizeZ;
@@ -116,7 +113,7 @@ namespace MCGalaxy.Drawing.Ops
     }
     public class CuboidWireframeDrawOp : CuboidHollowsDrawOp
     {
-        public override string Name { get { return "Cuboid Wireframe"; } }
+        public override string Name => "Cuboid Wireframe";
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
             int lenX = SizeX, lenY = SizeY, lenZ = SizeZ;

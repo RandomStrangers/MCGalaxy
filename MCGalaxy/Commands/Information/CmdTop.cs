@@ -18,17 +18,11 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdTop : Command2
     {
-        public override string name { get { return "Top"; } }
-        public override string shortcut { get { return "Most"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new[] { new CommandAlias("TopTen", "10"), new CommandAlias("TopFive", "5"),
+        public override string Name => "Top";
+        public override string Shortcut => "Most";
+        public override string Type => CommandTypes.Information;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("TopTen", "10"), new CommandAlias("TopFive", "5"),
                     new CommandAlias("Top10", "10"), };
-            }
-        }
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();

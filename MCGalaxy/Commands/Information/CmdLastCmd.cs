@@ -17,11 +17,11 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdLastCmd : Command2
     {
-        public override string name { get { return "LastCmd"; } }
-        public override string shortcut { get { return "Last"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override bool UpdatesLastCmd { get { return false; } }
+        public override string Name => "LastCmd";
+        public override string Shortcut => "Last";
+        public override string Type => CommandTypes.Information;
+        public override sbyte DefaultRank => 80;
+        public override bool UpdatesLastCmd => false;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0)

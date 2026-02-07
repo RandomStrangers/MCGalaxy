@@ -17,33 +17,21 @@ namespace MCGalaxy.Commands.Chatting
 {
     public class CmdNick : EntityPropertyCmd
     {
-        public override string name { get { return "Nick"; } }
-        public override string shortcut { get { return "Nickname"; } }
-        public override string type { get { return CommandTypes.Chat; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get
-            {
-                return new[] { new CommandPerm(LevelPermission.Operator, "can change the nick of others"),
-                    new CommandPerm(LevelPermission.Operator, "can change the nick of bots") };
-            }
-        }
-        public override CommandAlias[] Aliases
-        {
-            get { return new CommandAlias[] { new("xnick", "-own") }; }
-        }
-        public override void Use(Player p, string message, CommandData data)
-        {
-            UseBotOrPlayer(p, data, message, "nick");
-        }
+        public override string Name => "Nick";
+        public override string Shortcut => "Nickname";
+        public override string Type => CommandTypes.Chat;
+        public override sbyte DefaultRank => 80;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can change the nick of others"),
+                    new CommandPerm(80, "can change the nick of bots") };
+        public override CommandAlias[] Aliases => new CommandAlias[] { new("xnick", "-own") };
+        public override void Use(Player p, string message, CommandData data) => UseBotOrPlayer(p, data, message, "nick");
         protected override void SetBotData(Player p, PlayerBot bot, string nick)
         {
-            if (!MessageCmd.CanSpeak(p, name)) return;
+            if (!MessageCmd.CanSpeak(p, Name)) return;
             if (nick.Length == 0)
             {
                 bot.DisplayName = bot.name;
-                p.level.Message("Bot " + bot.ColoredName + " &Sreverted to their original name.");
+                p.Level.Message("Bot " + bot.ColoredName + " &Sreverted to their original name.");
             }
             else
             {
@@ -54,12 +42,9 @@ namespace MCGalaxy.Commands.Chatting
             }
             bot.GlobalDespawn();
             bot.GlobalSpawn();
-            BotsFile.Save(p.level);
+            BotsFile.Save(p.Level);
         }
-        protected override void SetPlayerData(Player p, string target, string nick)
-        {
-            PlayerOperations.SetNick(p, target, nick);
-        }
+        protected override void SetPlayerData(Player p, string target, string nick) => PlayerOperations.SetNick(p, target, nick);
         public override void Help(Player p)
         {
             p.Message("&T/Nick [player] [nick]");

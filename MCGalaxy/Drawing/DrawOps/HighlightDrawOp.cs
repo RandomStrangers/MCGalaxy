@@ -20,7 +20,7 @@ namespace MCGalaxy.Drawing.Ops
 {
     public class HighlightDrawOp : DrawOp
     {
-        public override string Name { get { return "Highlight"; } }
+        public override string Name => "Highlight";
         // Some servers like to set custom default highlight blocks due to using custom blocks
         public static ushort DefaultPlaceHighlight = Block.Green;
         public static ushort DefaultDeleteHighlight = Block.Red;
@@ -39,7 +39,7 @@ namespace MCGalaxy.Drawing.Ops
             Undoable = false;
             AffectedByTransform = false;
         }
-        public override long BlocksAffected(Level lvl, Vec3S32[] marks) { return -1; }
+        public override long BlocksAffected(Level lvl, Vec3S32[] marks) => -1;
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             this.output = output;

@@ -18,9 +18,9 @@ namespace MCGalaxy.Modules.Moderation.Notes
 {
     class CmdNotes : Command2
     {
-        public override string name { get { return "Notes"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "Notes";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 80;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
@@ -95,14 +95,11 @@ namespace MCGalaxy.Modules.Moderation.Notes
     }
     sealed class CmdMyNotes : CmdNotes
     {
-        public override string name { get { return "MyNotes"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override bool SuperUseable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Guest; } }
-        public override void Use(Player p, string message, CommandData data)
-        {
-            PrintNotes(p, "MyNotes", p.name, message);
-        }
+        public override string Name => "MyNotes";
+        public override string Type => CommandTypes.Other;
+        public override bool SuperUseable => false;
+        public override sbyte DefaultRank => 0;
+        public override void Use(Player p, string message, CommandData data) => PrintNotes(p, "MyNotes", p.name, message);
         public override void Help(Player p)
         {
             p.Message("&T/MyNotes &H- views your own notes.");

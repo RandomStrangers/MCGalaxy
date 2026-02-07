@@ -16,12 +16,9 @@ namespace MCGalaxy.Modules.Games.LS
 {
     sealed class CmdLives : Command2
     {
-        public override string name { get { return "Lives"; } }
-        public override string type { get { return CommandTypes.Games; } }
-        public override void Use(Player p, string message, CommandData data)
-        {
-            p.Message("You " + LSGame.Instance.DescribeLives(p));
-        }
+        public override string Name => "Lives";
+        public override string Type => CommandTypes.Games;
+        public override void Use(Player p, string message, CommandData data) => p.Message("You " + LSGame.Instance.DescribeLives(p));
         public override void Help(Player p)
         {
             p.Message("&T/Alive");

@@ -17,7 +17,7 @@ namespace MCGalaxy.Modules.Games.ZS
 {
     public sealed class ZSPlugin : Plugin
     {
-        public override string name { get { return "ZS"; } }
+        public override string Name => "ZS";
         static readonly Command cmdZS = new CmdZombieSurvival();
         public override void Load(bool startup)
         {
@@ -26,7 +26,7 @@ namespace MCGalaxy.Modules.Games.ZS
             game.Config.Path = "props/zombiesurvival.properties";
             game.ReloadConfig();
             game.AutoStart();
-            OnConfigUpdatedEvent.Register(game.ReloadConfig, Priority.Low);
+            OnConfigUpdatedEvent.Register(game.ReloadConfig, 0);
         }
         public override void Unload(bool shutdown)
         {

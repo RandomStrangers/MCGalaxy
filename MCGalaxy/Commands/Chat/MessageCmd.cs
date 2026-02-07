@@ -16,14 +16,14 @@ namespace MCGalaxy.Commands.Chatting
 {
     public abstract class MessageCmd : Command2
     {
-        public override string type { get { return CommandTypes.Chat; } }
-        public override bool UseableWhenFrozen { get { return true; } }
+        public override string Type => CommandTypes.Chat;
+        public override bool UseableWhenFrozen => true;
         protected bool TryMessageAction(Player p, string name, string msg, bool messageWho)
         {
             if (name.Length == 0) { Help(p); return false; }
             Player target = PlayerInfo.FindMatches(p, name);
             if (target == null) return false;
-            string reciever = p == target ? p.pronouns.Reflexive : target.ColoredName;
+            string reciever = p == target ? p.Pronouns.Reflexive : target.ColoredName;
             if (!TryMessage(p, msg.Replace("λTARGET", reciever))) return false;
             if (messageWho && p != target && !Chat.Ignoring(target, p))
             {
@@ -32,26 +32,20 @@ namespace MCGalaxy.Commands.Chatting
             }
             return true;
         }
-        protected bool TryMessage(Player p, string msg) { return TryMessage(p, msg, false); }
+        protected bool TryMessage(Player p, string msg) => TryMessage(p, msg, false);
         protected bool TryMessage(Player p, string msg, bool relay)
         {
-            if (!CanSpeak(p, name)) return false;
+            if (!CanSpeak(p, Name)) return false;
             Chat.MessageFrom(p, msg, null, relay);
             p.CheckForMessageSpam();
             return true;
         }
-        public static bool CanSpeak(Player p, string cmd)
-        {
-            return p.CheckCanSpeak("use &T/" + cmd);
-        }
+        public static bool CanSpeak(Player p, string cmd) => p.CheckCanSpeak("use &T/" + cmd);
     }
     public sealed class CmdHigh5 : MessageCmd
     {
-        public override string name { get { return "High5"; } }
-        public override void Use(Player p, string message, CommandData data)
-        {
-            TryMessageAction(p, message, "λNICK &Sjust highfived λTARGET", true);
-        }
+        public override string Name => "High5";
+        public override void Use(Player p, string message, CommandData data) => TryMessageAction(p, message, "λNICK &Sjust highfived λTARGET", true);
         public override void Help(Player p)
         {
             p.Message("&T/High5 [player]");

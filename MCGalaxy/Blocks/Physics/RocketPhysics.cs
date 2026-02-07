@@ -42,7 +42,7 @@ namespace MCGalaxy.Blocks.Physics
                         }
                         else
                         {
-                            if (lvl.physics > 2)
+                            if (lvl.LevelPhysics > 2)
                                 lvl.MakeExplosion(x, y, z, 2);
                             else
                                 lvl.AddUpdate(C.Index, Block.LavaFire, default(PhysicsArgs));

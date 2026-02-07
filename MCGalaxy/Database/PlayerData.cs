@@ -122,14 +122,8 @@ namespace MCGalaxy.DB
             data.TotalDeleted = UnpackHi(drawn);
             return data;
         }
-        internal static long ParseLong(string value)
-        {
-            return (value.Length == 0 || value.CaselessEq("null")) ? 0 : long.Parse(value);
-        }
-        internal static int ParseInt(string value)
-        {
-            return (value.Length == 0 || value.CaselessEq("null")) ? 0 : NumberUtils.ParseInt32(value);
-        }
+        internal static long ParseLong(string value) => (value.Length == 0 || value.CaselessEq("null")) ? 0 : long.Parse(value);
+        internal static int ParseInt(string value) => (value.Length == 0 || value.CaselessEq("null")) ? 0 : NumberUtils.ParseInt32(value);
         internal static string ParseColor(string raw)
         {
             if (raw.Length == 0) return raw;
@@ -154,18 +148,9 @@ namespace MCGalaxy.DB
                 return DateTime.MinValue;
             }
         }
-        internal static long UnpackHi(long value)
-        {
-            return (value >> HiBitsShift) & HiBitsMask;
-        }
-        internal static long UnpackLo(long value)
-        {
-            return value & LoBitsMask;
-        }
-        internal static long Pack(long hi, long lo)
-        {
-            return hi << HiBitsShift | lo;
-        }
+        internal static long UnpackHi(long value) => (value >> HiBitsShift) & HiBitsMask;
+        internal static long UnpackLo(long value) => value & LoBitsMask;
+        internal static long Pack(long hi, long lo) => hi << HiBitsShift | lo;
         public const int HiBitsShift = 38;
         public const long LoBitsMask = (1L << HiBitsShift) - 1;
         // convert negative to positive after shifting

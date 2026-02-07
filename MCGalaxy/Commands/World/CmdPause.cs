@@ -18,13 +18,13 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdPause : Command2
     {
-        public override string name { get { return "Pause"; } }
-        public override string type { get { return CommandTypes.World; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "Pause";
+        public override string Type => CommandTypes.World;
+        public override sbyte DefaultRank => 80;
         public override void Use(Player p, string message, CommandData data)
         {
             int seconds = 30;
-            Level lvl = p.IsSuper ? Server.mainLevel : p.level;
+            Level lvl = p.IsSuper ? Server.mainLevel : p.Level;
             if (message.Length > 0)
             {
                 string[] parts = message.SplitSpaces();

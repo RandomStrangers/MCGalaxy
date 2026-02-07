@@ -25,22 +25,9 @@ using System.Runtime.InteropServices;
 using System.Threading;
 namespace MCGalaxy
 {
-    public enum LevelPermission
-    {
-        Banned = -20, Guest = 0, Builder = 30, AdvBuilder = 50,
-        Operator = 80, Admin = 100, Owner = 120, Console = 127,
-        Null = 150, Nobody = 120
-    }
-    public enum BuildType
-    {
-        Normal, ModifyOnly, NoModify
-    };
     public sealed partial class Level : IDisposable
     {
-        public Level(string name, ushort width, ushort height, ushort length)
-        {
-            Init(name, width, height, length);
-        }
+        public Level(string name, ushort width, ushort height, ushort length) => Init(name, width, height, length);
         public Level(string name, ushort width, ushort height, ushort length, byte[] blocks)
         {
             this.blocks = blocks;
@@ -93,13 +80,6 @@ namespace MCGalaxy
             listCheckExists = new(width, height, length);
             listUpdateExists = new(width, height, length);
         }
-        public List<Player> players
-        {
-            get
-            {
-                return getPlayers();
-            }
-        }
         public void Dispose()
         {
             Extras.Clear();
@@ -133,7 +113,7 @@ namespace MCGalaxy
                 return true;
             }
             bool skip = p.summonedMap != null && p.summonedMap.CaselessEq(name);
-            LevelPermission plRank = skip ? LevelPermission.Console : p.Rank;
+            sbyte plRank = skip ? (sbyte)127 : p.Rank;
             if (!VisitAccess.CheckDetailed(p, plRank))
             {
                 return false;
@@ -162,11 +142,7 @@ namespace MCGalaxy
             Server.DoGC();
         }
         /// <summary> Attempts to automatically unload this map. </summary>
-        public bool AutoUnload()
-        {
-            bool can = IsMuseum || (Server.Config.AutoLoadMaps && Config.AutoUnload && !HasPlayers());
-            return can && Unload(true);
-        }
+        public bool AutoUnload() => (IsMuseum || (Server.Config.AutoLoadMaps && Config.AutoUnload && !HasPlayers())) && Unload(true);
         public bool Unload(bool silent = false, bool save = true)
         {
             if (Server.mainLevel == this)
@@ -182,7 +158,7 @@ namespace MCGalaxy
             OnLevelUnloadEvent.Call(this, ref cancel);
             if (cancel)
             {
-                Logger.Log(LogType.SystemActivity, "Unloading of {0} canceled by a plugin", name);
+                Logger.Log(1, "Unloading of {0} canceled by a plugin", name);
                 return false;
             }
             MovePlayersToMain();
@@ -214,7 +190,7 @@ namespace MCGalaxy
             {
                 Chat.MessageOps(ColoredName + " &Swas unloaded.");
             }
-            Logger.Log(LogType.SystemActivity, name + " was unloaded.");
+            Logger.Log(1, name + " was unloaded.");
             return true;
         }
         internal void MovePlayersToMain()
@@ -222,7 +198,7 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {
-                if (p.level == this)
+                if (p.Level == this)
                 {
                     p.Message("You were moved to the main level as " + ColoredName + " &Swas unloaded.");
                     PlayerActions.ChangeMap(p, Server.mainLevel);
@@ -236,10 +212,7 @@ namespace MCGalaxy
                 Config.SaveFor(MapName);
             }
         }
-        public bool CheckClear(ushort x, ushort y, ushort z)
-        {
-            return x >= Width || y >= Height || z >= Length || !listCheckExists.Get(x, y, z);
-        }
+        public bool CheckClear(ushort x, ushort y, ushort z) => x >= Width || y >= Height || z >= Length || !listCheckExists.Get(x, y, z);
         /// <summary> Attempts to save this level (can be cancelled) </summary>
         /// <param name="force"> Whether to save even if nothing changed since last save </param>
         /// <returns> Whether this level was successfully saved to disc </returns>
@@ -283,12 +256,12 @@ namespace MCGalaxy
                 }
                 else
                 {
-                    Logger.Log(LogType.SystemActivity, "Skipping level save for " + name + ".");
+                    Logger.Log(1, "Skipping level save for " + name + ".");
                 }
             }
             catch (Exception e)
             {
-                Logger.Log(LogType.Warning, "FAILED TO SAVE :" + name);
+                Logger.Log(6, "FAILED TO SAVE :" + name);
                 Chat.MessageGlobal("FAILED TO SAVE {0}", ColoredName);
                 Logger.LogError(e);
                 return false;
@@ -312,8 +285,8 @@ namespace MCGalaxy
             IMapExporter.Encode(path + ".backup", this);
             FileIO.TryCopy(path + ".backup", path);
             SaveSettings();
-            Logger.Log(LogType.SystemActivity, "SAVED: Level \"{0}\". ({1}/{2}/{3})",
-                       name, players.Count, PlayerInfo.Online.Count, Server.Config.MaxPlayers);
+            Logger.Log(1, "SAVED: Level \"{0}\". ({1}/{2}/{3})",
+                       name, GetPlayers().Count, PlayerInfo.Online.Count, Server.Config.MaxPlayers);
             Changed = false;
         }
         /// <summary> Saves a backup of the map and associated files. (like bots, .properties) </summary>
@@ -330,18 +303,15 @@ namespace MCGalaxy
                 }
                 if (!LevelActions.Backup(name, backup))
                 {
-                    Logger.Log(LogType.Warning, "FAILED TO INCREMENTAL BACKUP :" + name);
+                    Logger.Log(6, "FAILED TO INCREMENTAL BACKUP :" + name);
                     return null;
                 }
                 return backup;
             }
-            Logger.Log(LogType.SystemActivity, "Level unchanged, skipping backup");
+            Logger.Log(1, "Level unchanged, skipping backup");
             return null;
         }
-        public static Level Load(string name)
-        {
-            return Load(name, LevelInfo.MapPath(name));
-        }
+        public static Level Load(string name) => Load(name, LevelInfo.MapPath(name));
         public static Level Load(string name, string path)
         {
             bool cancel = false;
@@ -352,7 +322,7 @@ namespace MCGalaxy
             }
             if (!File.Exists(path))
             {
-                Logger.Log(LogType.Warning, "Attempted to load level {0}, but {1} does not exist.", name, path);
+                Logger.Log(6, "Attempted to load level {0}, but {1} does not exist.", name, path);
                 return null;
             }
             try
@@ -367,7 +337,7 @@ namespace MCGalaxy
                     LevelDB.LoadPortals(lvl, name);
                     LevelDB.LoadMessages(lvl, name);
                 }
-                Logger.Log(LogType.SystemActivity, "Level \"{0}\" loaded.", lvl.name);
+                Logger.Log(1, "Level \"{0}\" loaded.", lvl.name);
                 OnLevelLoadedEvent.Call(lvl);
                 return lvl;
             }
@@ -388,7 +358,7 @@ namespace MCGalaxy
                 }
                 else
                 {
-                    Logger.Log(LogType.ConsoleMessage, ".properties file for level {0} was not found.", lvl.MapName);
+                    Logger.Log(16, ".properties file for level {0} was not found.", lvl.MapName);
                 }
             }
             catch (Exception e)
@@ -409,16 +379,13 @@ namespace MCGalaxy
             lvl.UpdateBlockProps();
             lvl.UpdateAllBlockHandlers();
         }
-        public void Message(string message)
-        {
-            Chat.Message(ChatScope.Level, message, this, null);
-        }
+        public void Message(string message) => Chat.Message(2, message, this, null);
         public void UpdateBlockPermissions()
         {
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {
-                if (p.level != this)
+                if (p.Level != this)
                 {
                     continue;
                 }
@@ -430,7 +397,7 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {
-                if (p.level == this)
+                if (p.Level == this)
                 {
                     return true;
                 }
@@ -445,13 +412,13 @@ namespace MCGalaxy
                 LevelDB.SaveBlockDB(this);
             }
         }
-        public List<Player> getPlayers()
+        public List<Player> GetPlayers()
         {
             Player[] players = PlayerInfo.Online.Items;
             List<Player> onLevel = new();
             foreach (Player p in players)
             {
-                if (p.level == this)
+                if (p.Level == this)
                 {
                     onLevel.Add(p);
                 }
@@ -464,35 +431,17 @@ namespace MCGalaxy
             public int Index;
             int flags;
             byte oldRaw, newRaw;
-            public readonly ushort OldBlock
-            {
-                get
-                {
-                    return (ushort)(oldRaw | ((flags & 0x03) << Block.ExtendedShift));
-                }
-            }
-            public readonly ushort NewBlock
-            {
-                get
-                {
-                    return (ushort)(newRaw | ((flags & 0xC >> 2) << Block.ExtendedShift));
-                }
-            }
-            public readonly DateTime Time
-            {
-                get
-                {
-                    return Server.StartTime.AddTicks((flags >> 4) * TimeSpan.TicksPerSecond);
-                }
-            }
+            public readonly ushort OldBlock => (ushort)(oldRaw | ((flags & 0x03) << 8));
+            public readonly ushort NewBlock => (ushort)(newRaw | ((flags & 0xC >> 2) << 8));
+            public readonly DateTime Time => Server.StartTime.AddTicks((flags >> 4) * TimeSpan.TicksPerSecond);
             public void SetData(ushort oldBlock, ushort newBlock)
             {
                 TimeSpan delta = DateTime.UtcNow.Subtract(Server.StartTime);
                 flags = (int)delta.TotalSeconds << 4;
                 oldRaw = (byte)oldBlock;
-                flags |= oldBlock >> Block.ExtendedShift;
+                flags |= oldBlock >> 8;
                 newRaw = (byte)newBlock;
-                flags |= (newBlock >> Block.ExtendedShift) << 2;
+                flags |= (newBlock >> 8) << 2;
             }
         }
         void LoadDefaultProps()
@@ -524,7 +473,7 @@ namespace MCGalaxy
         }
         public void UpdateBlockHandlers(ushort block)
         {
-            bool nonSolid = !Blocks.CollideType.IsSolid(CollideType(block));
+            bool nonSolid = !DefaultSet.IsSolid(CollideType(block));
             DeleteHandlers[block] = BlockBehaviour.GetDeleteHandler(block, Props);
             PlaceHandlers[block] = BlockBehaviour.GetPlaceHandler(block, Props);
             WalkthroughHandlers[block] = BlockBehaviour.GetWalkthroughHandler(block, Props, nonSolid);
@@ -541,7 +490,7 @@ namespace MCGalaxy
         public int GetEdgeLevel()
         {
             int edgeLevel = Config.EdgeLevel;
-            if (edgeLevel == EnvConfig.ENV_USE_DEFAULT)
+            if (edgeLevel == int.MaxValue)
             {
                 edgeLevel = Height / 2;
             }

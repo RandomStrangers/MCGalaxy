@@ -12,7 +12,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-#if !NET_20
 using System;
 using System.Threading;
 namespace MCGalaxy.Util
@@ -20,14 +19,8 @@ namespace MCGalaxy.Util
     public sealed class IReaderWriterLock
     {
         readonly ReaderWriterLockSlim locker = new();
-        public IDisposable AccquireRead()
-        {
-            return AccquireRead(-1);
-        }
-        public IDisposable AccquireWrite()
-        {
-            return AccquireWrite(-1);
-        }
+        public IDisposable AccquireRead() => AccquireRead(-1);
+        public IDisposable AccquireWrite() => AccquireWrite(-1);
         public IDisposable AccquireRead(int msTimeout)
         {
             if (!locker.TryEnterReadLock(msTimeout))
@@ -68,4 +61,3 @@ namespace MCGalaxy.Util
         }
     }
 }
-#endif

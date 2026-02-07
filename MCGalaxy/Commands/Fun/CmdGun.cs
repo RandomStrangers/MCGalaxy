@@ -17,30 +17,36 @@ namespace MCGalaxy.Commands.Fun
 {
     public sealed class CmdGun : Command2
     {
-        public override string name { get { return "Gun"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Gun";
+        public override string Type => CommandTypes.Other;
+        public override sbyte DefaultRank => 50;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (!p.level.Config.Guns)
+            if (!p.Level.Config.Guns)
             {
-                p.Message("Guns cannot be used on this map!"); return;
+                p.Message("Guns cannot be used on this map!");
+                return;
             }
             if (p.weapon != null && message.Length == 0)
             {
-                p.weapon.Disable(); return;
+                p.weapon.Disable(); 
+                return;
             }
-            WeaponType type = Weapon.ParseType(message);
-            if (type == WeaponType.Invalid) { Help(p); return; }
+            int type = Weapon.ParseType(message);
+            if (type == 0) 
+            { 
+                Help(p); 
+                return; 
+            }
             GetGun(type).Enable(p);
         }
-        static Gun GetGun(WeaponType type)
+        static Gun GetGun(int type)
         {
-            if (type == WeaponType.Destroy) return new PenetrativeGun();
-            if (type == WeaponType.Teleport) return new TeleportGun();
-            if (type == WeaponType.Explode) return new ExplosiveGun();
-            if (type == WeaponType.Laser) return new LaserGun();
+            if (type == 2) return new PenetrativeGun();
+            if (type == 3) return new TeleportGun();
+            if (type == 4) return new ExplosiveGun();
+            if (type == 5) return new LaserGun();
             return new Gun();
         }
         public override void Help(Player p)

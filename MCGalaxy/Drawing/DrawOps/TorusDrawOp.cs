@@ -19,7 +19,7 @@ namespace MCGalaxy.Drawing.Ops
 {
     public class TorusDrawOp : ShapedDrawOp
     {
-        public override string Name { get { return "Torus"; } }
+        public override string Name => "Torus";
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
             double rx = XRadius, ry = YRadius, rz = ZRadius;

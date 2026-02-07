@@ -17,10 +17,10 @@ namespace MCGalaxy.Commands.Misc
 {
     public class CmdAscend : Command2
     {
-        public override string name { get { return "Ascend"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Builder; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Ascend";
+        public override string Type => CommandTypes.Other;
+        public override sbyte DefaultRank => 30;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             if (!Hacks.CanUseHacks(p))
@@ -30,9 +30,9 @@ namespace MCGalaxy.Commands.Misc
             int x = p.Pos.BlockX, y = p.Pos.BlockY, z = p.Pos.BlockZ;
             if (y < 0) y = 0;
             int freeY = -1;
-            if (p.level.IsValidPos(x, y, z))
+            if (p.Level.IsValidPos(x, y, z))
             {
-                freeY = FindYAbove(p.level, (ushort)x, (ushort)y, (ushort)z);
+                freeY = FindYAbove(p.Level, (ushort)x, (ushort)y, (ushort)z);
             }
             if (freeY == -1)
             {
@@ -50,17 +50,17 @@ namespace MCGalaxy.Commands.Misc
             for (; y <= lvl.Height; y++)
             {
                 ushort block = lvl.GetBlock(x, y, z);
-                if (block != Block.Invalid && CollideType.IsSolid(lvl.CollideType(block))) continue;
+                if (block != Block.Invalid && DefaultSet.IsSolid(lvl.CollideType(block))) continue;
                 ushort above = lvl.GetBlock(x, (ushort)(y + 1), z);
-                if (above != Block.Invalid && CollideType.IsSolid(lvl.CollideType(above))) continue;
+                if (above != Block.Invalid && DefaultSet.IsSolid(lvl.CollideType(above))) continue;
                 ushort below = lvl.GetBlock(x, (ushort)(y - 1), z);
-                if (below != Block.Invalid && CollideType.IsSolid(lvl.CollideType(below))) return y;
+                if (below != Block.Invalid && DefaultSet.IsSolid(lvl.CollideType(below))) return y;
             }
             return -1;
         }
         public override void Help(Player p)
         {
-            string name = Group.GetColoredName(LevelPermission.Operator);
+            string name = Group.GetColoredName(80);
             p.Message("&T/Ascend");
             p.Message("&HTeleports you to the first free space above you.");
             p.Message("&H  Cannot be used on maps which have -hax in their motd. " +

@@ -22,7 +22,7 @@ namespace MCGalaxy.Commands
         public override string name { get { return "CTF"; } }
         public override string type { get { return CommandTypes.Other; } }
         public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
+        public override sbyte defaultRank { get { return 100; } }
         public override void Use(Player p, string message)
         {
             if (message.IndexOf(' ') != -1)
@@ -84,7 +84,7 @@ namespace MCGalaxy.Commands
                     if (message.SplitSpaces().Length < 2) { Help(p); return; }
                     if (message.SplitSpaces()[1] == "round")
                     {
-                        foreach (Team team in p.level.teams)
+                        foreach (Team team in p.Level.teams)
                         {
                             team.ResetRound();
                         }
@@ -103,7 +103,7 @@ namespace MCGalaxy.Commands
                     int i;
                     Int32.TryParse(message.SplitSpaces()[1], out i);
                     if (i == 0) { p.Message("You must indicate a numeric points value greater than 0."); return; }
-                    p.level.maxroundpoints = i;
+                    p.Level.maxroundpoints = i;
                     p.Message("Max points has been set to " + i);
                 }
             }
@@ -111,7 +111,7 @@ namespace MCGalaxy.Commands
             {
                 p.Message("Player debug info: hasFlag: " + p.hasFlag + ", holdingflag: " + p.holdingFlag);
                 p.Message("OnTeam: " + p.onTeam + ", inCtf: " + p.inCtf);
-                Team workTeam = p.level.teams.Find(team => team.color == p.onTeam);
+                Team workTeam = p.Level.teams.Find(team => team.color == p.onTeam);
                 p.Message("Team debug info: flagishome: " + workTeam.flagishome + ", Points: " + workTeam.points);
                 p.Message("Flag base: x: " + workTeam.flagBase[0] + ", y: " + workTeam.flagBase[1] + ", z: " + workTeam.flagBase[2]);
                 p.Message("Flag loc:  x: " + workTeam.flagLocation[0] + ", y: " + workTeam.flagLocation[1] + ", z: " + workTeam.flagLocation[2]);
@@ -120,7 +120,7 @@ namespace MCGalaxy.Commands
             else if (message.SplitSpaces()[0].ToLower() == "clear")
             {
                 if (message.SplitSpaces().Length > 1 && message.SplitSpaces().Length < 1) { Help(p); return;}
-                foreach (Team team in p.level.teams)
+                foreach (Team team in p.Level.teams)
                 {
                     foreach (Player p1 in team.onTeam)
                     {
@@ -128,23 +128,23 @@ namespace MCGalaxy.Commands
                         p1.holdingFlag = false;
                     }
                     team.onTeam.Clear();
-                    p.level.ctfmode = false;
-                    p.level.maxroundpoints = 0;
+                    p.Level.ctfmode = false;
+                    p.Level.maxroundpoints = 0;
                     team.hasFlag = null;
                 }
-                p.level.teams.Clear();
-                p.level.ChatLevel("Capture the flag data has been reset.");
+                p.Level.teams.Clear();
+                p.Level.ChatLevel("Capture the flag data has been reset.");
             }
             else if (message.Length == 0)
             {
-                if (!p.level.ctfmode)
+                if (!p.Level.ctfmode)
                 {
-                    p.level.ctfmode = true;
+                    p.Level.ctfmode = true;
                     GameStart(p);
                 }
                 else
                 {
-                    p.level.ctfmode = false;
+                    p.Level.ctfmode = false;
                     GameEnd(p);
                 }
             }
@@ -155,17 +155,17 @@ namespace MCGalaxy.Commands
         }
         public void GameStart(Player p)
         {
-            foreach (Team team in p.level.teams)
+            foreach (Team team in p.Level.teams)
             {
                 team.ResetRound();
             }
-            if (p.level.maxroundpoints == 0)
+            if (p.Level.maxroundpoints == 0)
             {
-                p.level.ChatLevel("Capture the flag game start! No max points set!");
+                p.Level.ChatLevel("Capture the flag game start! No max points set!");
             }
             else
             {
-                p.level.ChatLevel("Capture the flag game start! Game goes to " + p.level.maxroundpoints + " point(s)!");
+                p.Level.ChatLevel("Capture the flag game start! Game goes to " + p.Level.maxroundpoints + " point(s)!");
             }
         }
         public void GameEnd(Player p)
@@ -173,42 +173,42 @@ namespace MCGalaxy.Commands
             int currentpoints = 0;
             int maxPoints = 0;
             Team winTeam = new Team();
-            for (int i = 0; i < p.level.teams.Count; i++)
+            for (int i = 0; i < p.Level.teams.Count; i++)
             {
-                currentpoints = p.level.teams[i].points;
-                foreach (Player derpy in p.level.teams[i].onTeam)
+                currentpoints = p.Level.teams[i].points;
+                foreach (Player derpy in p.Level.teams[i].onTeam)
                 {
                     derpy.holdingFlag = false;
                 }
                 if (currentpoints > maxPoints)
                 {
-                    winTeam = p.level.teams[i];
+                    winTeam = p.Level.teams[i];
                 }
             }
-            p.level.ctfmode = false;
-            p.level.ChatLevel(p.color + p.prefix + p.name + Server.DefaultColor + " has ended the game!");
+            p.Level.ctfmode = false;
+            p.Level.ChatLevel(p.color + p.prefix + p.name + Server.DefaultColor + " has ended the game!");
             if (maxPoints == 0)
             {
-                p.level.ChatLevel("Nobody wins!");
+                p.Level.ChatLevel("Nobody wins!");
             }
             else
             {
-                p.level.ChatLevel(winTeam.teamname + " team " + Server.DefaultColor + " has won the game with " + maxPoints + " point(s)!");
+                p.Level.ChatLevel(winTeam.teamname + " team " + Server.DefaultColor + " has won the game with " + maxPoints + " point(s)!");
             }
-            foreach (Team team in p.level.teams)
+            foreach (Team team in p.Level.teams)
             {
                 team.EndRound();
             }
         }
         public void CtfInitTeam(Player p, string color)
         {
-            Level workLevel = p.level;
+            Level workLevel = p.Level;
             Team workTeam = new Team();
             char teamCol = (char)color[1];
             if (workLevel.teams.Find(team => team.color == teamCol) != null) { p.Message("That team already exists."); return; }
             workTeam.color = teamCol;
             workTeam.points = 0;
-            workTeam.maxpoints = p.level.maxroundpoints;
+            workTeam.maxpoints = p.Level.maxroundpoints;
             workTeam.mapOn = workLevel;
             char[] temp = c.Name("&" + teamCol).ToCharArray();
             temp[0] = char.ToUpper(temp[0]);
@@ -219,7 +219,7 @@ namespace MCGalaxy.Commands
         }
         public void AddTeamMember(Player p, Player newPlayer, string color)
         {
-            Level workLevel = p.level;
+            Level workLevel = p.Level;
             char teamCol = (char)color[1];
             if (workLevel.teams.Exists(team => team.color == teamCol))
             {
@@ -242,7 +242,7 @@ namespace MCGalaxy.Commands
         }
         public void RemoveTeamMember(Player p, Player newPlayer, string color)
         {
-            Level worklevel = p.level;
+            Level worklevel = p.Level;
             char teamCol = (char)color[1];
             if (worklevel.teams.Exists(team => team.color == teamCol))
             {
@@ -265,7 +265,7 @@ namespace MCGalaxy.Commands
         }
         public void AddFlagbase(Player p, string color, ushort x, ushort y, ushort z)
         {
-            Level worklevel = p.level;
+            Level worklevel = p.Level;
             char teamCol = (char)color[1];
             if (worklevel.teams.Exists(team => team.color == teamCol))
             {
@@ -281,9 +281,9 @@ namespace MCGalaxy.Commands
                 worklevel.flags.Add(workFlag);
                 p.Message(workTeam.teamname + " team" +Server.DefaultColor +" flag has been set.");
                 workTeam.flagishome = true;
-                p.level.Blockchange(p, x, y, z, Block.flagbase);
-                p.level.Blockchange(p, x, (ushort)(y + 1), z, Block.mushroom);
-                p.level.Blockchange(x, (ushort)(y + 2), z, Team.GetColorBlock(teamCol));
+                p.Level.Blockchange(p, x, y, z, Block.flagbase);
+                p.Level.Blockchange(p, x, (ushort)(y + 1), z, Block.mushroom);
+                p.Level.Blockchange(x, (ushort)(y + 2), z, Team.GetColorBlock(teamCol));
             }
             else
             {
@@ -292,7 +292,7 @@ namespace MCGalaxy.Commands
         }
         public void AddTeamSpawn(Player p, string color)
         {
-            Level worklevel = p.level;
+            Level worklevel = p.Level;
             char teamCol = (char)color[1];
             if (worklevel.teams.Exists(team => team.color == teamCol))
             {
@@ -313,7 +313,7 @@ namespace MCGalaxy.Commands
         void AddFlag(Player p, ushort x, ushort y, ushort z, byte type)
         {
             CatchPos bp = (CatchPos)p.blockchangeObject;
-            byte b = p.level.GetTile(x, y, z);
+            byte b = p.Level.GetTile(x, y, z);
             p.SendBlockchange(x, y, z, b);
             p.ClearBlockchange();
             AddFlagbase(p, bp.color, x, y, z);
@@ -321,7 +321,7 @@ namespace MCGalaxy.Commands
  /*       void AddSpawn(Player p, ushort x, ushort y, ushort z, byte type)
         {
             CatchPos bp = (CatchPos)p.blockchangeObject;
-            byte b = p.level.GetTile(x, y, z);
+            byte b = p.Level.GetTile(x, y, z);
             p.SendBlockchange(x, y, z, b);
             p.ClearBlockchange();
             AddTeamSpawn(p, bp.color, x, y, z);

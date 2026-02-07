@@ -42,7 +42,7 @@ namespace MCGalaxy.Modules.Warps
             }
             return null;
         }
-        public bool Exists(string name) { return Find(name) != null; }
+        public bool Exists(string name) => Find(name) != null;
         public void Create(string name, Player p)
         {
             Warp warp = new();
@@ -54,7 +54,7 @@ namespace MCGalaxy.Modules.Warps
         {
             warp.Pos = p.Pos; warp.Name = name;
             warp.Yaw = p.Rot.RotY; warp.Pitch = p.Rot.HeadX;
-            warp.Level = p.level.name;
+            warp.Level = p.Level.name;
         }
         public void Update(Warp warp, Player p)
         {
@@ -68,11 +68,11 @@ namespace MCGalaxy.Modules.Warps
         }
         public void Goto(Warp warp, Player p)
         {
-            if (!p.level.name.CaselessEq(warp.Level))
+            if (!p.Level.name.CaselessEq(warp.Level))
             {
                 PlayerActions.ChangeMap(p, warp.Level);
             }
-            if (p.level.name.CaselessEq(warp.Level))
+            if (p.Level.name.CaselessEq(warp.Level))
             {
                 p.SendPosition(warp.Pos, new Orientation(warp.Yaw, warp.Pitch));
                 p.Message("Sent you to waypoint/warp {0}", warp.Name);

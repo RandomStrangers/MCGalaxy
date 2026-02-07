@@ -1,8 +1,7 @@
-#if NAS && TEN_BIT_BLOCKS
 using System;
 using System.Collections;
 using System.Collections.Generic;
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
     public class SimplePriorityQueue<TItem, TPriority> : IPriorityQueue<TItem, TPriority>
         where TPriority : IComparable<TPriority>
@@ -13,8 +12,8 @@ namespace NotAwesomeSurvival
             public SimpleNode(TItem data) => Data = data;
         }
         readonly GenericPriorityQueue<SimpleNode, TPriority> _queue;
-        readonly Dictionary<TItem, IList<SimpleNode>> _itemToNodesCache;
-        readonly IList<SimpleNode> _nullNodesCache;
+        readonly Dictionary<TItem, List<SimpleNode>> _itemToNodesCache;
+        readonly List<SimpleNode> _nullNodesCache;
         public SimplePriorityQueue() : this(Comparer<TPriority>.Default, EqualityComparer<TItem>.Default) { }
         public SimplePriorityQueue(IComparer<TPriority> priorityComparer, IEqualityComparer<TItem> itemEquality) : this(priorityComparer.Compare, itemEquality) { }
         public SimplePriorityQueue(Comparison<TPriority> priorityComparer, IEqualityComparer<TItem> itemEquality)
@@ -29,7 +28,7 @@ namespace NotAwesomeSurvival
             {
                 return _nullNodesCache.Count > 0 ? _nullNodesCache[0] : null;
             }
-            if (!_itemToNodesCache.TryGetValue(item, out IList<SimpleNode> nodes))
+            if (!_itemToNodesCache.TryGetValue(item, out List<SimpleNode> nodes))
             {
                 return null;
             }
@@ -42,7 +41,7 @@ namespace NotAwesomeSurvival
                 _nullNodesCache.Remove(node);
                 return;
             }
-            if (!_itemToNodesCache.TryGetValue(node.Data, out IList<SimpleNode> nodes))
+            if (!_itemToNodesCache.TryGetValue(node.Data, out List<SimpleNode> nodes))
             {
                 return;
             }
@@ -93,7 +92,7 @@ namespace NotAwesomeSurvival
         }
         public void Enqueue(TItem item, TPriority priority)
         {
-            IList<SimpleNode> nodes;
+            List<SimpleNode> nodes;
             if (item == null)
             {
                 nodes = _nullNodesCache;
@@ -109,7 +108,7 @@ namespace NotAwesomeSurvival
         public void Remove(TItem item)
         {
             SimpleNode removeMe;
-            IList<SimpleNode> nodes;
+            List<SimpleNode> nodes;
             if (item == null)
             {
                 if (_nullNodesCache.Count == 0)
@@ -151,4 +150,3 @@ namespace NotAwesomeSurvival
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
-#endif

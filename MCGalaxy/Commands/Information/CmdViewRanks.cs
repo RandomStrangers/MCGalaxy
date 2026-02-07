@@ -16,17 +16,11 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdViewRanks : Command2
     {
-        public override string name { get { return "ViewRanks"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override bool UseableWhenFrozen { get { return true; } }
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new[] { new CommandAlias("Ops", "@80"), new CommandAlias("Admins", "@100"),
+        public override string Name => "ViewRanks";
+        public override string Type => CommandTypes.Information;
+        public override bool UseableWhenFrozen => true;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("Ops", "@80"), new CommandAlias("Admins", "@100"),
                     new CommandAlias("Banned", "banned"), new CommandAlias("BanList", "banned") };
-            }
-        }
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(2);
@@ -50,7 +44,7 @@ namespace MCGalaxy.Commands.Info
                 int perm = 0;
                 rankName = rankName.Substring(1);
                 if (!CommandParser.GetInt(p, rankName, "Permission level", ref perm)) return;
-                grp = Group.Find((LevelPermission)perm);
+                grp = Group.Find((sbyte)perm);
                 if (grp == null) p.Message("&WThere is no rank with permission level \"{0}\"", rankName);
             }
             if (grp == null) return;

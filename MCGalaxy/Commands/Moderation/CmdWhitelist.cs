@@ -16,14 +16,11 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdWhitelist : Command2
     {
-        public override string name { get { return "Whitelist"; } }
-        public override string shortcut { get { return "w"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Admin, "can enable/disable whitelisted only mode") }; }
-        }
+        public override string Name => "Whitelist";
+        public override string Shortcut => "w";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 80;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(100, "can enable/disable whitelisted only mode") };
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
@@ -67,7 +64,7 @@ namespace MCGalaxy.Commands.Moderation
             Server.Config.WhitelistedOnly = enabled;
             SrvProperties.Save();
             Chat.MessageAll("Whitelisted only mode " + desc);
-            Logger.Log(LogType.SystemActivity, "Whitelisted only mode is now " + desc);
+            Logger.Log(1, "Whitelisted only mode is now " + desc);
         }
         static void Add(Player p, string name)
         {
@@ -80,7 +77,7 @@ namespace MCGalaxy.Commands.Moderation
             {
                 Chat.MessageFromOps(p, "λNICK &Sadded &f" + name + " &Sto the whitelist.");
                 Server.whiteList.Save();
-                Logger.Log(LogType.UserActivity, "WHITELIST: Added " + name);
+                Logger.Log(3, "WHITELIST: Added " + name);
             }
         }
         static void Remove(Player p, string name)
@@ -94,13 +91,10 @@ namespace MCGalaxy.Commands.Moderation
             {
                 Server.whiteList.Save();
                 Chat.MessageFromOps(p, "λNICK &Sremoved &f" + name + " &Sfrom the whitelist.");
-                Logger.Log(LogType.UserActivity, "WHITELIST: Removed " + name);
+                Logger.Log(3, "WHITELIST: Removed " + name);
             }
         }
-        static void List(Player p, string modifier)
-        {
-            Server.whiteList.Output(p, "whitelisted players", "Whitelist list", modifier);
-        }
+        static void List(Player p, string modifier) => Server.whiteList.Output(p, "whitelisted players", "Whitelist list", modifier);
         public override void Help(Player p)
         {
             p.Message("&T/Whitelist add/del [player]");

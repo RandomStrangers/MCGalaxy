@@ -20,16 +20,16 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdRestoreSelection : Command2
     {
-        public override string name { get { return "RS"; } }
-        public override string shortcut { get { return "RestoreSelection"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "RS";
+        public override string Shortcut => "RestoreSelection";
+        public override string Type => CommandTypes.Moderation;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 80;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
             if (!Formatter.ValidMapName(p, message)) return;
-            string path = LevelInfo.BackupFilePath(p.level.name, message);
+            string path = LevelInfo.BackupFilePath(p.Level.name, message);
             if (File.Exists(path))
             {
                 p.Message("Select two corners for restore.");
@@ -38,7 +38,7 @@ namespace MCGalaxy.Commands.Moderation
             else
             {
                 p.Message("Backup {0} does not exist.", message);
-                LevelOperations.OutputBackups(p, p.level);
+                LevelOperations.OutputBackups(p, p.Level);
             }
         }
         bool DoRestore(Player p, Vec3S32[] marks, object state, ushort block)

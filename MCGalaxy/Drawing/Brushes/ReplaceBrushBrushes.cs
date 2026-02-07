@@ -24,7 +24,7 @@ namespace MCGalaxy.Drawing.Brushes
         {
             target = include; this.replacement = replacement;
         }
-        public override string Name { get { return "ReplaceBrush"; } }
+        public override string Name => "ReplaceBrush";
         public override void Configure(DrawOp op, Player p)
         {
             op.Flags = BlockDBFlags.Replaced;
@@ -42,7 +42,7 @@ namespace MCGalaxy.Drawing.Brushes
     {
         public ReplaceNotBrushBrush(ushort exclude, Brush replacement)
             : base(exclude, replacement) { }
-        public override string Name { get { return "ReplaceNotBrush"; } }
+        public override string Name => "ReplaceNotBrush";
         public override ushort NextBlock(DrawOp op)
         {
             ushort x = op.Coords.X, y = op.Coords.Y, z = op.Coords.Z;

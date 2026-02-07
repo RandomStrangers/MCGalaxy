@@ -25,15 +25,23 @@ namespace MCGalaxy.Modules.Games.ZS
         int infectCombo = 0;
         protected override void DoRound()
         {
-            if (!Running) return;
-            ResetPledges();
-            List<Player> players = DoRoundCountdown(Config.InfectionCountdown);
-            if (players == null) return;
-            if (!Running) return;
-            RoundInProgress = true;
-            StartRound(players);
-            if (!Running) return;
-            DoCoreGame();
+            if (Running)
+            {
+                ResetPledges();
+                List<Player> players = DoRoundCountdown(Config.InfectionCountdown);
+                if (players != null)
+                {
+                    if (Running)
+                    {
+                        RoundInProgress = true;
+                        StartRound(players);
+                        if (Running)
+                        {
+                            DoCoreGame();
+                        }
+                    }
+                }
+            }
         }
         void ResetPledges()
         {
@@ -50,7 +58,7 @@ namespace MCGalaxy.Modules.Games.ZS
             Player[] online = PlayerInfo.Online.Items;
             foreach (Player p in online)
             {
-                if (p.level != Map || p.Game.Referee) continue;
+                if (p.Level != Map || p.Game.Referee) continue;
                 Alive.Add(p);
             }
             Infected.Clear();
@@ -60,7 +68,7 @@ namespace MCGalaxy.Modules.Games.ZS
             {
                 first = QueuedZombie != null ? PlayerInfo.FindExact(QueuedZombie) : players[rnd.Next(players.Count)];
                 QueuedZombie = null;
-            } while (first == null || first.level != Map);
+            } while (first == null || first.Level != Map);
             Map.Message("&c" + first.DisplayName + " &Sstarted the infection!");
             InfectPlayer(first, null);
         }
@@ -77,13 +85,12 @@ namespace MCGalaxy.Modules.Games.ZS
                 int seconds = (int)(RoundEnd - DateTime.UtcNow).TotalSeconds;
                 if (seconds <= 0)
                 {
-                    MessageMap(CpeMessageType.Announcement, ""); return;
+                    MessageMap(100, ""); return;
                 }
                 if (seconds <= 5 && seconds != lastCountdown)
                 {
-                    string suffix = seconds == 1 ? " &4second" : " &4seconds";
-                    MessageMap(CpeMessageType.Announcement,
-                               "&4Ending in &f" + seconds + suffix);
+                    MessageMap(100,
+                               "&4Ending in &f" + seconds + (seconds == 1 ? " &4second" : " &4seconds"));
                     lastCountdown = seconds;
                 }
                 // Update the round time left shown in the top right
@@ -113,7 +120,7 @@ namespace MCGalaxy.Modules.Games.ZS
                     if (!InRange(alive, killer, dist)) continue;
                     if (killer.infected && !IsInfected(alive)
                         && !alive.Game.Referee && !killer.Game.Referee
-                        && killer.level == Map && alive.level == Map)
+                        && killer.Level == Map && alive.Level == Map)
                     {
                         InfectPlayer(alive, killer);
                         if (lastKiller == killer.name)
@@ -146,7 +153,7 @@ namespace MCGalaxy.Modules.Games.ZS
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {
-                if (p.level != Map) continue;
+                if (p.Level != Map) continue;
                 ZSData data = Get(p);
                 if (!data.Invisible) continue;
                 DateTime end = data.InvisibilityEnd;
@@ -162,7 +169,7 @@ namespace MCGalaxy.Modules.Games.ZS
                 string msg = "&bInvisibility for &a" + left;
                 if (p.Supports(CpeExt.MessageTypes))
                 {
-                    p.SendCpeMessage(CpeMessageType.BottomRight2, msg);
+                    p.SendCpeMessage(12, msg);
                 }
                 else
                 {
@@ -173,38 +180,42 @@ namespace MCGalaxy.Modules.Games.ZS
         void CheckHumanPledge(Player p, Player killer)
         {
             ZSData data = Get(p);
-            if (!data.PledgeSurvive) return;
-            data.PledgeSurvive = false;
-            Map.Message("&c" + p.DisplayName + " &Sbroke " + p.pronouns.Object + " pledge of not being infected.");
-            if (killer == null)
+            if (data.PledgeSurvive)
             {
-                p.Message("As this was an automatic infection, you have not lost any &3" + Server.Config.Currency);
-            }
-            else
-            {
-                p.SetMoney(Math.Max(p.money - 2, 0));
+                data.PledgeSurvive = false;
+                Map.Message("&c" + p.DisplayName + " &Sbroke " + p.Pronouns.Object + " pledge of not being infected.");
+                if (killer == null)
+                {
+                    p.Message("As this was an automatic infection, you have not lost any &3" + Server.Config.Currency);
+                }
+                else
+                {
+                    p.SetMoney(Math.Max(p.money - 2, 0));
+                }
             }
         }
         void CheckBounty(Player p, Player pKiller)
         {
             BountyData bounty = BountyData.Find(p.name);
-            if (bounty == null) return;
-            BountyData.Bounties.Remove(bounty);
-            Player setter = PlayerInfo.FindExact(bounty.Origin);
-            if (pKiller == null)
+            if (bounty != null)
             {
-                Map.Message("Bounty on " + p.ColoredName + " &Sis no longer active");
-                setter?.SetMoney(setter.money + bounty.Amount);
-            }
-            else if (setter == null)
-            {
-                pKiller.Message("Cannot collect the bounty, as the player who set it is offline.");
-            }
-            else
-            {
-                Map.Message("&c" + pKiller.DisplayName + " &Scollected the bounty of &a" +
-                              bounty.Amount + " &S" + Server.Config.Currency + " on " + p.ColoredName);
-                pKiller.SetMoney(pKiller.money + bounty.Amount);
+                BountyData.Bounties.Remove(bounty);
+                Player setter = PlayerInfo.FindExact(bounty.Origin);
+                if (pKiller == null)
+                {
+                    Map.Message("Bounty on " + p.ColoredName + " &Sis no longer active");
+                    setter?.SetMoney(setter.money + bounty.Amount);
+                }
+                else if (setter == null)
+                {
+                    pKiller.Message("Cannot collect the bounty, as the player who set it is offline.");
+                }
+                else
+                {
+                    Map.Message("&c" + pKiller.DisplayName + " &Scollected the bounty of &a" +
+                                  bounty.Amount + " &S" + Server.Config.Currency + " on " + p.ColoredName);
+                    pKiller.SetMoney(pKiller.money + bounty.Amount);
+                }
             }
         }
         void ShowInfectMessage(Random random, Player pAlive, Player pKiller)
@@ -228,26 +239,33 @@ namespace MCGalaxy.Modules.Games.ZS
         }
         public override void EndRound()
         {
-            if (!RoundInProgress) return;
-            RoundInProgress = false;
-            RoundStart = DateTime.MinValue;
-            RoundEnd = DateTime.MinValue;
-            UpdateAllStatus1();
-            if (!Running) return;
-            Player[] alive = Alive.Items, dead = Infected.Items;
-            Map.Message("&aThe game has ended!");
-            if (alive.Length == 0) Map.Message("&4Zombies have won this round.");
-            else if (alive.Length == 1) Map.Message("&2Congratulations to the sole survivor:");
-            else Map.Message("&2Congratulations to the survivors:");
-            AnnounceWinners(alive, dead);
-            Map.Config.RoundsPlayed++;
-            if (alive.Length > 0)
+            if (RoundInProgress)
             {
-                Map.Config.RoundsHumanWon++;
-                foreach (Player p in alive) { IncreaseAliveStats(p); }
+                RoundInProgress = false;
+                RoundStart = DateTime.MinValue;
+                RoundEnd = DateTime.MinValue;
+                UpdateAllStatus1();
+                if (Running)
+                {
+                    Player[] alive = Alive.Items, dead = Infected.Items;
+                    Map.Message("&aThe game has ended!");
+                    if (alive.Length == 0) Map.Message("&4Zombies have won this round.");
+                    else if (alive.Length == 1) Map.Message("&2Congratulations to the sole survivor:");
+                    else Map.Message("&2Congratulations to the survivors:");
+                    AnnounceWinners(alive, dead);
+                    Map.Config.RoundsPlayed++;
+                    if (alive.Length > 0)
+                    {
+                        Map.Config.RoundsHumanWon++;
+                        foreach (Player p in alive) 
+                        { 
+                            IncreaseAliveStats(p);
+                        }
+                    }
+                    GiveMoney(alive);
+                    Map.SaveSettings();
+                }
             }
-            GiveMoney(alive);
-            Map.SaveSettings();
         }
         void AnnounceWinners(Player[] alive, Player[] dead)
         {
@@ -264,10 +282,8 @@ namespace MCGalaxy.Modules.Games.ZS
             {
                 if (Get(dead[i]).CurrentInfected == maxKills) count++;
             }
-            string group = count == 1 ? " zombie " : " zombies ";
-            string suffix = maxKills == 1 ? " &Skill" : " &Skills";
             string formatter(Player p) => Get(p).CurrentInfected == maxKills ? p.ColoredName : null;
-            Map.Message("&8Best" + group + "&S(&b" + maxKills + suffix + "&S)&8: " + dead.Join(formatter));
+            Map.Message("&8Best" + (count == 1 ? " zombie " : " zombies ") + "&S(&b" + maxKills + (maxKills == 1 ? " &Skill" : " &Skills") + "&S)&8: " + dead.Join(formatter));
         }
         void IncreaseAliveStats(Player p)
         {
@@ -289,7 +305,7 @@ namespace MCGalaxy.Modules.Games.ZS
             Random rand = new();
             foreach (Player pl in online)
             {
-                if (pl.level != Map) continue;
+                if (pl.Level != Map) continue;
                 ZSData data = Get(pl);
                 data.ResetInvisibility();
                 RewardMoney(pl, data, alive, rand);

@@ -20,24 +20,24 @@ namespace MCGalaxy.Blocks
     {
         internal static bool Door(Player p, ushort block, ushort x, ushort y, ushort z)
         {
-            if (p.level.physics == 0) return true;
+            if (p.Level.LevelPhysics == 0) return true;
             PhysicsArgs args = ActivateablePhysics.GetDoorArgs(block, out ushort physForm);
-            p.level.Blockchange(x, y, z, physForm, false, args);
+            p.Level.Blockchange(x, y, z, physForm, false, args);
             return true;
         }
         internal static bool Train(Player p, ushort _, ushort __, ushort ___, ushort ____)
         {
-            if (!p.trainInvincible && p.level.Config.KillerBlocks) p.HandleDeath(Block.Train);
+            if (!p.trainInvincible && p.Level.Config.KillerBlocks) p.HandleDeath(Block.Train);
             return true;
         }
         internal static bool DoPortal(Player p, ushort _, ushort x, ushort y, ushort z)
         {
-            if (p.level.PosToInt(x, y, z) == p.lastWalkthrough) return true;
+            if (p.Level.PosToInt(x, y, z) == p.lastWalkthrough) return true;
             return Portal.Handle(p, x, y, z);
         }
         internal static bool DoMessageBlock(Player p, ushort _, ushort x, ushort y, ushort z)
         {
-            if (p.level.PosToInt(x, y, z) == p.lastWalkthrough) return true;
+            if (p.Level.PosToInt(x, y, z) == p.lastWalkthrough) return true;
             return MessageBlock.Handle(p, x, y, z, false);
         }
         internal static bool Checkpoint(Player p, ushort _, ushort x, ushort y, ushort z)
@@ -48,7 +48,7 @@ namespace MCGalaxy.Blocks
             p.checkpointZ = z;
             p.checkpointRotX = p.Rot.RotY;
             p.checkpointRotY = p.Rot.HeadX;
-            int index = p.level.PosToInt(x, y, z);
+            int index = p.Level.PosToInt(x, y, z);
             if (index != p.lastCheckpointIndex)
             {
                 Position pos = p.Pos;

@@ -44,7 +44,7 @@ namespace MCGalaxy.Commands
             PlayerBot bot = Matcher.FindBots(p, args[1]);
             if (bot == null) return;
             if (!CheckExtraPerm(p, data, 2)) return;
-            if (!LevelInfo.Check(p, data.Rank, p.level, "change the " + type + " of that bot")) return;
+            if (!LevelInfo.Check(p, data.Rank, p.Level, "change the " + type + " of that bot")) return;
             if (!bot.EditableBy(p, "change the " + type + " of")) { return; }
             SetBotData(p, bot, args.Length > 2 ? args[2] : "");
         }
@@ -69,7 +69,7 @@ namespace MCGalaxy.Commands
             target = PlayerInfo.FindMatchesPreferOnline(p, target);
             if (target == null) return;
             if (p.name != target && !CheckExtraPerm(p, data, 1)) return;
-            LevelPermission rank = Group.GroupIn(target).Permission;
+            sbyte rank = Group.GroupIn(target).Permission;
             if (!CheckRank(p, data, target, rank, "change the " + type + " of", true)) return;
             SetPlayerData(p, target, args.Length > 1 ? args[1] : "");
         }

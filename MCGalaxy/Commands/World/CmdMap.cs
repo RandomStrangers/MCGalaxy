@@ -16,30 +16,18 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdMap : Command2
     {
-        public override string name { get { return "Map"; } }
-        public override string type { get { return CommandTypes.World; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get
-            {
-                return new[] { new CommandPerm(LevelPermission.Operator, "can edit map options"),
-                    new CommandPerm(LevelPermission.Admin, "can set realm owners") };
-            }
-        }
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new[] { new CommandAlias("ps", LevelOptions.Speed),
+        public override string Name => "Map";
+        public override string Type => CommandTypes.World;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can edit map options"),
+                    new CommandPerm(100, "can set realm owners") };
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("ps", LevelOptions.Speed),
                     new CommandAlias("AllowGuns", "{args} " + LevelOptions.Guns) };
-            }
-        }
         public override void Use(Player p, string message, CommandData data)
         {
             if (CheckSuper(p, message, "level name")) return;
             if (message.Length == 0)
             {
-                PrintMapInfo(p, p.level.Config); return;
+                PrintMapInfo(p, p.Level.Config); return;
             }
             string[] args = message.SplitSpaces(3);
             string value;
@@ -48,7 +36,7 @@ namespace MCGalaxy.Commands.World
             if (IsMapOption(args))
             {
                 if (p.IsSuper) { SuperRequiresArgs(p, "level name"); return; }
-                lvl = p.level;
+                lvl = p.Level;
                 optName = args[0];
                 args = message.SplitSpaces(2);
                 value = args.Length > 1 ? args[1] : "";
@@ -90,12 +78,8 @@ namespace MCGalaxy.Commands.World
             int argsCount = HasArgument(opt.Name) ? 2 : 1;
             return args.Length == argsCount;
         }
-        static bool HasArgument(string opt)
-        {
-            return
-                opt == LevelOptions.Speed || opt == LevelOptions.Overload || opt == LevelOptions.TreeType ||
+        static bool HasArgument(string opt) => opt == LevelOptions.Speed || opt == LevelOptions.Overload || opt == LevelOptions.TreeType ||
                 opt == LevelOptions.Fall || opt == LevelOptions.Drown || opt == LevelOptions.RealmOwner || opt == LevelOptions.LoadDelay;
-        }
         static void PrintMapInfo(Player p, LevelConfig cfg)
         {
             p.Message("&TPhysics settings:");
@@ -122,7 +106,7 @@ namespace MCGalaxy.Commands.World
             p.Message("  Buildable: {0}&S, Deletable: {1}&S, Drawing: {2}",
                            GetBool(cfg.Buildable), GetBool(cfg.Deletable), GetBool(cfg.Drawing));
         }
-        static string GetBool(bool value) { return value ? "&aON" : "&cOFF"; }
+        static string GetBool(bool value) => value ? "&aON" : "&cOFF";
         public override void Help(Player p)
         {
             p.Message("&T/Map [level] [option] <value> &H- Sets [option] on that level");
@@ -158,7 +142,7 @@ namespace MCGalaxy.Commands.World
             p.Message("&T-/+thirdperson &H- disallows/allows third person camera");
             p.Message("&T-/+speed &H- disallows/allows speeding");
             p.Message("&T-/+ophax &H- disallows/allows hacks for {0}&S+",
-                           Group.GetColoredName(LevelPermission.Operator));
+                           Group.GetColoredName(80));
             p.Message("&T-/+push &H- disallows/allows player pushing");
             p.Message("&Tjumpheight=[height] &H- sets max height users can jump up to");
             p.Message("&Thorspeed=[speed] &H- sets base horizontal speed users move at");

@@ -1,13 +1,11 @@
-#if NAS && TEN_BIT_BLOCKS
-using MCGalaxy;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using MCGalaxy.Util.Imaging;
 using System;
 using System.IO;
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
-    public class DynamicColor
+    public class NASColor
     {
         public static SchedulerTask task, GoldTask;
         public static ColorDesc[] defaultColors,
@@ -33,14 +31,14 @@ namespace NotAwesomeSurvival
         {
             if (File.Exists("plugins/" + selectorImageName))
             {
-                FileIO.TryMove("plugins/" + selectorImageName, Nas.Path + selectorImageName);
+                FileIO.TryMove("plugins/" + selectorImageName, NASPlugin.Path + selectorImageName);
             }
-            if (!File.Exists(Nas.Path + selectorImageName))
+            if (!File.Exists(NASPlugin.Path + selectorImageName))
             {
-                Logger.Log(LogType.Debug, "Could not locate {0} (needed for tool health/selection colors)", selectorImageName);
+                Logger.Log(15, "Could not locate {0} (needed for tool health/selection colors)", selectorImageName);
                 return false;
             }
-            byte[] data = File.ReadAllBytes(Nas.Path + "selectorColors.png");
+            byte[] data = File.ReadAllBytes(NASPlugin.Path + "selectorColors.png");
             Bitmap2D colorImage = ImageDecoder.DecodeFrom(data);
             defaultColors = new ColorDesc[colorImage.Width];
             fullHealthColors = new ColorDesc[colorImage.Width];
@@ -91,7 +89,7 @@ namespace NotAwesomeSurvival
                 {
                     continue;
                 }
-                NasPlayer np = NasPlayer.GetNasPlayer(p);
+                NASPlayer np = NASPlayer.GetPlayer(p);
                 if (np == null)
                 {
                     continue;
@@ -102,4 +100,3 @@ namespace NotAwesomeSurvival
         }
     }
 }
-#endif

@@ -16,22 +16,13 @@ namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdLoginMessage : EntityPropertyCmd
     {
-        public override string name { get { return "LoginMessage"; } }
-        public override string shortcut { get { return "LoginMsg"; } }
-        public override string type { get { return CommandTypes.Chat; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can change the login message of others") }; }
-        }
-        public override void Use(Player p, string message, CommandData data)
-        {
-            UsePlayer(p, data, message, "login message");
-        }
-        protected override void SetPlayerData(Player p, string target, string msg)
-        {
-            PlayerOperations.SetLoginMessage(p, target, msg);
-        }
+        public override string Name => "LoginMessage";
+        public override string Shortcut => "LoginMsg";
+        public override string Type => CommandTypes.Chat;
+        public override sbyte DefaultRank => 80;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can change the login message of others") };
+        public override void Use(Player p, string message, CommandData data) => UsePlayer(p, data, message, "login message");
+        protected override void SetPlayerData(Player p, string target, string msg) => PlayerOperations.SetLoginMessage(p, target, msg);
         public override void Help(Player p)
         {
             p.Message("&T/LoginMessage [player] [message]");

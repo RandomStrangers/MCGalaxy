@@ -22,14 +22,11 @@ namespace MCGalaxy.Commands.Building
 {
     public class CmdUndo : Command2
     {
-        public override string name { get { return "Undo"; } }
-        public override string shortcut { get { return "u"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can undo physics") }; }
-        }
-        public override bool MessageBlockRestricted { get { return true; } }
+        public override string Name => "Undo";
+        public override string Shortcut => "u";
+        public override string Type => CommandTypes.Building;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can undo physics") };
+        public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { UndoLastDrawOp(p); return; }
@@ -80,15 +77,15 @@ namespace MCGalaxy.Commands.Building
             {
                 p.Message("&WYou can only undo physics if you can use &T/Physics"); return;
             }
-            CmdPhysics.SetPhysics(p.level, 0);
+            CmdPhysics.SetPhysics(p.Level, 0);
             UndoPhysicsDrawOp op = new()
             {
                 Start = DateTime.UtcNow.Subtract(delta)
             };
             DrawOpPerformer.Do(op, null, p, new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal });
-            p.level.Message("Physics were undone &b" + delta.Shorten());
-            Logger.Log(LogType.UserActivity, "Physics were undone &b" + delta.Shorten());
-            p.level.Save(true);
+            p.Level.Message("Physics were undone &b" + delta.Shorten());
+            Logger.Log(3, "Physics were undone &b" + delta.Shorten());
+            p.Level.Save(true);
         }
         void UndoSelf(Player p, TimeSpan delta)
         {
@@ -102,7 +99,7 @@ namespace MCGalaxy.Commands.Building
             if (op.found)
             {
                 p.Message("Undid your changes for the past &b{0}", delta.Shorten(true));
-                Logger.Log(LogType.UserActivity, "{0} undid their own actions for the past {1}",
+                Logger.Log(3, "{0} undid their own actions for the past {1}",
                            p.name, delta.Shorten(true));
             }
             else

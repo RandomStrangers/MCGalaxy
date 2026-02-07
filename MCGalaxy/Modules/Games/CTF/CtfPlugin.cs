@@ -17,7 +17,7 @@ namespace MCGalaxy.Modules.Games.CTF
 {
     public sealed class CTFPlugin : Plugin
     {
-        public override string name { get { return "CTF"; } }
+        public override string Name => "CTF";
         static readonly Command cmdCTF = new CmdCTF();
         public override void Load(bool startup)
         {
@@ -26,7 +26,7 @@ namespace MCGalaxy.Modules.Games.CTF
             game.Config.Path = "props/ctf.properties";
             game.ReloadConfig();
             game.AutoStart();
-            OnConfigUpdatedEvent.Register(game.ReloadConfig, Priority.Low);
+            OnConfigUpdatedEvent.Register(game.ReloadConfig, 0);
         }
         public override void Unload(bool shutdown)
         {

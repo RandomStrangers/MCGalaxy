@@ -73,16 +73,16 @@ namespace MCGalaxy.Core
             {
                 p.Leave(null, "Server full!", true); return false;
             }
-            if (p.Rank > LevelPermission.Guest) return true;
+            if (p.Rank > 0) return true;
             online = PlayerInfo.Online.Items;
             int guests = 0;
             foreach (Player pl in online)
             {
-                if (pl.Rank <= LevelPermission.Guest) guests++;
+                if (pl.Rank <= 0) guests++;
             }
             if (guests < Server.Config.MaxGuests) return true;
             if (Server.Config.GuestLimitNotify) Chat.MessageOps("Guest " + p.truename + " couldn't log in - too many guests.");
-            Logger.Log(LogType.Warning, "Guest {0} couldn't log in - too many guests.", p.truename);
+            Logger.Log(6, "Guest {0} couldn't log in - too many guests.", p.truename);
             p.Leave(null, "Server has reached max number of guests", true);
             return false;
         }
@@ -95,7 +95,7 @@ namespace MCGalaxy.Core
                 p.Kick(null, ipban, true);
                 return false;
             }
-            if (p.Rank != LevelPermission.Banned) return true;
+            if (p.Rank != -20) return true;
             Ban.GetBanData(p.name, out string banner, out string reason, out _, out _);
             if (banner != null)
             {

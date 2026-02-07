@@ -81,8 +81,8 @@ namespace MCGalaxy.Modules.Games.ZS
         [ConfigInt("humans-win-reward-max", "Human rewards", 6, 0)]
         public int HumansRewardMax = 6;
         static ConfigElement[] cfg;
-        public override bool AllowAutoload { get { return true; } }
-        protected override string GameName { get { return "Zombie Survival"; } }
+        public override bool AllowAutoload => true;
+        protected override string GameName => "Zombie Survival";
         public override void Save()
         {
             cfg ??= ConfigElement.GetAll(typeof(ZSConfig));
@@ -118,14 +118,11 @@ namespace MCGalaxy.Modules.Games.ZS
             "<zombie> made some zombie babies with <human>", "<zombie> made <human> see the dark side", "<zombie> tweeted <human>",
             "<zombie> made <human> open source", "<zombie> infected <human>", "<zombie> iDotted <human>", "<human> got nommed on",
             "<zombie> transplanted <human>'s living brain" };
-        public static string FormatInfectMessage(string infectMsg, Player pKiller, Player pAlive)
-        {
-            return infectMsg
+        public static string FormatInfectMessage(string infectMsg, Player pKiller, Player pAlive) => infectMsg
                 .Replace(InfectZombiePlaceholder, "&c" + pKiller.DisplayName + "&S")
                 .Replace(InfectHumanPlaceholder, pAlive.ColoredName + "&S")
-                .Replace(InfectZombieObjectPlaceholder, pKiller.pronouns.Object)
-                .Replace(InfectHumanObjectPlaceholder, pAlive.pronouns.Object);
-        }
+                .Replace(InfectZombieObjectPlaceholder, pKiller.Pronouns.Object)
+                .Replace(InfectHumanObjectPlaceholder, pAlive.Pronouns.Object);
         public static List<string> LoadInfectMessages()
         {
             List<string> msgs = new();
@@ -145,7 +142,7 @@ namespace MCGalaxy.Modules.Games.ZS
             if (msgs.Count == 0) msgs = new List<string>(defMessages);
             return ConvertInfectMessages(msgs);
         }
-        static string InfectPath(string name) { return "text/infect/" + name.ToLower() + ".txt"; }
+        static string InfectPath(string name) => "text/infect/" + name.ToLower() + ".txt";
         public static List<string> LoadPlayerInfectMessages(string name)
         {
             string path = InfectPath(name);

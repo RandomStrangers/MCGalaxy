@@ -12,7 +12,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-#if !MCG_STANDALONE
 using MCGalaxy.Commands;
 using MCGalaxy.Scripting;
 using System.IO;
@@ -20,14 +19,11 @@ namespace MCGalaxy.Modules.Compiling
 {
     class CmdCompile : Command2
     {
-        public override string name { get { return "Compile"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Owner; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("PCompile", "plugin") }; }
-        }
-        public override bool MessageBlockRestricted { get { return true; } }
+        public override string Name => "Compile";
+        public override string Type => CommandTypes.Other;
+        public override sbyte DefaultRank => 120;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("PCompile", "plugin") };
+        public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
@@ -114,4 +110,3 @@ namespace MCGalaxy.Modules.Compiling
         }
     }
 }
-#endif

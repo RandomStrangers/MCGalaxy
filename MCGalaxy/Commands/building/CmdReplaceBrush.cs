@@ -17,10 +17,10 @@ namespace MCGalaxy.Commands.Building
 {
     public class CmdReplaceBrush : DrawCmd
     {
-        public override string name { get { return "ReplaceBrush"; } }
-        public override string shortcut { get { return "rb"; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        protected virtual bool ReplaceNot { get { return false; } }
+        public override string Name => "ReplaceBrush";
+        public override string Shortcut => "rb";
+        public override sbyte DefaultRank => 50;
+        protected virtual bool ReplaceNot => false;
         protected override DrawOp GetDrawOp(DrawArgs dArgs)
         {
             Player p = dArgs.Player;
@@ -51,9 +51,9 @@ namespace MCGalaxy.Commands.Building
     }
     public class CmdReplaceNotBrush : CmdReplaceBrush
     {
-        public override string name { get { return "ReplaceNotBrush"; } }
-        public override string shortcut { get { return "rnb"; } }
-        protected override bool ReplaceNot { get { return true; } }
+        public override string Name => "ReplaceNotBrush";
+        public override string Shortcut => "rnb";
+        protected override bool ReplaceNot => true;
         public override void Help(Player p)
         {
             p.Message("&T/ReplaceNotBrush [block] [brush name] <brush args>");

@@ -16,9 +16,9 @@ namespace MCGalaxy.Modules.Games.ZS
 {
     sealed class CmdInfect : Command2
     {
-        public override string name { get { return "Infect"; } }
-        public override string type { get { return CommandTypes.Games; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "Infect";
+        public override string Type => CommandTypes.Games;
+        public override sbyte DefaultRank => 80;
         public override void Use(Player p, string message, CommandData data)
         {
             Player who = message.Length == 0 ? p : PlayerInfo.FindMatches(p, message);

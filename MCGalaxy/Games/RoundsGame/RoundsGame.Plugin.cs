@@ -23,13 +23,13 @@ namespace MCGalaxy.Games
     {
         protected virtual void HookEventHandlers()
         {
-            OnLevelUnloadEvent.Register(HandleLevelUnload, Priority.High);
-            OnMainLevelChangingEvent.Register(HandleMainChanged, Priority.High);
-            OnSendingHeartbeatEvent.Register(HandleSendingHeartbeat, Priority.High);
-            OnInfoSaveEvent.Register(HandleSaveStats, Priority.High);
-            OnPlayerActionEvent.Register(HandlePlayerAction, Priority.High);
-            OnPlayerConnectEvent.Register(HandlePlayerConnect, Priority.High);
-            OnPlayerDisconnectEvent.Register(HandlePlayerDisconnect, Priority.High);
+            OnLevelUnloadEvent.Register(HandleLevelUnload, 2);
+            OnMainLevelChangingEvent.Register(HandleMainChanged, 2);
+            OnSendingHeartbeatEvent.Register(HandleSendingHeartbeat, 2);
+            OnInfoSaveEvent.Register(HandleSaveStats, 2);
+            OnPlayerActionEvent.Register(HandlePlayerAction, 2);
+            OnPlayerConnectEvent.Register(HandlePlayerConnect, 2);
+            OnPlayerDisconnectEvent.Register(HandlePlayerDisconnect, 2);
         }
         protected virtual void UnhookEventHandlers()
         {
@@ -41,7 +41,7 @@ namespace MCGalaxy.Games
             OnPlayerConnectEvent.Unregister(HandlePlayerConnect);
             OnPlayerDisconnectEvent.Unregister(HandlePlayerDisconnect);
         }
-        void HandleSaveStats(Player p, ref bool cancel) { SaveStats(p); }
+        void HandleSaveStats(Player p, ref bool cancel) => SaveStats(p);
         protected virtual void HandleSendingHeartbeat(Heartbeat service, ref string name)
         {
             if (Map == null || !GetConfig().MapInHeartbeat) return;
@@ -54,7 +54,7 @@ namespace MCGalaxy.Games
         }
         protected virtual void HandlePlayerDisconnect(Player p, string reason)
         {
-            if (p.level != Map) return;
+            if (p.Level != Map) return;
             PlayerLeftGame(p);
         }
         protected void HandleJoinedCommon(Player p, Level prevLevel, Level level, ref bool announce)
@@ -81,11 +81,11 @@ namespace MCGalaxy.Games
                 announce = false;
             }
         }
-        protected void HandlePlayerAction(Player p, PlayerAction action, string message, bool stealth)
+        protected void HandlePlayerAction(Player p, int action, string _, bool __)
         {
-            if (!(action == PlayerAction.Referee || action == PlayerAction.UnReferee)) return;
-            if (p.level != Map) return;
-            if (action == PlayerAction.UnReferee)
+            if (!(action == 1 || action == 2)) return;
+            if (p.Level != Map) return;
+            if (action == 2)
             {
                 PlayerActions.Respawn(p);
                 PlayerJoinedGame(p);
@@ -103,7 +103,7 @@ namespace MCGalaxy.Games
         void HandleLevelUnload(Level lvl, ref bool cancel)
         {
             if (lvl != Map) return;
-            Logger.Log(LogType.GameActivity, "Unload cancelled! A {0} game is currently going on!", GameName);
+            Logger.Log(2, "Unload cancelled! A {0} game is currently going on!", GameName);
             cancel = true;
         }
         void HandleMainChanged(ref string map)

@@ -17,9 +17,9 @@ namespace MCGalaxy.Commands.Fun
 {
     public abstract class RoundsGameCmd : Command2
     {
-        public override string type { get { return CommandTypes.Games; } }
-        public override bool museumUsable { get { return false; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Type => CommandTypes.Games;
+        public override bool MuseumUsable => false;
+        public override bool SuperUseable => false;
         protected abstract RoundsGame Game { get; }
         public override void Use(Player p, string message, CommandData data)
         {
@@ -47,11 +47,11 @@ namespace MCGalaxy.Commands.Fun
             }
             else if (message.CaselessEq("add"))
             {
-                RoundsGameConfig.AddMap(p, p.level.name, p.level.Config, game);
+                RoundsGameConfig.AddMap(p, p.Level.name, p.Level.Config, game);
             }
             else if (IsDeleteAction(message))
             {
-                RoundsGameConfig.RemoveMap(p, p.level.name, p.level.Config, game);
+                RoundsGameConfig.RemoveMap(p, p.Level.name, p.Level.Config, game);
             }
             else if (message.CaselessStarts("set ") || message.CaselessStarts("setup "))
             {
@@ -117,14 +117,14 @@ namespace MCGalaxy.Commands.Fun
         protected abstract void HandleSet(Player p, RoundsGame game, string[] args);
         protected void LoadMapConfig(Player p, RoundsGameMapConfig cfg)
         {
-            cfg.SetDefaults(p.level);
-            cfg.Load(p.level.name);
+            cfg.SetDefaults(p.Level);
+            cfg.Load(p.Level.name);
         }
         protected void SaveMapConfig(Player p, RoundsGameMapConfig cfg)
         {
             RoundsGame game = Game;
-            cfg.Save(p.level.name);
-            if (p.level == game.Map) game.UpdateMapConfig();
+            cfg.Save(p.Level.name);
+            if (p.Level == game.Map) game.UpdateMapConfig();
         }
     }
 }

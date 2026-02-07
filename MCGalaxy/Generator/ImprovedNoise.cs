@@ -96,36 +96,27 @@ namespace MCGalaxy.Generator
                     v),
                 w);
         }
-        static float Fade(float t)
+        static float Fade(float t) => t * t * t * (t * (t * 6 - 15) + 10);
+        static float Grad(int hash, float x, float y, float z) => (hash & 0xF) switch
         {
-            return t * t * t * (t * (t * 6 - 15) + 10);
-        }
-        static float Grad(int hash, float x, float y, float z)
-        {
-            return (hash & 0xF) switch
-            {
-                0x0 => x + y,
-                0x1 => -x + y,
-                0x2 => x - y,
-                0x3 => -x - y,
-                0x4 => x + z,
-                0x5 => -x + z,
-                0x6 => x - z,
-                0x7 => -x - z,
-                0x8 => y + z,
-                0x9 => -y + z,
-                0xA => y - z,
-                0xB => -y - z,
-                0xC => y + x,
-                0xD => -y + z,
-                0xE => y - x,
-                0xF => -y - z,
-                _ => 0,// never happens
-            };
-        }
-        static float Lerp(float a, float b, float t)
-        {
-            return a + t * (b - a);
-        }
+            0x0 => x + y,
+            0x1 => -x + y,
+            0x2 => x - y,
+            0x3 => -x - y,
+            0x4 => x + z,
+            0x5 => -x + z,
+            0x6 => x - z,
+            0x7 => -x - z,
+            0x8 => y + z,
+            0x9 => -y + z,
+            0xA => y - z,
+            0xB => -y - z,
+            0xC => y + x,
+            0xD => -y + z,
+            0xE => y - x,
+            0xF => -y - z,
+            _ => 0,// never happens
+        };
+        static float Lerp(float a, float b, float t) => a + t * (b - a);
     }
 }

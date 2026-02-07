@@ -17,8 +17,8 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdWhere : Command2
     {
-        public override string name { get { return "Where"; } }
-        public override string type { get { return CommandTypes.Information; } }
+        public override string Name => "Where";
+        public override string Type => CommandTypes.Information;
         public override void Use(Player p, string message, CommandData data)
         {
             Entity target;

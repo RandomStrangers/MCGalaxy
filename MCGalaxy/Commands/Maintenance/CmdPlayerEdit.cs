@@ -20,14 +20,11 @@ namespace MCGalaxy.Commands.Maintenance
 {
     public sealed class CmdPlayerEdit : Command2
     {
-        public override string name { get { return "PlayerEdit"; } }
-        public override string shortcut { get { return "pe"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("SetInfo") }; }
-        }
+        public override string Name => "PlayerEdit";
+        public override string Shortcut => "pe";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 100;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("SetInfo") };
         delegate void DBSetter(string name, string column, string data);
         const int type_norm = 0, type_lo = 1, type_hi = 2;
         public override void Use(Player p, string message, CommandData data)
@@ -256,11 +253,8 @@ namespace MCGalaxy.Commands.Maintenance
                 p.Message("The {1} data for &b{0} &Shas been updated to &a{2}&S.", name, type, value);
             }
         }
-        static void MessageValidTypes(Player p)
-        {
-            p.Message("&HValid types: &SFirstLogin, LastLogin, Logins, Title, IP, Deaths, Money, " +
+        static void MessageValidTypes(Player p) => p.Message("&HValid types: &SFirstLogin, LastLogin, Logins, Title, IP, Deaths, Money, " +
                       "Modified, Drawn, Placed, Deleted, TotalKicked, TimeSpent, Color, TitleColor, Messages ");
-        }
         public override void Help(Player p)
         {
             p.Message("&T/PlayerEdit [username] [type] <value>");

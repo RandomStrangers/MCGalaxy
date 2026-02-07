@@ -17,14 +17,11 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdCommands : Command2
     {
-        public override string name { get { return "Commands"; } }
-        public override string shortcut { get { return "Cmds"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override bool UseableWhenFrozen { get { return true; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("CmdList") }; }
-        }
+        public override string Name => "Commands";
+        public override string Shortcut => "Cmds";
+        public override string Type => CommandTypes.Information;
+        public override bool UseableWhenFrozen => true;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("CmdList") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (!ListCommands(p, message)) Help(p);
@@ -75,12 +72,12 @@ namespace MCGalaxy.Commands.Info
             List<Command> shortcuts = new();
             foreach (Command cmd in allCmds)
             {
-                if (cmd.shortcut.Length == 0) continue;
+                if (cmd.Shortcut.Length == 0) continue;
                 if (!p.CanUse(cmd)) continue;
                 shortcuts.Add(cmd);
             }
             Paginator.Output(p, shortcuts,
-                             (cmd) => "&b" + cmd.shortcut + " &S[" + cmd.name + "]",
+                             (cmd) => "&b" + cmd.Shortcut + " &S[" + cmd.Name + "]",
                              "Commands shortcuts", "shortcuts", modifier);
         }
         static void PrintRankCommands(Player p, string sort, string modifier, Group group, bool own)
@@ -125,7 +122,7 @@ namespace MCGalaxy.Commands.Info
             if (type.CaselessEq("eco")) type = CommandTypes.Economy;
             foreach (Command c in allCmds)
             {
-                string category = MapCategory(c.type);
+                string category = MapCategory(c.Type);
                 if (!type.CaselessEq(category)) continue;
                 if (p.CanUse(c)) cmds.Add(c);
                 foundAny = true;
@@ -148,8 +145,8 @@ namespace MCGalaxy.Commands.Info
         {
             if (sort == "name" || sort == "names")
             {
-                cmds.Sort((a, b) => a.name
-                          .CompareTo(b.name));
+                cmds.Sort((a, b) => a.Name
+                          .CompareTo(b.Name));
             }
             if (sort == "rank" || sort == "ranks")
             {
@@ -175,7 +172,7 @@ namespace MCGalaxy.Commands.Info
             Dictionary<string, bool> categories = new();
             foreach (Command cmd in allCmds)
             {
-                categories[MapCategory(cmd.type)] = true;
+                categories[MapCategory(cmd.Type)] = true;
             }
             List<string> list = new(categories.Keys);
             list.Sort();

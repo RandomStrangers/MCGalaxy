@@ -16,15 +16,12 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdLockdown : Command2
     {
-        public override string name { get { return "Lockdown"; } }
-        public override string shortcut { get { return "ld"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("WLock"), new CommandAlias("WUnlock") }; }
-        }
+        public override string Name => "Lockdown";
+        public override string Shortcut => "ld";
+        public override string Type => CommandTypes.Other;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 80;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("WLock"), new CommandAlias("WUnlock") };
         public override void Use(Player p, string map, CommandData data)
         {
             if (map.Length == 0) { Help(p); return; }

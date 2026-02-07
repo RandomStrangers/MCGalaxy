@@ -18,7 +18,7 @@ namespace MCGalaxy.Commands.Eco
 {
     public abstract class MoneyCmd : Command2
     {
-        public override string type { get { return CommandTypes.Economy; } }
+        public override string Type => CommandTypes.Economy;
         protected bool ParseArgs(Player p, string message, ref bool all,
                                  string _, out EcoTransaction data)
         {

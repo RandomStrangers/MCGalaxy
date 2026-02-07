@@ -21,12 +21,12 @@ namespace MCGalaxy.Config
         readonly bool defValue;
         public ConfigBoolAttribute() : this(null, null, false) { }
         public ConfigBoolAttribute(string name, string section, bool def)
-            : base(name, section) { defValue = def; }
+            : base(name, section) => defValue = def;
         public override object Parse(string raw)
         {
             if (!bool.TryParse(raw, out bool value))
             {
-                Logger.Log(LogType.Warning, "Config key \"{0}\" has invalid boolean '{2}', using default of {1}", Name, defValue, raw);
+                Logger.Log(6, "Config key \"{0}\" has invalid boolean '{2}', using default of {1}", Name, defValue, raw);
                 return defValue;
             }
             return value;
@@ -39,33 +39,33 @@ namespace MCGalaxy.Config
     }
     public sealed class ConfigPermAttribute : ConfigAttribute
     {
-        readonly LevelPermission defPerm;
-        public ConfigPermAttribute(string name, string section, LevelPermission def)
-            : base(name, section) { defPerm = def; }
+        readonly sbyte defPerm;
+        public ConfigPermAttribute(string name, string section, sbyte def)
+            : base(name, section) => defPerm = def;
         public override object Parse(string raw)
         {
-            LevelPermission perm = Group.ParsePermOrName(raw, LevelPermission.Null);
-            if (perm == LevelPermission.Null)
+            sbyte perm = Group.ParsePermOrName(raw, -106);
+            if (perm == -106)
             {
-                Logger.Log(LogType.Warning, "Config key \"{0}\" has invalid permission '{2}', using default of {1}",
+                Logger.Log(6, "Config key \"{0}\" has invalid permission '{2}', using default of {1}",
                                             Name, defPerm, raw);
                 perm = defPerm;
             }
-            if (perm < LevelPermission.Banned)
+            if (perm < -20)
             {
-                Logger.Log(LogType.Warning, "Config key \"{0}\" cannot be below banned rank.", Name);
-                perm = LevelPermission.Banned;
+                Logger.Log(6, "Config key \"{0}\" cannot be below banned rank.", Name);
+                perm = -20;
             }
-            if (perm > LevelPermission.Console)
+            if (perm > 127)
             {
-                Logger.Log(LogType.Warning, "Config key \"{0}\" cannot be above console rank.", Name);
-                perm = LevelPermission.Console;
+                Logger.Log(6, "Config key \"{0}\" cannot be above console rank.", Name);
+                perm = 127;
             }
             return perm;
         }
         public override string Serialise(object value)
         {
-            LevelPermission perm = (LevelPermission)value;
+            sbyte perm = (sbyte)value;
             return NumberUtils.StringifyInt((sbyte)perm);
         }
     }
@@ -85,7 +85,7 @@ namespace MCGalaxy.Config
             }
             catch
             {
-                Logger.Log(LogType.Warning, "Config key \"{0}\" is not a valid enum member, using default of {1}", Name, defValue);
+                Logger.Log(6, "Config key \"{0}\" is not a valid enum member, using default of {1}", Name, defValue);
                 return defValue;
             }
             return value;
@@ -104,7 +104,7 @@ namespace MCGalaxy.Config
             }
             catch
             {
-                Logger.Log(LogType.Warning, "Config key \"{0}\" is not a valid vec3, using default", Name);
+                Logger.Log(6, "Config key \"{0}\" is not a valid vec3, using default", Name);
                 value = default;
             }
             return value;
@@ -125,7 +125,7 @@ namespace MCGalaxy.Config
             for (i = 0; i < parts.Length; i++)
             {
                 if (bool.TryParse(parts[i], out values[i])) continue;
-                Logger.Log(LogType.Warning, "Config key \"{0}\" is not a valid boolean, using default of {1}", Name, defValue);
+                Logger.Log(6, "Config key \"{0}\" is not a valid boolean, using default of {1}", Name, defValue);
                 values[i] = defValue;
             }
             // shouldn't usually happen, but handle anyways

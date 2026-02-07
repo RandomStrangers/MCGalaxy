@@ -62,21 +62,17 @@ namespace MCGalaxy.Modules.Games.ZS
     public partial class ZSGame : RoundsGame
     {
         public ZSConfig Config = new();
-        public override string GameName { get { return "Zombie Survival"; } }
-        public override RoundsGameConfig GetConfig() { return Config; }
+        public override string GameName => "Zombie Survival";
+        public override RoundsGameConfig GetConfig() => Config;
         public static ZSGame Instance = new();
-        public ZSGame() { Picker = new SimpleLevelPicker(); }
-        protected override string WelcomeMessage
-        {
-            get { return "&2Zombie Survival &Sis running! Type &T/ZS go &Sto join"; }
-        }
+        public ZSGame() => Picker = new SimpleLevelPicker();
+        protected override string WelcomeMessage => "&2Zombie Survival &Sis running! Type &T/ZS go &Sto join";
         public DateTime RoundEnd;
         public VolatileArray<Player> Alive = new();
         public VolatileArray<Player> Infected = new();
         public string QueuedZombie;
         internal List<string> infectMessages = new();
         static bool hooked;
-        const string zsExtrasKey = "MCG_ZS_DATA";
         internal static ZSData Get(Player p)
         {
             ZSData data = TryGet(p);
@@ -88,14 +84,17 @@ namespace MCGalaxy.Modules.Games.ZS
                 InfectMessages = ZSConfig.LoadPlayerInfectMessages(p.name)
             };
             ZombieStats s = LoadStats(p.name);
-            data.MaxInfected = s.MaxInfected; data.TotalInfected = s.TotalInfected;
-            data.MaxRoundsSurvived = s.MaxRounds; data.TotalRoundsSurvived = s.TotalRounds;
-            p.Extras[zsExtrasKey] = data;
+            data.MaxInfected = s.MaxInfected; 
+            data.TotalInfected = s.TotalInfected;
+            data.MaxRoundsSurvived = s.MaxRounds;
+            data.TotalRoundsSurvived = s.TotalRounds;
+            p.Extras["MCG_ZS_DATA"] = data;
             return data;
         }
         internal static ZSData TryGet(Player p)
         {
-            p.Extras.TryGet(zsExtrasKey, out object data); return (ZSData)data;
+            p.Extras.TryGet("MCG_ZS_DATA", out object data); 
+            return (ZSData)data;
         }
         // TODO: Move ZS map config to per-game properties
         public override void UpdateMapConfig() { }
@@ -105,30 +104,29 @@ namespace MCGalaxy.Modules.Games.ZS
             List<Player> playing = new();
             foreach (Player pl in players)
             {
-                if (pl.level != Map || pl.Game.Referee) continue;
+                if (pl.Level != Map || pl.Game.Referee) continue;
                 playing.Add(pl);
             }
             return playing;
         }
-        public override void OutputStatus(Player p)
-        {
-            p.Message("{0} out of {1} players are alive",
+        public override void OutputStatus(Player p) => p.Message("{0} out of {1} players are alive",
                            Alive.Count, Alive.Count + Infected.Count);
-        }
         public override void Start(Player p, string map, int rounds)
         {
             // ZS starts on current map by default
-            if (!p.IsSuper && map.Length == 0) map = p.level.name;
+            if (!p.IsSuper && map.Length == 0) map = p.Level.name;
             base.Start(p, map, rounds);
         }
         protected override void StartGame()
         {
             Database.CreateTable("ZombieStats", zsTable);
-            if (hooked) return;
-            hooked = true;
-            HookStats();
-            HookCommands();
-            HookItems();
+            if (!hooked)
+            {
+                hooked = true;
+                HookStats();
+                HookCommands();
+                HookItems();
+            }
         }
         protected override void EndGame()
         {
@@ -143,35 +141,39 @@ namespace MCGalaxy.Modules.Games.ZS
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                if (pl.level != Map) continue;
+                if (pl.Level != Map) continue;
                 ZSData data = Get(pl);
                 ResetRoundState(pl, data);
                 ResetInvisibility(pl, data);
             }
         }
-        public static bool IsInfected(Player p) { return p.infected; }
+        public static bool IsInfected(Player p) => p.infected;
         public void InfectPlayer(Player p, Player killer)
         {
-            if (!RoundInProgress) return;
-            Infected.Add(p);
-            Alive.Remove(p);
-            ZSData data = Get(p);
-            data.CurrentRoundsSurvived = 0;
-            data.TimeInfected = DateTime.UtcNow;
-            p.SetPrefix();
-            UpdatePlayer(p, data, true);
-            RespawnPlayer(p);
-            CheckHumanPledge(p, killer);
-            CheckBounty(p, killer);
+            if (RoundInProgress)
+            {
+                Infected.Add(p);
+                Alive.Remove(p);
+                ZSData data = Get(p);
+                data.CurrentRoundsSurvived = 0;
+                data.TimeInfected = DateTime.UtcNow;
+                p.SetPrefix();
+                UpdatePlayer(p, data, true);
+                RespawnPlayer(p);
+                CheckHumanPledge(p, killer);
+                CheckBounty(p, killer);
+            }
         }
         public void DisinfectPlayer(Player p)
         {
-            if (!RoundInProgress) return;
-            Infected.Remove(p);
-            Alive.Add(p);
-            ZSData data = Get(p);
-            UpdatePlayer(p, data, false);
-            RespawnPlayer(p);
+            if (RoundInProgress)
+            {
+                Infected.Remove(p);
+                Alive.Add(p);
+                ZSData data = Get(p);
+                UpdatePlayer(p, data, false);
+                RespawnPlayer(p);
+            }
         }
         static void ResetRoundState(Player p, ZSData data)
         {
@@ -192,10 +194,12 @@ namespace MCGalaxy.Modules.Games.ZS
         }
         static void ResetInvisibility(Player p, ZSData data)
         {
-            if (!data.Invisible) return;
-            p.SendCpeMessage(CpeMessageType.BottomRight2, "");
-            data.ResetInvisibility();
-            Entities.GlobalSpawn(p, false);
+            if (data.Invisible)
+            {
+                p.SendCpeMessage(12, "");
+                data.ResetInvisibility();
+                Entities.GlobalSpawn(p, false);
+            }
         }
         public override void PlayerJoinedGame(Player p)
         {
@@ -261,12 +265,8 @@ namespace MCGalaxy.Modules.Games.ZS
                 Map.Message(p.ColoredName + " &Stried using a revive potion. &cIt was not very effective..");
             }
         }
-        public override void OutputMapInfo(Player p, string map, LevelConfig cfg)
-        {
-            int winChance = cfg.RoundsPlayed == 0 ? 100 : cfg.RoundsHumanWon * 100 / cfg.RoundsPlayed;
-            p.Message("&a{0} &Srounds played total, &a{1}% &Swin chance for humans.",
-                      cfg.RoundsPlayed, winChance);
-        }
+        public override void OutputMapInfo(Player p, string map, LevelConfig cfg) => p.Message("&a{0} &Srounds played total, &a{1}% &Swin chance for humans.",
+                      cfg.RoundsPlayed, cfg.RoundsPlayed == 0 ? 100 : cfg.RoundsHumanWon * 100 / cfg.RoundsPlayed);
         static string GetTimeLeft(int seconds)
         {
             if (seconds < 0) return "";
@@ -275,26 +275,10 @@ namespace MCGalaxy.Modules.Games.ZS
             if (seconds <= 60) return "1m left";
             return ((seconds + 59) / 60) + "m left";
         }
-        protected override string FormatStatus1(Player p)
-        {
-            int left = (int)(RoundEnd - DateTime.UtcNow).TotalSeconds;
-            string timespan = GetTimeLeft(left);
-            string format = timespan.Length == 0 ? "&a{0} &Salive &S(map: {1})" :
-                "&a{0} &Salive &S({2}, map: {1})";
-            return string.Format(format, Alive.Count, Map.MapName, timespan);
-        }
-        protected override string FormatStatus2(Player p)
-        {
-            string pillar = "&SPillaring " + (Map.Config.Pillaring ? "&aYes" : "&cNo");
-            string type = "&S, Type is &a" + Map.Config.BuildType;
-            return pillar + type;
-        }
-        protected override string FormatStatus3(Player p)
-        {
-            string money = "&a" + p.money + " &S" + Server.Config.Currency;
-            string state = ", you are " + (IsInfected(p) ? "&cdead" : "&aalive");
-            return money + state;
-        }
+        protected override string FormatStatus1(Player p) => string.Format(GetTimeLeft((int)(RoundEnd - DateTime.UtcNow).TotalSeconds).Length == 0 ? "&a{0} &Salive &S(map: {1})" :
+                "&a{0} &Salive &S({2}, map: {1})", Alive.Count, Map.MapName, GetTimeLeft((int)(RoundEnd - DateTime.UtcNow).TotalSeconds));
+        protected override string FormatStatus2(Player p) => "&SPillaring " + (Map.Config.Pillaring ? "&aYes" : "&cNo") + "&S, Type is &a" + Map.Config.BuildType;
+        protected override string FormatStatus3(Player p) => "&a" + p.money + " &S" + Server.Config.Currency + ", you are " + (IsInfected(p) ? "&cdead" : "&aalive");
         public bool SetQueuedZombie(Player p, string name)
         {
             Player target = PlayerInfo.FindMatches(p, name);

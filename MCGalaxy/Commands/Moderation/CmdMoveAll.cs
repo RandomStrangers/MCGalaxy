@@ -16,11 +16,11 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdMoveAll : Command2
     {
-        public override string name { get { return "MoveAll"; } }
-        public override string shortcut { get { return "ma"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "MoveAll";
+        public override string Shortcut => "ma";
+        public override string Type => CommandTypes.Moderation;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 80;
         public override void Use(Player p, string message, CommandData data)
         {
             Level level = Matcher.FindLevels(p, message);
@@ -31,7 +31,7 @@ namespace MCGalaxy.Commands.Moderation
                 if (pl.Rank < data.Rank)
                     PlayerActions.ChangeMap(pl, level.name);
                 else
-                    p.Message("You cannot move {0} &Sbecause {1} {2} of equal or higher rank", p.FormatNick(pl), pl.pronouns.Subject, pl.pronouns.PresentVerb);
+                    p.Message("You cannot move {0} &Sbecause {1} {2} of equal or higher rank", p.FormatNick(pl), pl.Pronouns.Subject, pl.Pronouns.PresentVerb);
             }
         }
         public override void Help(Player p)

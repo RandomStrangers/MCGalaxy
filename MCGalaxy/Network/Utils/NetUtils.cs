@@ -18,7 +18,6 @@ namespace MCGalaxy
     /// <summary> Utility methods for reading/writing big endian integers, and fixed length strings. </summary>
     public static class NetUtils
     {
-        public const int StringSize = 64;
         public static void WriteI16(short value, byte[] array, int index)
         {
             array[index++] = (byte)(value >> 8);
@@ -35,11 +34,6 @@ namespace MCGalaxy
             array[index++] = (byte)(value >> 16);
             array[index++] = (byte)(value >> 8);
             array[index++] = (byte)value;
-        }
-        public static unsafe void WriteF32(float value, byte[] buffer, int i)
-        {
-            int num = *(int*)&value;
-            WriteI32(num, buffer, i);
         }
         internal static int WritePos(Position pos, byte[] arr, int offset, bool extPos)
         {
@@ -59,18 +53,24 @@ namespace MCGalaxy
         }
         public static void WriteBlock(ushort raw, byte[] array, int index, bool extBlocks)
         {
-            if (extBlocks) { array[index++] = (byte)(raw >> 8); }
+            if (extBlocks) 
+            { 
+                array[index++] = (byte)(raw >> 8);
+            }
             array[index++] = (byte)raw;
         }
         public static unsafe string ReadString(byte[] data, int offset)
         {
             int length = 0;
-            char* characters = stackalloc char[StringSize];
-            for (int i = StringSize - 1; i >= 0; i--)
+            char* characters = stackalloc char[64];
+            for (int i = 63; i >= 0; i--)
             {
                 byte code = data[i + offset];
                 if (code == 0) code = 0x20; // NULL to space
-                if (length == 0 && code != 0x20) { length = i + 1; }
+                if (length == 0 && code != 0x20) 
+                {
+                    length = i + 1; 
+                }
                 characters[i] = ((char)code).Cp437ToUnicode();
             }
             return new string(characters, 0, length);
@@ -82,21 +82,21 @@ namespace MCGalaxy
         }
         static void WriteAscii(string str, byte[] array, int offset)
         {
-            int count = Math.Min(str.Length, StringSize);
+            int count = Math.Min(str.Length, 64);
             for (int i = 0; i < count; i++)
             {
                 char raw = str[i].UnicodeToCp437();
                 array[offset + i] = raw >= '\u0080' ? (byte)'?' : (byte)raw;
             }
-            for (int i = count; i < StringSize; i++)
+            for (int i = count; i < 64; i++)
                 array[offset + i] = (byte)' ';
         }
         static void WriteCP437(string str, byte[] array, int offset)
         {
-            int count = Math.Min(str.Length, StringSize);
+            int count = Math.Min(str.Length, 64);
             for (int i = 0; i < count; i++)
                 array[offset + i] = (byte)str[i].UnicodeToCp437();
-            for (int i = count; i < StringSize; i++)
+            for (int i = count; i < 64; i++)
                 array[offset + i] = (byte)' ';
         }
     }

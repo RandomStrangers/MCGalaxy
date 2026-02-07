@@ -23,7 +23,7 @@ namespace MCGalaxy
     {
         // these are checked very frequently, so avoid overhead of .Supports(
         public bool hasChangeModel, hasExtList, hasCP437;
-        public void Send(byte[] buffer) { Socket.Send(buffer, SendFlags.None); }
+        public void Send(byte[] buffer) => Socket.Send(buffer, 0x00);
         public void MessageLines(IEnumerable<string> lines)
         {
             lock (messageLocker)
@@ -33,10 +33,10 @@ namespace MCGalaxy
         }
         // Put a lock on sending messages so that MessageLines is not interrupted by other messages
         readonly object messageLocker = new();
-        public void Message(string message, object a0) { Message(string.Format(message, a0)); }
-        public void Message(string message, object a0, object a1) { Message(string.Format(message, a0, a1)); }
-        public void Message(string message, object a0, object a1, object a2) { Message(string.Format(message, a0, a1, a2)); }
-        public void Message(string message, params object[] args) { Message(string.Format(message, args)); }
+        public void Message(string message, object a0) => Message(string.Format(message, a0));
+        public void Message(string message, object a0, object a1) => Message(string.Format(message, a0, a1));
+        public void Message(string message, object a0, object a1, object a2) => Message(string.Format(message, a0, a1, a2));
+        public void Message(string message, params object[] args) => Message(string.Format(message, args));
         public virtual void Message(string message)
         {
             // Message should start with server color if no initial color
@@ -61,20 +61,19 @@ namespace MCGalaxy
                 Logger.LogError(e);
             }
         }
-        public void SendCpeMessage(CpeMessageType type, string message)
+        public void SendCpeMessage(int type, string message) => SendCpeMessage(type, message, 10);
+        public void SendCpeMessage(int type, string message, int priority = 10)
         {
-            SendCpeMessage(type, message, PersistentMessagePriority.Normal);
-        }
-        public void SendCpeMessage(CpeMessageType type, string message, PersistentMessagePriority priority = PersistentMessagePriority.Normal)
-        {
-            if (type != CpeMessageType.Normal && !Supports(CpeExt.MessageTypes))
+            if (type != 0 && !Supports(CpeExt.MessageTypes))
             {
-                if (type == CpeMessageType.Announcement) type = CpeMessageType.Normal;
+                if (type == 100) type = 0;
                 else return;
             }
             message = Chat.Format(message, this);
-            if (!persistentMessages.Handle(type, ref message, priority)) return;
-            Session.SendMessage(type, message);
+            if (persistentMessages.Handle(type, ref message, priority))
+            {
+                Session.SendMessage(type, message);
+            }
         }
         public void SendMapMotd()
         {
@@ -93,28 +92,28 @@ namespace MCGalaxy
             Session.SendMotd(motd);
         }
         readonly object joinLock = new();
-        public bool SendRawMap(Level oldLevel, Level level)
+        public bool SendRawMap(Level oldLevel)
         {
             lock (joinLock)
-                return SendRawMapCore(oldLevel, level);
+                return SendRawMapCore(oldLevel);
         }
-        bool SendRawMapCore(Level prev, Level level)
+        bool SendRawMapCore(Level prev)
         {
             bool success = true;
             try
             {
-                if (level.blocks == null)
+                if (Level.blocks == null)
                     throw new InvalidOperationException("Tried to join unloaded level");
                 useCheckpointSpawn = false;
                 lastCheckpointIndex = -1;
                 AFKCooldown = DateTime.UtcNow.AddSeconds(2);
                 ZoneIn = null;
-                AllowBuild = level.BuildAccess.CheckAllowed(this);
+                AllowBuild = Level.BuildAccess.CheckAllowed(this);
                 SendMapMotd();
                 selections.Clear();
-                Session.SendLevel(prev, level);
+                Session.SendLevel(prev, Level);
                 Loading = false;
-                OnSentMapEvent.Call(this, prev, level);
+                OnSentMapEvent.Call(this, prev, Level);
             }
             catch (Exception ex)
             {
@@ -139,7 +138,7 @@ namespace MCGalaxy
         /// <summary> Sends a packet indicating an absolute position + orientation change for this player. </summary>
         public void SendPosition(Position pos, Orientation rot)
         {
-            if (!Session.SendTeleport(Entities.SelfID, pos, rot, Packet.TeleportMoveMode.AbsoluteInstant))
+            if (!Session.SendTeleport(Entities.SelfID, pos, rot, 0))
             {
                 Session.SendTeleport(Entities.SelfID, pos, rot);
             }
@@ -149,17 +148,14 @@ namespace MCGalaxy
         public void SendBlockchange(ushort x, ushort y, ushort z, ushort block)
         {
             //if (x < 0 || y < 0 || z < 0) return;
-            if (x >= level.Width || y >= level.Height || z >= level.Length) return;
+            if (x >= Level.Width || y >= Level.Height || z >= Level.Length) return;
             Session.SendBlockchange(x, y, z, block);
         }
         /// <summary> Whether this player's client supports the given CPE extension at the given version </summary>
-        public bool Supports(string extName, int version = 1)
-        {
-            return Session != null && Session.Supports(extName, version);
-        }
+        public bool Supports(string extName, int version = 1) => Session != null && Session.Supports(extName, version);
         public string GetTextureUrl()
         {
-            string url = level.Config.TexturePack.Length == 0 ? level.Config.Terrain : level.Config.TexturePack;
+            string url = Level.Config.TexturePack.Length == 0 ? Level.Config.Terrain : Level.Config.TexturePack;
             if (url.Length == 0)
             {
                 url = Server.Config.DefaultTexture.Length == 0 ? Server.Config.DefaultTerrain : Server.Config.DefaultTexture;
@@ -170,11 +166,11 @@ namespace MCGalaxy
         public void SendCurrentTextures()
         {
             Zone zone = ZoneIn;
-            int cloudsHeight = CurrentEnvProp(EnvProp.CloudsLevel, zone);
-            int edgeHeight = CurrentEnvProp(EnvProp.EdgeLevel, zone);
-            int maxFogDist = CurrentEnvProp(EnvProp.MaxFog, zone);
-            byte side = (byte)CurrentEnvProp(EnvProp.SidesBlock, zone);
-            byte edge = (byte)CurrentEnvProp(EnvProp.EdgeBlock, zone);
+            int cloudsHeight = CurrentEnvProp(3, zone),
+                edgeHeight = CurrentEnvProp(2, zone),
+                maxFogDist = CurrentEnvProp(4, zone);
+            byte side = (byte)CurrentEnvProp(0, zone),
+                edge = (byte)CurrentEnvProp(1, zone);
             string url = GetTextureUrl();
             if (Supports(CpeExt.EnvMapAspect, 2))
             {
@@ -200,32 +196,30 @@ namespace MCGalaxy
             }
             else if (Supports(CpeExt.EnvMapAppearance))
             {
-                url = level.Config.Terrain.Length == 0 ? Server.Config.DefaultTerrain : level.Config.Terrain;
+                url = Level.Config.Terrain.Length == 0 ? Server.Config.DefaultTerrain : Level.Config.Terrain;
                 Send(Packet.MapAppearance(url, side, edge, edgeHeight, hasCP437));
             }
         }
         public void SendCurrentBlockPermissions()
         {
-            if (!Supports(CpeExt.BlockPermissions)) return;
-            // Write the block permissions as one bulk TCP packet
-            SendAllBlockPermissions();
+            if (Supports(CpeExt.BlockPermissions))
+            {
+                SendAllBlockPermissions();
+            }
         }
         void SendAllBlockPermissions()
         {
             bool extBlocks = Session.hasExtBlocks;
-            int count = Session.MaxRawBlock + 1;
-            int size = extBlocks ? 5 : 4;
+            int count = Session.MaxRawBlock + 1,
+                size = extBlocks ? 5 : 4;
             byte[] bulk = new byte[count * size];
             for (int i = 0; i < count; i++)
             {
                 ushort block = Block.FromRaw((ushort)i);
-                bool place = group.CanPlace[block] && level.CanPlace;
-                // NOTE: If you can't delete air, then you're no longer able to place blocks
-                // (see ClassiCube client #815)
-                // TODO: Maybe better solution than this?
-                bool delete = group.CanDelete[block] && (level.CanDelete || i == Block.Air);
+                bool place = group.CanPlace[block] && Level.CanPlace,
+                    delete = group.CanDelete[block] && (Level.CanDelete || i == 0);
                 // Placing air is the same as deleting existing block at that position in the world
-                if (block == Block.Air) place &= delete;
+                if (block == 0) place &= delete;
                 Packet.WriteBlockPermission((ushort)i, place, delete, extBlocks, bulk, i * size);
             }
             Send(bulk);
@@ -236,8 +230,7 @@ namespace MCGalaxy
         {
             lock (selections.locker)
             {
-                byte id = FindOrAddSelection(selections.Items, instance);
-                return Session.SendAddSelection(id, label, min, max, color);
+                return Session.SendAddSelection(FindOrAddSelection(selections.Items, instance), label, min, max, color);
             }
         }
         public bool RemoveVisibleSelection(object instance)

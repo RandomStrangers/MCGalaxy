@@ -17,17 +17,11 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdRules : Command2
     {
-        public override string name { get { return "Rules"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Builder, "can send rules to others") }; }
-        }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("Agree", "agree"), new CommandAlias("Disagree", "disagree") }; }
-        }
-        public override bool UseableWhenFrozen { get { return true; } }
+        public override string Name => "Rules";
+        public override string Type => CommandTypes.Information;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(30, "can send rules to others") };
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("Agree", "agree"), new CommandAlias("Disagree", "disagree") };
+        public override bool UseableWhenFrozen => true;
         public override void Use(Player p, string message, CommandData data)
         {
             TextFile rulesFile = TextFile.Files["Rules"];
@@ -71,7 +65,7 @@ namespace MCGalaxy.Commands.Info
         {
             if (p.IsSuper) { p.Message("Only in-game players can disagree with the rules."); return; }
             if (!Server.Config.AgreeToRulesOnEntry) { p.Message("agree-to-rules-on-entry is not enabled."); return; }
-            if (data.Rank > LevelPermission.Guest)
+            if (data.Rank > 0)
             {
                 p.Message("Your awesomeness prevents you from using this command"); return;
             }
@@ -79,7 +73,7 @@ namespace MCGalaxy.Commands.Info
         }
         public override void Help(Player p)
         {
-            if (HasExtraPerm(p, p.Rank, 1))
+            if (HasExtraPerm(p.Rank, 1))
             {
                 p.Message("&T/Rules [player] &H- Displays server rules to [player]");
             }

@@ -13,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Events.EntityEvents;
-using MCGalaxy.Network;
 using System;
 using System.Collections.Generic;
 namespace MCGalaxy
@@ -64,10 +63,7 @@ namespace MCGalaxy
         class WaitingEntity : VisibleEntity
         {
             public readonly bool tabList;
-            public WaitingEntity(Entity e, byte id, string displayName, bool tabList) : base(e, id, displayName)
-            {
-                this.tabList = tabList;
-            }
+            public WaitingEntity(Entity e, byte id, string displayName, bool tabList) : base(e, id, displayName) => this.tabList = tabList;
         }
         readonly Player p;
         readonly Dictionary<Entity, VisibleEntity> visible = new();
@@ -110,35 +106,37 @@ namespace MCGalaxy
         }
         public void SendAddTabEntry(object o, string name, string nick, string group, byte groupRank)
         {
-            if (!p.hasExtList) return;
-            bool self = o == p;
-            lock (locker)
+            if (p.hasExtList)
             {
-                if (tabObjects.TryGetValue(o, out TabObject tabby))
+                bool self = o == p;
+                lock (locker)
                 {
-                    tabby.UpdateFields(name, nick, group, groupRank); //Refresh every field other than entity and ID
-                    //p.Message("RETABBING {0}&S with ID {1}", name, tabby.id);
+                    if (tabObjects.TryGetValue(o, out TabObject tabby))
+                    {
+                        tabby.UpdateFields(name, nick, group, groupRank); //Refresh every field other than entity and ID
+                                                                          //p.Message("RETABBING {0}&S with ID {1}", name, tabby.id);
+                    }
+                    else
+                    {
+                        int tentativeID = FindFreeTabID(o, self);
+                        if (tentativeID == -1) return;
+                        byte ID = (byte)tentativeID;
+                        //p.Message("| &a+TAB &S{0}&S with ID {1}", name, ID);
+                        tabby = new TabObject(o, ID, name, nick, group, groupRank);
+                        tabObjects[o] = tabby;
+                    }
+                    p.Session.SendAddTabEntry(tabby.id, tabby.name, tabby.nick, tabby.group, tabby.groupRank);
                 }
-                else
-                {
-                    int tentativeID = FindFreeTabID(o, self);
-                    if (tentativeID == -1) return;
-                    byte ID = (byte)tentativeID;
-                    //p.Message("| &a+TAB &S{0}&S with ID {1}", name, ID);
-                    tabby = new TabObject(o, ID, name, nick, group, groupRank);
-                    tabObjects[o] = tabby;
-                }
-                p.Session.SendAddTabEntry(tabby.id, tabby.name, tabby.nick, tabby.group, tabby.groupRank);
             }
         }
         int FindFreeTabID(object o, bool self)
         {
-            if (self) return Entities.SelfID;
+            if (self) return 0xFF;
             //Try finding a matching visible entity for the ID
             if (o is Entity entity)
             {
                 Entity e = entity;
-                if (visible.TryGetValue(e, out VisibleEntity vis) && usedTabIDs[vis.id] != true)
+                if (visible.TryGetValue(e, out VisibleEntity vis) && !usedTabIDs[vis.id])
                 {
                     //We need to match the tablist ID to the matching entity in the level if possible,
                     //because a few popular plugins (chatsounds, CEF) rely on this
@@ -153,7 +151,7 @@ namespace MCGalaxy
             //an entity from another level sharing an ID with an entity on your level
             for (int i = maxEntityID; i >= 0; i--)
             {
-                if (usedTabIDs[i] == false)
+                if (!usedTabIDs[i])
                 {
                     usedTabIDs[i] = true;
                     //p.Message("Tab ID {0} is now used.", i);
@@ -165,21 +163,22 @@ namespace MCGalaxy
         }
         public void SendRemoveTabEntry(object o)
         {
-            if (!p.hasExtList) return;
-            lock (locker)
-            {
-                if (tabObjects.TryGetValue(o, out TabObject tabby))
+            if (p.hasExtList) {
+                lock (locker)
                 {
-                    tabby = tabObjects[o];
-                    if (o != p) usedTabIDs[tabby.id] = false;
-                    //p.Message("| &c-TAB &S{0}&S with ID {1}", tabby.name, tabby.id);
-                    tabObjects.Remove(o);
-                    p.Session.SendRemoveTabEntry(tabby.id);
-                }
-                else
-                {
-                    //Seems to happen when reconnecting
-                    //Logger.Log(LogType.Warning, "{0}'s entitymap: Tried removing Tablist ({0}) that wasn't in the collection...", p.name, e.SkinName);
+                    if (tabObjects.TryGetValue(o, out TabObject tabby))
+                    {
+                        tabby = tabObjects[o];
+                        if (o != p) usedTabIDs[tabby.id] = false;
+                        //p.Message("| &c-TAB &S{0}&S with ID {1}", tabby.name, tabby.id);
+                        tabObjects.Remove(o);
+                        p.Session.SendRemoveTabEntry(tabby.id);
+                    }
+                    else
+                    {
+                        //Seems to happen when reconnecting
+                        //Logger.Log(6, "{0}'s entitymap: Tried removing Tablist ({0}) that wasn't in the collection...", p.name, e.SkinName);
+                    }
                 }
             }
         }
@@ -213,9 +212,9 @@ namespace MCGalaxy
                 {
                     if (!visible.TryGetValue(e, out VisibleEntity vis))
                     {
-                        byte ID = self ? Entities.SelfID : freeIDs.Pop();
+                        byte ID = self ? (byte)0xFF : freeIDs.Pop();
                         //p.Message("| &a+ &S{0}&S with ID {1}", name, ID);
-                        vis = new VisibleEntity(e, ID, name);
+                        vis = new(e, ID, name);
                         visible[e] = vis;
                     }
                     else
@@ -281,7 +280,7 @@ namespace MCGalaxy
                 else
                 {
                     //Seems to happen when reconnecting
-                    //Logger.Log(LogType.Warning, "{0}'s entitymap: Tried removing an entity ({0}) that wasn't in the collection...", p.name, e.SkinName);
+                    //Logger.Log(6, "{0}'s entitymap: Tried removing an entity ({0}) that wasn't in the collection...", p.name, e.SkinName);
                     return false;
                 }
             }
@@ -293,10 +292,7 @@ namespace MCGalaxy
             SendRot2(vis, rot);
             SendScales2(vis);
         }
-        void Despawn(VisibleEntity vis)
-        {
-            p.Session.SendRemoveEntity(vis.id);
-        }
+        void Despawn(VisibleEntity vis) => p.Session.SendRemoveEntity(vis.id);
         /// <summary>
         /// Calls OnSendingModelEvent and changes the model of the given entity.
         /// </summary>
@@ -305,8 +301,10 @@ namespace MCGalaxy
             OnSendingModelEvent.Call(e, ref model, p);
             lock (locker)
             {
-                if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
-                SendModel2(vis, model);
+                if (visible.TryGetValue(e, out VisibleEntity vis))
+                {
+                    SendModel2(vis, model);
+                }
             }
         }
         void SendModel2(VisibleEntity vis, string model)
@@ -320,41 +318,52 @@ namespace MCGalaxy
         {
             if (p.Supports(CpeExt.EntityProperty))
             {
-                p.Session.SendEntityProperty(vis.id, EntityProp.RotX, Orientation.PackedToDegrees(rot.RotX));
-                p.Session.SendEntityProperty(vis.id, EntityProp.RotZ, Orientation.PackedToDegrees(rot.RotZ));
+                p.Session.SendEntityProperty(vis.id, 0, Orientation.PackedToDegrees(rot.RotX));
+                p.Session.SendEntityProperty(vis.id, 2, Orientation.PackedToDegrees(rot.RotZ));
             }
         }
         public void SendScales(Entity e)
         {
             lock (locker)
             {
-                if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
-                SendScales2(vis);
+                if (visible.TryGetValue(e, out VisibleEntity vis))
+                {
+                    SendScales2(vis);
+                }
             }
         }
         void SendScales2(VisibleEntity vis)
         {
-            if (!p.Supports(CpeExt.EntityProperty)) return;
-            float max = ModelInfo.MaxScale(vis.e, vis.e.Model);
-            SendScale2(vis, EntityProp.ScaleX, vis.e.ScaleX, max);
-            SendScale2(vis, EntityProp.ScaleY, vis.e.ScaleY, max);
-            SendScale2(vis, EntityProp.ScaleZ, vis.e.ScaleZ, max);
-        }
-        void SendScale2(VisibleEntity vis, EntityProp axis, float value, float max)
-        {
-            if (value == 0) return;
-            value = Math.Min(value, max);
-            int packed = (int)(value * 1000);
-            if (packed == 0) return;
-            p.Session.SendEntityProperty(vis.id, axis, packed);
-        }
-        public void SendProp(Entity e, EntityProp prop, int value)
-        {
-            if (!p.Supports(CpeExt.EntityProperty)) return;
-            lock (locker)
+            if (p.Supports(CpeExt.EntityProperty))
             {
-                if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
-                p.Session.SendEntityProperty(vis.id, prop, value);
+                SendScale2(vis, 3, vis.e.ScaleX, ModelInfo.MaxScale(vis.e, vis.e.Model));
+                SendScale2(vis, 4, vis.e.ScaleY, ModelInfo.MaxScale(vis.e, vis.e.Model));
+                SendScale2(vis, 5, vis.e.ScaleZ, ModelInfo.MaxScale(vis.e, vis.e.Model));
+            }
+        }
+        void SendScale2(VisibleEntity vis, int axis, float value, float max)
+        {
+            if (value != 0)
+            {
+                value = Math.Min(value, max);
+                int packed = (int)(value * 1000);
+                if (packed != 0)
+                {
+                    p.Session.SendEntityProperty(vis.id, axis, packed);
+                }
+            }
+        }
+        public void SendProp(Entity e, int prop, int value)
+        {
+            if (p.Supports(CpeExt.EntityProperty))
+            {
+                lock (locker)
+                {
+                    if (visible.TryGetValue(e, out VisibleEntity vis))
+                    {
+                        p.Session.SendEntityProperty(vis.id, prop, value);
+                    }
+                }
             }
         }
         public bool GetID(Entity e, out byte id)
@@ -369,31 +378,6 @@ namespace MCGalaxy
             }
             id = 0;
             return false;
-        }
-        /// <summary>
-        /// For plugins. Unused in base MCGalaxy.
-        /// </summary>
-        public void SendTeleport(Entity e, Position pos, Orientation rot, Packet.TeleportMoveMode mode)
-        {
-            lock (locker)
-            {
-                if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
-                if (!p.Session.SendTeleport(vis.id, pos, rot, mode))
-                {
-                    p.Session.SendTeleport(vis.id, pos, rot);
-                }
-            }
-        }
-        /// <summary>
-        /// For plugins. Unused in base MCGalaxy.
-        /// </summary>
-        public void SendTeleport(Entity e, Position pos, Orientation rot)
-        {
-            lock (locker)
-            {
-                if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
-                p.Session.SendTeleport(vis.id, pos, rot);
-            }
         }
         readonly Dictionary<Entity, VisibleEntity> cachedVisible = new(32);
         internal unsafe void BroadcastEntityPositions()
@@ -421,7 +405,7 @@ namespace MCGalaxy
             {
                 Entity e = pair.Key;
                 byte id = pair.Value.id;
-                if (dst == e || dst.level != e.Level || !dst.CanSeeEntity(e)) continue;
+                if (dst == e || dst.Level != e.Level || !dst.CanSeeEntity(e)) continue;
                 Orientation rot = e.Rot;
                 byte pitch = rot.HeadX;
                 //No pattern matching because we're ancient C#
@@ -442,16 +426,21 @@ namespace MCGalaxy
                 //}
             }
             int count = (int)(ptr - src);
-            if (count == 0) return;
-            byte[] packet = new byte[count];
-            for (int i = 0; i < packet.Length; i++) { packet[i] = src[i]; }
-            dst.Send(packet);
-            foreach (KeyValuePair<Entity, VisibleEntity> pair in cachedVisible)
+            if (count != 0)
             {
-                if (pair.Key.untracked)
+                byte[] packet = new byte[count];
+                for (int i = 0; i < packet.Length; i++) 
+                { 
+                    packet[i] = src[i]; 
+                }
+                dst.Send(packet);
+                foreach (KeyValuePair<Entity, VisibleEntity> pair in cachedVisible)
                 {
-                    pair.Key._lastPos = pair.Key._positionUpdatePos;
-                    pair.Key._lastRot = pair.Key.Rot;
+                    if (pair.Key.untracked)
+                    {
+                        pair.Key._lastPos = pair.Key._positionUpdatePos;
+                        pair.Key._lastRot = pair.Key.Rot;
+                    }
                 }
             }
         }

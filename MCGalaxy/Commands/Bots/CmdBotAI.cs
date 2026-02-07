@@ -19,11 +19,11 @@ namespace MCGalaxy.Commands.Bots
 {
     public sealed class CmdBotAI : Command2
     {
-        public override string name { get { return "BotAI"; } }
-        public override string shortcut { get { return "bai"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "BotAI";
+        public override string Shortcut => "bai";
+        public override string Type => CommandTypes.Other;
+        public override sbyte DefaultRank => 50;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();

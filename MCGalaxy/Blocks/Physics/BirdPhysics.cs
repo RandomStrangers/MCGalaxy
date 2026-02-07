@@ -20,8 +20,8 @@ namespace MCGalaxy.Blocks.Physics
         public static void Do(Level lvl, ref PhysInfo C)
         {
             Random rand = lvl.physRandom;
-            ushort x = C.X, y = C.Y, z = C.Z;
-            ushort block = lvl.GetBlock(x, y, z);
+            ushort x = C.X, y = C.Y, z = C.Z,
+                block = lvl.GetBlock(x, y, z);
             int index;
             switch (rand.Next(1, 15))
             {
@@ -58,26 +58,29 @@ namespace MCGalaxy.Blocks.Physics
                     FlyTo(lvl, ref C, x, y, (ushort)(z + 1), block);
                     break;
             }
-            lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
-            C.Data.Data = PhysicsArgs.RemoveFromChecks;
+            lvl.AddUpdate(C.Index, 0, default(PhysicsArgs));
+            C.Data.Data = 255;
         }
         static void FlyTo(Level lvl, ref PhysInfo C, ushort x, ushort y, ushort z, ushort block)
         {
             ushort neighbour = lvl.GetBlock(x, y, z, out int index);
-            if (neighbour == Block.Invalid) return;
-            switch (neighbour)
+            if (neighbour != 0xff)
             {
-                case Block.Air:
-                    lvl.AddUpdate(index, block);
-                    break;
-                case Block.Op_Air:
-                    break;
-                default:
-                    // bird died by hitting a block
-                    PhysicsArgs args = default;
-                    args.Type1 = PhysicsArgs.Dissipate; args.Value1 = 25;
-                    lvl.AddUpdate(C.Index, Block.Red, args);
-                    break;
+                switch (neighbour)
+                {
+                    case 0:
+                        lvl.AddUpdate(index, block);
+                        break;
+                    case 105:
+                        break;
+                    default:
+                        // bird died by hitting a block
+                        PhysicsArgs args = default;
+                        args.Type1 = 3;
+                        args.Value1 = 25;
+                        lvl.AddUpdate(C.Index, 21, args);
+                        break;
+                }
             }
         }
     }

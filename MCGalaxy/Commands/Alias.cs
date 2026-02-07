@@ -18,8 +18,8 @@ namespace MCGalaxy.Commands
 {
     public class Alias
     {
-        public static List<Alias> coreAliases = new();
-        public static List<Alias> aliases = new();
+        public static List<Alias> coreAliases = new(),
+            aliases = new();
         public string Trigger, Target, Format;
         public Alias(string trigger, string target)
         {
@@ -46,10 +46,7 @@ namespace MCGalaxy.Commands
             if (!File.Exists(Paths.AliasesFile)) { SaveCustom(); return; }
             PropertiesFile.Read(Paths.AliasesFile, LineProcessor, ':');
         }
-        static void LineProcessor(string key, string value)
-        {
-            aliases.Add(new Alias(key, value));
-        }
+        static void LineProcessor(string key, string value) => aliases.Add(new Alias(key, value));
         public static void SaveCustom()
         {
             using StreamWriter sw = FileIO.CreateGuarded(Paths.AliasesFile);
@@ -91,14 +88,14 @@ namespace MCGalaxy.Commands
             if (aliases == null) return;
             foreach (CommandAlias a in aliases)
             {
-                Alias alias = new(a.Trigger, cmd.name, a.Format);
+                Alias alias = new(a.Trigger, cmd.Name, a.Format);
                 coreAliases.Add(alias);
             }
         }
         internal static void UnregisterDefaults(Command cmd)
         {
             if (cmd.Aliases == null) return;
-            coreAliases.RemoveAll(a => a.Target == cmd.name);
+            coreAliases.RemoveAll(a => a.Target == cmd.Name);
         }
     }
 }

@@ -17,10 +17,10 @@ namespace MCGalaxy.Commands.Misc
 {
     public sealed class CmdDescend : Command2
     {
-        public override string name { get { return "Descend"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Builder; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Descend";
+        public override string Type => CommandTypes.Other;
+        public override sbyte DefaultRank => 30;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             if (!Hacks.CanUseHacks(p))
@@ -29,12 +29,12 @@ namespace MCGalaxy.Commands.Misc
             }
             // Move starting position down half a block since players are a little bit above the ground.
             int x = p.Pos.BlockX, y = (p.Pos.Y - 51 - 4) / 32, z = p.Pos.BlockZ;
-            if (y > p.level.Height) y = p.level.Height;
+            if (y > p.Level.Height) y = p.Level.Height;
             y--; // start at block below initially
             int freeY = -1;
-            if (p.level.IsValidPos(x, y, z))
+            if (p.Level.IsValidPos(x, y, z))
             {
-                freeY = FindYBelow(p.level, (ushort)x, y, (ushort)z);
+                freeY = FindYBelow(p.Level, (ushort)x, y, (ushort)z);
             }
             if (freeY == -1)
             {
@@ -61,11 +61,11 @@ namespace MCGalaxy.Commands.Misc
         {
             if (y >= lvl.Height) return false;
             ushort block = lvl.GetBlock(x, (ushort)y, z);
-            return CollideType.IsSolid(lvl.CollideType(block));
+            return DefaultSet.IsSolid(lvl.CollideType(block));
         }
         public override void Help(Player p)
         {
-            string name = Group.GetColoredName(LevelPermission.Operator);
+            string name = Group.GetColoredName(80);
             p.Message("&T/Descend");
             p.Message("&HTeleports you to the first free space below you.");
             p.Message("&H  Cannot be used on maps which have -hax in their motd. " +

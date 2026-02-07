@@ -19,19 +19,13 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdSphere : DrawCmd
     {
-        public override string name { get { return "Sphere"; } }
-        public override string shortcut { get { return "sp"; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new[] { new CommandAlias("SphereH", "hollow"),
+        public override string Name => "Sphere";
+        public override string Shortcut => "sp";
+        public override sbyte DefaultRank => 50;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("SphereH", "hollow"),
                     new CommandAlias("sph", "hollow"), new CommandAlias("Circle", "circle" ),
                     new CommandAlias("CircleH", "hollowcircle") };
-            }
-        }
-        protected override string PlaceMessage { get { return "Place a block for the centre, then another for the radius."; } }
+        protected override string PlaceMessage => "Place a block for the centre, then another for the radius.";
         protected override DrawMode GetMode(string[] parts)
         {
             string msg = parts[0];
@@ -41,16 +35,13 @@ namespace MCGalaxy.Commands.Building
             if (msg == "hollowcircle") return DrawMode.hcircle;
             return DrawMode.normal;
         }
-        protected override DrawOp GetDrawOp(DrawArgs dArgs)
+        protected override DrawOp GetDrawOp(DrawArgs dArgs) => dArgs.Mode switch
         {
-            return dArgs.Mode switch
-            {
-                DrawMode.hollow => new AdvHollowSphereDrawOp(),
-                DrawMode.circle => new EllipsoidDrawOp(),
-                DrawMode.hcircle => new EllipsoidHollowDrawOp(),
-                _ => new AdvSphereDrawOp(),
-            };
-        }
+            DrawMode.hollow => new AdvHollowSphereDrawOp(),
+            DrawMode.circle => new EllipsoidDrawOp(),
+            DrawMode.hcircle => new EllipsoidHollowDrawOp(),
+            _ => new AdvSphereDrawOp(),
+        };
         protected override void GetMarks(DrawArgs dArgs, ref Vec3S32[] m)
         {
             Vec3S32 p0 = m[0];

@@ -17,9 +17,9 @@ namespace MCGalaxy.Commands.Fun
 {
     public sealed class CmdSlap : Command2
     {
-        public override string name { get { return "Slap"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
+        public override string Name => "Slap";
+        public override string Type => CommandTypes.Other;
+        public override sbyte DefaultRank => 50;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -35,7 +35,7 @@ namespace MCGalaxy.Commands.Fun
                 Player[] players = PlayerInfo.Online.Items;
                 foreach (Player pl in players)
                 {
-                    if (pl.level == lvl && pl.Rank < data.Rank) DoSlap(p, pl);
+                    if (pl.Level == lvl && pl.Rank < data.Rank) DoSlap(p, pl);
                 }
                 return;
             }
@@ -47,9 +47,9 @@ namespace MCGalaxy.Commands.Fun
             int x = who.Pos.BlockX, y = who.Pos.BlockY, z = who.Pos.BlockZ;
             if (y < 0) y = 0;
             Position pos = who.Pos;
-            if (who.level.IsValidPos(x, y, z))
+            if (who.Level.IsValidPos(x, y, z))
             {
-                pos.Y = FindYAbove(who.level, (ushort)x, (ushort)y, (ushort)z);
+                pos.Y = FindYAbove(who.Level, (ushort)x, (ushort)y, (ushort)z);
                 if (pos.Y != -1)
                 {
                     Chat.MessageFromLevel(who, "λNICK &Swas slapped into the roof by " + p.ColoredName);
@@ -66,8 +66,8 @@ namespace MCGalaxy.Commands.Fun
             for (; y <= lvl.Height; y++)
             {
                 ushort above = lvl.GetBlock(x, (ushort)(y + 1), z);
-                if (above == Block.Invalid) continue;
-                if (!CollideType.IsSolid(lvl.CollideType(above))) continue;
+                if (above == 0xff) continue;
+                if (!DefaultSet.IsSolid(lvl.CollideType(above))) continue;
                 int posY = (y + 1) * 32 - 6;
                 BlockDefinition def = lvl.GetBlockDef(above);
                 if (def != null) posY += def.MinZ * 2;

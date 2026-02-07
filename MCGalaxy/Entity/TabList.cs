@@ -19,7 +19,7 @@ namespace MCGalaxy
     public static class TabList
     {
         // Want higher ranks at top of tab list, banned at bottom of tab list
-        const LevelPermission offset = LevelPermission.Console;
+        const sbyte offset = 127;
         /// <summary> Adds the given player to that player's tab list (if their client supports it). </summary>
         public static void Add(Player dst, Player p)
         {
@@ -32,8 +32,8 @@ namespace MCGalaxy
         }
         static void GetEntry(Player p, Player dst, out string name, out string group)
         {
-            string map = p.level.name;
-            if (!p.level.SeesServerWideChat) map += " &S<Local chat>";
+            string map = p.Level.name;
+            if (!p.Level.SeesServerWideChat) map += " &S<Local chat>";
             group = Server.Config.TablistGlobal ? "On " + map : "&fPlayers";
             name = dst.Ignores.Nicks ? p.color + p.truename : p.ColoredName;
             OnTabListEntryAddedEvent.Call(p, ref name, ref group, dst);
@@ -68,7 +68,7 @@ namespace MCGalaxy
                     if (self) Add(other, p);
                     continue;
                 }
-                if (!Server.Config.TablistGlobal && p.level != other.level) continue;
+                if (!Server.Config.TablistGlobal && p.Level != other.Level) continue;
                 if (other.CanSee(p)) Add(other, p);
                 if (p.CanSee(other)) Add(p, other);
             }

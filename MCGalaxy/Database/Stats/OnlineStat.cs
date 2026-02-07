@@ -65,30 +65,18 @@ namespace MCGalaxy.DB
                                deaths, PlayerAwards.Summarise(name));
             }
         }
-        public static void BlocksModifiedLine(Player p, Player who)
-        {
-            p.Message("  Modified &a{0} &Sblocks, &a{1} &Ssince login", who.TotalModified, who.SessionModified);
-        }
-        public static void BlockStatsLine(Player p, long placed, long deleted, long drawn)
-        {
-            p.Message("    &a{0} &Splaced, &a{1} &Sdeleted, &a{2} &Sdrawn",
+        public static void BlocksModifiedLine(Player p, Player who) => p.Message("  Modified &a{0} &Sblocks, &a{1} &Ssince login", who.TotalModified, who.SessionModified);
+        public static void BlockStatsLine(Player p, long placed, long deleted, long drawn) => p.Message("    &a{0} &Splaced, &a{1} &Sdeleted, &a{2} &Sdrawn",
                            placed, deleted, drawn);
-        }
         public static void TimeSpentLine(Player p, Player who)
         {
             TimeSpan timeOnline = DateTime.UtcNow - who.SessionStartTime;
             p.Message("  Spent &a{0} &Son the server, &a{1} &Sthis session",
                            who.TotalTime.Shorten(), timeOnline.Shorten());
         }
-        public static void LoginLine(Player p, Player who)
-        {
-            p.Message("  First login &a{0}&S, and is currently &aonline",
+        public static void LoginLine(Player p, Player who) => p.Message("  First login &a{0}&S, and is currently &aonline",
                            who.FirstLogin.ToString("yyyy-MM-dd"));
-        }
-        public static void LoginsLine(Player p, int logins, int kicks)
-        {
-            p.Message("  Logged in &a{0} &Stimes, &c{1} &Sof which ended in a kick", logins, kicks);
-        }
+        public static void LoginsLine(Player p, int logins, int kicks) => p.Message("  Logged in &a{0} &Stimes, &c{1} &Sof which ended in a kick", logins, kicks);
         public static void BanLine(Player p, string name)
         {
             if (!Group.BannedRank.Players.Contains(name)) return;

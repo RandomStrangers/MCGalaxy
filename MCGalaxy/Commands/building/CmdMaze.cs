@@ -18,7 +18,7 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdMaze : DrawCmd
     {
-        public override string name { get { return "Maze"; } }
+        public override string Name => "Maze";
         protected override DrawOp GetDrawOp(DrawArgs dArgs)
         {
             MazeDrawOp op = new()
@@ -27,7 +27,7 @@ namespace MCGalaxy.Commands.Building
             };
             return op;
         }
-        protected override void GetBrush(DrawArgs dArgs) { dArgs.BrushName = "Normal"; }
+        protected override void GetBrush(DrawArgs dArgs) => dArgs.BrushName = "Normal";
         public override void Help(Player p)
         {
             p.Message("&T/Maze");

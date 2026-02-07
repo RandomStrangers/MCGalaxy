@@ -18,7 +18,7 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to nod spin around for a certain interval. </summary>
     public class SpinInstruction : BotInstruction
     {
-        public SpinInstruction() { Name = "spin"; }
+        public SpinInstruction() => Name = "spin";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             Metadata meta = (Metadata)data.Metadata;
@@ -48,7 +48,7 @@ namespace MCGalaxy.Bots
             string speed = args.Length > 4 ? args[4] : "2";
             w.WriteLine(Name + " " + short.Parse(time) + " " + short.Parse(speed));
         }
-        public override string[] Help { get { return help; } }
+        public override string[] Help => help;
         static readonly string[] help = new string[] {
             "&T/BotAI add [name] spin <interval> <speed>",
             "&HCauses the bot to spin around for a period of time.",
@@ -60,7 +60,7 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to nod down up and down for a certain interval. </summary>
     public sealed class NodInstruction : SpinInstruction
     {
-        public NodInstruction() { Name = "nod"; }
+        public NodInstruction() => Name = "nod";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             Metadata meta = (Metadata)data.Metadata;
@@ -96,7 +96,7 @@ namespace MCGalaxy.Bots
             if (bot.countdown == 0) { bot.NextInstruction(); return false; }
             return true;
         }
-        public override string[] Help { get { return help; } }
+        public override string[] Help => help;
         static readonly string[] help = new string[] {
             "&T/BotAI add [name] nod <interval> <speed>",
             "&HCauses the bot to nod up and down for a period of time.",

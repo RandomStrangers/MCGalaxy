@@ -16,13 +16,13 @@ namespace MCGalaxy.Commands.Bots
 {
     public sealed class CmdBots : Command2
     {
-        public override string name { get { return "Bots"; } }
-        public override string shortcut { get { return "BotList"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Builder; } }
+        public override string Name => "Bots";
+        public override string Shortcut => "BotList";
+        public override string Type => CommandTypes.Other;
+        public override sbyte DefaultRank => 30;
         public override void Use(Player p, string message, CommandData data)
         {
-            Level lvl = p.IsSuper ? null : p.level;
+            Level lvl = p.IsSuper ? null : p.Level;
             string[] args = message.SplitSpaces(2);
             int offset = 0;
             if (args.Length == 2 || (message.Length > 0 && !IsListModifier(args[0])))
@@ -32,7 +32,7 @@ namespace MCGalaxy.Commands.Bots
                 if (lvl == null) return;
             }
             PlayerBot[] bots = lvl.Bots.Items;
-            string cmd = (lvl == p.level) ? "bots" : "bots " + lvl.name;
+            string cmd = (lvl == p.Level) ? "bots" : "bots " + lvl.name;
             string modifier = args.Length > offset ? args[offset] : "";
             p.Message("Bots in " + lvl.ColoredName + ":");
             Paginator.Output(p, bots, FormatBot, cmd, "Bots", modifier);

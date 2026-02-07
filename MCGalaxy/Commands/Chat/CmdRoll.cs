@@ -17,7 +17,7 @@ namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdRoll : MessageCmd
     {
-        public override string name { get { return "Roll"; } }
+        public override string Name => "Roll";
         static volatile Random rng;
         static readonly object rngLock = new();
         public override void Use(Player p, string message, CommandData data)

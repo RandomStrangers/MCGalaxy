@@ -24,41 +24,39 @@ namespace MCGalaxy
         {
             p.Message("Usable by: " + cmd.Permissions.Describe());
             PrintAliases(p, cmd);
-            List<CommandExtraPerms> extraPerms = CommandExtraPerms.FindAll(cmd.name);
+            List<CommandExtraPerms> extraPerms = CommandExtraPerms.FindAll(cmd.Name);
             if (cmd.ExtraPerms == null)
             {
                 extraPerms.Clear();
             }
-            if (extraPerms.Count == 0)
+            if (extraPerms.Count != 0)
             {
-                return;
-            }
-            p.Message("&TExtra permissions:");
-            foreach (CommandExtraPerms extra in extraPerms)
-            {
-                p.Message("{0}) {1} {2}", extra.Num, extra.Describe(), extra.Desc);
+                p.Message("&TExtra permissions:");
+                foreach (CommandExtraPerms extra in extraPerms)
+                {
+                    p.Message("{0}) {1} {2}", extra.Num, extra.Describe(), extra.Desc);
+                }
             }
         }
         static void PrintAliases(Player p, Command cmd)
         {
             StringBuilder dst = new("Shortcuts: &T");
-            if (!string.IsNullOrEmpty(cmd.shortcut))
+            if (!string.IsNullOrEmpty(cmd.Shortcut))
             {
-                dst.Append('/').Append(cmd.shortcut).Append(", ");
+                dst.Append('/').Append(cmd.Shortcut).Append(", ");
             }
             FindAliases(Alias.coreAliases, cmd, dst);
             FindAliases(Alias.aliases, cmd, dst);
-            if (dst.Length == "Shortcuts: &T".Length)
+            if (dst.Length != "Shortcuts: &T".Length)
             {
-                return;
+                p.Message(dst.ToString(0, dst.Length - 2));
             }
-            p.Message(dst.ToString(0, dst.Length - 2));
         }
         static void FindAliases(List<Alias> aliases, Command cmd, StringBuilder dst)
         {
             foreach (Alias a in aliases)
             {
-                if (!a.Target.CaselessEq(cmd.name))
+                if (!a.Target.CaselessEq(cmd.Name))
                 {
                     continue;
                 }
@@ -68,28 +66,21 @@ namespace MCGalaxy
                     dst.Append(", ");
                     continue;
                 }
-                string name = string.IsNullOrEmpty(cmd.shortcut) ? cmd.name : cmd.shortcut;
-                if (name.Length > cmd.name.Length)
+                string name = string.IsNullOrEmpty(cmd.Shortcut) ? cmd.Name : cmd.Shortcut;
+                if (name.Length > cmd.Name.Length)
                 {
-                    name = cmd.name;
+                    name = cmd.Name;
                 }
                 string args = a.Format.Replace("{args}", "[args]");
                 dst.Append(" for /").Append(name + " " + args);
                 dst.Append(", ");
             }
         }
-        public static void MessageNeedMinPerm(Player p, string action, LevelPermission perm)
-        {
-            p.Message("Only {0}&S{1}", Group.GetColoredName(perm), action);
-        }
-        public static bool ValidName(Player p, string name, string type)
-        {
-            const string alphabet = Player.USERNAME_ALPHABET + "+"; // compatibility with ClassiCubeAccountPlus
-            return IsValidName(p, name, type, alphabet);
-        }
+        public static void MessageNeedMinPerm(Player p, string action, sbyte perm) => p.Message("Only {0}&S{1}", Group.GetColoredName(perm), action);
+        public static bool ValidName(Player p, string name, string type) => IsValidName(p, name, type, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890._+");
         public static bool ValidPlayerName(Player p, string name)
         {
-            string alphabet = Player.USERNAME_ALPHABET + "+"; // compatibility with ClassiCubeAccountPlus
+            string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890._+"; // compatibility with ClassiCubeAccountPlus
             foreach (AuthService service in AuthService.Services)
             {
                 alphabet += service.NameSuffix;

@@ -16,31 +16,20 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdDeleteLvl : Command2
     {
-        public override string name { get { return "DeleteLvl"; } }
-        public override string type { get { return CommandTypes.World; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-        public const string BACKUP_FLAG = "*backup";
-        public static readonly CommandAlias BackupAlias = new("DeleteBackup", BACKUP_FLAG);
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new[] {
+        public override string Name => "DeleteLvl";
+        public override string Type => CommandTypes.World;
+        public override sbyte DefaultRank => 100;
+        public override CommandAlias[] Aliases => new[] {
                     new CommandAlias("WDelete"), new CommandAlias("WorldDelete"), new CommandAlias("WRemove"),
-                    BackupAlias
+                    new("DeleteBackup", "*backup")
                 };
-            }
-        }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Owner, "can delete backups of levels") }; }
-        }
-        public override bool MessageBlockRestricted { get { return true; } }
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(120, "can delete backups of levels") };
+        public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
             string[] words = message.SplitSpaces(2);
-            if (words[0].CaselessEq(BACKUP_FLAG))
+            if (words[0].CaselessEq("*backup"))
             {
                 if (!CheckExtraPerm(p, data, 1)) return;
                 UseBackup(p, words.Length >= 2 ? words[1] : "", false);
@@ -77,13 +66,13 @@ namespace MCGalaxy.Commands.World
                     backup, map);
                 if (os)
                 {
-                    p.Message("If you are sure, type &T/os delete {0} {1} confirm", BACKUP_FLAG, backup);
+                    p.Message("If you are sure, type &T/os delete *backup {0} confirm", backup);
                 }
                 else
                 {
                     // Don't use message, since they could have typed /deletebackup earth 1 derp
                     // and it should not tell you to type "[...] derp confirm"
-                    p.Message("If you are sure, type &T/{0} {1} {2} confirm", BackupAlias.Trigger, map, backup);
+                    p.Message("If you are sure, type &T/DeleteBackup {0} {1} confirm", map, backup);
                 }
                 return;
             }
@@ -98,7 +87,7 @@ namespace MCGalaxy.Commands.World
         }
         public static void HelpBackup(Player p)
         {
-            p.Message("&T/DeleteLvl {0} [level] [backup]", BACKUP_FLAG);
+            p.Message("&T/DeleteLvl *backup [level] [backup]");
             p.Message("&H-Permanently- deletes [backup] of [level].");
         }
     }

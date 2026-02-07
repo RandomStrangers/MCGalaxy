@@ -16,14 +16,11 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdRenameLvl : Command2
     {
-        public override string name { get { return "RenameLvl"; } }
-        public override string type { get { return CommandTypes.World; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("WRename"), new CommandAlias("WorldRename") }; }
-        }
-        public override bool MessageBlockRestricted { get { return true; } }
+        public override string Name => "RenameLvl";
+        public override string Type => CommandTypes.World;
+        public override sbyte DefaultRank => 100;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("WRename"), new CommandAlias("WorldRename") };
+        public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();

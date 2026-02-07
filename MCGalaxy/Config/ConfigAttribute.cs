@@ -19,7 +19,7 @@ namespace MCGalaxy.Config
     {
         public string Name, Section;
         public abstract object Parse(string value);
-        public virtual string Serialise(object value) { return value == null ? "" : value.ToString(); }
+        public virtual string Serialise(object value) => value == null ? "" : value.ToString();
         public ConfigAttribute(string name, string section)
         {
             Name = name; Section = section;

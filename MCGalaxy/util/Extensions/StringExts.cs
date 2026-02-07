@@ -42,10 +42,7 @@ namespace MCGalaxy
             return str.Substring(0, str.Length - 1);
         }
         /// <summary> Returns whether line is empty or starts with a #. </summary>
-        public static bool IsCommentLine(this string line)
-        {
-            return line.Length == 0 || line[0] == '#';
-        }
+        public static bool IsCommentLine(this string line) => line.Length == 0 || line[0] == '#';
         /// <summary> Returns whether all characters in the given string are also in the given alphabet </summary>
         public static bool ContainsAllIn(this string str, string alphabet)
         {

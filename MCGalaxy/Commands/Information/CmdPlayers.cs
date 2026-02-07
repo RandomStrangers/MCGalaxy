@@ -18,9 +18,9 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdPlayers : Command2
     {
-        public override string name { get { return "Players"; } }
-        public override string shortcut { get { return "Who"; } }
-        public override string type { get { return CommandTypes.Information; } }
+        public override string Name => "Players";
+        public override string Shortcut => "Who";
+        public override string Type => CommandTypes.Information;
         public override void Use(Player p, string message, CommandData data)
         {
             List<OnlineListEntry> all = PlayerInfo.GetOnlineList(p, data.Rank, out int total);
@@ -55,7 +55,7 @@ namespace MCGalaxy.Commands.Info
             if (p.voice) { data.Append("&f+").Append(group.Color); }
             data.Append(Colors.StripUsed(target.FormatNick(p)));
             data.Append(OnlineListEntry.GetFlags(p));
-            string lvl = Colors.Strip(p.level.name); // for museums
+            string lvl = Colors.Strip(p.Level.name); // for museums
             data.Append(" (").Append(lvl).Append("),");
         }
         static void Output(OnlineListEntry e, Player p, bool showWhenEmpty)

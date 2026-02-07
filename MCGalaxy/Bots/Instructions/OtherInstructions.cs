@@ -18,12 +18,12 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to reset to the and execute first instruction. </summary>
     public sealed class ResetInstruction : BotInstruction
     {
-        public ResetInstruction() { Name = "reset"; }
+        public ResetInstruction() => Name = "reset";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             bot.cur = 0; return false;
         }
-        public override string[] Help { get { return help; } }
+        public override string[] Help => help;
         static readonly string[] help = new string[] {
             "&T/BotAI add [name] reset",
             "&HCauses the bot to go back to the first instruction",
@@ -32,12 +32,12 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to be removed from the world. </summary>
     public sealed class RemoveInstruction : BotInstruction
     {
-        public RemoveInstruction() { Name = "remove"; }
+        public RemoveInstruction() => Name = "remove";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             PlayerBot.Remove(bot); return true;
         }
-        public override string[] Help { get { return help; } }
+        public override string[] Help => help;
         static readonly string[] help = new string[] {
             "&T/BotAI add [name] remove",
             "&HCauses the bot to be removed from the world",
@@ -46,7 +46,7 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to switch to a different AI. </summary>
     public sealed class LinkScriptInstruction : BotInstruction
     {
-        public LinkScriptInstruction() { Name = "linkscript"; }
+        public LinkScriptInstruction() => Name = "linkscript";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             string ai = (string)data.Metadata;
@@ -75,7 +75,7 @@ namespace MCGalaxy.Bots
                 w.WriteLine(Name + " " + script);
             }
         }
-        public override string[] Help { get { return help; } }
+        public override string[] Help => help;
         static readonly string[] help = new string[] {
             "&T/BotAI add [name] linkscript [ai name]",
             "&HCauses the bot to switch to the given AI, and execute that AI's instructions instead.",
@@ -84,7 +84,7 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to wait/do nothing for a certain interval. </summary>
     public sealed class WaitInstruction : BotInstruction
     {
-        public WaitInstruction() { Name = "wait"; }
+        public WaitInstruction() => Name = "wait";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             if (bot.countdown == 0)
@@ -107,7 +107,7 @@ namespace MCGalaxy.Bots
             string time = args.Length > 3 ? args[3] : "10";
             w.WriteLine(Name + " " + short.Parse(time));
         }
-        public override string[] Help { get { return help; } }
+        public override string[] Help => help;
         static readonly string[] help = new string[] {
             "&T/BotAI add [name] wait <interval>",
             "&HCauses the bot to stay still for a period of time.",

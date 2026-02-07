@@ -22,13 +22,10 @@ namespace MCGalaxy.Modules.Games.LS
 {
     sealed class CmdLavaSurvival : RoundsGameCmd
     {
-        public override string name { get { return "LavaSurvival"; } }
-        public override string shortcut { get { return "LS"; } }
-        protected override RoundsGame Game { get { return LSGame.Instance; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can manage lava survival") }; }
-        }
+        public override string Name => "LavaSurvival";
+        public override string Shortcut => "LS";
+        protected override RoundsGame Game => LSGame.Instance;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can manage lava survival") };
         protected override void HandleSet(Player p, RoundsGame game, string[] args)
         {
             string prop = args[1];

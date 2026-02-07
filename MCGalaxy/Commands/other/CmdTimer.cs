@@ -18,9 +18,9 @@ namespace MCGalaxy.Commands.Misc
 {
     public sealed class CmdTimer : Command2
     {
-        public override string name { get { return "Timer"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "Timer";
+        public override string Type => CommandTypes.Other;
+        public override sbyte DefaultRank => 80;
         public override void Use(Player p, string message, CommandData data)
         {
             if (p.cmdTimer) { p.Message("Can only have one timer at a time. Use /abort to cancel your previous timer."); return; }
@@ -44,8 +44,8 @@ namespace MCGalaxy.Commands.Misc
                 Player = p
             };
             p.cmdTimer = true;
-            p.level.Message("Timer lasting for " + TotalTime + " seconds has started.");
-            p.level.Message(args.Message);
+            p.Level.Message("Timer lasting for " + TotalTime + " seconds has started.");
+            p.Level.Message(args.Message);
             Server.MainScheduler.QueueRepeat(TimerCallback, args, TimeSpan.FromSeconds(5));
         }
         class TimerArgs
@@ -67,8 +67,8 @@ namespace MCGalaxy.Commands.Misc
             }
             else
             {
-                p.level.Message(args.Message);
-                p.level.Message("Timer has " + (args.Repeats * 5) + " seconds remaining.");
+                p.Level.Message(args.Message);
+                p.Level.Message("Timer has " + (args.Repeats * 5) + " seconds remaining.");
             }
         }
         public override void Help(Player p)

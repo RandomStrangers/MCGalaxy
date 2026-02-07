@@ -17,8 +17,8 @@ namespace MCGalaxy.Modules.Games.ZS
 {
     sealed class CmdAlive : Command2
     {
-        public override string name { get { return "Alive"; } }
-        public override string type { get { return CommandTypes.Games; } }
+        public override string Name => "Alive";
+        public override string Type => CommandTypes.Games;
         public override void Use(Player p, string message, CommandData data)
         {
             List<Player> alive = PlayerInfo.OnlyCanSee(p, data.Rank,

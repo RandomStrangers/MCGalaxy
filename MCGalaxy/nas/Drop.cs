@@ -1,11 +1,10 @@
-#if NAS && TEN_BIT_BLOCKS
 using System.Collections.Generic;
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
     public class Drop
     {
         public List<BlockStack> blockStacks = null;
-        public List<Item> items = null;
+        public List<NASItem> items = null;
         public int exp = 0;
         public Drop()
         {
@@ -24,9 +23,9 @@ namespace NotAwesomeSurvival
             if (parent.items != null)
             {
                 items = new();
-                foreach (Item item in parent.items)
+                foreach (NASItem item in parent.items)
                 {
-                    Item itemClone = new(item.name);
+                    NASItem itemClone = new(item.name);
                     items.Add(itemClone);
                 }
             }
@@ -39,7 +38,7 @@ namespace NotAwesomeSurvival
                 bs
             };
         }
-        public Drop(Item item) => items = new()
+        public Drop(NASItem item) => items = new()
             {
                 item
             };
@@ -59,7 +58,7 @@ namespace NotAwesomeSurvival
                 blockStacks = null;
             }
             items = new();
-            foreach (Item item in inv.items)
+            foreach (NASItem item in inv.items)
             {
                 if (item == null)
                 {
@@ -84,4 +83,3 @@ namespace NotAwesomeSurvival
         }
     }
 }
-#endif

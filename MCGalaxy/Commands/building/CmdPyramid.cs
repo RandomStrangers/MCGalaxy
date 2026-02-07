@@ -17,8 +17,8 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdPyramid : DrawCmd
     {
-        public override string name { get { return "Pyramid"; } }
-        public override string shortcut { get { return "pd"; } }
+        public override string Name => "Pyramid";
+        public override string Shortcut => "pd";
         protected override DrawMode GetMode(string[] parts)
         {
             string mode = parts[0];
@@ -27,15 +27,12 @@ namespace MCGalaxy.Commands.Building
             if (mode == "reverse") return DrawMode.reverse;
             return DrawMode.normal;
         }
-        protected override DrawOp GetDrawOp(DrawArgs dArgs)
+        protected override DrawOp GetDrawOp(DrawArgs dArgs) => dArgs.Mode switch
         {
-            return dArgs.Mode switch
-            {
-                DrawMode.hollow => new PyramidHollowDrawOp(),
-                DrawMode.reverse => new PyramidReverseDrawOp(),
-                _ => new PyramidSolidDrawOp(),
-            };
-        }
+            DrawMode.hollow => new PyramidHollowDrawOp(),
+            DrawMode.reverse => new PyramidReverseDrawOp(),
+            _ => new PyramidSolidDrawOp(),
+        };
         public override void Help(Player p)
         {
             p.Message("&T/Pyramid <brush args>");

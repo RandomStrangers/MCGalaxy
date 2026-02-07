@@ -20,12 +20,9 @@ namespace MCGalaxy.Levels.IO
 {
     public sealed class CwImporter : IMapImporter
     {
-        public override string Extension { get { return ".cw"; } }
-        public override string Description { get { return "ClassiCube/ClassicalSharp map"; } }
-        public override Vec3U16 ReadDimensions(Stream src)
-        {
-            throw new NotSupportedException();
-        }
+        public override string Extension => ".cw";
+        public override string Description => "ClassiCube/ClassicalSharp map";
+        public override Vec3U16 ReadDimensions(Stream src) => throw new NotSupportedException();
         public override Level Read(Stream src, string name, bool metadata)
         {
             NbtFile file = new();
@@ -47,75 +44,67 @@ namespace MCGalaxy.Levels.IO
             {
                 throw new NotSupportedException("Only version 1 of ClassicWorld format is supported.");
             }
-            ushort width = (ushort)root["X"].ShortValue;
-            ushort height = (ushort)root["Y"].ShortValue;
-            ushort length = (ushort)root["Z"].ShortValue;
+            ushort width = (ushort)root["X"].ShortValue,
+                height = (ushort)root["Y"].ShortValue,
+                length = (ushort)root["Z"].ShortValue;
             byte[] blocks = root["BlockArray"].ByteArrayValue;
-            lvl = new Level(name, width, height, length, blocks);
+            lvl = new(name, width, height, length, blocks);
             ReadSpawn(root, lvl);
-#if TEN_BIT_BLOCKS
-            // Can't use ConvertCustom, as that changes lvl.blocks
-            // (aka the array containing the lower 8 bits of block ids)
             if (root.Contains("BlockArray2"))
             {
                 ReadExtBlocks(root, lvl);
                 return;
             }
-#endif
             ConvertCustom(lvl);
         }
-#if TEN_BIT_BLOCKS
         static void ReadExtBlocks(NbtCompound root, Level lvl)
         {
-            byte[] lo = root["BlockArray"].ByteArrayValue;
-            byte[] hi = root["BlockArray2"].ByteArrayValue;
+            byte[] lo = root["BlockArray"].ByteArrayValue,
+                hi = root["BlockArray2"].ByteArrayValue;
             for (int i = 0; i < lo.Length; i++)
             {
-                if (hi[i] == 0 && lo[i] <= Block.CPE_MAX_BLOCK)
+                if (hi[i] == 0 && lo[i] <= 65)
                 {
                     continue;
                 }
                 lvl.IntToPos(i, out ushort x, out ushort y, out ushort z);
-                int b = ((hi[i] << 8) | lo[i]) + Block.Extended;
+                int b = ((hi[i] << 8) | lo[i]) + 256;
                 lvl.SetBlock(x, y, z, (ushort)b);
             }
         }
-#endif
         static void ReadSpawn(NbtCompound root, Level lvl)
         {
-            if (!root.Contains("Spawn"))
+            if (root.Contains("Spawn"))
             {
-                return;
+                NbtTag spawn = root["Spawn"];
+                lvl.spawnx = (ushort)spawn["X"].ShortValue;
+                lvl.spawny = (ushort)spawn["Y"].ShortValue;
+                lvl.spawnz = (ushort)spawn["Z"].ShortValue;
+                lvl.rotx = spawn["H"].ByteValue;
+                lvl.roty = spawn["P"].ByteValue;
             }
-            NbtTag spawn = root["Spawn"];
-            lvl.spawnx = (ushort)spawn["X"].ShortValue;
-            lvl.spawny = (ushort)spawn["Y"].ShortValue;
-            lvl.spawnz = (ushort)spawn["Z"].ShortValue;
-            lvl.rotx = spawn["H"].ByteValue;
-            lvl.roty = spawn["P"].ByteValue;
         }
         static void ReadMetadata(NbtCompound root, Level lvl)
         {
-            if (!root.Contains("CPE"))
+            if (root.Contains("CPE"))
             {
-                return;
-            }
-            NbtCompound cpe = (NbtCompound)root["CPE"];
-            if (cpe.Contains("EnvWeatherType"))
-            {
-                lvl.Config.Weather = cpe["EnvWeatherType"]["WeatherType"].ByteValue;
-            }
-            if (cpe.Contains("EnvMapAppearance"))
-            {
-                ParseEnvMapAppearance(cpe, lvl);
-            }
-            if (cpe.Contains("EnvColors"))
-            {
-                ParseEnvColors(cpe, lvl);
-            }
-            if (cpe.Contains("BlockDefinitions"))
-            {
-                ParseBlockDefinitions(cpe, lvl);
+                NbtCompound cpe = (NbtCompound)root["CPE"];
+                if (cpe.Contains("EnvWeatherType"))
+                {
+                    lvl.Config.Weather = cpe["EnvWeatherType"]["WeatherType"].ByteValue;
+                }
+                if (cpe.Contains("EnvMapAppearance"))
+                {
+                    ParseEnvMapAppearance(cpe, lvl);
+                }
+                if (cpe.Contains("EnvColors"))
+                {
+                    ParseEnvColors(cpe, lvl);
+                }
+                if (cpe.Contains("BlockDefinitions"))
+                {
+                    ParseBlockDefinitions(cpe, lvl);
+                }
             }
         }
         static void ParseEnvMapAppearance(NbtCompound cpe, Level lvl)
@@ -124,18 +113,17 @@ namespace MCGalaxy.Levels.IO
             lvl.Config.HorizonBlock = Block.FromRaw(comp["EdgeBlock"].ByteValue);
             lvl.Config.EdgeBlock = Block.FromRaw(comp["SideBlock"].ByteValue);
             lvl.Config.EdgeLevel = comp["SideLevel"].ShortValue;
-            if (!comp.Contains("TextureURL"))
+            if (comp.Contains("TextureURL"))
             {
-                return;
-            }
-            string url = comp["TextureURL"].StringValue;
-            if (url.CaselessContains(".png"))
-            {
-                lvl.Config.Terrain = url == Server.Config.DefaultTerrain ? "" : url;
-            }
-            else
-            {
-                lvl.Config.TexturePack = url == Server.Config.DefaultTexture ? "" : url;
+                string url = comp["TextureURL"].StringValue;
+                if (url.CaselessContains(".png"))
+                {
+                    lvl.Config.Terrain = url == Server.Config.DefaultTerrain ? "" : url;
+                }
+                else
+                {
+                    lvl.Config.TexturePack = url == Server.Config.DefaultTexture ? "" : url;
+                }
             }
         }
         static void ParseEnvColors(NbtCompound cpe, Level lvl)
@@ -167,7 +155,7 @@ namespace MCGalaxy.Levels.IO
             bool hasBlockDefs = false;
             foreach (NbtTag tag in blocks)
             {
-                if (tag.TagType != NbtTagType.Compound)
+                if (tag.TagType != 0x0a)
                 {
                     continue;
                 }
@@ -213,9 +201,9 @@ namespace MCGalaxy.Levels.IO
                 def.MaxZ = coords[4];
                 def.MaxY = coords[5];
                 ushort block = def.GetBlock();
-                if (block >= Block.SUPPORTED_COUNT)
+                if (block >= 1024)
                 {
-                    Logger.Log(LogType.Warning, "Cannot import custom block {0} (ID {1})",
+                    Logger.Log(6, "Cannot import custom block {0} (ID {1})",
                                def.Name, def.RawID);
                     continue;
                 }
@@ -230,7 +218,7 @@ namespace MCGalaxy.Levels.IO
                 {
                     def.FallBack = globalDef.FallBack;
                 }
-                else if (def.RawID <= Block.CPE_MAX_BLOCK)
+                else if (def.RawID <= 65)
                 {
                     def.FallBack = (byte)def.RawID;
                 }

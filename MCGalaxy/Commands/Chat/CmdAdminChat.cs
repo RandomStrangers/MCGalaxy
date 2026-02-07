@@ -16,15 +16,12 @@ namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdAdminChat : Command2
     {
-        public override string name { get { return "AdminChat"; } }
-        public override string shortcut { get { return "Admin"; } }
-        public override string type { get { return CommandTypes.Chat; } }
-        public override bool UseableWhenFrozen { get { return true; } }
-        public override bool UpdatesLastCmd { get { return false; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Admin, "can read adminchat messages") }; }
-        }
+        public override string Name => "AdminChat";
+        public override string Shortcut => "Admin";
+        public override string Type => CommandTypes.Chat;
+        public override bool UseableWhenFrozen => true;
+        public override bool UpdatesLastCmd => false;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(100, "can read adminchat messages") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length > 0) { ChatModes.MessageAdmins(p, message); return; }

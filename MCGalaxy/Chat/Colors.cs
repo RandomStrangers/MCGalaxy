@@ -51,10 +51,7 @@ namespace MCGalaxy
         }
         /// <summary> Returns whether the given color code is considered a standard color. </summary>
         /// <remarks> Standard colors are 0-9, a-f, A-F </remarks>
-        public static bool IsStandard(char c)
-        {
-            return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
-        }
+        public static bool IsStandard(char c) => (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
         public static ColorDesc Get(char c)
         {
             if (c >= ' ' && c <= '~') return List[c];
@@ -137,10 +134,7 @@ namespace MCGalaxy
             if (col == 'W') return Server.Config.WarningErrorColor[1];
             return IsDefined(col) ? col : '\0';
         }
-        public static bool IsSystem(char col)
-        {
-            return col == 'S' || col == 'H' || col == 'T' || col == 'I' || col == 'W';
-        }
+        public static bool IsSystem(char col) => col == 'S' || col == 'H' || col == 'T' || col == 'I' || col == 'W';
         /// <summary> Converts percentage color codes to their actual/real color codes. </summary>
         /// <remarks> Does not escape percentage codes that are part of urls. </remarks>
         public static string Escape(string value)
@@ -325,8 +319,8 @@ namespace MCGalaxy
         public char Code, Fallback;
         public byte R, G, B, A;
         public string Name;
-        public readonly bool Undefined { get { return Fallback == '\0'; } }
-        public readonly byte Index { get { return (byte)Code.UnicodeToCp437(); } }
+        public readonly bool Undefined => Fallback == '\0';
+        public readonly byte Index => (byte)Code.UnicodeToCp437();
         public ColorDesc(byte r, byte g, byte b)
         {
             Code = '\0'; Fallback = '\0'; Name = null;

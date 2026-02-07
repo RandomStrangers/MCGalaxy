@@ -20,11 +20,8 @@ namespace MCGalaxy.Drawing.Ops
 {
     public class RestoreSelectionDrawOp : DrawOp
     {
-        public override string Name { get { return "RestoreSelection"; } }
-        public override long BlocksAffected(Level lvl, Vec3S32[] marks)
-        {
-            return SizeX * SizeY * SizeZ;
-        }
+        public override string Name => "RestoreSelection";
+        public override long BlocksAffected(Level lvl, Vec3S32[] marks) => SizeX * SizeY * SizeZ;
         public RestoreSelectionDrawOp()
         {
             Flags = BlockDBFlags.Restored;

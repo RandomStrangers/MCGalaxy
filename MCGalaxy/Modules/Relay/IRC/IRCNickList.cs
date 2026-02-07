@@ -20,7 +20,7 @@ namespace MCGalaxy.Modules.Relay.IRC
     {
         readonly Dictionary<string, List<string>> userMap = new();
         public IRCBot bot;
-        public void Clear() { userMap.Clear(); }
+        public void Clear() => userMap.Clear();
         public void OnLeftChannel(string userNick, string channel)
         {
             List<string> chanNicks = GetNicks(channel);
@@ -94,14 +94,8 @@ namespace MCGalaxy.Modules.Relay.IRC
             }
             return -1;
         }
-        string Unprefix(string nick)
-        {
-            return nick.Substring(GetPrefixLength(nick));
-        }
-        string GetPrefix(string nick)
-        {
-            return nick.Substring(0, GetPrefixLength(nick));
-        }
+        string Unprefix(string nick) => nick.Substring(GetPrefixLength(nick));
+        string GetPrefix(string nick) => nick.Substring(0, GetPrefixLength(nick));
         int GetPrefixLength(string nick)
         {
             int prefixChars = 0;
@@ -114,11 +108,8 @@ namespace MCGalaxy.Modules.Relay.IRC
             }
             return prefixChars;
         }
-        bool IsNickChar(char c)
-        {
-            return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
+        bool IsNickChar(char c) => (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
                 c == '[' || c == ']' || c == '{' || c == '}' || c == '^' || c == '`' || c == '_' || c == '|';
-        }
         public bool VerifyNick(string channel, string userNick, ref string error, ref bool foundAtAll)
         {
             List<string> chanNicks = GetNicks(channel);

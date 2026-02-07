@@ -30,7 +30,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         /// <summary> Returns the JSON representation of the request data </summary>
         public abstract JsonObject ToJson();
         /// <summary> Attempts to combine this message with a prior message to reduce API calls </summary>
-        public virtual bool CombineWith(DiscordApiMessage prior) { return false; }
+        public virtual bool CombineWith(DiscordApiMessage prior) => false;
         /// <summary> Optionally adjusts the request to send to Discord </summary>
         public virtual void OnRequest(HttpWebRequest req) { }
         /// <summary> Processes the response received from Discord </summary>
@@ -76,10 +76,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         public string Title;
         public Dictionary<string, string> Fields = new();
         public int Color;
-        public ChannelSendEmbed(string channelID)
-        {
-            Path = "/channels/" + channelID + "/messages";
-        }
+        public ChannelSendEmbed(string channelID) => Path = "/channels/" + channelID + "/messages";
         JsonArray GetFields()
         {
             JsonArray arr = new();
@@ -94,9 +91,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             }
             return arr;
         }
-        public override JsonObject ToJson()
-        {
-            return new JsonObject()
+        public override JsonObject ToJson() => new()
             {
                 { "embeds", new JsonArray()
                     {
@@ -115,6 +110,5 @@ namespace MCGalaxy.Modules.Relay.Discord
                     }
                 }
             };
-        }
     }
 }

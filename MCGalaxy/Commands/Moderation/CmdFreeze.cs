@@ -18,10 +18,10 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdFreeze : Command2
     {
-        public override string name { get { return "Freeze"; } }
-        public override string shortcut { get { return "fz"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "Freeze";
+        public override string Shortcut => "fz";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 80;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -48,7 +48,7 @@ namespace MCGalaxy.Commands.Moderation
             string reason = args.Length > 2 ? args[2] : "";
             reason = ModActionCmd.ExpandReason(p, reason);
             if (reason == null) return;
-            ModAction action = new(target, p, ModActionType.Frozen, reason, duration);
+            ModAction action = new(target, p, 6, reason, duration);
             OnModActionEvent.Call(action);
         }
         void DoUnfreeze(Player p, string target, string[] args)
@@ -56,7 +56,7 @@ namespace MCGalaxy.Commands.Moderation
             string reason = args.Length > 1 ? args[1] : "";
             reason = ModActionCmd.ExpandReason(p, reason);
             if (reason == null) return;
-            ModAction action = new(target, p, ModActionType.Unfrozen, reason);
+            ModAction action = new(target, p, 7, reason);
             OnModActionEvent.Call(action);
         }
         public override void Help(Player p)

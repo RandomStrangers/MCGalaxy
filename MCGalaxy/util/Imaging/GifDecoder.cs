@@ -26,11 +26,8 @@ namespace MCGalaxy.Util.Imaging
             0x47, 0x49, 0x46, 0x38, 0x39, 0x61
         };
         Pixel[] globalPal;
-        public static bool DetectHeader(byte[] data)
-        {
-            return MatchesSignature(data, gif87Sig)
+        public static bool DetectHeader(byte[] data) => MatchesSignature(data, gif87Sig)
                 || MatchesSignature(data, gif89Sig);
-        }
         public override Bitmap2D Decode(byte[] src)
         {
             SetBuffer(src);

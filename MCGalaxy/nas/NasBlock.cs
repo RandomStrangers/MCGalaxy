@@ -1,69 +1,59 @@
-#if NAS && TEN_BIT_BLOCKS
-using MCGalaxy;
 using MCGalaxy.Maths;
-using System;
 using System.Collections.Generic;
-using NasBlockAction = NotAwesomeSurvival.Action<NotAwesomeSurvival.NasLevel, NotAwesomeSurvival.NasBlock, int, int, int>;
-using NasBlockCollideAction =
-    NotAwesomeSurvival.Action<NotAwesomeSurvival.NasEntity,
-    NotAwesomeSurvival.NasBlock, bool, ushort, ushort, ushort>;
-using NasBlockExistAction =
-    NotAwesomeSurvival.Action<NotAwesomeSurvival.NasPlayer,
-    NotAwesomeSurvival.NasBlock, bool, ushort, ushort, ushort>;
-using NasBlockInteraction =
-    NotAwesomeSurvival.Action<NotAwesomeSurvival.NasPlayer, MCGalaxy.Events.PlayerEvents.MouseButton, MCGalaxy.Events.PlayerEvents.MouseAction,
-    NotAwesomeSurvival.NasBlock, ushort, ushort, ushort>;
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
-    public partial class NasBlock
+    public enum NASMaterial
     {
-        public static NasBlock[] blocks = new NasBlock[768], blocksIndexedByServerushort;
-        public static NasBlock Default;
-        public static int[] DefaultDurabilities = new int[(int)Material.Count];
-        public enum Material
-        {
-            None,
-            Gas,
-            Stone,
-            Earth,
-            Wood,
-            Plant,
-            Leaves,
-            Organic,
-            Glass,
-            Metal,
-            Liquid,
-            Lava,
-            Count
-        }
+        None,
+        Gas,
+        Stone,
+        Earth,
+        Wood,
+        Plant,
+        Leaves,
+        Organic,
+        Glass,
+        Metal,
+        Liquid,
+        Lava,
+        Count
+    }
+    public partial class NASBlock
+    {
+        public static NASBlock[] blocks = new NASBlock[768], blocksIndexedByServerushort;
+        public static NASBlock Default;
+        public static int[] DefaultDurabilities = new int[(int)NASMaterial.Count];
         public ushort selfID,
             parentID,
             alternateID;
         public List<ushort> childIDs = null;
-        public Material material;
+        public NASMaterial material;
         public int tierOfToolNeededToBreak,
             durability,
             resourceCost,
             expGivenMax = 0,
             expGivenMin = 0;
-        public Type type;
+        public NASType type;
         public float damageDoneToTool,
             fallDamageMultiplier = -1,
             disturbDelayMax = 0f,
             disturbDelayMin = 0f,
             beginDelayMax = 0f,
             beginDelayMin = 0f;
-        public Func<NasPlayer, ushort, Drop> dropHandler;
-        public Crafting.Station station;
+        public Func<NASPlayer, ushort, Drop> dropHandler;
+        public Station station;
         public Container container;
         public bool collides = true;
         public AABB bounds;
-        public NasBlockAction disturbedAction = null,
+        public Action<NASLevel, NASBlock, int, int, int> disturbedAction = null,
             instantAction = null;
-        public NasBlockInteraction interaction = null;
-        public NasBlockExistAction existAction = null;
-        public NasBlockCollideAction collideAction = null;
-        public NasBlock(ushort id, Material mat)
+        public Action<NASPlayer, int, int,
+    NASBlock, ushort, ushort, ushort> interaction = null;
+        public Action<NASPlayer,
+    NASBlock, bool, ushort, ushort, ushort> existAction = null;
+        public Action<NASEntity,
+    NASBlock, bool, ushort, ushort, ushort> collideAction = null;
+        public NASBlock(ushort id, NASMaterial mat)
         {
             selfID = id;
             parentID = id;
@@ -72,7 +62,7 @@ namespace NotAwesomeSurvival
             tierOfToolNeededToBreak = 0;
             durability = DefaultDurabilities[(int)mat];
             damageDoneToTool = 1f;
-            if (material == Material.Leaves || durability == 0)
+            if (material == NASMaterial.Leaves || durability == 0)
             {
                 damageDoneToTool = 0;
             }
@@ -80,12 +70,12 @@ namespace NotAwesomeSurvival
             resourceCost = 1;
             station = null;
         }
-        public NasBlock(ushort id, Material mat, int dur, int tierOfToolNeededToBreak = 0) : this(id, mat)
+        public NASBlock(ushort id, NASMaterial mat, int dur, int tierOfToolNeededToBreak = 0) : this(id, mat)
         {
             durability = dur;
             this.tierOfToolNeededToBreak = tierOfToolNeededToBreak;
         }
-        public NasBlock(ushort id, NasBlock parent)
+        public NASBlock(ushort id, NASBlock parent)
         {
             selfID = id;
             alternateID = id;
@@ -122,16 +112,16 @@ namespace NotAwesomeSurvival
                 existAction = parent.existAction;
             }
         }
-        public static NasBlock Get(ushort clientushort) => blocks[clientushort] ?? Default;
-        public string GetName(NasPlayer np, ushort id = ushort.MaxValue)
+        public static NASBlock Get(ushort clientushort) => blocks[clientushort] ?? Default;
+        public string GetName(NASPlayer np, ushort id = ushort.MaxValue)
         {
             if (id == ushort.MaxValue)
             {
                 id = parentID;
             }
             string name;
-            ushort block = Nas.FromRaw(id);
-            if (Nas.IsPhysicsType(block))
+            ushort block = NASPlugin.FromRaw(id);
+            if (block >= 66 && block < 256)
             {
                 name = "Physics block";
             }
@@ -158,7 +148,6 @@ namespace NotAwesomeSurvival
             }
             return name.Split('-')[0];
         }
-        public static Drop DefaultDropHandler(NasPlayer np, ushort id) => new(id);
+        public static Drop DefaultDropHandler(NASPlayer np, ushort id) => new(id);
     }
 }
-#endif

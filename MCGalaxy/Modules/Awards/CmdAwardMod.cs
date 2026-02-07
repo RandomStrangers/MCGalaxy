@@ -16,9 +16,9 @@ namespace MCGalaxy.Modules.Awards
 {
     public sealed class CmdAwardMod : Command2
     {
-        public override string name { get { return "AwardMod"; } }
-        public override string type { get { return CommandTypes.Economy; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
+        public override string Name => "AwardMod";
+        public override string Type => CommandTypes.Economy;
+        public override sbyte DefaultRank => 100;
         static readonly char[] awardArgs = new char[] { ':' };
         public override void Use(Player p, string message, CommandData data)
         {

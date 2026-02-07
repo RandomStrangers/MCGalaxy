@@ -45,10 +45,7 @@ namespace MCGalaxy
         }
         /// <summary> Matches given name against the names of all online players that the given player can see </summary>
         /// <returns> A Player instance if exactly one match was found </returns>
-        public static Player FindMatches(Player pl, string name)
-        {
-            return FindMatches(pl, name, out _);
-        }
+        public static Player FindMatches(Player pl, string name) => FindMatches(pl, name, out _);
         /// <summary> Matches given name against the names of all online players that the given player can see </summary>
         /// <param name="matches"> Outputs the number of matching players </param>
         /// <returns> A Player instance if exactly one match was found </returns>
@@ -112,7 +109,7 @@ namespace MCGalaxy
             return names;
         }
         /// <summary> Filters input list to only players that the source player can see. </summary>
-        public static List<Player> OnlyCanSee(Player p, LevelPermission plRank,
+        public static List<Player> OnlyCanSee(Player p, sbyte plRank,
                                                 IEnumerable<Player> players)
         {
             List<Player> list = new();
@@ -122,12 +119,9 @@ namespace MCGalaxy
             }
             return list;
         }
-        public static List<Player> GetOnlineCanSee(Player p, LevelPermission plRank)
-        {
-            return OnlyCanSee(p, plRank, Online.Items);
-        }
+        public static List<Player> GetOnlineCanSee(Player p, sbyte plRank) => OnlyCanSee(p, plRank, Online.Items);
         /// <summary> Returns all online players that the given player can see, ordered by rank </summary>
-        public static List<OnlineListEntry> GetOnlineList(Player p, LevelPermission plRank, out int total)
+        public static List<OnlineListEntry> GetOnlineList(Player p, sbyte plRank, out int total)
         {
             List<OnlineListEntry> all = new();
             total = 0;
@@ -141,7 +135,7 @@ namespace MCGalaxy
             all.Reverse();
             return all;
         }
-        static OnlineListEntry OnlineOfRank(Player p, LevelPermission plRank, Group group)
+        static OnlineListEntry OnlineOfRank(Player p, sbyte plRank, Group group)
         {
             OnlineListEntry entry = new()
             {
@@ -156,16 +150,11 @@ namespace MCGalaxy
             }
             return entry;
         }
-        public static string GetLoginMessage(Player p)
-        {
-            string msg = PlayerDB.GetLoginMessage(p.name);
-            return string.IsNullOrEmpty(msg) ? Server.Config.DefaultLoginMessage : msg;
-        }
+        public static string GetLoginMessage(Player p) => string.IsNullOrEmpty(PlayerDB.GetLoginMessage(p.name)) ? Server.Config.DefaultLoginMessage : PlayerDB.GetLoginMessage(p.name);
         public static string GetLogoutMessage(Player p)
         {
             if (p.name == null) return "disconnected";
-            string msg = PlayerDB.GetLogoutMessage(p.name);
-            return string.IsNullOrEmpty(msg) ? Server.Config.DefaultLogoutMessage : msg;
+            return string.IsNullOrEmpty(PlayerDB.GetLogoutMessage(p.name)) ? Server.Config.DefaultLogoutMessage : PlayerDB.GetLogoutMessage(p.name);
         }
     }
     public class OnlineListEntry

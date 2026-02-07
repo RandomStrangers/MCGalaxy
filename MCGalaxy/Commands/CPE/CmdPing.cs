@@ -17,13 +17,10 @@ namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdPing : Command2
     {
-        public override string name { get { return "Ping"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override bool UseableWhenFrozen { get { return true; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can see ping of other players") }; }
-        }
+        public override string Name => "Ping";
+        public override string Type => CommandTypes.Information;
+        public override bool UseableWhenFrozen => true;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can see ping of other players") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (!message.CaselessEq("all"))

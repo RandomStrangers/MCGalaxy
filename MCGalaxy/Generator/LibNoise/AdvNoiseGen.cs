@@ -20,61 +20,33 @@ namespace MCGalaxy.Generator
     {
         public static void RegisterGenerators()
         {
-            const GenType type = GenType.Advanced;
-            MapGen.Register("Billow", type, GenBillow2D, MapGen.DEFAULT_HELP);
-            MapGen.Register("RidgedMultifractal", type, GenRidged2D, MapGen.DEFAULT_HELP);
-            MapGen.Register("Perlin", type, GenPerlin2D, MapGen.DEFAULT_HELP);
-            MapGen.Register("Voronoi", type, GenVoronoi, MapGen.DEFAULT_HELP);
-            MapGen.Register("Perlin3D", type, GenPerlin3D, MapGen.DEFAULT_HELP);
-            MapGen.Register("Perlin3Dyadjust", type, GenPerlin3DYAdjust, MapGen.DEFAULT_HELP);
-            MapGen.Register("Billow3D", type, GenBillow3D, MapGen.DEFAULT_HELP);
+            MapGen.Register("Billow", 2, GenBillow2D, "&HSeed affects how terrain is generated. If seed is the same, the generated level will be the same.");
+            MapGen.Register("RidgedMultifractal", 2, GenRidged2D, "&HSeed affects how terrain is generated. If seed is the same, the generated level will be the same.");
+            MapGen.Register("Perlin", 2, GenPerlin2D, "&HSeed affects how terrain is generated. If seed is the same, the generated level will be the same.");
+            MapGen.Register("Voronoi", 2, GenVoronoi, "&HSeed affects how terrain is generated. If seed is the same, the generated level will be the same.");
+            MapGen.Register("Perlin3D", 2, GenPerlin3D, "&HSeed affects how terrain is generated. If seed is the same, the generated level will be the same.");
+            MapGen.Register("Perlin3Dyadjust", 2, GenPerlin3DYAdjust, "&HSeed affects how terrain is generated. If seed is the same, the generated level will be the same.");
+            MapGen.Register("Billow3D", 2, GenBillow3D, "&HSeed affects how terrain is generated. If seed is the same, the generated level will be the same.");
         }
         #region Implementations
-        static bool GenBillow2D(Player p, Level lvl, MapGenArgs args)
-        {
-            Billow module = new();
-            return Gen2D(p, lvl, module, args);
-        }
-        static bool GenRidged2D(Player p, Level lvl, MapGenArgs args)
-        {
-            RidgedMultifractal module = new();
-            return Gen2D(p, lvl, module, args);
-        }
-        static bool GenPerlin2D(Player p, Level lvl, MapGenArgs args)
-        {
-            Perlin module = new();
-            return Gen2D(p, lvl, module, args);
-        }
-        static bool GenVoronoi(Player p, Level lvl, MapGenArgs args)
-        {
-            Voronoi module = new();
-            return Gen2D(p, lvl, module, args);
-        }
-        static bool GenPerlin3D(Player p, Level lvl, MapGenArgs args)
-        {
-            Perlin module = new();
-            return Gen3D(p, lvl, module, args);
-        }
-        static bool GenPerlin3DYAdjust(Player p, Level lvl, MapGenArgs args)
-        {
-            Perlin module = new();
-            return Gen3DYAdjust(p, lvl, module, args);
-        }
-        static bool GenBillow3D(Player p, Level lvl, MapGenArgs args)
-        {
-            Billow module = new();
-            return Gen3D(p, lvl, module, args);
-        }
+        static bool GenBillow2D(Player p, Level lvl, MapGenArgs args) => Gen2D(p, lvl, new Billow(), args);
+        static bool GenRidged2D(Player p, Level lvl, MapGenArgs args) => Gen2D(p, lvl, new RidgedMultifractal(), args);
+        static bool GenPerlin2D(Player p, Level lvl, MapGenArgs args) => Gen2D(p, lvl, new Perlin(), args);
+        static bool GenVoronoi(Player p, Level lvl, MapGenArgs args) => Gen2D(p, lvl, new Voronoi(), args);
+        static bool GenPerlin3D(Player p, Level lvl, MapGenArgs args) => Gen3D(p, lvl, new Perlin(), args);
+        static bool GenPerlin3DYAdjust(Player p, Level lvl, MapGenArgs args) => Gen3DYAdjust(p, lvl, new Perlin(), args);
+        static bool GenBillow3D(Player p, Level lvl, MapGenArgs args) => Gen3D(p, lvl, new Billow(), args);
         #endregion
         static bool Gen2D(Player p, Level lvl, IModule module, MapGenArgs args)
         {
-            int width = lvl.Width, length = lvl.Length, half = lvl.Height / 2;
-            int waterHeight = half - 1;
+            int width = lvl.Width, length = lvl.Length, half = lvl.Height / 2,
+                waterHeight = half - 1;
             module.Frequency = 1 / 100.0;
             if (!args.ParseArgs(p)) return false;
             module.Seed = args.Seed;
             MapGenBiome biome = MapGenBiome.Get(args.Biome);
             for (int z = 0; z < length; ++z)
+            {
                 for (int x = 0; x < width; ++x)
                 {
                     double noise = module.GetValue(x, 10, z);
@@ -100,6 +72,7 @@ namespace MCGalaxy.Generator
                         lvl.SetTile((ushort)x, (ushort)y, (ushort)z, block);
                     }
                 }
+            }
             return true;
         }
         static bool Gen3D(Player p, Level lvl, IModule module, MapGenArgs args)
@@ -110,13 +83,17 @@ namespace MCGalaxy.Generator
             MapGenBiome biome = MapGenBiome.Get(args.Biome);
             int width = lvl.Width, height = lvl.Height, length = lvl.Length;
             for (int y = 0; y < height; y++)
+            {
                 for (int z = 0; z < length; ++z)
+                {
                     for (int x = 0; x < width; ++x)
                     {
                         double value = module.GetValue(x, y, z);
                         if (value >= 0.1)
                             lvl.SetTile((ushort)x, (ushort)y, (ushort)z, biome.Surface);
                     }
+                }
+            }
             return true;
         }
         static bool Gen3DYAdjust(Player p, Level lvl, IModule module, MapGenArgs args)
@@ -127,13 +104,17 @@ namespace MCGalaxy.Generator
             MapGenBiome biome = MapGenBiome.Get(args.Biome);
             int width = lvl.Width, height = lvl.Height, length = lvl.Length;
             for (int y = 0; y < height; y++)
+            {
                 for (int z = 0; z < length; ++z)
+                {
                     for (int x = 0; x < width; ++x)
                     {
                         double value = Math.Floor((module.GetValue(x, y, z) + 2) * 10);
                         if (value > 30 * y / height)
                             lvl.SetTile((ushort)x, (ushort)y, (ushort)z, biome.Surface);
                     }
+                }
+            }
             return true;
         }
     }

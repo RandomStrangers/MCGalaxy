@@ -23,36 +23,18 @@ namespace MCGalaxy
     {
         public long CompressedLen;
         public Stream stream;
-        public ZipReaderStream(Stream stream)
-        {
-            this.stream = stream;
-        }
-        public override bool CanRead { get { return true; } }
-        public override bool CanSeek { get { return false; } }
-        public override bool CanWrite { get { return false; } }
+        public ZipReaderStream(Stream stream) => this.stream = stream;
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
         static readonly Exception ex = new NotSupportedException();
-        public override void Flush()
-        {
-            stream.Flush();
-        }
-        public override long Length { get { throw ex; } }
+        public override void Flush() => stream.Flush();
+        public override long Length => throw ex;
         public override long Position { get { throw ex; } set { throw ex; } }
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            throw ex;
-        }
-        public override void SetLength(long length)
-        {
-            throw ex;
-        }
-        public override void Write(byte[] buffer, int offset, int count)
-        {
-            throw ex;
-        }
-        public override void WriteByte(byte value)
-        {
-            throw ex;
-        }
+        public override long Seek(long offset, SeekOrigin origin) => throw ex;
+        public override void SetLength(long length) => throw ex;
+        public override void Write(byte[] buffer, int offset, int count) => throw ex;
+        public override void WriteByte(byte value) => throw ex;
         public override int Read(byte[] buffer, int offset, int count)
         {
             if (CompressedLen <= 0)
@@ -76,10 +58,7 @@ namespace MCGalaxy
             CompressedLen--;
             return stream.ReadByte();
         }
-        public override void Close()
-        {
-            stream = null;
-        }
+        public override void Close() => stream = null;
     }
     /// <summary> Reads entries from a ZIP archive. </summary>
     public sealed class ZipReader
@@ -100,9 +79,9 @@ namespace MCGalaxy
             stream.Seek(entry.LocalHeaderOffset, SeekOrigin.Begin);
             file = null;
             uint sig = reader.ReadUInt32();
-            if (sig != ZipEntry.SIG_LOCAL)
+            if (sig != 0x04034b50)
             {
-                Logger.Log(LogType.Warning, "&WFailed to find local file entry {0}", i); return null;
+                Logger.Log(6, "&WFailed to find local file entry {0}", i); return null;
             }
             entry = ReadLocalFileRecord();
             file = Encoding.UTF8.GetString(entry.Filename);
@@ -122,9 +101,9 @@ namespace MCGalaxy
             for (int i = 0; i < numEntries; i++)
             {
                 uint sig = reader.ReadUInt32();
-                if (sig != ZipEntry.SIG_CENTRAL)
+                if (sig != 0x02014b50)
                 {
-                    Logger.Log(LogType.Warning, "&WFailed to find central dir entry {0}", i); return i;
+                    Logger.Log(6, "&WFailed to find central dir entry {0}", i); return i;
                 }
                 ZipEntry entry = ReadCentralDirectoryRecord();
                 entries.Add(entry);
@@ -141,34 +120,34 @@ namespace MCGalaxy
             {
                 stream.Seek(-i, SeekOrigin.End);
                 sig = r.ReadUInt32();
-                if (sig == ZipEntry.SIG_END)
+                if (sig == 0x06054b50)
                 {
                     break;
                 }
             }
-            if (sig != ZipEntry.SIG_END)
+            if (sig != 0x06054b50)
             {
-                Logger.Log(LogType.Warning, "&WFailed to find end of central directory"); return;
+                Logger.Log(6, "&WFailed to find end of central directory"); return;
             }
             ReadEndOfCentralDirectoryRecord();
             if (centralDirOffset != uint.MaxValue)
             {
                 return;
             }
-            Logger.Log(LogType.SystemActivity, "Backup .zip is using ZIP64 format");
+            Logger.Log(1, "Backup .zip is using ZIP64 format");
             stream.Seek(-i - 20, SeekOrigin.End);
             sig = r.ReadUInt32();
-            if (sig != ZipEntry.SIG_ZIP64_LOC)
+            if (sig != 0x07064b50)
             {
-                Logger.Log(LogType.Warning, "&WFailed to find ZIP64 locator");
+                Logger.Log(6, "&WFailed to find ZIP64 locator");
                 return;
             }
             ReadZip64EndOfCentralDirectoryLocator();
             stream.Seek(zip64EndOffset, SeekOrigin.Begin);
             sig = r.ReadUInt32();
-            if (sig != ZipEntry.SIG_ZIP64_END)
+            if (sig != 0x06064b50)
             {
-                Logger.Log(LogType.Warning, "&WFailed to find ZIP64 end");
+                Logger.Log(6, "&WFailed to find ZIP64 end");
                 return;
             }
             ReadZip64EndOfCentralDirectoryRecord();

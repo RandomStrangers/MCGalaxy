@@ -15,36 +15,36 @@
 using MCGalaxy.Blocks;
 using MCGalaxy.Blocks.Physics;
 using MCGalaxy.Events.LevelEvents;
-using MCGalaxy.Network;
 using System;
 using System.Threading;
 namespace MCGalaxy
 {
-    public enum PhysicsState { Stopped, Warning, Other }
     public sealed partial class Level : IDisposable
     {
         public void SetPhysics(int level)
         {
-            if (IsMuseum) return;
-            if (physics == 0 && level != 0 && blocks != null)
+            if (!IsMuseum)
             {
-                for (int i = 0; i < blocks.Length; i++)
+                if (LevelPhysics == 0 && level != 0 && blocks != null)
                 {
-                    // Optimization hack, since no blocks under 183 ever need a restart
-                    if (blocks[i] > 183 && Block.NeedRestart(blocks[i]))
-                        AddCheck(i);
+                    for (int i = 0; i < blocks.Length; i++)
+                    {
+                        // Optimization hack, since no blocks under 183 ever need a restart
+                        if (blocks[i] > 183 && Block.NeedRestart(blocks[i]))
+                            AddCheck(i);
+                    }
                 }
+                if (LevelPhysics != level) OnPhysicsLevelChangedEvent.Call(this, level);
+                if (level > 0 && LevelPhysics == 0) StartPhysics();
+                Physicsint = level;
+                Config.Physics = level;
             }
-            if (physics != level) OnPhysicsLevelChangedEvent.Call(this, level);
-            if (level > 0 && physics == 0) StartPhysics();
-            Physicsint = level;
-            Config.Physics = level;
         }
         public void StartPhysics()
         {
             lock (physThreadLock)
             {
-                if (physThread != null && physThread.ThreadState == ThreadState.Running) return;
+                if (physThread != null && physThread.ThreadState == 0) return;
                 if (ListCheck.Count == 0 || physThreadStarted) return;
                 Server.StartThread(out physThread, "Physics_" + name,
                                    PhysicsLoop);
@@ -61,11 +61,11 @@ namespace MCGalaxy
                 {
                     if (PhysicsPaused)
                     {
-                        if (physics == 0) break;
+                        if (LevelPhysics == 0) break;
                         Thread.Sleep(500); continue;
                     }
                     if (wait > 0) Thread.Sleep(wait);
-                    if (physics == 0) break;
+                    if (LevelPhysics == 0) break;
                     // No block calculations in this tick
                     if (ListCheck.Count == 0)
                     {
@@ -97,15 +97,15 @@ namespace MCGalaxy
                             if (!Server.Config.PhysicsRestart) SetPhysics(0);
                             ClearPhysics();
                             Chat.MessageGlobal("Physics shutdown on {0}", ColoredName);
-                            Logger.Log(LogType.Warning, "Physics shutdown on " + name);
-                            OnPhysicsStateChangedEvent.Call(this, PhysicsState.Stopped);
+                            Logger.Log(6, "Physics shutdown on " + name);
+                            OnPhysicsStateChangedEvent.Call(this, 0);
                             wait = Config.PhysicsSpeed;
                         }
                         else
                         {
                             Message("Physics warning!");
-                            Logger.Log(LogType.Warning, "Physics warning on " + name);
-                            OnPhysicsStateChangedEvent.Call(this, PhysicsState.Warning);
+                            Logger.Log(6, "Physics warning on " + name);
+                            OnPhysicsStateChangedEvent.Call(this, 1);
                         }
                     }
                 }
@@ -116,8 +116,9 @@ namespace MCGalaxy
             }
             lastCheck = 0;
             physThreadStarted = false;
+
         }
-        public PhysicsArgs foundInfo(ushort x, ushort y, ushort z)
+        public PhysicsArgs FoundInfo(ushort x, ushort y, ushort z)
         {
             if (!listCheckExists.Get(x, y, z))
                 return default;
@@ -133,10 +134,9 @@ namespace MCGalaxy
         void PhysicsTick()
         {
             lastCheck = ListCheck.Count;
-            const uint mask = PhysicsArgs.TypeMask;
             HandlePhysics[] handlers = PhysicsHandlers;
             ExtraInfoHandler extraHandler = ExtraInfoPhysics.normalHandler;
-            if (physics == 5)
+            if (LevelPhysics == 5)
             {
                 handlers = physicsDoorsHandlers;
                 extraHandler = ExtraInfoPhysics.doorsHandler;
@@ -146,34 +146,28 @@ namespace MCGalaxy
             {
                 Check chk = ListCheck.Items[i];
                 IntToPos(chk.Index, out C.X, out C.Y, out C.Z);
-                C.Index = chk.Index; C.Data = chk.data;
+                C.Index = chk.Index; 
+                C.Data = chk.data;
                 try
                 {
                     if (OnPhysicsUpdateEvent.handlers.Count > 0)
                         OnPhysicsUpdateEvent.Call(C.X, C.Y, C.Z, C.Data, this);
                     C.Block = blocks[chk.Index];
-#if TEN_BIT_BLOCKS
                     ushort extended = Block.ExtendedBase[C.Block];
                     if (extended > 0)
                     {
                         C.Block = (ushort)(extended | FastGetExtTile(C.X, C.Y, C.Z));
                     }
-#else
-                    if (C.Block == Block.custom_block)
-                    {
-                        C.Block = (ushort)(Block.Extended | FastGetExtTile(C.X, C.Y, C.Z));
-                    }
-#endif
-                    if ((C.Data.Raw & mask) == 0 || C.Data.Type1 == PhysicsArgs.Custom || extraHandler(this, ref C))
+                    if ((C.Data.Raw & 0x3F) == 0 || C.Data.Type1 == 7 || extraHandler(this, ref C))
                     {
                         HandlePhysics handler = handlers[C.Block];
                         if (handler != null)
                         {
                             handler(this, ref C);
                         }
-                        else if ((C.Data.Raw & mask) == 0 || !C.Data.HasWait)
+                        else if ((C.Data.Raw & 0x3F) == 0 || !C.Data.HasWait)
                         {
-                            C.Data.Data = PhysicsArgs.RemoveFromChecks;
+                            C.Data.Data = 255;
                         }
                     }
                     ListCheck.Items[i].data = C.Data;
@@ -188,7 +182,7 @@ namespace MCGalaxy
             RemoveExpiredChecks();
             lastUpdate = ListUpdate.Count;
             if (ListUpdate.Count > 0 && bulkSender == null)
-                bulkSender = new BufferedBlockSender(this);
+                bulkSender = new(this);
             for (int i = 0; i < ListUpdate.Count; i++)
             {
                 Update U = ListUpdate.Items[i];
@@ -198,35 +192,32 @@ namespace MCGalaxy
                     U.data.Data = 0;
                     // Is the Ext flag just an indicator for the block update?
                     byte extBits = U.data.ExtBlock;
-                    if (extBits != 0 && (U.data.Raw & PhysicsArgs.TypeMask) == 0)
+                    if (extBits != 0 && (U.data.Raw & 0x3F) == 0)
                     {
-                        block |= (ushort)(extBits << Block.ExtendedShift);
-                        U.data.Raw &= ~PhysicsArgs.ExtBits;
+                        block |= (ushort)(extBits << 8);
+                        U.data.Raw &= ~((1u << 30) | (1u << 31));
                     }
                     if (DoPhysicsBlockchange(U.Index, block, false, U.data, true))
                         bulkSender.Add(U.Index, block);
                 }
                 catch
                 {
-                    Logger.Log(LogType.Warning, "Phys update issue");
+                    Logger.Log(6, "Phys update issue");
                 }
             }
             bulkSender?.Flush();
             ListUpdate.Clear(); listUpdateExists.Clear();
         }
         /// <summary> Adds the given coordinates to the list of ticked coordinates with empty data </summary>
-        public void AddCheck(int index, bool overRide = false)
-        {
-            AddCheck(index, overRide, default);
-        }
+        public void AddCheck(int index, bool overRide = false) => AddCheck(index, overRide, default);
         /// <summary> Adds the given coordinates to the list of ticked coordinates with the given data </summary>
         public void AddCheck(int index, bool overRide, PhysicsArgs data)
         {
             try
             {
-                int x = index % Width;
-                int y = index / Width / Length;
-                int z = index / Width % Length;
+                int x = index % Width,
+                    y = index / Width / Length,
+                    z = index / Width % Length;
                 if (x >= Width || y >= Height || z >= Length) return;
                 if (listCheckExists.TrySetOn(x, y, z))
                 {
@@ -240,11 +231,12 @@ namespace MCGalaxy
                     for (int i = 0; i < count; i++)
                     {
                         if (items[i].Index != index) continue;
-                        items[i].data = data; return;
+                        items[i].data = data; 
+                        return;
                     }
                     //Dont need to check physics here because if the list is active, then physics is active :)
                 }
-                if (!physThreadStarted && physics > 0)
+                if (!physThreadStarted && LevelPhysics > 0)
                     StartPhysics();
             }
             catch
@@ -258,7 +250,7 @@ namespace MCGalaxy
         public bool AddUpdate(int index, ushort block, bool overRide = false)
         {
             PhysicsArgs args = default;
-            args.Raw |= (uint)(PhysicsArgs.ExtBit * (block >> Block.ExtendedShift));
+            args.Raw |= (uint)((1u << 30) * (block >> 8));
             return AddUpdate(index, block, args, overRide);
         }
         /// <summary> Adds the given entry to the list of updates to be applied at the end of the current physics tick </summary>
@@ -267,16 +259,16 @@ namespace MCGalaxy
         {
             try
             {
-                int x = index % Width;
-                int y = index / Width / Length;
-                int z = index / Width % Length;
+                int x = index % Width,
+                    y = index / Width / Length,
+                    z = index / Width % Length;
                 if (x >= Width || y >= Height || z >= Length) return false;
                 if (overRide)
                 {
                     // Is the Ext flag just an indicator for the block update?
-                    if (data.ExtBlock != 0 && (data.Raw & PhysicsArgs.TypeMask) == 0)
+                    if (data.ExtBlock != 0 && (data.Raw & 0x3F) == 0)
                     {
-                        data.Raw &= ~PhysicsArgs.ExtBits;
+                        data.Raw &= ~((1u << 30) | (1u << 31));
                     }
                     AddCheck(index, true, data); //Dont need to check physics here....AddCheck will do that
                     Blockchange((ushort)x, (ushort)y, (ushort)z, block, true, data);
@@ -285,7 +277,7 @@ namespace MCGalaxy
                 if (listUpdateExists.TrySetOn(x, y, z))
                 {
                 }
-                else if (block == Block.Sand || block == Block.Gravel)
+                else if (block == 12 || block == 13)
                 {
                     RemoveUpdatesAtPos(index);
                 }
@@ -294,9 +286,13 @@ namespace MCGalaxy
                     return false;
                 }
                 data.Data = (byte)block;
-                Update update; update.Index = index; update.data = data;
+                Update update = new()
+                {
+                    Index = index,
+                    data = data
+                };                
                 ListUpdate.Add(update);
-                if (!physThreadStarted && physics > 0)
+                if (!physThreadStarted && LevelPhysics > 0)
                     StartPhysics();
                 return true;
             }
@@ -313,7 +309,7 @@ namespace MCGalaxy
             int j = 0, count = ListCheck.Count;
             for (int i = 0; i < count; i++)
             {
-                if (items[i].data.Data == PhysicsArgs.RemoveFromChecks)
+                if (items[i].data.Data == 255)
                 {
                     IntToPos(items[i].Index, out ushort x, out ushort y, out ushort z);
                     listCheckExists.Set(x, y, z, false);
@@ -338,8 +334,10 @@ namespace MCGalaxy
         }
         void ClearPhysicsLists()
         {
-            ListCheck.Count = 0; listCheckExists.Clear();
-            ListUpdate.Count = 0; listUpdateExists.Clear();
+            ListCheck.Count = 0; 
+            listCheckExists.Clear();
+            ListUpdate.Count = 0; 
+            listUpdateExists.Clear();
         }
         public void ClearPhysics()
         {
@@ -354,24 +352,25 @@ namespace MCGalaxy
             //attemps on shutdown to change blocks back into normal selves that are active, hopefully without needing to send into to clients.
             switch (blocks[C.Index])
             {
-                case Block.Air_Flood:
-                case Block.Air_FloodLayer:
-                case Block.Air_FloodDown:
-                case Block.Air_FloodUp:
-                    blocks[C.Index] = Block.Air; break;
+                case 200:
+                case 202:
+                case 203:
+                case 204:
+                    blocks[C.Index] = 0; 
+                    break;
             }
             try
             {
                 PhysicsArgs args = C.data;
                 // Copy paste here because it's worthwhile inlining
-                if (args.Type1 == PhysicsArgs.Revert)
+                if (args.Type1 == 2)
                 {
-                    ushort block = (ushort)(args.Value1 | (args.ExtBlock << Block.ExtendedShift));
+                    ushort block = (ushort)(args.Value1 | (args.ExtBlock << 8));
                     Blockchange(C.Index, block, true, default);
                 }
-                else if (args.Type2 == PhysicsArgs.Revert)
+                else if (args.Type2 == 2)
                 {
-                    ushort block = (ushort)(args.Value2 | (args.ExtBlock << Block.ExtendedShift));
+                    ushort block = (ushort)(args.Value2 | (args.ExtBlock << 8));
                     Blockchange(C.Index, block, true, default);
                 }
             }
@@ -398,7 +397,7 @@ namespace MCGalaxy
                     for (int xx = x - 2; xx <= x + 2; ++xx)
                     {
                         if (xx < 0 || xx >= Width) continue;
-                        if (blocks[xx + Width * (zz + yy * Length)] == Block.Sponge)
+                        if (blocks[xx + Width * (zz + yy * Length)] == 19)
                             return true;
                     }
                 }
@@ -416,17 +415,14 @@ namespace MCGalaxy
                     for (int xx = x - 2; xx <= x + 2; ++xx)
                     {
                         if (xx < 0 || xx >= Width) continue;
-                        if (blocks[xx + Width * (zz + yy * Length)] == Block.LavaSponge)
+                        if (blocks[xx + Width * (zz + yy * Length)] == 109)
                             return true;
                     }
                 }
             }
             return false;
         }
-        public void MakeExplosion(ushort x, ushort y, ushort z, int size, bool force = false)
-        {
-            TntPhysics.MakeExplosion(this, x, y, z, size, force, null);
-        }
+        public void MakeExplosion(ushort x, ushort y, ushort z, int size, bool force = false) => TntPhysics.MakeExplosion(this, x, y, z, size, force, null);
     }
     /// <summary> Represents a physics tick entry </summary>
     public struct PhysInfo

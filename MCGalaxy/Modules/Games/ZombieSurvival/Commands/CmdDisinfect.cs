@@ -16,10 +16,10 @@ namespace MCGalaxy.Modules.Games.ZS
 {
     sealed class CmdDisInfect : Command2
     {
-        public override string name { get { return "DisInfect"; } }
-        public override string shortcut { get { return "di"; } }
-        public override string type { get { return CommandTypes.Games; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "DisInfect";
+        public override string Shortcut => "di";
+        public override string Type => CommandTypes.Games;
+        public override sbyte DefaultRank => 80;
         public override void Use(Player p, string message, CommandData data)
         {
             Player who = message.Length == 0 ? p : PlayerInfo.FindMatches(p, message);

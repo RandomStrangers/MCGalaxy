@@ -17,10 +17,10 @@ namespace MCGalaxy.Commands.CPE
 {
     public sealed class CmdCustomColors : Command2
     {
-        public override string name { get { return "CustomColors"; } }
-        public override string shortcut { get { return "ccols"; } }
-        public override string type { get { return CommandTypes.Chat; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
+        public override string Name => "CustomColors";
+        public override string Shortcut => "ccols";
+        public override string Type => CommandTypes.Chat;
+        public override sbyte DefaultRank => 100;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();

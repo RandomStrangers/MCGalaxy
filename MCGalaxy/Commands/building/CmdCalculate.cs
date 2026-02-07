@@ -17,9 +17,9 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdCalculate : Command2
     {
-        public override string name { get { return "Calculate"; } }
-        public override string shortcut { get { return "Calc"; } }
-        public override string type { get { return CommandTypes.Building; } }
+        public override string Name => "Calculate";
+        public override string Shortcut => "Calc";
+        public override string Type => CommandTypes.Building;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();

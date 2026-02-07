@@ -40,28 +40,24 @@ namespace MCGalaxy.Games
         protected abstract List<Player> GetPlayers();
         /// <summary> Saves stats to the database for the given player. </summary>
         protected virtual void SaveStats(Player pl) { }
-        public override bool HandlesChatMessage(Player p, string message)
-        {
-            return Picker.HandlesMessage(p, message);
-        }
-        public override bool ClaimsMap(string map)
-        {
-            return GetConfig().Maps.CaselessContains(map);
-        }
+        public override bool HandlesChatMessage(Player p, string message) => Picker.HandlesMessage(p, message);
+        public override bool ClaimsMap(string map) => GetConfig().Maps.CaselessContains(map);
         protected abstract void StartGame();
         public virtual void Start(Player p, string map, int rounds)
         {
             map = GetStartMap(p, map);
             if (map == null)
             {
-                p.Message("No maps have been setup for {0} yet", GameName); return;
+                p.Message("No maps have been setup for {0} yet", GameName); 
+                return;
             }
             if (!SetMap(map))
             {
-                p.Message("Failed to load initial map!"); return;
+                p.Message("Failed to load initial map!"); 
+                return;
             }
             Chat.MessageGlobal("{0} is starting on {1}&S!", GameName, Map.ColoredName);
-            Logger.Log(LogType.GameActivity, "[{0}] Game started", GameName);
+            Logger.Log(2, "[{0}] Game started", GameName);
             StartGame();
             RoundsLeft = rounds;
             Running = true;
@@ -71,7 +67,7 @@ namespace MCGalaxy.Games
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                if (pl.level == Map) PlayerJoinedGame(pl);
+                if (pl.Level == Map) PlayerJoinedGame(pl);
             }
             Server.StartThread(out Thread thread, "Game_ " + GameName, RunGame);
             Utils.SetBackgroundMode(thread);
@@ -79,14 +75,16 @@ namespace MCGalaxy.Games
         /// <summary> Attempts to auto start this game with infinite rounds. </summary>
         public void AutoStart()
         {
-            if (!GetConfig().StartImmediately) return;
-            try
+            if (GetConfig().StartImmediately)
             {
-                Start(Player.Console, "", int.MaxValue);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Error auto-starting " + GameName, ex);
+                try
+                {
+                    Start(Player.Console, "", int.MaxValue);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("Error auto-starting " + GameName, ex);
+                }
             }
         }
         protected virtual string GetStartMap(Player p, string forcedMap)
@@ -104,7 +102,7 @@ namespace MCGalaxy.Games
                 {
                     RoundInProgress = false;
                     if (RoundsLeft != int.MaxValue) RoundsLeft--;
-                    if (Map != null) Logger.Log(LogType.GameActivity, "[{0}] Round started on {1}", GameName, Map.ColoredName);
+                    if (Map != null) Logger.Log(2, "[{0}] Round started on {1}", GameName, Map.ColoredName);
                     DoRound();
                     if (Running) EndRound();
                     if (Running) VoteAndMoveToNextMap();
@@ -138,19 +136,18 @@ namespace MCGalaxy.Games
                 MessageCountdown(format, i, minThreshold);
                 Thread.Sleep(1000);
             }
-            MessageMap(CpeMessageType.Announcement, "");
+            MessageMap(100, "");
         }
         protected void MessageCountdown(string format, int i, int minThreshold)
         {
-            const CpeMessageType type = CpeMessageType.Announcement;
             if (i == 1)
             {
-                MessageMap(type, string.Format(format, i)
+                MessageMap(100, string.Format(format, i)
                            .Replace("seconds", "second"));
             }
             else if (i < minThreshold || (i % 10) == 0)
             {
-                MessageMap(type, string.Format(format, i));
+                MessageMap(100, string.Format(format, i));
             }
         }
         protected List<Player> DoRoundCountdown(int delay)
@@ -169,24 +166,29 @@ namespace MCGalaxy.Games
         protected virtual void VoteAndMoveToNextMap()
         {
             Picker.AddRecentMap(Map.MapName);
-            if (RoundsLeft == 0) return;
-            string map = Picker.ChooseNextLevel(this);
-            if (!Running) return;
-            if (map == null || map.CaselessEq(Map.MapName))
+            if (RoundsLeft != 0)
             {
-                ContinueOnSameMap(); return;
-            }
-            AnnounceMapChange(map);
-            Level lastMap = Map; LastMap = Map.MapName;
-            if (!SetMap(map))
-            {
-                Map.Message("&WFailed to change map to " + map);
-                ContinueOnSameMap();
-            }
-            else
-            {
-                TransferPlayers(lastMap);
-                lastMap.Unload(true);
+                string map = Picker.ChooseNextLevel(this);
+                if (Running)
+                {
+                    if (map == null || map.CaselessEq(Map.MapName))
+                    {
+                        ContinueOnSameMap();
+                        return;
+                    }
+                    AnnounceMapChange(map);
+                    Level lastMap = Map; LastMap = Map.MapName;
+                    if (!SetMap(map))
+                    {
+                        Map.Message("&WFailed to change map to " + map);
+                        ContinueOnSameMap();
+                    }
+                    else
+                    {
+                        TransferPlayers(lastMap);
+                        lastMap.Unload(true);
+                    }
+                }
             }
         }
         protected virtual void AnnounceMapChange(string newMap)
@@ -223,7 +225,7 @@ namespace MCGalaxy.Games
             foreach (Player pl in online)
             {
                 pl.Game.RatedMap = false;
-                if (pl.level != Map && pl.level == lastMap) transfers.Add(pl);
+                if (pl.Level != Map && pl.Level == lastMap) transfers.Add(pl);
             }
             while (transfers.Count > 0)
             {
@@ -237,38 +239,40 @@ namespace MCGalaxy.Games
         protected abstract void EndGame();
         public override void End()
         {
-            if (!Running) return;
-            Running = false;
-            RunningGames.Remove(this);
-            UnhookEventHandlers();
-            if (RoundInProgress)
+            if (Running)
             {
-                EndRound();
+                Running = false;
+                RunningGames.Remove(this);
+                UnhookEventHandlers();
+                if (RoundInProgress)
+                {
+                    EndRound();
+                    RoundInProgress = false;
+                }
+                EndGame();
+                OnStateChangedEvent.Call(this);
+                RoundStart = DateTime.MinValue;
+                RoundsLeft = 0;
                 RoundInProgress = false;
+                Player[] players = PlayerInfo.Online.Items;
+                foreach (Player pl in players)
+                {
+                    if (pl.Level != Map) continue;
+                    pl.Game.RatedMap = false;
+                    PlayerLeftGame(pl);
+                    TabList.Update(pl, true);
+                    ResetStatus(pl);
+                    pl.SetPrefix();
+                }
+                // in case players left game partway through
+                foreach (Player pl in players) { SaveStats(pl); }
+                Map?.Message(GameName + " &Sgame ended");
+                Logger.Log(2, "[{0}] Game ended", GameName);
+                Picker?.Clear();
+                LastMap = "";
+                Map?.AutoUnload();
+                Map = null;
             }
-            EndGame();
-            OnStateChangedEvent.Call(this);
-            RoundStart = DateTime.MinValue;
-            RoundsLeft = 0;
-            RoundInProgress = false;
-            Player[] players = PlayerInfo.Online.Items;
-            foreach (Player pl in players)
-            {
-                if (pl.level != Map) continue;
-                pl.Game.RatedMap = false;
-                PlayerLeftGame(pl);
-                TabList.Update(pl, true);
-                ResetStatus(pl);
-                pl.SetPrefix();
-            }
-            // in case players left game partway through
-            foreach (Player pl in players) { SaveStats(pl); }
-            Map?.Message(GameName + " &Sgame ended");
-            Logger.Log(LogType.GameActivity, "[{0}] Game ended", GameName);
-            Picker?.Clear();
-            LastMap = "";
-            Map?.AutoUnload();
-            Map = null;
         }
         protected void UpdateAllMotd()
         {
@@ -281,8 +285,10 @@ namespace MCGalaxy.Games
         public virtual void ReloadConfig()
         {
             GetConfig().Load();
-            if (File.Exists(GetConfig().Path)) return;
-            GetConfig().Save();
+            if (!File.Exists(GetConfig().Path))
+            {
+                GetConfig().Save();
+            }
         }
     }
 }

@@ -43,7 +43,7 @@ namespace MCGalaxy.Eco
                                 record => outdated.Add(ParseOld(record)),
                                 "WHERE money > 0");
             if (outdated.Count == 0) return;
-            Logger.Log(LogType.SystemActivity, "Upgrading economy stats..");
+            Logger.Log(1, "Upgrading economy stats..");
             foreach (EcoStats stats in outdated)
             {
                 UpdateMoney(stats.Player, stats.__unused);
@@ -56,23 +56,17 @@ namespace MCGalaxy.Eco
             money = match == null ? 0 : NumberUtils.ParseInt32(match[1]);
             return match?[0];
         }
-        public static void UpdateMoney(string name, int money)
-        {
-            PlayerDB.Update(name, PlayerData.ColumnMoney,
+        public static void UpdateMoney(string name, int money) => PlayerDB.Update(name, PlayerData.ColumnMoney,
                             NumberUtils.StringifyInt(money));
-        }
         public struct EcoStats
         {
             public string Player;
             public string Purchase, Payment, Salary, Fine;
             public int TotalSpent, __unused;
         }
-        public static void UpdateStats(EcoStats stats)
-        {
-            Database.AddOrReplaceRow("Economy", "player, money, total, purchase, payment, salary, fine",
+        public static void UpdateStats(EcoStats stats) => Database.AddOrReplaceRow("Economy", "player, money, total, purchase, payment, salary, fine",
                                      stats.Player, 0, stats.TotalSpent, stats.Purchase,
                                      stats.Payment, stats.Salary, stats.Fine);
-        }
         static EcoStats ParseStats(ISqlRecord record)
         {
             EcoStats stats;

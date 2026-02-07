@@ -29,16 +29,10 @@ namespace MCGalaxy
         static readonly string[] emptyStrs = new string[0];
         /// <summary> Same as value.Split(' '), but doesn't allocate ' ' each time. </summary>
         /// <example> "abc def xyz".SplitSpaces() becomes "abc", "def", "xyz" </example>
-        public static string[] SplitSpaces(this string value)
-        {
-            return value.Split(space);
-        }
+        public static string[] SplitSpaces(this string value) => value.Split(space);
         /// <summary> Same as value.Split(' ', maxParts), but doesn't allocate ' ' each time. </summary>
         /// <example> "abc def xyz".SplitSpaces(2) becomes "abc", "def xyz" </example>
-        public static string[] SplitSpaces(this string value, int maxParts)
-        {
-            return value.Split(space, maxParts);
-        }
+        public static string[] SplitSpaces(this string value, int maxParts) => value.Split(space, maxParts);
         /// <summary> Works like value.Split(' '), removing first 'startCount' and last 'endCount' elements,
         /// then joining the leftover elements together again. </summary>
         /// <example> "abc def ghi xyz".Splice(1, 1) becomes "def ghi" </example>
@@ -114,10 +108,7 @@ namespace MCGalaxy
             prefix = index == -1 ? str : str.Substring(0, index);
             suffix = index == -1 ? "" : str.Substring(index + 1);
         }
-        public static string Plural(this int value)
-        {
-            return value != 1 ? "s" : "";
-        }
+        public static string Plural(this int value) => value != 1 ? "s" : "";
         public static byte[] GZip(this byte[] bytes)
         {
             using MemoryStream ms = new();
@@ -131,11 +122,10 @@ namespace MCGalaxy
         public static byte[] Decompress(this byte[] gzip, int capacity)
         {
             using GZipStream src = new(new MemoryStream(gzip), CompressionMode.Decompress);
-            const int size = 4096;
-            byte[] buffer = new byte[size];
+            byte[] buffer = new byte[4096];
             using MemoryStream dst = new(capacity);
             int count = 0;
-            while ((count = src.Read(buffer, 0, size)) > 0)
+            while ((count = src.Read(buffer, 0, 4096)) > 0)
             {
                 dst.Write(buffer, 0, count);
             }
@@ -182,28 +172,15 @@ namespace MCGalaxy
             }
             return builder.ToString();
         }
-        const StringComparison comp = StringComparison.OrdinalIgnoreCase;
-        public static bool CaselessEq(this string a, string b)
-        {
-            return a.Equals(b, comp);
-        }
-        public static bool CaselessStarts(this string a, string b)
-        {
-            return a.StartsWith(b, comp);
-        }
-        public static bool CaselessEnds(this string a, string b)
-        {
-            return a.EndsWith(b, comp);
-        }
-        public static bool CaselessContains(this string a, string b)
-        {
-            return a.IndexOf(b, comp) >= 0;
-        }
+        public static bool CaselessEq(this string a, string b) => a.Equals(b, StringComparison.OrdinalIgnoreCase);
+        public static bool CaselessStarts(this string a, string b) => a.StartsWith(b, StringComparison.OrdinalIgnoreCase);
+        public static bool CaselessEnds(this string a, string b) => a.EndsWith(b, StringComparison.OrdinalIgnoreCase);
+        public static bool CaselessContains(this string a, string b) => a.IndexOf(b, StringComparison.OrdinalIgnoreCase) >= 0;
         public static bool CaselessContains(this List<string> items, string value)
         {
             foreach (string item in items)
             {
-                if (item.Equals(value, comp))
+                if (item.Equals(value, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -214,7 +191,7 @@ namespace MCGalaxy
         {
             for (int i = 0; i < items.Length; i++)
             {
-                if (items[i].Equals(value, comp))
+                if (items[i].Equals(value, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -225,7 +202,7 @@ namespace MCGalaxy
         {
             for (int i = 0; i < items.Count; i++)
             {
-                if (!items[i].Equals(value, comp))
+                if (!items[i].Equals(value, StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
@@ -238,7 +215,7 @@ namespace MCGalaxy
         {
             for (int i = 0; i < items.Count; i++)
             {
-                if (items[i].Equals(value, comp))
+                if (items[i].Equals(value, StringComparison.OrdinalIgnoreCase))
                 {
                     return i;
                 }

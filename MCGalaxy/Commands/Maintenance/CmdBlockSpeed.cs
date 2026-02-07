@@ -16,9 +16,9 @@ namespace MCGalaxy.Commands.Maintenance
 {
     public sealed class CmdBlockSpeed : Command2
     {
-        public override string name { get { return "BlockSpeed"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "BlockSpeed";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 80;
         public override void Use(Player p, string text, CommandData data)
         {
             if (text.Length == 0) { SendEstimation(p, data.Rank); return; }
@@ -44,7 +44,7 @@ namespace MCGalaxy.Commands.Maintenance
             }
             SendEstimation(p, data.Rank);
         }
-        static void SendEstimation(Player p, LevelPermission plRank)
+        static void SendEstimation(Player p, sbyte plRank)
         {
             int updates = BlockQueue.UpdatesPerTick, interval = BlockQueue.Interval;
             int count = PlayerInfo.GetOnlineCanSee(p, plRank).Count;

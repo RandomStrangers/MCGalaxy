@@ -16,15 +16,12 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdXban : Command2
     {
-        public override string name { get { return "XBan"; } }
-        public override string shortcut { get { return "BanX"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("UBan", "-noip") }; }
-        }
+        public override string Name => "XBan";
+        public override string Shortcut => "BanX";
+        public override string Type => CommandTypes.Moderation;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 80;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("UBan", "-noip") };
         public override void Use(Player p, string message, CommandData data)
         {
             bool banIP = true;

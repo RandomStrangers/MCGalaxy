@@ -12,28 +12,39 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using System;
 namespace MCGalaxy.Commands.Maintenance
 {
-    public sealed class CmdUpdate : Command2
+    public class CmdUpdate : Command
     {
-        public override string name { get { return "Update"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Owner; } }
-        public override void Use(Player p, string message, CommandData data)
+        public override string Name => "Update";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 120;
+        public override void Use(Player p, string message)
         {
+            if (!Updater.SetupDone)
+            {
+                Updater.Setup();
+            }
             if (message.CaselessEq("check"))
             {
                 p.Message("Checking for updates..");
-                bool needsUpdating = Updater.NeedsUpdating();
-                p.Message("Server {0}", needsUpdating ? "&cneeds updating" : "&ais up to date");
+                p.Message("Server {0}", Updater.NeedsUpdating() ? "&cneeds updating" : "&ais up to date");
+                if (Updater.NeedsUpdating())
+                {
+                    if (!string.IsNullOrEmpty(Updater.Latest))
+                    {
+                        p.Message("Current version: {0}.", Server.Version);
+                        p.Message("Latest version: {0}.", Updater.Latest);
+                    }
+                }
             }
             else if (message.CaselessEq("latest"))
             {
-                Updater.PerformUpdate(false);
-            }
-            else if (message.Length == 0)
-            {
-                Updater.PerformUpdate(true);
+                if (Environment.Version.Major == 4)
+                {
+                    Updater.PerformUpdate();
+                }
             }
             else
             {
@@ -45,10 +56,7 @@ namespace MCGalaxy.Commands.Maintenance
             p.Message("&T/Update check");
             p.Message("&HChecks whether the server needs updating");
             p.Message("&T/Update latest");
-            p.Message("&HUpdates the server to the latest unstable build");
-            p.Message("&WNote unstable builds may have more bugs or issues");
-            p.Message("&T/Update");
-            p.Message("&HUpdates the server to the latest release");
+            p.Message("&HUpdates the server to the latest build");
         }
     }
 }

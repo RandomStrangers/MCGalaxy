@@ -29,10 +29,7 @@ namespace MCGalaxy.Util.Imaging
         {
             1, 0, 3, 1, 2, 0, 4
         };
-        public static bool DetectHeader(byte[] data)
-        {
-            return MatchesSignature(data, pngSig);
-        }
+        public static bool DetectHeader(byte[] data) => MatchesSignature(data, pngSig);
         static Pixel ExpandRGB(byte bitsPerSample, int r, int g, int b)
         {
             switch (bitsPerSample)
@@ -453,43 +450,40 @@ namespace MCGalaxy.Util.Imaging
                 dst[i] = new(r, g, b, a);
             }
         }
-        static RowExpander GetRowExpander(byte colorspace, byte bitsPerSample)
+        static RowExpander GetRowExpander(byte colorspace, byte bitsPerSample) => colorspace switch
         {
-            return colorspace switch
+            0 => bitsPerSample switch
             {
-                0 => bitsPerSample switch
-                {
-                    1 => Expand_GRAYSCALE_1,
-                    2 => Expand_GRAYSCALE_2,
-                    4 => Expand_GRAYSCALE_4,
-                    8 => Expand_GRAYSCALE_8,
-                    _ => null,
-                },
-                2 => bitsPerSample switch
-                {
-                    8 => Expand_RGB_8,
-                    _ => null,
-                },
-                3 => bitsPerSample switch
-                {
-                    1 => Expand_INDEXED_1,
-                    2 => Expand_INDEXED_2,
-                    4 => Expand_INDEXED_4,
-                    8 => Expand_INDEXED_8,
-                    _ => null,
-                },
-                4 => bitsPerSample switch
-                {
-                    8 => Expand_GRAYSCALE_A_8,
-                    _ => null,
-                },
-                6 => bitsPerSample switch
-                {
-                    8 => Expand_RGB_A_8,
-                    _ => null,
-                },
+                1 => Expand_GRAYSCALE_1,
+                2 => Expand_GRAYSCALE_2,
+                4 => Expand_GRAYSCALE_4,
+                8 => Expand_GRAYSCALE_8,
                 _ => null,
-            };
-        }
+            },
+            2 => bitsPerSample switch
+            {
+                8 => Expand_RGB_8,
+                _ => null,
+            },
+            3 => bitsPerSample switch
+            {
+                1 => Expand_INDEXED_1,
+                2 => Expand_INDEXED_2,
+                4 => Expand_INDEXED_4,
+                8 => Expand_INDEXED_8,
+                _ => null,
+            },
+            4 => bitsPerSample switch
+            {
+                8 => Expand_GRAYSCALE_A_8,
+                _ => null,
+            },
+            6 => bitsPerSample switch
+            {
+                8 => Expand_RGB_A_8,
+                _ => null,
+            },
+            _ => null,
+        };
     }
 }

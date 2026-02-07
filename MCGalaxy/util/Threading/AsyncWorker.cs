@@ -68,10 +68,7 @@ namespace MCGalaxy
                 // for very rare case where handle's already been destroyed
             }
         }
-        protected void WaitForWork()
-        {
-            handle.WaitOne();
-        }
+        protected void WaitForWork() => handle.WaitOne();
         /// <summary> Starts the background worker thread </summary>
         public void RunAsync()
         {

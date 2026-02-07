@@ -25,7 +25,7 @@ namespace MCGalaxy.Eco
         public static bool CheckIsEnabled(Player p, Command cmd)
         {
             if (Enabled) return true;
-            p.Message("Cannot use &T/{0} &Scurrently as economy is disabled", cmd.name);
+            p.Message("Cannot use &T/{0} &Scurrently as economy is disabled", cmd.Name);
             return false;
         }
         static List<string> GetConfig(string item)
@@ -39,7 +39,7 @@ namespace MCGalaxy.Eco
         {
             if (!File.Exists(Paths.EconomyPropsFile))
             {
-                Logger.Log(LogType.SystemActivity, "Economy properties don't exist, creating");
+                Logger.Log(1, "Economy properties don't exist, creating");
                 Save();
             }
             using StreamReader r = new(Paths.EconomyPropsFile);
@@ -143,8 +143,8 @@ namespace MCGalaxy.Eco
             string items = Items.Join(x => x.Enabled ? x.ShopName : null);
             return items.Length == 0 ? "(no enabled items)" : items;
         }
-        public static RankItem Ranks { get { return (RankItem)Items[3]; } }
-        public static LevelItem Levels { get { return (LevelItem)Items[4]; } }
+        public static RankItem Ranks => (RankItem)Items[3];
+        public static LevelItem Levels => (LevelItem)Items[4];
         public static void MakePurchase(Player p, int cost, string item)
         {
             p.SetMoney(p.money - cost);

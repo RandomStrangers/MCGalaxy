@@ -20,14 +20,8 @@ namespace MCGalaxy
 {
     public sealed partial class Server
     {
-        public static bool cancelcommand, SetupFinished, CLIMode,
+        public static bool cancelcommand, SetupFinished,
             chatmod, flipHead, shuttingDown, voting;
-        public delegate void OnConsoleCommand(string cmd, string message);
-        public static event OnConsoleCommand ConsoleCommand;
-        public delegate void MessageEventHandler(string message);
-        public delegate void VoidHandler();
-        public static event MessageEventHandler OnURLChange;
-        public static event VoidHandler OnSettingsUpdate;
         public static ServerConfig Config = new();
         public static DateTime StartTime;
         public static PlayerExtList AutoloadMaps, models, skins,
@@ -37,25 +31,12 @@ namespace MCGalaxy
             Notes = new("text/notes.txt");
         public static PlayerList whiteList, invalidIds, ignored,
             hidden, agreed, vip, noEmotes, lockdown, reviewlist = new();
-        public const string InternalVersion = "1.9.5.3";
-        /// <summary> *** DO NOT USE THIS! *** Use VersionString, as this field is a constant and is inlined if used. </summary>
-#if NAS && TEN_BIT_BLOCKS
-        public static string Version
-        {
-            get
-            {
-                return NotAwesomeSurvival.Nas.NasVersion;
-            }
-        }
+        public const string InternalVersion = "1.0.5.9";
+        public static string Version => InternalVersion;
         public static string SoftwareName = "MCGalaxy-NAS";
-#else
-        public static string Version { get { return InternalVersion; } }
-        public static string SoftwareName = "MCGalaxy";
-#endif
         static string fullName;
         public static string SoftwareNameVersioned
         {
-            // By default, if SoftwareName gets externally changed, that is reflected in SoftwareNameVersioned too
             get { return fullName ?? SoftwareName + " " + Version; }
             set { fullName = value; }
         }
@@ -73,7 +54,6 @@ namespace MCGalaxy
         public static Level mainLevel;
         static string[] announcements = new string[0];
         public static string RestartPath;
-        // Extra storage for custom commands
         public static ExtrasCollection Extras = new();
         public static int YesVotes, NoVotes;
         public const int MAX_PLAYERS = 256;
@@ -81,11 +61,5 @@ namespace MCGalaxy
             Background = new("MCG_BackgroundScheduler"),
             Critical = new("MCG_CriticalScheduler"),
             Heartbeats = new("MCG_HeartbeatsScheduler");
-        public static Server s = new();
-        public const byte VERSION_0016 = 3, // classic 0.0.16
-            VERSION_0017 = 4, // classic 0.0.17 / 0.0.18
-            VERSION_0019 = 5, // classic 0.0.19
-            VERSION_0020 = 6, // classic 0.0.20 / 0.0.21 / 0.0.23
-            VERSION_0030 = 7; // classic 0.30 (final)
     }
 }

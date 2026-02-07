@@ -82,30 +82,34 @@ namespace MCGalaxy
         }
         public static void MessageOps(Player p, string message)
         {
-            if (!MessageCmd.CanSpeak(p, "OpChat")) return;
-            MessageStaff(p, message, Chat.OpchatPerms, "Ops");
+            if (MessageCmd.CanSpeak(p, "OpChat"))
+            {
+                MessageStaff(p, message, Chat.OpchatPerms, "Ops");
+            }
         }
         public static void MessageAdmins(Player p, string message)
         {
-            if (!MessageCmd.CanSpeak(p, "AdminChat")) return;
-            MessageStaff(p, message, Chat.AdminchatPerms, "Admins");
+            if (MessageCmd.CanSpeak(p, "AdminChat"))
+            {
+                MessageStaff(p, message, Chat.AdminchatPerms, "Admins");
+            }
         }
         public static void MessageStaff(Player p, string message,
                                         ItemPerms perms, string group)
         {
             if (message.Length == 0) { p.Message("No message to send."); return; }
             string chatMsg = "To " + group + " &f-λNICK&f- " + message;
-            Chat.MessageChat(ChatScope.Perms, p, chatMsg, perms, null, true);
+            Chat.MessageChat(4, p, chatMsg, perms, null, true);
         }
         public static void MessageDirect(Player p, Player target, string message)
         {
             if (message.Length == 0) { p.Message("No message entered"); return; }
-            Logger.Log(LogType.PrivateChat, "{0} @{1}: {2}", p.name, target.name, message);
+            Logger.Log(13, "{0} @{1}: {2}", p.name, target.name, message);
             if (!p.IsConsole)
             {
                 p.Message("[<] {0}: &f{1}", p.FormatNick(target), message);
             }
-            Chat.MessageChat(ChatScope.PM, p, "&9[>] λNICK: &f" + message, target, null);
+            Chat.MessageChat(5, p, "&9[>] λNICK: &f" + message, target, null);
         }
     }
 }

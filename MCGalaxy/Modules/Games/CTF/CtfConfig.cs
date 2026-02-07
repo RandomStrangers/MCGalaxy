@@ -20,8 +20,8 @@ namespace MCGalaxy.Modules.Games.CTF
 {
     public sealed class CTFConfig : RoundsGameConfig
     {
-        public override bool AllowAutoload { get { return false; } }
-        protected override string GameName { get { return "CTF"; } }
+        public override bool AllowAutoload => false;
+        protected override string GameName => "CTF";
         [ConfigFloat("tag-distance", "Collisions", 1f)]
         public float TagDistance = 1f;
         [ConfigInt("collisions-check-interval", "Collisions", 150, 20, 2000)]

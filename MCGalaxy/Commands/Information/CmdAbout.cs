@@ -21,19 +21,13 @@ namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdAbout : Command2
     {
-        public override string name { get { return "About"; } }
-        public override string shortcut { get { return "b"; } }
-        public override string type { get { return CommandTypes.Information; } }
-        public override bool museumUsable { get { return false; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("BInfo"), new CommandAlias("WhoDid") }; }
-        }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.AdvBuilder, "can see portal/MB data of a block") }; }
-        }
+        public override string Name => "About";
+        public override string Shortcut => "b";
+        public override string Type => CommandTypes.Information;
+        public override bool MuseumUsable => false;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("BInfo"), new CommandAlias("WhoDid") };
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(50, "can see portal/MB data of a block") };
         public override void Use(Player p, string message, CommandData data)
         {
             p.Message("Break/build a block to display information.");
@@ -42,17 +36,17 @@ namespace MCGalaxy.Commands.Info
         bool PlacedMark(Player p, Vec3S32[] marks, object state, ushort block)
         {
             ushort x = (ushort)marks[0].X, y = (ushort)marks[0].Y, z = (ushort)marks[0].Z;
-            block = p.level.GetBlock(x, y, z);
+            block = p.Level.GetBlock(x, y, z);
             p.RevertBlock(x, y, z);
             Dictionary<int, string> names = new();
             p.Message("Retrieving block change records..");
             bool foundAny = false;
             ListFromDatabase(p, ref foundAny, x, y, z);
-            using (IDisposable rLock = p.level.BlockDB.Locker.AccquireRead(30 * 1000))
+            using (IDisposable rLock = p.Level.BlockDB.Locker.AccquireRead(30 * 1000))
             {
                 if (rLock != null)
                 {
-                    p.level.BlockDB.FindChangesAt(x, y, z,
+                    p.Level.BlockDB.FindChangesAt(x, y, z,
                                                   entry => OutputEntry(p, ref foundAny, names, entry));
                 }
                 else
@@ -66,7 +60,7 @@ namespace MCGalaxy.Commands.Info
             string blockName = Block.GetName(p, block);
             p.Message("Block ({0}, {1}, {2}): &f{3} = {4}&S.", x, y, z, raw, blockName);
             CommandData data = (CommandData)state;
-            if (HasExtraPerm(p, data.Rank, 1))
+            if (HasExtraPerm(data.Rank, 1))
             {
                 BlockDBChange.OutputMessageBlock(p, block, x, y, z);
                 BlockDBChange.OutputPortal(p, block, x, y, z);
@@ -76,8 +70,8 @@ namespace MCGalaxy.Commands.Info
         }
         static void ListFromDatabase(Player p, ref bool foundAny, ushort x, ushort y, ushort z)
         {
-            if (!Database.TableExists("Block" + p.level.name)) return;
-            List<string[]> entries = Database.GetRows("Block" + p.level.name, "Username,TimePerformed,Deleted,Type",
+            if (!Database.TableExists("Block" + p.Level.name)) return;
+            List<string[]> entries = Database.GetRows("Block" + p.Level.name, "Username,TimePerformed,Deleted,Type",
                                                       "WHERE X=@0 AND Y=@1 AND Z=@2", x, y, z);
             if (entries.Count > 0) foundAny = true;
             BlockDBEntry entry = default;

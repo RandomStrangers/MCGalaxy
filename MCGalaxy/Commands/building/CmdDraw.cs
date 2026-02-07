@@ -18,10 +18,10 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdDraw : DrawCmd
     {
-        public override string name { get { return "Draw"; } }
-        protected override int MarksCount { get { return 1; } }
-        protected override string SelectionType { get { return "origin"; } }
-        protected override string PlaceMessage { get { return "Place a block to determine the origin."; } }
+        public override string Name => "Draw";
+        protected override int MarksCount => 1;
+        protected override string SelectionType => "origin";
+        protected override string PlaceMessage => "Place a block to determine the origin.";
         protected override DrawMode GetMode(string[] parts)
         {
             string msg = parts[0];

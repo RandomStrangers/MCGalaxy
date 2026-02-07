@@ -39,7 +39,7 @@ namespace MCGalaxy.Drawing.Brushes
                 Persistence = n.Persistence
             };
         }
-        public override string Name { get { return "Cloudy"; } }
+        public override string Name => "Cloudy";
         public override unsafe void Configure(DrawOp op, Player p)
         {
             if (!p.Ignores.DrawOutput)

@@ -20,11 +20,8 @@ namespace MCGalaxy.Drawing.Ops
 {
     public class ImagePrintDrawOp : DrawOp
     {
-        public override string Name { get { return "ImagePrint"; } }
-        public override long BlocksAffected(Level lvl, Vec3S32[] marks)
-        {
-            return Source.Width * Source.Height;
-        }
+        public override string Name => "ImagePrint";
+        public override long BlocksAffected(Level lvl, Vec3S32[] marks) => Source.Width * Source.Height;
         internal Bitmap2D Source;
         internal bool DualLayer, LayerMode;
         public ImagePalette Palette;

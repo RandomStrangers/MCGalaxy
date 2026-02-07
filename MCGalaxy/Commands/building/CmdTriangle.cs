@@ -17,11 +17,11 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdTriangle : DrawCmd
     {
-        public override string name { get { return "Triangle"; } }
-        public override string shortcut { get { return "tri"; } }
-        protected override int MarksCount { get { return 3; } }
-        protected override string PlaceMessage { get { return "Place three blocks to determine the edges."; } }
-        protected override DrawOp GetDrawOp(DrawArgs dArgs) { return new TriangleDrawOp(); }
+        public override string Name => "Triangle";
+        public override string Shortcut => "tri";
+        protected override int MarksCount => 3;
+        protected override string PlaceMessage => "Place three blocks to determine the edges.";
+        protected override DrawOp GetDrawOp(DrawArgs dArgs) => new TriangleDrawOp();
         public override void Help(Player p)
         {
             p.Message("&T/Triangle <brush args>");

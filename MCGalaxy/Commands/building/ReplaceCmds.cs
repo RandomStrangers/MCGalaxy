@@ -17,9 +17,9 @@ namespace MCGalaxy.Commands.Building
 {
     public class CmdReplace : DrawCmd
     {
-        public override string name { get { return "Replace"; } }
-        public override string shortcut { get { return "r"; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
+        public override string Name => "Replace";
+        public override string Shortcut => "r";
+        public override sbyte DefaultRank => 50;
         protected override DrawOp GetDrawOp(DrawArgs dArgs)
         {
             DrawOp op = new CuboidDrawOp
@@ -43,8 +43,8 @@ namespace MCGalaxy.Commands.Building
     }
     public sealed class CmdReplaceNot : CmdReplace
     {
-        public override string name { get { return "ReplaceNot"; } }
-        public override string shortcut { get { return "rn"; } }
+        public override string Name => "ReplaceNot";
+        public override string Shortcut => "rn";
         protected override void GetBrush(DrawArgs dArgs)
         {
             dArgs.BrushName = "ReplaceNot";

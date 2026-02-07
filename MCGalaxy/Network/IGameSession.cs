@@ -23,7 +23,7 @@ namespace MCGalaxy.Network
     {
         public byte ProtocolVersion;
         public byte[] fallback = new byte[256]; // fallback for classic+CPE block IDs
-        public ushort MaxRawBlock = Block.CLASSIC_MAX_BLOCK;
+        public ushort MaxRawBlock = 49;
         public bool hasCpe;
         public string appName;
         // these are checked very frequently, so avoid overhead of .Supports(
@@ -54,9 +54,9 @@ namespace MCGalaxy.Network
             return read;
         }
         public abstract int MaxEntityID { get; }
-        public void Disconnect() { player.Disconnect(); }
+        public void Disconnect() => player.Disconnect();
         /// <summary> Sends raw data to the client </summary>
-        public void Send(byte[] data) { socket.Send(data, SendFlags.None); }
+        public void Send(byte[] data) => socket.Send(data, 0x00);
         /// <summary> Whether the client supports the given CPE extension </summary>
         public abstract bool Supports(string extName, int version);
         /// <summary> Attempts to process the next packet received from the client </summary>
@@ -70,7 +70,7 @@ namespace MCGalaxy.Network
         /// <remarks> Performs line wrapping if chat message is too long to fit in a single packet </remarks>
         public abstract void SendChat(string message);
         /// <summary> Sends a message packet to the client </summary>
-        public abstract void SendMessage(CpeMessageType type, string message);
+        public abstract void SendMessage(int type, string message);
         /// <summary> Sends a kick/disconnect packet with the given reason </summary>
         public abstract void SendKick(string reason, bool sync);
         public abstract bool SendSetUserType(byte type);
@@ -78,8 +78,7 @@ namespace MCGalaxy.Network
         public abstract void SendTeleport(byte id, Position pos, Orientation rot);
         /// <summary> Sends an ext entity teleport with more control over behavior </summary>
         public virtual bool SendTeleport(byte id, Position pos, Orientation rot,
-                                         Packet.TeleportMoveMode moveMode, bool usePos = true, bool interpolateOri = false, bool useOri = true)
-        { return false; }
+                                         int moveMode, bool usePos = true, bool interpolateOri = false, bool useOri = true) => false;
         /// <summary> Sends a spawn/add entity packet to the client </summary>
         public abstract void SendSpawnEntity(byte id, string name, string skin, Position pos, Orientation rot);
         /// <summary> Sends a despawn/remove entity to the client </summary>
@@ -94,7 +93,7 @@ namespace MCGalaxy.Network
         /// <summary> Sends an update environment color packet to the client </summary>
         public abstract bool SendSetEnvColor(byte type, string hex);
         public abstract void SendChangeModel(byte id, string model);
-        public abstract void SendEntityProperty(byte id, EntityProp prop, int value);
+        public abstract void SendEntityProperty(byte id, int prop, int value);
         /// <summary> Sends an update weather packet </summary>
         public abstract bool SendSetWeather(byte weather);
         /// <summary> Sends an update text color code packet to the client </summary>
@@ -105,10 +104,6 @@ namespace MCGalaxy.Network
         public abstract bool SendUndefineBlock(BlockDefinition def);
         public abstract bool SendAddSelection(byte id, string label, Vec3U16 p1, Vec3U16 p2, ColorDesc color);
         public abstract bool SendRemoveSelection(byte id);
-        /// <summary> Sends a cinematic gui definition to the client </summary>
-        public abstract bool SendCinematicGui(CinematicGui gui);
-        /// <summary> Sends a toggle block list packet to the client </summary>
-        public abstract bool SendToggleBlockList(bool toggle);
         /// <summary> Sends a level to the client </summary>
         public abstract void SendLevel(Level prev, Level level);
         /// <summary> Sends a block change/update packet to the client </summary>
@@ -124,7 +119,7 @@ namespace MCGalaxy.Network
         {
             ushort raw;
             Player p = player;
-            if (block >= Block.Extended)
+            if (block >= 256)
             {
                 raw = Block.ToRaw(block);
             }
@@ -132,14 +127,14 @@ namespace MCGalaxy.Network
             {
                 raw = Block.Convert(block);
                 // show invalid physics blocks as Orange
-                if (raw >= Block.CPE_COUNT) raw = Block.Orange;
+                if (raw >= 66) raw = 22;
             }
-            if (raw > MaxRawBlock) raw = p.level.GetFallback(block);
+            if (raw > MaxRawBlock) raw = p.Level.GetFallback(block);
             // Check if a custom block replaced a core block
             //  If so, assume fallback is the better block to display
-            if (!hasBlockDefs && raw < Block.CPE_COUNT)
+            if (!hasBlockDefs && raw < 66)
             {
-                BlockDefinition def = p.level.CustomBlockDefs[raw];
+                BlockDefinition def = p.Level.CustomBlockDefs[raw];
                 if (def != null) raw = def.FallBack;
             }
             if (!hasCustomBlocks) raw = fallback[(byte)raw];

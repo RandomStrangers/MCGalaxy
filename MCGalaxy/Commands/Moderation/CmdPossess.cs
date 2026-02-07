@@ -16,10 +16,10 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdPossess : Command2
     {
-        public override string name { get { return "Possess"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Possess";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 100;
+        public override bool SuperUseable => false;
         static void Unpossess(Player target)
         {
             target.following = "";

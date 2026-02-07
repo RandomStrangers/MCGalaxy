@@ -25,7 +25,7 @@ namespace MCGalaxy.Drawing.Brushes
             this.blocks = blocks;
             seed = new Random().Next();
         }
-        public override string Name { get { return "Random"; } }
+        public override string Name => "Random";
         int next;
         const int mask = 0x7fffffff;
         public override ushort NextBlock(DrawOp op)

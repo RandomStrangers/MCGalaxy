@@ -19,13 +19,10 @@ namespace MCGalaxy.Drawing.Ops
 {
     public class UndoPhysicsDrawOp : DrawOp
     {
-        public override string Name { get { return "UndoPhysics"; } }
+        public override string Name => "UndoPhysics";
         internal DateTime Start;
-        public UndoPhysicsDrawOp()
-        {
-            AffectedByTransform = false;
-        }
-        public override long BlocksAffected(Level lvl, Vec3S32[] marks) { return -1; }
+        public UndoPhysicsDrawOp() => AffectedByTransform = false;
+        public override long BlocksAffected(Level lvl, Vec3S32[] marks) => -1;
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             if (Level.UndoBuffer.Count != Server.Config.PhysicsUndo)

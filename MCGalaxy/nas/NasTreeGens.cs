@@ -1,12 +1,10 @@
-#if NAS && TEN_BIT_BLOCKS
-using MCGalaxy;
 using MCGalaxy.Drawing.Brushes;
 using MCGalaxy.Drawing.Ops;
 using MCGalaxy.Generator.Foliage;
 using MCGalaxy.Maths;
 using System;
 using System.Collections.Generic;
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
     public class BirchTree : Tree
     {
@@ -22,7 +20,7 @@ namespace NotAwesomeSurvival
         {
             for (ushort dy = 0; dy < height + size - 1; dy++)
             {
-                output(x, (ushort)(y + dy), z, Nas.FromRaw(242));
+                output(x, (ushort)(y + dy), z, NASPlugin.FromRaw(242));
             }
             for (int dy = -size; dy <= size; ++dy)
             {
@@ -36,7 +34,7 @@ namespace NotAwesomeSurvival
                             ushort xx = (ushort)(x + dx), yy = (ushort)(y + dy + height), zz = (ushort)(z + dz);
                             if (xx != x || zz != z || dy >= size - 1)
                             {
-                                output(xx, yy, zz, Nas.FromRaw(103));
+                                output(xx, yy, zz, NASPlugin.FromRaw(103));
                             }
                         }
                     }
@@ -76,18 +74,18 @@ namespace NotAwesomeSurvival
                             {
                                 if (j <= height && rnd.Next(2) == 0)
                                 {
-                                    output(num2, y2, num3, Nas.FromRaw(146));
+                                    output(num2, y2, num3, NASPlugin.FromRaw(146));
                                 }
                             }
                             else
                             {
-                                output(num2, y2, num3, Nas.FromRaw(146));
+                                output(num2, y2, num3, NASPlugin.FromRaw(146));
                                 if (rnd.Next(15) == 0)
                                 {
-                                    output(num2, (ushort)(height - 3 + y), num3, Nas.FromRaw(107));
+                                    output(num2, (ushort)(height - 3 + y), num3, NASPlugin.FromRaw(107));
                                     if (rnd.Next(3) == 0)
                                     {
-                                        output(num2, (ushort)(height - 4 + y), num3, Nas.FromRaw(107));
+                                        output(num2, (ushort)(height - 4 + y), num3, NASPlugin.FromRaw(107));
                                     }
                                 }
                             }
@@ -150,7 +148,7 @@ namespace NotAwesomeSurvival
             ThingDrawOp.DrawLine(p1.X, p1.Y, p1.Z, 10000, p2.X, p2.Y, p2.Z, branch);
             foreach (Vec3S32 current in branch)
             {
-                output((ushort)current.X, (ushort)current.Y, (ushort)current.Z, Nas.FromRaw(250));
+                output((ushort)current.X, (ushort)current.Y, (ushort)current.Z, NASPlugin.FromRaw(250));
             }
             branch.Clear();
         }
@@ -294,4 +292,3 @@ namespace NotAwesomeSurvival
         }
     }
 }
-#endif

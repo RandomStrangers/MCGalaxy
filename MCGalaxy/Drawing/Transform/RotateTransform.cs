@@ -20,7 +20,7 @@ namespace MCGalaxy.Drawing.Transforms
 {
     public sealed class RotateTransform : Transform
     {
-        public override string Name { get { return "Rotate"; } }
+        public override string Name => "Rotate";
         public bool CentreOrigin;
         Shear2D shearX, shearY, shearZ;
         Vec3S32 P;

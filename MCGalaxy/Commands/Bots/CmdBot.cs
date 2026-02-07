@@ -19,26 +19,17 @@ namespace MCGalaxy.Commands.Bots
 {
     public sealed class CmdBot : Command2
     {
-        public override string name { get { return "Bot"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new[] {
+        public override string Name => "Bot";
+        public override string Type => CommandTypes.Moderation;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 100;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new[] {
                     new CommandAlias("BotAdd", "add"),
                     new CommandAlias("BotRemove", "remove"),
                     new CommandAlias("BotInfo", "info")
                 };
-            }
-        }
-        public override CommandPerm[] ExtraPerms
-        {
-            get { return new[] { new CommandPerm(LevelPermission.Operator, "can modify bots that do not belong to them") }; }
-        }
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can modify bots that do not belong to them") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -46,7 +37,7 @@ namespace MCGalaxy.Commands.Bots
             if (args[0].CaselessEq("info")) { BotInfo(p, args.Length < 2 ? "" : args[1]); return; }
             if (args.Length < 2) { Help(p); return; }
             if (!Formatter.ValidName(p, args[1], "bot")) return;
-            if (!LevelInfo.Check(p, data.Rank, p.level, "modify bots in this level")) return;
+            if (!LevelInfo.Check(p, data.Rank, p.Level, "modify bots in this level")) return;
             string bot = args[1], value = args.Length > 2 ? args[2] : null;
             if (args[0].CaselessEq("add"))
             {
@@ -80,7 +71,7 @@ namespace MCGalaxy.Commands.Bots
         void AddBot(Player p, string botName)
         {
             botName = botName.Replace(' ', '_');
-            PlayerBot bot = new(botName, p.level)
+            PlayerBot bot = new(botName, p.Level)
             {
                 Owner = p.name,
                 CreationDate = DateTime.UtcNow.ToUnixTime()
@@ -89,11 +80,11 @@ namespace MCGalaxy.Commands.Bots
         }
         void TryAddBot(Player p, PlayerBot bot)
         {
-            if (BotExists(p.level, bot.name, null))
+            if (BotExists(p.Level, bot.name, null))
             {
                 p.Message("A bot with that name already exists."); return;
             }
-            if (p.level.Bots.Count >= Server.Config.MaxBotsPerLevel)
+            if (p.Level.Bots.Count >= Server.Config.MaxBotsPerLevel)
             {
                 p.Message("Reached maximum number of bots allowed on this map."); return;
             }
@@ -123,7 +114,7 @@ namespace MCGalaxy.Commands.Bots
                     if (ownerName == null) { return; }
                     if (PlayerBot.CanEditAny(p) || ownerName.CaselessEq(p.name))
                     {
-                        int removedCount = PlayerBot.RemoveBotsOwnedBy(p, ownerName, p.level, false);
+                        int removedCount = PlayerBot.RemoveBotsOwnedBy(p, ownerName, p.Level, false);
                         if (removedCount == 0)
                         {
                             p.Message("There are no bots owned by {0}&S in this level.", p.FormatNick(ownerName));
@@ -131,7 +122,7 @@ namespace MCGalaxy.Commands.Bots
                         else
                         {
                             p.Message("Removed {0} bot{1} belonging to {2}&S.", removedCount, removedCount.Plural(), p.FormatNick(ownerName));
-                            BotsFile.Save(p.level);
+                            BotsFile.Save(p.Level);
                         }
                     }
                     else
@@ -142,7 +133,7 @@ namespace MCGalaxy.Commands.Bots
                 }
                 if (PlayerBot.CanEditAny(p))
                 {
-                    int removedCount = PlayerBot.RemoveLoadedBots(p.level, false);
+                    int removedCount = PlayerBot.RemoveLoadedBots(p.Level, false);
                     if (removedCount == 0)
                     {
                         p.Message("There are no bots in this level.");
@@ -150,7 +141,7 @@ namespace MCGalaxy.Commands.Bots
                     else
                     {
                         p.Message("Removed {0} bot{1}.", removedCount, removedCount.Plural());
-                        BotsFile.Save(p.level);
+                        BotsFile.Save(p.Level);
                     }
                 }
                 else
@@ -167,7 +158,7 @@ namespace MCGalaxy.Commands.Bots
                 p.Message("Removed bot {0}", bot.ColoredName);
             }
         }
-        void SetBotText(Player p, string botName, string text, LevelPermission plRank)
+        void SetBotText(Player p, string botName, string text, sbyte plRank)
         {
             PlayerBot bot = Matcher.FindBots(p, botName);
             if (bot == null) return;
@@ -179,12 +170,13 @@ namespace MCGalaxy.Commands.Bots
             }
             else
             {
-                bool allCmds = HasExtraPerm(p, "MB", plRank, 1);
+                
+                bool allCmds = CommandExtraPerms.Find("MB", 1).UsableBy(plRank);
                 if (!MessageBlock.Validate(p, text, allCmds)) return;
                 p.Message("Set text shown when bot {0} &Sis clicked on to {1}", bot.ColoredName, text);
                 bot.ClickedOnText = text;
             }
-            BotsFile.Save(p.level);
+            BotsFile.Save(p.Level);
         }
         void SetDeathMessage(Player p, string botName, string text)
         {
@@ -201,7 +193,7 @@ namespace MCGalaxy.Commands.Bots
                 p.Message("Set message shown when bot {0} &Skills someone to {1}", bot.ColoredName, text);
                 bot.DeathMessage = text;
             }
-            BotsFile.Save(p.level);
+            BotsFile.Save(p.Level);
         }
         void RenameBot(Player p, string botName, string newName)
         {
@@ -210,7 +202,7 @@ namespace MCGalaxy.Commands.Bots
             PlayerBot bot = Matcher.FindBots(p, botName);
             if (bot == null) return;
             if (!bot.EditableBy(p, "rename")) { return; }
-            if (BotExists(p.level, newName, bot))
+            if (BotExists(p.Level, newName, bot))
             {
                 p.Message("A bot with the new name already exists."); return;
             }
@@ -222,7 +214,7 @@ namespace MCGalaxy.Commands.Bots
                 bot.GlobalSpawn();
             }
             bot.name = newName;
-            BotsFile.Save(p.level);
+            BotsFile.Save(p.Level);
         }
         void CopyBot(Player p, string botName, string newName)
         {
@@ -230,7 +222,7 @@ namespace MCGalaxy.Commands.Bots
             if (!Formatter.ValidName(p, newName, "bot")) return;
             PlayerBot bot = Matcher.FindBots(p, botName);
             if (bot == null) return;
-            PlayerBot clone = new(newName, p.level);
+            PlayerBot clone = new(newName, p.Level);
             BotProperties props = new();
             props.FromBot(bot);
             props.ApplyTo(clone);

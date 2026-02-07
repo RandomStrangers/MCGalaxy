@@ -1,12 +1,9 @@
-#if NAS && TEN_BIT_BLOCKS
-using MCGalaxy;
 using MCGalaxy.Maths;
 using System;
 using System.Collections.Generic;
-using NasBlockAction = NotAwesomeSurvival.Action<NotAwesomeSurvival.NasLevel, NotAwesomeSurvival.NasBlock, int, int, int>;
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
-    public partial class NasBlock
+    public partial class NASBlock
     {
         public static int LiquidInfiniteIndex = 0,
             LiquidSourceIndex = 1,
@@ -22,10 +19,10 @@ namespace NotAwesomeSurvival
             256|96,
             256|130,
             256|651,
-            Nas.FromRaw(644),
-            Nas.FromRaw(645),
-            Nas.FromRaw(646),
-            Nas.FromRaw(461),
+            NASPlugin.FromRaw(644),
+            NASPlugin.FromRaw(645),
+            NASPlugin.FromRaw(646),
+            NASPlugin.FromRaw(461),
             53
         },
         waterSet = new ushort[]
@@ -84,118 +81,118 @@ namespace NotAwesomeSurvival
         },
         pistonUp =
         {
-            Nas.FromRaw(704),
-            Nas.FromRaw(705),
-            Nas.FromRaw(706)
+            NASPlugin.FromRaw(704),
+            NASPlugin.FromRaw(705),
+            NASPlugin.FromRaw(706)
         },
         stickyPistonUp =
         {
-            Nas.FromRaw(678),
-            Nas.FromRaw(679),
-            Nas.FromRaw(680)
+            NASPlugin.FromRaw(678),
+            NASPlugin.FromRaw(679),
+            NASPlugin.FromRaw(680)
         },
         pistonDown =
         {
-            Nas.FromRaw(707),
-            Nas.FromRaw(708),
-            Nas.FromRaw(709)
+            NASPlugin.FromRaw(707),
+            NASPlugin.FromRaw(708),
+            NASPlugin.FromRaw(709)
         },
         stickyPistonDown =
         {
-            Nas.FromRaw(710),
-            Nas.FromRaw(711),
-            Nas.FromRaw(712)
+            NASPlugin.FromRaw(710),
+            NASPlugin.FromRaw(711),
+            NASPlugin.FromRaw(712)
         },
         pistonNorth =
         {
-            Nas.FromRaw(389),
-            Nas.FromRaw(390),
-            Nas.FromRaw(391)
+            NASPlugin.FromRaw(389),
+            NASPlugin.FromRaw(390),
+            NASPlugin.FromRaw(391)
         },
         pistonEast =
         {
-            Nas.FromRaw(392),
-            Nas.FromRaw(393),
-            Nas.FromRaw(394)
+            NASPlugin.FromRaw(392),
+            NASPlugin.FromRaw(393),
+            NASPlugin.FromRaw(394)
         },
         pistonSouth =
         {
-            Nas.FromRaw(395),
-            Nas.FromRaw(396),
-            Nas.FromRaw(397)
+            NASPlugin.FromRaw(395),
+            NASPlugin.FromRaw(396),
+            NASPlugin.FromRaw(397)
         },
         pistonWest =
         {
-            Nas.FromRaw(398),
-            Nas.FromRaw(399),
-            Nas.FromRaw(400)
+            NASPlugin.FromRaw(398),
+            NASPlugin.FromRaw(399),
+            NASPlugin.FromRaw(400)
         },
         stickyPistonNorth =
         {
-            Nas.FromRaw(401),
-            Nas.FromRaw(402),
-            Nas.FromRaw(403)
+            NASPlugin.FromRaw(401),
+            NASPlugin.FromRaw(402),
+            NASPlugin.FromRaw(403)
         },
         stickyPistonEast =
         {
-            Nas.FromRaw(404),
-            Nas.FromRaw(405),
-            Nas.FromRaw(406)
+            NASPlugin.FromRaw(404),
+            NASPlugin.FromRaw(405),
+            NASPlugin.FromRaw(406)
         },
         stickyPistonSouth =
         {
-            Nas.FromRaw(407),
-            Nas.FromRaw(408),
-            Nas.FromRaw(409)
+            NASPlugin.FromRaw(407),
+            NASPlugin.FromRaw(408),
+            NASPlugin.FromRaw(409)
         },
         stickyPistonWest =
         {
-            Nas.FromRaw(410),
-            Nas.FromRaw(411),
-            Nas.FromRaw(412)
+            NASPlugin.FromRaw(410),
+            NASPlugin.FromRaw(411),
+            NASPlugin.FromRaw(412)
         },
         unpushable =
         {
-            Nas.FromRaw(690),
-            Nas.FromRaw(647),
-            Nas.FromRaw(216),
-            Nas.FromRaw(217),
-            Nas.FromRaw(218),
-            Nas.FromRaw(219),
-            Nas.FromRaw(602),
-            Nas.FromRaw(603),
-            Nas.FromRaw(143),
-            Nas.FromRaw(171),
-            Nas.FromRaw(54),
-            Nas.FromRaw(703),
-            Nas.FromRaw(7),
-            Nas.FromRaw(767),
-            Nas.FromRaw(674),
-            Nas.FromRaw(675),
-            Nas.FromRaw(195),
-            Nas.FromRaw(196),
-            Nas.FromRaw(172),
-            Nas.FromRaw(173),
-            Nas.FromRaw(174),
-            Nas.FromRaw(175),
-            Nas.FromRaw(176),
-            Nas.FromRaw(177),
-            Nas.FromRaw(612),
-            Nas.FromRaw(613),
-            Nas.FromRaw(614),
-            Nas.FromRaw(615),
-            Nas.FromRaw(616),
-            Nas.FromRaw(617),
-            Nas.FromRaw(413),
-            Nas.FromRaw(414),
-            Nas.FromRaw(439),
-            Nas.FromRaw(440),
-            Nas.FromRaw(441),
-            Nas.FromRaw(442),
-            Nas.FromRaw(443),
-            Nas.FromRaw(444),
-            Nas.FromRaw(673),
-            Nas.FromRaw(457),
+            NASPlugin.FromRaw(690),
+            NASPlugin.FromRaw(647),
+            NASPlugin.FromRaw(216),
+            NASPlugin.FromRaw(217),
+            NASPlugin.FromRaw(218),
+            NASPlugin.FromRaw(219),
+            NASPlugin.FromRaw(602),
+            NASPlugin.FromRaw(603),
+            NASPlugin.FromRaw(143),
+            NASPlugin.FromRaw(171),
+            NASPlugin.FromRaw(54),
+            NASPlugin.FromRaw(703),
+            NASPlugin.FromRaw(7),
+            NASPlugin.FromRaw(767),
+            NASPlugin.FromRaw(674),
+            NASPlugin.FromRaw(675),
+            NASPlugin.FromRaw(195),
+            NASPlugin.FromRaw(196),
+            NASPlugin.FromRaw(172),
+            NASPlugin.FromRaw(173),
+            NASPlugin.FromRaw(174),
+            NASPlugin.FromRaw(175),
+            NASPlugin.FromRaw(176),
+            NASPlugin.FromRaw(177),
+            NASPlugin.FromRaw(612),
+            NASPlugin.FromRaw(613),
+            NASPlugin.FromRaw(614),
+            NASPlugin.FromRaw(615),
+            NASPlugin.FromRaw(616),
+            NASPlugin.FromRaw(617),
+            NASPlugin.FromRaw(413),
+            NASPlugin.FromRaw(414),
+            NASPlugin.FromRaw(439),
+            NASPlugin.FromRaw(440),
+            NASPlugin.FromRaw(441),
+            NASPlugin.FromRaw(442),
+            NASPlugin.FromRaw(443),
+            NASPlugin.FromRaw(444),
+            NASPlugin.FromRaw(673),
+            NASPlugin.FromRaw(457),
         },
         wireSetActive =
         {
@@ -245,17 +242,17 @@ namespace NotAwesomeSurvival
         },
         wheatSet = new ushort[]
         {
-            Nas.FromRaw(644),
-            Nas.FromRaw(645),
-            Nas.FromRaw(646),
-            Nas.FromRaw(461)
+            NASPlugin.FromRaw(644),
+            NASPlugin.FromRaw(645),
+            NASPlugin.FromRaw(646),
+            NASPlugin.FromRaw(461)
         },
         ironSet = new ushort[]
         {
-            Nas.FromRaw(729),
-            Nas.FromRaw(730),
-            Nas.FromRaw(731),
-            Nas.FromRaw(479)
+            NASPlugin.FromRaw(729),
+            NASPlugin.FromRaw(730),
+            NASPlugin.FromRaw(731),
+            NASPlugin.FromRaw(479)
         },
         soilForPlants = new ushort[]
         {
@@ -269,7 +266,7 @@ namespace NotAwesomeSurvival
             256|452,
             256|451
         };
-        public static NasBlockAction FloodAction(ushort[] set) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> FloodAction(ushort[] set) => (nl, nasBlock, x, y, z) =>
                                                                            {
                                                                                if (CanInfiniteFloodKillThis(nl, x, y - 1, z, set))
                                                                                {
@@ -293,7 +290,7 @@ namespace NotAwesomeSurvival
                                                                                    nl.SetBlock(x, y, z - 1, set[LiquidInfiniteIndex]);
                                                                                }
                                                                            };
-        public static bool CanInfiniteFloodKillThis(NasLevel nl, int x, int y, int z, ushort[] set)
+        public static bool CanInfiniteFloodKillThis(NASLevel nl, int x, int y, int z, ushort[] set)
         {
             ushort here = nl.GetBlock(x, y, z);
             if (CanPhysicsKillThis(here) || IsPartOfSet(set, here) > LiquidInfiniteIndex)
@@ -332,10 +329,10 @@ namespace NotAwesomeSurvival
             }
             return -1;
         }
-        public static int CanReplaceBlockAt(NasLevel nl, int x, int y, int z, ushort[] set, int spreadIndex)
+        public static int CanReplaceBlockAt(NASLevel nl, int x, int y, int z, ushort[] set, int spreadIndex)
         {
             ushort hereBlock = nl.GetBlock(x, y, z);
-            if (nl.GetBlock(x, y - 1, z) == Nas.FromRaw(703))
+            if (nl.GetBlock(x, y - 1, z) == NASPlugin.FromRaw(703))
             {
                 return -1;
             }
@@ -346,7 +343,7 @@ namespace NotAwesomeSurvival
             int hereIndex = IsPartOfSet(set, hereBlock);
             return hereIndex;
         }
-        public static bool CanLiquidLive(NasLevel nl, ushort[] set, int index, int x, int y, int z)
+        public static bool CanLiquidLive(NASLevel nl, ushort[] set, int index, int x, int y, int z)
         {
             ushort neighbor = nl.GetBlock(x, y, z);
             if (neighbor == set[index - 1] ||
@@ -358,7 +355,7 @@ namespace NotAwesomeSurvival
             }
             return false;
         }
-        public static NasBlockAction LimitedFloodAction(ushort[] set, int index) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> LimitedFloodAction(ushort[] set, int index) => (nl, nasBlock, x, y, z) =>
                                                                                              {
                                                                                                  if (y >= 200 && set == waterSet)
                                                                                                  {
@@ -475,7 +472,7 @@ namespace NotAwesomeSurvival
                                                                                                      nl.SetBlock(x, y, z - 1, spreadBlock);
                                                                                                  }
                                                                                              };
-        public static void CanFlowInDirection(NasLevel nl, int x, int y, int z,
+        public static void CanFlowInDirection(NASLevel nl, int x, int y, int z,
                                        ushort[] set, int spreadIndex,
                                        out bool xPos,
                                        out bool xNeg,
@@ -552,7 +549,7 @@ namespace NotAwesomeSurvival
         }
         public class FloodSim
         {
-            public NasLevel nl;
+            public NASLevel nl;
             public int xO,
                 yO,
                 zO,
@@ -562,7 +559,7 @@ namespace NotAwesomeSurvival
             public ushort[] liquidSet;
             public bool[,] waterAtSpot;
             public List<Vec3S32> holes;
-            public FloodSim(NasLevel nl, int xO, int yO, int zO, int totalDistance, ushort[] set)
+            public FloodSim(NASLevel nl, int xO, int yO, int zO, int totalDistance, ushort[] set)
             {
                 this.nl = nl;
                 this.xO = xO;
@@ -647,15 +644,15 @@ namespace NotAwesomeSurvival
                 waterAtSpot[xI, zI] = value;
             }
         }
-        public static List<Vec3S32> HolesInRange(NasLevel nl, int x, int y, int z, int totalDistance, ushort[] set, out int distance)
+        public static List<Vec3S32> HolesInRange(NASLevel nl, int x, int y, int z, int totalDistance, ushort[] set, out int distance)
         {
             FloodSim sim = new(nl, x, y, z, totalDistance, set);
             return sim.GetHoles(out distance);
         }
-        public static NasBlockAction FallingBlockAction(ushort serverushort) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> FallingBlockAction(ushort serverushort) => (nl, nasBlock, x, y, z) =>
                                                                                          {
                                                                                              ushort blockUnder = nl.GetBlock(x, y - 1, z);
-                                                                                             if (nl.GetBlock(x, y - 2, z) == Nas.FromRaw(703))
+                                                                                             if (nl.GetBlock(x, y - 2, z) == NASPlugin.FromRaw(703))
                                                                                              {
                                                                                                  return;
                                                                                              }
@@ -665,11 +662,11 @@ namespace NotAwesomeSurvival
                                                                                                  nl.SetBlock(x, y - 1, z, serverushort);
                                                                                              }
                                                                                          };
-        public static NasBlockAction GrassBlockAction(ushort grass, ushort dirt) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> GrassBlockAction(ushort grass, ushort dirt) => (nl, nasBlock, x, y, z) =>
                                                                                              {
-                                                                                                 if (grass == Nas.FromRaw(139) && nl.biome != 2)
+                                                                                                 if (grass == NASPlugin.FromRaw(139) && nl.biome != 2)
                                                                                                  {
-                                                                                                     nl.SetBlock(x, y, z, Nas.FromRaw(129));
+                                                                                                     nl.SetBlock(x, y, z, NASPlugin.FromRaw(129));
                                                                                                  }
                                                                                                  ushort aboveHere = nl.GetBlock(x, y + 1, z);
                                                                                                  if (!nl.lvl.LightPasses(aboveHere))
@@ -677,7 +674,7 @@ namespace NotAwesomeSurvival
                                                                                                      nl.SetBlock(x, y, z, dirt);
                                                                                                  }
                                                                                              };
-        public static NasBlockAction DirtBlockAction(ushort[] grassSet, ushort _) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> DirtBlockAction(ushort[] grassSet, ushort _) => (nl, nasBlock, x, y, z) =>
                                                                                               {
                                                                                                   ushort aboveHere = nl.GetBlock(x, y + 1, z);
                                                                                                   if (!nl.lvl.LightPasses(aboveHere))
@@ -774,7 +771,7 @@ namespace NotAwesomeSurvival
                                                                                                   }
                                                                                                   return;
                                                                                               };
-        public static NasBlockAction ObserverActivateAction(int type) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> ObserverActivateAction(int type) => (nl, nasBlock, x, y, z) =>
                                                                                   {
                                                                                       if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                                                                                       {
@@ -784,7 +781,7 @@ namespace NotAwesomeSurvival
                                                                                       nl.blockEntities[x + " " + y + " " + z].strength = 15;
                                                                                       nl.SetBlock(x, y, z, (ushort)(nl.lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z) + 6));
                                                                                   };
-        public static NasBlockAction ObserverDeactivateAction(int type) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> ObserverDeactivateAction(int type) => (nl, nasBlock, x, y, z) =>
                                                                                     {
                                                                                         if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                                                                                         {
@@ -794,7 +791,7 @@ namespace NotAwesomeSurvival
                                                                                         nl.blockEntities[x + " " + y + " " + z].strength = 0;
                                                                                         nl.SetBlock(x, y, z, (ushort)(nl.lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z) - 6));
                                                                                     };
-        public static NasBlockAction LeafBlockAction(ushort[] _, ushort leaf) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> LeafBlockAction(ushort[] _, ushort leaf) => (nl, nasBlock, x, y, z) =>
                                                                                           {
                                                                                               bool canLive = false;
                                                                                               int iteration = 1;
@@ -813,17 +810,17 @@ namespace NotAwesomeSurvival
                                                                                               {
                                                                                                   if (leaf == 18)
                                                                                                   {
-                                                                                                      nl.SetBlock(x, y - 1, z, Nas.FromRaw(648));
+                                                                                                      nl.SetBlock(x, y - 1, z, NASPlugin.FromRaw(648));
                                                                                                   }
-                                                                                                  if (leaf == Nas.FromRaw(103))
+                                                                                                  if (leaf == NASPlugin.FromRaw(103))
                                                                                                   {
-                                                                                                      nl.SetBlock(x, y - 1, z, Nas.FromRaw(702));
+                                                                                                      nl.SetBlock(x, y - 1, z, NASPlugin.FromRaw(702));
                                                                                                   }
                                                                                               }
                                                                                           };
-        public static NasBlockAction GrowAction(ushort grow) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> GrowAction(ushort grow) => (nl, nasBlock, x, y, z) =>
                                                                          {
-                                                                             if (grow == Nas.FromRaw(667))
+                                                                             if (grow == NASPlugin.FromRaw(667))
                                                                              {
                                                                                  if (12 == nl.GetBlock(x, y - 1, z))
                                                                                  {
@@ -864,7 +861,7 @@ namespace NotAwesomeSurvival
                                                                              }
                                                                              nl.SetBlock(x, y + 1, z, grow);
                                                                          };
-        public static NasBlockAction VineGrowAction(ushort grow) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> VineGrowAction(ushort grow) => (nl, nasBlock, x, y, z) =>
                                                                              {
                                                                                  if (nl.GetBlock(x, y + 1, z) == grow && nl.GetBlock(x, y + 2, z) == grow)
                                                                                  {
@@ -875,21 +872,21 @@ namespace NotAwesomeSurvival
                                                                                      nl.SetBlock(x, y - 1, z, grow);
                                                                                  }
                                                                              };
-        public static NasBlockAction VineDeathAction() => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> VineDeathAction() => (nl, nasBlock, x, y, z) =>
                                                                    {
                                                                        if (IsPartOfSet(blocksPhysicsCanKill, nl.GetBlock(x, y + 1, z)) != -1)
                                                                        {
                                                                            nl.SetBlock(x, y, z, 0);
                                                                        }
                                                                    };
-        public static NasBlockAction LilyAction() => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> LilyAction() => (nl, nasBlock, x, y, z) =>
                                                               {
                                                                   if (IsPartOfSet(waterSet, nl.GetBlock(x, y - 1, z)) == -1)
                                                                   {
                                                                       nl.SetBlock(x, y, z, 0);
                                                                   }
                                                               };
-        public static void IsThereLog(NasLevel nl, int x, int y, int z, ushort leaf, int iteration, ref bool canLive)
+        public static void IsThereLog(NASLevel nl, int x, int y, int z, ushort leaf, int iteration, ref bool canLive)
         {
             if (canLive)
             {
@@ -905,7 +902,7 @@ namespace NotAwesomeSurvival
             {
                 return;
             }
-            if ((iteration >= 10 && leaf == Nas.FromRaw(104)) || (iteration >= 5 && leaf != Nas.FromRaw(104)))
+            if ((iteration >= 10 && leaf == NASPlugin.FromRaw(104)) || (iteration >= 5 && leaf != NASPlugin.FromRaw(104)))
             {
                 return;
             }
@@ -917,13 +914,13 @@ namespace NotAwesomeSurvival
             IsThereLog(nl, x, y - 1, z, leaf, iteration, ref canLive);
             IsThereLog(nl, x, y, z - 1, leaf, iteration, ref canLive);
         }
-        public static NasBlockAction FireAction() => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> FireAction() => (nl, nasBlock, x, y, z) =>
                                                               {
                                                                   if (IsPartOfSet(infinifire, nl.GetBlock(x, y - 1, z)) == -1)
                                                                   {
                                                                       if (r.Next(0, 8) == 0)
                                                                       {
-                                                                          nl.SetBlock(x, y, z, Nas.FromRaw(131));
+                                                                          nl.SetBlock(x, y, z, NASPlugin.FromRaw(131));
                                                                       }
                                                                       else
                                                                       {
@@ -931,9 +928,9 @@ namespace NotAwesomeSurvival
                                                                       }
                                                                   }
                                                               };
-        public static NasBlockAction LampAction(ushort on, ushort off, ushort me) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> LampAction(ushort on, ushort off, ushort me) => (nl, nasBlock, x, y, z) =>
                                                                                               {
-                                                                                                  Entity[] b = new Entity[6];
+                                                                                                  BlockEntity[] b = new BlockEntity[6];
                                                                                                   if (nl.blockEntities.ContainsKey(x + " " + (y - 1) + " " + z))
                                                                                                   {
                                                                                                       b[0] = nl.blockEntities[x + " " + (y - 1) + " " + z];
@@ -980,9 +977,9 @@ namespace NotAwesomeSurvival
                                                                                                       }
                                                                                                   }
                                                                                               };
-        public static NasBlockAction UnrefinedGoldAction(ushort on, ushort off, ushort me) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> UnrefinedGoldAction(ushort on, ushort off, ushort me) => (nl, nasBlock, x, y, z) =>
                                                                                                        {
-                                                                                                           Entity[] b = new Entity[6];
+                                                                                                           BlockEntity[] b = new BlockEntity[6];
                                                                                                            if (nl.blockEntities.ContainsKey(x + " " + (y - 1) + " " + z))
                                                                                                            {
                                                                                                                b[0] = nl.blockEntities[x + " " + (y - 1) + " " + z];
@@ -1039,7 +1036,7 @@ namespace NotAwesomeSurvival
                                                                                                                }
                                                                                                            }
                                                                                                        };
-        public static NasBlockAction SidewaysPistonAction(string type, string axis, int dir, ushort[] pistonSet, bool sticky = false) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> SidewaysPistonAction(string type, string axis, int dir, ushort[] pistonSet, bool sticky = false) => (nl, nasBlock, x, y, z) =>
                                                                                                                                                   {
                                                                                                                                                       int changeX = 0,
                                                                                                                                                       changeZ = 0,
@@ -1047,32 +1044,32 @@ namespace NotAwesomeSurvival
                                                                                                                                                       ushort[] dontpush =
                                                                                                                                                       {
                     0, 0, 0, 0,
-                    Nas.FromRaw(680),
-                    Nas.FromRaw(706),
-                    Nas.FromRaw(709),
-                    Nas.FromRaw(712)
+                    NASPlugin.FromRaw(680),
+                    NASPlugin.FromRaw(706),
+                    NASPlugin.FromRaw(709),
+                    NASPlugin.FromRaw(712)
                                                                                                                                                       };
                                                                                                                                                       if (axis.CaselessEq("x"))
                                                                                                                                                       {
                                                                                                                                                           changeX = dir;
                                                                                                                                                           changeZ = 0;
-                                                                                                                                                          dontpush[0] = Nas.FromRaw(391);
-                                                                                                                                                          dontpush[1] = Nas.FromRaw(397);
-                                                                                                                                                          dontpush[2] = Nas.FromRaw(403);
-                                                                                                                                                          dontpush[3] = Nas.FromRaw(409);
+                                                                                                                                                          dontpush[0] = NASPlugin.FromRaw(391);
+                                                                                                                                                          dontpush[1] = NASPlugin.FromRaw(397);
+                                                                                                                                                          dontpush[2] = NASPlugin.FromRaw(403);
+                                                                                                                                                          dontpush[3] = NASPlugin.FromRaw(409);
                                                                                                                                                       }
                                                                                                                                                       if (axis.CaselessEq("z"))
                                                                                                                                                       {
                                                                                                                                                           changeZ = dir;
                                                                                                                                                           changeX = 0;
-                                                                                                                                                          dontpush[0] = Nas.FromRaw(394);
-                                                                                                                                                          dontpush[1] = Nas.FromRaw(400);
-                                                                                                                                                          dontpush[2] = Nas.FromRaw(406);
-                                                                                                                                                          dontpush[3] = Nas.FromRaw(412);
+                                                                                                                                                          dontpush[0] = NASPlugin.FromRaw(394);
+                                                                                                                                                          dontpush[1] = NASPlugin.FromRaw(400);
+                                                                                                                                                          dontpush[2] = NASPlugin.FromRaw(406);
+                                                                                                                                                          dontpush[3] = NASPlugin.FromRaw(412);
                                                                                                                                                       }
                                                                                                                                                       if (type.CaselessEq("off"))
                                                                                                                                                       {
-                                                                                                                                                          Entity[] b = new Entity[6];
+                                                                                                                                                          BlockEntity[] b = new BlockEntity[6];
                                                                                                                                                           if (nl.blockEntities.ContainsKey(x + " " + (y + 1) + " " + z))
                                                                                                                                                           {
                                                                                                                                                               b[0] = nl.blockEntities[x + " " + (y + 1) + " " + z];
@@ -1263,7 +1260,7 @@ namespace NotAwesomeSurvival
                                                                                                                                                       }
                                                                                                                                                       if (type.CaselessEq("body"))
                                                                                                                                                       {
-                                                                                                                                                          Entity[] b = new Entity[6];
+                                                                                                                                                          BlockEntity[] b = new BlockEntity[6];
                                                                                                                                                           if (nl.blockEntities.ContainsKey(x + " " + (y + 1) + " " + z))
                                                                                                                                                           {
                                                                                                                                                               b[0] = nl.blockEntities[x + " " + (y + 1) + " " + z];
@@ -1333,22 +1330,22 @@ namespace NotAwesomeSurvival
                                                                                                                                                           }
                                                                                                                                                       }
                                                                                                                                                   };
-        public static NasBlockAction PistonAction(string type, int changeX, int changeY, int changeZ, ushort[] pistonSet) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> PistonAction(string type, int changeX, int changeY, int changeZ, ushort[] pistonSet) => (nl, nasBlock, x, y, z) =>
                                                                                                                                       {
                                                                                                                                           ushort[] dontpush =
                                                                                                                                           {
-                    Nas.FromRaw(391),
-                    Nas.FromRaw(397),
-                    Nas.FromRaw(403),
-                    Nas.FromRaw(409),
-                    Nas.FromRaw(394),
-                    Nas.FromRaw(400),
-                    Nas.FromRaw(406),
-                    Nas.FromRaw(412),
+                    NASPlugin.FromRaw(391),
+                    NASPlugin.FromRaw(397),
+                    NASPlugin.FromRaw(403),
+                    NASPlugin.FromRaw(409),
+                    NASPlugin.FromRaw(394),
+                    NASPlugin.FromRaw(400),
+                    NASPlugin.FromRaw(406),
+                    NASPlugin.FromRaw(412),
                                                                                                                                           };
                                                                                                                                           if (type.CaselessEq("off"))
                                                                                                                                           {
-                                                                                                                                              Entity[] b = new Entity[5];
+                                                                                                                                              BlockEntity[] b = new BlockEntity[5];
                                                                                                                                               if (nl.blockEntities.ContainsKey(x + " " + (y - changeY) + " " + z))
                                                                                                                                               {
                                                                                                                                                   b[0] = nl.blockEntities[x + " " + (y - changeY) + " " + z];
@@ -1534,7 +1531,7 @@ namespace NotAwesomeSurvival
                                                                                                                                           }
                                                                                                                                           if (type.CaselessEq("body"))
                                                                                                                                           {
-                                                                                                                                              Entity[] b = new Entity[5];
+                                                                                                                                              BlockEntity[] b = new BlockEntity[5];
                                                                                                                                               if (nl.blockEntities.ContainsKey(x + " " + (y - changeY) + " " + z))
                                                                                                                                               {
                                                                                                                                                   b[0] = nl.blockEntities[x + " " + (y - changeY) + " " + z];
@@ -1579,20 +1576,20 @@ namespace NotAwesomeSurvival
                                                                                                                                               }
                                                                                                                                           }
                                                                                                                                       };
-        public static NasBlockAction StickyPistonAction(string type, int changeX, int changeY, int changeZ, ushort[] pistonSet) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> StickyPistonAction(string type, int changeX, int changeY, int changeZ, ushort[] pistonSet) => (nl, nasBlock, x, y, z) =>
                                                                                                                                             {
                                                                                                                                                 ushort[] dontpush =
                                                                                                                                                 {
-                    Nas.FromRaw(391),
-                    Nas.FromRaw(397),
-                    Nas.FromRaw(403),
-                    Nas.FromRaw(409),
-                    Nas.FromRaw(394),
-                    Nas.FromRaw(400),
-                    Nas.FromRaw(406),
-                    Nas.FromRaw(412),
+                    NASPlugin.FromRaw(391),
+                    NASPlugin.FromRaw(397),
+                    NASPlugin.FromRaw(403),
+                    NASPlugin.FromRaw(409),
+                    NASPlugin.FromRaw(394),
+                    NASPlugin.FromRaw(400),
+                    NASPlugin.FromRaw(406),
+                    NASPlugin.FromRaw(412),
                                                                                                                                                 };
-                                                                                                                                                Entity[] b = new Entity[5];
+                                                                                                                                                BlockEntity[] b = new BlockEntity[5];
                                                                                                                                                 if (nl.blockEntities.ContainsKey(x + " " + (y - changeY) + " " + z))
                                                                                                                                                 {
                                                                                                                                                     b[0] = nl.blockEntities[x + " " + (y - changeY) + " " + z];
@@ -1874,7 +1871,7 @@ namespace NotAwesomeSurvival
             }
             return returnedBlock;
         }
-        public static NasBlockAction PowerSourceAction(int direction) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> PowerSourceAction(int direction) => (nl, nasBlock, x, y, z) =>
                                                                                   {
                                                                                       if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                                                                                       {
@@ -1884,7 +1881,7 @@ namespace NotAwesomeSurvival
                                                                                           nl.SimulateSetBlock(x, y, z);
                                                                                       }
                                                                                   };
-        public static NasBlockAction WireAction(ushort[] actSet, ushort[] inactSet, int direction, ushort hereBlock) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> WireAction(ushort[] actSet, ushort[] inactSet, int direction, ushort hereBlock) => (nl, nasBlock, x, y, z) =>
                                                                                                                                  {
                                                                                                                                      int type = 0;
                                                                                                                                      if (IsPartOfSet(actSet, hereBlock) != -1)
@@ -1905,7 +1902,7 @@ namespace NotAwesomeSurvival
                                                                                                                                          nl.blockEntities[x + " " + y + " " + z].strength = 0;
                                                                                                                                          nl.blockEntities[x + " " + y + " " + z].type = type;
                                                                                                                                      }
-                                                                                                                                     Entity b = nl.blockEntities[x + " " + y + " " + z],
+                                                                                                                                     BlockEntity b = nl.blockEntities[x + " " + y + " " + z],
                                                                                                                                      strength1 = new(),
                                                                                                                                      strength2 = new();
                                                                                                                                      int strength0 = b.strength;
@@ -1913,7 +1910,7 @@ namespace NotAwesomeSurvival
                                                                                                                                      {
                                                                                                                                          if (nl.blockEntities.ContainsKey(x + 1 + " " + y + " " + z))
                                                                                                                                          {
-                                                                                                                                             Entity bEntity = nl.blockEntities[x + 1 + " " + y + " " + z];
+                                                                                                                                             BlockEntity bEntity = nl.blockEntities[x + 1 + " " + y + " " + z];
                                                                                                                                              int checkType = bEntity.type;
                                                                                                                                              if (checkType < 5 || checkType == 10 || checkType == 11)
                                                                                                                                              {
@@ -1922,7 +1919,7 @@ namespace NotAwesomeSurvival
                                                                                                                                          }
                                                                                                                                          if (nl.blockEntities.ContainsKey(x - 1 + " " + y + " " + z))
                                                                                                                                          {
-                                                                                                                                             Entity bEntity = nl.blockEntities[x - 1 + " " + y + " " + z];
+                                                                                                                                             BlockEntity bEntity = nl.blockEntities[x - 1 + " " + y + " " + z];
                                                                                                                                              int checkType = bEntity.type;
                                                                                                                                              if (checkType < 5 || checkType == 8 || checkType == 11)
                                                                                                                                              {
@@ -1934,7 +1931,7 @@ namespace NotAwesomeSurvival
                                                                                                                                      {
                                                                                                                                          if (nl.blockEntities.ContainsKey(x + " " + (y + 1) + " " + z))
                                                                                                                                          {
-                                                                                                                                             Entity bEntity = nl.blockEntities[x + " " + (y + 1) + " " + z];
+                                                                                                                                             BlockEntity bEntity = nl.blockEntities[x + " " + (y + 1) + " " + z];
                                                                                                                                              int checkType = bEntity.type;
                                                                                                                                              if (checkType <= 5 || checkType == 12)
                                                                                                                                              {
@@ -1943,7 +1940,7 @@ namespace NotAwesomeSurvival
                                                                                                                                          }
                                                                                                                                          if (nl.blockEntities.ContainsKey(x + " " + (y - 1) + " " + z))
                                                                                                                                          {
-                                                                                                                                             Entity bEntity = nl.blockEntities[x + " " + (y - 1) + " " + z];
+                                                                                                                                             BlockEntity bEntity = nl.blockEntities[x + " " + (y - 1) + " " + z];
                                                                                                                                              int checkType = bEntity.type;
                                                                                                                                              if (checkType < 5 || checkType == 6 || checkType == 12)
                                                                                                                                              {
@@ -1955,7 +1952,7 @@ namespace NotAwesomeSurvival
                                                                                                                                      {
                                                                                                                                          if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z + 1)))
                                                                                                                                          {
-                                                                                                                                             Entity bEntity = nl.blockEntities[x + " " + y + " " + (z + 1)];
+                                                                                                                                             BlockEntity bEntity = nl.blockEntities[x + " " + y + " " + (z + 1)];
                                                                                                                                              int checkType = bEntity.type;
                                                                                                                                              if (checkType < 5 || checkType == 7 || checkType == 13)
                                                                                                                                              {
@@ -1964,7 +1961,7 @@ namespace NotAwesomeSurvival
                                                                                                                                          }
                                                                                                                                          if (nl.blockEntities.ContainsKey(x + " " + y + " " + (z - 1)))
                                                                                                                                          {
-                                                                                                                                             Entity bEntity = nl.blockEntities[x + " " + y + " " + (z - 1)];
+                                                                                                                                             BlockEntity bEntity = nl.blockEntities[x + " " + y + " " + (z - 1)];
                                                                                                                                              int checkType = bEntity.type;
                                                                                                                                              if (checkType < 5 || checkType == 9 || checkType == 13)
                                                                                                                                              {
@@ -2011,7 +2008,7 @@ namespace NotAwesomeSurvival
                                                                                                                                          }
                                                                                                                                      }
                                                                                                                                  };
-        public static NasBlockAction PressurePlateAction() => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> PressurePlateAction() => (nl, nasBlock, x, y, z) =>
                                                                        {
                                                                            bool stoodOn = false;
                                                                            Player[] players = PlayerInfo.Online.Items;
@@ -2025,7 +2022,7 @@ namespace NotAwesomeSurvival
                                                                            }
                                                                            if (!stoodOn)
                                                                            {
-                                                                               nl.SetBlock(x, y, z, Nas.FromRaw(610));
+                                                                               nl.SetBlock(x, y, z, NASPlugin.FromRaw(610));
                                                                                nl.blockEntities[x + " " + y + " " + z].strength = 0;
                                                                            }
                                                                            else
@@ -2033,7 +2030,7 @@ namespace NotAwesomeSurvival
                                                                                nl.SimulateSetBlock(x, y, z);
                                                                            }
                                                                        };
-        public static NasBlockAction RepeaterAction(int direction, ushort hereBlock) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> RepeaterAction(int direction, ushort hereBlock) => (nl, nasBlock, x, y, z) =>
                                                                                                  {
                                                                                                      int type = 0;
                                                                                                      if (IsPartOfSet(repeaterSetActive, hereBlock) != -1)
@@ -2050,7 +2047,7 @@ namespace NotAwesomeSurvival
                                                                                                          nl.blockEntities[x + " " + y + " " + z].strength = 0;
                                                                                                          nl.blockEntities[x + " " + y + " " + z].type = direction;
                                                                                                      }
-                                                                                                     Entity b = nl.blockEntities[x + " " + y + " " + z],
+                                                                                                     BlockEntity b = nl.blockEntities[x + " " + y + " " + z],
                                                                                                      strength1 = new();
                                                                                                      if (direction == 5)
                                                                                                      {
@@ -2094,7 +2091,7 @@ namespace NotAwesomeSurvival
                                                                                                              strength1 = nl.blockEntities[x + 1 + " " + y + " " + z];
                                                                                                          }
                                                                                                      }
-                                                                                                     NasLevel.QueuedBlockUpdate qb = new()
+                                                                                                     QueuedBlockUpdate qb = new()
                                                                                                      {
                                                                                                          x = x,
                                                                                                          y = y,
@@ -2107,9 +2104,9 @@ namespace NotAwesomeSurvival
                                                                                                      qb.da = ContRepeaterTask(type, strength1, direction);
                                                                                                      nl.tickQueue.Enqueue(qb, qb.date);
                                                                                                  };
-        public static NasBlockAction ContRepeaterTask(int type, Entity strength1, int direction) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> ContRepeaterTask(int type, BlockEntity strength1, int direction) => (nl, nasBlock, x, y, z) =>
                                                                                                              {
-                                                                                                                 Entity b = nl.blockEntities[x + " " + y + " " + z];
+                                                                                                                 BlockEntity b = nl.blockEntities[x + " " + y + " " + z];
                                                                                                                  if (!(strength1.type < 5 || strength1.type == b.type || (strength1.type == 11 && (b.type == 10 || b.type == 8)) ||
                                                                                                                        (strength1.type == 12 && (b.type == 5 || b.type == 6)) ||
                                                                                                                        (strength1.type == 13 && (b.type == 9 || b.type == 7))))
@@ -2127,18 +2124,18 @@ namespace NotAwesomeSurvival
                                                                                                                      b.strength = 0;
                                                                                                                  }
                                                                                                              };
-        public static NasBlockAction TurnOffAction() => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> TurnOffAction() => (nl, nasBlock, x, y, z) =>
                                                                  {
                                                                      if (!nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                                                                      {
                                                                          return;
                                                                      }
-                                                                     nl.SetBlock(x, y, z, Nas.FromRaw(195));
+                                                                     nl.SetBlock(x, y, z, NASPlugin.FromRaw(195));
                                                                      nl.blockEntities[x + " " + y + " " + z].strength = 0;
                                                                  };
-        public static NasBlockAction DispenserAction(int changeX, int changeY, int changeZ) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> DispenserAction(int changeX, int changeY, int changeZ) => (nl, nasBlock, x, y, z) =>
                                                                                                         {
-                                                                                                            Entity[] b = new Entity[6];
+                                                                                                            BlockEntity[] b = new BlockEntity[6];
                                                                                                             if (nl.blockEntities.ContainsKey(x + " " + (y + 1) + " " + z) && (changeY != 1))
                                                                                                             {
                                                                                                                 b[0] = nl.blockEntities[x + " " + (y + 1) + " " + z];
@@ -2189,7 +2186,7 @@ namespace NotAwesomeSurvival
                                                                                                                 {
                                                                                                                     return;
                                                                                                                 }
-                                                                                                                Entity bEntity = nl.blockEntities[x + " " + y + " " + z];
+                                                                                                                BlockEntity bEntity = nl.blockEntities[x + " " + y + " " + z];
                                                                                                                 if (bEntity.drop == null || bEntity.drop.blockStacks == null)
                                                                                                                 {
                                                                                                                     return;
@@ -2241,7 +2238,7 @@ namespace NotAwesomeSurvival
                                                                                                                 }
                                                                                                                 if (addedushort == 0)
                                                                                                                 {
-                                                                                                                    nl.SetBlock(x + changeX, y + changeY, z + changeZ, Nas.FromRaw(clientushort));
+                                                                                                                    nl.SetBlock(x + changeX, y + changeY, z + changeZ, NASPlugin.FromRaw(clientushort));
                                                                                                                     if (Get(bs.ID).container != null)
                                                                                                                     {
                                                                                                                         nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new());
@@ -2250,7 +2247,7 @@ namespace NotAwesomeSurvival
                                                                                                                 }
                                                                                                                 if (bEntity.drop == null)
                                                                                                                 {
-                                                                                                                    nl.SetBlock(x + changeX, y + changeY, z + changeZ, Nas.FromRaw(clientushort));
+                                                                                                                    nl.SetBlock(x + changeX, y + changeY, z + changeZ, NASPlugin.FromRaw(clientushort));
                                                                                                                     bEntity.drop = new(addedushort);
                                                                                                                     return;
                                                                                                                 }
@@ -2262,7 +2259,7 @@ namespace NotAwesomeSurvival
                                                                                                                         {
                                                                                                                             stack.amount += 1;
                                                                                                                         }
-                                                                                                                        nl.SetBlock(x + changeX, y + changeY, z + changeZ, Nas.FromRaw(clientushort));
+                                                                                                                        nl.SetBlock(x + changeX, y + changeY, z + changeZ, NASPlugin.FromRaw(clientushort));
                                                                                                                         if (Get(bs.ID).container != null)
                                                                                                                         {
                                                                                                                             nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new());
@@ -2278,14 +2275,14 @@ namespace NotAwesomeSurvival
                                                                                                                 {
                                                                                                                     bEntity.drop.blockStacks.Add(new(addedushort));
                                                                                                                 }
-                                                                                                                nl.SetBlock(x + changeX, y + changeY, z + changeZ, Nas.FromRaw(clientushort));
+                                                                                                                nl.SetBlock(x + changeX, y + changeY, z + changeZ, NASPlugin.FromRaw(clientushort));
                                                                                                                 if (Get(bs.ID).container != null)
                                                                                                                 {
                                                                                                                     nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new());
                                                                                                                 }
                                                                                                             }
                                                                                                         };
-        public static NasBlockAction SpongeAction() => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> SpongeAction() => (nl, nasBlock, x, y, z) =>
                                                                 {
                                                                     bool absorbed = false;
                                                                     for (int xOff = -3; xOff <= 3; xOff++)
@@ -2304,54 +2301,54 @@ namespace NotAwesomeSurvival
                                                                     }
                                                                     if (absorbed)
                                                                     {
-                                                                        nl.SetBlock(x, y, z, Nas.FromRaw(428));
+                                                                        nl.SetBlock(x, y, z, NASPlugin.FromRaw(428));
                                                                     }
                                                                 };
-        public static NasBlockAction NeedsSupportAction() => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> NeedsSupportAction() => (nl, nasBlock, x, y, z) =>
                                                                       {
                                                                           IsSupported(nl, x, y, z);
                                                                       };
-        public static NasBlockAction GenericPlantAction() => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> GenericPlantAction() => (nl, nasBlock, x, y, z) =>
                                                                       {
                                                                           GenericPlantSurvived(nl, x, y, z);
                                                                       };
-        public static NasBlockAction OakSaplingAction() => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> OakSaplingAction() => (nl, nasBlock, x, y, z) =>
                                                                     {
                                                                         if (!GenericPlantSurvived(nl, x, y, z))
                                                                         {
                                                                             return;
                                                                         }
                                                                         nl.SetBlock(x, y, z, 0);
-                                                                        NasTree.GenOakTree(nl, r, x, y, z, true);
+                                                                        NASTree.GenOakTree(nl, r, x, y, z, true);
                                                                     };
-        public static NasBlockAction BirchSaplingAction() => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> BirchSaplingAction() => (nl, nasBlock, x, y, z) =>
                                                                       {
                                                                           if (!GenericPlantSurvived(nl, x, y, z))
                                                                           {
                                                                               return;
                                                                           }
                                                                           nl.SetBlock(x, y, z, 0);
-                                                                          NasTree.GenBirchTree(nl, r, x, y, z, true);
+                                                                          NASTree.GenBirchTree(nl, r, x, y, z, true);
                                                                       };
-        public static NasBlockAction SwampSaplingAction() => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> SwampSaplingAction() => (nl, nasBlock, x, y, z) =>
                                                                       {
                                                                           if (!GenericPlantSurvived(nl, x, y, z))
                                                                           {
                                                                               return;
                                                                           }
                                                                           nl.SetBlock(x, y, z, 0);
-                                                                          NasTree.GenSwampTree(nl, r, x, y, z, true);
+                                                                          NASTree.GenSwampTree(nl, r, x, y, z, true);
                                                                       };
-        public static NasBlockAction SpruceSaplingAction() => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> SpruceSaplingAction() => (nl, nasBlock, x, y, z) =>
                                                                        {
                                                                            if (!GenericPlantSurvived(nl, x, y, z))
                                                                            {
                                                                                return;
                                                                            }
                                                                            nl.SetBlock(x, y, z, 0);
-                                                                           NasTree.GenSpruceTree(nl, r, x, y, z, true);
+                                                                           NASTree.GenSpruceTree(nl, r, x, y, z, true);
                                                                        };
-        public static NasBlockAction CropAction(ushort[] cropSet, int index) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> CropAction(ushort[] cropSet, int index) => (nl, nasBlock, x, y, z) =>
                                                                                          {
                                                                                              if (!CropSurvived(nl, x, y, z))
                                                                                              {
@@ -2363,7 +2360,7 @@ namespace NotAwesomeSurvival
                                                                                              }
                                                                                              nl.SetBlock(x, y, z, cropSet[index + 1]);
                                                                                          };
-        public static NasBlockAction IronCropAction(ushort[] cropSet, int index) => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> IronCropAction(ushort[] cropSet, int index) => (nl, nasBlock, x, y, z) =>
                                                                                              {
                                                                                                  if (!IronCropSurvived(nl, x, y, z))
                                                                                                  {
@@ -2375,9 +2372,9 @@ namespace NotAwesomeSurvival
                                                                                                  }
                                                                                                  nl.SetBlock(x, y, z, cropSet[index + 1]);
                                                                                              };
-        public static NasBlockAction AutoCraftingAction() => (nl, nasBlock, x, y, z) =>
+        public static Action<NASLevel, NASBlock, int, int, int> AutoCraftingAction() => (nl, nasBlock, x, y, z) =>
                                                                       {
-                                                                          Entity[] b = new Entity[5];
+                                                                          BlockEntity[] b = new BlockEntity[5];
                                                                           if (nl.blockEntities.ContainsKey(x + " " + (y - 1) + " " + z))
                                                                           {
                                                                               b[0] = nl.blockEntities[x + " " + (y - 1) + " " + z];
@@ -2414,14 +2411,14 @@ namespace NotAwesomeSurvival
                                                                               return;
                                                                           }
                                                                           nl.blockEntities[x + " " + y + " " + z].type = 1;
-                                                                          Crafting.Recipe recipe = Crafting.GetRecipe(nl, (ushort)x, (ushort)y, (ushort)z, nasBlock.station);
+                                                                          Recipe recipe = Recipe.GetRecipe(nl, (ushort)x, (ushort)y, (ushort)z, nasBlock.station);
                                                                           if (recipe == null)
                                                                           {
                                                                               return;
                                                                           }
                                                                           Drop dropClone = new(recipe.drop);
                                                                           Crafting.ClearCraftingArea(nl, (ushort)x, (ushort)y, (ushort)z, nasBlock.station.ori);
-                                                                          Entity bEntity = nl.blockEntities[x + " " + y + " " + z];
+                                                                          BlockEntity bEntity = nl.blockEntities[x + " " + y + " " + z];
                                                                           if (bEntity.drop == null)
                                                                           {
                                                                               bEntity.drop = dropClone;
@@ -2429,7 +2426,7 @@ namespace NotAwesomeSurvival
                                                                           }
                                                                           if (dropClone.items != null)
                                                                           {
-                                                                              foreach (Item tool in bEntity.drop.items)
+                                                                              foreach (NASItem tool in bEntity.drop.items)
                                                                               {
                                                                                   bEntity.drop.items.Add(tool);
                                                                               }
@@ -2455,7 +2452,7 @@ namespace NotAwesomeSurvival
                                                                               }
                                                                           }
                                                                       };
-        public static bool IsSupported(NasLevel nl, int x, int y, int z)
+        public static bool IsSupported(NASLevel nl, int x, int y, int z)
         {
             ushort below = nl.GetBlock(x, y - 1, z);
             if (CanPhysicsKillThis(below))
@@ -2465,7 +2462,7 @@ namespace NotAwesomeSurvival
             }
             return true;
         }
-        public static bool GenericPlantSurvived(NasLevel nl, int x, int y, int z)
+        public static bool GenericPlantSurvived(NASLevel nl, int x, int y, int z)
         {
             if (!IsSupported(nl, x, y, z))
             {
@@ -2478,7 +2475,7 @@ namespace NotAwesomeSurvival
             }
             return true;
         }
-        public static bool CropSurvived(NasLevel nl, int x, int y, int z)
+        public static bool CropSurvived(NASLevel nl, int x, int y, int z)
         {
             if (!IsSupported(nl, x, y, z))
             {
@@ -2495,7 +2492,7 @@ namespace NotAwesomeSurvival
             }
             return true;
         }
-        public static bool IronCropSurvived(NasLevel nl, int x, int y, int z)
+        public static bool IronCropSurvived(NASLevel nl, int x, int y, int z)
         {
             if (!IsSupported(nl, x, y, z))
             {
@@ -2522,4 +2519,3 @@ namespace NotAwesomeSurvival
         }
     }
 }
-#endif

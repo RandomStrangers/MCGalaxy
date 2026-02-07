@@ -21,15 +21,12 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdHighlight : Command2
     {
-        public override string name { get { return "Highlight"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new CommandAlias[] { new("HighlightArea", "area") }; }
-        }
+        public override string Name => "Highlight";
+        public override string Type => CommandTypes.Moderation;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 50;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new CommandAlias[] { new("HighlightArea", "area") };
         public override void Use(Player p, string message, CommandData data)
         {
             TimeSpan delta = TimeSpan.Zero;
@@ -80,12 +77,12 @@ namespace MCGalaxy.Commands.Moderation
                 who = who,
                 ids = ids
             };
-            op.Setup(p, p.level, marks);
+            op.Setup(p, p.Level, marks);
             BufferedBlockSender buffer = new(p);
             op.Perform(marks, null,
                        P =>
                        {
-                           int index = p.level.PosToInt(P.X, P.Y, P.Z);
+                           int index = p.Level.PosToInt(P.X, P.Y, P.Z);
                            buffer.Add(index, P.Block);
                        });
             buffer.Flush();

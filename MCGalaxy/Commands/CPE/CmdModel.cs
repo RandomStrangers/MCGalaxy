@@ -17,21 +17,12 @@ namespace MCGalaxy.Commands.CPE
 {
     public class CmdModel : EntityPropertyCmd
     {
-        public override string name { get { return "Model"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override CommandPerm[] ExtraPerms
-        {
-            get
-            {
-                return new[] { new CommandPerm(LevelPermission.Operator, "can change the model of others"),
-                    new CommandPerm(LevelPermission.Operator, "can change the model of bots") };
-            }
-        }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("XModel", "-own") }; }
-        }
+        public override string Name => "Model";
+        public override string Type => CommandTypes.Other;
+        public override sbyte DefaultRank => 50;
+        public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(80, "can change the model of others"),
+                    new CommandPerm(80, "can change the model of bots") };
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("XModel", "-own") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.IndexOf(' ') == -1)
@@ -47,7 +38,7 @@ namespace MCGalaxy.Commands.CPE
             if (model == null) return;
             bot.UpdateModel(model);
             p.Message("You changed the model of bot {0} &Sto a &c{1}", bot.ColoredName, model);
-            BotsFile.Save(p.level);
+            BotsFile.Save(p.Level);
         }
         protected override void SetOnlineData(Player p, Player who, string model)
         {
@@ -57,7 +48,7 @@ namespace MCGalaxy.Commands.CPE
             who.UpdateModel(model);
             if (p != who)
             {
-                Chat.MessageFrom(who, "λNICK &Shad " + who.pronouns.Object + " model changed to &c" + model);
+                Chat.MessageFrom(who, "λNICK &Shad " + who.Pronouns.Object + " model changed to &c" + model);
             }
             else
             {

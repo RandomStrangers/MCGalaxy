@@ -17,7 +17,7 @@ namespace MCGalaxy.Commands.Moderation
 {
     public sealed class CmdBlockSet : ItemPermsCmd
     {
-        public override string name { get { return "BlockSet"; } }
+        public override string Name => "BlockSet";
         public override void Use(Player p, string message, CommandData data)
         {
             bool canPlace = true; const string PLACE_PREFIX = "place ";

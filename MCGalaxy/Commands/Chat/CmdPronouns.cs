@@ -17,8 +17,8 @@ namespace MCGalaxy.Commands.Chatting
 {
     public class CmdPronouns : Command2
     {
-        public override string name { get { return "Pronouns"; } }
-        public override string type { get { return CommandTypes.Chat; } }
+        public override string Name => "Pronouns";
+        public override string Type => CommandTypes.Chat;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }

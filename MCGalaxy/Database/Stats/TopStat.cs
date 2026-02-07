@@ -32,10 +32,7 @@ namespace MCGalaxy.DB
             Title = title;
             Formatter = formatter;
         }
-        public virtual string FormatName(Player p, string name)
-        {
-            return p.FormatNick(name);
-        }
+        public virtual string FormatName(Player p, string name) => p.FormatNick(name);
         /// <summary> Retrieves unformatted results from the underlying data source </summary>
         public abstract List<TopResult> GetResults(int maxResults, int offset);
         public static TopStat Find(string name)
@@ -46,18 +43,9 @@ namespace MCGalaxy.DB
             }
             return null;
         }
-        public static void List(Player p)
-        {
-            p.Message("&f" + stats.Join(stat => stat.Identifier));
-        }
-        public static void Register(TopStat stat)
-        {
-            stats.Add(stat);
-        }
-        public static void Unregister(TopStat stat)
-        {
-            stats.Remove(stat);
-        }
+        public static void List(Player p) => p.Message("&f" + stats.Join(stat => stat.Identifier));
+        public static void Register(TopStat stat) => stats.Add(stat);
+        public static void Unregister(TopStat stat) => stats.Remove(stat);
         static readonly List<TopStat> stats = new() {
             new DBTopStat("Logins", "Most logins", "Players",
                         PlayerData.ColumnLogins, FormatInteger),

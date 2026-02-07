@@ -40,7 +40,7 @@ namespace MCGalaxy.Modules.Awards
             Awards.Remove(award);
             return true;
         }
-        public static bool Exists(string name) { return FindExact(name) != null; }
+        public static bool Exists(string name) => FindExact(name) != null;
         public static Award FindExact(string name)
         {
             foreach (Award award in Awards)

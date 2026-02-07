@@ -1,47 +1,55 @@
-#if NAS && TEN_BIT_BLOCKS
-using MCGalaxy;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using Newtonsoft.Json;
 using System.IO;
-namespace NotAwesomeSurvival
+namespace MCGalaxy
 {
-    public partial class NasTimeCycle
+    public partial class NASTimeCycle
     {
+        public const string Path = NASPlugin.Path + "CoreData/";
         public static float globalCurrentTime;
-        public static DayCycles globalCurrentDayCycle;
         public static JsonSerializer serializer = new();
         public static Scheduler weatherScheduler;
         public static SchedulerTask task;
         public static string globalSkyColor, globalCloudColor,
             globalSunColor, globalShadowColor, 
-            TimeFilePath = Nas.CoreSavePath + "time.json";
-        public static DayCycles dayCycle = DayCycles.Sunrise;
-        public DayCycles cycle = DayCycles.Sunrise;
-        public static int cycleCurrentTime = 0,
+            TimeFilePath = Path + "time.json";
+        public static int globalCurrentDayCycle,
+            dayCycle = 0,
+            cycleCurrentTime = 0,
             cycleMaxTime = 14400,
             hourMinutes = 600,
             gameday = 0;
-        public int day = 0, minutes = 7 * hourMinutes;
-        public enum DayCycles
+        public int cycle = 0, day = 0, minutes = 7 * hourMinutes;
+        public static NASTimeCycle cyc = new();
+        public static void StoreTimeData(int day, int minutes, int cycle)
         {
-            Sunrise, Day, Sunset, Night, Midnight
+            cyc.day = day;
+            cyc.minutes = minutes;
+            cyc.cycle = cycle;
+            if (!File.Exists(TimeFilePath))
+            {
+                File.Create(TimeFilePath).Dispose();
+                Logger.Log(15, "Created new json time file {0}!", TimeFilePath);
+            }
+            using StreamWriter sw = new(TimeFilePath);
+            using JsonTextWriter writer = new(sw);
+            serializer.Serialize(writer, cyc);
         }
         public static void Setup()
         {
             weatherScheduler ??= new("WeatherScheduler");
             task = weatherScheduler.QueueRepeat(Update, null, new(0, 0, 7));
-            dayCycle = DayCycles.Sunrise;
+            dayCycle = 0;
             if (!File.Exists(TimeFilePath))
             {
                 File.Create(TimeFilePath).Dispose();
-                Log("Created new json time file {0}!", TimeFilePath);
+                Logger.Log(15, "Created new json time file {0}!", TimeFilePath);
                 using StreamWriter sw = new(TimeFilePath);
-                using JsonWriter writer = new JsonTextWriter(sw);
+                using JsonTextWriter writer = new(sw);
                 serializer.Serialize(writer, cyc);
             }
-            string jsonString = FileUtils.TryReadAllText(TimeFilePath);
-            NasTimeCycle ntc = JsonConvert.DeserializeObject<NasTimeCycle>(jsonString);
+            NASTimeCycle ntc = JsonConvert.DeserializeObject<NASTimeCycle>(FileIO.TryReadAllText(TimeFilePath));
             dayCycle = ntc.cycle;
             gameday = ntc.day;
             cycleCurrentTime = ntc.minutes;
@@ -63,51 +71,51 @@ namespace NotAwesomeSurvival
             }
             if (cycleCurrentTime >= 7 * hourMinutes & cycleCurrentTime < 8 * hourMinutes)
             {
-                dayCycle = DayCycles.Sunrise;
+                dayCycle = 0;
             }
             if (cycleCurrentTime >= 8 * hourMinutes & cycleCurrentTime < 19 * hourMinutes)
             {
-                dayCycle = DayCycles.Day;
+                dayCycle = 1;
             }
             if (cycleCurrentTime >= 19 * hourMinutes & cycleCurrentTime < 20 * hourMinutes)
             {
-                dayCycle = DayCycles.Sunset;
+                dayCycle = 2;
             }
             if (cycleCurrentTime >= 20 * hourMinutes & cycleCurrentTime < 24 * hourMinutes)
             {
-                dayCycle = DayCycles.Night;
+                dayCycle = 3;
             }
             if (cycleCurrentTime == 24 * hourMinutes | cycleCurrentTime == 0 | cycleCurrentTime < 7 * hourMinutes)
             {
-                dayCycle = DayCycles.Midnight;
+                dayCycle = 4;
             }
             switch (dayCycle)
             {
-                case DayCycles.Sunrise:
+                case 0:
                     globalCloudColor = "#ff8c00";
                     globalSkyColor = "#FFA500";
                     globalSunColor = "#a9a9a9";
                     globalShadowColor = "#828282";
                     break;
-                case DayCycles.Day:
+                case 1:
                     globalCloudColor = "#ffffff";
                     globalSkyColor = "#ADD8E6";
                     globalSunColor = "#ffffff";
                     globalShadowColor = "#9B9B9B";
                     break;
-                case DayCycles.Sunset:
+                case 2:
                     globalCloudColor = "#cf5c00";
                     globalSkyColor = "#FFB500";
                     globalSunColor = "#a9a9a9";
                     globalShadowColor = "#828282";
                     break;
-                case DayCycles.Night:
+                case 3:
                     globalCloudColor = "#808080";
                     globalSkyColor = "#404040";
                     globalSunColor = "#808080";
                     globalShadowColor = "#595959";
                     break;
-                case DayCycles.Midnight:
+                case 4:
                     globalCloudColor = "#404040";
                     globalSkyColor = "#000000";
                     globalSunColor = "#404040";
@@ -122,7 +130,7 @@ namespace NotAwesomeSurvival
             bool changed = false;
             foreach (Level lvl in LevelInfo.Loaded.Items)
             {
-                NasLevel nl = NasLevel.Get(lvl);
+                NASLevel nl = NASLevel.Get(lvl);
                 if (nl != null)
                 {
                     if (nl.biome >= 0)
@@ -156,7 +164,7 @@ namespace NotAwesomeSurvival
             }
             foreach (Player p in PlayerInfo.Online.Items)
             {
-                NasLevel nl = NasLevel.Get(p.Level);
+                NASLevel nl = NASLevel.Get(p.Level);
                 if (nl != null)
                 {
                     if (nl.biome >= 0)
@@ -189,4 +197,3 @@ namespace NotAwesomeSurvival
         }
     }
 }
-#endif

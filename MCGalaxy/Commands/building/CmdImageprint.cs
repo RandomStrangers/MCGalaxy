@@ -24,21 +24,15 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdImageprint : Command2
     {
-        public override string name { get { return "ImagePrint"; } }
-        public override string shortcut { get { return "Img"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Admin; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases
-        {
-            get
-            {
-                return new[] { new CommandAlias("ImgPrint"), new CommandAlias("PrintImg"),
+        public override string Name => "ImagePrint";
+        public override string Shortcut => "Img";
+        public override string Type => CommandTypes.Building;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 100;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("ImgPrint"), new CommandAlias("PrintImg"),
                     new CommandAlias("ImgDraw"), new CommandAlias("DrawImg"),
                     new CommandAlias("DrawImage"), new CommandAlias("PrintImage") };
-            }
-        }
         public override void Use(Player p, string message, CommandData data)
         {
             if (!Directory.Exists("extra/images/"))
@@ -107,7 +101,7 @@ namespace MCGalaxy.Commands.Building
                     p.Message("{0} does not exist", path);
                     return;
                 }
-                dArgs.Data = File.ReadAllBytes(path);
+                FileIO.TryReadBytes(path, out dArgs.Data);
             }
             p.Message("Place or break two blocks to determine direction.");
             p.MakeSelection(2, "Selecting direction for &SImagePrint", dArgs, DoImage);
@@ -187,7 +181,7 @@ namespace MCGalaxy.Commands.Building
         }
         void Clamp(Player p, Vec3S32[] m, ImagePrintDrawOp op, ref int width, ref int height)
         {
-            Level lvl = p.level;
+            Level lvl = p.Level;
             Vec3S32 xEnd = m[0] + op.dx * (width - 1),
                 yEnd = m[0] + op.dy * (height - 1);
             if (lvl.IsValidPos(xEnd.X, xEnd.Y, xEnd.Z) && lvl.IsValidPos(yEnd.X, yEnd.Y, yEnd.Z))

@@ -52,14 +52,13 @@ namespace MCGalaxy.Util
                     free ??= new List<string>();
                     free.Add(kvp.Key);
                 }
-                if (free == null)
+                if (free != null)
                 {
-                    return;
-                }
-                foreach (string key in free)
-                {
-                    items.Remove(key);
-                    access.Remove(key);
+                    foreach (string key in free)
+                    {
+                        items.Remove(key);
+                        access.Remove(key);
+                    }
                 }
             }
         }

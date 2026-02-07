@@ -16,10 +16,10 @@ namespace MCGalaxy.Modules.Games.ZS
 {
     sealed class CmdQueue : Command2
     {
-        public override string name { get { return "Queue"; } }
-        public override string shortcut { get { return "qz"; } }
-        public override string type { get { return CommandTypes.Games; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
+        public override string Name => "Queue";
+        public override string Shortcut => "qz";
+        public override string Type => CommandTypes.Games;
+        public override sbyte DefaultRank => 80;
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();

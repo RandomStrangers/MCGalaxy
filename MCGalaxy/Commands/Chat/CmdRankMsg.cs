@@ -17,23 +17,23 @@ namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdRankMsg : Command2
     {
-        public override string name { get { return "RankMsg"; } }
-        public override string shortcut { get { return "rm"; } }
-        public override string type { get { return CommandTypes.Chat; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.AdvBuilder; } }
-        public override bool UseableWhenFrozen { get { return true; } }
-        public override bool MessageBlockRestricted { get { return true; } }
+        public override string Name => "RankMsg";
+        public override string Shortcut => "rm";
+        public override string Type => CommandTypes.Chat;
+        public override sbyte DefaultRank => 50;
+        public override bool UseableWhenFrozen => true;
+        public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
-            if (!MessageCmd.CanSpeak(p, name)) return;
+            if (!MessageCmd.CanSpeak(p, Name)) return;
             string[] args = message.SplitSpaces(2);
             string rank = args.Length == 1 ? p.group.Name : args[0];
             string text = args[args.Length - 1];
             Group grp = Matcher.FindRanks(p, rank);
             if (grp == null) return;
             string msg = grp.Color + "<" + grp.Name + ">λNICK: &f" + text;
-            Chat.MessageChat(ChatScope.Rank, p, msg, grp.Permission, null);
+            Chat.MessageChat(3, p, msg, grp.Permission, null);
         }
         public override void Help(Player p)
         {

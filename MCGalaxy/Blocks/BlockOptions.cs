@@ -13,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Commands;
-using System;
 using System.Collections.Generic;
 namespace MCGalaxy.Blocks
 {
@@ -41,7 +40,7 @@ namespace MCGalaxy.Blocks
             new BlockOption("DeathMessage", SetDeathMsg, "&HSets or removes the death message for this block " +
                             "(Note: &S@p &His a placeholder for name of player who dies"),
             new BlockOption("AnimalAI",   SetAI,     "&HSets the flying or swimming animal AI for this block. " +
-                            "Types: &f" + Enum.GetNames(typeof(AnimalAI)).Join()),
+                            "Types: &fNone, Fly, FleeAir, KillerAir, FleeWater, KillerWater, FleeLava, KillerLava"),
             new BlockOption("StackBlock", SetStackId,"&HSets the block this block is changed into, when placed on top " +
                             "of itself (e.g. placing a slab on top of another slab turns into a double slab)"),
             new BlockOption("OPBlock",    SetOPBlock,"&HMarks the block as being on OP block. OP blocks can't be " +
@@ -69,26 +68,26 @@ namespace MCGalaxy.Blocks
             }
             return null;
         }
-        static void SetPortal(Player p, BlockProps[] s, ushort b, string v) { ToggleBehaviour(p, s, b, "a portal", ref s[b].IsPortal); }
-        static void SetMB(Player p, BlockProps[] s, ushort b, string v) { ToggleBehaviour(p, s, b, "a message block", ref s[b].IsMessageBlock); }
-        static void SetRails(Player p, BlockProps[] s, ushort b, string v) { Toggle(p, s, b, "train rails", ref s[b].IsRails); }
-        static void SetWater(Player p, BlockProps[] s, ushort b, string v) { Toggle(p, s, b, "killed by water", ref s[b].WaterKills); }
-        static void SetLava(Player p, BlockProps[] s, ushort b, string v) { Toggle(p, s, b, "killed by lava", ref s[b].LavaKills); }
-        static void SetDoor(Player p, BlockProps[] s, ushort b, string v) { ToggleBehaviour(p, s, b, "a door", ref s[b].IsDoor); }
-        static void SetTDoor(Player p, BlockProps[] s, ushort b, string v) { ToggleBehaviour(p, s, b, "a tDoor", ref s[b].IsTDoor); }
-        static void SetKiller(Player p, BlockProps[] s, ushort b, string v) { Toggle(p, s, b, "a killer block", ref s[b].KillerBlock); }
-        static void SetOPBlock(Player p, BlockProps[] s, ushort b, string v) { Toggle(p, s, b, "an OP block", ref s[b].OPBlock); }
-        static void SetDrown(Player p, BlockProps[] s, ushort b, string v) { Toggle(p, s, b, "drowns players", ref s[b].Drownable); }
-        static void SetGrass(Player p, BlockProps[] s, ushort b, string v) { SetBlock(p, s, b, v, "Grass form", ref s[b].GrassBlock); }
-        static void SetDirt(Player p, BlockProps[] s, ushort b, string v) { SetBlock(p, s, b, v, "Dirt form", ref s[b].DirtBlock); }
-        static void SetODoor(Player p, BlockProps[] s, ushort b, string v) { SetBlock(p, s, b, v, "oDoor form", ref s[b].oDoorBlock); }
+        static void SetPortal(Player p, BlockProps[] s, ushort b, string v) => ToggleBehaviour(p, s, b, "a portal", ref s[b].IsPortal);
+        static void SetMB(Player p, BlockProps[] s, ushort b, string v) => ToggleBehaviour(p, s, b, "a message block", ref s[b].IsMessageBlock);
+        static void SetRails(Player p, BlockProps[] s, ushort b, string v) => Toggle(p, s, b, "train rails", ref s[b].IsRails);
+        static void SetWater(Player p, BlockProps[] s, ushort b, string v) => Toggle(p, s, b, "killed by water", ref s[b].WaterKills);
+        static void SetLava(Player p, BlockProps[] s, ushort b, string v) => Toggle(p, s, b, "killed by lava", ref s[b].LavaKills);
+        static void SetDoor(Player p, BlockProps[] s, ushort b, string v) => ToggleBehaviour(p, s, b, "a door", ref s[b].IsDoor);
+        static void SetTDoor(Player p, BlockProps[] s, ushort b, string v) => ToggleBehaviour(p, s, b, "a tDoor", ref s[b].IsTDoor);
+        static void SetKiller(Player p, BlockProps[] s, ushort b, string v) => Toggle(p, s, b, "a killer block", ref s[b].KillerBlock);
+        static void SetOPBlock(Player p, BlockProps[] s, ushort b, string v) => Toggle(p, s, b, "an OP block", ref s[b].OPBlock);
+        static void SetDrown(Player p, BlockProps[] s, ushort b, string v) => Toggle(p, s, b, "drowns players", ref s[b].Drownable);
+        static void SetGrass(Player p, BlockProps[] s, ushort b, string v) => SetBlock(p, s, b, v, "Grass form", ref s[b].GrassBlock);
+        static void SetDirt(Player p, BlockProps[] s, ushort b, string v) => SetBlock(p, s, b, v, "Dirt form", ref s[b].DirtBlock);
+        static void SetODoor(Player p, BlockProps[] s, ushort b, string v) => SetBlock(p, s, b, v, "oDoor form", ref s[b].oDoorBlock);
         // NOTE: Make sure to keep this in sync with BlockBehaviour.GetDeleteHandler
         static string CheckBehaviour(BlockProps[] props, ushort block)
         {
             if (props[block].IsMessageBlock) return "message block";
             if (props[block].IsPortal) return "portal";
             if (props[block].IsTDoor) return "tDoor";
-            if (props[block].oDoorBlock != Block.Invalid) return "oDoor";
+            if (props[block].oDoorBlock != 0xff) return "oDoor";
             if (props[block].IsDoor) return "door";
             return null;
         }
@@ -113,8 +112,8 @@ namespace MCGalaxy.Blocks
         }
         static void SetAI(Player p, BlockProps[] scope, ushort block, string msg)
         {
-            AnimalAI ai = AnimalAI.None;
-            if (!CommandParser.GetEnum(p, msg, "Animal AI", ref ai)) return;
+            int ai = 0;
+            if (!CommandParser.GetInt(p, msg, "Animal AI", ref ai, 0, 7)) return;
             scope[block].AnimalAI = ai;
             string name = BlockProps.ScopedName(scope, p, block);
             p.Message("Animal AI for {0} set to: {1}", name, ai);
@@ -138,7 +137,7 @@ namespace MCGalaxy.Blocks
             ushort stackBlock;
             if (msg.Length == 0)
             {
-                stackBlock = Block.Air;
+                stackBlock = 0;
             }
             else
             {
@@ -146,7 +145,7 @@ namespace MCGalaxy.Blocks
             }
             scope[block].StackBlock = stackBlock;
             string name = BlockProps.ScopedName(scope, p, block);
-            if (stackBlock == Block.Air)
+            if (stackBlock == 0)
             {
                 p.Message("Removed stack block for {0}", name);
             }
@@ -162,7 +161,7 @@ namespace MCGalaxy.Blocks
             string name = BlockProps.ScopedName(scope, p, block);
             if (msg.Length == 0)
             {
-                target = Block.Invalid;
+                target = 0xff;
                 p.Message("{1} for {0} removed.", name, type);
             }
             else

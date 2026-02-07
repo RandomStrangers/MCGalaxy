@@ -17,11 +17,11 @@ namespace MCGalaxy
     public static partial class Block
     {
         /// <summary> Highest block ID supported in Classic </summary>
-        public const byte CLASSIC_MAX_BLOCK = Obsidian;
+        public const byte CLASSIC_MAX_BLOCK = 49;
         /// <summary> Highest block ID supported in Classic + CPE CustomBlocks </summary>
-        public const byte CPE_MAX_BLOCK = StoneBrick;
+        public const byte CPE_MAX_BLOCK = 65;
         /// <summary> Total number of blocks in Classic + CPE CustomBlocks </summary>
-        public const byte CPE_COUNT = CPE_MAX_BLOCK + 1;
+        public const byte CPE_COUNT = 66;
         /// <summary> Total number of blocks in Classic + CPE CustomBlocks + physics blocks </summary>
         public const int CORE_COUNT = 256;
         // 10 bit block ids are broken down into: 2 bits of class/type, 8 bits value
@@ -40,7 +40,6 @@ namespace MCGalaxy
         //
         // E.g. 0x080 = class 00, value 128 = physics block 128
         // E.g. 0x180 = class 01, value 128 =  custom block 128
-#if TEN_BIT_BLOCKS
         public const ushort MaxRaw = 767;
         internal const int SUPPORTED_COUNT = 256 * 4;
         internal static ushort[] ExtendedBase = new ushort[CORE_COUNT];
@@ -55,10 +54,6 @@ namespace MCGalaxy
             ExtendedClass[2] = custom_block_2;
             ExtendedClass[3] = custom_block_3;
         }
-#else
-        public const ushort MaxRaw = 255;
-        internal const int SUPPORTED_COUNT = 256 * 2;
-#endif
         // non-const for external code (SUPPORTED_COUNT value differs when TEN_BIT_BLOCKS)
         public static readonly int ExtendedCount = SUPPORTED_COUNT;
         // Original blocks
@@ -269,10 +264,8 @@ namespace MCGalaxy
         public const byte Magma = 195;
         public const byte Geyser = 196;
         public const byte Checkpoint = 197;
-#if TEN_BIT_BLOCKS
         public const byte custom_block_2 = 198;
         public const byte custom_block_3 = 199;
-#endif
         // Air type blocks
         public const byte Air_Flood = 200;
         public const byte Door_Log_air = 201;

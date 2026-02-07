@@ -19,13 +19,13 @@ namespace MCGalaxy.Commands.Building
 {
     public abstract class DrawCmd : Command2
     {
-        public override string type { get { return CommandTypes.Building; } }
-        public override bool museumUsable { get { return false; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Builder; } }
-        public override bool SuperUseable { get { return false; } }
-        protected virtual int MarksCount { get { return 2; } }
-        protected virtual string SelectionType { get { return "region"; } }
-        protected virtual string PlaceMessage { get { return "Place or break two blocks to determine the edges."; } }
+        public override string Type => CommandTypes.Building;
+        public override bool MuseumUsable => false;
+        public override sbyte DefaultRank => 30;
+        public override bool SuperUseable => false;
+        protected virtual int MarksCount => 2;
+        protected virtual string SelectionType => "region";
+        protected virtual string PlaceMessage => "Place or break two blocks to determine the edges.";
         protected const string BrushHelpLine = "   &HFor help about brushes, type &T/Help Brush";
         public override void Use(Player p, string message, CommandData data)
         {
@@ -70,13 +70,10 @@ namespace MCGalaxy.Commands.Building
             if (args.BrushArgs.Length == 0) args.BrushArgs = args.Player.DefaultBrushArgs;
             return BrushFactory.Find(args.BrushName);
         }
-        protected virtual DrawMode GetMode(string[] parts) { return DrawMode.normal; }
+        protected virtual DrawMode GetMode(string[] parts) => DrawMode.normal;
         protected abstract DrawOp GetDrawOp(DrawArgs dArgs);
         protected virtual void GetMarks(DrawArgs dArgs, ref Vec3S32[] m) { }
-        protected virtual void GetBrush(DrawArgs dArgs)
-        {
-            dArgs.BrushArgs = dArgs.Message.Splice(dArgs.ModeArgsCount, 0);
-        }
+        protected virtual void GetBrush(DrawArgs dArgs) => dArgs.BrushArgs = dArgs.Message.Splice(dArgs.ModeArgsCount, 0);
         /// <summary>
         /// Sends a draw-command-feedback related message to the player.
         /// If the player ignores draw output and supports MessageTypes, the message will not be sent.
@@ -92,7 +89,7 @@ namespace MCGalaxy.Commands.Building
             public DrawMode Mode;
             public ushort Block;
             public string Message, BrushName, BrushArgs;
-            public int ModeArgsCount { get { return Mode == DrawMode.normal ? 0 : 1; } }
+            public int ModeArgsCount => Mode == DrawMode.normal ? 0 : 1;
             public DrawOp Op;
             public Player Player;
             public object Meta;

@@ -23,8 +23,8 @@ namespace MCGalaxy.Games
     /// travelling in based on the player's current orientation. </remarks>
     public class Missile : Weapon
     {
-        public override string Name { get { return "Missile"; } }
-        public WeaponType type;
+        public override string Name => "Missile";
+        public int type;
         protected override void OnDisabled(Player p) { }
         protected override void OnActivated(Vec3F32 dir, ushort block)
         {
@@ -41,21 +41,15 @@ namespace MCGalaxy.Games
         }
         protected class MissileData : AmmunitionData
         {
-            public WeaponType type;
+            public int type;
             public Vec3U16 pos;
             public List<Vec3S32> buffer = new();
         }
         /// <summary> Called when a missile has collided with a block. </summary>
         /// <returns> true if this block stops the missile, false if it should continue moving. </returns>
-        protected virtual bool OnHitBlock(MissileData args, Vec3U16 pos, ushort block)
-        {
-            return true;
-        }
+        protected virtual bool OnHitBlock(MissileData args, Vec3U16 pos, ushort block) => true;
         /// <summary> Called when a missile has collided with a player. </summary>
-        protected virtual void OnHitPlayer(MissileData args, Player pl)
-        {
-            pl.HandleDeath(Block.Cobblestone, "@p &Swas hit by a missile from " + p.ColoredName);
-        }
+        protected virtual void OnHitPlayer(MissileData args, Player pl) => pl.HandleDeath(Block.Cobblestone, "@p &Swas hit by a missile from " + p.ColoredName);
         void MissileCallback(SchedulerTask task)
         {
             MissileData args = (MissileData)task.State;
@@ -64,7 +58,7 @@ namespace MCGalaxy.Games
             {
                 Vec3U16 pos = args.visible[0];
                 args.visible.RemoveAt(0);
-                p.level.Blockchange(pos.X, pos.Y, pos.Z, Block.Air, true);
+                p.Level.Blockchange(pos.X, pos.Y, pos.Z, 0, true);
             }
             task.Repeating = args.visible.Count > 0;
         }
@@ -88,9 +82,9 @@ namespace MCGalaxy.Games
             for (i = 1; ; i++)
             {
                 Vec3U16 target = args.PosAt(i);
-                ushort block = p.level.GetBlock(target.X, target.Y, target.Z);
-                if (block == Block.Invalid) break;
-                if (block != Block.Air && !args.all.Contains(target)) break;
+                ushort block = p.Level.GetBlock(target.X, target.Y, target.Z);
+                if (block == 0xff) break;
+                if (block != 0 && !args.all.Contains(target)) break;
                 Player hit = PlayerAt(p, target, true);
                 if (hit != null) return (Vec3U16)hit.Pos.BlockCoords;
             }
@@ -98,22 +92,22 @@ namespace MCGalaxy.Games
         }
         bool MoveMissile(MissileData args, Vec3U16 pos, Vec3U16 target)
         {
-            ushort block = p.level.GetBlock(pos.X, pos.Y, pos.Z);
-            if (block != Block.Air && !args.all.Contains(pos) && OnHitBlock(args, pos, block))
+            ushort block = p.Level.GetBlock(pos.X, pos.Y, pos.Z);
+            if (block != 0 && !args.all.Contains(pos) && OnHitBlock(args, pos, block))
                 return false;
-            p.level.Blockchange(pos.X, pos.Y, pos.Z, args.block);
+            p.Level.Blockchange(pos.X, pos.Y, pos.Z, args.block);
             args.visible.Add(pos);
             args.all.Add(pos);
             if (HitsPlayer(args, pos)) return false;
-            if (pos == target && p.level.physics >= 3 && args.type >= WeaponType.Explode)
+            if (pos.X == target.X && pos.Y == target.Y && pos.Z == target.Z && p.Level.LevelPhysics >= 3 && args.type >= 4)
             {
-                p.level.MakeExplosion(target.X, target.Y, target.Z, 2);
+                p.Level.MakeExplosion(target.X, target.Y, target.Z, 2);
                 return false;
             }
             if (args.visible.Count > 12)
             {
                 pos = args.visible[0];
-                p.level.Blockchange(pos.X, pos.Y, pos.Z, Block.Air, true);
+                p.Level.Blockchange(pos.X, pos.Y, pos.Z, 0, true);
                 args.visible.RemoveAt(0);
             }
             return true;
@@ -129,30 +123,32 @@ namespace MCGalaxy.Games
         {
             LineDrawOp.DrawLine(pos.X, pos.Y, pos.Z, 2, lookedAt.X, lookedAt.Y, lookedAt.Z, buffer);
             Vec3U16 end = (Vec3U16)buffer[buffer.Count - 1];
-            pos.X = end.X; pos.Y = end.Y; pos.Z = end.Z;
+            pos.X = end.X; 
+            pos.Y = end.Y; 
+            pos.Z = end.Z;
             buffer.Clear();
         }
     }
     public class PenetrativeMissile : Missile
     {
-        public override string Name { get { return "Penetrative missile"; } }
+        public override string Name => "Penetrative missile";
         protected override bool OnHitBlock(MissileData args, Vec3U16 pos, ushort block)
         {
-            if (p.level.physics < 2) return true;
-            if (!p.level.Props[block].LavaKills) return true;
+            if (p.Level.LevelPhysics < 2) return true;
+            if (!p.Level.Props[block].LavaKills) return true;
             // Penetrative missile goes through blocks lava can go through
-            p.level.Blockchange(pos.X, pos.Y, pos.Z, Block.Air);
+            p.Level.Blockchange(pos.X, pos.Y, pos.Z, 0);
             return false;
         }
     }
     public class ExplosiveMissile : Missile
     {
-        public override string Name { get { return "Explosive missile"; } }
+        public override string Name => "Explosive missile";
         protected override void OnHitPlayer(MissileData args, Player pl)
         {
-            if (pl.level.physics >= 3)
+            if (pl.Level.LevelPhysics >= 3)
             {
-                pl.HandleDeath(Block.Cobblestone, "@p &Swas blown up by " + p.ColoredName, true);
+                pl.HandleDeath(4, "@p &Swas blown up by " + p.ColoredName, true);
             }
             else
             {
@@ -161,17 +157,14 @@ namespace MCGalaxy.Games
         }
         protected override bool OnHitBlock(MissileData args, Vec3U16 pos, ushort block)
         {
-            if (p.level.physics >= 3) p.level.MakeExplosion(pos.X, pos.Y, pos.Z, 1);
+            if (p.Level.LevelPhysics >= 3) p.Level.MakeExplosion(pos.X, pos.Y, pos.Z, 1);
             return true;
         }
     }
     public class TeleportMissile : Missile
     {
-        public override string Name { get { return "Teleporter missile"; } }
-        protected override void OnHitPlayer(MissileData args, Player pl)
-        {
-            args.DoTeleport(p);
-        }
+        public override string Name => "Teleporter missile";
+        protected override void OnHitPlayer(MissileData args, Player pl) => args.DoTeleport(p);
         protected override bool OnHitBlock(MissileData args, Vec3U16 pos, ushort block)
         {
             args.DoTeleport(p);

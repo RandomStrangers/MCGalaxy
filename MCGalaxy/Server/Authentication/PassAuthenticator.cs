@@ -50,10 +50,7 @@ namespace MCGalaxy.Authentication
     /// <summary> Performs extra authentication using a per player password </summary>
     public abstract class PassAuthenticator : ExtraAuthenticator
     {
-        public override void RequiresVerification(Player p, string action)
-        {
-            p.Message("&WYou must first verify with &T/Pass [password] &Wbefore you can {0}", action);
-        }
+        public override void RequiresVerification(Player p, string action) => p.Message("&WYou must first verify with &T/Pass [password] &Wbefore you can {0}", action);
         public override void NeedVerification(Player p)
         {
             if (!HasPassword(p.name))
@@ -67,15 +64,13 @@ namespace MCGalaxy.Authentication
         }
         public override void AutoVerify(Player p, string mppass)
         {
-            if (!HasPassword(p.name))
+            if (HasPassword(p.name))
             {
-                return;
+                if (VerifyPassword(p.name, mppass))
+                {
+                    Verify(p);
+                }
             }
-            if (!VerifyPassword(p.name, mppass))
-            {
-                return;
-            }
-            Verify(p);
         }
         /// <summary> Returns whether the given player has a stored password </summary>
         public abstract bool HasPassword(string name);
@@ -89,8 +84,8 @@ namespace MCGalaxy.Authentication
         public abstract bool ResetPassword(string name);
         protected override void Activate()
         {
-            OnPlayerHelpEvent.Register(OnPlayerHelp, Priority.Low);
-            OnPlayerCommandEvent.Register(OnPlayerCommand, Priority.Low);
+            OnPlayerHelpEvent.Register(OnPlayerHelp, 0);
+            OnPlayerCommandEvent.Register(OnPlayerCommand, 0);
         }
         protected override void Deactivate()
         {
@@ -208,28 +203,27 @@ namespace MCGalaxy.Authentication
         void DoResetPassword(Player p, string name, CommandData data)
         {
             string target = PlayerInfo.FindMatchesPreferOnline(p, name);
-            if (target == null)
+            if (target != null)
             {
-                return;
-            }
-            if (p.Unverified)
-            {
-                RequiresVerification(p, "can reset verification passwords");
-                return;
-            }
-            if (data.Rank < Server.Config.ResetPasswordRank)
-            {
-                p.Message("Only {0}&S+ can reset verification passwords",
-                          Group.GetColoredName(Server.Config.ResetPasswordRank));
-                return;
-            }
-            if (ResetPassword(target))
-            {
-                p.Message("Reset verification password for {0}", p.FormatNick(target));
-            }
-            else
-            {
-                p.Message("{0} &Sdoes not have a verification password.", p.FormatNick(target));
+                if (p.Unverified)
+                {
+                    RequiresVerification(p, "can reset verification passwords");
+                    return;
+                }
+                if (data.Rank < Server.Config.ResetPasswordRank)
+                {
+                    p.Message("Only {0}&S+ can reset verification passwords",
+                              Group.GetColoredName(Server.Config.ResetPasswordRank));
+                    return;
+                }
+                if (ResetPassword(target))
+                {
+                    p.Message("Reset verification password for {0}", p.FormatNick(target));
+                }
+                else
+                {
+                    p.Message("{0} &Sdoes not have a verification password.", p.FormatNick(target));
+                }
             }
         }
         static void PrintHelp(Player p)
@@ -248,26 +242,20 @@ namespace MCGalaxy.Authentication
     /// <summary> Password authenticator that loads/stores passwords in /extra/passwords folder </summary>
     public class DefaultPassAuthenticator : PassAuthenticator
     {
-        const string PASS_FOLDER = "extra/passwords/";
-        public override bool HasPassword(string name)
-        {
-            return GetHashPath(name) != null;
-        }
+        public override bool HasPassword(string name) => GetHashPath(name) != null;
         public override bool VerifyPassword(string name, string password)
         {
             string path = GetHashPath(name);
-            if (path == null)
+            if (path != null)
             {
-                return false;
+                return CheckHash(path, name, password);
             }
-            return CheckHash(path, name, password);
+            return false;
         }
         public override void StorePassword(string name, string password)
         {
-            byte[] hash = ComputeHash(name, password);
-            Directory.CreateDirectory(PASS_FOLDER);
-            //File.WriteAllBytes(HashPath(name), hash);
-            FileIO.TryWriteAllBytes(HashPath(name), hash);
+            Directory.CreateDirectory("extra/passwords/");
+            FileIO.TryWriteAllBytes(HashPath(name), ComputeHash(name, password));
         }
         public override bool ResetPassword(string name)
         {
@@ -276,39 +264,20 @@ namespace MCGalaxy.Authentication
             {
                 return false;
             }
-            //File.Delete(path);
             FileIO.TryDelete(path);
             return true;
         }
-        static string GetHashPath(string name)
-        {
-            string path = HashPath(name);
-            return File.Exists(path) ? path : null;
-        }
-        static string HashPath(string name)
-        {
-            // unfortunately necessary for backwards compatibility
-            name = Server.ToRawUsername(name);
-            return PASS_FOLDER + name.ToLower() + ".pwd";
-        }
+        static string GetHashPath(string name) => File.Exists(HashPath(name)) ? HashPath(name) : null;
+        static string HashPath(string name) => "extra/passwords/" + Server.ToRawUsername(name).ToLower() + ".pwd";
         static bool CheckHash(string path, string name, string pass)
         {
             if (!FileIO.TryReadBytes(path, out byte[] stored))
             {
                 return false;
             }
-            //byte[] stored   = File.ReadAllBytes(path);
-            byte[] computed = ComputeHash(name, pass);
-            return ArraysEqual(computed, stored);
+            return ArraysEqual(ComputeHash(name, pass), stored);
         }
-        static byte[] ComputeHash(string name, string pass)
-        {
-            // The constant string added to the username salt is to mitigate
-            // rainbow tables. We should really have a unique salt for each
-            // user, but this is close enough.
-            byte[] data = Encoding.UTF8.GetBytes("0bec662b-416f-450c-8f50-664fd4a41d49" + name.ToLower() + " " + pass);
-            return SHA256.Create().ComputeHash(data);
-        }
+        static byte[] ComputeHash(string name, string pass) => SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes("0bec662b-416f-450c-8f50-664fd4a41d49" + name.ToLower() + " " + pass));
         static bool ArraysEqual(byte[] a, byte[] b)
         {
             if (a.Length != b.Length)

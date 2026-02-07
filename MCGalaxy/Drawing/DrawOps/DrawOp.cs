@@ -53,9 +53,9 @@ namespace MCGalaxy.Drawing.Ops
         public bool Undoable = true;
         /// <summary> Whether this draw operation can be used on maps that have drawing disabled. </summary>
         public bool AlwaysUsable;
-        public int SizeX { get { return Max.X - Min.X + 1; } }
-        public int SizeY { get { return Max.Y - Min.Y + 1; } }
-        public int SizeZ { get { return Max.Z - Min.Z + 1; } }
+        public int SizeX => Max.X - Min.X + 1;
+        public int SizeY => Max.Y - Min.Y + 1;
+        public int SizeZ => Max.Z - Min.Z + 1;
         /// <summary> Human friendly name of the draw operation. </summary>
         public abstract string Name { get; }
         /// <summary> Whether the output of this draw operation is affected by the player's current Transform. </summary>
@@ -100,7 +100,7 @@ namespace MCGalaxy.Drawing.Ops
             Coords.Block = block;
             return Coords;
         }
-        Vec3S32 clip = new(ushort.MaxValue);
+        Vec3S32 clip = new(ushort.MaxValue, ushort.MaxValue, ushort.MaxValue);
         protected Vec3U16 Clamp(Vec3S32 pos)
         {
             pos.X = Math.Max(0, Math.Min(pos.X, clip.X));

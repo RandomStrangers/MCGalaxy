@@ -53,10 +53,7 @@ namespace MCGalaxy.DB
                     node = node.Next;
             }
         }
-        public override long CountEntries(Stream s)
-        {
-            return (s.Length / EntrySize) - HeaderEntries;
-        }
+        public override long CountEntries(Stream s) => (s.Length / EntrySize) - HeaderEntries;
         // Inlined WriteI32/WriteU16 for better performance
         static void WriteEntry(BlockDBEntry entry, byte[] bulk, int index)
         {

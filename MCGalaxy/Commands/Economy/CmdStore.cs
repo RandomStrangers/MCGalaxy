@@ -17,13 +17,10 @@ namespace MCGalaxy.Commands.Eco
 {
     public sealed class CmdStore : Command2
     {
-        public override string name { get { return "Store"; } }
-        public override string shortcut { get { return "Shop"; } }
-        public override string type { get { return CommandTypes.Economy; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("Item") }; }
-        }
+        public override string Name => "Store";
+        public override string Shortcut => "Shop";
+        public override string Type => CommandTypes.Economy;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("Item") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (!Economy.CheckIsEnabled(p, this)) return;
@@ -44,10 +41,7 @@ namespace MCGalaxy.Commands.Eco
                 item.OnStoreCommand(p);
             }
         }
-        static void PrintItemOverview(Player p, Item item)
-        {
-            item.OnStoreOverview(p);
-        }
+        static void PrintItemOverview(Player p, Item item) => item.OnStoreOverview(p);
         public override void Help(Player p)
         {
             p.Message("&T/Store [item]");

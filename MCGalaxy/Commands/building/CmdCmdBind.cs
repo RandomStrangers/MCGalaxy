@@ -16,12 +16,12 @@ namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdCmdBind : Command2
     {
-        public override string name { get { return "CmdBind"; } }
-        public override string shortcut { get { return "cb"; } }
-        public override string type { get { return CommandTypes.Building; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Builder; } }
-        public override bool SuperUseable { get { return false; } }
-        public override bool MessageBlockRestricted { get { return true; } }
+        public override string Name => "CmdBind";
+        public override string Shortcut => "cb";
+        public override string Type => CommandTypes.Building;
+        public override sbyte DefaultRank => 30;
+        public override bool SuperUseable => false;
+        public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0)

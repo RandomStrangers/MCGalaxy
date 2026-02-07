@@ -25,25 +25,13 @@ namespace MCGalaxy.Tasks
         readonly AutoResetEvent handle = new(false);
         readonly object taskLock = new();
         volatile SchedulerTask curTask; // for .ToString()
-        public Scheduler(string name)
-        {
-            Server.StartThread(out _, name, Loop);
-        }
+        public Scheduler(string name) => Server.StartThread(out _, name, Loop);
         /// <summary> Queues an action that is asynchronously executed one time, as soon as possible. </summary>
-        public SchedulerTask QueueOnce(SchedulerCallback callback)
-        {
-            return EnqueueTask(new SchedulerTask(callback, null, TimeSpan.Zero, false));
-        }
+        public SchedulerTask QueueOnce(SchedulerCallback callback) => EnqueueTask(new SchedulerTask(callback, null, TimeSpan.Zero, false));
         /// <summary> Queues an action that is asynchronously executed one time, after a certain delay. </summary>
-        public SchedulerTask QueueOnce(SchedulerCallback callback, object state, TimeSpan delay)
-        {
-            return EnqueueTask(new SchedulerTask(callback, state, delay, false));
-        }
+        public SchedulerTask QueueOnce(SchedulerCallback callback, object state, TimeSpan delay) => EnqueueTask(new SchedulerTask(callback, state, delay, false));
         /// <summary> Queues an action that is asynchronously executed repeatedly, after a certain delay. </summary>
-        public SchedulerTask QueueRepeat(SchedulerCallback callback, object state, TimeSpan delay)
-        {
-            return EnqueueTask(new SchedulerTask(callback, state, delay, true));
-        }
+        public SchedulerTask QueueRepeat(SchedulerCallback callback, object state, TimeSpan delay) => EnqueueTask(new SchedulerTask(callback, state, delay, true));
         /// <summary> Cancels a task if it is in the tasks list. </summary>
         /// <remarks> Does not cancel the task if it is currently executing. </remarks>
         public bool Cancel(SchedulerTask task)

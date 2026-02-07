@@ -29,13 +29,13 @@ namespace MCGalaxy.Modules.Games.TW
     {
         protected override void HookEventHandlers()
         {
-            OnPlayerChatEvent.Register(HandlePlayerChat, Priority.High);
-            OnPlayerSpawningEvent.Register(HandlePlayerSpawning, Priority.High);
-            OnSentMapEvent.Register(HandleSentMap, Priority.High);
-            OnJoinedLevelEvent.Register(HandleJoinedLevel, Priority.High);
-            OnTabListEntryAddedEvent.Register(HandleTabListEntryAdded, Priority.High);
-            OnSettingColorEvent.Register(HandleSettingColor, Priority.High);
-            OnBlockHandlersUpdatedEvent.Register(HandleBlockHandlersUpdated, Priority.High);
+            OnPlayerChatEvent.Register(HandlePlayerChat, 2);
+            OnPlayerSpawningEvent.Register(HandlePlayerSpawning, 2);
+            OnSentMapEvent.Register(HandleSentMap, 2);
+            OnJoinedLevelEvent.Register(HandleJoinedLevel, 2);
+            OnTabListEntryAddedEvent.Register(HandleTabListEntryAdded, 2);
+            OnSettingColorEvent.Register(HandleSettingColor, 2);
+            OnBlockHandlersUpdatedEvent.Register(HandleBlockHandlersUpdated, 2);
             base.HookEventHandlers();
         }
         protected override void UnhookEventHandlers()
@@ -51,35 +51,35 @@ namespace MCGalaxy.Modules.Games.TW
         }
         void HandlePlayerChat(Player p, string message)
         {
-            if (p.level != Map || message.Length == 0 || message[0] != ':') return;
+            if (p.Level != Map || message.Length == 0 || message[0] != ':') return;
             TWTeam team = TeamOf(p);
-            if (team == null || Config.Mode != TWGameMode.TDM) return;
+            if (team == null || Config.Mode != 1) return;
             message = message.Substring(1);
-            // "To Team &c-" + ColoredName + "&c- &S" + message);
-            string prefix = team.Color + " - to " + team.Name;
-            Chat.MessageChat(ChatScope.Level, p, prefix + " - λNICK: &f" + message,
+            Chat.MessageChat(2, p, team.Color + " - to " + team.Name + " - λNICK: &f" + message,
                              Map, (pl, arg) => pl.Game.Referee || TeamOf(pl) == team);
             p.cancelchat = true;
         }
         void HandlePlayerSpawning(Player p, ref Position pos, ref byte yaw, ref byte pitch, bool respawning)
         {
-            if (p.level != Map) return;
-            TWData data = Get(p);
-            if (respawning)
+            if (p.Level == Map)
             {
-                data.Health = 2;
-                data.KillStreak = 0;
-                data.ScoreMultiplier = 1f;
-                data.LastKillStreakAnnounced = 0;
+                TWData data = Get(p);
+                if (respawning)
+                {
+                    data.Health = 2;
+                    data.KillStreak = 0;
+                    data.ScoreMultiplier = 1f;
+                    data.LastKillStreakAnnounced = 0;
+                }
+                TWTeam team = TeamOf(p);
+                if (team == null || Config.Mode != 1) return;
+                Vec3U16 coords = team.SpawnPos;
+                pos = Position.FromFeetBlockCoords(coords.X, coords.Y, coords.Z);
             }
-            TWTeam team = TeamOf(p);
-            if (team == null || Config.Mode != TWGameMode.TDM) return;
-            Vec3U16 coords = team.SpawnPos;
-            pos = Position.FromFeetBlockCoords(coords.X, coords.Y, coords.Z);
         }
         void HandleTabListEntryAdded(Entity entity, ref string tabName, ref string tabGroup, Player dst)
         {
-            if (entity is not Player p || p.level != Map) return;
+            if (entity is not Player p || p.Level != Map) return;
             TWTeam team = TeamOf(p);
             if (p.Game.Referee)
             {
@@ -96,15 +96,19 @@ namespace MCGalaxy.Modules.Games.TW
         }
         void HandleSettingColor(Player p, ref string color)
         {
-            if (p.level != Map) return;
-            TWTeam team = TeamOf(p);
-            if (team != null) color = team.Color;
+            if (p.Level == Map)
+            {
+                TWTeam team = TeamOf(p);
+                if (team != null) color = team.Color;
+            }
         }
         void HandleSentMap(Player p, Level prevLevel, Level level)
         {
-            if (level != Map) return;
-            OutputMapSummary(p, Map.name, Map.Config);
-            if (TeamOf(p) == null) AutoAssignTeam(p);
+            if (level == Map)
+            {
+                OutputMapSummary(p, Map.name, Map.Config);
+                if (TeamOf(p) == null) AutoAssignTeam(p);
+            }
         }
         void HandleJoinedLevel(Player p, Level prevLevel, Level level, ref bool announce)
         {

@@ -17,13 +17,10 @@ namespace MCGalaxy.Commands.Misc
 {
     public sealed class CmdTpA : Command2
     {
-        public override string name { get { return "TPA"; } }
-        public override string type { get { return CommandTypes.Other; } }
-        public override bool SuperUseable { get { return false; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("TPAccept", "accept"), new CommandAlias("TPDeny", "deny") }; }
-        }
+        public override string Name => "TPA";
+        public override string Type => CommandTypes.Other;
+        public override bool SuperUseable => false;
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("TPAccept", "accept"), new CommandAlias("TPDeny", "deny") };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) { Help(p); return; }
@@ -50,7 +47,7 @@ namespace MCGalaxy.Commands.Misc
             {
                 p.Message("You still have a pending teleport request with this player."); return;
             }
-            if (p.level != target.level && target.level.IsMuseum)
+            if (p.Level != target.Level && target.Level.IsMuseum)
             {
                 p.Message("{0} &Sis in a museum.", p.FormatNick(target)); return;
             }

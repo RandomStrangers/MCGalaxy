@@ -23,7 +23,6 @@ namespace MCGalaxy.Generator
 {
     public delegate bool MapGenFunc(Player p, Level lvl, MapGenArgs args);
     public delegate bool MapGenArgSelector(string arg);
-    public enum GenType { Simple, fCraft, Advanced };
     public class MapGenArgs
     {
         public string Args;
@@ -61,7 +60,7 @@ namespace MCGalaxy.Generator
     public sealed class MapGen
     {
         public string Theme, Desc;
-        public GenType Type;
+        public int Type;
         public MapGenFunc GenFunc;
         /// <summary> Applies this map generator to the given level. </summary>
         /// <returns> Whether generation was actually successful. </returns>
@@ -80,10 +79,10 @@ namespace MCGalaxy.Generator
         /// <summary> Creates an RNG initialised with the given seed. </summary>
         public static Random MakeRng(string seed)
         {
-            if (seed.Length == 0) return new Random();
+            if (seed.Length == 0) return new();
             if (!NumberUtils.TryParseInt32(seed, out int value))
                 value = seed.GetHashCode();
-            return new Random(value);
+            return new(value);
         } // TODO move to CmdMaze
         public static List<MapGen> Generators = new();
         public static MapGen Find(string theme)
@@ -94,31 +93,27 @@ namespace MCGalaxy.Generator
             }
             return null;
         }
-        static string FilterThemes(GenType type)
-        {
-            return Generators.Join(g => g.Type == type ? g.Theme : null);
-        }
+        static string FilterThemes(int type) => Generators.Join(g => g.Type == type ? g.Theme : null);
         public static void PrintThemes(Player p)
         {
-            p.Message("&HStandard themes: &f" + FilterThemes(GenType.Simple));
-            p.Message("&HfCraft themes: &f" + FilterThemes(GenType.fCraft));
-            p.Message("&HAdvanced themes: &f" + FilterThemes(GenType.Advanced));
+            p.Message("&HStandard themes: &f" + FilterThemes(0));
+            p.Message("&HfCraft themes: &f" + FilterThemes(1));
+            p.Message("&HAdvanced themes: &f" + FilterThemes(2));
         }
-        public const string DEFAULT_HELP = "&HSeed affects how terrain is generated. If seed is the same, the generated level will be the same.";
         /// <summary> Adds a new map generator to the list of generators. </summary>
-        public static void Register(string theme, GenType type, MapGenFunc func, string desc)
+        public static void Register(string theme, int type, MapGenFunc func, string desc)
         {
             MapGen gen = new() { Theme = theme, GenFunc = func, Desc = desc, Type = type };
             Generators.Add(gen);
         }
-        static MapGen()
+        public static void Init()
         {
             RealisticMapGen.RegisterGenerators();
             SimpleGen.RegisterGenerators();
-            fCraftMapGen.RegisterGenerators();
+            FCraftMapGen.RegisterGenerators();
             AdvNoiseGen.RegisterGenerators();
             ClassicGenerator.RegisterGenerators();
-            Register("Heightmap", GenType.Advanced, HeightmapGen.Generate,
+            Register("Heightmap", 2, HeightmapGen.Generate,
                      "&HSeed specifies the URL of the heightmap image");
         }
         public static Level Generate(Player p, MapGen gen, string name,
@@ -143,7 +138,7 @@ namespace MCGalaxy.Generator
                 lvl = new Level(name, x, y, z);
                 DateTime start = DateTime.UtcNow;
                 if (!gen.Generate(p, lvl, seed)) { lvl.Dispose(); return null; }
-                Logger.Log(LogType.SystemActivity, "Generation completed in {0:F3} seconds",
+                Logger.Log(1, "Generation completed in {0:F3} seconds",
                            (DateTime.UtcNow - start).TotalSeconds);
                 string msg = seed.Length > 0 ? "λNICK&S created level {0}&S with seed \"{1}\"" : "λNICK&S created level {0}";
                 Chat.MessageFrom(p, string.Format(msg, lvl.ColoredName, seed));
@@ -156,18 +151,11 @@ namespace MCGalaxy.Generator
             return lvl;
         }
         public static bool GetDimensions(Player p, string[] args, int i,
-                                         ref ushort x, ref ushort y, ref ushort z, bool checkVolume = true)
-        {
-            return
-                CheckMapAxis(p, args[i], "Width", ref x) &&
+                                         ref ushort x, ref ushort y, ref ushort z, bool checkVolume = true) => CheckMapAxis(p, args[i], "Width", ref x) &&
                 CheckMapAxis(p, args[i + 1], "Height", ref y) &&
                 CheckMapAxis(p, args[i + 2], "Length", ref z) &&
                 (!checkVolume || CheckMapVolume(p, x, y, z));
-        }
-        static bool CheckMapAxis(Player p, string input, string type, ref ushort len)
-        {
-            return CommandParser.GetUShort(p, input, type, ref len, 1, 16384);
-        }
+        static bool CheckMapAxis(Player p, string input, string type, ref ushort len) => CommandParser.GetUShort(p, input, type, ref len, 1, 16384);
         static bool CheckMapVolume(Player p, int x, int y, int z)
         {
             int limit = p.group.GenVolume;
@@ -183,12 +171,13 @@ namespace MCGalaxy.Generator
         internal static void SetRealmPerms(Player p, Level lvl)
         {
             lvl.Config.RealmOwner = p.name;
-            const LevelPermission rank = LevelPermission.Console;
-            lvl.BuildAccess.Whitelist(Player.Console, rank, lvl, p.name);
-            lvl.VisitAccess.Whitelist(Player.Console, rank, lvl, p.name);
+            lvl.BuildAccess.Whitelist(Player.Console, 127, lvl, p.name);
+            lvl.VisitAccess.Whitelist(Player.Console, 127, lvl, p.name);
             Group grp = Group.Find(Server.Config.OSPerbuildDefault);
-            if (grp == null) return;
-            lvl.BuildAccess.SetMin(Player.Console, rank, lvl, grp);
+            if (grp != null)
+            {
+                lvl.BuildAccess.SetMin(Player.Console, 127, lvl, grp);
+            }
         }
     }
 }

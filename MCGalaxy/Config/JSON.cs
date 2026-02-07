@@ -27,19 +27,16 @@ namespace MCGalaxy.Config
         /// <summary> Callback invoked when a member of an object has been parsed. </summary>
         public JsonOnMember OnMember;
         int offset;
-        char Cur { get { return Value[offset]; } }
+        char Cur => Value[offset];
         readonly StringBuilder strBuffer = new(96);
         public JsonReader(string value)
         {
             Value = value;
             OnMember = DefaultOnMember;
         }
-        static void DefaultOnMember(JsonObject obj, string key, object value) { obj[key] = value; }
+        static void DefaultOnMember(JsonObject obj, string key, object value) => obj[key] = value;
         const int T_NONE = 0, T_NUM = 1, T_TRUE = 2, T_FALSE = 3, T_NULL = 4;
-        static bool IsWhitespace(char c)
-        {
-            return c == '\r' || c == '\n' || c == '\t' || c == ' ';
-        }
+        static bool IsWhitespace(char c) => c == '\r' || c == '\n' || c == '\t' || c == ' ';
         bool NextConstant(string value)
         {
             if (offset + value.Length > Value.Length) return false;
@@ -67,21 +64,18 @@ namespace MCGalaxy.Config
         }
         /// <summary> Parses the given JSON and then returns the root element. </summary>
         /// <returns> Either a JsonObject, a JsonArray, a string, or null </returns>
-        public object Parse() { return ParseValue(NextToken()); }
-        object ParseValue(int token)
+        public object Parse() => ParseValue(NextToken());
+        object ParseValue(int token) => token switch
         {
-            return token switch
-            {
-                '{' => ParseObject(),
-                '[' => ParseArray(),
-                '"' => ParseString(),
-                T_NUM => ParseNumber(),
-                T_TRUE => "true",
-                T_FALSE => "false",
-                T_NULL => null,
-                _ => null,
-            };
-        }
+            '{' => ParseObject(),
+            '[' => ParseArray(),
+            '"' => ParseString(),
+            T_NUM => ParseNumber(),
+            T_TRUE => "true",
+            T_FALSE => "false",
+            T_NULL => null,
+            _ => null,
+        };
         JsonObject ParseObject()
         {
             JsonObject obj = new();
@@ -139,15 +133,10 @@ namespace MCGalaxy.Config
             }
             Failed = true; return null;
         }
-        static bool IsNumber(char c)
-        {
-            return c == '-' || c == '.' || (c >= '0' && c <= '9');
-        }
-        static bool IsNumberPart(char c)
-        {
+        static bool IsNumber(char c) => c == '-' || c == '.' || (c >= '0' && c <= '9');
+        static bool IsNumberPart(char c) =>
             // same as IsNumber, but also accepts exponential notation (e.g. "3.40E+38")
-            return c == '-' || c == '.' || (c >= '0' && c <= '9') || c == 'E' || c == '+';
-        }
+            c == '-' || c == '.' || (c >= '0' && c <= '9') || c == 'E' || c == '+';
         string ParseNumber()
         {
             int start = offset - 1;
@@ -158,14 +147,14 @@ namespace MCGalaxy.Config
     public class JsonWriter
     {
         readonly TextWriter w;
-        public JsonWriter(TextWriter dst) { w = dst; }
+        public JsonWriter(TextWriter dst) => w = dst;
         static char Hex(char c, int shift)
         {
             int x = (c >> shift) & 0x0F;
             return (char)(x <= 9 ? ('0' + x) : ('a' + (x - 10)));
         }
-        public void WriteNull() { w.Write("null"); }
-        public void Write(string value) { w.Write(value); }
+        public void WriteNull() => w.Write("null");
+        public void Write(string value) => w.Write(value);
         public void WriteString(string value)
         {
             w.Write('"');
@@ -267,9 +256,9 @@ namespace MCGalaxy.Config
     public class JsonConfigWriter : JsonWriter
     {
         readonly ConfigElement[] elems;
-        public JsonConfigWriter(TextWriter dst, ConfigElement[] cfg) : base(dst) { elems = cfg; }
+        public JsonConfigWriter(TextWriter dst, ConfigElement[] cfg) : base(dst) => elems = cfg;
         // Only ever write an object
-        protected override void WriteValue(object value) { WriteObject(value); }
+        protected override void WriteValue(object value) => WriteObject(value);
         void WriteConfigValue(ConfigAttribute a, string value)
         {
             if (string.IsNullOrEmpty(value))

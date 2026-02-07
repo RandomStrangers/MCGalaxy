@@ -16,8 +16,8 @@ namespace MCGalaxy.Modules.Games.ZS
 {
     sealed class CmdAka : Command2
     {
-        public override string name { get { return "AKA"; } }
-        public override string type { get { return CommandTypes.Games; } }
+        public override string Name => "AKA";
+        public override string Type => CommandTypes.Games;
         public override void Use(Player p, string message, CommandData data)
         {
             ZSData data_ = ZSGame.Get(p);
@@ -26,7 +26,7 @@ namespace MCGalaxy.Modules.Games.ZS
             p.Message("AKA mode is now: " + (data_.AkaMode ? "&aOn" : "&cOff"));
             foreach (Player other in players)
             {
-                if (other.level != p.level || p == other || !p.CanSeeEntity(other)) continue;
+                if (other.Level != p.Level || p == other || !p.CanSeeEntity(other)) continue;
                 Entities.Despawn(p, other);
                 Entities.Spawn(p, other);
             }

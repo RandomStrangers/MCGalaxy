@@ -19,6 +19,64 @@ namespace MCGalaxy
     /// <summary> Provides utility methods for File I/O operations. </summary>
     public static class FileIO
     {
+        public static string TryReadAllText(string path)
+        {
+            try
+            {
+                return File.ReadAllText(path);
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
+            }
+        }
+        public static string[] TryReadAllLines(string path)
+        {
+            try
+            {
+                return File.ReadAllLines(path);
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
+            }
+        }
+        public static bool TryWriteAllText(string path, string contents)
+        {
+            try
+            {
+                File.WriteAllText(path, contents);
+                return true;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
+        }
+        public static bool TryAppendAllText(string path, string contents)
+        {
+            try
+            {
+                File.AppendAllText(path, contents);
+                return true;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
+        }
+        public static bool TryWriteAllLines(string path, string[] contents)
+        {
+            try
+            {
+                File.WriteAllLines(path, contents);
+                return true;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return false;
+            }
+        }
         /// <summary> Attempts to delete a file from disc, if it exists </summary>
         /// <returns> true if file was successfully deleted, false if file did not exist to begin with </returns>
         /// <remarks> See File.Delete for exceptions that can be thrown </remarks>
@@ -60,17 +118,6 @@ namespace MCGalaxy
             {
                 bytes = null;
                 return false;
-            }
-        }
-        public static string TryReadAllText(string path)
-        {
-            try
-            {
-                return File.ReadAllText(path);
-            }
-            catch (FileNotFoundException)
-            {
-                return null;
             }
         }
         public static FileStream TryOpenRead(string path)
@@ -140,41 +187,6 @@ namespace MCGalaxy
                 return null;
             }
         }
-        public static string[] TryReadAllLines(string path)
-        {
-            try
-            {
-                return File.ReadAllLines(path);
-            }
-            catch (FileNotFoundException)
-            {
-                return null;
-            }
-        }
-        public static bool TryWriteAllText(string path, string contents)
-        {
-            try
-            {
-                File.WriteAllText(path, contents);
-                return true;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return false;
-            }
-        }
-        public static bool TryAppendAllText(string path, string contents)
-        {
-            try
-            {
-                File.AppendAllText(path, contents);
-                return true;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return false;
-            }
-        }
         public static bool TryWriteAllBytes(string path, byte[] bytes)
         {
             try
@@ -187,32 +199,14 @@ namespace MCGalaxy
                 return false;
             }
         }
-        public static bool TryWriteAllLines(string path, string[] contents)
-        {
-            try
-            {
-                File.WriteAllLines(path, contents);
-                return true;
-            }
-            catch (UnauthorizedAccessException)
-            {
-                return false;
-            }
-        }
         /// <summary> Returns a StreamWriter that writes data to a temp file path first,
         /// and only overwrites the real file when .Dispose() is called </summary>
         /// <remarks> Reduces the chance of data corruption in full disks </remarks>
-        public static StreamWriter CreateGuarded(string path)
-        {
-            return new GuardedWriter(path);
-        }
+        public static StreamWriter CreateGuarded(string path) => new GuardedWriter(path);
         class GuardedWriter : StreamWriter
         {
             readonly string realPath;
-            public GuardedWriter(string path) : base(path + ".tmp")
-            {
-                realPath = path;
-            }
+            public GuardedWriter(string path) : base(path + ".tmp") => realPath = path;
             protected override void Dispose(bool disposing)
             {
                 base.Dispose(disposing);
@@ -221,8 +215,7 @@ namespace MCGalaxy
                     old = realPath + ".old";
                 TryDelete(old);
                 bool didExist = TryMove(dst, old);
-                File.Move(src, dst);
-                // Only delete old 'good' file if everything worked
+                TryMove(src, dst);
                 if (didExist)
                 {
                     TryDelete(old);

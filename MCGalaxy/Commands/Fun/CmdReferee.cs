@@ -17,23 +17,23 @@ namespace MCGalaxy.Commands.Fun
 {
     public sealed class CmdReferee : Command2
     {
-        public override string name { get { return "Referee"; } }
-        public override string shortcut { get { return "Ref"; } }
-        public override string type { get { return CommandTypes.Moderation; } }
-        public override LevelPermission defaultRank { get { return LevelPermission.Operator; } }
-        public override bool SuperUseable { get { return false; } }
+        public override string Name => "Referee";
+        public override string Shortcut => "Ref";
+        public override string Type => CommandTypes.Moderation;
+        public override sbyte DefaultRank => 80;
+        public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
             if (p.Game.Referee)
             {
                 Chat.MessageFrom(p, "λNICK &Sis no longer a referee", Chat.FilterVisible(p));
-                OnPlayerActionEvent.Call(p, PlayerAction.UnReferee);
+                OnPlayerActionEvent.Call(p, 2);
                 p.Game.Referee = false;
             }
             else
             {
                 Chat.MessageFrom(p, "λNICK &Sis now a referee", Chat.FilterVisible(p));
-                OnPlayerActionEvent.Call(p, PlayerAction.Referee);
+                OnPlayerActionEvent.Call(p, 1);
                 p.Game.Referee = true;
             }
             p.SetPrefix();

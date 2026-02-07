@@ -23,17 +23,11 @@ namespace MCGalaxy
         /// <summary> Outputs a large range of values across a number of 'pages' </summary>
         /// <remarks> Items are printed combined with a comma separator between them </remarks>
         public static void Output<T>(Player p, IList<T> items, StringFormatter<T> formatter,
-                                     string cmd, string type, string modifier)
-        {
-            Output(p, items, formatter, null, cmd, type, modifier, 30);
-        }
+                                     string cmd, string type, string modifier) => Output(p, items, formatter, null, cmd, type, modifier, 30);
         /// <summary> Outputs a large range of values across a number of 'pages' </summary>
         /// <remarks> Each item is printed on a separate line </param>
         public static void Output<T>(Player p, IList<T> items, ItemPrinter<T> printer,
-                                     string cmd, string type, string modifier)
-        {
-            Output(p, items, null, printer, cmd, type, modifier, 8);
-        }
+                                     string cmd, string type, string modifier) => Output(p, items, null, printer, cmd, type, modifier, 8);
         public static void Output<T>(Player p, IList<T> items,
                               StringFormatter<T> formatter, ItemPrinter<T> printer,
                               string cmd, string type, string modifier, int perPage)
@@ -42,11 +36,10 @@ namespace MCGalaxy
             if (modifier.Length == 0)
             {
                 OutputPage(p, items, formatter, printer, cmd, type, 1, perPage);
-                if (total <= perPage)
+                if (total > perPage)
                 {
-                    return;
+                    p.Message("To see all {0}, use &T/{1} all", type, cmd);
                 }
-                p.Message("To see all {0}, use &T/{1} all", type, cmd);
             }
             else if (modifier.CaselessEq("all"))
             {

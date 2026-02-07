@@ -22,9 +22,9 @@ namespace MCGalaxy.Generator.Foliage
     {
         int numBranches, maxExtent, maxBranchHeight, trunkHeight;
         readonly List<Vec3S32> branch = new();
-        public override int MinSize { get { return 0; } }
-        public override long EstimateBlocksAffected() { return (long)height * height * height; }
-        public override int DefaultSize(Random rnd) { return rnd.Next(0, 11); }
+        public override int MinSize => 0;
+        public override long EstimateBlocksAffected() => (long)height * height * height;
+        public override int DefaultSize(Random rnd) => rnd.Next(0, 11);
         public override void SetData(Random rnd, int value)
         {
             numBranches = value;

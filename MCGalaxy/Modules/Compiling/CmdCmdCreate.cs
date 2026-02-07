@@ -12,18 +12,14 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-#if !MCG_STANDALONE
 using MCGalaxy.Commands;
 namespace MCGalaxy.Modules.Compiling
 {
     sealed class CmdCmdCreate : CmdCompile
     {
-        public override string name { get { return "CmdCreate"; } }
-        public override string shortcut { get { return ""; } }
-        public override CommandAlias[] Aliases
-        {
-            get { return new[] { new CommandAlias("PCreate", "plugin") }; }
-        }
+        public override string Name => "CmdCreate";
+        public override string Shortcut => "";
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("PCreate", "plugin") };
         protected override void CompileCommand(Player p, string[] paths, ICompiler compiler)
         {
             foreach (string cmd in paths)
@@ -48,4 +44,3 @@ namespace MCGalaxy.Modules.Compiling
         }
     }
 }
-#endif

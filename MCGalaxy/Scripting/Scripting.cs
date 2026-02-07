@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using MCGalaxy.Platform;
 namespace MCGalaxy.Scripting
 {
     /// <summary> Exception raised when attempting to load a new command/plugin
@@ -34,15 +33,9 @@ namespace MCGalaxy.Scripting
         public const string COMMANDS_DLL_DIR = "extra/commands/dll/",
             PLUGINS_DLL_DIR = "plugins/";
         /// <summary> Returns the default .dll path for the custom command with the given name </summary>
-        public static string CommandPath(string name)
-        {
-            return COMMANDS_DLL_DIR + "Cmd" + name + ".dll";
-        }
+        public static string CommandPath(string name) => COMMANDS_DLL_DIR + "Cmd" + name + ".dll";
         /// <summary> Returns the default .dll path for the plugin with the given name </summary>
-        public static string PluginPath(string name)
-        {
-            return PLUGINS_DLL_DIR + name + ".dll";
-        }
+        public static string PluginPath(string name) => PLUGINS_DLL_DIR + name + ".dll";
         public static void Init()
         {
             Directory.CreateDirectory(COMMANDS_DLL_DIR);
@@ -51,17 +44,13 @@ namespace MCGalaxy.Scripting
         }
         static Assembly ResolveMissingAssembly(object sender, ResolveEventArgs args)
         {
-            Assembly source = null;
-#if !NET_20
-            // This property only exists in .NET framework 4.0 and later
-            source = args.RequestingAssembly;
-#endif
+            Assembly source = args.RequestingAssembly;
             Assembly match = ResolvePluginAssembly(source, args.Name);
             if (match != null)
             {
                 return match;
             }
-            Logger.Log(LogType.Warning, "{0} [{1}] tried to load [{2}], but it could not be found",
+            Logger.Log(6, "{0} [{1}] tried to load [{2}], but it could not be found",
                        IsPluginDLL(source) ? "Custom command/plugin" : "Assembly",
                        source == null ? "(unknown)" : source.FullName,
                        args.Name);
@@ -89,14 +78,9 @@ namespace MCGalaxy.Scripting
                     return assem;
                 }
             }
-            // In modern dotnet, also try resolving to a core assembly
-            Assembly coreRef = DotNetBackend.ResolvePluginReference(target);
-            return coreRef ?? null;
+            return null;
         }
-        static bool IsPluginDLL(Assembly a)
-        {
-            return string.IsNullOrEmpty(a.Location);
-        }
+        static bool IsPluginDLL(Assembly a) => string.IsNullOrEmpty(a.Location);
         /// <summary> Constructs instances of all types which derive from T in the given assembly. </summary>
         /// <returns> The list of constructed instances. </returns>
         public static List<T> LoadTypes<T>(Assembly lib)
@@ -111,7 +95,7 @@ namespace MCGalaxy.Scripting
                 object instance = Activator.CreateInstance(t);
                 if (instance == null)
                 {
-                    Logger.Log(LogType.Warning, "{0} \"{1}\" could not be loaded", typeof(T).Name, t.Name);
+                    Logger.Log(6, "{0} \"{1}\" could not be loaded", typeof(T).Name, t.Name);
                     throw new BadImageFormatException();
                 }
                 instances.Add((T)instance);
@@ -119,10 +103,7 @@ namespace MCGalaxy.Scripting
             return instances;
         }
         /// <summary> Loads the given assembly from disc (and associated .pdb debug data) </summary>
-        public static Assembly LoadAssembly(string path)
-        {
-            return LoadAssembly(path, true);
-        }
+        public static Assembly LoadAssembly(string path) => LoadAssembly(path, true);
         public static Assembly LoadAssembly(string path, bool loadDebug)
         {
             if (!FileIO.TryReadBytes(path, out byte[] data))
@@ -201,8 +182,8 @@ namespace MCGalaxy.Scripting
                 Logger.LogError("Error loading commands from " + path, ex);
                 return;
             }
-            Logger.Log(LogType.SystemActivity, "AUTOLOAD: Loaded {0} from {1}",
-                       cmds.Join(c => "/" + c.name), Path.GetFileName(path));
+            Logger.Log(1, "AUTOLOAD: Loaded {0} from {1}",
+                       cmds.Join(c => "/" + c.Name), Path.GetFileName(path));
         }
         /// <summary> Loads and registers all the commands from the given .dll path </summary>
         public static List<Command> LoadCommands(string path)
@@ -215,9 +196,9 @@ namespace MCGalaxy.Scripting
             }
             foreach (Command cmd in commands)
             {
-                if (Command.Find(cmd.name) != null)
+                if (Command.Find(cmd.Name) != null)
                 {
-                    throw new AlreadyLoadedException("/" + cmd.name + " is already loaded");
+                    throw new AlreadyLoadedException("/" + cmd.Name + " is already loaded");
                 }
                 Command.Register(cmd);
             }
@@ -265,9 +246,9 @@ namespace MCGalaxy.Scripting
             List<Plugin> plugins = LoadTypes<Plugin>(lib);
             foreach (Plugin pl in plugins)
             {
-                if (Plugin.FindCustom(pl.name) != null)
+                if (Plugin.FindCustom(pl.Name) != null)
                 {
-                    throw new AlreadyLoadedException("Plugin " + pl.name + " is already loaded");
+                    throw new AlreadyLoadedException("Plugin " + pl.Name + " is already loaded");
                 }
                 Plugin.Load(pl, auto);
             }

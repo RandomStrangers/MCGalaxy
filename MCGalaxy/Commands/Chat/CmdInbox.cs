@@ -12,31 +12,29 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using MCGalaxy.SQL;
 using System;
 using System.Collections.Generic;
+using MCGalaxy.SQL;
 namespace MCGalaxy.Commands.Chatting
 {
     public sealed class CmdInbox : Command2
     {
-        public override string name { get { return "Inbox"; } }
-        public override string type { get { return CommandTypes.Chat; } }
-        public override bool SuperUseable { get { return false; } }
-        public override bool UseableWhenFrozen { get { return true; } }
-        public override CommandParallelism Parallelism { get { return CommandParallelism.NoAndWarn; } }
+        public override string Name => "Inbox";
+        public override string Type => CommandTypes.Chat;
+        public override bool SuperUseable => false;
+        public override bool UseableWhenFrozen => true;
+        public override int Parallelism => 1;
         public override void Use(Player p, string message, CommandData data)
         {
             if (!Database.TableExists("Inbox" + p.name))
             {
-                p.Message("Your inbox is empty.");
-                return;
+                p.Message("Your inbox is empty."); return;
             }
             List<string[]> entries = Database.GetRows("Inbox" + p.name, "Contents,TimeSent,PlayerFrom",
                                                       "ORDER BY TimeSent");
             if (entries.Count == 0)
             {
-                p.Message("Your inbox is empty.");
-                return;
+                p.Message("Your inbox is empty."); return;
             }
             string[] args = message.SplitSpaces(2);
             if (message.Length == 0)
@@ -54,7 +52,7 @@ namespace MCGalaxy.Commands.Chatting
                 }
                 else if (args[1].CaselessEq("all"))
                 {
-                    DeleteAll(p);
+                    p.Message("Deleted all {0} messages.", Database.Execute(SqlUtils.WithTable("DELETE FROM {table}", "Inbox" + p.name)));
                 }
                 else
                 {
@@ -66,19 +64,10 @@ namespace MCGalaxy.Commands.Chatting
                 OutputByID(p, message, entries);
             }
         }
-        static void DeleteAll(Player p)
-        {
-            string sql = SqlUtils.WithTable("DELETE FROM {table}", "Inbox" + p.name);
-            int count = Database.Execute(sql);
-            p.Message("Deleted all {0} messages.", count);
-        }
         static void DeleteByID(Player p, string value, List<string[]> entries)
         {
             int num = 1;
-            if (!CommandParser.GetInt(p, value, "Message number", ref num, 1))
-            {
-                return;
-            }
+            if (!CommandParser.GetInt(p, value, "Message number", ref num, 1)) return;
             if (num > entries.Count)
             {
                 p.Message("Message #{0} does not exist.", num);
@@ -86,18 +75,14 @@ namespace MCGalaxy.Commands.Chatting
             else
             {
                 string[] entry = entries[num - 1];
-                string sql = SqlUtils.WithTable("DELETE FROM {table} WHERE PlayerFrom=@0 AND TimeSent=@1", "Inbox" + p.name);
-                Database.Execute(sql, entry[2], entry[1]);
+                Database.Execute(SqlUtils.WithTable("DELETE FROM {table} WHERE PlayerFrom=@0 AND TimeSent=@1", "Inbox" + p.name), entry[2], entry[1]);
                 p.Message("Deleted message #{0}", num);
             }
         }
         static void OutputByID(Player p, string value, List<string[]> entries)
         {
             int num = 1;
-            if (!CommandParser.GetInt(p, value, "Message number", ref num, 1))
-            {
-                return;
-            }
+            if (!CommandParser.GetInt(p, value, "Message number", ref num, 1)) return;
             if (num > entries.Count)
             {
                 p.Message("Message #{0} does not exist.", num);
@@ -109,10 +94,7 @@ namespace MCGalaxy.Commands.Chatting
         }
         static void Output(Player p, int num, string[] entry)
         {
-            DateTime time = Database.ParseDBDate(entry[1]);
-            TimeSpan delta = DateTime.Now - time;
-            string sender = p.FormatNick(entry[2]);
-            p.Message("{0}) From {1} &a{2} ago:", num, sender, delta.Shorten());
+            p.Message("{0}) From {1} &a{2} ago:", num, p.FormatNick(entry[2]), (DateTime.Now - Database.ParseDBDate(entry[1])).Shorten());
             p.Message("  {0}", entry[0]);
         }
         public override void Help(Player p)

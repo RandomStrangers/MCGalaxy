@@ -132,7 +132,7 @@ namespace MCGalaxy.Modules.Games.Countdown
             pos.X -= 16; pos.Z -= 16;
             foreach (Player pl in players)
             {
-                if (pl.level != Map)
+                if (pl.Level != Map)
                 {
                     pl.Message("Sending you to the correct map.");
                     PlayerActions.ChangeMap(pl, Map.name);
@@ -262,7 +262,7 @@ namespace MCGalaxy.Modules.Games.Countdown
             }
             UpdateAllStatus2();
         }
-        public override void EndRound() { EndRound(null); }
+        public override void EndRound() => EndRound(null);
         public void EndRound(Player winner)
         {
             squaresLeft.Clear();

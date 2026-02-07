@@ -19,7 +19,7 @@ namespace MCGalaxy.Drawing.Ops
 {
     public class HollowDrawOp : CuboidDrawOp
     {
-        public override string Name { get { return "Hollow"; } }
+        public override string Name => "Hollow";
         public ushort Skip;
         static bool CanHollow(ushort block, bool andAir = false)
         {
@@ -73,7 +73,7 @@ namespace MCGalaxy.Drawing.Ops
             Layer = Left | Right | Front | Back,
             All = Layer | Up | Down,
         }
-        public override string Name { get { return "Outline"; } }
+        public override string Name => "Outline";
         public ushort Target;
         public Side side;
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
@@ -98,7 +98,7 @@ namespace MCGalaxy.Drawing.Ops
     public class RainbowDrawOp : CuboidDrawOp
     {
         public bool AllowAir;
-        public override string Name { get { return "Rainbow"; } }
+        public override string Name => "Rainbow";
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             Vec3U16 p1 = Clamp(Min), p2 = Clamp(Max);
