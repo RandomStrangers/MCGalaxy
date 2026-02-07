@@ -1,9 +1,11 @@
 name: Build
 on:
   push:
+    branches:
+      - NAS
   workflow_dispatch:
 concurrency:
-  group: ${{ github.ref }}-Build
+  group: ${{ github.ref }}-NAS
   cancel-in-progress: true
 jobs:
   build:
@@ -15,15 +17,16 @@ jobs:
         id: compile
         run: |
           msbuild MCGalaxy.sln /p:Configuration=Release
+          msbuild MCGalaxy/MCGalaxy.csproj /p:Configuration=Release
       - uses: ./.github/actions/notify_success
         if: ${{ always() && steps.compile.outcome == 'success' }}
         with:
-          NOTIFY_MESSAGE: 'Successfully compiled MCGalaxy.'
+          NOTIFY_MESSAGE: 'Successfully compiled MCGalaxy-NAS.'
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
           SOURCE_FILE: 'bin/Release'
           DEST_NAME: 'MCGalaxy'
       - uses: ./.github/actions/notify_failure
         if: failure()
         with:
-          NOTIFY_MESSAGE: 'Failed to produce MCGalaxy! <@999409543001931788>'
+          NOTIFY_MESSAGE: 'Failed to build MCGalaxy-NAS! <@999409543001931788>'
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
