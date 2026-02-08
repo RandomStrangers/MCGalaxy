@@ -22,7 +22,13 @@ namespace MCGalaxy.Bots
     public static class BotsFile
     {
         static ConfigElement[] elems;
-        public static void Load(Level lvl) { lock (lvl.botsIOLock) { LoadCore(lvl); } }
+        public static void Load(Level lvl) 
+        {
+            lock (lvl.botsIOLock) 
+            { 
+                LoadCore(lvl); 
+            }
+        }
         static void LoadCore(Level lvl)
         {
             string path = Paths.BotsPath(lvl.MapName);
@@ -34,7 +40,8 @@ namespace MCGalaxy.Bots
             }
             catch (Exception ex)
             {
-                Logger.LogError("Reading bots file", ex); return;
+                Logger.LogError("Reading bots file", ex);
+                return;
             }
             foreach (BotProperties data in props)
             {
@@ -49,7 +56,6 @@ namespace MCGalaxy.Bots
         {
             List<BotProperties> props = new();
             elems ??= ConfigElement.GetAll(typeof(BotProperties));
-            //string json = File.ReadAllText(path);
             string json = FileIO.TryReadAllText(path);
             JsonReader reader = new(json)
             {
@@ -71,7 +77,13 @@ namespace MCGalaxy.Bots
             }
             return props;
         }
-        public static void Save(Level lvl) { lock (lvl.botsIOLock) { SaveCore(lvl); } }
+        public static void Save(Level lvl) 
+        { 
+            lock (lvl.botsIOLock) 
+            {
+                SaveCore(lvl); 
+            } 
+        }
         static void SaveCore(Level lvl)
         {
             PlayerBot[] bots = lvl.Bots.Items;
@@ -146,16 +158,28 @@ namespace MCGalaxy.Bots
         {
             Owner = bot.Owner;
             Name = bot.name;
-            Skin = bot.SkinName; AI = bot.AIName;
-            Model = bot.Model; Color = bot.color;
-            Kill = bot.kill; Hunt = bot.hunt;
+            Skin = bot.SkinName; 
+            AI = bot.AIName;
+            Model = bot.Model; 
+            Color = bot.color;
+            Kill = bot.kill; 
+            Hunt = bot.hunt;
             DisplayName = bot.DisplayName;
-            CurInstruction = bot.cur; CurJump = bot.curJump; CurSpeed = bot.movementSpeed;
-            ClickedOnText = bot.ClickedOnText; DeathMessage = bot.DeathMessage;
-            X = bot.Pos.X; Y = bot.Pos.Y; Z = bot.Pos.Z;
-            RotX = bot.Rot.RotY; RotY = bot.Rot.HeadX;
-            BodyX = bot.Rot.RotX; BodyZ = bot.Rot.RotZ;
-            ScaleX = bot.ScaleX; ScaleY = bot.ScaleY; ScaleZ = bot.ScaleZ;
+            CurInstruction = bot.cur; 
+            CurJump = bot.curJump; 
+            CurSpeed = bot.movementSpeed;
+            ClickedOnText = bot.ClickedOnText;
+            DeathMessage = bot.DeathMessage;
+            X = bot.Pos.X; 
+            Y = bot.Pos.Y; 
+            Z = bot.Pos.Z;
+            RotX = bot.Rot.RotY; 
+            RotY = bot.Rot.HeadX;
+            BodyX = bot.Rot.RotX;
+            BodyZ = bot.Rot.RotZ;
+            ScaleX = bot.ScaleX; 
+            ScaleY = bot.ScaleY; 
+            ScaleZ = bot.ScaleZ;
             CreationDate = bot.CreationDate.ToString();
         }
         public void ApplyTo(PlayerBot bot)
@@ -163,17 +187,26 @@ namespace MCGalaxy.Bots
             bot.SetInitialPos(new Position(X, Y, Z));
             bot.SetYawPitch(RotX, RotY);
             Orientation rot = bot.Rot;
-            rot.RotX = BodyX; rot.RotZ = BodyZ;
+            rot.RotX = BodyX; 
+            rot.RotZ = BodyZ;
             bot.Rot = rot;
             bot.Owner = Owner;
-            bot.SkinName = Skin; bot.Model = Model; bot.color = Color;
-            bot.AIName = AI; bot.hunt = Hunt; bot.kill = Kill;
+            bot.SkinName = Skin; 
+            bot.Model = Model; 
+            bot.color = Color;
+            bot.AIName = AI; 
+            bot.hunt = Hunt; 
+            bot.kill = Kill;
             bot.DisplayName = DisplayName;
-            bot.cur = CurInstruction; bot.curJump = CurJump;
+            bot.cur = CurInstruction;
+            bot.curJump = CurJump;
             // NOTE: This field wasn't in old json
             if (CurSpeed != 0) bot.movementSpeed = CurSpeed;
-            bot.ClickedOnText = ClickedOnText; bot.DeathMessage = DeathMessage;
-            bot.ScaleX = ScaleX; bot.ScaleY = ScaleY; bot.ScaleZ = ScaleZ;
+            bot.ClickedOnText = ClickedOnText;
+            bot.DeathMessage = DeathMessage;
+            bot.ScaleX = ScaleX; 
+            bot.ScaleY = ScaleY; 
+            bot.ScaleZ = ScaleZ;
             if (!string.IsNullOrEmpty(CreationDate) && long.TryParse(CreationDate, out long longCreationDate)) bot.CreationDate = longCreationDate;
         }
     }

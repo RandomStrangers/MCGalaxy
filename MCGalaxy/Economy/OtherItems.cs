@@ -29,7 +29,8 @@ namespace MCGalaxy.Eco
             if (DateTime.UtcNow < p.NextEat)
             {
                 p.Message("You're still full - you need to wait at least " +
-                          "10 seconds between snacks."); return;
+                          "10 seconds between snacks."); 
+                return;
             }
             if (!CheckPrice(p)) return;
             TextFile eatFile = TextFile.Files["Eat"];

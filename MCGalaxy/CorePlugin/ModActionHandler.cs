@@ -27,21 +27,45 @@ namespace MCGalaxy.Core
         {
             switch (action.Type)
             {
-                case ModActionType.Frozen: DoFreeze(action); break;
-                case ModActionType.Unfrozen: DoUnfreeze(action); break;
-                case ModActionType.Muted: DoMute(action); break;
-                case ModActionType.Unmuted: DoUnmute(action); break;
-                case ModActionType.Ban: DoBan(action); break;
-                case ModActionType.Unban: DoUnban(action); break;
-                case ModActionType.BanIP: DoBanIP(action); break;
-                case ModActionType.UnbanIP: DoUnbanIP(action); break;
-                case ModActionType.Warned: DoWarn(action); break;
-                case ModActionType.Rank: DoRank(action); break;
-                case ModActionType.Noted: DoNote(action); break;
-                case ModActionType.OpNoted: DoNote(action); break;
+                case ModActionType.Frozen:
+                    DoFreeze(action);
+                    break;
+                case ModActionType.Unfrozen:
+                    DoUnfreeze(action); 
+                    break;
+                case ModActionType.Muted:
+                    DoMute(action); 
+                    break;
+                case ModActionType.Unmuted:
+                    DoUnmute(action);
+                    break;
+                case ModActionType.Ban:
+                    DoBan(action);
+                    break;
+                case ModActionType.Unban: 
+                    DoUnban(action); 
+                    break;
+                case ModActionType.BanIP: 
+                    DoBanIP(action); 
+                    break;
+                case ModActionType.UnbanIP:
+                    DoUnbanIP(action);
+                    break;
+                case ModActionType.Warned:
+                    DoWarn(action); 
+                    break;
+                case ModActionType.Rank: 
+                    DoRank(action); 
+                    break;
+                case ModActionType.Noted:
+                    DoNote(action);
+                    break;
+                case ModActionType.OpNoted:
+                    DoNote(action); 
+                    break;
             }
         }
-        static void LogAction(ModAction e, Player _, string action)
+        static void LogAction(ModAction e, string action)
         {
             // TODO should use per-player nick settings
             string targetNick = e.Actor.FormatNick(e.Target);
@@ -68,7 +92,7 @@ namespace MCGalaxy.Core
         {
             Player who = PlayerInfo.FindExact(e.Target);
             if (who != null) who.frozen = true;
-            LogAction(e, who, "&bfrozen");
+            LogAction(e, "&bfrozen");
             Server.frozen.Update(e.Target, FormatModTaskData(e));
             ModerationTasks.FreezeCalcNextRun();
             Server.frozen.Save();
@@ -77,7 +101,7 @@ namespace MCGalaxy.Core
         {
             Player who = PlayerInfo.FindExact(e.Target);
             if (who != null) who.frozen = false;
-            LogAction(e, who, "&adefrosted");
+            LogAction(e, "&adefrosted");
             Server.frozen.Remove(e.Target);
             ModerationTasks.FreezeCalcNextRun();
             Server.frozen.Save();
@@ -86,7 +110,7 @@ namespace MCGalaxy.Core
         {
             Player who = PlayerInfo.FindExact(e.Target);
             if (who != null) who.muted = true;
-            LogAction(e, who, "&8muted");
+            LogAction(e, "&8muted");
             Server.muted.Update(e.Target, FormatModTaskData(e));
             ModerationTasks.MuteCalcNextRun();
             Server.muted.Save();
@@ -95,7 +119,7 @@ namespace MCGalaxy.Core
         {
             Player who = PlayerInfo.FindExact(e.Target);
             if (who != null) who.muted = false;
-            LogAction(e, who, "&aun-muted");
+            LogAction(e, "&aun-muted");
             Server.muted.Remove(e.Target);
             ModerationTasks.MuteCalcNextRun();
             Server.muted.Save();
@@ -103,7 +127,7 @@ namespace MCGalaxy.Core
         static void DoBan(ModAction e)
         {
             Player who = PlayerInfo.FindExact(e.Target);
-            LogAction(e, who, "&8banned");
+            LogAction(e, "&8banned");
             if (e.Duration.Ticks != 0)
             {
                 DateTime end = DateTime.UtcNow.Add(e.Duration);
@@ -128,7 +152,7 @@ namespace MCGalaxy.Core
         static void DoUnban(ModAction e)
         {
             Player who = PlayerInfo.FindExact(e.Target);
-            LogAction(e, who, "&8unbanned");
+            LogAction(e, "&8unbanned");
             if (Server.tempBans.Remove(e.Target))
             {
                 Server.tempBans.Save();
@@ -173,7 +197,7 @@ namespace MCGalaxy.Core
             Player who = PlayerInfo.FindExact(e.Target);
             if (who != null)
             {
-                LogAction(e, who, "&ewarned");
+                LogAction(e, "&ewarned");
                 if (who.warn == 0)
                 {
                     who.Message("Do it again twice and you will get kicked!");
@@ -185,8 +209,8 @@ namespace MCGalaxy.Core
                 else if (who.warn == 2)
                 {
                     Chat.MessageGlobal("{0} &Swas warn-kicked by {1}", who.ColoredName, e.Actor.ColoredName);
-                    string chatMsg = "by " + e.Actor.ColoredName + "&S: " + e.Reason;
-                    string kickMsg = "Kicked by " + e.Actor.ColoredName + ": &f" + e.Reason;
+                    string chatMsg = "by " + e.Actor.ColoredName + "&S: " + e.Reason,
+                        kickMsg = "Kicked by " + e.Actor.ColoredName + ": &f" + e.Reason;
                     who.Kick(chatMsg, kickMsg);
                 }
                 who.warn++;
@@ -195,9 +219,10 @@ namespace MCGalaxy.Core
             {
                 if (!Server.Config.LogNotes)
                 {
-                    e.Actor.Message("Notes logging must be enabled to warn offline players."); return;
+                    e.Actor.Message("Notes logging must be enabled to warn offline players.");
+                    return;
                 }
-                LogAction(e, who, "&ewarned");
+                LogAction(e, "&ewarned");
             }
         }
         static void DoRank(ModAction e)
@@ -205,7 +230,7 @@ namespace MCGalaxy.Core
             Player who = PlayerInfo.FindExact(e.Target);
             Group newRank = (Group)e.Metadata;
             string action = newRank.Permission >= e.TargetGroup.Permission ? "promoted to " : "demoted to ";
-            LogAction(e, who, action + newRank.ColoredName);
+            LogAction(e, action + newRank.ColoredName);
             if (who != null && e.Announce)
             {
                 who.Message("You are now ranked " + newRank.ColoredName + "&S, type /Help for your new set of commands.");
@@ -257,11 +282,10 @@ namespace MCGalaxy.Core
         {
             if (!Server.Config.LogNotes)
             {
-                e.Actor.Message("Notes logging must be enabled to note players."); return;
+                e.Actor.Message("Notes logging must be enabled to note players.");
+                return;
             }
-            // No null checking because LogAction who parameter isn't used
-            Player who = PlayerInfo.FindExact(e.Target);
-            LogAction(e, who, "&egiven a note");
+            LogAction(e, "&egiven a note");
         }
     }
 }

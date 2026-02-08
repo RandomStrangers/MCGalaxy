@@ -33,21 +33,13 @@ namespace MCGalaxy
             UncompressedSize = uint.MaxValue;
             LocalHeaderOffset = uint.MaxValue;
         }
-        public const uint SIG_LOCAL = 0x04034b50,
-            SIG_CENTRAL = 0x02014b50,
-            SIG_END = 0x06054b50,
-            SIG_ZIP64_END = 0x06064b50,
-            SIG_ZIP64_LOC = 0x07064b50;
     }
     sealed class ZipWriterStream : Stream
     {
         public uint Crc32 = uint.MaxValue;
         public long CompressedLen;
         public Stream stream;
-        public ZipWriterStream(Stream stream)
-        {
-            this.stream = stream;
-        }
+        public ZipWriterStream(Stream stream) => this.stream = stream;
         public override bool CanRead => false;
         public override bool CanSeek => false;
         public override bool CanWrite => true;
@@ -125,11 +117,7 @@ namespace MCGalaxy
         readonly List<ZipEntry> entries = new();
         int numEntries;
         long centralDirOffset, centralDirSize, zip64EndOffset;
-        const ushort ver_norm = 20, ver_zip64 = 45,
-            EXTRA_TAG_ZIP64 = 0x0001,
-            ZIP64_CENTRAL_EXTRA_SIZE = 28,
-            ZIP64_LOCAL_EXTRA_SIZE = 20;
-        static readonly byte[] emptyZip64Local = new byte[ZIP64_LOCAL_EXTRA_SIZE];
+        static readonly byte[] emptyZip64Local = new byte[20];
         public ZipWriter(Stream stream)
         {
             this.stream = stream;
@@ -149,7 +137,7 @@ namespace MCGalaxy
                 entry.ModifiedDate = DateTime.Now;
             }
             // leave some room to fill in header later
-            int headerSize = 30 + entry.Filename.Length + ZIP64_LOCAL_EXTRA_SIZE;
+            int headerSize = 30 + entry.Filename.Length + 20;
             stream.Write(buffer, 0, headerSize);
             // set bit flag for non-ascii filename
             foreach (char c in file)
@@ -174,8 +162,7 @@ namespace MCGalaxy
         public void FinishEntries()
         {
             // account for central directory too
-            const int maxLen = int.MaxValue - 4 * 1000 * 1000;
-            zip64 = numEntries >= ushort.MaxValue || stream.Length >= maxLen;
+            zip64 = numEntries >= ushort.MaxValue || stream.Length >= (int.MaxValue - 4 * 1000 * 1000);
             long pos = stream.Position;
             for (int i = 0; i < numEntries; i++)
             {
@@ -212,14 +199,14 @@ namespace MCGalaxy
         }
         void WriteLocalFileRecord(ZipEntry entry)
         {
-            ushort version = zip64 ? ver_zip64 : ver_norm;
+            ushort version = zip64 ? (ushort)45 : (ushort)20;
             BinaryWriter w = writer;
             ZipEntry copy = entry;
             if (zip64)
             {
                 entry.MakeZip64Placeholder();
             }
-            w.Write(ZipEntry.SIG_LOCAL);
+            w.Write(0x04034b50);
             w.Write(version);
             w.Write(entry.BitFlags);
             w.Write(entry.CompressionMethod);
@@ -228,7 +215,7 @@ namespace MCGalaxy
             w.Write((uint)entry.CompressedSize);
             w.Write((uint)entry.UncompressedSize);
             w.Write((ushort)entry.Filename.Length);
-            w.Write(ZIP64_LOCAL_EXTRA_SIZE);
+            w.Write(20);
             w.Write(entry.Filename);
             // not using zip64, fill in with empty data
             if (!zip64)
@@ -237,22 +224,22 @@ namespace MCGalaxy
                 return;
             }
             // zip64 extra data entry
-            w.Write(EXTRA_TAG_ZIP64);
-            w.Write((ushort)(ZIP64_LOCAL_EXTRA_SIZE - 4));
+            w.Write(0x0001);
+            w.Write((ushort)16);
             w.Write(copy.UncompressedSize);
             w.Write(copy.CompressedSize);
         }
         void WriteCentralDirectoryRecord(ZipEntry entry)
         {
-            ushort extraLen = (ushort)(zip64 ? ZIP64_CENTRAL_EXTRA_SIZE : 0),
-                version = zip64 ? ver_zip64 : ver_norm;
+            ushort extraLen = (ushort)(zip64 ? 28 : 0),
+                version = zip64 ? (ushort)45 : (ushort)20;
             BinaryWriter w = writer;
             ZipEntry copy = entry;
             if (zip64)
             {
                 entry.MakeZip64Placeholder();
             }
-            w.Write(ZipEntry.SIG_CENTRAL);
+            w.Write(0x02014b50);
             w.Write(version);
             w.Write(version);
             w.Write(entry.BitFlags);
@@ -274,7 +261,7 @@ namespace MCGalaxy
                 return;
             }
             w.Write((ushort)1);
-            w.Write((ushort)(ZIP64_CENTRAL_EXTRA_SIZE - 4));
+            w.Write((ushort)24);
             w.Write(copy.UncompressedSize);
             w.Write(copy.CompressedSize);
             w.Write(copy.LocalHeaderOffset);
@@ -289,11 +276,10 @@ namespace MCGalaxy
         void WriteZip64EndOfCentralDirectoryRecord()
         {
             BinaryWriter w = writer;
-            const long zip64EndDataSize = (2 * 2) + (2 * 4) + (4 * 8);
-            w.Write(ZipEntry.SIG_ZIP64_END);
-            w.Write(zip64EndDataSize);
-            w.Write(ver_zip64);
-            w.Write(ver_zip64);
+            w.Write(0x06064b50);
+            w.Write((2 * 2) + (2 * 4) + (4 * 8));
+            w.Write(45);
+            w.Write(45);
             w.Write(0); // disc number
             w.Write(0); // disc number of central directory
             w.Write((long)numEntries);
@@ -304,7 +290,7 @@ namespace MCGalaxy
         void WriteZip64EndOfCentralDirectoryLocator()
         {
             BinaryWriter w = writer;
-            w.Write(ZipEntry.SIG_ZIP64_LOC);
+            w.Write(0x07064b50);
             w.Write(0); // disc number of zip64 end of central directory
             w.Write(zip64EndOffset);
             w.Write(1); // total number of discs
@@ -312,7 +298,7 @@ namespace MCGalaxy
         void WriteEndOfCentralDirectoryRecord()
         {
             BinaryWriter w = writer;
-            w.Write(ZipEntry.SIG_END);
+            w.Write(0x06054b50);
             w.Write((ushort)0); // disc number
             w.Write((ushort)0); // disc number of start
             w.Write((ushort)numEntries);

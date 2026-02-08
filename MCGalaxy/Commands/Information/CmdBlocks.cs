@@ -64,8 +64,8 @@ namespace MCGalaxy.Commands.Info
         }
         static void OutputBlocks(Player p, string type, string modifier, Predicate<ushort> selector)
         {
-            List<ushort> blocks = new(Block.SUPPORTED_COUNT);
-            for (ushort b = 0; b < Block.SUPPORTED_COUNT; b++)
+            List<ushort> blocks = new(1024);
+            for (ushort b = 0; b < 1024; b++)
             {
                 if (Block.ExistsFor(p, b) && selector(b)) blocks.Add(b);
             }

@@ -64,7 +64,8 @@ namespace MCGalaxy
                                 Predicate<T> filter, StringFormatter<T> nameGetter,
                                 StringFormatter<T> itemFormatter, string group, int limit = 5)
         {
-            T match = default; matches = 0;
+            T match = default; 
+            matches = 0;
             StringBuilder output = new();
             const StringComparison comp = StringComparison.OrdinalIgnoreCase;
             foreach (T item in items)
@@ -83,7 +84,8 @@ namespace MCGalaxy
                 {
                     continue;
                 }
-                match = item; matches++;
+                match = item;
+                matches++;
                 if (matches <= limit)
                 {
                     output.Append(itemFormatter(item)).Append("&S, ");

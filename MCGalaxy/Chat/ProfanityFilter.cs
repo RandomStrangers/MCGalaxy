@@ -20,8 +20,7 @@ namespace MCGalaxy
     public static class ProfanityFilter
     {
         static string[] reduceKeys, reduceValues;
-        static List<string> goodWords;
-        static List<string> badWords;
+        static List<string> goodWords, badWords;
         static bool hookedFilter;
         public static void Init()
         {
@@ -31,8 +30,8 @@ namespace MCGalaxy
         // Replace any words containing a bad word inside it (including partial bad word matches)
         public static string Parse(string text)
         {
-            string[] words = text.SplitSpaces();
-            string[] reduced = Reduce(text).SplitSpaces();
+            string[] words = text.SplitSpaces(),
+                reduced = Reduce(text).SplitSpaces();
             for (int i = 0; i < reduced.Length; i++)
             {
                 if (IsGoodWord(words[i])) continue;
@@ -63,12 +62,7 @@ namespace MCGalaxy
                 }
             }
         }
-        static string Censor(int badWordLength)
-        {
-            string replacement = Server.Config.ProfanityReplacement;
-            // for * repeat to ****
-            return replacement.Length == 1 ? new string(replacement[0], badWordLength) : replacement;
-        }
+        static string Censor(int badWordLength) => Server.Config.ProfanityReplacement.Length == 1 ? new string(Server.Config.ProfanityReplacement[0], badWordLength) : Server.Config.ProfanityReplacement;
         static void InitReduceTable()
         {
             if (reduceKeys != null) return;
@@ -80,8 +74,8 @@ namespace MCGalaxy
         static void LoadBadWords()
         {
             // Duplicated literal const values? tsk x1000
-            TextFile goodWordsFile = TextFile.Files["Profanity filter exceptions"];
-            TextFile badWordsFile = TextFile.Files["Profanity filter"];
+            TextFile goodWordsFile = TextFile.Files["Profanity filter exceptions"],
+                badWordsFile = TextFile.Files["Profanity filter"];
             goodWordsFile.EnsureExists();
             badWordsFile.EnsureExists();
             if (!hookedFilter)

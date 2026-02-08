@@ -23,16 +23,11 @@ namespace MCGalaxy
     {
         public ConfigAttribute Attrib;
         public FieldInfo Field;
-        public readonly string Format(object instance)
-        {
-            object value = Field.GetValue(instance);
-            return Attrib.Name + " = " + Attrib.Serialise(value);
-        }
-        const BindingFlags flags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+        public readonly string Format(object instance) => Attrib.Name + " = " + Attrib.Serialise(Field.GetValue(instance));
         public static ConfigElement[] GetAll(Type type)
         {
             List<ConfigElement> elems = new();
-            FieldInfo[] fields = type.GetFields(flags);
+            FieldInfo[] fields = type.GetFields(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
             for (int i = 0; i < fields.Length; i++)
             {
                 FieldInfo field = fields[i];
@@ -52,7 +47,8 @@ namespace MCGalaxy
             foreach (ConfigElement elem in elems)
             {
                 if (!elem.Attrib.Name.CaselessEq(k)) continue;
-                elem.Field.SetValue(instance, elem.Attrib.Parse(v)); return;
+                elem.Field.SetValue(instance, elem.Attrib.Parse(v));
+                return;
             }
         }
         public static void Serialise(ConfigElement[] elements, StreamWriter dst, object instance)
@@ -62,7 +58,7 @@ namespace MCGalaxy
             {
                 if (!sections.TryGetValue(elem.Attrib.Section, out List<ConfigElement> members))
                 {
-                    members = new List<ConfigElement>();
+                    members = new();
                     sections[elem.Attrib.Section] = members;
                 }
                 members.Add(elem);

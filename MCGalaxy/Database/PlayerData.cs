@@ -114,8 +114,8 @@ namespace MCGalaxy.DB
             data.Logins = record.GetInt(ColumnLogins);
             data.Kicks = record.GetInt(ColumnKicked);
             data.Messages = record.GetInt(ColumnMessages);
-            long blocks = record.GetLong(ColumnBlocks);
-            long drawn = record.GetLong(ColumnDrawn);
+            long blocks = record.GetLong(ColumnBlocks),
+                drawn = record.GetLong(ColumnDrawn);
             data.TotalModified = UnpackLo(blocks);
             data.TotalPlaced = UnpackHi(blocks);
             data.TotalDrawn = UnpackLo(drawn);
@@ -148,12 +148,8 @@ namespace MCGalaxy.DB
                 return DateTime.MinValue;
             }
         }
-        internal static long UnpackHi(long value) => (value >> HiBitsShift) & HiBitsMask;
-        internal static long UnpackLo(long value) => value & LoBitsMask;
-        internal static long Pack(long hi, long lo) => hi << HiBitsShift | lo;
-        public const int HiBitsShift = 38;
-        public const long LoBitsMask = (1L << HiBitsShift) - 1;
-        // convert negative to positive after shifting
-        public const long HiBitsMask = (1L << 26) - 1;
+        internal static long UnpackHi(long value) => (value >> 38) & ((1L << 26) - 1);
+        internal static long UnpackLo(long value) => value & ((1L << 38) - 1);
+        internal static long Pack(long hi, long lo) => hi << 38 | lo;
     }
 }

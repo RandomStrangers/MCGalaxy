@@ -55,7 +55,6 @@ namespace MCGalaxy
             SetIP(IPAddress.Loopback);
             IsSuper = true;
         }
-        const int SESSION_ID_MASK = (1 << 20) - 1;
         public Player(INetSocket socket, IGameSession session)
         {
             Socket = socket;
@@ -65,7 +64,7 @@ namespace MCGalaxy
             CriticalTasks = new VolatileArray<SchedulerTask>();
             spamChecker = new SpamChecker(this);
             partialLog = new List<DateTime>(20);
-            session.ID = Interlocked.Increment(ref sessionCounter) & SESSION_ID_MASK;
+            session.ID = Interlocked.Increment(ref sessionCounter) & ((1 << 20) - 1);
             for (int b = 0; b < BlockBindings.Length; b++)
             {
                 BlockBindings[b] = (ushort)b;
@@ -102,7 +101,7 @@ namespace MCGalaxy
         }
         public ushort GetHeldBlock()
         {
-            if (ModeBlock != Block.Invalid) return ModeBlock;
+            if (ModeBlock != 0xff) return ModeBlock;
             return BlockBindings[ClientHeldBlock];
         }
         public string GetMotd()
@@ -177,11 +176,7 @@ namespace MCGalaxy
             ip = addr.ToString();
         }
         public bool CanUse(Command cmd) => cmd.Permissions.UsableBy(this);
-        public bool CanUse(string cmdName)
-        {
-            Command cmd = Command.Find(cmdName);
-            return cmd != null && CanUse(cmd);
-        }
+        public bool CanUse(string cmdName) => Command.Find(cmdName) != null && CanUse(Command.Find(cmdName));
         public bool MarkPossessed(string marker = "")
         {
             if (marker.Length > 0)
@@ -275,17 +270,15 @@ namespace MCGalaxy
             if (chatMsg == null) return;
             if (!isKick)
             {
-                string leaveMsg = "&c- λFULL &S" + chatMsg;
                 if (Server.Config.GuestLeavesNotify || Rank > LevelPermission.Guest)
                 {
-                    Chat.MessageFrom(ChatScope.All, this, leaveMsg, null, Chat.FilterVisible(this), !hidden);
+                    Chat.MessageFrom(ChatScope.All, this, "&c- λFULL &S" + chatMsg, null, Chat.FilterVisible(this), !hidden);
                 }
                 Logger.Log(LogType.UserActivity, "{0} disconnected ({1}&S).", truename, chatMsg);
             }
             else
             {
-                string leaveMsg = "&c- λFULL &Skicked &S" + chatMsg;
-                Chat.MessageFrom(ChatScope.All, this, leaveMsg, null, null, true);
+                Chat.MessageFrom(ChatScope.All, this, "&c- λFULL &Skicked &S" + chatMsg, null, null, true);
                 Logger.Log(LogType.UserActivity, "{0} kicked ({1}&S).", truename, chatMsg);
             }
         }
@@ -304,7 +297,7 @@ namespace MCGalaxy
         #endregion
         #region == OTHER ==
         public const string USERNAME_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890._";
-        internal byte UserType() => group.CanPlace[Block.Bedrock] ? (byte)100 : (byte)0;
+        internal byte UserType() => group.CanPlace[7] ? (byte)100 : (byte)0;
         #endregion
         /// <summary> Returns whether the player is currently allowed to talk. </summary>
         public bool CanSpeak() => IsConsole || (!muted && !Unverified && (voice || !Server.chatmod));
@@ -432,7 +425,7 @@ namespace MCGalaxy
             {
                 Blockchange = SelectionBlockChange;
                 RevertBlock(x, y, z);
-                selMarks[selIndex] = new Vec3S32(x, y, z);
+                selMarks[selIndex] = new(x, y, z);
                 selMarkCallback?.Invoke(p, selMarks, selIndex, selState, block);
                 // Mark callback cancelled selection
                 if (selCallback == null) return;

@@ -18,10 +18,11 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to reset to the and execute first instruction. </summary>
     public sealed class ResetInstruction : BotInstruction
     {
-        public ResetInstruction() { Name = "reset"; }
+        public ResetInstruction() => Name = "reset";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
-            bot.cur = 0; return false;
+            bot.cur = 0;
+            return false;
         }
         public override string[] Help => help;
         static readonly string[] help = new string[] {
@@ -32,10 +33,11 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to be removed from the world. </summary>
     public sealed class RemoveInstruction : BotInstruction
     {
-        public RemoveInstruction() { Name = "remove"; }
+        public RemoveInstruction() => Name = "remove";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
-            PlayerBot.Remove(bot); return true;
+            PlayerBot.Remove(bot); 
+            return true;
         }
         public override string[] Help => help;
         static readonly string[] help = new string[] {
@@ -46,7 +48,7 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to switch to a different AI. </summary>
     public sealed class LinkScriptInstruction : BotInstruction
     {
-        public LinkScriptInstruction() { Name = "linkscript"; }
+        public LinkScriptInstruction() => Name = "linkscript";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             string ai = (string)data.Metadata;
@@ -55,7 +57,8 @@ namespace MCGalaxy.Bots
                 ScriptFile.Parse(Player.Console, bot, ai);
                 return true;
             }
-            bot.NextInstruction(); return true;
+            bot.NextInstruction(); 
+            return true;
         }
         public override InstructionData Parse(string[] args)
         {
@@ -84,7 +87,7 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to wait/do nothing for a certain interval. </summary>
     public sealed class WaitInstruction : BotInstruction
     {
-        public WaitInstruction() { Name = "wait"; }
+        public WaitInstruction() => Name = "wait";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             if (bot.countdown == 0)
@@ -93,7 +96,11 @@ namespace MCGalaxy.Bots
                 return true;
             }
             bot.countdown--;
-            if (bot.countdown == 0) { bot.NextInstruction(); return false; }
+            if (bot.countdown == 0) 
+            { 
+                bot.NextInstruction();
+                return false; 
+            }
             return true;
         }
         public override InstructionData Parse(string[] args)
@@ -102,11 +109,7 @@ namespace MCGalaxy.Bots
             data.Metadata = short.Parse(args[1]);
             return data;
         }
-        public override void Output(Player p, string[] args, TextWriter w)
-        {
-            string time = args.Length > 3 ? args[3] : "10";
-            w.WriteLine(Name + " " + short.Parse(time));
-        }
+        public override void Output(Player p, string[] args, TextWriter w) => w.WriteLine(Name + " " + short.Parse(args.Length > 3 ? args[3] : "10"));
         public override string[] Help => help;
         static readonly string[] help = new string[] {
             "&T/BotAI add [name] wait <interval>",

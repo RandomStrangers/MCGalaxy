@@ -112,7 +112,7 @@ namespace MCGalaxy
                 }
             }
             p.Message("Updating portals that go to {0}..", src);
-            List<string> tables = Database.Backend.AllTables();
+            List<string> tables = SQLiteBackend.Instance.AllTables();
             foreach (string table in tables)
             {
                 if (!table.StartsWith("Portals"))

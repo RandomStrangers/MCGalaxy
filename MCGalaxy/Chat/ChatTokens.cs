@@ -20,12 +20,13 @@ namespace MCGalaxy
 {
     public sealed class ChatToken
     {
-        public readonly string Trigger;
-        public readonly string Description;
+        public readonly string Trigger, Description;
         public readonly StringFormatter<Player> Formatter;
         public ChatToken(string trigger, string desc, StringFormatter<Player> formatter)
         {
-            Trigger = trigger; Description = desc; Formatter = formatter;
+            Trigger = trigger;
+            Description = desc; 
+            Formatter = formatter;
         }
     }
     public static class ChatTokens
@@ -43,7 +44,8 @@ namespace MCGalaxy
             for (int i = 0; i < sb.Length; i++)
             {
                 if (sb[i] != '$') continue;
-                ApplyStandard(sb, p); break;
+                ApplyStandard(sb, p);
+                break;
             }
             ApplyCustom(sb);
         }
@@ -167,8 +169,8 @@ namespace MCGalaxy
                 }
                 int separator = FindColon(line, offset);
                 if (separator == -1) continue; // not a proper line
-                string key = line.Substring(0, separator).Trim().Replace("\\:", ":");
-                string value = line.Substring(separator + 1).Trim();
+                string key = line.Substring(0, separator).Trim().Replace("\\:", ":"),
+                    value = line.Substring(separator + 1).Trim();
                 if (key.Length == 0) continue;
                 addToken(key, value);
             }

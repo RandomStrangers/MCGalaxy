@@ -38,22 +38,8 @@ namespace MCGalaxy
     public delegate bool ChatMessageFilter(Player pl, object arg);
     public static class Chat
     {
-        public static ItemPerms OpchatPerms
-        {
-            get
-            {
-                ItemPerms perms = CommandExtraPerms.Find("OpChat", 1);
-                return perms ?? new ItemPerms(LevelPermission.Operator);
-            }
-        }
-        public static ItemPerms AdminchatPerms
-        {
-            get
-            {
-                ItemPerms perms = CommandExtraPerms.Find("AdminChat", 1);
-                return perms ?? new ItemPerms(LevelPermission.Admin);
-            }
-        }
+        public static ItemPerms OpchatPerms => CommandExtraPerms.Find("OpChat", 1) ?? new ItemPerms(LevelPermission.Operator);
+        public static ItemPerms AdminchatPerms => CommandExtraPerms.Find("AdminChat", 1) ?? new ItemPerms(LevelPermission.Admin);
         public static string Format(string message, Player dst, bool tokens = true, bool emotes = true)
         {
             message = Colors.Escape(message);
@@ -107,7 +93,6 @@ namespace MCGalaxy
         }
         public static void MessageFromLevel(Player source, string msg) => MessageFrom(ChatScope.Level, source, msg, source.Level, null);
         public static void MessageFromOps(Player source, string msg) => MessageFrom(ChatScope.Perms, source, msg, OpchatPerms, null);
-        public const string LocalPrefix = "<Local>";
         public static void MessageFrom(Player source, string msg,
                                        ChatMessageFilter filter = null, bool relay = false)
         {
@@ -118,7 +103,7 @@ namespace MCGalaxy
             }
             else
             {
-                string prefix = Server.Config.ServerWideChat ? LocalPrefix : "";
+                string prefix = Server.Config.ServerWideChat ? "<Local>" : "";
                 MessageFrom(ChatScope.Level, source, prefix + msg, source.Level , filter);
             }
         }
@@ -149,7 +134,7 @@ namespace MCGalaxy
             }
             else
             {
-                string prefix = Server.Config.ServerWideChat ? LocalPrefix : "";
+                string prefix = Server.Config.ServerWideChat ? "<Local>" : "";
                 MessageChat(ChatScope.Level, source, prefix + msg, source.Level, filter);
             }
         }
@@ -174,7 +159,11 @@ namespace MCGalaxy
                 {
                     if (!scopeFilter(pl, arg)) continue;
                     if (filter != null && !filter(pl, arg)) continue;
-                    if (!counted) { source.TotalMessagesSent++; counted = true; }
+                    if (!counted) 
+                    { 
+                        source.TotalMessagesSent++; 
+                        counted = true; 
+                    }
                 }
                 else
                 {
@@ -231,13 +220,17 @@ namespace MCGalaxy
             {
                 if (!persistentMsgs.TryGetValue(type, out List<PersistentMessage> field))
                 {
-                    field = new List<PersistentMessage>();
+                    field = new();
                     persistentMsgs[type] = field;
                 }
                 PersistentMessage curMsg = null;
                 foreach (PersistentMessage msg in field)
                 {
-                    if (msg.priority == priority) { curMsg = msg; break; }
+                    if (msg.priority == priority) 
+                    { 
+                        curMsg = msg; 
+                        break;
+                    }
                 }
                 if (string.IsNullOrEmpty(message))
                 {
@@ -254,7 +247,7 @@ namespace MCGalaxy
                 {
                     if (curMsg == null)
                     {
-                        curMsg = new PersistentMessage
+                        curMsg = new()
                         {
                             priority = priority
                         };

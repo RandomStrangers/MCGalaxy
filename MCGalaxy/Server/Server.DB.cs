@@ -53,17 +53,7 @@ namespace MCGalaxy
             {
                 Directory.CreateDirectory("blockdb");
             }
-            Logger.Log(LogType.SystemActivity, "Using {0} for database backend", Database.Backend.EngineName);
-            try
-            {
-                Database.Backend.CreateDatabase();
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e);
-                Logger.Log(LogType.Warning, "MySQL settings have not been set! Please Setup using the properties window.");
-                return;
-            }
+            Logger.Log(LogType.SystemActivity, "Using SQLite for database backend");
             Database.CreateTable("Opstats", opstatsTable);
             Database.CreateTable("Players", playersTable);
             //since MCForge 5.5.11 we are cleaning up the table Playercmds
@@ -78,30 +68,30 @@ namespace MCGalaxy
                 Database.Execute(string.Format(sql, "cmd = 'review' AND cmdmsg = 'next'"));
                 Database.DeleteTable("Playercmds");
             }
-            List<string> columns = Database.Backend.ColumnNames("Players");
+            List<string> columns = SQLiteBackend.Instance.ColumnNames("Players");
             if (columns.Count == 0)
             {
                 return;
             }
             if (!columns.CaselessContains("Color"))
             {
-                Database.AddColumn("Players", new ColumnDesc("color", ColumnType.VarChar, 6), "totalKicked");
+                Database.AddColumn("Players", new("color", ColumnType.VarChar, 6));
             }
             if (!columns.CaselessContains("Title_Color"))
             {
-                Database.AddColumn("Players", new ColumnDesc("title_color", ColumnType.VarChar, 6), "color");
+                Database.AddColumn("Players", new("title_color", ColumnType.VarChar, 6));
             }
             if (!columns.CaselessContains("TimeSpent"))
             {
-                Database.AddColumn("Players", new ColumnDesc("TimeSpent", ColumnType.VarChar, 20), "totalKicked");
+                Database.AddColumn("Players", new("TimeSpent", ColumnType.VarChar, 20));
             }
             if (!columns.CaselessContains("TotalCuboided"))
             {
-                Database.AddColumn("Players", new ColumnDesc("totalCuboided", ColumnType.Int64), "totalBlocks");
+                Database.AddColumn("Players", new("totalCuboided", ColumnType.Int64));
             }
             if (!columns.CaselessContains("Messages"))
             {
-                Database.AddColumn("Players", new ColumnDesc("Messages", ColumnType.UInt24), "title_color");
+                Database.AddColumn("Players", new("Messages", ColumnType.UInt24));
             }
         }
     }

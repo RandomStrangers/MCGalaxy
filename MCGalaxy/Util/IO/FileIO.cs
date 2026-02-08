@@ -206,10 +206,7 @@ namespace MCGalaxy
         class GuardedWriter : StreamWriter
         {
             readonly string realPath;
-            public GuardedWriter(string path) : base(path + ".tmp")
-            {
-                realPath = path;
-            }
+            public GuardedWriter(string path) : base(path + ".tmp") => realPath = path;
             protected override void Dispose(bool disposing)
             {
                 base.Dispose(disposing);

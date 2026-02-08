@@ -29,10 +29,6 @@ namespace MCGalaxy
         }
         public static bool Setup()
         {
-            if (File.Exists("plugins/" + selectorImageName))
-            {
-                FileIO.TryMove("plugins/" + selectorImageName, NASPlugin.Path + selectorImageName);
-            }
             if (!File.Exists(NASPlugin.Path + selectorImageName))
             {
                 Logger.Log(LogType.Debug, "Could not locate {0} (needed for tool health/selection colors)", selectorImageName);

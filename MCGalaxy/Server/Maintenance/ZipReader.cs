@@ -23,10 +23,7 @@ namespace MCGalaxy
     {
         public long CompressedLen;
         public Stream stream;
-        public ZipReaderStream(Stream stream)
-        {
-            this.stream = stream;
-        }
+        public ZipReaderStream(Stream stream) => this.stream = stream;
         public override bool CanRead => true;
         public override bool CanSeek => false;
         public override bool CanWrite => false;
@@ -82,7 +79,7 @@ namespace MCGalaxy
             stream.Seek(entry.LocalHeaderOffset, SeekOrigin.Begin);
             file = null;
             uint sig = reader.ReadUInt32();
-            if (sig != ZipEntry.SIG_LOCAL)
+            if (sig != 0x04034b50)
             {
                 Logger.Log(LogType.Warning, "&WFailed to find local file entry {0}", i); return null;
             }
@@ -104,7 +101,7 @@ namespace MCGalaxy
             for (int i = 0; i < numEntries; i++)
             {
                 uint sig = reader.ReadUInt32();
-                if (sig != ZipEntry.SIG_CENTRAL)
+                if (sig != 0x02014b50)
                 {
                     Logger.Log(LogType.Warning, "&WFailed to find central dir entry {0}", i); return i;
                 }
@@ -123,12 +120,12 @@ namespace MCGalaxy
             {
                 stream.Seek(-i, SeekOrigin.End);
                 sig = r.ReadUInt32();
-                if (sig == ZipEntry.SIG_END)
+                if (sig == 0x06054b50)
                 {
                     break;
                 }
             }
-            if (sig != ZipEntry.SIG_END)
+            if (sig != 0x06054b50)
             {
                 Logger.Log(LogType.Warning, "&WFailed to find end of central directory"); return;
             }
@@ -140,7 +137,7 @@ namespace MCGalaxy
             Logger.Log(LogType.SystemActivity, "Backup .zip is using ZIP64 format");
             stream.Seek(-i - 20, SeekOrigin.End);
             sig = r.ReadUInt32();
-            if (sig != ZipEntry.SIG_ZIP64_LOC)
+            if (sig != 0x07064b50)
             {
                 Logger.Log(LogType.Warning, "&WFailed to find ZIP64 locator");
                 return;
@@ -148,7 +145,7 @@ namespace MCGalaxy
             ReadZip64EndOfCentralDirectoryLocator();
             stream.Seek(zip64EndOffset, SeekOrigin.Begin);
             sig = r.ReadUInt32();
-            if (sig != ZipEntry.SIG_ZIP64_END)
+            if (sig != 0x06064b50)
             {
                 Logger.Log(LogType.Warning, "&WFailed to find ZIP64 end");
                 return;
@@ -203,8 +200,8 @@ namespace MCGalaxy
             entry.CompressedSize = r.ReadUInt32();
             entry.UncompressedSize = r.ReadUInt32();
             int filenameLen = r.ReadUInt16(),
-                extraLen = r.ReadUInt16(),
-                _ = r.ReadUInt16();
+                extraLen = r.ReadUInt16();
+            r.ReadUInt16();
             r.ReadUInt16(); // disc number
             r.ReadUInt16(); // internal attributes
             r.ReadUInt32(); // external attributes

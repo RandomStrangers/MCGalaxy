@@ -161,11 +161,7 @@ namespace MCGalaxy.Network
         }
         #endregion
         #region CPE processing
-        public override bool Supports(string extName, int version = 1)
-        {
-            CpeExt ext = FindExtension(extName);
-            return ext != null && ext.ClientVersion == version;
-        }
+        public override bool Supports(string extName, int version = 1) => FindExtension(extName) != null && FindExtension(extName).ClientVersion == version;
         CpeExt FindExtension(string extName)
         {
             foreach (CpeExt ext in extensions)
@@ -387,11 +383,11 @@ namespace MCGalaxy.Network
             SendTeleportCore(self, Packet.Teleport(id, pos, rot, player.hasExtPositions), id, pos, rot);
         }
         public override bool SendTeleport(byte id, Position pos, Orientation rot,
-                                          Packet.TeleportMoveMode moveMode, bool usePos = true, bool interpolateOri = false, bool useOri = true)
+                                          TeleportMoveMode moveMode, bool usePos = true, bool interpolateOri = false, bool useOri = true)
         {
             if (!Supports(CpeExt.ExtEntityTeleport)) { return false; }
-            bool absoluteSelf = (moveMode == Packet.TeleportMoveMode.AbsoluteInstant ||
-                moveMode == Packet.TeleportMoveMode.AbsoluteSmooth) && id == 0xFF;
+            bool absoluteSelf = (moveMode == TeleportMoveMode.AbsoluteInstant ||
+                moveMode == TeleportMoveMode.AbsoluteSmooth) && id == 0xFF;
             // NOTE: Classic clients require offseting own entity by 22 units vertically when using absolute location updates
             if (absoluteSelf) pos.Y -= 22;
             SendTeleportCore(absoluteSelf, Packet.TeleportExt(id, usePos, moveMode, useOri, interpolateOri, pos, rot, player.hasExtPositions), id, pos, rot);
@@ -435,11 +431,7 @@ namespace MCGalaxy.Network
                 Send(data);
             }
         }
-        public override void SendMessage(CpeMessageType type, string message)
-        {
-            message = CleanupColors(message);
-            Send(Packet.Message(message, type, player.hasCP437));
-        }
+        public override void SendMessage(CpeMessageType type, string message) => Send(Packet.Message(CleanupColors(message), type, player.hasCP437));
         public override void SendKick(string reason, bool sync)
         {
             reason = CleanupColors(reason);
@@ -455,12 +447,7 @@ namespace MCGalaxy.Network
         }
         #endregion
         #region CPE packet sending
-        public override void SendAddTabEntry(byte id, string name, string nick, string group, byte groupRank)
-        {
-            nick = CleanupColors(nick);
-            group = CleanupColors(group);
-            Send(Packet.ExtAddPlayerName(id, name, nick, group, groupRank, player.hasCP437));
-        }
+        public override void SendAddTabEntry(byte id, string name, string nick, string group, byte groupRank) => Send(Packet.ExtAddPlayerName(id, name, CleanupColors(nick), CleanupColors(group), groupRank, player.hasCP437));
         public override void SendRemoveTabEntry(byte id) => Send(Packet.ExtRemovePlayerName(id));
         public override bool SendSetReach(float reach)
         {
@@ -681,13 +668,7 @@ namespace MCGalaxy.Network
                 fallback[b] = hasCustomBlocks ? b : Block.ConvertClassic(b, ProtocolVersion);
             }
         }
-        string CleanupColors(string value) =>
-            // Although ClassiCube in classic mode supports invalid colours,
-            //  the original vanilla client crashes with invalid colour codes
-            // Since it's impossible to identify which client is being used,
-            //  just remove the ampersands to be on the safe side
-            //  when text colours extension is not supported
-            LineWrapper.CleanupColors(value, hasTextColors, hasTextColors);
+        string CleanupColors(string value) => LineWrapper.CleanupColors(value, hasTextColors, hasTextColors);
         public override string ClientName()
         {
             if (!string.IsNullOrEmpty(appName)) return appName;
@@ -703,13 +684,15 @@ namespace MCGalaxy.Network
                                                     Position pos, Position oldPos, Orientation rot, Orientation oldRot)
         {
             Position delta = GetDelta(pos, oldPos, srcExtPos);
-            bool posChanged = delta.X != 0 || delta.Y != 0 || delta.Z != 0;
-            bool oriChanged = rot.RotY != oldRot.RotY || rot.HeadX != oldRot.HeadX;
-            bool absPosUpdate = Math.Abs(delta.X) > 32 || Math.Abs(delta.Y) > 32 || Math.Abs(delta.Z) > 32;
+            bool posChanged = delta.X != 0 || delta.Y != 0 || delta.Z != 0,
+                oriChanged = rot.RotY != oldRot.RotY || rot.HeadX != oldRot.HeadX,
+                absPosUpdate = Math.Abs(delta.X) > 32 || Math.Abs(delta.Y) > 32 || Math.Abs(delta.Z) > 32;
             if (absPosUpdate)
             {
-                *ptr = Opcode.EntityTeleport; ptr++;
-                *ptr = id; ptr++;
+                *ptr = 8; 
+                ptr++;
+                *ptr = id; 
+                ptr++;
                 if (extPos)
                 {
                     WriteI32(ref ptr, pos.X); 

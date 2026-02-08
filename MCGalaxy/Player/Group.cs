@@ -59,8 +59,8 @@ namespace MCGalaxy
         [ConfigString("Filename", null, "", true, ".,_-+=")]
         internal string filename;
         public PlayerList Players;
-        public bool[] CanPlace = new bool[Block.SUPPORTED_COUNT];
-        public bool[] CanDelete = new bool[Block.SUPPORTED_COUNT];
+        public bool[] CanPlace = new bool[1024],
+            CanDelete = new bool[1024];
         public Group() { }
         private Group(LevelPermission perm, int drawLimit, TimeSpan undoMins, string name, string color, int volume, int realms)
         {
@@ -243,8 +243,7 @@ namespace MCGalaxy
                 // try appending a and z if duplicate file
                 for (char c = 'a'; c <= 'z'; c++)
                 {
-                    string newFile = desired + c + ".txt";
-                    if (MoveToFile(newFile)) return;
+                    if (MoveToFile(desired + c + ".txt")) return;
                 }
             }
         }
@@ -253,7 +252,6 @@ namespace MCGalaxy
             if (File.Exists("ranks/" + newFile)) return false;
             try
             {
-                //File.Move("ranks/" + filename, "ranks/" + newFile);
                 FileIO.TryMove("ranks/" + filename, "ranks/" + newFile);
                 filename = newFile;
                 return true;
@@ -277,7 +275,7 @@ namespace MCGalaxy
             if (key.CaselessEq("RankName"))
             {
                 if (temp != null) AddGroup(temp);
-                temp = new Group
+                temp = new()
                 {
                     Name = value.Replace(" ", "")
                 };

@@ -17,12 +17,12 @@ namespace MCGalaxy.Undo
 {
     public sealed class UndoDrawOpEntry
     {
-        public string DrawOpName;
-        public string LevelName;
+        public string DrawOpName, LevelName;
         public DateTime Start, End;
         public void Init(string op, string map)
         {
-            DrawOpName = op; LevelName = map;
+            DrawOpName = op; 
+            LevelName = map;
             // Use same time method as DoBlockchange writing to undo buffer
             int timeDelta = (int)DateTime.UtcNow.Subtract(Server.StartTime).TotalSeconds;
             Start = Server.StartTime.AddTicks(timeDelta * TimeSpan.TicksPerSecond);

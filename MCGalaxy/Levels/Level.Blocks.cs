@@ -74,20 +74,10 @@ namespace MCGalaxy
         public bool IsValidPos(int x, int y, int z) => x >= 0 && y >= 0 && z >= 0 && x < Width && y < Height && z < Length;
         /// <summary> Gets the block at the given coordinates </summary>
         /// <returns> Undefined behaviour if coordinates are invalid </returns>
-        public ushort FastGetBlock(int index)
-        {
-            byte raw = blocks[index];
-            ushort extended = Block.ExtendedBase[raw];
-            return extended == 0 ? raw : (ushort)(extended | GetExtTile(index));
-        }
+        public ushort FastGetBlock(int index) => Block.ExtendedBase[blocks[index]] == 0 ? blocks[index] : (ushort)(Block.ExtendedBase[blocks[index]] | GetExtTile(index));
         /// <summary> Gets the block at the given coordinates </summary>
         /// <returns> Undefined behaviour if coordinates are invalid </returns>
-        public ushort FastGetBlock(ushort x, ushort y, ushort z)
-        {
-            byte raw = blocks[x + Width * (z + y * Length)];
-            ushort extended = Block.ExtendedBase[raw];
-            return extended == 0 ? raw : (ushort)(extended | FastGetExtTile(x, y, z));
-        }
+        public ushort FastGetBlock(ushort x, ushort y, ushort z) => Block.ExtendedBase[blocks[x + Width * (z + y * Length)]] == 0 ? blocks[x + Width * (z + y * Length)] : (ushort)(Block.ExtendedBase[blocks[x + Width * (z + y * Length)]] | FastGetExtTile(x, y, z));
         /// <summary> Gets the block at the given coordinates </summary>
         /// <returns> Block.Invalid if coordinates outside level </returns>
         public ushort GetBlock(ushort x, ushort y, ushort z)
@@ -116,7 +106,11 @@ namespace MCGalaxy
         /// <summary> Gets whether the block at the given coordinates is air </summary>
         public bool IsAirAt(ushort x, ushort y, ushort z, out int index)
         {
-            if (x >= Width || y >= Height || z >= Length || blocks == null) { index = -1; return false; }
+            if (x >= Width || y >= Height || z >= Length || blocks == null) 
+            { 
+                index = -1; 
+                return false; 
+            }
             index = x + Width * (z + y * Length);
             return blocks[index] == 0;
         }
@@ -235,13 +229,6 @@ namespace MCGalaxy
             {
                 if (p.Level == this) p.SendBlockchange(x, y, z, block);
             }
-        }
-        /// <summary> Sends a block update packet to all players in this level. </summary>
-        /// <remarks> The block sent is the current block at the given coordinates. </remarks>
-        public void BroadcastRevert(ushort x, ushort y, ushort z)
-        {
-            ushort block = GetBlock(x, y, z);
-            if (block != 0xff) BroadcastChange(x, y, z, block);
         }
         public void Blockchange(Player p, ushort x, ushort y, ushort z, ushort block)
         {

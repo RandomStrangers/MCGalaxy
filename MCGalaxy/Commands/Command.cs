@@ -193,11 +193,7 @@ namespace MCGalaxy
         {
             foreach (Command cmd in commands) Unregister(cmd);
         }
-        public static string GetColoredName(Command cmd)
-        {
-            LevelPermission perm = cmd.Permissions.MinRank;
-            return Group.GetColor(perm) + cmd.Name;
-        }
+        public static string GetColoredName(Command cmd) => Group.GetColor(cmd.Permissions.MinRank) + cmd.Name;
         public static Command Find(string name)
         {
             foreach (Command cmd in allCmds)
@@ -216,7 +212,8 @@ namespace MCGalaxy
                 foreach (Command cmd in allCmds)
                 {
                     if (!cmd.Shortcut.CaselessEq(cmdName)) continue;
-                    cmdName = cmd.Name; return;
+                    cmdName = cmd.Name;
+                    return;
                 }
                 return;
             }
@@ -262,7 +259,8 @@ namespace MCGalaxy.Commands
         public string Description;
         public CommandPerm(LevelPermission perm, string desc)
         {
-            Perm = perm; Description = desc;
+            Perm = perm; 
+            Description = desc;
         }
     }
     public struct CommandAlias
@@ -270,7 +268,8 @@ namespace MCGalaxy.Commands
         public string Trigger, Format;
         public CommandAlias(string cmd, string format = null)
         {
-            Trigger = cmd; Format = format;
+            Trigger = cmd; 
+            Format = format;
         }
     }
 }

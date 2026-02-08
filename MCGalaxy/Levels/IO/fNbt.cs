@@ -56,7 +56,7 @@ namespace fNbt
         public override NbtTagType TagType => NbtTagType.Compound;
         readonly Dictionary<string, NbtTag> tags = new();
         public NbtCompound() { }
-        public NbtCompound(string tagName) { Name = tagName; }
+        public NbtCompound(string tagName) => Name = tagName;
         public override NbtTag this[string tagName]
         {
             get
@@ -235,10 +235,7 @@ namespace fNbt
         readonly bool swapNeeded;
         // avoid allocation for small strings (which is majority of them)
         readonly byte[] strBuffer = new byte[64];
-        public NbtBinaryReader(Stream input, bool bigEndian) : base(input)
-        {
-            swapNeeded = BitConverter.IsLittleEndian == bigEndian;
-        }
+        public NbtBinaryReader(Stream input, bool bigEndian) : base(input) => swapNeeded = BitConverter.IsLittleEndian == bigEndian;
         public NbtTagType ReadTagType()
         {
             int type = ReadByte();
@@ -341,7 +338,7 @@ namespace fNbt
     public sealed class NbtFile
     {
         public NbtCompound RootTag;
-        public NbtFile() { RootTag = new NbtCompound(""); }
+        public NbtFile() => RootTag = new NbtCompound("");
         public void LoadFromStream(Stream stream)
         {
             if (stream == null) throw new ArgumentNullException("stream");

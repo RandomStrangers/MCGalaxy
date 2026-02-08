@@ -48,21 +48,9 @@ namespace MCGalaxy
                 return dict.Remove(key);
             }
         }
-        public bool TryGet(string key, out object value)
-        {
-            lock (locker)
-            {
-                return dict.TryGetValue(key, out value);
-            }
-        }
-        public object Get(string key)
-        {
-            TryGet(key, out object value);
-            return value;
-        }
         public bool GetBoolean(string key, bool defaultValue = false)
         {
-            if (TryGet(key, out object value))
+            if (dict.TryGetValue(key, out object value))
             {
                 try
                 {
@@ -76,7 +64,7 @@ namespace MCGalaxy
         }
         public int GetInt(string key, int defaultValue = 0)
         {
-            if (TryGet(key, out object value))
+            if (dict.TryGetValue(key, out object value))
             {
                 try
                 {
@@ -90,7 +78,7 @@ namespace MCGalaxy
         }
         public string GetString(string key, string defaultValue = null)
         {
-            if (TryGet(key, out object value))
+            if (dict.TryGetValue(key, out object value))
             {
                 try
                 {

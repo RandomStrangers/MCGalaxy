@@ -21,7 +21,6 @@ namespace MCGalaxy.Authentication
     {
         public static List<AuthService> Services = new();
         public string URL, Salt, NameSuffix = "", SkinPrefix = "";
-        public bool MojangAuth;
         public virtual void AcceptPlayer(Player p)
         {
             p.VerifiedVia = URL;
@@ -47,18 +46,16 @@ namespace MCGalaxy.Authentication
                 Salt = Server.GenerateSalt()
             };
             Services.Add(service);
-            // TODO: Maybe seperate method instead
-            if (!canSave)
+            if (canSave)
             {
-                return service;
-            }
-            try
-            {
-                SaveServices();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Error saving authservices.properties", ex);
+                try
+                {
+                    SaveServices();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("Error saving authservices.properties", ex);
+                }
             }
             return service;
         }
@@ -67,10 +64,6 @@ namespace MCGalaxy.Authentication
         {
             AuthService cur = null;
             PropertiesFile.Read(Paths.AuthServicesFile, ref cur, ParseProperty, '=', true);
-            // NOTE: Heartbeat.ReloadDefault will call GetOrCreate for all of the
-            //  URLs specified in the HeartbeatURL server configuration property
-            // Therefore it is unnecessary to create default AuthServices here
-            //  (e.g. for when authservices.properties is empty or is missing a URL)
         }
         static void ParseProperty(string key, string value, ref AuthService cur)
         {
@@ -94,14 +87,6 @@ namespace MCGalaxy.Authentication
                 }
                 cur.SkinPrefix = value;
             }
-            else if (key.CaselessEq("mojang-auth"))
-            {
-                if (cur == null)
-                {
-                    return;
-                }
-                bool.TryParse(value, out cur.MojangAuth);
-            }
         }
         static void SaveServices()
         {
@@ -120,16 +105,12 @@ namespace MCGalaxy.Authentication
             w.WriteLine("#skin-prefix = string");
             w.WriteLine("#   Characters that are prefixed to skin name of players that login through the authentication service");
             w.WriteLine("#   (used to ensure players from other authentication services see the correct skin)");
-            w.WriteLine("#mojang-auth = boolean");
-            w.WriteLine("#   Whether to try verifying users using Mojang's authentication servers if mppass verification fails");
-            w.WriteLine("#   NOTE: This should only be used for the Betacraft.uk authentication service");
             w.WriteLine();
             foreach (AuthService service in Services)
             {
                 w.WriteLine("URL = " + service.URL);
                 w.WriteLine("name-suffix = " + service.NameSuffix);
                 w.WriteLine("skin-prefix = " + service.SkinPrefix);
-                w.WriteLine("mojang-auth = " + service.MojangAuth);
                 w.WriteLine();
             }
         }

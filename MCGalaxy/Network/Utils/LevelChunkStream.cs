@@ -34,7 +34,7 @@ namespace MCGalaxy.Network
         byte chunkValue;
         ClassicProtocol session;
         byte[] data = new byte[1028];
-        public LevelChunkStream(ClassicProtocol s) { session = s; }
+        public LevelChunkStream(ClassicProtocol s) => session = s;
         public override void Close()
         {
             if (index > 0) WritePacket();

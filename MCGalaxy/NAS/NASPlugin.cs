@@ -15,28 +15,25 @@ namespace MCGalaxy
             "JuneSolis",
         };
         public const string PlayerKey = "NAS_NASPlayer",
-            Path = "NAS/",
-            SavePath = Path + "PlayerData/",
-            CoreSavePath = Path + "CoreData/",
-            EffectsPath = Path + "Effects/";
+            Path = "NAS/";
         public static bool LoadedOnStartup = false,
-            firstEverPluginLoad = false;
+            firstEverLoad = false;
         public static Command[] Commands = new Command[]
         {
-            new NASPlayer.CmdBarrelMode(),
-            new NASPlayer.CmdGravestones(),
-            new NASPlayer.CmdMyGravestones(),
-            new NASPlayer.CmdNASSpawn(),
-            new NASPlayer.CmdPVP(),
-            new NASPlayer.CmdSpawnDungeon(),
+            new CmdBarrelMode(),
+            new CmdGravestones(),
+            new CmdMyGravestones(),
+            new CmdNASSpawn(),
+            new CmdPVP(),
+            new CmdSpawnDungeon(),
         };
         public static void EnsureNASFilesExist()
         {
             EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/NAS/Uploads/selectorColors.png", Path + "selectorColors.png");
             EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/NAS/Uploads/terrain.png", Path + "terrain.png");
-            EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/NAS/Uploads/effects/breakdust.properties", EffectsPath + "breakdust.properties");
-            EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/NAS/Uploads/effects/breakleaf.properties", EffectsPath + "breakleaf.properties");
-            EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/NAS/Uploads/effects/breakmeter.properties", EffectsPath + "breakmeter.properties");
+            EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/NAS/Uploads/effects/breakdust.properties", NASEffect.Path + "breakdust.properties");
+            EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/NAS/Uploads/effects/breakleaf.properties", NASEffect.Path + "breakleaf.properties");
+            EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/NAS/Uploads/effects/breakmeter.properties", NASEffect.Path + "breakmeter.properties");
             EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/NAS/Uploads/global.json", "blockdefs/global.json");
             EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/NAS/Newtonsoft.Json.dll", "Newtonsoft.Json.dll");
         }
@@ -46,27 +43,27 @@ namespace MCGalaxy
             {
                 LoadedOnStartup = true;
             }
-            EnsureDirectoriesExists(Path, SavePath,
-                CoreSavePath, EffectsPath,
+            EnsureDirectoriesExists(Path, NASPlayer.Path,
+                NASTimeCycle.Path, NASEffect.Path,
                 NASLevel.Path, NASBlock.Path,
                 NASPlayer.DeathsPath, "blockprops",
                 "blockdefs", "text");
             EnsureNASFilesExist();
             if (!File.Exists("Newtonsoft.Json.dll"))
             {
-                Log("NAS: FAILED to load plugin. Could not find Newtonsoft.Json.dll");
+                Log("NAS: FAILED to load. Could not find Newtonsoft.Json.dll");
                 return;
             }
             if (File.Exists("NAS/loaded.txt"))
             {
-                firstEverPluginLoad = false;
+                firstEverLoad = false;
             }
             else
             {
-                firstEverPluginLoad = true;
-                FileIO.TryWriteAllText("NAS/loaded.txt", "Do not delete this file unless you are using the plugin for the first time!");
+                firstEverLoad = true;
+                FileIO.TryWriteAllText("NAS/loaded.txt", "Do not delete this file unless you are using NAS for the first time!");
             }
-            if (firstEverPluginLoad)
+            if (firstEverLoad)
             {
                 LoadFirstTime();
             }
@@ -79,19 +76,19 @@ namespace MCGalaxy
             NASBlock.Setup();
             if (!NASEffect.Setup())
             {
-                Log("NAS: FAILED to load plugin. Please report this to randomstrangers on Discord!");
+                Log("NAS: FAILED to load. Please report this to randomstrangers on Discord!");
                 return;
             }
             if (!NASBlockChange.Setup())
             {
-                Log("NAS: FAILED to load plugin. Please report this to randomstrangers on Discord!");
+                Log("NAS: FAILED to load. Please report this to randomstrangers on Discord!");
                 return;
             }
             NASItemProp.Setup();
             NASCrafting.Setup();
             if (!NASColor.Setup())
             {
-                Log("NAS: FAILED to load plugin. Please report this to randomstrangers on Discord!");
+                Log("NAS: FAILED to load. Please report this to randomstrangers on Discord!");
                 return;
             }
             NASCollision.Setup();
@@ -108,7 +105,7 @@ namespace MCGalaxy
             NASGen.Setup();
             NASLevel.Setup();
             NASTimeCycle.Setup();
-            if (firstEverPluginLoad)
+            if (firstEverLoad)
             {
                 GenLevel();
             }
@@ -144,8 +141,7 @@ namespace MCGalaxy
             Chat.MessageAll("Attempting to unload NAS.");
             if (!shutdown && LoadedOnStartup)
             {
-                InvalidOperationException ioex = new("You cannot unload NAS manually, it can only be unloaded on server shutdown.");
-                throw ioex;
+                throw new InvalidOperationException("You cannot unload NAS manually, it can only be unloaded on server shutdown.");
             }
             NASPlayer.Unregister();
             NASColor.TakeDown();

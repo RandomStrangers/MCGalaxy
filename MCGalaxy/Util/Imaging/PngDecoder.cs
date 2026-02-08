@@ -345,21 +345,9 @@ namespace MCGalaxy.Util.Imaging
             }
         }
         delegate void RowExpander(int width, Pixel[] palette, byte[] src, Pixel* dst);
-        static int Get_1BPP(byte[] src, int i)
-        {
-            int j = 7 - (i & 7);
-            return (src[i >> 3] >> j) & 0x01;
-        }
-        static int Get_2BPP(byte[] src, int i)
-        {
-            int j = (3 - (i & 3)) * 2;
-            return (src[i >> 2] >> j) & 0x03;
-        }
-        static int Get_4BPP(byte[] src, int i)
-        {
-            int j = (1 - (i & 1)) * 4;
-            return (src[i >> 1] >> j) & 0x0F;
-        }
+        static int Get_1BPP(byte[] src, int i) => (src[i >> 3] >> (7 - (i & 7))) & 0x01;
+        static int Get_2BPP(byte[] src, int i) => (src[i >> 2] >> ((3 - (i & 3)) * 2)) & 0x03;
+        static int Get_4BPP(byte[] src, int i) => (src[i >> 1] >> ((1 - (i & 1)) * 4)) & 0x0F;
         static void Expand_GRAYSCALE_1(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
             for (int i = 0; i < width; i++)

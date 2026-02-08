@@ -44,7 +44,7 @@ namespace MCGalaxy.Commands.Building
             List<ushort> toCount = (List<ushort>)state;
             Vec3S32 min = Vec3S32.Min(m[0], m[1]);
             Vec3S32 max = Vec3S32.Max(m[0], m[1]);
-            int[] counts = new int[Block.SUPPORTED_COUNT];
+            int[] counts = new int[1024];
             for (ushort y = (ushort)min.Y; y <= (ushort)max.Y; y++)
                 for (ushort z = (ushort)min.Z; z <= (ushort)max.Z; z++)
                     for (ushort x = (ushort)min.X; x <= (ushort)max.X; x++)
@@ -68,8 +68,8 @@ namespace MCGalaxy.Commands.Building
         }
         static List<ushort> MostFrequentBlocks(int[] countsRaw)
         {
-            ushort[] blocks = new ushort[Block.SUPPORTED_COUNT];
-            int[] counts = new int[Block.SUPPORTED_COUNT]; // copy array as Sort works in place
+            ushort[] blocks = new ushort[1024];
+            int[] counts = new int[1024]; // copy array as Sort works in place
             int total = 0;
             for (int i = 0; i < blocks.Length; i++)
             {

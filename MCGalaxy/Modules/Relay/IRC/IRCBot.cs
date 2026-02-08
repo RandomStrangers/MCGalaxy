@@ -30,13 +30,10 @@ namespace MCGalaxy.Modules.Relay.IRC
         public override bool Enabled => Server.Config.UseIRC;
         public override string UserID => conn?.Nick;
         public override void LoadControllers() => Controllers = PlayerList.Load("ranks/IRC_Controllers.txt");
-        public IRCBot()
+        public IRCBot() => nicks = new IRCNickList
         {
-            nicks = new IRCNickList
-            {
-                bot = this
-            };
-        }
+            bot = this
+        };
         static readonly char[] newline = { '\n' };
         protected override void DoSendMessage(string channel, string message)
         {

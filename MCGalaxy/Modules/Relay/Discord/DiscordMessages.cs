@@ -76,10 +76,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         public string Title;
         public Dictionary<string, string> Fields = new();
         public int Color;
-        public ChannelSendEmbed(string channelID)
-        {
-            Path = "/channels/" + channelID + "/messages";
-        }
+        public ChannelSendEmbed(string channelID) => Path = "/channels/" + channelID + "/messages";
         JsonArray GetFields()
         {
             JsonArray arr = new();

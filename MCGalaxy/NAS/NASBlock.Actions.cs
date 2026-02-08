@@ -4,6 +4,103 @@ using System.Collections.Generic;
 using NASBlockAction = MCGalaxy.NASAction<MCGalaxy.NASLevel, MCGalaxy.NASBlock, int, int, int>;
 namespace MCGalaxy
 {
+    public class NASFloodSim
+    {
+        public NASLevel nl;
+        public int xO,
+            yO,
+            zO,
+            totalDistance,
+            widthAndHeight,
+            distanceHolesWereFoundAt;
+        public ushort[] liquidSet;
+        public bool[,] waterAtSpot;
+        public List<Vec3S32> holes;
+        public NASFloodSim(NASLevel nl, int xO, int yO, int zO, int totalDistance, ushort[] set)
+        {
+            this.nl = nl;
+            this.xO = xO;
+            this.yO = yO;
+            this.zO = zO;
+            this.totalDistance = totalDistance;
+            liquidSet = set;
+            waterAtSpot = new bool[totalDistance * 2 + 1, totalDistance * 2 + 1];
+            widthAndHeight = waterAtSpot.GetLength(0);
+            holes = new();
+            distanceHolesWereFoundAt = totalDistance;
+        }
+        public List<Vec3S32> GetHoles(out int distance)
+        {
+            Flood(xO, zO, true);
+            TryFlood(xO + 1, yO, zO);
+            TryFlood(xO - 1, yO, zO);
+            TryFlood(xO, yO, zO + 1);
+            TryFlood(xO, yO, zO - 1);
+            distance = distanceHolesWereFoundAt;
+            return holes;
+        }
+        public void TryFlood(int x, int y, int z)
+        {
+            int distanceFromCenter = Math.Abs(x - xO) + Math.Abs(z - zO);
+            if (distanceFromCenter > totalDistance)
+            {
+                return;
+            }
+            if (AlreadyFlooded(x, z))
+            {
+                return;
+            }
+            ushort here = nl.GetBlock(x, y, z);
+            if (!(NASBlock.CanPhysicsKillThis(here) || NASBlock.IsPartOfSet(liquidSet, here) != -1))
+            {
+                return;
+            }
+            ushort below = nl.GetBlock(x, y - 1, z);
+            if (NASBlock.CanPhysicsKillThis(below) || NASBlock.IsPartOfSet(liquidSet, below) != -1)
+            {
+                if (distanceFromCenter < distanceHolesWereFoundAt)
+                {
+                    holes.Clear();
+                    holes.Add(new(x, y - 1, z));
+                    distanceHolesWereFoundAt = distanceFromCenter;
+                }
+                else if (distanceFromCenter == distanceHolesWereFoundAt)
+                {
+                    holes.Add(new(x, y - 1, z));
+                }
+            }
+            Flood(x, z, true);
+            TryFlood(x + 1, y, z);
+            TryFlood(x - 1, y, z);
+            TryFlood(x, y, z + 1);
+            TryFlood(x, y, z - 1);
+        }
+        public bool AlreadyFlooded(int x, int z)
+        {
+            int xI = x - xO,
+                zI = z - zO;
+            xI += totalDistance;
+            zI += totalDistance;
+            if (
+                xI >= widthAndHeight ||
+                zI >= widthAndHeight ||
+                xI < 0 ||
+                zI < 0
+               )
+            {
+                return false;
+            }
+            return waterAtSpot[xI, zI];
+        }
+        public void Flood(int x, int z, bool value)
+        {
+            int xI = x - xO,
+                zI = z - zO;
+            xI += totalDistance;
+            zI += totalDistance;
+            waterAtSpot[xI, zI] = value;
+        }
+    }
     public partial class NASBlock
     {
         public static int LiquidInfiniteIndex = 0,
@@ -548,108 +645,7 @@ namespace MCGalaxy
             }
             canFlowDir = false;
         }
-        public class NASFloodSim
-        {
-            public NASLevel nl;
-            public int xO,
-                yO,
-                zO,
-                totalDistance,
-                widthAndHeight,
-                distanceHolesWereFoundAt;
-            public ushort[] liquidSet;
-            public bool[,] waterAtSpot;
-            public List<Vec3S32> holes;
-            public NASFloodSim(NASLevel nl, int xO, int yO, int zO, int totalDistance, ushort[] set)
-            {
-                this.nl = nl;
-                this.xO = xO;
-                this.yO = yO;
-                this.zO = zO;
-                this.totalDistance = totalDistance;
-                liquidSet = set;
-                waterAtSpot = new bool[totalDistance * 2 + 1, totalDistance * 2 + 1];
-                widthAndHeight = waterAtSpot.GetLength(0);
-                holes = new();
-                distanceHolesWereFoundAt = totalDistance;
-            }
-            public List<Vec3S32> GetHoles(out int distance)
-            {
-                Flood(xO, zO, true);
-                TryFlood(xO + 1, yO, zO);
-                TryFlood(xO - 1, yO, zO);
-                TryFlood(xO, yO, zO + 1);
-                TryFlood(xO, yO, zO - 1);
-                distance = distanceHolesWereFoundAt;
-                return holes;
-            }
-            public void TryFlood(int x, int y, int z)
-            {
-                int distanceFromCenter = Math.Abs(x - xO) + Math.Abs(z - zO);
-                if (distanceFromCenter > totalDistance)
-                {
-                    return;
-                }
-                if (AlreadyFlooded(x, z))
-                {
-                    return;
-                }
-                ushort here = nl.GetBlock(x, y, z);
-                if (!(CanPhysicsKillThis(here) || IsPartOfSet(liquidSet, here) != -1))
-                {
-                    return;
-                }
-                ushort below = nl.GetBlock(x, y - 1, z);
-                if (CanPhysicsKillThis(below) || IsPartOfSet(liquidSet, below) != -1)
-                {
-                    if (distanceFromCenter < distanceHolesWereFoundAt)
-                    {
-                        holes.Clear();
-                        holes.Add(new(x, y - 1, z));
-                        distanceHolesWereFoundAt = distanceFromCenter;
-                    }
-                    else if (distanceFromCenter == distanceHolesWereFoundAt)
-                    {
-                        holes.Add(new(x, y - 1, z));
-                    }
-                }
-                Flood(x, z, true);
-                TryFlood(x + 1, y, z);
-                TryFlood(x - 1, y, z);
-                TryFlood(x, y, z + 1);
-                TryFlood(x, y, z - 1);
-            }
-            public bool AlreadyFlooded(int x, int z)
-            {
-                int xI = x - xO,
-                    zI = z - zO;
-                xI += totalDistance;
-                zI += totalDistance;
-                if (
-                    xI >= widthAndHeight ||
-                    zI >= widthAndHeight ||
-                    xI < 0 ||
-                    zI < 0
-                   )
-                {
-                    return false;
-                }
-                return waterAtSpot[xI, zI];
-            }
-            public void Flood(int x, int z, bool value)
-            {
-                int xI = x - xO,
-                    zI = z - zO;
-                xI += totalDistance;
-                zI += totalDistance;
-                waterAtSpot[xI, zI] = value;
-            }
-        }
-        public static List<Vec3S32> HolesInRange(NASLevel nl, int x, int y, int z, int totalDistance, ushort[] set, out int distance)
-        {
-            NASFloodSim sim = new(nl, x, y, z, totalDistance, set);
-            return sim.GetHoles(out distance);
-        }
+        public static List<Vec3S32> HolesInRange(NASLevel nl, int x, int y, int z, int totalDistance, ushort[] set, out int distance) => new NASFloodSim(nl, x, y, z, totalDistance, set).GetHoles(out distance);
         public static NASBlockAction FallingBlockAction(ushort serverushort) => (nl, nasBlock, x, y, z) =>
                                                                                          {
                                                                                              ushort blockUnder = nl.GetBlock(x, y - 1, z);
@@ -2092,7 +2088,7 @@ namespace MCGalaxy
                                                                                                              strength1 = nl.blockEntities[x + 1 + " " + y + " " + z];
                                                                                                          }
                                                                                                      }
-                                                                                                     NASLevel.NASQueuedBlockUpdate qb = new()
+                                                                                                     NASQueuedBlockUpdate qb = new()
                                                                                                      {
                                                                                                          x = x,
                                                                                                          y = y,
@@ -2412,7 +2408,7 @@ namespace MCGalaxy
                                                                               return;
                                                                           }
                                                                           nl.blockEntities[x + " " + y + " " + z].type = 1;
-                                                                          NASCrafting.NASRecipe recipe = NASCrafting.GetRecipe(nl, (ushort)x, (ushort)y, (ushort)z, nasBlock.station);
+                                                                          NASRecipe recipe = NASCrafting.GetRecipe(nl, (ushort)x, (ushort)y, (ushort)z, nasBlock.station);
                                                                           if (recipe == null)
                                                                           {
                                                                               return;

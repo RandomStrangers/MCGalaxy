@@ -225,7 +225,7 @@ namespace MCGalaxy {
         protected override void ApplyChanges(Player p, Level lvl, string msg) {
             Update(lvl);
             Logger.Log(LogType.UserActivity, "{0} &Son {1}", msg, lvlName);
-            lvl?.Message(Chat.LocalPrefix + msg);
+            lvl?.Message("<Local>" + msg);
             if (p != Player.Console && p.Level != lvl) {
                 p.Message("{0} &Son {1} &Sby you.", msg, ColoredName);
             }

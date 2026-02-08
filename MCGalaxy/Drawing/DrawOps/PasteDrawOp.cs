@@ -21,10 +21,7 @@ namespace MCGalaxy.Drawing.Ops
     {
         public override string Name => "Paste";
         public CopyState CopyState;
-        public PasteDrawOp()
-        {
-            Flags = BlockDBFlags.Pasted;
-        }
+        public PasteDrawOp() => Flags = BlockDBFlags.Pasted;
         public override long BlocksAffected(Level lvl, Vec3S32[] marks) => CopyState.UsedBlocks;
         public override void SetMarks(Vec3S32[] m)
         {

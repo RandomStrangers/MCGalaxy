@@ -58,12 +58,12 @@ namespace MCGalaxy.Config
     public sealed class ConfigBlockAttribute : ConfigIntegerAttribute
     {
         readonly ushort defBlock;
-        public ConfigBlockAttribute() : this(null, null, Block.Air) { }
+        public ConfigBlockAttribute() : this(null, null, 0) { }
         public ConfigBlockAttribute(string name, string section, ushort def)
-            : base(name, section) { defBlock = def; }
+            : base(name, section) => defBlock = def;
         public override object Parse(string raw)
         {
-            ushort block = (ushort)ParseInteger(raw, defBlock, 0, Block.SUPPORTED_COUNT - 1);
+            ushort block = (ushort)ParseInteger(raw, defBlock, 0, 1023);
             if (block == Block.Invalid) return Block.Invalid;
             return Block.MapOldRaw(block);
         }
@@ -125,11 +125,7 @@ namespace MCGalaxy.Config
         readonly bool mins; readonly int def;
         public ConfigTimespanAttribute(string name, string section, int def, bool mins)
             : base(name, section) { this.def = def; this.mins = mins; }
-        public override object Parse(string raw)
-        {
-            double value = ParseReal(raw, def, 0, int.MaxValue);
-            return ParseInput(value);
-        }
+        public override object Parse(string raw) => ParseInput(ParseReal(raw, def, 0, int.MaxValue));
         protected TimeSpan ParseInput(double value)
         {
             if (mins)
@@ -141,12 +137,7 @@ namespace MCGalaxy.Config
                 return TimeSpan.FromSeconds(value);
             }
         }
-        public override string Serialise(object value)
-        {
-            TimeSpan span = (TimeSpan)value;
-            double time = mins ? span.TotalMinutes : span.TotalSeconds;
-            return time.ToString();
-        }
+        public override string Serialise(object value) => (mins ? ((TimeSpan)value).TotalMinutes : ((TimeSpan)value).TotalSeconds).ToString();
     }
     public class ConfigOptTimespanAttribute : ConfigTimespanAttribute
     {

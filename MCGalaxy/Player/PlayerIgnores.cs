@@ -26,7 +26,6 @@ namespace MCGalaxy
             if (!File.Exists(path)) return;
             try
             {
-                //string[] lines = File.ReadAllLines(path);
                 string[] lines = FileIO.TryReadAllLines(path);
                 foreach (string line in lines)
                 {

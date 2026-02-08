@@ -18,8 +18,7 @@ namespace MCGalaxy.Commands
 {
     public class Alias
     {
-        public static List<Alias> coreAliases = new();
-        public static List<Alias> aliases = new();
+        public static List<Alias> coreAliases = new(), aliases = new();
         public string Trigger, Target, Format;
         public Alias(string trigger, string target)
         {
@@ -38,12 +37,18 @@ namespace MCGalaxy.Commands
         }
         public Alias(string trigger, string target, string format)
         {
-            Trigger = trigger; Target = target; Format = format;
+            Trigger = trigger; 
+            Target = target; 
+            Format = format;
         }
         public static void LoadCustom()
         {
             aliases.Clear();
-            if (!File.Exists(Paths.AliasesFile)) { SaveCustom(); return; }
+            if (!File.Exists(Paths.AliasesFile)) 
+            {
+                SaveCustom(); 
+                return;
+            }
             PropertiesFile.Read(Paths.AliasesFile, LineProcessor, ':');
         }
         static void LineProcessor(string key, string value) => aliases.Add(new Alias(key, value));

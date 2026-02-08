@@ -40,8 +40,8 @@ namespace MCGalaxy.DB
         };
         public static void CoreLine(Player p, Player who)
         {
-            string prefix = who.title.Length == 0 ? "" : who.MakeTitle(who.title, who.titlecolor);
-            string fullName = prefix + who.ColoredName;
+            string prefix = who.title.Length == 0 ? "" : who.MakeTitle(who.title, who.titlecolor),
+                fullName = prefix + who.ColoredName;
             CommonCoreLine(p, fullName, who.name, who.group, who.TotalMessagesSent);
         }
         internal static void CommonCoreLine(Player p, string fullName, string name, Group grp, int messages)
@@ -49,7 +49,10 @@ namespace MCGalaxy.DB
             p.Message("{0} &S({1}) has:", fullName, name);
             p.Message("  Rank of {0}&S, wrote &a{1} &Smessages", grp.ColoredName, messages);
             List<Pronouns> pros = Pronouns.GetFor(name);
-            if (pros[0] == Pronouns.Default) { return; }
+            if (pros[0] == Pronouns.Default) 
+            { 
+                return;
+            }
             p.Message("  Pronouns: &a{0}", pros.Join((pro) => pro.Name, ", "));
         }
         public static void MiscLine(Player p, string name, int deaths, int money)
@@ -124,9 +127,8 @@ namespace MCGalaxy.DB
         }
         public static void EntityLine(Player p, Player who)
         {
-            bool hasSkin = !who.SkinName.CaselessEq(who.truename);
-            // TODO remove hardcoding
-            bool hasModel = !(who.Model.CaselessEq("humanoid") || who.Model.CaselessEq("human"));
+            bool hasSkin = !who.SkinName.CaselessEq(who.truename),
+                hasModel = !(who.Model.CaselessEq("humanoid") || who.Model.CaselessEq("human"));
             if (hasSkin && hasModel)
             {
                 p.Message("  Skin: &f{0} &Smodel: &f{1}", who.SkinName, who.Model);

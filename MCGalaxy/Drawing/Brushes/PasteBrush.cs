@@ -19,7 +19,7 @@ namespace MCGalaxy.Drawing.Brushes
     public class SimplePasteBrush : Brush
     {
         readonly CopyState state;
-        public SimplePasteBrush(CopyState state) { this.state = state; }
+        public SimplePasteBrush(CopyState state) => this.state = state;
         public override string Name => "Paste";
         public override void Configure(DrawOp op, Player p) => op.Flags = BlockDBFlags.Pasted;
         public override ushort NextBlock(DrawOp op)

@@ -18,35 +18,21 @@ using System.Net;
 using System.Net.Sockets;
 namespace MCGalaxy.Network
 {
-    /// <summary> Abstracts listening on network socket </summary>
-    public abstract class INetListen
+    public class INetListen
     {
-        /// <summary> The IP address this network socket is listening on </summary>
         public IPAddress IP;
-        /// <summary> The port this network socket is listening on </summary>
         public int Port;
-        /// <summary> Whether connections are currently being accepted </summary>
         public bool Listening;
-        /// <summary> Begins listening for connections on the given IP and port </summary>
-        /// <remarks> Client connections are asynchronously accepted </remarks>
-        public abstract void Listen(IPAddress ip, int port);
-        /// <summary> Closes this network listener </summary>
-        public abstract void Close();
-    }
-    /// <summary> Abstracts listening on a TCP socket </summary>
-    public sealed class TcpListen : INetListen
-    {
         Socket socket;
         void DisableIPV6OnlyListener()
         {
-            if (socket.AddressFamily != AddressFamily.InterNetworkV6) return;
-            // TODO: Make windows only?
-            // NOTE: SocketOptionName.IPv6Only is not defined in Mono, but apparently
-            //  macOS and Linux default to dual stack by default already
-            const SocketOptionName ipv6Only = (SocketOptionName)27;
+            if (socket.AddressFamily != AddressFamily.InterNetworkV6)
+            {
+                return;
+            }
             try
             {
-                socket.SetSocketOption(SocketOptionLevel.IPv6, ipv6Only, false);
+                socket.SetSocketOption(SocketOptionLevel.IPv6, (SocketOptionName)27, false);
             }
             catch (Exception ex)
             {
@@ -55,32 +41,29 @@ namespace MCGalaxy.Network
         }
         void EnableAddressReuse()
         {
-            // This fixes when on certain environments, if the server is restarted while there are still some
-            // sockets in the TIME_WAIT state, the listener in the new server process will fail with EADDRINUSE
-            //   https://stackoverflow.com/questions/3229860/what-is-the-meaning-of-so-reuseaddr-setsockopt-option-linux
-            //   https://superuser.com/questions/173535/what-are-close-wait-and-time-wait-states
-            //   https://stackoverflow.com/questions/14388706/how-do-so-reuseaddr-and-so-reuseport-differ
-            // SO_REUSEADDR behaves differently on Windows though, so don't enable it there
-            //  (note that this code is required for WINE, therefore just check if running in mono)
-            //  (see WS_SO_REUSEADDR case handling in WS_setsockopt in WINE/dlls/ws2_32/socket.c)
-            if (!Server.RunningOnMono()) return;
-            try
+            if (Server.RunningOnMono())
             {
-                socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
-            }
-            catch
-            {
-                // not really a critical issue if this fails to work
+                try
+                {
+                    socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
+                }
+                catch
+                {
+                }
             }
         }
-        public override void Listen(IPAddress ip, int port)
+        public void Listen(IPAddress ip, int port)
         {
-            if (IP == ip && Port == port) return;
+            if (IP == ip && Port == port)
+            {
+                return;
+            }
             Close();
-            IP = ip; Port = port;
+            IP = ip;
+            Port = port;
             try
             {
-                socket = new Socket(ip.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                socket = new(ip.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                 DisableIPV6OnlyListener();
                 EnableAddressReuse();
                 socket.Bind(new IPEndPoint(ip, port));
@@ -91,7 +74,7 @@ namespace MCGalaxy.Network
             {
                 Logger.LogError(ex);
                 Logger.Log(LogType.Warning, "Failed to start listening on port {0} ({1})", port, ex.Message);
-                socket = null; 
+                socket = null;
                 return;
             }
             Listening = true;
@@ -99,12 +82,12 @@ namespace MCGalaxy.Network
         }
         void AcceptNextAsync()
         {
-            // retry, because if we don't call BeginAccept, no one can connect anymore
             for (int i = 0; i < 3; i++)
             {
                 try
                 {
-                    socket.BeginAccept(acceptCallback, this); return;
+                    socket.BeginAccept(acceptCallback, this); 
+                    return;
                 }
                 catch (Exception ex)
                 {
@@ -115,34 +98,47 @@ namespace MCGalaxy.Network
         static readonly AsyncCallback acceptCallback = new(AcceptCallback);
         static void AcceptCallback(IAsyncResult result)
         {
-            if (Server.shuttingDown) return;
-            TcpListen listen = (TcpListen)result.AsyncState;
-            INetSocket s = null;
-            try
+            if (!Server.shuttingDown)
             {
-                Socket raw = listen.socket.EndAccept(result);
-                bool cancel = false, announce = true;
-                OnConnectionReceivedEvent.Call(raw, ref cancel, ref announce);
-                if (cancel)
+                INetListen listen = (INetListen)result.AsyncState;
+                INetSocket s = null;
+                try
                 {
-                    // intentionally non-clean connection close
-                    try { raw.Close(); } catch { }
+                    Socket raw = listen.socket.EndAccept(result);
+                    bool cancel = false, announce = true;
+                    OnConnectionReceivedEvent.Call(raw, ref cancel, ref announce);
+                    if (cancel)
+                    {
+                        try 
+                        { 
+                            raw.Close(); 
+                        } 
+                        catch 
+                        { 
+                        }
+                    }
+                    else
+                    {
+                        s = new TcpSocket(raw);
+                        if (announce)
+                        {
+                            Logger.Log(LogType.UserActivity, s.IP + " connected to the server.");
+                        }
+                        s.Init();
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    s = new TcpSocket(raw);
-                    if (announce) Logger.Log(LogType.UserActivity, s.IP + " connected to the server.");
-                    s.Init();
+                    if (ex is not SocketException)
+                    {
+                        Logger.LogError(ex);
+                    }
+                    s?.Close();
                 }
+                listen.AcceptNextAsync();
             }
-            catch (Exception ex)
-            {
-                if (ex is not SocketException) Logger.LogError(ex);
-                s?.Close();
-            }
-            listen.AcceptNextAsync();
         }
-        public override void Close()
+        public void Close()
         {
             try
             {

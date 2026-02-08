@@ -186,7 +186,7 @@ namespace MCGalaxy.Drawing
         }
         static ushort[] Transform(BlockDefinition[] defs, string[] mirrorDirs, string[] rotateDirs)
         {
-            ushort[] transform = new ushort[Block.SUPPORTED_COUNT];
+            ushort[] transform = new ushort[1024];
             for (int i = 0; i < transform.Length; i++)
             {
                 transform[i] = (ushort)i;

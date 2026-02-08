@@ -65,7 +65,7 @@ namespace MCGalaxy.Commands.Info
         static void SearchBlocks(Player p, string keyword, string modifier)
         {
             List<ushort> blocks = new();
-            for (int b = 0; b < Block.SUPPORTED_COUNT; b++)
+            for (int b = 0; b < 1024; b++)
             {
                 ushort block = (ushort)b;
                 if (Block.ExistsFor(p, block)) blocks.Add(block);
@@ -130,10 +130,9 @@ namespace MCGalaxy.Commands.Info
         static void SearchPlayers(Player p, string keyword, string modifier)
         {
             List<string> names = new();
-            string suffix = Database.Backend.CaselessLikeSuffix;
             // TODO supporting more than 100 matches somehow
             Database.ReadRows("Players", "Name", r => names.Add(r.GetText(0)),
-                              "WHERE Name LIKE @0 ESCAPE '#' LIMIT 100" + suffix,
+                              "WHERE Name LIKE @0 ESCAPE '#' LIMIT 100 COLLATE NOCASE",
                               Wildcard.ToSQLFilter(keyword));
             OutputList(p, keyword, "search players", "players", modifier, names);
         }

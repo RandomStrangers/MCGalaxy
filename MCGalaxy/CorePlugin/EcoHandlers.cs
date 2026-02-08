@@ -26,13 +26,17 @@ namespace MCGalaxy.Core
             switch (transaction.Type)
             {
                 case EcoTransactionType.Purchase:
-                    HandlePurchase(transaction); break;
+                    HandlePurchase(transaction);
+                    break;
                 case EcoTransactionType.Take:
-                    HandleTake(transaction); break;
+                    HandleTake(transaction); 
+                    break;
                 case EcoTransactionType.Give:
-                    HandleGive(transaction); break;
+                    HandleGive(transaction);
+                    break;
                 case EcoTransactionType.Payment:
-                    HandlePayment(transaction); break;
+                    HandlePayment(transaction); 
+                    break;
             }
         }
         static void HandlePurchase(EcoTransaction data)
@@ -71,28 +75,14 @@ namespace MCGalaxy.Core
             Economy.UpdateStats(stats);
             data.Source.SetMoney(data.Source.money - data.Amount);
         }
-        static void MessageAll(string format, EcoTransaction data)
-        {
-            string reason = data.Reason == null ? "" : " &S(" + data.Reason + "&S)";
-            string msg = string.Format(format, data.Source.ColoredName, data.TargetFormatted,
-                                       data.Amount, Server.Config.Currency, reason);
-            Chat.MessageGlobal(msg);
-        }
+        static void MessageAll(string format, EcoTransaction data) => Chat.MessageGlobal(string.Format(format, data.Source.ColoredName, data.TargetFormatted,
+                                       data.Amount, Server.Config.Currency, data.Reason == null ? "" : " &S(" + data.Reason + "&S)"));
         static string Format(string action, EcoTransaction data)
         {
             string entry = "&f" + data.Amount + " &3$currency" + action
-                + "&3 on %f" + DateTime.Now.ToString(CultureInfo.InvariantCulture);
+                + "&3 on &f" + DateTime.Now.ToString(CultureInfo.InvariantCulture);
             string reason = data.Reason;
             if (reason == null) return entry;
-            if (!Database.Backend.EnforcesTextLength)
-                return entry + " (" + reason + ")";
-            int totalLen = entry.Length + 3 + reason.Length;
-            if (totalLen >= 256)
-            {
-                int truncatedLen = reason.Length - (totalLen - 255);
-                reason = reason.Substring(0, truncatedLen);
-                data.Source.Message("Reason too long, truncating to: {0}", reason);
-            }
             return entry + " (" + reason + ")";
         }
     }

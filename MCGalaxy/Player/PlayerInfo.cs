@@ -22,17 +22,9 @@ namespace MCGalaxy
         /// <summary> Array of all currently online players. </summary>
         /// <remarks> Note this field is highly volatile, you should cache references to the items array. </remarks>
         public static VolatileArray<Player> Online = new();
-        public static Group GetGroup(string name)
-        {
-            Player target = FindExact(name);
-            return target != null ? target.group : Group.GroupIn(name);
-        }
+        public static Group GetGroup(string name) => FindExact(name) != null ? FindExact(name).group : Group.GroupIn(name);
         /// <summary> Calculates default color for the given player. </summary>
-        public static string DefaultColor(Player p)
-        {
-            string col = PlayerDB.FindColor(p);
-            return col.Length > 0 ? col : p.group.Color;
-        }
+        public static string DefaultColor(Player p) => PlayerDB.FindColor(p).Length > 0 ? PlayerDB.FindColor(p) : p.group.Color;
         public static int NonHiddenUniqueIPCount()
         {
             Player[] players = Online.Items;
@@ -55,7 +47,11 @@ namespace MCGalaxy
             if (!Formatter.ValidPlayerName(pl, name)) return null;
             // Try to exactly match name first (because names have + at end)
             Player exact = FindExact(name);
-            if (exact != null && pl.CanSee(exact)) { matches = 1; return exact; }
+            if (exact != null && pl.CanSee(exact))
+            { 
+                matches = 1; 
+                return exact; 
+            }
             return Matcher.Find(pl, name, out matches, Online.Items,
                                 p => pl.CanSee(p), p => p.name, p => p.color + p.name, "online players");
         }
@@ -87,8 +83,7 @@ namespace MCGalaxy
         }
         static void ReadAccounts(ISqlRecord record, List<string> names)
         {
-            string name = record.GetText(0);
-            if (!names.CaselessContains(name)) names.Add(name);
+            if (!names.CaselessContains(record.GetText(0))) names.Add(record.GetText(0));
         }
         /// <summary> Retrieves names of all players whose IP address matches the given IP address. </summary>
         /// <remarks> This is current IP for online players, last IP for offline players from the database. </remarks>
@@ -150,11 +145,7 @@ namespace MCGalaxy
             }
             return entry;
         }
-        public static string GetLoginMessage(Player p)
-        {
-            string msg = PlayerDB.GetLoginMessage(p.name);
-            return string.IsNullOrEmpty(msg) ? Server.Config.DefaultLoginMessage : msg;
-        }
+        public static string GetLoginMessage(Player p) => string.IsNullOrEmpty(PlayerDB.GetLoginMessage(p.name)) ? Server.Config.DefaultLoginMessage : PlayerDB.GetLoginMessage(p.name);
         public static string GetLogoutMessage(Player p)
         {
             if (p.name == null) return "disconnected";
@@ -164,7 +155,8 @@ namespace MCGalaxy
     }
     public class OnlineListEntry
     {
-        public Group group; public List<Player> players;
+        public Group group; 
+        public List<Player> players;
         public static string GetFlags(Player p)
         {
             string flags = "";

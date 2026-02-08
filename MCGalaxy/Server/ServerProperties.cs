@@ -12,8 +12,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using MCGalaxy.Commands;
-using MCGalaxy.SQL;
 using System;
 using System.IO;
 namespace MCGalaxy
@@ -22,8 +20,7 @@ namespace MCGalaxy
     {
         public static void Load()
         {
-            old = new();
-            PropertiesFile.Read(Paths.ServerPropsFile, ref old, LineProcessor);
+            PropertiesFile.Read(Paths.ServerPropsFile, (key, value) => ConfigElement.Parse(Server.serverConfig, Server.Config, key, value));
             ApplyChanges();
             Save();
         }
@@ -33,114 +30,7 @@ namespace MCGalaxy
             {
                 Server.Config.BackupDirectory = "levels/backups";
             }
-            Database.UpdateActiveBackend();
             Server.SetMainLevel(Server.Config.MainLevel);
-        }
-        static void LineProcessor(string key, string value, ref OldPerms perms)
-        {
-            // Backwards compatibility: some command extra permissions used to be part of server.properties
-            // Backwards compatibility: map generation volume used to be part of server.properties
-            if (key.CaselessEq("opchat-perm"))
-            {
-                perms.opchatPerm = int.Parse(value);
-            }
-            else if (key.CaselessEq("adminchat-perm"))
-            {
-                perms.adminchatPerm = int.Parse(value);
-            }
-            else if (key.CaselessEq("map-gen-limit-admin"))
-            {
-                perms.mapGenLimitAdmin = int.Parse(value);
-            }
-            else if (key.CaselessEq("map-gen-limit"))
-            {
-                perms.mapGenLimit = int.Parse(value);
-            }
-            else if (key.CaselessEq("afk-kick"))
-            {
-                perms.afkKickMins = int.Parse(value);
-            }
-            else if (key.CaselessEq("afk-kick-perm"))
-            {
-                perms.afkKickMax = Group.ParsePermOrName(value, LevelPermission.AdvBuilder);
-            }
-            else
-            {
-                ConfigElement.Parse(Server.serverConfig, Server.Config, key, value);
-            }
-        }
-        static OldPerms old;
-        class OldPerms
-        {
-            public int opchatPerm = -1, adminchatPerm = -1,
-                mapGenLimit = -1, mapGenLimitAdmin = -1, afkKickMins = -1;
-            public LevelPermission afkKickMax = LevelPermission.Banned;
-        }
-        internal static void FixupOldPerms()
-        {
-            SetOldReview();
-            if (old.mapGenLimit != -1)
-            {
-                SetOldGenVolume();
-            }
-            if (old.mapGenLimitAdmin != -1)
-            {
-                SetOldGenVolumeAdmin();
-            }
-            if (old.afkKickMins != -1)
-            {
-                SetOldAfkKick();
-            }
-            if (old.mapGenLimit != -1 || old.mapGenLimitAdmin != -1 || old.afkKickMins != -1)
-            {
-                Group.SaveAll(Group.GroupList);
-            }
-        }
-        static void SetOldReview()
-        {
-            if (old.opchatPerm == -1 && old.adminchatPerm == -1)
-            {
-                return;
-            }
-            // Apply backwards compatibility
-            if (old.opchatPerm != -1)
-            {
-                Chat.OpchatPerms.MinRank = (LevelPermission)old.opchatPerm;
-            }
-            if (old.adminchatPerm != -1)
-            {
-                Chat.AdminchatPerms.MinRank = (LevelPermission)old.adminchatPerm;
-            }
-            CommandExtraPerms.Save();
-        }
-        static void SetOldGenVolume()
-        {
-            foreach (Group grp in Group.GroupList)
-            {
-                if (grp.Permission < LevelPermission.Admin)
-                {
-                    grp.GenVolume = old.mapGenLimit;
-                }
-            }
-        }
-        static void SetOldGenVolumeAdmin()
-        {
-            foreach (Group grp in Group.GroupList)
-            {
-                if (grp.Permission >= LevelPermission.Admin)
-                {
-                    grp.GenVolume = old.mapGenLimitAdmin;
-                }
-            }
-        }
-        static void SetOldAfkKick()
-        {
-            foreach (Group grp in Group.GroupList)
-            {
-                grp.AfkKickTime = TimeSpan.FromMinutes(old.afkKickMins);
-                // 0 minutes had the special meaning of 'not AFK kicked'
-                grp.AfkKicked = old.afkKickMins > 0 && grp.Permission < old.afkKickMax;
-            }
         }
         static readonly object saveLock = new();
         public static void Save()
@@ -184,13 +74,6 @@ namespace MCGalaxy
             w.WriteLine("#   irc-password                  = The password you want to use if you're identifying with nickserv");
             w.WriteLine("# Explanation of Backup settings:");
             w.WriteLine("#   backup-time                   = The number of seconds between automatic backups");
-            w.WriteLine("# Explanation of Database settings:");
-            w.WriteLine("#   UseMySQL                      = Use MySQL (true) or use SQLite (false)");
-            w.WriteLine("#   Host                          = The host name for the database (usually 127.0.0.1)");
-            w.WriteLine("#   SQLPort                       = Port number to be used for MySQL.  Unless you manually changed the port, leave this alone.  Default 3306.");
-            w.WriteLine("#   Username                      = The username you used to create the database (usually root)");
-            w.WriteLine("#   Password                      = The password set while making the database");
-            w.WriteLine("#   DatabaseName                  = The name of the database stored (Default = MCZall)");
             w.WriteLine("# Explanation of Color settings:");
             w.WriteLine("#   defaultColor                  = The color code of the default messages (Default = &e)");
             w.WriteLine("# Explanation of Other settings:");

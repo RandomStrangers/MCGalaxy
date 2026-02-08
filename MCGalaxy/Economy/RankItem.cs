@@ -18,10 +18,7 @@ namespace MCGalaxy.Eco
 {
     public sealed class RankItem : Item
     {
-        public RankItem()
-        {
-            Aliases = new string[] { "rank", "ranks", "rankup" };
-        }
+        public RankItem() => Aliases = new string[] { "rank", "ranks", "rankup" };
         public override string Name => "Rank";
         public override string ShopName => "Rankup";
         public List<RankEntry> Ranks = new();
@@ -50,10 +47,11 @@ namespace MCGalaxy.Eco
         {
             RankEntry rank = Find(perm);
             if (rank != null) return rank;
-            rank = new RankEntry
+            rank = new()
             {
                 Perm = perm
-            }; Ranks.Add(rank);
+            }; 
+            Ranks.Add(rank);
             Ranks.Sort((a, b) => a.Perm.CompareTo(b.Perm));
             return rank;
         }
@@ -108,7 +106,11 @@ namespace MCGalaxy.Eco
             {
                 Group grp = Matcher.FindRanks(p, args[2]);
                 if (grp == null) return;
-                if (p.Rank < grp.Permission) { p.Message("&WCannot remove a rank higher than yours."); return; }
+                if (p.Rank < grp.Permission) 
+                {
+                    p.Message("&WCannot remove a rank higher than yours.");
+                    return; 
+                }
                 if (Remove(grp.Permission))
                 {
                     p.Message("&aMade rank {0} &ano longer buyable", grp.ColoredName);
@@ -149,7 +151,8 @@ namespace MCGalaxy.Eco
             p.Message("&T/Buy rankup");
             if (Ranks.Count == 0)
             {
-                p.Message("&WNo ranks have been setup be buyable. See &T/eco help rank"); return;
+                p.Message("&WNo ranks have been setup be buyable. See &T/eco help rank"); 
+                return;
             }
             LevelPermission maxRank = Ranks[Ranks.Count - 1].Perm;
             p.Message("&fThe highest buyable rank is: {0}", Group.GetColoredName(maxRank));

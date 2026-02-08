@@ -23,14 +23,12 @@ namespace MCGalaxy.Commands
         public string CmdName;
         public override string ItemName => CmdName;
         static readonly List<CommandPerms> List = new();
-        public CommandPerms(string cmd, LevelPermission min) : base(min)
-        {
-            CmdName = cmd;
-        }
+        public CommandPerms(string cmd, LevelPermission min) : base(min) => CmdName = cmd;
         public CommandPerms Copy()
         {
             CommandPerms copy = new(CmdName, 0);
-            CopyPermissionsTo(copy); return copy;
+            CopyPermissionsTo(copy); 
+            return copy;
         }
         /// <summary> Find the permissions for the given command. (case insensitive) </summary>
         public static CommandPerms Find(string cmd)
@@ -46,7 +44,7 @@ namespace MCGalaxy.Commands
         {
             CommandPerms perms = Find(cmd);
             if (perms != null) return perms;
-            perms = new CommandPerms(cmd, min);
+            perms = new(cmd, min);
             List.Add(perms);
             return perms;
         }
@@ -88,7 +86,11 @@ namespace MCGalaxy.Commands
         }
         static void LoadCore()
         {
-            if (!File.Exists(Paths.CmdPermsFile)) { Save(); return; }
+            if (!File.Exists(Paths.CmdPermsFile))
+            {
+                Save(); 
+                return; 
+            }
             using StreamReader r = new(Paths.CmdPermsFile);
             ProcessLines(r);
         }
@@ -110,7 +112,8 @@ namespace MCGalaxy.Commands
                 }
                 catch
                 {
-                    Logger.Log(LogType.Warning, "Hit an error on the command " + line); continue;
+                    Logger.Log(LogType.Warning, "Hit an error on the command " + line); 
+                    continue;
                 }
             }
         }

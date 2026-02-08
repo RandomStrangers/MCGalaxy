@@ -7,6 +7,32 @@ using System;
 using System.IO;
 namespace MCGalaxy
 {
+    public class NASTransferInfo
+    {
+        [JsonIgnore] public Position posBeforeMapChange;
+        [JsonIgnore] public byte yawBeforeMapChange, pitchBeforeMapChange;
+        [JsonIgnore]
+        public int chunkOffsetX, chunkOffsetZ,
+            travelX = -1, travelY = -1, travelZ = -1;
+        public NASTransferInfo(Player p, int chunkOffsetX, int chunkOffsetZ, int x, int y, int z)
+        {
+            posBeforeMapChange = p.Pos;
+            yawBeforeMapChange = p.Rot.RotY;
+            pitchBeforeMapChange = p.Rot.HeadX;
+            this.chunkOffsetX = chunkOffsetX;
+            this.chunkOffsetZ = chunkOffsetZ;
+            travelX = x;
+            travelZ = z;
+            travelY = y;
+        }
+        public void CalcNewPos()
+        {
+            int xOffset = chunkOffsetX * NASGen.mapWideness * 32,
+                zOffset = chunkOffsetZ * NASGen.mapWideness * 32;
+            posBeforeMapChange.X -= xOffset;
+            posBeforeMapChange.Z -= zOffset;
+        }
+    }
     public partial class NASPlayer
     {
         [JsonIgnore] public DateTime datePositionCheckingIsAllowed = DateTime.MinValue;
@@ -414,32 +440,6 @@ namespace MCGalaxy
             {
                 lvl?.Dispose();
                 Server.DoGC();
-            }
-        }
-        public class NASTransferInfo
-        {
-            [JsonIgnore] public Position posBeforeMapChange;
-            [JsonIgnore] public byte yawBeforeMapChange, pitchBeforeMapChange;
-            [JsonIgnore]
-            public int chunkOffsetX, chunkOffsetZ,
-                travelX = -1, travelY = -1, travelZ = -1;
-            public NASTransferInfo(Player p, int chunkOffsetX, int chunkOffsetZ, int x, int y, int z)
-            {
-                posBeforeMapChange = p.Pos;
-                yawBeforeMapChange = p.Rot.RotY;
-                pitchBeforeMapChange = p.Rot.HeadX;
-                this.chunkOffsetX = chunkOffsetX;
-                this.chunkOffsetZ = chunkOffsetZ;
-                travelX = x;
-                travelZ = z;
-                travelY = y;
-            }
-            public void CalcNewPos()
-            {
-                int xOffset = chunkOffsetX * NASGen.mapWideness * 32,
-                    zOffset = chunkOffsetZ * NASGen.mapWideness * 32;
-                posBeforeMapChange.X -= xOffset;
-                posBeforeMapChange.Z -= zOffset;
             }
         }
         public void UpdateCaveFog(Position next)

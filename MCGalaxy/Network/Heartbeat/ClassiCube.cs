@@ -61,21 +61,25 @@ namespace MCGalaxy.Network
         protected override void OnRequest(HttpWebRequest request)
         {
             if (!checkedAddr) CheckAddress();
-            if (proxyUrl == null) return;
-            request.Proxy = new WebProxy(proxyUrl);
+            if (proxyUrl != null)
+            {
+                request.Proxy = new WebProxy(proxyUrl);
+            }
         }
         protected override void OnResponse(WebResponse response)
         {
             string text = HttpUtil.GetResponseText(response);
-            if (!NeedsProcessing(text)) return;
-            if (!text.Contains("\"errors\":"))
+            if (NeedsProcessing(text))
             {
-                OnSuccess(text);
-            }
-            else
-            {
-                string error = GetError(text) ?? "Error while finding URL. Is the port open?";
-                OnError(error);
+                if (!text.Contains("\"errors\":"))
+                {
+                    OnSuccess(text);
+                }
+                else
+                {
+                    string error = GetError(text) ?? "Error while finding URL. Is the port open?";
+                    OnError(error);
+                }
             }
         }
         protected override void OnFailure(string response)

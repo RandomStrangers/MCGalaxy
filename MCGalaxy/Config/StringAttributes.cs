@@ -19,7 +19,7 @@ namespace MCGalaxy.Config
     {
         readonly string defCol;
         public ConfigColorAttribute(string name, string section, string def)
-            : base(name, section) { defCol = def; }
+            : base(name, section) => defCol = def;
         public override object Parse(string raw)
         {
             // colour code without & provided
@@ -43,9 +43,9 @@ namespace MCGalaxy.Config
         public ConfigStringAttribute(string name, string section, string def, bool empty)
             : base(name, section) { defValue = def; allowEmpty = empty; }
         public ConfigStringAttribute(string name, string section, string def)
-            : base(name, section) { defValue = def; }
+            : base(name, section) => defValue = def;
         public ConfigStringAttribute()
-            : base(null, null) { allowEmpty = true; }
+            : base(null, null) => allowEmpty = true;
         public override object Parse(string value)
         {
             if (string.IsNullOrEmpty(value) && !allowEmpty)
@@ -74,10 +74,6 @@ namespace MCGalaxy.Config
         public ConfigStringListAttribute(string name, string section)
             : base(name, section) { }
         public override object Parse(string value) => new List<string>(value.SplitComma());
-        public override string Serialise(object value)
-        {
-            List<string> elements = (List<string>)value;
-            return elements.Join(",");
-        }
+        public override string Serialise(object value) => (value as List<string>).Join(",");
     }
 }

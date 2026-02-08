@@ -28,7 +28,10 @@ namespace MCGalaxy
         {
             lock (messageLocker)
             {
-                foreach (string line in lines) { Message(line); }
+                foreach (string line in lines) 
+                { 
+                    Message(line); 
+                }
             }
         }
         // Put a lock on sending messages so that MessageLines is not interrupted by other messages
@@ -61,7 +64,6 @@ namespace MCGalaxy
                 Logger.LogError(e);
             }
         }
-        public void SendCpeMessage(CpeMessageType type, string message) => SendCpeMessage(type, message, PersistentMessagePriority.Normal);
         public void SendCpeMessage(CpeMessageType type, string message, PersistentMessagePriority priority = PersistentMessagePriority.Normal)
         {
             if (type != CpeMessageType.Normal && !Supports(CpeExt.MessageTypes))
@@ -131,14 +133,14 @@ namespace MCGalaxy
         {
             Pos = pos;
             SetYawPitch(rot.RotY, rot.HeadX);
-            Session.SendTeleport(Entities.SelfID, pos, rot);
+            Session.SendTeleport(0xFF, pos, rot);
         }
         /// <summary> Sends a packet indicating an absolute position + orientation change for this player. </summary>
         public void SendPosition(Position pos, Orientation rot)
         {
-            if (!Session.SendTeleport(Entities.SelfID, pos, rot, Packet.TeleportMoveMode.AbsoluteInstant))
+            if (!Session.SendTeleport(0xFF, pos, rot, TeleportMoveMode.AbsoluteInstant))
             {
-                Session.SendTeleport(Entities.SelfID, pos, rot);
+                Session.SendTeleport(0xFF, pos, rot);
             }
             // Forcibly move the player since their position won't naturally update
             if (frozen || Session.Ping.IgnorePosition) Pos = pos;
@@ -164,11 +166,11 @@ namespace MCGalaxy
         public void SendCurrentTextures()
         {
             Zone zone = ZoneIn;
-            int cloudsHeight = CurrentEnvProp(EnvProp.CloudsLevel, zone);
-            int edgeHeight = CurrentEnvProp(EnvProp.EdgeLevel, zone);
-            int maxFogDist = CurrentEnvProp(EnvProp.MaxFog, zone);
-            byte side = (byte)CurrentEnvProp(EnvProp.SidesBlock, zone);
-            byte edge = (byte)CurrentEnvProp(EnvProp.EdgeBlock, zone);
+            int cloudsHeight = CurrentEnvProp(EnvProp.CloudsLevel, zone),
+                edgeHeight = CurrentEnvProp(EnvProp.EdgeLevel, zone),
+                maxFogDist = CurrentEnvProp(EnvProp.MaxFog, zone);
+            byte side = (byte)CurrentEnvProp(EnvProp.SidesBlock, zone),
+                edge = (byte)CurrentEnvProp(EnvProp.EdgeBlock, zone);
             string url = GetTextureUrl();
             if (Supports(CpeExt.EnvMapAspect, 2))
             {
@@ -207,31 +209,31 @@ namespace MCGalaxy
         void SendAllBlockPermissions()
         {
             bool extBlocks = Session.hasExtBlocks;
-            int count = Session.MaxRawBlock + 1;
-            int size = extBlocks ? 5 : 4;
+            int count = Session.MaxRawBlock + 1,
+                size = extBlocks ? 5 : 4;
             byte[] bulk = new byte[count * size];
             for (int i = 0; i < count; i++)
             {
                 ushort block = Block.FromRaw((ushort)i);
-                bool place = group.CanPlace[block] && Level.Config.Buildable;
-                // NOTE: If you can't delete air, then you're no longer able to place blocks
-                // (see ClassiCube client #815)
-                // TODO: Maybe better solution than this?
-                bool delete = group.CanDelete[block] && (Level.Config.Deletable || i == Block.Air);
+                bool place = group.CanPlace[block] && Level.Config.Buildable,
+                    delete = group.CanDelete[block] && (Level.Config.Deletable || i == Block.Air);
                 // Placing air is the same as deleting existing block at that position in the world
-                if (block == Block.Air) place &= delete;
+                if (block == 0) place &= delete;
                 Packet.WriteBlockPermission((ushort)i, place, delete, extBlocks, bulk, i * size);
             }
             Send(bulk);
         }
-        class VisibleSelection { public object data; public byte ID; }
+        class VisibleSelection 
+        { 
+            public object data; 
+            public byte ID; 
+        }
         readonly VolatileArray<VisibleSelection> selections = new();
         public bool AddVisibleSelection(string label, Vec3U16 min, Vec3U16 max, ColorDesc color, object instance)
         {
             lock (selections.locker)
             {
-                byte id = FindOrAddSelection(selections.Items, instance);
-                return Session.SendAddSelection(id, label, min, max, color);
+                return Session.SendAddSelection(FindOrAddSelection(selections.Items, instance), label, min, max, color);
             }
         }
         public bool RemoveVisibleSelection(object instance)

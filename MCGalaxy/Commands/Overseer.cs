@@ -24,8 +24,6 @@ namespace MCGalaxy.Commands.World
     public static class Overseer
     {
         public static readonly string commandShortcut = "os";
-        public static void RegisterSubCommand(SubCommand subCmd) => subCommandGroup.Register(subCmd);
-        public static void UnregisterSubCommand(SubCommand subCmd) => subCommandGroup.Unregister(subCmd);
         static void UseCommand(Player p, string cmd, string args)
         {
             CommandData data = default;
@@ -75,7 +73,8 @@ namespace MCGalaxy.Commands.World
         {
             if (p.group.OverseerMaps == 0)
             {
-                p.Message("Your rank is not allowed to create any /{0} maps.", commandShortcut); return;
+                p.Message("Your rank is not allowed to create any /{0} maps.", commandShortcut); 
+                return;
             }
             string level = NextLevel(p);
             if (level == null) return;
@@ -100,12 +99,12 @@ namespace MCGalaxy.Commands.World
         }
         static readonly string[] deleteHelp = new string[] {
             "&T/os delete &H- Deletes your map.",
-            "&T/os delete "+CmdDeleteLvl.BACKUP_FLAG+" [backup]",
+            "&T/os delete *backup [backup]",
             "&H  -Permanently- deletes [backup] from your map.",
         };
         static void HandleDelete(Player p, string message)
         {
-            if (message.CaselessStarts(CmdDeleteLvl.BACKUP_FLAG))
+            if (message.CaselessStarts("*backup"))
             {
                 string[] args = message.SplitSpaces(2); //"flag", "other args"
                 if (args.Length == 1)
@@ -147,7 +146,11 @@ namespace MCGalaxy.Commands.World
         static void HandleUnban(Player p, string message) => HandlePerm(p, message, "unban", "pervisit", "+");
         static void HandlePerm(Player p, string message, string action, string cmd, string prefix)
         {
-            if (message.Length == 0) { p.Message("&WYou need to type a player name to {0}.", action); return; }
+            if (message.Length == 0)
+            { 
+                p.Message("&WYou need to type a player name to {0}.", action); 
+                return; 
+            }
             UseCommand(p, cmd, prefix + message);
         }
         static readonly string[] blockPropsHelp = new string[] {
@@ -157,7 +160,11 @@ namespace MCGalaxy.Commands.World
         };
         static void HandleBlockProps(Player p, string message)
         {
-            if (message.Length == 0) { p.MessageLines(blockPropsHelp); return; }
+            if (message.Length == 0) 
+            { 
+                p.MessageLines(blockPropsHelp); 
+                return; 
+            }
             UseCommand(p, "BlockProperties", "level " + message);
         }
         static readonly string[] envHelp = new string[] {
@@ -186,12 +193,14 @@ namespace MCGalaxy.Commands.World
             string map = GetLevelName(p, message);
             if (message.Length == 0)
             {
-                GotoExact(p, map); return;
+                GotoExact(p, map); 
+                return;
             }
             if (NumberUtils.TryParseInt32(message, out _))
             {
                 //If it's a number, use exact goto logic like before
-                GotoExact(p, map); return;
+                GotoExact(p, map); 
+                return;
             }
             if (Formatter.ValidMapName(p, map))
             {
@@ -212,7 +221,11 @@ namespace MCGalaxy.Commands.World
         };
         static void HandleKick(Player p, string name)
         {
-            if (name.Length == 0) { p.Message("You must specify a player to kick."); return; }
+            if (name.Length == 0) 
+            { 
+                p.Message("You must specify a player to kick."); 
+                return; 
+            }
             Player pl = PlayerInfo.FindMatches(p, name);
             if (pl == null) return;
             if (pl.Level == p.Level)
@@ -250,13 +263,13 @@ namespace MCGalaxy.Commands.World
         {
             if (raw.Length == 0)
             {
-                p.MessageLines(mapHelp); return;
+                p.MessageLines(mapHelp); 
+                return;
             }
             SubCommandGroup.UsageResult result = mapSubCommandGroup.Use(p, raw, false);
             if (result != SubCommandGroup.UsageResult.NoneFound) return;
             string[] args = raw.SplitExact(2);
-            string cmd = args[0];
-            string value = args[1];
+            string cmd = args[0], value = args[1];
             LevelOption opt = LevelOptions.Find(cmd);
             if (opt == null)
             {
@@ -269,7 +282,7 @@ namespace MCGalaxy.Commands.World
                 p.Message("&WYou cannot change the {0} map option via /{1} map.", opt.Name, commandShortcut);
                 return;
             }
-            if (!LevelInfo.IsRealmOwner(p.Level, p.name))
+            if (!LevelInfo.IsRealmOwner(p.Level.name, p.name))
             {
                 p.Message("You may only use &T/{0} map {1}&S after you join your map.", commandShortcut, opt.Name);
                 return;
@@ -282,7 +295,7 @@ namespace MCGalaxy.Commands.World
         static void MapMoved(Player p, string message, string name, SubCommand.Behavior behaviour, bool mapOnly = true)
         {
             AnnounceRenamed(p, "map " + name, name);
-            if (mapOnly && !LevelInfo.IsRealmOwner(p.Level, p.name))
+            if (mapOnly && !LevelInfo.IsRealmOwner(p.Level.name, p.name))
             {
                 p.Message("You may only use &T/{0} {1}&S after you join your map.", commandShortcut, name);
                 return;
@@ -378,7 +391,10 @@ namespace MCGalaxy.Commands.World
         };
         static void HandleTexture(Player p, string message)
         {
-            if (message.Length == 0) { message = "normal"; }
+            if (message.Length == 0) 
+            { 
+                message = "normal"; 
+            }
             UseCommand(p, "Texture", "levelzip " + message);
         }
         static readonly string[] presetHelp = new string[] {
@@ -393,11 +409,6 @@ namespace MCGalaxy.Commands.World
             "&T/os setspawn &H- Sets the map's spawn point to your current position.",
         };
         static void HandleSpawn(Player p, string unused) => UseCommand(p, "SetSpawn", "");
-        static readonly string[] plotHelp = new string[] {
-            "&T/os plot [args]",
-            "&H  Plots are zones that can change permissions and environment." +
-            "&H  See &T/Help zone &Hto learn what args you can use.",
-        };
         static void HandlePlotHelp(Player p, string message) => Moderation.CmdZone.HelpName(p, "os plot", message);
         static void HandlePlot(Player p, string raw)
         {
@@ -405,8 +416,6 @@ namespace MCGalaxy.Commands.World
             if (args.Length == 1)
             {
                 HandlePlotHelp(p, raw);
-                //p.Message("This command is the &T/{0} &Sversion of &T/zone&S.", commandShortcut);
-                //p.Message("To learn how to use it, read &T/help zone&S");
             }
             else
             {
@@ -437,10 +446,9 @@ namespace MCGalaxy.Commands.World
             {
                 return;
             }
-            const int MAX_LENGTH = 16;
-            if (args.Length > MAX_LENGTH)
+            if (args.Length > 16)
             {
-                p.Message("Your os name must be {0} characters or fewer.", MAX_LENGTH);
+                p.Message("Your os name must be 16 characters or fewer.");
                 return;
             }
             UseCommand(p, "RenameLvl", p.Level.name + " " + GetLevelName(p, args));
@@ -459,9 +467,9 @@ namespace MCGalaxy.Commands.World
         static void HandleList(Player p, string args)
         {
             string[] words = args.SplitSpaces(2);
-            string word0 = words[0];
-            string word1 = words.Length > 1 ? words[1] : ""; //How many times have I typed a variant of this
-            string playerName = word0.Length == 0 ? p.name : PlayerInfo.FindMatchesPreferOnline(p, word0);
+            string word0 = words[0],
+                word1 = words.Length > 1 ? words[1] : "",
+                playerName = word0.Length == 0 ? p.name : PlayerInfo.FindMatchesPreferOnline(p, word0);
             if (playerName == null) return;
             string page = word1;
             LevelInfo.ListMaps(p, LevelInfo.AllPersonalRealms(playerName), "OS realms", "os list " + playerName, "OS realms", page, playerName != p.name);
@@ -509,7 +517,11 @@ namespace MCGalaxy.Commands.World
             int curIndex = -1;
             for (int i = 0; i < realms.Count; i++)
             {
-                if (curLevel.name == realms[i]) { curIndex = i; break; }
+                if (curLevel.name == realms[i]) 
+                { 
+                    curIndex = i; 
+                    break; 
+                }
             }
             if (curIndex == -1)
             {

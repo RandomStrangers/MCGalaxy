@@ -167,12 +167,12 @@ namespace MCGalaxy.Commands.Maintenance
         {
             if (args.Length < 3)
             {
-                p.Message("Dates must be in the format: " + Database.DateFormat);
+                p.Message("Dates must be in the format: yyyy-MM-dd HH:mm:ss");
                 return;
             }
             if (!args[2].TryParseInvariantDateString(out DateTime dt))
             {
-                p.Message("Invalid date. It must be in format: " + Database.DateFormat);
+                p.Message("Invalid date. It must be in format: yyyy-MM-dd HH:mm:ss");
                 return;
             }
             if (who != null) setter(dt);
@@ -184,7 +184,7 @@ namespace MCGalaxy.Commands.Maintenance
             if (args.Length < 3)
             {
                 p.Message("Timespan must be in the format: <number><quantifier>..");
-                p.Message(CommandParser.TimespanHelp, "set time spent to");
+                p.Message("For example, to set time spent to 25 and a half hours, use \"1d1h30m\".");
                 return;
             }
             TimeSpan span = TimeSpan.Zero;
@@ -227,14 +227,14 @@ namespace MCGalaxy.Commands.Maintenance
                 // special case handling for packed forms of totalBlocks and totalCuboided
                 if (type == 1)
                 {
-                    long packed = GetLong(args[0], column) & ~PlayerData.LoBitsMask; // hi value only
+                    long packed = GetLong(args[0], column) & ~((1L << 38) - 1); // hi value only
                     packed |= (uint)value;
                     dbValue = packed.ToString();
                 }
                 else if (type == 2)
                 {
-                    long packed = GetLong(args[0], column) & PlayerData.LoBitsMask; // lo value only
-                    packed |= ((long)value) << PlayerData.HiBitsShift;
+                    long packed = GetLong(args[0], column) & ((1L << 38) - 1); // lo value only
+                    packed |= ((long)value) << 38;
                     dbValue = packed.ToString();
                 }
                 PlayerDB.Update(args[0], column, dbValue);

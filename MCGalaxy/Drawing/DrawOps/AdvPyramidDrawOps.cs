@@ -25,7 +25,7 @@ namespace MCGalaxy.Drawing.Ops
     public class AdvPyramidDrawOp : AdvDrawOp
     {
         public override string Name => "Adv Pyramid";
-        public AdvPyramidDrawOp(bool invert = false) { Invert = invert; }
+        public AdvPyramidDrawOp(bool invert = false) => Invert = invert;
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
             long R = Radius, H = Height;
@@ -53,7 +53,7 @@ namespace MCGalaxy.Drawing.Ops
     public class AdvHollowPyramidDrawOp : AdvDrawOp
     {
         public override string Name => "Adv Hollow Pyramid";
-        public AdvHollowPyramidDrawOp(bool invert = false) { Invert = invert; }
+        public AdvHollowPyramidDrawOp(bool invert = false) => Invert = invert;
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
             long R = Radius, H = Height;

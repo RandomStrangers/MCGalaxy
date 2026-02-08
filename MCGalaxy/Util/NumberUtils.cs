@@ -17,9 +17,6 @@ namespace MCGalaxy
 {
     public static class NumberUtils
     {
-        const NumberStyles DECIMAL_STYLE = NumberStyles.Integer | NumberStyles.AllowDecimalPoint,
-            INTEGER_STYLE = NumberStyles.Integer;
-        // Not all languages use . as their decimal point separator
         public static bool TryParseSingle(string s, out float result)
         {
             if (s != null && s.IndexOf(',') >= 0)
@@ -27,7 +24,7 @@ namespace MCGalaxy
                 s = s.Replace(',', '.');
             }
             result = 0;
-            if (!float.TryParse(s, DECIMAL_STYLE, NumberFormatInfo.InvariantInfo, out float temp))
+            if (!float.TryParse(s, NumberStyles.Integer | NumberStyles.AllowDecimalPoint, NumberFormatInfo.InvariantInfo, out float temp))
             {
                 return false;
             }
@@ -45,7 +42,7 @@ namespace MCGalaxy
                 s = s.Replace(',', '.');
             }
             result = 0;
-            if (!double.TryParse(s, DECIMAL_STYLE, NumberFormatInfo.InvariantInfo, out double temp))
+            if (!double.TryParse(s, NumberStyles.Integer | NumberStyles.AllowDecimalPoint, NumberFormatInfo.InvariantInfo, out double temp))
             {
                 return false;
             }
@@ -56,12 +53,10 @@ namespace MCGalaxy
             result = temp;
             return true;
         }
-        // in JSON we must use . instead of ,
         public static string StringifyDouble(double value) => value.ToString(CultureInfo.InvariantCulture);
         public static string StringifyInt(int value) => value.ToString(CultureInfo.InvariantCulture);
-        // Some languages don't have - as the negative sign symbol
-        public static bool TryParseInt32(string s, out int result) => int.TryParse(s, INTEGER_STYLE, NumberFormatInfo.InvariantInfo, out result);
-        public static int ParseInt32(string s) => int.Parse(s, INTEGER_STYLE, NumberFormatInfo.InvariantInfo);
-        public static bool TryParseInt8(string s, out sbyte result) => sbyte.TryParse(s, INTEGER_STYLE, NumberFormatInfo.InvariantInfo, out result);
+        public static bool TryParseInt32(string s, out int result) => int.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
+        public static int ParseInt32(string s) => int.Parse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
+        public static bool TryParseInt8(string s, out sbyte result) => sbyte.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
     }
 }

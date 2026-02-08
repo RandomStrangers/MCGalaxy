@@ -79,11 +79,7 @@ namespace MCGalaxy
             }
         }
         public static void MessageNeedMinPerm(Player p, string action, LevelPermission perm) => p.Message("Only {0}&S{1}", Group.GetColoredName(perm), action);
-        public static bool ValidName(Player p, string name, string type)
-        {
-            const string alphabet = Player.USERNAME_ALPHABET + "+"; // compatibility with ClassiCubeAccountPlus
-            return IsValidName(p, name, type, alphabet);
-        }
+        public static bool ValidName(Player p, string name, string type) => IsValidName(p, name, type, Player.USERNAME_ALPHABET + "+");
         public static bool ValidPlayerName(Player p, string name)
         {
             string alphabet = Player.USERNAME_ALPHABET + "+"; // compatibility with ClassiCubeAccountPlus

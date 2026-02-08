@@ -14,8 +14,6 @@
  */
 namespace MCGalaxy.Util.Imaging
 {
-    public delegate Pixel PixelGet(int x, int y);
-    public delegate void PixelSet(int x, int y, Pixel pixel);
     public struct Pixel
     {
         public byte A, R, G, B;

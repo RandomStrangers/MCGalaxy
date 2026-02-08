@@ -55,14 +55,6 @@ namespace MCGalaxy
         }
         static void InitPlayerLists(SchedulerTask task)
         {
-            try
-            {
-                UpgradeTasks.UpgradeOldAgreed();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Error upgrading agreed list", ex);
-            }
             LoadPlayerLists();
             ModerationTasks.QueueTasks();
         }

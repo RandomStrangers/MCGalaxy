@@ -40,25 +40,24 @@ namespace MCGalaxy
     {
         public static void CheckFile(string file)
         {
-            if (File.Exists(file))
+            if (!File.Exists(file))
             {
-                return;
-            }
-            Logger.Log(LogType.SystemActivity, file + " doesn't exist, Downloading..");
-            try
-            {
-                using (WebClient client = HttpUtil.CreateWebClient())
+                Logger.Log(LogType.SystemActivity, file + " doesn't exist, Downloading..");
+                try
                 {
-                    client.DownloadFile("https://raw.githubusercontent.com/ClassiCube/MCGalaxy/master/" + file, file);
+                    using (WebClient client = HttpUtil.CreateWebClient())
+                    {
+                        client.DownloadFile("https://raw.githubusercontent.com/ClassiCube/MCGalaxy/master/" + file, file);
+                    }
+                    if (File.Exists(file))
+                    {
+                        Logger.Log(LogType.SystemActivity, file + " download succesful!");
+                    }
                 }
-                if (File.Exists(file))
+                catch (Exception ex)
                 {
-                    Logger.Log(LogType.SystemActivity, file + " download succesful!");
+                    Logger.LogError("Downloading " + file + " failed, try again later", ex);
                 }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError("Downloading " + file + " failed, try again later", ex);
             }
         }
         internal static ConfigElement[] serverConfig, levelConfig, zoneConfig;
@@ -72,9 +71,8 @@ namespace MCGalaxy
             Logger.Log(LogType.SystemActivity, "Starting Server");
             ServicePointManager.Expect100Continue = false;
             ForceEnableTLS();
-            ExtraAuthenticator.SetActive(new DefaultPassAuthenticator());
+            ExtraAuthenticator.SetActive(new PassAuthenticator());
             SQLiteBackend.Instance.LoadDependencies();
-            MySQLBackend.Instance.LoadDependencies();
             EnsureFilesExist();
             IScripting.Init();
             LoadAllSettings(true);
@@ -83,8 +81,6 @@ namespace MCGalaxy
             Background.QueueOnce(LoadMainLevel);
             Background.QueueOnce(LoadAllPlugins);
             Background.QueueOnce(LoadAutoloadMaps);
-            Background.QueueOnce(UpgradeTasks.UpgradeOldTempranks);
-            Background.QueueOnce(UpgradeTasks.UpgradeDBTimeSpent);
             Background.QueueOnce(InitPlayerLists);
             Background.QueueOnce(Pronouns.Init);
             Background.QueueOnce(SetupSocket);
@@ -100,14 +96,14 @@ namespace MCGalaxy
             // Force enable TLS 1.1/1.2, otherwise checking for updates on Github doesn't work
             try
             {
-                ServicePointManager.SecurityProtocol |= (SecurityProtocolType)0x300;
+                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11;
             }
             catch
             {
             }
             try
             {
-                ServicePointManager.SecurityProtocol |= (SecurityProtocolType)0xC00;
+                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
             }
             catch
             {
@@ -115,7 +111,6 @@ namespace MCGalaxy
         }
         static void EnsureFilesExist()
         {
-            FileIO.TryDeleteDirectory("properties", true);
             EnsureDirectoryExists("props");
             EnsureDirectoryExists("levels");
             EnsureDirectoryExists("bots");
@@ -143,9 +138,7 @@ namespace MCGalaxy
                 Logger.LogError("Creating directory " + dir, ex);
             }
         }
-        public static void LoadAllSettings() => LoadAllSettings(false);
-        // TODO rethink this
-        static void LoadAllSettings(bool commands)
+        public static void LoadAllSettings(bool commands = false)
         {
             Colors.Load();
             Alias.LoadCustom();
@@ -169,7 +162,6 @@ namespace MCGalaxy
             ProfanityFilter.Init();
             Team.LoadList();
             ChatTokens.LoadCustom();
-            SrvProperties.FixupOldPerms();
             CpeExtension.LoadDisabledList();
             TextFile announcementsFile = TextFile.Files["Announcements"];
             announcementsFile.EnsureExists();
@@ -235,7 +227,6 @@ namespace MCGalaxy
                 string autoload = SaveAllLevels();
                 if (SetupFinished && !Config.AutoLoadMaps)
                 {
-                    //File.WriteAllText("text/autoload.txt", autoload);
                     FileIO.TryWriteAllText("text/autoload.txt", autoload);
                 }
             }

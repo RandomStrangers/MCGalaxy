@@ -73,7 +73,9 @@ namespace MCGalaxy.Bots
         {
             bot.AIName = ai;
             bot.Instructions.Clear();
-            bot.cur = 0; bot.countdown = 0; bot.movementSpeed = 3;
+            bot.cur = 0; 
+            bot.countdown = 0;
+            bot.movementSpeed = 3;
         }
         public static string Append(Player p, string ai, string cmd, string[] args)
         {
@@ -83,7 +85,8 @@ namespace MCGalaxy.Bots
             BotInstruction ins = BotInstruction.Find(cmd);
             if (ins == null)
             {
-                p.Message("Could not find instruction \"" + cmd + "\""); return null;
+                p.Message("Could not find instruction \"" + cmd + "\"");
+                return null;
             }
             CommandExtraPerms killPerms = CommandExtraPerms.Find("BotSet", 1);
             if (ins.Name.CaselessEq("kill") && !killPerms.UsableBy(p))

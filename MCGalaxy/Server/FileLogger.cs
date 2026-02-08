@@ -21,7 +21,6 @@ namespace MCGalaxy
 {
     public static class FileLogger
     {
-        public static string ErrorLogPath => err.Path;
         static bool disposed;
         static DateTime last;
         static readonly object logLock = new();
@@ -52,31 +51,29 @@ namespace MCGalaxy
         }
         static void LogMessage(LogType type, string message)
         {
-            if (string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(message))
             {
-                return;
-            }
-            if (!Server.Config.FileLogging[(int)type])
-            {
-                return;
-            }
-            if (type == LogType.Error)
-            {
-                StringBuilder sb = new();
-                sb.AppendLine("----" + DateTime.Now + " ----");
-                sb.AppendLine(message);
-                sb.Append('-', 25);
-                string output = sb.ToString();
-                lock (logLock)
+                if (Server.Config.FileLogging[(int)type])
                 {
-                    err.Cache.Enqueue(output);
+                    if (type == LogType.Error)
+                    {
+                        StringBuilder sb = new();
+                        sb.AppendLine("----" + DateTime.Now + " ----");
+                        sb.AppendLine(message);
+                        sb.Append('-', 25);
+                        string output = sb.ToString();
+                        lock (logLock)
+                        {
+                            err.Cache.Enqueue(output);
+                        }
+                        message = "!!!Error! See " + err.Path + " for more information.";
+                    }
+                    string now = DateTime.Now.ToString("(HH:mm:ss) ");
+                    lock (logLock)
+                    {
+                        msg.Cache.Enqueue(now + message);
+                    }
                 }
-                message = "!!!Error! See " + err.Path + " for more information.";
-            }
-            string now = DateTime.Now.ToString("(HH:mm:ss) ");
-            lock (logLock)
-            {
-                msg.Cache.Enqueue(now + message);
             }
         }
         public static void Flush(SchedulerTask task)
@@ -101,19 +98,18 @@ namespace MCGalaxy
         }
         public static void Dispose()
         {
-            if (disposed)
+            if (!disposed)
             {
-                return;
-            }
-            disposed = true;
-            Server.MainScheduler.Cancel(logTask);
-            lock (logLock)
-            {
-                if (err.Cache.Count > 0)
+                disposed = true;
+                Server.MainScheduler.Cancel(logTask);
+                lock (logLock)
                 {
-                    err.FlushCache();
+                    if (err.Cache.Count > 0)
+                    {
+                        err.FlushCache();
+                    }
+                    msg.Cache.Clear();
                 }
-                msg.Cache.Clear();
             }
         }
     }
@@ -129,7 +125,7 @@ namespace MCGalaxy
             {
                 stream = new FileStream(Path, FileMode.Append, FileAccess.Write,
                                         FileShare.ReadWrite, 4096, FileOptions.SequentialScan);
-                writer = new StreamWriter(stream);
+                writer = new(stream);
             }
             try
             {

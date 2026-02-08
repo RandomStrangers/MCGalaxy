@@ -4,27 +4,28 @@ using Newtonsoft.Json;
 using System.IO;
 namespace MCGalaxy
 {
-    public partial class NASTimeCycle
+    public enum NASDayCycles
+    {
+        Sunrise, Day, Sunset, Night, Midnight
+    }
+    public class NASTimeCycle
     {
         public static float globalCurrentTime;
-        public static NASDayCycles globalCurrentDayCycle;
+        public static NASDayCycles globalCurrentDayCycle,
+            dayCycle = NASDayCycles.Sunrise;
         public static JsonSerializer serializer = new();
         public static Scheduler weatherScheduler;
         public static SchedulerTask task;
+        public const string Path = NASPlugin.Path + "CoreData/";
         public static string globalSkyColor, globalCloudColor,
             globalSunColor, globalShadowColor, 
-            TimeFilePath = NASPlugin.CoreSavePath + "time.json";
-        public static NASDayCycles dayCycle = NASDayCycles.Sunrise;
+            TimeFilePath = Path + "time.json";
         public NASDayCycles cycle = NASDayCycles.Sunrise;
         public static int cycleCurrentTime = 0,
             cycleMaxTime = 14400,
             hourMinutes = 600,
             gameday = 0;
         public int day = 0, minutes = 7 * hourMinutes;
-        public enum NASDayCycles
-        {
-            Sunrise, Day, Sunset, Night, Midnight
-        }
         public static NASTimeCycle cyc = new();
         public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
         public static void StoreTimeData(int day, int minutes, NASDayCycles cycle)

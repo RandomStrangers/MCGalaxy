@@ -98,11 +98,15 @@ namespace MCGalaxy
         public bool Enabled = true;
         public CpeExtension(string name, string desc)
         {
-            Name = name; Desc = desc; Version = 1;
+            Name = name; 
+            Desc = desc;
+            Version = 1;
         }
         public CpeExtension(string name, string desc, byte version)
         {
-            Name = name; Desc = desc; Version = version;
+            Name = name; 
+            Desc = desc; 
+            Version = version;
         }
         /// <summary> Array of all supported CPE extensions </summary>
         public static CpeExtension[] All = new CpeExtension[] {
@@ -158,7 +162,7 @@ namespace MCGalaxy
             {
                 CpeExtension e = all[i];
                 if (!e.Enabled) continue;
-                exts.Add(new CpeExt() { Name = e.Name, ServerVersion = e.Version });
+                exts.Add(new() { Name = e.Name, ServerVersion = e.Version });
             }
             return exts.ToArray();
         }

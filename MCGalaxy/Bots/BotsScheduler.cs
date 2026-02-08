@@ -26,7 +26,7 @@ namespace MCGalaxy
             lock (activateLock)
             {
                 if (instance != null) return;
-                instance = new Scheduler("MCG_BotsScheduler");
+                instance = new("MCG_BotsScheduler");
                 instance.QueueRepeat(BotsTick, null,
                                      TimeSpan.FromMilliseconds(100));
             }
@@ -37,7 +37,10 @@ namespace MCGalaxy
             for (int i = 0; i < levels.Length; i++)
             {
                 PlayerBot[] bots = levels[i].Bots.Items;
-                for (int j = 0; j < bots.Length; j++) { BotTick(bots[j]); }
+                for (int j = 0; j < bots.Length; j++) 
+                { 
+                    BotTick(bots[j]); 
+                }
             }
         }
         static void BotTick(PlayerBot bot)
@@ -82,11 +85,21 @@ namespace MCGalaxy
             Position pos = bot.Pos;
             switch (bot.curJump)
             {
-                case 1: pos.Y += 24; break;
-                case 2: pos.Y += 12; break;
-                case 3: break;
-                case 4: pos.Y -= 12; break;
-                case 5: pos.Y -= 24; bot.curJump = -1; break;
+                case 1: 
+                    pos.Y += 24; 
+                    break;
+                case 2: 
+                    pos.Y += 12; 
+                    break;
+                case 3: 
+                    break;
+                case 4: 
+                    pos.Y -= 12; 
+                    break;
+                case 5: 
+                    pos.Y -= 24; 
+                    bot.curJump = -1; 
+                    break;
             }
             bot.curJump++;
             bot.Pos = pos;

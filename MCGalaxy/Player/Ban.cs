@@ -20,8 +20,8 @@ namespace MCGalaxy
     /// <remarks> This is NOT the list of banned players (ranks/banned.txt) </remarks>
     public static class Ban
     {
-        static readonly PlayerMetaList bans = new("text/bans.txt");
-        static readonly PlayerMetaList unbans = new("text/unbans.txt");
+        static readonly PlayerMetaList bans = new("text/bans.txt"),
+            unbans = new("text/unbans.txt");
         public static void EnsureExists()
         {
             bans.EnsureExists();
@@ -45,7 +45,7 @@ namespace MCGalaxy
             }
             catch (ArgumentOutOfRangeException)
             {
-                expiry = new DateTime(long.Parse(parts[1]), DateTimeKind.Utc);
+                expiry = new(long.Parse(parts[1]), DateTimeKind.Utc);
             }
             reason = parts.Length > 2 ? parts[2] : "";
         }
@@ -63,18 +63,8 @@ namespace MCGalaxy
             reason = reason.Replace(" ", "%20");
             AddUnbanEntry(unbanner.name, target.ToLower(), reason);
         }
-        static void AddBanEntry(string pl, string target, string reason, bool stealth, string oldrank)
-        {
-            string time = DateTime.UtcNow.ToUnixTime().ToString();
-            string data = pl + " " + target + " " + reason + " " + stealth + " " + time + " " + oldrank;
-            bans.Append(data);
-        }
-        static void AddUnbanEntry(string pl, string target, string reason)
-        {
-            string time = DateTime.UtcNow.ToUnixTime().ToString();
-            string data = pl + " " + target + " " + reason + " " + time;
-            unbans.Append(data);
-        }
+        static void AddBanEntry(string pl, string target, string reason, bool stealth, string oldrank) => bans.Append(pl + " " + target + " " + reason + " " + stealth + " " + DateTime.UtcNow.ToUnixTime().ToString() + " " + oldrank);
+        static void AddUnbanEntry(string pl, string target, string reason) => unbans.Append(pl + " " + target + " " + reason + " " + DateTime.UtcNow.ToUnixTime().ToString());
         /// <summary> Returns info about the current or last ban of a user. </summary>
         public static void GetBanData(string who, out string banner, out string reason,
                                       out DateTime time, out string prevRank)
@@ -91,14 +81,18 @@ namespace MCGalaxy
                 prevRank = parts[5];
                 return;
             }
-            banner = null; reason = null; time = DateTime.MinValue; prevRank = null;
+            banner = null;
+            reason = null; 
+            time = DateTime.MinValue;
+            prevRank = null;
         }
         /// <summary> Returns information about the last unban of a user. </summary>
         public static void GetUnbanData(string who, out string unbanner, out string reason,
                                         out DateTime time)
         {
             who = who.ToLower();
-            unbanner = null; reason = null;
+            unbanner = null; 
+            reason = null;
             foreach (string line in FileIO.TryReadAllLines(unbans.file))
             {
                 string[] parts = line.SplitSpaces();
@@ -109,7 +103,9 @@ namespace MCGalaxy
                 time = GetDate(parts[3]);
                 return;
             }
-            unbanner = null; reason = null; time = DateTime.MinValue;
+            unbanner = null; 
+            reason = null; 
+            time = DateTime.MinValue;
         }
         static DateTime GetDate(string raw)
         {
@@ -119,13 +115,13 @@ namespace MCGalaxy
                DateTime now = DateTime.Now;
                return now.DayOfWeek + "%20" + now.Day + "%20" + now.Month + "%20" + now.Year + ",%20at%20" + now.Hour + ":" + now.Minute;
              */
-            string[] date = raw.SplitSpaces();
-            string[] minuteHour = date[5].Split(':');
-            int hour = NumberUtils.ParseInt32(minuteHour[0]);
-            int min = NumberUtils.ParseInt32(minuteHour[1]);
-            int day = NumberUtils.ParseInt32(date[1]);
-            int month = NumberUtils.ParseInt32(date[2]);
-            int year = NumberUtils.ParseInt32(date[3]);
+            string[] date = raw.SplitSpaces(),
+                minuteHour = date[5].Split(':');
+            int hour = NumberUtils.ParseInt32(minuteHour[0]),
+                min = NumberUtils.ParseInt32(minuteHour[1]),
+                day = NumberUtils.ParseInt32(date[1]),
+                month = NumberUtils.ParseInt32(date[2]),
+                year = NumberUtils.ParseInt32(date[3]);
             return new DateTime(year, month, day, hour, min, 0).ToUniversalTime();
         }
         public static bool DeleteBan(string name) => DeleteInfo(name, bans);
@@ -151,7 +147,6 @@ namespace MCGalaxy
             return found;
         }
         public static bool ChangeBanReason(string who, string reason) => ChangeReason(who, reason, bans);
-        public static bool ChangeUnbanReason(string who, string reason) => ChangeReason(who, reason, unbans);
         static bool ChangeReason(string who, string reason, PlayerMetaList list)
         {
             who = who.ToLower();

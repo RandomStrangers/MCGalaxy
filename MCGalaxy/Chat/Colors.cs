@@ -61,22 +61,38 @@ namespace MCGalaxy
         {
             switch (code)
             {
-                case '0': return new ColorDesc('0', "Black");
-                case '1': return new ColorDesc('1', "Navy");
-                case '2': return new ColorDesc('2', "Green");
-                case '3': return new ColorDesc('3', "Teal");
-                case '4': return new ColorDesc('4', "Maroon");
-                case '5': return new ColorDesc('5', "Purple");
-                case '6': return new ColorDesc('6', "Gold");
-                case '7': return new ColorDesc('7', "Silver");
-                case '8': return new ColorDesc('8', "Gray");
-                case '9': return new ColorDesc('9', "Blue");
-                case 'a': return new ColorDesc('a', "Lime");
-                case 'b': return new ColorDesc('b', "Aqua");
-                case 'c': return new ColorDesc('c', "Red");
-                case 'd': return new ColorDesc('d', "Pink");
-                case 'e': return new ColorDesc('e', "Yellow");
-                case 'f': return new ColorDesc('f', "White");
+                case '0':
+                    return new('0', "Black");
+                case '1':
+                    return new('1', "Navy");
+                case '2':
+                    return new('2', "Green");
+                case '3': 
+                    return new('3', "Teal");
+                case '4':
+                    return new('4', "Maroon");
+                case '5':
+                    return new('5', "Purple");
+                case '6':
+                    return new('6', "Gold");
+                case '7': 
+                    return new('7', "Silver");
+                case '8':
+                    return new('8', "Gray");
+                case '9':
+                    return new('9', "Blue");
+                case 'a':
+                    return new('a', "Lime");
+                case 'b':
+                    return new('b', "Aqua");
+                case 'c':
+                    return new('c', "Red");
+                case 'd':
+                    return new('d', "Pink");
+                case 'e':
+                    return new('e', "Yellow");
+                case 'f': 
+                    return new('f', "White");
             }
             ColorDesc col = default;
             col.Code = code;
@@ -117,7 +133,8 @@ namespace MCGalaxy
         /// <returns> Whether given color code was a valid color code. </returns>
         public static bool Map(ref char col)
         {
-            col = Lookup(col); return col != '\0';
+            col = Lookup(col); 
+            return col != '\0';
         }
         /// <summary> Maps internal system color codes to their actual color codes. </summary>
         /// <remarks> Also converts uppercase standard color codes to lowercase. </remarks>
@@ -141,7 +158,10 @@ namespace MCGalaxy
         {
             if (value.IndexOf('%') == -1) return value;
             char[] chars = new char[value.Length];
-            for (int i = 0; i < chars.Length; i++) { chars[i] = value[i]; }
+            for (int i = 0; i < chars.Length; i++) 
+            {
+                chars[i] = value[i]; 
+            }
             for (int i = 0; i < chars.Length;)
             {
                 int end = value.IndexOf(' ', i);
@@ -153,16 +173,24 @@ namespace MCGalaxy
         }
         static bool IsUrlAt(char[] chars, int i, int len)
         {
-            const int PREFIX_LEN = 7; // "http://".Length
-            if (len < PREFIX_LEN) return false;
+            if (len < 7) return false;
             // skip color codes in url
-            while (len > 0 && chars[i] == '&') { len -= 2; i += 2; }
+            while (len > 0 && chars[i] == '&') 
+            { 
+                len -= 2; 
+                i += 2; 
+            }
             // Starts with "http" ?
-            if (len < PREFIX_LEN) return false;
+            if (len < 7) return false;
             if (chars[i] != 'h' || chars[i + 1] != 't' || chars[i + 2] != 't' || chars[i + 3] != 'p') return false;
-            len -= 4; i += 4;
+            len -= 4;
+            i += 4;
             // And then with "s://" or "://" ?
-            if (chars[i] == 's') { len--; i++; }
+            if (chars[i] == 's') 
+            { 
+                len--;
+                i++; 
+            }
             return len >= 3 && chars[i] == ':' && chars[i + 1] == '/' && chars[i + 2] == '/';
         }
         static void Escape(char[] chars, int start, int end)
@@ -198,7 +226,7 @@ namespace MCGalaxy
                     output[usedChars++] = token;
                 }
             }
-            return new string(output, 0, usedChars);
+            return new(output, 0, usedChars);
         }
         static bool UsedColor(string message, int i)
         {
@@ -224,7 +252,7 @@ namespace MCGalaxy
                     output[usedChars++] = c;
                 }
             }
-            return new string(output, 0, usedChars);
+            return new(output, 0, usedChars);
         }
         static readonly object ioLock = new();
         /// <summary> Saves list of changed colors to disc. </summary>
@@ -257,7 +285,6 @@ namespace MCGalaxy
         static void LoadCore()
         {
             if (!File.Exists(Paths.CustomColorsFile)) return;
-            //string[] lines = File.ReadAllLines(Paths.CustomColorsFile);
             string[] lines = FileIO.TryReadAllLines(Paths.CustomColorsFile);
             ColorDesc col = default;
             for (int i = 0; i < lines.Length; i++)
@@ -292,11 +319,17 @@ namespace MCGalaxy
             }
             else
             {
-                R = UnHex(hex[0]); R |= R << 4;
-                G = UnHex(hex[1]); G |= G << 4;
-                B = UnHex(hex[2]); B |= B << 4;
+                R = UnHex(hex[0]); 
+                R |= R << 4;
+                G = UnHex(hex[1]); 
+                G |= G << 4;
+                B = UnHex(hex[2]); 
+                B |= B << 4;
             }
-            c.R = (byte)R; c.G = (byte)G; c.B = (byte)B; c.A = 255;
+            c.R = (byte)R; 
+            c.G = (byte)G; 
+            c.B = (byte)B; 
+            c.A = 255;
             return true;
         }
         /// <summary> Parses an #RRGGBB hex color string. </summary>
@@ -307,9 +340,18 @@ namespace MCGalaxy
         }
         public static int UnHex(char c)
         {
-            if (c >= '0' && c <= '9') { return c - '0'; }
-            if (c >= 'a' && c <= 'f') { return c - 'a' + 10; }
-            if (c >= 'A' && c <= 'F') { return c - 'A' + 10; }
+            if (c >= '0' && c <= '9') 
+            {
+                return c - '0'; 
+            }
+            if (c >= 'a' && c <= 'f') 
+            {
+                return c - 'a' + 10; 
+            }
+            if (c >= 'A' && c <= 'F') 
+            {
+                return c - 'A' + 10; 
+            }
             return -1;
         }
     }
@@ -323,12 +365,20 @@ namespace MCGalaxy
         public readonly byte Index => (byte)Code.UnicodeToCp437();
         public ColorDesc(byte r, byte g, byte b)
         {
-            Code = '\0'; Fallback = '\0'; Name = null;
-            R = r; G = g; B = b; A = 255;
+            Code = '\0'; 
+            Fallback = '\0'; 
+            Name = null;
+            R = r;
+            G = g; 
+            B = b;
+            A = 255;
         }
         internal ColorDesc(char code, string name)
         {
-            Code = code; Fallback = code; Name = name; A = 255;
+            Code = code; 
+            Fallback = code;
+            Name = name; 
+            A = 255;
             if (code >= '0' && code <= '9')
             {
                 HexDecode(code - '0', out R, out G, out B);

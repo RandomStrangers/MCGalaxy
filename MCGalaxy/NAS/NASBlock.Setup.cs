@@ -1071,46 +1071,46 @@ namespace MCGalaxy
             i = 198;
             blocks[i] = new(i, blocks[17])
             {
-                station = new NASCrafting.NASStation
+                station = new NASStation
                 {
                     name = "Crafting Table",
-                    type = NASCrafting.NASStation.NASStationType.Normal,
-                    ori = NASCrafting.NASStation.NASOrientation.NS
+                    type = NASStationType.Normal,
+                    ori = NASOrientation.NS
                 },
                 existAction = CraftingExistAction(),
                 interaction = CraftingInteraction()
             };
             i = 199;
             blocks[i] = new(i, blocks[198]);
-            blocks[i].station.ori = NASCrafting.NASStation.NASOrientation.WE;
+            blocks[i].station.ori = NASOrientation.WE;
             i = 413;
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Stone], 1)
             {
-                station = new NASCrafting.NASStation
+                station = new NASStation
                 {
                     name = "Auto Crafter",
-                    type = NASCrafting.NASStation.NASStationType.Normal,
-                    ori = NASCrafting.NASStation.NASOrientation.NS
+                    type = NASStationType.Normal,
+                    ori = NASOrientation.NS
                 },
                 existAction = AutoCraftExistAction(),
                 interaction = AutoCraftInteraction(),
                 disturbedAction = AutoCraftingAction(),
                 container = new NASContainer
                 {
-                    type = NASContainer.NASContainerType.AutoCraft
+                    type = NASContainerType.AutoCraft
                 }
             };
             i = 414;
             blocks[i] = new(i, blocks[413]);
-            blocks[i].station.ori = NASCrafting.NASStation.NASOrientation.WE;
+            blocks[i].station.ori = NASOrientation.WE;
             i = 462;
             blocks[i] = new(i, blocks[242])
             {
-                station = new NASCrafting.NASStation
+                station = new NASStation
                 {
                     name = "Crafting Table",
-                    type = NASCrafting.NASStation.NASStationType.Normal,
-                    ori = NASCrafting.NASStation.NASOrientation.NS
+                    type = NASStationType.Normal,
+                    ori = NASOrientation.NS
                 },
                 existAction = CraftingExistAction(),
                 interaction = CraftingInteraction(),
@@ -1118,16 +1118,16 @@ namespace MCGalaxy
             };
             i = 463;
             blocks[i] = new(i, blocks[462]);
-            blocks[i].station.ori = NASCrafting.NASStation.NASOrientation.WE;
+            blocks[i].station.ori = NASOrientation.WE;
             blocks[i].alternateID = 199;
             i = 464;
             blocks[i] = new(i, blocks[250])
             {
-                station = new NASCrafting.NASStation
+                station = new NASStation
                 {
                     name = "Crafting Table",
-                    type = NASCrafting.NASStation.NASStationType.Normal,
-                    ori = NASCrafting.NASStation.NASOrientation.NS
+                    type = NASStationType.Normal,
+                    ori = NASOrientation.NS
                 },
                 existAction = CraftingExistAction(),
                 interaction = CraftingInteraction(),
@@ -1135,23 +1135,23 @@ namespace MCGalaxy
             };
             i = 465;
             blocks[i] = new(i, blocks[464]);
-            blocks[i].station.ori = NASCrafting.NASStation.NASOrientation.WE;
+            blocks[i].station.ori = NASOrientation.WE;
             blocks[i].alternateID = 199;
             i = 625;
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Stone], 1)
             {
-                station = new NASCrafting.NASStation
+                station = new NASStation
                 {
                     name = "Furnace",
-                    type = NASCrafting.NASStation.NASStationType.Furnace,
-                    ori = NASCrafting.NASStation.NASOrientation.WE
+                    type = NASStationType.Furnace,
+                    ori = NASOrientation.WE
                 },
                 existAction = CraftingExistAction(),
                 interaction = CraftingInteraction()
             };
             i = 626;
             blocks[i] = new(i, blocks[625]);
-            blocks[i].station.ori = NASCrafting.NASStation.NASOrientation.NS;
+            blocks[i].station.ori = NASOrientation.NS;
             i = 239;
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Stone], 1)
             {
@@ -1177,7 +1177,7 @@ namespace MCGalaxy
             {
                 container = new NASContainer
                 {
-                    type = NASContainer.NASContainerType.Barrel
+                    type = NASContainerType.Barrel
                 },
                 existAction = ContainerExistAction(),
                 interaction = ContainerInteraction()
@@ -1190,7 +1190,7 @@ namespace MCGalaxy
             {
                 container = new NASContainer
                 {
-                    type = NASContainer.NASContainerType.Chest
+                    type = NASContainerType.Chest
                 },
                 existAction = ContainerExistAction(),
                 interaction = ContainerInteraction()
@@ -1206,7 +1206,7 @@ namespace MCGalaxy
             {
                 container = new NASContainer
                 {
-                    type = NASContainer.NASContainerType.Gravestone
+                    type = NASContainerType.Gravestone
                 },
                 existAction = ContainerExistAction(),
                 interaction = ContainerInteraction()
@@ -2158,7 +2158,7 @@ namespace MCGalaxy
                 interaction = ContainerInteraction(),
                 container = new NASContainer
                 {
-                    type = NASContainer.NASContainerType.Dispenser
+                    type = NASContainerType.Dispenser
                 }
             };
             i++;

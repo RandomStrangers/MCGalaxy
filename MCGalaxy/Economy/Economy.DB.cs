@@ -14,7 +14,6 @@
  */
 using MCGalaxy.DB;
 using MCGalaxy.SQL;
-using System.Collections.Generic;
 namespace MCGalaxy.Eco
 {
     public static partial class Economy
@@ -28,27 +27,12 @@ namespace MCGalaxy.Eco
             new("salary", ColumnType.VarChar, 255),
             new("fine", ColumnType.VarChar, 255),
         };
-        static EcoStats ParseOld(ISqlRecord record)
-        {
-            EcoStats stats = ParseStats(record);
-            stats.__unused = record.GetInt("money");
-            return stats;
-        }
         public static void LoadDatabase()
         {
             Database.CreateTable("Economy", ecoTable);
-            // money used to be in the Economy table, move it back to the Players table
-            List<EcoStats> outdated = new();
             Database.ReadRows("Economy", "*",
-                                record => outdated.Add(ParseOld(record)),
+                                record => ParseStats(record),
                                 "WHERE money > 0");
-            if (outdated.Count == 0) return;
-            Logger.Log(LogType.SystemActivity, "Upgrading economy stats..");
-            foreach (EcoStats stats in outdated)
-            {
-                UpdateMoney(stats.Player, stats.__unused);
-                UpdateStats(stats);
-            }
         }
         public static string FindMatches(Player p, string name, out int money)
         {
@@ -60,25 +44,21 @@ namespace MCGalaxy.Eco
                             NumberUtils.StringifyInt(money));
         public struct EcoStats
         {
-            public string Player;
-            public string Purchase, Payment, Salary, Fine;
-            public int TotalSpent, __unused;
+            public string Player, Purchase, Payment, Salary, Fine;
+            public int TotalSpent;
         }
         public static void UpdateStats(EcoStats stats) => Database.AddOrReplaceRow("Economy", "player, money, total, purchase, payment, salary, fine",
                                      stats.Player, 0, stats.TotalSpent, stats.Purchase,
                                      stats.Payment, stats.Salary, stats.Fine);
-        static EcoStats ParseStats(ISqlRecord record)
+        static EcoStats ParseStats(ISqlRecord record) => new()
         {
-            EcoStats stats;
-            stats.Player = record.GetText("player");
-            stats.Payment = Parse(record.GetText("payment"));
-            stats.Purchase = Parse(record.GetText("purchase"));
-            stats.Salary = Parse(record.GetText("salary"));
-            stats.Fine = Parse(record.GetText("fine"));
-            stats.TotalSpent = record.GetInt("total");
-            stats.__unused = 0;
-            return stats;
-        }
+            Player = record.GetText("player"),
+            Payment = Parse(record.GetText("payment")),
+            Purchase = Parse(record.GetText("purchase")),
+            Salary = Parse(record.GetText("salary")),
+            Fine = Parse(record.GetText("fine")),
+            TotalSpent = record.GetInt("total"),
+        };
         static string Parse(string raw)
         {
             if (raw == null || raw.Length == 0 || raw.CaselessEq("NULL")) return null;

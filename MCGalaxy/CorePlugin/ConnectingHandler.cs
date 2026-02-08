@@ -71,7 +71,8 @@ namespace MCGalaxy.Core
             Player[] online = PlayerInfo.Online.Items;
             if (online.Length >= Server.Config.MaxPlayers && !IPUtil.IsPrivate(p.IP))
             {
-                p.Leave(null, "Server full!", true); return false;
+                p.Leave(null, "Server full!", true);
+                return false;
             }
             if (p.Rank > LevelPermission.Guest) return true;
             online = PlayerInfo.Online.Items;

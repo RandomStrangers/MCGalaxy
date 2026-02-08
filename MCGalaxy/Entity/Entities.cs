@@ -45,8 +45,10 @@ namespace MCGalaxy
                 }
                 else if (p == other && self)
                 {
-                    other.Pos = pos; other.SetYawPitch(rot.RotY, rot.HeadX);
-                    other._lastPos = other.Pos; other._lastRot = other.Rot;
+                    other.Pos = pos; 
+                    other.SetYawPitch(rot.RotY, rot.HeadX);
+                    other._lastPos = other.Pos; 
+                    other._lastRot = other.Rot;
                     Spawn(other, p, pos, rot, possession);
                 }
             }
@@ -82,8 +84,8 @@ namespace MCGalaxy
         public static void Spawn(Player dst, Player p, Position pos,
                                  Orientation rot, string possession = "")
         {
-            string name = p.color + p.truename + possession;
-            string skin = p.SkinName, model = p.Model;
+            string name = p.color + p.truename + possession,
+                skin = p.SkinName, model = p.Model;
             OnEntitySpawnedEvent.Call(p, ref name, ref skin, ref model, dst);
             SpawnRaw(dst, p, pos, rot, skin, name, model);
         }
@@ -101,7 +103,10 @@ namespace MCGalaxy
             GlobalSpawn(p, pos, rot, true);
             if (!bots) return;
             PlayerBot[] botsList = p.Level.Bots.Items;
-            foreach (PlayerBot b in botsList) { Spawn(p, b); }
+            foreach (PlayerBot b in botsList) 
+            {
+                Spawn(p, b);
+            }
         }
         /// <summary> Despawns this player to all other players, and despawns all others players to this player. </summary>
         internal static void DespawnEntities(Player p, bool bots = true)
@@ -114,14 +119,17 @@ namespace MCGalaxy
             GlobalDespawn(p, true);
             if (!bots) return;
             PlayerBot[] botsList = p.Level.Bots.Items;
-            foreach (PlayerBot b in botsList) { Despawn(p, b); }
+            foreach (PlayerBot b in botsList) 
+            { 
+                Despawn(p, b);
+            }
         }
         public static void Spawn(Player dst, PlayerBot b)
         {
             string name = Chat.Format(b.color + b.DisplayName, dst, true, false);
             if (b.DisplayName.CaselessEq("empty")) name = "";
-            string skin = Chat.Format(b.SkinName, dst, true, false);
-            string model = Chat.Format(b.Model, dst, true, false);
+            string skin = Chat.Format(b.SkinName, dst, true, false),
+                model = Chat.Format(b.Model, dst, true, false);
             OnEntitySpawnedEvent.Call(b, ref name, ref skin, ref model, dst);
             SpawnRaw(dst, b, b.Pos, b.Rot, skin, name, model);
         }
@@ -225,7 +233,8 @@ namespace MCGalaxy
             }
             foreach (Player p in players)
             {
-                p._lastPos = p._positionUpdatePos; p._lastRot = p.Rot;
+                p._lastPos = p._positionUpdatePos; 
+                p._lastRot = p.Rot;
             }
             PlayerBot.GlobalPostBroadcastPosition(); //Need to set bot's _lastPos and _lastRot
         }

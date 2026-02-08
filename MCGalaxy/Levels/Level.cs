@@ -37,10 +37,7 @@ namespace MCGalaxy
     };
     public sealed partial class Level : IDisposable
     {
-        public Level(string name, ushort width, ushort height, ushort length)
-        {
-            Init(name, width, height, length);
-        }
+        public Level(string name, ushort width, ushort height, ushort length) => Init(name, width, height, length);
         public Level(string name, ushort width, ushort height, ushort length, byte[] blocks)
         {
             this.blocks = blocks;

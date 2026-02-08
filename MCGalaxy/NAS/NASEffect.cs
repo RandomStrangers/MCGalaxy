@@ -1,7 +1,6 @@
 using MCGalaxy.Config;
 using MCGalaxy.Network;
 using MCGalaxy.Util.Imaging;
-using System.IO;
 namespace MCGalaxy
 {
     public class NASEffect
@@ -53,12 +52,7 @@ namespace MCGalaxy
         static ConfigElement[] cfg;
         public bool Load(string effectName)
         {
-            string fileName = Path + effectName + ".properties",
-                fileNameInPluginsDir = "plugins/" + effectName + ".properties";
-            if (File.Exists(fileNameInPluginsDir))
-            {
-                FileIO.TryMove(fileNameInPluginsDir, fileName);
-            }
+            string fileName = Path + effectName + ".properties";
             cfg ??= ConfigElement.GetAll(typeof(NASEffect));
             if (!ConfigElement.ParseFile(cfg, fileName, this))
             {
@@ -70,7 +64,7 @@ namespace MCGalaxy
         }
         public const string Path = NASPlugin.Path + "Effects/";
         public static NASEffect breakMeter, breakEarth, breakLeaves;
-        public static NASEffect[] breakEffects = new NASEffect[(int)NASBlock.NASMaterial.Count];
+        public static NASEffect[] breakEffects = new NASEffect[(int)NASMaterial.Count];
         public static bool Setup()
         {
             breakMeter = new();
@@ -88,11 +82,11 @@ namespace MCGalaxy
             {
                 return false;
             }
-            for (int i = 0; i < (int)NASBlock.NASMaterial.Count; i++)
+            for (int i = 0; i < (int)NASMaterial.Count; i++)
             {
                 breakEffects[i] = breakEarth;
             }
-            breakEffects[(int)NASBlock.NASMaterial.Leaves] = breakLeaves;
+            breakEffects[(int)NASMaterial.Leaves] = breakLeaves;
             return true;
         }
         public static void Define(Player p, byte ID, NASEffect effect, Pixel? color = null, float? lifetime = null)

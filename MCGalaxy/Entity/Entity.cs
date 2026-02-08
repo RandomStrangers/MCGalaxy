@@ -55,12 +55,15 @@ namespace MCGalaxy
         }
         public void SetInitialPos(Position pos)
         {
-            Pos = pos; _lastPos = pos; _positionUpdatePos = pos;
+            Pos = pos; 
+            _lastPos = pos; 
+            _positionUpdatePos = pos;
         }
         public void SetYawPitch(byte yaw, byte pitch)
         {
             Orientation rot = Rot;
-            rot.RotY = yaw; rot.HeadX = pitch;
+            rot.RotY = yaw;
+            rot.HeadX = pitch;
             Rot = rot;
         }
         /// <summary> Whether this player can see the given entity as an entity in the level. </summary>

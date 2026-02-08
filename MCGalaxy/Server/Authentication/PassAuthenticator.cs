@@ -48,8 +48,59 @@ namespace MCGalaxy.Authentication
         }
     }
     /// <summary> Performs extra authentication using a per player password </summary>
-    public abstract class PassAuthenticator : ExtraAuthenticator
+    public class PassAuthenticator : ExtraAuthenticator
     {
+        public bool HasPassword(string name) => GetHashPath(name) != null;
+        public bool VerifyPassword(string name, string password)
+        {
+            string path = GetHashPath(name);
+            if (path == null)
+            {
+                return false;
+            }
+            return CheckHash(path, name, password);
+        }
+        public void StorePassword(string name, string password)
+        {
+            Directory.CreateDirectory("extra/passwords/");
+            FileIO.TryWriteAllBytes(HashPath(name), ComputeHash(name, password));
+        }
+        public bool ResetPassword(string name)
+        {
+            string path = GetHashPath(name);
+            if (path == null)
+            {
+                return false;
+            }
+            FileIO.TryDelete(path);
+            return true;
+        }
+        static string GetHashPath(string name) => File.Exists(HashPath(name)) ? HashPath(name) : null;
+        static string HashPath(string name) => "extra/passwords/" + Server.ToRawUsername(name).ToLower() + ".pwd";
+        static bool CheckHash(string path, string name, string pass)
+        {
+            if (!FileIO.TryReadBytes(path, out byte[] stored))
+            {
+                return false;
+            }
+            return ArraysEqual(ComputeHash(name, pass), stored);
+        }
+        static byte[] ComputeHash(string name, string pass) => SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes("0bec662b-416f-450c-8f50-664fd4a41d49" + name.ToLower() + " " + pass));
+        static bool ArraysEqual(byte[] a, byte[] b)
+        {
+            if (a.Length != b.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (a[i] != b[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
         public override void RequiresVerification(Player p, string action) => p.Message("&WYou must first verify with &T/Pass [password] &Wbefore you can {0}", action);
         public override void NeedVerification(Player p)
         {
@@ -74,16 +125,6 @@ namespace MCGalaxy.Authentication
             }
             Verify(p);
         }
-        /// <summary> Returns whether the given player has a stored password </summary>
-        public abstract bool HasPassword(string name);
-        /// <summary> Returns whether the given pasword equals
-        /// the stored password for the given player </summary>
-        public abstract bool VerifyPassword(string name, string password);
-        /// <summary> Sets the stored password for the given player </summary>
-        public abstract void StorePassword(string name, string password);
-        /// <summary> Removes the stored password for the given player </summary>
-        /// <returns> Whether the given player actually had a stored password </returns>
-        public abstract bool ResetPassword(string name);
         protected override void Activate()
         {
             OnPlayerHelpEvent.Register(OnPlayerHelp, Priority.Low);
@@ -240,83 +281,6 @@ namespace MCGalaxy.Authentication
             p.Message("&H If you are {0}&H+, use this command to verify your login.",
                       Group.GetColoredName(Server.Config.VerifyAdminsRank));
             p.Message("&H You must be verified to use commands, modify blocks, and chat");
-        }
-    }
-    /// <summary> Password authenticator that loads/stores passwords in /extra/passwords folder </summary>
-    public class DefaultPassAuthenticator : PassAuthenticator
-    {
-        const string PASS_FOLDER = "extra/passwords/";
-        public override bool HasPassword(string name) => GetHashPath(name) != null;
-        public override bool VerifyPassword(string name, string password)
-        {
-            string path = GetHashPath(name);
-            if (path == null)
-            {
-                return false;
-            }
-            return CheckHash(path, name, password);
-        }
-        public override void StorePassword(string name, string password)
-        {
-            byte[] hash = ComputeHash(name, password);
-            Directory.CreateDirectory(PASS_FOLDER);
-            //File.WriteAllBytes(HashPath(name), hash);
-            FileIO.TryWriteAllBytes(HashPath(name), hash);
-        }
-        public override bool ResetPassword(string name)
-        {
-            string path = GetHashPath(name);
-            if (path == null)
-            {
-                return false;
-            }
-            //File.Delete(path);
-            FileIO.TryDelete(path);
-            return true;
-        }
-        static string GetHashPath(string name)
-        {
-            string path = HashPath(name);
-            return File.Exists(path) ? path : null;
-        }
-        static string HashPath(string name)
-        {
-            // unfortunately necessary for backwards compatibility
-            name = Server.ToRawUsername(name);
-            return PASS_FOLDER + name.ToLower() + ".pwd";
-        }
-        static bool CheckHash(string path, string name, string pass)
-        {
-            if (!FileIO.TryReadBytes(path, out byte[] stored))
-            {
-                return false;
-            }
-            //byte[] stored   = File.ReadAllBytes(path);
-            byte[] computed = ComputeHash(name, pass);
-            return ArraysEqual(computed, stored);
-        }
-        static byte[] ComputeHash(string name, string pass)
-        {
-            // The constant string added to the username salt is to mitigate
-            // rainbow tables. We should really have a unique salt for each
-            // user, but this is close enough.
-            byte[] data = Encoding.UTF8.GetBytes("0bec662b-416f-450c-8f50-664fd4a41d49" + name.ToLower() + " " + pass);
-            return SHA256.Create().ComputeHash(data);
-        }
-        static bool ArraysEqual(byte[] a, byte[] b)
-        {
-            if (a.Length != b.Length)
-            {
-                return false;
-            }
-            for (int i = 0; i < a.Length; i++)
-            {
-                if (a[i] != b[i])
-                {
-                    return false;
-                }
-            }
-            return true;
         }
     }
 }

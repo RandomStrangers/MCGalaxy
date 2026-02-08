@@ -23,11 +23,14 @@ namespace MCGalaxy.Core
         internal static void HandlePlayerMove(Player p, Position next, byte yaw, byte pitch, ref bool cancel)
         {
             if (!p.frozen) return;
-            bool movedX = Math.Abs(next.X - p.Pos.X) > 4;  // moved more than 0.125 blocks horizontally
-            bool movedY = Math.Abs(next.Y - p.Pos.Y) > 40; // moved more than 1.25 blocks vertically
-            bool movedZ = Math.Abs(next.Z - p.Pos.Z) > 4;  // moved more than 0.125 blocks horizontally
+            bool movedX = Math.Abs(next.X - p.Pos.X) > 4,
+                movedY = Math.Abs(next.Y - p.Pos.Y) > 40,
+                movedZ = Math.Abs(next.Z - p.Pos.Z) > 4; 
             p.SetYawPitch(yaw, pitch);
-            if (movedX || movedY || movedZ) { p.SendPosition(p.Pos, p.Rot); }
+            if (movedX || movedY || movedZ) 
+            {
+                p.SendPosition(p.Pos, p.Rot); 
+            }
             cancel = true;
         }
         internal static void HandleSentMap(Player p, Level _, Level level)
@@ -43,7 +46,10 @@ namespace MCGalaxy.Core
             p.SendCurrentBlockPermissions();
             // TODO: unshow old zones here??
             Zone[] zones = level.Zones.Items;
-            foreach (Zone zn in zones) { zn.Show(p); }
+            foreach (Zone zn in zones) 
+            { 
+                zn.Show(p);
+            }
             if (p.weapon != null && !level.Config.Guns) p.weapon.Disable();
             if (!level.Config.UseBlockDB)
             {
@@ -68,10 +74,16 @@ namespace MCGalaxy.Core
             // if Deletable is enabled, handle MBs/Portals in SetBlock instead
             if (p.Level.Config.Deletable || !p.Level.IsValidPos(x, y, z)) return;
             ushort block = p.Level.GetBlock(x, y, z);
-            bool isMB = p.Level.Props[block].IsMessageBlock;
-            bool isPortal = p.Level.Props[block].IsPortal;
-            if (isMB) { MessageBlock.Handle(p, x, y, z, true); }
-            if (isPortal) { Portal.Handle(p, x, y, z); }
+            bool isMB = p.Level.Props[block].IsMessageBlock,
+                isPortal = p.Level.Props[block].IsPortal;
+            if (isMB) 
+            { 
+                MessageBlock.Handle(p, x, y, z, true);
+            }
+            if (isPortal) 
+            { 
+                Portal.Handle(p, x, y, z); 
+            }
         }
         static bool ClickOnBot(Player p, byte id)
         {

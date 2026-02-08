@@ -41,7 +41,7 @@ namespace MCGalaxy.Drawing.Brushes
         readonly Random rnd = new();
         readonly ushort[] blocks;
         public override string Name => "RandomRainbow";
-        public RandomRainbowBrush(ushort[] list) { blocks = list; }
+        public RandomRainbowBrush(ushort[] list) => blocks = list;
         public override ushort NextBlock(DrawOp op) => blocks[rnd.Next(blocks.Length)];
     }
 }

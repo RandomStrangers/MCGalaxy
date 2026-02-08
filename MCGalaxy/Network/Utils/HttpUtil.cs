@@ -113,9 +113,9 @@ namespace MCGalaxy.Network
             {
                 FilterURL(ref skin);
             }
-            if (skin.Length > NetUtils.StringSize)
+            if (skin.Length > 64)
             {
-                p.Message("&WThe skin must be " + NetUtils.StringSize + " characters or less.");
+                p.Message("&WThe skin must be 64 characters or less.");
                 return null;
             }
             return skin;

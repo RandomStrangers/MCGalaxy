@@ -40,7 +40,11 @@ namespace MCGalaxy
                 }
                 Player who = PlayerInfo.FindMatches(p, target);
                 if (who == null) return true;
-                if (who == p) { p.Message("Trying to talk to yourself, huh?"); return true; }
+                if (who == p) 
+                {
+                    p.Message("Trying to talk to yourself, huh?"); 
+                    return true; 
+                }
                 MessageDirect(p, who, text);
                 return true;
             }
@@ -93,13 +97,21 @@ namespace MCGalaxy
         public static void MessageStaff(Player p, string message,
                                         ItemPerms perms, string group)
         {
-            if (message.Length == 0) { p.Message("No message to send."); return; }
+            if (message.Length == 0) 
+            { 
+                p.Message("No message to send."); 
+                return; 
+            }
             string chatMsg = "To " + group + " &f-λNICK&f- " + message;
             Chat.MessageChat(ChatScope.Perms, p, chatMsg, perms, null, true);
         }
         public static void MessageDirect(Player p, Player target, string message)
         {
-            if (message.Length == 0) { p.Message("No message entered"); return; }
+            if (message.Length == 0) 
+            { 
+                p.Message("No message entered");
+                return; 
+            }
             Logger.Log(LogType.PrivateChat, "{0} @{1}: {2}", p.name, target.name, message);
             if (!p.IsConsole)
             {

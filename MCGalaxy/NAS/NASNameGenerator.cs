@@ -3,7 +3,7 @@ namespace MCGalaxy
 {
     public class NASNameGenerator
     {
-        public long[] numSyllables = new long[] { 1, 2, 3, 4, 5 },
+        readonly long[] numSyllables = new long[] { 1, 2, 3, 4, 5 },
             numSyllablesChance = new long[] { 150, 500, 80, 10, 1 },
             numConsonants = new long[] { 0, 1, 2, 3, 4 },
             numConsonantsChance = new long[] { 80, 350, 25, 5, 1 },
@@ -11,9 +11,9 @@ namespace MCGalaxy
             numVowelsChance = new long[] { 180, 25, 1 },
             vowelChance = new long[] { 10, 12, 10, 10, 8, 2 },
             consonantChance = new long[] { 10, 10, 10, 10, 10, 10, 10, 10, 12, 12, 12, 10, 5, 12, 12, 12, 8, 8, 3, 4, 3 };
-        public char[] vowel = new char[] { 'a', 'e', 'i', 'o', 'u', 'y' },
+        readonly char[] vowel = new char[] { 'a', 'e', 'i', 'o', 'u', 'y' },
             consonant = new char[] { 'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z' };
-        public long IndexSelect(long[] intArray)
+        long IndexSelect(long[] intArray)
         {
             long totalPossible = 0;
             for (long i = 0; i < intArray.LongLength; i++)
@@ -32,8 +32,7 @@ namespace MCGalaxy
             }
             return 0;
         }
-        public string MakeSyllable() => MakeConsonantBlock() + MakeVowelBlock() + MakeConsonantBlock();
-        public string MakeConsonantBlock()
+        string MakeConsonantBlock()
         {
             string newName = "";
             long numberConsonants = numConsonants[IndexSelect(numConsonantsChance)];
@@ -43,7 +42,7 @@ namespace MCGalaxy
             }
             return newName;
         }
-        public string MakeVowelBlock()
+        string MakeVowelBlock()
         {
             string newName = "";
             long numberVowels = numVowels[IndexSelect(numVowelsChance)];
@@ -59,7 +58,7 @@ namespace MCGalaxy
             string newName = "";
             for (long i = 0; i < numberSyllables; i++)
             {
-                newName += MakeSyllable();
+                newName += MakeConsonantBlock() + MakeVowelBlock() + MakeConsonantBlock();
             }
             return char.ToUpper(newName[0]) + newName.Substring(1);
         }

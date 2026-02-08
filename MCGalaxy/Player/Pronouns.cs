@@ -20,8 +20,6 @@ namespace MCGalaxy
 {
     public class Pronouns
     {
-        const string CONFIG_FILE = "props/pronouns.properties";
-        const string PLAYER_PATH = "text/pronouns/";
         static readonly object locker = new();
         static readonly List<Pronouns> Loaded = new();
         public static Pronouns Default;
@@ -30,17 +28,17 @@ namespace MCGalaxy
         /// </summary>
         public static void Init(SchedulerTask _)
         {
-            if (!Directory.Exists(PLAYER_PATH))
+            if (!Directory.Exists("text/pronouns/"))
             {
-                Directory.CreateDirectory(PLAYER_PATH);
+                Directory.CreateDirectory("text/pronouns/");
             }
             Default = new("default", "they", "their", "themselves", true, "them");
-            if (!File.Exists(CONFIG_FILE))
+            if (!File.Exists("props/pronouns.properties"))
             {
                 Loaded.Add(new("they/them", "they", "their", "themselves", true, "them"));
                 Loaded.Add(new("he/him", "he", "his", "himself", false, "him"));
                 Loaded.Add(new("she/her", "she", "her", "herself", false, "her"));
-                using (StreamWriter w = new(CONFIG_FILE))
+                using (StreamWriter w = new("props/pronouns.properties"))
                 {
                     w.WriteLine("# Below are the pronouns that players may choose from by using /pronouns");
                     w.WriteLine("# Lines starting with # are ignored");
@@ -56,7 +54,7 @@ namespace MCGalaxy
                         p.Write(w);
                     }
                 }
-                Logger.Log(LogType.SystemActivity, "CREATED NEW: " + CONFIG_FILE);
+                Logger.Log(LogType.SystemActivity, "CREATED NEW: props/pronouns.properties");
             }
             Events.ServerEvents.OnConfigUpdatedEvent.Register(OnConfigUpdated, Priority.Low);
             OnConfigUpdated();
@@ -69,11 +67,14 @@ namespace MCGalaxy
                 Loaded.Add(Default);
                 try
                 {
-                    using StreamReader r = new(CONFIG_FILE);
+                    using StreamReader r = new("props/pronouns.properties");
                     while (!r.EndOfStream)
                     {
                         string line = r.ReadLine();
-                        if (string.IsNullOrEmpty(line) || line.StartsWith("#")) { continue; }
+                        if (string.IsNullOrEmpty(line) || line.StartsWith("#")) 
+                        { 
+                            continue; 
+                        }
                         LoadFrom(line);
                     }
                 }
@@ -91,18 +92,23 @@ namespace MCGalaxy
         static void LoadFrom(string line)
         {
             string[] words = line.ToLower().SplitSpaces();
-            const int minWordCount = 5;
-            if (words.Length < minWordCount)
+            if (words.Length < 5)
             {
                 Logger.Log(LogType.Warning,
                     "Failed to load malformed pronouns \"{0}\" from config (expected at least {1} arguments, got {2}).",
-                    line, minWordCount, words.Length);
+                    line, 5, words.Length);
                 return;
             }
             string name = words[0];
             bool plural;
-            if (words[4].CaselessEq("singular")) { plural = false; }
-            else if (words[4].CaselessEq("plural")) { plural = true; }
+            if (words[4].CaselessEq("singular")) 
+            { 
+                plural = false; 
+            }
+            else if (words[4].CaselessEq("plural")) 
+            { 
+                plural = true; 
+            }
             else
             {
                 Logger.Log(LogType.Warning, "Failed to load the pronouns \"{0}\" because the 5th argument was not \"singular\" or \"plural\"", name);
@@ -115,7 +121,7 @@ namespace MCGalaxy
             }
             string tpos; //ThirdPersonObjectiveSingular
             //Older config files do not contain this argument, thus we need to guess or provide a fallback
-            if (words.Length > minWordCount)
+            if (words.Length > 5)
             {
                 tpos = words[5];
             }
@@ -133,7 +139,7 @@ namespace MCGalaxy
             }
             Loaded.Add(new(name, words[1], words[2], words[3], plural, tpos));
         }
-        static string PlayerPath(string playerName) => PLAYER_PATH + playerName + ".txt";
+        static string PlayerPath(string playerName) => "text/pronouns/" + playerName + ".txt";
         /// <summary>
         /// Find the pronouns associated with the playerName. Returns Default pronouns if none were specified.
         /// </summary>
@@ -145,12 +151,23 @@ namespace MCGalaxy
                 string data;
                 lock (locker)
                 {
-                    if (!File.Exists(myPath)) { return new List<Pronouns> { Default }; }
-                    //data = File.ReadAllText(myPath);
+                    if (!File.Exists(myPath)) 
+                    {
+                        return new() 
+                        {
+                            Default 
+                        };
+                    }
                     data = FileIO.TryReadAllText(myPath);
                 }
                 data = data.Trim();
-                if (data.Length == 0) return new List<Pronouns> { Default };
+                if (data.Length == 0)
+                {
+                    return new()
+                    {
+                        Default
+                    };
+                }
                 List<Pronouns> pros = new();
                 string[] names = data.SplitSpaces();
                 foreach (string name in names)
@@ -160,12 +177,18 @@ namespace MCGalaxy
                     pros.Add(p);
                 }
                 if (pros.Count != 0) return pros;
-                return new List<Pronouns> { Default };
+                return new()
+                { 
+                    Default 
+                };
             }
             catch (Exception e)
             {
                 Logger.LogError(e);
-                return new List<Pronouns> { Default };
+                return new() 
+                { 
+                    Default 
+                };
             }
         }
         /// <summary>
@@ -177,7 +200,10 @@ namespace MCGalaxy
             {
                 foreach (Pronouns p in Loaded)
                 {
-                    if (name.CaselessEq(p.Name)) { return p; }
+                    if (name.CaselessEq(p.Name)) 
+                    { 
+                        return p;
+                    }
                 }
             }
             return null;
@@ -187,9 +213,8 @@ namespace MCGalaxy
         {
             lock (locker)
             {
-                Pronouns pronouns = Matcher.Find(p, name, out int matches, Loaded,
+                return Matcher.Find(p, name, out int matches, Loaded,
                                            null, pro => pro.Name, "pronouns");
-                return pronouns;
             }
         }
         /// <summary>
@@ -241,11 +266,11 @@ namespace MCGalaxy
         /// have, has
         /// </summary>
         public readonly string PresentPerfectVerb;
-        private Pronouns(string name, string subject, string @object, string reflexive, bool plural, string thirdPersonObjectiveSingular)
+        private Pronouns(string name, string subject, string obj, string reflexive, bool plural, string thirdPersonObjectiveSingular)
         {
             Name = name;
             Subject = subject;
-            Object = @object;
+            Object = obj;
             Reflexive = reflexive;
             Plural = plural;
             ThirdPersonObjectiveSingular = thirdPersonObjectiveSingular;
@@ -267,11 +292,9 @@ namespace MCGalaxy
                 //Reduce clutter by simply erasing the file if it's default
                 if (p.pronounsList.Count == 1 && p.pronounsList[0] == Default)
                 {
-                    //File.Delete(path);
                     FileIO.TryDelete(path);
                     return;
                 }
-                //File.WriteAllText(path, ListFor(p, " "));
                 FileIO.TryWriteAllText(path, ListFor(p, " "));
             }
             catch (Exception e)

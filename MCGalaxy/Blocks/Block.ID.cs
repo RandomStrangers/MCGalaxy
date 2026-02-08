@@ -41,7 +41,6 @@ namespace MCGalaxy
         // E.g. 0x080 = class 00, value 128 = physics block 128
         // E.g. 0x180 = class 01, value 128 =  custom block 128
         public const ushort MaxRaw = 767;
-        internal const int SUPPORTED_COUNT = 1024;
         internal static ushort[] ExtendedBase = new ushort[256];
         internal static byte[] ExtendedClass = new byte[4];
         static Block()

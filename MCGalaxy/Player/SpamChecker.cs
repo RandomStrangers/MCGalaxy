@@ -22,9 +22,9 @@ namespace MCGalaxy
         public SpamChecker(Player p)
         {
             this.p = p;
-            blockLog = new List<DateTime>(Server.Config.BlockSpamCount);
-            chatLog = new List<DateTime>(Server.Config.ChatSpamCount);
-            cmdLog = new List<DateTime>(Server.Config.CmdSpamCount);
+            blockLog = new(Server.Config.BlockSpamCount);
+            chatLog = new(Server.Config.ChatSpamCount);
+            cmdLog = new(Server.Config.CmdSpamCount);
         }
         readonly Player p;
         readonly object chatLock = new(), cmdLock = new();

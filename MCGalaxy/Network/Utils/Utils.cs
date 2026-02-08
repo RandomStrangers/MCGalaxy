@@ -53,11 +53,9 @@ namespace MCGalaxy.Network
         /// <summary> Converts an IPv4 mapped IPv6 address into an IPv4 address </summary>
         public static IPAddress MapToIPV4(IPAddress ip)
         {
-            byte[] addr = ip.GetAddressBytes();
-            // lower 32 bits of IPv6 address are the IPV4 address
             byte[] ipv4 = new byte[4];
-            Buffer.BlockCopy(addr, 12, ipv4, 0, 4);
-            return new IPAddress(ipv4);
+            Buffer.BlockCopy(ip.GetAddressBytes(), 12, ipv4, 0, 4);
+            return new(ipv4);
         }
     }
     /// <summary> Utility methods related to sockets </summary>

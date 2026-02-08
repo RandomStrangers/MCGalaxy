@@ -23,7 +23,9 @@ namespace MCGalaxy.Blocks
         public BlockOptions.OptionSetter SetFunc;
         public BlockOption(string name, BlockOptions.OptionSetter func, string help)
         {
-            Name = name; SetFunc = func; Help = help;
+            Name = name; 
+            SetFunc = func; 
+            Help = help;
         }
     }
     public static class BlockOptions
@@ -88,7 +90,7 @@ namespace MCGalaxy.Blocks
             if (props[block].IsMessageBlock) return "message block";
             if (props[block].IsPortal) return "portal";
             if (props[block].IsTDoor) return "tDoor";
-            if (props[block].oDoorBlock != Block.Invalid) return "oDoor";
+            if (props[block].oDoorBlock != 0xff) return "oDoor";
             if (props[block].IsDoor) return "door";
             return null;
         }
@@ -138,7 +140,7 @@ namespace MCGalaxy.Blocks
             ushort stackBlock;
             if (msg.Length == 0)
             {
-                stackBlock = Block.Air;
+                stackBlock = 0;
             }
             else
             {
@@ -146,7 +148,7 @@ namespace MCGalaxy.Blocks
             }
             scope[block].StackBlock = stackBlock;
             string name = BlockProps.ScopedName(scope, p, block);
-            if (stackBlock == Block.Air)
+            if (stackBlock == 0)
             {
                 p.Message("Removed stack block for {0}", name);
             }
@@ -162,13 +164,17 @@ namespace MCGalaxy.Blocks
             string name = BlockProps.ScopedName(scope, p, block);
             if (msg.Length == 0)
             {
-                target = Block.Invalid;
+                target = 0xff;
                 p.Message("{1} for {0} removed.", name, type);
             }
             else
             {
                 if (!CommandParser.GetBlockIfAllowed(p, msg, "use", out ushort other)) return;
-                if (other == block) { p.Message("ID of {0} must be different.", type); return; }
+                if (other == block) 
+                {
+                    p.Message("ID of {0} must be different.", type);
+                    return; 
+                }
                 target = other;
                 p.Message("{2} for {0} set to: {1}",
                           name, BlockProps.ScopedName(scope, p, other), type);

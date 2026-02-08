@@ -22,15 +22,11 @@ namespace MCGalaxy
     public sealed class PlayerBot : Entity
     {
         public bool hunt = false, kill = false;
-        public string AIName = "", color;
-        public string name, DisplayName;
-        public string ClickedOnText;
-        public string DeathMessage;
-        public string Owner;
+        public string AIName = "", color, name, DisplayName, 
+            ClickedOnText, DeathMessage, Owner;
         public string ColoredName => color + DisplayName;
         public Level level;
-        public int cur = 0;
-        public int countdown = 0;
+        public int cur = 0, countdown = 0;
         public bool nodUp = false;
         public List<InstructionData> Instructions = new();
         public Position TargetPos;
@@ -40,7 +36,9 @@ namespace MCGalaxy
         public long CreationDate = 0;
         public PlayerBot(string n, Level lvl)
         {
-            name = n; DisplayName = n; SkinName = n;
+            name = n; 
+            DisplayName = n; 
+            SkinName = n;
             color = "&1";
             Level = lvl;
             SetModel(Model);
@@ -62,16 +60,28 @@ namespace MCGalaxy
         public override bool RestrictsScale => false;
         public bool EditableBy(Player p, string attemptedAction = "modify")
         {
-            if (CanEditAny(p)) { return true; }
-            if (Owner == p.name) { return true; }
+            if (CanEditAny(p)) 
+            {
+                return true; 
+            }
+            if (Owner == p.name) 
+            { 
+                return true; 
+            }
             p.Message("&WYou are not allowed to {0} bots that you did not create.", attemptedAction);
             return false;
         }
         public static bool CanEditAny(Player p)
         {
-            if (LevelInfo.IsRealmOwner(p.Level, p.name)) { return true; }
+            if (LevelInfo.IsRealmOwner(p.Level.name, p.name)) 
+            { 
+                return true; 
+            }
             ItemPerms perms = CommandExtraPerms.Find("Bot", 1) ?? new ItemPerms(LevelPermission.Operator);
-            if (perms.UsableBy(p)) { return true; }
+            if (perms.UsableBy(p)) 
+            { 
+                return true; 
+            }
             return false;
         }
         public static void Add(PlayerBot bot, bool save = true)
@@ -137,10 +147,12 @@ namespace MCGalaxy
         }
         public void FaceTowards(Position srcPos, Position dstPos)
         {
-            Vec3F32 dir;
-            dir.X = dstPos.X - srcPos.X;
-            dir.Y = dstPos.Y - srcPos.Y;
-            dir.Z = dstPos.Z - srcPos.Z;
+            Vec3F32 dir = new()
+            {
+                X = dstPos.X - srcPos.X,
+                Y = dstPos.Y - srcPos.Y,
+                Z = dstPos.Z - srcPos.Z
+            };
             dir = Vec3F32.Normalise(dir);
             Orientation rot = Rot;
             DirUtils.GetYawPitch(dir, out rot.RotY, out rot.HeadX);
@@ -184,16 +196,8 @@ namespace MCGalaxy
         }
         static AABB[] downs = new AABB[16], ups = new AABB[16];
         static int downsCount, upsCount;
-        void RecalcDownExtent(ref AABB bb, int steps, int dx, int dz)
-        {
-            AABB downExtent = bb.Adjust(dx * steps, -32, dz * steps);
-            downsCount = AABB.FindIntersectingSolids(downExtent, Level, ref downs);
-        }
-        void RecalcUpExtent(ref AABB bb, int steps, int dx, int dz)
-        {
-            AABB upExtent = bb.Adjust(dx * steps, 32, dz * steps);
-            upsCount = AABB.FindIntersectingSolids(upExtent, Level, ref ups);
-        }
+        void RecalcDownExtent(ref AABB bb, int steps, int dx, int dz) => downsCount = AABB.FindIntersectingSolids(bb.Adjust(dx * steps, -32, dz * steps), Level, ref downs);
+        void RecalcUpExtent(ref AABB bb, int steps, int dx, int dz) => upsCount = AABB.FindIntersectingSolids(bb.Adjust(dx * steps, 32, dz * steps), Level, ref ups);
         void PerformMovement()
         {
             double scale = Math.Ceiling(Server.Config.PositionUpdateInterval / 25.0);
@@ -205,8 +209,8 @@ namespace MCGalaxy
         {
             Position pos = Pos;
             AABB bb = ModelBB.OffsetPosition(pos);
-            int dx = Math.Sign(TargetPos.X - pos.X);
-            int dz = Math.Sign(TargetPos.Z - pos.Z);
+            int dx = Math.Sign(TargetPos.X - pos.X),
+                dz = Math.Sign(TargetPos.Z - pos.Z);
             if (downsCount == -1)
             {
                 RecalcDownExtent(ref bb, steps, dx, dz);
@@ -222,15 +226,27 @@ namespace MCGalaxy
                 bool intersectsAny = false;
                 for (int i = 0; i < downsCount; i++)
                 {
-                    if (AABB.Intersects(ref bb, ref downs[i])) { intersectsAny = true; break; }
+                    if (AABB.Intersects(ref bb, ref downs[i])) 
+                    {
+                        intersectsAny = true;
+                        break;
+                    }
                 }
-                if (intersectsAny) { hitY = dy + 1; break; }
-                bb.Min.Y--; bb.Max.Y--;
+                if (intersectsAny) 
+                { 
+                    hitY = dy + 1; 
+                    break; 
+                }
+                bb.Min.Y--; 
+                bb.Max.Y--;
             }
             // Does the bot fall down a block
             if (hitY < 0)
             {
-                pos.X += dx; pos.Y += hitY; pos.Z += dz; Pos = pos;
+                pos.X += dx; 
+                pos.Y += hitY; 
+                pos.Z += dz; 
+                Pos = pos;
                 RecalcDownExtent(ref bb, steps, dx, dz);
                 RecalcUpExtent(ref bb, steps, dx, dz);
                 return;
@@ -242,11 +258,18 @@ namespace MCGalaxy
                 bool intersectsAny = false;
                 for (int i = 0; i < upsCount; i++)
                 {
-                    if (AABB.Intersects(ref bb, ref ups[i])) { intersectsAny = true; break; }
+                    if (AABB.Intersects(ref bb, ref ups[i])) 
+                    { 
+                        intersectsAny = true; 
+                        break; 
+                    }
                 }
                 if (!intersectsAny)
                 {
-                    pos.X += dx; pos.Y += dy; pos.Z += dz; Pos = pos;
+                    pos.X += dx; 
+                    pos.Y += dy; 
+                    pos.Z += dz; 
+                    Pos = pos;
                     if (dy != 0)
                     {
                         RecalcDownExtent(ref bb, steps, dx, dz);
@@ -254,18 +277,34 @@ namespace MCGalaxy
                     }
                     return;
                 }
-                bb.Min.Y++; bb.Max.Y++;
+                bb.Min.Y++; 
+                bb.Max.Y++;
             }
         }
         public void DisplayInfo(Player p)
         {
             p.Message("Bot {0} &S({1}) has:", ColoredName, name);
             p.Message("  Owner: &f{0}", string.IsNullOrEmpty(Owner) ? "no one" : p.FormatNick(Owner));
-            if (CreationDate != 0) { p.Message("  Created: &f{0}", CreationDate.FromUnixTime().ToString("yyyy-MM-dd")); }
-            if (!string.IsNullOrEmpty(AIName)) { p.Message("  AI: &f{0}", AIName); }
-            if (hunt || kill) { p.Message("  Hunt: &f{0}&S, Kill: %f{1}", hunt, kill); }
-            if (SkinName != name) { p.Message("  Skin: &f{0}", SkinName); }
-            if (Model != "humanoid") { p.Message("  Model: &f{0}", Model); }
+            if (CreationDate != 0) 
+            { 
+                p.Message("  Created: &f{0}", CreationDate.FromUnixTime().ToString("yyyy-MM-dd"));
+            }
+            if (!string.IsNullOrEmpty(AIName)) 
+            { 
+                p.Message("  AI: &f{0}", AIName); 
+            }
+            if (hunt || kill) 
+            { 
+                p.Message("  Hunt: &f{0}&S, Kill: &f{1}", hunt, kill);
+            }
+            if (SkinName != name) 
+            { 
+                p.Message("  Skin: &f{0}", SkinName); 
+            }
+            if (Model != "humanoid") 
+            { 
+                p.Message("  Model: &f{0}", Model); 
+            }
             if (!(ScaleX == 0 && ScaleY == 0 && ScaleZ == 0))
             {
                 p.Message("  X scale: &a{0}&S, Y scale: &a{1}&S, Z scale: &a{2}",
@@ -279,21 +318,5 @@ namespace MCGalaxy
             if (!perms.UsableBy(p)) return; //don't show bot's ClickedOnText if player isn't allowed to see message block contents
             p.Message("  Clicked-on text: {0}", ClickedOnText);
         }
-        /*
-         * Old water/lava swimming code - TODO: need to fix.
-         *
-                if ((ushort)(foundPos[1] / 32) > y) {
-                    if (b1 == Block.water || b1 == Block.waterstill || b1 == Block.lava || b1 == Block.lavastill) {
-                        if (Block.Walkthrough(b2)) {
-                            pos[1] = (ushort)(pos[1] + (Math.Sign(foundPos[1] - pos[1])));
-                        }
-                    } else if (b2 == Block.water || b2 == Block.waterstill || b2 == Block.lava || b2 == Block.lavastill) {
-                        pos[1] = (ushort)(pos[1] + (Math.Sign(foundPos[1] - pos[1])));
-                    }
-                } else if ((ushort)(foundPos[1] / 32) < y) {
-                    if (b3 == Block.water || b3 == Block.waterstill || b3 == Block.lava || b3 == Block.lavastill) {
-                        pos[1] = (ushort)(pos[1] + (Math.Sign(foundPos[1] - pos[1])));
-                    }
-                }*/
     }
 }

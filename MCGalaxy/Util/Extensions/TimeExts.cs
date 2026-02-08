@@ -68,7 +68,8 @@ namespace MCGalaxy
                 }
                 if (c >= '0' && c <= '9')
                 {
-                    num = checked(num * 10); num += c - '0';
+                    num = checked(num * 10); 
+                    num += c - '0';
                     continue;
                 }
                 amount = GetTicks(num, GetUnit(value, i));

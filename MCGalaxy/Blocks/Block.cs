@@ -43,12 +43,12 @@ namespace MCGalaxy
             BlockDefinition def = lvl.GetBlockDef(block);
             if (def != null)
             {
-                return new AABB(def.MinX * 2, def.MinZ * 2, def.MinY * 2,
+                return new(def.MinX * 2, def.MinZ * 2, def.MinY * 2,
                                 def.MaxX * 2, def.MaxZ * 2, def.MaxY * 2);
             }
-            if (block >= Extended) return new AABB(0, 0, 0, 32, 32, 32);
+            if (block >= Extended) return new(0, 0, 0, 32, 32, 32);
             ushort core = Convert(block);
-            return new AABB(0, 0, 0, 32, DefaultSet.Height(core) * 2, 32);
+            return new(0, 0, 0, 32, DefaultSet.Height(core) * 2, 32);
         }
         public static void SetBlocks()
         {

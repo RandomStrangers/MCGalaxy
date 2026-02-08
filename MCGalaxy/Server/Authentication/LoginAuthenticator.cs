@@ -13,39 +13,11 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Network;
-using MCGalaxy.Util;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Security.Cryptography;
-using System.Text;
 namespace MCGalaxy.Authentication
 {
-    /// <summary> Authenticates a player logging in </summary>
-    public abstract class LoginAuthenticator
+    public class LoginAuthenticator
     {
-        public static List<LoginAuthenticator> Authenticators = new()
-        {
-            new MppassAuthenticator(), new MojangAuthenticator()
-        };
-        public abstract bool Verify(Player p, string mppass);
-        /// <summary> Checks if the given player is allowed to login </summary>
-        public static bool VerifyLogin(Player p, string mppass)
-        {
-            foreach (LoginAuthenticator auth in Authenticators)
-            {
-                if (auth.Verify(p, mppass))
-                {
-                    return true;
-                }
-            }
-            return !Server.Config.VerifyNames || (IPUtil.IsPrivate(p.IP) && !Server.Config.VerifyLanIPs);
-        }
-    }
-    /// <summary> Authenticates a player using the provided mppass </summary>
-    public class MppassAuthenticator : LoginAuthenticator
-    {
-        public override bool Verify(Player p, string mppass)
+        public bool Verify(Player p, string mppass)
         {
             foreach (AuthService auth in AuthService.Services)
             {
@@ -66,65 +38,14 @@ namespace MCGalaxy.Authentication
             auth.AcceptPlayer(p);
             return true;
         }
-    }
-    /// <summary> Authenticates a player using the Mojang session verification API </summary>
-    public class MojangAuthenticator : LoginAuthenticator
-    {
-        static readonly ThreadSafeCache ip_cache = new();
-        public override bool Verify(Player p, string mppass)
+        public static bool VerifyLogin(Player p, string mppass)
         {
-            foreach (AuthService auth in AuthService.Services)
+            LoginAuthenticator auth = new();
+            if (auth.Verify(p, mppass))
             {
-                if (!auth.MojangAuth)
-                {
-                    continue;
-                }
-                if (Authenticate(auth, p))
-                {
-                    return true;
-                }
+                return true;
             }
-            return false;
-        }
-        static bool Authenticate(AuthService auth, Player p)
-        {
-            object locker = ip_cache.GetLocker(p.ip);
-            // if a player from an IP is spamming login attempts,
-            //  prevent that from spamming Mojang's authentication servers too
-            lock (locker)
-            {
-                if (!HasJoined(p))
-                {
-                    return false;
-                }
-            }
-            auth.AcceptPlayer(p);
-            return true;
-        }
-        const string HAS_JOINED_URL = "https://sessionserver.mojang.com/session/minecraft/hasJoined?username={0}&serverId={1}";
-        public static bool HasJoined(Player p)
-        {
-            string url = string.Format(HAS_JOINED_URL, p.truename, GetServerID(p));
-            try
-            {
-                HttpWebRequest req = HttpUtil.CreateRequest(url);
-                req.Timeout = 5 * 1000;
-                req.ReadWriteTimeout = 5 * 1000;
-                using HttpWebResponse response = (HttpWebResponse)req.GetResponse();
-                return response.StatusCode == HttpStatusCode.OK;
-            }
-            catch (Exception ex)
-            {
-                HttpUtil.DisposeErrorResponse(ex);
-                Logger.LogError("Verifying Mojang session for " + p.truename, ex);
-            }
-            return false;
-        }
-        static string GetServerID(Player p)
-        {
-            byte[] data = Encoding.UTF8.GetBytes(p.ip),
-                hash = new SHA1Managed().ComputeHash(data);
-            return Utils.ToHexString(hash);
+            return !Server.Config.VerifyNames || (IPUtil.IsPrivate(p.IP) && !Server.Config.VerifyLanIPs);
         }
     }
 }

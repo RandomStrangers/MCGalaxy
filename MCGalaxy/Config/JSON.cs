@@ -32,10 +32,8 @@ namespace MCGalaxy.Config
         public JsonReader(string value)
         {
             Value = value;
-            OnMember = DefaultOnMember;
+            OnMember = (obj, key, value) => obj[key] = value;
         }
-        static void DefaultOnMember(JsonObject obj, string key, object value) => obj[key] = value;
-        const int T_NONE = 0, T_NUM = 1, T_TRUE = 2, T_FALSE = 3, T_NULL = 4;
         static bool IsWhitespace(char c) => c == '\r' || c == '\n' || c == '\t' || c == ' ';
         bool NextConstant(string value)
         {
@@ -44,23 +42,26 @@ namespace MCGalaxy.Config
             {
                 if (Value[offset + i] != value[i]) return false;
             }
-            offset += value.Length; return true;
+            offset += value.Length;
+            return true;
         }
         int NextToken()
         {
             for (; offset < Value.Length && IsWhitespace(Cur); offset++) ;
-            if (offset >= Value.Length) return T_NONE;
-            char c = Cur; offset++;
+            if (offset >= Value.Length) return 0;
+            char c = Cur; 
+            offset++;
             if (c == '{' || c == '}') return c;
             if (c == '[' || c == ']') return c;
             if (c == ',' || c == '"' || c == ':') return c;
-            if (IsNumber(c)) return T_NUM;
+            if (IsNumber(c)) return 1;
             offset--;
-            if (NextConstant("true")) return T_TRUE;
-            if (NextConstant("false")) return T_FALSE;
-            if (NextConstant("null")) return T_NULL;
+            if (NextConstant("true")) return 2;
+            if (NextConstant("false")) return 3;
+            if (NextConstant("null")) return 4;
             // invalid token
-            offset++; return T_NONE;
+            offset++; 
+            return 0;
         }
         /// <summary> Parses the given JSON and then returns the root element. </summary>
         /// <returns> Either a JsonObject, a JsonArray, a string, or null </returns>
@@ -70,10 +71,10 @@ namespace MCGalaxy.Config
             '{' => ParseObject(),
             '[' => ParseArray(),
             '"' => ParseString(),
-            T_NUM => ParseNumber(),
-            T_TRUE => "true",
-            T_FALSE => "false",
-            T_NULL => null,
+            1 => ParseNumber(),
+            2 => "true",
+            3 => "false",
+            4 => null,
             _ => null,
         };
         JsonObject ParseObject()
@@ -84,14 +85,25 @@ namespace MCGalaxy.Config
                 int token = NextToken();
                 if (token == ',') continue;
                 if (token == '}') return obj;
-                if (token != '"') { Failed = true; return null; }
+                if (token != '"') 
+                { 
+                    Failed = true; 
+                    return null;
+                }
                 string key = ParseString();
                 token = NextToken();
-                if (token != ':') { Failed = true; return null; }
+                if (token != ':') 
+                {
+                    Failed = true;
+                    return null; 
+                }
                 token = NextToken();
-                if (token == T_NONE) { Failed = true; return null; }
-                object value = ParseValue(token);
-                OnMember(obj, key, value);
+                if (token == 0) 
+                { 
+                    Failed = true; 
+                    return null;
+                }
+                OnMember(obj, key, ParseValue(token));
             }
         }
         JsonArray ParseArray()
@@ -102,36 +114,55 @@ namespace MCGalaxy.Config
                 int token = NextToken();
                 if (token == ',') continue;
                 if (token == ']') return arr;
-                if (token == T_NONE) { Failed = true; return null; }
+                if (token == 0)
+                { 
+                    Failed = true;
+                    return null; 
+                }
                 arr.Add(ParseValue(token));
             }
         }
         string ParseString()
         {
-            StringBuilder s = strBuffer; s.Length = 0;
+            StringBuilder s = strBuffer;
+            s.Length = 0;
             for (; offset < Value.Length;)
             {
-                char c = Cur; offset++;
+                char c = Cur; 
+                offset++;
                 if (c == '"') return s.ToString();
-                if (c != '\\') { s.Append(c); continue; }
+                if (c != '\\') 
+                { 
+                    s.Append(c);
+                    continue; 
+                }
                 if (offset >= Value.Length) break;
                 c = Cur; offset++;
-                if (c == '/' || c == '\\' || c == '"') { s.Append(c); continue; }
-                if (c == 'n') { s.Append('\n'); continue; }
+                if (c == '/' || c == '\\' || c == '"') 
+                { 
+                    s.Append(c); 
+                    continue;
+                }
+                if (c == 'n') 
+                { 
+                    s.Append('\n'); 
+                    continue;
+                }
                 // TODO any other escape codes to add support for
                 if (c != 'u') break;
                 if (offset + 4 > Value.Length) break;
                 // form of \uYYYY
-                int aH = Colors.UnHex(Value[offset + 0]);
-                int aL = Colors.UnHex(Value[offset + 1]);
-                int bH = Colors.UnHex(Value[offset + 2]);
-                int bL = Colors.UnHex(Value[offset + 3]);
+                int aH = Colors.UnHex(Value[offset + 0]),
+                    aL = Colors.UnHex(Value[offset + 1]),
+                    bH = Colors.UnHex(Value[offset + 2]),
+                    bL = Colors.UnHex(Value[offset + 3]);
                 if (aH == -1 || aL == -1 || bH == -1 || bL == -1) break;
                 int codePoint = (aH << 12) | (aL << 8) | (bH << 4) | bL;
                 s.Append((char)codePoint);
                 offset += 4;
             }
-            Failed = true; return null;
+            Failed = true; 
+            return null;
         }
         static bool IsNumber(char c) => c == '-' || c == '.' || (c >= '0' && c <= '9');
         static bool IsNumberPart(char c) =>
@@ -147,12 +178,8 @@ namespace MCGalaxy.Config
     public class JsonWriter
     {
         readonly TextWriter w;
-        public JsonWriter(TextWriter dst) { w = dst; }
-        static char Hex(char c, int shift)
-        {
-            int x = (c >> shift) & 0x0F;
-            return (char)(x <= 9 ? ('0' + x) : ('a' + (x - 10)));
-        }
+        public JsonWriter(TextWriter dst) => w = dst;
+        static char Hex(char c, int shift) => (char)(((c >> shift) & 0x0F) <= 9 ? ('0' + ((c >> shift) & 0x0F)) : ('a' + (((c >> shift) & 0x0F) - 10)));
         public void WriteNull() => w.Write("null");
         public void Write(string value) => w.Write(value);
         public void WriteString(string value)
@@ -192,8 +219,7 @@ namespace MCGalaxy.Config
             for (int i = 0; i < array.Count; i++)
             {
                 w.Write(separator);
-                object value = array[i];
-                WriteValue(value);
+                WriteValue(array[i]);
                 separator = ",\r\n";
             }
             w.Write("]\r\n");
@@ -206,7 +232,9 @@ namespace MCGalaxy.Config
         }
         internal void WriteObjectKey(string name)
         {
-            Write("    "); WriteString(name); Write(": ");
+            Write("    "); 
+            WriteString(name);
+            Write(": ");
         }
         protected virtual void WriteValue(object value)
         {
@@ -256,7 +284,7 @@ namespace MCGalaxy.Config
     public class JsonConfigWriter : JsonWriter
     {
         readonly ConfigElement[] elems;
-        public JsonConfigWriter(TextWriter dst, ConfigElement[] cfg) : base(dst) { elems = cfg; }
+        public JsonConfigWriter(TextWriter dst, ConfigElement[] cfg) : base(dst) => elems = cfg;
         // Only ever write an object
         protected override void WriteValue(object value) => WriteObject(value);
         void WriteConfigValue(ConfigAttribute a, string value)
@@ -283,9 +311,7 @@ namespace MCGalaxy.Config
                 ConfigAttribute a = elem.Attrib;
                 Write(separator);
                 WriteObjectKey(a.Name);
-                object raw = elem.Field.GetValue(value);
-                string text = elem.Attrib.Serialise(raw);
-                WriteConfigValue(a, text);
+                WriteConfigValue(a, elem.Attrib.Serialise(elem.Field.GetValue(value)));
                 separator = ",\r\n";
             }
         }

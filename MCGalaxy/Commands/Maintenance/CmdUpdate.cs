@@ -37,7 +37,10 @@ namespace MCGalaxy.Commands.Maintenance
                 if (needsUpdate)
                 {
                     p.Message("Current version: {0}.", Server.Version);
-                    p.Message("Latest version: {0}.", latest);
+                    if (!string.IsNullOrEmpty(latest))
+                    {
+                        p.Message("Latest version: {0}.", latest);
+                    }
                 }
             }
             else if (message.CaselessEq("latest"))

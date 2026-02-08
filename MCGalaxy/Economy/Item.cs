@@ -88,7 +88,11 @@ namespace MCGalaxy.Eco
             }
             else if (cmd.CaselessStarts("purchaserank"))
             {
-                if (args.Length == 2) { p.Message("You need to provide a rank name."); return; }
+                if (args.Length == 2) 
+                { 
+                    p.Message("You need to provide a rank name.");
+                    return; 
+                }
                 Group grp = Matcher.FindRanks(p, args[2]);
                 if (grp == null) return;
                 PurchaseRank = grp.Permission;
@@ -172,7 +176,8 @@ namespace MCGalaxy.Eco
                 foreach (string alias in Aliases)
                 {
                     if (!a.Format.CaselessEq(alias)) continue;
-                    matchFound = true; break;
+                    matchFound = true; 
+                    break;
                 }
                 if (!matchFound) continue;
                 shortcuts.Add("/" + a.Trigger);

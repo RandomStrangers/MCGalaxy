@@ -81,14 +81,12 @@ namespace MCGalaxy.DB
         /// <summary> Returns the Name field of the row whose Name field caselessly equals the given name </summary>
         public static string FindName(string name)
         {
-            string suffix = Database.Backend.CaselessWhereSuffix;
-            return Database.ReadString("Players", "Name", "WHERE Name=@0" + suffix, name);
+            return Database.ReadString("Players", "Name", "WHERE Name=@0 COLLATE NOCASE", name);
         }
         /// <summary> Returns the IP field of the row whose Name field caselessly equals the given name </summary>
         public static string FindIP(string name)
         {
-            string suffix = Database.Backend.CaselessWhereSuffix;
-            return Database.ReadString("Players", "IP", "WHERE Name=@0" + suffix, name);
+            return Database.ReadString("Players", "IP", "WHERE Name=@0 COLLATE NOCASE", name);
         }
         public static string FindOfflineIPMatches(Player p, string name, out string ip)
         {
@@ -138,19 +136,17 @@ namespace MCGalaxy.DB
         }
         static List<T> FindPartial<T>(string name, string columns, RecordParser<T> parseRecord)
         {
-            string suffix = Database.Backend.CaselessLikeSuffix;
             List<T> list = new();
             Database.ReadRows("Players", columns, r => list.Add(parseRecord(r)),
-                              "WHERE Name LIKE @0 ESCAPE '#' LIMIT 25" + suffix,
+                              "WHERE Name LIKE @0 ESCAPE '#' LIMIT 25 COLLATE NOCASE",
                               "%" + name.Replace("_", "#_") + "%");
             return list;
         }
         static T FindExact<T>(string name, string columns, RecordParser<T> parseRecord) where T : class
         {
-            string suffix = Database.Backend.CaselessWhereSuffix;
             T exact = null;
             Database.ReadRows("Players", columns, r => exact = parseRecord(r),
-                              "WHERE Name=@0 " + suffix + " LIMIT 1", name);
+                              "WHERE Name=@0  COLLATE NOCASE LIMIT 1", name);
             return exact;
         }
         public static void EnsureDirectoriesExist()

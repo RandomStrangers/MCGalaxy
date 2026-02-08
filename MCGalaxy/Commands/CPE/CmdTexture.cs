@@ -15,14 +15,18 @@
 using MCGalaxy.Network;
 namespace MCGalaxy.Commands.CPE
 {
-    public sealed class CmdTexture : Command2
+    public sealed class CmdTexture : Command
     {
         public override string Name => "Texture";
         public override string Type => CommandTypes.Other;
         public override LevelPermission DefaultRank => LevelPermission.Operator;
-        public override void Use(Player p, string message, CommandData data)
+        public override void Use(Player p, string message)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0)
+            { 
+                Help(p); 
+                return;
+            }
             string[] args = message.SplitSpaces();
             string scope = args[0].ToLower();
             if (scope == "local") scope = "level";
@@ -51,11 +55,13 @@ namespace MCGalaxy.Commands.CPE
                 HttpUtil.FilterURL(ref url);
                 if (!(url.CaselessContains(".png") || url.CaselessContains(".zip")))
                 {
-                    p.Message("URL must contain either .png (for terrain) or .zip (for texture pack)"); return;
+                    p.Message("URL must contain either .png (for terrain) or .zip (for texture pack)");
+                    return;
                 }
-                if (url.Length > (NetUtils.StringSize * 2))
+                if (url.Length > 128)
                 {
-                    p.Message("The URL must be " + (NetUtils.StringSize * 2) + " characters or less."); return;
+                    p.Message("The URL must be 128 characters or less."); 
+                    return;
                 }
             }
             if (scope == "global" || scope == "globalzip")
@@ -76,11 +82,11 @@ namespace MCGalaxy.Commands.CPE
                     Server.Config.DefaultTexture = url;
                     p.Message("Set server's default texture pack to " + url);
                 }
-                UpdateGlobal(p);
+                UpdateGlobal();
             }
             else if (scope == "level" || scope == "levelzip")
             {
-                if (!LevelInfo.Check(p, data.Rank, p.Level, "set texture of this level")) return;
+                if (!LevelInfo.Check(p, p.Rank, p.Level, "set texture of this level")) return;
                 p.Level.Config.Terrain = "";
                 p.Level.Config.TexturePack = "";
                 if (url.Length == 0)
@@ -105,7 +111,7 @@ namespace MCGalaxy.Commands.CPE
             }
         }
         static string GetPath(string url) => url.Length == 0 ? "(none)" : url;
-        static void UpdateGlobal(Player _)
+        static void UpdateGlobal()
         {
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)

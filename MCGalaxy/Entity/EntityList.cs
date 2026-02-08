@@ -13,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Events.EntityEvents;
-using MCGalaxy.Network;
 using System;
 using System.Collections.Generic;
 namespace MCGalaxy
@@ -40,9 +39,7 @@ namespace MCGalaxy
         {
             public readonly object o;
             public readonly byte id;
-            public string name;
-            public string nick;
-            public string group;
+            public string name, nick, group;
             public byte groupRank;
             public TabObject(object o, byte id, string name, string nick, string group, byte groupRank)
             {
@@ -64,10 +61,7 @@ namespace MCGalaxy
         class WaitingEntity : VisibleEntity
         {
             public readonly bool tabList;
-            public WaitingEntity(Entity e, byte id, string displayName, bool tabList) : base(e, id, displayName)
-            {
-                this.tabList = tabList;
-            }
+            public WaitingEntity(Entity e, byte id, string displayName, bool tabList) : base(e, id, displayName) => this.tabList = tabList;
         }
         readonly Player p;
         readonly Dictionary<Entity, VisibleEntity> visible = new();
@@ -125,7 +119,7 @@ namespace MCGalaxy
                     if (tentativeID == -1) return;
                     byte ID = (byte)tentativeID;
                     //p.Message("| &a+TAB &S{0}&S with ID {1}", name, ID);
-                    tabby = new TabObject(o, ID, name, nick, group, groupRank);
+                    tabby = new(o, ID, name, nick, group, groupRank);
                     tabObjects[o] = tabby;
                 }
                 p.Session.SendAddTabEntry(tabby.id, tabby.name, tabby.nick, tabby.group, tabby.groupRank);
@@ -133,7 +127,7 @@ namespace MCGalaxy
         }
         int FindFreeTabID(object o, bool self)
         {
-            if (self) return Entities.SelfID;
+            if (self) return 0xFF;
             //Try finding a matching visible entity for the ID
             if (o is Entity entity)
             {
@@ -213,9 +207,9 @@ namespace MCGalaxy
                 {
                     if (!visible.TryGetValue(e, out VisibleEntity vis))
                     {
-                        byte ID = self ? Entities.SelfID : freeIDs.Pop();
+                        byte ID = self ? (byte)0xFF : freeIDs.Pop();
                         //p.Message("| &a+ &S{0}&S with ID {1}", name, ID);
-                        vis = new VisibleEntity(e, ID, name);
+                        vis = new(e, ID, name);
                         visible[e] = vis;
                     }
                     else
@@ -367,36 +361,11 @@ namespace MCGalaxy
             id = 0;
             return false;
         }
-        /// <summary>
-        /// For plugins. Unused in base MCGalaxy.
-        /// </summary>
-        public void SendTeleport(Entity e, Position pos, Orientation rot, Packet.TeleportMoveMode mode)
-        {
-            lock (locker)
-            {
-                if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
-                if (!p.Session.SendTeleport(vis.id, pos, rot, mode))
-                {
-                    p.Session.SendTeleport(vis.id, pos, rot);
-                }
-            }
-        }
-        /// <summary>
-        /// For plugins. Unused in base MCGalaxy.
-        /// </summary>
-        public void SendTeleport(Entity e, Position pos, Orientation rot)
-        {
-            lock (locker)
-            {
-                if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
-                p.Session.SendTeleport(vis.id, pos, rot);
-            }
-        }
         readonly Dictionary<Entity, VisibleEntity> cachedVisible = new(32);
         internal unsafe void BroadcastEntityPositions()
         {
-            byte* src = stackalloc byte[16 * 256]; // 16 = size of absolute update, with extended positions
-            byte* ptr = src;
+            byte* src = stackalloc byte[16 * 256],
+                ptr = src;
             Player dst = p;
             lock (locker)
             {
@@ -441,7 +410,10 @@ namespace MCGalaxy
             int count = (int)(ptr - src);
             if (count == 0) return;
             byte[] packet = new byte[count];
-            for (int i = 0; i < packet.Length; i++) { packet[i] = src[i]; }
+            for (int i = 0; i < packet.Length; i++) 
+            { 
+                packet[i] = src[i];
+            }
             dst.Send(packet);
             foreach (KeyValuePair<Entity, VisibleEntity> pair in cachedVisible)
             {

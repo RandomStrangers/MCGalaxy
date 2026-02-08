@@ -28,7 +28,7 @@ namespace MCGalaxy
         /// <summary> Returns a copy of all names in the list. </summary>
         public List<string> All()
         {
-            lock (locker) return new List<string>(names);
+            lock (locker) return new(names);
         }
         /// <summary> Returns number of names that are in this list. </summary>
         public int Count { get { lock (locker) return names.Count; } }
@@ -111,8 +111,7 @@ namespace MCGalaxy
                                  listCmd, "players", modifier);
             }
         }
-        public void Save() => Save(true);
-        public void Save(bool log)
+        public void Save(bool log = true)
         {
             lock (saveLocker)
             {

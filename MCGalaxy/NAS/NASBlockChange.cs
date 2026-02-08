@@ -7,6 +7,30 @@ using System;
 using System.IO;
 namespace MCGalaxy
 {
+    public class NASInvInfo
+    {
+        public NASPlayer np;
+        public bool inv;
+    }
+    public class NASFishingInfo
+    {
+        public Player p, who;
+    }
+    public class NASBreakInfo
+    {
+        public NASPlayer np;
+        public ushort x, y, z,
+            serverushort;
+        public NASBlock nasBlock;
+        public int breakAttempt;
+        public NASItem toolUsed;
+    }
+    public class NASMeterInfo
+    {
+        public Player p;
+        public int milliseconds;
+        public float x, y, z;
+    }
     public static class NASBlockChange
     {
         public static Scheduler breakScheduler,
@@ -23,10 +47,6 @@ namespace MCGalaxy
         public static byte BreakEffectID = 255;
         public static bool Setup()
         {
-            if (File.Exists("plugins/" + terrainImageName))
-            {
-                FileIO.TryMove("plugins/" + terrainImageName, NASPlugin.Path + terrainImageName);
-            }
             if (!File.Exists(NASPlugin.Path + terrainImageName))
             {
                 Logger.Log(LogType.Debug, "Could not locate {0} (needed for block particle colors)", terrainImageName);
@@ -246,30 +266,6 @@ namespace MCGalaxy
             NASEffect.Define(p, BreakMeterID, NASEffect.breakMeter, new(255,255,255,255), (float)(millisecs / 1000.0f));
             NASEffect.Spawn(p, BreakMeterID, NASEffect.breakMeter, info.x, info.y, info.z, info.x, info.y, info.z);
         }
-        public class NASBreakInfo
-        {
-            public NASPlayer np;
-            public ushort x, y, z,
-                serverushort;
-            public NASBlock nasBlock;
-            public int breakAttempt;
-            public NASItem toolUsed;
-        }
-        public class NASFishingInfo
-        {
-            public Player p, who;
-        }
-        public class NASInvInfo
-        {
-            public NASPlayer np;
-            public bool inv;
-        }
-        public class NASMeterInfo
-        {
-            public Player p;
-            public int milliseconds;
-            public float x, y, z;
-        }
         public static void HandleLeftClick(Player p, MouseButton _,
             MouseAction action, ushort __, ushort ___, byte ____,
             ushort x, ushort y, ushort z, TargetBlockFace face)
@@ -319,7 +315,7 @@ namespace MCGalaxy
                 bool toolEffective = false;
                 if (heldItem.Prop.materialsEffectiveAgainst != null)
                 {
-                    foreach (NASBlock.NASMaterial mat in heldItem.Prop.materialsEffectiveAgainst)
+                    foreach (NASMaterial mat in heldItem.Prop.materialsEffectiveAgainst)
                     {
                         if (nasBlock.material == mat)
                         {
@@ -458,9 +454,8 @@ namespace MCGalaxy
                         DoOffset(def.MinY, false, ref meterInfo.z);
                     }
                 }
-                SchedulerTask taskDisplayMeter;
-                taskDisplayMeter = breakScheduler.QueueOnce(MeterTask, meterInfo, TimeSpan.FromMilliseconds(100));
-                p.Extras["nas_taskDisplayMeter"] = taskDisplayMeter;
+                SchedulerTask taskDisplayMeter = breakScheduler.QueueOnce(MeterTask, meterInfo, TimeSpan.FromMilliseconds(100));
+                p.Extras["NAS_taskDisplayMeter"] = taskDisplayMeter;
             }
         }
         public static void DoOffset(byte minOrMax, bool positive, ref float coord)

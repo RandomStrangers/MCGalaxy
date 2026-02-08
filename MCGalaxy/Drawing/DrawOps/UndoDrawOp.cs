@@ -21,10 +21,7 @@ namespace MCGalaxy.Drawing.Ops
 {
     public class UndoSelfDrawOp : UndoDrawOp
     {
-        public UndoSelfDrawOp()
-        {
-            Flags = BlockDBFlags.UndoSelf;
-        }
+        public UndoSelfDrawOp() => Flags = BlockDBFlags.UndoSelf;
         public override string Name => "UndoSelf";
     }
     public class UndoDrawOp : DrawOp

@@ -26,7 +26,10 @@ namespace MCGalaxy
                                 char separator = '=', bool trimValue = true)
         {
             object obj = null;
-            void del(string key, string value, ref object state) { processor(key, value); }
+            void del(string key, string value, ref object state) 
+            { 
+                processor(key, value); 
+            }
             return Read(path, ref obj, del, separator, trimValue);
         }
         public static bool Read<T>(string path, ref T state, LineProcessor<T> processor,
@@ -54,7 +57,8 @@ namespace MCGalaxy
         }
         internal static void ParseLine(string line, char separator, out string key, out string value)
         {
-            key = null; value = null;
+            key = null; 
+            value = null;
             if (line.IsCommentLine()) return;
             int index = line.IndexOf(separator);
             if (index == -1) return;

@@ -27,12 +27,14 @@ namespace MCGalaxy.Commands
             if (input.CaselessEq("1") || input.CaselessEq("true")
                 || input.CaselessEq("yes") || input.CaselessEq("on"))
             {
-                result = true; return true;
+                result = true;
+                return true;
             }
             if (input.CaselessEq("0") || input.CaselessEq("false")
                 || input.CaselessEq("no") || input.CaselessEq("off"))
             {
-                result = false; return true;
+                result = false;
+                return true;
             }
             p.Message("&W\"{0}\" is not a valid boolean.", input);
             p.Message("&WValue must be either 1/yes/on or 0/no/off");
@@ -76,11 +78,10 @@ namespace MCGalaxy.Commands
             catch (FormatException ex)
             {
                 p.Message("&W{0} is not a valid quantifier.", ex.Message);
-                p.Message(TimespanHelp, action);
+                p.Message("For example, to {0} 25 and a half hours, use \"1d1h30m\".", action);
             }
             return false;
         }
-        public const string TimespanHelp = "For example, to {0} 25 and a half hours, use \"1d1h30m\".";
         /// <summary> Returns whether the given value lies within the given range </summary>
         /// <remarks> If given value is not in range, messages the player the valid range of values </remarks>
         public static bool CheckRange(Player p, int value, string argName, int min, int max)
@@ -110,7 +111,8 @@ namespace MCGalaxy.Commands
                 p.Message("&W\"{0}\" is not a valid integer for {1}.", input, argName.ToLowerInvariant()); return false;
             }
             if (!CheckRange(p, value, argName, min, max)) return false;
-            result = value; return true;
+            result = value; 
+            return true;
         }
         /// <summary> Attempts to parse the given argument as a real number. </summary>
         public static bool GetReal(Player p, string input, string argName, ref float result,
@@ -126,7 +128,8 @@ namespace MCGalaxy.Commands
                                min.ToString("F4"), max.ToString("F4"));
                 return false;
             }
-            result = value; return true;
+            result = value; 
+            return true;
         }
         /// <summary> Attempts to parse the given argument as an byte. </summary>
         public static bool GetByte(Player p, string input, string argName, ref byte result,
@@ -134,7 +137,8 @@ namespace MCGalaxy.Commands
         {
             int temp = 0;
             if (!GetInt(p, input, argName, ref temp, min, max)) return false;
-            result = (byte)temp; return true;
+            result = (byte)temp;
+            return true;
         }
         /// <summary> Attempts to parse the given argument as a ushort. </summary>
         public static bool GetUShort(Player p, string input, string argName, ref ushort result,
@@ -142,16 +146,19 @@ namespace MCGalaxy.Commands
         {
             int temp = 0;
             if (!GetInt(p, input, argName, ref temp, min, max)) return false;
-            result = (ushort)temp; return true;
+            result = (ushort)temp; 
+            return true;
         }
         /// <summary> Attempts to parse the given argument as a hex color. </summary>
         public static bool GetHex(Player p, string input, ref ColorDesc col)
         {
             if (!Colors.TryParseHex(input, out ColorDesc tmp))
             {
-                p.Message("&W\"#{0}\" is not a valid HEX color.", input); return false;
+                p.Message("&W\"#{0}\" is not a valid HEX color.", input); 
+                return false;
             }
-            col = tmp; return true;
+            col = tmp; 
+            return true;
         }
         /// <summary> Attempts to parse the 3 given arguments as coordinates. </summary>
         public static bool GetCoords(Player p, string[] args, int argsOffset, ref Vec3S32 P) => GetCoordInt(p, args[argsOffset + 0], "X coordinate", ref P.X) &&
@@ -192,11 +199,13 @@ namespace MCGalaxy.Commands
             // Skip/None block for draw operations
             if (input.CaselessEq("skip") || input.CaselessEq("none"))
             {
-                block = Block.Invalid; return true;
+                block = 0xff; 
+                return true;
             }
             else
             {
-                block = Block.Air; return false;
+                block = 0; 
+                return false;
             }
         }
         /// <summary> Attempts to parse the given argument as either a block name or a block ID. </summary>
@@ -212,8 +221,8 @@ namespace MCGalaxy.Commands
         {
             if (allowSkip && IsSkipBlock(input, out block)) return true;
             block = Block.Parse(p, input);
-            if (block == Block.Invalid) p.Message("&WThere is no block \"{0}\".", input);
-            return block != Block.Invalid;
+            if (block == 0xff) p.Message("&WThere is no block \"{0}\".", input);
+            return block != 0xff;
         }
         /// <summary> Returns whether the player is allowed to place/modify/delete the given block. </summary>
         /// <remarks> Outputs information of which ranks can modify the block if not. </remarks>
@@ -236,8 +245,8 @@ namespace MCGalaxy.Commands
                 return 1;
             }
             ushort min = 0, max = 0;
-            if (!GetUShort(p, bits[0], "Raw block ID", ref min, Block.Air, Block.MaxRaw)) return 0;
-            if (!GetUShort(p, bits[1], "Raw block ID", ref max, Block.Air, Block.MaxRaw)) return 0;
+            if (!GetUShort(p, bits[0], "Raw block ID", ref min, 0, 767)) return 0;
+            if (!GetUShort(p, bits[1], "Raw block ID", ref max, 0, 767)) return 0;
             int count = 0;
             for (ushort raw = min; raw <= max; raw++)
             {

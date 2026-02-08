@@ -78,10 +78,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         const int OPCODE_INVALID_SESSION = 9;
         const int OPCODE_HELLO = 10;
         const int OPCODE_HEARTBEAT_ACK = 11;
-        public DiscordWebsocket(string apiPath)
-        {
-            path = apiPath;
-        }
+        public DiscordWebsocket(string apiPath) => path = apiPath;
         // stubs
         public override bool LowLatency { set { } }
         public override IPAddress IP => null;

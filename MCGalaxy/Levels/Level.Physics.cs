@@ -20,7 +20,10 @@ using System;
 using System.Threading;
 namespace MCGalaxy
 {
-    public enum PhysicsState { Stopped, Warning, Other }
+    public enum PhysicsState 
+    { 
+        Stopped, Warning, Other 
+    }
     public sealed partial class Level : IDisposable
     {
         public void SetPhysics(int level)
@@ -62,7 +65,8 @@ namespace MCGalaxy
                     if (PhysicsPaused)
                     {
                         if (LevelPhysics == 0) break;
-                        Thread.Sleep(500); continue;
+                        Thread.Sleep(500); 
+                        continue;
                     }
                     if (wait > 0) Thread.Sleep(wait);
                     if (LevelPhysics == 0) break;
@@ -180,7 +184,7 @@ namespace MCGalaxy
             RemoveExpiredChecks();
             lastUpdate = ListUpdate.Count;
             if (ListUpdate.Count > 0 && bulkSender == null)
-                bulkSender = new BufferedBlockSender(this);
+                bulkSender = new(this);
             for (int i = 0; i < ListUpdate.Count; i++)
             {
                 Update U = ListUpdate.Items[i];
@@ -219,7 +223,11 @@ namespace MCGalaxy
                 if (x >= Width || y >= Height || z >= Length) return;
                 if (listCheckExists.TrySetOn(x, y, z))
                 {
-                    Check check; check.Index = index; check.data = data;
+                    Check check = new()
+                    {
+                        Index = index,
+                        data = data
+                    };
                     ListCheck.Add(check); // Adds block to list to be updated
                 }
                 else if (overRide)
@@ -229,7 +237,8 @@ namespace MCGalaxy
                     for (int i = 0; i < count; i++)
                     {
                         if (items[i].Index != index) continue;
-                        items[i].data = data; return;
+                        items[i].data = data; 
+                        return;
                     }
                     //Dont need to check physics here because if the list is active, then physics is active :)
                 }
@@ -283,7 +292,11 @@ namespace MCGalaxy
                     return false;
                 }
                 data.Data = (byte)block;
-                Update update; update.Index = index; update.data = data;
+                Update update = new()
+                {
+                    Index = index,
+                    data = data
+                };
                 ListUpdate.Add(update);
                 if (!physThreadStarted && LevelPhysics > 0)
                     StartPhysics();
@@ -291,8 +304,6 @@ namespace MCGalaxy
             }
             catch
             {
-                //s.Log("Warning-PhysicsUpdate");
-                //ListUpdate.Add(new Update(b, (byte)type));    //Lousy back up plan
                 return false;
             }
         }
@@ -320,15 +331,18 @@ namespace MCGalaxy
             for (int i = 0; i < count; i++)
             {
                 if (items[j].Index == b) continue;
-                items[j] = items[i]; j++;
+                items[j] = items[i];
+                j++;
             }
             ListUpdate.Items = items;
             ListUpdate.Count = j;
         }
         void ClearPhysicsLists()
         {
-            ListCheck.Count = 0; listCheckExists.Clear();
-            ListUpdate.Count = 0; listUpdateExists.Clear();
+            ListCheck.Count = 0; 
+            listCheckExists.Clear();
+            ListUpdate.Count = 0; 
+            listUpdateExists.Clear();
         }
         public void ClearPhysics()
         {
@@ -347,7 +361,8 @@ namespace MCGalaxy
                 case 202:
                 case 203:
                 case 204:
-                    blocks[C.Index] = 0; break;
+                    blocks[C.Index] = 0; 
+                    break;
             }
             try
             {
@@ -417,10 +432,7 @@ namespace MCGalaxy
     /// <summary> Represents a physics tick entry </summary>
     public struct PhysInfo
     {
-        /// <summary> X/Y/Z coordinates of this tick entry </summary>
-        public ushort X, Y, Z;
-        /// <summary> Block ID that is located at the coordinates of this tick entry </summary>
-        public ushort Block;
+        public ushort X, Y, Z, Block;
         /// <summary> Packed coordinates of this tick entry </summary>
         public int Index;
         /// <summary> Data/State of this tick entry </summary>

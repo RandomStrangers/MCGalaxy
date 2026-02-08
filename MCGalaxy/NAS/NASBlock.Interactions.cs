@@ -15,9 +15,59 @@ using NASBlockInteraction =
     MCGalaxy.NASBlock, ushort, ushort, ushort>;
 namespace MCGalaxy
 {
+    public enum NASContainerType
+    {
+        Chest, Barrel, Crate,
+        Gravestone, AutoCraft, Dispenser
+    }
+    public class NASContainer
+    {
+        public const int ToolLimit = 27, BlockStackLimit = 27;
+        public NASContainerType type;
+        public string Name => Enum.GetName(typeof(NASContainerType), type);
+        public string Description
+        {
+            get
+            {
+                string desc = "&s";
+                desc += type switch
+                {
+                    NASContainerType.Chest => Name + "s&S can store &btools&S, with a limit of " + ToolLimit + ".",
+                    NASContainerType.Barrel or NASContainerType.Crate or NASContainerType.Dispenser => Name + "s&S can store &bblock&S stacks, with a limit of " + BlockStackLimit + ".",
+                    _ => throw new Exception("Invalid value for Type"),
+                };
+                return desc;
+            }
+        }
+        public NASContainer() { }
+        public NASContainer(NASContainer parent) => type = parent.type;
+    }
+    public class NASBlockEntity
+    {
+        public string lockedBy = "",
+            blockText = "";
+        public int strength = 0,
+            type = 0,
+            direction = 0;
+        public NASDrop drop = null;
+        [JsonIgnore]
+        public string FormattedNameOfLocker
+        {
+            get
+            {
+                if (lockedBy.Length == 0)
+                {
+                    return "no one";
+                }
+                Player locker = PlayerInfo.FindExact(lockedBy);
+                return locker == null ? lockedBy : locker.ColoredName;
+            }
+        }
+        public bool CanAccess(NASPlayer np) => lockedBy.Length == 0 || lockedBy == np.p.name;
+    }
     public partial class NASBlock
     {
-        public const string Path = NASPlugin.SavePath + "Blocks/";
+        public const string Path = NASPlayer.Path + "Blocks/";
         public static List<string> books = ReadAllLinesList("text/BookTitles.txt"),
             authors = ReadAllLinesList("text/BookAuthors.txt");
         public static ushort[] waffleSet = { 256 | 542, 256 | 543 },
@@ -42,56 +92,6 @@ namespace MCGalaxy
             return lines;
         }
         public static string GetTextPath(Player p) => Path + p.name + ".txt";
-        public class NASBlockEntity
-        {
-            public string lockedBy = "",
-                blockText = "";
-            public int strength = 0, 
-                type = 0,
-                direction = 0;
-            public NASDrop drop = null;
-            [JsonIgnore]
-            public string FormattedNameOfLocker
-            {
-                get
-                {
-                    if (lockedBy.Length == 0)
-                    {
-                        return "no one";
-                    }
-                    Player locker = PlayerInfo.FindExact(lockedBy);
-                    return locker == null ? lockedBy : locker.ColoredName;
-                }
-            }
-            public bool CanAccess(NASPlayer np) => lockedBy.Length == 0 || lockedBy == np.p.name;
-        }
-        public class NASContainer
-        {
-            public const int ToolLimit = 27, BlockStackLimit = 27;
-            public enum NASContainerType 
-            {
-                Chest, Barrel, Crate, 
-                Gravestone, AutoCraft, Dispenser 
-            }
-            public NASContainerType type;
-            public string Name => Enum.GetName(typeof(NASContainerType), type);
-            public string Description
-            {
-                get
-                {
-                    string desc = "&s";
-                    desc += type switch
-                    {
-                        NASContainerType.Chest => Name + "s&S can store &btools&S, with a limit of " + ToolLimit + ".",
-                        NASContainerType.Barrel or NASContainerType.Crate or NASContainerType.Dispenser => Name + "s&S can store &bblock&S stacks, with a limit of " + BlockStackLimit + ".",
-                        _ => throw new Exception("Invalid value for Type"),
-                    };
-                    return desc;
-                }
-            }
-            public NASContainer() { }
-            public NASContainer(NASContainer parent) => type = parent.type;
-        }
         public static NASBlockExistAction WaterExistAction() => (np, nasBlock, exists, x, y, z) =>
                                                                          {
                                                                              if (exists)
@@ -235,7 +235,7 @@ namespace MCGalaxy
                                                                                      }
                                                                                      np.SendToMain();
                                                                                      np.lastGroundedLocation = new(Server.mainLevel.SpawnPos.X, Server.mainLevel.SpawnPos.Y, Server.mainLevel.SpawnPos.Z);
-                                                                                     NASBlockChange.NASInvInfo invInfo = new()
+                                                                                     NASInvInfo invInfo = new()
                                                                                      {
                                                                                          np = np,
                                                                                          inv = inv
@@ -245,9 +245,9 @@ namespace MCGalaxy
                                                                              };
         public static void InvTask(SchedulerTask task)
         {
-            if (!((NASBlockChange.NASInvInfo)task.State).inv)
+            if (!((NASInvInfo)task.State).inv)
             {
-                ((NASBlockChange.NASInvInfo)task.State).np.p.invincible = false;
+                ((NASInvInfo)task.State).np.p.invincible = false;
             }
         }
         public static NASBlockExistAction BedBeaconAction() => (np, nasBlock, exists, x, y, z) =>
@@ -479,7 +479,7 @@ namespace MCGalaxy
                                                                           };
         public static NASBlockExistAction ContainerExistAction() => (np, nasBlock, exists, x, y, z) =>
                                                                              {
-                                                                                 if (exists && nasBlock.container.type == NASContainer.NASContainerType.Barrel)
+                                                                                 if (exists && nasBlock.container.type == NASContainerType.Barrel)
                                                                                  {
                                                                                      if (
                                                                                          IsPartOfSet(waterSet, np.nl.GetBlock(x, y + 1, z)) != -1 ||
@@ -497,7 +497,7 @@ namespace MCGalaxy
                                                                                  }
                                                                                  if (exists)
                                                                                  {
-                                                                                     if (nasBlock.container.type == NASContainer.NASContainerType.Gravestone)
+                                                                                     if (nasBlock.container.type == NASContainerType.Gravestone)
                                                                                      {
                                                                                          return;
                                                                                      }
@@ -588,7 +588,7 @@ namespace MCGalaxy
                                                                                      {
                                                                                          if (np.inventory.HeldItem.name == "Key")
                                                                                          {
-                                                                                             if (nasBlock.container.type == NASContainer.NASContainerType.Gravestone || nasBlock.container.type == NASContainer.NASContainerType.Dispenser)
+                                                                                             if (nasBlock.container.type == NASContainerType.Gravestone || nasBlock.container.type == NASContainerType.Dispenser)
                                                                                              {
                                                                                                  np.Message("You cannot lock gravestones or dispensers.");
                                                                                              }
@@ -599,12 +599,12 @@ namespace MCGalaxy
                                                                                                  return;
                                                                                              }
                                                                                          }
-                                                                                         if (nasBlock.container.type == NASContainer.NASContainerType.Gravestone)
+                                                                                         if (nasBlock.container.type == NASContainerType.Gravestone)
                                                                                          {
                                                                                              np.Message("You can right click to extract from tombstones.");
                                                                                              return;
                                                                                          }
-                                                                                         if (nasBlock.container.type == NASContainer.NASContainerType.Chest)
+                                                                                         if (nasBlock.container.type == NASContainerType.Chest)
                                                                                          {
                                                                                              AddTool(np, bEntity);
                                                                                          }
@@ -626,15 +626,15 @@ namespace MCGalaxy
                                                                                                  return;
                                                                                              }
                                                                                          }
-                                                                                         if (nasBlock.container.type == NASContainer.NASContainerType.Chest)
+                                                                                         if (nasBlock.container.type == NASContainerType.Chest)
                                                                                          {
                                                                                              RemoveTool(np, bEntity);
                                                                                          }
-                                                                                         else if (nasBlock.container.type == NASContainer.NASContainerType.Barrel || nasBlock.container.type == NASContainer.NASContainerType.Dispenser)
+                                                                                         else if (nasBlock.container.type == NASContainerType.Barrel || nasBlock.container.type == NASContainerType.Dispenser)
                                                                                          {
                                                                                              RemoveBlocks(np, bEntity);
                                                                                          }
-                                                                                         else if (nasBlock.container.type == NASContainer.NASContainerType.Gravestone)
+                                                                                         else if (nasBlock.container.type == NASContainerType.Gravestone)
                                                                                          {
                                                                                              string file = NASPlugin.GetDeathPath(np.p.name);
                                                                                              if (!File.Exists(file))
@@ -659,7 +659,7 @@ namespace MCGalaxy
                                                                                      }
                                                                                      return;
                                                                                  }
-                                                                                 if (nasBlock.container.type != NASContainer.NASContainerType.Gravestone)
+                                                                                 if (nasBlock.container.type != NASContainerType.Gravestone)
                                                                                  {
                                                                                      np.Message("(BUG) The data inside this {0} was lost, but you can make it functional again by &cdeleting&S then &breplacing&S it.",
                                                                                                   nasBlock.container.Name.ToLower());
@@ -841,7 +841,7 @@ namespace MCGalaxy
                     }
                 }
             }
-            if (nb.container.type == NASContainer.NASContainerType.Gravestone)
+            if (nb.container.type == NASContainerType.Gravestone)
             {
                 return;
             }
@@ -908,7 +908,7 @@ namespace MCGalaxy
                                                                                 {
                                                                                     return;
                                                                                 }
-                                                                                NASCrafting.NASRecipe recipe = NASCrafting.GetRecipe(np.nl, x, y, z, nasBlock.station);
+                                                                                NASRecipe recipe = NASCrafting.GetRecipe(np.nl, x, y, z, nasBlock.station);
                                                                                 if (recipe == null)
                                                                                 {
                                                                                     nasBlock.station.ShowArea(np, x, y, z, new(255, 0, 0, 255), 500, 127);
@@ -996,7 +996,7 @@ namespace MCGalaxy
             }
             if (healthRestored < 0)
             {
-                np.TakeDamage(-healthRestored, NASEntity.NASDamageSource.None);
+                np.TakeDamage(-healthRestored, NASDamageSource.None);
             }
             else
             {

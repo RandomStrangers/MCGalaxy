@@ -17,14 +17,12 @@ namespace MCGalaxy.SQL
 {
     public sealed class SqlTransaction : IDisposable
     {
-        internal ISqlConnection conn;
-        internal ISqlTransaction transaction;
+        internal SQLiteConnection conn;
+        internal SQLiteTransaction transaction;
         public SqlTransaction()
         {
-            IDatabaseBackend db = Database.Backend;
-            conn = db.CreateConnection();
+            conn = new();
             conn.Open();
-            if (db.MultipleSchema) conn.ChangeDatabase(Server.Config.MySQLDatabaseName);
             transaction = conn.BeginTransaction();
         }
         public void Commit()
@@ -67,8 +65,8 @@ namespace MCGalaxy.SQL
         {
             try
             {
-                using ISqlCommand cmd = conn.CreateCommand(sql);
-                IDatabaseBackend.FillParams(cmd, args);
+                using SQLiteCommand cmd = conn.CreateCommand(sql);
+                SQLiteBackend.FillParams(cmd, args);
                 cmd.ExecuteNonQuery();
                 return true;
             }

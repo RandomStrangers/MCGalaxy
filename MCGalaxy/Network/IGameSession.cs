@@ -23,7 +23,7 @@ namespace MCGalaxy.Network
     {
         public byte ProtocolVersion;
         public byte[] fallback = new byte[256]; // fallback for classic+CPE block IDs
-        public ushort MaxRawBlock = Block.CLASSIC_MAX_BLOCK;
+        public ushort MaxRawBlock = 49;
         public bool hasCpe;
         public string appName;
         // these are checked very frequently, so avoid overhead of .Supports(
@@ -78,7 +78,7 @@ namespace MCGalaxy.Network
         public abstract void SendTeleport(byte id, Position pos, Orientation rot);
         /// <summary> Sends an ext entity teleport with more control over behavior </summary>
         public virtual bool SendTeleport(byte id, Position pos, Orientation rot,
-                                         Packet.TeleportMoveMode moveMode, bool usePos = true, bool interpolateOri = false, bool useOri = true) => false;
+                                         TeleportMoveMode moveMode, bool usePos = true, bool interpolateOri = false, bool useOri = true) => false;
         /// <summary> Sends a spawn/add entity packet to the client </summary>
         public abstract void SendSpawnEntity(byte id, string name, string skin, Position pos, Orientation rot);
         /// <summary> Sends a despawn/remove entity to the client </summary>
@@ -119,7 +119,7 @@ namespace MCGalaxy.Network
         {
             ushort raw;
             Player p = player;
-            if (block >= Block.Extended)
+            if (block >= 256)
             {
                 raw = Block.ToRaw(block);
             }
@@ -127,12 +127,12 @@ namespace MCGalaxy.Network
             {
                 raw = Block.Convert(block);
                 // show invalid physics blocks as Orange
-                if (raw >= Block.CPE_COUNT) raw = Block.Orange;
+                if (raw >= 66) raw = 22;
             }
             if (raw > MaxRawBlock) raw = p.Level.GetFallback(block);
             // Check if a custom block replaced a core block
             //  If so, assume fallback is the better block to display
-            if (!hasBlockDefs && raw < Block.CPE_COUNT)
+            if (!hasBlockDefs && raw < 66)
             {
                 BlockDefinition def = p.Level.CustomBlockDefs[raw];
                 if (def != null) raw = def.FallBack;

@@ -31,7 +31,7 @@ namespace MCGalaxy.Eco
         static List<string> GetConfig(string item)
         {
             if (itemCfg.TryGetValue(item, out List<string> cfg)) return cfg;
-            cfg = new List<string>();
+            cfg = new();
             itemCfg[item] = cfg;
             return cfg;
         }
@@ -63,7 +63,8 @@ namespace MCGalaxy.Eco
             if (value.Length == 0) return;
             if (name.CaselessEq("enabled"))
             {
-                Enabled = value.CaselessEq("true"); return;
+                Enabled = value.CaselessEq("true");
+                return;
             }
             Item item = GetItem(name);
             name = item != null ? item.Name : name;

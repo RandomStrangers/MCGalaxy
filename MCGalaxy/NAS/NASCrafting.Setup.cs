@@ -570,7 +570,7 @@ namespace MCGalaxy
             };
             NASRecipe charcoal = new(49, 2)
             {
-                stationType = NASStation.NASStationType.Furnace,
+                stationType = NASStationType.Furnace,
                 shapeless = true,
                 usesParentID = true,
                 usesAlternateID = true,
@@ -600,7 +600,7 @@ namespace MCGalaxy
             };
             NASRecipe iron = new(42, 1)
             {
-                stationType = NASStation.NASStationType.Furnace,
+                stationType = NASStationType.Furnace,
                 expGiven = 4,
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -626,7 +626,7 @@ namespace MCGalaxy
             };
             NASRecipe ironRefine = new(42, 1)
             {
-                stationType = NASStation.NASStationType.Furnace,
+                stationType = NASStationType.Furnace,
                 expGiven = 2,
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -637,7 +637,7 @@ namespace MCGalaxy
             };
             NASRecipe goldRefine = new(41, 1)
             {
-                stationType = NASStation.NASStationType.Furnace,
+                stationType = NASStationType.Furnace,
                 expGiven = 3,
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -648,7 +648,7 @@ namespace MCGalaxy
             };
             NASRecipe oldIron = new(148, 3)
             {
-                stationType = NASStation.NASStationType.Furnace,
+                stationType = NASStationType.Furnace,
                 expGiven = 2,
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -659,7 +659,7 @@ namespace MCGalaxy
             };
             NASRecipe oldgold = new(672, 3)
             {
-                stationType = NASStation.NASStationType.Furnace,
+                stationType = NASStationType.Furnace,
                 expGiven = 3,
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -713,7 +713,7 @@ namespace MCGalaxy
             };
             NASRecipe gold = new(41, 1)
             {
-                stationType = NASStation.NASStationType.Furnace,
+                stationType = NASStationType.Furnace,
                 expGiven = 6,
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -724,7 +724,7 @@ namespace MCGalaxy
             };
             NASRecipe diamond = new(631, 1)
             {
-                stationType = NASStation.NASStationType.Furnace,
+                stationType = NASStationType.Furnace,
                 expGiven = 10,
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -735,7 +735,7 @@ namespace MCGalaxy
             };
             NASRecipe emerald = new(650, 1)
             {
-                stationType = NASStation.NASStationType.Furnace,
+                stationType = NASStationType.Furnace,
                 expGiven = 15,
                 shapeless = true,
                 pattern = new ushort[,] {
@@ -746,7 +746,7 @@ namespace MCGalaxy
             };
             NASRecipe glass = new(20, 1)
             {
-                stationType = NASStation.NASStationType.Furnace,
+                stationType = NASStationType.Furnace,
                 pattern = new ushort[,] {
                     { 12 }
                 }
@@ -797,7 +797,7 @@ namespace MCGalaxy
             };
             NASRecipe bread = new(640, 1)
             {
-                stationType = NASStation.NASStationType.Furnace,
+                stationType = NASStationType.Furnace,
                 expGiven = 4,
                 shapeless = true,
                 usesParentID = true,
@@ -809,7 +809,7 @@ namespace MCGalaxy
             };
             NASRecipe waffle = new(542, 1)
             {
-                stationType = NASStation.NASStationType.Furnace,
+                stationType = NASStationType.Furnace,
                 expGiven = 4,
                 shapeless = true,
                 usesParentID = true,
@@ -1357,7 +1357,7 @@ namespace MCGalaxy
                 shapeless = true,
                 expGiven = 8,
                 usesParentID = true,
-                stationType = NASStation.NASStationType.Furnace,
+                stationType = NASStationType.Furnace,
                 pattern = new ushort[,] {
                     {  648, 648, 0 },
                     {  667, 667, 0 },
@@ -1369,7 +1369,7 @@ namespace MCGalaxy
                 shapeless = true,
                 expGiven = 8,
                 usesParentID = true,
-                stationType = NASStation.NASStationType.Furnace,
+                stationType = NASStationType.Furnace,
                 pattern = new ushort[,] {
                     {  702, 702, 0 },
                     {  667, 667, 0 },
@@ -1620,7 +1620,7 @@ namespace MCGalaxy
             };
             NASRecipe drysponge = new(427, 1)
             {
-                stationType = NASStation.NASStationType.Furnace,
+                stationType = NASStationType.Furnace,
                 shapeless = true,
                 pattern = new ushort[,] {
                     {  428, 49 }
@@ -1628,7 +1628,7 @@ namespace MCGalaxy
             };
             NASRecipe cobbledDeep = new(429, 1)
             {
-                stationType = NASStation.NASStationType.Furnace,
+                stationType = NASStationType.Furnace,
                 pattern = new ushort[,] {
                     {  430 }
                 }
@@ -1724,7 +1724,7 @@ namespace MCGalaxy
             };
             NASRecipe crackedBlack = new(474, 1)
             {
-                stationType = NASStation.NASStationType.Furnace,
+                stationType = NASStationType.Furnace,
                 pattern = new ushort[,] {
                     { 466 },
                 }

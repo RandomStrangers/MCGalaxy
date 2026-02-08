@@ -45,9 +45,7 @@ namespace MCGalaxy.Util
                 w.WriteLine(DefaultText[i]);
             }
         }
-        public string[] GetText() =>
-            //return File.ReadAllLines(Filename);
-            FileIO.TryReadAllLines(Filename);
+        public string[] GetText() => FileIO.TryReadAllLines(Filename);
         /// <summary>
         /// Returns all text lines in the file that do not begin with # and are not empty.
         /// </summary>
@@ -65,12 +63,6 @@ namespace MCGalaxy.Util
                 text.Add(line);
             }
             return text;
-        }
-        public void SetText(string[] text)
-        {
-            //File.WriteAllLines(Filename, text);
-            FileIO.TryWriteAllLines(Filename, text);
-            OnTextChanged?.Invoke();
         }
         public static Dictionary<string, TextFile> Files = new()
         {

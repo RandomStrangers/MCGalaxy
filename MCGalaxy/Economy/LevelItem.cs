@@ -19,18 +19,13 @@ namespace MCGalaxy.Eco
 {
     public sealed class LevelItem : Item
     {
-        public LevelItem()
-        {
-            Aliases = new string[] { "level", "levels", "map", "maps" };
-        }
+        public LevelItem() => Aliases = new string[] { "level", "levels", "map", "maps" };
         public override string Name => "Level";
         public List<LevelPreset> Presets = new();
         public class LevelPreset
         {
             public int price;
-            public string name;
-            public string x, y, z;
-            public string type;
+            public string name, x, y, z, type;
         }
         public override void Parse(string prop, string value)
         {
@@ -39,7 +34,7 @@ namespace MCGalaxy.Eco
             LevelPreset preset = FindPreset(args[0]);
             if (preset == null)
             {
-                preset = new LevelPreset
+                preset = new()
                 {
                     name = args[0]
                 };
@@ -47,11 +42,21 @@ namespace MCGalaxy.Eco
             }
             switch (args[1])
             {
-                case "price": preset.price = int.Parse(args[2]); break;
-                case "x": preset.x = args[2]; break;
-                case "y": preset.y = args[2]; break;
-                case "z": preset.z = args[2]; break;
-                case "type": preset.type = args[2]; break;
+                case "price": 
+                    preset.price = int.Parse(args[2]); 
+                    break;
+                case "x":
+                    preset.x = args[2]; 
+                    break;
+                case "y": 
+                    preset.y = args[2]; 
+                    break;
+                case "z": 
+                    preset.z = args[2];
+                    break;
+                case "type":
+                    preset.type = args[2]; 
+                    break;
             }
         }
         public override void Serialise(List<string> cfg)
@@ -69,9 +74,17 @@ namespace MCGalaxy.Eco
         public override void OnPurchase(Player p, string raw)
         {
             string[] args = raw.SplitSpaces();
-            if (raw.Length == 0) { OnStoreCommand(p); return; }
+            if (raw.Length == 0) 
+            {
+                OnStoreCommand(p);
+                return; 
+            }
             LevelPreset preset = FindPreset(args[0]);
-            if (preset == null) { p.Message("&WThat isn't a level preset"); return; }
+            if (preset == null)
+            {
+                p.Message("&WThat isn't a level preset");
+                return; 
+            }
             if (!CheckPrice(p, preset.price, "that map")) return;
             string name = null;
             if (args.Length > 1)
@@ -89,7 +102,10 @@ namespace MCGalaxy.Eco
             }
             p.Message("&aCreating level: '&f" + name + "&a' . . .");
             ushort x = 0, y = 0, z = 0;
-            string[] xyz = { preset.x, preset.y, preset.z };
+            string[] xyz = 
+                {
+                preset.x, preset.y, preset.z 
+            };
             if (!MapGen.GetDimensions(p, xyz, 0, ref x, ref y, ref z, false)) return;
             MapGen gen = MapGen.Find(preset.type);
             Level lvl = MapGen.Generate(p, gen, name, x, y, z, "");
@@ -104,7 +120,7 @@ namespace MCGalaxy.Eco
                 lvl.Dispose();
                 Server.DoGC();
             }
-            Economy.MakePurchase(p, preset.price, "%3Map: %f" + preset.name);
+            Economy.MakePurchase(p, preset.price, "&3Map: &f" + preset.name);
         }
         protected internal override void OnSetup(Player p, string[] args)
         {
@@ -116,7 +132,7 @@ namespace MCGalaxy.Eco
             }
             else if (Command.IsDeleteAction(cmd))
             {
-                RemovePreset(p, args, preset);
+                RemovePreset(p, preset);
             }
             else if (Command.IsEditAction(cmd))
             {
@@ -129,17 +145,24 @@ namespace MCGalaxy.Eco
         }
         void AddPreset(Player p, string[] args, LevelPreset preset)
         {
-            if (preset != null) { p.Message("&WThat preset level already exists"); return; }
-            preset = new LevelPreset
+            if (preset != null) 
+            { 
+                p.Message("&WThat preset level already exists"); 
+                return; 
+            }
+            preset = new()
             {
                 name = args[2]
             };
             ushort x = 0, y = 0, z = 0;
             if (!MapGen.GetDimensions(p, args, 3, ref x, ref y, ref z)) return;
-            preset.x = args[3]; preset.y = args[4]; preset.z = args[5];
+            preset.x = args[3]; 
+            preset.y = args[4]; 
+            preset.z = args[5];
             if (MapGen.Find(args[6]) == null)
             {
-                MapGen.PrintThemes(p); return;
+                MapGen.PrintThemes(p);
+                return;
             }
             preset.type = args[6];
             if (!CommandParser.GetInt(p, args[7], "Price", ref preset.price, 0)) return;
@@ -150,15 +173,23 @@ namespace MCGalaxy.Eco
             p.Message("Map Type: &f" + preset.type);
             p.Message("Map Price: &f" + preset.price + " &3" + Server.Config.Currency);
         }
-        void RemovePreset(Player p, string[] _, LevelPreset preset)
+        void RemovePreset(Player p, LevelPreset preset)
         {
-            if (preset == null) { p.Message("&WThat preset level doesn't exist"); return; }
+            if (preset == null) 
+            { 
+                p.Message("&WThat preset level doesn't exist");
+                return; 
+            }
             Presets.Remove(preset);
             p.Message("&aSuccessfully removed preset: &f" + preset.name);
         }
         void EditPreset(Player p, string[] args, LevelPreset preset)
         {
-            if (preset == null) { p.Message("&WThat preset level doesn't exist"); return; }
+            if (preset == null) 
+            { 
+                p.Message("&WThat preset level doesn't exist");
+                return;
+            }
             if (args[3] == "name" || args[3] == "title")
             {
                 preset.name = args[4];
@@ -166,18 +197,27 @@ namespace MCGalaxy.Eco
             }
             else if (args[3] == "x" || args[3] == "y" || args[3] == "z")
             {
-                string[] dims = new string[] { preset.x, preset.y, preset.z };
+                string[] dims = new string[] 
+                {
+                    preset.x, preset.y, preset.z 
+                };
                 if (args[3] == "x") dims[0] = args[4];
                 if (args[3] == "y") dims[1] = args[4];
                 if (args[3] == "z") dims[2] = args[4];
                 ushort x = 0, y = 0, z = 0;
                 if (!MapGen.GetDimensions(p, dims, 0, ref x, ref y, ref z)) return;
-                preset.x = dims[0]; preset.y = dims[1]; preset.z = dims[2];
+                preset.x = dims[0]; 
+                preset.y = dims[1]; 
+                preset.z = dims[2];
                 p.Message("&aSuccessfully changed preset {0} size to &f{1}", args[3], args[4]);
             }
             else if (args[3] == "type" || args[3] == "theme")
             {
-                if (MapGen.Find(args[4]) == null) { MapGen.PrintThemes(p); return; }
+                if (MapGen.Find(args[4]) == null) 
+                {
+                    MapGen.PrintThemes(p);
+                    return; 
+                }
                 preset.type = args[4];
                 p.Message("&aSuccessfully changed preset type to &f" + preset.type);
             }
@@ -207,7 +247,8 @@ namespace MCGalaxy.Eco
             p.Message("&aAvailable maps to buy:");
             if (Presets.Count == 0)
             {
-                p.Message("&6-None-"); return;
+                p.Message("&6-None-");
+                return;
             }
             foreach (LevelPreset preset in Presets)
             {

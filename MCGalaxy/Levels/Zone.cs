@@ -32,10 +32,7 @@ namespace MCGalaxy
     public sealed class ZoneAccessController : AccessController
     {
         readonly ZoneConfig cfg;
-        public ZoneAccessController(ZoneConfig cfg)
-        {
-            this.cfg = cfg;
-        }
+        public ZoneAccessController(ZoneConfig cfg) => this.cfg = cfg;
         public override LevelPermission Min
         {
             get { return cfg.BuildMin; }
@@ -58,7 +55,7 @@ namespace MCGalaxy
             lvl.Save(true);
             msg += " &Sin " + ColoredName;
             Logger.Log(LogType.UserActivity, "{0} &Son {1}", msg, lvl.name);
-            lvl.Message(Chat.LocalPrefix + msg);
+            lvl.Message("<Local>" + msg);
             if (p.Level != lvl) p.Message("{0} &Son {1} &Sby you", msg, lvl.ColoredName);
         }
     }

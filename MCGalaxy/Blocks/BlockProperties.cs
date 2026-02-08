@@ -59,14 +59,12 @@ namespace MCGalaxy.Blocks
         /// <summary> Whether the properties for this block have been modified and hence require saving. </summary>
         /// <remarks> bit 0 set means modified at global scope, bit 1 set means modified at level scope</remarks>
         public byte ChangedScope;
-        public const byte SCOPE_GLOBAL = 0x01;
-        public const byte SCOPE_LEVEL = 0x02;
         public static BlockProps MakeEmpty()
         {
             BlockProps props = default;
-            props.oDoorBlock = Block.Invalid;
-            props.GrassBlock = Block.Invalid;
-            props.DirtBlock = Block.Invalid;
+            props.oDoorBlock = 0xff;
+            props.GrassBlock = 0xff;
+            props.DirtBlock = 0xff;
             return props;
         }
         public static void Save(string group, BlockProps[] list, byte scope)
@@ -195,7 +193,7 @@ namespace MCGalaxy.Blocks
                 Level[] loaded = LevelInfo.Loaded.Items;
                 foreach (Level lvl in loaded)
                 {
-                    if ((lvl.Props[block].ChangedScope & SCOPE_LEVEL) != 0) continue;
+                    if ((lvl.Props[block].ChangedScope & 0x02) != 0) continue;
                     if (!IsDefaultBlock(lvl, block)) continue;
                     lvl.Props[block] = scope[block];
                     lvl.UpdateBlockHandlers(block);

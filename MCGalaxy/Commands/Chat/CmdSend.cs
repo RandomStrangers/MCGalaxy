@@ -32,12 +32,6 @@ namespace MCGalaxy.Commands.Chatting
             string name = PlayerDB.MatchNames(p, parts[0]);
             if (name == null) return;
             message = parts[1];
-            if (message.Length >= 256 && Database.Backend.EnforcesTextLength)
-            {
-                message = message.Substring(0, 255);
-                p.Message("&WMessage was too long. It has been trimmed to:");
-                p.Message(message);
-            }
             Database.CreateTable("Inbox" + name, createInbox);
             int pending = Database.CountRows("Inbox" + name, "WHERE PlayerFrom=@0", p.name);
             if (pending >= 200)

@@ -23,12 +23,14 @@ namespace MCGalaxy.Blocks.Physics
             Vec3S32 min = bb.BlockMin, max = bb.BlockMax;
             bool hitWalkthrough = false;
             for (int y = min.Y; y <= max.Y; y++)
+            {
                 for (int z = min.Z; z <= max.Z; z++)
+                {
                     for (int x = min.X; x <= max.X; x++)
                     {
-                        ushort xP = (ushort)x, yP = (ushort)y, zP = (ushort)z;
-                        ushort block = p.Level.GetBlock(xP, yP, zP);
-                        if (block == Block.Invalid) continue;
+                        ushort xP = (ushort)x, yP = (ushort)y, zP = (ushort)z,
+                            block = p.Level.GetBlock(xP, yP, zP);
+                        if (block == 0xff) continue;
                         AABB blockBB = p.Level.blockAABBs[block].Offset(x * 32, y * 32, z * 32);
                         if (!AABB.Intersects(ref bb, ref blockBB)) continue;
                         // We can activate only one walkthrough block per movement
@@ -43,9 +45,11 @@ namespace MCGalaxy.Blocks.Physics
                         }
                         // Some blocks will cause death of players
                         if (!p.Level.Props[block].KillerBlock) continue;
-                        if (block == Block.Train && p.trainInvincible) continue;
+                        if (block == 230 && p.trainInvincible) continue;
                         if (p.Level.Config.KillerBlocks) p.HandleDeath(block);
                     }
+                }
+            }
             if (!hitWalkthrough) p.lastWalkthrough = -1;
         }
         internal static void Fall(Player p, AABB bb, bool movingDown)
@@ -55,27 +59,31 @@ namespace MCGalaxy.Blocks.Physics
             // Only do when not moving down, so hitting a pillar while falling doesn't trigger
             if (!movingDown)
             {
-                bb.Min.X -= 1; bb.Max.X += 1;
-                bb.Min.Z -= 1; bb.Max.Z += 1;
+                bb.Min.X -= 1; 
+                bb.Max.X += 1;
+                bb.Min.Z -= 1; 
+                bb.Max.Z += 1;
             }
             bb.Min.Y -= 2; // test block below player feet
             Vec3S32 min = bb.BlockMin, max = bb.BlockMax;
             bool allGas = true;
             for (int z = min.Z; z <= max.Z; z++)
+            {
                 for (int x = min.X; x <= max.X; x++)
                 {
                     ushort block = GetSurvivalBlock(p, x, min.Y, z);
                     byte collide = p.Level.CollideType(block);
-                    allGas = allGas && collide == CollideType.WalkThrough;
+                    allGas = allGas && collide == 0;
                     if (!CollideType.IsSolid(collide)) continue;
                     int fallHeight = p.startFallY - bb.Min.Y;
                     if (fallHeight > p.Level.Config.FallHeight * 32)
                     {
-                        p.HandleDeath(Block.Air, null, false, true);
+                        p.HandleDeath(0, null, false, true);
                     }
                     p.startFallY = -1;
                     return;
                 }
+            }
             if (!allGas) return;
             if (bb.Min.Y > p.lastFallY) p.startFallY = -1; // flying up resets fall height
             p.startFallY = Math.Max(bb.Min.Y, p.startFallY);
@@ -105,7 +113,7 @@ namespace MCGalaxy.Blocks.Physics
             }
             else
             {
-                bool isGas = p.Level.CollideType(bHead) == CollideType.WalkThrough;
+                bool isGas = p.Level.CollideType(bHead) == 0;
                 // NOTE: Rope is a special case, it should always reset fall height
                 if (bHead == Block.Rope) isGas = false;
                 if (!isGas) p.startFallY = -1;
@@ -114,8 +122,8 @@ namespace MCGalaxy.Blocks.Physics
         }
         static ushort GetSurvivalBlock(Player p, int x, int y, int z)
         {
-            if (y < 0) return Block.Bedrock;
-            if (y >= p.Level.Height) return Block.Air;
+            if (y < 0) return 7;
+            if (y >= p.Level.Height) return 0;
             return p.Level.GetBlock((ushort)x, (ushort)y, (ushort)z);
         }
     }

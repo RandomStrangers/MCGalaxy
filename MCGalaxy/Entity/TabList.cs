@@ -18,13 +18,11 @@ namespace MCGalaxy
     /// <summary> Contains methods related to the management of tab list of player names. </summary>
     public static class TabList
     {
-        // Want higher ranks at top of tab list, banned at bottom of tab list
-        const LevelPermission offset = LevelPermission.Console;
         /// <summary> Adds the given player to that player's tab list (if their client supports it). </summary>
         public static void Add(Player dst, Player p)
         {
             if (!dst.hasExtList) return;
-            byte grpPerm = (byte)(offset - p.Rank);
+            byte grpPerm = (byte)(LevelPermission.Console - p.Rank);
             if (!Server.Config.TablistRankSorted) grpPerm = 1;
             GetEntry(p, dst, out string name, out string group);
             name = Colors.Escape(name); // for nicks

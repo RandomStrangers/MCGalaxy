@@ -13,27 +13,27 @@ using NASBlockInteraction =
     MCGalaxy.NASBlock, ushort, ushort, ushort>;
 namespace MCGalaxy
 {
+    public enum NASMaterial
+    {
+        None,
+        Gas,
+        Stone,
+        Earth,
+        Wood,
+        Plant,
+        Leaves,
+        Organic,
+        Glass,
+        Metal,
+        Liquid,
+        Lava,
+        Count
+    }
     public partial class NASBlock
     {
         public static NASBlock[] blocks = new NASBlock[768], blocksIndexedByServerushort;
         public static NASBlock Default;
         public static int[] DefaultDurabilities = new int[(int)NASMaterial.Count];
-        public enum NASMaterial
-        {
-            None,
-            Gas,
-            Stone,
-            Earth,
-            Wood,
-            Plant,
-            Leaves,
-            Organic,
-            Glass,
-            Metal,
-            Liquid,
-            Lava,
-            Count
-        }
         public ushort selfID,
             parentID,
             alternateID;
@@ -52,7 +52,7 @@ namespace MCGalaxy
             beginDelayMax = 0f,
             beginDelayMin = 0f;
         public NASFunc<NASPlayer, ushort, NASDrop> dropHandler;
-        public NASCrafting.NASStation station;
+        public NASStation station;
         public NASContainer container;
         public bool collides = true;
         public AABB bounds;

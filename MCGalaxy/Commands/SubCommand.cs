@@ -12,7 +12,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using System;
 using System.Collections.Generic;
 namespace MCGalaxy.Commands
 {
@@ -41,10 +40,7 @@ namespace MCGalaxy.Commands
         /// Construct a SubCommand with custom help behavior (e.g. this subcommand needs help that changes based on help args)
         /// </summary>
         public SubCommand(string name, Behavior behavior, HelpBehavior helpBehavior, bool mapOnly = true, string[] aliases = null)
-                            : this(name, behavior, mapOnly, aliases)
-        {
-            this.helpBehavior = helpBehavior;
-        }
+                            : this(name, behavior, mapOnly, aliases) => this.helpBehavior = helpBehavior;
         /// <summary>
         /// Construct a SubCommand without help
         /// </summary>
@@ -66,20 +62,9 @@ namespace MCGalaxy.Commands
             }
             return Name.CaselessEq(cmd);
         }
-        public bool AnyMatchingAlias(SubCommand other)
-        {
-            if (Aliases != null)
-            {
-                foreach (string alias in Aliases)
-                {
-                    if (other.Match(alias)) return true;
-                }
-            }
-            return other.Match(Name);
-        }
         public bool Allowed(Player p, string parentCommandName)
         {
-            if (MapOnly && !LevelInfo.IsRealmOwner(p.Level, p.name))
+            if (MapOnly && !LevelInfo.IsRealmOwner(p.Level.name, p.name))
             {
                 p.Message("You may only use &T/{0} {1}&S after you join your map.", parentCommandName, Name.ToLower());
                 return false;
@@ -101,7 +86,10 @@ namespace MCGalaxy.Commands
     /// </summary>
     public class SubCommandGroup
     {
-        public enum UsageResult { NoneFound, Success, Disallowed }
+        public enum UsageResult 
+        { 
+            NoneFound, Success, Disallowed
+        }
         public readonly string parentCommandName;
         readonly List<SubCommand> subCommands;
         public SubCommandGroup(string parentCmd, List<SubCommand> initialCmds)
@@ -109,28 +97,20 @@ namespace MCGalaxy.Commands
             parentCommandName = parentCmd;
             subCommands = initialCmds;
         }
-        public void Register(SubCommand subCmd)
-        {
-            foreach (SubCommand sub in subCommands)
-            {
-                if (subCmd.AnyMatchingAlias(sub))
-                {
-                    throw new ArgumentException(
-                        string.Format("One or more aliases of the existing subcommand \"{0}\" conflicts with the subcommand \"{1}\" that is being registered.",
-                        sub.Name, subCmd.Name));
-                }
-            }
-            subCommands.Add(subCmd);
-        }
-        public void Unregister(SubCommand subCmd) => subCommands.Remove(subCmd);
         public UsageResult Use(Player p, string message, bool alertNoneFound = true)
         {
             string[] args = message.SplitExact(2);
             string cmd = args[0];
             foreach (SubCommand subCmd in subCommands)
             {
-                if (!subCmd.Match(cmd)) { continue; }
-                if (!subCmd.Allowed(p, parentCommandName)) { return UsageResult.Disallowed; }
+                if (!subCmd.Match(cmd)) 
+                { 
+                    continue; 
+                }
+                if (!subCmd.Allowed(p, parentCommandName))
+                {
+                    return UsageResult.Disallowed; 
+                }
                 subCmd.behavior(p, args[1]);
                 return UsageResult.Success;
             }
@@ -149,11 +129,14 @@ namespace MCGalaxy.Commands
         public void DisplayHelpFor(Player p, string message)
         {
             string[] words = message.SplitSpaces(2);
-            string subCmdName = words[0];
-            string helpArgs = words.Length == 2 ? words[1] : "";
+            string subCmdName = words[0],
+                helpArgs = words.Length == 2 ? words[1] : "";
             foreach (SubCommand subCmd in subCommands)
             {
-                if (!subCmd.Match(subCmdName)) { continue; }
+                if (!subCmd.Match(subCmdName)) 
+                {
+                    continue; 
+                }
                 subCmd.DisplayHelp(p, helpArgs);
                 return;
             }

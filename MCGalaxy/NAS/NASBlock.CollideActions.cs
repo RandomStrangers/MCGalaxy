@@ -9,27 +9,27 @@ namespace MCGalaxy
                                                                                     {
                                                                                         if (headSurrounded)
                                                                                         {
-                                                                                            ne.TakeDamage(1.5f, NASEntity.NASDamageSource.Suffocating);
+                                                                                            ne.TakeDamage(1.5f, NASDamageSource.Suffocating);
                                                                                         }
                                                                                     };
         public static NASBlockCollideAction LavaCollideAction() => (ne, nasBlock, headSurrounded, x, y, z) =>
                                                                             {
                                                                                 if (headSurrounded)
                                                                                 {
-                                                                                    if (ne.CanTakeDamage(NASEntity.NASDamageSource.Drowning))
+                                                                                    if (ne.CanTakeDamage(NASDamageSource.Drowning))
                                                                                     {
                                                                                         ne.holdingBreath = true;
                                                                                     }
                                                                                 }
-                                                                                ne.TakeDamage(1.5f, NASEntity.NASDamageSource.Suffocating, "@p &cmelted in lava.");
+                                                                                ne.TakeDamage(1.5f, NASDamageSource.Suffocating, "@p &cmelted in lava.");
                                                                             };
         public static NASBlockCollideAction FireCollideAction() => (ne, nasBlock, headSurrounded, x, y, z) =>
                                                                             {
-                                                                                ne.TakeDamage(0.25f, NASEntity.NASDamageSource.None, "@p &cburned up");
+                                                                                ne.TakeDamage(0.25f, NASDamageSource.None, "@p &cburned up");
                                                                             };
         public static NASBlockCollideAction SpikeCollideAction() => (ne, nasBlock, headSurrounded, x, y, z) =>
                                                                              {
-                                                                                 ne.TakeDamage(3f, NASEntity.NASDamageSource.None, "@p &cgot impaled");
+                                                                                 ne.TakeDamage(3f, NASDamageSource.None, "@p &cgot impaled");
                                                                              };
         public static NASBlockCollideAction PressureCollideAction() => (ne, nasBlock, headSurrounded, x, y, z) =>
                                                                                 {
@@ -44,7 +44,7 @@ namespace MCGalaxy
                                                                               {
                                                                                   if (headSurrounded)
                                                                                   {
-                                                                                      if (ne.CanTakeDamage(NASEntity.NASDamageSource.Drowning))
+                                                                                      if (ne.CanTakeDamage(NASDamageSource.Drowning))
                                                                                       {
                                                                                           ne.holdingBreath = true;
                                                                                       }

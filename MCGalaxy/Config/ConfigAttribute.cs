@@ -22,7 +22,8 @@ namespace MCGalaxy.Config
         public virtual string Serialise(object value) => value == null ? "" : value.ToString();
         public ConfigAttribute(string name, string section)
         {
-            Name = name; Section = section;
+            Name = name;
+            Section = section;
         }
     }
 }

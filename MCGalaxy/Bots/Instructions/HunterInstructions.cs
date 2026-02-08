@@ -20,15 +20,23 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to move towards the closest player, within a defined search radius. </summary>
     public sealed class HuntInstruction : BotInstruction
     {
-        public HuntInstruction() { Name = "hunt"; }
+        public HuntInstruction() => Name = "hunt";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             int search = 75;
             if (data.Metadata != null) search = (ushort)data.Metadata;
             Player closest = ClosestPlayer(bot, search);
-            if (closest == null) { bot.NextInstruction(); return false; }
+            if (closest == null) 
+            { 
+                bot.NextInstruction(); 
+                return false; 
+            }
             bool overlapsPlayer = MoveTowards(bot, closest);
-            if (overlapsPlayer) { bot.NextInstruction(); return false; }
+            if (overlapsPlayer) 
+            { 
+                bot.NextInstruction(); 
+                return false; 
+            }
             return true;
         }
         internal static Player ClosestPlayer(PlayerBot bot, int search)
@@ -39,8 +47,8 @@ namespace MCGalaxy.Bots
             foreach (Player p in players)
             {
                 if (p.Level != bot.Level || p.invincible || p.hidden) continue;
-                int dx = p.Pos.X - bot.Pos.X, dy = p.Pos.Y - bot.Pos.Y, dz = p.Pos.Z - bot.Pos.Z;
-                int playerDist = Math.Abs(dx) + Math.Abs(dy) + Math.Abs(dz);
+                int dx = p.Pos.X - bot.Pos.X, dy = p.Pos.Y - bot.Pos.Y, dz = p.Pos.Z - bot.Pos.Z,
+                    playerDist = Math.Abs(dx) + Math.Abs(dy) + Math.Abs(dz);
                 if (playerDist >= maxDist) continue;
                 closest = p;
                 maxDist = playerDist;
@@ -56,7 +64,9 @@ namespace MCGalaxy.Bots
             dir = Vec3F32.Normalise(dir);
             Orientation rot = bot.Rot;
             DirUtils.GetYawPitch(dir, out rot.RotY, out rot.HeadX);
-            dx = Math.Abs(dx); dy = Math.Abs(dy); dz = Math.Abs(dz);
+            dx = Math.Abs(dx);
+            dy = Math.Abs(dy);
+            dz = Math.Abs(dz);
             // If we are very close to a player, switch from trying to look
             // at them to just facing the opposite direction to them
             if (dx < 4 && dz < 4)
@@ -94,23 +104,24 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to kill nearby players. </summary>
     public sealed class KillInstruction : BotInstruction
     {
-        public KillInstruction() { Name = "kill"; }
+        public KillInstruction() => Name = "kill";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {
                 if (p.Level != bot.Level || p.invincible) continue;
-                int dx = Math.Abs(bot.Pos.X - p.Pos.X);
-                int dy = Math.Abs(bot.Pos.Y - p.Pos.Y);
-                int dz = Math.Abs(bot.Pos.Z - p.Pos.Z);
+                int dx = Math.Abs(bot.Pos.X - p.Pos.X),
+                    dy = Math.Abs(bot.Pos.Y - p.Pos.Y),
+                    dz = Math.Abs(bot.Pos.Z - p.Pos.Z);
                 if (dx <= 8 && dy <= 16 && dz <= 8)
                 {
                     string msg = bot.DeathMessage ?? "@p &Swas &cterminated.";
                     p.HandleDeath(Block.Cobblestone, msg);
                 }
             }
-            bot.NextInstruction(); return true;
+            bot.NextInstruction();
+            return true;
         }
         public override string[] Help => help;
         static readonly string[] help = new string[] {
@@ -120,7 +131,7 @@ namespace MCGalaxy.Bots
     }
     public sealed class StareInstruction : BotInstruction
     {
-        public StareInstruction() { Name = "stare"; }
+        public StareInstruction() => Name = "stare";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             int search = 1000;

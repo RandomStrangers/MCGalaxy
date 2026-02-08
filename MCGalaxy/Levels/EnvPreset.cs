@@ -18,14 +18,16 @@ namespace MCGalaxy
 {
     public sealed class EnvPreset
     {
-        const string FOLDER = "presets";
-        const string FILE_EXTENSION = ".env";
-        public readonly string Fog, Sky, Clouds, Sun, Shadow;
-        public readonly string LavaLight = "", LampLight = "";
+        public readonly string Fog, Sky, Clouds, Sun, Shadow,
+            LavaLight = "", LampLight = "";
         public EnvPreset(string raw)
         {
             string[] args = raw.SplitSpaces();
-            Fog = args[0]; Sky = args[1]; Clouds = args[2]; Sun = args[3]; Shadow = args[4];
+            Fog = args[0]; 
+            Sky = args[1];
+            Clouds = args[2]; 
+            Sun = args[3]; 
+            Shadow = args[4];
             LavaLight = args.Length > 5 ? args[5] : "";
             LampLight = args.Length > 6 ? args[6] : "";
         }
@@ -46,10 +48,9 @@ namespace MCGalaxy
         {
             EnvPreset preset = FindDefault(value);
             if (preset != null) return preset;
-            if (File.Exists(FOLDER + "/" + value.ToLower() + FILE_EXTENSION))
+            if (File.Exists("presets/" + value.ToLower() + ".env"))
             {
-                //string text = File.ReadAllText(FOLDER + "/" + value.ToLower() + FILE_EXTENSION);
-                string text = FileIO.TryReadAllText(FOLDER + "/" + value.ToLower() + FILE_EXTENSION);
+                string text = FileIO.TryReadAllText("presets/" + value.ToLower() + ".env");
                 return new EnvPreset(text);
             }
             return null;
@@ -65,7 +66,7 @@ namespace MCGalaxy
         public static void ListFor(Player p)
         {
             p.Message("&HPresets: &f{0}", Presets.Join(pr => pr.Key));
-            string[] files = FileIO.TryGetFiles(FOLDER, "*" + FILE_EXTENSION);
+            string[] files = FileIO.TryGetFiles("presets", "*.env");
             if (files == null) return;
             string all = files.Join(f => Path.GetFileNameWithoutExtension(f));
             if (all.Length > 0) p.Message("&HCustom presets: &f" + all);

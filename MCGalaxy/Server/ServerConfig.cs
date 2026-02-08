@@ -21,7 +21,10 @@ namespace MCGalaxy
 {
     public sealed class ServerConfig : EnvConfig
     {
-        [ConfigString("server-name", "Server", "[MCGalaxy] Default", false, BASE_NAME_CHARS + CP437_NAME_CHARS)]
+        [ConfigString("server-name", "Server", "[MCGalaxy] Default", false, " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~" + 
+            "\xC7\xFC\xE9\xE2\xE4\xE0\xE5\xE7\xEA\xEB\xE8\xEF\xEE\xEC\xC4\xC5" +
+            "\xC9\xE6\xC6\xF4\xF6\xF2\xFB\xF9\xFF\xD6\xDC\xA2\xA3\xA5\xE1\xED\xF3\xFA\xF1\xD1\xAA" +
+            "\xBA\xBF\xAC\xBD\xBC\xA1\xAB\xBB\xDF\xB5\xB1\xF7\xB0\xB7\xB2\xA0")]
         public string Name = "[MCGalaxy] Default";
         [ConfigString("motd", "Server", "Welcome", false)]
         public string MOTD = "Welcome!";
@@ -290,14 +293,5 @@ namespace MCGalaxy
         public TimeSpan IPSpamBlockTime = TimeSpan.FromSeconds(180);
         [ConfigTimespan("ip-spam-interval", "Spam control", 60, false)]
         public TimeSpan IPSpamInterval = TimeSpan.FromSeconds(60);
-        // List of characters that are both
-        // - unicode codepoints <= 255 (so accepted by classicube.net DB)
-        // - code page 437 characters  (so accepted by ClassiCube client)
-        const string BASE_NAME_CHARS = " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~",
-            CP437_0x80 = "\xC7\xFC\xE9\xE2\xE4\xE0\xE5\xE7\xEA\xEB\xE8\xEF\xEE\xEC\xC4\xC5", // ÇüéâäàåçêëèïîìÄÅ
-            CP437_0x90 = "\xC9\xE6\xC6\xF4\xF6\xF2\xFB\xF9\xFF\xD6\xDC\xA2\xA3\xA5",         // ÉæÆôöòûùÿÖÜ¢£¥
-            CP437_0xA0 = "\xE1\xED\xF3\xFA\xF1\xD1\xAA\xBA\xBF\xAC\xBD\xBC\xA1\xAB\xBB",     // áíóúñÑªº¿¬½¼¡«»
-            CP437_0xE0 = "\xDF\xB5", CP437_0xF0 = "\xB1\xF7\xB0\xB7\xB2\xA0",
-            CP437_NAME_CHARS = CP437_0x80 + CP437_0x90 + CP437_0xA0 + CP437_0xE0 + CP437_0xF0;
     }
 }

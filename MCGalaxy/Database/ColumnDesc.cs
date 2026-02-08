@@ -20,9 +20,7 @@ namespace MCGalaxy.SQL
         public readonly string Column;
         public readonly ColumnType Type;
         public readonly ushort MaxLength;
-        public readonly bool AutoIncrement;
-        public readonly bool PrimaryKey;
-        public readonly bool NotNull;
+        public readonly bool AutoIncrement, PrimaryKey, NotNull;
         public ColumnDesc(string col, ColumnType type)
             : this(col, type, 0, false, false, false) { }
         public ColumnDesc(string col, ColumnType type, ushort maxLen)

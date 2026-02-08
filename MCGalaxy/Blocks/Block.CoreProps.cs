@@ -18,7 +18,7 @@ namespace MCGalaxy
 {
     public static partial class Block
     {
-        public static BlockProps[] Props = new BlockProps[SUPPORTED_COUNT];
+        public static BlockProps[] Props = new BlockProps[1024];
         public static Dictionary<string, byte> Aliases = new();
         internal static BlockProps MakeDefaultProps(ushort b)
         {

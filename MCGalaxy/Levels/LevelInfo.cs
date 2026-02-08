@@ -176,10 +176,9 @@ namespace MCGalaxy
             Directory.CreateDirectory(root);
             return (LatestBackup(map) + 1).ToString();
         }
-        public const string LATEST_MUSEUM_FLAG = "*latest";
         /// <summary>
         /// Returns true if a file was found for the given map with the given backup number.
-        /// Supports LATEST_FLAG as backup number to return latest backup path.
+        /// Supports latest as backup number to return latest backup path.
         /// </summary>
         public static bool GetBackupPath(Player p, string map, string backupNumber, out string path)
         {
@@ -189,7 +188,7 @@ namespace MCGalaxy
                 path = null;
                 return false;
             }
-            if (backupNumber == LATEST_MUSEUM_FLAG)
+            if (backupNumber == "*latest")
             {
                 int latest = LatestBackup(map);
                 if (latest == 0)
@@ -272,11 +271,6 @@ namespace MCGalaxy
         public static bool IsRealmOwner(string name, string map)
         {
             LevelConfig cfg = GetConfig(map);
-            return IsRealmOwner(map, cfg, name);
-        }
-        public static bool IsRealmOwner(Level lvl, string name) => IsRealmOwner(lvl.name, lvl.Config, name);
-        public static bool IsRealmOwner(string map, LevelConfig cfg, string name)
-        {
             string[] owners = cfg.RealmOwner.SplitComma();
             if (owners.Length > 0)
             {

@@ -143,7 +143,7 @@ namespace MCGalaxy.Commands.Info
                 p.Message("Fancy colors: &eLavaLight {0}, &eLampLight {1}",
                           Color(cfg.LavaLightColor), Color(cfg.LampLightColor));
             }
-            if (cfg.LightingMode != Packet.LightingMode.None)
+            if (cfg.LightingMode != LightingMode.None)
             {
                 p.Message("Lighting Mode: &b{0}{1}", cfg.LightingMode, cfg.LightingModeLocked ? "&c locked" : "");
             }

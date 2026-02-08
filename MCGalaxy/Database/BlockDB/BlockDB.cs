@@ -90,7 +90,7 @@ namespace MCGalaxy.DB
                 BlockDBFile format = BlockDBFile.ReadHeader(s, out Vec3U16 dims);
                 if (x >= dims.X || y >= dims.Y || z >= dims.Z) return;
                 int index = (y * dims.Z + z) * dims.X + x;
-                format.FindChangesAt(s, index, output);
+                BlockDBFile.FindChangesAt(s, index, output);
             }
             FindInMemoryAt(x, y, z, output);
         }
@@ -169,7 +169,7 @@ namespace MCGalaxy.DB
         /// Also recreates the backing file if dimensions on disc are less than those in memory. </summary>
         BlockDBFile ValidateBackingFile(string path)
         {
-            BlockDBFile format = BlockDBFile.V1;
+            BlockDBFile format = new();
             Vec3U16 fileDims;
             if (!File.Exists(path))
             {

@@ -27,15 +27,13 @@ namespace MCGalaxy
         readonly object saveLocker = new();
         public List<string> AllNames()
         {
-            lock (locker) return new List<string>(names);
+            lock (locker) return new(names);
         }
         /// <summary> Returns a copy of all lines (name + separator + data) in the list. </summary>
         public List<string> AllLines()
         {
-            lock (locker) return new List<string>(lines);
+            lock (locker) return new(lines);
         }
-        /// <summary> Returns number of names that are in this list. </summary>
-        public int Count { get { lock (locker) return names.Count; } }
         /// <summary> Sets the data associated with the given name. </summary>
         public void Update(string name, string data)
         {
@@ -44,7 +42,8 @@ namespace MCGalaxy
                 int idx = names.CaselessIndexOf(name);
                 if (idx == -1)
                 {
-                    names.Add(name); lines.Add(name + Separator + data);
+                    names.Add(name); 
+                    lines.Add(name + Separator + data);
                 }
                 else
                 {
@@ -83,8 +82,7 @@ namespace MCGalaxy
                 return idx == -1 ? "" : line.Substring(idx + 1);
             }
         }
-        public void Save() => Save(true);
-        public void Save(bool log)
+        public void Save(bool log = true)
         {
             lock (saveLocker)
             {

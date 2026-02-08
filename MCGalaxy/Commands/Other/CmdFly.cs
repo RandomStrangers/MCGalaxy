@@ -63,7 +63,7 @@ namespace MCGalaxy.Commands.Misc
         static void DoFly(FlyState state)
         {
             Player p = state.player;
-            if (p.Pos == state.oldPos) return;
+            if (p.Pos.X == state.oldPos.X && p.Pos.Y == state.oldPos.Y && p.Pos.Z == state.oldPos.Z) return;
             int x = p.Pos.BlockX, z = p.Pos.BlockZ;
             int y = (p.Pos.Y - 60) / 32;
             for (int yy = y - 1; yy <= y; yy++)

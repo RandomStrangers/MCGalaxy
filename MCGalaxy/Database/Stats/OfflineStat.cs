@@ -35,11 +35,11 @@ namespace MCGalaxy.DB
         public static void CoreLine(Player p, PlayerData data)
         {
             Group group = Group.GroupIn(data.Name);
-            string color = data.Color.Length == 0 ? group.Color : data.Color;
-            string prefix = data.Title.Length == 0 ? "" : color + "[" + data.TitleColor + data.Title + color + "] ";
-            string nick = PlayerDB.LoadNick(data.Name);
-            string name = nick ?? Server.ToRawUsername(data.Name);
-            string fullName = prefix + color + name;
+            string color = data.Color.Length == 0 ? group.Color : data.Color,
+                prefix = data.Title.Length == 0 ? "" : color + "[" + data.TitleColor + data.Title + color + "] ",
+                nick = PlayerDB.LoadNick(data.Name),
+                name = nick ?? Server.ToRawUsername(data.Name),
+                fullName = prefix + color + name;
             OnlineStat.CommonCoreLine(p, fullName, data.Name, group, data.Messages);
         }
         public static void BlocksModifiedLine(Player p, PlayerData who) => p.Message("  Modified &a{0} &Sblocks", who.TotalModified);

@@ -25,7 +25,7 @@ namespace MCGalaxy.Drawing.Ops
     public class AdvHollowConeDrawOp : AdvDrawOp
     {
         public override string Name => "Adv Hollow Cone";
-        public AdvHollowConeDrawOp(bool invert = false) { Invert = invert; }
+        public AdvHollowConeDrawOp(bool invert = false) => Invert = invert;
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
             long R = Radius, H = Height;

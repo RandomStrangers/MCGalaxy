@@ -22,7 +22,9 @@ namespace MCGalaxy
         {
             length = Math.Min(length, lineLength);
             // skip trailing spaces
-            for (; length > 0 & line[length - 1] == ' '; length--) { }
+            for (; length > 0 & line[length - 1] == ' '; length--) 
+            { 
+            }
             if (length == 0) return false;
             char last = line[length - 1];
             return last.UnicodeToCp437() != last;
@@ -43,7 +45,7 @@ namespace MCGalaxy
             //  as crashes original minecraft classic otherwise
             length = TrimTrailingInvisible(line, length);
             if (emotePad) line[length++] = '\'';
-            return new string(line, 0, length);
+            return new(line, 0, length);
         }
         static bool IsWrapper(char[] line, int i)
         {
@@ -61,9 +63,7 @@ namespace MCGalaxy
         public static List<string> Wordwrap(char[] message, int messageLen, bool supportsEmotes)
         {
             List<string> lines = new();
-            const int limit = NetUtils.StringSize; // max characters on one line
-            const int maxLineLen = limit + 1; // +1 because need to know if length of line overshot limit
-            char[] line = new char[maxLineLen];
+            char[] line = new char[65];
             bool firstLine = true;
             char lastColor = 'f';
             for (int offset = 0; offset < messageLen;)
@@ -96,7 +96,7 @@ namespace MCGalaxy
                 // Also trim leading spaces on subsequent lines
                 // (note that first line is NOT trimmed for spaces)
                 bool foundStart = firstLine;
-                for (; length < maxLineLen && offset < messageLen;)
+                for (; length < 65 && offset < messageLen;)
                 {
                     char c = message[offset++];
                     if (c != ' ' || foundStart)
@@ -105,7 +105,7 @@ namespace MCGalaxy
                         foundStart = true;
                     }
                 }
-                int lineLength = limit;
+                int lineLength = 64;
                 bool emotePad = false;
                 // Check if need to add a padding ' to line end
                 // (Lines ending in emote are trimmed by minecraft classic client)
@@ -125,7 +125,7 @@ namespace MCGalaxy
                 }
                 firstLine = false;
                 // Try to split up this line nicely
-                for (int i = lineLength - 1; i > limit - 20; i--)
+                for (int i = lineLength - 1; i > 64 - 20; i--)
                 {
                     if (!IsWrapper(line, i)) continue;
                     i++; // include line wrapper character on this line
@@ -140,7 +140,11 @@ namespace MCGalaxy
                     length = lineLength;
                 }
                 // Don't split up line in middle of colour code
-                if (line[length - 1] == '&') { length--; offset--; }
+                if (line[length - 1] == '&')
+                { 
+                    length--; 
+                    offset--;
+                }
                 lastColor = LastColor(line, length);
                 lines.Add(MakeLine(line, length, emotePad));
             }
@@ -153,7 +157,7 @@ namespace MCGalaxy
         {
             if (value.IndexOf('&') == -1) return value;
             char[] chars = CleanupColors(value, out int len, fullAmpersands, customColors);
-            return new string(chars, 0, len);
+            return new(chars, 0, len);
         }
         public static char[] CleanupColors(string value, out int bufferLen,
                                            bool fullAmpersands, bool customColors)
@@ -216,7 +220,11 @@ namespace MCGalaxy
             while (len >= 2)
             {
                 char c = chars[len - 1];
-                if (c == ' ') { len--; continue; }
+                if (c == ' ') 
+                { 
+                    len--; 
+                    continue;
+                }
                 if (chars[len - 2] != '&') break;
                 if (Colors.Lookup(c) == '\0') break;
                 len -= 2; // remove color code

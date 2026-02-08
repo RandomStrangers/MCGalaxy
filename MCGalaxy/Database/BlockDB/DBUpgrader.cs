@@ -59,7 +59,7 @@ namespace MCGalaxy.DB
         internal static string Progress => current + " / " + count;
         public static void Upgrade()
         {
-            List<string> tables = Database.Backend.AllTables();
+            List<string> tables = SQLiteBackend.Instance.AllTables();
             List<string> blockDBTables = new(tables.Count);
             current = 0; count = 0;
             foreach (string table in tables)

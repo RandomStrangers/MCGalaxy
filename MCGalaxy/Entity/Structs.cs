@@ -13,11 +13,10 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Maths;
-using System;
 namespace MCGalaxy
 {
     /// <summary> Represents the position of an entity in the world. </summary>
-    public struct Position : IEquatable<Position>
+    public struct Position
     {
         /// <summary> X fixed-point location in the world. </summary>
         public int X;
@@ -39,24 +38,16 @@ namespace MCGalaxy
         public readonly int BlockY => Y >> 5;
         /// <summary> Z block coordinate of this position. </summary>
         public readonly int BlockZ => Z >> 5;
-        public override readonly bool Equals(object obj) => (obj is Position position) && Equals(position);
-        public readonly bool Equals(Position other) => X == other.X && Y == other.Y && Z == other.Z;
-        public override readonly int GetHashCode() => 1000000007 * X + 1000000009 * Y + 1000000021 * Z;
-        public static bool operator ==(Position a, Position b) { return a.Equals(b); }
-        public static bool operator !=(Position a, Position b) { return !a.Equals(b); }
-        const long mask = 0x1FFFFF;
-        internal readonly long Pack() => (X & mask) | ((Y & mask) << 21) | ((Z & mask) << 42);
-        internal static Position Unpack(long raw)
+        internal readonly long Pack() => (X & (long)0x1FFFFF) | ((Y & (long)0x1FFFFF) << 21) | ((Z & (long)0x1FFFFF) << 42);
+        internal static Position Unpack(long raw) => new()
         {
-            Position pos;
-            pos.X = SignExtend(raw);
-            pos.Y = SignExtend(raw >> 21);
-            pos.Z = SignExtend(raw >> 42);
-            return pos;
-        }
+            X = SignExtend(raw),
+            Y = SignExtend(raw >> 21),
+            Z = SignExtend(raw >> 42)
+        };
         static int SignExtend(long parts)
         {
-            int value = (int)(parts & mask);
+            int value = (int)(parts & 0x1FFFFF);
             value <<= 32 - 21;
             value >>= 32 - 21;
             return value;
@@ -73,18 +64,24 @@ namespace MCGalaxy
         public byte RotZ;
         /// <summary> Rotation of head around X axis in packed form. (pitch) </summary>
         public byte HeadX;
-        public Orientation(byte yaw, byte pitch) { RotX = 0; RotY = yaw; RotZ = 0; HeadX = pitch; }
+        public Orientation(byte yaw, byte pitch) 
+        { 
+            RotX = 0;
+            RotY = yaw; 
+            RotZ = 0; 
+            HeadX = pitch;
+        }
         /// <summary> Converts angle in range [0, 256) into range [0, 360). </summary>
         public static int PackedToDegrees(byte packed) => packed * 360 / 256;
         /// <summary> Converts angle in degrees into range [0, 256) </summary>
         public static byte DegreesToPacked(int degrees) => (byte)(degrees * 256 / 360);
         internal readonly uint Pack() => (uint)(RotX | (RotY << 8) | (RotZ << 16) | (HeadX << 24));
-        internal static Orientation Unpack(uint raw)
+        internal static Orientation Unpack(uint raw) => new()
         {
-            Orientation rot;
-            rot.RotX = (byte)raw; rot.RotY = (byte)(raw >> 8);
-            rot.RotZ = (byte)(raw >> 16); rot.HeadX = (byte)(raw >> 24);
-            return rot;
-        }
+            RotX = (byte)raw,
+            RotY = (byte)(raw >> 8),
+            RotZ = (byte)(raw >> 16),
+            HeadX = (byte)(raw >> 24)
+        };
     }
 }

@@ -26,20 +26,7 @@ namespace MCGalaxy
             }
             char[] a = str.ToCharArray();
             a[0] = char.ToUpper(a[0]);
-            return new string(a);
-        }
-        /// <summary> Removes an ending + from a username. </summary>
-        public static string RemoveLastPlus(this string str)
-        {
-            if (string.IsNullOrEmpty(str))
-            {
-                return str;
-            }
-            if (str[str.Length - 1] != '+')
-            {
-                return str;
-            }
-            return str.Substring(0, str.Length - 1);
+            return new(a);
         }
         /// <summary> Returns whether line is empty or starts with a #. </summary>
         public static bool IsCommentLine(this string line) => line.Length == 0 || line[0] == '#';

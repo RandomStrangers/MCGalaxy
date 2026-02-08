@@ -23,17 +23,19 @@ namespace MCGalaxy
         public virtual string ItemName => "";
         public LevelPermission MinRank;
         public List<LevelPermission> Allowed, Disallowed;
-        public ItemPerms(LevelPermission min) { MinRank = min; }
+        public ItemPerms(LevelPermission min) => MinRank = min;
         protected void Init(LevelPermission min, List<LevelPermission> allowed,
                             List<LevelPermission> disallowed)
         {
-            MinRank = min; Allowed = allowed; Disallowed = disallowed;
+            MinRank = min; 
+            Allowed = allowed; 
+            Disallowed = disallowed;
         }
         public void CopyPermissionsTo(ItemPerms dst)
         {
             dst.MinRank = MinRank;
-            dst.Allowed = Allowed == null ? null : new List<LevelPermission>(Allowed);
-            dst.Disallowed = Disallowed == null ? null : new List<LevelPermission>(Disallowed);
+            dst.Allowed = Allowed == null ? null : new(Allowed);
+            dst.Disallowed = Disallowed == null ? null : new(Disallowed);
         }
         public bool UsableBy(LevelPermission perm) => (perm >= MinRank || (Allowed != null && Allowed.Contains(perm)))
                 && (Disallowed == null || !Disallowed.Contains(perm));
@@ -46,7 +48,7 @@ namespace MCGalaxy
             }
             else if (Allowed == null || !Allowed.Contains(rank))
             {
-                Allowed ??= new List<LevelPermission>();
+                Allowed ??= new();
                 Allowed.Add(rank);
             }
         }
@@ -58,7 +60,7 @@ namespace MCGalaxy
             }
             else if (Disallowed == null || !Disallowed.Contains(rank))
             {
-                Disallowed ??= new List<LevelPermission>();
+                Disallowed ??= new();
                 Disallowed.Add(rank);
             }
         }

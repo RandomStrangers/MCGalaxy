@@ -4,9 +4,9 @@ using System;
 using System.Text;
 namespace MCGalaxy
 {
+    public enum NASDamageSource { Falling, Suffocating, Drowning, Entity, None, Murder }
     public partial class NASEntity
     {
-        public enum NASDamageSource { Falling, Suffocating, Drowning, Entity, None, Murder }
         [JsonIgnore] public float AirPrev;
         [JsonIgnore] public NASLevel nl;
         [JsonIgnore] public AABB bounds = AABB.Make(new(0, 0, 0), new(16, 26 * 2, 16));

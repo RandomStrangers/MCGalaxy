@@ -254,7 +254,7 @@ namespace MCGalaxy
                 }
                 NASPlayer nw = NASPlayer.GetPlayer(PlayerInfo.FindMatches(p, message));
                 nw.lastAttackedPlayer = p;
-                nw.TakeDamage(50, NASEntity.NASDamageSource.Entity, "@p &fwas smote by " + p.ColoredName);
+                nw.TakeDamage(50, NASDamageSource.Entity, "@p &fwas smote by " + p.ColoredName);
                 return;
             }
             if (!name.CaselessEq("NAS"))
@@ -379,7 +379,7 @@ namespace MCGalaxy
                 int x = np.interactCoords[0],
                     y = np.interactCoords[1],
                     z = np.interactCoords[2];
-                NASBlock.NASBlockEntity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
+                NASBlockEntity bEntity = np.nl.blockEntities[x + " " + y + " " + z];
                 if (bEntity.drop == null)
                 {
                     np.inventory.SetAmount(nasBlock.parentID, -items, true, true);
@@ -401,9 +401,9 @@ namespace MCGalaxy
                         return;
                     }
                 }
-                if (bEntity.drop.blockStacks.Count >= NASBlock.NASContainer.BlockStackLimit)
+                if (bEntity.drop.blockStacks.Count >= NASContainer.BlockStackLimit)
                 {
-                    np.Message("It can't contain more than {0} stacks of blocks.", NASBlock.NASContainer.BlockStackLimit);
+                    np.Message("It can't contain more than {0} stacks of blocks.", NASContainer.BlockStackLimit);
                     p.cancelchat = true;
                     p.SendMapMotd();
                     np.isInserting = false;

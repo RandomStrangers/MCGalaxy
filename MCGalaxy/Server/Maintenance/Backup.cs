@@ -21,15 +21,14 @@ namespace MCGalaxy
     /// <summary> Utility methods for backing up and restoring a server. </summary>
     public static class Backup
     {
-        const string zipPath = "MCGalaxy_NAS.zip", sqlPath = "SQL_NAS.sql";
         public static void Perform(Player p, bool files, bool db, bool lite, bool compress)
         {
             if (db)
             {
                 Logger.Log(LogType.SystemActivity, "Backing up the database...");
-                using (StreamWriter sql = new(sqlPath))
+                using (StreamWriter sql = new("SQL_NAS.sql"))
                     BackupDatabase(sql);
-                Logger.Log(LogType.SystemActivity, "Backed up the database to " + sqlPath);
+                Logger.Log(LogType.SystemActivity, "Backed up the database to SQL_NAS.sql");
             }
             List<string> filesList = null;
             if (files)
@@ -39,7 +38,7 @@ namespace MCGalaxy
                 Logger.Log(LogType.SystemActivity, "Finished determining included files");
             }
             Logger.Log(LogType.SystemActivity, "Creating compressed backup...");
-            using (Stream stream = File.Create(zipPath))
+            using (Stream stream = File.Create("MCGalaxy_NAS.zip"))
             {
                 ZipWriter writer = new(stream);
                 if (files)
@@ -124,9 +123,9 @@ namespace MCGalaxy
         {
             Logger.Log(LogType.SystemActivity, "Compressing Database...");
             //using (Stream src = File.OpenRead(sqlPath))
-            using (Stream src = FileIO.TryOpenRead(sqlPath))
+            using (Stream src = FileIO.TryOpenRead("SQL_NAS.sql"))
             {
-                writer.WriteEntry(src, sqlPath, compress);
+                writer.WriteEntry(src, "SQL_NAS.sql", compress);
             }
             Logger.Log(LogType.SystemActivity, "Database compressed");
         }
@@ -134,7 +133,7 @@ namespace MCGalaxy
         {
             int errors = 0;
             //using (FileStream src = File.OpenRead(zipPath))
-            using (FileStream src = FileIO.TryOpenRead(zipPath))
+            using (FileStream src = FileIO.TryOpenRead("MCGalaxy_NAS.zip"))
             {
                 ZipReader reader = new(src);
                 reader.FindFooter();
@@ -147,7 +146,7 @@ namespace MCGalaxy
                     {
                         Logger.Log(LogType.SystemActivity, "Restored {0}/{1} files", i, entries);
                     }
-                    if (!path.CaselessEq(sqlPath))
+                    if (!path.CaselessEq("SQL_NAS.sql"))
                     {
                         continue;
                     }
@@ -207,7 +206,7 @@ namespace MCGalaxy
             sql.WriteLine("-- Generated on {0:yyyy-MM-dd} at {0:HH:mm:ss}", DateTime.Now);
             sql.WriteLine();
             sql.WriteLine();
-            List<string> tables = Database.Backend.AllTables();
+            List<string> tables = SQLiteBackend.Instance.AllTables();
             foreach (string name in tables)
             {
                 BackupTable(name, sql);
@@ -219,7 +218,7 @@ namespace MCGalaxy
             sql.WriteLine("-- --------------------------------------------------------");
             sql.WriteLine("-- Table structure for table `{0}`", tableName);
             sql.WriteLine();
-            Database.Backend.PrintSchema(tableName, sql);
+            SQLiteBackend.Instance.PrintSchema(tableName, sql);
             TableDumper dumper = new();
             dumper.DumpTable(sql, tableName);
             dumper.sql = null;
@@ -228,7 +227,7 @@ namespace MCGalaxy
         {
             using (Stream backup = File.Create("NAS_Backup.sql"))
                 BackupDatabase(new StreamWriter(backup));
-            List<string> tables = Database.Backend.AllTables();
+            List<string> tables = SQLiteBackend.Instance.AllTables();
             foreach (string table in tables)
             {
                 Database.DeleteTable(table);
@@ -260,7 +259,6 @@ namespace MCGalaxy
                     {
                         cmd = cmd.Remove(0, index);
                         cmd = cmd.Replace(" unsigned", " UNSIGNED");
-                        Database.Backend.ParseCreate(ref cmd);
                     }
                     //Run the command in the transaction.
                     if (bulk.Execute(cmd, null))

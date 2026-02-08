@@ -29,7 +29,7 @@ namespace MCGalaxy.Util
             {
                 if (!items.TryGetValue(key, out object value))
                 {
-                    value = new object();
+                    value = new();
                     items[key] = value;
                 }
                 access[key] = DateTime.UtcNow;
@@ -49,7 +49,7 @@ namespace MCGalaxy.Util
                     {
                         continue;
                     }
-                    free ??= new List<string>();
+                    free ??= new();
                     free.Add(kvp.Key);
                 }
                 if (free == null)

@@ -59,11 +59,7 @@ namespace MCGalaxy
             bool success = Aliases.TryGetValue(input.ToLower(), out byte coreID);
             return success ? coreID : Invalid;
         }
-        public static string GetColoredName(Player p, ushort block)
-        {
-            BlockPerms perms = BlockPerms.GetPlace(block); // TODO check Delete perms too?
-            return Group.GetColor(perms.MinRank) + GetName(p, block);
-        }
+        public static string GetColoredName(Player p, ushort block) => Group.GetColor(BlockPerms.GetPlace(block).MinRank) + GetName(p, block);
         /// <summary> Converts a block &lt;= CPE_MAX_BLOCK into a suitable
         /// block compatible for the given classic protocol version </summary>
         public static byte ConvertClassic(byte block, byte protocolVersion)

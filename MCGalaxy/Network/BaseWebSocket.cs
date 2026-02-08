@@ -21,22 +21,9 @@ namespace MCGalaxy.Network
     /// <remarks> See RFC 6455 for websocket specification </remarks>
     public abstract class BaseWebSocket : INetSocket, INetProtocol
     {
-        protected bool conn, upgrade;
-        protected bool readingHeaders = true;
+        protected bool conn, upgrade, readingHeaders = true;
         /// <summary> Computes a base64-encoded handshake verification key </summary>
-        protected static string ComputeKey(string rawKey)
-        {
-            // RFC 6455, section 1.3 - Opening Handshake
-            //   For this header field, the server has to take the value (as present
-            //    in the header field... and concatenate this with the GUID
-            //    "258EAFA5-E914-47DA-95CA-C5AB0DC85B11" in string form
-            //   A SHA-1 hash, base64-encoded, of this concatenation is
-            //    then returned in the server's handshake.
-            string key = rawKey + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
-            SHA1 sha = SHA1.Create();
-            byte[] raw = sha.ComputeHash(Encoding.ASCII.GetBytes(key));
-            return Convert.ToBase64String(raw);
-        }
+        protected static string ComputeKey(string rawKey) => Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.ASCII.GetBytes(rawKey + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")));
         protected abstract void OnGotAllHeaders();
         protected abstract void OnGotHeader(string name, string value);
         void ProcessHeader(string raw)
@@ -46,8 +33,8 @@ namespace MCGalaxy.Network
             // check that got a proper header
             int sep = raw.IndexOf(':');
             if (sep == -1) return;
-            string name = raw.Substring(0, sep);
-            string value = raw.Substring(sep + 1).Trim();
+            string name = raw.Substring(0, sep),
+                value = raw.Substring(sep + 1).Trim();
             // RFC 6455, section 1.3 - Opening Handshake
             //   To this end, the WebSocket client's handshake is an HTTP Upgrade request
             if (name.CaselessEq("Connection"))
@@ -73,7 +60,8 @@ namespace MCGalaxy.Network
                 for (int j = i; j < bufferLen - 1; j++)
                 {
                     if (buffer[j] != '\r' || buffer[j + 1] != '\n') continue;
-                    end = j; break;
+                    end = j; 
+                    break;
                 }
                 if (end == -1) break;
                 string value = Encoding.ASCII.GetString(buffer, i, end - i);
@@ -85,23 +73,9 @@ namespace MCGalaxy.Network
         int state, opcode, frameLen, maskRead, frameRead;
         private readonly byte[] mask = new byte[4];
         private byte[] frame;
-        const int state_header1 = 0;
-        const int state_header2 = 1;
-        const int state_extLen1 = 2;
-        const int state_extLen2 = 3;
-        const int state_mask = 4;
-        const int state_data = 5;
-        protected const int OPCODE_CONTINUED = 0;
-        protected const int OPCODE_TEXT = 1;
-        protected const int OPCODE_BINARY = 2;
-        protected const int OPCODE_DISCONNECT = 8;
-        protected const int FIN = 0x80;
-        protected const int REASON_NORMAL = 1000;
-        protected const int REASON_INVALID_DATA = 1003;
-        protected const int REASON_EXCESSIVE_SIZE = 1009;
         int GetDisconnectReason()
         {
-            if (frameLen < 2) return REASON_NORMAL;
+            if (frameLen < 2) return 1000;
             // RFC 6455, section 5.5.1 - Close
             //   If there is a body, the first two bytes of the body MUST
             //    be a 2-byte unsigned integer (in network byte order)...
@@ -116,29 +90,29 @@ namespace MCGalaxy.Network
             switch (opcode)
             {
                 // TODO: reply to ping frames
-                case OPCODE_CONTINUED:
-                case OPCODE_BINARY:
-                case OPCODE_TEXT:
+                case 0:
+                case 2:
+                case 1:
                     if (frameLen == 0) return;
                     HandleData(frame, frameLen);
                     break;
-                case OPCODE_DISCONNECT:
+                case 8:
                     // Connection is getting closed
                     Disconnect(GetDisconnectReason()); break;
                 default:
-                    Disconnect(REASON_INVALID_DATA); break;
+                    Disconnect(1003); break;
             }
         }
         int ProcessData(byte[] data, int offset, int len)
         {
             switch (state)
             {
-                case state_header1:
+                case 0:
                     if (offset >= len) break;
                     opcode = data[offset++] & 0x0F;
-                    state = state_header2;
-                    goto case state_header2;
-                case state_header2:
+                    state = 1;
+                    goto case 1;
+                case 1:
                     if (offset >= len) break;
                     int flags = data[offset] & 0x7F;
                     // if mask bit is     zero: maskRead is set to 0x80 (therefore skipping reading the 4 bytes)
@@ -148,51 +122,52 @@ namespace MCGalaxy.Network
                     if (flags == 127)
                     {
                         // unsupported 8 byte extended length
-                        Disconnect(REASON_EXCESSIVE_SIZE);
+                        Disconnect(1009);
                         return len;
                     }
                     else if (flags == 126)
                     {
                         // two byte extended length
-                        state = state_extLen1;
-                        goto case state_extLen1;
+                        state = 2;
+                        goto case 2;
                     }
                     else
                     {
                         // length is inline
                         frameLen = flags;
-                        state = state_mask;
-                        goto case state_mask;
+                        state = 4;
+                        goto case 4;
                     }
-                case state_extLen1:
+                case 2:
                     if (offset >= len) break;
                     frameLen = data[offset++] << 8;
-                    state = state_extLen2;
-                    goto case state_extLen2;
-                case state_extLen2:
+                    state = 3;
+                    goto case 3;
+                case 3:
                     if (offset >= len) break;
                     frameLen |= data[offset++];
-                    state = state_mask;
-                    goto case state_mask;
-                case state_mask:
+                    state = 4;
+                    goto case 4;
+                case 4:
                     for (; maskRead < 4; maskRead++)
                     {
                         if (offset >= len) return offset;
                         mask[maskRead] = data[offset++];
                     }
                     maskRead = 0;
-                    state = state_data;
-                    goto case state_data;
-                case state_data:
+                    state = 5;
+                    goto case 5;
+                case 5:
                     if (frame == null || frameLen > frame.Length) frame = new byte[frameLen];
                     int copy = Math.Min(len - offset, frameLen - frameRead);
                     Buffer.BlockCopy(data, offset, frame, frameRead, copy);
-                    offset += copy; frameRead += copy;
+                    offset += copy; 
+                    frameRead += copy;
                     if (frameRead == frameLen)
                     {
                         DecodeFrame();
                         frameRead = 0;
-                        state = state_header1;
+                        state = 0;
                     }
                     break;
             }
@@ -215,13 +190,13 @@ namespace MCGalaxy.Network
         protected static byte[] WrapDisconnect(int reason)
         {
             byte[] packet = new byte[4];
-            packet[0] = OPCODE_DISCONNECT | FIN;
+            packet[0] = 8 | 0x80;
             packet[1] = 2;
             packet[2] = (byte)(reason >> 8);
             packet[3] = (byte)reason;
             return packet;
         }
-        public void Disconnect() => Disconnect(REASON_NORMAL);
+        public void Disconnect() => Disconnect(1000);
         protected void Disconnect(int reason)
         {
             try
@@ -230,33 +205,25 @@ namespace MCGalaxy.Network
             }
             catch
             {
-                // try to cleanly close connection if possible
             }
             OnDisconnected(reason);
         }
-        /// <summary> Called when either side ends the connection for the given reason </summary>
         protected abstract void OnDisconnected(int reason);
         protected abstract void HandleData(byte[] data, int len);
-        /// <summary> Sends data to the underlying socket without wrapping the data in a websocket frame </summary>
         protected abstract void SendRaw(byte[] data, SendFlags flags);
     }
-    /// <summary> Abstracts a server side WebSocket </summary>
     public abstract class ServerWebSocket : BaseWebSocket
     {
         bool version;
         string verKey;
         void AcceptConnection()
         {
-            const string fmt =
-                "HTTP/1.1 101 Switching Protocols\r\n" +
+            SendRaw(Encoding.ASCII.GetBytes(string.Format("HTTP/1.1 101 Switching Protocols\r\n" +
                 "Upgrade: websocket\r\n" +
                 "Connection: Upgrade\r\n" +
                 "Sec-WebSocket-Accept: {0}\r\n" +
                 "Sec-WebSocket-Protocol: ClassiCube\r\n" +
-                "\r\n";
-            string key = ComputeKey(verKey);
-            string headers = string.Format(fmt, key);
-            SendRaw(Encoding.ASCII.GetBytes(headers), SendFlags.None);
+                "\r\n", ComputeKey(verKey))), SendFlags.None);
             readingHeaders = false;
         }
         protected override void OnGotAllHeaders()
@@ -267,7 +234,6 @@ namespace MCGalaxy.Network
             }
             else
             {
-                // don't pretend to be a http server (so IP:port isn't marked as one by bots)
                 Close();
             }
         }
@@ -282,12 +248,11 @@ namespace MCGalaxy.Network
                 verKey = value;
             }
         }
-        /// <summary> Wraps the given data in a websocket frame </summary>
         protected static byte[] WrapData(byte[] data)
         {
             int headerLen = data.Length >= 126 ? 4 : 2;
             byte[] packet = new byte[headerLen + data.Length];
-            packet[0] = OPCODE_BINARY | FIN;
+            packet[0] = 2 | 0x80;
             if (headerLen > 2)
             {
                 packet[1] = 126;
@@ -302,23 +267,19 @@ namespace MCGalaxy.Network
             return packet;
         }
     }
-    /// <summary> Abstracts a client side WebSocket </summary>
     public abstract class ClientWebSocket : BaseWebSocket
     {
         protected string path = "/";
         string verKey;
-        // TODO: use a random securely generated key
-        const string key = "xTNDiuZRoMKtxrnJDWyLmA==";
         void AcceptConnection() => readingHeaders = false;
         protected override void OnGotAllHeaders()
         {
-            if (conn && upgrade && verKey == ComputeKey(key))
+            if (conn && upgrade && verKey == ComputeKey("xTNDiuZRoMKtxrnJDWyLmA=="))
             {
                 AcceptConnection();
             }
             else
             {
-                // don't pretend to be a http server (so IP:port isn't marked as one by bots)
                 Close();
             }
         }
@@ -329,12 +290,11 @@ namespace MCGalaxy.Network
                 verKey = value;
             }
         }
-        /// <summary> Wraps the given data in a websocket frame </summary>
         protected static byte[] WrapData(byte[] data)
         {
             int headerLen = data.Length >= 126 ? 4 : 2;
             byte[] packet = new byte[headerLen + 4 + data.Length];
-            packet[0] = OPCODE_TEXT | FIN;
+            packet[0] = 1 | 0x80;
             if (headerLen > 2)
             {
                 packet[1] = 126;
@@ -358,7 +318,7 @@ namespace MCGalaxy.Network
             WriteHeader("Upgrade: websocket");
             WriteHeader("Connection: Upgrade");
             WriteHeader("Sec-WebSocket-Version: 13");
-            WriteHeader("Sec-WebSocket-Key: " + key);
+            WriteHeader("Sec-WebSocket-Key: xTNDiuZRoMKtxrnJDWyLmA==");
             WriteCustomHeaders();
             WriteHeader("");
         }

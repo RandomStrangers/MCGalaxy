@@ -53,13 +53,20 @@ namespace MCGalaxy
             lock (locker) Add(flags);
         }
         /// <summary> Removes all block updates from the queue. </summary>
-        public void ClearAll() { lock (locker) Clear(); }
+        public void ClearAll() 
+        { 
+            lock (locker) Clear();
+        }
         void Process(Level lvl)
         {
             try
             {
                 if (Count == 0) return;
-                if (!lvl.HasPlayers()) { Clear(); return; }
+                if (!lvl.HasPlayers()) 
+                { 
+                    Clear();
+                    return; 
+                }
                 bulkSender.level = lvl;
                 int count = Count;
                 if (count > UpdatesPerTick) count = UpdatesPerTick;

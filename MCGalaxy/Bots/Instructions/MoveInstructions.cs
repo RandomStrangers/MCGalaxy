@@ -19,23 +19,25 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to instantly teleport to a position. </summary>
     public class TeleportInstruction : BotInstruction
     {
-        public TeleportInstruction() { Name = "teleport"; }
+        public TeleportInstruction() => Name = "teleport";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             Coords coords = (Coords)data.Metadata;
-            bot.Pos = new Position(coords.X, coords.Y, coords.Z);
+            bot.Pos = new(coords.X, coords.Y, coords.Z);
             bot.SetYawPitch(coords.RotX, coords.RotY);
             bot.NextInstruction();
             return true;
         }
         public override InstructionData Parse(string[] args)
         {
-            Coords coords;
-            coords.X = NumberUtils.ParseInt32(args[1]);
-            coords.Y = NumberUtils.ParseInt32(args[2]);
-            coords.Z = NumberUtils.ParseInt32(args[3]);
-            coords.RotX = byte.Parse(args[4]);
-            coords.RotY = byte.Parse(args[5]);
+            Coords coords = new()
+            {
+                X = NumberUtils.ParseInt32(args[1]),
+                Y = NumberUtils.ParseInt32(args[2]),
+                Z = NumberUtils.ParseInt32(args[3]),
+                RotX = byte.Parse(args[4]),
+                RotY = byte.Parse(args[5])
+            };
             InstructionData data = default;
             data.Metadata = coords;
             return data;
@@ -56,7 +58,7 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to gradually move towards a position. </summary>
     public class MoveInstruction : TeleportInstruction
     {
-        public MoveInstruction() { Name = "move"; }
+        public MoveInstruction() => Name = "move";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             Coords target = (Coords)data.Metadata;
@@ -66,7 +68,8 @@ namespace MCGalaxy.Bots
             {
                 bot.SetYawPitch(target.RotX, target.RotY); // TODO don't call
                 bot.movement = false;
-                bot.NextInstruction(); return false;
+                bot.NextInstruction(); 
+                return false;
             }
             StartMoving(bot);
             return true;
@@ -82,7 +85,7 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to gradually walk towards to a position. </summary>
     public sealed class WalkInstruction : MoveInstruction
     {
-        public WalkInstruction() { Name = "walk"; }
+        public WalkInstruction() => Name = "walk";
         protected override void StartMoving(PlayerBot bot) => bot.FaceTowards(bot.Pos, bot.TargetPos);
         public override string[] Help => help;
         static readonly string[] help = new string[] {
@@ -94,11 +97,12 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to begin jumping. </summary>
     public sealed class JumpInstruction : BotInstruction
     {
-        public JumpInstruction() { Name = "jump"; }
+        public JumpInstruction() => Name = "jump";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             if (bot.curJump <= 0) bot.curJump = 1;
-            bot.NextInstruction(); return false;
+            bot.NextInstruction(); 
+            return false;
         }
         public override string[] Help => help;
         static readonly string[] help = new string[] {
@@ -111,12 +115,13 @@ namespace MCGalaxy.Bots
     /// <summary> Causes the bot to change how fast it moves. </summary>
     public sealed class SpeedInstruction : BotInstruction
     {
-        public SpeedInstruction() { Name = "speed"; }
+        public SpeedInstruction() => Name = "speed";
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
             bot.movementSpeed = (int)Math.Round(3m * (short)data.Metadata / 100m);
             if (bot.movementSpeed == 0) bot.movementSpeed = 1;
-            bot.NextInstruction(); return false;
+            bot.NextInstruction();
+            return false;
         }
         public override InstructionData Parse(string[] args)
         {
@@ -124,11 +129,7 @@ namespace MCGalaxy.Bots
             data.Metadata = short.Parse(args[1]);
             return data;
         }
-        public override void Output(Player p, string[] args, TextWriter w)
-        {
-            string time = args.Length > 3 ? args[3] : "10";
-            w.WriteLine(Name + " " + short.Parse(time));
-        }
+        public override void Output(Player p, string[] args, TextWriter w) => w.WriteLine(Name + " " + short.Parse(args.Length > 3 ? args[3] : "10"));
         public override string[] Help => help;
         static readonly string[] help = new string[] {
             "&T/BotAI add [name] speed [percentage]",

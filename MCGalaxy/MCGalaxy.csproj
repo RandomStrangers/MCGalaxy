@@ -354,14 +354,10 @@
     <Compile Include="Database\BlockDB\BlockDBFile.cs" />
     <Compile Include="Database\BlockDB\BlockDBEntry.cs" />
     <Compile Include="Database\BlockDB\BlockDBChange.cs" />
-    <Compile Include="Database\BlockDB\BlockDBFile.V1.cs" />
-    <Compile Include="Database\BlockDB\BlockDBFile.V2.cs" />
     <Compile Include="Database\BlockDB\DBUpgrader.cs" />
     <Compile Include="Database\BlockDB\BlockDBTableDumper.cs" />
     <Compile Include="Database\BlockDB\NameConverter.cs" />
     <Compile Include="Database\ColumnDesc.cs" />
-    <Compile Include="Database\IDatabaseBackend.cs" />
-    <Compile Include="Database\Backends\MySQL.cs" />
     <Compile Include="Database\PlayerData.cs" />
     <Compile Include="Database\SqlUtils.cs" />
     <Compile Include="Database\Stats\OfflineStat.cs" />
@@ -428,7 +424,6 @@
     <Compile Include="Economy\MessageItems.cs" />
     <Compile Include="Economy\NameItems.cs" />
     <Compile Include="Economy\RankItem.cs" />
-    <Compile Include="Entity\CustomModel.cs" />
     <Compile Include="Entity\Entities.cs" />
     <Compile Include="Entity\Entity.cs" />
     <Compile Include="Entity\EntityList.cs" />
@@ -574,7 +569,6 @@
     <Compile Include="Modules\Relay\IRC\IRCBot.cs" />
     <Compile Include="Network\IGameSession.cs" />
     <Compile Include="Network\Listeners.cs" />
-    <Compile Include="Network\Packets\Opcode.cs" />
     <Compile Include="Network\Packets\Packet.cs" />
     <Compile Include="Network\Sockets.cs" />
     <Compile Include="Network\Utils\BufferedBlockSender.cs" />
@@ -635,7 +629,6 @@
     <Compile Include="Server\ServerProperties.cs" />
     <Compile Include="Server\Tasks\ModerationTasks.cs" />
     <Compile Include="Server\Tasks\ServerTasks.cs" />
-    <Compile Include="Server\Tasks\UpgradeTasks.cs" />
     <Compile Include="Util\Extensions\DateExts.cs" />
     <Compile Include="Util\Extensions\Extensions.cs" />
     <Compile Include="Util\Extensions\StringExts.cs" />
@@ -696,7 +689,6 @@
     <Compile Include="NAS\Priority Queue\IPriorityQueue.cs" />
     <Compile Include="NAS\Priority Queue\SimplePriorityQueue.cs" />
     <Compile Include="NAS\NASPlayerInventory.Items.cs" />
-    <Compile Include="NAS\NASLevel.IO.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\LICENSE.txt">

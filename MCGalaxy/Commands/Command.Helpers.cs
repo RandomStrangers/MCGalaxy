@@ -56,7 +56,11 @@ namespace MCGalaxy
         {
             if (name.CaselessEq("-own"))
             {
-                if (p.IsSuper) { SuperRequiresArgs(p, type); return null; }
+                if (p.IsSuper) 
+                { 
+                    SuperRequiresArgs(p, type);
+                    return null;
+                }
                 return p.name;
             }
             return name;

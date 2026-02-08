@@ -36,12 +36,14 @@ namespace MCGalaxy.DB
             entry.Packed = p.DatabaseID << 8;
             int timeDelta = (int)DateTime.UtcNow.Subtract(BlockDB.Epoch).TotalSeconds;
             entry.Index = x + Dims.X * (z + Dims.Z * y);
-            entry.OldRaw = (byte)old; entry.NewRaw = (byte)block;
+            entry.OldRaw = (byte)old; 
+            entry.NewRaw = (byte)block;
             // Bit flags -> bit index
             for (int i = 0; i <= 13; i++)
             {
                 if ((flags & (1 << i)) == 0) continue;
-                entry.Packed |= i; break;
+                entry.Packed |= i; 
+                break;
             }
             // Icky, match extended BlockDBFlags flags >> 4
             entry.Packed |= (old & (1 << 9)) >> 5;
@@ -58,7 +60,8 @@ namespace MCGalaxy.DB
                 // pack the time delta
                 entry.TimeDelta = (ushort)Math.Abs(timeDelta - Head.BaseTimeDelta);
                 Head.Entries[Head.Count] = entry;
-                Head.Count++; Count++;
+                Head.Count++; 
+                Count++;
             }
         }
         public void Clear()
@@ -76,7 +79,8 @@ namespace MCGalaxy.DB
                     cur.Next = null;
                     cur = next;
                 }
-                Head = null; Tail = null;
+                Head = null; 
+                Tail = null;
             }
         }
         void AddNextNode()
@@ -111,12 +115,15 @@ namespace MCGalaxy.DB
         }
         public BlockDBEntry Unpack(BlockDBCacheEntry cEntry)
         {
-            BlockDBEntry entry;
-            entry.PlayerID = (int)((uint)cEntry.Packed >> 8);
-            entry.Index = cEntry.Index;
-            entry.TimeDelta = BaseTimeDelta + cEntry.TimeDelta;
-            entry.OldRaw = cEntry.OldRaw; entry.NewRaw = cEntry.NewRaw;
-            entry.Flags = (ushort)(1 << (cEntry.Packed & 0x0F));
+            BlockDBEntry entry = new()
+            {
+                PlayerID = (int)((uint)cEntry.Packed >> 8),
+                Index = cEntry.Index,
+                TimeDelta = BaseTimeDelta + cEntry.TimeDelta,
+                OldRaw = cEntry.OldRaw,
+                NewRaw = cEntry.NewRaw,
+                Flags = (ushort)(1 << (cEntry.Packed & 0x0F))
+            };
             entry.Flags |= (ushort)((cEntry.Packed & 0xF0) << 8);
             return entry;
         }

@@ -27,12 +27,15 @@ namespace MCGalaxy.Commands
         static readonly List<CommandExtraPerms> list = new();
         public CommandExtraPerms(string cmd, int num, string desc, LevelPermission min) : base(min)
         {
-            CmdName = cmd; Num = num; Desc = desc;
+            CmdName = cmd; 
+            Num = num; 
+            Desc = desc;
         }
         public CommandExtraPerms Copy()
         {
             CommandExtraPerms copy = new(CmdName, Num, Desc, 0);
-            CopyPermissionsTo(copy); return copy;
+            CopyPermissionsTo(copy); 
+            return copy;
         }
         public static CommandExtraPerms Find(string cmd, int num)
         {
@@ -56,7 +59,7 @@ namespace MCGalaxy.Commands
         {
             CommandExtraPerms perms = Find(cmd, num);
             if (perms != null) return perms;
-            perms = new CommandExtraPerms(cmd, num, "", min);
+            perms = new(cmd, num, "", min);
             list.Add(perms);
             return perms;
         }
@@ -112,7 +115,8 @@ namespace MCGalaxy.Commands
                     if (IsDescription(args[3]))
                     {
                         min = (LevelPermission)NumberUtils.ParseInt32(args[2]);
-                        allowed = null; disallowed = null;
+                        allowed = null;
+                        disallowed = null;
                     }
                     else
                     {

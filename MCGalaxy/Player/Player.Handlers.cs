@@ -17,7 +17,6 @@ using MCGalaxy.Blocks;
 using MCGalaxy.Blocks.Physics;
 using MCGalaxy.Commands;
 using MCGalaxy.Commands.Chatting;
-using MCGalaxy.DB;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Maths;
 using MCGalaxy.Network;
@@ -31,7 +30,6 @@ namespace MCGalaxy
 {
     public partial class Player : IDisposable
     {
-        const string mustAgreeMsg = "You must read /rules then agree to them with /agree!";
         readonly object blockchangeLock = new();
         internal bool HasBlockChange() => Blockchange != null;
         internal bool DoBlockchangeCallback(ushort x, ushort y, ushort z, ushort block)
@@ -48,11 +46,11 @@ namespace MCGalaxy
                                        ushort block, bool checkPlaceDist)
         {
             ushort old = Level.GetBlock(x, y, z);
-            if (old == Block.Invalid) return;
-            if (jailed || frozen || possessed) { RevertBlock(x, y, z); return; }
+            if (old == 0xff) return;
+            if (frozen || possessed) { RevertBlock(x, y, z); return; }
             if (!agreed)
             {
-                Message(mustAgreeMsg);
+                Message("You must read /rules then agree to them with /agree!");
                 RevertBlock(x, y, z); return;
             }
             if (Level.IsMuseum && Blockchange == null) return;
@@ -66,7 +64,7 @@ namespace MCGalaxy
             bool cancel = false;
             OnBlockChangingEvent.Call(this, x, y, z, block, placing, ref cancel);
             if (cancel) return;
-            if (old >= Block.Air_Flood && old <= Block.Door_Air_air)
+            if (old >= 200 && old <= 217)
             {
                 Message("Block is active, you cannot disturb it.");
                 RevertBlock(x, y, z); return;
@@ -92,14 +90,13 @@ namespace MCGalaxy
             {
                 RevertBlock(x, y, z); return;
             }
-            ushort raw = placing ? block : Block.Air;
+            ushort raw = placing ? block : (ushort)0;
             block = BlockBindings[block];
-            if (ModeBlock != Block.Invalid) block = ModeBlock;
-            ushort newB = deletingBlock ? Block.Air : block;
+            if (ModeBlock != 0xff) block = ModeBlock;
+            ushort newB = deletingBlock ? (ushort)0 : block;
             ChangeResult result;
             if (old == newB)
             {
-                // Ignores updating blocks that are the same and revert block back only to the player
                 result = ChangeResult.Unchanged;
             }
             else if (deletingBlock)
@@ -108,7 +105,6 @@ namespace MCGalaxy
             }
             else if (!CommandParser.IsBlockAllowed(this, "place", block))
             {
-                // Not allowed to place new block
                 result = ChangeResult.Unchanged;
             }
             else
@@ -117,8 +113,6 @@ namespace MCGalaxy
             }
             if (result != ChangeResult.Modified)
             {
-                // Client always assumes that the place/delete succeeds
-                // So if actually didn't, need to revert to the actual block
                 if (!Block.VisuallyEquals(raw, old)) RevertBlock(x, y, z);
             }
             OnBlockChangedEvent.Call(this, x, y, z, result);
@@ -135,10 +129,10 @@ namespace MCGalaxy
         }
         ChangeResult DeleteBlock(ushort old, ushort x, ushort y, ushort z)
         {
-            if (deleteMode) return ChangeBlock(x, y, z, Block.Air);
+            if (deleteMode) return ChangeBlock(x, y, z, 0);
             HandleDelete handler = Level.DeleteHandlers[old];
             if (handler != null) return handler(this, old, x, y, z);
-            return ChangeBlock(x, y, z, Block.Air);
+            return ChangeBlock(x, y, z, 0);
         }
         ChangeResult PlaceBlock(ushort _, ushort x, ushort y, ushort z, ushort block)
         {
@@ -155,23 +149,23 @@ namespace MCGalaxy
             ChangeResult result = Level.TryChangeBlock(this, x, y, z, block);
             if (result == ChangeResult.Unchanged) return result;
             if (result == ChangeResult.Modified) Level.BroadcastChange(x, y, z, block);
-            ushort flags = BlockDBFlags.ManualPlace;
+            ushort flags = 1 << 0;
             if (painting && CollideType.IsSolid(Level.CollideType(old)))
             {
-                flags = BlockDBFlags.Painted;
+                flags = 1 << 1;
             }
             Level.BlockDB.Cache.Add(this, x, y, z, flags, old, block);
             y--; // check for growth at block below
             bool grow = Level.Config.GrassGrow && (Level.LevelPhysics == 0 || Level.LevelPhysics == 5);
             if (!grow || Level.CanAffect(this, x, y, z) != null) return result;
-            ushort below = Level.GetBlock(x, y, z);
-            ushort grass = Level.Props[below].GrassBlock;
-            if (grass != Block.Invalid && block == Block.Air)
+            ushort below = Level.GetBlock(x, y, z),
+                grass = Level.Props[below].GrassBlock;
+            if (grass != 0xff && block == 0)
             {
                 Level.Blockchange(this, x, y, z, grass);
             }
             ushort dirt = Level.Props[below].DirtBlock;
-            if (dirt != Block.Invalid && !Level.LightPasses(block))
+            if (dirt != 0xff && !Level.LightPasses(block))
             {
                 Level.Blockchange(this, x, y, z, dirt);
             }
@@ -185,7 +179,7 @@ namespace MCGalaxy
                 LastAction = DateTime.UtcNow;
                 if (IsAfk) CmdAfk.ToggleAfk(this, "");
                 ClientHeldBlock = held;
-                if ((action == 0 || held == Block.Air) && !Level.Config.Deletable)
+                if ((action == 0 || held == 0) && !Level.Config.Deletable)
                 {
                     // otherwise if you're holding air and try to place a block, this message would show
                     if (!Level.IsAirAt(x, y, z)) Message("Deleting blocks is disabled in this level.");
@@ -196,7 +190,7 @@ namespace MCGalaxy
                     Message("Placing blocks is disabled in this level.");
                     RevertBlock(x, y, z); return;
                 }
-                if (held >= Block.Extended)
+                if (held >= 256)
                 {
                     if (!Session.hasBlockDefs || Level.CustomBlockDefs[held] == null)
                     {
@@ -268,7 +262,7 @@ namespace MCGalaxy
         {
             int value = Server.Config.GetEnvProp(i);
             bool block = i == EnvProp.SidesBlock || i == EnvProp.EdgeBlock;
-            int default_ = block ? Block.Invalid : EnvConfig.ENV_USE_DEFAULT;
+            int default_ = block ? 0xff : int.MaxValue;
             if (Level.Config.GetEnvProp(i) != default_)
             {
                 value = Level.Config.GetEnvProp(i);
@@ -284,7 +278,7 @@ namespace MCGalaxy
         public void SendCurrentEnv()
         {
             Zone zone = ZoneIn;
-            for (int i = 0; i <= EnvConfig.ENV_COLOR_COUNT; i++)
+            for (int i = 0; i <= 7; i++)
             {
                 string col = Server.Config.GetColor(i);
                 if (Level.Config.GetColor(i) != "")
@@ -308,14 +302,14 @@ namespace MCGalaxy
             if (Supports(CpeExt.LightingMode))
             {
                 EnvConfig cfg;
-                if (zone != null && zone.Config.LightingMode != Packet.LightingMode.None)
+                if (zone != null && zone.Config.LightingMode != LightingMode.None)
                 {
                     // Zone takes most precedence if it has a setting
                     cfg = zone.Config;
                 }
                 else
                 {
-                    if (Level.Config.LightingMode == Packet.LightingMode.None)
+                    if (Level.Config.LightingMode == LightingMode.None)
                     {
                         // If level has no setting, use global
                         cfg = Server.Config;
@@ -377,12 +371,12 @@ namespace MCGalaxy
             ushort x = (ushort)Pos.BlockX, y = (ushort)Pos.BlockY, z = (ushort)Pos.BlockZ;
             string deathMsg = Level.Props[block].DeathMessage;
             if (deathMsg != null) AnnounceDeath(deathMsg);
-            if (block == Block.RocketHead) Level.MakeExplosion(x, y, z, 0);
-            if (block == Block.Creeper) Level.MakeExplosion(x, y, z, 1);
-            if (block == Block.Stone || block == Block.Cobblestone)
+            if (block == 188) Level.MakeExplosion(x, y, z, 0);
+            if (block == 231) Level.MakeExplosion(x, y, z, 1);
+            if (block == 1 || block == 4)
             {
                 if (explode) Level.MakeExplosion(x, y, z, 1);
-                if (block == Block.Stone)
+                if (block == 1)
                 {
                     Chat.MessageFrom(this, customMsg.Replace("@p", "λNICK"));
                 }
@@ -395,9 +389,6 @@ namespace MCGalaxy
             OnPlayerDiedEvent.Call(this, block, ref cooldown);
             PlayerActions.Respawn(this);
             TimesDied++;
-            // NOTE: If deaths column is ever increased past 16 bits, remove this clamp
-            if (TimesDied > short.MaxValue && Database.Backend.EnforcesIntegerLimits)
-                TimesDied = short.MaxValue;
             if (Server.Config.AnnounceDeathCount && TimesDied > 0 && TimesDied % 10 == 0)
             {
                 AnnounceDeath("@p &Shas died &3" + TimesDied + " times");
@@ -444,7 +435,7 @@ namespace MCGalaxy
             }
             if (continued)
             {
-                if (text.Length < NetUtils.StringSize) text += " ";
+                if (text.Length < 64) text += " ";
                 partialMessage += text;
                 LimitPartialMessage();
                 return true;
@@ -556,8 +547,8 @@ namespace MCGalaxy
                 foreach (string raw in cmds)
                 {
                     string[] parts = raw.SplitSpaces(2);
-                    string cmd = parts[0].ToLower();
-                    string args = parts.Length > 1 ? parts[1] : "";
+                    string cmd = parts[0].ToLower(),
+                        args = parts.Length > 1 ? parts[1] : "";
                     Command command = GetCommand(ref cmd, ref args, data);
                     if (command == null) return;
                     messages.Add(args); commands.Add(command);
@@ -613,11 +604,7 @@ namespace MCGalaxy
             if (cmd.Length == 0) { Message("No command entered."); return false; }
             if (Server.Config.AgreeToRulesOnEntry && !agreed && !(cmd == "agree" || cmd == "rules" || cmd == "disagree" || cmd == "pass" || cmd == "setpass"))
             {
-                Message(mustAgreeMsg); return false;
-            }
-            if (jailed)
-            {
-                Message("You cannot use any commands while jailed."); return false;
+                Message("You must read /rules then agree to them with /agree!"); return false;
             }
             if (Unverified && !(cmd == "pass" || cmd == "setpass"))
             {

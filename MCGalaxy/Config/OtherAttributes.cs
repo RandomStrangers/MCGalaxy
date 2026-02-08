@@ -21,7 +21,7 @@ namespace MCGalaxy.Config
         readonly bool defValue;
         public ConfigBoolAttribute() : this(null, null, false) { }
         public ConfigBoolAttribute(string name, string section, bool def)
-            : base(name, section) { defValue = def; }
+            : base(name, section) => defValue = def;
         public override object Parse(string raw)
         {
             if (!bool.TryParse(raw, out bool value))
@@ -31,17 +31,13 @@ namespace MCGalaxy.Config
             }
             return value;
         }
-        public override string Serialise(object value)
-        {
-            bool boolValue = (bool)value;
-            return boolValue ? "true" : "false";
-        }
+        public override string Serialise(object value) => (bool)value ? "true" : "false";
     }
     public sealed class ConfigPermAttribute : ConfigAttribute
     {
         readonly LevelPermission defPerm;
         public ConfigPermAttribute(string name, string section, LevelPermission def)
-            : base(name, section) { defPerm = def; }
+            : base(name, section) => defPerm = def;
         public override object Parse(string raw)
         {
             LevelPermission perm = Group.ParsePermOrName(raw, LevelPermission.Null);
@@ -63,11 +59,7 @@ namespace MCGalaxy.Config
             }
             return perm;
         }
-        public override string Serialise(object value)
-        {
-            LevelPermission perm = (LevelPermission)value;
-            return NumberUtils.StringifyInt((sbyte)perm);
-        }
+        public override string Serialise(object value) => NumberUtils.StringifyInt((sbyte)(LevelPermission)value);
     }
     public sealed class ConfigEnumAttribute : ConfigAttribute
     {
@@ -100,7 +92,7 @@ namespace MCGalaxy.Config
             try
             {
                 string[] p = raw.SplitComma();
-                value = new Vec3U16(ushort.Parse(p[0]), ushort.Parse(p[1]), ushort.Parse(p[2]));
+                value = new(ushort.Parse(p[0]), ushort.Parse(p[1]), ushort.Parse(p[2]));
             }
             catch
             {
@@ -132,10 +124,6 @@ namespace MCGalaxy.Config
             for (; i < values.Length; i++) values[i] = defValue;
             return values;
         }
-        public override string Serialise(object value)
-        {
-            bool[] values = (bool[])value;
-            return values.Join(b => b.ToString(), ", ");
-        }
+        public override string Serialise(object value) => (value as bool[]).Join(b => b.ToString(), ", ");
     }
 }

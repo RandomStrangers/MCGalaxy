@@ -241,9 +241,9 @@ namespace MCGalaxy
                 }
             }
         }
-        public static string GetSavePath(Player p) => SavePath + p.name + ".json";
+        public static string GetSavePath(Player p) => NASPlayer.Path + p.name + ".json";
         public static string GetDeathPath(string name) => NASPlayer.DeathsPath + name + ".txt";
-        public static string GetTextPath(Player p) => SavePath + p.name + ".txt";
+        public static string GetTextPath(Player p) => NASPlayer.Path + p.name + ".txt";
         public static bool IsDev(Player p) => Devs.CaselessContains(p.truename);
         public static bool IsDev(PlayerData data) => Devs.CaselessContains(data.Name);
         public static void DisposeErrorResponse(Exception ex)
@@ -441,20 +441,6 @@ namespace MCGalaxy
             }
             result = value;
             return true;
-        }
-    }
-    public partial class NASLevel
-    {
-        public static Level GenerateMap(Player p, string mapName, string width, string height, string length, string seed)
-        {
-            string[] args = new string[] { mapName, width, height, length, seed };
-            MapGen gen = MapGen.Find("NASGen");
-            ushort x = 0, y = 0, z = 0;
-            if (!MapGen.GetDimensions(p, args, 1, ref x, ref y, ref z, false))
-            {
-                return null;
-            }
-            return MapGen.Generate(p, gen, mapName, x, y, z, seed);
         }
     }
     public delegate void NASAction<T1>(T1 arg1);

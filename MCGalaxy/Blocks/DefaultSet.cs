@@ -36,9 +36,13 @@ namespace MCGalaxy.Blocks
                 def.BlockDraw = DrawType.Transparent;
             def.FogDensity = FogDensity(b);
             ColorDesc fog = FogColor(b);
-            def.FogR = fog.R; def.FogG = fog.G; def.FogB = fog.B;
+            def.FogR = fog.R; 
+            def.FogG = fog.G;
+            def.FogB = fog.B;
             def.FallBack = (byte)b;
-            def.MaxX = 16; def.MaxZ = Height(b); def.MaxY = 16;
+            def.MaxX = 16; 
+            def.MaxZ = Height(b); 
+            def.MaxY = 16;
             def.Shape = Draw(b) == DrawType.Sprite ? (byte)0 : def.MaxZ;
             return def;
         }
@@ -66,9 +70,9 @@ namespace MCGalaxy.Blocks
         public static ColorDesc FogColor(ushort b)
         {
             if (b == Block.Water || b == Block.StillWater)
-                return new ColorDesc(5, 5, 51);
+                return new(5, 5, 51);
             if (b == Block.Lava || b == Block.StillLava)
-                return new ColorDesc(153, 25, 0);
+                return new(153, 25, 0);
             return default;
         }
         /// <summary> Gets the default collide type of a block, see CollideType class. </summary>

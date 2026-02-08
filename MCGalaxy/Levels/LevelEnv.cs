@@ -23,36 +23,38 @@ namespace MCGalaxy
         public EnvOptions.OptionSetter SetFunc;
         public EnvOption(string name, EnvOptions.OptionSetter func, string help)
         {
-            Name = name; SetFunc = func; Help = help;
+            Name = name; 
+            SetFunc = func; 
+            Help = help;
         }
     }
     public static class EnvOptions
     {
         public delegate void OptionSetter(Player p, string area, EnvConfig cfg, string value);
         public static List<EnvOption> Options = new() {
-             new EnvOption("Weather",   SetWeather,   "&HSets the weather (sun, rain, snow)"),
-             new EnvOption("SmoothFog", SetSmoothFog, "&HSets whether smoother fog is used"),
-             new EnvOption("Horizon",   SetHorizon,   "&HSets the \"ocean\" block outside the map"),
-             new EnvOption("Border",    SetBorder,    "&HSets the \"bedrock\" block outside the map"),
-             new EnvOption("CloudsHeight", SetCloudsHeight, "&HSets the clouds height of the map"),
-             new EnvOption("EdgeLevel",    SetEdgeLevel,    "&HSets the water height of the map"),
-             new EnvOption("SidesOffset",  SetSidesOffset,  "&HSets offset of bedrock from water (default -2)"),
-             new EnvOption("MaxFog",       SetMaxFog,       "&HSets maximum fog distance in the map (e.g. 16 for a horror map)"),
-             new EnvOption("Sky",       SetSky,       "&HSets color of the sky (default 99CCFF)"),
-             new EnvOption("Clouds",    SetClouds,    "&HSets color of the clouds (default FFFFFF)"),
-             new EnvOption("Fog",       SetFog,       "&HSets color of the fog (default FFFFFF)"),
-             new EnvOption("Sun",       SetSun,       "&HSets color of blocks in sunlight (default FFFFFF)"),
-             new EnvOption("Shadow",    SetShadow,    "&HSets color of blocks in darkness (default 9B9B9B)"),
-             new EnvOption("Skybox",    SetSkybox,    "&HSets color of the skybox (default FFFFFF)"),
-             new EnvOption("LavaLight", SetLavaLight, "&HSets color cast by bright natural blocks when fancy lighting is enabled (default FFEBC6)"),
-             new EnvOption("LampLight", SetLampLight, "&HSets color cast by bright artificial blocks when fancy lighting is enabled (default FFFFFF)"),
-             new EnvOption("LightingMode", SetLightingMode, "&HSets the lighting mode, which can be Classic or Fancy. " +
+             new("Weather",   SetWeather,   "&HSets the weather (sun, rain, snow)"),
+             new("SmoothFog", SetSmoothFog, "&HSets whether smoother fog is used"),
+             new("Horizon",   SetHorizon,   "&HSets the \"ocean\" block outside the map"),
+             new("Border",    SetBorder,    "&HSets the \"bedrock\" block outside the map"),
+             new("CloudsHeight", SetCloudsHeight, "&HSets the clouds height of the map"),
+             new("EdgeLevel",    SetEdgeLevel,    "&HSets the water height of the map"),
+             new("SidesOffset",  SetSidesOffset,  "&HSets offset of bedrock from water (default -2)"),
+             new("MaxFog",       SetMaxFog,       "&HSets maximum fog distance in the map (e.g. 16 for a horror map)"),
+             new("Sky",       SetSky,       "&HSets color of the sky (default 99CCFF)"),
+             new("Clouds",    SetClouds,    "&HSets color of the clouds (default FFFFFF)"),
+             new("Fog",       SetFog,       "&HSets color of the fog (default FFFFFF)"),
+             new("Sun",       SetSun,       "&HSets color of blocks in sunlight (default FFFFFF)"),
+             new("Shadow",    SetShadow,    "&HSets color of blocks in darkness (default 9B9B9B)"),
+             new("Skybox",    SetSkybox,    "&HSets color of the skybox (default FFFFFF)"),
+             new("LavaLight", SetLavaLight, "&HSets color cast by bright natural blocks when fancy lighting is enabled (default FFEBC6)"),
+             new("LampLight", SetLampLight, "&HSets color cast by bright artificial blocks when fancy lighting is enabled (default FFFFFF)"),
+             new("LightingMode", SetLightingMode, "&HSets the lighting mode, which can be Classic or Fancy. " +
                  "Add \"locked\" on the end to lock the mode. For example: &Tlightingmode classic locked"),
-             new EnvOption("CloudsSpeed",  SetCloudsSpeed,  "&HSets how fast clouds move (negative moves in opposite direction)"),
-             new EnvOption("WeatherSpeed", SetWeatherSpeed, "&HSets how fast rain/snow falls (negative falls upwards)"),
-             new EnvOption("WeatherFade",  SetWeatherFade,  "&HSets how quickly rain/snow fades out over distance"),
-             new EnvOption("SkyboxHorSpeed", SetSkyboxHor,  "&HSets how many times per second skybox fully spins horizontally (e.g. 0.1 is once every 10 seconds)"),
-             new EnvOption("SkyboxVerSpeed", SetSkyboxVer,  "&HSets how many times per second skybox fully spins vertically (e.g. 0.1 is once every 10 seconds)"),
+             new("CloudsSpeed",  SetCloudsSpeed,  "&HSets how fast clouds move (negative moves in opposite direction)"),
+             new("WeatherSpeed", SetWeatherSpeed, "&HSets how fast rain/snow falls (negative falls upwards)"),
+             new("WeatherFade",  SetWeatherFade,  "&HSets how quickly rain/snow fades out over distance"),
+             new("SkyboxHorSpeed", SetSkyboxHor,  "&HSets how many times per second skybox fully spins horizontally (e.g. 0.1 is once every 10 seconds)"),
+             new("SkyboxVerSpeed", SetSkyboxVer,  "&HSets how many times per second skybox fully spins vertically (e.g. 0.1 is once every 10 seconds)"),
         };
         public static EnvOption Find(string opt)
         {
@@ -99,7 +101,7 @@ namespace MCGalaxy
             string[] args = value.SplitSpaces(2);
             string lightingMode = args[0];
             bool locked = args.Length > 1 && args[1].CaselessEq("locked");
-            if (!SetEnum(p, lightingMode, area, "lighting mode", Packet.LightingMode.None, ref cfg.LightingMode)) return;
+            if (!SetEnum(p, lightingMode, area, "lighting mode", LightingMode.None, ref cfg.LightingMode)) return;
             cfg.LightingModeLocked = locked;
             if (locked) p.Message("Lighting mode for {0}&S was %clocked%S. Players will not be able to change lighting mode while inside.", area);
             if (!p.Supports(CpeExt.LightingMode)) p.Message("&WNote: Your client does not support lighting modes, so you will see no changes.");

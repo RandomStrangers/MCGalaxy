@@ -5,6 +5,13 @@ using Newtonsoft.Json;
 using System;
 namespace MCGalaxy
 {
+    public class NASDisplayInfo
+    {
+        public NASInventory inv;
+        public NASBlock nasBlock;
+        public int amountChanged;
+        public bool showToNormalChat;
+    }
     public partial class NASInventory
     {
         [JsonIgnore] public Player p;
@@ -145,13 +152,6 @@ namespace MCGalaxy
             int amount = GetAmount(nasBlock.parentID);
             string hand = amount <= 0 ? "┤" : "╕¼";
             return "[" + amount + "] " + nasBlock.GetName(np) + " " + hand;
-        }
-        public class NASDisplayInfo
-        {
-            public NASInventory inv;
-            public NASBlock nasBlock;
-            public int amountChanged;
-            public bool showToNormalChat;
         }
         public static void DisplayHeldBlockTask(SchedulerTask task)
         {

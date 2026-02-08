@@ -120,8 +120,8 @@ namespace MCGalaxy
         /// <summary> Color emitted by bright artificial blocks (Hex RGB color). Set to "" to use client defaults. </summary>
         [ConfigString("LampLightColor", "Env", "", true)]
         public string LampLightColor = "";
-        [ConfigEnum("LightingMode", "Env", Packet.LightingMode.None, typeof(Packet.LightingMode))]
-        public Packet.LightingMode LightingMode;
+        [ConfigEnum("LightingMode", "Env", LightingMode.None, typeof(LightingMode))]
+        public LightingMode LightingMode;
         [ConfigBool("LightingModeLocked", "Env", false)]
         public bool LightingModeLocked = false;
         public void ResetEnv()
@@ -148,7 +148,7 @@ namespace MCGalaxy
             SkyboxColor = "";
             LavaLightColor = "";
             LampLightColor = "";
-            LightingMode = Packet.LightingMode.None;
+            LightingMode = LightingMode.None;
             LightingModeLocked = false;
         }
         internal const int ENV_COLOR_COUNT = 7;

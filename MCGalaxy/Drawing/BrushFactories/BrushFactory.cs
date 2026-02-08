@@ -15,6 +15,12 @@
 using System.Collections.Generic;
 namespace MCGalaxy.Drawing.Brushes
 {
+    public enum CustomModelAnimAxis
+    {
+        X = 0,
+        Y = 1,
+        Z = 2,
+    }
     public abstract class BrushFactory
     {
         public abstract string Name { get; }

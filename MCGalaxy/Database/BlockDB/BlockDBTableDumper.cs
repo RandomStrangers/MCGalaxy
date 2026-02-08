@@ -74,8 +74,7 @@ namespace MCGalaxy.DB
                 entriesWritten++;
                 if (entriesWritten == 10)
                 {
-                    string progress = " (" + DBUpgrader.Progress + ")";
-                    Logger.Log(LogType.SystemActivity, "Dumping BlockDB for " + mapName + progress);
+                    Logger.Log(LogType.SystemActivity, "Dumping BlockDB for " + mapName + " (" + DBUpgrader.Progress + ")");
                 }
                 UpdateBlock(record);
                 UpdateCoords(record);
@@ -100,7 +99,7 @@ namespace MCGalaxy.DB
             {
                 return;
             }
-            BlockDBFile.V1.WriteEntries(stream, buffer);
+            BlockDBFile.WriteEntries(stream, buffer);
             buffer.Count = 0;
         }
         void AppendCbdbFile()
@@ -112,7 +111,7 @@ namespace MCGalaxy.DB
             }
             byte[] bulk = new byte[4096];
             using Stream cbdb = FileIO.TryOpenRead(path);
-            cbdb.Read(bulk, 0, BlockDBFile.EntrySize);
+            cbdb.Read(bulk, 0, 16);
             int read = 0;
             while ((read = cbdb.Read(bulk, 0, 4096)) > 0)
             {
@@ -171,10 +170,6 @@ namespace MCGalaxy.DB
             }
             entry.PlayerID = id;
         }
-        void UpdateTimestamp(ISqlRecord record)
-        {
-            DateTime time = record.GetDateTime(1).ToUniversalTime();
-            entry.TimeDelta = (int)time.Subtract(BlockDB.Epoch).TotalSeconds;
-        }
+        void UpdateTimestamp(ISqlRecord record) => entry.TimeDelta = (int)record.GetDateTime(1).ToUniversalTime().Subtract(BlockDB.Epoch).TotalSeconds;
     }
 }

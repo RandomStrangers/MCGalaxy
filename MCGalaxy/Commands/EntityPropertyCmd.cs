@@ -45,12 +45,19 @@ namespace MCGalaxy.Commands
             if (bot == null) return;
             if (!CheckExtraPerm(p, 2)) return;
             if (!LevelInfo.Check(p, p.Rank, p.Level, "change the " + type + " of that bot")) return;
-            if (!bot.EditableBy(p, "change the " + type + " of")) { return; }
+            if (!bot.EditableBy(p, "change the " + type + " of")) 
+            { 
+                return; 
+            }
             SetBotData(p, bot, args.Length > 2 ? args[2] : "");
         }
         protected void UseOnline(Player p, CommandData data, string message, string type)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p); 
+                return; 
+            }
             string[] args = message.SplitSpaces(2);
             string name = CheckOwn(p, args[0], "player name");
             if (name == null) return;
@@ -62,7 +69,11 @@ namespace MCGalaxy.Commands
         }
         protected void UsePlayer(Player p, CommandData data, string message, string type)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p);
+                return;
+            }
             string[] args = message.SplitSpaces(2);
             string target = CheckOwn(p, args[0], "player name");
             if (target == null) return;
