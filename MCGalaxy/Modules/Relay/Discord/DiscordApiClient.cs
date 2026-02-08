@@ -26,8 +26,8 @@ namespace MCGalaxy.Modules.Relay.Discord
     /// <remarks> https://discord.com/developers/docs/resources/channel#create-message </remarks>
     public class DiscordApiClient : AsyncWorker<DiscordApiMessage>
     {
-        public string Token;
-        public string Host;
+        public string Token, Host;
+        readonly object msgLock = new();
         DiscordApiMessage GetNextRequest()
         {
             if (queue.Count == 0) return null;
@@ -45,9 +45,20 @@ namespace MCGalaxy.Modules.Relay.Discord
         protected override void HandleNext()
         {
             DiscordApiMessage msg = null;
-            WebResponse res = null;
             lock (queueLock) { msg = GetNextRequest(); }
             if (msg == null) { WaitForWork(); return; }
+            lock (msgLock) { ProcessMessage(msg); }
+        }
+        public void SendNow(DiscordApiMessage msg)
+        {
+            lock (msgLock) 
+            { 
+                ProcessMessage(msg); 
+            }
+        }
+        void ProcessMessage(DiscordApiMessage msg)
+        {
+            WebResponse res = null;
             for (int retry = 0; retry < 10; retry++)
             {
                 try

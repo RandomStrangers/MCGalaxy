@@ -48,7 +48,9 @@ namespace MCGalaxy.Commands.Chatting
                           p.FormatNick(name), pronouns.Object, pronouns.Subject, pronouns.PresentPerfectVerb, pronouns.Object);
                 return;
             }
-            Database.AddRow("Inbox" + name, "PlayerFrom, TimeSent, Contents",
+            string sql = SqlUtils.WithTable("INSERT INTO {table} (PlayerFrom, TimeSent, Contents)" +
+                                            " VALUES (@0, @1, @2)", "Inbox" + name);
+            Database.Execute(sql,
                             p.name, DateTime.Now.ToInvariantDateString(), message);
             p.CheckForMessageSpam();
             Player target = PlayerInfo.FindExact(name);

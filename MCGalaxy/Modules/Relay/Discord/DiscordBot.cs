@@ -155,10 +155,10 @@ namespace MCGalaxy.Modules.Relay.Discord
             filter_triggers.Clear();
             filter_replacements.Clear();
             ChatTokens.LoadTokens(lines, (phrase, replacement) =>
-                                  {
-                                      filter_triggers.Add(phrase);
-                                      filter_replacements.Add(DiscordUtils.MarkdownToSpecial(replacement));
-                                  });
+            {
+                filter_triggers.Add(phrase);
+                filter_replacements.Add(DiscordUtils.MarkdownToSpecial(replacement));
+            });
         }
         public override void LoadControllers()
         {
@@ -394,6 +394,13 @@ namespace MCGalaxy.Modules.Relay.Discord
         {
             // can be null in gap between initial connection and ready event received
             api?.QueueAsync(msg);
+        }
+        /// <summary> Synchronously sends a message to the discord API </summary>
+        /// <remarks> Use with CAUTION, as synchronous messages can be sent out of order
+        /// (i.e. may be sent before pending async messages) </remarks>
+        public void SendNow(DiscordApiMessage msg)
+        {
+            api?.SendNow(msg);
         }
         protected override void DoSendMessage(string channel, string message)
         {
