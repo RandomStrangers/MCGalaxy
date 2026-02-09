@@ -24,11 +24,6 @@ namespace MCGalaxy
         {
             this.p = p;
             NASPlayer np = NASPlayer.GetPlayer(p);
-            if (!np.SetInventoryNotif)
-            {
-                Logger.Log(LogType.Debug, "Setting up inventory for {0}", np.p.truename);
-                np.SetInventoryNotif = true;
-            }
             for (ushort clientushort = 1; clientushort <= 767; clientushort++)
             {
                 Send(Packet.BlockPermission(clientushort, false, false, true));

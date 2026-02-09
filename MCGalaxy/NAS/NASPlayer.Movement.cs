@@ -133,7 +133,6 @@ namespace MCGalaxy
                 data.Context = CommandContext.SendCmd;
                 Orientation rot = new(Server.mainLevel.rotx, Server.mainLevel.roty);
                 SetLocation(this, spawnMap, spawnCoords, rot);
-                Log("Teleporting {0} to {1} bed!", p.truename, p.Pronouns.Object);
                 if (!headingToBed)
                 {
                     SendCpeMessage(CpeMessageType.Announcement, "&cY O U  D I E D");
@@ -232,14 +231,12 @@ namespace MCGalaxy
             Log("Teleporting {0}!", p.truename);
             if (level.name != levelName)
             {
-                Log("{0}: trying to use /goto to move to the map they logged out in", p.truename);
                 CommandData data = p.DefaultCmdData;
                 data.Context = CommandContext.SendCmd;
                 p.HandleCommand("goto", levelName, data);
                 return;
             }
             hasBeenSpawned = true;
-            Log("{0}: hasBeenSpawned set to {1}", p.truename, hasBeenSpawned);
         }
         public void DoMovement(Position next, byte _, byte __)
         {
@@ -508,13 +505,7 @@ namespace MCGalaxy
             }
             Send(Packet.EnvMapProperty(EnvProp.ExpFog, expFog));
         }
-        public static Pixel ScaleColor(Pixel cur, Pixel goal)
-        {
-            byte R = ScaleChannel(cur.R, goal.R),
-                G = ScaleChannel(cur.G, goal.G),
-                B = ScaleChannel(cur.B, goal.B);
-            return new(R, G, B, 255);
-        }
+        public static Pixel ScaleColor(Pixel cur, Pixel goal) => new(ScaleChannel(cur.R, goal.R), ScaleChannel(cur.G, goal.G), ScaleChannel(cur.B, goal.B), 255);
         public static byte ScaleChannel(byte curChannel, byte goalChannel)
         {
             if (curChannel > goalChannel)
