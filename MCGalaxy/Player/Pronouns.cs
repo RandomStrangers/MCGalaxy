@@ -176,10 +176,11 @@ namespace MCGalaxy
                     if (p == null) continue;
                     pros.Add(p);
                 }
-                if (pros.Count != 0) return pros;
-                return new()
-                { 
-                    Default 
+                return pros.Count != 0
+                    ? pros
+                    : new()
+                {
+                    Default
                 };
             }
             catch (Exception e)

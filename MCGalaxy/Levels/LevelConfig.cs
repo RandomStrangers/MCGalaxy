@@ -47,11 +47,7 @@ namespace MCGalaxy
     class ConfigExpFogAttribute : ConfigEnvIntAttribute
     {
         public ConfigExpFogAttribute(string name) : base(name, -1, 1) { }
-        public override object Parse(string raw)
-        {
-            if (bool.TryParse(raw, out bool value)) return value ? 1 : 0;
-            return base.Parse(raw);
-        }
+        public override object Parse(string raw) => bool.TryParse(raw, out bool value) ? value ? 1 : 0 : base.Parse(raw);
     }
     public abstract class EnvConfig
     {
@@ -161,8 +157,7 @@ namespace MCGalaxy
             if (i == 4) return LightColor;
             if (i == 5) return SkyboxColor;
             if (i == 6) return LavaLightColor;
-            if (i == 7) return LampLightColor;
-            return null;
+            return i == 7 ? LampLightColor : null;
         }
         public int GetEnvProp(EnvProp i)
         {
@@ -178,8 +173,7 @@ namespace MCGalaxy
             if (i == EnvProp.SidesOffset) return SidesOffset;
             if (i == EnvProp.SkyboxHorSpeed) return SkyboxHorSpeed;
             if (i == EnvProp.SkyboxVerSpeed) return SkyboxVerSpeed;
-            if (i == EnvProp.Weather) return Weather;
-            return ENV_USE_DEFAULT;
+            return i == EnvProp.Weather ? Weather : ENV_USE_DEFAULT;
         }
         /// <summary> Calculates the default value for the given env property </summary>
         public static int DefaultEnvProp(EnvProp i, int height)
@@ -191,8 +185,7 @@ namespace MCGalaxy
             if (i == EnvProp.CloudsSpeed) return 256;
             if (i == EnvProp.WeatherSpeed) return 256;
             if (i == EnvProp.WeatherFade) return 128;
-            if (i == EnvProp.SidesOffset) return -2;
-            return 0;
+            return i == EnvProp.SidesOffset ? -2 : 0;
         }
     }
     public abstract class AreaConfig : EnvConfig

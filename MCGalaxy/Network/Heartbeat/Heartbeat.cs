@@ -142,8 +142,7 @@ namespace MCGalaxy.Network
                 if (family == AddressFamily.InterNetwork && firstIPv4 == null)
                     firstIPv4 = ip;
             }
-            if (!hasIPv6 || firstIPv4 == null) return null;
-            return "http://" + firstIPv4 + ":80";
+            return !hasIPv6 || firstIPv4 == null ? null : "http://" + firstIPv4 + ":80";
         }
     }
 }

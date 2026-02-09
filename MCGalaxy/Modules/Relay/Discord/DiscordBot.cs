@@ -25,12 +25,7 @@ namespace MCGalaxy.Modules.Relay.Discord
     sealed class DiscordUser : RelayUser
     {
         public string ReferencedUser;
-        public override string GetMessagePrefix()
-        {
-            if (string.IsNullOrEmpty(ReferencedUser))
-                return "";
-            return "@" + ReferencedUser + " ";
-        }
+        public override string GetMessagePrefix() => string.IsNullOrEmpty(ReferencedUser) ? "" : "@" + ReferencedUser + " ";
     }
     public class DiscordBot : RelayBot
     {
@@ -179,16 +174,14 @@ namespace MCGalaxy.Modules.Relay.Discord
         {
             // User's chosen display name (configurable)
             author.TryGetValue("global_name", out object name);
-            if (name != null) return (string)name;
-            return (string)author["username"];
+            return name != null ? (string)name : (string)author["username"];
         }
         string ExtractReferencedUser(JsonObject data)
         {
             data.TryGetValue("referenced_message", out object refMsgRaw);
             if (refMsgRaw is not JsonObject refMsgData) return null;
             refMsgData.TryGetValue("author", out object authorRaw);
-            if (authorRaw == null) return null;
-            return GetUser((JsonObject)authorRaw);
+            return authorRaw == null ? null : GetUser((JsonObject)authorRaw);
         }
         void HandleMessageEvent(JsonObject data)
         {

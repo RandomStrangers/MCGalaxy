@@ -170,14 +170,7 @@ namespace MCGalaxy.SQL
             {
                 try
                 {
-                    if (callback != null)
-                    {
-                        return db.Iterate(sql, args, callback);
-                    }
-                    else
-                    {
-                        return db.Execute(sql, args);
-                    }
+                    return callback != null ? db.Iterate(sql, args, callback) : db.Execute(sql, args);
                 }
                 catch (Exception ex)
                 {
@@ -198,11 +191,8 @@ namespace MCGalaxy.SQL
                 secs = NumberUtils.ParseInt32(parts[3]);
             return new TimeSpan(days, hours, mins, secs);
         }
-        public static DateTime ParseDBDate(string value)
-        {
+        public static DateTime ParseDBDate(string value) =>
             // prefer the exact format
-            if (value.TryParseInvariantDateString(out DateTime dt)) return dt;
-            return DateTime.Parse(value);
-        }
+            value.TryParseInvariantDateString(out DateTime dt) ? dt : DateTime.Parse(value);
     }
 }

@@ -9,13 +9,6 @@ namespace MCGalaxy.Config
     public sealed class JsonObject : Dictionary<string, object>
     {
         public object Meta;
-        public void Deserialise(ConfigElement[] elems, object instance)
-        {
-            foreach (KeyValuePair<string, object> kvp in this)
-            {
-                ConfigElement.Parse(elems, instance, kvp.Key, (string)kvp.Value);
-            }
-        }
     }
     public delegate void JsonOnMember(JsonObject obj, string key, object value);
     /// <summary> Implements a simple JSON parser. </summary>

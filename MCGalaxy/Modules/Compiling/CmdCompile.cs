@@ -13,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Commands;
-using MCGalaxy.Scripting;
 using System.IO;
 namespace MCGalaxy.Modules.Compiling
 {
@@ -28,16 +27,14 @@ namespace MCGalaxy.Modules.Compiling
         {
             string[] args = message.SplitSpaces();
             bool plugin = args[0].CaselessEq("plugin");
-            string name, lang;
+            string name;
             if (plugin)
             {
                 name = args.Length > 1 ? args[1] : "";
-                lang = args.Length > 2 ? args[2] : "";
             }
             else
             {
                 name = args[0];
-                lang = args.Length > 1 ? args[1] : "";
             }
             if (name.Length == 0)
             {
@@ -48,65 +45,90 @@ namespace MCGalaxy.Modules.Compiling
             {
                 return;
             }
-            ICompiler compiler = CompilerOperations.GetCompiler(p, lang);
-            if (compiler == null)
-            {
-                return;
-            }
             string[] paths = name.SplitComma();
             if (plugin)
             {
-                CompilePlugin(p, paths, compiler);
+                CompilePlugin(p, paths);
             }
             else
             {
-                CompileCommand(p, paths, compiler);
+                CompileCommand(p, paths);
             }
         }
-        protected virtual void CompilePlugin(Player p, string[] paths, ICompiler compiler)
+        protected virtual void CompilePlugin(Player p, string[] paths)
         {
             string pln = paths[0],
-                dstPath = IScripting.PluginPath(pln);
+                dstPath = Compiler.PluginPath(pln);
             for (int i = 0; i < paths.Length; i++)
             {
-                paths[i] = compiler.PluginPath(paths[i]);
+                paths[i] = Compiler.PluginPath(paths[i]);
             }
-            paths = TryDirectory(ICompiler.PLUGINS_SOURCE_DIR, pln, paths, compiler);
-            CompilerOperations.Compile(p, compiler, "Plugin", paths, dstPath);
+            paths = TryDirectory(Compiler.PLUGINS_DIR, pln, paths);
+            Compile(p, "Plugin", paths, dstPath);
         }
-        protected virtual void CompileCommand(Player p, string[] paths, ICompiler compiler)
+        static void Compile(Player p, string type, string[] srcs, string dst)
+        {
+            foreach (string path in srcs)
+            {
+                if (File.Exists(path))
+                {
+                    continue;
+                }
+                p.Message("File &9{0} &Snot found.", path);
+                return;
+            }
+            ICompilerErrors errors = Compiler.Compile(srcs, dst, true);
+            if (!errors.HasErrors)
+            {
+                p.Message("{0} compiled successfully from {1}",
+                        type, srcs.Join(file => Path.GetFileName(file)));
+                return;
+            }
+            int logged = 0;
+            foreach (ICompilerError err in errors)
+            {
+                p.Message("&W{1} - {0}", err.ErrorText,
+                          Compiler.DescribeError(err, srcs, " #" + err.ErrorNumber));
+                logged++;
+                if (logged >= 5)
+                {
+                    break;
+                }
+            }
+            if (logged < errors.Count)
+            {
+                p.Message(" &W.. and {0} more", errors.Count - logged);
+            }
+            p.Message("&WCompiling failed. See " + Compiler.ERROR_LOG_PATH + " for more detail");
+        }
+        protected virtual void CompileCommand(Player p, string[] paths)
         {
             string cmd = paths[0],
-                dstPath = IScripting.CommandPath(cmd);
+                dstPath = Compiler.CommandDLLPath(cmd);
             for (int i = 0; i < paths.Length; i++)
             {
-                paths[i] = compiler.CommandPath(paths[i]);
+                paths[i] = Compiler.CommandPath(paths[i]);
             }
-            paths = TryDirectory(ICompiler.COMMANDS_SOURCE_DIR, cmd, paths, compiler);
-            CompilerOperations.Compile(p, compiler, "Command", paths, dstPath);
+            paths = TryDirectory(Compiler.COMMANDS_SOURCE_DIR, cmd, paths);
+            Compile(p, "Command", paths, dstPath);
         }
-        string[] TryDirectory(string root, string name, string[] srcPaths, ICompiler compiler)
+        string[] TryDirectory(string root, string name, string[] srcPaths)
         {
             if (File.Exists(srcPaths[0]))
             {
                 return srcPaths;
             }
             string dir = Path.Combine(root, name);
-            if (!Directory.Exists(dir))
-            {
-                return srcPaths;
-            }
-            return FileIO.TryGetFiles(dir, "*" + compiler.FileExtension);
+            return !Directory.Exists(dir) ? srcPaths : FileIO.TryGetFiles(dir, "*" + Compiler.FileExtension);
         }
         public override void Help(Player p)
         {
-            ICompiler compiler = ICompiler.Compilers[0];
             p.Message("&T/Compile [command name]");
             p.Message("&HCompiles a .cs file containing a C# command into a DLL");
-            p.Message("&H  Compiles from &f{0}", compiler.CommandPath("&H<name>&f"));
+            p.Message("&H  Compiles from &f{0}", Compiler.CommandPath("&H<name>&f"));
             p.Message("&T/Compile plugin [plugin name]");
             p.Message("&HCompiles a .cs file containing a C# plugin into a DLL");
-            p.Message("&H  Compiles from &f{0}", compiler.PluginPath("&H<name>&f"));
+            p.Message("&H  Compiles from &f{0}", Compiler.PluginPath("&H<name>&f"));
         }
     }
 }

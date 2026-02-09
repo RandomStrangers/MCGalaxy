@@ -211,11 +211,7 @@ namespace MCGalaxy.Commands
         /// <summary> Attempts to parse the given argument as either a block name or a block ID. </summary>
         /// <remarks> Also ensures the player is allowed to place the given block. </remarks>
         public static bool GetBlockIfAllowed(Player p, string input, string action,
-                                             out ushort block, bool allowSkip = false)
-        {
-            if (allowSkip && IsSkipBlock(input, out block)) return true;
-            return GetBlock(p, input, out block) && IsBlockAllowed(p, action, block);
-        }
+                                             out ushort block, bool allowSkip = false) => allowSkip && IsSkipBlock(input, out block) || GetBlock(p, input, out block) && IsBlockAllowed(p, action, block);
         /// <summary> Attempts to parse the given argument as either a block name or a block ID. </summary>
         public static bool GetBlock(Player p, string input, out ushort block, bool allowSkip = false)
         {

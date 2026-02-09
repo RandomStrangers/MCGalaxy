@@ -39,19 +39,18 @@ namespace MCGalaxy
         /// </summary>
         public bool untracked;
         internal bool hasExtPositions;
-        public string Model = "humanoid";
+        public string Model = "humanoid", SkinName;
         public AABB ModelBB;
-        public string SkinName;
         public float ScaleX, ScaleY, ScaleZ;
         public Orientation Rot
         {
             get { return Orientation.Unpack(_rot); }
-            set { _rot = value.Pack(); OnSetRot(); }
+            set { _rot = value.Pack(); }
         }
         public Position Pos
         {
             get { return Position.Unpack(Interlocked.Read(ref _pos)); }
-            set { Interlocked.Exchange(ref _pos, value.Pack()); OnSetPos(); }
+            set { Interlocked.Exchange(ref _pos, value.Pack()); }
         }
         public void SetInitialPos(Position pos)
         {
@@ -72,8 +71,6 @@ namespace MCGalaxy
         public abstract Level Level { get; set; }
         /// <summary> Whether maximum model scale is limited. </summary>
         public abstract bool RestrictsScale { get; }
-        protected virtual void OnSetPos() { }
-        protected virtual void OnSetRot() { }
         /// <summary> Sets new model and updates internal state. </summary>
         public void SetModel(string model)
         {

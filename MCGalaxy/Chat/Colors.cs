@@ -44,19 +44,11 @@ namespace MCGalaxy
         }
         /// <summary> Returns whether the given color code is defined. </summary>
         /// <remarks> NOTE: This returns false for A to F, be warned! </remarks>
-        public static bool IsDefined(char c)
-        {
-            if (c >= ' ' && c <= '~') return List[c].Fallback != '\0';
-            return List[c.UnicodeToCp437()].Fallback != '\0';
-        }
+        public static bool IsDefined(char c) => c >= ' ' && c <= '~' ? List[c].Fallback != '\0' : List[c.UnicodeToCp437()].Fallback != '\0';
         /// <summary> Returns whether the given color code is considered a standard color. </summary>
         /// <remarks> Standard colors are 0-9, a-f, A-F </remarks>
         public static bool IsStandard(char c) => (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
-        public static ColorDesc Get(char c)
-        {
-            if (c >= ' ' && c <= '~') return List[c];
-            return List[c.UnicodeToCp437()];
-        }
+        public static ColorDesc Get(char c) => c >= ' ' && c <= '~' ? List[c] : List[c.UnicodeToCp437()];
         public static ColorDesc DefaultCol(char code)
         {
             switch (code)
@@ -118,11 +110,7 @@ namespace MCGalaxy
             }
             return "";
         }
-        public static string Name(string color)
-        {
-            if (color.Length != 2 || color[0] != '&') return "";
-            return Name(color[1]);
-        }
+        public static string Name(string color) => color.Length != 2 || color[0] != '&' ? "" : Name(color[1]);
         public static string Name(char code)
         {
             if (code >= 'A' && code <= 'F') code += ' ';
@@ -148,8 +136,7 @@ namespace MCGalaxy
             if (col == 'H') return Server.Config.HelpDescriptionColor[1];
             if (col == 'T') return Server.Config.HelpSyntaxColor[1];
             if (col == 'I') return Server.Config.IRCColor[1];
-            if (col == 'W') return Server.Config.WarningErrorColor[1];
-            return IsDefined(col) ? col : '\0';
+            return col == 'W' ? Server.Config.WarningErrorColor[1] : IsDefined(col) ? col : '\0';
         }
         public static bool IsSystem(char col) => col == 'S' || col == 'H' || col == 'T' || col == 'I' || col == 'W';
         /// <summary> Converts percentage color codes to their actual/real color codes. </summary>
@@ -228,12 +215,9 @@ namespace MCGalaxy
             }
             return new(output, 0, usedChars);
         }
-        static bool UsedColor(string message, int i)
-        {
+        static bool UsedColor(string message, int i) =>
             // handle & being last character in string
-            if (i >= message.Length - 1) return false;
-            return Lookup(message[i + 1]) != '\0';
-        }
+            i < message.Length - 1 && Lookup(message[i + 1]) != '\0';
         /// <summary> Removes all occurrences of % and &amp; that are followed by a used color code. </summary>
         public static string StripUsed(string message)
         {
@@ -333,11 +317,7 @@ namespace MCGalaxy
             return true;
         }
         /// <summary> Parses an #RRGGBB hex color string. </summary>
-        public static ColorDesc ParseHex(string hex)
-        {
-            if (!TryParseHex(hex, out ColorDesc c)) throw new ArgumentException("invalid input");
-            return c;
-        }
+        public static ColorDesc ParseHex(string hex) => !TryParseHex(hex, out ColorDesc c) ? throw new ArgumentException("invalid input") : c;
         public static int UnHex(char c)
         {
             if (c >= '0' && c <= '9') 
@@ -348,11 +328,7 @@ namespace MCGalaxy
             {
                 return c - 'a' + 10; 
             }
-            if (c >= 'A' && c <= 'F') 
-            {
-                return c - 'A' + 10; 
-            }
-            return -1;
+            return c >= 'A' && c <= 'F' ? c - 'A' + 10 : -1;
         }
     }
     /// <summary> Describes information about a color code. </summary>

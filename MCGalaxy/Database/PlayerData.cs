@@ -129,8 +129,7 @@ namespace MCGalaxy.DB
             if (raw.Length == 0) return raw;
             // Try parse color name, then color code
             string col = Colors.Parse(raw);
-            if (col.Length > 0) return col;
-            return Colors.Name(raw).Length == 0 ? "" : raw;
+            return col.Length > 0 ? col : Colors.Name(raw).Length == 0 ? "" : raw;
         }
         static DateTime ParseDateTime(ISqlRecord record, string name)
         {

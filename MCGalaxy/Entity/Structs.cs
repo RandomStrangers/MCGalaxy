@@ -18,20 +18,15 @@ namespace MCGalaxy
     /// <summary> Represents the position of an entity in the world. </summary>
     public struct Position
     {
-        /// <summary> X fixed-point location in the world. </summary>
-        public int X;
-        /// <summary> Y fixed-point location in the world. (vertical) </summary>
-        public int Y;
-        /// <summary> Z fixed-point location in the world. </summary>
-        public int Z;
+        public int X, Y, Z;
         public readonly Vec3F32 ToVec3F32() => new(X / 32.0f, Y / 32.0f, Z / 32.0f);
         public Position(int x, int y, int z) { X = x; Y = y; Z = z; }
-        public static Position FromFeet(int x, int y, int z) => new(x, y + Entities.CharacterHeight, z);
+        public static Position FromFeet(int x, int y, int z) => new(x, y + 51, z);
         public static Position FromFeetBlockCoords(int bX, int bY, int bZ) => FromFeet(16 + bX * 32, bY * 32, 16 + bZ * 32);
         /// <summary> World/block coordinate of this position. </summary>
         public readonly Vec3S32 BlockCoords => new(X >> 5, Y >> 5, Z >> 5);
         /// <summary> World/block coordinate of this position. </summary>
-        public readonly Vec3S32 FeetBlockCoords => new(X >> 5, (Y - Entities.CharacterHeight) >> 5, Z >> 5);
+        public readonly Vec3S32 FeetBlockCoords => new(X >> 5, (Y - 51) >> 5, Z >> 5);
         /// <summary> X block coordinate of this position. </summary>
         public readonly int BlockX => X >> 5;
         /// <summary> Y block coordinate of this position. </summary>
@@ -56,14 +51,7 @@ namespace MCGalaxy
     /// <summary> Represents orientation / rotation of an entity. </summary>
     public struct Orientation
     {
-        /// <summary> Rotation around X axis in packed form. </summary>
-        public byte RotX;
-        /// <summary> Rotation around Y axis in packed form. (yaw) </summary>
-        public byte RotY;
-        /// <summary> Rotation around Z axis in packed form. </summary>
-        public byte RotZ;
-        /// <summary> Rotation of head around X axis in packed form. (pitch) </summary>
-        public byte HeadX;
+        public byte RotX, RotY, RotZ, HeadX;
         public Orientation(byte yaw, byte pitch) 
         { 
             RotX = 0;

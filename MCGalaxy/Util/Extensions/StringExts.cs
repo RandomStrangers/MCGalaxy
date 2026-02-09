@@ -35,11 +35,7 @@ namespace MCGalaxy
             {
                 return str;
             }
-            if (str[str.Length - 1] != '+')
-            {
-                return str;
-            }
-            return str.Substring(0, str.Length - 1);
+            return str[str.Length - 1] != '+' ? str : str.Substring(0, str.Length - 1);
         }
         /// <summary> Returns whether line is empty or starts with a #. </summary>
         public static bool IsCommentLine(this string line) => line.Length == 0 || line[0] == '#';

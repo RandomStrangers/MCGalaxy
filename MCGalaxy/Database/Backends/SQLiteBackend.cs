@@ -93,23 +93,19 @@ namespace MCGalaxy.SQL
         {
             get
             {
-                if (handle == IntPtr.Zero) throw new InvalidOperationException("Database connection closed");
-                return Interop.sqlite3_changes(handle);
+                return handle == IntPtr.Zero ? throw new InvalidOperationException("Database connection closed") : Interop.sqlite3_changes(handle);
             }
         }
         public bool AutoCommit
         {
             get
             {
-                if (handle == IntPtr.Zero) throw new InvalidOperationException("Database connection closed");
-                return Interop.sqlite3_get_autocommit(handle) == 1;
+                return handle == IntPtr.Zero
+                    ? throw new InvalidOperationException("Database connection closed")
+                    : Interop.sqlite3_get_autocommit(handle) == 1;
             }
         }
-        internal string GetLastError()
-        {
-            if (handle == IntPtr.Zero) return "database connection closed";
-            return SQLiteConvert.FromUTF8(Interop.sqlite3_errmsg(handle), -1);
-        }
+        internal string GetLastError() => handle == IntPtr.Zero ? "database connection closed" : SQLiteConvert.FromUTF8(Interop.sqlite3_errmsg(handle), -1);
         internal SQLiteStatement Prepare(string strSql, ref string strRemain)
         {
             byte[] b = SQLiteConvert.ToUTF8(strSql);
@@ -121,8 +117,7 @@ namespace MCGalaxy.SQL
                 if (n == SQLiteErrorCodes.Ok)
                 {
                     strRemain = SQLiteConvert.FromUTF8(ptr, -1);
-                    if (stmt != IntPtr.Zero) return new SQLiteStatement(this, stmt);
-                    return null;
+                    return stmt != IntPtr.Zero ? new SQLiteStatement(this, stmt) : null;
                 }
                 else if (n == SQLiteErrorCodes.Locked || n == SQLiteErrorCodes.Busy)
                 {
@@ -184,8 +179,7 @@ namespace MCGalaxy.SQL
             SQLiteErrorCode n = Interop.sqlite3_exec(handle, SQLiteConvert.ToUTF8("ROLLBACK"),
                                                      IntPtr.Zero, IntPtr.Zero, ref stmt);
             if (n == SQLiteErrorCodes.Ok) return true;
-            if (canThrow) throw new SQLiteException(n, GetLastError());
-            return false;
+            return canThrow ? throw new SQLiteException(n, GetLastError()) : false;
         }
         public void Dispose() => Close(false);
         public void Close() => Close(true);
@@ -231,8 +225,7 @@ namespace MCGalaxy.SQL
         {
             lock (poolLocker)
             {
-                if (pool.Count > 0) return pool.Dequeue();
-                return IntPtr.Zero;
+                return pool.Count > 0 ? pool.Dequeue() : IntPtr.Zero;
             }
         }
     }
@@ -621,19 +614,16 @@ namespace MCGalaxy.SQL
         {
             if (conn == null)
             {
-                if (throwError) throw new ArgumentNullException("No connection associated with this transaction");
-                return false;
+                return throwError ? throw new ArgumentNullException("No connection associated with this transaction") : false;
             }
             if (conn.handle == IntPtr.Zero)
             {
-                if (throwError) throw new SQLiteException("Connection was closed");
-                return false;
+                return throwError ? throw new SQLiteException("Connection was closed") : false;
             }
             if (conn._transactionLevel == 0 || conn.AutoCommit)
             {
                 conn._transactionLevel = 0; // Make sure the transaction level is reset before returning
-                if (throwError) throw new SQLiteException("No transaction is active on this connection");
-                return false;
+                return throwError ? throw new SQLiteException("No transaction is active on this connection") : false;
             }
             return true;
         }

@@ -35,15 +35,10 @@ namespace MCGalaxy
         public static Level FindLevels(Player p, string name) => Find(p, name, out int matches, LevelInfo.Loaded.Items,
                         null, l => l.name, l => l.ColoredName, "loaded levels");
         /// <summary> Find partial matches of 'name' against the list of all map files. </summary>
-        public static string FindMaps(Player pl, string name)
-        {
-            if (!Formatter.ValidMapName(pl, name))
-            {
-                return null;
-            }
-            return Find(pl, name, out int matches, LevelInfo.AllMapNames(),
+        public static string FindMaps(Player pl, string name) => !Formatter.ValidMapName(pl, name)
+                ? null
+                : Find(pl, name, out int matches, LevelInfo.AllMapNames(),
                         null, l => l, "levels", 10);
-        }
         /// <summary> Find partial matches of 'name' against the list of ranks. </summary>
         public static Group FindRanks(Player p, string name)
         {

@@ -126,8 +126,7 @@ namespace MCGalaxy.Commands.Info
         {
             if (scope[b].IsMessageBlock || scope[b].IsPortal) return false;
             if (scope[b].IsDoor || scope[b].IsTDoor) return false;
-            if (scope[b].OPBlock) return false;
-            return BlockBehaviour.GetPhysicsHandler(b, Block.Props) != null;
+            return !scope[b].OPBlock && BlockBehaviour.GetPhysicsHandler(b, Block.Props) != null;
         }
         public override void Help(Player p)
         {

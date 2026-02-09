@@ -45,11 +45,7 @@ namespace MCGalaxy
         {
             get
             {
-                if (DateTime.UtcNow >= datePositionCheckingIsAllowed)
-                {
-                    return true;
-                }
-                return false;
+                return DateTime.UtcNow >= datePositionCheckingIsAllowed;
             }
             set
             {

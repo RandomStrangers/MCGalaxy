@@ -13,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.SQL;
-using System;
 using System.Collections.Generic;
 using System.IO;
 namespace MCGalaxy
@@ -53,19 +52,17 @@ namespace MCGalaxy
             {
                 Directory.CreateDirectory("blockdb");
             }
-            Logger.Log(LogType.SystemActivity, "Using SQLite for database backend");
             Database.CreateTable("Opstats", opstatsTable);
             Database.CreateTable("Players", playersTable);
             //since MCForge 5.5.11 we are cleaning up the table Playercmds
             //if Playercmds exists copy-filter to Opstats and remove Playercmds
             if (Database.TableExists("Playercmds"))
             {
-                const string sql = "INSERT INTO Opstats (Time, Name, Cmd, Cmdmsg) SELECT Time, Name, Cmd, Cmdmsg FROM Playercmds WHERE {0};";
                 foreach (string cmd in Opstats)
                 {
-                    Database.Execute(string.Format(sql, "cmd = '" + cmd + "'"));
+                    Database.Execute(string.Format("INSERT INTO Opstats (Time, Name, Cmd, Cmdmsg) SELECT Time, Name, Cmd, Cmdmsg FROM Playercmds WHERE {0};", "cmd = '" + cmd + "'"));
                 }
-                Database.Execute(string.Format(sql, "cmd = 'review' AND cmdmsg = 'next'"));
+                Database.Execute(string.Format("INSERT INTO Opstats (Time, Name, Cmd, Cmdmsg) SELECT Time, Name, Cmd, Cmdmsg FROM Playercmds WHERE {0};", "cmd = 'review' AND cmdmsg = 'next'"));
                 Database.DeleteTable("Playercmds");
             }
             List<string> columns = SQLiteBackend.Instance.ColumnNames("Players");

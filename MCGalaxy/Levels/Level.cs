@@ -139,12 +139,10 @@ namespace MCGalaxy
         void Cleanup()
         {
             Physicsint = 0;
-            Thread t;
             try
             {
-                t = physThread;
-                t?.Interrupt();
-                t?.Join(1000);
+                physThread?.Interrupt();
+                physThread?.Join(1000);
             }
             catch
             {
@@ -153,11 +151,7 @@ namespace MCGalaxy
             Server.DoGC();
         }
         /// <summary> Attempts to automatically unload this map. </summary>
-        public bool AutoUnload()
-        {
-            bool can = IsMuseum || (Server.Config.AutoLoadMaps && Config.AutoUnload && !HasPlayers());
-            return can && Unload(true);
-        }
+        public bool AutoUnload() => (IsMuseum || (Server.Config.AutoLoadMaps && Config.AutoUnload && !HasPlayers())) && Unload(true);
         public bool Unload(bool silent = false, bool save = true)
         {
             if (Server.mainLevel == this)

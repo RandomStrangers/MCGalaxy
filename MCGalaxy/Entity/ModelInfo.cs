@@ -67,11 +67,7 @@ namespace MCGalaxy
             return scale;
         }
         public static float DefaultMaxScale(string model) => model.CaselessEq("chibi") ? 3 : 2;
-        public static float MaxScale(Entity entity, string model)
-        {
-            if (!entity.RestrictsScale) return float.MaxValue;
-            return DefaultMaxScale(GetRawModel(model));
-        }
+        public static float MaxScale(Entity entity, string model) => !entity.RestrictsScale ? float.MaxValue : DefaultMaxScale(GetRawModel(model));
         public static Vec3F32 CalcScale(Entity entity) => new(
                 entity.ScaleX != 0 ? entity.ScaleX : GetRawScale(entity.Model),
                 entity.ScaleY != 0 ? entity.ScaleY : GetRawScale(entity.Model),

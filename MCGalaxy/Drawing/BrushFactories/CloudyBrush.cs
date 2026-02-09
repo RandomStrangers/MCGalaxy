@@ -41,8 +41,7 @@ namespace MCGalaxy.Drawing.Brushes
             n.Lacunarity = 2;
             bool ok = FrequencyBrush.GetBlocks(args, out List<ushort> toAffect, out List<int> freqs,
                                                Filter, arg => Handler(arg, args.Player, ref n));
-            if (!ok) return null;
-            return new CloudyBrush(toAffect, freqs, n);
+            return !ok ? null : (Brush)new CloudyBrush(toAffect, freqs, n);
         }
         // Only want to handle non block options.
         static bool Filter(string arg) => arg.Length >= 2 && (arg[1] == '_' || arg[1] == '=');

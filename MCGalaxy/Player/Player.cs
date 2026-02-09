@@ -99,11 +99,7 @@ namespace MCGalaxy
             OnGettingCanSeeEntityEvent.Call(this, ref canSee, target);
             return canSee;
         }
-        public ushort GetHeldBlock()
-        {
-            if (ModeBlock != 0xff) return ModeBlock;
-            return BlockBindings[ClientHeldBlock];
-        }
+        public ushort GetHeldBlock() => ModeBlock != 0xff ? ModeBlock : BlockBindings[ClientHeldBlock];
         public string GetMotd()
         {
             Zone zone = ZoneIn;
@@ -314,7 +310,7 @@ namespace MCGalaxy
             }
             if (Unverified)
             {
-                ExtraAuthenticator.Current.RequiresVerification(this, action);
+                ExtraAuthenticator.RequiresVerification(this, action);
                 return false;
             }
             return true;
@@ -329,22 +325,17 @@ namespace MCGalaxy
         /// <summary> Checks if player is currently unverified, and if so, sends a message informing them </summary>
         public void CheckIsUnverified()
         {
-            if (NeedsVerification()) ExtraAuthenticator.Current.NeedVerification(this);
+            if (NeedsVerification()) ExtraAuthenticator.NeedVerification(this);
         }
         /// <summary> Formats a player name for displaying in chat. </summary>
         public string FormatNick(string name)
         {
             Player target = PlayerInfo.FindExact(name);
             // TODO: select color from database?
-            if (target != null && CanSee(target)) return FormatNick(target);
-            return Group.GroupIn(name).Color + Server.ToRawUsername(name);
+            return target != null && CanSee(target) ? FormatNick(target) : Group.GroupIn(name).Color + Server.ToRawUsername(name);
         }
         /// <summary> Formats a player's name for displaying in chat. </summary>
-        public string FormatNick(Player target)
-        {
-            if (Ignores.Nicks) return target.color + target.truename;
-            return target.color + target.DisplayName;
-        }
+        public string FormatNick(Player target) => Ignores.Nicks ? target.color + target.truename : target.color + target.DisplayName;
         /// <summary> Blocks calling thread until all 'new map loaded' packets have been sent. </summary>
         public void BlockUntilLoad(int sleep)
         {

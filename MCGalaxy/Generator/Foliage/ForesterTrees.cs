@@ -96,12 +96,7 @@ namespace MCGalaxy.Generator.Foliage
         /// <summary> Take y and return a radius for the location of the foliage cluster. </summary>
         /// <remarks> If no foliage cluster is to be created, return None
         /// Designed for sublcassing.  Only makes clusters close to the trunk. </remarks>
-        protected virtual double ShapeFunc(int y)
-        {
-            if (Random() < (100.0 / (height * height)) && y < trunkheight)
-                return height * 0.12;
-            return none;
-        }
+        protected virtual double ShapeFunc(int y) => Random() < (100.0 / (height * height)) && y < trunkheight ? height * 0.12 : none;
         /// <summary> generate a round cluster of foliage at the location center. </summary>
         /// <remarks> The shape of the cluster is defined by the list self.foliage_shape.
         /// This list must be set in a subclass of ProceduralTree. </remarks>
@@ -404,8 +399,7 @@ namespace MCGalaxy.Generator.Foliage
         protected override double ShapeFunc(int y)
         {
             double val = base.ShapeFunc(y);
-            if (val == none) return none;
-            return val * 1.618;
+            return val == none ? none : val * 1.618;
         }
     }
     public sealed class BambooTree : Tree

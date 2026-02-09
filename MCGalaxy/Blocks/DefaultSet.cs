@@ -51,8 +51,7 @@ namespace MCGalaxy.Blocks
         {
             if (b == Block.Slab) return 8;
             if (b == Block.CobblestoneSlab) return 8;
-            if (b == Block.Snow) return 2;
-            return 16;
+            return b == Block.Snow ? (byte)2 : (byte)16;
         }
         /// <summary> Gets whether a block is full bright / light emitting by default. </summary>
         public static bool FullBright(ushort b) => b == Block.Lava || b == Block.StillLava
@@ -71,18 +70,14 @@ namespace MCGalaxy.Blocks
         {
             if (b == Block.Water || b == Block.StillWater)
                 return new(5, 5, 51);
-            if (b == Block.Lava || b == Block.StillLava)
-                return new(153, 25, 0);
-            return default;
+            return b == Block.Lava || b == Block.StillLava ? new(153, 25, 0) : default;
         }
         /// <summary> Gets the default collide type of a block, see CollideType class. </summary>
         public static byte Collide(ushort b)
         {
             if (b >= Block.Water && b <= Block.StillLava)
                 return CollideType.SwimThrough;
-            if (b == Block.Snow || b == Block.Air || Draw(b) == DrawType.Sprite)
-                return CollideType.WalkThrough;
-            return CollideType.Solid;
+            return b == Block.Snow || b == Block.Air || Draw(b) == DrawType.Sprite ? CollideType.WalkThrough : CollideType.Solid;
         }
         /// <summary> Gets whether a block blocks light (prevents light passing through) by default. </summary>
         public static bool BlocksLight(ushort b) => !(b == Block.Glass || b == Block.Leaves
@@ -115,9 +110,7 @@ namespace MCGalaxy.Blocks
                 return SoundType.Grass;
             if (b >= Block.Water && b <= Block.StillLava)
                 return SoundType.None;
-            if (b >= Block.Stone && b <= Block.StoneBrick)
-                return SoundType.Stone;
-            return SoundType.None;
+            return b >= Block.Stone && b <= Block.StoneBrick ? SoundType.Stone : SoundType.None;
         }
         /// <summary> Gets the default draw type of a block, see DrawType class. </summary>
         public static byte Draw(ushort b)
@@ -130,9 +123,7 @@ namespace MCGalaxy.Blocks
                 return DrawType.Transparent;
             if (b >= Block.Dandelion && b <= Block.RedMushroom)
                 return DrawType.Sprite;
-            if (b == Block.Sapling || b == Block.Rope || b == Block.Fire)
-                return DrawType.Sprite;
-            return DrawType.Opaque;
+            return b == Block.Sapling || b == Block.Rope || b == Block.Fire ? DrawType.Sprite : DrawType.Opaque;
         }
         const string RawNames = "Air_Stone_Grass_Dirt_Cobblestone_Wood_Sapling_Bedrock_Water_Still water_Lava" +
             "_Still lava_Sand_Gravel_Gold ore_Iron ore_Coal ore_Log_Leaves_Sponge_Glass_Red_Orange_Yellow_Lime_Green" +

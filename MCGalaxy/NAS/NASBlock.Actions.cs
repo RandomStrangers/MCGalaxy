@@ -81,16 +81,10 @@ namespace MCGalaxy
                 zI = z - zO;
             xI += totalDistance;
             zI += totalDistance;
-            if (
-                xI >= widthAndHeight ||
-                zI >= widthAndHeight ||
-                xI < 0 ||
-                zI < 0
-               )
-            {
-                return false;
-            }
-            return waterAtSpot[xI, zI];
+            return xI < widthAndHeight &&
+                zI < widthAndHeight &&
+                xI >= 0 &&
+                zI >= 0 && waterAtSpot[xI, zI];
         }
         public void Flood(int x, int z, bool value)
         {
@@ -391,11 +385,7 @@ namespace MCGalaxy
         public static bool CanInfiniteFloodKillThis(NASLevel nl, int x, int y, int z, ushort[] set)
         {
             ushort here = nl.GetBlock(x, y, z);
-            if (CanPhysicsKillThis(here) || IsPartOfSet(set, here) > LiquidInfiniteIndex)
-            {
-                return true;
-            }
-            return false;
+            return CanPhysicsKillThis(here) || IsPartOfSet(set, here) > LiquidInfiniteIndex;
         }
         public static bool CanPhysicsKillThis(ushort block)
         {
@@ -408,14 +398,7 @@ namespace MCGalaxy
             }
             return false;
         }
-        public static bool IsThisLiquid(ushort block)
-        {
-            if (IsPartOfSet(waterSet, block) != -1)
-            {
-                return true;
-            }
-            return false;
-        }
+        public static bool IsThisLiquid(ushort block) => IsPartOfSet(waterSet, block) != -1;
         public static int IsPartOfSet(ushort[] set, ushort block)
         {
             for (int i = 0; i < set.Length; i++)
@@ -444,14 +427,9 @@ namespace MCGalaxy
         public static bool CanLiquidLive(NASLevel nl, ushort[] set, int index, int x, int y, int z)
         {
             ushort neighbor = nl.GetBlock(x, y, z);
-            if (neighbor == set[index - 1] ||
+            return neighbor == set[index - 1] ||
                 neighbor == set[LiquidSourceIndex] ||
-                neighbor == set[LiquidWaterfallIndex]
-               )
-            {
-                return true;
-            }
-            return false;
+                neighbor == set[LiquidWaterfallIndex];
         }
         public static NASBlockAction LimitedFloodAction(ushort[] set, int index) => (nl, nasBlock, x, y, z) =>
                                                                                              {
@@ -1862,11 +1840,7 @@ namespace MCGalaxy
             {
                 return returnedBlock;
             }
-            if (ConvertBody(block, stickyPistonWest, out returnedBlock))
-            {
-                return returnedBlock;
-            }
-            return returnedBlock;
+            return ConvertBody(block, stickyPistonWest, out returnedBlock) ? returnedBlock : returnedBlock;
         }
         public static NASBlockAction PowerSourceAction(int direction) => (nl, nasBlock, x, y, z) =>
                                                                                   {
@@ -2506,13 +2480,6 @@ namespace MCGalaxy
             }
             return true;
         }
-        public static bool CanPlantsLiveOn(ushort block)
-        {
-            if (IsPartOfSet(soilForPlants, block) != -1 || IsPartOfSet(grassSet, block) != -1)
-            {
-                return true;
-            }
-            return false;
-        }
+        public static bool CanPlantsLiveOn(ushort block) => IsPartOfSet(soilForPlants, block) != -1 || IsPartOfSet(grassSet, block) != -1;
     }
 }

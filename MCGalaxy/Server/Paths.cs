@@ -51,29 +51,11 @@ namespace MCGalaxy
         /// <summary> Relative path of the file containing a map's block definitions. </summary>
         public static string MapBlockDefs(string map) => "blockdefs/lvl_" + map + ".json";
         /// <summary> Relative path of a deleted level's map file. </summary>
-        public static string DeletedMapFile(string level)
-        {
-            if (File.Exists("levels/deleted/" + level.ToLower() + ".mcf"))
-            {
-                return "levels/deleted/" + level + ".mcf";
-            }
-            else
-            {
-                return "levels/deleted/" + level + ".lvl";
-            }
-        }
+        public static string DeletedMapFile(string level) => File.Exists("levels/deleted/" + level.ToLower() + ".mcf")
+                ? "levels/deleted/" + level + ".mcf"
+                : "levels/deleted/" + level + ".lvl";
         /// <summary> Relative path of a level's previous save map file. </summary>
-        public static string PrevMapFile(string level)
-        {
-            if (File.Exists("levels/" + level.ToLower() + ".mcf"))
-            {
-                return "levels/prev/" + level.ToLower() + ".mcf.prev";
-            }
-            else
-            {
-                return "levels/prev/" + level.ToLower() + ".lvl.prev";
-            }
-        }
+        public static string PrevMapFile(string level) => File.Exists("levels/" + level.ToLower() + ".mcf") ? "levels/prev/" + level.ToLower() + ".mcf.prev" : "levels/prev/" + level.ToLower() + ".lvl.prev";
         /// <summary> Relative path of a block properties file. </summary>
         public static string BlockPropsPath(string group) => "blockprops/" + group + ".txt";
     }

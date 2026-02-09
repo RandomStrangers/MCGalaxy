@@ -86,21 +86,7 @@ namespace MCGalaxy.Blocks
             }
             return ChangeResult.Unchanged;
         }
-        internal static ChangeResult DoPortal(Player p, ushort _, ushort x, ushort y, ushort z)
-        {
-            if (!Portal.Handle(p, x, y, z))
-            {
-                return p.ChangeBlock(x, y, z, Block.Air);
-            }
-            return ChangeResult.Unchanged;
-        }
-        internal static ChangeResult DoMessageBlock(Player p, ushort _, ushort x, ushort y, ushort z)
-        {
-            if (!MessageBlock.Handle(p, x, y, z, true))
-            {
-                return p.ChangeBlock(x, y, z, Block.Air);
-            }
-            return ChangeResult.Unchanged;
-        }
+        internal static ChangeResult DoPortal(Player p, ushort _, ushort x, ushort y, ushort z) => !Portal.Handle(p, x, y, z) ? p.ChangeBlock(x, y, z, Block.Air) : ChangeResult.Unchanged;
+        internal static ChangeResult DoMessageBlock(Player p, ushort _, ushort x, ushort y, ushort z) => !MessageBlock.Handle(p, x, y, z, true) ? p.ChangeBlock(x, y, z, Block.Air) : ChangeResult.Unchanged;
     }
 }

@@ -57,6 +57,5 @@ namespace MCGalaxy
         public static string StringifyInt(int value) => value.ToString(CultureInfo.InvariantCulture);
         public static bool TryParseInt32(string s, out int result) => int.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
         public static int ParseInt32(string s) => int.Parse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo);
-        public static bool TryParseInt8(string s, out sbyte result) => sbyte.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
     }
 }

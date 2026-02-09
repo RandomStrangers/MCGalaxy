@@ -21,13 +21,7 @@ namespace MCGalaxy.Platform
     /// <summary> Summarises resource usage of all CPU cores in the system </summary>
     public struct CPUTime
     {
-        /// <summary> Total time spent being idle / not executing code </summary>
-        public ulong IdleTime;
-        /// <summary> Total time spent executing code in Kernel mode </summary>
-        public ulong KernelTime;
-        /// <summary> Total time spent executing code in User mode </summary>
-        public ulong UserTime;
-        /// <summary> Total time spent executing code </summary>
+        public ulong IdleTime, KernelTime, UserTime;
         public readonly ulong ProcessorTime => KernelTime + UserTime;
     }
     /// <summary> Summarises resource usage of current process </summary>
@@ -45,8 +39,10 @@ namespace MCGalaxy.Platform
         public abstract CPUTime MeasureAllCPUTime();
         public virtual ProcInfo MeasureResourceUsage(Process proc, bool all)
         {
-            ProcInfo info = default;
-            info.ProcessorTime = proc.TotalProcessorTime;
+            ProcInfo info = new()
+            {
+                ProcessorTime = proc.TotalProcessorTime
+            };
             if (all)
             {
                 info.PrivateMemorySize = proc.PrivateMemorySize64;
@@ -148,13 +144,9 @@ namespace MCGalaxy.Platform
                     {
                         return new NetBSD_OS();
                     }
-                    else if (kernel.CaselessContains("darwin"))
-                    {
-                        return mac;
-                    }
                     else
                     {
-                        return unixOS;
+                        return kernel.CaselessContains("darwin") ? mac : unixOS;
                     }
                 }
             }
@@ -233,11 +225,9 @@ namespace MCGalaxy.Platform
             {
                 using StreamReader r = new("/proc/stat");
                 string line = r.ReadLine();
-                if (line.StartsWith("cpu "))
-                {
-                    return ParseCpuLine(line);
-                }
-                return new()
+                return line.StartsWith("cpu ")
+                    ? ParseCpuLine(line)
+                    : new()
                 {
                     IdleTime = 2,
                     KernelTime = 2,
@@ -302,9 +292,7 @@ namespace MCGalaxy.Platform
         {
             try
             {
-                string exe = Server.GetRuntimeExePath();
-                string[] args = GetProcessCommandLineArgs();
-                execvp(exe, args);
+                execvp(Server.GetRuntimeExePath(), GetProcessCommandLineArgs());
             }
             catch (Exception ex)
             {

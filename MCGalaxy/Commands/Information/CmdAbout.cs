@@ -95,8 +95,7 @@ namespace MCGalaxy.Commands.Info
         {
             // This used to be a 'deleted' boolean, so we need to make sure we account for that
             if (value.CaselessEq("true")) return 1;
-            if (value.CaselessEq("false")) return 0;
-            return byte.Parse(value);
+            return value.CaselessEq("false") ? (byte)0 : byte.Parse(value);
         }
         static void OutputEntry(Player p, ref bool foundAny, Dictionary<int, string> names, BlockDBEntry entry)
         {

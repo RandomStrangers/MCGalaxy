@@ -77,8 +77,7 @@ namespace MCGalaxy
         static bool DoInstruction(PlayerBot bot)
         {
             BotInstruction ins = BotInstruction.Find(bot.Instructions[bot.cur].Name);
-            if (ins == null) return false;
-            return ins.Execute(bot, bot.Instructions[bot.cur]);
+            return ins != null && ins.Execute(bot, bot.Instructions[bot.cur]);
         }
         static void DoJump(PlayerBot bot)
         {

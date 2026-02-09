@@ -118,10 +118,6 @@ namespace MCGalaxy.Network
             }
             return null;
         }
-        static string Truncate(string text)
-        {
-            if (text.Length < 256) return text;
-            return text.Substring(0, 256) + "..";
-        }
+        static string Truncate(string text) => text.Length < 256 ? text : text.Substring(0, 256) + "..";
     }
 }

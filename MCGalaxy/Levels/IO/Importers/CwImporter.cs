@@ -145,11 +145,7 @@ namespace MCGalaxy.Levels.IO
             }
             NbtCompound rgb = (NbtCompound)comp[type];
             short r = rgb["R"].ShortValue, g = rgb["G"].ShortValue, b = rgb["B"].ShortValue;
-            if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255)
-            {
-                return "";
-            }
-            return r.ToString("X2") + g.ToString("X2") + b.ToString("X2");
+            return r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255 ? "" : r.ToString("X2") + g.ToString("X2") + b.ToString("X2");
         }
         static void ParseBlockDefinitions(NbtCompound cpe, Level lvl)
         {
@@ -242,19 +238,12 @@ namespace MCGalaxy.Levels.IO
             def.FrontTex |= (ushort)(tex[i + 4] << s);
             def.BackTex |= (ushort)(tex[i + 5] << s);
         }
-        static bool PropsEquals(BlockDefinition a, BlockDefinition b)
-        {
-            if (b == null || b.Name == null)
-            {
-                return false;
-            }
-            return a.Name == b.Name && a.CollideType == b.CollideType && a.Speed == b.Speed && a.TopTex == b.TopTex
+        static bool PropsEquals(BlockDefinition a, BlockDefinition b) => b != null && b.Name != null && a.Name == b.Name && a.CollideType == b.CollideType && a.Speed == b.Speed && a.TopTex == b.TopTex
                 && a.BottomTex == b.BottomTex && a.BlocksLight == b.BlocksLight && a.WalkSound == b.WalkSound
                 && a.FullBright == b.FullBright && a.Shape == b.Shape && a.BlockDraw == b.BlockDraw
                 && a.FogDensity == b.FogDensity && a.FogR == b.FogR && a.FogG == b.FogG && a.FogB == b.FogB
                 && a.MinX == b.MinX && a.MinY == b.MinY && a.MinZ == b.MinZ && a.MaxX == b.MaxX
                 && a.MaxY == b.MaxY && a.MaxZ == b.MaxZ && a.LeftTex == b.LeftTex && a.RightTex == b.RightTex
                 && a.FrontTex == b.FrontTex && a.BackTex == b.BackTex;
-        }
     }
 }

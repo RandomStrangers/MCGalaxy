@@ -15,13 +15,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 namespace MCGalaxy.Authentication
 {
     public class AuthService
     {
         public static List<AuthService> Services = new();
         public string URL, Salt, NameSuffix = "", SkinPrefix = "";
-        public virtual void AcceptPlayer(Player p)
+        public void AcceptPlayer(Player p)
         {
             p.VerifiedVia = URL;
             p.verifiedName = true;
@@ -30,6 +31,24 @@ namespace MCGalaxy.Authentication
             p.name += suffix;
             p.truename += suffix;
             p.DisplayName += suffix;
+        }
+        static bool AcceptableSaltChar(char c) => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+                || (c >= '0' && c <= '9');
+        static string GenerateSalt()
+        {
+            RandomNumberGenerator rng = RandomNumberGenerator.Create();
+            char[] str = new char[32];
+            byte[] one = new byte[1];
+            for (int i = 0; i < str.Length;)
+            {
+                rng.GetBytes(one);
+                if (!AcceptableSaltChar((char)one[0]))
+                {
+                    continue;
+                }
+                str[i] = (char)one[0]; i++;
+            }
+            return new string(str);
         }
         public static AuthService GetOrCreate(string url, bool canSave = true)
         {
@@ -43,7 +62,7 @@ namespace MCGalaxy.Authentication
             AuthService service = new()
             {
                 URL = url,
-                Salt = Server.GenerateSalt()
+                Salt = GenerateSalt()
             };
             Services.Add(service);
             if (canSave)

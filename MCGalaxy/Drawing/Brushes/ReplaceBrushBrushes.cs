@@ -34,8 +34,7 @@ namespace MCGalaxy.Drawing.Brushes
         {
             ushort x = op.Coords.X, y = op.Coords.Y, z = op.Coords.Z;
             ushort block = op.Level.GetBlock(x, y, z); // TODO FastGetBlock
-            if (block != target) return Block.Invalid;
-            return replacement.NextBlock(op);
+            return block != target ? Block.Invalid : replacement.NextBlock(op);
         }
     }
     public class ReplaceNotBrushBrush : ReplaceBrushBrush
@@ -47,8 +46,7 @@ namespace MCGalaxy.Drawing.Brushes
         {
             ushort x = op.Coords.X, y = op.Coords.Y, z = op.Coords.Z;
             ushort block = op.Level.GetBlock(x, y, z); // TODO FastGetBlock
-            if (block == target) return Block.Invalid;
-            return replacement.NextBlock(op);
+            return block == target ? Block.Invalid : replacement.NextBlock(op);
         }
     }
 }

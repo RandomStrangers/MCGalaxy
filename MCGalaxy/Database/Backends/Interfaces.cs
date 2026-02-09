@@ -47,37 +47,15 @@ namespace MCGalaxy.SQL
             return stmt.ColumnAffinity(i);
         }
         public override bool GetBoolean(int i) => GetInt32(i) != 0;
-        public override byte[] GetBytes(int i)
-        {
-            if (GetAffinity(i) == TypeAffinity.Blob)
-                return stmt.GetBytes(i);
-            throw new InvalidCastException();
-        }
-        public override DateTime GetDateTime(int i)
-        {
-            if (GetAffinity(i) == TypeAffinity.Text)
-                return stmt.GetDateTime(i);
-            throw new NotSupportedException();
-        }
+        public override byte[] GetBytes(int i) => GetAffinity(i) == TypeAffinity.Blob ? stmt.GetBytes(i) : throw new InvalidCastException();
+        public override DateTime GetDateTime(int i) => GetAffinity(i) == TypeAffinity.Text ? stmt.GetDateTime(i) : throw new NotSupportedException();
         public override double GetDouble(int i)
         {
             TypeAffinity aff = GetAffinity(i);
-            if (aff == TypeAffinity.Int64 || aff == TypeAffinity.Double)
-                return stmt.GetDouble(i);
-            throw new NotSupportedException();
+            return aff == TypeAffinity.Int64 || aff == TypeAffinity.Double ? stmt.GetDouble(i) : throw new NotSupportedException();
         }
-        public override int GetInt32(int i)
-        {
-            if (GetAffinity(i) == TypeAffinity.Int64)
-                return stmt.GetInt32(i);
-            throw new InvalidCastException();
-        }
-        public override long GetInt64(int i)
-        {
-            if (GetAffinity(i) == TypeAffinity.Int64)
-                return stmt.GetInt64(i);
-            throw new InvalidCastException();
-        }
+        public override int GetInt32(int i) => GetAffinity(i) == TypeAffinity.Int64 ? stmt.GetInt32(i) : throw new InvalidCastException();
+        public override long GetInt64(int i) => GetAffinity(i) == TypeAffinity.Int64 ? stmt.GetInt64(i) : throw new InvalidCastException();
         public override string GetString(int i) => stmt.GetText(i);
         public override bool IsDBNull(int i) => GetAffinity(i) == TypeAffinity.Null;
         public override object GetValue(int i)

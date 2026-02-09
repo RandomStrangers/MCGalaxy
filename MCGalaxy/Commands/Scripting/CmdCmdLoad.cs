@@ -12,7 +12,7 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
 */
-using MCGalaxy.Scripting;
+using MCGalaxy.Modules.Compiling;
 namespace MCGalaxy.Commands.Scripting
 {
     public sealed class CmdCmdLoad : Command2
@@ -32,8 +32,7 @@ namespace MCGalaxy.Commands.Scripting
             {
                 return;
             }
-            string path = IScripting.CommandPath(cmdName);
-            ScriptingOperations.LoadCommands(p, path);
+            Compiler.LoadCommands(p, Compiler.CommandDLLPath(cmdName));
         }
         public override void Help(Player p)
         {

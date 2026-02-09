@@ -44,7 +44,7 @@ namespace MCGalaxy.Commands.Building
                     Start = entry.Start,
                     End = entry.End
                 };
-                DrawOpPerformer.Do(op, null, p, new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal });
+                DrawOpPerformer.Do(op, null, p, new Vec3S32[] { new(ushort.MinValue, ushort.MinValue, ushort.MinValue), new(ushort.MaxValue, ushort.MaxValue, ushort.MaxValue) });
                 p.Message("Redo performed.");
                 return;
             }

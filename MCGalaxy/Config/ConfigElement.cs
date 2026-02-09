@@ -33,9 +33,11 @@ namespace MCGalaxy
                 FieldInfo field = fields[i];
                 Attribute[] attributes = Attribute.GetCustomAttributes(field, typeof(ConfigAttribute));
                 if (attributes.Length == 0) continue;
-                ConfigElement elem;
-                elem.Field = field;
-                elem.Attrib = (ConfigAttribute)attributes[0];
+                ConfigElement elem = new()
+                {
+                    Field = field,
+                    Attrib = (ConfigAttribute)attributes[0]
+                };
                 elem.Attrib.Name ??= field.Name;
                 elems.Add(elem);
             }
@@ -72,13 +74,6 @@ namespace MCGalaxy
                     dst.WriteLine(elem.Format(instance));
                 }
                 dst.WriteLine();
-            }
-        }
-        public static void SerialiseElements(ConfigElement[] elements, TextWriter w, object instance)
-        {
-            foreach (ConfigElement elem in elements)
-            {
-                w.WriteLine(elem.Format(instance));
             }
         }
     }

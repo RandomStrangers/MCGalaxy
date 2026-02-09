@@ -69,7 +69,7 @@ namespace MCGalaxy.Drawing.Ops
         {
             Player = p;
             Level = lvl;
-            clip = new Vec3S32(lvl.Width - 1, lvl.Height - 1, lvl.Length - 1);
+            clip = new(lvl.Width - 1, lvl.Height - 1, lvl.Length - 1);
             SetMarks(marks);
         }
         public virtual bool CanDraw(Vec3S32[] marks, Player p, long affected)
@@ -81,7 +81,9 @@ namespace MCGalaxy.Drawing.Ops
         }
         public virtual void SetMarks(Vec3S32[] marks)
         {
-            Origin = marks[0]; Min = marks[0]; Max = marks[0];
+            Origin = marks[0]; 
+            Min = marks[0]; 
+            Max = marks[0];
             for (int i = 1; i < marks.Length; i++)
             {
                 Min = Vec3S32.Min(Min, marks[i]);
@@ -90,17 +92,21 @@ namespace MCGalaxy.Drawing.Ops
         }
         protected DrawOpBlock Place(ushort x, ushort y, ushort z, Brush brush)
         {
-            Coords.X = x; Coords.Y = y; Coords.Z = z;
+            Coords.X = x; 
+            Coords.Y = y; 
+            Coords.Z = z;
             Coords.Block = brush.NextBlock(this);
             return Coords;
         }
         protected DrawOpBlock Place(ushort x, ushort y, ushort z, ushort block)
         {
-            Coords.X = x; Coords.Y = y; Coords.Z = z;
+            Coords.X = x; 
+            Coords.Y = y; 
+            Coords.Z = z;
             Coords.Block = block;
             return Coords;
         }
-        Vec3S32 clip = new(ushort.MaxValue);
+        Vec3S32 clip = new(ushort.MaxValue, ushort.MaxValue, ushort.MaxValue);
         protected Vec3U16 Clamp(Vec3S32 pos)
         {
             pos.X = Math.Max(0, Math.Min(pos.X, clip.X));

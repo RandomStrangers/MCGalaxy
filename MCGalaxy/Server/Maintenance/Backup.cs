@@ -65,23 +65,23 @@ namespace MCGalaxy
                 string path = all[i];
                 // convert to zip entry form
                 path = path.Replace('\\', '/').Replace("./", "");
-                if (lite && path.Contains("Extra/Undo/"))
+                if (lite && path.Contains("extra/undo/"))
                 {
                     continue;
                 }
-                if (lite && path.Contains("Extra/UndoPrevious/"))
+                if (lite && path.Contains("extra/undoPrevious/"))
                 {
                     continue;
                 }
-                if (lite && path.Contains("Levels/Prev"))
+                if (lite && path.Contains("levels/prev"))
                 {
                     continue;
                 }
-                if (lite && path.Contains("Levels/Backups/"))
+                if (lite && path.Contains("levels/backups/"))
                 {
                     continue;
                 }
-                if (lite && path.Contains("BlockDB/"))
+                if (lite && path.Contains("blockdb/"))
                 {
                     continue;
                 }
@@ -101,7 +101,7 @@ namespace MCGalaxy
             {
                 string path = paths[i];
                 // .lvl contents are already compressed, no point in compressing again
-                bool compressThis = compress && !path.CaselessContains(".lvl");
+                bool compressThis = compress && !path.CaselessContains(".lvl") && path.CaselessContains(".mcf");
                 try
                 {
                     //using Stream src = File.OpenRead(path);
@@ -122,7 +122,6 @@ namespace MCGalaxy
         static void SaveDatabase(ZipWriter writer, bool compress)
         {
             Logger.Log(LogType.SystemActivity, "Compressing Database...");
-            //using (Stream src = File.OpenRead(sqlPath))
             using (Stream src = FileIO.TryOpenRead("SQL_NAS.sql"))
             {
                 writer.WriteEntry(src, "SQL_NAS.sql", compress);
@@ -132,7 +131,6 @@ namespace MCGalaxy
         public static void Extract(Player p)
         {
             int errors = 0;
-            //using (FileStream src = File.OpenRead(zipPath))
             using (FileStream src = FileIO.TryOpenRead("MCGalaxy_NAS.zip"))
             {
                 ZipReader reader = new(src);
@@ -173,8 +171,6 @@ namespace MCGalaxy
         static string ExtractItem(ZipReader reader, int i, ref int errors)
         {
             using Stream part = reader.GetEntry(i, out string path);
-            // old server backup used to URI encode files
-            path = Uri.UnescapeDataString(path);
             try
             {
                 Extract(part, path);

@@ -83,7 +83,7 @@ namespace MCGalaxy.Commands.Maintenance
             else
             {
                 Chat.MessageAll(type + " set to &b" + percent);
-                SrvProperties.Save();
+                Server.Save();
             }
         }
         static void SetLimit(Player p, string type, ref int target, int value, bool hasValue)
@@ -96,7 +96,7 @@ namespace MCGalaxy.Commands.Maintenance
             {
                 target = value;
                 Chat.MessageAll(type + " set to &b" + target);
-                SrvProperties.Save();
+                Server.Save();
             }
         }
         public override void Help(Player p)

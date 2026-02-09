@@ -108,8 +108,7 @@ namespace MCGalaxy.Levels.IO
         object PrevObject()
         {
             int handle = ReadInt32() - baseWireHandle;
-            if (handle >= 0 && handle < handles.Count) return handles[handle];
-            throw new InvalidDataException("Invalid stream handle: " + handle);
+            return handle >= 0 && handle < handles.Count ? handles[handle] : throw new InvalidDataException("Invalid stream handle: " + handle);
         }
         JObject NewObject()
         {
@@ -200,8 +199,7 @@ namespace MCGalaxy.Levels.IO
             byte typeCode = ReadUInt8();
             if (typeCode == TC_CLASSDESC) return NewClassDesc();
             if (typeCode == TC_NULL) return null;
-            if (typeCode == TC_REFERENCE) return (JClassDesc)PrevObject();
-            throw new InvalidDataException("Invalid type code: " + typeCode);
+            return typeCode == TC_REFERENCE ? (JClassDesc)PrevObject() : throw new InvalidDataException("Invalid type code: " + typeCode);
         }
         JClassData ClassData(JClassDesc desc)
         {
@@ -234,8 +232,7 @@ namespace MCGalaxy.Levels.IO
             if (type == 'S') return ReadInt16();
             if (type == 'Z') return ReadUInt8() != 0;
             if (type == 'L') return ReadObject();
-            if (type == '[') return ReadObject();
-            throw new InvalidDataException("Invalid value code: " + type);
+            return type == '[' ? ReadObject() : throw new InvalidDataException("Invalid value code: " + type);
         }
         JFieldDesc FieldDesc()
         {

@@ -89,11 +89,7 @@ namespace MCGalaxy
             {
                 CompressedLen = entry.CompressedSize
             };
-            if (entry.CompressionMethod == 0)
-            {
-                return part;
-            }
-            return new DeflateStream(part, CompressionMode.Decompress);
+            return entry.CompressionMethod == 0 ? part : new DeflateStream(part, CompressionMode.Decompress);
         }
         public int FindEntries()
         {

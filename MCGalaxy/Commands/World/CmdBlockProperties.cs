@@ -56,8 +56,7 @@ namespace MCGalaxy.Commands.World
             if (scope.CaselessEq("level"))
             {
                 if (p.IsSuper) { p.Message("Cannot use level scope from {0}.", p.SuperName); return null; }
-                if (!LevelInfo.Check(p, data.Rank, p.Level, "change properties of blocks in this level")) return null;
-                return p.Level.Props;
+                return !LevelInfo.Check(p, data.Rank, p.Level, "change properties of blocks in this level") ? null : p.Level.Props;
             }
             p.Message("&WScope must be: global or level");
             return null;

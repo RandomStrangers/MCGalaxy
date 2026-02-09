@@ -68,8 +68,7 @@ namespace MCGalaxy
                 string map = Matcher.FindMaps(p, name);
                 if (map == null) return false;
                 lvl = LevelInfo.FindExact(map);
-                if (lvl != null) return GotoLevel(p, lvl);
-                return LoadOfflineLevel(p, map);
+                return lvl != null ? GotoLevel(p, lvl) : LoadOfflineLevel(p, map);
             }
             else
             {

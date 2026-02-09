@@ -62,7 +62,7 @@ namespace MCGalaxy.Commands.Building
                     Start = entry.Start,
                     End = entry.End
                 };
-                DrawOpPerformer.Do(op, null, p, new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal });
+                DrawOpPerformer.Do(op, null, p, new Vec3S32[] { new(ushort.MinValue, ushort.MinValue, ushort.MinValue), new(ushort.MaxValue, ushort.MaxValue, ushort.MaxValue) });
                 p.Message("Undo performed.");
                 return;
             }
@@ -82,7 +82,7 @@ namespace MCGalaxy.Commands.Building
             {
                 Start = DateTime.UtcNow.Subtract(delta)
             };
-            DrawOpPerformer.Do(op, null, p, new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal });
+            DrawOpPerformer.Do(op, null, p, new Vec3S32[] { new(ushort.MinValue, ushort.MinValue, ushort.MinValue), new(ushort.MaxValue, ushort.MaxValue, ushort.MaxValue) });
             p.Level.Message("Physics were undone &b" + delta.Shorten());
             Logger.Log(LogType.UserActivity, "Physics were undone &b" + delta.Shorten());
             p.Level.Save(true);
@@ -95,7 +95,7 @@ namespace MCGalaxy.Commands.Building
                 who = p.name,
                 ids = NameConverter.FindIds(p.name)
             };
-            DrawOpPerformer.Do(op, null, p, new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal });
+            DrawOpPerformer.Do(op, null, p, new Vec3S32[] { new(ushort.MinValue, ushort.MinValue, ushort.MinValue), new(ushort.MaxValue, ushort.MaxValue, ushort.MaxValue) });
             if (op.found)
             {
                 p.Message("Undid your changes for the past &b{0}", delta.Shorten(true));

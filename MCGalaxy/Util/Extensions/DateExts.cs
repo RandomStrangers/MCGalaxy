@@ -19,12 +19,10 @@ namespace MCGalaxy
     /// <summary> Extension methods relating to dates. </summary>
     public static class DateExts
     {
-        /// <summary> Origin point in time for Unix time (Midnight January 1, 1970) </summary>
-        public static DateTime UnixEpoch = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        public static DateTime FromUnixTime(this long offset) => UnixEpoch.AddTicks(offset * TimeSpan.TicksPerSecond);
+        public static DateTime FromUnixTime(this long offset) => new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddTicks(offset * TimeSpan.TicksPerSecond);
         /// <summary> Converts the given DateTime instance to Unix time </summary>
         /// <remarks> Unix time is the number of seconds since Midnight January 1, 1970 </remarks>
-        public static long ToUnixTime(this DateTime time) => (long)(time.ToUniversalTime() - UnixEpoch).TotalSeconds;
+        public static long ToUnixTime(this DateTime time) => (long)(time.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
         public static bool AddSpamEntry(this List<DateTime> log, int maxEntries, TimeSpan checkInterval)
         {
             DateTime now = DateTime.UtcNow;

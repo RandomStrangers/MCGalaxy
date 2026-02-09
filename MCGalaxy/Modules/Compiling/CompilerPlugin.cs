@@ -22,7 +22,7 @@ namespace MCGalaxy.Modules.Compiling
             cmdCompLoad = new CmdCompLoad();
         public override void Load(bool startup)
         {
-            Server.EnsureDirectoryExists(ICompiler.COMMANDS_SOURCE_DIR);
+            Server.EnsureDirectoryExists(Compiler.COMMANDS_SOURCE_DIR);
             Command.Register(cmdCreate, cmdCompile, cmdCompLoad);
         }
         public override void Unload(bool shutdown) => Command.Unregister(cmdCreate, cmdCompile, cmdCompLoad);

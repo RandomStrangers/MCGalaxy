@@ -31,12 +31,6 @@ namespace MCGalaxy.Commands
             Num = num; 
             Desc = desc;
         }
-        public CommandExtraPerms Copy()
-        {
-            CommandExtraPerms copy = new(CmdName, Num, Desc, 0);
-            CopyPermissionsTo(copy); 
-            return copy;
-        }
         public static CommandExtraPerms Find(string cmd, int num)
         {
             foreach (CommandExtraPerms perms in list)

@@ -826,8 +826,7 @@ namespace MCGalaxy.Commands.CPE
             if (prop == "density") return "fogdensity";
             if (prop == "col" || prop == "fogcol") return "fogcolor";
             if (prop == "fogcolour") return "fogcolor";
-            if (prop == "fallbackid" || prop == "fallbackblock") return "fallback";
-            return prop;
+            return prop == "fallbackid" || prop == "fallbackblock" ? "fallback" : prop;
         }
         static readonly string[] stepsHelp = new string[] {
             null, null, "name", "shape", "toptex", "sidetex", "bottomtex", "min", "max", "collide",

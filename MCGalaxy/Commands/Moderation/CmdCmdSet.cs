@@ -53,7 +53,6 @@ namespace MCGalaxy.Commands.Moderation
         void UpdateCommandPerms(ItemPerms perms, Player p, string msg)
         {
             CommandPerms.Save();
-            CommandPerms.ApplyChanges();
             Announce(p, perms.ItemName + msg);
         }
         void UpdateExtraPerms(CommandExtraPerms perms, Player p, string msg)

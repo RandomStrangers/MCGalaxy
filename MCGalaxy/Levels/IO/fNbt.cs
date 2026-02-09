@@ -61,8 +61,7 @@ namespace fNbt
         {
             get
             {
-                if (tags.TryGetValue(tagName, out NbtTag result)) return result;
-                return null;
+                return tags.TryGetValue(tagName, out NbtTag result) ? result : null;
             }
         }
         public bool Contains(string tagName) => tags.ContainsKey(tagName);
@@ -170,16 +169,16 @@ namespace fNbt
         {
             get
             {
-                if (TagType == NbtTagType.Byte) return ((NbtByte)this).Value;
-                throw new InvalidCastException("Cannot get ByteValue from " + TagType);
+                return TagType == NbtTagType.Byte ? ((NbtByte)this).Value : throw new InvalidCastException("Cannot get ByteValue from " + TagType);
             }
         }
         public float FloatValue
         {
             get
             {
-                if (TagType == NbtTagType.Float) return ((NbtFloat)this).Value;
-                throw new InvalidCastException("Cannot get FloatValue from " + TagType);
+                return TagType == NbtTagType.Float
+                    ? ((NbtFloat)this).Value
+                    : throw new InvalidCastException("Cannot get FloatValue from " + TagType);
             }
         }
         public short ShortValue => TagType switch
@@ -199,16 +198,18 @@ namespace fNbt
         {
             get
             {
-                if (TagType == NbtTagType.ByteArray) return ((NbtByteArray)this).Value;
-                throw new InvalidCastException("Cannot get ByteArrayValue from " + TagType);
+                return TagType == NbtTagType.ByteArray
+                    ? ((NbtByteArray)this).Value
+                    : throw new InvalidCastException("Cannot get ByteArrayValue from " + TagType);
             }
         }
         public string StringValue
         {
             get
             {
-                if (TagType == NbtTagType.String) return ((NbtString)this).Value;
-                throw new InvalidCastException("Cannot get StringValue from " + TagType);
+                return TagType == NbtTagType.String
+                    ? ((NbtString)this).Value
+                    : throw new InvalidCastException("Cannot get StringValue from " + TagType);
             }
         }
         internal static NbtTag Construct(NbtTagType type) => type switch
@@ -240,34 +241,11 @@ namespace fNbt
         {
             int type = ReadByte();
             if (type < 0) throw new EndOfStreamException();
-            if (type > (int)NbtTagType.IntArray)
-                throw new NbtFormatException("NBT tag type out of range: " + type);
-            return (NbtTagType)type;
+            return type > (int)NbtTagType.IntArray ? throw new NbtFormatException("NBT tag type out of range: " + type) : (NbtTagType)type;
         }
-        public override short ReadInt16()
-        {
-            if (swapNeeded)
-            {
-                return Swap(base.ReadInt16());
-            }
-            return base.ReadInt16();
-        }
-        public override int ReadInt32()
-        {
-            if (swapNeeded)
-            {
-                return Swap(base.ReadInt32());
-            }
-            return base.ReadInt32();
-        }
-        public override long ReadInt64()
-        {
-            if (swapNeeded)
-            {
-                return Swap(base.ReadInt64());
-            }
-            return base.ReadInt64();
-        }
+        public override short ReadInt16() => swapNeeded ? Swap(base.ReadInt16()) : base.ReadInt16();
+        public override int ReadInt32() => swapNeeded ? Swap(base.ReadInt32()) : base.ReadInt32();
+        public override long ReadInt64() => swapNeeded ? Swap(base.ReadInt64()) : base.ReadInt64();
         public override float ReadSingle()
         {
             if (swapNeeded)
@@ -309,8 +287,7 @@ namespace fNbt
             else
             {
                 byte[] data = ReadBytes(length);
-                if (data.Length < length) throw new EndOfStreamException();
-                return Encoding.UTF8.GetString(data);
+                return data.Length < length ? throw new EndOfStreamException() : Encoding.UTF8.GetString(data);
             }
         }
         new void FillBuffer(int numBytes)

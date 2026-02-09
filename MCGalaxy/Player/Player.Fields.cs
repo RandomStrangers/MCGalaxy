@@ -28,6 +28,7 @@ namespace MCGalaxy
 {
     public partial class Player : IDisposable
     {
+        bool gotSQLData;
         public PlayerIgnores Ignores = new();
         public static string lastMSG = "";
         internal PersistentMessages persistentMessages = new();
@@ -35,52 +36,51 @@ namespace MCGalaxy
         public CinematicGui CinematicGui = new();
         internal bool Request;
         internal string senderName = "", currentTpa = "";
-        public string truename;
+        public string truename, afkMessage, BrushName = Brush.DefaultBrush,
+            DefaultBrushArgs = "", name, DisplayName,
+            prefix = "", title = "", titlecolor = "",
+            ip, color, SuperName, whisperTo = "",
+            following = "", possess = "",
+            prevMsg = "", PreTeleportMap, summonedMap,
+            VerifiedVia, lastCMD = "";
         public INetSocket Socket;
         public IGameSession Session;
         public EntityList EntityList;
-        public DateTime LastAction, AFKCooldown;
-        public bool IsAfk, AutoAfk, cmdTimer, UsingWom;
-        public string afkMessage;
-        public bool ClickToMark = true;
-        public string BrushName = Brush.DefaultBrush;
+        public DateTime LastAction, AFKCooldown, 
+            NextReviewTime, NextEat, NextTeamInvite,
+            SessionStartTime, FirstLogin, LastLogin, lastCmdTime,
+            drownTime = DateTime.MaxValue, deathCooldown, LastPatrol;
+        public bool IsAfk, AutoAfk, cmdTimer, UsingWom,
+            hidden, painting, checkingBotInfo,
+            muted, agreed = true, invincible, hasreadrules, hackrank,
+            deleteMode, ignoreGrief,
+            parseEmotes = Server.Config.ParseEmotes,
+            opchat, adminchat, whisper, ClickToMark = true,
+            trainGrab, onTrain, trainInvincible,
+            frozen, staticCommands, isFlying, aiming,
+            joker, Unverified, verifiedPass, voice, useCheckpointSpawn,
+            voted, flipHead, infected, showPortals, showMBs,
+            Loading = true, cancelcommand, cancelchat, cancellogin,
+            cancelconnecting, loggedIn, verifiedName,
+            possessed, AllowBuild = true;
         public Transform Transform = Transform.DefaultTransform;
-        public string DefaultBrushArgs = "", name, DisplayName;
         public Pronouns Pronouns => pronounsList[0];
         internal List<Pronouns> pronounsList = new() { Pronouns.Default };
-        public int warn;
         public IPAddress IP;
-        public string ip, color;
         public Group group;
         public LevelPermission hideRank = LevelPermission.Banned;
-        public bool hidden, painting, checkingBotInfo,
-            muted, agreed = true, invincible;
-        public string prefix = "", title = "", titlecolor = "";
-        public int passtries;
-        public bool hasreadrules;
-        public DateTime NextReviewTime, NextEat, NextTeamInvite;
         public float ReachDistance = 5;
-        public bool hackrank;
-        public string SuperName;
         public readonly bool IsSuper;
         public bool IsConsole => this == Console;
         public virtual string FullName => color + prefix + DisplayName;
         public string ColoredName => color + DisplayName;
         public string GroupPrefix => group.Prefix.Length == 0 ? "" : "&f" + group.Prefix;
-        public bool deleteMode, ignoreGrief,
-            parseEmotes = Server.Config.ParseEmotes, 
-            opchat, adminchat, whisper;
-        public string whisperTo = "";
         string partialMessage = "";
-        public bool trainGrab, onTrain, trainInvincible;
         int mbRecursion;
-        public bool frozen;
-        public string following = "", possess = "";
-        public bool possessed, AllowBuild = true;
-        public int money;
+        public int money, TimesVisited, TimesBeenKicked, TimesDied, 
+            TotalMessagesSent, lastCheckpointIndex = -1, DatabaseID, 
+            CurrentCopySlot, passtries, warn;
         public long TotalModified, TotalDrawn, TotalPlaced, TotalDeleted;
-        public int TimesVisited, TimesBeenKicked, TimesDied,
-            TotalMessagesSent;
         long startModified;
         public long SessionModified => TotalModified - startModified;
         DateTime startTime;
@@ -89,14 +89,10 @@ namespace MCGalaxy
             get { return DateTime.UtcNow - startTime; }
             set { startTime = DateTime.UtcNow.Subtract(value); }
         }
-        public DateTime SessionStartTime, FirstLogin, LastLogin;
-        public bool staticCommands;
-        internal DateTime lastAccessStatus;
+        internal DateTime lastAccessStatus, cmdUnblocked;
         public VolatileArray<SchedulerTask> CriticalTasks;
-        public bool isFlying, aiming;
         public Weapon weapon;
         internal BufferedBlockSender weaponBuffer;
-        public bool joker, Unverified, verifiedPass, voice;
         public CommandData DefaultCmdData
         {
             get
@@ -106,15 +102,11 @@ namespace MCGalaxy
                 return data;
             }
         }
-        public bool useCheckpointSpawn;
-        public int lastCheckpointIndex = -1;
-        public ushort checkpointX, checkpointY, checkpointZ;
+        public ushort ModeBlock = 0xff, ClientHeldBlock = 1,
+            checkpointX, checkpointY, checkpointZ;
         public byte checkpointRotX, checkpointRotY;
-        public bool voted, flipHead, infected;
         public GameProps Game = new();
-        public int DatabaseID;
         public List<CopyState> CopySlots = new();
-        public int CurrentCopySlot;
         public CopyState CurrentCopy
         {
             get { return CurrentCopySlot >= CopySlots.Count ? null : CopySlots[CurrentCopySlot]; }
@@ -127,40 +119,24 @@ namespace MCGalaxy
                 CopySlots[CurrentCopySlot] = value;
             }
         }
-        internal int gbStep, lbStep;
         internal BlockDefinition gbBlock, lbBlock;
         public VolatileArray<UndoDrawOpEntry> DrawOps = new();
         internal readonly object pendingDrawOpsLock = new();
         internal List<PendingDrawOp> PendingDrawOps = new();
-        public bool showPortals, showMBs;
-        public string prevMsg = "";
-        internal int oldIndex = -1, lastWalkthrough = -1, 
-            startFallY = -1, lastFallY = -1;
-        public DateTime drownTime = DateTime.MaxValue, deathCooldown;
-        public ushort ModeBlock = 0xff, ClientHeldBlock = 1;
+        internal int gbStep, lbStep, oldIndex = -1, lastWalkthrough = -1, 
+            startFallY = -1, lastFallY = -1,
+            UsingGoto, GeneratingMap, LoadingMuseum;
         public ushort[] BlockBindings = new ushort[1024];
         public Dictionary<string, string> CmdBindings = new(StringComparer.OrdinalIgnoreCase);
-        public string lastCMD = "";
-        public DateTime lastCmdTime;
         public sbyte c4circuitNumber = -1;
         public Level level;
-        public bool Loading = true;
-        internal int UsingGoto, GeneratingMap, LoadingMuseum;
-        public Vec3U16 lastClick = Vec3U16.Zero;
+        public Vec3U16 lastClick = new(0, 0, 0);
         public Position PreTeleportPos;
         public Orientation PreTeleportRot;
-        public string PreTeleportMap, summonedMap;
         public ExtrasCollection Extras = new();
         readonly SpamChecker spamChecker;
-        internal DateTime cmdUnblocked;
         readonly List<DateTime> partialLog;
-        public DateTime LastPatrol;
         public LevelPermission Rank => group.Permission;
-        public bool loggedIn, verifiedName;
-        public string VerifiedVia;
-        bool gotSQLData;
-        public bool cancelcommand, cancelchat, 
-            cancellogin, cancelconnecting;
         readonly Queue<SerialCommand> serialCmds = new();
         readonly object serialCmdsLock = new();
         struct SerialCommand 

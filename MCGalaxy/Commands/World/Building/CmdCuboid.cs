@@ -30,8 +30,7 @@ namespace MCGalaxy.Commands.Building
             if (msg == "walls") return DrawMode.walls;
             if (msg == "holes") return DrawMode.holes;
             if (msg == "wire") return DrawMode.wire;
-            if (msg == "random") return DrawMode.random;
-            return DrawMode.normal;
+            return msg == "random" ? DrawMode.random : DrawMode.normal;
         }
         protected override DrawOp GetDrawOp(DrawArgs dArgs) => dArgs.Mode switch
         {

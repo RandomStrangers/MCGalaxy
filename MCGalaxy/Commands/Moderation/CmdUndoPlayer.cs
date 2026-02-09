@@ -44,7 +44,7 @@ namespace MCGalaxy.Commands.Moderation
             if (delta == TimeSpan.MinValue) return;
             if (!area)
             {
-                Vec3S32[] marks = new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal };
+                Vec3S32[] marks = new Vec3S32[] { new(ushort.MinValue, ushort.MinValue, ushort.MinValue), new(ushort.MaxValue, ushort.MaxValue, ushort.MaxValue) };
                 UndoPlayer(p, delta, names, ids, marks);
             }
             else

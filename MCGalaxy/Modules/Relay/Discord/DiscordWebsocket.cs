@@ -254,23 +254,21 @@ namespace MCGalaxy.Modules.Relay.Discord
                 },
                 { "presence",   MakePresence() }
             };
-        public JsonObject MakePresence()
-        {
-            if (!Presence) return null;
-            return new()
+        public JsonObject MakePresence() => !Presence
+                ? null
+                : new()
             {
                 { "since",      null },
-                { "activities", new JsonArray() 
+                { "activities", new JsonArray()
                     { new JsonObject()
                         {
                             { "name", GetStatus() },
                             { "type", (int)Activity }
-                        } 
-                    } 
+                        }
+                    }
                 },
                 { "status",     Status.ToString() },
                 { "afk",        false }
             };
-        }
     }
 }

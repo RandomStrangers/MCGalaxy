@@ -164,8 +164,7 @@ namespace MCGalaxy.Commands.Info
             if (type == "mod") return CommandTypes.Moderation;
             if (type == "other") return CommandTypes.Other;
             if (type == "world") return CommandTypes.World;
-            if (type == "information") return CommandTypes.Information;
-            return type;
+            return type == "information" ? CommandTypes.Information : type;
         }
         internal static string GetCategories()
         {

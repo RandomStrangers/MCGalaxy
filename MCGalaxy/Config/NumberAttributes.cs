@@ -39,11 +39,7 @@ namespace MCGalaxy.Config
             }
             return value;
         }
-        public override string Serialise(object value)
-        {
-            if (value is int v) return NumberUtils.StringifyInt(v);
-            return base.Serialise(value);
-        }
+        public override string Serialise(object value) => value is int v ? NumberUtils.StringifyInt(v) : base.Serialise(value);
     }
     public sealed class ConfigIntAttribute : ConfigIntegerAttribute
     {
@@ -64,8 +60,7 @@ namespace MCGalaxy.Config
         public override object Parse(string raw)
         {
             ushort block = (ushort)ParseInteger(raw, defBlock, 0, 1023);
-            if (block == Block.Invalid) return Block.Invalid;
-            return Block.MapOldRaw(block);
+            return block == Block.Invalid ? Block.Invalid : (object)Block.MapOldRaw(block);
         }
     }
     public class ConfigByteAttribute : ConfigIntegerAttribute
@@ -106,8 +101,7 @@ namespace MCGalaxy.Config
         public override string Serialise(object value)
         {
             if (value is float v) return NumberUtils.StringifyDouble(v);
-            if (value is double v1) return NumberUtils.StringifyDouble(v1);
-            return base.Serialise(value);
+            return value is double v1 ? NumberUtils.StringifyDouble(v1) : base.Serialise(value);
         }
     }
     public class ConfigFloatAttribute : ConfigRealAttribute
@@ -126,17 +120,7 @@ namespace MCGalaxy.Config
         public ConfigTimespanAttribute(string name, string section, int def, bool mins)
             : base(name, section) { this.def = def; this.mins = mins; }
         public override object Parse(string raw) => ParseInput(ParseReal(raw, def, 0, int.MaxValue));
-        protected TimeSpan ParseInput(double value)
-        {
-            if (mins)
-            {
-                return TimeSpan.FromMinutes(value);
-            }
-            else
-            {
-                return TimeSpan.FromSeconds(value);
-            }
-        }
+        protected TimeSpan ParseInput(double value) => mins ? TimeSpan.FromMinutes(value) : TimeSpan.FromSeconds(value);
         public override string Serialise(object value) => (mins ? ((TimeSpan)value).TotalMinutes : ((TimeSpan)value).TotalSeconds).ToString();
     }
     public class ConfigOptTimespanAttribute : ConfigTimespanAttribute
@@ -147,13 +131,8 @@ namespace MCGalaxy.Config
         {
             if (string.IsNullOrEmpty(raw)) return null;
             double value = ParseReal(raw, -1, -1, int.MaxValue);
-            if (value < 0) return null;
-            return ParseInput(value);
+            return value < 0 ? null : ParseInput(value);
         }
-        public override string Serialise(object value)
-        {
-            if (value == null) return "";
-            return base.Serialise(value);
-        }
+        public override string Serialise(object value) => value == null ? "" : base.Serialise(value);
     }
 }

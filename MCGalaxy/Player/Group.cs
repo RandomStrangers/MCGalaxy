@@ -17,6 +17,7 @@ using MCGalaxy.Config;
 using MCGalaxy.Events.GroupEvents;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 namespace MCGalaxy
 {
@@ -108,11 +109,7 @@ namespace MCGalaxy
         {
             if (name.CaselessEq("op")) name = "operator";
         }
-        public static Group Find(LevelPermission perm)
-        {
-            if (perm == LevelPermission.Console) return ConsoleRank;
-            return GroupList.Find(grp => grp.Permission == perm);
-        }
+        public static Group Find(LevelPermission perm) => perm == LevelPermission.Console ? ConsoleRank : GroupList.Find(grp => grp.Permission == perm);
         public static Group GroupIn(string playerName)
         {
             foreach (Group grp in GroupList)
@@ -121,30 +118,16 @@ namespace MCGalaxy
             }
             return DefaultRank;
         }
-        public static string GetColoredName(LevelPermission perm)
-        {
-            Group grp = Find(perm);
-            if (grp != null) return grp.ColoredName;
-            return "&f" + NumberUtils.StringifyInt((int)perm);
-        }
-        public static string GetColoredName(string rankName)
-        {
-            Group grp = Find(rankName);
-            if (grp != null) return grp.ColoredName;
-            return "&f" + rankName;
-        }
+        public static string GetColoredName(LevelPermission perm) => Find(perm) != null ? Find(perm).ColoredName : "&f" + NumberUtils.StringifyInt((int)perm);
+        public static string GetColoredName(string rankName) => Find(rankName) != null ? Find(rankName).ColoredName : "&f" + rankName;
         /// <summary> Returns the color of the group with the given permission level </summary>
         /// <remarks> Returns white if no such group exists </remarks>
-        public static string GetColor(LevelPermission perm)
-        {
-            Group grp = Find(perm);
-            if (grp != null) return grp.Color;
-            return "&f";
-        }
+        public static string GetColor(LevelPermission perm) => Find(perm) != null ? Find(perm).Color : "&f";
+        static bool TryParse(string s, out sbyte result) => sbyte.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
         public static LevelPermission ParsePermOrName(string value, LevelPermission defPerm)
         {
             if (value == null) return defPerm;
-            if (NumberUtils.TryParseInt8(value, out sbyte perm))
+            if (TryParse(value, out sbyte perm))
                 return (LevelPermission)perm;
             Group grp = Find(value);
             return grp != null ? grp.Permission : defPerm;
@@ -153,9 +136,7 @@ namespace MCGalaxy
         {
             if (name.Length < 2) return name;
             string last2 = name.Substring(name.Length - 2).ToLower();
-            if ((last2 != "ed" || name.Length <= 3) && last2[1] != 's')
-                return name + "s";
-            return name;
+            return (last2 != "ed" || name.Length <= 3) && last2[1] != 's' ? name + "s" : name;
         }
         public string GetFormattedName() => Color + GetPlural(Name);
         static void Add(LevelPermission perm, int drawLimit, int undoMins, string name, string color, int volume, int realms) => Register(new Group(perm, drawLimit, TimeSpan.FromMinutes(undoMins), name, color, volume, realms));
@@ -366,7 +347,10 @@ namespace MCGalaxy
             foreach (Group group in givenList)
             {
                 w.WriteLine("RankName = " + group.Name);
-                ConfigElement.SerialiseElements(cfg, w, group);
+                foreach (ConfigElement elem in cfg)
+                {
+                    w.WriteLine(elem.Format(group));
+                }
                 w.WriteLine();
             }
         }

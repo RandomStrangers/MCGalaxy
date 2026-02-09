@@ -40,8 +40,7 @@ namespace MCGalaxy.Commands.Fun
             if (type == WeaponType.Destroy) return new PenetrativeGun();
             if (type == WeaponType.Teleport) return new TeleportGun();
             if (type == WeaponType.Explode) return new ExplosiveGun();
-            if (type == WeaponType.Laser) return new LaserGun();
-            return new Gun();
+            return type == WeaponType.Laser ? new LaserGun() : new Gun();
         }
         public override void Help(Player p)
         {

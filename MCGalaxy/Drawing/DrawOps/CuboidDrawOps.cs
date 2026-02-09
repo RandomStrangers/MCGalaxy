@@ -24,8 +24,7 @@ namespace MCGalaxy.Drawing.Ops
         static bool CanHollow(ushort block, bool andAir = false)
         {
             block = Block.Convert(block);
-            if (andAir && block == Block.Air) return true;
-            return block >= Block.Water && block <= Block.StillLava;
+            return andAir && block == Block.Air || block >= Block.Water && block <= Block.StillLava;
         }
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {

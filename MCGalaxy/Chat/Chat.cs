@@ -182,13 +182,9 @@ namespace MCGalaxy
             {
                 return msg.Replace("λFULL", src.GroupPrefix + nick);
             }
-            else if (pl.Ignores.Nicks)
-            {
-                return msg.Replace("λFULL", src.color + src.prefix + src.truename);
-            }
             else
             {
-                return msg.Replace("λFULL", src.FullName);
+                return pl.Ignores.Nicks ? msg.Replace("λFULL", src.color + src.prefix + src.truename) : msg.Replace("λFULL", src.FullName);
             }
         }
         internal static string ParseInput(string text, out bool isCommand)

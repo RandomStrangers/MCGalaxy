@@ -44,14 +44,14 @@ namespace MCGalaxy.Commands.Maintenance
             Server.Config.Public = true;
             p.Message("Server is now public!");
             Logger.Log(LogType.SystemActivity, "Server is now public!");
-            SrvProperties.Save();
+            Server.Save();
         }
         void SetPrivate(Player p)
         {
             Server.Config.Public = false;
             p.Message("Server is now private!");
             Logger.Log(LogType.SystemActivity, "Server is now private!");
-            SrvProperties.Save();
+            Server.Save();
         }
         void DoReload(Player p)
         {
@@ -115,8 +115,7 @@ namespace MCGalaxy.Commands.Maintenance
         static bool CheckPerms(Player p)
         {
             if (p.IsConsole) return true;
-            if (Server.Config.OwnerName.CaselessEq("Notch")) return false;
-            return p.name.CaselessEq(Server.Config.OwnerName);
+            return !Server.Config.OwnerName.CaselessEq("Notch") && p.name.CaselessEq(Server.Config.OwnerName);
         }
         void DoImport(Player p, string[] args)
         {

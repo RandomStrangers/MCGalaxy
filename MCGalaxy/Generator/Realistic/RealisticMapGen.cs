@@ -312,11 +312,7 @@ namespace MCGalaxy.Generator.Realistic
             return terrain[x + z * lvl.Width];
         }
         //converts the height into a range
-        static float Range(float input, float low, float high)
-        {
-            if (high <= low) return low;
-            return low + (input * (high - low));
-        }
+        static float Range(float input, float low, float high) => high <= low ? low : low + (input * (high - low));
         //Forces the edge of a map to slope lower for island map types
         static float NegateEdge(ushort x, ushort z, Level lvl)
         {

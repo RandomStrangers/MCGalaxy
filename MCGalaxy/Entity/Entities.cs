@@ -21,7 +21,6 @@ namespace MCGalaxy
     public static class Entities
     {
         public const byte SelfID = 0xFF;
-        public const ushort CharacterHeight = 51;
         #region Spawning / Despawning
         /// <summary> Respawns this player to all players (including self) that can see the player in the current world. </summary>
         public static void GlobalRespawn(Player p, bool self = true)
@@ -155,7 +154,7 @@ namespace MCGalaxy
         public static void DisplayPosition(Player p, Entity src, string displayName)
         {
             Vec3S32 feet = src.Pos.FeetBlockCoords;
-            int x = src.Pos.X, y = src.Pos.Y - CharacterHeight, z = src.Pos.Z;
+            int x = src.Pos.X, y = src.Pos.Y - 51, z = src.Pos.Z;
             p.Message("{0} &Sis on {1}", displayName, src.Level.ColoredName);
             p.Message("     Block coords: &b{0} {1} {2}",
                       feet.X, feet.Y, feet.Z);

@@ -82,8 +82,7 @@ namespace MCGalaxy.Core
             string entry = "&f" + data.Amount + " &3$currency" + action
                 + "&3 on &f" + DateTime.Now.ToString(CultureInfo.InvariantCulture);
             string reason = data.Reason;
-            if (reason == null) return entry;
-            return entry + " (" + reason + ")";
+            return reason == null ? entry : entry + " (" + reason + ")";
         }
     }
 }

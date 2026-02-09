@@ -62,7 +62,7 @@ namespace MCGalaxy.Commands.Moderation
         static void SetMode(bool enabled, string desc)
         {
             Server.Config.WhitelistedOnly = enabled;
-            SrvProperties.Save();
+            Server.Save();
             Chat.MessageAll("Whitelisted only mode " + desc);
             Logger.Log(LogType.SystemActivity, "Whitelisted only mode is now " + desc);
         }

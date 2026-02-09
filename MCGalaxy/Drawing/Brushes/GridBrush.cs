@@ -39,8 +39,7 @@ namespace MCGalaxy.Drawing.Brushes
             {
                 if (dx < gridSize && dz < gridSize) return gridBlock;
                 if (dx < gridSize && dy < gridSize) return gridBlock;
-                if (dy < gridSize && dz < gridSize) return gridBlock;
-                return borderBlock;
+                return dy < gridSize && dz < gridSize ? gridBlock : borderBlock;
             }
             return cellBlock;
         }

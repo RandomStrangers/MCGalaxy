@@ -31,7 +31,7 @@ namespace MCGalaxy.Commands.Building
             Brush brush = BrushFactory.Find("Replace").Construct(args);
             if (brush == null) return;
             Vec3S32 max = new(p.Level.MaxX, p.Level.MaxY, p.Level.MaxZ);
-            Vec3S32[] marks = new Vec3S32[] { Vec3S32.Zero, max };
+            Vec3S32[] marks = new Vec3S32[] { new(0, 0, 0), max };
             MeasureDrawOp measure = new();
             measure.Setup(p, p.Level, marks);
             measure.Perform(marks, brush, null);

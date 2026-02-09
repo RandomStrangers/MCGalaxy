@@ -335,11 +335,7 @@ namespace MCGalaxy.Util.Imaging
             {
                 return 0;
             }
-            if (n > 255)
-            {
-                return 255;
-            }
-            return (byte)n;
+            return n > 255 ? (byte)255 : (byte)n;
         }
         void DecodeBlock(JpegComponent comp, byte[] src, int* block)
         {

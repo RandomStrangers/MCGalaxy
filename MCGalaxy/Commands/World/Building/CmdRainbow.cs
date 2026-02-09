@@ -24,8 +24,7 @@ namespace MCGalaxy.Commands.Building
         {
             string args = dArgs.Message;
             RainbowDrawOp op = new();
-            if (args.Length > 0 && !CommandParser.GetBool(dArgs.Player, args, ref op.AllowAir)) return null;
-            return op;
+            return args.Length > 0 && !CommandParser.GetBool(dArgs.Player, args, ref op.AllowAir) ? null : (DrawOp)op;
         }
         public override void Help(Player p)
         {

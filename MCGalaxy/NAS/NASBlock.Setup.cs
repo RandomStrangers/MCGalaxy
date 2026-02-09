@@ -316,11 +316,7 @@ namespace MCGalaxy
                 interaction = StripInteraction(NASPlugin.FromRaw(547), "Shovel"),
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    if (NasPlayer.inventory.HeldItem.name == "Shears")
-                    {
-                        return new(129, 1);
-                    }
-                    return new(3, 1);
+                    return NasPlayer.inventory.HeldItem.name == "Shears" ? new(129, 1) : new(3, 1);
                 }
             };
             i = 139;
@@ -330,11 +326,7 @@ namespace MCGalaxy
                 interaction = StripInteraction(NASPlugin.FromRaw(547), "Shovel"),
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    if (NasPlayer.inventory.HeldItem.name == "Shears")
-                    {
-                        return new(139, 1);
-                    }
-                    return new(3, 1);
+                    return NasPlayer.inventory.HeldItem.name == "Shears" ? new(139, 1) : new(3, 1);
                 }
             };
             i = 547;
@@ -345,11 +337,7 @@ namespace MCGalaxy
                 disturbedAction = GrassBlockAction(256 | 129, 3),
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    if (NasPlayer.inventory.HeldItem.name == "Shears")
-                    {
-                        return new(547, 1);
-                    }
-                    return new(3, 1);
+                    return NasPlayer.inventory.HeldItem.name == "Shears" ? new(547, 1) : new(3, 1);
                 }
             };
             i = 3;
@@ -852,14 +840,7 @@ namespace MCGalaxy
             {
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    if (NasPlayer.inventory.HeldItem.name == "Shears")
-                    {
-                        return new(37, 1);
-                    }
-                    else
-                    {
-                        return (r.Next(0, 2) == 0) ? new(35, 1) : null;
-                    }
+                    return NasPlayer.inventory.HeldItem.name == "Shears" ? new(37, 1) : (r.Next(0, 2) == 0) ? new(35, 1) : null;
                 },
                 disturbedAction = GenericPlantAction()
             };
@@ -868,14 +849,7 @@ namespace MCGalaxy
             {
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    if (NasPlayer.inventory.HeldItem.name == "Shears")
-                    {
-                        return new(38, 1);
-                    }
-                    else
-                    {
-                        return (r.Next(0, 2) == 0) ? new(27, 1) : null;
-                    }
+                    return NasPlayer.inventory.HeldItem.name == "Shears" ? new(38, 1) : (r.Next(0, 2) == 0) ? new(27, 1) : null;
                 },
                 disturbedAction = GenericPlantAction()
             };
@@ -894,14 +868,7 @@ namespace MCGalaxy
             {
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    if (NasPlayer.inventory.HeldItem.name == "Shears")
-                    {
-                        return new(130, 1);
-                    }
-                    else
-                    {
-                        return (r.Next(0, 8) == 0) ? new(644, 1) : null;
-                    }
+                    return NasPlayer.inventory.HeldItem.name == "Shears" ? new(130, 1) : (r.Next(0, 8) == 0) ? new(644, 1) : null;
                 },
                 disturbedAction = GenericPlantAction()
             };
@@ -1282,11 +1249,7 @@ namespace MCGalaxy
                 disturbedAction = CropAction(wheatSet, 3),
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    if (r.Next(0, 2) == 0)
-                    {
-                        return new(145, 1);
-                    }
-                    return new(644, r.Next(2, 5));
+                    return r.Next(0, 2) == 0 ? new(145, 1) : new(644, r.Next(2, 5));
                 }
             };
             i = 624;
@@ -1581,14 +1544,7 @@ namespace MCGalaxy
             {
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    if (NasPlayer.inventory.HeldItem.name == "Shears")
-                    {
-                        return new(96, 1);
-                    }
-                    else
-                    {
-                        return (r.Next(0, 2) == 0) ? new(36, 1) : null;
-                    }
+                    return NasPlayer.inventory.HeldItem.name == "Shears" ? new(96, 1) : (r.Next(0, 2) == 0) ? new(36, 1) : null;
                 },
                 disturbedAction = GenericPlantAction()
             };
@@ -1597,14 +1553,7 @@ namespace MCGalaxy
             {
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    if (NasPlayer.inventory.HeldItem.name == "Shears")
-                    {
-                        return new(651, 1);
-                    }
-                    else
-                    {
-                        return (r.Next(0, 3) == 0) ? new(23, 1) : null;
-                    }
+                    return NasPlayer.inventory.HeldItem.name == "Shears" ? new(651, 1) : (r.Next(0, 3) == 0) ? new(23, 1) : null;
                 },
                 disturbedAction = GenericPlantAction()
             };
@@ -1613,14 +1562,7 @@ namespace MCGalaxy
             {
                 dropHandler = (NasPlayer, dropID) =>
                 {
-                    if (NasPlayer.inventory.HeldItem.name == "Shears")
-                    {
-                        return new(201, 1);
-                    }
-                    else
-                    {
-                        return (r.Next(0, 2) == 0) ? new(138, 1) : null;
-                    }
+                    return NasPlayer.inventory.HeldItem.name == "Shears" ? new(201, 1) : (r.Next(0, 2) == 0) ? new(138, 1) : null;
                 },
                 disturbedAction = GenericPlantAction()
             };

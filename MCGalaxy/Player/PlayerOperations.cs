@@ -99,8 +99,11 @@ namespace MCGalaxy
                 string color = who != null ? who.color : Group.GroupIn(target).Color;
                 MessageAction(p, target, who, "λACTOR &Schanged λTARGET nick to " + color + nick);
             }
-            if (who != null) who.DisplayName = nick;
-            if (who != null) TabList.Update(who, true);
+            if (who != null)
+            {
+                who.DisplayName = nick;
+                TabList.Update(who, true);
+            }
             PlayerDB.SetNick(target, nick);
             return true;
         }

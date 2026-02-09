@@ -56,10 +56,6 @@ namespace MCGalaxy.Util.Imaging
             {
                 globalPal = ReadPalette(src, flags);
             }
-            if (hasGlobalPal && bgIndex < globalPal.Length)
-            {
-                _ = globalPal[bgIndex];
-            }
             bmp.AllocatePixels();
         }
         Pixel[] ReadPalette(byte[] src, byte flags)

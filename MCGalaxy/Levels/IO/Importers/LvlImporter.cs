@@ -169,8 +169,7 @@ namespace MCGalaxy.Levels.IO
         static int TryRead_I32(byte[] buffer, Stream gs)
         {
             int read = gs.Read(buffer, 0, sizeof(int));
-            if (read < sizeof(int)) return 0;
-            return MemUtils.ReadI32_BE(buffer, 0);
+            return read < sizeof(int) ? 0 : MemUtils.ReadI32_BE(buffer, 0);
         }
         static ushort Read_U16(byte[] buffer, Stream gs)
         {

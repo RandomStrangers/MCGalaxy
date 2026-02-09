@@ -12,10 +12,12 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.Network;
 using MCGalaxy.Platform;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Text;
 namespace MCGalaxy.SQL
 {
@@ -140,12 +142,34 @@ namespace MCGalaxy.SQL
             return names;
         }
         #endregion
+        static void CheckFile(string file)
+        {
+            if (!File.Exists(file))
+            {
+                Logger.Log(LogType.SystemActivity, file + " doesn't exist, Downloading..");
+                try
+                {
+                    using (WebClient client = HttpUtil.CreateWebClient())
+                    {
+                        client.DownloadFile("https://raw.githubusercontent.com/ClassiCube/MCGalaxy/master/" + file, file);
+                    }
+                    if (File.Exists(file))
+                    {
+                        Logger.Log(LogType.SystemActivity, file + " download succesful!");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError("Downloading " + file + " failed, try again later", ex);
+                }
+            }
+        }
         public void LoadDependencies()
         {
             // on macOS/Linux, system provided sqlite3 native library is used
             if (!IOperatingSystem.DetectOS().IsWindows) return;
-            Server.CheckFile("sqlite3_x32.dll");
-            Server.CheckFile("sqlite3_x64.dll");
+            CheckFile("sqlite3_x32.dll");
+            CheckFile("sqlite3_x64.dll");
             // sqlite3.dll is the .DLL that MCGalaxy will actually load on Windows
             try
             {

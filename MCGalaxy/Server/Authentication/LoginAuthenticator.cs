@@ -13,11 +13,12 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Network;
+using System.Security.Cryptography;
 namespace MCGalaxy.Authentication
 {
     public class LoginAuthenticator
     {
-        public bool Verify(Player p, string mppass)
+        public static bool Verify(Player p, string mppass)
         {
             foreach (AuthService auth in AuthService.Services)
             {
@@ -28,9 +29,21 @@ namespace MCGalaxy.Authentication
             }
             return false;
         }
+        static readonly System.Text.ASCIIEncoding enc = new();
+        static readonly MD5CryptoServiceProvider md5 = new();
+        static readonly object md5Lock = new();
+        static string CalcMppass(string name, string salt)
+        {
+            byte[] hash = null;
+            lock (md5Lock)
+            {
+                hash = md5.ComputeHash(enc.GetBytes(salt + name));
+            }
+            return Utils.ToHexString(hash);
+        }
         static bool Authenticate(AuthService auth, Player p, string mppass)
         {
-            string calc = Server.CalcMppass(p.truename, auth.Salt);
+            string calc = CalcMppass(p.truename, auth.Salt);
             if (!mppass.CaselessEq(calc))
             {
                 return false;
@@ -38,14 +51,6 @@ namespace MCGalaxy.Authentication
             auth.AcceptPlayer(p);
             return true;
         }
-        public static bool VerifyLogin(Player p, string mppass)
-        {
-            LoginAuthenticator auth = new();
-            if (auth.Verify(p, mppass))
-            {
-                return true;
-            }
-            return !Server.Config.VerifyNames || (IPUtil.IsPrivate(p.IP) && !Server.Config.VerifyLanIPs);
-        }
+        public static bool VerifyLogin(Player p, string mppass) => Verify(p, mppass) || !Server.Config.VerifyNames || (IPUtil.IsPrivate(p.IP) && !Server.Config.VerifyLanIPs);
     }
 }

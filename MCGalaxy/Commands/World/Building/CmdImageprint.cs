@@ -144,9 +144,8 @@ namespace MCGalaxy.Commands.Building
                 p.Message("No direction was selected");
                 return false;
             }
-            Server.StartThread(out Thread thread, "ImagePrint",
+            Utils.StartBackgroundThread("ImagePrint",
                                () => DoDrawImage(p, m, (DrawArgs)state));
-            Utils.SetBackgroundMode(thread);
             return false;
         }
         void DoDrawImage(Player p, Vec3S32[] m, DrawArgs dArgs)

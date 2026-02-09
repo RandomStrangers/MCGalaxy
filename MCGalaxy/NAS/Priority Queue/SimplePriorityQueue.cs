@@ -28,11 +28,7 @@ namespace MCGalaxy
             {
                 return _nullNodesCache.Count > 0 ? _nullNodesCache[0] : null;
             }
-            if (!_itemToNodesCache.TryGetValue(item, out List<SimpleNode> nodes))
-            {
-                return null;
-            }
-            return nodes[0];
+            return !_itemToNodesCache.TryGetValue(item, out List<SimpleNode> nodes) ? null : nodes[0];
         }
         public void RemoveFromNodeCache(SimpleNode node)
         {
@@ -56,11 +52,7 @@ namespace MCGalaxy
         {
             get
             {
-                if (_queue.Count <= 0)
-                {
-                    throw new InvalidOperationException("Cannot call .First on an empty queue");
-                }
-                return _queue.First.Data;
+                return _queue.Count <= 0 ? throw new InvalidOperationException("Cannot call .First on an empty queue") : _queue.First.Data;
             }
         }
         public void Clear()

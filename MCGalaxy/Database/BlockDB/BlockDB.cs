@@ -73,11 +73,7 @@ namespace MCGalaxy.DB
         public long TotalEntries()
         {
             using IDisposable rLock = Locker.AccquireRead(5 * 1000);
-            if (rLock != null)
-            {
-                return Cache.Count + BlockDBFile.CountEntries(MapName);
-            }
-            return -1;
+            return rLock != null ? Cache.Count + BlockDBFile.CountEntries(MapName) : -1;
         }
         /// <summary> Outputs all block changes which affect the given coordinates. </summary>
         /// <remarks> You must lock using Locker.AccquireRead() **before** entering this method. </remarks>
@@ -153,8 +149,7 @@ namespace MCGalaxy.DB
         {
             long secs = (long)delta.TotalSeconds;
             if (secs < int.MinValue) return int.MinValue;
-            if (secs > int.MaxValue) return int.MaxValue;
-            return (int)secs;
+            return secs > int.MaxValue ? int.MaxValue : (int)secs;
         }
         /// <summary> Deletes the backing file on disc if it exists. </summary>
         public void DeleteBackingFile()

@@ -27,11 +27,7 @@ namespace MCGalaxy
                 {
                     return NASColor.fullHealthColors;
                 }
-                if (healthPercent > 0.25)
-                {
-                    return NASColor.mediumHealthColors;
-                }
-                return NASColor.lowHealthColors;
+                return healthPercent > 0.25 ? NASColor.mediumHealthColors : NASColor.lowHealthColors;
             }
         }
         public static NASItem Fist;
@@ -67,11 +63,7 @@ namespace MCGalaxy
                 return false;
             }
             HP -= amount;
-            if (HP <= 0)
-            {
-                return true;
-            }
-            return false;
+            return HP <= 0;
         }
         public bool Enchanted()
         {

@@ -13,6 +13,7 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Commands;
+using System.IO;
 namespace MCGalaxy.Modules.Compiling
 {
     sealed class CmdCmdCreate : CmdCompile
@@ -20,19 +21,30 @@ namespace MCGalaxy.Modules.Compiling
         public override string Name => "CmdCreate";
         public override string Shortcut => "";
         public override CommandAlias[] Aliases => new[] { new CommandAlias("PCreate", "plugin") };
-        protected override void CompileCommand(Player p, string[] paths, ICompiler compiler)
+        protected override void CompileCommand(Player p, string[] paths)
         {
             foreach (string cmd in paths)
             {
-                CompilerOperations.CreateCommand(p, cmd, compiler);
+                CreateFile(p, cmd, Compiler.CommandDLLPath(cmd), "command &fCmd", Compiler.GenExampleCommand(cmd));
             }
         }
-        protected override void CompilePlugin(Player p, string[] paths, ICompiler compiler)
+        protected override void CompilePlugin(Player p, string[] paths)
         {
-            foreach (string cmd in paths)
+            foreach (string name in paths)
             {
-                CompilerOperations.CreatePlugin(p, cmd, compiler);
+                CreateFile(p, name, Compiler.PluginPath(name), "plugin &f", Compiler.GenExamplePlugin(name, p.IsSuper ? Server.Config.Name : p.truename));
             }
+        }
+        static bool CreateFile(Player p, string name, string path, string type, string source)
+        {
+            if (File.Exists(path))
+            {
+                p.Message("File {0} already exists. Choose another name.", path);
+                return false;
+            }
+            FileIO.TryWriteAllText(path, source);
+            p.Message("Successfully saved example {2}{0} &Sto {1}", name, path, type);
+            return true;
         }
         public override void Help(Player p)
         {

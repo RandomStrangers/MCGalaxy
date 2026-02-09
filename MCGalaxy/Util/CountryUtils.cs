@@ -23,11 +23,7 @@ namespace MCGalaxy.Util
         public static string GetName(string twoLetterCode)
         {
             twoLetterCode = twoLetterCode.ToUpperInvariant();
-            if (!CodesToNames.ContainsKey(twoLetterCode))
-            {
-                return null;
-            }
-            return CodesToNames[twoLetterCode];
+            return !CodesToNames.ContainsKey(twoLetterCode) ? null : CodesToNames[twoLetterCode];
         }
         /// <summary>
         /// Based on https://www.iban.com/country-codes

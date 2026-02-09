@@ -65,8 +65,7 @@ namespace MCGalaxy.Commands.CPE
             string scale = bits[1];
             if (axis == "X") return ParseScale(dst, e, axis, scale, ref e.ScaleX);
             if (axis == "Y") return ParseScale(dst, e, axis, scale, ref e.ScaleY);
-            if (axis == "Z") return ParseScale(dst, e, axis, scale, ref e.ScaleZ);
-            return false;
+            return axis == "Z" && ParseScale(dst, e, axis, scale, ref e.ScaleZ);
         }
         static bool ParseScale(Player dst, Entity e, string axis, string scale, ref float value)
         {

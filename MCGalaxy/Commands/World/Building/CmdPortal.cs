@@ -171,8 +171,7 @@ namespace MCGalaxy.Commands.Building
             if (block == Block.Portal_Blue) return "blue";
             if (block == Block.Portal_Air) return "air";
             if (block == Block.Portal_Lava) return "lava";
-            if (block == Block.Portal_Water) return "water";
-            return Block.GetName(p, block);
+            return block == Block.Portal_Water ? "water" : Block.GetName(p, block);
         }
         static List<string> SupportedBlocks(Player p)
         {

@@ -12,7 +12,7 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
 */
-using MCGalaxy.Scripting;
+using MCGalaxy.Modules.Compiling;
 namespace MCGalaxy.Commands.Scripting
 {
     public sealed class CmdCmdUnload : Command2
@@ -36,7 +36,7 @@ namespace MCGalaxy.Commands.Scripting
                 p.Message("\"{0}\" is not a valid or loaded command.", cmdName);
                 return;
             }
-            ScriptingOperations.UnloadCommand(p, cmd);
+            Compiler.UnloadCommand(p, cmd);
         }
         public override void Help(Player p)
         {

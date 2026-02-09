@@ -79,7 +79,7 @@ namespace MCGalaxy.Modules.Relay
                         p.Message("Cannot set the {0} controllers rank to a rank higher than yours.", bot.RelayName); return;
                     }
                     Server.Config.IRCControllerRank = grp.Permission;
-                    SrvProperties.Save();
+                    Server.Save();
                     p.Message("Set {0} controller rank to {1}&S.", bot.RelayName, grp.ColoredName);
                     break;
                 default:

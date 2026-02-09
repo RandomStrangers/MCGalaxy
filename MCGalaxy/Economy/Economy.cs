@@ -107,15 +107,6 @@ namespace MCGalaxy.Eco
             new RankItem(), new LevelItem(), new LoginMessageItem(),
             new LogoutMessageItem(), new NickItem(), new SnackItem()
         };
-        public static void RegisterItem(Item item)
-        {
-            List<string> cfg = GetConfig(item.Name);
-            foreach (string line in cfg)
-            {
-                item.LoadConfig(line);
-            }
-            Items.Add(item);
-        }
         /// <summary> Finds the item whose name or one of its aliases caselessly matches the input. </summary>
         public static Item GetItem(string name)
         {
@@ -139,13 +130,7 @@ namespace MCGalaxy.Eco
             return enabled;
         }
         /// <summary> Gets comma separated list of enabled items. </summary>
-        public static string EnabledItemNames()
-        {
-            string items = Items.Join(x => x.Enabled ? x.ShopName : null);
-            return items.Length == 0 ? "(no enabled items)" : items;
-        }
-        public static RankItem Ranks => (RankItem)Items[3];
-        public static LevelItem Levels => (LevelItem)Items[4];
+        public static string EnabledItemNames() => Items.Join(x => x.Enabled ? x.ShopName : null).Length == 0 ? "(no enabled items)" : Items.Join(x => x.Enabled ? x.ShopName : null);
         public static void MakePurchase(Player p, int cost, string item)
         {
             p.SetMoney(p.money - cost);

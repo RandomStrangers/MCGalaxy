@@ -50,10 +50,16 @@ namespace MCGalaxy
             }
             return lines;
         }
-        public static void SetBackgroundMode(Thread thread)
+        public static void StartBackgroundThread(string name, ThreadStart threadFunc)
         {
-            // Throws an exception when called on a dead thread,
-            //  which can very rarely happen
+            Thread thread = new(threadFunc);
+            try
+            {
+                thread.Name = name;
+            }
+            catch
+            {
+            }
             try
             {
                 thread.IsBackground = true;
@@ -61,6 +67,26 @@ namespace MCGalaxy
             catch
             {
             }
+            thread.Start();
+        }
+        public static void StartBackgroundThread(out Thread thread, string name, ThreadStart threadFunc)
+        {
+            thread = new(threadFunc);
+            try
+            {
+                thread.Name = name;
+            }
+            catch
+            {
+            }
+            try
+            {
+                thread.IsBackground = true;
+            }
+            catch
+            {
+            }
+            thread.Start();
         }
     }
     public static class MemUtils

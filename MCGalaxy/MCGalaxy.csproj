@@ -56,9 +56,6 @@
     <ApplicationIcon>Galaxy.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MySql.Data">
-      <HintPath>..\MySql.Data.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -523,13 +520,10 @@
     <Compile Include="Modules\Awards\CmdAwardMod.cs" />
     <Compile Include="Modules\Awards\CmdAwards.cs" />
     <Compile Include="Modules\Awards\AwardsList.cs" />
-    <Compile Include="Modules\Compiling\CompilerFrontends.cs" />
     <Compile Include="Modules\Compiling\CmdCmdCreate.cs" />
     <Compile Include="Modules\Compiling\CmdCompile.cs" />
     <Compile Include="Modules\Compiling\CmdCompload.cs" />
     <Compile Include="Modules\Compiling\Compiler.cs" />
-    <Compile Include="Modules\Compiling\CompilerOperations.cs" />
-    <Compile Include="Modules\Compiling\CompilerBackends.cs" />
     <Compile Include="Modules\Compiling\CompilerPlugin.cs" />
     <Compile Include="Modules\Moderation\Notes\CmdNote.cs" />
     <Compile Include="Modules\Moderation\Notes\CmdNotes.cs" />
@@ -591,14 +585,12 @@
     <Compile Include="Database\Undo\UndoFormat.cs" />
     <Compile Include="Network\Player.Networking.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Scripting\Plugin.cs" />
-    <Compile Include="Scripting\Scripting.cs" />
+    <Compile Include="Modules\Compiling\Plugin.cs" />
     <Compile Include="Player\Ban.cs" />
     <Compile Include="Database\SqlTransaction.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="Levels\BlockQueue.cs" />
     <Compile Include="Levels\Level.cs" />
-    <Compile Include="Scripting\ScriptingOperations.cs" />
     <Compile Include="Server\Authentication\LoginAuthenticator.cs" />
     <Compile Include="Server\Authentication\AuthService.cs" />
     <Compile Include="Server\Authentication\PassAuthenticator.cs" />
@@ -609,7 +601,6 @@
     <Compile Include="Server\Maintenance\ZipReader.cs" />
     <Compile Include="Server\Maintenance\ZipWriter.cs" />
     <Compile Include="Util\CountryUtils.cs" />
-    <Compile Include="Util\Formatting\Wildcard.cs" />
     <Compile Include="Util\Imaging\Bitmap2D.cs" />
     <Compile Include="Util\Imaging\GifDecoder.cs" />
     <Compile Include="Util\Imaging\ImageDecoder.cs" />
@@ -623,7 +614,6 @@
     <Compile Include="Server\Server.Fields.cs" />
     <Compile Include="Server\Server.Init.cs" />
     <Compile Include="Server\ServerConfig.cs" />
-    <Compile Include="Server\ServerProperties.cs" />
     <Compile Include="Server\Tasks\ModerationTasks.cs" />
     <Compile Include="Server\Tasks\ServerTasks.cs" />
     <Compile Include="Util\Extensions\DateExts.cs" />

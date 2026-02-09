@@ -147,11 +147,7 @@ namespace MCGalaxy
                 bDigit = GetDigits(b, out int bLen);
             string aName = a.Substring(0, aLen),
                 bName = b.Substring(0, bLen);
-            if (aName.Length != bName.Length || (aDigit == -1 && bDigit == -1))
-            {
-                return aName.CompareTo(bName);
-            }
-            return aDigit.CompareTo(bDigit);
+            return aName.Length != bName.Length || (aDigit == -1 && bDigit == -1) ? aName.CompareTo(bName) : aDigit.CompareTo(bDigit);
         }
         /// <summary>
         /// Returns the digits on the end of the string or -1 if no integer found.

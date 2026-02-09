@@ -27,8 +27,7 @@ namespace MCGalaxy.Drawing.Brushes
         {
             ushort include = 0;
             Brush brush = ParseArguments(args, ref include);
-            if (brush == null) return null;
-            return new ReplaceBrushBrush(include, brush);
+            return brush == null ? null : (Brush)new ReplaceBrushBrush(include, brush);
         }
         protected Brush ParseArguments(BrushArgs args, ref ushort target)
         {
@@ -54,8 +53,7 @@ namespace MCGalaxy.Drawing.Brushes
         {
             ushort exclude = 0;
             Brush brush = ParseArguments(args, ref exclude);
-            if (brush == null) return null;
-            return new ReplaceNotBrushBrush(exclude, brush);
+            return brush == null ? null : (Brush)new ReplaceNotBrushBrush(exclude, brush);
         }
     }
 }

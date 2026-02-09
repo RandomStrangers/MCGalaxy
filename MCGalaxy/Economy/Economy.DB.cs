@@ -59,11 +59,7 @@ namespace MCGalaxy.Eco
             Fine = Parse(record.GetText("fine")),
             TotalSpent = record.GetInt("total"),
         };
-        static string Parse(string raw)
-        {
-            if (raw == null || raw.Length == 0 || raw.CaselessEq("NULL")) return null;
-            return raw.CaselessEq("%cNone") ? null : raw;
-        }
+        static string Parse(string raw) => raw == null || raw.Length == 0 || raw.CaselessEq("NULL") ? null : raw.CaselessEq("%cNone") ? null : raw;
         public static EcoStats RetrieveStats(string name)
         {
             EcoStats stats = default;

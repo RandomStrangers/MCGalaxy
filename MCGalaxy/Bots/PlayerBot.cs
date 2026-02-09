@@ -78,11 +78,7 @@ namespace MCGalaxy
                 return true; 
             }
             ItemPerms perms = CommandExtraPerms.Find("Bot", 1) ?? new ItemPerms(LevelPermission.Operator);
-            if (perms.UsableBy(p)) 
-            { 
-                return true; 
-            }
-            return false;
+            return perms.UsableBy(p);
         }
         public static void Add(PlayerBot bot, bool save = true)
         {

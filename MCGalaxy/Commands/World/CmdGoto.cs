@@ -58,7 +58,7 @@ namespace MCGalaxy.Commands.World
             // randomly visit a specified subset of all levels
             if (args.Length > 1)
             {
-                List<string> maps = Wildcard.Filter(files, args[1],
+                List<string> maps = Paginator.Filter(files, args[1],
                                                     mapFile => Path.GetFileNameWithoutExtension(mapFile));
                 if (maps.Count == 0)
                 {
@@ -78,8 +78,7 @@ namespace MCGalaxy.Commands.World
                 return GrResult.NoPermission;
             }
             bool changed = PlayerActions.ChangeMap(p, map);
-            if (changed) return GrResult.Success;
-            return GrResult.NoPermission;
+            return changed ? GrResult.Success : GrResult.NoPermission;
         }
         public override void Help(Player p)
         {

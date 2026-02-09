@@ -143,11 +143,7 @@ namespace MCGalaxy.Drawing.Ops
         }
         bool TurnsPossible(GridNode P) => IsWall(P.X, P.Y + 2) || IsWall(P.X, P.Y - 2)
                 || IsWall(P.X + 2, P.Y) || IsWall(P.X - 2, P.Y);
-        bool IsWall(int x, int y)
-        {
-            if (x < 0 || y < 0 || x > width || y > length) return false;
-            return wall[x, y];
-        }
+        bool IsWall(int x, int y) => x >= 0 && y >= 0 && x <= width && y <= length && wall[x, y];
         struct GridNode
         {
             public ushort X, Y;

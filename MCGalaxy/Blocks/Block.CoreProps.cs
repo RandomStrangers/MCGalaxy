@@ -93,8 +93,7 @@ namespace MCGalaxy
             if (b >= Door_Obsidian && b <= Door_Slab) return true;
             if (b >= Door_Iron && b <= Door_Bookshelf) return true;
             if (b >= Door_Orange && b <= Door_White) return true;
-            if (b >= Door_Air && b <= Door_Lava) return true;
-            return b == Door_Cobblestone || b == Door_Red || b == Door_Log || b == Door_Gold;
+            return b >= Door_Air && b <= Door_Lava || b == Door_Cobblestone || b == Door_Red || b == Door_Log || b == Door_Gold;
         }
         static AnimalAI GetAI(ushort b)
         {
@@ -102,8 +101,7 @@ namespace MCGalaxy
             if (b == Bird_Red || b == Bird_Blue || b == Bird_Killer) return AnimalAI.KillerAir;
             if (b == Fish_Betta || b == Fish_Shark) return AnimalAI.KillerWater;
             if (b == Fish_LavaShark) return AnimalAI.KillerLava;
-            if (b == Fish_Gold || b == Fish_Salmon || b == Fish_Sponge) return AnimalAI.FleeWater;
-            return AnimalAI.None;
+            return b == Fish_Gold || b == Fish_Salmon || b == Fish_Sponge ? AnimalAI.FleeWater : AnimalAI.None;
         }
         static string GetDeathMessage(ushort b)
         {
@@ -123,8 +121,7 @@ namespace MCGalaxy
             if (b == ZombieBody) return "@p &Sdied due to lack of &5brain.";
             if (b == Creeper) return "@p &Swas killed &cb-SSSSSSSSSSSSSS";
             if (b == Fish_LavaShark) return "@p &Swas eaten by a ... LAVA SHARK?!";
-            if (b == Snake) return "@p &Swas bit by a deadly snake.";
-            return null;
+            return b == Snake ? "@p &Swas bit by a deadly snake." : null;
         }
         internal static void SetDefaultNames()
         {

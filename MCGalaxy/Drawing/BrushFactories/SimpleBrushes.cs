@@ -30,19 +30,13 @@ namespace MCGalaxy.Drawing.Brushes
             Player p = args.Player;
             if (args.Message.Length == 0)
             {
-                if (!CommandParser.IsBlockAllowed(p, "draw with", args.Block)) return null;
-                return new SolidBrush(args.Block);
+                return !CommandParser.IsBlockAllowed(p, "draw with", args.Block) ? null : (Brush)new SolidBrush(args.Block);
             }
-            if (!CommandParser.GetBlockIfAllowed(p, args.Message, "draw with", out ushort block)) return null;
-            return new SolidBrush(block);
+            return !CommandParser.GetBlockIfAllowed(p, args.Message, "draw with", out ushort block) ? null : (Brush)new SolidBrush(block);
         }
         // Usually this shouldn't be overriden, but since SolidBrush is the default brush,
         //  it's worth overriding this to avoid an unnecessary object allocation
-        public override bool Validate(BrushArgs args)
-        {
-            if (args.Message.Length == 0) return true;
-            return CommandParser.GetBlockIfAllowed(args.Player, args.Message, "draw with", out _);
-        }
+        public override bool Validate(BrushArgs args) => args.Message.Length == 0 || CommandParser.GetBlockIfAllowed(args.Player, args.Message, "draw with", out _);
     }
     public sealed class CheckeredBrushFactory : BrushFactory
     {
@@ -61,16 +55,13 @@ namespace MCGalaxy.Drawing.Brushes
             // TODO remove?
             if (args.Message.Length == 0)
             {
-                if (!CommandParser.IsBlockAllowed(p, "draw with", args.Block)) return null;
-                return new CheckeredBrush(args.Block, Block.Invalid);
+                return !CommandParser.IsBlockAllowed(p, "draw with", args.Block) ? null : (Brush)new CheckeredBrush(args.Block, Block.Invalid);
             }
             bool ok = FrequencyBrush.GetBlocks(args, out List<ushort> toAffect, out List<int> freqs,
                                                P => false, null);
             if (!ok) return null;
             ushort[] blocks = FrequencyBrush.Combine(toAffect, freqs);
-            if (blocks.Length == 2)
-                return new CheckeredBrush(blocks[0], blocks[1]);
-            return new CheckeredPaletteBrush(blocks);
+            return blocks.Length == 2 ? new CheckeredBrush(blocks[0], blocks[1]) : new CheckeredPaletteBrush(blocks);
         }
     }
     public sealed class GridBrushFactory : BrushFactory
@@ -87,8 +78,7 @@ namespace MCGalaxy.Drawing.Brushes
         {
             bool ok = FrequencyBrush.GetBlocks(args, out List<ushort> toAffect, out List<int> freqs,
                                                P => false, null);
-            if (!ok) return null;
-            return new GridBrush(toAffect, freqs);
+            return !ok ? null : (Brush)new GridBrush(toAffect, freqs);
         }
     }
     public sealed class PasteBrushFactory : BrushFactory
@@ -147,15 +137,13 @@ namespace MCGalaxy.Drawing.Brushes
             Player p = args.Player;
             if (args.Message.Length == 0)
             {
-                if (!CommandParser.IsBlockAllowed(p, "draw with", args.Block)) return null;
-                return new StripedBrush(args.Block, Block.Invalid);
+                return !CommandParser.IsBlockAllowed(p, "draw with", args.Block) ? null : (Brush)new StripedBrush(args.Block, Block.Invalid);
             }
             string[] parts = args.Message.SplitSpaces();
             if (!CommandParser.GetBlockIfAllowed(p, parts[0], "draw with", out ushort block1, true)) return null;
             if (parts.Length == 1)
                 return new StripedBrush(block1, Block.Invalid);
-            if (!CommandParser.GetBlockIfAllowed(p, parts[1], "draw with", out ushort block2, true)) return null;
-            return new StripedBrush(block1, block2);
+            return !CommandParser.GetBlockIfAllowed(p, parts[1], "draw with", out ushort block2, true) ? null : (Brush)new StripedBrush(block1, block2);
         }
     }
     public sealed class RainbowBrushFactory : BrushFactory
@@ -167,12 +155,7 @@ namespace MCGalaxy.Drawing.Brushes
             "&HIf no arguments are given, draws a diagonally repeating rainbow",
             "&HIf 'random' is given, draws by randomly selecting blocks from the rainbow pattern.",
         };
-        public override Brush Construct(BrushArgs args)
-        {
-            if (args.Message.CaselessEq("random"))
-                return new RandomRainbowBrush(RainbowBrush.blocks);
-            return new RainbowBrush();
-        }
+        public override Brush Construct(BrushArgs args) => args.Message.CaselessEq("random") ? new RandomRainbowBrush(RainbowBrush.blocks) : new RainbowBrush();
     }
     public sealed class BWRainbowBrushFactory : BrushFactory
     {
@@ -183,11 +166,6 @@ namespace MCGalaxy.Drawing.Brushes
             "&HIf no arguments are given, draws a diagonally repeating black-white rainbow",
             "&HIf 'random' is given, draws by randomly selecting blocks from the rainbow pattern.",
         };
-        public override Brush Construct(BrushArgs args)
-        {
-            if (args.Message.CaselessEq("random"))
-                return new RandomRainbowBrush(BWRainbowBrush.blocks);
-            return new BWRainbowBrush();
-        }
+        public override Brush Construct(BrushArgs args) => args.Message.CaselessEq("random") ? new RandomRainbowBrush(BWRainbowBrush.blocks) : new BWRainbowBrush();
     }
 }

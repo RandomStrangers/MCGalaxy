@@ -84,11 +84,7 @@ namespace MCGalaxy.Commands.World
             {
                 return null;
             }
-            if (gen != null && gen.Type == GenType.Advanced && !CheckExtraPerm(p, 1))
-            {
-                return null;
-            }
-            return MapGen.Generate(p, gen, args[0], x, y, z, seed);
+            return gen != null && gen.Type == GenType.Advanced && !CheckExtraPerm(p, 1) ? null : MapGen.Generate(p, gen, args[0], x, y, z, seed);
         }
         public override void Help(Player p)
         {

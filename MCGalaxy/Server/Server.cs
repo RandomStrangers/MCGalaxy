@@ -22,9 +22,9 @@ using MCGalaxy.Events.LevelEvents;
 using MCGalaxy.Events.ServerEvents;
 using MCGalaxy.Games;
 using MCGalaxy.Modules.Awards;
+using MCGalaxy.Modules.Compiling;
 using MCGalaxy.Network;
 using MCGalaxy.Platform;
-using MCGalaxy.Scripting;
 using MCGalaxy.SQL;
 using MCGalaxy.Tasks;
 using MCGalaxy.Util;
@@ -32,35 +32,98 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Security.Cryptography;
+using System.Reflection;
 using System.Threading;
 namespace MCGalaxy
 {
     public sealed partial class Server
     {
-        public static void CheckFile(string file)
+        internal static ConfigElement[] serverConfig, levelConfig, zoneConfig;
+        public static void Load()
         {
-            if (!File.Exists(file))
+            PropertiesFile.Read(Paths.ServerPropsFile, (key, value) => ConfigElement.Parse(serverConfig, Config, key, value));
+            if (!Directory.Exists(Config.BackupDirectory))
             {
-                Logger.Log(LogType.SystemActivity, file + " doesn't exist, Downloading..");
-                try
+                Config.BackupDirectory = "levels/backups";
+            }
+            SetMainLevel(Config.MainLevel);
+            Save();
+        }
+        static readonly object saveLock = new();
+        public static void Save()
+        {
+            try
+            {
+                lock (saveLock)
                 {
-                    using (WebClient client = HttpUtil.CreateWebClient())
-                    {
-                        client.DownloadFile("https://raw.githubusercontent.com/ClassiCube/MCGalaxy/master/" + file, file);
-                    }
-                    if (File.Exists(file))
-                    {
-                        Logger.Log(LogType.SystemActivity, file + " download succesful!");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError("Downloading " + file + " failed, try again later", ex);
+                    using StreamWriter w = FileIO.CreateGuarded(Paths.ServerPropsFile);
+                    SaveProps(w);
                 }
             }
+            catch (Exception ex)
+            {
+                Logger.LogError("Error saving " + Paths.ServerPropsFile, ex);
+            }
         }
-        internal static ConfigElement[] serverConfig, levelConfig, zoneConfig;
+        static void SaveProps(StreamWriter w)
+        {
+            w.WriteLine("# Edit the settings below to modify how your server operates.");
+            w.WriteLine("#");
+            w.WriteLine("# Explanation of Server settings:");
+            w.WriteLine("#   server-name                   = The name which displays on classicube.net");
+            w.WriteLine("#   motd                          = The message which displays when a player connects");
+            w.WriteLine("#   port                          = The port to list for connections on");
+            w.WriteLine("#   public                        = Set to true to appear in the public server list");
+            w.WriteLine("#   max-players                   = The maximum number of players allowed");
+            w.WriteLine("#   max-guests                    = The maximum number of guests allowed");
+            w.WriteLine("#   verify-names                  = Verify the validity of names");
+            w.WriteLine("#   server-owner                  = The username of the owner of the server");
+            w.WriteLine("# Explanation of Level settings:");
+            w.WriteLine("#   world-chat                    = Set to true to enable world chat");
+            w.WriteLine("# Explanation of IRC settings:");
+            w.WriteLine("#   irc                           = Set to true to enable the IRC bot");
+            w.WriteLine("#   irc-nick                      = The name of the IRC bot");
+            w.WriteLine("#   irc-server                    = The server to connect to");
+            w.WriteLine("#   irc-channel                   = The channel to join");
+            w.WriteLine("#   irc-opchannel                 = The channel to join (posts OpChat)");
+            w.WriteLine("#   irc-port                      = The port to use to connect");
+            w.WriteLine("#   irc-identify                  = (true/false)    Do you want the IRC bot to Identify itself with nickserv. Note: You will need to register it's name with nickserv manually.");
+            w.WriteLine("#   irc-password                  = The password you want to use if you're identifying with nickserv");
+            w.WriteLine("# Explanation of Backup settings:");
+            w.WriteLine("#   backup-time                   = The number of seconds between automatic backups");
+            w.WriteLine("# Explanation of Color settings:");
+            w.WriteLine("#   defaultColor                  = The color code of the default messages (Default = &e)");
+            w.WriteLine("# Explanation of Other settings:");
+            w.WriteLine("#   use-whitelist                 = Switch to allow use of a whitelist to override IP bans for certain players.  Default false.");
+            w.WriteLine("#   profanity-filter              = Replace certain bad words in the chat.  Default false.");
+            w.WriteLine("#   notify-on-join-leave          = Show a balloon popup in tray notification area when a player joins/leaves the server.  Default false.");
+            w.WriteLine("#   allow-tp-to-higher-ranks      = Allows the teleportation to players of higher ranks");
+            w.WriteLine("#   agree-to-rules-on-entry       = Forces all new players to the server to agree to the rules before they can build or use commands.");
+            w.WriteLine("#   admins-join-silent            = Players who have adminchat permission join the game silently. Default true");
+            w.WriteLine("#   guest-limit-notify            = Show -Too Many Guests- message in chat when maxGuests has been reached. Default false");
+            w.WriteLine("#   guest-join-notify             = Shows when guests and lower ranks join server in chat and IRC. Default true");
+            w.WriteLine("#   guest-leave-notify            = Shows when guests and lower ranks leave server in chat and IRC. Default true");
+            w.WriteLine("#   announcement-interval         = The delay in between server announcements in minutes. Default 5");
+            w.WriteLine();
+            w.WriteLine("#   kick-on-hackrank              = Set to true if hackrank should kick players");
+            w.WriteLine("#   hackrank-kick-time            = Number of seconds until player is kicked");
+            w.WriteLine("# Explanation of Security settings:");
+            w.WriteLine("#   admin-verification            = Determines whether admins have to verify on entry to the server.  Default true.");
+            w.WriteLine("#   verify-admin-perm             = The minimum rank required for admin verification to occur.");
+            w.WriteLine("# Explanation of Spam Control settings:");
+            w.WriteLine("#   mute-on-spam                  = If enabled it mutes a player for spamming.  Default false.");
+            w.WriteLine("#   spam-messages                 = The amount of messages that have to be sent \"consecutively\" to be muted.");
+            w.WriteLine("#   spam-mute-time                = The amount of seconds a player is muted for spam.");
+            w.WriteLine("#   spam-counter-reset-time       = The amount of seconds the \"consecutive\" messages have to fall between to be considered spam.");
+            w.WriteLine();
+            w.WriteLine("#   As an example, if you wanted the spam to only mute if a user posts 5 messages in a row within 2 seconds, you would use the folowing:");
+            w.WriteLine("#   mute-on-spam                  = true");
+            w.WriteLine("#   spam-messages                 = 5");
+            w.WriteLine("#   spam-mute-time                = 60");
+            w.WriteLine("#   spam-counter-reset-time       = 2");
+            w.WriteLine();
+            ConfigElement.Serialise(serverConfig, w, Config);
+        }
         public static void Start()
         {
             serverConfig = ConfigElement.GetAll(typeof(ServerConfig));
@@ -71,10 +134,10 @@ namespace MCGalaxy
             Logger.Log(LogType.SystemActivity, "Starting Server");
             ServicePointManager.Expect100Continue = false;
             ForceEnableTLS();
-            ExtraAuthenticator.SetActive(new PassAuthenticator());
+            ExtraAuthenticator.SetActive();
             SQLiteBackend.Instance.LoadDependencies();
             EnsureFilesExist();
-            IScripting.Init();
+            Compiler.Init();
             LoadAllSettings(true);
             InitDatabase();
             Economy.LoadDatabase();
@@ -144,7 +207,7 @@ namespace MCGalaxy
             Alias.LoadCustom();
             BlockDefinition.LoadGlobal();
             ImagePalette.Load();
-            SrvProperties.Load();
+            Load();
             if (commands)
             {
                 Command.InitAll();
@@ -273,7 +336,7 @@ namespace MCGalaxy
             return autoload;
         }
         /// <summary> Returns the full path to the server executable </summary>
-        public static string GetPath() => RestartPath;
+        public static string GetPath() => Assembly.GetEntryAssembly().Location;
         /// <summary> Returns the full path to the runtime executable </summary>
         public static string GetRuntimeExePath() => Process.GetCurrentProcess().MainModule.FileName;
         static bool checkedOnMono, runningOnMono;
@@ -286,7 +349,7 @@ namespace MCGalaxy
             }
             return runningOnMono;
         }
-        static void RandomMessage(SchedulerTask task)
+        static void RandomMessage(SchedulerTask _)
         {
             if (PlayerInfo.Online.Count > 0 && announcements.Length > 0)
             {
@@ -330,61 +393,9 @@ namespace MCGalaxy
             Logger.Log(LogType.BackgroundActivity, "GC performed in {0:F2} ms (tracking {1:F2} KB, freed {2:F2} KB)",
                        sw.Elapsed.TotalMilliseconds, end / 1024.0, deltaKB);
         }
-        public static void StartThread(out Thread thread, string name, ThreadStart threadFunc)
-        {
-            thread = new(threadFunc);
-            try
-            {
-                thread.Name = name;
-            }
-            catch
-            {
-            }
-            thread.Start();
-        }
-        // only want ASCII alphanumerical characters for salt
-        static bool AcceptableSaltChar(char c) => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
-                || (c >= '0' && c <= '9');
-        /// <summary> Generates a random salt that is used for calculating mppasses. </summary>
-        public static string GenerateSalt()
-        {
-            RandomNumberGenerator rng = RandomNumberGenerator.Create();
-            char[] str = new char[32];
-            byte[] one = new byte[1];
-            for (int i = 0; i < str.Length;)
-            {
-                rng.GetBytes(one);
-                if (!AcceptableSaltChar((char)one[0]))
-                {
-                    continue;
-                }
-                str[i] = (char)one[0]; i++;
-            }
-            return new string(str);
-        }
-        static readonly System.Text.ASCIIEncoding enc = new();
-        static readonly MD5CryptoServiceProvider md5 = new();
-        static readonly object md5Lock = new();
-        /// <summary> Calculates mppass (verification token) for the given username. </summary>
-        public static string CalcMppass(string name, string salt)
-        {
-            byte[] hash = null;
-            lock (md5Lock)
-            {
-                hash = md5.ComputeHash(enc.GetBytes(salt + name));
-            }
-            return Utils.ToHexString(hash);
-        }
         /// <summary> Converts a formatted username into its original username </summary>
         /// <remarks> If ClassiCubeAccountPlus option is set, removes + </remarks>
-        public static string ToRawUsername(string name)
-        {
-            if (Config.ClassicubeAccountPlus)
-            {
-                return name.Replace("+", "");
-            }
-            return name;
-        }
+        public static string ToRawUsername(string name) => Config.ClassicubeAccountPlus ? name.Replace("+", "") : name;
         /// <summary> Converts a username into its formatted username </summary>
         /// <remarks> If ClassiCubeAccountPlus option is set, adds trailing + </remarks>
         public static string FromRawUsername(string name)

@@ -32,8 +32,7 @@ namespace MCGalaxy.Commands.Building
             if (msg == "hollow") return DrawMode.hollow;
             if (msg == "vertical") return DrawMode.vertical;
             if (msg == "cylinder") return DrawMode.vertical;
-            if (msg == "cone") return DrawMode.cone;
-            return DrawMode.normal;
+            return msg == "cone" ? DrawMode.cone : DrawMode.normal;
         }
         protected override DrawOp GetDrawOp(DrawArgs dArgs) => dArgs.Mode switch
         {

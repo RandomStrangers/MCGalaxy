@@ -118,7 +118,7 @@ namespace MCGalaxy.Commands.CPE
             {
                 pl.SendCurrentTextures();
             }
-            SrvProperties.Save();
+            Server.Save();
         }
         static void UpdateLevel(Player p)
         {

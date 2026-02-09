@@ -66,8 +66,7 @@ namespace MCGalaxy
         {
             lock (locker)
             {
-                if (index < 0 || index >= names.Count) return null;
-                return names[index];
+                return index < 0 || index >= names.Count ? null : names[index];
             }
         }
         /// <summary> Finds matches within this list for the given name. </summary>

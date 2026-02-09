@@ -49,9 +49,8 @@ namespace MCGalaxy
             {
                 if (physThread != null && physThread.ThreadState == ThreadState.Running) return;
                 if (ListCheck.Count == 0 || physThreadStarted) return;
-                Server.StartThread(out physThread, "Physics_" + name,
+                Utils.StartBackgroundThread(out physThread, "Physics_" + name,
                                    PhysicsLoop);
-                Utils.SetBackgroundMode(physThread);
                 physThreadStarted = true;
             }
         }
@@ -388,8 +387,7 @@ namespace MCGalaxy
         {
             if (Props[block].IsMessageBlock || Props[block].IsPortal) return false;
             if (Props[block].IsDoor || Props[block].IsTDoor) return false;
-            if (Props[block].OPBlock) return false;
-            return PhysicsHandlers[block] != null;
+            return !Props[block].OPBlock && PhysicsHandlers[block] != null;
         }
         internal bool CheckSpongeWater(ushort x, ushort y, ushort z)
         {

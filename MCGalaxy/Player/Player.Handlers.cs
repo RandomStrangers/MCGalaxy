@@ -57,7 +57,7 @@ namespace MCGalaxy
             bool deletingBlock = !painting && !placing;
             if (Unverified)
             {
-                ExtraAuthenticator.Current.RequiresVerification(this, "modify blocks");
+                ExtraAuthenticator.RequiresVerification(this, "modify blocks");
                 RevertBlock(x, y, z); return;
             }
             if (ClickToMark && DoBlockchangeCallback(x, y, z, block)) return;
@@ -131,14 +131,12 @@ namespace MCGalaxy
         {
             if (deleteMode) return ChangeBlock(x, y, z, 0);
             HandleDelete handler = Level.DeleteHandlers[old];
-            if (handler != null) return handler(this, old, x, y, z);
-            return ChangeBlock(x, y, z, 0);
+            return handler != null ? handler(this, old, x, y, z) : ChangeBlock(x, y, z, 0);
         }
         ChangeResult PlaceBlock(ushort _, ushort x, ushort y, ushort z, ushort block)
         {
             HandlePlace handler = Level.PlaceHandlers[block];
-            if (handler != null) return handler(this, block, x, y, z);
-            return ChangeBlock(x, y, z, block);
+            return handler != null ? handler(this, block, x, y, z) : ChangeBlock(x, y, z, block);
         }
         /// <summary> Updates the block at the given position, mainly intended for manual changes by the player. </summary>
         /// <remarks> Adds to the BlockDB. Also turns block below to grass/dirt depending on light. </remarks>
@@ -528,8 +526,7 @@ namespace MCGalaxy
                 {
                     callback = ExecuteSerialCommands;
                 }
-                Server.StartThread(out Thread thread, "CMD_ " + cmd, callback);
-                Utils.SetBackgroundMode(thread);
+                Utils.StartBackgroundThread("CMD_ " + cmd, callback);
             }
             catch (Exception e)
             {
@@ -553,9 +550,8 @@ namespace MCGalaxy
                     if (command == null) return;
                     messages.Add(args); commands.Add(command);
                 }
-                Server.StartThread(out Thread thread, "CMDS_",
+                Utils.StartBackgroundThread("CMDS_",
                                    () => UseCommands(commands, messages, data));
-                Utils.SetBackgroundMode(thread);
             }
             catch (Exception e)
             {
@@ -608,7 +604,7 @@ namespace MCGalaxy
             }
             if (Unverified && !(cmd == "pass" || cmd == "setpass"))
             {
-                ExtraAuthenticator.Current.RequiresVerification(this, "use /" + cmd);
+                ExtraAuthenticator.RequiresVerification(this, "use /" + cmd);
                 return false;
             }
             TimeSpan delta = cmdUnblocked - DateTime.UtcNow;
@@ -695,8 +691,7 @@ namespace MCGalaxy
                 Message(e.GetType() + ": " + e.Message);
                 return false;
             }
-            if (spamChecker != null && spamChecker.CheckCommandSpam()) return false;
-            return true;
+            return spamChecker == null || !spamChecker.CheckCommandSpam();
         }
         bool EnqueueSerialCommand(Command cmd, string args, CommandData data)
         {

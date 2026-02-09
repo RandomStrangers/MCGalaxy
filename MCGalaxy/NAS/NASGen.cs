@@ -107,11 +107,7 @@ namespace MCGalaxy
             {
                 return false;
             }
-            if (!int.TryParse(chunks[1], out chunkOffsetZ))
-            {
-                return false;
-            }
-            return true;
+            return int.TryParse(chunks[1], out chunkOffsetZ);
         }
         public static bool Gen(Player p, Level lvl, MapGenArgs args)
         {
@@ -445,18 +441,10 @@ namespace MCGalaxy
                 }
             }
         }
-        public bool ShouldThereBeSoil(int x, int y, int z)
-        {
-            if (
-                IsNeighborLowEnough(x, y, z, -1, 0) ||
-                IsNeighborLowEnough(x, y, z, 1, 0) ||
-                IsNeighborLowEnough(x, y, z, 0, -1) ||
-                IsNeighborLowEnough(x, y, z, 0, 1))
-            {
-                return false;
-            }
-            return true;
-        }
+        public bool ShouldThereBeSoil(int x, int y, int z) => !IsNeighborLowEnough(x, y, z, -1, 0) &&
+!IsNeighborLowEnough(x, y, z, 1, 0) &&
+!IsNeighborLowEnough(x, y, z, 0, -1) &&
+!IsNeighborLowEnough(x, y, z, 0, 1);
         public bool IsNeighborLowEnough(int x, int y, int z, int offX, int offZ)
         {
             int neighborX = x + offX,
@@ -819,14 +807,7 @@ namespace MCGalaxy
                 }
             }
         }
-        public ushort GetSoilType()
-        {
-            if (biome == 1)
-            {
-                return 12;
-            }
-            return 3;
-        }
+        public ushort GetSoilType() => biome == 1 ? (ushort)12 : (ushort)3;
         public void GenOre()
         {
             for (int y = 0; y < lvl.Height - 1; y++)
@@ -1079,11 +1060,7 @@ namespace MCGalaxy
             {
                 return true;
             }
-            if (lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1)))
-            {
-                return true;
-            }
-            return false;
+            return lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1));
         }
         public bool BlockExposed2(int x, int y, int z)
         {
@@ -1099,11 +1076,7 @@ namespace MCGalaxy
             {
                 return true;
             }
-            if (lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1)))
-            {
-                return true;
-            }
-            return false;
+            return lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1));
         }
         public void GenDungeons()
         {

@@ -177,11 +177,7 @@ namespace MCGalaxy.Blocks
                 }
             }
         }
-        public static BlockProps MakeDefault(BlockProps[] scope, Level lvl, ushort block)
-        {
-            if (scope == Block.Props) return Block.MakeDefaultProps(block);
-            return IsDefaultBlock(lvl, block) ? Block.Props[block] : MakeEmpty();
-        }
+        public static BlockProps MakeDefault(BlockProps[] scope, Level lvl, ushort block) => scope == Block.Props ? Block.MakeDefaultProps(block) : IsDefaultBlock(lvl, block) ? Block.Props[block] : MakeEmpty();
         static bool IsDefaultBlock(Level lvl, ushort b) => Block.IsPhysicsType(b) || lvl.CustomBlockDefs[b] == BlockDefinition.GlobalDefs[b];
         public static void ApplyChanges(BlockProps[] scope, Level lvl_, ushort block, bool save)
         {

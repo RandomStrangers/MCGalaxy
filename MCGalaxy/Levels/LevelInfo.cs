@@ -64,17 +64,7 @@ namespace MCGalaxy
             return files;
         }
         public static bool MapExists(string name) => File.Exists(MapPath(name));
-        public static string GetExt(string levelName)
-        {
-            if (File.Exists("levels/" + levelName.ToLower() + ".mcf"))
-            {
-                return ".mcf";
-            }
-            else
-            {
-                return ".lvl";
-            }
-        }
+        public static string GetExt(string levelName) => File.Exists("levels/" + levelName.ToLower() + ".mcf") ? ".mcf" : ".lvl";
         public static string Name(string name, string ext = ".lvl")
         {
             if (!ext.CaselessContains(".lvl"))
@@ -83,14 +73,7 @@ namespace MCGalaxy
             }
             else
             {
-                if (File.Exists("levels/" + name.ToLower() + ".mcf"))
-                {
-                    return name.ToLower() + ".mcf";
-                }
-                else
-                {
-                    return name.ToLower() + ".lvl";
-                }
+                return File.Exists("levels/" + name.ToLower() + ".mcf") ? name.ToLower() + ".mcf" : name.ToLower() + ".lvl";
             }
         }
         /// <summary> Relative path of a level's map file </summary>
@@ -108,14 +91,9 @@ namespace MCGalaxy
             }
             else
             {
-                if (File.Exists("levels/" + name.ToLower() + ".mcf"))
-                {
-                    return BackupDirPath(name, backup) + "/" + name + ".mcf";
-                }
-                else
-                {
-                    return BackupDirPath(name, backup) + "/" + name + ".lvl";
-                }
+                return File.Exists("levels/" + name.ToLower() + ".mcf")
+                    ? BackupDirPath(name, backup) + "/" + name + ".mcf"
+                    : BackupDirPath(name, backup) + "/" + name + ".lvl";
             }
         }
         public static string BackupNameFrom(string path) => path.Substring(path.LastIndexOf(Path.DirectorySeparatorChar) + 1);

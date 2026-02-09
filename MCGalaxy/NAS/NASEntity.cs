@@ -70,14 +70,7 @@ namespace MCGalaxy
             return final;
         }
         public virtual bool CanTakeDamage(NASDamageSource source) => true;
-        public virtual bool TakeDamage(float damage, NASDamageSource source, string customDeathReason = "")
-        {
-            if (!CanTakeDamage(source))
-            {
-                return false;
-            }
-            return false;
-        }
+        public virtual bool TakeDamage(float damage, NASDamageSource source, string customDeathReason = "") => !CanTakeDamage(source) && false;
         public virtual void UpdateAir()
         {
             AirPrev = Air;

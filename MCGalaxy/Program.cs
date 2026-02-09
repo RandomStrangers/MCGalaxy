@@ -31,12 +31,11 @@ namespace MCGalaxy
             {
                 return;
             }
-            Player p = Player.Console;
-            if (ChatModes.Handle(p, text))
+            if (ChatModes.Handle(Player.Console, text))
             {
                 return;
             }
-            Chat.MessageChat(ChatScope.Global, p, "λFULL: &f" + text, null, null, true);
+            Chat.MessageChat(ChatScope.Global, Player.Console, "λFULL: &f" + text, null, null, true);
         }
         public static void RepeatCommand()
         {
@@ -81,7 +80,7 @@ namespace MCGalaxy
                 Logger.Log(LogType.CommandUsage, "(console): /{0} can only be used in-game.", cmd.Name);
                 return;
             }
-            Server.StartThread(out Thread thread, "ConsoleCMD_" + name,
+            Utils.StartBackgroundThread("ConsoleCMD_" + name,
                 () =>
                 {
                     try
@@ -102,7 +101,6 @@ namespace MCGalaxy
                         Logger.Log(LogType.CommandUsage, "(console): FAILED COMMAND");
                     }
                 });
-            Utils.SetBackgroundMode(thread);
         }
         public static string OutputPart(ref char nextCol, ref int start, string message)
         {
@@ -146,35 +144,6 @@ namespace MCGalaxy
         [STAThread]
         public static void Main()
         {
-            SetCurrentDirectory();
-            try
-            {
-                Server.RestartPath = Assembly.GetEntryAssembly().Location;
-            }
-            catch (FileNotFoundException ex)
-            {
-                Console.Out.WriteLine("Cannot start server as {0} is missing from {1}",
-                                  GetFilename(ex.FileName), Environment.CurrentDirectory);
-                Console.Out.WriteLine("Download from https://github.com/RandomStrangers/MCGalaxy/tree/NAS/Uploads");
-                Console.Out.WriteLine("Press any key to exit...");
-                Console.ReadKey(true);
-                return;
-            }
-            StartCLI();
-        }
-        static string GetFilename(string rawName)
-        {
-            try
-            {
-                return new AssemblyName(rawName).Name + ".dll";
-            }
-            catch
-            {
-                return rawName;
-            }
-        }
-        static void SetCurrentDirectory()
-        {
             string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             try
             {
@@ -184,15 +153,11 @@ namespace MCGalaxy
             {
                 Console.Out.WriteLine("Failed to set working directory to '{0}', running in current directory..", path);
             }
-        }
-        static void StartCLI()
-        {
             FileLogger.Init();
             AppDomain.CurrentDomain.UnhandledException += GlobalExHandler;
             try
             {
                 Logger.LogHandler += LogMessage;
-                Server.RestartPath = Assembly.GetEntryAssembly().Location;
                 Server.Start();
                 Console.Title = Server.Config.Name + " - " + Server.SoftwareNameVersioned;
                 Console.CancelKeyPress += OnCancelKeyPress;
@@ -263,11 +228,7 @@ namespace MCGalaxy
             }
             beg += (Environment.NewLine + "Message: ").Length;
             int end = raw.IndexOf(Environment.NewLine, beg);
-            if (end == -1)
-            {
-                return "";
-            }
-            return " (" + raw.Substring(beg, end - beg) + ")";
+            return end == -1 ? "" : " (" + raw.Substring(beg, end - beg) + ")";
         }
         static void CheckNameVerification()
         {

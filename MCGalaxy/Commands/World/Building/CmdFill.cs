@@ -36,8 +36,7 @@ namespace MCGalaxy.Commands.Building
             if (msg == "layer") return DrawMode.layer;
             if (msg == "vertical_x") return DrawMode.verticalX;
             if (msg == "vertical_z") return DrawMode.verticalZ;
-            if (msg == "2d") return DrawMode.volcano;
-            return DrawMode.normal;
+            return msg == "2d" ? DrawMode.volcano : DrawMode.normal;
         }
         protected override DrawOp GetDrawOp(DrawArgs dArg) => new FillDrawOp();
         protected override void GetBrush(DrawArgs dArgs)
@@ -76,8 +75,7 @@ namespace MCGalaxy.Commands.Building
             int lenX = Math.Abs(p.Pos.BlockX - marks[0].X);
             int lenY = Math.Abs(p.Pos.BlockY - marks[0].Y);
             int lenZ = Math.Abs(p.Pos.BlockZ - marks[0].Z);
-            if (lenY >= lenX && lenY >= lenZ) return DrawMode.layer;
-            return lenX >= lenZ ? DrawMode.verticalX : DrawMode.verticalZ;
+            return lenY >= lenX && lenY >= lenZ ? DrawMode.layer : lenX >= lenZ ? DrawMode.verticalX : DrawMode.verticalZ;
         }
         static bool IsConfirmed(string message) => message.CaselessEq("confirm") || message.CaselessEnds(" confirm");
         public override void Help(Player p)

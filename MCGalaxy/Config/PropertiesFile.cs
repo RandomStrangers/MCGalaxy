@@ -26,11 +26,7 @@ namespace MCGalaxy
                                 char separator = '=', bool trimValue = true)
         {
             object obj = null;
-            void del(string key, string value, ref object state) 
-            { 
-                processor(key, value); 
-            }
-            return Read(path, ref obj, del, separator, trimValue);
+            return Read(path, ref obj, (string key, string value, ref object state) => processor(key, value), separator, trimValue);
         }
         public static bool Read<T>(string path, ref T state, LineProcessor<T> processor,
                                    char separator = '=', bool trimValue = true)

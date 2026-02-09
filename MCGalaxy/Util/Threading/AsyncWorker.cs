@@ -70,11 +70,7 @@ namespace MCGalaxy
         }
         protected void WaitForWork() => handle.WaitOne();
         /// <summary> Starts the background worker thread </summary>
-        public void RunAsync()
-        {
-            Server.StartThread(out Thread worker, ThreadName, SendLoop);
-            Utils.SetBackgroundMode(worker);
-        }
+        public void RunAsync() => Utils.StartBackgroundThread(ThreadName, SendLoop);
         public void StopAsync()
         {
             terminating = true;

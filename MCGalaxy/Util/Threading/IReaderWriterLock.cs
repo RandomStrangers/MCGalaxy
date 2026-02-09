@@ -21,22 +21,8 @@ namespace MCGalaxy.Util
         readonly ReaderWriterLockSlim locker = new();
         public IDisposable AccquireRead() => AccquireRead(-1);
         public IDisposable AccquireWrite() => AccquireWrite(-1);
-        public IDisposable AccquireRead(int msTimeout)
-        {
-            if (!locker.TryEnterReadLock(msTimeout))
-            {
-                return null;
-            }
-            return new SlimLock(locker, false);
-        }
-        public IDisposable AccquireWrite(int msTimeout)
-        {
-            if (!locker.TryEnterWriteLock(msTimeout))
-            {
-                return null;
-            }
-            return new SlimLock(locker, true);
-        }
+        public IDisposable AccquireRead(int msTimeout) => !locker.TryEnterReadLock(msTimeout) ? null : (IDisposable)new SlimLock(locker, false);
+        public IDisposable AccquireWrite(int msTimeout) => !locker.TryEnterWriteLock(msTimeout) ? null : (IDisposable)new SlimLock(locker, true);
         class SlimLock : IDisposable
         {
             ReaderWriterLockSlim locker;

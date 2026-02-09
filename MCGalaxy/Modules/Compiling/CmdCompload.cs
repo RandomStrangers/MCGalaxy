@@ -13,7 +13,6 @@
     permissions and limitations under the Licenses.
 */
 using MCGalaxy.Commands;
-using MCGalaxy.Scripting;
 namespace MCGalaxy.Modules.Compiling
 {
     sealed class CmdCompLoad : CmdCompile
@@ -21,13 +20,13 @@ namespace MCGalaxy.Modules.Compiling
         public override string Name => "CompLoad";
         public override string Shortcut => "cml";
         public override CommandAlias[] Aliases => null;
-        protected override void CompilePlugin(Player p, string[] paths, ICompiler compiler)
+        protected override void CompilePlugin(Player p, string[] paths)
         {
             string pln = paths[0],
-                dst = IScripting.PluginPath(pln);
+                dst = Compiler.PluginPath(pln);
             UnloadPlugin(p, pln);
-            base.CompilePlugin(p, paths, compiler);
-            ScriptingOperations.LoadPlugins(p, dst);
+            base.CompilePlugin(p, paths);
+            Compiler.LoadPlugins(p, dst);
         }
         static void UnloadPlugin(Player p, string name)
         {
@@ -36,15 +35,15 @@ namespace MCGalaxy.Modules.Compiling
             {
                 return;
             }
-            ScriptingOperations.UnloadPlugin(p, plugin);
+            Compiler.UnloadPlugin(p, plugin);
         }
-        protected override void CompileCommand(Player p, string[] paths, ICompiler compiler)
+        protected override void CompileCommand(Player p, string[] paths)
         {
             string cmd = paths[0],
-                dst = IScripting.CommandPath(cmd);
+                dst = Compiler.CommandPath(cmd);
             UnloadCommand(p, cmd);
-            base.CompileCommand(p, paths, compiler);
-            ScriptingOperations.LoadCommands(p, dst);
+            base.CompileCommand(p, paths);
+            Compiler.LoadCommands(p, dst);
         }
         static void UnloadCommand(Player p, string cmdName)
         {
@@ -55,7 +54,7 @@ namespace MCGalaxy.Modules.Compiling
             {
                 return;
             }
-            ScriptingOperations.UnloadCommand(p, cmd);
+            Compiler.UnloadCommand(p, cmd);
         }
         public override void Help(Player p)
         {

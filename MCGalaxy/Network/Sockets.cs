@@ -100,14 +100,7 @@ namespace MCGalaxy.Network
             Protocols['G'] = ConstructWebsocket;
         }
         static INetProtocol ConstructClassic(INetSocket socket) => new ClassicProtocol(socket);
-        static INetProtocol ConstructWebsocket(INetSocket socket)
-        {
-            if (!Server.Config.WebClient)
-            {
-                return null;
-            }
-            return new WebSocket(socket);
-        }
+        static INetProtocol ConstructWebsocket(INetSocket socket) => !Server.Config.WebClient ? null : (INetProtocol)new WebSocket(socket);
     }
     public interface INetProtocol
     {

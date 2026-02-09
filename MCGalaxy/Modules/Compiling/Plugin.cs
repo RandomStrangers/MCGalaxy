@@ -13,7 +13,13 @@
     permissions and limitations under the Licenses.
 */
 using MCGalaxy.Core;
-using MCGalaxy.Scripting;
+using MCGalaxy.Modules.Compiling;
+using MCGalaxy.Modules.Moderation.Notes;
+using MCGalaxy.Modules.Moderation.Review;
+using MCGalaxy.Modules.Relay.Discord;
+using MCGalaxy.Modules.Relay.IRC;
+using MCGalaxy.Modules.Security;
+using MCGalaxy.Modules.Warps;
 using System;
 using System.Collections.Generic;
 namespace MCGalaxy
@@ -125,15 +131,15 @@ namespace MCGalaxy
         public static void LoadAll()
         {
             LoadCorePlugin(new CorePlugin());
-            LoadCorePlugin(new Modules.Moderation.Review.ReviewPlugin());
-            LoadCorePlugin(new Modules.Moderation.Notes.NotesPlugin());
-            LoadCorePlugin(new Modules.Relay.Discord.DiscordPlugin());
-            LoadCorePlugin(new Modules.Relay.IRC.IRCPlugin());
-            LoadCorePlugin(new Modules.Security.IPThrottler());
-            LoadCorePlugin(new Modules.Warps.WarpsPlugin());
-            LoadCorePlugin(new Modules.Compiling.CompilerPlugin());
+            LoadCorePlugin(new ReviewPlugin());
+            LoadCorePlugin(new NotesPlugin());
+            LoadCorePlugin(new DiscordPlugin());
+            LoadCorePlugin(new IRCPlugin());
+            LoadCorePlugin(new IPThrottler());
+            LoadCorePlugin(new WarpsPlugin());
+            LoadCorePlugin(new CompilerPlugin());
             Load(new NASPlugin(), true);
-            IScripting.AutoloadPlugins();
+            Compiler.AutoloadPlugins();
         }
         static void LoadCorePlugin(Plugin plugin)
         {

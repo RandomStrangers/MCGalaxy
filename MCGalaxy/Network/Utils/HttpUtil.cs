@@ -85,8 +85,7 @@ namespace MCGalaxy.Network
                 return null;
             }
             // can only use same family for local bind IP
-            if (remoteEP.AddressFamily != localIP.AddressFamily) return null;
-            return new IPEndPoint(localIP, 0);
+            return remoteEP.AddressFamily != localIP.AddressFamily ? null : new IPEndPoint(localIP, 0);
         }
         // TLS 1.1/1.2 do not exist in .NET 4.0 and cause a compilation failure
         public const SslProtocols TLS_11 = (SslProtocols)768;
@@ -171,8 +170,7 @@ namespace MCGalaxy.Network
         public static byte[] DownloadData(string url, Player p)
         {
             Uri uri = GetUrl(p, ref url);
-            if (uri == null) return null;
-            return DownloadData(p, url, uri);
+            return uri == null ? null : DownloadData(p, url, uri);
         }
         static byte[] DownloadData(Player p, string url, Uri uri)
         {

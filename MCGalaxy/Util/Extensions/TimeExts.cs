@@ -102,11 +102,7 @@ namespace MCGalaxy
             {
                 return num * TimeSpan.TicksPerDay * 7;
             }
-            if (unit.CaselessEq("ms"))
-            {
-                return num * TimeSpan.TicksPerMillisecond;
-            }
-            throw new FormatException(unit);
+            return unit.CaselessEq("ms") ? num * TimeSpan.TicksPerMillisecond : throw new FormatException(unit);
         }
         static string GetUnit(string value, int i)
         {

@@ -135,7 +135,7 @@ namespace MCGalaxy
             OnlineListEntry entry = new()
             {
                 group = group,
-                players = new List<Player>()
+                players = new()
             };
             Player[] online = Online.Items;
             foreach (Player pl in online)

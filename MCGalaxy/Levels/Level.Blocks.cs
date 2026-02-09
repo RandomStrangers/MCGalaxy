@@ -50,11 +50,7 @@ namespace MCGalaxy
         }
         /// <summary> Converts the given coordinates to a position index </summary>
         /// <remarks> Returns -1 if coordinates outside this level's boundaries are given </remarks>
-        public int PosToInt(ushort x, ushort y, ushort z)
-        {
-            if (x >= Width || y >= Height || z >= Length) return -1;
-            return x + Width * (z + y * Length);
-        }
+        public int PosToInt(ushort x, ushort y, ushort z) => x >= Width || y >= Height || z >= Length ? -1 : x + Width * (z + y * Length);
         /// <summary> Converts the given position index to coordinates </summary>
         /// <remarks> Undefined coordinates if given position index is invalid </remarks>
         public void IntToPos(int pos, out ushort x, out ushort y, out ushort z)
@@ -98,11 +94,7 @@ namespace MCGalaxy
             return extended == 0 ? raw : (ushort)(extended | FastGetExtTile(x, y, z));
         }
         /// <summary> Gets whether the block at the given coordinates is air </summary>
-        public bool IsAirAt(ushort x, ushort y, ushort z)
-        {
-            if (x >= Width || y >= Height || z >= Length || blocks == null) return false;
-            return blocks[x + Width * (z + y * Length)] == 0;
-        }
+        public bool IsAirAt(ushort x, ushort y, ushort z) => x < Width && y < Height && z < Length && blocks != null && blocks[x + Width * (z + y * Length)] == 0;
         /// <summary> Gets whether the block at the given coordinates is air </summary>
         public bool IsAirAt(ushort x, ushort y, ushort z, out int index)
         {
@@ -200,14 +192,7 @@ namespace MCGalaxy
                 return zn.Access;
             }
         checkRank:
-            if (p.Level == this)
-            {
-                return p.AllowBuild ? null : BuildAccess;
-            }
-            else
-            {
-                return BuildAccess.CheckAllowed(p) ? null : BuildAccess;
-            }
+            return p.Level == this ? p.AllowBuild ? null : BuildAccess : BuildAccess.CheckAllowed(p) ? null : BuildAccess;
         }
         public bool CheckAffect(Player p, ushort x, ushort y, ushort z, ushort old, ushort block)
         {
@@ -392,34 +377,23 @@ namespace MCGalaxy
         public BlockDefinition GetBlockDef(ushort block)
         {
             if (block == 0) return null;
-            if (Block.IsPhysicsType(block))
-            {
-                return CustomBlockDefs[Block.Convert(block)];
-            }
-            else
-            {
-                return CustomBlockDefs[block];
-            }
+            return Block.IsPhysicsType(block) ? CustomBlockDefs[Block.Convert(block)] : CustomBlockDefs[block];
         }
         public byte CollideType(ushort block)
         {
             BlockDefinition def = GetBlockDef(block);
             byte collide = def != null ? def.CollideType : (byte)2;
-            if (def == null && block < 256)
-                return DefaultSet.Collide(Block.Convert(block));
-            return collide;
+            return def == null && block < 256 ? DefaultSet.Collide(Block.Convert(block)) : collide;
         }
         public bool LightPasses(ushort block)
         {
             BlockDefinition def = GetBlockDef(block);
-            if (def != null) return !def.BlocksLight || def.BlockDraw == 2 || def.MinZ > 0;
-            return Block.LightPass(block);
+            return def != null ? !def.BlocksLight || def.BlockDraw == 2 || def.MinZ > 0 : Block.LightPass(block);
         }
         public byte GetFallback(ushort b)
         {
             BlockDefinition def = CustomBlockDefs[b];
-            if (def != null) return def.FallBack;
-            return b < 66 ? (byte)b : (byte)0;
+            return def != null ? def.FallBack : b < 66 ? (byte)b : (byte)0;
         }
     }
 }

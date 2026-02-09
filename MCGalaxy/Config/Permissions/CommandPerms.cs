@@ -24,12 +24,6 @@ namespace MCGalaxy.Commands
         public override string ItemName => CmdName;
         static readonly List<CommandPerms> List = new();
         public CommandPerms(string cmd, LevelPermission min) : base(min) => CmdName = cmd;
-        public CommandPerms Copy()
-        {
-            CommandPerms copy = new(CmdName, 0);
-            CopyPermissionsTo(copy); 
-            return copy;
-        }
         /// <summary> Find the permissions for the given command. (case insensitive) </summary>
         public static CommandPerms Find(string cmd)
         {
@@ -71,18 +65,10 @@ namespace MCGalaxy.Commands
                 w.WriteLine(perms.Serialise());
             }
         }
-        /// <summary> Applies new command permissions to server state. </summary>
-        public static void ApplyChanges()
-        {
-            // does nothing... for now anyways
-            //  (may be required if p.CanUse is changed to instead
-            //   use a list of usable commands as a field instead)
-        }
         /// <summary> Loads list of command permissions from disc. </summary>
         public static void Load()
         {
             lock (ioLock) LoadCore();
-            ApplyChanges();
         }
         static void LoadCore()
         {

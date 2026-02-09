@@ -212,7 +212,7 @@ namespace MCGalaxy
                                            NASGen.mapWideness.ToString(),
                                            seed);
                 Server.Config.MainLevel = mapName;
-                SrvProperties.Save();
+                Server.Save();
                 Chat.Message(ChatScope.All, "A server restart is required to initialize NAS plugin.", null, null, true);
                 Thread.Sleep(TimeSpan.FromSeconds(5));
                 Server.Stop(true, "A server restart is required to initialize NAS plugin.");
@@ -229,7 +229,7 @@ namespace MCGalaxy
             Server.Config.MaxFogDistance = 512;
             Server.Config.SkyColor = "#1489FF";
             Server.Config.ShadowColor = "#888899";
-            SrvProperties.Save();
+            Server.Save();
         }
         public static void EnsureDirectoriesExists(params string[] paths)
         {
@@ -345,14 +345,7 @@ namespace MCGalaxy
             LogResponse(err);
             return false;
         }
-        public static HttpStatusCode GetStatus(WebException ex)
-        {
-            if (ex.Response == null)
-            {
-                return 0;
-            }
-            return ((HttpWebResponse)ex.Response).StatusCode;
-        }
+        public static HttpStatusCode GetStatus(WebException ex) => ex.Response == null ? 0 : ((HttpWebResponse)ex.Response).StatusCode;
         public static void LogWarning(Exception ex, string target) => Logger.Log(LogType.Warning, "Error sending request to Github API {0}: {1}", target, ex.Message);
         public static void LogWarning(string message) => Logger.Log(LogType.Warning, message);
         public static void LogWarning(Exception ex) => Logger.Log(LogType.Warning, "Error sending request to Github API - {0}", ex.Message);

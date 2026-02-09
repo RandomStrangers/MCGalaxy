@@ -17,13 +17,8 @@ namespace MCGalaxy.Maths
 {
     public struct AABB
     {
-        /// <summary> Fixed-point min coordinate of this bounding box. </summary>
-        public Vec3S32 Min;
-        /// <summary> Fixed-point max coordinate of this bounding box. </summary>
-        public Vec3S32 Max;
-        /// <summary> World/block coordinate of the min coordinate of this bounding box. </summary>
+        public Vec3S32 Min, Max;
         public readonly Vec3S32 BlockMin => new(Min.X >> 5, Min.Y >> 5, Min.Z >> 5);
-        /// <summary> World/block coordinate of the max coordinate of this bounding box. </summary>
         public readonly Vec3S32 BlockMax => new(Max.X >> 5, Max.Y >> 5, Max.Z >> 5);
         public AABB(int x1, int y1, int z1, int x2, int y2, int z2)
         {
@@ -34,14 +29,9 @@ namespace MCGalaxy.Maths
             Max.Y = y2;
             Max.Z = z2;
         }
-        public AABB(Vec3S32 min, Vec3S32 max)
-        {
-            Min = min;
-            Max = max;
-        }
         public static AABB Make(Vec3S32 pos, Vec3S32 size) => new(pos.X - size.X / 2, pos.Y, pos.Z - size.Z / 2,
                 pos.X + size.X / 2, pos.Y + size.Y, pos.Z + size.Z / 2);
-        public readonly AABB OffsetPosition(Position pos) => Offset(pos.X, pos.Y - Entities.CharacterHeight, pos.Z);
+        public readonly AABB OffsetPosition(Position pos) => Offset(pos.X, pos.Y - 51, pos.Z);
         public readonly AABB Offset(int x, int y, int z)
         {
             AABB bb = this;
@@ -93,17 +83,11 @@ namespace MCGalaxy.Maths
             bb.Max.Z += amount;
             return bb;
         }
-        /// <summary> Determines whether this bounding box intersects
-        /// the given bounding box on any axes. </summary>
         public static bool Intersects(ref AABB a, ref AABB b)
         {
             if (a.Max.X >= b.Min.X && a.Min.X <= b.Max.X)
             {
-                if (a.Max.Y < b.Min.Y || a.Min.Y > b.Max.Y)
-                {
-                    return false;
-                }
-                return a.Max.Z >= b.Min.Z && a.Min.Z <= b.Max.Z;
+                return a.Max.Y >= b.Min.Y && a.Min.Y <= b.Max.Y && a.Max.Z >= b.Min.Z && a.Min.Z <= b.Max.Z;
             }
             return false;
         }

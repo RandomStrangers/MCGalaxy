@@ -117,11 +117,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             LogResponse(err);
             return false;
         }
-        static HttpStatusCode GetStatus(WebException ex)
-        {
-            if (ex.Response == null) return 0;
-            return ((HttpWebResponse)ex.Response).StatusCode;
-        }
+        static HttpStatusCode GetStatus(WebException ex) => ex.Response == null ? 0 : ((HttpWebResponse)ex.Response).StatusCode;
         static void LogError(Exception ex, DiscordApiMessage msg)
         {
             string target = "(" + msg.Method + " " + msg.Path + ")";

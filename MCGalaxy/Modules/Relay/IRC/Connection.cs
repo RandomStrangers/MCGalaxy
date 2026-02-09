@@ -163,11 +163,7 @@ namespace Sharkbite.Irc
         Stream MakeDataStream()
         {
             Stream raw = client.GetStream();
-            if (!UseSSL)
-            {
-                return raw;
-            }
-            return MCGalaxy.Network.HttpUtil.WrapSSLStream(raw, Hostname);
+            return !UseSSL ? raw : MCGalaxy.Network.HttpUtil.WrapSSLStream(raw, Hostname);
         }
         /// <summary> Connect to the IRC server and start listening for messages on a new thread. </summary>
         /// <exception cref="SocketException">If a connection cannot be established with the IRC server</exception>
@@ -576,33 +572,9 @@ namespace Sharkbite.Irc
         /// <summary>
         /// Turn an array of strings back into a single string.
         /// </summary>
-        static string CondenseStrings(string[] strings, int start)
-        {
-            if (strings.Length == start + 1)
-            {
-                return strings[start];
-            }
-            else
-            {
-                return string.Join(" ", strings, start, strings.Length - start);
-            }
-        }
-        static string RemoveLeadingColon(string text)
-        {
-            if (text[0] == ':')
-            {
-                return text.Substring(1);
-            }
-            return text;
-        }
-        static string GetSuffix(string[] strings, int start)
-        {
-            if (start >= strings.Length)
-            {
-                return "";
-            }
-            return RemoveLeadingColon(CondenseStrings(strings, start));
-        }
+        static string CondenseStrings(string[] strings, int start) => strings.Length == start + 1 ? strings[start] : string.Join(" ", strings, start, strings.Length - start);
+        static string RemoveLeadingColon(string text) => text[0] == ':' ? text.Substring(1) : text;
+        static string GetSuffix(string[] strings, int start) => start >= strings.Length ? "" : RemoveLeadingColon(CondenseStrings(strings, start));
         /// <summary>
         /// Strip off the trailing CTCP quote.
         /// </summary>
@@ -642,11 +614,7 @@ namespace Sharkbite.Irc
             {
                 return false;
             }
-            if (HasSpace(nick))
-            {
-                return false;
-            }
-            return nickRegex.IsMatch(nick);
+            return !HasSpace(nick) && nickRegex.IsMatch(nick);
         }
         static bool IsEmpty(string str) => str == null || str.Trim().Length == 0;
         static bool HasSpace(string str) => str.IndexOf(' ') != -1;

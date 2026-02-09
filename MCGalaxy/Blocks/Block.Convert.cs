@@ -23,8 +23,7 @@ namespace MCGalaxy
         public static bool ExistsFor(Player p, ushort b)
         {
             if (b < CORE_COUNT) return !Undefined(b);
-            if (!p.IsSuper) return p.Level.GetBlockDef(b) != null;
-            return BlockDefinition.GlobalDefs[b] != null;
+            return !p.IsSuper ? p.Level.GetBlockDef(b) != null : BlockDefinition.GlobalDefs[b] != null;
         }
         /// <summary> Gets the name for the block with the given block ID </summary>
         /// <remarks> Block names can differ depending on the player's level </remarks>
@@ -40,8 +39,7 @@ namespace MCGalaxy
             {
                 def = BlockDefinition.GlobalDefs[block];
             }
-            if (def != null) return def.Name.Replace(" ", "");
-            return block < CPE_COUNT ? coreNames[block] : ToRaw(block).ToString();
+            return def != null ? def.Name.Replace(" ", "") : block < CPE_COUNT ? coreNames[block] : ToRaw(block).ToString();
         }
         public static ushort Parse(Player p, string input)
         {

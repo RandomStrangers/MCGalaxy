@@ -350,8 +350,7 @@ namespace MCGalaxy.Generator.Classic
         Tree GetTreeGen()
         {
             if (biome.TreeType == null) return null;
-            if (biome.TreeType == "") return new ClassicTree() { rng = rnd };
-            return Tree.TreeTypes[biome.TreeType]();
+            return biome.TreeType == "" ? new ClassicTree() { rng = rnd } : Tree.TreeTypes[biome.TreeType]();
         }
         bool CanGrowTree(int treeX, int treeY, int treeZ, int treeHeight)
         {

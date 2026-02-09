@@ -20,52 +20,25 @@ using System.Text;
 namespace MCGalaxy.Authentication
 {
     /// <summary> Manages optional additional verification for certain users </summary>
-    public abstract class ExtraAuthenticator
+    public class ExtraAuthenticator
     {
-        /// <summary> The currently/actively used authenticator </summary>
-        public static ExtraAuthenticator Current { get; protected set; }
-        protected abstract void Activate();
-        protected abstract void Deactivate();
-        public static void SetActive(ExtraAuthenticator auth)
+        public static void SetActive()
         {
-            Current?.Deactivate();
-            Current = auth;
-            auth.Activate();
+            Deactivate();
+            Activate();
         }
-        /// <summary> Informs the given player that they must first
-        /// verify before they can perform the given action </summary>
-        public abstract void RequiresVerification(Player p, string action);
-        /// <summary> Informs the given player that they should verify,
-        /// otherwise they will be unable to perform some actions </summary>
-        public abstract void NeedVerification(Player p);
-        /// <summary> Attempts to automatically verify the player at login </summary>
-        public abstract void AutoVerify(Player p, string mppass);
-        protected void Verify(Player p)
-        {
-            p.Message("You are now &averified &Sand can now &ause commands, modify blocks, and chat.");
-            p.verifiedPass = true;
-            p.Unverified = false;
-        }
-    }
-    /// <summary> Performs extra authentication using a per player password </summary>
-    public class PassAuthenticator : ExtraAuthenticator
-    {
-        public bool HasPassword(string name) => GetHashPath(name) != null;
-        public bool VerifyPassword(string name, string password)
+        public static bool HasPassword(string name) => GetHashPath(name) != null;
+        public static bool VerifyPassword(string name, string password)
         {
             string path = GetHashPath(name);
-            if (path == null)
-            {
-                return false;
-            }
-            return CheckHash(path, name, password);
+            return path != null && CheckHash(path, name, password);
         }
-        public void StorePassword(string name, string password)
+        public static void StorePassword(string name, string password)
         {
             Directory.CreateDirectory("extra/passwords/");
             FileIO.TryWriteAllBytes(HashPath(name), ComputeHash(name, password));
         }
-        public bool ResetPassword(string name)
+        public static bool ResetPassword(string name)
         {
             string path = GetHashPath(name);
             if (path == null)
@@ -77,14 +50,7 @@ namespace MCGalaxy.Authentication
         }
         static string GetHashPath(string name) => File.Exists(HashPath(name)) ? HashPath(name) : null;
         static string HashPath(string name) => "extra/passwords/" + Server.ToRawUsername(name).ToLower() + ".pwd";
-        static bool CheckHash(string path, string name, string pass)
-        {
-            if (!FileIO.TryReadBytes(path, out byte[] stored))
-            {
-                return false;
-            }
-            return ArraysEqual(ComputeHash(name, pass), stored);
-        }
+        static bool CheckHash(string path, string name, string pass) => FileIO.TryReadBytes(path, out byte[] stored) && ArraysEqual(ComputeHash(name, pass), stored);
         static byte[] ComputeHash(string name, string pass) => SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes("0bec662b-416f-450c-8f50-664fd4a41d49" + name.ToLower() + " " + pass));
         static bool ArraysEqual(byte[] a, byte[] b)
         {
@@ -101,8 +67,8 @@ namespace MCGalaxy.Authentication
             }
             return true;
         }
-        public override void RequiresVerification(Player p, string action) => p.Message("&WYou must first verify with &T/Pass [password] &Wbefore you can {0}", action);
-        public override void NeedVerification(Player p)
+        public static void RequiresVerification(Player p, string action) => p.Message("&WYou must first verify with &T/Pass [password] &Wbefore you can {0}", action);
+        public static void NeedVerification(Player p)
         {
             if (!HasPassword(p.name))
             {
@@ -113,7 +79,7 @@ namespace MCGalaxy.Authentication
                 p.Message("&WPlease complete account verification with &T/Pass [password]");
             }
         }
-        public override void AutoVerify(Player p, string mppass)
+        public static void AutoVerify(Player p, string mppass)
         {
             if (!HasPassword(p.name))
             {
@@ -125,17 +91,17 @@ namespace MCGalaxy.Authentication
             }
             Verify(p);
         }
-        protected override void Activate()
+        protected static void Activate()
         {
             OnPlayerHelpEvent.Register(OnPlayerHelp, Priority.Low);
             OnPlayerCommandEvent.Register(OnPlayerCommand, Priority.Low);
         }
-        protected override void Deactivate()
+        protected static void Deactivate()
         {
             OnPlayerHelpEvent.Unregister(OnPlayerHelp);
             OnPlayerCommandEvent.Unregister(OnPlayerCommand);
         }
-        void OnPlayerHelp(Player p, string target, ref bool cancel)
+        static void OnPlayerHelp(Player p, string target, ref bool cancel)
         {
             if (!(target.CaselessEq("pass") || target.CaselessEq("password") || target.CaselessEq("setpass")))
             {
@@ -144,7 +110,7 @@ namespace MCGalaxy.Authentication
             PrintHelp(p);
             cancel = true;
         }
-        void OnPlayerCommand(Player p, string cmd, string args, CommandData data)
+        static void OnPlayerCommand(Player p, string cmd, string args, CommandData data)
         {
             if (cmd.CaselessEq("pass"))
             {
@@ -162,7 +128,7 @@ namespace MCGalaxy.Authentication
                 p.cancelcommand = true;
             }
         }
-        void ExecPassCommand(Player p, string message, CommandData data)
+        static void ExecPassCommand(Player p, string message, CommandData data)
         {
             if (!Server.Config.verifyadmins)
             {
@@ -195,7 +161,7 @@ namespace MCGalaxy.Authentication
                 DoVerifyPassword(p, message);
             }
         }
-        void DoVerifyPassword(Player p, string password)
+        static void DoVerifyPassword(Player p, string password)
         {
             if (!p.Unverified)
             {
@@ -227,7 +193,7 @@ namespace MCGalaxy.Authentication
             p.Message("&WWrong Password. &SRemember your password is &Wcase sensitive.");
             p.Message("Forgot your password? Contact &W{0} &Sto &Wreset it.", Server.Config.OwnerName);
         }
-        void DoSetPassword(Player p, string password)
+        static void DoSetPassword(Player p, string password)
         {
             if (p.Unverified && HasPassword(p.name))
             {
@@ -243,7 +209,7 @@ namespace MCGalaxy.Authentication
             StorePassword(p.name, password);
             p.Message("Your verification password was &aset to: &c" + password);
         }
-        void DoResetPassword(Player p, string name, CommandData data)
+        static void DoResetPassword(Player p, string name, CommandData data)
         {
             string target = PlayerInfo.FindMatchesPreferOnline(p, name);
             if (target == null)
@@ -281,6 +247,12 @@ namespace MCGalaxy.Authentication
             p.Message("&H If you are {0}&H+, use this command to verify your login.",
                       Group.GetColoredName(Server.Config.VerifyAdminsRank));
             p.Message("&H You must be verified to use commands, modify blocks, and chat");
+        }
+        protected static void Verify(Player p)
+        {
+            p.Message("You are now &averified &Sand can now &ause commands, modify blocks, and chat.");
+            p.verifiedPass = true;
+            p.Unverified = false;
         }
     }
 }

@@ -129,8 +129,7 @@ namespace MCGalaxy.Commands.Moderation
                 p.Message("You cannot {0} yourself", action); return null;
             }
             Group group = PlayerInfo.GetGroup(target);
-            if (!Command.CheckRank(p, data, target, group.Permission, action, false)) return null;
-            return group;
+            return !Command.CheckRank(p, data, target, group.Permission, action, false) ? null : group;
         }
         /// <summary> Finds the matching name(s) for the input name,
         /// and requires a confirmation message for non-existent players. </summary>
@@ -168,9 +167,7 @@ namespace MCGalaxy.Commands.Moderation
             if (reason == null) return null;
             if (reason.CaselessEq("confirm"))
                 return "";
-            if (reason.CaselessEnds(" confirm"))
-                return reason.Substring(0, reason.Length - " confirm".Length);
-            return null;
+            return reason.CaselessEnds(" confirm") ? reason.Substring(0, reason.Length - " confirm".Length) : null;
         }
         static bool ValidIP(string str) =>
             // IPAddress.TryParse returns "0.0.0.123" for "123", we do not want that behaviour

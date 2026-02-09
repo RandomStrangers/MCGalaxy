@@ -116,8 +116,7 @@ namespace MCGalaxy.Games
             if (type.CaselessEq("tp")) return WeaponType.Teleport;
             if (type.CaselessEq("teleport")) return WeaponType.Teleport;
             if (type.CaselessEq("explode")) return WeaponType.Explode;
-            if (type.CaselessEq("laser")) return WeaponType.Laser;
-            return WeaponType.Invalid;
+            return type.CaselessEq("laser") ? WeaponType.Laser : WeaponType.Invalid;
         }
     }
     public enum WeaponType { Invalid, Normal, Destroy, Teleport, Explode, Laser };

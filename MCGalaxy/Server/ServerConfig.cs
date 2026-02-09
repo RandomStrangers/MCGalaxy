@@ -28,9 +28,9 @@ namespace MCGalaxy
         public string Name = "[MCGalaxy] Default";
         [ConfigString("motd", "Server", "Welcome", false)]
         public string MOTD = "Welcome!";
-        [ConfigInt("max-players", "Server", 16, 1, Server.MAX_PLAYERS)]
+        [ConfigInt("max-players", "Server", 16, 1, 256)]
         public int MaxPlayers = 16;
-        [ConfigInt("max-guests", "Server", 14, 1, Server.MAX_PLAYERS)]
+        [ConfigInt("max-guests", "Server", 14, 1, 256)]
         public int MaxGuests = 14;
         [ConfigInt("port", "Server", 25565, 0, 65535)]
         public int Port = 25565;

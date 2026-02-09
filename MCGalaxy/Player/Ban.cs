@@ -27,11 +27,7 @@ namespace MCGalaxy
             bans.EnsureExists();
             unbans.EnsureExists();
         }
-        public static string PackTempBanData(string reason, string banner, DateTime expiry)
-        {
-            reason ??= "-";
-            return banner + " " + expiry.ToUnixTime() + " " + reason;
-        }
+        public static string PackTempBanData(string reason, string banner, DateTime expiry) => banner + " " + expiry.ToUnixTime() + " " + (reason ??= "-");
         public static void UnpackTempBanData(string line, out string reason, out string banner, out DateTime expiry)
         {
             string[] parts = line.SplitSpaces(3);

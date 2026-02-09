@@ -46,10 +46,9 @@ namespace MCGalaxy {
             if (Blacklisted.CaselessContains(name)) return AccessResult.Blacklisted;
             if (Whitelisted.CaselessContains(name)) return AccessResult.Whitelisted;
             if (rank < Min) return AccessResult.BelowMinRank;
-            if (rank > Max && MaxCmd != null && !CommandExtraPerms.Find(MaxCmd, 1).UsableBy(rank)) {
-                return AccessResult.AboveMaxRank;
-            }
-            return AccessResult.Accepted;
+            return rank > Max && MaxCmd != null && !CommandExtraPerms.Find(MaxCmd, 1).UsableBy(rank)
+                ? AccessResult.AboveMaxRank
+                : AccessResult.Accepted;
         }
         public bool CheckDetailed(Player p) => CheckDetailed(p, p.Rank);
         public bool CheckDetailed(Player p, LevelPermission plRank) {

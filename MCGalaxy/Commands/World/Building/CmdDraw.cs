@@ -36,8 +36,7 @@ namespace MCGalaxy.Commands.Building
             if (msg == "sphere") return DrawMode.sphere;
             if (msg == "hsphere") return DrawMode.hsphere;
             if (msg == "volcano") return DrawMode.volcano;
-            if (msg == "cylinder") return DrawMode.hollow;
-            return DrawMode.normal;
+            return msg == "cylinder" ? DrawMode.hollow : DrawMode.normal;
         }
         protected override DrawOp GetDrawOp(DrawArgs dArgs)
         {

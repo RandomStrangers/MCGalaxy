@@ -214,13 +214,11 @@ namespace MCGalaxy
                     dst = realPath,
                     old = realPath + ".old";
                 TryDelete(old);
-                bool didExist = TryMove(dst, old);
-                TryMove(src, dst);
-                // Only delete old 'good' file if everything worked
-                if (didExist)
+                if (TryMove(dst, old))
                 {
                     TryDelete(old);
                 }
+                TryMove(src, dst);
             }
         }
     }

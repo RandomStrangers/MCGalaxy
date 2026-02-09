@@ -13,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Modules.Compiling;
-using MCGalaxy.Scripting;
 namespace MCGalaxy.Commands.Scripting
 {
     public sealed class CmdPlugin : Command2
@@ -47,8 +46,7 @@ namespace MCGalaxy.Commands.Scripting
             }
             if (cmd.CaselessEq("load"))
             {
-                string path = IScripting.PluginPath(name);
-                ScriptingOperations.LoadPlugins(p, path);
+                Compiler.LoadPlugins(p, Compiler.PluginPath(name));
             }
             else if (cmd.CaselessEq("unload"))
             {
@@ -75,7 +73,7 @@ namespace MCGalaxy.Commands.Scripting
             {
                 return;
             }
-            ScriptingOperations.UnloadPlugin(p, plugin);
+            Compiler.UnloadPlugin(p, plugin);
         }
         public override void Help(Player p)
         {

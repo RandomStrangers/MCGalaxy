@@ -49,8 +49,7 @@ namespace MCGalaxy.Commands.Building
             if (type == "down") return OutlineDrawOp.Side.Down;
             if (type == "up") return OutlineDrawOp.Side.Up;
             if (type == "layer") return OutlineDrawOp.Side.Layer;
-            if (type == "all") return OutlineDrawOp.Side.All;
-            return OutlineDrawOp.Side.Unspecified;
+            return type == "all" ? OutlineDrawOp.Side.All : OutlineDrawOp.Side.Unspecified;
         }
         // Parts is just Command.Use's message.SplitSpaces()
         protected override DrawMode GetMode(string[] parts) =>

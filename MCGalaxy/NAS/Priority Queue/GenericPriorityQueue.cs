@@ -39,11 +39,9 @@ namespace MCGalaxy
             {
                 throw new InvalidOperationException("node.Contains was called on a node from another queue.  Please call originalQueue.ResetNode() first");
             }
-            if (node.QueueIndex < 0 || node.QueueIndex >= _nodes.Length)
-            {
-                throw new InvalidOperationException("node.QueueIndex has been corrupted. Did you change it manually?");
-            }
-            return _nodes[node.QueueIndex] == node;
+            return node.QueueIndex < 0 || node.QueueIndex >= _nodes.Length
+                ? throw new InvalidOperationException("node.QueueIndex has been corrupted. Did you change it manually?")
+                : _nodes[node.QueueIndex] == node;
         }
         public void Enqueue(TItem node, TPriority priority)
         {
@@ -265,11 +263,7 @@ namespace MCGalaxy
         {
             get
             {
-                if (_numNodes <= 0)
-                {
-                    throw new InvalidOperationException("Cannot call .First on an empty queue");
-                }
-                return _nodes[1];
+                return _numNodes <= 0 ? throw new InvalidOperationException("Cannot call .First on an empty queue") : _nodes[1];
             }
         }
         public void UpdatePriority(TItem node, TPriority priority)

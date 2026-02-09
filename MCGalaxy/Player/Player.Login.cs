@@ -60,7 +60,7 @@ namespace MCGalaxy
             }
             if (!verifiedName && NeedsVerification())
             {
-                ExtraAuthenticator.Current.AutoVerify(this, mppass);
+                ExtraAuthenticator.AutoVerify(this, mppass);
             }
             Level = Server.mainLevel;
             Loading = true;

@@ -39,15 +39,14 @@ namespace MCGalaxy
         {
             lock (locker)
             {
-                int idx = names.CaselessIndexOf(name);
-                if (idx == -1)
+                if (names.CaselessIndexOf(name) == -1)
                 {
                     names.Add(name); 
                     lines.Add(name + Separator + data);
                 }
                 else
                 {
-                    lines[idx] = name + Separator + data;
+                    lines[names.CaselessIndexOf(name)] = name + Separator + data;
                 }
             }
         }
@@ -56,10 +55,9 @@ namespace MCGalaxy
         {
             lock (locker)
             {
-                int idx = names.CaselessIndexOf(name);
-                if (idx == -1) return false;
-                names.RemoveAt(idx);
-                lines.RemoveAt(idx);
+                if (names.CaselessIndexOf(name) == -1) return false;
+                names.RemoveAt(names.CaselessIndexOf(name));
+                lines.RemoveAt(names.CaselessIndexOf(name));
                 return true;
             }
         }
@@ -117,9 +115,7 @@ namespace MCGalaxy
                 while ((line = r.ReadLine()) != null)
                 {
                     list.lines.Add(line);
-                    int sepIndex = line.IndexOf(separator);
-                    string name = sepIndex >= 0 ? line.Substring(0, sepIndex) : line;
-                    list.names.Add(name);
+                    list.names.Add(line.IndexOf(separator) >= 0 ? line.Substring(0, line.IndexOf(separator)) : line);
                 }
             }
             return list;

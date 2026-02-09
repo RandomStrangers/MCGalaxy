@@ -27,7 +27,7 @@ using MCGalaxy.Commands.Scripting;
 using MCGalaxy.Commands.World;
 using MCGalaxy.Maths;
 using MCGalaxy.Modules.Awards;
-using MCGalaxy.Scripting;
+using MCGalaxy.Modules.Compiling;
 using System.Collections.Generic;
 using System.Reflection;
 namespace MCGalaxy
@@ -73,7 +73,7 @@ namespace MCGalaxy
             allCmds.Clear();
             Alias.coreAliases.Clear();
             RegisterAllCore();
-            IScripting.AutoloadCommands();
+            Compiler.AutoloadCommands();
         }
         static void RegisterAllCore()
         {

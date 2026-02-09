@@ -83,11 +83,7 @@ namespace MCGalaxy
             string[] args = new string[] { mapName, width, height, length, seed };
             MapGen gen = MapGen.Find("NASGen");
             ushort x = 0, y = 0, z = 0;
-            if (!MapGen.GetDimensions(p, args, 1, ref x, ref y, ref z, false))
-            {
-                return null;
-            }
-            return MapGen.Generate(p, gen, mapName, x, y, z, seed);
+            return !MapGen.GetDimensions(p, args, 1, ref x, ref y, ref z, false) ? null : MapGen.Generate(p, gen, mapName, x, y, z, seed);
         }
         public static bool IsNASLevel(Level lvl)
         {
@@ -95,20 +91,9 @@ namespace MCGalaxy
             {
                 return false;
             }
-            if (Get(lvl) == null)
-            {
-                return false;
-            }
-            return true;
+            return Get(lvl) != null;
         }
-        public static NASLevel Get(Level lvl)
-        {
-            if (all.ContainsKey(lvl.name))
-            {
-                return all[lvl.name];
-            }
-            return null;
-        }
+        public static NASLevel Get(Level lvl) => all.ContainsKey(lvl.name) ? all[lvl.name] : null;
         public static void Setup()
         {
             OnLevelLoadedEvent.Register(OnLevelLoaded, Priority.High);

@@ -70,16 +70,16 @@ namespace MCGalaxy.Commands.Info
                 ushort block = (ushort)b;
                 if (Block.ExistsFor(p, block)) blocks.Add(block);
             }
-            List<string> blockNames = Wildcard.Filter(blocks, keyword,
+            List<string> blockNames = Paginator.Filter(blocks, keyword,
                                                       b => Block.GetName(p, b), null,
                                                       b => Block.GetColoredName(p, b));
             OutputList(p, keyword, "search blocks", "blocks", modifier, blockNames);
         }
         static void SearchCommands(Player p, string keyword, string modifier)
         {
-            List<string> commands = Wildcard.Filter(allCmds, keyword, cmd => cmd.Name,
+            List<string> commands = Paginator.Filter(allCmds, keyword, cmd => cmd.Name,
                                                      null, GetColoredName);
-            List<string> shortcuts = Wildcard.Filter(allCmds, keyword, cmd => cmd.Shortcut,
+            List<string> shortcuts = Paginator.Filter(allCmds, keyword, cmd => cmd.Shortcut,
                                                      cmd => !string.IsNullOrEmpty(cmd.Shortcut),
                                                      GetColoredName);
             // Match both names and shortcuts
@@ -92,27 +92,27 @@ namespace MCGalaxy.Commands.Info
         }
         static void SearchRanks(Player p, string keyword, string modifier)
         {
-            List<string> ranks = Wildcard.Filter(Group.GroupList, keyword, grp => grp.Name,
+            List<string> ranks = Paginator.Filter(Group.GroupList, keyword, grp => grp.Name,
                                                 null, grp => grp.ColoredName);
             OutputList(p, keyword, "search ranks", "ranks", modifier, ranks);
         }
         static void SearchOnline(Player p, string keyword, string modifier)
         {
             Player[] online = PlayerInfo.Online.Items;
-            List<string> players = Wildcard.Filter(online, keyword, pl => pl.name,
+            List<string> players = Paginator.Filter(online, keyword, pl => pl.name,
                                                   pl => p.CanSee(pl), pl => pl.ColoredName);
             OutputList(p, keyword, "search online", "players", modifier, players);
         }
         static void SearchLoaded(Player p, string keyword, string modifier)
         {
             Level[] loaded = LevelInfo.Loaded.Items;
-            List<string> levels = Wildcard.Filter(loaded, keyword, level => level.name);
+            List<string> levels = Paginator.Filter(loaded, keyword, level => level.name);
             OutputList(p, keyword, "search loaded", "loaded levels", modifier, levels);
         }
         static void SearchMaps(Player p, string keyword, string modifier)
         {
             string[] allMaps = LevelInfo.AllMapNames();
-            List<string> maps = Wildcard.Filter(allMaps, keyword, map => map);
+            List<string> maps = Paginator.Filter(allMaps, keyword, map => map);
             maps.Sort(new AlphanumComparator());
             OutputList(p, keyword, "search levels", "maps", modifier, maps);
         }
@@ -133,7 +133,7 @@ namespace MCGalaxy.Commands.Info
             // TODO supporting more than 100 matches somehow
             Database.ReadRows("Players", "Name", r => names.Add(r.GetText(0)),
                               "WHERE Name LIKE @0 ESCAPE '#' LIMIT 100 COLLATE NOCASE",
-                              Wildcard.ToSQLFilter(keyword));
+                              "%" + keyword.Replace("_", "#_").Replace('*', '%').Replace('?', '_') + "%");
             OutputList(p, keyword, "search players", "players", modifier, names);
         }
         public override void Help(Player p)

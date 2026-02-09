@@ -38,7 +38,7 @@ namespace MCGalaxy.Commands.Maintenance
                 Server.Config.PositionUpdateInterval = interval;
                 Chat.MessageAll("Positions now update every &b" + interval + " &Smilliseconds.");
             }
-            SrvProperties.Save();
+            Server.Save();
         }
         public override void Help(Player p)
         {

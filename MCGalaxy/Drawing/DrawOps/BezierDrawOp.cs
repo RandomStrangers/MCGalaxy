@@ -27,7 +27,7 @@ namespace MCGalaxy.Drawing.Ops
             Vec3S32 p0 = marks[0], p2 = marks[1], p1 = marks[2];
             return (long)((p1 - p0).Length + (p1 - p2).Length);
         }
-        static Vec3F32 offset = new(0.5f);
+        static Vec3F32 offset = new(0.5f, 0.5f, 0.5f);
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             points.Clear();

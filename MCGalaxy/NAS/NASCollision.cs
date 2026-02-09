@@ -103,11 +103,7 @@ namespace MCGalaxy
                 return true;
             }
             entityPos.X += entityAABB.Max.X * 2;
-            if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier))
-            {
-                return true;
-            }
-            return false;
+            return NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier);
         }
         public static bool NASTouchesGround(Level lvl, AABB entityAABB, Position posToGetBlock, out float fallDamageMultiplier)
         {
@@ -131,11 +127,7 @@ namespace MCGalaxy
             AABB blockAABB = nasBlock.bounds;
             blockAABB.Max.Y = 32;
             blockAABB = blockAABB.Offset(x * 32, y * 32, z * 32);
-            if (AABB.Intersects(ref entityAABB, ref blockAABB))
-            {
-                return true;
-            }
-            return false;
+            return AABB.Intersects(ref entityAABB, ref blockAABB);
         }
     }
 }

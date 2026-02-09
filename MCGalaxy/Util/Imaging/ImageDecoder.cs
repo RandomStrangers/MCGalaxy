@@ -24,11 +24,7 @@ namespace MCGalaxy.Util.Imaging
         {
             int offset = buf_offset;
             buf_offset += amount;
-            if (buf_offset > buf_length)
-            {
-                throw new EndOfStreamException("End of stream reading data");
-            }
-            return offset;
+            return buf_offset > buf_length ? throw new EndOfStreamException("End of stream reading data") : offset;
         }
         protected void SetBuffer(byte[] src)
         {
@@ -55,11 +51,7 @@ namespace MCGalaxy.Util.Imaging
         public static Bitmap2D DecodeFrom(byte[] src)
         {
             ImageDecoder decoder = DetectFrom(src);
-            if (decoder != null)
-            {
-                return decoder.Decode(src);
-            }
-            throw new UnknownImageFormatException();
+            return decoder != null ? decoder.Decode(src) : throw new UnknownImageFormatException();
         }
         static ImageDecoder DetectFrom(byte[] src)
         {
@@ -71,11 +63,7 @@ namespace MCGalaxy.Util.Imaging
             {
                 return new GifDecoder();
             }
-            if (JpegDecoder.DetectHeader(src))
-            {
-                return new JpegDecoder();
-            }
-            return null;
+            return JpegDecoder.DetectHeader(src) ? new JpegDecoder() : (ImageDecoder)null;
         }
         public abstract Bitmap2D Decode(byte[] src);
     }

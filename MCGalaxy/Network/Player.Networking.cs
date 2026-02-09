@@ -19,6 +19,11 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
+    class VisibleSelection
+    {
+        public object data;
+        public byte ID;
+    }
     public partial class Player : IDisposable
     {
         // these are checked very frequently, so avoid overhead of .Supports(
@@ -36,9 +41,6 @@ namespace MCGalaxy
         }
         // Put a lock on sending messages so that MessageLines is not interrupted by other messages
         readonly object messageLocker = new();
-        public void Message(string message, object a0) => Message(string.Format(message, a0));
-        public void Message(string message, object a0, object a1) => Message(string.Format(message, a0, a1));
-        public void Message(string message, object a0, object a1, object a2) => Message(string.Format(message, a0, a1, a2));
         public void Message(string message, params object[] args) => Message(string.Format(message, args));
         public virtual void Message(string message)
         {
@@ -222,11 +224,6 @@ namespace MCGalaxy
                 Packet.WriteBlockPermission((ushort)i, place, delete, extBlocks, bulk, i * size);
             }
             Send(bulk);
-        }
-        class VisibleSelection 
-        { 
-            public object data; 
-            public byte ID; 
         }
         readonly VolatileArray<VisibleSelection> selections = new();
         public bool AddVisibleSelection(string label, Vec3U16 min, Vec3U16 max, ColorDesc color, object instance)

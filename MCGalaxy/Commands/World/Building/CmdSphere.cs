@@ -32,8 +32,7 @@ namespace MCGalaxy.Commands.Building
             if (msg == "solid") return DrawMode.solid;
             if (msg == "hollow") return DrawMode.hollow;
             if (msg == "circle") return DrawMode.circle;
-            if (msg == "hollowcircle") return DrawMode.hcircle;
-            return DrawMode.normal;
+            return msg == "hollowcircle" ? DrawMode.hcircle : DrawMode.normal;
         }
         protected override DrawOp GetDrawOp(DrawArgs dArgs) => dArgs.Mode switch
         {

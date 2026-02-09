@@ -40,11 +40,9 @@ namespace MCGalaxy.Levels.IO
                 return ReadFormat0(lvl, s);
             }
             // All valid .dat maps must start with these 4 bytes
-            if (signature != 0x271BB788)
-            {
-                throw new InvalidDataException("Invalid .dat map signature");
-            }
-            return r.ReadUInt8() switch
+            return signature != 0x271BB788
+                ? throw new InvalidDataException("Invalid .dat map signature")
+                : r.ReadUInt8() switch
             {
                 // Format version 1 - classic 0.13
                 0x01 => ReadFormat1(lvl, r),

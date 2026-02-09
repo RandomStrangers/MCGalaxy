@@ -29,7 +29,7 @@ namespace MCGalaxy
             comma = new char[] { ',' };
         static readonly string[] emptyStrs = new string[0];
         public static string EscapeCurlyBraces(this string input) => input.Replace("{", "{{").Replace("}", "}}");
-        static List<string> MatchingKeys<T>(Dictionary<string, T> dict, string keyword) => Wildcard.Filter(dict.Keys.ToList(), keyword, key => key);
+        static List<string> MatchingKeys<T>(Dictionary<string, T> dict, string keyword) => Paginator.Filter(dict.Keys.ToList(), keyword, key => key);
         public static void Clear<T>(this Dictionary<string, T> dict, string matcher)
         {
             if (matcher.Length == 0)
@@ -127,11 +127,7 @@ namespace MCGalaxy
             {
                 str = str.Replace(" ", "");
             }
-            if (str.Length == 0)
-            {
-                return emptyStrs;
-            }
-            return str.Split(comma);
+            return str.Length == 0 ? emptyStrs : str.Split(comma);
         }
         public static void Separate(this string str, char splitter,
                                     out string prefix, out string suffix)

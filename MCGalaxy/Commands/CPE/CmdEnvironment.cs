@@ -81,7 +81,7 @@ namespace MCGalaxy.Commands.CPE
                 {
                     pl.SendCurrentEnv();
                 }
-                SrvProperties.Save();
+                Server.Save();
             }
             else
             {

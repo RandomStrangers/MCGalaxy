@@ -22,15 +22,9 @@ namespace MCGalaxy.Blocks
     {
         public ushort ID;
         public override string ItemName => ID.ToString();
-        static readonly BlockPerms[] PlaceList = new BlockPerms[1024];
-        static readonly BlockPerms[] DeleteList = new BlockPerms[1024];
+        static readonly BlockPerms[] PlaceList = new BlockPerms[1024],
+            DeleteList = new BlockPerms[1024];
         public BlockPerms(ushort id, LevelPermission min) : base(min) => ID = id;
-        public BlockPerms Copy()
-        {
-            BlockPerms copy = new(ID, 0);
-            CopyPermissionsTo(copy); 
-            return copy;
-        }
         public static BlockPerms GetPlace(ushort b) => PlaceList[b];
         public static BlockPerms GetDelete(ushort b) => DeleteList[b];
         public static void ResendAllBlockPermissions()

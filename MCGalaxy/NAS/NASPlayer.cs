@@ -326,14 +326,7 @@ namespace MCGalaxy
             }
             return (NASPlayer)p.Extras[NASPlugin.PlayerKey];
         }
-        public bool CanDamage()
-        {
-            if (p.invincible || p.Game.Referee || !pvpEnabled)
-            {
-                return false;
-            }
-            return true;
-        }
+        public bool CanDamage() => !p.invincible && !p.Game.Referee && pvpEnabled;
         public NASPlayer(Player p)
         {
             this.p = p;
@@ -500,11 +493,9 @@ namespace MCGalaxy
             {
                 return exp + (int)Math.Pow(levels, 2) + 6 * levels;
             }
-            if (levels <= 31)
-            {
-                return exp + (int)(2.5 * Math.Pow(levels, 2) - 40.5 * levels + 360);
-            }
-            return exp + (int)(4.5 * Math.Pow(levels, 2) - 162.5 * levels + 2220);
+            return levels <= 31
+                ? exp + (int)(2.5 * Math.Pow(levels, 2) - 40.5 * levels + 360)
+                : exp + (int)(4.5 * Math.Pow(levels, 2) - 162.5 * levels + 2220);
         }
         public static void ClickOnPlayer(Player p, byte entity, MouseButton button, MouseAction action)
         {
@@ -967,11 +958,7 @@ namespace MCGalaxy
             {
                 return "&eα";
             }
-            if (cooldownPercent <= 0)
-            {
-                return "&aα";
-            }
-            return "&hα";
+            return cooldownPercent <= 0 ? "&aα" : "&hα";
         }
         public string ArmorDisplay()
         {

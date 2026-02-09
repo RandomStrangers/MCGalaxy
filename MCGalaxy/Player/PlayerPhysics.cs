@@ -123,8 +123,7 @@ namespace MCGalaxy.Blocks.Physics
         static ushort GetSurvivalBlock(Player p, int x, int y, int z)
         {
             if (y < 0) return 7;
-            if (y >= p.Level.Height) return 0;
-            return p.Level.GetBlock((ushort)x, (ushort)y, (ushort)z);
+            return y >= p.Level.Height ? (ushort)0 : p.Level.GetBlock((ushort)x, (ushort)y, (ushort)z);
         }
     }
 }

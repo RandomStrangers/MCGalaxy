@@ -30,16 +30,8 @@ namespace MCGalaxy.Blocks
             if (!p.trainInvincible && p.Level.Config.KillerBlocks) p.HandleDeath(Block.Train);
             return true;
         }
-        internal static bool DoPortal(Player p, ushort _, ushort x, ushort y, ushort z)
-        {
-            if (p.Level.PosToInt(x, y, z) == p.lastWalkthrough) return true;
-            return Portal.Handle(p, x, y, z);
-        }
-        internal static bool DoMessageBlock(Player p, ushort _, ushort x, ushort y, ushort z)
-        {
-            if (p.Level.PosToInt(x, y, z) == p.lastWalkthrough) return true;
-            return MessageBlock.Handle(p, x, y, z, false);
-        }
+        internal static bool DoPortal(Player p, ushort _, ushort x, ushort y, ushort z) => p.Level.PosToInt(x, y, z) == p.lastWalkthrough || Portal.Handle(p, x, y, z);
+        internal static bool DoMessageBlock(Player p, ushort _, ushort x, ushort y, ushort z) => p.Level.PosToInt(x, y, z) == p.lastWalkthrough || MessageBlock.Handle(p, x, y, z, false);
         internal static bool Checkpoint(Player p, ushort _, ushort x, ushort y, ushort z)
         {
             p.useCheckpointSpawn = true;

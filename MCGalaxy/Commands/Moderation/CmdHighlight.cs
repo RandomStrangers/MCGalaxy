@@ -47,7 +47,7 @@ namespace MCGalaxy.Commands.Moderation
             int[] ids = NameConverter.FindIds(parts[0]);
             if (!area)
             {
-                Vec3S32[] marks = new Vec3S32[] { Vec3U16.MinVal, Vec3U16.MaxVal };
+                Vec3S32[] marks = new Vec3S32[] { new(ushort.MinValue, ushort.MinValue, ushort.MinValue), new(ushort.MaxValue, ushort.MaxValue, ushort.MaxValue) };
                 HighlightPlayer(p, delta, parts[0], ids, marks);
             }
             else

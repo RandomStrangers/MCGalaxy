@@ -27,7 +27,6 @@ namespace MCGalaxy.DB
         {
             string path = "players/" + name + "DB.txt";
             if (!File.Exists(path)) return null;
-            //foreach (string line in File.ReadAllLines(path))
             foreach (string line in FileIO.TryReadAllLines(path))
             {
                 if (!line.CaselessStarts(NICK_PREFIX)) continue;
@@ -44,20 +43,15 @@ namespace MCGalaxy.DB
         public static string GetLoginMessage(string name)
         {
             string path = LoginPath(name);
-            //if (File.Exists(path)) return File.ReadAllText(path);
             if (File.Exists(path)) return FileIO.TryReadAllText(path);
-            // Filesystem is case sensitive (older files used correct casing of name)
             path = "text/login/" + name + ".txt";
-            //return File.Exists(path) ? File.ReadAllText(path) : "";
             return File.Exists(path) ? FileIO.TryReadAllText(path) : "";
         }
         public static string GetLogoutMessage(string name)
         {
             string path = LogoutPath(name);
-            //if (File.Exists(path)) return File.ReadAllText(path);
             if (File.Exists(path)) return FileIO.TryReadAllText(path);
             path = "text/logout/" + name + ".txt";
-            //return File.Exists(path) ? File.ReadAllText(path) : "";
             return File.Exists(path) ? FileIO.TryReadAllText(path) : "";
         }
         static void SetMessage(string path, string msg)
@@ -65,12 +59,10 @@ namespace MCGalaxy.DB
             EnsureDirectoriesExist();
             if (msg.Length > 0)
             {
-                //File.WriteAllText(path, msg);
                 FileIO.TryWriteAllText(path, msg);
             }
             else if (File.Exists(path))
             {
-                //File.Delete(path);
                 FileIO.TryDelete(path);
             }
         }
@@ -92,8 +84,7 @@ namespace MCGalaxy.DB
         public static string FindColor(Player p)
         {
             string raw = Database.ReadString("Players", "Color", "WHERE ID=@0", p.DatabaseID);
-            if (raw == null) return "";
-            return PlayerData.ParseColor(raw);
+            return raw == null ? "" : PlayerData.ParseColor(raw);
         }
         public static string MatchNames(Player p, string name)
         {

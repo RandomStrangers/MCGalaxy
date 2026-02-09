@@ -25,14 +25,22 @@ namespace MCGalaxy.Commands.Misc
         const string precisePrefix = "-precise ";
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p); 
+                return; 
+            }
             bool preciseTP = message.CaselessStarts(precisePrefix);
             if (preciseTP)
             {
                 message = message.Substring(precisePrefix.Length);
             }
             string[] args = message.SplitSpaces();
-            if (args.Length >= 3) { TeleportCoords(p, args, preciseTP); return; }
+            if (args.Length >= 3) 
+            { 
+                TeleportCoords(p, args, preciseTP); 
+                return; 
+            }
             Player target = null;
             PlayerBot bot = null;
             if (args.Length == 1)
@@ -57,7 +65,9 @@ namespace MCGalaxy.Commands.Misc
                                                out Position pos, out byte yaw, out byte pitch)
         {
             Vec3S32 P;
-            pos = p.Pos; yaw = ori.Rot.RotY; pitch = ori.Rot.HeadX;
+            pos = p.Pos;
+            yaw = ori.Rot.RotY; 
+            pitch = ori.Rot.HeadX;
             if (!precise)
             {
                 // relative to feet block coordinates
@@ -68,9 +78,9 @@ namespace MCGalaxy.Commands.Misc
             else
             {
                 // relative to feet position exactly
-                P = new Vec3S32(p.Pos.X, p.Pos.Y - Entities.CharacterHeight, p.Pos.Z);
+                P = new(p.Pos.X, p.Pos.Y - 51, p.Pos.Z);
                 if (!CommandParser.GetCoords(p, args, 0, ref P)) return false;
-                pos = new Position(P.X, P.Y + Entities.CharacterHeight, P.Z);
+                pos = new(P.X, P.Y + 51, P.Z);
             }
             int angle = 0;
             if (args.Length > 3)
@@ -94,10 +104,10 @@ namespace MCGalaxy.Commands.Misc
         {
             if (target.Level.IsMuseum)
             {
-                p.Message("{0} &Sis in a museum.", p.FormatNick(target)); return false;
+                p.Message("{0} &Sis in a museum.", p.FormatNick(target));
+                return false;
             }
-            if (!Server.Config.HigherRankTP && !CheckRank(p, data, target, "teleport to", true)) return false;
-            return true;
+            return Server.Config.HigherRankTP || CheckRank(p, data, target, "teleport to", true);
         }
         public override void Help(Player p)
         {
