@@ -25,7 +25,7 @@ namespace MCGalaxy.Modules.Compiling
         {
             foreach (string cmd in paths)
             {
-                CreateFile(p, cmd, Compiler.CommandDLLPath(cmd), "command &fCmd", Compiler.GenExampleCommand(cmd));
+                CreateFile(p, cmd, Compiler.CommandPath(cmd), "command &fCmd", Compiler.GenExampleCommand(cmd));
             }
         }
         protected override void CompilePlugin(Player p, string[] paths)

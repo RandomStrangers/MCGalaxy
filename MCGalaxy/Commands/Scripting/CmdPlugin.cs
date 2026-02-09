@@ -46,7 +46,7 @@ namespace MCGalaxy.Commands.Scripting
             }
             if (cmd.CaselessEq("load"))
             {
-                Compiler.LoadPlugins(p, Compiler.PluginPath(name));
+                Compiler.LoadPlugins(p, Compiler.PluginDLLPath(name));
             }
             else if (cmd.CaselessEq("unload"))
             {

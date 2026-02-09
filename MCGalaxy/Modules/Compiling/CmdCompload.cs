@@ -23,7 +23,7 @@ namespace MCGalaxy.Modules.Compiling
         protected override void CompilePlugin(Player p, string[] paths)
         {
             string pln = paths[0],
-                dst = Compiler.PluginPath(pln);
+                dst = Compiler.PluginDLLPath(pln);
             UnloadPlugin(p, pln);
             base.CompilePlugin(p, paths);
             Compiler.LoadPlugins(p, dst);
@@ -40,7 +40,7 @@ namespace MCGalaxy.Modules.Compiling
         protected override void CompileCommand(Player p, string[] paths)
         {
             string cmd = paths[0],
-                dst = Compiler.CommandPath(cmd);
+                dst = Compiler.CommandDLLPath(cmd);
             UnloadCommand(p, cmd);
             base.CompileCommand(p, paths);
             Compiler.LoadCommands(p, dst);

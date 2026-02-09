@@ -58,7 +58,7 @@ namespace MCGalaxy.Modules.Compiling
         protected virtual void CompilePlugin(Player p, string[] paths)
         {
             string pln = paths[0],
-                dstPath = Compiler.PluginPath(pln);
+                dstPath = Compiler.PluginDLLPath(pln);
             for (int i = 0; i < paths.Length; i++)
             {
                 paths[i] = Compiler.PluginPath(paths[i]);

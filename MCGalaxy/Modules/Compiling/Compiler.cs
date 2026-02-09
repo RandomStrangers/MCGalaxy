@@ -532,6 +532,7 @@ namespace MCGalaxy
 }}";
         public static string CommandPath(string name) => COMMANDS_SOURCE_DIR + "Cmd" + name + FileExtension;
         public static string PluginPath(string name) => PLUGINS_DIR + name + FileExtension;
+        public static string PluginDLLPath(string name) => PLUGINS_DIR + name + ".dll";
         static string FormatSource(string source, params string[] args) => string.Format(source.Replace(@"\t", "\t").Replace("\n", "\r\n"), args);
         /// <summary> Generates source code for an example command,
         /// preformatted with the given command name </summary>
