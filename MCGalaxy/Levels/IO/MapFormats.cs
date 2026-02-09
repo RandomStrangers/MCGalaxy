@@ -22,17 +22,7 @@ namespace MCGalaxy.Levels.IO
     {
         public abstract string Extension { get; }
         public abstract string Description { get; }
-        public virtual Level Read(string path, string name, bool metadata)
-        {
-            using FileStream fs = FileIO.TryOpenRead(path);
-            return Read(fs, name, metadata);
-        }
         public abstract Level Read(Stream src, string name, bool metadata);
-        public virtual Vec3U16 ReadDimensions(string path)
-        {
-            using FileStream fs = FileIO.TryOpenRead(path);
-            return ReadDimensions(fs);
-        }
         public abstract Vec3U16 ReadDimensions(Stream src);
         protected static void ConvertCustom(Level lvl)
         {
@@ -55,7 +45,6 @@ namespace MCGalaxy.Levels.IO
             new LvlImporter(), new CwImporter(),
             new FcmImporter(), new McfImporter(),
             new DatImporter(), new McLevelImporter(),
-            new MapImporter(), new UclImporter()
         };
         public static IMapImporter defaultImporter = new LvlImporter();
         /// <summary> Returns an IMapImporter capable of decoding the given level file </summary>
@@ -84,24 +73,19 @@ namespace MCGalaxy.Levels.IO
                 Logger.Log(LogType.Warning, "Using default importer.");
                 imp = defaultImporter;
             }
-            return imp.Read(path, name, metadata);
+            using FileStream fs = FileIO.TryOpenRead(path);
+            return imp.Read(fs, name, metadata);
         }
     }
     /// <summary> Writes/Saves block data (and potentially metadata) encoded in a particular format. </summary>
     public abstract class IMapExporter
     {
         public abstract string Extension { get; }
-        public void Write(string path, Level lvl)
-        {
-            using FileStream fs = File.Create(path);
-            Write(fs, lvl);
-        }
         public static IMapExporter defaultExporter = new LvlExporter();
         public abstract void Write(Stream dst, Level lvl);
         public static List<IMapExporter> Formats = new()
         {
             new LvlExporter(), new McfExporter(),
-            new MapExporter(), new UclExporter()
         };
         public static IMapExporter GetFor(string path)
         {
@@ -122,11 +106,11 @@ namespace MCGalaxy.Levels.IO
             if (exp == null)
             {
                 Logger.Log(LogType.Warning, "No exporter found for {0}, cannot save level!", path);
-                return;
             }
             else
             {
-                exp.Write(path, lvl);
+                using FileStream fs = File.Create(path);
+                exp.Write(fs, lvl);
             }
         }
     }

@@ -36,7 +36,8 @@ namespace MCGalaxy.Modules.Moderation.Notes
         {
             if (!Server.Config.LogNotes)
             {
-                p.Message("The server does not have notes logging enabled."); return;
+                p.Message("The server does not have notes logging enabled."); 
+                return;
             }
             List<string> allNotes = Server.Notes.FindAllExact(name);
             List<string> visibleNotes;
@@ -46,7 +47,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
             }
             else
             {
-                visibleNotes = new List<string>();
+                visibleNotes = new();
                 foreach (string note in allNotes)
                 {
                     string[] sections = note.SplitSpaces();
@@ -58,7 +59,8 @@ namespace MCGalaxy.Modules.Moderation.Notes
             string nick = p.FormatNick(name);
             if (visibleNotes.Count == 0)
             {
-                p.Message("{0} &Shas no notes.", nick); return;
+                p.Message("{0} &Shas no notes.", nick);
+                return;
             }
             else
             {

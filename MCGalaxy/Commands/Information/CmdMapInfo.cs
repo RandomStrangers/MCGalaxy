@@ -181,10 +181,14 @@ namespace MCGalaxy.Commands.Info
             }
             public void FromMap(string map)
             {
-                Name = map; MapName = map;
+                Name = map; 
+                MapName = map;
                 string path = LevelInfo.MapPath(map);
-                Vec3U16 dims = IMapImporter.GetFor(path).ReadDimensions(path);
-                Width = dims.X; Height = dims.Y; Length = dims.Z;
+                using FileStream fs = FileIO.TryOpenRead(path);
+                Vec3U16 dims = IMapImporter.GetFor(path).ReadDimensions(fs);
+                Width = dims.X; 
+                Height = dims.Y; 
+                Length = dims.Z;
                 BlockDBEntries = BlockDBFile.CountEntries(map);
                 path = LevelInfo.PropsPath(map);
                 LevelConfig cfg = new();

@@ -52,8 +52,6 @@ namespace MCGalaxy
             List<string> Files = new();
             Files.AddRange(FileIO.TryGetFiles("levels", "*.lvl"));
             Files.AddRange(FileIO.TryGetFiles("levels", "*.mcf"));
-            Files.AddRange(FileIO.TryGetFiles("levels", "*.map"));
-            Files.AddRange(FileIO.TryGetFiles("levels", "*.ucl"));
             return Files.ToArray();
         }
         public static string[] AllMapNames()
@@ -68,20 +66,9 @@ namespace MCGalaxy
         public static bool MapExists(string name) => File.Exists(MapPath(name));
         public static string GetExt(string levelName)
         {
-            bool mcf = File.Exists("levels/" + levelName.ToLower() + ".mcf"),
-                map = File.Exists("levels/" + levelName.ToLower() + ".map"),
-                ucl = File.Exists("levels/" + levelName.ToLower() + ".ucl");
-            if (mcf)
+            if (File.Exists("levels/" + levelName.ToLower() + ".mcf"))
             {
                 return ".mcf";
-            }
-            else if (map)
-            {
-                return ".map";
-            }
-            else if (ucl)
-            {
-                return ".ucl";
             }
             else
             {
@@ -96,20 +83,9 @@ namespace MCGalaxy
             }
             else
             {
-                bool mcf = File.Exists("levels/" + name.ToLower() + ".mcf"),
-                    map = File.Exists("levels/" + name.ToLower() + ".map"),
-                    ucl = File.Exists("levels/" + name.ToLower() + ".ucl");
-                if (mcf)
+                if (File.Exists("levels/" + name.ToLower() + ".mcf"))
                 {
                     return name.ToLower() + ".mcf";
-                }
-                else if (map)
-                {
-                    return name.ToLower() + ".map";
-                }
-                else if (ucl)
-                {
-                    return name.ToLower() + ".ucl";
                 }
                 else
                 {
@@ -132,20 +108,9 @@ namespace MCGalaxy
             }
             else
             {
-                bool mcf = File.Exists("levels/" + name.ToLower() + ".mcf"),
-                    map = File.Exists("levels/" + name.ToLower() + ".map"),
-                    ucl = File.Exists("levels/" + name.ToLower() + ".ucl");
-                if (mcf)
+                if (File.Exists("levels/" + name.ToLower() + ".mcf"))
                 {
                     return BackupDirPath(name, backup) + "/" + name + ".mcf";
-                }
-                else if (map)
-                {
-                    return BackupDirPath(name, backup) + "/" + name + ".map";
-                }
-                else if (ucl)
-                {
-                    return BackupDirPath(name, backup) + "/" + name + ".ucl";
                 }
                 else
                 {
@@ -301,11 +266,11 @@ namespace MCGalaxy
         /// <summary>
         /// If playerName owns levelName and levelName begins with playerName.
         /// </summary>
-        internal static bool IsPersonalRealmOwner(string playerName, string levelName) => levelName.CaselessStarts(playerName) && IsRealmOwner(playerName, levelName);
+        public static bool IsPersonalRealmOwner(string playerName, string levelName) => levelName.CaselessStarts(playerName) && IsRealmOwner(playerName, levelName);
         /// <summary>
         /// Returns all the os maps personally(level name begins with player name) owned by p, sorted alphabetically.
         /// </summary>
-        internal static List<string> AllPersonalRealms(string playerName)
+        public static List<string> AllPersonalRealms(string playerName)
         {
             string[] allMaps = AllMapNames();
             List<string> owned = new();

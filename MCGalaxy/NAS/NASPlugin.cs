@@ -16,7 +16,7 @@ namespace MCGalaxy
         };
         public const string PlayerKey = "NAS_NASPlayer",
             Path = "NAS/";
-        public static bool LoadedOnStartup = false,
+        static bool LoadedOnStartup = false,
             firstEverLoad = false;
         public static Command[] Commands = new Command[]
         {
@@ -54,14 +54,10 @@ namespace MCGalaxy
                 Log("NAS: FAILED to load. Could not find Newtonsoft.Json.dll");
                 return;
             }
-            if (File.Exists("NAS/loaded.txt"))
-            {
-                firstEverLoad = false;
-            }
-            else
+            if (!File.Exists("NAS/Loaded.txt"))
             {
                 firstEverLoad = true;
-                FileIO.TryWriteAllText("NAS/loaded.txt", "Do not delete this file unless you are using NAS for the first time!");
+                FileIO.TryWriteAllText("NAS/Loaded.txt", "Do not delete this file unless you are using NAS for the first time!");
             }
             if (firstEverLoad)
             {
@@ -139,7 +135,7 @@ namespace MCGalaxy
         public override void Unload(bool shutdown)
         {
             Chat.MessageAll("Attempting to unload NAS.");
-            if (!shutdown && LoadedOnStartup)
+            if (!shutdown && (LoadedOnStartup || core.Contains(this)))
             {
                 throw new InvalidOperationException("You cannot unload NAS manually, it can only be unloaded on server shutdown.");
             }

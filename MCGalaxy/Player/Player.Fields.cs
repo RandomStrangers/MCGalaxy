@@ -32,6 +32,7 @@ namespace MCGalaxy
         public static string lastMSG = "";
         internal PersistentMessages persistentMessages = new();
         public Zone ZoneIn;
+        public CinematicGui CinematicGui = new();
         internal bool Request;
         internal string senderName = "", currentTpa = "";
         public string truename;

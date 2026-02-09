@@ -79,15 +79,9 @@ namespace MCGalaxy.DB
         /// <summary> Returns the fields of the row whose Name field caselessly equals the given name </summary>
         public static PlayerData FindData(string name) => FindExact(name, "*", PlayerData.Parse);
         /// <summary> Returns the Name field of the row whose Name field caselessly equals the given name </summary>
-        public static string FindName(string name)
-        {
-            return Database.ReadString("Players", "Name", "WHERE Name=@0 COLLATE NOCASE", name);
-        }
+        public static string FindName(string name) => Database.ReadString("Players", "Name", "WHERE Name=@0 COLLATE NOCASE", name);
         /// <summary> Returns the IP field of the row whose Name field caselessly equals the given name </summary>
-        public static string FindIP(string name)
-        {
-            return Database.ReadString("Players", "IP", "WHERE Name=@0 COLLATE NOCASE", name);
-        }
+        public static string FindIP(string name) => Database.ReadString("Players", "IP", "WHERE Name=@0 COLLATE NOCASE", name);
         public static string FindOfflineIPMatches(Player p, string name, out string ip)
         {
             string[] match = MatchValues(p, name, "Name,IP");

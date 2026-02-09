@@ -116,10 +116,8 @@ namespace MCGalaxy
         public static bool Gen(Player p, Level lvl, MapGenArgs args)
         {
             string seed = args.Seed.ToString();
-            if (File.Exists("levels/" + lvl.name + ".lvl")
-                || File.Exists("levels/" + lvl.name + ".mcf")
-                || File.Exists("levels/" + lvl.name + ".map")
-                || File.Exists("levels/" + lvl.name + ".ucl"))
+            if (File.Exists("levels/" + lvl.name + ".lvl") 
+                || File.Exists("levels/" + lvl.name + ".mcf"))
             {
                 p.Message("Something weird happened, try going into the map again");
                 return false;

@@ -68,7 +68,8 @@ namespace MCGalaxy.DB
                 {
                     stream = File.Create(BlockDBFile.DumpPath(mapName));
                     string lvlPath = LevelInfo.MapPath(mapName);
-                    dims = IMapImporter.GetFor(lvlPath).ReadDimensions(lvlPath);
+                    using FileStream fs = FileIO.TryOpenRead(lvlPath);
+                    dims = IMapImporter.GetFor(lvlPath).ReadDimensions(fs);
                     BlockDBFile.WriteHeader(stream, dims);
                 }
                 entriesWritten++;

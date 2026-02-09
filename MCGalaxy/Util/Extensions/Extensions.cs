@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 namespace MCGalaxy
 {
@@ -27,13 +28,28 @@ namespace MCGalaxy
         static readonly char[] space = new char[] { ' ' },
             comma = new char[] { ',' };
         static readonly string[] emptyStrs = new string[0];
+        public static string EscapeCurlyBraces(this string input) => input.Replace("{", "{{").Replace("}", "}}");
+        static List<string> MatchingKeys<T>(Dictionary<string, T> dict, string keyword) => Wildcard.Filter(dict.Keys.ToList(), keyword, key => key);
+        public static void Clear<T>(this Dictionary<string, T> dict, string matcher)
+        {
+            if (matcher.Length == 0)
+            {
+                dict.Clear();
+                return;
+            }
+            List<string> keysToRemove = MatchingKeys(dict, matcher);
+            foreach (string key in keysToRemove)
+            {
+                dict.Remove(key);
+            }
+        }
         /// <summary> Same as value.Split(' '), but doesn't allocate ' ' each time. </summary>
         /// <example> "abc def xyz".SplitSpaces() becomes "abc", "def", "xyz" </example>
         public static string[] SplitSpaces(this string value) => value.Split(space);
         /// <summary> Same as value.Split(' ', maxParts), but doesn't allocate ' ' each time. </summary>
         /// <example> "abc def xyz".SplitSpaces(2) becomes "abc", "def xyz" </example>
         public static string[] SplitSpaces(this string value, int maxParts) => value.Split(space, maxParts);
-        public static DateTime Floor(this DateTime date, TimeSpan span) => new((date.Ticks / span.Ticks) * span.Ticks);
+        public static DateTime Floor(this DateTime date, TimeSpan span) => new(date.Ticks / span.Ticks * span.Ticks);
         public static bool IsNullOrWhiteSpace(this string value)
         {
             if (value as object is null)

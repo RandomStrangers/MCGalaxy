@@ -27,6 +27,13 @@ namespace MCGalaxy
             get { lock (locker) { return dict[key]; } }
             set { lock (locker) { dict[key] = value; } }
         }
+        public bool TryGet(string key, out object value)
+        {
+            lock (locker) 
+            {
+                return dict.TryGetValue(key, out value); 
+            }
+        }
         public void Clear()
         {
             lock (locker)

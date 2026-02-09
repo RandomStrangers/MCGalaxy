@@ -574,6 +574,17 @@ namespace MCGalaxy.Network
                 Entities.Spawn(player, player, pos, rot);
             }
         }
+        public override bool SendCinematicGui(CinematicGui gui)
+        {
+            if (!Supports(CpeExt.CinematicGui)) return false;
+            float barSize = gui.barSize;
+            barSize = Math.Max(0, Math.Min(1, barSize));
+            Send(Packet.SetCinematicGui(
+                gui.hideCrosshair, gui.hideHand, gui.hideHotbar,
+                gui.barColor.R, gui.barColor.G, gui.barColor.B, gui.barColor.A,
+                (ushort)(barSize * ushort.MaxValue)));
+            return true;
+        }
         public override void SendSpawnEntity(byte id, string name, string skin, Position pos, Orientation rot)
         {
             name = CleanupColors(name);

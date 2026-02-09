@@ -103,8 +103,7 @@ namespace MCGalaxy.Scripting
             return instances;
         }
         /// <summary> Loads the given assembly from disc (and associated .pdb debug data) </summary>
-        public static Assembly LoadAssembly(string path) => LoadAssembly(path, true);
-        public static Assembly LoadAssembly(string path, bool loadDebug)
+        public static Assembly LoadAssembly(string path, bool loadDebug = true)
         {
             if (!FileIO.TryReadBytes(path, out byte[] data))
             {

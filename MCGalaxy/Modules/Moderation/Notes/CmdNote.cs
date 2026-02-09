@@ -27,13 +27,22 @@ namespace MCGalaxy.Modules.Moderation.Notes
         {
             if (!Server.Config.LogNotes)
             {
-                p.Message("Notes logging must be enabled to note players."); return;
+                p.Message("Notes logging must be enabled to note players.");
+                return;
             }
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p); 
+                return; 
+            }
             string[] args = message.SplitSpaces(2);
-            if (args.Length == 1) { p.Message("&WYou must provide text for the note."); return; }
-            string note = args[1];
-            string target = ModActionCmd.FindName(p, "note", "/" + Name, "", args[0], ref note);
+            if (args.Length == 1) 
+            {
+                p.Message("&WYou must provide text for the note."); 
+                return; 
+            }
+            string note = args[1],
+                target = ModActionCmd.FindName(p, "note", "/" + Name, "", args[0], ref note);
             if (target == null) return;
             note = ModActionCmd.ExpandReason(p, note);
             if (note == null) return;

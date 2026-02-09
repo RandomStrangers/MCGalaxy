@@ -53,20 +53,9 @@ namespace MCGalaxy
         /// <summary> Relative path of a deleted level's map file. </summary>
         public static string DeletedMapFile(string level)
         {
-            bool mcf = File.Exists("levels/deleted/" + level.ToLower() + ".mcf"),
-                map = File.Exists("levels/deleted/" + level.ToLower() + ".map"),
-                ucl = File.Exists("levels/deleted/" + level.ToLower() + ".ucl");
-            if (mcf)
+            if (File.Exists("levels/deleted/" + level.ToLower() + ".mcf"))
             {
                 return "levels/deleted/" + level + ".mcf";
-            }
-            else if (map)
-            {
-                return "levels/deleted/" + level + ".map";
-            }
-            else if (ucl)
-            {
-                return "levels/deleted/" + level + ".ucl";
             }
             else
             {
@@ -76,20 +65,9 @@ namespace MCGalaxy
         /// <summary> Relative path of a level's previous save map file. </summary>
         public static string PrevMapFile(string level)
         {
-            bool mcf = File.Exists("levels/" + level.ToLower() + ".mcf"),
-                map = File.Exists("levels/" + level.ToLower() + ".map"),
-                ucl = File.Exists("levels/" + level.ToLower() + ".ucl");
-            if (mcf)
+            if (File.Exists("levels/" + level.ToLower() + ".mcf"))
             {
                 return "levels/prev/" + level.ToLower() + ".mcf.prev";
-            }
-            if (map)
-            {
-                return "levels/prev/" + level.ToLower() + ".map.prev";
-            }
-            if (ucl)
-            {
-                return "levels/prev/" + level.ToLower() + ".ucl.prev";
             }
             else
             {

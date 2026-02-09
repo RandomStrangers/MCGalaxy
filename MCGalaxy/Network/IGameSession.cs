@@ -104,6 +104,8 @@ namespace MCGalaxy.Network
         public abstract bool SendUndefineBlock(BlockDefinition def);
         public abstract bool SendAddSelection(byte id, string label, Vec3U16 p1, Vec3U16 p2, ColorDesc color);
         public abstract bool SendRemoveSelection(byte id);
+        /// <summary> Sends a cinematic gui definition to the client </summary>
+        public abstract bool SendCinematicGui(CinematicGui gui);
         /// <summary> Sends a level to the client </summary>
         public abstract void SendLevel(Level prev, Level level);
         /// <summary> Sends a block change/update packet to the client </summary>

@@ -60,7 +60,7 @@ namespace MCGalaxy
             armor = prop.armor;
             displayName ??= ColoredName;
         }
-        public bool TakeDamage(float amount = 1)
+        public bool TakeDamage(float amount)
         {
             if (HP == int.MaxValue)
             {

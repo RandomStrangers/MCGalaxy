@@ -168,7 +168,7 @@ namespace MCGalaxy {
             if (!CheckDetailed(p, plRank)) {
                 p.Message("&WHence you cannot change the {1} {0} rank.", Type, mode); return false;
             }
-            if (perm <= plRank || max && perm == LevelPermission.Nobody) return true;
+            if (perm <= plRank || max && perm == LevelPermission.Owner) return true;
             p.Message("&WYou cannot change the {1} {0} rank of {2} &Wto a rank higher than yours.",
                       Type, mode, ColoredName);
             return false;
@@ -198,7 +198,7 @@ namespace MCGalaxy {
         readonly string lvlName;
         public LevelAccessController(LevelConfig cfg, string levelName, bool isVisit) {
             this.cfg = cfg;
-            this.lvlName = levelName;
+            lvlName = levelName;
             this.isVisit = isVisit;
         }
         public override LevelPermission Min {

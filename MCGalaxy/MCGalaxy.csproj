@@ -475,19 +475,15 @@
     <Compile Include="Levels\EnvPreset.cs" />
     <Compile Include="Levels\Hacks.cs" />
     <Compile Include="Levels\IO\Exporters\LvlExporter.cs" />
-    <Compile Include="Levels\IO\Exporters\MapExporter.cs" />
     <Compile Include="Levels\IO\Exporters\McfExporter.cs" />
-    <Compile Include="Levels\IO\Exporters\UclExporter.cs" />
     <Compile Include="Levels\IO\fNbt.cs" />
     <Compile Include="Levels\IO\Importers\CwImporter.cs" />
     <Compile Include="Levels\IO\Importers\DatImporter.cs" />
     <Compile Include="Levels\IO\Importers\FcmImporter.cs" />
     <Compile Include="Levels\IO\Importers\JavaDeserialiser.cs" />
     <Compile Include="Levels\IO\Importers\LvlImporter.cs" />
-    <Compile Include="Levels\IO\Importers\MapImporter.cs" />
     <Compile Include="Levels\IO\Importers\McfImporter.cs" />
     <Compile Include="Levels\IO\Importers\McLevelImporter.cs" />
-    <Compile Include="Levels\IO\Importers\UclImporter.cs" />
     <Compile Include="Levels\IO\MapFormats.cs" />
     <Compile Include="Levels\Level.Blocks.cs" />
     <Compile Include="Levels\Level.Fields.cs" />
@@ -577,6 +573,7 @@
     <Compile Include="Network\Utils\LevelChunkStream.cs" />
     <Compile Include="Network\Utils\NetUtils.cs" />
     <Compile Include="Network\Utils\PingList.cs" />
+    <Compile Include="Player\CinematicGui.cs" />
     <Compile Include="Player\Group.cs" />
     <Compile Include="Player\List\PlayerExtList.cs" />
     <Compile Include="Player\List\PlayerList.cs" />

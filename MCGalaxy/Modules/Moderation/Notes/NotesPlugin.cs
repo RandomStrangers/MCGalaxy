@@ -19,7 +19,11 @@ namespace MCGalaxy.Modules.Moderation.Notes
     public sealed class NotesPlugin : Plugin
     {
         public override string Name => "Notes";
-        static readonly Command[] cmds = new Command[] { new CmdNotes(), new CmdMyNotes(), new CmdNote(), new CmdOpNote(), };
+        static readonly Command[] cmds = new Command[] 
+        {
+            new CmdNotes(), new CmdMyNotes(),
+            new CmdNote(), new CmdOpNote(), 
+        };
         public override void Load(bool startup)
         {
             OnModActionEvent.Register(HandleModerationAction, Priority.Low);
@@ -40,9 +44,9 @@ namespace MCGalaxy.Modules.Moderation.Notes
         static void AddNote(ModAction e, string type)
         {
             if (!Server.Config.LogNotes) return;
-            string src = e.Actor.name;
-            string time = DateTime.UtcNow.ToString("dd/MM/yyyy");
-            string data = e.Target + " " + type + " " + src + " " + time + " " +
+            string src = e.Actor.name,
+                time = DateTime.UtcNow.ToString("dd/MM/yyyy"),
+                data = e.Target + " " + type + " " + src + " " + time + " " +
                           e.Reason.Replace(" ", "%20") + " " + e.Duration.Ticks;
             Server.Notes.Append(data);
         }
@@ -52,8 +56,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
     /// </summary>
     public class NoteAcronym
     {
-        public readonly string Acronym;
-        public readonly string Action;
+        public readonly string Acronym, Action;
         private NoteAcronym(string acronym, string action)
         {
             Acronym = acronym;
@@ -63,13 +66,12 @@ namespace MCGalaxy.Modules.Moderation.Notes
         private static readonly NoteAcronym Kicked = new("K", "Kicked");
         private static readonly NoteAcronym Muted = new("M", "Muted");
         private static readonly NoteAcronym Banned = new("B", "Banned");
-        private static readonly NoteAcronym Jailed = new("J", "Jailed"); // Jailing was removed, but still appears in notes for historical reasons
         private static readonly NoteAcronym Frozen = new("F", "Frozen");
         private static readonly NoteAcronym TempBanned = new("T", "Temp-Banned");
         private static readonly NoteAcronym Noted = new("N", "Noted");
         public static readonly NoteAcronym OpNoted = new("O", "OpNoted");
         static NoteAcronym[] All;
-        internal static void Init() => All = new NoteAcronym[] { Warned, Kicked, Muted, Banned, Jailed, Frozen, TempBanned, Noted, OpNoted };
+        internal static void Init() => All = new NoteAcronym[] { Warned, Kicked, Muted, Banned, Frozen, TempBanned, Noted, OpNoted };
         /// <summary>
         /// Returns the appropriate Acronym to log when a mod action occurs.
         /// </summary>
@@ -82,7 +84,10 @@ namespace MCGalaxy.Modules.Moderation.Notes
             string modActionString = action.Type.ToString();
             foreach (NoteAcronym na in All)
             {
-                if (na.Action == modActionString) { return na.Acronym; }
+                if (na.Action == modActionString) 
+                { 
+                    return na.Acronym; 
+                }
             }
             return null;
         }
@@ -93,7 +98,10 @@ namespace MCGalaxy.Modules.Moderation.Notes
         {
             foreach (NoteAcronym na in All)
             {
-                if (na.Acronym == acronym) { return na.Action; }
+                if (na.Acronym == acronym) 
+                {
+                    return na.Action; 
+                }
             }
             return acronym;
         }

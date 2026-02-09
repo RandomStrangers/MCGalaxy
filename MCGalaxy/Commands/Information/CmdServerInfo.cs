@@ -52,57 +52,10 @@ namespace MCGalaxy.Commands.Info
         }
         static DateTime startTime;
         static ProcInfo startUsg;
-        static string Get()
-        {
-            string bitType = " unknown bit type (IntPtr size is " + IntPtr.Size + ")",
-                name = "Unix";
-            if (IntPtr.Size == 8)
-            {
-                bitType = " 64-bit";
-            }
-            else if (IntPtr.Size == 4)
-            {
-                bitType = " 32-bit";
-            }
-            else if (IntPtr.Size == 2)
-            {
-                bitType = " 16-bit";
-            }
-            IOperatingSystem operatingSystem = IOperatingSystem.DetectOS();
-            if (operatingSystem is MonoOS)
-            {
-                name = "Mono";
-            }
-            else if (operatingSystem is WindowsOS)
-            {
-                name = "Windows";
-            }
-            else if (operatingSystem is MacOS)
-            {
-                name = "Mac";
-            }
-            else if (operatingSystem is LinuxOS)
-            {
-                name = "Linux";
-            }
-            else if (operatingSystem is FreeBSD_OS)
-            {
-                name = "FreeBSD";
-            }
-            else if (operatingSystem is NetBSD_OS)
-            {
-                name = "NetBSD";
-            }
-            else if (operatingSystem is UnixOS)
-            {
-                name = "Unix";
-            }
-            return name + bitType;
-        }
         static void OutputResourceUsage(Player p)
         {
             p.Message("Host: {0}", Environment.MachineName);
-            p.Message("OS: {0}", Get());
+            p.Message("OS: {0}", IOperatingSystem.Get());
             Process proc = Process.GetCurrentProcess();
             p.Message("Measuring resource usage...one second");
             IOperatingSystem os = IOperatingSystem.DetectOS();

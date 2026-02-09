@@ -41,9 +41,6 @@ namespace MCGalaxy.Platform
     {
         /// <summary> Whether the operating system currently being run on is Windows </summary>
         public abstract bool IsWindows { get; }
-        public virtual void Init()
-        {
-        }
         public virtual void RestartProcess() => Process.Start(Server.GetPath());
         public abstract CPUTime MeasureAllCPUTime();
         public virtual ProcInfo MeasureResourceUsage(Process proc, bool all)
@@ -66,6 +63,53 @@ namespace MCGalaxy.Platform
             PlatformID.Xbox => true,
             _ => false,
         };
+        public static string Get()
+        {
+            string bitType = " unknown bit type (IntPtr size is " + IntPtr.Size + ")",
+                name = "Unix";
+            if (IntPtr.Size == 8)
+            {
+                bitType = " 64-bit";
+            }
+            else if (IntPtr.Size == 4)
+            {
+                bitType = " 32-bit";
+            }
+            else if (IntPtr.Size == 2)
+            {
+                bitType = " 16-bit";
+            }
+            IOperatingSystem operatingSystem = DetectOS();
+            if (operatingSystem is MonoOS)
+            {
+                name = "Mono";
+            }
+            else if (operatingSystem is WindowsOS)
+            {
+                name = "Windows";
+            }
+            else if (operatingSystem is MacOS)
+            {
+                name = "Mac";
+            }
+            else if (operatingSystem is LinuxOS)
+            {
+                name = "Linux";
+            }
+            else if (operatingSystem is FreeBSD_OS)
+            {
+                name = "FreeBSD";
+            }
+            else if (operatingSystem is NetBSD_OS)
+            {
+                name = "NetBSD";
+            }
+            else if (operatingSystem is UnixOS)
+            {
+                name = "Unix";
+            }
+            return name + bitType;
+        }
         public static unsafe IOperatingSystem DetectOS()
         {
             if (Server.RunningOnMono())

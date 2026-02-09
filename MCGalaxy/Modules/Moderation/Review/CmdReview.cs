@@ -58,7 +58,11 @@ namespace MCGalaxy.Modules.Moderation.Review
         }
         void HandleEnter(Player p)
         {
-            if (p.IsSuper) { p.Message("{0} cannot enter the review queue.", p.SuperName); return; }
+            if (p.IsSuper) 
+            { 
+                p.Message("{0} cannot enter the review queue.", p.SuperName);
+                return; 
+            }
             TimeSpan delta = p.NextReviewTime - DateTime.UtcNow;
             if (delta.TotalSeconds >= 0)
             {
@@ -98,7 +102,8 @@ namespace MCGalaxy.Modules.Moderation.Review
             List<string> inQueue = Server.reviewlist.All();
             if (inQueue.Count == 0)
             {
-                p.Message("There are no players in the review queue."); return;
+                p.Message("There are no players in the review queue."); 
+                return;
             }
             p.Message("&9Players in the review queue:");
             int pos = 1;
@@ -123,12 +128,17 @@ namespace MCGalaxy.Modules.Moderation.Review
         }
         void HandleNext(Player p)
         {
-            if (p.IsSuper) { p.Message("{0} cannot answer the review queue.", p.SuperName); return; }
+            if (p.IsSuper) 
+            { 
+                p.Message("{0} cannot answer the review queue.", p.SuperName);
+                return; 
+            }
             if (!CheckExtraPerm(p, 2)) return;
             string user = Server.reviewlist.GetAt(0);
             if (user == null)
             {
-                p.Message("There are no players in the review queue."); return;
+                p.Message("There are no players in the review queue."); 
+                return;
             }
             Player target = PlayerInfo.FindExact(user);
             Server.reviewlist.Remove(user);

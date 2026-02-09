@@ -16,8 +16,14 @@ namespace MCGalaxy.Modules.Relay.Discord
 {
     public static class DiscordUtils
     {
-        static readonly string[] markdown_special = { @"\", @"*", @"_", @"~", @"`", @"|", @"-", @"#" };
-        static readonly string[] markdown_escaped = { @"\\", @"\*", @"\_", @"\~", @"\`", @"\|", @"\-", @"\#" };
+        static readonly string[] markdown_special = 
+        {
+            @"\", @"*", @"_", @"~", @"`", @"|", @"-", @"#" 
+        },
+        markdown_escaped = 
+        { 
+            @"\\", @"\*", @"\_", @"\~", @"\`", @"\|", @"\-", @"\#" 
+        };
         public static string EscapeMarkdown(string message)
         {
             // don't let user use bold/italic etc markdown
@@ -27,31 +33,17 @@ namespace MCGalaxy.Modules.Relay.Discord
             }
             return message;
         }
-        // these characters are chosen specifically to lie within the unspecified unicode range,
-        //  as those characters are "application defined" (EDCX = Escaped Discord Character #X)
-        //  https://en.wikipedia.org/wiki/Private_Use_Areas
-        public const char UNDERSCORE = '\uEDC1'; // _
-        public const char TILDE = '\uEDC2'; // ~
-        public const char STAR = '\uEDC3'; // *
-        public const char GRAVE = '\uEDC4'; // `
-        public const char BAR = '\uEDC5'; // |
-        public const string UNDERLINE = "\uEDC1\uEDC1"; // __
-        public const string BOLD = "\uEDC3\uEDC3"; // **
-        public const string ITALIC = "\uEDC1"; // _
-        public const string CODE = "\uEDC4"; // `
-        public const string SPOILER = "\uEDC5\uEDC5"; // ||
-        public const string STRIKETHROUGH = "\uEDC2\uEDC2"; // ~~
         public static string MarkdownToSpecial(string input) => input
-                .Replace('_', UNDERSCORE)
-                .Replace('~', TILDE)
-                .Replace('*', STAR)
-                .Replace('`', GRAVE)
-                .Replace('|', BAR);
+                .Replace('_', '\uEDC1')
+                .Replace('~', '\uEDC2')
+                .Replace('*', '\uEDC3')
+                .Replace('`', '\uEDC4')
+                .Replace('|', '\uEDC5');
         public static string SpecialToMarkdown(string input) => input
-                .Replace(UNDERSCORE, '_')
-                .Replace(TILDE, '~')
-                .Replace(STAR, '*')
-                .Replace(GRAVE, '`')
-                .Replace(BAR, '|');
+                .Replace('\uEDC1', '_')
+                .Replace('\uEDC2', '~')
+                .Replace('\uEDC3', '*')
+                .Replace('\uEDC4', '`')
+                .Replace('\uEDC5', '|');
     }
 }

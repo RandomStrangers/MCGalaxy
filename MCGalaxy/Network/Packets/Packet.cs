@@ -14,6 +14,7 @@
  */
 using MCGalaxy.Maths;
 using System;
+using System.Reflection.Emit;
 namespace MCGalaxy.Network
 {
     public enum TeleportMoveMode { AbsoluteInstant, AbsoluteSmooth, RelativeSmooth, RelativeShift }
@@ -480,6 +481,20 @@ namespace MCGalaxy.Network
             buffer[0] = 55;
             buffer[1] = (byte)mode;
             buffer[2] = (byte)(locked ? 1 : 0);
+            return buffer;
+        }
+        public static byte[] SetCinematicGui(bool hideCrosshair, bool hideHand, bool hideHotbar, byte r, byte g, byte b, byte opacity, ushort barSize)
+        {
+            byte[] buffer = new byte[10];
+            buffer[0] = 56;
+            buffer[1] = (byte)(hideCrosshair ? 1 : 0);
+            buffer[2] = (byte)(hideHand ? 1 : 0);
+            buffer[3] = (byte)(hideHotbar ? 1 : 0);
+            buffer[4] = r;
+            buffer[5] = g;
+            buffer[6] = b;
+            buffer[7] = opacity;
+            NetUtils.WriteU16(barSize, buffer, 8);
             return buffer;
         }
         #endregion
