@@ -661,8 +661,6 @@ namespace MCGalaxy
                                                                                  }
                                                                                  if (nasBlock.container.type != NASContainerType.Gravestone)
                                                                                  {
-                                                                                     np.Message("(BUG) The data inside this {0} was lost, but you can make it functional again by &cdeleting&S then &breplacing&S it.",
-                                                                                                  nasBlock.container.Name.ToLower());
                                                                                      np.nl.blockEntities.Add(x + " " + y + " " + z, new());
                                                                                  }
                                                                              };
@@ -775,7 +773,6 @@ namespace MCGalaxy
             {
                 if (bEntity.drop.blockStacks.Count == 0)
                 {
-                    np.Message("&cTHERE ARE 0 BLOCK STACKS INSIDE WARNING THIS SHOULD NEVER HAPPEN IT SHOULD BE NULL INSTEAD");
                     bEntity.drop.blockStacks = null;
                 }
                 NASBlockStack bs = null;

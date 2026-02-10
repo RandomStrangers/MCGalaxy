@@ -228,7 +228,6 @@ namespace MCGalaxy
             spawnPos = new(location.X, location.Y, location.Z);
             yaw = this.yaw;
             pitch = this.pitch;
-            Log("Teleporting {0}!", p.truename);
             if (level.name != levelName)
             {
                 CommandData data = p.DefaultCmdData;

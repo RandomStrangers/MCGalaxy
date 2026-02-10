@@ -274,7 +274,6 @@ namespace MCGalaxy
                 }
                 if (File.Exists(file))
                 {
-                    Log("{0} download successful!", file);
                     return true;
                 }
             }
@@ -301,7 +300,7 @@ namespace MCGalaxy
                 Command.Register(cmd);
             }
         }
-        public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
+        public static void Log(string format, params object[] args) => Logger.Log(LogType.Warning, string.Format(format, args));
         public static string GetErrorResponse(Exception ex)
         {
             try
@@ -361,11 +360,7 @@ namespace MCGalaxy
             }
             LogWarning("Github API returned: " + err);
         }
-        public static void Sleep()
-        {
-            Log("Waiting to download files...");
-            Thread.Sleep(TimeSpan.FromSeconds(30 + 0.5f));
-        }
+        public static void Sleep() => Thread.Sleep(TimeSpan.FromSeconds(30 + 0.5f));
     }
     public partial class NASPlayer
     {

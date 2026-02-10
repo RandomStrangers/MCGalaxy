@@ -44,7 +44,6 @@ namespace MCGalaxy
             48
         };
         public static bool currentlyGenerating = false;
-        public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
         public static void Setup()
         {
             genScheduler ??= new("MapGenScheduler");
@@ -343,10 +342,6 @@ namespace MCGalaxy
                 TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
                 if (span > TimeSpan.FromSeconds(5))
                 {
-                    if (!p.IsSuper)
-                    {
-                        Log("Initial gen {0}% complete.", (int)(y / height * 100));
-                    }
                     p.Message("Initial gen {0}% complete.", (int)(y / height * 100));
                     dateStartLayer = DateTime.UtcNow;
                 }
@@ -432,10 +427,6 @@ namespace MCGalaxy
                 TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
                 if (span > TimeSpan.FromSeconds(5))
                 {
-                    if (!p.IsSuper)
-                    {
-                        Log("Soil gen {0}% complete.", y / height * 100);
-                    }
                     p.Message("Soil gen {0}% complete.", y / height * 100);
                     dateStartLayer = DateTime.UtcNow;
                 }
@@ -518,10 +509,6 @@ namespace MCGalaxy
                 TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
                 if (span > TimeSpan.FromSeconds(5))
                 {
-                    if (!p.IsSuper)
-                    {
-                        Log("Cave gen {0}% complete.", (int)(y / height * 100));
-                    }
                     p.Message("Cave gen {0}% complete.", (int)(y / height * 100));
                     dateStartLayer = DateTime.UtcNow;
                 }
@@ -568,10 +555,6 @@ namespace MCGalaxy
                 TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
                 if (span > TimeSpan.FromSeconds(5))
                 {
-                    if (!p.IsSuper)
-                    {
-                        Log("Random gen {0}% complete.", (int)(y / height * 100));
-                    }
                     p.Message("Random gen {0}% complete.", (int)(y / height * 100));
                     dateStartLayer = DateTime.UtcNow;
                 }
@@ -714,10 +697,6 @@ namespace MCGalaxy
                 TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
                 if (span > TimeSpan.FromSeconds(5))
                 {
-                    if (!p.IsSuper)
-                    {
-                        Log("Foilage gen {0}% complete.", y / height * 100);
-                    }
                     p.Message("Foilage gen {0}% complete.", y / height * 100);
                     dateStartLayer = DateTime.UtcNow;
                 }

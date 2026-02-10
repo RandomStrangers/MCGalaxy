@@ -49,7 +49,7 @@ namespace MCGalaxy
         {
             if (!File.Exists(NASPlugin.Path + terrainImageName))
             {
-                Logger.Log(LogType.Debug, "Could not locate {0} (needed for block particle colors)", terrainImageName);
+                Logger.Log(LogType.Warning, "Could not locate {0} (needed for block particle colors)", terrainImageName);
                 return false;
             }
             breakScheduler ??= new("BlockBreakScheduler");
@@ -57,7 +57,7 @@ namespace MCGalaxy
             fishingScheduler ??= new("FishingScheduler");
             if (!FileIO.TryReadBytes(NASPlugin.Path + terrainImageName, out byte[] data))
             {
-                Logger.Log(LogType.Debug, "Could not read {0} (needed for block particle colors)", NASPlugin.Path + terrainImageName);
+                Logger.Log(LogType.Warning, "Could not read {0} (needed for block particle colors)", NASPlugin.Path + terrainImageName);
                 return false;
             }
             Bitmap2D terrain = ImageDecoder.DecodeFrom(data);
@@ -260,11 +260,10 @@ namespace MCGalaxy
         public static void MeterTask(SchedulerTask task)
         {
             NASMeterInfo info = (NASMeterInfo)task.State;
-            Player p = info.p;
             int millisecs = info.milliseconds;
             millisecs -= 100;
-            NASEffect.Define(p, BreakMeterID, NASEffect.breakMeter, new(255,255,255,255), (float)(millisecs / 1000.0f));
-            NASEffect.Spawn(p, BreakMeterID, NASEffect.breakMeter, info.x, info.y, info.z, info.x, info.y, info.z);
+            NASEffect.Define(info.p, BreakMeterID, NASEffect.breakMeter, new(255,255,255,255), (float)(millisecs / 1000.0f));
+            NASEffect.Spawn(info.p, BreakMeterID, NASEffect.breakMeter, info.x, info.y, info.z, info.x, info.y, info.z);
         }
         public static void HandleLeftClick(Player p, MouseButton _,
             MouseAction action, ushort __, ushort ___, byte ____,
@@ -454,8 +453,7 @@ namespace MCGalaxy
                         DoOffset(def.MinY, false, ref meterInfo.z);
                     }
                 }
-                SchedulerTask taskDisplayMeter = breakScheduler.QueueOnce(MeterTask, meterInfo, TimeSpan.FromMilliseconds(100));
-                p.Extras["NAS_taskDisplayMeter"] = taskDisplayMeter;
+                p.Extras["NAS_taskDisplayMeter"] = breakScheduler.QueueOnce(MeterTask, meterInfo, TimeSpan.FromMilliseconds(100));
             }
         }
         public static void DoOffset(byte minOrMax, bool positive, ref float coord)

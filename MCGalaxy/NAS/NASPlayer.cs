@@ -313,7 +313,6 @@ namespace MCGalaxy
                 NASBlockChange.breakScheduler.Cancel((SchedulerTask)p.Extras["nas_taskDisplayMeter"]);
             }
         }
-        public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
         public static NASPlayer GetPlayer(Player p)
         {
             if (!p.Extras.Contains(NASPlugin.PlayerKey))
@@ -342,7 +341,6 @@ namespace MCGalaxy
         }
         public void SetPlayer(Player p)
         {
-            Log("setting {0} in inventory", p.truename);
             this.p = p;
             inventory.p = p;
         }
@@ -854,7 +852,6 @@ namespace MCGalaxy
             hasBeenSpawned = false;
             isDead = true;
             lastAttackedPlayer = null;
-            Log("{0}: hasBeenSpawned set to {1}", p.truename, hasBeenSpawned);
             reason = thing.Replace("@p", p.ColoredName);
             PlayerActions.Respawn(p);
         }

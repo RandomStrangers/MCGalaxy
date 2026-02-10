@@ -441,7 +441,6 @@ namespace MCGalaxy
                 np = JsonConvert.DeserializeObject<NASPlayer>(jsonString);
                 np.SetPlayer(p);
                 p.Extras[PlayerKey] = np;
-                Log("Loaded save file {0}!", file);
                 return true;
             }
             catch
@@ -460,7 +459,6 @@ namespace MCGalaxy
                 Orientation rot = new(Server.mainLevel.rotx, Server.mainLevel.roty);
                 NASEntity.SetLocation(np, Server.mainLevel.name, Server.mainLevel.SpawnPos, rot);
                 p.Extras[PlayerKey] = np;
-                Log("Created new save file for {0}!", p.name);
             }
             np.DisplayHealth();
             np.inventory.ClearHotbar();

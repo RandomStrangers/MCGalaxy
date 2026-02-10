@@ -27,7 +27,6 @@ namespace MCGalaxy
             gameday = 0;
         public int day = 0, minutes = 7 * hourMinutes;
         public static NASTimeCycle cyc = new();
-        public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
         public static void StoreTimeData(int day, int minutes, NASDayCycles cycle)
         {
             cyc.day = day;
@@ -36,7 +35,6 @@ namespace MCGalaxy
             if (!File.Exists(TimeFilePath))
             {
                 File.Create(TimeFilePath).Dispose();
-                Log("Created new json time file {0}!", TimeFilePath);
             }
             using StreamWriter sw = new(TimeFilePath);
             using JsonWriter writer = new JsonTextWriter(sw);
@@ -50,7 +48,6 @@ namespace MCGalaxy
             if (!File.Exists(TimeFilePath))
             {
                 File.Create(TimeFilePath).Dispose();
-                Log("Created new json time file {0}!", TimeFilePath);
                 using StreamWriter sw = new(TimeFilePath);
                 using JsonWriter writer = new JsonTextWriter(sw);
                 serializer.Serialize(writer, cyc);

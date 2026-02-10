@@ -56,7 +56,7 @@ namespace MCGalaxy
             cfg ??= ConfigElement.GetAll(typeof(NASEffect));
             if (!ConfigElement.ParseFile(cfg, fileName, this))
             {
-                Logger.Log(LogType.Debug, "NAS: Could not find required effect file {0}", effectName);
+                Logger.Log(LogType.Warning, "NAS: Could not find required effect file {0}", effectName);
                 return false;
             }
             offset = pixelSize / 32;

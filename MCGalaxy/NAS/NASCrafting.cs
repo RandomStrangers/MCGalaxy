@@ -18,16 +18,17 @@ namespace MCGalaxy
             usesAlternateID = false,
             shapeless = false;
         public NASDrop drop;
-        public NASRecipe() => NASCrafting.recipes.Add(this);
-        public NASRecipe(NASItem item) : this()
+        public NASRecipe(NASItem item)
         {
             name = item.name;
             drop = new(item);
+            NASCrafting.recipes.Add(this);
         }
-        public NASRecipe(ushort blockID, int amount) : this()
+        public NASRecipe(ushort blockID, int amount)
         {
             name = blockID.ToString();
             drop = new(blockID, amount);
+            NASCrafting.recipes.Add(this);
         }
         public Dictionary<ushort, int> PatternCost
         {

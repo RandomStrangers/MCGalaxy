@@ -64,7 +64,7 @@ namespace MCGalaxy
             string final;
             for (int i = 0; i < Air; ++i)
             {
-                builder.Append('�');
+                builder.Append('°');
             }
             final = builder.ToString();
             return final;

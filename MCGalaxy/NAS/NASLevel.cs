@@ -77,7 +77,6 @@ namespace MCGalaxy
             NASPlugin.FromRaw(613),
             NASPlugin.FromRaw(614),
         };
-        public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
         public static Level GenerateMap(Player p, string mapName, string width, string height, string length, string seed)
         {
             string[] args = new string[] { mapName, width, height, length, seed };
@@ -129,7 +128,6 @@ namespace MCGalaxy
             string jsonString = JsonConvert.SerializeObject(this, Formatting.Indented),
                 fileName = GetFileName(name);
             FileIO.TryWriteAllText(fileName, jsonString);
-            Log("Unloaded(saved) NASLevel {0}!", fileName);
             all.Remove(name);
             Server.DoGC();
             return true;
@@ -150,7 +148,6 @@ namespace MCGalaxy
                     nl = JsonConvert.DeserializeObject<NASLevel>(jsonString);
                     return nl;
                 }
-                Log("NASLevel {0} does not exist, creating a new one!", name);
                 return nl;
             }
         }
@@ -199,7 +196,6 @@ namespace MCGalaxy
                     }
                     nl.dungeons = true;
                 }
-                Log("Loaded NASLevel {0}!", fileName);
             }
         }
         public static void OnLevelUnload(Level lvl, ref bool cancel)
@@ -216,7 +212,6 @@ namespace MCGalaxy
             if (File.Exists(fileName))
             {
                 FileIO.TryDelete(fileName);
-                Log("Deleted NASLevel {0}!", fileName);
             }
         }
         public static void OnLevelRenamed(string srcMap, string dstMap)
@@ -226,13 +221,11 @@ namespace MCGalaxy
             {
                 string newFileName = Path + dstMap + Extension;
                 FileIO.TryMove(fileName, newFileName);
-                Log("Renamed NASLevel {0} to {1}!", fileName, newFileName);
             }
         }
         public void BeginTickTask()
         {
             TickScheduler ??= new("NASLevelTickScheduler");
-            Log("Re-disturbing {0} blocks.", blocksThatMustBeDisturbed.Count);
             foreach (NASBlockLocation blockLoc in blocksThatMustBeDisturbed)
             {
                 DisturbBlock(blockLoc.X, blockLoc.Y, blockLoc.Z);
@@ -244,7 +237,6 @@ namespace MCGalaxy
         {
             TickScheduler ??= new("NASLevelTickScheduler");
             TickScheduler.Cancel(schedulerTask);
-            Log("Saving {0} blocks to re-disturb later.", tickQueue.Count);
             if (tickQueue.Count == 0)
             {
                 return;
@@ -263,22 +255,9 @@ namespace MCGalaxy
         }
         public static void TickLevelCallback(SchedulerTask task)
         {
-            object state = task.State;
-            if (state != null)
+            if (task.State != null)
             {
-                NASLevel nl = (NASLevel)state;
-                if (nl != null)
-                {
-                    nl.Tick();
-                }
-                else
-                {
-                    Log("NASLevel tick task was null, skipping tick.");
-                }
-            }
-            else
-            {
-                Log("NASLevel tick task was null, skipping tick.");
+                (task.State as NASLevel)?.Tick();
             }
         }
         public void Tick()
@@ -318,7 +297,6 @@ namespace MCGalaxy
                 }
                 else
                 {
-                    Log("NASLevel tick called on a null level, skipping tick");
                     return;
                 }
                 tickQueue.Dequeue();
