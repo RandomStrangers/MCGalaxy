@@ -38,8 +38,7 @@ namespace MCGalaxy.Core
                 return false;
             }
             p.group = Group.GroupIn(p.name);
-            if (!CheckBanned(p)) return false;
-            return CheckPlayersCount(p);
+            return CheckBanned(p) && CheckPlayersCount(p);
         }
         static bool CheckTempban(Player p)
         {

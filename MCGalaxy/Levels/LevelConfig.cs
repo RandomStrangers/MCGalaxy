@@ -156,8 +156,7 @@ namespace MCGalaxy
             if (i == 3) return ShadowColor;
             if (i == 4) return LightColor;
             if (i == 5) return SkyboxColor;
-            if (i == 6) return LavaLightColor;
-            return i == 7 ? LampLightColor : null;
+            return i == 6 ? LavaLightColor : i == 7 ? LampLightColor : null;
         }
         public int GetEnvProp(EnvProp i)
         {
@@ -172,8 +171,7 @@ namespace MCGalaxy
             if (i == EnvProp.ExpFog) return ExpFog;
             if (i == EnvProp.SidesOffset) return SidesOffset;
             if (i == EnvProp.SkyboxHorSpeed) return SkyboxHorSpeed;
-            if (i == EnvProp.SkyboxVerSpeed) return SkyboxVerSpeed;
-            return i == EnvProp.Weather ? Weather : ENV_USE_DEFAULT;
+            return i == EnvProp.SkyboxVerSpeed ? SkyboxVerSpeed : i == EnvProp.Weather ? Weather : ENV_USE_DEFAULT;
         }
         /// <summary> Calculates the default value for the given env property </summary>
         public static int DefaultEnvProp(EnvProp i, int height)
@@ -184,8 +182,7 @@ namespace MCGalaxy
             if (i == EnvProp.CloudsLevel) return height + 2;
             if (i == EnvProp.CloudsSpeed) return 256;
             if (i == EnvProp.WeatherSpeed) return 256;
-            if (i == EnvProp.WeatherFade) return 128;
-            return i == EnvProp.SidesOffset ? -2 : 0;
+            return i == EnvProp.WeatherFade ? 128 : i == EnvProp.SidesOffset ? -2 : 0;
         }
     }
     public abstract class AreaConfig : EnvConfig

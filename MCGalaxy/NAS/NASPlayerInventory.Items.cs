@@ -104,7 +104,7 @@ namespace MCGalaxy
             {
                 NASPlayer.StartCooldown(p, np.inventory.HeldItem.Prop.recharge);
                 np.ResetBreaking();
-                NASEffect.UndefineEffect(p, NASBlockChange.BreakMeterID);
+                NASEffect.UndefineEffect(p, 249);
             }
         }
         public void MoveBar(int direction, ref int selection)

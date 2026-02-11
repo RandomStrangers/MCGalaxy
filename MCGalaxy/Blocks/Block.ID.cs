@@ -16,31 +16,6 @@ namespace MCGalaxy
 {
     public static partial class Block
     {
-        /// <summary> Highest block ID supported in Classic </summary>
-        public const byte CLASSIC_MAX_BLOCK = 49;
-        /// <summary> Highest block ID supported in Classic + CPE CustomBlocks </summary>
-        public const byte CPE_MAX_BLOCK = 65;
-        /// <summary> Total number of blocks in Classic + CPE CustomBlocks </summary>
-        public const byte CPE_COUNT = 66;
-        /// <summary> Total number of blocks in Classic + CPE CustomBlocks + physics blocks </summary>
-        public const int CORE_COUNT = 256;
-        // 10 bit block ids are broken down into: 2 bits of class/type, 8 bits value
-        // class | value meaning
-        // --------------
-        // 00    | Default blocks:
-        //       |    0  to 65  are classic + CPE blocks
-        //       |    66 to 255 are physics blocks
-        // 01    | Custom blocks:
-        //       |    0  to 65  are same as default blocks (not used)
-        //       |    66 to 255 are custom blocks 66 to 255
-        // 10    | Extended custom blocks:
-        //       |    0 to 255 are custom blocks 256 to 511
-        // 11    | Extended custom blocks:
-        //       |    0 to 255 are custom blocks 512 to 767
-        //
-        // E.g. 0x080 = class 00, value 128 = physics block 128
-        // E.g. 0x180 = class 01, value 128 =  custom block 128
-        public const ushort MaxRaw = 767;
         internal static ushort[] ExtendedBase = new ushort[256];
         internal static byte[] ExtendedClass = new byte[4];
         static Block()
@@ -53,8 +28,6 @@ namespace MCGalaxy
             ExtendedClass[2] = 198;
             ExtendedClass[3] = 199;
         }
-        // non-const for external code (SUPPORTED_COUNT value differs when TEN_BIT_BLOCKS)
-        public static readonly int ExtendedCount = 1024;
         // Original blocks
         public const byte Air = 0;
         public const byte Stone = 1;
@@ -321,7 +294,5 @@ namespace MCGalaxy
         public const byte Door_Gold = 253;
         //public const byte Door_Gold_air = 254;       // unused in core
         public const byte Invalid = 0xff;
-        public const ushort Extended = 256;
-        public const int ExtendedShift = 8;
     }
 }

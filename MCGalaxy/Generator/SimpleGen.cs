@@ -20,12 +20,11 @@ namespace MCGalaxy.Generator
         delegate byte NextBlock();
         public static void RegisterGenerators()
         {
-            const GenType type = GenType.Simple;
-            MapGen.Register("Flat", type, GenFlat, "&HSeed specifies grass height (default half of level height)");
-            MapGen.Register("Pixel", type, GenPixel, "&HSeed does nothing");
-            MapGen.Register("Empty", type, GenEmpty, "&HSeed does nothing");
-            MapGen.Register("Space", type, GenSpace, MapGen.DEFAULT_HELP);
-            MapGen.Register("Rainbow", type, GenRainbow, MapGen.DEFAULT_HELP);
+            MapGen.Register("Flat", GenType.Simple, GenFlat, "&HSeed specifies grass height (default half of level height)");
+            MapGen.Register("Pixel", GenType.Simple, GenPixel, "&HSeed does nothing");
+            MapGen.Register("Empty", GenType.Simple, GenEmpty, "&HSeed does nothing");
+            MapGen.Register("Space", GenType.Simple, GenSpace, MapGen.DEFAULT_HELP);
+            MapGen.Register("Rainbow", GenType.Simple, GenRainbow, MapGen.DEFAULT_HELP);
         }
         static unsafe bool GenFlat(Player p, Level lvl, MapGenArgs args)
         {
@@ -48,8 +47,8 @@ namespace MCGalaxy.Generator
         static unsafe void MapSet(int width, int length, byte* ptr,
                                   int yBeg, int yEnd, byte block)
         {
-            int beg = yBeg * length * width;
-            int end = (yEnd * length + (length - 1)) * width + (width - 1);
+            int beg = yBeg * length * width,
+                end = (yEnd * length + (length - 1)) * width + (width - 1);
             MemUtils.Memset((IntPtr)ptr, block, beg, end - beg + 1);
         }
         static bool GenEmpty(Player p, Level lvl, MapGenArgs args)
@@ -118,11 +117,15 @@ namespace MCGalaxy.Generator
             // space theme uses maxY = 2, but map might only be 1 block high
             maxY = Math.Min(maxY, lvl.MaxY);
             for (int y = minY; y <= maxY; y++)
+            {
                 for (int z = minZ; z <= maxZ; z++)
+                {
                     for (int x = minX; x <= maxX; x++)
                     {
                         blocks[x + width * (z + y * length)] = nextBlock();
                     }
+                }
+            }
         }
     }
 }

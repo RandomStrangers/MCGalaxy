@@ -19,29 +19,19 @@ namespace MCGalaxy.Generator
     /// <summary> Contains environment settings and the types of blocks that are used to generate a map </summary>
     public struct MapGenBiome
     {
-        /// <summary> The block that appears at the top of ground (e.g. Grass) </summary>
-        public byte Surface;
-        /// <summary> The block that makes up the bulk of ground (e.g. Dirt) </summary>
-        public byte Ground;
-        public byte Cliff;
-        public byte Water;
-        public byte Bedrock;
-        public byte BeachSandy, BeachRocky;
-        public string CloudColor;
-        public string SkyColor;
-        public string FogColor;
-        public byte Horizon;
-        public byte Border;
-        public string TreeType;
-        public const string FOREST = "Forest";
-        public const string ARCTIC = "Arctic";
-        public const string DESERT = "Desert";
-        public const string HELL = "Hell";
-        public const string SWAMP = "Swamp";
-        public const string MINE = "Mine";
-        public const string SANDY = "Sandy";
-        public const string PLAINS = "Plains";
-        public const string SPACE = "Space";
+        public byte Surface, Ground, Cliff, Horizon, Border,
+            Water, Bedrock, BeachSandy, BeachRocky;
+        public string CloudColor, SkyColor,
+            FogColor, TreeType;
+        public const string FOREST = "Forest",
+            ARCTIC = "Arctic",
+            DESERT = "Desert",
+            HELL = "Hell",
+            SWAMP = "Swamp",
+            MINE = "Mine",
+            SANDY = "Sandy",
+            PLAINS = "Plains",
+            SPACE = "Space";
         public readonly void ApplyEnv(EnvConfig env)
         {
             if (CloudColor != null) env.CloudColor = CloudColor;
@@ -67,8 +57,8 @@ namespace MCGalaxy.Generator
             BeachSandy = Block.Sand,
             BeachRocky = Block.Gravel,
             TreeType = "", // "use default for generator"
-        };
-        static MapGenBiome arctic = new()
+        },
+        arctic = new()
         {
             Surface = Block.White,
             Ground = Block.White,
@@ -80,8 +70,8 @@ namespace MCGalaxy.Generator
             CloudColor = "#8E8E8E",
             SkyColor = "#8E8E8E",
             FogColor = "#AFAFAF",
-        };
-        static MapGenBiome desert = new()
+        },
+        desert = new()
         {
             Surface = Block.Sand,
             Ground = Block.Sand,
@@ -96,8 +86,8 @@ namespace MCGalaxy.Generator
             Horizon = Block.Sand,
             Border = Block.Sandstone,
             TreeType = "Cactus",
-        };
-        static MapGenBiome hell = new()
+        },
+        hell = new()
         {
             Surface = Block.Obsidian,
             Ground = Block.Stone,
@@ -110,8 +100,8 @@ namespace MCGalaxy.Generator
             SkyColor = "#FFCC00",
             FogColor = "#FF6600",
             Horizon = Block.StillLava,
-        };
-        static MapGenBiome swamp = new()
+        },
+        swamp = new()
         {
             Surface = Block.Dirt,
             Ground = Block.Dirt,
@@ -120,8 +110,8 @@ namespace MCGalaxy.Generator
             Bedrock = Block.Stone,
             BeachSandy = Block.Leaves,
             BeachRocky = Block.Dirt,
-        };
-        static MapGenBiome mine = new()
+        },
+        mine = new()
         {
             Surface = Block.Gravel,
             Ground = Block.Cobblestone,
@@ -133,8 +123,8 @@ namespace MCGalaxy.Generator
             CloudColor = "#444444",
             SkyColor = "#444444",
             FogColor = "#777777",
-        };
-        static MapGenBiome sandy = new()
+        },
+        sandy = new()
         {
             Surface = Block.Sand,
             Ground = Block.Sand,
@@ -146,8 +136,8 @@ namespace MCGalaxy.Generator
             CloudColor = "#52C6F7",
             Border = Block.Sand,
             TreeType = "Palm",
-        };
-        static MapGenBiome plains = new()
+        },
+        plains = new()
         {
             Surface = Block.Grass,
             Ground = Block.Dirt,
@@ -158,8 +148,8 @@ namespace MCGalaxy.Generator
             BeachRocky = Block.Grass,
             TreeType = "", // "use default for generator"
             Horizon = Block.Grass,
-        };
-        static MapGenBiome space = new()
+        },
+        space = new()
         {
             Surface = Block.Obsidian,
             Ground = Block.Iron,

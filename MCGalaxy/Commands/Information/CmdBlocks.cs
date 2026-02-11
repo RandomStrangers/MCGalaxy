@@ -27,8 +27,8 @@ namespace MCGalaxy.Commands.Info
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
-            string modifier = args.Length > 1 ? args[1] : "";
-            string type = args[0];
+            string modifier = args.Length > 1 ? args[1] : "",
+                type = args[0];
             ushort block;
             if (type.Length == 0 || type.CaselessEq("basic"))
             {
@@ -83,7 +83,7 @@ namespace MCGalaxy.Commands.Info
                 OutputPhysicsInfo(p, scope, block); return;
             }
             string msg = "";
-            for (ushort b = Block.CPE_COUNT; b < Block.CORE_COUNT; b++)
+            for (ushort b = 66; b < 256; b++)
             {
                 if (Block.Convert(b) != block) continue;
                 msg += Block.GetColoredName(p, b) + ", ";
@@ -117,16 +117,11 @@ namespace MCGalaxy.Commands.Info
             if (Block.Walkthrough(conv)) p.Message("  Can be walked through");
             if (Mover(scope, conv)) p.Message("  Can be activated by walking through it");
         }
-        static bool Mover(BlockProps[] scope, ushort conv)
-        {
-            bool nonSolid = Block.Walkthrough(conv);
-            return BlockBehaviour.GetWalkthroughHandler(conv, scope, nonSolid) != null;
-        }
+        static bool Mover(BlockProps[] scope, ushort conv) => BlockBehaviour.GetWalkthroughHandler(conv, scope, Block.Walkthrough(conv)) != null;
         static bool Physics(BlockProps[] scope, ushort b)
         {
             if (scope[b].IsMessageBlock || scope[b].IsPortal) return false;
-            if (scope[b].IsDoor || scope[b].IsTDoor) return false;
-            return !scope[b].OPBlock && BlockBehaviour.GetPhysicsHandler(b, Block.Props) != null;
+            return !scope[b].IsDoor && !scope[b].IsTDoor && !scope[b].OPBlock && BlockBehaviour.GetPhysicsHandler(b, Block.Props) != null;
         }
         public override void Help(Player p)
         {

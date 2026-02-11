@@ -35,8 +35,7 @@ namespace MCGalaxy.Commands.Building
             if (msg == "down") return DrawMode.down;
             if (msg == "layer") return DrawMode.layer;
             if (msg == "vertical_x") return DrawMode.verticalX;
-            if (msg == "vertical_z") return DrawMode.verticalZ;
-            return msg == "2d" ? DrawMode.volcano : DrawMode.normal;
+            return msg == "vertical_z" ? DrawMode.verticalZ : msg == "2d" ? DrawMode.volcano : DrawMode.normal;
         }
         protected override DrawOp GetDrawOp(DrawArgs dArg) => new FillDrawOp();
         protected override void GetBrush(DrawArgs dArgs)

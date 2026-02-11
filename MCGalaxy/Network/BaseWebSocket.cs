@@ -98,9 +98,11 @@ namespace MCGalaxy.Network
                     break;
                 case 8:
                     // Connection is getting closed
-                    Disconnect(GetDisconnectReason()); break;
+                    Disconnect(GetDisconnectReason()); 
+                    break;
                 default:
-                    Disconnect(1003); break;
+                    Disconnect(1003); 
+                    break;
             }
         }
         int ProcessData(byte[] data, int offset, int len)

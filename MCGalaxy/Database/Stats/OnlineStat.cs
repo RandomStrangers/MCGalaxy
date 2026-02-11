@@ -38,12 +38,7 @@ namespace MCGalaxy.DB
             IdleLine,
             EntityLine,
         };
-        public static void CoreLine(Player p, Player who)
-        {
-            string prefix = who.title.Length == 0 ? "" : who.MakeTitle(who.title, who.titlecolor),
-                fullName = prefix + who.ColoredName;
-            CommonCoreLine(p, fullName, who.name, who.group, who.TotalMessagesSent);
-        }
+        public static void CoreLine(Player p, Player who) => CommonCoreLine(p, (who.title.Length == 0 ? "" : who.MakeTitle(who.title, who.titlecolor)) + who.ColoredName, who.name, who.group, who.TotalMessagesSent);
         internal static void CommonCoreLine(Player p, string fullName, string name, Group grp, int messages)
         {
             p.Message("{0} &S({1}) has:", fullName, name);
@@ -71,12 +66,8 @@ namespace MCGalaxy.DB
         public static void BlocksModifiedLine(Player p, Player who) => p.Message("  Modified &a{0} &Sblocks, &a{1} &Ssince login", who.TotalModified, who.SessionModified);
         public static void BlockStatsLine(Player p, long placed, long deleted, long drawn) => p.Message("    &a{0} &Splaced, &a{1} &Sdeleted, &a{2} &Sdrawn",
                            placed, deleted, drawn);
-        public static void TimeSpentLine(Player p, Player who)
-        {
-            TimeSpan timeOnline = DateTime.UtcNow - who.SessionStartTime;
-            p.Message("  Spent &a{0} &Son the server, &a{1} &Sthis session",
-                           who.TotalTime.Shorten(), timeOnline.Shorten());
-        }
+        public static void TimeSpentLine(Player p, Player who) => p.Message("  Spent &a{0} &Son the server, &a{1} &Sthis session",
+                           who.TotalTime.Shorten(), (DateTime.UtcNow - who.SessionStartTime).Shorten());
         public static void LoginLine(Player p, Player who) => p.Message("  First login &a{0}&S, and is currently &aonline",
                            who.FirstLogin.ToString("yyyy-MM-dd"));
         public static void LoginsLine(Player p, int logins, int kicks) => p.Message("  Logged in &a{0} &Stimes, &c{1} &Sof which ended in a kick", logins, kicks);
@@ -95,9 +86,8 @@ namespace MCGalaxy.DB
         }
         public static void SpecialGroupLine(Player p, string name)
         {
-            string owner;
+            string owner = Server.ToRawUsername(Server.Config.OwnerName);
             name = Server.ToRawUsername(name);
-            owner = Server.ToRawUsername(Server.Config.OwnerName);
             if (Server.Devs.CaselessContains(name))
                 p.Message("  Player is a developer of &9{0}", Server.SoftwareName);
             if (owner.CaselessEq(name))

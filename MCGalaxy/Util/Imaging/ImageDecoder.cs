@@ -59,11 +59,7 @@ namespace MCGalaxy.Util.Imaging
             {
                 return new PngDecoder();
             }
-            if (GifDecoder.DetectHeader(src))
-            {
-                return new GifDecoder();
-            }
-            return JpegDecoder.DetectHeader(src) ? new JpegDecoder() : (ImageDecoder)null;
+            return GifDecoder.DetectHeader(src) ? new GifDecoder() : JpegDecoder.DetectHeader(src) ? new JpegDecoder() : (ImageDecoder)null;
         }
         public abstract Bitmap2D Decode(byte[] src);
     }

@@ -18,28 +18,26 @@ namespace MCGalaxy.Generator.fCraft
         readonly Noise noise;
         float[] heightmap, slopemap;
         ushort[] surfaceMap; // height of tallest non-air block
-        int _width, _length;
+        int _width, _length, groundThickness = 5;
         // theme-dependent vars
         byte bGroundSurface, bWater, bGround, bSeaFloor, bBedrock, bCliff;
-        int groundThickness = 5;
-        const int SeaFloorThickness = 3;
         Tree tree;
         public FCraftMapGen(FCraftMapGenArgs generatorArgs)
         {
             args = generatorArgs;
-            rand = new Random(args.Seed);
-            noise = new Noise(args.Seed, NoiseInterpolationMode.Bicubic);
+            rand = new(args.Seed);
+            noise = new(args.Seed, NoiseInterpolationMode.Bicubic);
         }
         public void Generate(Level map)
         {
             _width = map.Width;
             _length = map.Length;
-            ApplyBiome(map);
-            GenerateHeightmap(map);
+            ApplyBiome();
+            GenerateHeightmap();
             GenerateMap(map);
         }
-        void ReportProgress(int _, string message) => Logger.Log(LogType.SystemActivity, message);
-        void ApplyBiome(Level _)
+        void ReportProgress(string message) => Logger.Log(LogType.SystemActivity, message);
+        void ApplyBiome()
         {
             MapGenBiome biome = MapGenBiome.Get(args.Biome);
             bGroundSurface = biome.Surface;
@@ -55,33 +53,33 @@ namespace MCGalaxy.Generator.fCraft
             tree = biome.GetTreeGen("fCraft");
         }
         #region Heightmap Processing
-        void GenerateHeightmap(Level _)
+        void GenerateHeightmap()
         {
-            ReportProgress(10, "Heightmap: Priming");
+            ReportProgress("Heightmap: Priming");
             heightmap = new float[_width * _length];
             surfaceMap = new ushort[_width * _length];
             noise.PerlinNoise(heightmap, _width, _length,
                               args.FeatureScale, args.DetailScale, args.Roughness);
             if (args.UseBias && !args.DelayBias)
             {
-                ReportProgress(2, "Heightmap: Biasing");
+                ReportProgress("Heightmap: Biasing");
                 Noise.Normalize(heightmap);
                 ApplyBias();
             }
             Noise.Normalize(heightmap);
             if (args.MarbledHeightmap)
             {
-                ReportProgress(1, "Heightmap: Marbling");
+                ReportProgress("Heightmap: Marbling");
                 Noise.Marble(heightmap);
             }
             if (args.InvertHeightmap)
             {
-                ReportProgress(1, "Heightmap: Inverting");
+                ReportProgress("Heightmap: Inverting");
                 Noise.Invert(heightmap);
             }
             if (args.UseBias && args.DelayBias)
             {
-                ReportProgress(2, "Heightmap: Biasing");
+                ReportProgress("Heightmap: Biasing");
                 Noise.Normalize(heightmap);
                 ApplyBias();
             }
@@ -117,7 +115,7 @@ namespace MCGalaxy.Generator.fCraft
             float desiredWaterLevel = .5f;
             if (args.MatchWaterCoverage)
             {
-                ReportProgress(2, "Heightmap Processing: Matching water coverage");
+                ReportProgress("Heightmap Processing: Matching water coverage");
                 desiredWaterLevel = Noise.FindThreshold(heightmap, args.WaterCoverage);
             }
             // Calculate above/below water multipliers
@@ -130,7 +128,7 @@ namespace MCGalaxy.Generator.fCraft
             float[] blurred;
             if (args.CliffSmoothing)
             {
-                ReportProgress(2, "Heightmap Processing: Smoothing");
+                ReportProgress("Heightmap Processing: Smoothing");
                 blurred = Noise.GaussianBlur5X5(heightmap, _width, _length);
                 slopemap = Noise.CalculateSlope(blurred, _width, _length);
             }
@@ -141,32 +139,33 @@ namespace MCGalaxy.Generator.fCraft
             float[] altmap = null;
             if (args.MaxHeightVariation != 0 || args.MaxDepthVariation != 0)
             {
-                ReportProgress(5, "Heightmap Processing: Randomizing");
+                ReportProgress("Heightmap Processing: Randomizing");
                 altmap = new float[_width * _length];
                 int blendmapDetailSize = (int)Math.Log(Math.Max(_width, _length), 2) - 2;
                 new Noise(rand.Next(), NoiseInterpolationMode.Cosine)
                     .PerlinNoise(altmap, _width, _length, 3, blendmapDetailSize, 0.5f);
                 Noise.Normalize(altmap, -1, 1);
             }
-            ReportProgress(10, "Filling");
+            ReportProgress("Filling");
             Fill(map, desiredWaterLevel, aboveWaterMultiplier, altmap);
             if (args.AddBeaches)
             {
-                ReportProgress(5, "Processing: Adding beaches");
+                ReportProgress("Processing: Adding beaches");
                 AddBeaches(map);
             }
             if (args.AddTrees)
             {
-                ReportProgress(5, "Processing: Planting trees");
+                ReportProgress("Processing: Planting trees");
                 GenerateTrees(map);
             }
         }
         void Fill(Level map, float desiredWaterLevel, float aboveWaterMultiplier, float[] altmap)
         {
-            int width = map.Width, length = map.Length, mapHeight = map.Height;
-            int snowStartThreshold = args.SnowAltitude - args.SnowTransition;
-            int snowThreshold = args.SnowAltitude;
+            int width = map.Width, length = map.Length, mapHeight = map.Height,
+                snowStartThreshold = args.SnowAltitude - args.SnowTransition,
+                snowThreshold = args.SnowAltitude;
             for (int x = 0, i = 0; x < width; x++)
+            {
                 for (int z = 0; z < length; z++, i++)
                 {
                     int level;
@@ -199,7 +198,7 @@ namespace MCGalaxy.Generator.fCraft
                             {
                                 index -= length * width;
                                 if (yy >= mapHeight) continue;
-                                if (level - yy < SeaFloorThickness)
+                                if (level - yy < 3)
                                 {
                                     map.blocks[index] = bSeaFloor;
                                 }
@@ -303,18 +302,23 @@ namespace MCGalaxy.Generator.fCraft
                         }
                     }
                 }
+            }
         }
         void AddBeaches(Level map)
         {
             int beachExtentSqr = (args.BeachExtent + 1) * (args.BeachExtent + 1);
             for (int x = 0; x < map.Width; x++)
+            {
                 for (int z = 0; z < map.Length; z++)
+                {
                     for (int y = args.WaterLevel; y <= args.WaterLevel + args.BeachHeight; y++)
                     {
                         if (map.GetBlock((ushort)x, (ushort)y, (ushort)z) != bGroundSurface) continue;
                         bool found = false;
                         for (int dx = -args.BeachExtent; !found && dx <= args.BeachExtent; dx++)
+                        {
                             for (int dz = -args.BeachExtent; !found && dz <= args.BeachExtent; dz++)
+                            {
                                 for (int dy = -args.BeachHeight; dy <= 0; dy++)
                                 {
                                     if (dx * dx + dy * dy + dz * dz > beachExtentSqr) continue;
@@ -327,6 +331,8 @@ namespace MCGalaxy.Generator.fCraft
                                         break;
                                     }
                                 }
+                            }
+                        }
                         if (found)
                         {
                             map.SetTile((ushort)x, (ushort)y, (ushort)z, bSeaFloor);
@@ -336,18 +342,21 @@ namespace MCGalaxy.Generator.fCraft
                             }
                         }
                     }
+                }
+            }
         }
         void GenerateTrees(Level map)
         {
-            int minTrunkPadding = args.TreeSpacingMin;
-            int maxTrunkPadding = args.TreeSpacingMax;
+            int minTrunkPadding = args.TreeSpacingMin,
+                maxTrunkPadding = args.TreeSpacingMax;
             Random rn = new();
             int width = _width, length = _length;
             for (int x = 0; x < width; x += rn.Next(minTrunkPadding, maxTrunkPadding + 1))
+            {
                 for (int z = 0; z < length; z += rn.Next(minTrunkPadding, maxTrunkPadding + 1))
                 {
-                    int nx = x + rn.Next(-(minTrunkPadding / 2), (maxTrunkPadding / 2) + 1);
-                    int nz = z + rn.Next(-(minTrunkPadding / 2), (maxTrunkPadding / 2) + 1);
+                    int nx = x + rn.Next(-(minTrunkPadding / 2), (maxTrunkPadding / 2) + 1),
+                        nz = z + rn.Next(-(minTrunkPadding / 2), (maxTrunkPadding / 2) + 1);
                     if (nx < 0 || nx >= width || nz < 0 || nz >= length) continue;
                     int ny = surfaceMap[nx * length + nz];
                     if ((map.GetBlock((ushort)nx, (ushort)ny, (ushort)nz) == bGroundSurface) && slopemap[nx * length + nz] < .5)
@@ -364,13 +373,14 @@ namespace MCGalaxy.Generator.fCraft
                                       });
                     }
                 }
+            }
         }
         #endregion
         public static void RegisterGenerators()
         {
             // TODO this doesn't support later dynamically added themes
-            string names = MapGenBiome.Biomes.Join(b => b.Key);
-            string desc = "&HSeed specifies biome of the map. " +
+            string names = MapGenBiome.Biomes.Join(b => b.Key),
+                desc = "&HSeed specifies biome of the map. " +
                  "It must be one of the following: &f" + names;
             for (MapGenTemplate type = 0; type < MapGenTemplate.Count; type++)
             {

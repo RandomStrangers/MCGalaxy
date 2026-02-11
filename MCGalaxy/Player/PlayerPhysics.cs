@@ -74,7 +74,7 @@ namespace MCGalaxy.Blocks.Physics
                     ushort block = GetSurvivalBlock(p, x, min.Y, z);
                     byte collide = p.Level.CollideType(block);
                     allGas = allGas && collide == 0;
-                    if (!CollideType.IsSolid(collide)) continue;
+                    if (!DefaultSet.IsSolid(collide)) continue;
                     int fallHeight = p.startFallY - bb.Min.Y;
                     if (fallHeight > p.Level.Config.FallHeight * 32)
                     {
@@ -120,10 +120,6 @@ namespace MCGalaxy.Blocks.Physics
                 p.drownTime = DateTime.MaxValue;
             }
         }
-        static ushort GetSurvivalBlock(Player p, int x, int y, int z)
-        {
-            if (y < 0) return 7;
-            return y >= p.Level.Height ? (ushort)0 : p.Level.GetBlock((ushort)x, (ushort)y, (ushort)z);
-        }
+        static ushort GetSurvivalBlock(Player p, int x, int y, int z) => y < 0 ? (ushort)7 : y >= p.Level.Height ? (ushort)0 : p.Level.GetBlock((ushort)x, (ushort)y, (ushort)z);
     }
 }

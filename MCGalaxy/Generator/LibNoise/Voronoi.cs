@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 //
-namespace LibNoise
+namespace MCGalaxy
 {
     public sealed class Voronoi : IModule
     {
@@ -30,13 +30,13 @@ namespace LibNoise
             x *= Frequency;
             y *= Frequency;
             z *= Frequency;
-            int xInt = x > 0.0 ? (int)x : (int)x - 1;
-            int yInt = y > 0.0 ? (int)y : (int)y - 1;
-            int zInt = z > 0.0 ? (int)z : (int)z - 1;
-            double minDist = 2147483647.0;
-            double xCandidate = 0;
-            double yCandidate = 0;
-            double zCandidate = 0;
+            int xInt = x > 0.0 ? (int)x : (int)x - 1,
+                yInt = y > 0.0 ? (int)y : (int)y - 1,
+                zInt = z > 0.0 ? (int)z : (int)z - 1;
+            double minDist = 2147483647.0,
+                xCandidate = 0,
+                yCandidate = 0,
+                zCandidate = 0;
             // Inside each unit cube, there is a seed point at a random position.  Go
             // through each of the nearby cubes until we find a cube with a seed point
             // that is closest to the specified position.
@@ -48,13 +48,13 @@ namespace LibNoise
                     {
                         // Calculate the position and distance to the seed point inside of
                         // this unit cube.
-                        double xPos = xCur + ValueNoise(xCur, yCur, zCur, Seed);
-                        double yPos = yCur + ValueNoise(xCur, yCur, zCur, Seed + 1);
-                        double zPos = zCur + ValueNoise(xCur, yCur, zCur, Seed + 2);
-                        double xDist = xPos - x;
-                        double yDist = yPos - y;
-                        double zDist = zPos - z;
-                        double dist = xDist * xDist + yDist * yDist + zDist * zDist;
+                        double xPos = xCur + ValueNoise(xCur, yCur, zCur, Seed),
+                            yPos = yCur + ValueNoise(xCur, yCur, zCur, Seed + 1),
+                            zPos = zCur + ValueNoise(xCur, yCur, zCur, Seed + 2),
+                            xDist = xPos - x,
+                            yDist = yPos - y,
+                            zDist = zPos - z,
+                            dist = xDist * xDist + yDist * yDist + zDist * zDist;
                         if (dist < minDist)
                         {
                             // This seed point is closer to any others found so far, so record
@@ -67,25 +67,21 @@ namespace LibNoise
                     }
                 }
             }
-            int x0 = xCandidate > 0.0 ? (int)xCandidate : (int)xCandidate - 1;
-            int y0 = yCandidate > 0.0 ? (int)yCandidate : (int)yCandidate - 1;
-            int z0 = zCandidate > 0.0 ? (int)zCandidate : (int)zCandidate - 1;
+            int x0 = xCandidate > 0.0 ? (int)xCandidate : (int)xCandidate - 1,
+                y0 = yCandidate > 0.0 ? (int)yCandidate : (int)yCandidate - 1,
+                z0 = zCandidate > 0.0 ? (int)zCandidate : (int)zCandidate - 1;
             // Return the calculated distance with the displacement value applied.
             return Displacement * ValueNoise(x0, y0, z0, 0);
         }
-        const int X_NOISE_GEN = 1619;
-        const int Y_NOISE_GEN = 31337;
-        const int Z_NOISE_GEN = 6971;
-        const int SEED_NOISE_GEN = 1013;
         static double ValueNoise(int x, int y, int z, int seed)
         {
             // All constants are primes and must remain prime in order for this noise
             // function to work correctly.
             int n = (
-                X_NOISE_GEN * x
-              + Y_NOISE_GEN * y
-              + Z_NOISE_GEN * z
-              + SEED_NOISE_GEN * seed)
+                1619 * x
+              + 31337 * y
+              + 6971 * z
+              + 1013 * seed)
               & 0x7fffffff;
             n = (n >> 13) ^ n;
             n = (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff;

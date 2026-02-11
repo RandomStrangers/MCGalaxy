@@ -98,11 +98,9 @@ namespace MCGalaxy.Config
             }
             return value;
         }
-        public override string Serialise(object value)
-        {
-            if (value is float v) return NumberUtils.StringifyDouble(v);
-            return value is double v1 ? NumberUtils.StringifyDouble(v1) : base.Serialise(value);
-        }
+        public override string Serialise(object value) => value is float v
+                ? NumberUtils.StringifyDouble(v)
+                : value is double v1 ? NumberUtils.StringifyDouble(v1) : base.Serialise(value);
     }
     public class ConfigFloatAttribute : ConfigRealAttribute
     {

@@ -64,8 +64,7 @@ namespace MCGalaxy.Commands.CPE
             axis = bits[0].ToUpper();
             string scale = bits[1];
             if (axis == "X") return ParseScale(dst, e, axis, scale, ref e.ScaleX);
-            if (axis == "Y") return ParseScale(dst, e, axis, scale, ref e.ScaleY);
-            return axis == "Z" && ParseScale(dst, e, axis, scale, ref e.ScaleZ);
+            return axis == "Y" ? ParseScale(dst, e, axis, scale, ref e.ScaleY) : axis == "Z" && ParseScale(dst, e, axis, scale, ref e.ScaleZ);
         }
         static bool ParseScale(Player dst, Entity e, string axis, string scale, ref float value)
         {

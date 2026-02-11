@@ -1,6 +1,5 @@
 using MCGalaxy.Commands;
 using MCGalaxy.DB;
-using MCGalaxy.Generator;
 using MCGalaxy.Maths;
 using Newtonsoft.Json;
 using System;
@@ -10,29 +9,8 @@ using System.Net;
 using System.Threading;
 namespace MCGalaxy
 {
-    public class NASConsolePlayer : Player
-    {
-        public NASConsolePlayer() : base("(NAS)")
-        {
-            group = new()
-            {
-                Permission = LevelPermission.Console,
-                DrawLimit = int.MaxValue,
-                MaxUndo = TimeSpan.MaxValue,
-                Name = "NAS",
-                Color = "&S",
-                GenVolume = int.MaxValue,
-                OverseerMaps = int.MaxValue,
-            };
-            color = "&S";
-            SuperName = "NAS";
-        }
-        public override string FullName => "NAS [" + Server.Config.ConsoleName + "&S]";
-        public override void Message(string message) => Logger.Log(LogType.Debug, message);
-    }
     public partial class NASPlugin
     {
-        public static Player NASConsole = new NASConsolePlayer();
         public static ushort Convert(ushort block) => block switch
         {
             70 => 39,
@@ -231,7 +209,7 @@ namespace MCGalaxy
             Server.Config.ShadowColor = "#888899";
             Server.Save();
         }
-        public static void EnsureDirectoriesExists(params string[] paths)
+        public static void EnsureDirectoriesExist(params string[] paths)
         {
             foreach (string path in paths)
             {
@@ -265,7 +243,6 @@ namespace MCGalaxy
             {
                 return true;
             }
-            Log("{0} doesn't exist, Downloading..", file);
             try
             {
                 using (WebClient client = new())

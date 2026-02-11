@@ -24,8 +24,7 @@ namespace MCGalaxy.Commands.CPE
         {
             public bool global;
             public Level level;
-            public string cmd;
-            public string scope;
+            public string cmd, scope;
             public BlockDefinition[] defs;
             public BlockDefinition curDef;
         }
@@ -60,28 +59,36 @@ namespace MCGalaxy.Commands.CPE
             { // TODO IsCreateCommand
                 case "add":
                 case "create":
-                    AddHandler(p, parts, args); break;
+                    AddHandler(p, parts, args); 
+                    break;
                 case "copyall":
                 case "copyfrom":
-                    CopyAllHandler(p, parts, args, data); break;
+                    CopyAllHandler(p, parts, args, data); 
+                    break;
                 case "copy":
                 case "clone":
                 case "duplicate":
-                    CopyHandler(p, parts, args, data); break;
+                    CopyHandler(p, parts, args, data);
+                    break;
                 case "delete":
                 case "remove":
-                    RemoveHandler(p, parts, args); break;
+                    RemoveHandler(p, parts, args);
+                    break;
                 case "info":
                 case "about":
-                    InfoHandler(p, parts, args); break;
+                    InfoHandler(p, parts, args);
+                    break;
                 case "list":
                 case "ids":
-                    ListHandler(p, parts, args); break;
+                    ListHandler(p, parts, args); 
+                    break;
                 case "abort":
                     p.Message("Aborted the custom block creation process.");
-                    SetBD(p, args, null); break;
+                    SetBD(p, args, null);
+                    break;
                 case "edit":
-                    EditHandler(p, parts, args); break;
+                    EditHandler(p, parts, args);
+                    break;
                 default:
                     if (args.curDef != null)
                         DefineBlockStep(p, message, args);
@@ -133,12 +140,15 @@ namespace MCGalaxy.Commands.CPE
                 return null;
             }
             coloredMap = cfg.Color + map;
-            string path = Paths.MapBlockDefs(map);
-            return BlockDefinition.Load(path);
+            return BlockDefinition.Load(Paths.MapBlockDefs(map));
         }
         static void CopyAllHandler(Player p, string[] parts, BlockDefinitionsArgs args, CommandData data)
         {
-            if (parts.Length < 2) { Help(p, args.cmd); return; }
+            if (parts.Length < 2) 
+            {
+                Help(p, args.cmd);
+                return; 
+            }
             string coloredMap = null;
             int copied = 0;
             BlockDefinition[] srcDefs = GetDefs(p, data, parts[1], ref coloredMap);
@@ -157,7 +167,11 @@ namespace MCGalaxy.Commands.CPE
         }
         static void CopyHandler(Player p, string[] parts, BlockDefinitionsArgs args, CommandData data)
         {
-            if (parts.Length < 2) { Help(p, args.cmd); return; }
+            if (parts.Length < 2) 
+            { 
+                Help(p, args.cmd); 
+                return; 
+            }
             BlockDefinition[] srcDefs = args.defs;
             ushort dst;
             if (!CheckRawBlocks(p, parts[1], args, out int min, out int max, true)) return;
@@ -177,7 +191,7 @@ namespace MCGalaxy.Commands.CPE
                 if (dst == Block.Invalid) return;
             }
             bool changed = false;
-            for (int i = min; i <= max && Block.ToRaw(dst) <= Block.MaxRaw; i++, dst++)
+            for (int i = min; i <= max && Block.ToRaw(dst) <= 767; i++, dst++)
             {
                 ushort src = Block.FromRaw((ushort)i);
                 if (!DoCopy(p, args, false, srcDefs[src], src, dst)) continue;
@@ -190,13 +204,21 @@ namespace MCGalaxy.Commands.CPE
         static bool DoCopy(Player p, BlockDefinitionsArgs args, bool keepOrder,
                            BlockDefinition srcDef, ushort src, ushort dst)
         {
-            if (srcDef == null && src < Block.CPE_COUNT)
+            if (srcDef == null && src < 66)
             {
                 srcDef = DefaultSet.MakeCustomBlock(src);
             }
-            if (srcDef == null) { MessageNoBlock(p, src, args); return false; }
+            if (srcDef == null) 
+            { 
+                MessageNoBlock(p, src, args); 
+                return false; 
+            }
             BlockDefinition dstDef = args.defs[dst];
-            if (ExistsInScope(dstDef, dst, args)) { MessageAlreadyBlock(p, dst, args); return false; }
+            if (ExistsInScope(dstDef, dst, args)) 
+            {
+                MessageAlreadyBlock(p, dst, args); 
+                return false;
+            }
             dstDef = srcDef.Copy();
             dstDef.SetBlock(dst);
             if (!keepOrder) dstDef.InventoryOrder = -1;
@@ -205,7 +227,11 @@ namespace MCGalaxy.Commands.CPE
         }
         static void InfoHandler(Player p, string[] parts, BlockDefinitionsArgs args)
         {
-            if (parts.Length == 1) { Help(p, args.cmd); return; }
+            if (parts.Length == 1) 
+            { 
+                Help(p, args.cmd); 
+                return; 
+            }
             if (!CheckRawBlocks(p, parts[1], args, out int min, out int max)) return;
             for (int i = min; i <= max; i++)
             {
@@ -215,7 +241,11 @@ namespace MCGalaxy.Commands.CPE
         static void DoInfo(Player p, BlockDefinitionsArgs args, ushort block)
         {
             BlockDefinition def = args.defs[block];
-            if (def == null) { MessageNoBlock(p, block, args); return; }
+            if (def == null) 
+            { 
+                MessageNoBlock(p, block, args);
+                return; 
+            }
             p.Message("About {0} ({1})", def.Name, def.RawID);
             p.Message("  Draw type: {0}, Blocks light: {1}, collide type: {2}",
                            def.BlockDraw, def.BlocksLight, def.CollideType);
@@ -264,8 +294,7 @@ namespace MCGalaxy.Commands.CPE
             }
             if (def.Brightness > 0)
             {
-                string word = def.UseLampBrightness ? "LampLight" : "LavaLight";
-                p.Message("  {0}: {1}", word, def.Brightness);
+                p.Message("  {0}: {1}", def.UseLampBrightness ? "LampLight" : "LavaLight", def.Brightness);
             }
         }
         static void ListHandler(Player p, string[] parts, BlockDefinitionsArgs args)
@@ -287,7 +316,11 @@ namespace MCGalaxy.Commands.CPE
         static void PrintBlock(Player p, BlockDefinition def) => p.Message("Custom block &T{0} &Shas name &T{1}", def.RawID, def.Name);
         static void RemoveHandler(Player p, string[] parts, BlockDefinitionsArgs args)
         {
-            if (parts.Length <= 1) { Help(p, args.cmd); return; }
+            if (parts.Length <= 1) 
+            { 
+                Help(p, args.cmd);
+                return; 
+            }
             if (!CheckRawBlocks(p, parts[1], args, out int min, out int max)) return;
             bool changed = false;
             for (int i = min; i <= max; i++)
@@ -299,7 +332,11 @@ namespace MCGalaxy.Commands.CPE
         static bool DoRemove(Player p, BlockDefinitionsArgs args, ushort block)
         {
             BlockDefinition def = args.defs[block];
-            if (!ExistsInScope(def, block, args)) { MessageNoBlock(p, block, args); return false; }
+            if (!ExistsInScope(def, block, args)) 
+            {
+                MessageNoBlock(p, block, args);
+                return false;
+            }
             BlockDefinition.Remove(def, args.defs, args.level);
             ResetProps(args, block);
             p.Message("Removed {0} custom block {1}({2})", args.scope, def.Name, def.RawID);
@@ -423,7 +460,11 @@ namespace MCGalaxy.Commands.CPE
             else if (step == 17)
             {
                 byte fallback = GetFallback(p, value);
-                if (fallback == Block.Invalid) { SendStepHelp(p, args); return; }
+                if (fallback == Block.Invalid)
+                { 
+                    SendStepHelp(p, args);
+                    return; 
+                }
                 def.FallBack = fallback;
                 if (!AddBlock(p, args, def)) return;
                 BlockDefinition.Save(args.global, args.level);
@@ -440,7 +481,7 @@ namespace MCGalaxy.Commands.CPE
         static bool DoEdit(Player p, string[] parts, BlockDefinitionsArgs args, ushort block)
         {
             BlockDefinition def = args.defs[block], globalDef = BlockDefinition.GlobalDefs[block];
-            if (def == null && block < Block.CPE_COUNT)
+            if (def == null && block < 66)
             {
                 def = DefaultSet.MakeCustomBlock(block);
                 UpdateBlock(p, args, def);
@@ -450,21 +491,27 @@ namespace MCGalaxy.Commands.CPE
                 def = globalDef.Copy();
                 UpdateBlock(p, args, def);
             }
-            if (!ExistsInScope(def, block, args)) { MessageNoBlock(p, block, args); return false; }
+            if (!ExistsInScope(def, block, args)) 
+            { 
+                MessageNoBlock(p, block, args);
+                return false;
+            }
             string value = parts[3], blockName = def.Name;
             bool temp = false, changedFallback = false;
             string arg = MapPropertyName(parts[2].ToLower());
             switch (arg)
             {
                 case "name":
-                    def.Name = value; break;
+                    def.Name = value; 
+                    break;
                 case "collide":
                     if (!EditByte(p, value, "Collide type", ref def.CollideType, arg)) return false;
                     break;
                 case "speed":
                     if (!CommandParser.GetReal(p, value, "Movement speed", ref def.Speed, 0.25f, 3.96f))
                     {
-                        SendEditHelp(p, arg); return false;
+                        SendEditHelp(p, arg); 
+                        return false;
                     }
                     break;
                 case "toptex":
@@ -496,7 +543,8 @@ namespace MCGalaxy.Commands.CPE
                 case "blockslight":
                     if (!CommandParser.GetBool(p, value, ref temp))
                     {
-                        SendEditHelp(p, arg); return false;
+                        SendEditHelp(p, arg);
+                        return false;
                     }
                     def.BlocksLight = temp;
                     break;
@@ -506,14 +554,16 @@ namespace MCGalaxy.Commands.CPE
                 case "fullbright":
                     if (!CommandParser.GetBool(p, value, ref temp))
                     {
-                        SendEditHelp(p, arg); return false;
+                        SendEditHelp(p, arg); 
+                        return false;
                     }
                     def.SetFullBright(temp);
                     break;
                 case "shape":
                     if (!CommandParser.GetBool(p, value, ref temp))
                     {
-                        SendEditHelp(p, arg); return false;
+                        SendEditHelp(p, arg);
+                        return false;
                     }
                     def.Shape = temp ? (byte)0 : def.MaxZ;
                     break;
@@ -523,13 +573,15 @@ namespace MCGalaxy.Commands.CPE
                 case "min":
                     if (!ParseCoords(p, value, ref def.MinX, ref def.MinY, ref def.MinZ))
                     {
-                        SendEditHelp(p, arg); return false;
+                        SendEditHelp(p, arg); 
+                        return false;
                     }
                     break;
                 case "max":
                     if (!ParseCoords(p, value, ref def.MaxX, ref def.MaxY, ref def.MaxZ))
                     {
-                        SendEditHelp(p, arg); return false;
+                        SendEditHelp(p, arg);
+                        return false;
                     }
                     break;
                 case "fogdensity":
@@ -538,19 +590,23 @@ namespace MCGalaxy.Commands.CPE
                 case "fogcolor":
                     ColorDesc rgb = default;
                     if (!CommandParser.GetHex(p, value, ref rgb)) return false;
-                    def.FogR = rgb.R; def.FogG = rgb.G; def.FogB = rgb.B;
+                    def.FogR = rgb.R;
+                    def.FogG = rgb.G;
+                    def.FogB = rgb.B;
                     break;
                 case "fallback":
                     byte fallback = GetFallback(p, value);
                     if (fallback == Block.Invalid) return false;
                     changedFallback = true;
                     value = Block.GetName(p, fallback);
-                    def.FallBack = fallback; break;
+                    def.FallBack = fallback; 
+                    break;
                 case "order":
                     int order = 0;
-                    if (!CommandParser.GetInt(p, value, "Inventory order", ref order, 0, Block.MaxRaw))
+                    if (!CommandParser.GetInt(p, value, "Inventory order", ref order, 0, 767))
                     {
-                        SendEditHelp(p, arg); return false;
+                        SendEditHelp(p, arg); 
+                        return false;
                     }
                     BlockDefinition[] defs = args.defs;
                     // Don't let multiple blocks be assigned to same order
@@ -573,7 +629,8 @@ namespace MCGalaxy.Commands.CPE
                     int brightness = 0;
                     if (!CommandParser.GetInt(p, value, "lava light", ref brightness, 0, 15))
                     {
-                        SendEditHelp(p, arg); return false;
+                        SendEditHelp(p, arg); 
+                        return false;
                     }
                     def.SetBrightness(brightness, false);
                     break;
@@ -581,12 +638,14 @@ namespace MCGalaxy.Commands.CPE
                     int sunBrightness = 0;
                     if (!CommandParser.GetInt(p, value, "lamp light", ref sunBrightness, 0, 15))
                     {
-                        SendEditHelp(p, arg); return false;
+                        SendEditHelp(p, arg);
+                        return false;
                     }
                     def.SetBrightness(sunBrightness, true);
                     break;
                 default:
-                    p.Message("Unrecognised property: " + arg); return false;
+                    p.Message("Unrecognised property: " + arg);
+                    return false;
             }
             p.Message("Set {0} for {1} to {2}", arg, blockName, value);
             BlockDefinition.Add(def, args.defs, args.level);
@@ -651,7 +710,7 @@ namespace MCGalaxy.Commands.CPE
         static byte GetFallback(Player p, string value)
         {
             if (!CommandParser.GetBlock(p, value, out ushort block)) return Block.Invalid;
-            if (block >= Block.Extended)
+            if (block >= 256)
             {
                 p.Message("&WCustom blocks cannot be used as fallback blocks.");
                 return Block.Invalid;
@@ -669,7 +728,7 @@ namespace MCGalaxy.Commands.CPE
             // Start from opposite ends to avoid overlap
             if (args.global)
             {
-                for (ushort b = Block.CPE_COUNT; b <= Block.MaxRaw; b++)
+                for (ushort b = 66; b <= 767; b++)
                 {
                     ushort block = Block.FromRaw(b);
                     if (defs[block] == null) return block;
@@ -677,7 +736,7 @@ namespace MCGalaxy.Commands.CPE
             }
             else
             {
-                for (ushort b = Block.MaxRaw; b >= Block.CPE_COUNT; b--)
+                for (ushort b = 767; b >= 66; b--)
                 {
                     ushort block = Block.FromRaw(b);
                     if (defs[block] == null) return block;
@@ -700,7 +759,8 @@ namespace MCGalaxy.Commands.CPE
         {
             if (!CommandParser.GetByte(p, value, propName, ref target))
             {
-                SendEditHelp(p, help); return false;
+                SendEditHelp(p, help); 
+                return false;
             }
             return true;
         }
@@ -708,7 +768,8 @@ namespace MCGalaxy.Commands.CPE
         {
             if (!CommandParser.GetUShort(p, value, propName, ref target))
             {
-                SendEditHelp(p, help); return false;
+                SendEditHelp(p, help); 
+                return false;
             }
             return true;
         }
@@ -723,14 +784,15 @@ namespace MCGalaxy.Commands.CPE
             if (!CommandParser.CheckRange(p, P.Y, "Y", -127, 127)) return false;
             if (!CommandParser.CheckRange(p, P.Z, "Z", -127, 127)) return false;
             // TODO: Improve output message with relative coords (currently shows "Set max for Stone to ~ ~8 ~")
-            x = (byte)P.X; z = (byte)P.Y; y = (byte)P.Z; // blockdef files have z being height, we use y being height
+            x = (byte)P.X; 
+            z = (byte)P.Y; 
+            y = (byte)P.Z; // blockdef files have z being height, we use y being height
             return true;
         }
         static bool CheckRaw(Player p, string arg, BlockDefinitionsArgs args,
                              out int raw, bool air = false)
         {
-            int min = air ? 0 : 1;
-            int max = Block.MaxRaw;
+            int min = air ? 0 : 1, max = 767;
             // Check for block names (can't use standard parsing behaviour)
             if (!NumberUtils.TryParseInt32(arg, out raw))
             {
@@ -825,8 +887,7 @@ namespace MCGalaxy.Commands.CPE
             if (prop == "maxcoords") return "max";
             if (prop == "density") return "fogdensity";
             if (prop == "col" || prop == "fogcol") return "fogcolor";
-            if (prop == "fogcolour") return "fogcolor";
-            return prop == "fallbackid" || prop == "fallbackblock" ? "fallback" : prop;
+            return prop == "fogcolour" ? "fogcolor" : prop == "fallbackid" || prop == "fallbackblock" ? "fallback" : prop;
         }
         static readonly string[] stepsHelp = new string[] {
             null, null, "name", "shape", "toptex", "sidetex", "bottomtex", "min", "max", "collide",
@@ -916,7 +977,11 @@ namespace MCGalaxy.Commands.CPE
                 p.Message("&HMulti editing only works with &T{0} edit, remove, or info", cmd);
                 return;
             }
-            if (!args.CaselessStarts("edit ")) { Help(p, cmd); return; }
+            if (!args.CaselessStarts("edit ")) 
+            { 
+                Help(p, cmd);
+                return;
+            }
             string prop = args.Substring(args.IndexOf(' ') + 1);
             prop = MapPropertyName(prop.ToLower());
             if (!helpSections.ContainsKey(prop))

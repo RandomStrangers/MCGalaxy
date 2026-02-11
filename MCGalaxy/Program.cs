@@ -21,7 +21,7 @@ namespace MCGalaxy
     public static class Program
     {
         static string lastCMD = "";
-        public static void HandleChat(string text)
+        static void HandleChat(string text)
         {
             if (text != null)
             {
@@ -37,7 +37,7 @@ namespace MCGalaxy
             }
             Chat.MessageChat(ChatScope.Global, Player.Console, "λFULL: &f" + text, null, null, true);
         }
-        public static void RepeatCommand()
+        static void RepeatCommand()
         {
             if (lastCMD.Length == 0)
             {
@@ -47,7 +47,7 @@ namespace MCGalaxy
             Logger.Log(LogType.CommandUsage, "Repeating &T/" + lastCMD);
             HandleCommand(lastCMD);
         }
-        public static void HandleCommand(string text)
+        static void HandleCommand(string text)
         {
             if (text != null)
             {
@@ -102,7 +102,7 @@ namespace MCGalaxy
                     }
                 });
         }
-        public static string OutputPart(ref char nextCol, ref int start, string message)
+        static string OutputPart(ref char nextCol, ref int start, string message)
         {
             int next = NextPart(start, message);
             string part;

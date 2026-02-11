@@ -4,7 +4,10 @@ using System;
 using System.Text;
 namespace MCGalaxy
 {
-    public enum NASDamageSource { Falling, Suffocating, Drowning, Entity, None, Murder }
+    public enum NASDamageSource 
+    {
+        Falling, Suffocating, Drowning, Entity, None, Murder
+    }
     public partial class NASEntity
     {
         [JsonIgnore] public float AirPrev;
@@ -12,23 +15,11 @@ namespace MCGalaxy
         [JsonIgnore] public AABB bounds = AABB.Make(new(0, 0, 0), new(16, 26 * 2, 16));
         [JsonIgnore] public AABB eyeBounds = AABB.Make(new(0, 24 * 2 - 2, 0), new(4, 4, 4));
         [JsonIgnore] public DateTime lastSuffocationDate = DateTime.MinValue;
-        public const int SuffocationMilliseconds = 500;
         public float HP, Air;
-        public const float maxHP = 10, maxAir = 10;
         public bool holdingBreath = false;
         public string levelName;
         public Vec3S32 location, lastGroundedLocation;
         public byte yaw, pitch;
-        public static string DeathReason(NASDamageSource source, Player p) => source switch
-        {
-            NASDamageSource.Entity => "@p &cdied.",
-            NASDamageSource.Falling => "@p &cfell to " + p.Pronouns.Object + " death.",
-            NASDamageSource.Suffocating => "@p &esuffocated.",
-            NASDamageSource.Drowning => "@p &rdrowned.",
-            NASDamageSource.None => "@p &adied from unknown causes.",
-            NASDamageSource.Murder => "@p &8" + p.Pronouns.PastVerb + "&8 murdered by &S@s",
-            _ => Enum.GetName(typeof(NASDamageSource), source).ToLower(),
-        };
         public static void SetLocation(NASEntity ne, string levelName, Position pos, Orientation rot)
         {
             ne.levelName = levelName;
@@ -45,14 +36,14 @@ namespace MCGalaxy
             {
                 HP = 0;
             }
-            if (HP > maxHP)
+            if (HP > 10)
             {
-                HP = maxHP;
+                HP = 10;
             }
         }
         public string OxygenString()
         {
-            if (Air == maxAir)
+            if (Air == 10)
             {
                 return "";
             }
@@ -60,14 +51,12 @@ namespace MCGalaxy
             {
                 return "&r?";
             }
-            StringBuilder builder = new("", (int)maxAir + 6);
-            string final;
+            StringBuilder builder = new("", 16);
             for (int i = 0; i < Air; ++i)
             {
                 builder.Append('°');
             }
-            final = builder.ToString();
-            return final;
+            return builder.ToString();
         }
         public virtual bool CanTakeDamage(NASDamageSource source) => true;
         public virtual bool TakeDamage(float damage, NASDamageSource source, string customDeathReason = "") => !CanTakeDamage(source) && false;
@@ -85,9 +74,9 @@ namespace MCGalaxy
             else
             {
                 Air += 0.03125f;
-                if (Air > maxAir)
+                if (Air > 10)
                 {
-                    Air = maxAir;
+                    Air = 10;
                 }
             }
             if (Air == 0)
@@ -140,8 +129,7 @@ namespace MCGalaxy
                             {
                                 continue;
                             }
-                            bool surroundsHead = AABB.Intersects(ref eyeAABB, ref blockBB);
-                            nb.collideAction(this, nb, surroundsHead, xP, yP, zP);
+                            nb.collideAction(this, nb, AABB.Intersects(ref eyeAABB, ref blockBB), xP, yP, zP);
                         }
                     }
                 }

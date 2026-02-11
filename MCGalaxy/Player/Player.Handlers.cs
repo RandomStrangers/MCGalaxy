@@ -148,7 +148,7 @@ namespace MCGalaxy
             if (result == ChangeResult.Unchanged) return result;
             if (result == ChangeResult.Modified) Level.BroadcastChange(x, y, z, block);
             ushort flags = 1 << 0;
-            if (painting && CollideType.IsSolid(Level.CollideType(old)))
+            if (painting && DefaultSet.IsSolid(Level.CollideType(old)))
             {
                 flags = 1 << 1;
             }

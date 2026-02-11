@@ -35,11 +35,9 @@ namespace MCGalaxy.SQL
             PrimaryKey = priKey;
             NotNull = notNull;
         }
-        public string FormatType()
-        {
-            if (Type == ColumnType.Char) return "CHAR(" + MaxLength + ")";
-            return Type == ColumnType.VarChar ? "VARCHAR(" + MaxLength + ")" : colTypes[(int)Type];
-        }
+        public string FormatType() => Type == ColumnType.Char
+                ? "CHAR(" + MaxLength + ")"
+                : Type == ColumnType.VarChar ? "VARCHAR(" + MaxLength + ")" : colTypes[(int)Type];
         static readonly string[] colTypes = new string[] {
             "TINYINT UNSIGNED", "SMALLINT UNSIGNED", "MEDIUMINT UNSIGNED", "INT UNSIGNED", "BIGINT UNSIGNED",
             "TINYINT", "SMALLINT", "MEDIUMINT", "INT", "BIGINT",

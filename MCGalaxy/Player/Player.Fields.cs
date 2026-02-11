@@ -28,7 +28,8 @@ namespace MCGalaxy
 {
     public partial class Player : IDisposable
     {
-        bool gotSQLData;
+        int selIndex, mbRecursion;
+        bool leftServer = false, gotSQLData;
         public PlayerIgnores Ignores = new();
         public static string lastMSG = "";
         internal PersistentMessages persistentMessages = new();
@@ -50,7 +51,8 @@ namespace MCGalaxy
             NextReviewTime, NextEat, NextTeamInvite,
             SessionStartTime, FirstLogin, LastLogin, lastCmdTime,
             drownTime = DateTime.MaxValue, deathCooldown, LastPatrol;
-        public bool IsAfk, AutoAfk, cmdTimer, UsingWom,
+        public bool hasChangeModel, hasExtList, hasCP437,
+            IsAfk, AutoAfk, cmdTimer, UsingWom,
             hidden, painting, checkingBotInfo,
             muted, agreed = true, invincible, hasreadrules, hackrank,
             deleteMode, ignoreGrief,
@@ -75,8 +77,8 @@ namespace MCGalaxy
         public virtual string FullName => color + prefix + DisplayName;
         public string ColoredName => color + DisplayName;
         public string GroupPrefix => group.Prefix.Length == 0 ? "" : "&f" + group.Prefix;
-        string partialMessage = "";
-        int mbRecursion;
+        string partialMessage = "", selTitle, lastUrl = "";
+        readonly VolatileArray<VisibleSelection> selections = new();
         public int money, TimesVisited, TimesBeenKicked, TimesDied, 
             TotalMessagesSent, lastCheckpointIndex = -1, DatabaseID, 
             CurrentCopySlot, passtries, warn;
@@ -138,7 +140,13 @@ namespace MCGalaxy
         readonly List<DateTime> partialLog;
         public LevelPermission Rank => group.Permission;
         readonly Queue<SerialCommand> serialCmds = new();
-        readonly object serialCmdsLock = new();
+        readonly object serialCmdsLock = new(),
+            messageLocker = new(), joinLock = new(),
+            selLock = new();
+        Vec3S32[] selMarks;
+        object selState;
+        SelectionHandler selCallback;
+        SelectionMarkHandler selMarkCallback;
         struct SerialCommand 
         { 
             public Command cmd; 

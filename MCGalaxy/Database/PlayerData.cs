@@ -123,7 +123,6 @@ namespace MCGalaxy.DB
             return data;
         }
         internal static long ParseLong(string value) => (value.Length == 0 || value.CaselessEq("null")) ? 0 : long.Parse(value);
-        internal static int ParseInt(string value) => (value.Length == 0 || value.CaselessEq("null")) ? 0 : NumberUtils.ParseInt32(value);
         internal static string ParseColor(string raw)
         {
             if (raw.Length == 0) return raw;

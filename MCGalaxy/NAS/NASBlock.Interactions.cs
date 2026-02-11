@@ -987,9 +987,9 @@ namespace MCGalaxy
                 roundAdd = ((float)Math.Floor(np.HP * 2f) / 2f) - np.HP;
             np.ChangeHealth(roundAdd);
             float HPafterHeal = np.HP + healthRestored;
-            if (HPafterHeal > NASEntity.maxHP)
+            if (HPafterHeal > 10)
             {
-                healthRestored = NASEntity.maxHP - np.HP;
+                healthRestored = 10 - np.HP;
             }
             if (healthRestored < 0)
             {

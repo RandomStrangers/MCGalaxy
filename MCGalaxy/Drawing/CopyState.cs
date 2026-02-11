@@ -22,11 +22,10 @@ namespace MCGalaxy.Drawing
     {
         byte[] blocks;
         byte[][] extBlocks;
-        public int X, Y, Z;
-        public int OriginX, OriginY, OriginZ;
-        public int Width, Height, Length;
+        public int X, Y, Z, 
+            OriginX, OriginY, OriginZ, 
+            Width, Height, Length, UsedBlocks;
         public bool PasteAir;
-        public int UsedBlocks;
         public Vec3S32 Offset;
         /// <summary> Point at time at which this copy was created </summary>
         public DateTime CopyTime;
@@ -47,8 +46,12 @@ namespace MCGalaxy.Drawing
         }
         void Init(int x, int y, int z, int width, int height, int length)
         {
-            X = x; Y = y; Z = z;
-            Width = width; Height = height; Length = length;
+            X = x;
+            Y = y; 
+            Z = z;
+            Width = width; 
+            Height = height;
+            Length = length;
             blocks = new byte[Volume];
             extBlocks = new byte[ExtChunks][];
             UsedBlocks = Volume;
@@ -77,9 +80,9 @@ namespace MCGalaxy.Drawing
         }
         public void Set(ushort block, int index)
         {
-            if (block >= Block.Extended)
+            if (block >= 256)
             {
-                blocks[index] = Block.ExtendedClass[block >> Block.ExtendedShift];
+                blocks[index] = Block.ExtendedClass[block >> 8];
                 byte[] chunk = extBlocks[index >> chunkShift];
                 if (chunk == null)
                 {
@@ -103,8 +106,12 @@ namespace MCGalaxy.Drawing
         {
             BinaryWriter w = new(stream);
             w.Write(identifier4);
-            w.Write(X); w.Write(Y); w.Write(Z);
-            w.Write(Width); w.Write(Height); w.Write(Length);
+            w.Write(X);
+            w.Write(Y); 
+            w.Write(Z);
+            w.Write(Width);
+            w.Write(Height); 
+            w.Write(Length);
             byte[] data = blocks.GZip();
             w.Write(data.Length);
             w.Write(data);
@@ -112,16 +119,21 @@ namespace MCGalaxy.Drawing
             {
                 if (extBlocks[i] == null)
                 {
-                    w.Write((byte)0); continue;
+                    w.Write((byte)0);
+                    continue;
                 }
                 w.Write((byte)1);
                 data = extBlocks[i].GZip();
                 w.Write((ushort)data.Length);
                 w.Write(data);
             }
-            w.Write(OriginX); w.Write(OriginY); w.Write(OriginZ);
+            w.Write(OriginX); 
+            w.Write(OriginY); 
+            w.Write(OriginZ);
             w.Write((byte)0x0f); // 0ffset
-            w.Write(Offset.X); w.Write(Offset.Y); w.Write(Offset.Z);
+            w.Write(Offset.X); 
+            w.Write(Offset.Y);
+            w.Write(Offset.Z);
             w.Write((byte)(PasteAir ? 1 : 0));
         }
         /// <summary> Loads this copy state from the given stream. </summary>
@@ -131,16 +143,24 @@ namespace MCGalaxy.Drawing
             int id = r.ReadInt32();
             if (!(id == identifier1 || id == identifier2 || id == identifier3 || id == identifier4))
                 throw new InvalidDataException("invalid identifier");
-            X = r.ReadInt32(); Y = r.ReadInt32(); Z = r.ReadInt32();
-            Width = r.ReadInt32(); Height = r.ReadInt32(); Length = r.ReadInt32();
+            X = r.ReadInt32();
+            Y = r.ReadInt32();
+            Z = r.ReadInt32();
+            Width = r.ReadInt32();
+            Height = r.ReadInt32(); 
+            Length = r.ReadInt32();
             LoadBlocks(r, id);
             UsedBlocks = Volume;
             // origin is not present in version 1
             if (id == identifier1) return;
-            OriginX = r.ReadInt32(); OriginY = r.ReadInt32(); OriginZ = r.ReadInt32();
+            OriginX = r.ReadInt32();
+            OriginY = r.ReadInt32(); 
+            OriginZ = r.ReadInt32();
             // was added in later (ReadByte also catches end of stream)
             if (stream.ReadByte() != 0x0f) return;
-            Offset.X = r.ReadInt32(); Offset.Y = r.ReadInt32(); Offset.Z = r.ReadInt32();
+            Offset.X = r.ReadInt32(); 
+            Offset.Y = r.ReadInt32(); 
+            Offset.Z = r.ReadInt32();
             PasteAir = stream.ReadByte() == 1;
         }
         void LoadBlocks(BinaryReader r, int id)
@@ -186,7 +206,7 @@ namespace MCGalaxy.Drawing
             for (int i = 0; i < blocks.Length; i++)
             {
                 if (blocks[i] != Block.custom_block) continue;
-                Set((ushort)(Block.Extended | allExtBlocks[i]), i);
+                Set((ushort)(256 | allExtBlocks[i]), i);
             }
         }
         void UnpackPackedExtBlocks(byte[] allExtBlocks)
@@ -194,7 +214,7 @@ namespace MCGalaxy.Drawing
             for (int i = 0; i < blocks.Length; i++)
             {
                 bool isExt = (allExtBlocks[i >> 3] & (1 << (i & 0x7))) != 0;
-                if (isExt) { Set((ushort)(Block.Extended | blocks[i]), i); }
+                if (isExt) { Set((ushort)(256 | blocks[i]), i); }
             }
         }
         /// <summary> Loads this copy state from the given stream, using the very old format. </summary>

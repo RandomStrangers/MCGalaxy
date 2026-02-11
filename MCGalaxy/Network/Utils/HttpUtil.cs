@@ -87,18 +87,12 @@ namespace MCGalaxy.Network
             // can only use same family for local bind IP
             return remoteEP.AddressFamily != localIP.AddressFamily ? null : new IPEndPoint(localIP, 0);
         }
-        // TLS 1.1/1.2 do not exist in .NET 4.0 and cause a compilation failure
-        public const SslProtocols TLS_11 = (SslProtocols)768;
-        public const SslProtocols TLS_12 = (SslProtocols)3072;
-        public const SslProtocols TLS_ALL = SslProtocols.Tls | TLS_11 | TLS_12;
         public static SslStream WrapSSLStream(Stream source, string host)
         {
             SslStream wrapped = new(source);
-            wrapped.AuthenticateAsClient(host, null, TLS_ALL, false);
+            wrapped.AuthenticateAsClient(host, null, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false);
             return wrapped;
         }
-        const string DROPBOX_HTTP_PREFIX = "http://www.dropbox";
-        const string DROPBOX_HTTPS_PREFIX = "https://www.dropbox";
         /// <summary>
         /// Performs Modern MC skin conversion and filters the url as needed (dropbox, add http://)
         /// </summary>
@@ -125,13 +119,13 @@ namespace MCGalaxy.Network
             if (!url.CaselessStarts("http://") && !url.CaselessStarts("https://"))
                 url = "http://" + url;
             // a lot of people try linking to the dropbox page instead of directly to file, so auto correct
-            if (url.CaselessStarts(DROPBOX_HTTP_PREFIX))
+            if (url.CaselessStarts("http://www.dropbox"))
             {
-                url = AdjustDropbox(url, DROPBOX_HTTP_PREFIX.Length);
+                url = AdjustDropbox(url, "http://www.dropbox".Length);
             }
-            else if (url.CaselessStarts(DROPBOX_HTTPS_PREFIX))
+            else if (url.CaselessStarts("https://www.dropbox"))
             {
-                url = AdjustDropbox(url, DROPBOX_HTTPS_PREFIX.Length);
+                url = AdjustDropbox(url, "https://www.dropbox".Length);
             }
             url = url.Replace("dl.dropboxusercontent.com", "dl.dropbox.com");
         }
@@ -152,7 +146,8 @@ namespace MCGalaxy.Network
             FilterURL(ref url);
             if (!Uri.TryCreate(url, UriKind.Absolute, out Uri uri))
             {
-                p.Message("&W{0} is not a valid URL.", url); return null;
+                p.Message("&W{0} is not a valid URL.", url); 
+                return null;
             }
             return uri;
         }
@@ -196,8 +191,7 @@ namespace MCGalaxy.Network
                 else
                 {
                     // known error, so just log a warning
-                    string logMsg = msg + url + Environment.NewLine + ex.Message;
-                    Logger.Log(LogType.Warning, "Error downloading " + logMsg);
+                    Logger.Log(LogType.Warning, "Error downloading " + msg + url + Environment.NewLine + ex.Message);
                 }
                 p.Message("&WFailed to download {0}&f{1}", msg, url);
                 return null;

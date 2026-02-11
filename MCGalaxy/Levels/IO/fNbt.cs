@@ -240,8 +240,9 @@ namespace fNbt
         public NbtTagType ReadTagType()
         {
             int type = ReadByte();
-            if (type < 0) throw new EndOfStreamException();
-            return type > (int)NbtTagType.IntArray ? throw new NbtFormatException("NBT tag type out of range: " + type) : (NbtTagType)type;
+            return type < 0
+                ? throw new EndOfStreamException()
+                : type > (int)NbtTagType.IntArray ? throw new NbtFormatException("NBT tag type out of range: " + type) : (NbtTagType)type;
         }
         public override short ReadInt16() => swapNeeded ? Swap(base.ReadInt16()) : base.ReadInt16();
         public override int ReadInt32() => swapNeeded ? Swap(base.ReadInt32()) : base.ReadInt32();

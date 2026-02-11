@@ -32,16 +32,7 @@ namespace MCGalaxy.DB
             (p, who) => OnlineStat.SpecialGroupLine(p, who.Name),
             (p, who) => OnlineStat.IPLine(p, who.Name, who.IP),
         };
-        public static void CoreLine(Player p, PlayerData data)
-        {
-            Group group = Group.GroupIn(data.Name);
-            string color = data.Color.Length == 0 ? group.Color : data.Color,
-                prefix = data.Title.Length == 0 ? "" : color + "[" + data.TitleColor + data.Title + color + "] ",
-                nick = PlayerDB.LoadNick(data.Name),
-                name = nick ?? Server.ToRawUsername(data.Name),
-                fullName = prefix + color + name;
-            OnlineStat.CommonCoreLine(p, fullName, data.Name, group, data.Messages);
-        }
+        public static void CoreLine(Player p, PlayerData data) => OnlineStat.CommonCoreLine(p, (data.Title.Length == 0 ? "" : (data.Color.Length == 0 ? Group.GroupIn(data.Name).Color : data.Color) + "[" + data.TitleColor + data.Title + (data.Color.Length == 0 ? Group.GroupIn(data.Name).Color : data.Color) + "] ") + (data.Color.Length == 0 ? Group.GroupIn(data.Name).Color : data.Color) + ((PlayerDB.LoadNick(data.Name)) ?? Server.ToRawUsername(data.Name)), data.Name, Group.GroupIn(data.Name), data.Messages);
         public static void BlocksModifiedLine(Player p, PlayerData who) => p.Message("  Modified &a{0} &Sblocks", who.TotalModified);
         public static void TimeSpentLine(Player p, PlayerData who) => p.Message("  Spent &a{0} &Son the server", who.TotalTime.Shorten());
         public static void LoginLine(Player p, PlayerData who) => p.Message("  First login &a{0}&S, last login &a{1}",

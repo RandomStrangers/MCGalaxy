@@ -28,11 +28,9 @@ namespace MCGalaxy.Drawing.Brushes
         public override Brush Construct(BrushArgs args)
         {
             Player p = args.Player;
-            if (args.Message.Length == 0)
-            {
-                return !CommandParser.IsBlockAllowed(p, "draw with", args.Block) ? null : (Brush)new SolidBrush(args.Block);
-            }
-            return !CommandParser.GetBlockIfAllowed(p, args.Message, "draw with", out ushort block) ? null : (Brush)new SolidBrush(block);
+            return args.Message.Length == 0
+                ? !CommandParser.IsBlockAllowed(p, "draw with", args.Block) ? null : (Brush)new SolidBrush(args.Block)
+                : !CommandParser.GetBlockIfAllowed(p, args.Message, "draw with", out ushort block) ? null : (Brush)new SolidBrush(block);
         }
         // Usually this shouldn't be overriden, but since SolidBrush is the default brush,
         //  it's worth overriding this to avoid an unnecessary object allocation
@@ -141,9 +139,9 @@ namespace MCGalaxy.Drawing.Brushes
             }
             string[] parts = args.Message.SplitSpaces();
             if (!CommandParser.GetBlockIfAllowed(p, parts[0], "draw with", out ushort block1, true)) return null;
-            if (parts.Length == 1)
-                return new StripedBrush(block1, Block.Invalid);
-            return !CommandParser.GetBlockIfAllowed(p, parts[1], "draw with", out ushort block2, true) ? null : (Brush)new StripedBrush(block1, block2);
+            return parts.Length == 1
+                ? new StripedBrush(block1, Block.Invalid)
+                : !CommandParser.GetBlockIfAllowed(p, parts[1], "draw with", out ushort block2, true) ? null : (Brush)new StripedBrush(block1, block2);
         }
     }
     public sealed class RainbowBrushFactory : BrushFactory

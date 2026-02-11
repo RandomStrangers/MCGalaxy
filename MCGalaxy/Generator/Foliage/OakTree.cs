@@ -52,42 +52,41 @@ namespace MCGalaxy.Generator.Foliage
         void MakeBranch(int x, int y, int z, TreeOutput output)
         {
             int branchX = rnd.Next(-maxExtent, maxExtent);
-            int branchZ = rnd.Next(-maxExtent, maxExtent);
-            int branchStartY = rnd.Next((trunkHeight / 4) + 1, trunkHeight + (trunkHeight / 4));
-            int branchEndY = branchStartY + rnd.Next(1, maxBranchHeight + 3);
-            Vec3S32 p1 = new(x, y + branchStartY, z);
-            Vec3S32 p2 = new(x + branchX, y + branchEndY, z + branchZ);
+            int branchZ = rnd.Next(-maxExtent, maxExtent),
+                branchStartY = rnd.Next((trunkHeight / 4) + 1, trunkHeight + (trunkHeight / 4)),
+                branchEndY = branchStartY + rnd.Next(1, maxBranchHeight + 3);
+            Vec3S32 p1 = new(x, y + branchStartY, z),
+                p2 = new(x + branchX, y + branchEndY, z + branchZ);
             Line(p1, p2, output);
             GenCluster(x + branchX, y + branchEndY, z + branchZ, output);
         }
         void GenCluster(int x, int y, int z, TreeOutput output)
         {
-            Vec3S32 p1, p2;
-            //cross X
-            p1 = new Vec3S32(x - 1, y - 1, z);
-            p2 = new Vec3S32(x + 1, y + 3, z);
+            Vec3S32 p1 = new(x - 1, y - 1, z),
+            p2 = new(x + 1, y + 3, z);
             Cuboid(p1, p2, output);
-            //cross z
-            p1 = new Vec3S32(x, y - 1, z - 1);
-            p2 = new Vec3S32(x, y + 3, z + 1);
+            p1 = new(x, y - 1, z - 1);
+            p2 = new(x, y + 3, z + 1);
             Cuboid(p1, p2, output);
-            //cuboid x
-            p1 = new Vec3S32(x - 2, y, z - 1);
-            p2 = new Vec3S32(x + 2, y + 2, z + 1);
+            p1 = new(x - 2, y, z - 1);
+            p2 = new(x + 2, y + 2, z + 1);
             Cuboid(p1, p2, output);
-            //cuboid z
-            p1 = new Vec3S32(x - 1, y, z - 2);
-            p2 = new Vec3S32(x + 1, y + 2, z + 2);
+            p1 = new(x - 1, y, z - 2);
+            p2 = new(x + 1, y + 2, z + 2);
             Cuboid(p1, p2, output);
         }
         void Cuboid(Vec3S32 p1, Vec3S32 p2, TreeOutput output)
         {
             for (int y = p1.Y; y <= p2.Y; y++)
+            {
                 for (int z = p1.Z; z <= p2.Z; z++)
+                {
                     for (int x = p1.X; x <= p2.X; x++)
                     {
                         output((ushort)x, (ushort)y, (ushort)z, Block.Leaves);
                     }
+                }
+            }
         }
         void Line(Vec3S32 p1, Vec3S32 p2, TreeOutput output)
         {

@@ -134,8 +134,7 @@ namespace MCGalaxy.Commands.Building
             if (block == Block.MB_Black) return "black";
             if (block == Block.MB_White) return "white";
             if (block == Block.MB_Air) return "air";
-            if (block == Block.MB_Lava) return "lava";
-            return block == Block.MB_Water ? "water" : Block.GetName(p, block);
+            return block == Block.MB_Lava ? "lava" : block == Block.MB_Water ? "water" : Block.GetName(p, block);
         }
         static List<string> SupportedBlocks(Player p)
         {

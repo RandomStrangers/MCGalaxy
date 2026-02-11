@@ -83,14 +83,7 @@ namespace MCGalaxy.Maths
             bb.Max.Z += amount;
             return bb;
         }
-        public static bool Intersects(ref AABB a, ref AABB b)
-        {
-            if (a.Max.X >= b.Min.X && a.Min.X <= b.Max.X)
-            {
-                return a.Max.Y >= b.Min.Y && a.Min.Y <= b.Max.Y && a.Max.Z >= b.Min.Z && a.Min.Z <= b.Max.Z;
-            }
-            return false;
-        }
+        public static bool Intersects(ref AABB a, ref AABB b) => a.Max.X >= b.Min.X && a.Min.X <= b.Max.X && a.Max.Y >= b.Min.Y && a.Min.Y <= b.Max.Y && a.Max.Z >= b.Min.Z && a.Min.Z <= b.Max.Z;
         public override readonly string ToString() => Min + " : " + Max;
         public static bool IntersectsSolidBlocks(AABB bb, Level lvl)
         {
@@ -110,7 +103,7 @@ namespace MCGalaxy.Maths
                         BlockDefinition def = lvl.GetBlockDef(block);
                         if (def != null)
                         {
-                            if (CollideType.IsSolid(def.CollideType))
+                            if (DefaultSet.IsSolid(def.CollideType))
                             {
                                 return true;
                             }
@@ -162,7 +155,7 @@ namespace MCGalaxy.Maths
                         bool solid;
                         if (def != null)
                         {
-                            solid = CollideType.IsSolid(def.CollideType);
+                            solid = DefaultSet.IsSolid(def.CollideType);
                         }
                         else
                         {

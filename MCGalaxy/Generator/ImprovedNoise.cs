@@ -27,7 +27,9 @@ namespace MCGalaxy.Generator
         public ImprovedNoise(Random rnd)
         {
             for (int i = 0; i < 256; i++)
+            {
                 p[i] = (byte)i;
+            }
             for (int i = 0; i < 256; i++)
             {
                 byte temp;
@@ -37,7 +39,9 @@ namespace MCGalaxy.Generator
                 p[j] = temp;
             }
             for (int i = 0; i < 256; i++)
+            {
                 p[i + 256] = p[i];
+            }
         }
         public float NormalisedNoise(float x, float y, float z)
         {

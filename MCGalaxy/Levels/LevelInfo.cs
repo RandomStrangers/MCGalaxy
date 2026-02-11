@@ -65,17 +65,9 @@ namespace MCGalaxy
         }
         public static bool MapExists(string name) => File.Exists(MapPath(name));
         public static string GetExt(string levelName) => File.Exists("levels/" + levelName.ToLower() + ".mcf") ? ".mcf" : ".lvl";
-        public static string Name(string name, string ext = ".lvl")
-        {
-            if (!ext.CaselessContains(".lvl"))
-            {
-                return name.ToLower() + ext;
-            }
-            else
-            {
-                return File.Exists("levels/" + name.ToLower() + ".mcf") ? name.ToLower() + ".mcf" : name.ToLower() + ".lvl";
-            }
-        }
+        public static string Name(string name, string ext = ".lvl") => !ext.CaselessContains(".lvl")
+                ? name.ToLower() + ext
+                : File.Exists("levels/" + name.ToLower() + ".mcf") ? name.ToLower() + ".mcf" : name.ToLower() + ".lvl";
         /// <summary> Relative path of a level's map file </summary>
         public static string MapPath(string name, string ext = ".lvl") => "levels/" + Name(name, ext);
         /// <summary> Relative path of a level's backup folder </summary>
@@ -83,19 +75,11 @@ namespace MCGalaxy
         /// <summary> Relative path of a level's backup map directory </summary>
         public static string BackupDirPath(string name, string backup) => BackupBasePath(name) + "/" + backup;
         /// <summary> Relative path of a level's backup map file </summary>
-        public static string BackupFilePath(string name, string backup, string ext = ".lvl")
-        {
-            if (!ext.CaselessContains(".lvl"))
-            {
-                return BackupDirPath(name, backup) + "/" + name + ext;
-            }
-            else
-            {
-                return File.Exists("levels/" + name.ToLower() + ".mcf")
+        public static string BackupFilePath(string name, string backup, string ext = ".lvl") => !ext.CaselessContains(".lvl")
+                ? BackupDirPath(name, backup) + "/" + name + ext
+                : File.Exists("levels/" + name.ToLower() + ".mcf")
                     ? BackupDirPath(name, backup) + "/" + name + ".mcf"
                     : BackupDirPath(name, backup) + "/" + name + ".lvl";
-            }
-        }
         public static string BackupNameFrom(string path) => path.Substring(path.LastIndexOf(Path.DirectorySeparatorChar) + 1);
         public static int LatestBackup(string map)
         {

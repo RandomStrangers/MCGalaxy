@@ -21,7 +21,6 @@ namespace MCGalaxy.DB
     public unsafe class BlockDBFile
     {
         public static string FilePath(string map) => "blockdb/" + map + ".cbdb";
-        public static string DumpPath(string map) => "blockdb/" + map + ".dump";
         public static void WriteHeader(Stream s, Vec3U16 dims)
         {
             byte[] header = new byte[16 * 4];

@@ -22,14 +22,9 @@ namespace MCGalaxy
             _itemToNodesCache = new(itemEquality);
             _nullNodesCache = new List<SimpleNode>();
         }
-        public SimpleNode GetExistingNode(TItem item)
-        {
-            if (item == null)
-            {
-                return _nullNodesCache.Count > 0 ? _nullNodesCache[0] : null;
-            }
-            return !_itemToNodesCache.TryGetValue(item, out List<SimpleNode> nodes) ? null : nodes[0];
-        }
+        public SimpleNode GetExistingNode(TItem item) => item == null
+                ? _nullNodesCache.Count > 0 ? _nullNodesCache[0] : null
+                : !_itemToNodesCache.TryGetValue(item, out List<SimpleNode> nodes) ? null : nodes[0];
         public void RemoveFromNodeCache(SimpleNode node)
         {
             if (node.Data == null)

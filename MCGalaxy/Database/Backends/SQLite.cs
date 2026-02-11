@@ -136,7 +136,10 @@ namespace MCGalaxy.SQL
             if (names == null || count > names.Length)
             {
                 names = new string[count];
-                for (int i = 0; i < names.Length; i++) { names[i] = "@" + i; }
+                for (int i = 0; i < names.Length; i++) 
+                {
+                    names[i] = "@" + i;
+                }
                 ids = names;
             }
             return names;
@@ -173,8 +176,7 @@ namespace MCGalaxy.SQL
             // sqlite3.dll is the .DLL that MCGalaxy will actually load on Windows
             try
             {
-                string dll = IntPtr.Size == 8 ? "sqlite3_x64.dll" : "sqlite3_x32.dll";
-                if (File.Exists(dll)) FileIO.TryCopy(dll, "sqlite3.dll", true);
+                if (File.Exists(IntPtr.Size == 8 ? "sqlite3_x64.dll" : "sqlite3_x32.dll")) FileIO.TryCopy(IntPtr.Size == 8 ? "sqlite3_x64.dll" : "sqlite3_x32.dll", "sqlite3.dll", true);
             }
             catch (Exception ex)
             {
@@ -186,8 +188,7 @@ namespace MCGalaxy.SQL
                                       "WHERE type='table' AND name=@0", table) > 0;
         public List<string> AllTables()
         {
-            const string sql = "SELECT name from sqlite_master WHERE type='table'";
-            List<string> tables = GetStrings(sql);
+            List<string> tables = GetStrings("SELECT name from sqlite_master WHERE type='table'");
             // exclude sqlite built-in database tables
             for (int i = tables.Count - 1; i >= 0; i--)
             {

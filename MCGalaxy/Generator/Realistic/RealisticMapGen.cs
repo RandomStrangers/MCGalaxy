@@ -39,7 +39,7 @@ namespace MCGalaxy.Generator.Realistic
         {
             gen_args.Biome = args.Biome;
             if (!gen_args.ParseArgs(p)) return false;
-            rng = new Random(gen_args.Seed);
+            rng = new(gen_args.Seed);
             biome = MapGenBiome.Get(gen_args.Biome);
             preprocessor?.Invoke(lvl, gen_args);
             terrain = new float[lvl.Width * lvl.Length];
@@ -60,16 +60,16 @@ namespace MCGalaxy.Generator.Realistic
             {
                 GeneratePerlinNoise(overlayT, lvl);
             }
-            float rangeLo = args.RangeLow;
-            float rangeHi = args.RangeHigh;
+            float rangeLo = args.RangeLow,
+                rangeHi = args.RangeHigh;
             treeDens = args.TreeDensity;
             treeDist = args.TreeDistance;
             //loops though evey X/Z coordinate
             for (int i = 0; i < terrain.Length; i++)
             {
-                ushort x = (ushort)(i % lvl.Width);
-                ushort z = (ushort)(i / lvl.Width); // TODO don't % /
-                ushort height;
+                ushort x = (ushort)(i % lvl.Width),
+                    z = (ushort)(i / lvl.Width),
+                    height;
                 if (args.FalloffEdges)
                 {
                     float offset = NegateEdge(x, z, lvl);
@@ -232,11 +232,13 @@ namespace MCGalaxy.Generator.Realistic
         // https://www.lighthouse3d.com/opengl/terrain/index.php?fault
         void GenerateFault(float[] array, Level lvl)
         {
-            float baseHeight = args.StartHeight;
-            float dispMax = args.DisplacementMax;
-            float dispStep = args.DisplacementStep;
+            float baseHeight = args.StartHeight,
+                dispMax = args.DisplacementMax,
+                dispStep = args.DisplacementStep;
             for (int i = 0; i < array.Length; i++)
+            {
                 array[i] = baseHeight;
+            }
             float disp = dispMax;
             ushort halfX = (ushort)(lvl.Width / 2), halfZ = (ushort)(lvl.Length / 2);
             float d = (float)Math.Sqrt(halfX * halfX + halfZ * halfZ);
@@ -244,10 +246,10 @@ namespace MCGalaxy.Generator.Realistic
             Logger.Log(LogType.SystemActivity, "Iterations = " + numIterations);
             for (int iter = 0; iter < numIterations; iter++)
             {
-                float phi = (float)(rng.NextDouble() * 360);
-                float cosPhi = (float)Math.Cos(phi);
-                float sinPhi = (float)Math.Sin(phi);
-                float c = ((float)rng.NextDouble()) * 2 * d - d;
+                float phi = (float)(rng.NextDouble() * 360),
+                    cosPhi = (float)Math.Cos(phi),
+                    sinPhi = (float)Math.Sin(phi),
+                    c = ((float)rng.NextDouble()) * 2 * d - d;
                 int index = 0;
                 for (ushort z = 0; z < lvl.Length; z++)
                 {
@@ -281,12 +283,14 @@ namespace MCGalaxy.Generator.Realistic
             float[] filtered = new float[terrain.Length];
             for (int i = 0; i < filtered.Length; i++)
             {
-                ushort x = (ushort)(i % lvl.Width);
-                ushort z = (ushort)(i / lvl.Width);
+                ushort x = (ushort)(i % lvl.Width),
+                    z = (ushort)(i / lvl.Width);
                 filtered[i] = GetAverage9(x, z, lvl);
             }
             for (int i = 0; i < terrain.Length; i++)
+            {
                 terrain[i] = filtered[i];
+            }
         }
         //Averages over 9 points
         float GetAverage9(ushort x, ushort z, Level lvl)
@@ -316,9 +320,9 @@ namespace MCGalaxy.Generator.Realistic
         //Forces the edge of a map to slope lower for island map types
         static float NegateEdge(ushort x, ushort z, Level lvl)
         {
-            float xAdj = x / (float)lvl.Width * 0.5f;
-            float zAdj = z / (float)lvl.Length * 0.5f;
-            float adj;
+            float xAdj = x / (float)lvl.Width * 0.5f,
+                zAdj = z / (float)lvl.Length * 0.5f,
+                adj;
             xAdj = Math.Abs(xAdj - 0.25f);
             zAdj = Math.Abs(zAdj - 0.25f);
             if (xAdj > zAdj)
@@ -329,13 +333,12 @@ namespace MCGalaxy.Generator.Realistic
         }
         public static void RegisterGenerators()
         {
-            const GenType type = GenType.Simple;
-            MapGen.Register("Island", type, GenIsland, MapGen.DEFAULT_HELP);
-            MapGen.Register("Mountains", type, GenMountains, MapGen.DEFAULT_HELP);
-            MapGen.Register("Forest", type, GenForest, MapGen.DEFAULT_HELP);
-            MapGen.Register("Ocean", type, GenOcean, MapGen.DEFAULT_HELP);
-            MapGen.Register("Desert", type, GenDesert, MapGen.DEFAULT_HELP);
-            MapGen.Register("Hell", type, GenHell, MapGen.DEFAULT_HELP);
+            MapGen.Register("Island", GenType.Simple, GenIsland, MapGen.DEFAULT_HELP);
+            MapGen.Register("Mountains", GenType.Simple, GenMountains, MapGen.DEFAULT_HELP);
+            MapGen.Register("Forest", GenType.Simple, GenForest, MapGen.DEFAULT_HELP);
+            MapGen.Register("Ocean", GenType.Simple, GenOcean, MapGen.DEFAULT_HELP);
+            MapGen.Register("Desert", GenType.Simple, GenDesert, MapGen.DEFAULT_HELP);
+            MapGen.Register("Hell", GenType.Simple, GenHell, MapGen.DEFAULT_HELP);
         }
         static bool GenIsland(Player p, Level lvl, MapGenArgs args) => GenRealistic(p, lvl, args, RealisticMapGenArgs.Island);
         static bool GenMountains(Player p, Level lvl, MapGenArgs args) => GenRealistic(p, lvl, args, RealisticMapGenArgs.Mountains);
@@ -346,15 +349,15 @@ namespace MCGalaxy.Generator.Realistic
         static void PreprocessHell(Level lvl, MapGenArgs args)
         {
             Random rng = new(args.Seed);
-            int width = lvl.Width, height = lvl.Height, length = lvl.Length;
-            int index = 0, oneY = width * length;
+            int width = lvl.Width, height = lvl.Height, length = lvl.Length,
+                index = 0, oneY = width * length;
             MapGenBiome biome = MapGenBiome.Get(args.Biome);
             byte[] blocks = lvl.blocks;
-            // first layer used to be bedrock, but is now skipped over
-            //  (since map generation will just replace it anyways)
             index += oneY;
             for (int y = 1; y < height; ++y)
+            {
                 for (int z = 0; z < length; ++z)
+                {
                     for (int x = 0; x < width; ++x)
                     {
                         if (x == 0 || x == width - 1 || z == 0 || z == length - 1 || y == height - 1)
@@ -363,16 +366,21 @@ namespace MCGalaxy.Generator.Realistic
                         }
                         else if (x == 1 || x == width - 2 || z == 1 || z == length - 2)
                         {
-                            if (rng.Next(1000) != 7) { index++; continue; }
+                            if (rng.Next(1000) != 7) 
+                            {
+                                index++; 
+                                continue;
+                            }
                             int colIndex = z * width + x;
                             for (int i = 1; i < (height - y); ++i)
                             {
-                                int yy = height - i;
-                                blocks[colIndex + yy * oneY] = biome.Water;
+                                blocks[colIndex + (height - i) * oneY] = biome.Water;
                             }
                         }
                         index++;
                     }
+                }
+            }
         }
         static bool GenRealistic(Player p, Level lvl, MapGenArgs gen_args,
                                  RealisticMapGenArgs args, PreprocessGen preprocessor = null) => new RealisticMapGen().Gen(p, lvl, gen_args, args, preprocessor);

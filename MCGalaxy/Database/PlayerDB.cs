@@ -22,15 +22,14 @@ namespace MCGalaxy.DB
     {
         static string LoginPath(string name) => "text/login/" + name.ToLower() + ".txt";
         static string LogoutPath(string name) => "text/logout/" + name.ToLower() + ".txt";
-        const string NICK_PREFIX = "Nick = ";
         public static string LoadNick(string name)
         {
             string path = "players/" + name + "DB.txt";
             if (!File.Exists(path)) return null;
             foreach (string line in FileIO.TryReadAllLines(path))
             {
-                if (!line.CaselessStarts(NICK_PREFIX)) continue;
-                return line.Substring(NICK_PREFIX.Length).Trim();
+                if (!line.CaselessStarts("Nick = ")) continue;
+                return line.Substring("Nick = ".Length).Trim();
             }
             return null;
         }
@@ -38,7 +37,7 @@ namespace MCGalaxy.DB
         {
             EnsureDirectoriesExist();
             using StreamWriter sw = new("players/" + name + "DB.txt", false);
-            sw.WriteLine(NICK_PREFIX + nick);
+            sw.WriteLine("Nick = " + nick);
         }
         public static string GetLoginMessage(string name)
         {
@@ -68,8 +67,6 @@ namespace MCGalaxy.DB
         }
         public static void SetLoginMessage(string name, string msg) => SetMessage(LoginPath(name), msg);
         public static void SetLogoutMessage(string name, string msg) => SetMessage(LogoutPath(name), msg);
-        /// <summary> Returns the fields of the row whose Name field caselessly equals the given name </summary>
-        public static PlayerData FindData(string name) => FindExact(name, "*", PlayerData.Parse);
         /// <summary> Returns the Name field of the row whose Name field caselessly equals the given name </summary>
         public static string FindName(string name) => Database.ReadString("Players", "Name", "WHERE Name=@0 COLLATE NOCASE", name);
         /// <summary> Returns the IP field of the row whose Name field caselessly equals the given name </summary>
@@ -81,30 +78,14 @@ namespace MCGalaxy.DB
             return match?[0];
         }
         public static void Update(string name, string column, string value) => Database.UpdateRows("Players", column + "=@1", "WHERE Name=@0", name, value);
-        public static string FindColor(Player p)
-        {
-            string raw = Database.ReadString("Players", "Color", "WHERE ID=@0", p.DatabaseID);
-            return raw == null ? "" : PlayerData.ParseColor(raw);
-        }
-        public static string MatchNames(Player p, string name)
-        {
-            List<string> names = MatchMulti(name, "Name", r => r.GetText(0));
-            return Matcher.Find(p, name, out int matches, names,
+        public static string FindColor(Player p) => Database.ReadString("Players", "Color", "WHERE ID=@0", p.DatabaseID) == null ? "" : PlayerData.ParseColor(Database.ReadString("Players", "Color", "WHERE ID=@0", p.DatabaseID));
+        public static string MatchNames(Player p, string name) => Matcher.Find(p, name, out int matches, MatchMulti(name, "Name", r => r.GetText(0)),
                                 null, n => n, "players", 20);
-        }
-        public static string[] MatchValues(Player p, string name, string columns)
-        {
-            List<string[]> name_values = MatchMulti(name, columns, Database.ParseFields);
-            return Matcher.Find(p, name, out int matches, name_values,
+        public static string[] MatchValues(Player p, string name, string columns) => Matcher.Find(p, name, out int matches, MatchMulti(name, columns, Database.ParseFields),
                                 null, n => n[0], "players", 20);
-        }
-        public static PlayerData Match(Player p, string name)
-        {
-            List<PlayerData> stats = MatchMulti(name, "*", PlayerData.Parse);
-            return Matcher.Find(p, name, out int matches, stats,
+        public static PlayerData Match(Player p, string name) => Matcher.Find(p, name, out int matches, MatchMulti(name, "*", PlayerData.Parse),
                                 null, stat => stat.Name, "players", 20);
-        }
-        delegate T RecordParser<T>(ISqlRecord record);
+        public delegate T RecordParser<T>(ISqlRecord record);
         static List<T> MatchMulti<T>(string name, string columns, RecordParser<T> parseRecord) where T : class
         {
             List<T> list = FindPartial(name, columns, parseRecord);
@@ -119,7 +100,7 @@ namespace MCGalaxy.DB
             list.Add(exact);
             return list;
         }
-        static List<T> FindPartial<T>(string name, string columns, RecordParser<T> parseRecord)
+        public static List<T> FindPartial<T>(string name, string columns, RecordParser<T> parseRecord)
         {
             List<T> list = new();
             Database.ReadRows("Players", columns, r => list.Add(parseRecord(r)),
@@ -127,7 +108,7 @@ namespace MCGalaxy.DB
                               "%" + name.Replace("_", "#_") + "%");
             return list;
         }
-        static T FindExact<T>(string name, string columns, RecordParser<T> parseRecord) where T : class
+        public static T FindExact<T>(string name, string columns, RecordParser<T> parseRecord) where T : class
         {
             T exact = null;
             Database.ReadRows("Players", columns, r => exact = parseRecord(r),

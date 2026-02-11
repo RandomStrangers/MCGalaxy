@@ -19,13 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 //
-namespace LibNoise
+namespace MCGalaxy
 {
     public sealed class Perlin : IModule
     {
-        public double Persistence;
+        public double Persistence, Lacunarity;
         public int OctaveCount;
-        public double Lacunarity;
         public Perlin()
         {
             Lacunarity = 2.0;
@@ -34,8 +33,7 @@ namespace LibNoise
         }
         public override double GetValue(double x, double y, double z)
         {
-            double value = 0.0;
-            double curPersistence = 1.0;
+            double value = 0.0, curPersistence = 1.0;
             x *= Frequency;
             y *= Frequency;
             z *= Frequency;

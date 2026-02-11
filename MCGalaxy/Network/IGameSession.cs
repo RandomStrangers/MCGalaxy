@@ -24,10 +24,9 @@ namespace MCGalaxy.Network
         public byte ProtocolVersion;
         public byte[] fallback = new byte[256]; // fallback for classic+CPE block IDs
         public ushort MaxRawBlock = 49;
-        public bool hasCpe;
+        public bool hasCpe, hasCustomBlocks, hasExtBlocks,
+            hasBlockDefs, hasBulkBlockUpdate;
         public string appName;
-        // these are checked very frequently, so avoid overhead of .Supports(
-        public bool hasCustomBlocks, hasExtBlocks, hasBlockDefs, hasBulkBlockUpdate;
         protected INetSocket socket;
         protected Player player;
         /// <summary> Temporary unique ID for this network session </summary>

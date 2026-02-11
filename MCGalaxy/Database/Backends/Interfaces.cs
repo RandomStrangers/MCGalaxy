@@ -20,7 +20,8 @@ namespace MCGalaxy.SQL
     {
         SQLiteCommand _command;
         SQLiteStatement stmt;
-        int readState, rowsAffected, columns;
+        int readState, columns;
+        public int rowsAffected;
         string[] fieldNames;
         internal ISqlReader(SQLiteCommand cmd) => _command = cmd;
         public void Dispose() => Close();
@@ -49,30 +50,19 @@ namespace MCGalaxy.SQL
         public override bool GetBoolean(int i) => GetInt32(i) != 0;
         public override byte[] GetBytes(int i) => GetAffinity(i) == TypeAffinity.Blob ? stmt.GetBytes(i) : throw new InvalidCastException();
         public override DateTime GetDateTime(int i) => GetAffinity(i) == TypeAffinity.Text ? stmt.GetDateTime(i) : throw new NotSupportedException();
-        public override double GetDouble(int i)
-        {
-            TypeAffinity aff = GetAffinity(i);
-            return aff == TypeAffinity.Int64 || aff == TypeAffinity.Double ? stmt.GetDouble(i) : throw new NotSupportedException();
-        }
+        public override double GetDouble(int i) => GetAffinity(i) == TypeAffinity.Int64 || GetAffinity(i) == TypeAffinity.Double ? stmt.GetDouble(i) : throw new NotSupportedException();
         public override int GetInt32(int i) => GetAffinity(i) == TypeAffinity.Int64 ? stmt.GetInt32(i) : throw new InvalidCastException();
         public override long GetInt64(int i) => GetAffinity(i) == TypeAffinity.Int64 ? stmt.GetInt64(i) : throw new InvalidCastException();
         public override string GetString(int i) => stmt.GetText(i);
         public override bool IsDBNull(int i) => GetAffinity(i) == TypeAffinity.Null;
-        public override object GetValue(int i)
-        {
-            TypeAffinity affinity = GetAffinity(i);
-            return stmt.GetValue(i, affinity);
-        }
+        public override object GetValue(int i) => stmt.GetValue(i, GetAffinity(i));
         public override string GetStringValue(int col) => GetString(col);
         public override string DumpValue(int col)
         {
-            TypeAffinity affinity = GetAffinity(col);
-            if (affinity == TypeAffinity.Null) return "NULL";
-            string value = GetString(col);
-            if (affinity == TypeAffinity.Text || affinity == TypeAffinity.Blob)
-                return SqlUtils.QuoteString(value);
-            // TODO doubles not exact? probably doesn't matter
-            return value;
+            if (GetAffinity(col) == TypeAffinity.Null) return "NULL";
+            if (GetAffinity(col) == TypeAffinity.Text || GetAffinity(col) == TypeAffinity.Blob)
+                return SqlUtils.QuoteString(GetString(col));
+            return GetString(col);
         }
         public override string GetName(int i) => stmt.ColumnName(i);
         public override int GetOrdinal(string name)
@@ -92,7 +82,6 @@ namespace MCGalaxy.SQL
             return -1;
         }
         public override int FieldCount => columns;
-        public int RowsAffected => rowsAffected;
         public bool NextResult()
         {
             CheckClosed();

@@ -23,11 +23,9 @@ namespace MCGalaxy
                     return NASColor.direHealthColors;
                 }
                 float healthPercent = HP / Prop.baseHP;
-                if (healthPercent > 0.5f)
-                {
-                    return NASColor.fullHealthColors;
-                }
-                return healthPercent > 0.25 ? NASColor.mediumHealthColors : NASColor.lowHealthColors;
+                return healthPercent > 0.5f
+                    ? NASColor.fullHealthColors
+                    : healthPercent > 0.25 ? NASColor.mediumHealthColors : NASColor.lowHealthColors;
             }
         }
         public static NASItem Fist;

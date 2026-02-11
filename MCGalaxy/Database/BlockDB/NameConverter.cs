@@ -19,13 +19,11 @@ namespace MCGalaxy.DB
     /// <summary> Converts names to integer ids and back </summary>
     public static class NameConverter
     {
-        // NOTE: this restriction is due to BlockDBCacheEntry
-        public const int MaxPlayerID = 0x00FFFFFF;
         /// <summary> Returns the name associated with the given ID, or ID#[id] if not found </summary>
         public static string FindName(int id)
         {
             // Only returns non-null if id > MaxPlayerID - invalid.Count
-            string name = Server.invalidIds.GetAt(MaxPlayerID - id);
+            string name = Server.invalidIds.GetAt(0x00FFFFFF - id);
             if (name != null) return name;
             name = Database.ReadString("Players", "Name", "WHERE ID=@0", id);
             return name ?? "ID#" + id;
@@ -35,7 +33,7 @@ namespace MCGalaxy.DB
         {
             List<int> ids = new();
             int i = Server.invalidIds.IndexOf(name);
-            if (i >= 0) ids.Add(MaxPlayerID - i);
+            if (i >= 0) ids.Add(0x00FFFFFF - i);
             Database.ReadRows("Players", "ID",
                                 record => ids.Add(record.GetInt32(0)),
                                 "WHERE Name=@0", name);
@@ -44,10 +42,8 @@ namespace MCGalaxy.DB
         /// <summary> Returns a non-database ID for the given name </summary>
         public static int InvalidNameID(string name)
         {
-            bool added = Server.invalidIds.Add(name);
-            if (added) Server.invalidIds.Save();
-            int index = Server.invalidIds.IndexOf(name);
-            return MaxPlayerID - index;
+            if (Server.invalidIds.Add(name)) Server.invalidIds.Save();
+            return 0x00FFFFFF - Server.invalidIds.IndexOf(name);
         }
     }
 }

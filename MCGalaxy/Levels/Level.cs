@@ -22,7 +22,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
 namespace MCGalaxy
 {
     public enum LevelPermission
@@ -440,17 +439,17 @@ namespace MCGalaxy
             public int Index;
             int flags;
             byte oldRaw, newRaw;
-            public readonly ushort OldBlock => (ushort)(oldRaw | ((flags & 0x03) << Block.ExtendedShift));
-            public readonly ushort NewBlock => (ushort)(newRaw | ((flags & 0xC >> 2) << Block.ExtendedShift));
+            public readonly ushort OldBlock => (ushort)(oldRaw | ((flags & 0x03) << 8));
+            public readonly ushort NewBlock => (ushort)(newRaw | ((flags & 0xC >> 2) << 8));
             public readonly DateTime Time => Server.StartTime.AddTicks((flags >> 4) * TimeSpan.TicksPerSecond);
             public void SetData(ushort oldBlock, ushort newBlock)
             {
                 TimeSpan delta = DateTime.UtcNow.Subtract(Server.StartTime);
                 flags = (int)delta.TotalSeconds << 4;
                 oldRaw = (byte)oldBlock;
-                flags |= oldBlock >> Block.ExtendedShift;
+                flags |= oldBlock >> 8;
                 newRaw = (byte)newBlock;
-                flags |= (newBlock >> Block.ExtendedShift) << 2;
+                flags |= (newBlock >> 8) << 2;
             }
         }
         void LoadDefaultProps()
@@ -463,8 +462,7 @@ namespace MCGalaxy
         public void UpdateBlockProps()
         {
             LoadDefaultProps();
-            string propsPath = Paths.BlockPropsPath("_" + MapName);
-            if (!File.Exists(propsPath))
+            if (!File.Exists(Paths.BlockPropsPath("_" + MapName)))
             {
                 BlockProps.Load("lvl_" + MapName, Props, 2, true);
             }
@@ -482,10 +480,9 @@ namespace MCGalaxy
         }
         public void UpdateBlockHandlers(ushort block)
         {
-            bool nonSolid = !Blocks.CollideType.IsSolid(CollideType(block));
             DeleteHandlers[block] = BlockBehaviour.GetDeleteHandler(block, Props);
             PlaceHandlers[block] = BlockBehaviour.GetPlaceHandler(block, Props);
-            WalkthroughHandlers[block] = BlockBehaviour.GetWalkthroughHandler(block, Props, nonSolid);
+            WalkthroughHandlers[block] = BlockBehaviour.GetWalkthroughHandler(block, Props, !DefaultSet.IsSolid(CollideType(block)));
             PhysicsHandlers[block] = BlockBehaviour.GetPhysicsHandler(block, Props);
             physicsDoorsHandlers[block] = BlockBehaviour.GetPhysicsDoorsHandler(block, Props);
             OnBlockHandlersUpdatedEvent.Call(this, block);

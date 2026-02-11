@@ -56,14 +56,7 @@ namespace MCGalaxy.Maths
         {
             readonly get
             {
-                if (index == 0)
-                {
-                    return X;
-                }
-                else
-                {
-                    return index == 1 ? Y : Z;
-                }
+                return index == 0 ? X : index == 1 ? Y : Z;
             }
             set
             {

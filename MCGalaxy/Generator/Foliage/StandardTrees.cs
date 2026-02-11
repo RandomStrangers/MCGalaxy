@@ -38,9 +38,9 @@ namespace MCGalaxy.Generator.Foliage
             {
                 output(x, (ushort)(y + dy), z, Block.Green);
             }
-            int value = rnd.Next(1, 3);
-            int dx = value == 1 ? -1 : 0;
-            int dz = value == 2 ? -1 : 0;
+            int value = rnd.Next(1, 3),
+                dx = value == 1 ? -1 : 0,
+                dz = value == 2 ? -1 : 0;
             for (int dy = height; dy <= rnd.Next(height + 2, height + 5); dy++)
             {
                 output((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz), Block.Green);
@@ -64,9 +64,13 @@ namespace MCGalaxy.Generator.Foliage
         public override void Generate(ushort x, ushort y, ushort z, TreeOutput output)
         {
             for (ushort dy = 0; dy < height + size - 1; dy++)
+            {
                 output(x, (ushort)(y + dy), z, Block.Log);
+            }
             for (int dy = -size; dy <= size; ++dy)
+            {
                 for (int dz = -size; dz <= size; ++dz)
+                {
                     for (int dx = -size; dx <= size; ++dx)
                     {
                         int dist = (int)Math.Sqrt(dx * dx + dy * dy + dz * dz);
@@ -77,6 +81,8 @@ namespace MCGalaxy.Generator.Foliage
                                 output(xx, yy, zz, Block.Leaves);
                         }
                     }
+                }
+            }
         }
     }
     public sealed class SwampTree : Tree
@@ -92,11 +98,14 @@ namespace MCGalaxy.Generator.Foliage
         public override void Generate(ushort x, ushort y, ushort z, TreeOutput output)
         {
             for (int dy = 0; dy <= height; dy++)
+            {
                 output(x, (ushort)(y + dy), z, Block.Log);
+            }
             for (int dy = height - 2; dy <= height + 1; dy++)
             {
                 int extent = dy > height - 1 ? 2 : 3;
                 for (int dz = -extent; dz <= extent; dz++)
+                {
                     for (int dx = -extent; dx <= extent; dx++)
                     {
                         ushort xx = (ushort)(x + dx), yy = (ushort)(y + dy), zz = (ushort)(z + dz);
@@ -111,6 +120,7 @@ namespace MCGalaxy.Generator.Foliage
                             output(xx, yy, zz, Block.Leaves);
                         }
                     }
+                }
             }
         }
     }

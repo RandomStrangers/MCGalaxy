@@ -20,14 +20,13 @@
 // DEALINGS IN THE SOFTWARE.
 //
 using System;
-namespace LibNoise
+namespace MCGalaxy
 {
     public sealed class RidgedMultifractal : IModule
     {
         public int OctaveCount;
         double mLacunarity;
-        const int MaxOctaves = 30;
-        readonly double[] SpectralWeights = new double[MaxOctaves];
+        readonly double[] SpectralWeights = new double[30];
         public RidgedMultifractal()
         {
             Lacunarity = 2.0;
@@ -38,12 +37,8 @@ namespace LibNoise
             x *= Frequency;
             y *= Frequency;
             z *= Frequency;
-            double value = 0.0;
-            double weight = 1.0;
-            // These parameters should be user-defined; they may be exposed in a
-            // future version of libnoise.
-            double offset = 1.0;
-            double gain = 2.0;
+            double value = 0.0, weight = 1.0,
+                offset = 1.0, gain = 2.0;
             for (int octave = 0; octave < OctaveCount; octave++)
             {
                 double signal = GradientNoise.GradientCoherentNoise(x, y, z, (Seed + octave) & 0x7fffffff);
@@ -86,9 +81,8 @@ namespace LibNoise
         }
         void CalculateSpectralWeights()
         {
-            double h = 1.0;
-            double frequency = 1.0;
-            for (int i = 0; i < MaxOctaves; i++)
+            double h = 1.0, frequency = 1.0;
+            for (int i = 0; i < 30; i++)
             {
                 // Compute weight for each frequency.
                 SpectralWeights[i] = Math.Pow(frequency, -h);

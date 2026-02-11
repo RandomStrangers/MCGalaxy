@@ -97,11 +97,9 @@ namespace MCGalaxy.Commands.Moderation
             OnChangingGroupEvent.Call(name, curRank, newRank, ref cancel);
             return !cancel;
         }
-        static Group TargetRank(Player p, string name, Group curRank)
-        {
-            if (name.CaselessEq("+up")) return NextRankUp(p, curRank);
-            return name.CaselessEq("-down") ? NextRankDown(p, curRank) : Matcher.FindRanks(p, name);
-        }
+        static Group TargetRank(Player p, string name, Group curRank) => name.CaselessEq("+up")
+                ? NextRankUp(p, curRank)
+                : name.CaselessEq("-down") ? NextRankDown(p, curRank) : Matcher.FindRanks(p, name);
         static Group NextRankDown(Player p, Group curRank)
         {
             int index = Group.GroupList.IndexOf(curRank);

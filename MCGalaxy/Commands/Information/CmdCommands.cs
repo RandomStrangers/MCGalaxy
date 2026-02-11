@@ -163,8 +163,7 @@ namespace MCGalaxy.Commands.Info
             if (type == "game") return CommandTypes.Games;
             if (type == "mod") return CommandTypes.Moderation;
             if (type == "other") return CommandTypes.Other;
-            if (type == "world") return CommandTypes.World;
-            return type == "information" ? CommandTypes.Information : type;
+            return type == "world" ? CommandTypes.World : type == "information" ? CommandTypes.Information : type;
         }
         internal static string GetCategories()
         {

@@ -57,12 +57,7 @@ namespace MCGalaxy.Commands.Misc
             }
             return -1;
         }
-        static bool SolidAt(Level lvl, ushort x, int y, ushort z)
-        {
-            if (y >= lvl.Height) return false;
-            ushort block = lvl.GetBlock(x, (ushort)y, z);
-            return CollideType.IsSolid(lvl.CollideType(block));
-        }
+        static bool SolidAt(Level lvl, ushort x, int y, ushort z) => y < lvl.Height && DefaultSet.IsSolid(lvl.CollideType(lvl.GetBlock(x, (ushort)y, z)));
         public override void Help(Player p)
         {
             string name = Group.GetColoredName(LevelPermission.Operator);

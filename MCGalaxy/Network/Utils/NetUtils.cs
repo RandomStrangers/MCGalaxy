@@ -35,11 +35,6 @@ namespace MCGalaxy
             array[index++] = (byte)(value >> 8);
             array[index++] = (byte)value;
         }
-        public static unsafe void WriteF32(float value, byte[] buffer, int i)
-        {
-            int num = *(int*)&value;
-            WriteI32(num, buffer, i);
-        }
         internal static int WritePos(Position pos, byte[] arr, int offset, bool extPos)
         {
             if (!extPos)

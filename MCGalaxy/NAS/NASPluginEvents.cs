@@ -481,7 +481,7 @@ namespace MCGalaxy
             np.PlayerSavingScheduler ??= new("SavingScheduler" + p.name);
             np.PlayerSaveTask = np.PlayerSavingScheduler.QueueRepeat(np.SaveStatsTask, null, TimeSpan.FromSeconds(5));
         }
-        public static void OnShutdown(bool restarting, string reason) => SaveAll(NASConsole);
+        public static void OnShutdown(bool restarting, string reason) => SaveAll(Player.Console);
         public static void OnPlayerDisconnect(Player p, string reason)
         {
             NASPlayer np = NASPlayer.GetPlayer(p);

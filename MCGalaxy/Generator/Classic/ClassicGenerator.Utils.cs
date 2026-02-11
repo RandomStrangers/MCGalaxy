@@ -5,22 +5,20 @@ namespace MCGalaxy.Generator.Classic
 {
     public sealed partial class ClassicGenerator
     {
-        static int Floor(float value)
-        {
-            int valueI = (int)value;
-            return value < valueI ? valueI - 1 : valueI;
-        }
+        static int Floor(float value) => value < (int)value ? (int)value - 1 : (int)value;
         void FillOblateSpheroid(int x, int y, int z, float radius, byte block)
         {
-            int xBeg = Floor(Math.Max(x - radius, 0));
-            int xEnd = Floor(Math.Min(x + radius, Width - 1));
-            int yBeg = Floor(Math.Max(y - radius, 0));
-            int yEnd = Floor(Math.Min(y + radius, Height - 1));
-            int zBeg = Floor(Math.Max(z - radius, 0));
-            int zEnd = Floor(Math.Min(z + radius, Length - 1));
+            int xBeg = Floor(Math.Max(x - radius, 0)),
+                xEnd = Floor(Math.Min(x + radius, Width - 1)),
+                yBeg = Floor(Math.Max(y - radius, 0)),
+                yEnd = Floor(Math.Min(y + radius, Height - 1)),
+                zBeg = Floor(Math.Max(z - radius, 0)),
+                zEnd = Floor(Math.Min(z + radius, Length - 1));
             float radiusSq = radius * radius;
             for (int yy = yBeg; yy <= yEnd; yy++)
+            {
                 for (int zz = zBeg; zz <= zEnd; zz++)
+                {
                     for (int xx = xBeg; xx <= xEnd; xx++)
                     {
                         int dx = xx - x, dy = yy - y, dz = zz - z;
@@ -31,6 +29,8 @@ namespace MCGalaxy.Generator.Classic
                                 blocks[index] = block;
                         }
                     }
+                }
+            }
         }
         void FloodFill(int startIndex, byte block)
         {
@@ -42,9 +42,9 @@ namespace MCGalaxy.Generator.Classic
                 int index = stack.Pop();
                 if (blocks[index] != Block.Air) continue;
                 blocks[index] = block;
-                int x = index % Width;
-                int y = index / oneY;
-                int z = index / Width % Length;
+                int x = index % Width,
+                    y = index / oneY,
+                    z = index / Width % Length;
                 if (x > 0) stack.Push(index - 1);
                 if (x < Width - 1) stack.Push(index + 1);
                 if (z > 0) stack.Push(index - Width);
@@ -74,27 +74,24 @@ namespace MCGalaxy.Generator.Classic
             }
         }
     }
-    // Based on https://docs.oracle.com/javase/7/docs/api/java/util/Random.html
     public sealed class JavaRandom
     {
         long seed;
-        const long value = 0x5DEECE66DL;
-        const long mask = (1L << 48) - 1;
         public JavaRandom(int seed) => SetSeed(seed);
-        public void SetSeed(int seed) => this.seed = (seed ^ value) & mask;
+        public void SetSeed(int seed) => this.seed = (seed ^ 0x5DEECE66DL) & ((1L << 48) - 1);
         public int Next(int min, int max) => min + Next(max - min);
         public int Next(int n)
         {
             if ((n & -n) == n)
             { // i.e., n is a power of 2
-                seed = (seed * value + 0xBL) & mask;
+                seed = (seed * 0x5DEECE66DL + 0xBL) & ((1L << 48) - 1);
                 long raw = (long)((ulong)seed >> (48 - 31));
                 return (int)((n * raw) >> 31);
             }
             int bits, val;
             do
             {
-                seed = (seed * value + 0xBL) & mask;
+                seed = (seed * 0x5DEECE66DL + 0xBL) & ((1L << 48) - 1);
                 bits = (int)((ulong)seed >> (48 - 31));
                 val = bits % n;
             } while (bits - val + (n - 1) < 0);
@@ -102,7 +99,7 @@ namespace MCGalaxy.Generator.Classic
         }
         public float NextFloat()
         {
-            seed = (seed * value + 0xBL) & mask;
+            seed = (seed * 0x5DEECE66DL + 0xBL) & ((1L << 48) - 1);
             int raw = (int)((ulong)seed >> (48 - 24));
             return raw / ((float)(1 << 24));
         }

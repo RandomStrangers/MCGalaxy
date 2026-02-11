@@ -140,13 +140,9 @@ namespace MCGalaxy.Platform
                     {
                         return new FreeBSD_OS();
                     }
-                    else if (kernel.CaselessContains("netBSD"))
-                    {
-                        return new NetBSD_OS();
-                    }
                     else
                     {
-                        return kernel.CaselessContains("darwin") ? mac : unixOS;
+                        return kernel.CaselessContains("netBSD") ? new NetBSD_OS() : kernel.CaselessContains("darwin") ? mac : unixOS;
                     }
                 }
             }

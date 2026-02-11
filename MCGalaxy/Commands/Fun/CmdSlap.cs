@@ -67,7 +67,7 @@ namespace MCGalaxy.Commands.Fun
             {
                 ushort above = lvl.GetBlock(x, (ushort)(y + 1), z);
                 if (above == Block.Invalid) continue;
-                if (!CollideType.IsSolid(lvl.CollideType(above))) continue;
+                if (!DefaultSet.IsSolid(lvl.CollideType(above))) continue;
                 int posY = (y + 1) * 32 - 6;
                 BlockDefinition def = lvl.GetBlockDef(above);
                 if (def != null) posY += def.MinZ * 2;

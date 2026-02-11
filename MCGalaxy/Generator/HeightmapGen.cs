@@ -89,15 +89,7 @@ namespace MCGalaxy.Generator
             }
             return true;
         }
-        static bool IsCliff(int height, byte[] hmap, Level lvl, int x, int z)
-        {
-            if (x >= lvl.Width || x < 0 || z >= lvl.Length || z < 0)
-            {
-                return false;
-            }
-            int neighbourHeight = hmap[z * lvl.Width + x];
-            return height >= neighbourHeight + 2;
-        }
+        static bool IsCliff(int height, byte[] hmap, Level lvl, int x, int z) => x < lvl.Width && x >= 0 && z < lvl.Length && z >= 0 && height >= hmap[z * lvl.Width + x] + 2;
         static byte[] ComputeHeightmap(Bitmap2D bmp)
         {
             byte[] hmap = new byte[bmp.Width * bmp.Height];

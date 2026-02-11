@@ -35,11 +35,9 @@ namespace MCGalaxy
             {
                 throw new ArgumentNullException("node");
             }
-            if (node.Queue != null && !Equals(node.Queue))
-            {
-                throw new InvalidOperationException("node.Contains was called on a node from another queue.  Please call originalQueue.ResetNode() first");
-            }
-            return node.QueueIndex < 0 || node.QueueIndex >= _nodes.Length
+            return node.Queue != null && !Equals(node.Queue)
+                ? throw new InvalidOperationException("node.Contains was called on a node from another queue.  Please call originalQueue.ResetNode() first")
+                : node.QueueIndex < 0 || node.QueueIndex >= _nodes.Length
                 ? throw new InvalidOperationException("node.QueueIndex has been corrupted. Did you change it manually?")
                 : _nodes[node.QueueIndex] == node;
         }

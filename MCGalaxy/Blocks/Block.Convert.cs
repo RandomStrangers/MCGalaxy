@@ -17,14 +17,10 @@ namespace MCGalaxy
 {
     public static partial class Block
     {
-        static readonly string[] coreNames = new string[CORE_COUNT];
+        static readonly string[] coreNames = new string[256];
         public static bool Undefined(ushort block) => IsPhysicsType(block) && coreNames[block].CaselessEq("unknown");
         public static bool ExistsGlobal(ushort b) => ExistsFor(Player.Console, b);
-        public static bool ExistsFor(Player p, ushort b)
-        {
-            if (b < CORE_COUNT) return !Undefined(b);
-            return !p.IsSuper ? p.Level.GetBlockDef(b) != null : BlockDefinition.GlobalDefs[b] != null;
-        }
+        public static bool ExistsFor(Player p, ushort b) => b < 256 ? !Undefined(b) : !p.IsSuper ? p.Level.GetBlockDef(b) != null : BlockDefinition.GlobalDefs[b] != null;
         /// <summary> Gets the name for the block with the given block ID </summary>
         /// <remarks> Block names can differ depending on the player's level </remarks>
         public static string GetName(Player p, ushort block)
@@ -39,7 +35,7 @@ namespace MCGalaxy
             {
                 def = BlockDefinition.GlobalDefs[block];
             }
-            return def != null ? def.Name.Replace(" ", "") : block < CPE_COUNT ? coreNames[block] : ToRaw(block).ToString();
+            return def != null ? def.Name.Replace(" ", "") : block < 66 ? coreNames[block] : ToRaw(block).ToString();
         }
         public static ushort Parse(Player p, string input)
         {
@@ -47,7 +43,7 @@ namespace MCGalaxy
             // raw ID is treated specially, before names
             if (ushort.TryParse(input, out ushort block))
             {
-                if (block < CPE_COUNT || (block <= MaxRaw && defs[FromRaw(block)] != null))
+                if (block < 66 || (block <= 767 && defs[FromRaw(block)] != null))
                 {
                     return FromRaw(block);
                 } // TODO redo to use ExistsFor?

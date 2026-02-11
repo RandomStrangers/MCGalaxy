@@ -58,18 +58,16 @@ namespace MCGalaxy.Drawing.Ops
             if (checkLimit && !op.CanDraw(marks, p, affected)) return false;
             if (brush != null && affected != -1)
             {
-                const string format = "{0}({1}): affecting up to {2} blocks";
                 if (!p.Ignores.DrawOutput)
                 {
-                    p.Message(format, op.Name, brush.Name, affected);
+                    p.Message("{0}({1}): affecting up to {2} blocks", op.Name, brush.Name, affected);
                 }
             }
             else if (affected != -1)
             {
-                const string format = "{0}: affecting up to {1} blocks";
                 if (!p.Ignores.DrawOutput)
                 {
-                    p.Message(format, op.Name, affected);
+                    p.Message("{0}: affecting up to {1} blocks", op.Name, affected);
                 }
             }
             DoQueuedDrawOp(p, op, brush, marks);
@@ -152,8 +150,8 @@ namespace MCGalaxy.Drawing.Ops
                 Player p = op.Player;
                 if (b.X >= lvl.Width || b.Y >= lvl.Height || b.Z >= lvl.Length) return;
                 int index = b.X + lvl.Width * (b.Z + b.Y * lvl.Length);
-                ushort old = lvl.blocks[index];
-                ushort extended = Block.ExtendedBase[old];
+                ushort old = lvl.blocks[index],
+                    extended = Block.ExtendedBase[old];
                 if (extended > 0) old = (ushort)(extended | lvl.FastGetExtTile(b.X, b.Y, b.Z));
                 // Check to make sure the block is actually different
                 if (old == b.Block) return;
@@ -173,21 +171,22 @@ namespace MCGalaxy.Drawing.Ops
                 }
                 // Set the block (inlined)
                 lvl.Changed = true;
-                if (b.Block >= Block.Extended)
+                if (b.Block >= 256)
                 {
-                    lvl.blocks[index] = Block.ExtendedClass[b.Block >> Block.ExtendedShift];
+                    lvl.blocks[index] = Block.ExtendedClass[b.Block >> 8];
                     lvl.FastSetExtTile(b.X, b.Y, b.Z, (byte)b.Block);
                 }
                 else
                 {
                     lvl.blocks[index] = (byte)b.Block;
-                    if (old >= Block.Extended)
+                    if (old >= 256)
                     {
                         lvl.FastRevertExtTile(b.X, b.Y, b.Z);
                     }
                 }
                 lvl.BlockDB.Cache.Add(p, b.X, b.Y, b.Z, op.Flags, old, b.Block);
-                p.TotalModified++; p.TotalDrawn++; // increment block stats inline
+                p.TotalModified++;
+                p.TotalDrawn++; // increment block stats inline
                 // Potentially buffer the block change
                 if (op.TotalModified == reloadThreshold)
                 {

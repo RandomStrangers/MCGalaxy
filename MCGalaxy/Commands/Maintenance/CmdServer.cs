@@ -12,7 +12,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using MCGalaxy.DB;
 using MCGalaxy.SQL;
 using System.IO;
 namespace MCGalaxy.Commands.Maintenance
@@ -28,29 +27,50 @@ namespace MCGalaxy.Commands.Maintenance
             string[] args = message.SplitSpaces();
             switch (args[0].ToLower())
             {
-                case "public": SetPublic(p); break;
-                case "private": SetPrivate(p); break;
-                case "reload": DoReload(p); break;
-                case "backup": DoBackup(p, args); break;
-                case "restore": DoRestore(p); break;
-                case "import": DoImport(p, args); break;
-                case "update": Find("Update").Use(p, "check"); break;
-                case "upgradeblockdb": DoBlockDBUpgrade(p, args); break;
-                default: Help(p); break;
+                case "public": 
+                    SetPublic(p);
+                    break;
+                case "private": 
+                    SetPrivate(p);
+                    break;
+                case "reload": 
+                    DoReload(p); 
+                    break;
+                case "backup": 
+                    DoBackup(p, args);
+                    break;
+                case "restore": 
+                    DoRestore(p);
+                    break;
+                case "import": 
+                    DoImport(p, args); 
+                    break;
+                case "update": 
+                    Find("Update").Use(p, "check");
+                    break;
+                default:
+                    Help(p); 
+                    break;
             }
         }
         void SetPublic(Player p)
         {
             Server.Config.Public = true;
             p.Message("Server is now public!");
-            Logger.Log(LogType.SystemActivity, "Server is now public!");
+            if (!p.IsConsole)
+            {
+                Logger.Log(LogType.SystemActivity, "Server is now public!");
+            }
             Server.Save();
         }
         void SetPrivate(Player p)
         {
             Server.Config.Public = false;
             p.Message("Server is now private!");
-            Logger.Log(LogType.SystemActivity, "Server is now private!");
+            if (!p.IsConsole)
+            {
+                Logger.Log(LogType.SystemActivity, "Server is now private!");
+            }
             Server.Save();
         }
         void DoReload(Player p)
@@ -62,13 +82,21 @@ namespace MCGalaxy.Commands.Maintenance
         }
         void DoBackup(Player p, string[] args)
         {
-            string type = args.Length > 1 ? args[1] : "";
-            string value = args.Length > 2 ? args[2] : "";
+            string type = args.Length > 1 ? args[1] : "",
+                value = args.Length > 2 ? args[2] : "";
             if (type.CaselessEq("table"))
             {
-                if (value.Length == 0) { p.Message("You need to provide the name of the table to backup."); return; }
+                if (value.Length == 0) 
+                { 
+                    p.Message("You need to provide the name of the table to backup."); 
+                    return; 
+                }
                 if (!Formatter.ValidName(p, value, "table")) return;
-                if (!Database.TableExists(value)) { p.Message("Table \"{0}\" does not exist.", value); return; }
+                if (!Database.TableExists(value)) 
+                { 
+                    p.Message("Table \"{0}\" does not exist.", value);
+                    return;
+                }
                 p.Message("Start backing up table {0}. Please wait while backup finishes.", value);
                 using (StreamWriter sql = new(value + ".sql"))
                 {
@@ -108,51 +136,25 @@ namespace MCGalaxy.Commands.Maintenance
         {
             if (!CheckPerms(p))
             {
-                p.Message("Only Console or the Server Owner can restore the server."); return;
+                p.Message("Only Console or the Server Owner can restore the server."); 
+                return;
             }
             Backup.Extract(p);
         }
-        static bool CheckPerms(Player p)
-        {
-            if (p.IsConsole) return true;
-            return !Server.Config.OwnerName.CaselessEq("Notch") && p.name.CaselessEq(Server.Config.OwnerName);
-        }
+        static bool CheckPerms(Player p) => p.IsConsole || !Server.Config.OwnerName.CaselessEq("Notch") && p.name.CaselessEq(Server.Config.OwnerName);
         void DoImport(Player p, string[] args)
         {
             if (args.Length == 1) { p.Message("You need to provide the table name to import."); return; }
             if (!Formatter.ValidName(p, args[1], "table")) return;
-            if (!File.Exists(args[1] + ".sql")) { p.Message("File \"{0}\".sql does not exist.", args[1]); return; }
+            if (!File.Exists(args[1] + ".sql")) 
+            { 
+                p.Message("File \"{0}\".sql does not exist.", args[1]);
+                return;
+            }
             p.Message("Importing table {0} started. Please wait while import finishes.", args[1]);
-            //using (Stream fs = File.OpenRead(args[1] + ".sql"))
             using (Stream fs = FileIO.TryOpenRead(args[1] + ".sql"))
                 Backup.ImportSql(fs);
             p.Message("Finished importing table {0}.", args[1]);
-        }
-        void DoBlockDBUpgrade(Player p, string[] args)
-        {
-            if (args.Length == 1 || !args[1].CaselessEq("confirm"))
-            {
-                p.Message("This will export all the BlockDB tables in the database to more efficient .cbdb files.");
-                p.Message("Note: This is only useful if you have updated from older {0} versions", Server.SoftwareName);
-                p.MessageLines(DBUpgrader.CompactMessages);
-                p.Message("Type &T/Server upgradeblockdb confirm &Sto begin");
-            }
-            else if (DBUpgrader.Upgrading)
-            {
-                p.Message("BlockDB upgrade is already in progress.");
-            }
-            else
-            {
-                try
-                {
-                    DBUpgrader.Lock();
-                    DBUpgrader.Upgrade();
-                }
-                finally
-                {
-                    DBUpgrader.Unlock();
-                }
-            }
         }
         public override void Help(Player p, string message)
         {

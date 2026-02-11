@@ -92,16 +92,16 @@ namespace MCGalaxy
         {
             if (b >= Door_Obsidian && b <= Door_Slab) return true;
             if (b >= Door_Iron && b <= Door_Bookshelf) return true;
-            if (b >= Door_Orange && b <= Door_White) return true;
-            return b >= Door_Air && b <= Door_Lava || b == Door_Cobblestone || b == Door_Red || b == Door_Log || b == Door_Gold;
+            return b >= Door_Orange && b <= Door_White || b >= Door_Air && b <= Door_Lava || b == Door_Cobblestone || b == Door_Red || b == Door_Log || b == Door_Gold;
         }
         static AnimalAI GetAI(ushort b)
         {
             if (b == Bird_Black || b == Bird_White || b == Bird_Lava || b == Bird_Water) return AnimalAI.Fly;
             if (b == Bird_Red || b == Bird_Blue || b == Bird_Killer) return AnimalAI.KillerAir;
             if (b == Fish_Betta || b == Fish_Shark) return AnimalAI.KillerWater;
-            if (b == Fish_LavaShark) return AnimalAI.KillerLava;
-            return b == Fish_Gold || b == Fish_Salmon || b == Fish_Sponge ? AnimalAI.FleeWater : AnimalAI.None;
+            return b == Fish_LavaShark
+                ? AnimalAI.KillerLava
+                : b == Fish_Gold || b == Fish_Salmon || b == Fish_Sponge ? AnimalAI.FleeWater : AnimalAI.None;
         }
         static string GetDeathMessage(ushort b)
         {
@@ -120,16 +120,14 @@ namespace MCGalaxy
             if (b == RocketHead) return "@p &Swas &cin a fiery explosion.";
             if (b == ZombieBody) return "@p &Sdied due to lack of &5brain.";
             if (b == Creeper) return "@p &Swas killed &cb-SSSSSSSSSSSSSS";
-            if (b == Fish_LavaShark) return "@p &Swas eaten by a ... LAVA SHARK?!";
-            return b == Snake ? "@p &Swas bit by a deadly snake." : null;
+            return b == Fish_LavaShark ? "@p &Swas eaten by a ... LAVA SHARK?!" : b == Snake ? "@p &Swas bit by a deadly snake." : null;
         }
         internal static void SetDefaultNames()
         {
             Aliases.Clear();
             SetDefaultAliases();
             int start = 0;
-            // Using a single const string reduces size by 2KB
-            const string default_names =
+            string default_names =
                 "Air@Stone@Grass@Dirt@Cobblestone@Wood@Sapling@Bedrock@" +
                 "Active_Water@Water@Active_Lava@Lava@Sand@Gravel@Gold_Ore@Iron_Ore@" +
                 "Coal@Log@Leaves@Sponge@Glass@Red@Orange@Yellow@" +
@@ -162,12 +160,12 @@ namespace MCGalaxy
                 "Zombie@Zombie_Head@@Dove@Pidgeon@Duck@Phoenix@Red_Robin@" +
                 "Blue_Bird@@Killer_Phoenix@@@GoldFish@Sea_Sponge@Shark@" +
                 "Salmon@Betta_Fish@Lava_Shark@Snake@Snake_Tail@Door_Gold@@@";
-            for (int b = 0; b < CORE_COUNT; b++)
+            for (int b = 0; b < 256; b++)
             {
                 int end = default_names.IndexOf('@', start);
                 string name = start == end ? "unknown" : default_names.Substring(start, end - start);
                 start = end + 1;
-                if (b > 0 && b < CPE_COUNT)
+                if (b > 0 && b < 66)
                 {
                     BlockDefinition def = BlockDefinition.GlobalDefs[b];
                     if (def != null) name = def.Name;
@@ -183,47 +181,72 @@ namespace MCGalaxy
         static void SetDefaultAliases()
         {
             Dictionary<string, byte> aliases = Aliases;
-            // Add old MCGalaxy names
-            aliases["purple"] = Indigo; aliases["blueviolet"] = Blue;
-            aliases["adminium"] = Bedrock; aliases["bookcase"] = Bookshelf;
-            aliases["plant"] = Sapling; aliases["mossy_cobblestone"] = MossyRocks;
-            aliases["springgreen"] = Teal; aliases["greenyellow"] = Lime;
-            aliases["red_flower"] = Rose; aliases["yellow_flower"] = Dandelion;
-            aliases["stair"] = Slab; aliases["double_stair"] = DoubleSlab;
-            // Add other aliases
-            aliases["planks"] = Wood; aliases["tree"] = Log;
-            aliases["stairs"] = Slab; aliases["slab"] = Slab;
-            aliases["doubleslab"] = DoubleSlab; aliases["slabfull"] = DoubleSlab;
-            aliases["solid"] = Bedrock; aliases["admintite"] = Bedrock;
-            aliases["blackrock"] = Bedrock; aliases["activewater"] = Water;
-            aliases["activelava"] = Lava; aliases["fhl"] = Deadly_FastLava;
-            aliases["water_door"] = Door_Water; aliases["lava_door"] = Door_Lava;
-            aliases["acw"] = Deadly_ActiveWater; aliases["ahl"] = Deadly_ActiveLava;
-            aliases["door_tree"] = Door_Log; aliases["door2"] = Door_Obsidian;
-            aliases["door3"] = Door_Glass; aliases["door4"] = Door_Stone;
-            aliases["door5"] = Door_Leaves; aliases["door6"] = Door_Sand;
-            aliases["door7"] = Door_Wood; aliases["door8"] = Door_Green;
-            aliases["door9"] = Door_TNT; aliases["door10"] = Door_Slab;
-            aliases["door11"] = Door_Iron; aliases["door12"] = Door_Dirt;
-            aliases["door13"] = Door_Grass; aliases["door14"] = Door_Blue;
-            aliases["door15"] = Door_Bookshelf; aliases["door16"] = Door_Gold;
-            aliases["door17"] = Door_Cobblestone; aliases["door18"] = Door_Red;
-            aliases["tdoor_tree"] = tDoor_Log; aliases["tdoor2"] = tDoor_Obsidian;
-            aliases["tdoor3"] = tDoor_Glass; aliases["tdoor4"] = tDoor_Stone;
-            aliases["tdoor5"] = tDoor_Leaves; aliases["tdoor6"] = tDoor_Sand;
-            aliases["tdoor7"] = tDoor_Wood; aliases["tdoor8"] = tDoor_Green;
-            aliases["tdoor9"] = tDoor_TNT; aliases["tdoor10"] = tDoor_Slab;
-            aliases["tair_switch"] = tDoor_Air; aliases["tdoor11"] = tDoor_Air;
-            aliases["tdoor12"] = tDoor_Water; aliases["tdoor13"] = tDoor_Lava;
-            aliases["odoor_tree"] = oDoor_Log; aliases["odoor2"] = oDoor_Obsidian;
-            aliases["odoor3"] = oDoor_Glass; aliases["odoor4"] = oDoor_Stone;
-            aliases["odoor5"] = oDoor_Leaves; aliases["odoor6"] = oDoor_Sand;
-            aliases["odoor7"] = oDoor_Wood; aliases["odoor8"] = oDoor_Green;
-            aliases["odoor9"] = oDoor_TNT; aliases["odoor10"] = oDoor_Slab;
-            aliases["odoor11"] = oDoor_Lava; aliases["odoor12"] = oDoor_Water;
-            aliases["steps"] = Slab; aliases["double_steps"] = DoubleSlab;
-            aliases["step"] = Slab; aliases["double_step"] = DoubleSlab;
-            aliases["grey"] = Gray; aliases["door_darkgray"] = Door_Black;
+            aliases["planks"] = Wood; 
+            aliases["tree"] = Log;
+            aliases["stairs"] = Slab; 
+            aliases["slab"] = Slab;
+            aliases["doubleslab"] = DoubleSlab;
+            aliases["slabfull"] = DoubleSlab;
+            aliases["solid"] = Bedrock;
+            aliases["admintite"] = Bedrock;
+            aliases["blackrock"] = Bedrock;
+            aliases["activewater"] = Water;
+            aliases["activelava"] = Lava;
+            aliases["fhl"] = Deadly_FastLava;
+            aliases["water_door"] = Door_Water;
+            aliases["lava_door"] = Door_Lava;
+            aliases["acw"] = Deadly_ActiveWater;
+            aliases["ahl"] = Deadly_ActiveLava;
+            aliases["door_tree"] = Door_Log; 
+            aliases["door2"] = Door_Obsidian;
+            aliases["door3"] = Door_Glass;
+            aliases["door4"] = Door_Stone;
+            aliases["door5"] = Door_Leaves; 
+            aliases["door6"] = Door_Sand;
+            aliases["door7"] = Door_Wood; 
+            aliases["door8"] = Door_Green;
+            aliases["door9"] = Door_TNT;
+            aliases["door10"] = Door_Slab;
+            aliases["door11"] = Door_Iron;
+            aliases["door12"] = Door_Dirt;
+            aliases["door13"] = Door_Grass; 
+            aliases["door14"] = Door_Blue;
+            aliases["door15"] = Door_Bookshelf;
+            aliases["door16"] = Door_Gold;
+            aliases["door17"] = Door_Cobblestone;
+            aliases["door18"] = Door_Red;
+            aliases["tdoor_tree"] = tDoor_Log; 
+            aliases["tdoor2"] = tDoor_Obsidian;
+            aliases["tdoor3"] = tDoor_Glass;
+            aliases["tdoor4"] = tDoor_Stone;
+            aliases["tdoor5"] = tDoor_Leaves;
+            aliases["tdoor6"] = tDoor_Sand;
+            aliases["tdoor7"] = tDoor_Wood; 
+            aliases["tdoor8"] = tDoor_Green;
+            aliases["tdoor9"] = tDoor_TNT;
+            aliases["tdoor10"] = tDoor_Slab;
+            aliases["tair_switch"] = tDoor_Air;
+            aliases["tdoor11"] = tDoor_Air;
+            aliases["tdoor12"] = tDoor_Water; 
+            aliases["tdoor13"] = tDoor_Lava;
+            aliases["odoor_tree"] = oDoor_Log;
+            aliases["odoor2"] = oDoor_Obsidian;
+            aliases["odoor3"] = oDoor_Glass; 
+            aliases["odoor4"] = oDoor_Stone;
+            aliases["odoor5"] = oDoor_Leaves;
+            aliases["odoor6"] = oDoor_Sand;
+            aliases["odoor7"] = oDoor_Wood; 
+            aliases["odoor8"] = oDoor_Green;
+            aliases["odoor9"] = oDoor_TNT;
+            aliases["odoor10"] = oDoor_Slab;
+            aliases["odoor11"] = oDoor_Lava; 
+            aliases["odoor12"] = oDoor_Water;
+            aliases["steps"] = Slab; 
+            aliases["double_steps"] = DoubleSlab;
+            aliases["step"] = Slab; 
+            aliases["double_step"] = DoubleSlab;
+            aliases["grey"] = Gray; 
+            aliases["door_darkgray"] = Door_Black;
             aliases["door_lightgray"] = Door_Gray;
         }
     }

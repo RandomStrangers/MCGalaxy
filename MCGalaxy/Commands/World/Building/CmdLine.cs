@@ -29,8 +29,7 @@ namespace MCGalaxy.Commands.Building
             string msg = parts[0];
             if (msg == "normal") return DrawMode.solid;
             if (msg == "walls") return DrawMode.walls;
-            if (msg == "straight") return DrawMode.straight;
-            return msg == "connected" ? DrawMode.wire : DrawMode.normal;
+            return msg == "straight" ? DrawMode.straight : msg == "connected" ? DrawMode.wire : DrawMode.normal;
         }
         protected override DrawOp GetDrawOp(DrawArgs dArgs)
         {

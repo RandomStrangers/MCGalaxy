@@ -19,15 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 //
-namespace LibNoise
+namespace MCGalaxy
 {
     public static class GradientNoise
     {
-        const int X_NOISE_GEN = 1619;
-        const int Y_NOISE_GEN = 31337;
-        const int Z_NOISE_GEN = 6971;
-        const int SEED_NOISE = 1013;
-        const int SHIFT_NOISE_GEN = 8;
         static readonly double[] RandomVectors =
         {
             -0.763874, -0.596439, -0.246489,
@@ -290,17 +285,17 @@ namespace LibNoise
         public static double GradientCoherentNoise(double x, double y, double z, int seed)
         {
             // NOTE: Incorrect logic, should be >= 0.0 (kept for compatibility)
-            int x0 = x > 0.0 ? (int)x : (int)x - 1;
-            int x1 = x0 + 1;
-            int y0 = y > 0.0 ? (int)y : (int)y - 1;
-            int y1 = y0 + 1;
-            int z0 = z > 0.0 ? (int)z : (int)z - 1;
-            int z1 = z0 + 1;
+            int x0 = x > 0.0 ? (int)x : (int)x - 1,
+                x1 = x0 + 1,
+                y0 = y > 0.0 ? (int)y : (int)y - 1,
+                y1 = y0 + 1,
+                z0 = z > 0.0 ? (int)z : (int)z - 1,
+                z1 = z0 + 1;
             // case NoiseQuality.Standard:
-            double xs = SCurve3(x - x0);
-            double ys = SCurve3(y - y0);
-            double zs = SCurve3(z - z0);
-            double n0, n1, ix0, ix1, iy0, iy1;
+            double xs = SCurve3(x - x0),
+                ys = SCurve3(y - y0),
+                zs = SCurve3(z - z0),
+                n0, n1, ix0, ix1, iy0, iy1;
             n0 = GradientRawNoise(x, y, z, x0, y0, z0, seed);
             n1 = GradientRawNoise(x, y, z, x1, y0, z0, seed);
             ix0 = LinearInterpolate(n0, n1, xs);
@@ -320,18 +315,18 @@ namespace LibNoise
         static double GradientRawNoise(double fx, double fy, double fz, int ix, int iy, int iz, int seed)
         {
             int vectorIndex =
-                  X_NOISE_GEN * ix
-                + Y_NOISE_GEN * iy
-                + Z_NOISE_GEN * iz
-                + SEED_NOISE * seed;
-            vectorIndex ^= vectorIndex >> SHIFT_NOISE_GEN;
+                  1619 * ix
+                + 31337 * iy
+                + 6971 * iz
+                + 1013 * seed;
+            vectorIndex ^= vectorIndex >> 8;
             vectorIndex &= 0xff;
-            double xvGradient = RandomVectors[vectorIndex * 3];
-            double yvGradient = RandomVectors[(vectorIndex * 3) + 1];
-            double zvGradient = RandomVectors[(vectorIndex * 3) + 2];
-            double xvPoint = fx - ix;
-            double yvPoint = fy - iy;
-            double zvPoint = fz - iz;
+            double xvGradient = RandomVectors[vectorIndex * 3],
+                yvGradient = RandomVectors[(vectorIndex * 3) + 1],
+                zvGradient = RandomVectors[(vectorIndex * 3) + 2],
+                xvPoint = fx - ix,
+                yvPoint = fy - iy,
+                zvPoint = fz - iz;
             return
                  ((xvGradient * xvPoint)
                 + (yvGradient * yvPoint)

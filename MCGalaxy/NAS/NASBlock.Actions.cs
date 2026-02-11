@@ -1836,11 +1836,9 @@ namespace MCGalaxy
             {
                 return returnedBlock;
             }
-            if (ConvertBody(block, stickyPistonSouth, out returnedBlock))
-            {
-                return returnedBlock;
-            }
-            return ConvertBody(block, stickyPistonWest, out returnedBlock) ? returnedBlock : returnedBlock;
+            return ConvertBody(block, stickyPistonSouth, out returnedBlock)
+                ? returnedBlock
+                : ConvertBody(block, stickyPistonWest, out returnedBlock) ? returnedBlock : returnedBlock;
         }
         public static NASBlockAction PowerSourceAction(int direction) => (nl, nasBlock, x, y, z) =>
                                                                                   {

@@ -27,11 +27,15 @@ namespace MCGalaxy.Blocks
             DirUtils.Pitch(p.Rot.HeadX, out int dy);
             // Looking straight up or down
             byte pitch = p.Rot.HeadX;
-            if (pitch >= 192 && pitch <= 196 || pitch >= 60 && pitch <= 64) { dx = 0; dz = 0; }
-            Vec3U16 head = new((ushort)(x + dx * 2), (ushort)(y + dy * 2), (ushort)(z + dz * 2));
-            Vec3U16 tail = new((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz));
-            bool headFree = p.Level.IsAirAt(head.X, head.Y, head.Z) && p.Level.CheckClear(head.X, head.Y, head.Z);
-            bool tailFree = p.Level.IsAirAt(tail.X, tail.Y, tail.Z) && p.Level.CheckClear(tail.X, tail.Y, tail.Z);
+            if (pitch >= 192 && pitch <= 196 || pitch >= 60 && pitch <= 64) 
+            {
+                dx = 0;
+                dz = 0;
+            }
+            Vec3U16 head = new((ushort)(x + dx * 2), (ushort)(y + dy * 2), (ushort)(z + dz * 2)),
+                tail = new((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz));
+            bool headFree = p.Level.IsAirAt(head.X, head.Y, head.Z) && p.Level.CheckClear(head.X, head.Y, head.Z),
+                tailFree = p.Level.IsAirAt(tail.X, tail.Y, tail.Z) && p.Level.CheckClear(tail.X, tail.Y, tail.Z);
             if (headFree && tailFree)
             {
                 p.Level.Blockchange(head.X, head.Y, head.Z, Block.RocketHead);
@@ -50,22 +54,25 @@ namespace MCGalaxy.Blocks
                 Z = (ushort)(z + rand.Next(0, 2) - 1)
             };
             ushort headY = (ushort)(y + 2), tailY = (ushort)(y + 1);
-            bool headFree = p.Level.IsAirAt(pos.X, headY, pos.Z) && p.Level.CheckClear(pos.X, headY, pos.Z);
-            bool tailFree = p.Level.IsAirAt(pos.X, tailY, pos.Z) && p.Level.CheckClear(pos.X, tailY, pos.Z);
+            bool headFree = p.Level.IsAirAt(pos.X, headY, pos.Z) && p.Level.CheckClear(pos.X, headY, pos.Z),
+                tailFree = p.Level.IsAirAt(pos.X, tailY, pos.Z) && p.Level.CheckClear(pos.X, tailY, pos.Z);
             if (headFree && tailFree)
             {
                 p.Level.Blockchange(pos.X, headY, pos.Z, Block.Fireworks);
-                PhysicsArgs args = default;
-                args.Type1 = PhysicsArgs.Wait; args.Value1 = 1;
-                args.Type2 = PhysicsArgs.Dissipate; args.Value2 = 100;
+                PhysicsArgs args = new()
+                {
+                    Type1 = 1,
+                    Value1 = 1,
+                    Type2 = 3,
+                    Value2 = 100
+                };
                 p.Level.Blockchange(pos.X, tailY, pos.Z, Block.StillLava, false, args);
             }
             return ChangeResult.Unchanged;
         }
         internal static ChangeResult C4Det(Player p, ushort _, ushort x, ushort y, ushort z)
         {
-            int index = p.Level.PosToInt(x, y, z);
-            C4Physics.BlowUp(index, p.Level);
+            C4Physics.BlowUp(p.Level.PosToInt(x, y, z), p.Level);
             return p.ChangeBlock(x, y, z, Block.Air);
         }
         internal static ChangeResult RevertDoor(Player _, ushort __, ushort ___, ushort ____, ushort _____) => ChangeResult.Unchanged;
@@ -80,8 +87,7 @@ namespace MCGalaxy.Blocks
         {
             if (old == Block.oDoor_Green || old == Block.oDoor_Green_air)
             {
-                ushort oDoorOpposite = p.Level.Props[old].oDoorBlock;
-                p.Level.Blockchange(x, y, z, oDoorOpposite);
+                p.Level.Blockchange(x, y, z, p.Level.Props[old].oDoorBlock);
                 return ChangeResult.Modified;
             }
             return ChangeResult.Unchanged;

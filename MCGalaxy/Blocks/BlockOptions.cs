@@ -90,8 +90,7 @@ namespace MCGalaxy.Blocks
             if (props[block].IsMessageBlock) return "message block";
             if (props[block].IsPortal) return "portal";
             if (props[block].IsTDoor) return "tDoor";
-            if (props[block].oDoorBlock != 0xff) return "oDoor";
-            return props[block].IsDoor ? "door" : null;
+            return props[block].oDoorBlock != 0xff ? "oDoor" : props[block].IsDoor ? "door" : null;
         }
         static void ToggleBehaviour(Player p, BlockProps[] scope, ushort block, string type, ref bool on)
         {

@@ -608,14 +608,7 @@ namespace Sharkbite.Irc
             // valid channels start with #, !, + or &
             return channel.Length > 1 && ChannelPrefix.IndexOf(channel[0]) >= 0;
         }
-        static bool IsValidNick(string nick)
-        {
-            if (IsEmpty(nick))
-            {
-                return false;
-            }
-            return !HasSpace(nick) && nickRegex.IsMatch(nick);
-        }
+        static bool IsValidNick(string nick) => !IsEmpty(nick) && !HasSpace(nick) && nickRegex.IsMatch(nick);
         static bool IsEmpty(string str) => str == null || str.Trim().Length == 0;
         static bool HasSpace(string str) => str.IndexOf(' ') != -1;
         #endregion

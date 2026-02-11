@@ -23,41 +23,12 @@ namespace MCGalaxy.Blocks
     /// <summary> Extended and physics properties of a block. </summary>
     public struct BlockProps
     {
-        /// <summary> Message shown to the level when the player is killed by this block. Can be null. </summary>
         public string DeathMessage;
-        /// <summary> Whether colliding/walking through this block kills the player. </summary>
-        public bool KillerBlock;
-        /// <summary> Whether this block is considered a tDoor. </summary>
-        public bool IsTDoor;
-        /// <summary> Whether this block is considered a door. </summary>
-        public bool IsDoor;
-        /// <summary> Block ID of the block this is converted to when toggled by a neighbouring door. </summary>
-        public ushort oDoorBlock;
-        /// <summary> Whether this block is considered a message block. </summary>
-        public bool IsMessageBlock;
-        /// <summary> Whether this block is considered a portal. </summary>
-        public bool IsPortal;
-        /// <summary> Whether this block is overwritten/killed by water blocks. </summary>
-        public bool WaterKills;
-        /// <summary> Whether this block is overwritten/killed by lava blocks. </summary>
-        public bool LavaKills;
-        /// <summary> Whether this block is an OP block (cannot be replaced by physics changes). </summary>
-        public bool OPBlock;
-        /// <summary> Whether this block should allow trains to go over them. </summary>
-        public bool IsRails;
-        /// <summary> Animal AI behaviour of this block. </summary>
+        public bool KillerBlock, IsTDoor, IsDoor,
+            IsMessageBlock, IsPortal, WaterKills, 
+            LavaKills, OPBlock, IsRails, Drownable;
+        public ushort oDoorBlock, StackBlock, GrassBlock, DirtBlock;
         public AnimalAI AnimalAI;
-        /// <summary> Block ID that is placed when two of this block are placed on top of each other. </summary>
-        /// <remarks> e.g. slabs and cobblestone slabs. </remarks>
-        public ushort StackBlock;
-        /// <summary> Whether players can drown inside this block (e.g. water). </summary>
-        public bool Drownable;
-        /// <summary> Block ID this is changed into when exposed to sunlight. </summary>
-        public ushort GrassBlock;
-        /// <summary> Block ID this is changed into when no longer exposed to sunlight. </summary>
-        public ushort DirtBlock;
-        /// <summary> Whether the properties for this block have been modified and hence require saving. </summary>
-        /// <remarks> bit 0 set means modified at global scope, bit 1 set means modified at level scope</remarks>
         public byte ChangedScope;
         public static BlockProps MakeEmpty()
         {

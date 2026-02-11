@@ -47,16 +47,14 @@ namespace MCGalaxy.Blocks
                 return p.ChangeBlock(x, y, z, block);
             }
             p.SendBlockchange(x, y, z, Block.Air); // send the air block back only to the user
-            ushort stack = p.Level.Props[block].StackBlock;
-            p.ChangeBlock(x, (ushort)(y - 1), z, stack);
+            p.ChangeBlock(x, (ushort)(y - 1), z, p.Level.Props[block].StackBlock);
             return ChangeResult.Modified;
         }
         internal static ChangeResult C4(Player p, ushort _, ushort x, ushort y, ushort z)
         {
             if (p.Level.LevelPhysics == 0 || p.Level.LevelPhysics == 5) return ChangeResult.Unchanged;
             // Use red wool to detonate c4
-            ushort held = p.BlockBindings[p.ClientHeldBlock];
-            if (held == Block.Red)
+            if (p.BlockBindings[p.ClientHeldBlock] == Block.Red)
             {
                 p.Message("Placed detonator block, delete it to detonate.");
                 return C4Det(p, Block.C4Detonator, x, y, z);
@@ -64,11 +62,10 @@ namespace MCGalaxy.Blocks
             if (p.c4circuitNumber == -1)
             {
                 sbyte num = C4Physics.NextCircuit(p.Level);
-                p.Level.C4list.Add(new C4Data(num));
+                p.Level.C4list.Add(new(num));
                 p.c4circuitNumber = num;
-                string detonatorName = Block.GetName(p, Block.Red);
                 p.Message("Place more blocks for more c4, then place a &c{0} &Sblock for the detonator.",
-                               detonatorName);
+                               Block.GetName(p, Block.Red));
             }
             C4Data c4 = C4Physics.Find(p.Level, p.c4circuitNumber);
             c4?.list.Add(p.Level.PosToInt(x, y, z));

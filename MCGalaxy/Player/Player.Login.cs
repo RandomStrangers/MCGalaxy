@@ -89,8 +89,7 @@ namespace MCGalaxy
             }
             if (clone != null && (verifiedName || Server.Config.VerifyNames))
             {
-                string reason = ip == clone.ip ? "(Reconnecting)" : "(Reconnecting from a different IP)";
-                clone.Leave(reason);
+                clone.Leave(ip == clone.ip ? "(Reconnecting)" : "(Reconnecting from a different IP)");
             }
             else if (clone != null)
             {
@@ -186,8 +185,7 @@ namespace MCGalaxy
             try
             {
                 welcomeFile.EnsureExists();
-                string[] welcome = welcomeFile.GetText();
-                MessageLines(welcome);
+                MessageLines(welcomeFile.GetText());
             }
             catch (Exception ex)
             {
@@ -236,7 +234,7 @@ namespace MCGalaxy
             }
             else
             {
-                data = PlayerDB.FindData(name);
+                data = PlayerDB.FindExact(name, "*", PlayerData.Parse);
             }
             if (data == null)
             {
@@ -277,9 +275,6 @@ namespace MCGalaxy
                 return;
             }
             List<string> alts = PlayerInfo.FindAccounts(p.ip);
-            while (alts.CaselessRemove(p.name)) 
-            { 
-            }
             if (alts.Count == 0)
             {
                 return;

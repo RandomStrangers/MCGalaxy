@@ -331,11 +331,7 @@ namespace MCGalaxy.Util.Imaging
         static byte ByteClamp(float value)
         {
             int n = (int)value;
-            if (n < 0)
-            {
-                return 0;
-            }
-            return n > 255 ? (byte)255 : (byte)n;
+            return n < 0 ? (byte)0 : n > 255 ? (byte)255 : (byte)n;
         }
         void DecodeBlock(JpegComponent comp, byte[] src, int* block)
         {

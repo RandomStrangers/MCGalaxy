@@ -386,8 +386,7 @@ namespace MCGalaxy
         internal bool ActivatesPhysics(ushort block)
         {
             if (Props[block].IsMessageBlock || Props[block].IsPortal) return false;
-            if (Props[block].IsDoor || Props[block].IsTDoor) return false;
-            return !Props[block].OPBlock && PhysicsHandlers[block] != null;
+            return !Props[block].IsDoor && !Props[block].IsTDoor && !Props[block].OPBlock && PhysicsHandlers[block] != null;
         }
         internal bool CheckSpongeWater(ushort x, ushort y, ushort z)
         {

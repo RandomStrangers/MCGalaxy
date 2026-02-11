@@ -29,14 +29,7 @@ namespace MCGalaxy
             return new(a);
         }
         /// <summary> Removes an ending + from a username. </summary>
-        public static string RemoveLastPlus(this string str)
-        {
-            if (string.IsNullOrEmpty(str))
-            {
-                return str;
-            }
-            return str[str.Length - 1] != '+' ? str : str.Substring(0, str.Length - 1);
-        }
+        public static string RemoveLastPlus(this string str) => string.IsNullOrEmpty(str) ? str : str[str.Length - 1] != '+' ? str : str.Substring(0, str.Length - 1);
         /// <summary> Returns whether line is empty or starts with a #. </summary>
         public static bool IsCommentLine(this string line) => line.Length == 0 || line[0] == '#';
         /// <summary> Returns whether all characters in the given string are also in the given alphabet </summary>

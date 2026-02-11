@@ -37,16 +37,17 @@ namespace MCGalaxy.Blocks
                 case Block.C4Detonator: return PlaceBehaviour.C4Det;
             }
             if (props[block].GrassBlock != Block.Invalid) return PlaceBehaviour.DirtGrow;
-            if (props[block].DirtBlock != Block.Invalid) return PlaceBehaviour.GrassDie;
-            return props[block].StackBlock != Block.Air ? PlaceBehaviour.Stack : null;
+            return props[block].DirtBlock != Block.Invalid
+                ? PlaceBehaviour.GrassDie
+                : props[block].StackBlock != Block.Air ? PlaceBehaviour.Stack : null;
         }
         // NOTE: These static declarations are just to save a few memory allocations
         //  Behind the scenes, 'return XYZ;' is actually compiled into 'return new HandleDelete(XYZ);'
         //  So by declaring a static variable, 'new HandleDelete(XYZ)' is only ever called once
         //   instead of over and over - thereby slightly reducing memory usage by a few KB per Level
-        static readonly HandleDelete DB_revert = DeleteBehaviour.RevertDoor;
-        static readonly HandleDelete DB_oDoor = DeleteBehaviour.ODoor;
-        static readonly HandleDelete DB_Door = DeleteBehaviour.Door;
+        static readonly HandleDelete DB_revert = DeleteBehaviour.RevertDoor,
+            DB_oDoor = DeleteBehaviour.ODoor,
+            DB_Door = DeleteBehaviour.Door;
         /// <summary> Retrieves the default delete block handler for the given block. </summary>
         internal static HandleDelete GetDeleteHandler(ushort block, BlockProps[] props)
         {
@@ -63,27 +64,27 @@ namespace MCGalaxy.Blocks
             if (props[block].IsMessageBlock) return DeleteBehaviour.DoMessageBlock;
             if (props[block].IsPortal) return DeleteBehaviour.DoPortal;
             if (props[block].IsTDoor) return DB_revert;
-            if (props[block].oDoorBlock != Block.Invalid) return DB_oDoor;
-            return props[block].IsDoor ? DB_Door : null;
+            return props[block].oDoorBlock != Block.Invalid ? DB_oDoor : props[block].IsDoor ? DB_Door : null;
         }
         /// <summary> Retrieves the default walkthrough block handler for the given block. </summary>
         internal static HandleWalkthrough GetWalkthroughHandler(ushort block, BlockProps[] props, bool nonSolid)
         {
-            switch (block)
+            return block switch
             {
-                case Block.Checkpoint: return WalkthroughBehaviour.Checkpoint;
-                case Block.Door_AirActivatable: return WalkthroughBehaviour.Door;
-                case Block.Door_Water: return WalkthroughBehaviour.Door;
-                case Block.Door_Lava: return WalkthroughBehaviour.Door;
-                case Block.Train: return WalkthroughBehaviour.Train;
-            }
-            if (props[block].IsMessageBlock && nonSolid) return WalkthroughBehaviour.DoMessageBlock;
-            return props[block].IsPortal && nonSolid ? WalkthroughBehaviour.DoPortal : null;
+                Block.Checkpoint => WalkthroughBehaviour.Checkpoint,
+                Block.Door_AirActivatable => WalkthroughBehaviour.Door,
+                Block.Door_Water => WalkthroughBehaviour.Door,
+                Block.Door_Lava => WalkthroughBehaviour.Door,
+                Block.Train => WalkthroughBehaviour.Train,
+                _ => props[block].IsMessageBlock && nonSolid
+                                ? WalkthroughBehaviour.DoMessageBlock
+                                : props[block].IsPortal && nonSolid ? WalkthroughBehaviour.DoPortal : null,
+            };
         }
         // See comments noted above for reasoning behind static declaration of some HandleDelete handlers
-        static readonly HandlePhysics PH_do_Door = DoorPhysics.Do;
-        static readonly HandlePhysics PH_do_oDoor = DoorPhysics.ODoor;
-        static readonly HandlePhysics PH_do_Other = OtherPhysics.DoOther;
+        static readonly HandlePhysics PH_do_Door = DoorPhysics.Do,
+            PH_do_oDoor = DoorPhysics.ODoor,
+            PH_do_Other = OtherPhysics.DoOther;
         /// <summary> Retrieves the default physics block handler for the given block. </summary>
         internal static HandlePhysics GetPhysicsHandler(ushort block, BlockProps[] props)
         {
@@ -169,8 +170,7 @@ namespace MCGalaxy.Blocks
             if (block == Block.Air) return PH_do_Door;
             if (block == Block.Door_Log_air) return PH_do_Door;
             if (block == Block.Door_TNT_air) return PH_do_Door;
-            if (block == Block.Door_Green_air) return PH_do_Door;
-            return props[block].oDoorBlock != Block.Invalid ? PH_do_oDoor : null;
+            return block == Block.Door_Green_air ? PH_do_Door : props[block].oDoorBlock != Block.Invalid ? PH_do_oDoor : null;
         }
         static HandlePhysics AnimalAIHandler(AnimalAI ai)
         {

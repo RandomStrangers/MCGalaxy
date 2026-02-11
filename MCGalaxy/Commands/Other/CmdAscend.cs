@@ -50,11 +50,11 @@ namespace MCGalaxy.Commands.Misc
             for (; y <= lvl.Height; y++)
             {
                 ushort block = lvl.GetBlock(x, y, z);
-                if (block != Block.Invalid && CollideType.IsSolid(lvl.CollideType(block))) continue;
+                if (block != Block.Invalid && DefaultSet.IsSolid(lvl.CollideType(block))) continue;
                 ushort above = lvl.GetBlock(x, (ushort)(y + 1), z);
-                if (above != Block.Invalid && CollideType.IsSolid(lvl.CollideType(above))) continue;
+                if (above != Block.Invalid && DefaultSet.IsSolid(lvl.CollideType(above))) continue;
                 ushort below = lvl.GetBlock(x, (ushort)(y - 1), z);
-                if (below != Block.Invalid && CollideType.IsSolid(lvl.CollideType(below))) return y;
+                if (below != Block.Invalid && DefaultSet.IsSolid(lvl.CollideType(below))) return y;
             }
             return -1;
         }

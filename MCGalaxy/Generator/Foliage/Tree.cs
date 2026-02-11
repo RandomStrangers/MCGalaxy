@@ -39,12 +39,16 @@ namespace MCGalaxy.Generator.Foliage
         public static bool TreeCheck(Level lvl, ushort x, ushort y, ushort z, short size)
         { //return true if tree is near
             for (int dy = -size; dy <= size; ++dy)
+            {
                 for (int dz = -size; dz <= size; ++dz)
+                {
                     for (int dx = -size; dx <= size; ++dx)
                     {
                         ushort block = lvl.GetBlock((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz));
                         if (block == Block.Log || block == Block.Green) return true;
                     }
+                }
+            }
             return false;
         } // TODO move to generic helper function
         public static Dictionary<string, TreeConstructor> TreeTypes =

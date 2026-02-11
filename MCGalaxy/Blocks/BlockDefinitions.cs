@@ -63,7 +63,6 @@ namespace MCGalaxy
         [ConfigBool] public bool UseLampBrightness;
         public ushort GetBlock() => Block.FromRaw(RawID);
         public void SetBlock(ushort b) => RawID = Block.ToRaw(b);
-        public const string GlobalPath = "blockdefs/global.json", GlobalBackupPath = "blockdefs/global.json.bak";
         public static BlockDefinition[] GlobalDefs;
         public BlockDefinition Copy()
         {
@@ -158,12 +157,7 @@ namespace MCGalaxy
             }
             return defs;
         }
-        public static void Save(bool global, Level lvl)
-        {
-            string path = global ? GlobalPath : Paths.MapBlockDefs(lvl.MapName);
-            BlockDefinition[] defs = global ? GlobalDefs : lvl.CustomBlockDefs;
-            Save(global, defs, path);
-        }
+        public static void Save(bool global, Level lvl) => Save(global, global ? GlobalDefs : lvl.CustomBlockDefs, global ? "blockdefs/global.json" : Paths.MapBlockDefs(lvl.MapName));
         public static void Save(bool global, BlockDefinition[] defs, string path)
         {
             elems ??= ConfigElement.GetAll(typeof(BlockDefinition));
@@ -190,11 +184,11 @@ namespace MCGalaxy
         public static void LoadGlobal()
         {
             BlockDefinition[] oldDefs = GlobalDefs;
-            GlobalDefs = Load(GlobalPath);
+            GlobalDefs = Load("blockdefs/global.json");
             GlobalDefs[Block.Air] = null;
             try
             {
-                FileIO.TryCopy(GlobalPath, GlobalBackupPath, true);
+                FileIO.TryCopy("blockdefs/global.json", "blockdefs/global.json.bak", true);
             }
             catch (Exception ex)
             {

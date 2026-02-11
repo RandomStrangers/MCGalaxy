@@ -103,8 +103,7 @@ namespace MCGalaxy
             }
             else
             {
-                string prefix = Server.Config.ServerWideChat ? "<Local>" : "";
-                MessageFrom(ChatScope.Level, source, prefix + msg, source.Level , filter);
+                MessageFrom(ChatScope.Level, source, (Server.Config.ServerWideChat ? "<Local>" : "") + msg, source.Level , filter);
             }
         }
         /// <summary> Sends a message from the given player (e.g. message when requesting a review) </summary>
@@ -134,8 +133,7 @@ namespace MCGalaxy
             }
             else
             {
-                string prefix = Server.Config.ServerWideChat ? "<Local>" : "";
-                MessageChat(ChatScope.Level, source, prefix + msg, source.Level, filter);
+                MessageChat(ChatScope.Level, source, (Server.Config.ServerWideChat ? "<Local>" : "") + msg, source.Level, filter);
             }
         }
         /// <summary> Sends a chat message from the given player (e.g. regular player chat or /me) </summary>
@@ -178,14 +176,9 @@ namespace MCGalaxy
         {
             string nick = pl.FormatNick(src);
             msg = msg.Replace("λNICK", nick);
-            if (pl.Ignores.Titles)
-            {
-                return msg.Replace("λFULL", src.GroupPrefix + nick);
-            }
-            else
-            {
-                return pl.Ignores.Nicks ? msg.Replace("λFULL", src.color + src.prefix + src.truename) : msg.Replace("λFULL", src.FullName);
-            }
+            return pl.Ignores.Titles
+                ? msg.Replace("λFULL", src.GroupPrefix + nick)
+                : pl.Ignores.Nicks ? msg.Replace("λFULL", src.color + src.prefix + src.truename) : msg.Replace("λFULL", src.FullName);
         }
         internal static string ParseInput(string text, out bool isCommand)
         {
@@ -198,13 +191,13 @@ namespace MCGalaxy
             return text.Substring(1);
         }
     }
+    class PersistentMessage
+    {
+        public string message;
+        public PersistentMessagePriority priority;
+    }
     internal class PersistentMessages
     {
-        class PersistentMessage
-        {
-            public string message;
-            public PersistentMessagePriority priority;
-        }
         readonly object locker = new();
         readonly Dictionary<CpeMessageType, List<PersistentMessage>> persistentMsgs =
             new();

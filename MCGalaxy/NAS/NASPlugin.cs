@@ -43,7 +43,7 @@ namespace MCGalaxy
             {
                 LoadedOnStartup = true;
             }
-            EnsureDirectoriesExists(Path, NASPlayer.Path,
+            EnsureDirectoriesExist(Path, NASPlayer.Path,
                 NASTimeCycle.Path, NASEffect.Path,
                 NASLevel.Path, NASBlock.Path,
                 NASPlayer.DeathsPath, "blockprops",

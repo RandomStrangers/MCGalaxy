@@ -170,7 +170,10 @@ namespace MCGalaxy
         public static void LoadDisabledList()
         {
             supportedCount = 0;
-            foreach (CpeExtension e in All) { e.Enabled = true; }
+            foreach (CpeExtension e in All) 
+            { 
+                e.Enabled = true;
+            }
             PropertiesFile.Read(Paths.CPEDisabledFile, ParseLine, '=');
             // file is out of sync with actual list
             if (supportedCount == All.Length) return;

@@ -84,14 +84,7 @@ namespace MCGalaxy
             ushort x = 0, y = 0, z = 0;
             return !MapGen.GetDimensions(p, args, 1, ref x, ref y, ref z, false) ? null : MapGen.Generate(p, gen, mapName, x, y, z, seed);
         }
-        public static bool IsNASLevel(Level lvl)
-        {
-            if (lvl.Config.Deletable && lvl.Config.Buildable)
-            {
-                return false;
-            }
-            return Get(lvl) != null;
-        }
+        public static bool IsNASLevel(Level lvl) => (!lvl.Config.Deletable || !lvl.Config.Buildable) && Get(lvl) != null;
         public static NASLevel Get(Level lvl) => all.ContainsKey(lvl.name) ? all[lvl.name] : null;
         public static void Setup()
         {

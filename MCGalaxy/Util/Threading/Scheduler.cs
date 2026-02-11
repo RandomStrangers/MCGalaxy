@@ -147,11 +147,10 @@ namespace MCGalaxy.Tasks
         }
         public override string ToString()
         {
-            SchedulerTask cur = curTask;
             string str = tasks.Count + " tasks";
-            if (cur != null)
+            if (curTask != null)
             {
-                MethodInfo method = cur.Callback.Method;
+                MethodInfo method = curTask.Callback.Method;
                 str += " (currently executing " + method.DeclaringType.FullName + "." + method.Name + ")";
             }
             return str;

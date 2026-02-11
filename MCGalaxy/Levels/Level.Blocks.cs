@@ -374,11 +374,7 @@ namespace MCGalaxy
             P.Z = Math.Max(0, Math.Min(P.Z, Length - 1));
             return P;
         }
-        public BlockDefinition GetBlockDef(ushort block)
-        {
-            if (block == 0) return null;
-            return Block.IsPhysicsType(block) ? CustomBlockDefs[Block.Convert(block)] : CustomBlockDefs[block];
-        }
+        public BlockDefinition GetBlockDef(ushort block) => block == 0 ? null : Block.IsPhysicsType(block) ? CustomBlockDefs[Block.Convert(block)] : CustomBlockDefs[block];
         public byte CollideType(ushort block)
         {
             BlockDefinition def = GetBlockDef(block);

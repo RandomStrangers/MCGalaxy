@@ -20,13 +20,12 @@
 // DEALINGS IN THE SOFTWARE.
 //
 using System;
-namespace LibNoise
+namespace MCGalaxy
 {
     public sealed class Billow : IModule
     {
-        public double Persistence;
+        public double Persistence, Lacunarity;
         public int OctaveCount;
-        public double Lacunarity;
         public Billow()
         {
             Lacunarity = 2.0;

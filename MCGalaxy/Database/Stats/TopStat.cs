@@ -19,7 +19,10 @@ namespace MCGalaxy.DB
 {
     /// <summary> Formats a raw stat value </summary>
     public delegate string TopStatFormatter(string input);
-    public struct TopResult { public string Name, Value; }
+    public struct TopResult 
+    {
+        public string Name, Value; 
+    }
     /// <summary> Outputs ordered stats from an underlying data source </summary>
     /// <example> Most TopStats are read from a column in a database table </example>
     public abstract class TopStat
@@ -44,8 +47,6 @@ namespace MCGalaxy.DB
             return null;
         }
         public static void List(Player p) => p.Message("&f" + stats.Join(stat => stat.Identifier));
-        public static void Register(TopStat stat) => stats.Add(stat);
-        public static void Unregister(TopStat stat) => stats.Remove(stat);
         static readonly List<TopStat> stats = new() {
             new DBTopStat("Logins", "Most logins", "Players",
                         PlayerData.ColumnLogins, FormatInteger),
@@ -80,22 +81,9 @@ namespace MCGalaxy.DB
             new DBTopStat("Messages", "Most messages written", "Players",
                         PlayerData.ColumnMessages, FormatInteger),
         };
-        public static string FormatInteger(string input)
-        {
-            long value = PlayerData.ParseLong(input);
-            return value.ToString("N0");
-        }
-        public static string FormatTimespan(string input)
-        {
-            long value = PlayerData.ParseLong(input);
-            return TimeSpan.FromSeconds(value).Shorten(true);
-        }
-        public static string FormatDate(string input)
-        {
-            DateTime time = Database.ParseDBDate(input);
-            TimeSpan delta = DateTime.Now - time;
-            return string.Format("{0:H:mm} on {0:d} ({1} ago)", time, delta.Shorten());
-        }
+        public static string FormatInteger(string input) => PlayerData.ParseLong(input).ToString("N0");
+        public static string FormatTimespan(string input) => TimeSpan.FromSeconds(PlayerData.ParseLong(input)).Shorten(true);
+        public static string FormatDate(string input) => string.Format("{0:H:mm} on {0:d} ({1} ago)", Database.ParseDBDate(input), (DateTime.Now - Database.ParseDBDate(input)).Shorten());
     }
     public class DBTopStat : TopStat
     {
@@ -119,12 +107,10 @@ namespace MCGalaxy.DB
                               "ORDER BY" + OrderBy + limit);
             return stats;
         }
-        static TopResult ParseRow(ISqlRecord record)
+        static TopResult ParseRow(ISqlRecord record) => new()
         {
-            TopResult result;
-            result.Name = record.GetStringValue(0);
-            result.Value = record.GetStringValue(1);
-            return result;
-        }
+            Name = record.GetStringValue(0),
+            Value = record.GetStringValue(1)
+        };
     }
 }

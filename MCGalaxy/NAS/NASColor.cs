@@ -2,7 +2,6 @@ using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using MCGalaxy.Util.Imaging;
 using System;
-using System.IO;
 namespace MCGalaxy
 {
     public class NASColor
@@ -14,7 +13,6 @@ namespace MCGalaxy
             lowHealthColors,
             direHealthColors;
         static int index, GoldIndex;
-        const string selectorImageName = "selectorColors.png";
         static readonly string[] GoldColors = { "ffe649", "e4bf16", "c39800", "a57800", "c39800", "e4bf16", "ffe649" };
         public static void GoldCallback(SchedulerTask task)
         {
@@ -29,14 +27,9 @@ namespace MCGalaxy
         }
         public static bool Setup()
         {
-            if (!File.Exists(NASPlugin.Path + selectorImageName))
-            {
-                Logger.Log(LogType.Warning, "Could not locate {0} (needed for tool health/selection colors)", selectorImageName);
-                return false;
-            }
             if (!FileIO.TryReadBytes(NASPlugin.Path + "selectorColors.png", out byte[] data))
             {
-                Logger.Log(LogType.Warning, "Could not locate {0} (needed for tool health/selection colors)", selectorImageName);
+                Logger.Log(LogType.Warning, "Could not locate selectorColors.png (needed for tool health/selection colors)");
                 return false;
             }
             Bitmap2D colorImage = ImageDecoder.DecodeFrom(data);

@@ -139,8 +139,8 @@ namespace MCGalaxy
                     Chat.MessageChat(p, reason, null, true);
                     curFogColor = new(0, 0, 0, 255);
                     curRenderDistance = 1;
-                    HP = maxHP;
-                    Air = maxAir;
+                    HP = 10;
+                    Air = 10;
                     holdingBreath = false;
                     DisplayHealth();
                 }

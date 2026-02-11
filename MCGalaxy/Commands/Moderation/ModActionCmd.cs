@@ -165,9 +165,9 @@ namespace MCGalaxy.Commands.Moderation
         static string IsConfirmed(string reason)
         {
             if (reason == null) return null;
-            if (reason.CaselessEq("confirm"))
-                return "";
-            return reason.CaselessEnds(" confirm") ? reason.Substring(0, reason.Length - " confirm".Length) : null;
+            return reason.CaselessEq("confirm")
+                ? ""
+                : reason.CaselessEnds(" confirm") ? reason.Substring(0, reason.Length - " confirm".Length) : null;
         }
         static bool ValidIP(string str) =>
             // IPAddress.TryParse returns "0.0.0.123" for "123", we do not want that behaviour

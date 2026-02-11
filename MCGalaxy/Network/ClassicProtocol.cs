@@ -37,18 +37,30 @@ namespace MCGalaxy.Network
         {
             switch (buffer[offset])
             {
-                case 1: return 1;
-                case 0: return HandleLogin(buffer, offset, left);
-                case 5: return HandleBlockchange(buffer, offset, left);
-                case 8: return HandleMovement(buffer, offset, left);
-                case 13: return HandleChat(buffer, offset, left);
-                case 16: return HandleExtInfo(buffer, offset, left);
-                case 17: return HandleExtEntry(buffer, offset, left);
-                case 34: return HandlePlayerClicked(buffer, offset, left);
-                case 43: return HandleTwoWayPing(buffer, offset, left);
-                case 53: return HandlePluginMessage(buffer, offset, left);
-                case 57: return HandleNotifyAction(buffer, offset, left);
-                case 58: return HandleNotifyPositionAction(buffer, offset, left);
+                case 1: 
+                    return 1;
+                case 0:
+                    return HandleLogin(buffer, offset, left);
+                case 5: 
+                    return HandleBlockchange(buffer, offset, left);
+                case 8: 
+                    return HandleMovement(buffer, offset, left);
+                case 13:
+                    return HandleChat(buffer, offset, left);
+                case 16:
+                    return HandleExtInfo(buffer, offset, left);
+                case 17: 
+                    return HandleExtEntry(buffer, offset, left);
+                case 34: 
+                    return HandlePlayerClicked(buffer, offset, left);
+                case 43: 
+                    return HandleTwoWayPing(buffer, offset, left);
+                case 53: 
+                    return HandlePluginMessage(buffer, offset, left);
+                case 57: 
+                    return HandleNotifyAction(buffer, offset, left);
+                case 58: 
+                    return HandleNotifyPositionAction(buffer, offset, left);
                 case 19:
                     return left < 2 ? 0 : 2; // only ever one level anyways
                 default:
@@ -96,8 +108,14 @@ namespace MCGalaxy.Network
                 mppass = NetUtils.ReadString(buffer, offset + 66);
             if (!player.ProcessLogin(name, mppass)) return left;
             UpdateFallbackTable();
-            if (hasCpe) { SendCpeExtensions(); }
-            else { player.CompleteLoginProcess(); }
+            if (hasCpe) 
+            { 
+                SendCpeExtensions();
+            }
+            else 
+            {
+                player.CompleteLoginProcess();
+            }
             return size;
         }
         int HandleBlockchange(byte[] buffer, int offset, int left)
@@ -111,7 +129,8 @@ namespace MCGalaxy.Network
             byte action = buffer[offset + 7];
             if (action > 1)
             {
-                player.Leave("Unknown block action!", true); return left;
+                player.Leave("Unknown block action!", true);
+                return left;
             }
             ushort held = ReadBlock(buffer, offset + 8);
             player.ProcessBlockchange(x, y, z, action, held);
@@ -217,8 +236,7 @@ namespace MCGalaxy.Network
         }
         int HandlePlayerClicked(byte[] buffer, int offset, int left)
         {
-            int size = 1 + 1 + 1 + 2 + 2 + 1 + 2 + 2 + 2 + 1;
-            if (left < size) return 0;
+            if (left < 15) return 0;
             MouseButton Button = (MouseButton)buffer[offset + 1];
             MouseAction Action = (MouseAction)buffer[offset + 2];
             ushort yaw = MemUtils.ReadU16_BE(buffer, offset + 3),
@@ -230,32 +248,29 @@ namespace MCGalaxy.Network
             TargetBlockFace face = (TargetBlockFace)buffer[offset + 14];
             if (face > TargetBlockFace.None) face = TargetBlockFace.None;
             OnPlayerClickEvent.Call(player, Button, Action, yaw, pitch, entityID, x, y, z, face);
-            return size;
+            return 15;
         }
         int HandleNotifyAction(byte[] buffer, int offset, int left)
         {
-            int size = 1 + 2 + 2;
-            if (left < size) return 0;
+            if (left < 5) return 0;
             NotifyActionType action = (NotifyActionType)buffer[offset + 2];
             short value = MemUtils.ReadI16_BE(buffer, offset + 3);
             OnNotifyActionEvent.Call(player, action, value);
-            return size;
+            return 5;
         }
         int HandleNotifyPositionAction(byte[] buffer, int offset, int left)
         {
-            int size = 1 + 2 + 2 + 2 + 2;
-            if (left < size) return 0;
+            if (left < 9) return 0;
             NotifyActionType action = (NotifyActionType)buffer[offset + 2];
             ushort x = MemUtils.ReadU16_BE(buffer, offset + 3),
                 y = MemUtils.ReadU16_BE(buffer, offset + 5),
                 z = MemUtils.ReadU16_BE(buffer, offset + 7);
             OnNotifyPositionActionEvent.Call(player, action, x, y, z);
-            return size;
+            return 9;
         }
         int HandleTwoWayPing(byte[] buffer, int offset, int left)
         {
-            int size = 1 + 1 + 2;
-            if (left < size) return 0;
+            if (left < 4) return 0;
             bool serverToClient = buffer[offset + 1] != 0;
             ushort data = MemUtils.ReadU16_BE(buffer, offset + 2);
             //player.Message("&bServerToClient? {0}, data {1}", serverToClient, data);
@@ -270,17 +285,16 @@ namespace MCGalaxy.Network
                 // Server -> client ping, set time received for reply.
                 Ping.Update(data);
             }
-            return size;
+            return 4;
         }
         int HandlePluginMessage(byte[] buffer, int offset, int left)
         {
-            int size = 1 + 1 + 64;
-            if (left < size) return 0;
+            if (left < 66) return 0;
             byte channel = buffer[offset + 1];
             byte[] data = new byte[64];
             Array.Copy(buffer, offset + 2, data, 0, 64);
             OnPluginMessageReceivedEvent.Call(player, channel, data);
-            return size;
+            return 66;
         }
         void AddExtension(string extName, int version)
         {
@@ -380,20 +394,23 @@ namespace MCGalaxy.Network
             // NOTE: Classic clients require offseting own entity by 22 units vertically
             bool self = id == 0xFF;
             if (self) pos.Y -= 22;
-            SendTeleportCore(self, Packet.Teleport(id, pos, rot, player.hasExtPositions), id, pos, rot);
+            SendTeleportCore(self, Packet.Teleport(id, pos, rot, player.hasExtPositions));
         }
         public override bool SendTeleport(byte id, Position pos, Orientation rot,
                                           TeleportMoveMode moveMode, bool usePos = true, bool interpolateOri = false, bool useOri = true)
         {
-            if (!Supports(CpeExt.ExtEntityTeleport)) { return false; }
+            if (!Supports(CpeExt.ExtEntityTeleport)) 
+            { 
+                return false; 
+            }
             bool absoluteSelf = (moveMode == TeleportMoveMode.AbsoluteInstant ||
                 moveMode == TeleportMoveMode.AbsoluteSmooth) && id == 0xFF;
             // NOTE: Classic clients require offseting own entity by 22 units vertically when using absolute location updates
             if (absoluteSelf) pos.Y -= 22;
-            SendTeleportCore(absoluteSelf, Packet.TeleportExt(id, usePos, moveMode, useOri, interpolateOri, pos, rot, player.hasExtPositions), id, pos, rot);
+            SendTeleportCore(absoluteSelf, Packet.TeleportExt(id, usePos, moveMode, useOri, interpolateOri, pos, rot, player.hasExtPositions));
             return true;
         }
-        void SendTeleportCore(bool absoluteSelf, byte[] packet, byte _, Position __, Orientation ___)
+        void SendTeleportCore(bool absoluteSelf, byte[] packet)
         {
             if (!absoluteSelf || !hasTwoWayPing)
             {
@@ -405,9 +422,6 @@ namespace MCGalaxy.Network
             Buffer.BlockCopy(packet, 0, merged, 0, packet.Length);
             Buffer.BlockCopy(pingPacket, 0, merged, packet.Length, pingPacket.Length);
             Send(merged);
-            // This shouldn't be called -- checking blocks can trigger other teleports leading to a stack overflow
-            // Update server-side position and check MB/portals/zones
-            // player.ProcessMovementCore(pos, rot.RotY, rot.HeadX, false);
         }
         public override void SendRemoveEntity(byte id) => Send(Packet.RemoveEntity(id));
         public override void SendChat(string message)
@@ -618,7 +632,7 @@ namespace MCGalaxy.Network
             {
                 packet = Packet.AddEntity(id, name, pos, rot, player.hasCP437, player.hasExtPositions);
             }
-            SendTeleportCore(self, packet, id, pos, rot);
+            SendTeleportCore(self, packet);
         }
         public override void SendLevel(Level prev, Level level)
         {

@@ -36,8 +36,9 @@ namespace MCGalaxy.Drawing.Brushes
             int count = parts.Length == 1 ? 1 : parts.Length - 1;
             ushort[] toAffect = GetBlocks(args.Player, 0, count, parts);
             if (toAffect == null) return null;
-            if (!GetTargetBlock(args, parts, out ushort target)) return null;
-            return not ? new ReplaceNotBrush(toAffect, target) : new ReplaceBrush(toAffect, target);
+            return !GetTargetBlock(args, parts, out ushort target)
+                ? null
+                : not ? new ReplaceNotBrush(toAffect, target) : new ReplaceBrush(toAffect, target);
         }
         internal static ushort[] GetBlocks(Player p, int start, int max, string[] parts)
         {

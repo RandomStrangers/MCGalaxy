@@ -21,7 +21,9 @@ namespace MCGalaxy.Blocks.Physics
         {
             int bHead = 0;
             for (int dy = -1; dy <= 1; dy++)
+            {
                 for (int dz = -1; dz <= 1; dz++)
+                {
                     for (int dx = -1; dx <= 1; dx++)
                     {
                         ushort block = lvl.GetBlock((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz));
@@ -49,8 +51,11 @@ namespace MCGalaxy.Blocks.Physics
                             if (isFree)
                             {
                                 lvl.AddUpdate(bHead, Block.Fireworks, default(PhysicsArgs));
-                                PhysicsArgs args = default;
-                                args.Type1 = PhysicsArgs.Dissipate; args.Value1 = 100;
+                                PhysicsArgs args = new()
+                                {
+                                    Type1 = 3,
+                                    Value1 = 100
+                                };
                                 lvl.AddUpdate(bTail, Block.StillLava, args);
                             }
                         }
@@ -59,6 +64,8 @@ namespace MCGalaxy.Blocks.Physics
                             lvl.MakeExplosion((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz), 0);
                         }
                     }
+                }
+            }
         }
         /// <summary> Activates doors, tdoors and toggles odoors at (x, y, z) </summary>
         public static void DoDoors(Level lvl, ushort x, ushort y, ushort z, bool instant)
@@ -73,8 +80,7 @@ namespace MCGalaxy.Blocks.Physics
             }
             else if (lvl.Props[block].IsTDoor)
             {
-                PhysicsArgs args = GetTDoorArgs(block);
-                lvl.AddUpdate(index, Block.Air, args);
+                lvl.AddUpdate(index, Block.Air, GetTDoorArgs(block));
             }
             else
             {
@@ -85,10 +91,14 @@ namespace MCGalaxy.Blocks.Physics
         }
         internal static PhysicsArgs GetDoorArgs(ushort block, out ushort physForm)
         {
-            PhysicsArgs args = default;
-            args.Type1 = PhysicsArgs.Custom; args.Value1 = 16 - 1;
-            args.Type2 = PhysicsArgs.Revert; args.Value2 = (byte)block;
-            args.ExtBlock = (byte)(block >> Block.ExtendedShift);
+            PhysicsArgs args = new()
+            {
+                Type1 = 7,
+                Value1 = 16 - 1,
+                Type2 = 2,
+                Value2 = (byte)block,
+                ExtBlock = (byte)(block >> 8)
+            };
             physForm = Block.Door_Log_air; // air
             if (block == Block.Door_Air || block == Block.Door_AirActivatable)
             {
@@ -104,14 +114,14 @@ namespace MCGalaxy.Blocks.Physics
             }
             return args;
         }
-        internal static PhysicsArgs GetTDoorArgs(ushort block)
+        internal static PhysicsArgs GetTDoorArgs(ushort block) => new()
         {
-            PhysicsArgs args = default;
-            args.Type1 = PhysicsArgs.Custom; args.Value1 = 16;
-            args.Type2 = PhysicsArgs.Revert; args.Value2 = (byte)block;
-            args.ExtBlock = (byte)(block >> Block.ExtendedShift);
-            return args;
-        }
+            Type1 = 7,
+            Value1 = 16,
+            Type2 = 2,
+            Value2 = (byte)block,
+            ExtBlock = (byte)(block >> 8)
+        };
         internal static void CheckNeighbours(Level lvl, ushort x, ushort y, ushort z)
         {
             CheckAt(lvl, (ushort)(x + 1), y, z);

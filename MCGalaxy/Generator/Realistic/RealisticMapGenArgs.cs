@@ -18,21 +18,14 @@ namespace MCGalaxy.Generator.Realistic
     public sealed class RealisticMapGenArgs
     {
         public string Biome = MapGenBiome.FOREST;
-        public float RangeLow = 0.2f;
-        public float RangeHigh = 0.8f;
-        public bool SimpleColumns = false, IslandColumns = false;
-        public bool FalloffEdges = false;
-        public bool UseLavaLiquid = false;
-        public bool GenOverlay2 = true;
+        public float RangeLow = 0.2f, RangeHigh = 0.8f, 
+            TreeDensity = 0.35f, StartHeight = 0.5f, 
+            DisplacementMax = 0.01f, DisplacementStep = -0.0025f;
+        public bool SimpleColumns = false, IslandColumns = false,
+            FalloffEdges = false,UseLavaLiquid = false, 
+            GenOverlay2 = true, GenFlowers = true, GenTrees = true;
         public CalcLiquidLevel GetLiquidLevel = (lvlHeight) => (ushort)(lvlHeight / 2 + 2);
-        // Decoration parameters
-        public float TreeDensity = 0.35f;
         public short TreeDistance = 3;
-        public bool GenFlowers = true, GenTrees = true;
-        // Fault parameters
-        public float StartHeight = 0.5f;
-        public float DisplacementMax = 0.01f;
-        public float DisplacementStep = -0.0025f;
         internal static RealisticMapGenArgs Hell = new()
         {
             RangeLow = 0.3f,
@@ -43,38 +36,38 @@ namespace MCGalaxy.Generator.Realistic
             UseLavaLiquid = true,
             GetLiquidLevel = (height) => 5,
             Biome = MapGenBiome.HELL,
-        };
-        internal static RealisticMapGenArgs Island = new()
+        },
+        Island = new()
         {
             RangeLow = 0.40f,
             RangeHigh = 0.75f,
             FalloffEdges = true,
             IslandColumns = true
-        };
-        internal static RealisticMapGenArgs Forest = new()
+        },
+        Forest = new()
         {
             RangeLow = 0.45f,
             RangeHigh = 0.80f,
             TreeDensity = 0.7f,
             TreeDistance = 2
-        };
-        internal static RealisticMapGenArgs Mountains = new()
+        },
+        Mountains = new()
         {
             RangeLow = 0.3f,
             RangeHigh = 0.9f,
             TreeDistance = 4,
             StartHeight = 0.6f,
             DisplacementMax = 0.02f,
-        };
-        internal static RealisticMapGenArgs Ocean = new()
+        },
+        Ocean = new()
         {
             RangeLow = 0.1f,
             RangeHigh = 0.6f,
             GenTrees = false,
             GenOverlay2 = false,
             GetLiquidLevel = (height) => (ushort)(height * 0.85f)
-        };
-        internal static RealisticMapGenArgs Desert = new()
+        },
+        Desert = new()
         {
             RangeLow = 0.5f,
             RangeHigh = 0.85f,

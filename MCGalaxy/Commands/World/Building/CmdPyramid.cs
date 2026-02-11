@@ -23,8 +23,7 @@ namespace MCGalaxy.Commands.Building
         {
             string mode = parts[0];
             if (mode == "solid") return DrawMode.solid;
-            if (mode == "hollow") return DrawMode.hollow;
-            return mode == "reverse" ? DrawMode.reverse : DrawMode.normal;
+            return mode == "hollow" ? DrawMode.hollow : mode == "reverse" ? DrawMode.reverse : DrawMode.normal;
         }
         protected override DrawOp GetDrawOp(DrawArgs dArgs) => dArgs.Mode switch
         {

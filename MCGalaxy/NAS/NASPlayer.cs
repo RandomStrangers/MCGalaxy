@@ -485,16 +485,11 @@ namespace MCGalaxy
                 levels = 99;
             }
         }
-        public int GetExp()
-        {
-            if (levels <= 16)
-            {
-                return exp + (int)Math.Pow(levels, 2) + 6 * levels;
-            }
-            return levels <= 31
+        public int GetExp() => levels <= 16
+                ? exp + (int)Math.Pow(levels, 2) + 6 * levels
+                : levels <= 31
                 ? exp + (int)(2.5 * Math.Pow(levels, 2) - 40.5 * levels + 360)
                 : exp + (int)(4.5 * Math.Pow(levels, 2) - 162.5 * levels + 2220);
-        }
         public static void ClickOnPlayer(Player p, byte entity, MouseButton button, MouseAction action)
         {
             NASPlayer np = GetPlayer(p);
@@ -755,7 +750,7 @@ namespace MCGalaxy
             if (source == NASDamageSource.Suffocating)
             {
                 TimeSpan timeSinceSuffocation = DateTime.UtcNow.Subtract(lastSuffocationDate);
-                if (timeSinceSuffocation.TotalMilliseconds < SuffocationMilliseconds)
+                if (timeSinceSuffocation.TotalMilliseconds < 500)
                 {
                     return false;
                 }
@@ -763,11 +758,21 @@ namespace MCGalaxy
             }
             return true;
         }
+        static string DeathReason(NASDamageSource source, Player p) => source switch
+        {
+            NASDamageSource.Entity => "@p &cdied.",
+            NASDamageSource.Falling => "@p &cfell to " + p.Pronouns.Object + " death.",
+            NASDamageSource.Suffocating => "@p &esuffocated.",
+            NASDamageSource.Drowning => "@p &rdrowned.",
+            NASDamageSource.None => "@p &adied from unknown causes.",
+            NASDamageSource.Murder => "@p &8" + p.Pronouns.PastVerb + "&8 murdered by &S@s",
+            _ => Enum.GetName(typeof(NASDamageSource), source).ToLower(),
+        };
         public override bool TakeDamage(float damage, NASDamageSource source, string customDeathReason = "")
         {
-            if (HP > maxHP)
+            if (HP > 10)
             {
-                HP = maxHP;
+                HP = 10;
             }
             if (!CanTakeDamage(source))
             {
@@ -908,13 +913,13 @@ namespace MCGalaxy
         public void DisplayHealth(string healthColor = "p", string prefix = "&7[", string suffix = "&7]¼") => SendCpeMessage(whereHealthIsDisplayed, OxygenString() + " " + prefix + HealthString(healthColor) + suffix + ArmorDisplay() + " " + ExpDisplay() + " " + AttackRecharge());
         public string HealthString(string healthColor)
         {
-            if (HP > maxHP)
+            if (HP > 10)
             {
-                HP = maxHP;
+                HP = 10;
             }
-            StringBuilder builder = new("&8", (int)maxHP + 6);
+            StringBuilder builder = new("&8", 16);
             string final;
-            float totalLostHealth = maxHP - HP,
+            float totalLostHealth = 10 - HP,
                 lostHealthRemaining = totalLostHealth;
             for (int i = 0; i < totalLostHealth; ++i)
             {
@@ -951,11 +956,7 @@ namespace MCGalaxy
             {
                 return "&oα";
             }
-            if (cooldownPercent > 0)
-            {
-                return "&eα";
-            }
-            return cooldownPercent <= 0 ? "&aα" : "&hα";
+            return cooldownPercent > 0 ? "&eα" : cooldownPercent <= 0 ? "&aα" : "&hα";
         }
         public string ArmorDisplay()
         {

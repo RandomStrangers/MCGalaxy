@@ -39,7 +39,7 @@ namespace MCGalaxy.DB
             MapName = lvl.name;
             Cache.Enabled = lvl.Config.UseBlockDB;
             ReadDimensions();
-            Locker = new IReaderWriterLock();
+            Locker = new();
             if (Dims.X < lvl.Width) Dims.X = lvl.Width;
             if (Dims.Y < lvl.Height) Dims.Y = lvl.Height;
             if (Dims.Z < lvl.Length) Dims.Z = lvl.Length;
@@ -47,9 +47,8 @@ namespace MCGalaxy.DB
         }
         void ReadDimensions()
         {
-            string path = FilePath;
-            if (!File.Exists(path)) return;
-            using Stream s = OpenRead(path);
+            if (!File.Exists(FilePath)) return;
+            using Stream s = OpenRead(FilePath);
             BlockDBFile.ReadHeader(s, out Dims);
         }
         /// <summary> Flushes the entries from the in-memory cache to disc. </summary>
@@ -80,7 +79,11 @@ namespace MCGalaxy.DB
         public void FindChangesAt(ushort x, ushort y, ushort z, Action<BlockDBEntry> output)
         {
             string path = FilePath;
-            if (!File.Exists(path)) { FindInMemoryAt(x, y, z, output); return; }
+            if (!File.Exists(path))
+            {
+                FindInMemoryAt(x, y, z, output);
+                return; 
+            }
             using (Stream s = OpenRead(path))
             {
                 BlockDBFile format = BlockDBFile.ReadHeader(s, out Vec3U16 dims);
@@ -113,8 +116,8 @@ namespace MCGalaxy.DB
         public bool FindChangesBy(int[] ids, DateTime start, DateTime end,
                                   out Vec3U16 dims, Action<BlockDBEntry> output)
         {
-            int startDelta = ClampDelta(start.Subtract(Epoch));
-            int endDelta = ClampDelta(end.Subtract(Epoch));
+            int startDelta = ClampDelta(start.Subtract(Epoch)),
+                endDelta = ClampDelta(end.Subtract(Epoch));
             dims = Dims;
             if (FindInMemoryBy(ids, startDelta, endDelta, output)) return true;
             string path = FilePath;
@@ -138,27 +141,20 @@ namespace MCGalaxy.DB
                     for (int j = 0; j < ids.Length; j++)
                     {
                         if (entry.PlayerID != ids[j]) continue;
-                        output(entry); break;
+                        output(entry);
+                        break;
                     }
                 }
                 lock (Cache.Locker) node = node.Prev;
             }
             return false;
         }
-        static int ClampDelta(TimeSpan delta)
-        {
-            long secs = (long)delta.TotalSeconds;
-            if (secs < int.MinValue) return int.MinValue;
-            return secs > int.MaxValue ? int.MaxValue : (int)secs;
-        }
+        static int ClampDelta(TimeSpan delta) => ((long)delta.TotalSeconds) < int.MinValue ? int.MinValue : ((long)delta.TotalSeconds) > int.MaxValue ? int.MaxValue : (int)delta.TotalSeconds;
         /// <summary> Deletes the backing file on disc if it exists. </summary>
         public void DeleteBackingFile()
         {
-            string path = FilePath;
             using IDisposable writeLock = Locker.AccquireWrite();
-            //if (!File.Exists(path)) return;
-            //File.Delete(path);
-            FileIO.TryDelete(path);
+            FileIO.TryDelete(FilePath);
         }
         /// <summary> Checks if the backing file exists on disc, and if not, creates it.
         /// Also recreates the backing file if dimensions on disc are less than those in memory. </summary>

@@ -4,7 +4,6 @@ using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using MCGalaxy.Util.Imaging;
 using System;
-using System.IO;
 namespace MCGalaxy
 {
     public class NASInvInfo
@@ -37,27 +36,15 @@ namespace MCGalaxy
             repeaterScheduler,
             fishingScheduler;
         public static Pixel[] blockColors = new Pixel[768];
-        public const string terrainImageName = "terrain.png",
-            ClickableBlocksKey = "__clickableBlocks_",
-            LastClickedCoordsKey = ClickableBlocksKey + "lastClickedCoords",
-            BreakAmountKey = ClickableBlocksKey + "breakAmount",
-            BreakIDKey = ClickableBlocksKey + "breakID";
-        public const byte BreakEffectIDcount = 6,
-            BreakMeterID = byte.MaxValue - BreakEffectIDcount;
         public static byte BreakEffectID = 255;
         public static bool Setup()
         {
-            if (!File.Exists(NASPlugin.Path + terrainImageName))
-            {
-                Logger.Log(LogType.Warning, "Could not locate {0} (needed for block particle colors)", terrainImageName);
-                return false;
-            }
             breakScheduler ??= new("BlockBreakScheduler");
             repeaterScheduler ??= new("RepeaterScheduler");
             fishingScheduler ??= new("FishingScheduler");
-            if (!FileIO.TryReadBytes(NASPlugin.Path + terrainImageName, out byte[] data))
+            if (!FileIO.TryReadBytes(NASPlugin.Path + "terrain.png", out byte[] data))
             {
-                Logger.Log(LogType.Warning, "Could not read {0} (needed for block particle colors)", NASPlugin.Path + terrainImageName);
+                Logger.Log(LogType.Warning, "Could not read {0} (needed for block particle colors)", NASPlugin.Path + "terrain.png");
                 return false;
             }
             Bitmap2D terrain = ImageDecoder.DecodeFrom(data);
@@ -84,7 +71,7 @@ namespace MCGalaxy
         public static byte GetBreakID() => BreakEffectID;
         public static void SetBreakID(byte value)
         {
-            if (value <= byte.MaxValue - BreakEffectIDcount)
+            if (value <= 249)
             {
                 value = 255;
             }
@@ -215,15 +202,13 @@ namespace MCGalaxy
             {
                 return;
             }
-            NASPlayer np = NASPlayer.GetPlayer(p);
             if (!NASLevel.IsNASLevel(p.Level))
             {
                 return;
             }
-            NASLevel nl = NASLevel.Get(p.Level.name);
             NASBlock nasBlock = NASBlock.blocksIndexedByServerushort[p.Level.GetBlock(x, y, z)];
-            nasBlock.existAction?.Invoke(np, nasBlock, true, x, y, z);
-            nl?.SimulateSetBlock(x, y, z);
+            nasBlock.existAction?.Invoke(NASPlayer.GetPlayer(p), nasBlock, true, x, y, z);
+            NASLevel.Get(p.Level.name)?.SimulateSetBlock(x, y, z);
         }
         public static void BreakTask(SchedulerTask task)
         {
@@ -262,8 +247,8 @@ namespace MCGalaxy
             NASMeterInfo info = (NASMeterInfo)task.State;
             int millisecs = info.milliseconds;
             millisecs -= 100;
-            NASEffect.Define(info.p, BreakMeterID, NASEffect.breakMeter, new(255,255,255,255), (float)(millisecs / 1000.0f));
-            NASEffect.Spawn(info.p, BreakMeterID, NASEffect.breakMeter, info.x, info.y, info.z, info.x, info.y, info.z);
+            NASEffect.Define(info.p, 249, NASEffect.breakMeter, new(255,255,255,255), (float)(millisecs / 1000.0f));
+            NASEffect.Spawn(info.p, 249, NASEffect.breakMeter, info.x, info.y, info.z, info.x, info.y, info.z);
         }
         public static void HandleLeftClick(Player p, MouseButton _,
             MouseAction action, ushort __, ushort ___, byte ____,
@@ -280,7 +265,7 @@ namespace MCGalaxy
                 np.ResetBreaking();
                 np.lastAirClickDate = null;
                 np.lastLeftClickReleaseDate = DateTime.UtcNow;
-                NASEffect.UndefineEffect(p, BreakMeterID);
+                NASEffect.UndefineEffect(p, 249);
             }
             if (action == MouseAction.Pressed)
             {
@@ -289,7 +274,7 @@ namespace MCGalaxy
                     z == ushort.MaxValue)
                 {
                     np.ResetBreaking();
-                    NASEffect.UndefineEffect(p, BreakMeterID);
+                    NASEffect.UndefineEffect(p, 249);
                     return;
                 }
                 ushort serverushort = p.Level.GetBlock(x, y, z),
@@ -298,7 +283,7 @@ namespace MCGalaxy
                 if (nasBlock.durability == int.MaxValue)
                 {
                     np.ResetBreaking();
-                    NASEffect.UndefineEffect(p, BreakMeterID);
+                    NASEffect.UndefineEffect(p, 249);
                     return;
                 }
                 if (nasBlock.container != null &&
@@ -307,7 +292,7 @@ namespace MCGalaxy
                    )
                 {
                     np.ResetBreaking();
-                    NASEffect.UndefineEffect(p, BreakMeterID);
+                    NASEffect.UndefineEffect(p, 249);
                     return;
                 }
                 NASItem heldItem = np.inventory.HeldItem;
@@ -331,7 +316,7 @@ namespace MCGalaxy
                 if (!canBreakBlock)
                 {
                     np.ResetBreaking();
-                    NASEffect.UndefineEffect(p, BreakMeterID);
+                    NASEffect.UndefineEffect(p, 249);
                     return;
                 }
                 if (serverushort == 0)
@@ -341,14 +326,14 @@ namespace MCGalaxy
                         np.lastAirClickDate = DateTime.UtcNow;
                     }
                     np.ResetBreaking();
-                    NASEffect.UndefineEffect(p, BreakMeterID);
+                    NASEffect.UndefineEffect(p, 249);
                     return;
                 }
                 if (np.breakX == x && np.breakY == y && np.breakZ == z)
                 {
                     return;
                 }
-                NASEffect.UndefineEffect(p, BreakMeterID);
+                NASEffect.UndefineEffect(p, 249);
                 np.breakX = x;
                 np.breakY = y;
                 np.breakZ = z;

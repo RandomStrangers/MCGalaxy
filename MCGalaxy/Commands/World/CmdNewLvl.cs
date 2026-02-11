@@ -80,11 +80,9 @@ namespace MCGalaxy.Commands.World
                 seed = args.Length > 5 ? args[5] : "";
             MapGen gen = MapGen.Find(theme);
             ushort x = 0, y = 0, z = 0;
-            if (!MapGen.GetDimensions(p, args, 1, ref x, ref y, ref z))
-            {
-                return null;
-            }
-            return gen != null && gen.Type == GenType.Advanced && !CheckExtraPerm(p, 1) ? null : MapGen.Generate(p, gen, args[0], x, y, z, seed);
+            return !MapGen.GetDimensions(p, args, 1, ref x, ref y, ref z)
+                ? null
+                : gen != null && gen.Type == GenType.Advanced && !CheckExtraPerm(p, 1) ? null : MapGen.Generate(p, gen, args[0], x, y, z, seed);
         }
         public override void Help(Player p)
         {

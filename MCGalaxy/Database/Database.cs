@@ -74,32 +74,28 @@ namespace MCGalaxy.SQL
         public static void CreateTable(string table, ColumnDesc[] columns)
         {
             SqlUtils.ValidateName(table);
-            string sql = SQLiteBackend.Instance.CreateTableSql(table, columns);
-            Execute(sql, null);
+            Execute(SQLiteBackend.Instance.CreateTableSql(table, columns), null);
         }
         /// <summary> Renames the source table to the given name. </summary>
         public static void RenameTable(string srcTable, string dstTable)
         {
             SqlUtils.ValidateName(srcTable);
             SqlUtils.ValidateName(dstTable);
-            string sql = SQLiteBackend.Instance.RenameTableSql(srcTable, dstTable);
-            Execute(sql, null);
+            Execute(SQLiteBackend.Instance.RenameTableSql(srcTable, dstTable), null);
         }
         /// <summary> Completely removes the given table. </summary>
         /// <remarks> Does nothing if no table with the given name exists. </remarks>
         public static void DeleteTable(string table)
         {
             SqlUtils.ValidateName(table);
-            string sql = SQLiteBackend.Instance.DeleteTableSql(table);
-            Execute(sql, null);
+            Execute(SQLiteBackend.Instance.DeleteTableSql(table), null);
         }
         /// <summary> Adds a new coloumn to the given table. </summary>
         /// <remarks> Note colAfter is only a hint - some database backends ignore this. </remarks>
         public static void AddColumn(string table, ColumnDesc col)
         {
             SqlUtils.ValidateName(table);
-            string sql = SQLiteBackend.Instance.AddColumnSql(table, col);
-            Execute(sql, null);
+            Execute(SQLiteBackend.Instance.AddColumnSql(table, col), null);
         }
         #endregion
         #region High level functions
@@ -110,8 +106,7 @@ namespace MCGalaxy.SQL
         {
             SqlUtils.ValidateName(srcTable);
             SqlUtils.ValidateName(dstTable);
-            string sql = SQLiteBackend.Instance.CopyAllRowsSql(srcTable, dstTable);
-            return Execute(sql, null);
+            return Execute(SQLiteBackend.Instance.CopyAllRowsSql(srcTable, dstTable), null);
         }
         /// <summary> Iterates over read rows for the given table. </summary>
         /// <param name="modifier"> Optional SQL to filter which rows are read,
@@ -120,8 +115,7 @@ namespace MCGalaxy.SQL
                                     ReaderCallback callback, string modifier = "", params object[] args)
         {
             SqlUtils.ValidateName(table);
-            string sql = SQLiteBackend.Instance.ReadRowsSql(table, columns, modifier);
-            Iterate(sql, callback, args);
+            Iterate(SQLiteBackend.Instance.ReadRowsSql(table, columns, modifier), callback, args);
         }
         /// <summary> Updates rows for the given table </summary>
         /// <param name="modifier"> Optional SQL to filter which rows are updated. Can be just "" </param>
@@ -130,8 +124,7 @@ namespace MCGalaxy.SQL
                                      string modifier, params object[] args)
         {
             SqlUtils.ValidateName(table);
-            string sql = SQLiteBackend.Instance.UpdateRowsSql(table, columns, modifier);
-            return Execute(sql, args);
+            return Execute(SQLiteBackend.Instance.UpdateRowsSql(table, columns, modifier), args);
         }
         /// <summary> Deletes rows for the given table. </summary>
         /// <param name="modifier"> Optional SQL to filter which rows are deleted. Can be just "" </param>
@@ -139,22 +132,19 @@ namespace MCGalaxy.SQL
         public static int DeleteRows(string table, string modifier, params object[] args)
         {
             SqlUtils.ValidateName(table);
-            string sql = SQLiteBackend.Instance.DeleteRowsSql(table, modifier);
-            return Execute(sql, args);
+            return Execute(SQLiteBackend.Instance.DeleteRowsSql(table, modifier), args);
         }
         /// <summary> Adds a row to the given table. </summary>
         public static void AddRow(string table, string columns, params object[] args)
         {
             SqlUtils.ValidateName(table);
-            string sql = SQLiteBackend.Instance.AddRowSql(table, columns, args.Length);
-            Execute(sql, args);
+            Execute(SQLiteBackend.Instance.AddRowSql(table, columns, args.Length), args);
         }
         /// <summary> Adds or replaces a row (same primary key) in the given table. </summary>
         public static void AddOrReplaceRow(string table, string columns, params object[] args)
         {
             SqlUtils.ValidateName(table);
-            string sql = SQLiteBackend.Instance.AddOrReplaceRowSql(table, columns, args.Length);
-            Execute(sql, args);
+            Execute(SQLiteBackend.Instance.AddOrReplaceRowSql(table, columns, args.Length), args);
         }
         #endregion
         #region Low level functions
@@ -189,10 +179,8 @@ namespace MCGalaxy.SQL
                 hours = NumberUtils.ParseInt32(parts[1]),
                 mins = NumberUtils.ParseInt32(parts[2]),
                 secs = NumberUtils.ParseInt32(parts[3]);
-            return new TimeSpan(days, hours, mins, secs);
+            return new(days, hours, mins, secs);
         }
-        public static DateTime ParseDBDate(string value) =>
-            // prefer the exact format
-            value.TryParseInvariantDateString(out DateTime dt) ? dt : DateTime.Parse(value);
+        public static DateTime ParseDBDate(string value) => value.TryParseInvariantDateString(out DateTime dt) ? dt : DateTime.Parse(value);
     }
 }

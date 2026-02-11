@@ -23,12 +23,14 @@ namespace MCGalaxy.Generator
 {
     public delegate bool MapGenFunc(Player p, Level lvl, MapGenArgs args);
     public delegate bool MapGenArgSelector(string arg);
-    public enum GenType { Simple, fCraft, Advanced };
+    public enum GenType 
+    { 
+        Simple, fCraft, Advanced 
+    };
     public class MapGenArgs
     {
-        public string Args;
+        public string Args, Biome = Server.Config.DefaultMapGenBiome;
         public int Seed;
-        public string Biome = Server.Config.DefaultMapGenBiome;
         public bool RandomDefault = true;
         public MapGenArgSelector ArgFilter = (Args) => false;
         public MapGenArgSelector ArgParser = null;
@@ -103,11 +105,13 @@ namespace MCGalaxy.Generator
         }
         public const string DEFAULT_HELP = "&HSeed affects how terrain is generated. If seed is the same, the generated level will be the same.";
         /// <summary> Adds a new map generator to the list of generators. </summary>
-        public static void Register(string theme, GenType type, MapGenFunc func, string desc)
+        public static void Register(string theme, GenType type, MapGenFunc func, string desc) => Generators.Add(new()
         {
-            MapGen gen = new() { Theme = theme, GenFunc = func, Desc = desc, Type = type };
-            Generators.Add(gen);
-        }
+            Theme = theme,
+            GenFunc = func,
+            Desc = desc,
+            Type = type
+        });
         static MapGen()
         {
             RealisticMapGen.RegisterGenerators();
@@ -122,11 +126,16 @@ namespace MCGalaxy.Generator
                                      ushort x, ushort y, ushort z, string seed)
         {
             name = name.ToLower();
-            if (gen == null) { PrintThemes(p); return null; }
+            if (gen == null) 
+            {
+                PrintThemes(p);
+                return null; 
+            }
             if (!Formatter.ValidMapName(p, name)) return null;
             if (LevelInfo.MapExists(name))
             {
-                p.Message("&WLevel \"{0}\" already exists", name); return null;
+                p.Message("&WLevel \"{0}\" already exists", name);
+                return null;
             }
             if (Interlocked.CompareExchange(ref p.GeneratingMap, 1, 0) == 1)
             {
@@ -137,9 +146,13 @@ namespace MCGalaxy.Generator
             try
             {
                 p.Message("Generating map \"{0}\"..", name);
-                lvl = new Level(name, x, y, z);
+                lvl = new(name, x, y, z);
                 DateTime start = DateTime.UtcNow;
-                if (!gen.Generate(p, lvl, seed)) { lvl.Dispose(); return null; }
+                if (!gen.Generate(p, lvl, seed)) 
+                { 
+                    lvl.Dispose();
+                    return null; 
+                }
                 Logger.Log(LogType.SystemActivity, "Generation completed in {0:F3} seconds",
                            (DateTime.UtcNow - start).TotalSeconds);
                 string msg = seed.Length > 0 ? "λNICK&S created level {0}&S with seed \"{1}\"" : "λNICK&S created level {0}";
@@ -173,12 +186,11 @@ namespace MCGalaxy.Generator
         internal static void SetRealmPerms(Player p, Level lvl)
         {
             lvl.Config.RealmOwner = p.name;
-            const LevelPermission rank = LevelPermission.Console;
-            lvl.BuildAccess.Whitelist(Player.Console, rank, lvl, p.name);
-            lvl.VisitAccess.Whitelist(Player.Console, rank, lvl, p.name);
+            lvl.BuildAccess.Whitelist(Player.Console, LevelPermission.Console, lvl, p.name);
+            lvl.VisitAccess.Whitelist(Player.Console, LevelPermission.Console, lvl, p.name);
             Group grp = Group.Find(Server.Config.OSPerbuildDefault);
             if (grp == null) return;
-            lvl.BuildAccess.SetMin(Player.Console, rank, lvl, grp);
+            lvl.BuildAccess.SetMin(Player.Console, LevelPermission.Console, lvl, grp);
         }
     }
 }

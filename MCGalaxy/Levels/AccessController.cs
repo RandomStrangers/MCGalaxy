@@ -45,8 +45,9 @@ namespace MCGalaxy {
         public AccessResult Check(string name, LevelPermission rank) {
             if (Blacklisted.CaselessContains(name)) return AccessResult.Blacklisted;
             if (Whitelisted.CaselessContains(name)) return AccessResult.Whitelisted;
-            if (rank < Min) return AccessResult.BelowMinRank;
-            return rank > Max && MaxCmd != null && !CommandExtraPerms.Find(MaxCmd, 1).UsableBy(rank)
+            return rank < Min
+                ? AccessResult.BelowMinRank
+                : rank > Max && MaxCmd != null && !CommandExtraPerms.Find(MaxCmd, 1).UsableBy(rank)
                 ? AccessResult.AboveMaxRank
                 : AccessResult.Accepted;
         }

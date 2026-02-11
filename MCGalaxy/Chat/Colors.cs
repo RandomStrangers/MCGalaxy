@@ -135,8 +135,7 @@ namespace MCGalaxy
             if (col == 'S') return Server.Config.DefaultColor[1];
             if (col == 'H') return Server.Config.HelpDescriptionColor[1];
             if (col == 'T') return Server.Config.HelpSyntaxColor[1];
-            if (col == 'I') return Server.Config.IRCColor[1];
-            return col == 'W' ? Server.Config.WarningErrorColor[1] : IsDefined(col) ? col : '\0';
+            return col == 'I' ? Server.Config.IRCColor[1] : col == 'W' ? Server.Config.WarningErrorColor[1] : IsDefined(col) ? col : '\0';
         }
         public static bool IsSystem(char col) => col == 'S' || col == 'H' || col == 'T' || col == 'I' || col == 'W';
         /// <summary> Converts percentage color codes to their actual/real color codes. </summary>
@@ -324,11 +323,7 @@ namespace MCGalaxy
             {
                 return c - '0'; 
             }
-            if (c >= 'a' && c <= 'f') 
-            {
-                return c - 'a' + 10; 
-            }
-            return c >= 'A' && c <= 'F' ? c - 'A' + 10 : -1;
+            return c >= 'a' && c <= 'f' ? c - 'a' + 10 : c >= 'A' && c <= 'F' ? c - 'A' + 10 : -1;
         }
     }
     /// <summary> Describes information about a color code. </summary>

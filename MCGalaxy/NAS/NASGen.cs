@@ -1,4 +1,3 @@
-using LibNoise;
 using MCGalaxy.Generator;
 using MCGalaxy.Tasks;
 using MCGalaxy.Util.Imaging;
@@ -102,11 +101,7 @@ namespace MCGalaxy
             {
                 return false;
             }
-            if (!int.TryParse(chunks[0], out chunkOffsetX))
-            {
-                return false;
-            }
-            return int.TryParse(chunks[1], out chunkOffsetZ);
+            return int.TryParse(chunks[0], out chunkOffsetX) && int.TryParse(chunks[1], out chunkOffsetZ);
         }
         public static bool Gen(Player p, Level lvl, MapGenArgs args)
         {
@@ -1035,11 +1030,7 @@ namespace MCGalaxy
             {
                 return true;
             }
-            if (lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z + 1)))
-            {
-                return true;
-            }
-            return lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1));
+            return lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z + 1)) || lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1));
         }
         public bool BlockExposed2(int x, int y, int z)
         {
@@ -1051,11 +1042,7 @@ namespace MCGalaxy
             {
                 return true;
             }
-            if (lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z + 1)))
-            {
-                return true;
-            }
-            return lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1));
+            return lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z + 1)) || lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1));
         }
         public void GenDungeons()
         {

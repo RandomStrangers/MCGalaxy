@@ -91,12 +91,9 @@ namespace MCGalaxy.Commands.Info
                 BlockDBChange.Output(p, row[0], entry);
             }
         }
-        static byte ParseFlags(string value)
-        {
+        static byte ParseFlags(string value) =>
             // This used to be a 'deleted' boolean, so we need to make sure we account for that
-            if (value.CaselessEq("true")) return 1;
-            return value.CaselessEq("false") ? (byte)0 : byte.Parse(value);
-        }
+            value.CaselessEq("true") ? (byte)1 : value.CaselessEq("false") ? (byte)0 : byte.Parse(value);
         static void OutputEntry(Player p, ref bool foundAny, Dictionary<int, string> names, BlockDBEntry entry)
         {
             if (!names.TryGetValue(entry.PlayerID, out string name))

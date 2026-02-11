@@ -6,8 +6,14 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
-    public enum NASOrientation { None, WE, NS }
-    public enum NASStationType { None, Normal, Furnace, Anvil }
+    public enum NASOrientation 
+    {
+        None, WE, NS 
+    }
+    public enum NASStationType 
+    { 
+        None, Normal, Furnace, Anvil 
+    }
     public class NASRecipe
     {
         public int expGiven = 0;
@@ -39,8 +45,7 @@ namespace MCGalaxy
                 {
                     for (int y = 0; y < pattern.GetLength(0); y++)
                     {
-                        ushort curPatternID = NASBlock.Get(pattern[y, x]).parentID;
-                        FillDict(curPatternID, ref patternCost);
+                        FillDict(NASBlock.Get(pattern[y, x]).parentID, ref patternCost);
                     }
                 }
                 return patternCost;
@@ -80,8 +85,7 @@ namespace MCGalaxy
                     {
                         suppliedNB = NASBlock.Get(suppliedNB.alternateID);
                     }
-                    ushort supplied = usesParentID ? suppliedNB.parentID : suppliedNB.selfID;
-                    FillDict(supplied, ref areaStacks);
+                    FillDict(usesParentID ? suppliedNB.parentID : suppliedNB.selfID, ref areaStacks);
                 }
             }
             bool matches = true;
@@ -143,9 +147,7 @@ namespace MCGalaxy
                     {
                         suppliedNB = NASBlock.Get(suppliedNB.alternateID);
                     }
-                    ushort supplied = usesParentID ? suppliedNB.parentID : suppliedNB.selfID,
-                        required = pattern[y, xPattern];
-                    if (supplied != required)
+                    if ((usesParentID ? suppliedNB.parentID : suppliedNB.selfID) != pattern[y, xPattern])
                     {
                         return false;
                     }
@@ -220,8 +222,7 @@ namespace MCGalaxy
                 return;
             }
             task.Delay = info.delay;
-            short alpha = (short)(info.A / info.totalRounds * info.curRound);
-            info.np.Send(Packet.MakeSelection(info.ID, "Crafting Zone", info.start, info.end, info.R, info.G, info.B, alpha, true));
+            info.np.Send(Packet.MakeSelection(info.ID, "Crafting Zone", info.start, info.end, info.R, info.G, info.B, (short)(info.A / info.totalRounds * info.curRound), true));
             info.curRound--;
         }
     }

@@ -178,8 +178,7 @@ namespace MCGalaxy.SQL
             if (AutoCommit) return true;
             SQLiteErrorCode n = Interop.sqlite3_exec(handle, SQLiteConvert.ToUTF8("ROLLBACK"),
                                                      IntPtr.Zero, IntPtr.Zero, ref stmt);
-            if (n == SQLiteErrorCodes.Ok) return true;
-            return canThrow ? throw new SQLiteException(n, GetLastError()) : false;
+            return n == SQLiteErrorCodes.Ok || (canThrow ? throw new SQLiteException(n, GetLastError()) : false);
         }
         public void Dispose() => Close(false);
         public void Close() => Close(true);
@@ -288,7 +287,7 @@ namespace MCGalaxy.SQL
         {
             using ISqlReader reader = ExecuteReader();
             while (reader.Read()) { }
-            return reader.RowsAffected;
+            return reader.rowsAffected;
         }
     }
     static class SQLiteConvert
@@ -466,11 +465,7 @@ namespace MCGalaxy.SQL
             }
         }
         internal int ColumnCount() => Interop.sqlite3_column_count(handle);
-        internal string ColumnName(int index)
-        {
-            IntPtr p = Interop.sqlite3_column_name(handle, index);
-            return SQLiteConvert.FromUTF8(p, -1);
-        }
+        internal string ColumnName(int index) => SQLiteConvert.FromUTF8(Interop.sqlite3_column_name(handle, index), -1);
         internal TypeAffinity ColumnAffinity(int index) => Interop.sqlite3_column_type(handle, index);
         internal void BindAll(List<string> names, List<object> values)
         {

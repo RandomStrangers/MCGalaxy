@@ -198,8 +198,9 @@ namespace MCGalaxy.Levels.IO
         {
             byte typeCode = ReadUInt8();
             if (typeCode == TC_CLASSDESC) return NewClassDesc();
-            if (typeCode == TC_NULL) return null;
-            return typeCode == TC_REFERENCE ? (JClassDesc)PrevObject() : throw new InvalidDataException("Invalid type code: " + typeCode);
+            return typeCode == TC_NULL
+                ? null
+                : typeCode == TC_REFERENCE ? (JClassDesc)PrevObject() : throw new InvalidDataException("Invalid type code: " + typeCode);
         }
         JClassData ClassData(JClassDesc desc)
         {
@@ -231,8 +232,7 @@ namespace MCGalaxy.Levels.IO
             if (type == 'J') return ReadInt64();
             if (type == 'S') return ReadInt16();
             if (type == 'Z') return ReadUInt8() != 0;
-            if (type == 'L') return ReadObject();
-            return type == '[' ? ReadObject() : throw new InvalidDataException("Invalid value code: " + type);
+            return type == 'L' ? ReadObject() : type == '[' ? ReadObject() : throw new InvalidDataException("Invalid value code: " + type);
         }
         JFieldDesc FieldDesc()
         {

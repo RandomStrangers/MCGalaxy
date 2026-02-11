@@ -20,16 +20,18 @@ namespace MCGalaxy.Blocks.Physics
         public static void Do(Level lvl, ref PhysInfo C)
         {
             Random rand = lvl.physRandom;
-            int dirX = rand.Next(1, 100 + 1) <= 50 ? 1 : -1;
-            int dirY = rand.Next(1, 100 + 1) <= 50 ? 1 : -1;
-            int dirZ = rand.Next(1, 100 + 1) <= 50 ? 1 : -1;
+            int dirX = rand.Next(1, 100 + 1) <= 50 ? 1 : -1,
+                dirY = rand.Next(1, 100 + 1) <= 50 ? 1 : -1,
+                dirZ = rand.Next(1, 100 + 1) <= 50 ? 1 : -1;
             ushort x = C.X, y = C.Y, z = C.Z;
             for (int dx = -dirX; dx != 2 * dirX; dx += dirX)
+            {
                 for (int dy = -dirY; dy != 2 * dirY; dy += dirY)
+                {
                     for (int dz = -dirZ; dz != 2 * dirZ; dz += dirZ)
                     {
-                        ushort below = lvl.GetBlock((ushort)(x + dx), (ushort)(y + dy - 1), (ushort)(z + dz));
-                        ushort block = lvl.GetBlock((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz), out int index);
+                        ushort below = lvl.GetBlock((ushort)(x + dx), (ushort)(y + dy - 1), (ushort)(z + dz)),
+                            block = lvl.GetBlock((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz), out int index);
                         bool isRails = lvl.Props[below].IsRails;
                         if (isRails && (block == Block.Air || block == Block.Water) && !lvl.listUpdateExists.Get(x + dx, y + dy, z + dz))
                         {
@@ -37,14 +39,20 @@ namespace MCGalaxy.Blocks.Physics
                             lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
                             ushort newBlock = below == Block.Op_Air ? Block.Glass : Block.Obsidian;
                             below = lvl.GetBlock(x, (ushort)(y - 1), z, out int belowIndex);
-                            PhysicsArgs args = default;
-                            args.Type1 = PhysicsArgs.Wait; args.Value1 = 5;
-                            args.Type2 = PhysicsArgs.Revert; args.Value2 = (byte)below;
-                            args.ExtBlock = (byte)(below >> Block.ExtendedShift);
+                            PhysicsArgs args = new()
+                            {
+                                Type1 = 1,
+                                Value1 = 5,
+                                Type2 = 2,
+                                Value2 = (byte)below,
+                                ExtBlock = (byte)(below >> 8)
+                            };
                             lvl.AddUpdate(belowIndex, newBlock, args, true);
                             return;
                         }
                     }
+                }
+            }
         }
     }
 }

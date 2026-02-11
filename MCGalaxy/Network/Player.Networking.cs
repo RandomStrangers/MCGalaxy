@@ -26,8 +26,6 @@ namespace MCGalaxy
     }
     public partial class Player : IDisposable
     {
-        // these are checked very frequently, so avoid overhead of .Supports(
-        public bool hasChangeModel, hasExtList, hasCP437;
         public void Send(byte[] buffer) => Socket.Send(buffer, SendFlags.None);
         public void MessageLines(IEnumerable<string> lines)
         {
@@ -40,7 +38,6 @@ namespace MCGalaxy
             }
         }
         // Put a lock on sending messages so that MessageLines is not interrupted by other messages
-        readonly object messageLocker = new();
         public void Message(string message, params object[] args) => Message(string.Format(message, args));
         public virtual void Message(string message)
         {
@@ -93,7 +90,6 @@ namespace MCGalaxy
             }
             Session.SendMotd(motd);
         }
-        readonly object joinLock = new();
         public bool SendRawMap(Level oldLevel, Level level)
         {
             lock (joinLock)
@@ -164,7 +160,6 @@ namespace MCGalaxy
             }
             return url;
         }
-        string lastUrl = "";
         public void SendCurrentTextures()
         {
             Zone zone = ZoneIn;
@@ -225,7 +220,6 @@ namespace MCGalaxy
             }
             Send(bulk);
         }
-        readonly VolatileArray<VisibleSelection> selections = new();
         public bool AddVisibleSelection(string label, Vec3U16 min, Vec3U16 max, ColorDesc color, object instance)
         {
             lock (selections.locker)

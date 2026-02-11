@@ -40,8 +40,7 @@ namespace MCGalaxy.Commands.Fun
         static Missile GetMissile(WeaponType type)
         {
             if (type == WeaponType.Destroy) return new PenetrativeMissile();
-            if (type == WeaponType.Teleport) return new TeleportMissile();
-            return type == WeaponType.Explode ? new ExplosiveMissile() : new Missile();
+            return type == WeaponType.Teleport ? new TeleportMissile() : type == WeaponType.Explode ? new ExplosiveMissile() : new Missile();
         }
         public override void Help(Player p)
         {
