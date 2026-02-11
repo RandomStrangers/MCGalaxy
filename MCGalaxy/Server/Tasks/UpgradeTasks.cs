@@ -22,13 +22,11 @@ namespace MCGalaxy.Tasks
     {
         internal static void UpgradeOldAgreed()
         {
-            // agreed.txt format used to be names separated by spaces, we need to fix that up.
             if (!File.Exists("ranks/agreed.txt"))
             {
                 return;
             }
             string data = null;
-            //using (FileStream fs = File.OpenRead("ranks/agreed.txt"))
             using (FileStream fs = FileIO.TryOpenRead("ranks/agreed.txt"))
             {
                 if (fs.ReadByte() != ' ')
@@ -38,7 +36,6 @@ namespace MCGalaxy.Tasks
                 data = new StreamReader(fs).ReadToEnd();
                 data = data.Replace(" ", Environment.NewLine);
             }
-            //File.WriteAllText("ranks/agreed.txt", data);
             FileIO.TryWriteAllText("ranks/agreed.txt", data);
         }
         internal static void UpgradeOldTempranks(SchedulerTask _)
@@ -47,7 +44,6 @@ namespace MCGalaxy.Tasks
             {
                 return;
             }
-            // Check if empty, or not old form
             using (StreamReader r = new(Paths.TempRanksFile))
             {
                 string line = r.ReadLine();
@@ -61,7 +57,6 @@ namespace MCGalaxy.Tasks
                     return;
                 }
             }
-            //string[] lines = File.ReadAllLines(Paths.TempRanksFile);
             string[] lines = FileIO.TryReadAllLines(Paths.TempRanksFile);
             for (int i = 0; i < lines.Length; i++)
             {
@@ -81,13 +76,11 @@ namespace MCGalaxy.Tasks
                 {
                     periodM = NumberUtils.ParseInt32(args[10]);
                 }
-                DateTime assigned = new(year, month, day, hour, min, 0);
-                DateTime expiry = assigned.AddHours(periodH).AddMinutes(periodM);
-                // Line format: name assigner assigntime expiretime oldRank tempRank
+                DateTime assigned = new(year, month, day, hour, min, 0),
+                    expiry = assigned.AddHours(periodH).AddMinutes(periodM);
                 lines[i] = args[0] + " " + args[9] + " " + assigned.ToUnixTime() +
                     " " + expiry.ToUnixTime() + " " + args[2] + " " + args[1];
             }
-            //File.WriteAllLines(Paths.TempRanksFile, lines);
             FileIO.TryWriteAllLines(Paths.TempRanksFile, lines);
         }
         internal static void UpgradeDBTimeSpent(SchedulerTask _)
@@ -95,11 +88,11 @@ namespace MCGalaxy.Tasks
             string time = Database.ReadString("Players", "TimeSpent", "LIMIT 1");
             if (time == null)
             {
-                return; // no players at all in DB
+                return;
             }
             if (time.IndexOf(' ') == -1)
             {
-                return; // already upgraded
+                return;
             }
             Logger.Log(LogType.SystemActivity, "Upgrading TimeSpent column in database to new format..");
             DumpPlayerTimeSpents();
@@ -108,11 +101,11 @@ namespace MCGalaxy.Tasks
         }
         static List<int> playerIds;
         static List<long> playerSeconds;
-        static int playerCount, playerFailed = 0;
+        static int playerCount, playerFailed;
         static void DumpPlayerTimeSpents()
         {
-            playerIds = new List<int>();
-            playerSeconds = new List<long>();
+            playerIds = new();
+            playerSeconds = new();
             Database.ReadRows("Players", "ID,TimeSpent", ReadTimeSpent);
         }
         static void ReadTimeSpent(ISqlRecord record)
@@ -135,8 +128,9 @@ namespace MCGalaxy.Tasks
             using SqlTransaction bulk = new();
             for (int i = 0; i < playerIds.Count; i++)
             {
-                bulk.Execute("UPDATE Players SET TimeSpent=@1 WHERE ID=@0",
-                             playerIds[i], playerSeconds[i]);
+                bulk.Execute("UPDATE Players SET TimeSpent=@time WHERE ID=@pid",
+                             new SqlArgument("@pid", playerIds[i]),
+                             new SqlArgument("@time", playerSeconds[i]));
             }
             bulk.Commit();
         }

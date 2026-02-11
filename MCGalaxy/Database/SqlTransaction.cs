@@ -24,7 +24,10 @@ namespace MCGalaxy.SQL
             IDatabaseBackend db = Database.Backend;
             conn = db.CreateConnection();
             conn.Open();
-            if (db.MultipleSchema) conn.ChangeDatabase(Server.Config.MySQLDatabaseName);
+            if (db.MultipleSchema)
+            {
+                conn.ChangeDatabase(Server.Config.MySQLDatabaseName);
+            }
             transaction = conn.BeginTransaction();
         }
         public void Commit()
@@ -63,12 +66,12 @@ namespace MCGalaxy.SQL
             transaction = null;
             conn = null;
         }
-        public bool Execute(string sql, params object[] args)
+        public bool Execute(string sql, params SqlArgument[] args)
         {
             try
             {
                 using ISqlCommand cmd = conn.CreateCommand(sql);
-                IDatabaseBackend.FillParams(cmd, args);
+                cmd.SetParameters(args);
                 cmd.ExecuteNonQuery();
                 return true;
             }

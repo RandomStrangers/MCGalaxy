@@ -27,8 +27,7 @@ namespace MCGalaxy.SQL
     /// <summary> Abstracts a SQL command/statement </summary>
     public interface ISqlCommand : IDisposable
     {
-        void ClearParameters();
-        void AddParameter(string name, object value);
+        void SetParameters(SqlArgument[] args);
         void Prepare();
         /// <summary> Executes this command and returns the number of rows affected </summary>
         int ExecuteNonQuery();
@@ -70,18 +69,25 @@ namespace MCGalaxy.SQL
         }
         public string GetText(string name)
         {
-            int col = GetOrdinal(name);
-            return IsDBNull(col) ? "" : GetString(col);
+            return IsDBNull(GetOrdinal(name)) ? "" : GetString(GetOrdinal(name));
         }
         public int GetInt(string name)
         {
-            int col = GetOrdinal(name);
-            return IsDBNull(col) ? 0 : GetInt32(col);
+            return IsDBNull(GetOrdinal(name)) ? 0 : GetInt32(GetOrdinal(name));
         }
         public long GetLong(string name)
         {
-            int col = GetOrdinal(name);
-            return IsDBNull(col) ? 0 : GetInt64(col);
+            return IsDBNull(GetOrdinal(name)) ? 0 : GetInt64(GetOrdinal(name));
+        }
+    }
+    public readonly struct SqlArgument
+    {
+        public readonly string Name;
+        public readonly object Value;
+        public SqlArgument(string name, object value)
+        {
+            Name = name;
+            Value = value;
         }
     }
 }
