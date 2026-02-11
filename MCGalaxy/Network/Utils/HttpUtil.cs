@@ -84,7 +84,6 @@ namespace MCGalaxy.Network
             {
                 return null;
             }
-            // can only use same family for local bind IP
             return remoteEP.AddressFamily != localIP.AddressFamily ? null : new IPEndPoint(localIP, 0);
         }
         public static SslStream WrapSSLStream(Stream source, string host)
@@ -118,7 +117,6 @@ namespace MCGalaxy.Network
         {
             if (!url.CaselessStarts("http://") && !url.CaselessStarts("https://"))
                 url = "http://" + url;
-            // a lot of people try linking to the dropbox page instead of directly to file, so auto correct
             if (url.CaselessStarts("http://www.dropbox"))
             {
                 url = AdjustDropbox(url, "http://www.dropbox".Length);
@@ -153,7 +151,6 @@ namespace MCGalaxy.Network
         }
         static bool CheckHttpOrHttps(Player p, string url)
         {
-            // only check valid URLs here
             if (!url.Contains("://")) return true;
             if (!Uri.TryCreate(url, UriKind.Absolute, out Uri uri)) return true;
             string scheme = uri.Scheme;
@@ -184,13 +181,11 @@ namespace MCGalaxy.Network
                 string msg = DescribeError(ex);
                 if (msg == null)
                 {
-                    // unexpected error, log full error details
                     msg = "from ";
                     Logger.LogError("Error downloading " + url, ex);
                 }
                 else
                 {
-                    // known error, so just log a warning
                     Logger.Log(LogType.Warning, "Error downloading " + msg + url + Environment.NewLine + ex.Message);
                 }
                 p.Message("&WFailed to download {0}&f{1}", msg, url);
@@ -211,7 +206,6 @@ namespace MCGalaxy.Network
             try
             {
                 WebException webEx = (WebException)ex;
-                // prefer explicit http status error codes if possible
                 try
                 {
                     int status = (int)((HttpWebResponse)webEx.Response).StatusCode;

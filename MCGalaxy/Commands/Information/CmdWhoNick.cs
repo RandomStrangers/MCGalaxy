@@ -22,7 +22,11 @@ namespace MCGalaxy.Commands.Info
         public override bool UseableWhenFrozen => true;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p);
+                return; 
+            }
             string[] args = message.SplitSpaces(2);
             if (args.Length > 1 && args[0].CaselessEq("bot"))
             {

@@ -83,7 +83,6 @@ namespace MCGalaxy
                     Logger.LogError(e);
                 }
             }
-            //In case any were deleted or changed
             foreach (Player p in PlayerInfo.Online.Items)
             {
                 p.pronounsList = GetFor(p.name);
@@ -119,8 +118,7 @@ namespace MCGalaxy
                 Logger.Log(LogType.Warning, "Cannot load pronouns \"{0}\" because it is already defined.", name);
                 return;
             }
-            string tpos; //ThirdPersonObjectiveSingular
-            //Older config files do not contain this argument, thus we need to guess or provide a fallback
+            string tpos;
             if (words.Length > 5)
             {
                 tpos = words[5];
@@ -290,7 +288,6 @@ namespace MCGalaxy
             string path = PlayerPath(p.name);
             try
             {
-                //Reduce clutter by simply erasing the file if it's default
                 if (p.pronounsList.Count == 1 && p.pronounsList[0] == Default)
                 {
                     FileIO.TryDelete(path);

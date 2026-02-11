@@ -27,22 +27,40 @@ namespace MCGalaxy.Commands.Moderation
             string cmd = args[0];
             if (cmd.CaselessEq("enable"))
             {
-                SetMode(true, "&aON"); return;
+                SetMode(true, "&aON"); 
+                return;
             }
             else if (cmd.CaselessEq("disable"))
             {
-                SetMode(false, "&cOFF"); return;
+                SetMode(false, "&cOFF");
+                return;
             }
-            if (!Server.Config.WhitelistedOnly) { p.Message("Whitelist is not enabled."); return; }
-            if (message.Length == 0) { List(p, ""); return; }
+            if (!Server.Config.WhitelistedOnly) 
+            { 
+                p.Message("Whitelist is not enabled.");
+                return;
+            }
+            if (message.Length == 0) 
+            { 
+                List(p, "");
+                return; 
+            }
             if (cmd.CaselessEq("add"))
             {
-                if (args.Length < 2) { Help(p); return; }
+                if (args.Length < 2) 
+                { 
+                    Help(p);
+                    return; 
+                }
                 Add(p, args[1]);
             }
             else if (IsDeleteAction(cmd))
             {
-                if (args.Length < 2) { Help(p); return; }
+                if (args.Length < 2) 
+                { 
+                    Help(p); 
+                    return; 
+                }
                 Remove(p, args[1]);
             }
             else if (IsListAction(cmd))

@@ -127,12 +127,10 @@ namespace MCGalaxy
                 {
                     continue;
                 }
-                // No colour code follows this
                 if (i == message.Length - 1)
                 {
                     return -1;
                 }
-                // Check following character is an actual colour code
                 char col = Colors.Lookup(message[i + 1]);
                 if (col != '\0')
                 {

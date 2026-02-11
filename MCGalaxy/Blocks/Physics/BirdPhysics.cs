@@ -20,8 +20,8 @@ namespace MCGalaxy.Blocks.Physics
         public static void Do(Level lvl, ref PhysInfo C)
         {
             Random rand = lvl.physRandom;
-            ushort x = C.X, y = C.Y, z = C.Z;
-            ushort block = lvl.GetBlock(x, y, z);
+            ushort x = C.X, y = C.Y, z = C.Z,
+                block = lvl.GetBlock(x, y, z);
             int index;
             switch (rand.Next(1, 15))
             {
@@ -73,9 +73,9 @@ namespace MCGalaxy.Blocks.Physics
                 case Block.Op_Air:
                     break;
                 default:
-                    // bird died by hitting a block
                     PhysicsArgs args = default;
-                    args.Type1 = PhysicsArgs.Dissipate; args.Value1 = 25;
+                    args.Type1 = 3; 
+                    args.Value1 = 25;
                     lvl.AddUpdate(C.Index, Block.Red, args);
                     break;
             }

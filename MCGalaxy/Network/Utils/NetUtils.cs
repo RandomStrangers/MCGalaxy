@@ -66,7 +66,7 @@ namespace MCGalaxy
             for (int i = 63; i >= 0; i--)
             {
                 byte code = data[i + offset];
-                if (code == 0) code = 0x20; // NULL to space
+                if (code == 0) code = 0x20;
                 if (length == 0 && code != 0x20) 
                 { 
                     length = i + 1; 

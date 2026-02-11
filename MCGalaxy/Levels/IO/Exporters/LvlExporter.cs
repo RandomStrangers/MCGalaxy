@@ -18,21 +18,14 @@ using System.IO.Compression;
 using System.Text;
 namespace MCGalaxy.Levels.IO
 {
-    //WARNING! DO NOT CHANGE THE WAY THE LEVEL IS SAVED/LOADED!
-    //You MUST make it able to save and load as a new version other wise you will make old levels incompatible!
     public sealed unsafe class LvlExporter : IMapExporter
     {
         public override string Extension => ".lvl";
-        const int bufferSize = 64 * 1024;
         public override void Write(Stream dst, Level lvl)
         {
             using Stream gs = new GZipStream(dst, CompressionMode.Compress);
-            // We need to copy blocks to a temp byte array due to the multithreaded nature of the server
-            // Otherwise, some blocks can change between writing data and calculating its crc32, which
-            // then causes the level to fail to load next time do to the crc32 not matching the data.
-            byte[] buffer = new byte[bufferSize];
+            byte[] buffer = new byte[65536];
             WriteHeader(lvl, gs, buffer);
-            // lock physics so it can't change blocks or checks during saving
             lock (lvl.physTickLock)
             {
                 WriteBlocksSection(lvl, gs, buffer);
@@ -64,24 +57,21 @@ namespace MCGalaxy.Levels.IO
         static void WriteBlocksSection(Level lvl, Stream gs, byte[] buffer)
         {
             byte[] blocks = lvl.blocks;
-            for (int i = 0; i < blocks.Length; i += bufferSize)
+            for (int i = 0; i < blocks.Length; i += 65536)
             {
-                int len = Math.Min(bufferSize, blocks.Length - i);
-                // Can't just write lvl.blocks here - another thread
-                //  may be modifying lvl.blocks, which can cause
-                //  the calculated GZIP checksum to be incorrect
-                //  (thus meaning the level will fail to load)
-                // Copying to a separate buffer first avoids this issue
+                int len = Math.Min(65536, blocks.Length - i);
                 Buffer.BlockCopy(blocks, i, buffer, 0, len);
                 gs.Write(buffer, 0, len);
             }
         }
         static void WriteBlockDefsSection(Level lvl, Stream gs, byte[] buffer)
         {
-            gs.WriteByte(0xBD); // 'B'lock 'D'efinitions
+            gs.WriteByte(0xBD);
             int index = 0;
             for (int y = 0; y < lvl.ChunksY; y++)
+            {
                 for (int z = 0; z < lvl.ChunksZ; z++)
+                {
                     for (int x = 0; x < lvl.ChunksX; x++)
                     {
                         byte[] chunk = lvl.CustomBlocks[index];
@@ -92,42 +82,35 @@ namespace MCGalaxy.Levels.IO
                         else
                         {
                             gs.WriteByte(1);
-                            // see comment in WriteBlocksSection
                             Buffer.BlockCopy(chunk, 0, buffer, 0, chunk.Length);
                             gs.Write(buffer, 0, chunk.Length);
                         }
                         index++;
                     }
+                }
+            }
         }
         static void WritePhysicsSection(Level lvl, Stream gs, byte[] buffer)
         {
             int count = lvl.ListCheck.Count;
             Check[] checks = lvl.ListCheck.Items;
             if (count == 0) return;
-            gs.WriteByte(0xFC); // 'Ph'ysics 'C'hecks
+            gs.WriteByte(0xFC);
             NetUtils.WriteI32(count, buffer, 0);
             gs.Write(buffer, 0, sizeof(int));
-            // NOTE: We have to be extremely careful here to make sure
-            //   that exactly 'count' entries are actually written.
-            // (this otherwise breaks zones getting imported from the map)
-            // Locking physics tick ensures that the physics thread can't
-            //   change the entries in the checks list out from under us.
-            // Players deleting door blocks on a map with physics on does
-            //   add to the check list, but this won't cause a problem as
-            //   both the underlying array and count are cached here.
             fixed (byte* ptr = buffer)
             {
                 int entries = 0;
                 int* ptrInt = (int*)ptr;
-                const int bulkCount = bufferSize / 8;
                 for (int i = 0; i < count; i++)
                 {
                     Check C = checks[i];
-                    *ptrInt = C.Index; ptrInt++;
-                    *ptrInt = (int)C.data.Raw; ptrInt++;
+                    *ptrInt = C.Index; 
+                    ptrInt++;
+                    *ptrInt = (int)C.data.Raw;
+                    ptrInt++;
                     entries++;
-                    // Have we filled the temp buffer?
-                    if (entries != bulkCount) continue;
+                    if (entries != 8192) continue;
                     ptrInt = (int*)ptr;
                     gs.Write(buffer, 0, entries * 8);
                     entries = 0;
@@ -145,11 +128,13 @@ namespace MCGalaxy.Levels.IO
             gs.Write(buffer, 0, sizeof(int));
             foreach (Zone z in zones)
             {
-                NetUtils.WriteU16(z.MinX, buffer, 0 * 2); NetUtils.WriteU16(z.MaxX, buffer, 1 * 2);
-                NetUtils.WriteU16(z.MinY, buffer, 2 * 2); NetUtils.WriteU16(z.MaxY, buffer, 3 * 2);
-                NetUtils.WriteU16(z.MinZ, buffer, 4 * 2); NetUtils.WriteU16(z.MaxZ, buffer, 5 * 2);
+                NetUtils.WriteU16(z.MinX, buffer, 0 * 2);
+                NetUtils.WriteU16(z.MaxX, buffer, 1 * 2);
+                NetUtils.WriteU16(z.MinY, buffer, 2 * 2);
+                NetUtils.WriteU16(z.MaxY, buffer, 3 * 2);
+                NetUtils.WriteU16(z.MinZ, buffer, 4 * 2);
+                NetUtils.WriteU16(z.MaxZ, buffer, 5 * 2);
                 gs.Write(buffer, 0, 6 * 2);
-                // Write all metadata of the zone
                 ConfigElement[] elem = Server.zoneConfig;
                 NetUtils.WriteI32(elem.Length, buffer, 0);
                 gs.Write(buffer, 0, sizeof(int));

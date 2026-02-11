@@ -129,13 +129,14 @@ namespace MCGalaxy
         /// <returns> Whether given color code was a valid color code. </returns>
         public static char Lookup(char col)
         {
-            // inlined as this must be fast for line wrapper
             if (col >= 'A' && col <= 'F') return (char)(col + ' ');
             if ((col >= '0' && col <= '9') || (col >= 'a' && col <= 'f')) return col;
             if (col == 'S') return Server.Config.DefaultColor[1];
-            if (col == 'H') return Server.Config.HelpDescriptionColor[1];
-            if (col == 'T') return Server.Config.HelpSyntaxColor[1];
-            return col == 'I' ? Server.Config.IRCColor[1] : col == 'W' ? Server.Config.WarningErrorColor[1] : IsDefined(col) ? col : '\0';
+            return col == 'H'
+                ? Server.Config.HelpDescriptionColor[1]
+                : col == 'T'
+                ? Server.Config.HelpSyntaxColor[1]
+                : col == 'I' ? Server.Config.IRCColor[1] : col == 'W' ? Server.Config.WarningErrorColor[1] : IsDefined(col) ? col : '\0';
         }
         public static bool IsSystem(char col) => col == 'S' || col == 'H' || col == 'T' || col == 'I' || col == 'W';
         /// <summary> Converts percentage color codes to their actual/real color codes. </summary>
@@ -160,18 +161,15 @@ namespace MCGalaxy
         static bool IsUrlAt(char[] chars, int i, int len)
         {
             if (len < 7) return false;
-            // skip color codes in url
             while (len > 0 && chars[i] == '&') 
             { 
                 len -= 2; 
                 i += 2; 
             }
-            // Starts with "http" ?
             if (len < 7) return false;
             if (chars[i] != 'h' || chars[i + 1] != 't' || chars[i + 2] != 't' || chars[i + 3] != 'p') return false;
             len -= 4;
             i += 4;
-            // And then with "s://" or "://" ?
             if (chars[i] == 's') 
             { 
                 len--;
@@ -190,7 +188,7 @@ namespace MCGalaxy
                 if (col == '\0') continue;
                 chars[i] = '&';
                 chars[i + 1] = col;
-                i++; // skip over color code
+                i++;
             }
         }
         /// <summary> Removes all occurrences of % or &amp; and the following character. </summary>
@@ -205,7 +203,7 @@ namespace MCGalaxy
                 char token = value[i];
                 if (token == '%' || token == '&')
                 {
-                    i++; // Skip over the following color code
+                    i++;
                 }
                 else
                 {
@@ -214,9 +212,7 @@ namespace MCGalaxy
             }
             return new(output, 0, usedChars);
         }
-        static bool UsedColor(string message, int i) =>
-            // handle & being last character in string
-            i < message.Length - 1 && Lookup(message[i + 1]) != '\0';
+        static bool UsedColor(string message, int i) => i < message.Length - 1 && Lookup(message[i + 1]) != '\0';
         /// <summary> Removes all occurrences of % and &amp; that are followed by a used color code. </summary>
         public static string StripUsed(string message)
         {
@@ -228,7 +224,7 @@ namespace MCGalaxy
                 char c = message[i];
                 if ((c == '%' || c == '&') && UsedColor(message, i))
                 {
-                    i++; // Skip over the following color code
+                    i++;
                 }
                 else
                 {
@@ -317,14 +313,7 @@ namespace MCGalaxy
         }
         /// <summary> Parses an #RRGGBB hex color string. </summary>
         public static ColorDesc ParseHex(string hex) => !TryParseHex(hex, out ColorDesc c) ? throw new ArgumentException("invalid input") : c;
-        public static int UnHex(char c)
-        {
-            if (c >= '0' && c <= '9') 
-            {
-                return c - '0'; 
-            }
-            return c >= 'a' && c <= 'f' ? c - 'a' + 10 : c >= 'A' && c <= 'F' ? c - 'A' + 10 : -1;
-        }
+        public static int UnHex(char c) => c >= '0' && c <= '9' ? c - '0' : c >= 'a' && c <= 'f' ? c - 'a' + 10 : c >= 'A' && c <= 'F' ? c - 'A' + 10 : -1;
     }
     /// <summary> Describes information about a color code. </summary>
     public struct ColorDesc

@@ -171,7 +171,6 @@ namespace MCGalaxy.Eco
             foreach (Alias a in Alias.aliases)
             {
                 if (!a.Target.CaselessEq("buy") || a.Format == null) continue;
-                // Find if there are any custom aliases for this item
                 bool matchFound = false;
                 foreach (string alias in Aliases)
                 {

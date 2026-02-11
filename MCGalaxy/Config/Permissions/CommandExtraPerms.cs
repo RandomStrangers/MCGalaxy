@@ -99,13 +99,11 @@ namespace MCGalaxy.Commands
             while ((line = r.ReadLine()) != null)
             {
                 if (line.IsCommentLine() || line.IndexOf(':') == -1) continue;
-                // Format - Name:Num : Lowest : Disallow : Allow
                 line.Replace(" ", "").FixedSplit(args, ':');
                 try
                 {
                     LevelPermission min;
                     List<LevelPermission> allowed, disallowed;
-                    // Old format - Name:Num : Lowest : Description
                     if (IsDescription(args[3]))
                     {
                         min = (LevelPermission)NumberUtils.ParseInt32(args[2]);

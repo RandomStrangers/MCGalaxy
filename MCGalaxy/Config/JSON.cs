@@ -52,7 +52,6 @@ namespace MCGalaxy.Config
             if (NextConstant("true")) return 2;
             if (NextConstant("false")) return 3;
             if (NextConstant("null")) return 4;
-            // invalid token
             offset++; 
             return 0;
         }
@@ -141,10 +140,8 @@ namespace MCGalaxy.Config
                     s.Append('\n'); 
                     continue;
                 }
-                // TODO any other escape codes to add support for
                 if (c != 'u') break;
                 if (offset + 4 > Value.Length) break;
-                // form of \uYYYY
                 int aH = Colors.UnHex(Value[offset + 0]),
                     aL = Colors.UnHex(Value[offset + 1]),
                     bH = Colors.UnHex(Value[offset + 2]),
@@ -158,9 +155,7 @@ namespace MCGalaxy.Config
             return null;
         }
         static bool IsNumber(char c) => c == '-' || c == '.' || (c >= '0' && c <= '9');
-        static bool IsNumberPart(char c) =>
-            // same as IsNumber, but also accepts exponential notation (e.g. "3.40E+38")
-            c == '-' || c == '.' || (c >= '0' && c <= '9') || c == 'E' || c == '+';
+        static bool IsNumberPart(char c) => c == '-' || c == '.' || (c >= '0' && c <= '9') || c == 'E' || c == '+';
         string ParseNumber()
         {
             int start = offset - 1;
@@ -231,7 +226,6 @@ namespace MCGalaxy.Config
         }
         protected virtual void WriteValue(object value)
         {
-            // TODO this is awful code
             if (value == null)
             {
                 WriteNull();
@@ -278,7 +272,6 @@ namespace MCGalaxy.Config
     {
         readonly ConfigElement[] elems;
         public JsonConfigWriter(TextWriter dst, ConfigElement[] cfg) : base(dst) => elems = cfg;
-        // Only ever write an object
         protected override void WriteValue(object value) => WriteObject(value);
         void WriteConfigValue(ConfigAttribute a, string value)
         {

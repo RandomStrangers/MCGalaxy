@@ -132,18 +132,11 @@ namespace MCGalaxy.Platform
                     sbyte* utsname = stackalloc sbyte[8192];
                     uname(utsname);
                     string kernel = new(utsname);
-                    if (kernel.CaselessContains("linux"))
-                    {
-                        return linuxOS;
-                    }
-                    else if (kernel.CaselessContains("freeBSD"))
-                    {
-                        return new FreeBSD_OS();
-                    }
-                    else
-                    {
-                        return kernel.CaselessContains("netBSD") ? new NetBSD_OS() : kernel.CaselessContains("darwin") ? mac : unixOS;
-                    }
+                    return kernel.CaselessContains("linux")
+                        ? linuxOS
+                        : kernel.CaselessContains("freeBSD")
+                            ? new FreeBSD_OS()
+                            : kernel.CaselessContains("netBSD") ? new NetBSD_OS() : kernel.CaselessContains("darwin") ? mac : unixOS;
                 }
             }
         }

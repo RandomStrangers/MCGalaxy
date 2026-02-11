@@ -22,7 +22,6 @@ namespace MCGalaxy.Config
             : base(name, section) => defCol = def;
         public override object Parse(string raw)
         {
-            // colour code without & provided
             if (raw.Length == 1) raw = "&" + raw;
             string col = Colors.Parse(raw);
             if (col.Length != 0) return col;
@@ -36,8 +35,6 @@ namespace MCGalaxy.Config
     {
         readonly bool allowEmpty;
         readonly string defValue, allowedChars;
-        // NOTE: required to define these, some compilers error when we try using optional parameters with:
-        // "An attribute argument must be a constant expression, typeof expression.."
         public ConfigStringAttribute(string name, string section, string def, bool empty, string allowed)
             : base(name, section) { defValue = def; allowEmpty = empty; allowedChars = allowed; }
         public ConfigStringAttribute(string name, string section, string def, bool empty)

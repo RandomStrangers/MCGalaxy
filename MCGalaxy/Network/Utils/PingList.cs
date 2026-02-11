@@ -16,15 +16,14 @@ using System;
 using System.Threading;
 namespace MCGalaxy.Network
 {
+    public struct PingEntry
+    {
+        public DateTime TimeSent, TimeRecv;
+        public ushort Data;
+        public readonly double Latency => (TimeRecv - TimeSent).TotalMilliseconds * 0.5;
+    }
     public sealed class PingList
     {
-        public struct PingEntry
-        {
-            public DateTime TimeSent, TimeRecv;
-            public ushort Data;
-            public readonly double Latency => (TimeRecv - TimeSent).TotalMilliseconds * 0.5;
-        }
-        // Pings are stored using a circular array
         public PingEntry[] Entries = new PingEntry[10];
         int pingCounter, nextPingHead;
         long ignorePositionData = -1;

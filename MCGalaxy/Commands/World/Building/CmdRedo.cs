@@ -24,7 +24,11 @@ namespace MCGalaxy.Commands.Building
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length > 0) { Help(p); return; }
+            if (message.Length > 0) 
+            {
+                Help(p); 
+                return; 
+            }
             PerformRedo(p);
         }
         static void PerformRedo(Player p)

@@ -30,8 +30,8 @@ namespace MCGalaxy.Commands.Info
         static string FormatMap(Player p, Level lvl)
         {
             bool canVisit = p.IsSuper || lvl.VisitAccess.CheckAllowed(p);
-            string physics = " [" + lvl.LevelPhysics + "]";
-            string visit = canVisit ? "" : " &c[no]";
+            string physics = " [" + lvl.LevelPhysics + "]",
+                visit = canVisit ? "" : " &c[no]";
             return lvl.ColoredName + physics + visit;
         }
         public override void Help(Player p)

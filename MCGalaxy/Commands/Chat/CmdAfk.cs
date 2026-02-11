@@ -61,11 +61,7 @@ namespace MCGalaxy.Commands.Chatting
                 OnPlayerActionEvent.Call(p, PlayerAction.UnAFK, null, cantSend);
             }
         }
-        static void ShowMessage(Player p, string message)
-        {
-            bool announce = !p.hidden && Server.Config.IRCShowAFK;
-            Chat.MessageFrom(p, message, Chat.FilterVisible(p), announce);
-        }
+        static void ShowMessage(Player p, string message) => Chat.MessageFrom(p, message, Chat.FilterVisible(p), !p.hidden && Server.Config.IRCShowAFK);
         public override void Help(Player p)
         {
             p.Message("&T/AFK <reason>");

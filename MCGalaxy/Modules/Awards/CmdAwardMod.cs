@@ -23,21 +23,30 @@ namespace MCGalaxy.Modules.Awards
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(2);
-            if (args.Length < 2) { Help(p); return; }
+            if (args.Length < 2) 
+            {
+                Help(p); 
+                return;
+            }
             if (IsCreateAction(args[0]))
             {
                 args = args[1].Split(awardArgs, 2);
                 if (args.Length == 1)
                 {
                     p.Message("&WUse a : to separate the award name from its description.");
-                    Help(p); return;
+                    Help(p); 
+                    return;
                 }
-                string award = args[0].Trim();
-                string desc = args[1].Trim();
-                if (award.Contains(",")) { p.Message("&WAward names cannot contain commas."); return; }
+                string award = args[0].Trim(), desc = args[1].Trim();
+                if (award.Contains(",")) 
+                { 
+                    p.Message("&WAward names cannot contain commas."); 
+                    return; 
+                }
                 if (!AwardsList.Add(award, desc))
                 {
-                    p.Message("This award already exists."); return;
+                    p.Message("This award already exists.");
+                    return;
                 }
                 else
                 {
@@ -49,7 +58,8 @@ namespace MCGalaxy.Modules.Awards
             {
                 if (!AwardsList.Remove(args[1]))
                 {
-                    p.Message("This award does not exist."); return;
+                    p.Message("This award does not exist.");
+                    return;
                 }
                 else
                 {

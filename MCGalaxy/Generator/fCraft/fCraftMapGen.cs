@@ -17,9 +17,8 @@ namespace MCGalaxy.Generator.fCraft
         readonly Random rand;
         readonly Noise noise;
         float[] heightmap, slopemap;
-        ushort[] surfaceMap; // height of tallest non-air block
+        ushort[] surfaceMap;
         int _width, _length, groundThickness = 5;
-        // theme-dependent vars
         byte bGroundSurface, bWater, bGround, bSeaFloor, bBedrock, bCliff;
         Tree tree;
         public FCraftMapGen(FCraftMapGenArgs generatorArgs)
@@ -48,7 +47,6 @@ namespace MCGalaxy.Generator.fCraft
             bCliff = biome.Cliff;
             args.AddWater = biome.Water != Block.Air;
             args.AddTrees = biome.TreeType != null;
-            // TODO: temp hack, need a better solution
             if (args.Biome == MapGenBiome.ARCTIC) groundThickness = 1;
             tree = biome.GetTreeGen("fCraft");
         }
@@ -87,7 +85,6 @@ namespace MCGalaxy.Generator.fCraft
         }
         void ApplyBias()
         {
-            // set corners and midpoint
             float[] corners = new float[4];
             int c = 0;
             for (int i = 0; i < args.RaisedCorners; i++)
@@ -99,11 +96,12 @@ namespace MCGalaxy.Generator.fCraft
                 corners[c++] = -args.Bias;
             }
             float midpoint = args.MidPoint * args.Bias;
-            // shuffle corners
             int[] keys = new int[corners.Length];
-            for (int i = 0; i < corners.Length; i++) { keys[i] = rand.Next(); }
+            for (int i = 0; i < corners.Length; i++) 
+            { 
+                keys[i] = rand.Next(); 
+            }
             Array.Sort(keys, corners);
-            // overlay the bias
             Noise.ApplyBias(heightmap, _width, _length,
                             corners[0], corners[1], corners[2], corners[3], midpoint);
         }
@@ -111,20 +109,17 @@ namespace MCGalaxy.Generator.fCraft
         #region Map Processing
         void GenerateMap(Level map)
         {
-            // Match water coverage
             float desiredWaterLevel = .5f;
             if (args.MatchWaterCoverage)
             {
                 ReportProgress("Heightmap Processing: Matching water coverage");
                 desiredWaterLevel = Noise.FindThreshold(heightmap, args.WaterCoverage);
             }
-            // Calculate above/below water multipliers
             float aboveWaterMultiplier = 0;
             if (desiredWaterLevel != 1)
             {
                 aboveWaterMultiplier = args.MaxHeight / (1 - desiredWaterLevel);
             }
-            // Calculate the slope
             float[] blurred;
             if (args.CliffSmoothing)
             {
@@ -190,7 +185,7 @@ namespace MCGalaxy.Generator.fCraft
                             for (int yy = args.WaterLevel; yy > level && yy >= 0; yy--)
                             {
                                 if (yy < mapHeight)
-                                    map.blocks[index] = bWater; // TODO: Might be a bug? Probably waterLevel - 1.
+                                    map.blocks[index] = bWater;
                                 index -= width * length;
                             }
                             index = ((level + 1) * length + z) * width + x;
@@ -361,7 +356,6 @@ namespace MCGalaxy.Generator.fCraft
                     int ny = surfaceMap[nx * length + nz];
                     if ((map.GetBlock((ushort)nx, (ushort)ny, (ushort)nz) == bGroundSurface) && slopemap[nx * length + nz] < .5)
                     {
-                        // discard this tree if it would breach the top of the map
                         tree.SetData(rn, tree.DefaultSize(rn));
                         int nh = tree.height;
                         if (ny + nh + nh / 2 > map.Height)
@@ -378,17 +372,11 @@ namespace MCGalaxy.Generator.fCraft
         #endregion
         public static void RegisterGenerators()
         {
-            // TODO this doesn't support later dynamically added themes
             string names = MapGenBiome.Biomes.Join(b => b.Key),
                 desc = "&HSeed specifies biome of the map. " +
                  "It must be one of the following: &f" + names;
             for (MapGenTemplate type = 0; type < MapGenTemplate.Count; type++)
             {
-                // Because of the way C# implements for loop closures, '=> Gen(p, lvl, seed, theme_)'
-                //  captures the variable from the LAST iteration, not the current one
-                // Hence this causes an error to get thrown later, because 'Gen' is always executed
-                //  with 'MapGenTheme.Count' theme instead of the expected theme
-                // Using a local variable copy fixes this
                 MapGenTemplate type_ = type;
                 MapGen.Register(type_.ToString(), GenType.fCraft,
                                 (p, lvl, args) => Gen(p, lvl, args, type_), desc);

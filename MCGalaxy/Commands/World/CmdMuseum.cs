@@ -74,7 +74,7 @@ namespace MCGalaxy.Commands.World
             }
             try
             {
-                Level lvl = LevelActions.LoadMuseum(p, formattedMuseumName, mapArg, path);
+                Level lvl = LevelActions.LoadMuseum(formattedMuseumName, mapArg, path);
                 PlayerActions.ChangeMap(p, lvl);
             }
             finally

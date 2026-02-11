@@ -1,15 +1,12 @@
 // Copyright 2014-2017 ClassicalSharp | Licensed under BSD-3
 // Source from http://mrl.nyu.edu/~perlin/noise/
 // Optimised form as we can always treat Z as being = 0.
-// Octave and combined noise based on:
-// https://github.com/ClassiCube/ClassiCube/wiki/Minecraft-Classic-map-generation-algorithm
 namespace MCGalaxy.Generator.Classic
 {
     public sealed class ImprovedNoise
     {
         public ImprovedNoise(JavaRandom rnd)
         {
-            // shuffle randomly using fisher-yates
             for (int i = 0; i < 256; i++)
             {
                 p[i] = (byte)i;

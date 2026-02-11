@@ -26,7 +26,9 @@ namespace MCGalaxy.Games
     {
         public string Color, Name, Owner;
         public List<string> Members = new();
-        public Team() { }
+        public Team() 
+        { 
+        }
         public Team(string name, string owner)
         {
             Name = name;
@@ -124,11 +126,14 @@ namespace MCGalaxy.Games
                     };
                     break;
                 case "color":
-                    tmp.Color = value; break;
+                    tmp.Color = value;
+                    break;
                 case "owner":
-                    tmp.Owner = value; break;
+                    tmp.Owner = value; 
+                    break;
                 case "members":
-                    tmp.Members = new List<string>(value.SplitComma()); break;
+                    tmp.Members = new(value.SplitComma());
+                    break;
             }
         }
     }

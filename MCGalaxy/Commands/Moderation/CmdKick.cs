@@ -23,7 +23,11 @@ namespace MCGalaxy.Commands.Moderation
         public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p); 
+                return; 
+            }
             string[] args = message.SplitSpaces(2);
             Player who = PlayerInfo.FindMatches(p, args[0]);
             if (who == null) return;
@@ -34,7 +38,11 @@ namespace MCGalaxy.Commands.Moderation
                 if (message == null) return;
                 kickMsg += "&f: " + reason;
             }
-            if (p == who) { p.Message("You cannot kick yourself."); return; }
+            if (p == who) 
+            { 
+                p.Message("You cannot kick yourself."); 
+                return;
+            }
             if (who.Rank >= data.Rank)
             {
                 Chat.MessageFrom(p, "λNICK &Stried to kick " + who.ColoredName + " &Sbut failed.");

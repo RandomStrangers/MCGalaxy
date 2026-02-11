@@ -142,6 +142,7 @@ namespace MCGalaxy
             InitDatabase();
             Economy.LoadDatabase();
             Background.QueueOnce(LoadMainLevel);
+            Background.QueueOnce(LoadNAS);
             Background.QueueOnce(LoadAllPlugins);
             Background.QueueOnce(LoadAutoloadMaps);
             Background.QueueOnce(InitPlayerLists);
@@ -156,7 +157,6 @@ namespace MCGalaxy
         }
         static void ForceEnableTLS()
         {
-            // Force enable TLS 1.1/1.2, otherwise checking for updates on Github doesn't work
             try
             {
                 ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11;
@@ -174,6 +174,7 @@ namespace MCGalaxy
         }
         static void EnsureFilesExist()
         {
+            FileIO.TryDeleteDirectory("properties", true);
             EnsureDirectoryExists("props");
             EnsureDirectoryExists("levels");
             EnsureDirectoryExists("bots");
@@ -256,7 +257,6 @@ namespace MCGalaxy
             catch
             {
             }
-            // Stop accepting new connections and disconnect existing sessions
             Listener.Close();
             try
             {
@@ -285,12 +285,12 @@ namespace MCGalaxy
             }
             OnShuttingDownEvent.Call(restarting, msg);
             Plugin.UnloadAll();
+            NAS.Unload();
             try
             {
-                string autoload = SaveAllLevels();
                 if (SetupFinished && !Config.AutoLoadMaps)
                 {
-                    FileIO.TryWriteAllText("text/autoload.txt", autoload);
+                    FileIO.TryWriteAllText("text/autoload.txt", SaveAllLevels());
                 }
             }
             catch (Exception ex)
@@ -314,7 +314,6 @@ namespace MCGalaxy
             if (restarting)
             {
                 IOperatingSystem.DetectOS().RestartProcess();
-                // TODO: FileLogger.Flush again maybe for if execvp fails?
             }
             Environment.Exit(0);
         }
@@ -404,12 +403,6 @@ namespace MCGalaxy
             {
                 return name;
             }
-            // NOTE:
-            // This is technically incorrect when the server has both
-            //   classicube-account-plus enabled and is using authentication service suffixes
-            // (e.g. ToRawUsername("Test+$") ==> "Test$", so adding + to end is wrong)
-            // But since that is an unsupported combination to run the server in anyways,
-            //  I decided that it is not worth complicating the implementation for
             if (!name.Contains("+"))
             {
                 name += "+";

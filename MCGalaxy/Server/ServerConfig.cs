@@ -139,8 +139,6 @@ namespace MCGalaxy
         public bool ProtectStaffIPs = true;
         [ConfigBool("classicube-account-plus", "Other", false)]
         public bool ClassicubeAccountPlus = false;
-        // technically a Server option, but it's a common mistake to think
-        //  this option needs changing to server's IP (0.0.0.0 = listen on all network interfaces)
         [ConfigString("listen-ip", "Other", "0.0.0.0")]
         public string ListenIP = "0.0.0.0";
         [ConfigStringList("disabled-commands", "Other")]
@@ -173,18 +171,8 @@ namespace MCGalaxy
         public bool IRCSSL = false;
         [ConfigString("irc-ignored-nicks", "IRC bot", "", true)]
         public string IRCIgnored = "";
-        [ConfigBool("UseMySQL", "Database", false)]
-        public bool UseMySQL = false;
         [ConfigString("host", "Database", "127.0.0.1")]
         public string MySQLHost = "127.0.0.1";
-        [ConfigString("SQLPort", "Database", "3306", false, "0123456789")]
-        public string MySQLPort = "3306";
-        [ConfigString("Username", "Database", "root", true)]
-        public string MySQLUsername = "root";
-        [ConfigString("Password", "Database", "password", true)]
-        public string MySQLPassword = "password";
-        [ConfigString("DatabaseName", "Database", "MCZallDB")]
-        public string MySQLDatabaseName = "MCZallDB";
         [ConfigBool("Pooling", "Database", true)]
         public bool DatabasePooling = true;
         [ConfigBool("irc-player-titles", "IRC bot", true)]

@@ -81,7 +81,7 @@ namespace MCGalaxy.SQL
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
         internal static extern SQLiteErrorCode sqlite3_extended_errcode(IntPtr db);
         [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern IntPtr sqlite3_errstr(SQLiteErrorCode rc); /* 3.7.15+ */
+        internal static extern IntPtr sqlite3_errstr(SQLiteErrorCode rc);
     }
     public class SQLiteConnection : IDisposable
     {
@@ -89,22 +89,10 @@ namespace MCGalaxy.SQL
         public IntPtr handle;
         public SQLiteTransaction BeginTransaction() => new(this);
         public SQLiteCommand CreateCommand(string sql) => new(sql, this);
-        public int Changes
-        {
-            get
-            {
-                return handle == IntPtr.Zero ? throw new InvalidOperationException("Database connection closed") : Interop.sqlite3_changes(handle);
-            }
-        }
-        public bool AutoCommit
-        {
-            get
-            {
-                return handle == IntPtr.Zero
+        public int Changes => handle == IntPtr.Zero ? throw new InvalidOperationException("Database connection closed") : Interop.sqlite3_changes(handle);
+        public bool AutoCommit => handle == IntPtr.Zero
                     ? throw new InvalidOperationException("Database connection closed")
                     : Interop.sqlite3_get_autocommit(handle) == 1;
-            }
-        }
         internal string GetLastError() => handle == IntPtr.Zero ? "database connection closed" : SQLiteConvert.FromUTF8(Interop.sqlite3_errmsg(handle), -1);
         internal SQLiteStatement Prepare(string strSql, ref string strRemain)
         {
@@ -121,7 +109,6 @@ namespace MCGalaxy.SQL
                 }
                 else if (n == SQLiteErrorCodes.Locked || n == SQLiteErrorCodes.Busy)
                 {
-                    // Locked -- delay a small amount before retrying
                     SQLiteConvert.TrySleep(this, n, start);
                     if (stmt != IntPtr.Zero) Interop.sqlite3_finalize(stmt);
                 }
@@ -174,7 +161,6 @@ namespace MCGalaxy.SQL
                 stmt = Interop.sqlite3_next_stmt(handle, stmt);
                 if (stmt != IntPtr.Zero) Interop.sqlite3_finalize(stmt);
             } while (stmt != IntPtr.Zero);
-            // NOTE: Is a transaction NOT pending on the connection?
             if (AutoCommit) return true;
             SQLiteErrorCode n = Interop.sqlite3_exec(handle, SQLiteConvert.ToUTF8("ROLLBACK"),
                                                      IntPtr.Zero, IntPtr.Zero, ref stmt);
@@ -185,7 +171,6 @@ namespace MCGalaxy.SQL
         void Close(bool canThrow)
         {
             if (handle == IntPtr.Zero) return;
-            // TODO: handle leak here??
             if (Server.Config.DatabasePooling)
             {
                 if (Reset(canThrow)) AddToPool(handle);
@@ -264,7 +249,6 @@ namespace MCGalaxy.SQL
             catch (Exception)
             {
                 DisposeStatement();
-                // Cannot continue on, so set the remaining text to null.
                 sqlCmd = null;
                 throw;
             }
@@ -422,7 +406,6 @@ namespace MCGalaxy.SQL
         {
             conn = connection;
             this.handle = handle;
-            // Determine parameters for this statement (if any) and prepare space for them.
             int count = Interop.sqlite3_bind_parameter_count(handle);
             if (count <= 0) return;
             paramNames = new string[count];
@@ -451,8 +434,6 @@ namespace MCGalaxy.SQL
                 if (n == SQLiteErrorCodes.Row) return true;
                 if (n == SQLiteErrorCodes.Done) return false;
                 if (n == SQLiteErrorCodes.Ok) continue;
-                // An error occurred, attempt to reset the statement. If it errored because
-                // the database is locked, then keep retrying until the command timeout occurs.
                 n = Interop.sqlite3_reset(handle);
                 if (n == SQLiteErrorCodes.Locked || n == SQLiteErrorCodes.Busy)
                 {
@@ -495,7 +476,6 @@ namespace MCGalaxy.SQL
             }
             Type t = obj.GetType();
             TypeCode tc = Type.GetTypeCode(t);
-            // byte[] doesn't have its own typecode, so needs special handling here
             if (tc == TypeCode.Object && t == typeof(byte[]))
             {
                 byte[] b = (byte[])obj;
@@ -505,7 +485,6 @@ namespace MCGalaxy.SQL
             {
                 TypeCode.DateTime => Bind_DateTime(i, (DateTime)obj),
                 TypeCode.Boolean => Bind_Int32(i, ((bool)obj) ? 1 : 0),
-                // TODO ushort instead?
                 TypeCode.Char or TypeCode.SByte => Bind_Int32(i, Convert.ToSByte(obj)),
                 TypeCode.Int16 => Bind_Int32(i, Convert.ToInt16(obj)),
                 TypeCode.Int32 => Bind_Int32(i, Convert.ToInt32(obj)),
@@ -617,7 +596,7 @@ namespace MCGalaxy.SQL
             }
             if (conn._transactionLevel == 0 || conn.AutoCommit)
             {
-                conn._transactionLevel = 0; // Make sure the transaction level is reset before returning
+                conn._transactionLevel = 0;
                 return throwError ? throw new SQLiteException("No transaction is active on this connection") : false;
             }
             return true;

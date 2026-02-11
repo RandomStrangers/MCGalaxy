@@ -37,7 +37,11 @@ namespace MCGalaxy.Commands.World
             }
             Player target = PlayerInfo.FindMatches(p, message);
             if (target == null) return;
-            if (target.Level != p.Level) { p.Message("{0} &Sis on a different map.", p.FormatNick(target)); return; }
+            if (target.Level != p.Level) 
+            {
+                p.Message("{0} &Sis on a different map.", p.FormatNick(target)); 
+                return; 
+            }
             if (!CheckRank(p, data, target, "set spawn of", false)) return;
             p.Message("Set spawn location of {0} &Sto your current location.", p.FormatNick(target));
             target.Session.SendSetSpawnpoint(p.Pos, p.Rot);

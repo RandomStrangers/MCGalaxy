@@ -29,18 +29,13 @@ namespace MCGalaxy
             Array.Clear(_nodes, 1, _numNodes);
             _numNodes = 0;
         }
-        public bool Contains(TItem node)
-        {
-            if (node == null)
-            {
-                throw new ArgumentNullException("node");
-            }
-            return node.Queue != null && !Equals(node.Queue)
+        public bool Contains(TItem node) => node == null
+                ? throw new ArgumentNullException("node")
+                : node.Queue != null && !Equals(node.Queue)
                 ? throw new InvalidOperationException("node.Contains was called on a node from another queue.  Please call originalQueue.ResetNode() first")
                 : node.QueueIndex < 0 || node.QueueIndex >= _nodes.Length
                 ? throw new InvalidOperationException("node.QueueIndex has been corrupted. Did you change it manually?")
                 : _nodes[node.QueueIndex] == node;
-        }
         public void Enqueue(TItem node, TPriority priority)
         {
             if (node == null)
@@ -211,11 +206,7 @@ namespace MCGalaxy
                 }
             }
         }
-        public bool HasHigherPriority(TItem higher, TItem lower)
-        {
-            int cmp = _comparer(higher.Priority, lower.Priority);
-            return cmp < 0 || (cmp == 0 && higher.InsertionIndex < lower.InsertionIndex);
-        }
+        public bool HasHigherPriority(TItem higher, TItem lower) => _comparer(higher.Priority, lower.Priority) < 0 || (_comparer(higher.Priority, lower.Priority) == 0 && higher.InsertionIndex < lower.InsertionIndex);
         public TItem Dequeue()
         {
             if (_numNodes <= 0)
@@ -257,13 +248,7 @@ namespace MCGalaxy
             Array.Copy(_nodes, newArray, highestIndexToCopy + 1);
             _nodes = newArray;
         }
-        public TItem First
-        {
-            get
-            {
-                return _numNodes <= 0 ? throw new InvalidOperationException("Cannot call .First on an empty queue") : _nodes[1];
-            }
-        }
+        public TItem First => _numNodes <= 0 ? throw new InvalidOperationException("Cannot call .First on an empty queue") : _nodes[1];
         public void UpdatePriority(TItem node, TPriority priority)
         {
             if (node == null)

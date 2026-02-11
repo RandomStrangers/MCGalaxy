@@ -113,8 +113,7 @@ namespace MCGalaxy.Tasks
                     }
                     if (p.group.AfkKicked && p.LastAction.Add(time) < DateTime.UtcNow)
                     {
-                        string afkTime = p.group.AfkKickTime.Shorten(true, true);
-                        p.Leave("Auto-kick, AFK for " + afkTime);
+                        p.Leave("Auto-kick, AFK for " + p.group.AfkKickTime.Shorten(true, true));
                     }
                 }
                 else
@@ -122,8 +121,7 @@ namespace MCGalaxy.Tasks
                     DateTime lastAction = p.LastAction;
                     if (lastAction.Add(Server.Config.AutoAfkTime) < DateTime.UtcNow)
                     {
-                        string afkTime = Server.Config.AutoAfkTime.Shorten(true, true);
-                        CmdAfk.ToggleAfk(p, "auto: Not moved for " + afkTime);
+                        CmdAfk.ToggleAfk(p, "auto: Not moved for " + Server.Config.AutoAfkTime.Shorten(true, true));
                         p.AutoAfk = true;
                         p.LastAction = lastAction;
                     }

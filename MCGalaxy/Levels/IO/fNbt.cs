@@ -165,22 +165,10 @@ namespace fNbt
             get { throw new InvalidOperationException("String indexers only work on NbtCompound tags."); }
             set { throw new InvalidOperationException("String indexers only work on NbtCompound tags."); }
         }
-        public byte ByteValue
-        {
-            get
-            {
-                return TagType == NbtTagType.Byte ? ((NbtByte)this).Value : throw new InvalidCastException("Cannot get ByteValue from " + TagType);
-            }
-        }
-        public float FloatValue
-        {
-            get
-            {
-                return TagType == NbtTagType.Float
+        public byte ByteValue => TagType == NbtTagType.Byte ? ((NbtByte)this).Value : throw new InvalidCastException("Cannot get ByteValue from " + TagType);
+        public float FloatValue => TagType == NbtTagType.Float
                     ? ((NbtFloat)this).Value
                     : throw new InvalidCastException("Cannot get FloatValue from " + TagType);
-            }
-        }
         public short ShortValue => TagType switch
         {
             NbtTagType.Byte => ((NbtByte)this).Value,
@@ -194,24 +182,12 @@ namespace fNbt
             NbtTagType.Int => ((NbtInt)this).Value,
             _ => throw new InvalidCastException("Cannot get IntValue from " + TagType),
         };
-        public byte[] ByteArrayValue
-        {
-            get
-            {
-                return TagType == NbtTagType.ByteArray
+        public byte[] ByteArrayValue => TagType == NbtTagType.ByteArray
                     ? ((NbtByteArray)this).Value
                     : throw new InvalidCastException("Cannot get ByteArrayValue from " + TagType);
-            }
-        }
-        public string StringValue
-        {
-            get
-            {
-                return TagType == NbtTagType.String
+        public string StringValue => TagType == NbtTagType.String
                     ? ((NbtString)this).Value
                     : throw new InvalidCastException("Cannot get StringValue from " + TagType);
-            }
-        }
         internal static NbtTag Construct(NbtTagType type) => type switch
         {
             NbtTagType.Byte => new NbtByte(),
@@ -234,7 +210,6 @@ namespace fNbt
     {
         readonly byte[] buffer = new byte[sizeof(double)];
         readonly bool swapNeeded;
-        // avoid allocation for small strings (which is majority of them)
         readonly byte[] strBuffer = new byte[64];
         public NbtBinaryReader(Stream input, bool bigEndian) : base(input) => swapNeeded = BitConverter.IsLittleEndian == bigEndian;
         public NbtTagType ReadTagType()
@@ -321,9 +296,7 @@ namespace fNbt
         {
             if (stream == null) throw new ArgumentNullException("stream");
             using GZipStream decStream = new(stream, CompressionMode.Decompress, true);
-            // Size of buffers that are used to avoid frequent reads from / writes to compressed streams
             BufferedStream buffered = new(decStream, 8 * 1024);
-            // Make sure the first byte in this file is the tag for a TAG_Compound
             int header = buffered.ReadByte();
             if (header < 0) throw new EndOfStreamException();
             if (header != (int)NbtTagType.Compound)

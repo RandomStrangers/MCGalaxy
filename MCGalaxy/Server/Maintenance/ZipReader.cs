@@ -81,7 +81,8 @@ namespace MCGalaxy
             uint sig = reader.ReadUInt32();
             if (sig != 0x04034b50)
             {
-                Logger.Log(LogType.Warning, "&WFailed to find local file entry {0}", i); return null;
+                Logger.Log(LogType.Warning, "&WFailed to find local file entry {0}", i);
+                return null;
             }
             entry = ReadLocalFileRecord();
             file = Encoding.UTF8.GetString(entry.Filename);
@@ -99,7 +100,8 @@ namespace MCGalaxy
                 uint sig = reader.ReadUInt32();
                 if (sig != 0x02014b50)
                 {
-                    Logger.Log(LogType.Warning, "&WFailed to find central dir entry {0}", i); return i;
+                    Logger.Log(LogType.Warning, "&WFailed to find central dir entry {0}", i); 
+                    return i;
                 }
                 ZipEntry entry = ReadCentralDirectoryRecord();
                 entries.Add(entry);
@@ -110,7 +112,6 @@ namespace MCGalaxy
         {
             BinaryReader r = reader;
             uint sig = 0;
-            // At -22 for nearly all zips, but try a bit further back in case of comment
             int i, len = Math.Min(257, (int)stream.Length);
             for (i = 22; i < len; i++)
             {
@@ -123,7 +124,8 @@ namespace MCGalaxy
             }
             if (sig != 0x06054b50)
             {
-                Logger.Log(LogType.Warning, "&WFailed to find end of central directory"); return;
+                Logger.Log(LogType.Warning, "&WFailed to find end of central directory");
+                return;
             }
             ReadEndOfCentralDirectoryRecord();
             if (centralDirOffset != uint.MaxValue)
@@ -152,11 +154,11 @@ namespace MCGalaxy
         {
             BinaryReader r = reader;
             ZipEntry entry = default;
-            r.ReadUInt16(); // version
-            r.ReadUInt16(); // bitflags
+            r.ReadUInt16();
+            r.ReadUInt16();
             entry.CompressionMethod = r.ReadUInt16();
-            r.ReadUInt32(); // last modified
-            r.ReadUInt32(); // crc32
+            r.ReadUInt32();
+            r.ReadUInt32();
             entry.CompressedSize = r.ReadUInt32();
             entry.UncompressedSize = r.ReadUInt32();
             int filenameLen = r.ReadUInt16(),
@@ -167,10 +169,9 @@ namespace MCGalaxy
                 return entry;
             }
             long extraEnd = stream.Position + extraLen;
-            // zip 64 mapping ID
             if (r.ReadUInt16() == 1)
             {
-                r.ReadUInt16(); // data len
+                r.ReadUInt16();
                 if (entry.UncompressedSize == uint.MaxValue)
                 {
                     entry.UncompressedSize = r.ReadInt64();
@@ -187,20 +188,20 @@ namespace MCGalaxy
         {
             BinaryReader r = reader;
             ZipEntry entry = default;
-            r.ReadUInt16(); // version
-            r.ReadUInt16(); // version
-            r.ReadUInt16(); // bit flags
+            r.ReadUInt16();
+            r.ReadUInt16();
+            r.ReadUInt16();
             entry.CompressionMethod = r.ReadUInt16();
-            r.ReadUInt32(); // last modified
-            r.ReadUInt32(); // crc32
+            r.ReadUInt32();
+            r.ReadUInt32();
             entry.CompressedSize = r.ReadUInt32();
             entry.UncompressedSize = r.ReadUInt32();
             int filenameLen = r.ReadUInt16(),
                 extraLen = r.ReadUInt16();
             r.ReadUInt16();
-            r.ReadUInt16(); // disc number
-            r.ReadUInt16(); // internal attributes
-            r.ReadUInt32(); // external attributes
+            r.ReadUInt16();
+            r.ReadUInt16();
+            r.ReadUInt32();
             entry.LocalHeaderOffset = r.ReadUInt32();
             entry.Filename = r.ReadBytes(filenameLen);
             if (extraLen == 0)
@@ -208,10 +209,9 @@ namespace MCGalaxy
                 return entry;
             }
             long extraEnd = stream.Position + extraLen;
-            // zip 64 mapping ID
             if (r.ReadUInt16() == 1)
             {
-                r.ReadUInt16(); // data len
+                r.ReadUInt16();
                 if (entry.UncompressedSize == uint.MaxValue)
                 {
                     entry.UncompressedSize = r.ReadInt64();
@@ -231,33 +231,33 @@ namespace MCGalaxy
         void ReadZip64EndOfCentralDirectoryRecord()
         {
             BinaryReader r = reader;
-            r.ReadInt64(); // zip64 end of central dir size
-            r.ReadUInt16(); // version
-            r.ReadUInt16(); // version
-            r.ReadUInt32(); // disc number
-            r.ReadUInt32(); // disc number of central directory
+            r.ReadInt64();
+            r.ReadUInt16();
+            r.ReadUInt16();
+            r.ReadUInt32();
+            r.ReadUInt32();
             numEntries = (int)r.ReadInt64();
-            r.ReadInt64(); // num entries on disc
-            r.ReadInt64(); // central dir size
+            r.ReadInt64();
+            r.ReadInt64();
             centralDirOffset = r.ReadInt64();
         }
         void ReadZip64EndOfCentralDirectoryLocator()
         {
             BinaryReader r = reader;
-            r.ReadUInt32(); // disc number of zip64 end of central directory
+            r.ReadUInt32();
             zip64EndOffset = reader.ReadInt64();
-            r.ReadUInt32(); // total number of discs
+            r.ReadUInt32();
         }
         void ReadEndOfCentralDirectoryRecord()
         {
             BinaryReader r = reader;
-            r.ReadUInt16(); // disc number
-            r.ReadUInt16(); // disc number of start
+            r.ReadUInt16();
+            r.ReadUInt16();
             numEntries = r.ReadUInt16();
-            r.ReadUInt16(); // num entries on disc
-            r.ReadUInt32(); // cental dir size
+            r.ReadUInt16();
+            r.ReadUInt32();
             centralDirOffset = r.ReadUInt32();
-            r.ReadUInt16(); // comment length
+            r.ReadUInt16();
         }
     }
 }

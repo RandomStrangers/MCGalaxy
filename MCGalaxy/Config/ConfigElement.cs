@@ -65,7 +65,6 @@ namespace MCGalaxy
                 }
                 members.Add(elem);
             }
-            // group output by sections
             foreach (KeyValuePair<string, List<ConfigElement>> kvp in sections)
             {
                 dst.WriteLine("# " + kvp.Key + " settings");

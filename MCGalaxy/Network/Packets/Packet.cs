@@ -14,7 +14,6 @@
  */
 using MCGalaxy.Maths;
 using System;
-using System.Reflection.Emit;
 namespace MCGalaxy.Network
 {
     public enum TeleportMoveMode { AbsoluteInstant, AbsoluteSmooth, RelativeSmooth, RelativeShift }
@@ -147,7 +146,6 @@ namespace MCGalaxy.Network
         public static byte[] TextHotKey(string label, string input, int keycode,
                                         byte mods, bool hasCP437)
         {
-            // per spec, \n should cause client to automatically send hotkey
             input = input.Replace('\n', '◙');
             byte[] buffer = new byte[134];
             buffer[0] = 21;
@@ -269,7 +267,7 @@ namespace MCGalaxy.Network
             NetUtils.WriteI16((short)sideLevel, buffer, 67);
         }
         public static byte[] EnvWeatherType(byte type)
-        { // 0 - sunny; 1 - raining; 2 - snowing
+        {
             byte[] buffer = new byte[2];
             buffer[0] = 31;
             buffer[1] = type;
@@ -547,8 +545,6 @@ namespace MCGalaxy.Network
         static void MakeDefineBlockStart(BlockDefinition def, byte[] buffer, ref int i, bool uniqueSideTexs,
                                          bool hasCP437, bool extBlocks, bool extTexs)
         {
-            // speed = 2^((raw - 128) / 64);
-            // therefore raw = 64log2(speed) + 128
             byte rawSpeed = (byte)(64 * Math.Log(def.Speed, 2) + 128);
             NetUtils.WriteBlock(def.RawID, buffer, i, extBlocks);
             i += extBlocks ? 2 : 1;
@@ -571,17 +567,15 @@ namespace MCGalaxy.Network
             WriteTex(buffer, ref i, def.BottomTex, extTexs);
             buffer[i++] = (byte)(def.BlocksLight ? 0 : 1);
             buffer[i++] = def.WalkSound;
-            // Less than zero shouldn't happen, but just in case
             if (def.Brightness <= 0)
             {
                 buffer[i++] = 0;
             }
             else
             {
-                // 0b_US--_LLLL where U = uses modern brightness, S = uses lamplight color, and L = brightness */
                 byte brightness = (byte)Math.Max(0, Math.Min(def.Brightness, 15));
-                brightness |= 1 << 7; // Insert "use modern brightness" flag (otherwise client will interpret it as either 0 or 15 lava brightness)
-                if (def.UseLampBrightness) brightness |= 1 << 6; // Insert "use lamplight color" flag
+                brightness |= 1 << 7; 
+                if (def.UseLampBrightness) brightness |= 1 << 6;
                 buffer[i++] = brightness;
             }
         }

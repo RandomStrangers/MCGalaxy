@@ -42,16 +42,10 @@ namespace MCGalaxy
             for (int octave = 0; octave < OctaveCount; octave++)
             {
                 double signal = GradientNoise.GradientCoherentNoise(x, y, z, (Seed + octave) & 0x7fffffff);
-                // Make the ridges.
                 signal = Math.Abs(signal);
                 signal = offset - signal;
-                // Square the signal to increase the sharpness of the ridges.
                 signal *= signal;
-                // The weighting from the previous octave is applied to the signal.
-                // Larger values have higher weights, producing sharp points along the
-                // ridges.
                 signal *= weight;
-                // Weight successive contributions by the previous signal.
                 weight = signal * gain;
                 if (weight > 1.0)
                 {
@@ -61,9 +55,7 @@ namespace MCGalaxy
                 {
                     weight = 0.0;
                 }
-                // Add the signal to the output value.
                 value += signal * SpectralWeights[octave];
-                // Go to the next octave.
                 x *= Lacunarity;
                 y *= Lacunarity;
                 z *= Lacunarity;
@@ -84,7 +76,6 @@ namespace MCGalaxy
             double h = 1.0, frequency = 1.0;
             for (int i = 0; i < 30; i++)
             {
-                // Compute weight for each frequency.
                 SpectralWeights[i] = Math.Pow(frequency, -h);
                 frequency *= mLacunarity;
             }

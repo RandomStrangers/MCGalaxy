@@ -32,7 +32,6 @@ namespace MCGalaxy.Drawing.Ops
         {
             points.Clear();
             points.Add(marks[0]);
-            // Want to rasterize bezier curve from centre of 'grid'
             TesselateCurve(marks[0] + offset, marks[2] + offset, marks[1] + offset, 0);
             List<Vec3S32> buffer = new();
             for (int i = 0; i < points.Count - 1; i++)
@@ -46,23 +45,23 @@ namespace MCGalaxy.Drawing.Ops
             }
         }
         readonly List<Vec3S32> points = new();
-        const float objspace_flatness_squared = 0.35f * 0.35f;
-        // Based off stbtt__tesselate_curve from https://github.com/nothings/stb/blob/master/stb_truetype.h
         void TesselateCurve(Vec3F32 p0, Vec3F32 p1, Vec3F32 p2, int n)
         {
             // midpoint
-            Vec3F32 m;
-            m.X = (p0.X + 2 * p1.X + p2.X) * 0.25f;
-            m.Y = (p0.Y + 2 * p1.Y + p2.Y) * 0.25f;
-            m.Z = (p0.Z + 2 * p1.Z + p2.Z) * 0.25f;
-            // versus directly drawn line
-            Vec3F32 d;
-            d.X = (p0.X + p2.X) * 0.5f - m.X;
-            d.Y = (p0.Y + p2.Y) * 0.5f - m.Y;
-            d.Z = (p0.Z + p2.Z) * 0.5f - m.Z;
-            if (n > 16) return; // 65536 segments on one curve better be enough!
-            // half-pixel error allowed... need to be smaller if AA
-            if (d.X * d.X + d.Y * d.Y + d.Z * d.Z > objspace_flatness_squared)
+            Vec3F32 m = new()
+            {
+                X = (p0.X + 2 * p1.X + p2.X) * 0.25f,
+                Y = (p0.Y + 2 * p1.Y + p2.Y) * 0.25f,
+                Z = (p0.Z + 2 * p1.Z + p2.Z) * 0.25f
+            };
+            Vec3F32 d = new()
+            {
+                X = (p0.X + p2.X) * 0.5f - m.X,
+                Y = (p0.Y + p2.Y) * 0.5f - m.Y,
+                Z = (p0.Z + p2.Z) * 0.5f - m.Z
+            };
+            if (n > 16) return;
+            if (d.X * d.X + d.Y * d.Y + d.Z * d.Z > (0.35f * 0.35f))
             {
                 Vec3F32 p0_p1 = new((p0.X + p1.X) * 0.5f, (p0.Y + p1.Y) * 0.5f, (p0.Z + p1.Z) * 0.5f);
                 TesselateCurve(p0, p0_p1, m, n + 1);
@@ -71,15 +70,8 @@ namespace MCGalaxy.Drawing.Ops
             }
             else
             {
-                // TODO: do we need to round properly here or not
-                points.Add(new Vec3S32((int)p2.X, (int)p2.Y, (int)p2.Z));
+                points.Add(new((int)p2.X, (int)p2.Y, (int)p2.Z));
             }
         }
-        /*static ushort Round(float value) {
-            int valueI = (int)value;
-            int floored = value < valueI ? valueI - 1 : valueI;
-            float frac = (value % 1.0f);
-            return (ushort)(floored + (frac > 0.5f ? 1 : 0));
-        }*/
     }
 }

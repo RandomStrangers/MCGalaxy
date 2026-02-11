@@ -26,7 +26,8 @@ namespace MCGalaxy.Commands.Info
             string[] args = message.SplitSpaces(2);
             if (message.Length == 0)
             {
-                p.Message("Available ranks: " + Group.GroupList.Join(g => g.ColoredName)); return;
+                p.Message("Available ranks: " + Group.GroupList.Join(g => g.ColoredName)); 
+                return;
             }
             string rankName = args[0];
             Group grp;
@@ -40,7 +41,6 @@ namespace MCGalaxy.Commands.Info
             }
             else
             {
-                // /viewranks @[permission level]
                 int perm = 0;
                 rankName = rankName.Substring(1);
                 if (!CommandParser.GetInt(p, rankName, "Permission level", ref perm)) return;

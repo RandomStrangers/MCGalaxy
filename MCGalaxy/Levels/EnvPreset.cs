@@ -32,7 +32,6 @@ namespace MCGalaxy
             LampLight = args.Length > 6 ? args[6] : "";
         }
         static readonly Dictionary<string, string> Presets = new() {
-                        //   fog   sky   clouds   sun   shadow
             { "Cartoon",  "00FFFF 1E90FF 00BFFF F5DEB3 F4A460" },
             { "Noir",     "000000 1F1F1F 000000 696969 1F1F1F" },
             { "Watery",   "5F9EA0 008080 008B8B E0FFFF 008B8B" },
@@ -51,7 +50,7 @@ namespace MCGalaxy
             if (File.Exists("presets/" + value.ToLower() + ".env"))
             {
                 string text = FileIO.TryReadAllText("presets/" + value.ToLower() + ".env");
-                return new EnvPreset(text);
+                return new(text);
             }
             return null;
         }
@@ -59,7 +58,7 @@ namespace MCGalaxy
         {
             foreach (KeyValuePair<string, string> kvp in Presets)
             {
-                if (kvp.Key.CaselessEq(name)) return new EnvPreset(kvp.Value);
+                if (kvp.Key.CaselessEq(name)) return new(kvp.Value);
             }
             return null;
         }

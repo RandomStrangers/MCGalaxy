@@ -21,7 +21,11 @@ namespace MCGalaxy.Commands.Info
         public override string Type => CommandTypes.Information;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length > 0) { Help(p); return; }
+            if (message.Length > 0) 
+            { 
+                Help(p); 
+                return;
+            }
             if (Server.Config.UseIRC)
             {
                 p.Message("IRC is &aEnabled&S.");

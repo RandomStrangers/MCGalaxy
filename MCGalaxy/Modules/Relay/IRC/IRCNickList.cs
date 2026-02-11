@@ -45,7 +45,6 @@ namespace MCGalaxy.Modules.Relay.IRC
                 }
                 else
                 {
-                    // should never happen, but just in case
                     bot.conn.SendNames(chans.Key);
                 }
             }
@@ -73,7 +72,8 @@ namespace MCGalaxy.Modules.Relay.IRC
             {
                 if (unprefixNick == Unprefix(chanNicks[i]))
                 {
-                    chanNicks[i] = n; return;
+                    chanNicks[i] = n; 
+                    return;
                 }
             }
             chanNicks.Add(n);
@@ -123,8 +123,9 @@ namespace MCGalaxy.Modules.Relay.IRC
             {
                 string prefix = GetPrefix(chanNicks[index]);
                 if (prefix.Length == 0 || prefix == "+")
-                { // + prefix is 'voiced user'
-                    error = "You must be at least a half-op on the channel to use commands from IRC."; return false;
+                {
+                    error = "You must be at least a half-op on the channel to use commands from IRC."; 
+                    return false;
                 }
                 return true;
             }
@@ -137,7 +138,8 @@ namespace MCGalaxy.Modules.Relay.IRC
                     index = GetNickIndex(userNick, chanNicks);
                     if (index != -1) return true;
                 }
-                error = "You must have joined the opchannel to use commands from IRC."; return false;
+                error = "You must have joined the opchannel to use commands from IRC.";
+                return false;
             }
         }
     }

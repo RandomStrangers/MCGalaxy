@@ -22,7 +22,6 @@ namespace MCGalaxy.Commands.Building
         public override CommandAlias[] Aliases => new CommandAlias[] { new("TNT", "tnt") };
         public override void Use(Player p, string message, CommandData data)
         {
-            // Special handling for the old TNT command
             if (message.CaselessStarts("tnt "))
             {
                 string[] parts = message.SplitSpaces(2);

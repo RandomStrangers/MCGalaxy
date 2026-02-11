@@ -32,10 +32,22 @@ namespace MCGalaxy.Commands.Bots
         public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can modify bots that do not belong to them") };
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            {
+                Help(p); 
+                return; 
+            }
             string[] args = message.SplitSpaces(3);
-            if (args[0].CaselessEq("info")) { BotInfo(p, args.Length < 2 ? "" : args[1]); return; }
-            if (args.Length < 2) { Help(p); return; }
+            if (args[0].CaselessEq("info"))
+            { 
+                BotInfo(p, args.Length < 2 ? "" : args[1]); 
+                return; 
+            }
+            if (args.Length < 2) 
+            { 
+                Help(p); 
+                return; 
+            }
             if (!Formatter.ValidName(p, args[1], "bot")) return;
             if (!LevelInfo.Check(p, data.Rank, p.Level, "modify bots in this level")) return;
             string bot = args[1], value = args.Length > 2 ? args[2] : null;
@@ -82,11 +94,13 @@ namespace MCGalaxy.Commands.Bots
         {
             if (BotExists(p.Level, bot.name, null))
             {
-                p.Message("A bot with that name already exists."); return;
+                p.Message("A bot with that name already exists."); 
+                return;
             }
             if (p.Level.Bots.Count >= Server.Config.MaxBotsPerLevel)
             {
-                p.Message("Reached maximum number of bots allowed on this map."); return;
+                p.Message("Reached maximum number of bots allowed on this map.");
+                return;
             }
             bot.SetInitialPos(p.Pos);
             bot.SetYawPitch(p.Rot.RotY, 0);
@@ -107,11 +121,13 @@ namespace MCGalaxy.Commands.Bots
         {
             if (botName.CaselessEq("all"))
             {
-                //bot remove all[botname] griefer[extArgs]
                 if (extArgs != null)
                 {
                     string ownerName = PlayerInfo.FindMatchesPreferOnline(p, extArgs);
-                    if (ownerName == null) { return; }
+                    if (ownerName == null) 
+                    { 
+                        return;
+                    }
                     if (PlayerBot.CanEditAny(p) || ownerName.CaselessEq(p.name))
                     {
                         int removedCount = PlayerBot.RemoveBotsOwnedBy(p, ownerName, p.Level, false);
@@ -141,7 +157,7 @@ namespace MCGalaxy.Commands.Bots
                     else
                     {
                         p.Message("Removed {0} bot{1}.", removedCount, removedCount.Plural());
-                        BotsFile.Save(p.Level       );
+                        BotsFile.Save(p.Level);
                     }
                 }
                 else
@@ -196,14 +212,22 @@ namespace MCGalaxy.Commands.Bots
         }
         void RenameBot(Player p, string botName, string newName)
         {
-            if (newName == null) { p.Message("New name of bot required."); return; }
+            if (newName == null)
+            {
+                p.Message("New name of bot required."); 
+                return; 
+            }
             if (!Formatter.ValidName(p, newName, "bot")) return;
             PlayerBot bot = Matcher.FindBots(p, botName);
             if (bot == null) return;
-            if (!bot.EditableBy(p, "rename")) { return; }
+            if (!bot.EditableBy(p, "rename"))
+            { 
+                return;
+            }
             if (BotExists(p.Level, newName, bot))
             {
-                p.Message("A bot with the new name already exists."); return;
+                p.Message("A bot with the new name already exists."); 
+                return;
             }
             p.Message("Renamed bot {0}", bot.ColoredName);
             if (bot.DisplayName == bot.name)
@@ -217,7 +241,11 @@ namespace MCGalaxy.Commands.Bots
         }
         void CopyBot(Player p, string botName, string newName)
         {
-            if (newName == null) { p.Message("Name of new bot required."); return; }
+            if (newName == null) 
+            {
+                p.Message("Name of new bot required."); 
+                return;
+            }
             if (!Formatter.ValidName(p, newName, "bot")) return;
             PlayerBot bot = Matcher.FindBots(p, botName);
             if (bot == null) return;
@@ -229,7 +257,6 @@ namespace MCGalaxy.Commands.Bots
             clone.SetModel(clone.Model);
             clone.CreationDate = DateTime.UtcNow.ToUnixTime();
             BotsFile.LoadAi(props, clone);
-            // Preserve custom name tag
             if (bot.DisplayName == bot.name) clone.DisplayName = newName;
             TryAddBot(p, clone);
         }
@@ -252,7 +279,11 @@ namespace MCGalaxy.Commands.Bots
             PlayerBot bot = Matcher.FindBots(p, botName);
             if (bot == null) return;
             bot.DisplayInfo(p);
-            if (p.checkingBotInfo) { p.checkingBotInfo = false; p.Message("Note: pending click-to-check bot info has been cancelled."); }
+            if (p.checkingBotInfo) 
+            { 
+                p.checkingBotInfo = false; 
+                p.Message("Note: pending click-to-check bot info has been cancelled.");
+            }
         }
         public override void Help(Player p)
         {

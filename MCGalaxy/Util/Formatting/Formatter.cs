@@ -82,7 +82,7 @@ namespace MCGalaxy
         public static bool ValidName(Player p, string name, string type) => IsValidName(p, name, type, Player.USERNAME_ALPHABET + "+");
         public static bool ValidPlayerName(Player p, string name)
         {
-            string alphabet = Player.USERNAME_ALPHABET + "+"; // compatibility with ClassiCubeAccountPlus
+            string alphabet = Player.USERNAME_ALPHABET + "+";
             foreach (AuthService service in AuthService.Services)
             {
                 alphabet += service.NameSuffix;
@@ -167,7 +167,7 @@ namespace MCGalaxy
                     return number;
                 }
                 nameLength--;
-                int digit = name[i] - '0'; //Paige Ruten: here's the most insane way to convert a digit char to an integer
+                int digit = name[i] - '0';
                 number += digit * decimalShift;
                 decimalShift *= 10;
             }

@@ -28,7 +28,7 @@ namespace MCGalaxy.Blocks.Extended
             message = message.Replace("@p", p.name);
             if (message != p.prevMsg || alwaysRepeat || Server.Config.RepeatMBs)
             {
-                Execute(p, message, new Vec3S32(x, y, z));
+                Execute(p, message, new(x, y, z));
             }
             return true;
         }
@@ -84,7 +84,7 @@ namespace MCGalaxy.Blocks.Extended
             string[] parts = message.Split(sep, opts);
             List<string> cmds = ParseSingle(parts[0], out text);
             if (parts.Length == 1) return cmds;
-            if (text != null) cmds = new List<string>();
+            if (text != null) cmds = new();
             for (int i = 1; i < parts.Length; i++)
                 cmds.Add(parts[i]);
             return cmds;
@@ -94,11 +94,16 @@ namespace MCGalaxy.Blocks.Extended
             message = Chat.ParseInput(message, out bool isCommand);
             if (isCommand)
             {
-                text = null; return new List<string>() { message };
+                text = null; 
+                return new()
+                { 
+                    message 
+                };
             }
             else
             {
-                text = message; return empty;
+                text = message; 
+                return empty;
             }
         }
         /// <summary> Returns whether a Messages table for the given map exists in the DB. </summary>

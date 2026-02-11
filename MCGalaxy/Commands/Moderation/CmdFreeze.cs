@@ -24,7 +24,11 @@ namespace MCGalaxy.Commands.Moderation
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p); 
+                return; 
+            }
             string[] args = message.SplitSpaces(2);
             string target = PlayerInfo.FindMatchesPreferOnline(p, args[0]);
             if (target == null) return;
@@ -36,13 +40,16 @@ namespace MCGalaxy.Commands.Moderation
             }
             else
             {
-                // unfreeze has second argument as reason, freeze has third argument instead
                 DoFreeze(p, target, message.SplitSpaces(3));
             }
         }
         void DoFreeze(Player p, string target, string[] args)
         {
-            if (args.Length < 2) { Help(p); return; }
+            if (args.Length < 2) 
+            {
+                Help(p);
+                return; 
+            }
             TimeSpan duration = TimeSpan.Zero;
             if (!CommandParser.GetTimespan(p, args[1], ref duration, "freeze for", "m")) return;
             string reason = args.Length > 2 ? args[2] : "";

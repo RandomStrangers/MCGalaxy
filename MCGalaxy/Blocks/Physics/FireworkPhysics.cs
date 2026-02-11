@@ -34,9 +34,13 @@ namespace MCGalaxy.Blocks.Physics
                     bool unblocked = bAbove < 0 || !lvl.listUpdateExists.Get(x, y + 1, z);
                     if (unblocked)
                     {
-                        PhysicsArgs args = default;
-                        args.Type1 = PhysicsArgs.Wait; args.Value1 = 1;
-                        args.Type2 = PhysicsArgs.Dissipate; args.Value2 = 100;
+                        PhysicsArgs args = new()
+                        {
+                            Type1 = 1,
+                            Value1 = 1,
+                            Type2 = 3,
+                            Value2 = 100
+                        };
                         lvl.AddUpdate(bAbove, Block.Fireworks, default(PhysicsArgs));
                         lvl.AddUpdate(C.Index, Block.StillLava, args);
                         args.Data = C.Data.Data;
@@ -49,25 +53,31 @@ namespace MCGalaxy.Blocks.Physics
         }
         static void Firework(ref PhysInfo C, int size, Level lvl, Random rand)
         {
-            int rand1 = rand.Next(Block.Red, Block.White);
-            int rand2 = rand.Next(Block.Red, Block.White);
-            int min = Math.Min(rand1, rand2), max = Math.Max(rand1, rand2);
-            // Not using override, since override = true makes it more likely that a colored block will be
-            // generated with no extraInfo, because it sets a Check for that position with no extraInfo.
+            int rand1 = rand.Next(Block.Red, Block.White),
+                rand2 = rand.Next(Block.Red, Block.White),
+                min = Math.Min(rand1, rand2), max = Math.Max(rand1, rand2);
             lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
             ushort x = C.X, y = C.Y, z = C.Z;
             for (int yy = y - (size + 1); yy <= y + (size + 1); ++yy)
+            {
                 for (int zz = z - (size + 1); zz <= z + (size + 1); ++zz)
+                {
                     for (int xx = x - (size + 1); xx <= x + (size + 1); ++xx)
                     {
                         if (lvl.IsAirAt((ushort)xx, (ushort)yy, (ushort)zz, out int index) && rand.Next(1, 40) < 2)
                         {
-                            PhysicsArgs args = default;
-                            args.Type1 = PhysicsArgs.Drop; args.Value1 = 100;
-                            args.Type2 = PhysicsArgs.Dissipate; args.Value2 = 25;
+                            PhysicsArgs args = new()
+                            {
+                                Type1 = 4,
+                                Value1 = 100,
+                                Type2 = 3,
+                                Value2 = 25
+                            };
                             lvl.AddUpdate(index, (byte)rand.Next(min, max), args);
                         }
                     }
+                }
+            }
         }
     }
 }

@@ -24,8 +24,6 @@ namespace MCGalaxy.Commands.Eco
         {
             bool all = false;
             if (!ParseArgs(p, message, ref all, "pay", out EcoTransaction trans)) return;
-            // Player can use /pay messages to bypass a mute
-            // TODO: Make MessageCmd.CanSpeak more generic so that can be used here instead
             if (trans.Reason != null && !p.CanSpeak())
             {
                 p.Message("&WCannot specify a payment reason, as you cannot currently speak");
@@ -58,11 +56,13 @@ namespace MCGalaxy.Commands.Eco
         {
             if (receiver + amount > 16777215)
             {
-                p.Message("&WPlayers cannot have over &f16777215 &3" + Server.Config.Currency); return false;
+                p.Message("&WPlayers cannot have over &f16777215 &3" + Server.Config.Currency); 
+                return false;
             }
             if (payer < amount)
             {
-                p.Message("&WYou don't have enough &3" + Server.Config.Currency); return false;
+                p.Message("&WYou don't have enough &3" + Server.Config.Currency);
+                return false;
             }
             return true;
         }

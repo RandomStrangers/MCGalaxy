@@ -28,17 +28,13 @@ namespace MCGalaxy.Games
             SchedulerTask task = new(GunCallback, args, TimeSpan.Zero, true);
             p.CriticalTasks.Add(task);
         }
-        protected AmmunitionData MakeArgs(Vec3F32 dir, ushort block)
+        protected AmmunitionData MakeArgs(Vec3F32 dir, ushort block) => new()
         {
-            AmmunitionData args = new()
-            {
-                block = block,
-                start = (Vec3U16)p.Pos.BlockCoords,
-                dir = dir,
-                iterations = 4
-            };
-            return args;
-        }
+            block = block,
+            start = (Vec3U16)p.Pos.BlockCoords,
+            dir = dir,
+            iterations = 4
+        };
         protected void BufferedRevert(Vec3U16 pos, BufferedBlockSender buffer)
         {
             ushort block = p.Level.GetBlock(pos.X, pos.Y, pos.Z, out int index);
@@ -58,7 +54,7 @@ namespace MCGalaxy.Games
             {
                 task.Repeating = TickRevert(task, buffer);
             }
-            buffer.Flush(); // TODO bufferedblocksender across guns
+            buffer.Flush();
         }
         bool TickGun(AmmunitionData args, BufferedBlockSender buffer)
         {
@@ -74,7 +70,11 @@ namespace MCGalaxy.Games
                 args.visible.Add(pos);
                 args.all.Add(pos);
                 Player pl = PlayerAt(p, pos, true);
-                if (pl != null) { OnHitPlayer(args, pl); return false; }
+                if (pl != null) 
+                { 
+                    OnHitPlayer(args, pl);
+                    return false;
+                }
                 if (TickMove(args, buffer)) return true;
             }
         }
@@ -112,7 +112,6 @@ namespace MCGalaxy.Games
         {
             if (p.Level.LevelPhysics < 2) return true;
             if (!p.Level.Props[block].LavaKills) return true;
-            // Penetrative gun goes through blocks lava can go through
             p.Level.Blockchange(pos.X, pos.Y, pos.Z, Block.Air);
             return false;
         }
@@ -140,15 +139,12 @@ namespace MCGalaxy.Games
     public class LaserGun : ExplosiveGun
     {
         public override string Name => "Laser";
-        protected override bool TickMove(AmmunitionData args, BufferedBlockSender buffer) =>
-            // laser immediately strikes target
-            false;
+        protected override bool TickMove(AmmunitionData args, BufferedBlockSender buffer) => false;
         protected override bool TickRevert(SchedulerTask task, BufferedBlockSender buffer)
         {
             AmmunitionData args = (AmmunitionData)task.State;
             if (args.all.Count > 0)
             {
-                // laser persists for a short while
                 task.Delay = TimeSpan.FromMilliseconds(400);
                 args.all.Clear();
             }

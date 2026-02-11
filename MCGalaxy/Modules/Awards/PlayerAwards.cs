@@ -17,10 +17,14 @@ using System.Collections.Generic;
 using System.IO;
 namespace MCGalaxy.Modules.Awards
 {
+    public struct PlayerAward
+    {
+        public string Player;
+        public List<string> Awards;
+    }
     /// <summary> Manages which players have which awards. </summary>
     public static class PlayerAwards
     {
-        struct PlayerAward { public string Player; public List<string> Awards; }
         /// <summary> List of all players who have awards </summary>
         static List<PlayerAward> Awards = new();
         /// <summary> Adds the given award to the given player's list of awards </summary>
@@ -29,8 +33,12 @@ namespace MCGalaxy.Modules.Awards
             List<string> awards = Get(player);
             if (awards == null)
             {
-                awards = new List<string>();
-                PlayerAward a; a.Player = player; a.Awards = awards;
+                awards = new();
+                PlayerAward a = new()
+                {
+                    Player = player,
+                    Awards = awards
+                };
                 Awards.Add(a);
             }
             if (awards.CaselessContains(award)) return false;
@@ -58,7 +66,6 @@ namespace MCGalaxy.Modules.Awards
             int total = AwardsList.Awards.Count;
             List<string> awards = Get(player);
             if (awards == null || total == 0) return "0/" + total + " (0%)";
-            // Some awards the player has may have been deleted
             int count = 0;
             for (int i = 0; i < awards.Count; i++)
             {
@@ -79,15 +86,17 @@ namespace MCGalaxy.Modules.Awards
         }
         public static void Load()
         {
-            Awards = new List<PlayerAward>();
+            Awards = new();
             PropertiesFile.Read("text/playerAwards.txt", ProcessLine, ':');
         }
         static void ProcessLine(string key, string value)
         {
             if (value.Length == 0) return;
-            PlayerAward a;
-            a.Player = key;
-            a.Awards = new List<string>();
+            PlayerAward a = new()
+            {
+                Player = key,
+                Awards = new()
+            };
             if (value.IndexOf(',') != -1)
             {
                 foreach (string award in value.Split(','))

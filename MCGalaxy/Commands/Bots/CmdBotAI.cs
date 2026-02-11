@@ -34,10 +34,18 @@ namespace MCGalaxy.Commands.Bots
                 HandleList(p, modifier);
                 return;
             }
-            if (args.Length < 2) { Help(p); return; }
+            if (args.Length < 2) 
+            {
+                Help(p); 
+                return;
+            }
             string ai = args[1].ToLower();
             if (!Formatter.ValidFilename(p, ai)) return;
-            if (ai == "hunt" || ai == "kill") { p.Message("Reserved for special AI."); return; }
+            if (ai == "hunt" || ai == "kill") 
+            { 
+                p.Message("Reserved for special AI."); 
+                return; 
+            }
             if (IsCreateAction(cmd))
             {
                 HandleAdd(p, ai, args);
@@ -61,7 +69,8 @@ namespace MCGalaxy.Commands.Bots
                 Directory.CreateDirectory("bots/deleted");
             if (!File.Exists("bots/" + ai))
             {
-                p.Message("Could not find specified bot AI."); return;
+                p.Message("Could not find specified bot AI.");
+                return;
             }
             for (int attempt = 0; attempt < 10; attempt++)
             {
@@ -69,15 +78,18 @@ namespace MCGalaxy.Commands.Bots
                 {
                     if (args.Length == 2)
                     {
-                        DeleteAI(p, ai, attempt); return;
+                        DeleteAI(p, ai, attempt);
+                        return;
                     }
                     else if (args[2].CaselessEq("last"))
                     {
-                        DeleteLast(p, ai); return;
+                        DeleteLast(p, ai); 
+                        return;
                     }
                     else
                     {
-                        Help(p); return;
+                        Help(p); 
+                        return;
                     }
                 }
                 catch (IOException)
@@ -89,12 +101,10 @@ namespace MCGalaxy.Commands.Bots
         {
             if (attempt == 0)
             {
-                //File.Move("bots/" + ai, "bots/deleted/" + ai);
                 FileIO.TryMove("bots/" + ai, "bots/deleted/" + ai);
             }
             else
             {
-                //File.Move("bots/" + ai, "bots/deleted/" + ai + attempt);
                 FileIO.TryMove("bots/" + ai, "bots/deleted/" + ai + attempt);
             }
             p.Message("Deleted bot AI &b" + ai);
@@ -103,7 +113,6 @@ namespace MCGalaxy.Commands.Bots
         {
             List<string> lines = Utils.ReadAllLinesList("bots/" + ai);
             if (lines.Count > 0) lines.RemoveAt(lines.Count - 1);
-            //File.WriteAllLines("bots/" + ai, lines.ToArray());
             FileIO.TryWriteAllLines("bots/" + ai, lines.ToArray());
             p.Message("Deleted last instruction from bot AI &b" + ai);
         }
@@ -113,11 +122,10 @@ namespace MCGalaxy.Commands.Bots
             {
                 p.Message("Created new bot AI: &b" + ai);
                 using StreamWriter w = new("bots/" + ai);
-                // For backwards compatibility
                 w.WriteLine("#Version 2");
             }
-            string action = args.Length > 2 ? args[2] : "";
-            string instruction = ScriptFile.Append(p, ai, action, args);
+            string action = args.Length > 2 ? args[2] : "",
+                instruction = ScriptFile.Append(p, ai, action, args);
             if (instruction != null)
             {
                 p.Message("Appended " + instruction + " instruction to bot AI &b" + ai);
@@ -125,7 +133,6 @@ namespace MCGalaxy.Commands.Bots
         }
         void HandleList(Player p, string modifier)
         {
-            //string[] files = Directory.GetFiles("bots");
             string[] files = FileIO.TryGetFiles("bots");
             Paginator.Output(p, files, f => Path.GetFileName(f),
                              "BotAI list", "bot AIs", modifier);
@@ -136,7 +143,6 @@ namespace MCGalaxy.Commands.Bots
             {
                 p.Message("There is no bot AI with that name."); return;
             }
-            //string[] lines = File.ReadAllLines("bots/" + ai);
             string[] lines = FileIO.TryReadAllLines("bots/" + ai);
             foreach (string line in lines)
             {

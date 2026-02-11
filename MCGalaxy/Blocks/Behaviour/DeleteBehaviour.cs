@@ -25,7 +25,6 @@ namespace MCGalaxy.Blocks
             if (p.Level.LevelPhysics < 2 || p.Level.LevelPhysics == 5) return ChangeResult.Unchanged;
             DirUtils.EightYaw(p.Rot.RotY, out int dx, out int dz);
             DirUtils.Pitch(p.Rot.HeadX, out int dy);
-            // Looking straight up or down
             byte pitch = p.Rot.HeadX;
             if (pitch >= 192 && pitch <= 196 || pitch >= 60 && pitch <= 64) 
             {
@@ -47,7 +46,6 @@ namespace MCGalaxy.Blocks
         {
             if (p.Level.LevelPhysics == 0 || p.Level.LevelPhysics == 5) return ChangeResult.Unchanged;
             Random rand = new();
-            // Offset the firework randomly
             Vec3U16 pos = new(0, 0, 0)
             {
                 X = (ushort)(x + rand.Next(0, 2) - 1),

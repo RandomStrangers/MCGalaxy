@@ -32,34 +32,23 @@ namespace MCGalaxy.Levels.IO
                 src = new BinaryReader(s)
             };
             int signature = r.ReadInt32();
-            // Format version 0 - preclassic to classic 0.12
-            //  (technically this format doesn't have a signature,
-            //   but 99% of such maps will start with these 4 bytes)
-            if (signature == 0x01010101)
-            {
-                return ReadFormat0(lvl, s);
-            }
-            // All valid .dat maps must start with these 4 bytes
-            return signature != 0x271BB788
+            return signature == 0x01010101
+                ? ReadFormat0(lvl, s)
+                : signature != 0x271BB788
                 ? throw new InvalidDataException("Invalid .dat map signature")
                 : r.ReadUInt8() switch
             {
-                // Format version 1 - classic 0.13
                 0x01 => ReadFormat1(lvl, r),
-                // Format version 2 - classic 0.15 to 0.30
                 0x02 => ReadFormat2(lvl, r),
                 _ => throw new InvalidDataException("Invalid .dat map version"),
             };
         }
-        // Map 'format' is just the 256x64x256 blocks of the level
-        const int PC_WIDTH = 256, PC_HEIGHT = 64, PC_LENGTH = 256;
         static Level ReadFormat0(Level lvl, Stream s)
         {
-            lvl.Width = PC_WIDTH;
-            lvl.Height = PC_HEIGHT;
-            lvl.Length = PC_LENGTH;
-            // First 4 bytes were already read earlier as signature
-            byte[] blocks = new byte[PC_WIDTH * PC_HEIGHT * PC_LENGTH];
+            lvl.Width = 256;
+            lvl.Height = 64;
+            lvl.Length = 256;
+            byte[] blocks = new byte[256 * 64 * 256];
             blocks[0] = 1;
             blocks[1] = 1;
             blocks[2] = 1;
@@ -67,37 +56,31 @@ namespace MCGalaxy.Levels.IO
             s.Read(blocks, 4, blocks.Length - 4);
             lvl.blocks = blocks;
             SetupClassic013(lvl);
-            // Similiar env to how it appears in preclassic client
             lvl.Config.EdgeBlock = Block.Air;
             lvl.Config.HorizonBlock = Block.Air;
             return lvl;
         }
         static Level ReadFormat1(Level lvl, JavaReader r)
         {
-            r.ReadUtf8();  // level name
-            r.ReadUtf8();  // level author
-            r.ReadInt64(); // created timestamp (currentTimeMillis)
+            r.ReadUtf8();
+            r.ReadUtf8();
+            r.ReadInt64();
             lvl.Width = r.ReadUInt16();
             lvl.Length = r.ReadUInt16();
             lvl.Height = r.ReadUInt16();
-            lvl.blocks = r.ReadBytes(lvl.Width * lvl.Height * lvl.Length); // TODO readfully
+            lvl.blocks = r.ReadBytes(lvl.Width * lvl.Height * lvl.Length);
             SetupClassic013(lvl);
             return lvl;
         }
         static void SetupClassic013(Level lvl)
         {
-            // You always spawn in a random place in 0.13,
-            //  so just use middle of map for spawn instead
             lvl.spawnx = (ushort)(lvl.Width / 2);
             lvl.spawny = lvl.Height;
             lvl.spawnz = (ushort)(lvl.Length / 2);
-            // Similiar env to how it appears in 0.13 client
             lvl.Config.CloudsHeight = -30000;
             lvl.Config.SkyColor = "#7FCCFF";
             lvl.Config.FogColor = "#7FCCFF";
         }
-        // Really annoying map format to parse, because it's just a Java serialised object
-        // See JavaDeserialiser.cs for the ugly details of parsing Java serialised objects
         static Level ReadFormat2(Level lvl, JavaReader r)
         {
             if (r.ReadUInt16() != 0xACED)
@@ -112,7 +95,6 @@ namespace MCGalaxy.Levels.IO
             ParseRootObject(lvl, obj);
             return lvl;
         }
-        // object is actually an int, so a simple cast to ushort will fail
         static ushort U16(object o) => (ushort)(int)o;
         static void ParseRootObject(Level lvl, JObject obj)
         {
@@ -122,7 +104,6 @@ namespace MCGalaxy.Levels.IO
             {
                 JFieldDesc f = fields[i];
                 object value = values[i];
-                // yes height/depth are swapped intentionally
                 if (f.Name == "width")
                 {
                     lvl.Width = U16(value);

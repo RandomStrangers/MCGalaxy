@@ -29,9 +29,8 @@ namespace MCGalaxy.Commands.Info
         internal static bool ListCommands(Player p, string message)
         {
             string[] args = message.SplitSpaces();
-            string sort = args.Length > 1 ? args[1].ToLower() : "";
-            string modifier = args.Length > 2 ? args[2] : sort;
-            // if user only provided name/names/rank/ranks, don't treat that as the modifier
+            string sort = args.Length > 1 ? args[1].ToLower() : "",
+                modifier = args.Length > 2 ? args[2] : sort;
             if (args.Length == 2)
             {
                 if (modifier == "name" || modifier == "names" || modifier == "rank" || modifier == "ranks")
@@ -60,7 +59,6 @@ namespace MCGalaxy.Commands.Info
             {
                 bool any = PrintCategoryCommands(p, sort, modifier, type);
                 if (any) return true;
-                // list commands a rank can use
                 Group grp = Group.Find(type);
                 if (grp == null) return false;
                 PrintRankCommands(p, sort, modifier, grp, false);
@@ -89,7 +87,8 @@ namespace MCGalaxy.Commands.Info
             }
             if (cmds.Count == 0)
             {
-                p.Message("{0} &Scannot use any commands.", group.ColoredName); return;
+                p.Message("{0} &Scannot use any commands.", group.ColoredName); 
+                return;
             }
             SortCommands(cmds, sort);
             if (own)
@@ -117,7 +116,6 @@ namespace MCGalaxy.Commands.Info
         {
             List<Command> cmds = new();
             bool foundAny = false;
-            // common shortcuts people tend to use
             type = MapCategory(type);
             if (type.CaselessEq("eco")) type = CommandTypes.Economy;
             foreach (Command c in allCmds)
@@ -156,14 +154,15 @@ namespace MCGalaxy.Commands.Info
         }
         static string MapCategory(string type)
         {
-            // convert old category/type names
             if (type == "build") return CommandTypes.Building;
             if (type == "chat") return CommandTypes.Chat;
             if (type == "economy") return CommandTypes.Economy;
             if (type == "game") return CommandTypes.Games;
-            if (type == "mod") return CommandTypes.Moderation;
-            if (type == "other") return CommandTypes.Other;
-            return type == "world" ? CommandTypes.World : type == "information" ? CommandTypes.Information : type;
+            return type == "mod"
+                ? CommandTypes.Moderation
+                : type == "other"
+                ? CommandTypes.Other
+                : type == "world" ? CommandTypes.World : type == "information" ? CommandTypes.Information : type;
         }
         internal static string GetCategories()
         {

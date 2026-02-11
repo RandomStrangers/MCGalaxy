@@ -25,7 +25,6 @@ namespace MCGalaxy.Modules.Warps
             {
                 p.Extras["MCG_WAYPOINTS"] = LoadList(Paths.WAYPOINTS_DIR + p.name + ".save");
             }
-            // TODO: Better thread safety
             WarpList waypoints = (WarpList)p.Extras["MCG_WAYPOINTS"];
             UseCore(p, message, waypoints, "Waypoint");
         }

@@ -22,10 +22,14 @@ namespace MCGalaxy.Commands.Moderation
         public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            {
+                Help(p); 
+                return; 
+            }
             string[] args = message.SplitSpaces(2);
-            string reason = args.Length == 1 ? "you know why." : args[1];
-            string target = ModActionCmd.FindName(p, "warn", "Warn", "", args[0], ref reason);
+            string reason = args.Length == 1 ? "you know why." : args[1],
+                target = ModActionCmd.FindName(p, "warn", "Warn", "", args[0], ref reason);
             if (target == null) return;
             reason = ModActionCmd.ExpandReason(p, reason);
             if (reason == null) return;

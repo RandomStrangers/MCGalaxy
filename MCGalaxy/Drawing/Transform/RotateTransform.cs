@@ -29,9 +29,6 @@ namespace MCGalaxy.Drawing.Transforms
             public int xMulX, xMulY, yMulX, yMulY;
             public double alpha, beta;
         };
-        // https://silmon.github.io/arbitrary-image-rotation-using-shearing.html
-        // http://delta.cs.cinvestav.mx/~mcintosh/newweb/camex/node37.html
-        // https://www.ocf.berkeley.edu/~fricke/projects/israel/paeth/rotation_by_shearing.html
         public void SetAngles(double xDeg, double yDeg, double zDeg)
         {
             CalcShear2D(xDeg, ref shearX);
@@ -42,10 +39,6 @@ namespace MCGalaxy.Drawing.Transforms
         {
             angle %= 360.0;
             if (angle < 0) angle += 360.0;
-            // trying to use shear with angles close to 180 tends to cause issues
-            //  (due to Math.Tan(angle / 2) approaching tan(90 degrees))
-            // so avoid this by reducing the angles to 0-90 degrees,
-            //  then rotating the output appropriately afterwards
             if (angle >= 0 && angle <= 90)
             {
                 shear.xMulX = 1;
@@ -69,18 +62,16 @@ namespace MCGalaxy.Drawing.Transforms
                 shear.xMulY = -1;
                 shear.yMulX = 1;
             }
-            // TODO angle %= 90; instead?? and integer angles instead???
-            angle = -angle; // same output as old Rotate Transform
-            angle *= Math.PI / 180.0; // degrees -> radians;
+            angle = -angle;
+            angle *= Math.PI / 180.0;
             shear.alpha = -Math.Tan(angle / 2);
             shear.beta = Math.Sin(angle);
         }
         void DoShear2D(ref int x, ref int y, ref Shear2D shear)
         {
-            int X_ = (int)(x + shear.alpha * (y + 0.5)); // shear #1
-            int Y_ = (int)(y + shear.beta * (X_ + 0.5)); // shear #2
-            X_ = (int)(X_ + shear.alpha * (Y_ + 0.5)); // shear #3
-            // rotate by quadrant the angle was originally in
+            int X_ = (int)(x + shear.alpha * (y + 0.5)),
+                Y_ = (int)(y + shear.beta * (X_ + 0.5));
+            X_ = (int)(X_ + shear.alpha * (Y_ + 0.5));
             x = shear.xMulX * X_ + shear.xMulY * Y_;
             y = shear.yMulX * X_ + shear.yMulY * Y_;
         }

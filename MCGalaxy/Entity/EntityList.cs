@@ -17,7 +17,6 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
-    //Thanks fCraft
     class VisibleEntity
     {
         public readonly Entity e;
@@ -74,7 +73,6 @@ namespace MCGalaxy
             }
             return null;
         }
-        //Thanks fCraft
         readonly Stack<byte> freeIDs;
         readonly object locker = new();
         #region TabList
@@ -110,15 +108,13 @@ namespace MCGalaxy
             {
                 if (tabObjects.TryGetValue(o, out TabObject tabby))
                 {
-                    tabby.UpdateFields(name, nick, group, groupRank); //Refresh every field other than entity and ID
-                    //p.Message("RETABBING {0}&S with ID {1}", name, tabby.id);
+                    tabby.UpdateFields(name, nick, group, groupRank);
                 }
                 else
                 {
                     int tentativeID = FindFreeTabID(o, self);
                     if (tentativeID == -1) return;
                     byte ID = (byte)tentativeID;
-                    //p.Message("| &a+TAB &S{0}&S with ID {1}", name, ID);
                     tabby = new(o, ID, name, nick, group, groupRank);
                     tabObjects[o] = tabby;
                 }
@@ -128,34 +124,24 @@ namespace MCGalaxy
         int FindFreeTabID(object o, bool self)
         {
             if (self) return 0xFF;
-            //Try finding a matching visible entity for the ID
             if (o is Entity entity)
             {
                 Entity e = entity;
                 if (visible.TryGetValue(e, out VisibleEntity vis) && usedTabIDs[vis.id] != true)
                 {
-                    //We need to match the tablist ID to the matching entity in the level if possible,
-                    //because a few popular plugins (chatsounds, CEF) rely on this
-                    //p.Message("Found {0}&S in level, using ID {1}", vis.displayName, vis.id);
                     usedTabIDs[vis.id] = true;
                     return vis.id;
                 }
             }
-            //In this case, it's an entry for an Entity not on your level (or one that hasn't spawned yet)
-            //Since visible entities are assigned starting from 0 and going up,
-            //we'll find tab list IDs going from 254 down so there's less chance of
-            //an entity from another level sharing an ID with an entity on your level
             for (int i = maxEntityID; i >= 0; i--)
             {
                 if (usedTabIDs[i] == false)
                 {
                     usedTabIDs[i] = true;
-                    //p.Message("Tab ID {0} is now used.", i);
                     return i;
                 }
             }
-            //p.Message("No IDS left :(");
-            return -1; //No IDs left :(
+            return -1;
         }
         public void SendRemoveTabEntry(object o)
         {
@@ -166,14 +152,11 @@ namespace MCGalaxy
                 {
                     tabby = tabObjects[o];
                     if (o != p) usedTabIDs[tabby.id] = false;
-                    //p.Message("| &c-TAB &S{0}&S with ID {1}", tabby.name, tabby.id);
                     tabObjects.Remove(o);
                     p.Session.SendRemoveTabEntry(tabby.id);
                 }
                 else
                 {
-                    //Seems to happen when reconnecting
-                    //Logger.Log(LogType.Warning, "{0}'s entitymap: Tried removing Tablist ({0}) that wasn't in the collection...", p.name, e.SkinName);
                 }
             }
         }
@@ -208,32 +191,25 @@ namespace MCGalaxy
                     if (!visible.TryGetValue(e, out VisibleEntity vis))
                     {
                         byte ID = self ? (byte)0xFF : freeIDs.Pop();
-                        //p.Message("| &a+ &S{0}&S with ID {1}", name, ID);
                         vis = new(e, ID, name);
                         visible[e] = vis;
                     }
                     else
                     {
-                        //p.Message("RESPAWNING {0}&S with ID {1}", name, vis.id);
                     }
                     Spawn(vis, pos, rot, skin, name, model);
                     if (tabList) AddTab(e);
-                    //If this entity has a matching tab entry, we need to make sure the IDs get synced
-                    //because a few popular plugins (chatsounds, CEF) rely on this
                     if (tabObjects.TryGetValue(vis.e, out TabObject tabby) && tabby.id != vis.id)
                     {
-                        //p.Message("%bReadding tab {0} :)", tabby.nick);
                         SendRemoveTabEntry(vis.e);
                         SendAddTabEntry(vis.e, tabby.name, tabby.nick, tabby.group, tabby.groupRank);
                     }
                     return true;
                 }
-                //Don't add if it's already queued
                 if (IsWaitingToSpawn(e) == null)
                 {
                     WaitingEntity waiting = new(e, 0, name, tabList);
                     invisible.Add(waiting);
-                    //p.Message("Queuing {0} as invisible.", waiting.displayName);
                 }
                 return false;
             }
@@ -246,36 +222,29 @@ namespace MCGalaxy
             bool self = e == p;
             lock (locker)
             {
-                //If we're removing a currently invisible entity...
                 WaitingEntity waiting = IsWaitingToSpawn(e);
                 if (waiting != null)
                 {
                     invisible.Remove(waiting);
-                    //p.Message("Removed invisible {0}", waiting.displayName);
                     return false;
                 }
                 if (visible.TryGetValue(e, out _))
                 {
                     VisibleEntity vis = visible[e];
                     if (!self) freeIDs.Push(vis.id);
-                    //p.Message("| &c- &S{0}&S with ID {1}", vis.displayName, vis.id);
                     visible.Remove(e);
                     if (tabList) RemoveTab(e);
                     Despawn(vis);
-                    //Now that we've removed a visible entity, try spawning a waiting invisible one
                     if (invisible.Count > 0 && freeIDs.Count > 0 && !self)
                     {
                         waiting = invisible[0];
                         invisible.RemoveAt(0);
-                        //p.Message("Adding {0} who was invisible :)", waiting.displayName);
                         Add(waiting.e, waiting.e.Pos, waiting.e.Rot, waiting.e.SkinName, waiting.displayName, waiting.e.Model, waiting.tabList);
                     }
                     return true;
                 }
                 else
                 {
-                    //Seems to happen when reconnecting
-                    //Logger.Log(LogType.Warning, "{0}'s entitymap: Tried removing an entity ({0}) that wasn't in the collection...", p.name, e.SkinName);
                     return false;
                 }
             }
@@ -370,9 +339,6 @@ namespace MCGalaxy
             lock (locker)
             {
                 cachedVisible.Clear();
-                //We want to avoid locking during the entire enumeration of position sending
-                //We need a cached collection to prevent the collection from changing while being enumerated over.
-                //Also, ignore entities that we don't want to automatically update the position of.
                 foreach (KeyValuePair<Entity, VisibleEntity> pair in visible)
                 {
                     if (!pair.Key.autoBroadcastPosition) continue;
@@ -390,22 +356,15 @@ namespace MCGalaxy
                 if (dst == e || dst.Level != e.Level || !dst.CanSeeEntity(e)) continue;
                 Orientation rot = e.Rot;
                 byte pitch = rot.HeadX;
-                //No pattern matching because we're ancient C#
-                //CODE REVIEW: How should this be done? We could maybe have the visible pitch be a virtual getter in Entity and player implements its own logic
                 if (e is Player pl)
                 {
                     if (Server.flipHead || pl.flipHead) pitch = FlippedPitch(pitch);
-                    // flip head when infected in ZS, but doesn't support model
                     if (!dst.hasChangeModel && pl.infected)
                         pitch = FlippedPitch(pitch);
                 }
                 rot.HeadX = pitch;
                 p.Session.GetPositionPacket(ref ptr, id, e.hasExtPositions, dst.hasExtPositions,
                                            e._positionUpdatePos, e._lastPos, rot, e._lastRot);
-                //bool rotChanged = rot.RotY != e._lastRot.RotY || rot.HeadX != e._lastRot.HeadX;
-                //if (pair.Value.displayName.CaselessContains("temp") && (e._lastPos != e._positionUpdatePos || rotChanged)) {
-                //    p.Message("Moving {0} to {1}", pair.Value.displayName, e._positionUpdatePos.ToVec3F32().ToString());
-                //}
             }
             int count = (int)(ptr - src);
             if (count == 0) return;

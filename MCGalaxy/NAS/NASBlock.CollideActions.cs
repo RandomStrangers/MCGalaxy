@@ -33,7 +33,7 @@ namespace MCGalaxy
                                                                              };
         public static NASBlockCollideAction PressureCollideAction() => (ne, nasBlock, headSurrounded, x, y, z) =>
                                                                                 {
-                                                                                    ne.nl.SetBlock(x, y, z, NASPlugin.FromRaw(611));
+                                                                                    ne.nl.SetBlock(x, y, z, Block.FromRaw(611));
                                                                                     if (!ne.nl.blockEntities.ContainsKey(x + " " + y + " " + z))
                                                                                     {
                                                                                         ne.nl.blockEntities.Add(x + " " + y + " " + z, new());

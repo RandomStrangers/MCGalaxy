@@ -25,8 +25,14 @@ namespace MCGalaxy.Events.BlockDBEvents
             IEvent<OnBlockDBSave>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(db, ref path, ref cancel); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                {
+                    items[i].method(db, ref path, ref cancel); 
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }

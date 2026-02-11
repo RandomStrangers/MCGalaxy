@@ -26,12 +26,14 @@ namespace MCGalaxy.Commands.Building
         {
             if (message.Length == 0)
             {
-                p.Message("Your current transform is: " + p.Transform.Name); return;
+                p.Message("Your current transform is: " + p.Transform.Name); 
+                return;
             }
             string[] args = message.SplitSpaces(2);
             if (IsListAction(args[0]))
             {
-                TransformFactory.List(p); return;
+                TransformFactory.List(p); 
+                return;
             }
             TransformFactory transform = TransformFactory.FindMatch(p, args[0]);
             if (transform == null) return;

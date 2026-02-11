@@ -20,7 +20,11 @@ namespace MCGalaxy.Commands.Chatting
         public override bool UseableWhenFrozen => true;
         protected bool TryMessageAction(Player p, string name, string msg, bool messageWho)
         {
-            if (name.Length == 0) { Help(p); return false; }
+            if (name.Length == 0)
+            { 
+                Help(p); 
+                return false;
+            }
             Player target = PlayerInfo.FindMatches(p, name);
             if (target == null) return false;
             string reciever = p == target ? p.Pronouns.Reflexive : target.ColoredName;

@@ -23,7 +23,9 @@ namespace MCGalaxy
         public LevelOptions.OptionSetter SetFunc;
         public LevelOption(string name, LevelOptions.OptionSetter func, string help)
         {
-            Name = name; SetFunc = func; Help = help;
+            Name = name; 
+            SetFunc = func; 
+            Help = help;
         }
     }
     public static class LevelOptions
@@ -84,8 +86,6 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                // Some clients will freeze or crash if we send a MOTD packet, but don't follow it up by a new map.
-                // Hnece only send MOTD for clients supporting InstantMOTD CPE extension
                 if (pl.Supports(CpeExt.InstantMOTD))
                 {
                     pl.SendMapMotd();

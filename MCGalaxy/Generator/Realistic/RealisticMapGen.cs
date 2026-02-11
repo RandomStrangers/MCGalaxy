@@ -64,7 +64,6 @@ namespace MCGalaxy.Generator.Realistic
                 rangeHi = args.RangeHigh;
             treeDens = args.TreeDensity;
             treeDist = args.TreeDistance;
-            //loops though evey X/Z coordinate
             for (int i = 0; i < terrain.Length; i++)
             {
                 ushort x = (ushort)(i % lvl.Width),
@@ -112,7 +111,7 @@ namespace MCGalaxy.Generator.Realistic
                     {
                         if (args.IslandColumns && height <= waterHeight + 2)
                         {
-                            lvl.blocks[pos] = biome.BeachSandy; // extra sand for islands
+                            lvl.blocks[pos] = biome.BeachSandy;
                         }
                         else
                         {
@@ -133,12 +132,8 @@ namespace MCGalaxy.Generator.Realistic
                 byte topBlock = Block.Air;
                 for (ushort yy = 0; height - yy >= 0; yy++)
                 {
-                    lvl.blocks[pos] = yy < 3 ? biome.Cliff : biome.BeachSandy; // TODO rethink this
+                    lvl.blocks[pos] = yy < 3 ? biome.Cliff : biome.BeachSandy;
                     pos -= lvl.Width * lvl.Length;
-                    // NOTE: Although your natural assumption would be that the following
-                    //  code should be outside the for loop, for backwards compatibility
-                    //  it must remain in the for loop (moving it out changes terrain generation)
-                    // add occasional lava pools on top of surface
                     if (overlay[index] < 0.3f && rng.Next(13) >= 9)
                     {
                         lvl.SetTile(x, (ushort)(height + 1), z, biome.Water);
@@ -155,9 +150,11 @@ namespace MCGalaxy.Generator.Realistic
                 switch (rng.Next(12))
                 {
                     case 10:
-                        lvl.SetTile(x, (ushort)(height + 1), z, Block.Rose); break;
+                        lvl.SetTile(x, (ushort)(height + 1), z, Block.Rose);
+                        break;
                     case 11:
-                        lvl.SetTile(x, (ushort)(height + 1), z, Block.Dandelion); break;
+                        lvl.SetTile(x, (ushort)(height + 1), z, Block.Dandelion);
+                        break;
                     default:
                         break;
                 }
@@ -229,7 +226,6 @@ namespace MCGalaxy.Generator.Realistic
                 }
             }
         }
-        // https://www.lighthouse3d.com/opengl/terrain/index.php?fault
         void GenerateFault(float[] array, Level lvl)
         {
             float baseHeight = args.StartHeight,
@@ -259,7 +255,8 @@ namespace MCGalaxy.Generator.Realistic
                         float sum = array[index] + (value > 0 ? disp : -disp);
                         sum = sum > 1 ? 1 : sum;
                         sum = sum < 0 ? 0 : sum;
-                        array[index] = sum; index++;
+                        array[index] = sum;
+                        index++;
                         value += sinPhi;
                     }
                 }
@@ -269,15 +266,11 @@ namespace MCGalaxy.Generator.Realistic
             }
         }
         void GeneratePerlinNoise(float[] array, Level Lvl) => NoiseGen.GenerateNormalized(array, 0.7f, 8, Lvl.Width, Lvl.Length, rng.Next(), 64);
-        //converts the float into a ushort for map height
         static ushort Evaluate(Level lvl, float height)
         {
             ushort y = (ushort)(height * lvl.Height);
-            if (y < 0) return 0;
-            if (y > lvl.Height - 1) return (ushort)(lvl.Height - 1); // TODO >= lvl.Height
-            return y;
+            return y < 0 ? (ushort)0 : y > lvl.Height - 1 ? (ushort)(lvl.Height - 1) : y;
         }
-        //applys the average filter
         void FilterAverage(Level lvl)
         {
             float[] filtered = new float[terrain.Length];
@@ -292,7 +285,6 @@ namespace MCGalaxy.Generator.Realistic
                 terrain[i] = filtered[i];
             }
         }
-        //Averages over 9 points
         float GetAverage9(ushort x, ushort z, Level lvl)
         {
             int points = 0;
@@ -307,7 +299,6 @@ namespace MCGalaxy.Generator.Realistic
             sum += GetPixel(ref points, (ushort)(x - 1), (ushort)(z - 1), lvl);
             return sum / points;
         }
-        //returns the value of a x,y terrain coordinate
         float GetPixel(ref int points, ushort x, ushort z, Level lvl)
         {
             if (x < 0 || x >= lvl.Width || z < 0 || z >= lvl.Length)
@@ -315,9 +306,7 @@ namespace MCGalaxy.Generator.Realistic
             points++;
             return terrain[x + z * lvl.Width];
         }
-        //converts the height into a range
         static float Range(float input, float low, float high) => high <= low ? low : low + (input * (high - low));
-        //Forces the edge of a map to slope lower for island map types
         static float NegateEdge(ushort x, ushort z, Level lvl)
         {
             float xAdj = x / (float)lvl.Width * 0.5f,

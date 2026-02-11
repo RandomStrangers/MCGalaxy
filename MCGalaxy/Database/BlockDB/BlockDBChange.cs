@@ -66,9 +66,11 @@ namespace MCGalaxy.DB
             if ((flags & BlockDBFlags.Cut) != 0) return " (Cut)";
             if ((flags & BlockDBFlags.Filled) != 0) return " (Filled)";
             if ((flags & BlockDBFlags.Restored) != 0) return " (Restored)";
-            if ((flags & BlockDBFlags.UndoOther) != 0) return " (UndoneOther)";
-            if ((flags & BlockDBFlags.UndoSelf) != 0) return " (UndoneSelf)";
-            return (flags & BlockDBFlags.RedoSelf) != 0 ? " (RedoneSelf)" : (flags & BlockDBFlags.FixGrass) != 0 ? " (FixGrass)" : "";
+            return (flags & BlockDBFlags.UndoOther) != 0
+                ? " (UndoneOther)"
+                : (flags & BlockDBFlags.UndoSelf) != 0
+                ? " (UndoneSelf)"
+                : (flags & BlockDBFlags.RedoSelf) != 0 ? " (RedoneSelf)" : (flags & BlockDBFlags.FixGrass) != 0 ? " (FixGrass)" : "";
         }
     }
 }

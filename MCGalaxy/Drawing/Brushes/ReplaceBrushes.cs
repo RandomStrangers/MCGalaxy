@@ -22,7 +22,8 @@ namespace MCGalaxy.Drawing.Brushes
         readonly ushort target;
         public ReplaceBrush(ushort[] include, ushort target)
         {
-            this.include = include; this.target = target;
+            this.include = include;
+            this.target = target;
         }
         public override string Name => "Replace";
         public override void Configure(DrawOp op, Player p) => op.Flags = BlockDBFlags.Replaced;
@@ -43,7 +44,8 @@ namespace MCGalaxy.Drawing.Brushes
         readonly ushort target;
         public ReplaceNotBrush(ushort[] exclude, ushort target)
         {
-            this.exclude = exclude; this.target = target;
+            this.exclude = exclude; 
+            this.target = target;
         }
         public override string Name => "ReplaceNot";
         public override void Configure(DrawOp op, Player p) => op.Flags = BlockDBFlags.Replaced;

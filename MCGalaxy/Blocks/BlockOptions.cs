@@ -84,19 +84,16 @@ namespace MCGalaxy.Blocks
         static void SetGrass(Player p, BlockProps[] s, ushort b, string v) => SetBlock(p, s, b, v, "Grass form", ref s[b].GrassBlock);
         static void SetDirt(Player p, BlockProps[] s, ushort b, string v) => SetBlock(p, s, b, v, "Dirt form", ref s[b].DirtBlock);
         static void SetODoor(Player p, BlockProps[] s, ushort b, string v) => SetBlock(p, s, b, v, "oDoor form", ref s[b].oDoorBlock);
-        // NOTE: Make sure to keep this in sync with BlockBehaviour.GetDeleteHandler
         static string CheckBehaviour(BlockProps[] props, ushort block)
         {
             if (props[block].IsMessageBlock) return "message block";
-            if (props[block].IsPortal) return "portal";
-            if (props[block].IsTDoor) return "tDoor";
-            return props[block].oDoorBlock != 0xff ? "oDoor" : props[block].IsDoor ? "door" : null;
+            return props[block].IsPortal
+                ? "portal"
+                : props[block].IsTDoor ? "tDoor" : props[block].oDoorBlock != 0xff ? "oDoor" : props[block].IsDoor ? "door" : null;
         }
         static void ToggleBehaviour(Player p, BlockProps[] scope, ushort block, string type, ref bool on)
         {
             string behaviour;
-            // Check if this would make a block both a door and a portal for instance
-            // If blocks have multiple behaviour, this would confuse users because only 1 behaviour works
             if (!on && (behaviour = CheckBehaviour(scope, block)) != null)
             {
                 string name = BlockProps.ScopedName(scope, p, block);

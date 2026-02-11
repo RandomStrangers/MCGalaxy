@@ -54,8 +54,14 @@ namespace MCGalaxy.Events.GroupEvents
             IEvent<OnChangingGroup>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(player, curRank, newRank, ref cancel); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(player, curRank, newRank, ref cancel);
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]);
+                }
             }
         }
     }

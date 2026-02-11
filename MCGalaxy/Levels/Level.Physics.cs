@@ -33,7 +33,6 @@ namespace MCGalaxy
             {
                 for (int i = 0; i < blocks.Length; i++)
                 {
-                    // Optimization hack, since no blocks under 183 ever need a restart
                     if (blocks[i] > 183 && Block.NeedRestart(blocks[i]))
                         AddCheck(i);
                 }
@@ -69,7 +68,6 @@ namespace MCGalaxy
                     }
                     if (wait > 0) Thread.Sleep(wait);
                     if (LevelPhysics == 0) break;
-                    // No block calculations in this tick
                     if (ListCheck.Count == 0)
                     {
                         lastCheck = 0;
@@ -89,10 +87,8 @@ namespace MCGalaxy
                     {
                         Logger.LogError("Error in physics tick", ex);
                     }
-                    // Measure how long this physics tick took to execute
                     TimeSpan elapsed = DateTime.UtcNow - tickStart;
                     wait = Config.PhysicsSpeed - (int)elapsed.TotalMilliseconds;
-                    // Check if tick took too long to execute (server is falling behind)
                     if (wait < (int)(-Config.PhysicsOverload * 0.75f))
                     {
                         if (wait < -Config.PhysicsOverload)
@@ -179,7 +175,6 @@ namespace MCGalaxy
                     ListCheck.RemoveAt(i);
                 }
             }
-            // TODO: Inline this into the prior for loop, and remove PhysicsArgs.RemoveFromChecks
             RemoveExpiredChecks();
             lastUpdate = ListUpdate.Count;
             if (ListUpdate.Count > 0 && bulkSender == null)
@@ -191,7 +186,6 @@ namespace MCGalaxy
                 {
                     ushort block = U.data.Data;
                     U.data.Data = 0;
-                    // Is the Ext flag just an indicator for the block update?
                     byte extBits = U.data.ExtBlock;
                     if (extBits != 0 && (U.data.Raw & 0x3F) == 0)
                     {
@@ -227,7 +221,7 @@ namespace MCGalaxy
                         Index = index,
                         data = data
                     };
-                    ListCheck.Add(check); // Adds block to list to be updated
+                    ListCheck.Add(check); 
                 }
                 else if (overRide)
                 {
@@ -239,15 +233,12 @@ namespace MCGalaxy
                         items[i].data = data; 
                         return;
                     }
-                    //Dont need to check physics here because if the list is active, then physics is active :)
                 }
                 if (!physThreadStarted && LevelPhysics > 0)
                     StartPhysics();
             }
             catch
             {
-                //s.Log("Warning-PhysicsCheck");
-                //ListCheck.Add(new Check(b));    //Lousy back up plan
             }
         }
         /// <summary> Adds the given entry to the list of updates to be applied at the end of the current physics tick </summary>
@@ -270,12 +261,11 @@ namespace MCGalaxy
                 if (x >= Width || y >= Height || z >= Length) return false;
                 if (overRide)
                 {
-                    // Is the Ext flag just an indicator for the block update?
                     if (data.ExtBlock != 0 && (data.Raw & 0x3F) == 0)
                     {
                         data.Raw &= ~((1u << 30) | (1u << 31));
                     }
-                    AddCheck(index, true, data); //Dont need to check physics here....AddCheck will do that
+                    AddCheck(index, true, data);
                     Blockchange((ushort)x, (ushort)y, (ushort)z, block, true, data);
                     return true;
                 }
@@ -353,7 +343,6 @@ namespace MCGalaxy
         }
         void RevertPhysics(Check C)
         {
-            //attemps on shutdown to change blocks back into normal selves that are active, hopefully without needing to send into to clients.
             switch (blocks[C.Index])
             {
                 case 200:
@@ -366,7 +355,6 @@ namespace MCGalaxy
             try
             {
                 PhysicsArgs args = C.data;
-                // Copy paste here because it's worthwhile inlining
                 if (args.Type1 == 2)
                 {
                     ushort block = (ushort)(args.Value1 | (args.ExtBlock << 8));
@@ -383,11 +371,7 @@ namespace MCGalaxy
                 Logger.LogError(e);
             }
         }
-        internal bool ActivatesPhysics(ushort block)
-        {
-            if (Props[block].IsMessageBlock || Props[block].IsPortal) return false;
-            return !Props[block].IsDoor && !Props[block].IsTDoor && !Props[block].OPBlock && PhysicsHandlers[block] != null;
-        }
+        internal bool ActivatesPhysics(ushort block) => !Props[block].IsMessageBlock && !Props[block].IsPortal && !Props[block].IsDoor && !Props[block].IsTDoor && !Props[block].OPBlock && PhysicsHandlers[block] != null;
         internal bool CheckSpongeWater(ushort x, ushort y, ushort z)
         {
             for (int yy = y - 2; yy <= y + 2; ++yy)

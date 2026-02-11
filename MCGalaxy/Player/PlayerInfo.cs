@@ -45,7 +45,6 @@ namespace MCGalaxy
         {
             matches = 0;
             if (!Formatter.ValidPlayerName(pl, name)) return null;
-            // Try to exactly match name first (because names have + at end)
             Player exact = FindExact(name);
             if (exact != null && pl.CanSee(exact))
             { 
@@ -93,8 +92,6 @@ namespace MCGalaxy
             Database.ReadRows("Players", "Name",
                                 record => ReadAccounts(record, names),
                                 "WHERE IP=@0", ip);
-            // TODO: should we instead do save() when the player logs in
-            // by checking online players we avoid a DB write though
             Player[] players = Online.Items;
             foreach (Player p in players)
             {
@@ -126,7 +123,6 @@ namespace MCGalaxy
                 total += e.players.Count;
                 all.Add(e);
             }
-            // Highest ranks first
             all.Reverse();
             return all;
         }

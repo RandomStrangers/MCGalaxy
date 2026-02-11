@@ -35,7 +35,6 @@ namespace MCGalaxy
             logTask = Server.MainScheduler.QueueRepeat(Flush, null,
                                                        TimeSpan.FromMilliseconds(500));
         }
-        // Update paths only if a new date
         static void UpdatePaths()
         {
             DateTime now = DateTime.Now;
@@ -129,17 +128,14 @@ namespace MCGalaxy
             }
             try
             {
-                // Failsafe in case something has gone catastrophically wrong
-                if (stream.Length > 1024 * 1024 * 1024)
+                if (stream.Length > 1073741824)
                 {
                     Cache.Clear();
                     return;
                 }
                 while (Cache.Count > 0)
                 {
-                    string item = Cache.Dequeue();
-                    item = Colors.Strip(item);
-                    writer.WriteLine(item);
+                    writer.WriteLine(Colors.Strip(Cache.Dequeue()));
                 }
                 writer.Flush();
             }

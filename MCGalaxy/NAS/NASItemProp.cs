@@ -3,13 +3,10 @@ namespace MCGalaxy
 {
     public partial class NASItemProp
     {
-        public string name,
-            color,
-            character;
+        public string name, color, character;
         public List<NASMaterial> materialsEffectiveAgainst;
         public int tier, recharge;
-        public float percentageOfTimeSaved,
-            baseHP, damage, armor, knockback;
+        public float percentageOfTimeSaved, baseHP, damage, armor, knockback;
         public Dictionary<string, bool> allowedEnchants = new();
         public static Dictionary<string, NASItemProp> props = new();
         public NASItemProp(string description, Dictionary<string, bool> enchants = null, NASMaterial effectiveAgainst = NASMaterial.None, float percentageOfTimeSaved = 0, int tier = 1)

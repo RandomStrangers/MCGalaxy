@@ -21,7 +21,11 @@ namespace MCGalaxy.Commands.Moderation
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0 || message.IndexOf(' ') != -1) { Help(p); return; }
+            if (message.Length == 0 || message.IndexOf(' ') != -1) 
+            { 
+                Help(p);
+                return; 
+            }
             Player target = PlayerInfo.FindMatches(p, message);
             if (target == null) return;
             target.ignoreGrief = !target.ignoreGrief;

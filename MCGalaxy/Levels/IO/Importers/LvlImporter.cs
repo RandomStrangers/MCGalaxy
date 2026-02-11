@@ -19,23 +19,20 @@ using System.IO.Compression;
 using System.Text;
 namespace MCGalaxy.Levels.IO
 {
-    //WARNING! DO NOT CHANGE THE WAY THE LEVEL IS SAVED/LOADED!
-    //You MUST make it able to save and load as a new version other wise you will make old levels incompatible!
     public sealed unsafe class LvlImporter : IMapImporter
     {
         public override string Extension => ".lvl";
         public override string Description => "MCDzienny/MCForge/MCGalaxy map";
-        const int HEADER_SIZE = 18;
         public override Vec3U16 ReadDimensions(Stream src)
         {
             using Stream gs = new GZipStream(src, CompressionMode.Decompress, true);
-            byte[] header = new byte[HEADER_SIZE];
+            byte[] header = new byte[18];
             return ReadHeader(gs, header);
         }
         public override Level Read(Stream src, string name, bool metadata)
         {
             using Stream gs = new GZipStream(src, CompressionMode.Decompress, true);
-            byte[] header = new byte[HEADER_SIZE];
+            byte[] header = new byte[18];
             Vec3U16 dims = ReadHeader(gs, header);
             Level lvl = new(name, dims.X, dims.Y, dims.Z)
             {
@@ -45,7 +42,6 @@ namespace MCGalaxy.Levels.IO
                 rotx = header[14],
                 roty = header[15]
             };
-            // pervisit/perbuild permission bytes ignored
             StreamUtils.ReadFully(gs, lvl.blocks, 0, lvl.blocks.Length);
             ReadCustomBlocksSection(lvl, gs);
             if (!metadata) return lvl;
@@ -53,19 +49,21 @@ namespace MCGalaxy.Levels.IO
             {
                 int section = gs.ReadByte();
                 if (section == 0xFC)
-                { // 'ph'ysics 'c'hecks
-                    ReadPhysicsSection(lvl, gs); continue;
+                {
+                    ReadPhysicsSection(lvl, gs); 
+                    continue;
                 }
                 if (section == 0x51)
-                { // 'z'one 'l'ist
-                    ReadZonesSection(lvl, gs); continue;
+                {
+                    ReadZonesSection(lvl, gs);
+                    continue;
                 }
                 return lvl;
             }
         }
         static Vec3U16 ReadHeader(Stream gs, byte[] header)
         {
-            StreamUtils.ReadFully(gs, header, 0, HEADER_SIZE);
+            StreamUtils.ReadFully(gs, header, 0, 18);
             int signature = MemUtils.ReadU16_LE(header, 0);
             if (signature != 1874)
                 throw new InvalidDataException("Invalid .lvl map signature");
@@ -82,7 +80,9 @@ namespace MCGalaxy.Levels.IO
             if (read == 0 || data[0] != 0xBD) return;
             int index = 0;
             for (int y = 0; y < lvl.ChunksY; y++)
+            {
                 for (int z = 0; z < lvl.ChunksZ; z++)
+                {
                     for (int x = 0; x < lvl.ChunksX; x++)
                     {
                         read = gs.Read(data, 0, 1);
@@ -94,6 +94,8 @@ namespace MCGalaxy.Levels.IO
                         }
                         index++;
                     }
+                }
+            }
         }
         static void ReadPhysicsSection(Level lvl, Stream gs)
         {
@@ -109,19 +111,23 @@ namespace MCGalaxy.Levels.IO
             byte[] buffer = new byte[Math.Min(count, 1024) * 8];
             Check C;
             fixed (byte* ptr = buffer)
+            {
                 for (int i = 0; i < count; i += 1024)
                 {
-                    int entries = Math.Min(1024, count - i);
-                    int read = gs.Read(buffer, 0, entries * 8);
+                    int entries = Math.Min(1024, count - i),
+                        read = gs.Read(buffer, 0, entries * 8);
                     if (read < entries * 8) return;
                     int* ptrInt = (int*)ptr;
                     for (int j = 0; j < entries; j++)
                     {
-                        C.Index = *ptrInt; ptrInt++;
-                        C.data.Raw = (uint)*ptrInt; ptrInt++;
+                        C.Index = *ptrInt;
+                        ptrInt++;
+                        C.data.Raw = (uint)*ptrInt;
+                        ptrInt++;
                         lvl.ListCheck.Items[i + j] = C;
                     }
                 }
+            }
         }
         static void ReadZonesSection(Level lvl, Stream gs)
         {
@@ -166,11 +172,7 @@ namespace MCGalaxy.Levels.IO
             }
             z.AddTo(lvl);
         }
-        static int TryRead_I32(byte[] buffer, Stream gs)
-        {
-            int read = gs.Read(buffer, 0, sizeof(int));
-            return read < sizeof(int) ? 0 : MemUtils.ReadI32_BE(buffer, 0);
-        }
+        static int TryRead_I32(byte[] buffer, Stream gs) => gs.Read(buffer, 0, sizeof(int)) < sizeof(int) ? 0 : MemUtils.ReadI32_BE(buffer, 0);
         static ushort Read_U16(byte[] buffer, Stream gs)
         {
             StreamUtils.ReadFully(gs, buffer, 0, sizeof(ushort));

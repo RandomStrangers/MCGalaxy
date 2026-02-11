@@ -44,19 +44,19 @@ namespace MCGalaxy
             int stonebrickDurMulti = 2;
             ushort[] set = new ushort[]
             {
-                NASPlugin.FromRaw(648)
+                Block.FromRaw(648)
             },
             set2 = new ushort[]
             {
-                NASPlugin.FromRaw(702)
+                Block.FromRaw(702)
             },
             set3 = new ushort[]
             {
-                NASPlugin.FromRaw(478)
+                Block.FromRaw(478)
             },
             set4 = new ushort[]
             {
-                NASPlugin.FromRaw(604)
+                Block.FromRaw(604)
             };
             ushort i;
             i = 8;
@@ -313,7 +313,7 @@ namespace MCGalaxy
                 disturbDelayMin = grassDelayMin,
                 disturbDelayMax = grassDelayMax,
                 disturbedAction = GrassBlockAction(256 | 129, 3),
-                interaction = StripInteraction(NASPlugin.FromRaw(547), "Shovel"),
+                interaction = StripInteraction(Block.FromRaw(547), "Shovel"),
                 dropHandler = (NasPlayer, dropID) =>
                 {
                     return NasPlayer.inventory.HeldItem.name == "Shears" ? new(129, 1) : new(3, 1);
@@ -323,7 +323,7 @@ namespace MCGalaxy
             blocks[i] = new(i, NASMaterial.Earth)
             {
                 disturbedAction = GrassBlockAction(256 | 139, 3),
-                interaction = StripInteraction(NASPlugin.FromRaw(547), "Shovel"),
+                interaction = StripInteraction(Block.FromRaw(547), "Shovel"),
                 dropHandler = (NasPlayer, dropID) =>
                 {
                     return NasPlayer.inventory.HeldItem.name == "Shears" ? new(139, 1) : new(3, 1);
@@ -345,7 +345,7 @@ namespace MCGalaxy
             {
                 disturbDelayMin = grassDelayMin,
                 disturbDelayMax = grassDelayMax,
-                interaction = StripInteraction(NASPlugin.FromRaw(547), "Shovel"),
+                interaction = StripInteraction(Block.FromRaw(547), "Shovel"),
                 disturbedAction = DirtBlockAction(grassSet, 3)
             };
             i = 685;
@@ -425,19 +425,19 @@ namespace MCGalaxy
             blocks[i] = new(i, NASMaterial.Wood)
             {
                 alternateID = 17,
-                interaction = StripInteraction(NASPlugin.FromRaw(546))
+                interaction = StripInteraction(Block.FromRaw(546))
             };
             i = 240;
             blocks[i] = new(i, blocks[242])
             {
                 alternateID = 15,
-                interaction = StripInteraction(NASPlugin.FromRaw(544))
+                interaction = StripInteraction(Block.FromRaw(544))
             };
             i = 241;
             blocks[i] = new(i, blocks[242])
             {
                 alternateID = 16,
-                interaction = StripInteraction(NASPlugin.FromRaw(545))
+                interaction = StripInteraction(Block.FromRaw(545))
             };
             i = 546;
             blocks[i] = new(i, NASMaterial.Wood);
@@ -503,19 +503,19 @@ namespace MCGalaxy
             blocks[i] = new(i, NASMaterial.Wood)
             {
                 alternateID = 17,
-                interaction = StripInteraction(NASPlugin.FromRaw(621))
+                interaction = StripInteraction(Block.FromRaw(621))
             };
             i = 248;
             blocks[i] = new(i, blocks[250])
             {
                 alternateID = 15,
-                interaction = StripInteraction(NASPlugin.FromRaw(619))
+                interaction = StripInteraction(Block.FromRaw(619))
             };
             i = 249;
             blocks[i] = new(i, blocks[250])
             {
                 alternateID = 16,
-                interaction = StripInteraction(NASPlugin.FromRaw(620))
+                interaction = StripInteraction(Block.FromRaw(620))
             };
             i = 621;
             blocks[i] = new(i, NASMaterial.Wood);
@@ -561,17 +561,17 @@ namespace MCGalaxy
             i = 17;
             blocks[i] = new(i, NASMaterial.Wood)
             {
-                interaction = StripInteraction(NASPlugin.FromRaw(585))
+                interaction = StripInteraction(Block.FromRaw(585))
             };
             i = 15;
             blocks[i] = new(i, blocks[17])
             {
-                interaction = StripInteraction(NASPlugin.FromRaw(583))
+                interaction = StripInteraction(Block.FromRaw(583))
             };
             i = 16;
             blocks[i] = new(i, blocks[17])
             {
-                interaction = StripInteraction(NASPlugin.FromRaw(584))
+                interaction = StripInteraction(Block.FromRaw(584))
             };
             i = 585;
             blocks[i] = new(i, NASMaterial.Wood);
@@ -590,14 +590,14 @@ namespace MCGalaxy
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed,
-                disturbedAction = FallingBlockAction(NASPlugin.FromRaw(i))
+                disturbedAction = FallingBlockAction(Block.FromRaw(i))
             };
             i = 656;
             blocks[i] = new(i, NASMaterial.Wood)
             {
                 disturbDelayMin = 0.75f,
                 disturbDelayMax = 0.75f,
-                disturbedAction = FallingBlockAction(NASPlugin.FromRaw(i))
+                disturbedAction = FallingBlockAction(Block.FromRaw(i))
             };
             i = 6;
             blocks[i] = new(i, NASMaterial.Plant)
@@ -649,49 +649,49 @@ namespace MCGalaxy
             i = 659;
             blocks[i] = new(i, NASMaterial.Wood)
             {
-                interaction = ChangeInteraction(NASPlugin.FromRaw(658)),
+                interaction = ChangeInteraction(Block.FromRaw(658)),
                 dropHandler = CustomDrop(659, 1)
             };
             i = 658;
             blocks[i] = new(i, blocks[659])
             {
-                interaction = ChangeInteraction(NASPlugin.FromRaw(659)),
+                interaction = ChangeInteraction(Block.FromRaw(659)),
                 dropHandler = CustomDrop(659, 1)
             };
             i = 660;
             blocks[i] = new(i, blocks[659])
             {
-                interaction = ChangeInteraction(NASPlugin.FromRaw(661)),
+                interaction = ChangeInteraction(Block.FromRaw(661)),
                 dropHandler = CustomDrop(659, 1)
             };
             i = 661;
             blocks[i] = new(i, blocks[659])
             {
-                interaction = ChangeInteraction(NASPlugin.FromRaw(660)),
+                interaction = ChangeInteraction(Block.FromRaw(660)),
                 dropHandler = CustomDrop(659, 1)
             };
             i = 662;
             blocks[i] = new(i, blocks[659])
             {
-                interaction = ChangeInteraction(NASPlugin.FromRaw(663)),
+                interaction = ChangeInteraction(Block.FromRaw(663)),
                 dropHandler = CustomDrop(659, 1)
             };
             i = 663;
             blocks[i] = new(i, blocks[659])
             {
-                interaction = ChangeInteraction(NASPlugin.FromRaw(662)),
+                interaction = ChangeInteraction(Block.FromRaw(662)),
                 dropHandler = CustomDrop(659, 1)
             };
             i = 664;
             blocks[i] = new(i, blocks[659])
             {
-                interaction = ChangeInteraction(NASPlugin.FromRaw(665)),
+                interaction = ChangeInteraction(Block.FromRaw(665)),
                 dropHandler = CustomDrop(659, 1)
             };
             i = 665;
             blocks[i] = new(i, blocks[659])
             {
-                interaction = ChangeInteraction(NASPlugin.FromRaw(664)),
+                interaction = ChangeInteraction(Block.FromRaw(664)),
                 dropHandler = CustomDrop(659, 1)
             };
             i = 12;
@@ -757,14 +757,14 @@ namespace MCGalaxy
             i = 666;
             blocks[i] = new(i, NASMaterial.Leaves)
             {
-                disturbedAction = LeafBlockAction(logSet, NASPlugin.FromRaw(i)),
+                disturbedAction = LeafBlockAction(logSet, Block.FromRaw(i)),
                 disturbDelayMin = 1f,
                 disturbDelayMax = 1.5f
             };
             i = 686;
             blocks[i] = new(i, NASMaterial.Leaves)
             {
-                disturbedAction = LeafBlockAction(logSet, NASPlugin.FromRaw(i)),
+                disturbedAction = LeafBlockAction(logSet, Block.FromRaw(i)),
                 disturbDelayMin = 1f,
                 disturbDelayMax = 1.5f
             };
@@ -800,23 +800,23 @@ namespace MCGalaxy
             i = 687;
             blocks[i] = new(i, NASMaterial.Glass)
             {
-                disturbedAction = LampAction(NASPlugin.FromRaw(688), NASPlugin.FromRaw(687), NASPlugin.FromRaw(687))
+                disturbedAction = LampAction(Block.FromRaw(688), Block.FromRaw(687), Block.FromRaw(687))
             };
             i++;
             blocks[i] = new(i, NASMaterial.Glass)
             {
-                disturbedAction = LampAction(NASPlugin.FromRaw(688), NASPlugin.FromRaw(687), NASPlugin.FromRaw(688)),
+                disturbedAction = LampAction(Block.FromRaw(688), Block.FromRaw(687), Block.FromRaw(688)),
                 dropHandler = CustomDrop(687, 1)
             };
             i = 178;
             blocks[i] = new(i, NASMaterial.Stone)
             {
-                disturbedAction = LampAction(NASPlugin.FromRaw(179), NASPlugin.FromRaw(178), NASPlugin.FromRaw(178))
+                disturbedAction = LampAction(Block.FromRaw(179), Block.FromRaw(178), Block.FromRaw(178))
             };
             i = 179;
             blocks[i] = new(i, NASMaterial.Stone)
             {
-                disturbedAction = LampAction(NASPlugin.FromRaw(179), NASPlugin.FromRaw(178), NASPlugin.FromRaw(179)),
+                disturbedAction = LampAction(Block.FromRaw(179), Block.FromRaw(178), Block.FromRaw(179)),
                 collideAction = SpikeCollideAction(),
                 dropHandler = CustomDrop(178, 1)
             };
@@ -991,7 +991,7 @@ namespace MCGalaxy
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed,
-                disturbedAction = FallingBlockAction(NASPlugin.FromRaw(i))
+                disturbedAction = FallingBlockAction(Block.FromRaw(i))
             };
             i = 60;
             blocks[i] = new(i, NASMaterial.Stone, 8);
@@ -1031,7 +1031,7 @@ namespace MCGalaxy
             i = 104;
             blocks[i] = new(i, NASMaterial.Leaves)
             {
-                disturbedAction = LeafBlockAction(logSet, NASPlugin.FromRaw(i)),
+                disturbedAction = LeafBlockAction(logSet, Block.FromRaw(i)),
                 disturbDelayMin = leafShrivelDelayMin,
                 disturbDelayMax = leafShrivelDelayMax
             };
@@ -1257,7 +1257,7 @@ namespace MCGalaxy
             {
                 disturbDelayMin = fallSpeed / 2f,
                 disturbDelayMax = fallSpeed / 2f,
-                disturbedAction = FallingBlockAction(NASPlugin.FromRaw(i))
+                disturbedAction = FallingBlockAction(Block.FromRaw(i))
             };
             i = 729;
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Metal], 1)
@@ -1302,27 +1302,27 @@ namespace MCGalaxy
             {
                 disturbDelayMin = sugarGrowMin,
                 disturbDelayMax = sugarGrowMax,
-                disturbedAction = GrowAction(NASPlugin.FromRaw(i))
+                disturbedAction = GrowAction(Block.FromRaw(i))
             };
             i = 106;
             blocks[i] = new(i, NASMaterial.Plant)
             {
                 disturbDelayMin = sugarGrowMin,
                 disturbDelayMax = sugarGrowMax,
-                disturbedAction = GrowAction(NASPlugin.FromRaw(i))
+                disturbedAction = GrowAction(Block.FromRaw(i))
             };
             i = 107;
             blocks[i] = new(i, NASMaterial.Plant)
             {
                 disturbDelayMin = sugarGrowMin / 5f,
                 disturbDelayMax = sugarGrowMax / 5f,
-                disturbedAction = VineGrowAction(NASPlugin.FromRaw(i)),
+                disturbedAction = VineGrowAction(Block.FromRaw(i)),
                 instantAction = VineDeathAction()
             };
             i = 146;
             blocks[i] = new(i, NASMaterial.Leaves)
             {
-                disturbedAction = LeafBlockAction(logSet, NASPlugin.FromRaw(146)),
+                disturbedAction = LeafBlockAction(logSet, Block.FromRaw(146)),
                 disturbDelayMin = leafShrivelDelayMin,
                 disturbDelayMax = leafShrivelDelayMax,
                 dropHandler = (NasPlayer, dropID) =>
@@ -1438,7 +1438,7 @@ namespace MCGalaxy
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed,
-                disturbedAction = FallingBlockAction(NASPlugin.FromRaw(i)),
+                disturbedAction = FallingBlockAction(Block.FromRaw(i)),
                 interaction = EatInteraction(set, 0, 1f)
             };
             i = 702;
@@ -1446,7 +1446,7 @@ namespace MCGalaxy
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed,
-                disturbedAction = FallingBlockAction(NASPlugin.FromRaw(i)),
+                disturbedAction = FallingBlockAction(Block.FromRaw(i)),
                 interaction = EatInteraction(set2, 0, 1f)
             };
             i = 478;
@@ -1454,7 +1454,7 @@ namespace MCGalaxy
             {
                 disturbDelayMin = fallSpeed / 2f,
                 disturbDelayMax = fallSpeed / 2f,
-                disturbedAction = FallingBlockAction(NASPlugin.FromRaw(i)),
+                disturbedAction = FallingBlockAction(Block.FromRaw(i)),
                 interaction = EatInteraction(set3, 0, 10f, 0.5f)
             };
             i = 36;
@@ -1594,7 +1594,7 @@ namespace MCGalaxy
             {
                 disturbDelayMin = fallSpeed,
                 disturbDelayMax = fallSpeed,
-                disturbedAction = FallingBlockAction(NASPlugin.FromRaw(i)),
+                disturbedAction = FallingBlockAction(Block.FromRaw(i)),
                 collideAction = AirCollideAction()
             };
             i = 696;
@@ -1612,25 +1612,25 @@ namespace MCGalaxy
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Metal], 1)
             {
                 existAction = WireExistAction(0, 4),
-                disturbedAction = UnrefinedGoldAction(NASPlugin.FromRaw(237), NASPlugin.FromRaw(672), NASPlugin.FromRaw(672))
+                disturbedAction = UnrefinedGoldAction(Block.FromRaw(237), Block.FromRaw(672), Block.FromRaw(672))
             };
             i = 237;
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Metal], 1)
             {
                 existAction = WireBreakAction(),
-                disturbedAction = UnrefinedGoldAction(NASPlugin.FromRaw(237), NASPlugin.FromRaw(672), NASPlugin.FromRaw(237)),
+                disturbedAction = UnrefinedGoldAction(Block.FromRaw(237), Block.FromRaw(672), Block.FromRaw(237)),
                 dropHandler = CustomDrop(672, 1)
             };
             i = 674;
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Metal], 1)
             {
-                interaction = ChangeInteraction(NASPlugin.FromRaw(675)),
+                interaction = ChangeInteraction(Block.FromRaw(675)),
                 existAction = WireExistAction(0, 4)
             };
             i = 675;
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Metal], 1)
             {
-                interaction = ChangeInteraction(NASPlugin.FromRaw(674)),
+                interaction = ChangeInteraction(Block.FromRaw(674)),
                 dropHandler = CustomDrop(674, 1),
                 existAction = WireExistAction(15, 4)
             };
@@ -1643,7 +1643,7 @@ namespace MCGalaxy
             i = 195;
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Metal], 1)
             {
-                interaction = ChangeInteraction(NASPlugin.FromRaw(196)),
+                interaction = ChangeInteraction(Block.FromRaw(196)),
                 existAction = WireExistAction(0, 4)
             };
             i = 196;
@@ -1779,71 +1779,71 @@ namespace MCGalaxy
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Metal], 1)
             {
                 existAction = WireExistAction(0, 1),
-                disturbedAction = WireAction(wireSetActive, wireSetInactive, 1, NASPlugin.FromRaw(550))
+                disturbedAction = WireAction(wireSetActive, wireSetInactive, 1, Block.FromRaw(550))
             };
             i++;
             blocks[i] = new(i, blocks[550])
             {
                 existAction = WireExistAction(0, 0),
-                disturbedAction = WireAction(wireSetActive, wireSetInactive, 0, NASPlugin.FromRaw(551))
+                disturbedAction = WireAction(wireSetActive, wireSetInactive, 0, Block.FromRaw(551))
             };
             i++;
             blocks[i] = new(i, blocks[550])
             {
                 existAction = WireExistAction(0, 2),
-                disturbedAction = WireAction(wireSetActive, wireSetInactive, 2, NASPlugin.FromRaw(552))
+                disturbedAction = WireAction(wireSetActive, wireSetInactive, 2, Block.FromRaw(552))
             };
             i = 682;
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Metal], 1)
             {
-                disturbedAction = WireAction(wireSetActive, wireSetInactive, 1, NASPlugin.FromRaw(682)),
+                disturbedAction = WireAction(wireSetActive, wireSetInactive, 1, Block.FromRaw(682)),
                 existAction = WireBreakAction(),
                 dropHandler = CustomDrop(550, 1)
             };
             i++;
             blocks[i] = new(i, blocks[682])
             {
-                disturbedAction = WireAction(wireSetActive, wireSetInactive, 0, NASPlugin.FromRaw(683))
+                disturbedAction = WireAction(wireSetActive, wireSetInactive, 0, Block.FromRaw(683))
             };
             i++;
             blocks[i] = new(i, blocks[682])
             {
-                disturbedAction = WireAction(wireSetActive, wireSetInactive, 2, NASPlugin.FromRaw(684))
+                disturbedAction = WireAction(wireSetActive, wireSetInactive, 2, Block.FromRaw(684))
             };
             i = 732;
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Metal], 1)
             {
                 existAction = WireExistAction(0, 12),
-                disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 1, NASPlugin.FromRaw(732))
+                disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 1, Block.FromRaw(732))
             };
             i++;
             blocks[i] = new(i, blocks[732])
             {
                 existAction = WireExistAction(0, 11),
-                disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 0, NASPlugin.FromRaw(733))
+                disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 0, Block.FromRaw(733))
             };
             i++;
             blocks[i] = new(i, blocks[732])
             {
                 existAction = WireExistAction(0, 13),
-                disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 2, NASPlugin.FromRaw(734))
+                disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 2, Block.FromRaw(734))
             };
             i++;
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Metal], 1)
             {
-                disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 1, NASPlugin.FromRaw(735)),
+                disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 1, Block.FromRaw(735)),
                 existAction = WireBreakAction(),
                 dropHandler = CustomDrop(732, 1)
             };
             i++;
             blocks[i] = new(i, blocks[735])
             {
-                disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 0, NASPlugin.FromRaw(736))
+                disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 0, Block.FromRaw(736))
             };
             i++;
             blocks[i] = new(i, blocks[735])
             {
-                disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 2, NASPlugin.FromRaw(737))
+                disturbedAction = WireAction(fixedWireSetActive, fixedWireSetInactive, 2, Block.FromRaw(737))
             };
             i = 172;
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Metal], 1)
@@ -1851,7 +1851,7 @@ namespace MCGalaxy
                 existAction = WireExistAction(0, 5),
                 disturbDelayMin = 0f,
                 disturbDelayMax = 0f,
-                disturbedAction = RepeaterAction(5, NASPlugin.FromRaw(172))
+                disturbedAction = RepeaterAction(5, Block.FromRaw(172))
             };
             i++;
             blocks[i] = new(i, blocks[172])
@@ -1859,7 +1859,7 @@ namespace MCGalaxy
                 existAction = WireExistAction(0, 6),
                 disturbDelayMin = 0f,
                 disturbDelayMax = 0f,
-                disturbedAction = RepeaterAction(6, NASPlugin.FromRaw(173))
+                disturbedAction = RepeaterAction(6, Block.FromRaw(173))
             };
             i++;
             blocks[i] = new(i, blocks[172])
@@ -1867,7 +1867,7 @@ namespace MCGalaxy
                 existAction = WireExistAction(0, 7),
                 disturbDelayMin = 0f,
                 disturbDelayMax = 0f,
-                disturbedAction = RepeaterAction(7, NASPlugin.FromRaw(174))
+                disturbedAction = RepeaterAction(7, Block.FromRaw(174))
             };
             i++;
             blocks[i] = new(i, blocks[172])
@@ -1875,7 +1875,7 @@ namespace MCGalaxy
                 existAction = WireExistAction(0, 8),
                 disturbDelayMin = 0f,
                 disturbDelayMax = 0f,
-                disturbedAction = RepeaterAction(8, NASPlugin.FromRaw(175))
+                disturbedAction = RepeaterAction(8, Block.FromRaw(175))
             };
             i++;
             blocks[i] = new(i, blocks[172])
@@ -1883,7 +1883,7 @@ namespace MCGalaxy
                 existAction = WireExistAction(0, 9),
                 disturbDelayMin = 0f,
                 disturbDelayMax = 0f,
-                disturbedAction = RepeaterAction(9, NASPlugin.FromRaw(176))
+                disturbedAction = RepeaterAction(9, Block.FromRaw(176))
             };
             i++;
             blocks[i] = new(i, blocks[172])
@@ -1891,7 +1891,7 @@ namespace MCGalaxy
                 existAction = WireExistAction(0, 10),
                 disturbDelayMin = 0f,
                 disturbDelayMax = 0f,
-                disturbedAction = RepeaterAction(10, NASPlugin.FromRaw(177))
+                disturbedAction = RepeaterAction(10, Block.FromRaw(177))
             };
             i = 613;
             blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Metal], 1)
@@ -1899,7 +1899,7 @@ namespace MCGalaxy
                 existAction = WireBreakAction(),
                 disturbDelayMin = 0f,
                 disturbDelayMax = 0f,
-                disturbedAction = RepeaterAction(5, NASPlugin.FromRaw(613)),
+                disturbedAction = RepeaterAction(5, Block.FromRaw(613)),
                 dropHandler = CustomDrop(172, 1)
             };
             i++;
@@ -1907,7 +1907,7 @@ namespace MCGalaxy
             {
                 disturbDelayMin = 0f,
                 disturbDelayMax = 0f,
-                disturbedAction = RepeaterAction(6, NASPlugin.FromRaw(614)),
+                disturbedAction = RepeaterAction(6, Block.FromRaw(614)),
                 dropHandler = CustomDrop(172, 1)
             };
             i++;
@@ -1915,7 +1915,7 @@ namespace MCGalaxy
             {
                 disturbDelayMin = 0f,
                 disturbDelayMax = 0f,
-                disturbedAction = RepeaterAction(7, NASPlugin.FromRaw(615)),
+                disturbedAction = RepeaterAction(7, Block.FromRaw(615)),
                 dropHandler = CustomDrop(172, 1)
             };
             i++;
@@ -1923,7 +1923,7 @@ namespace MCGalaxy
             {
                 disturbDelayMin = 0f,
                 disturbDelayMax = 0f,
-                disturbedAction = RepeaterAction(8, NASPlugin.FromRaw(616)),
+                disturbedAction = RepeaterAction(8, Block.FromRaw(616)),
                 dropHandler = CustomDrop(172, 1)
             };
             i++;
@@ -1931,7 +1931,7 @@ namespace MCGalaxy
             {
                 disturbDelayMin = 0f,
                 disturbDelayMax = 0f,
-                disturbedAction = RepeaterAction(9, NASPlugin.FromRaw(617)),
+                disturbedAction = RepeaterAction(9, Block.FromRaw(617)),
                 dropHandler = CustomDrop(172, 1)
             };
             i++;
@@ -1939,7 +1939,7 @@ namespace MCGalaxy
             {
                 disturbDelayMin = 0f,
                 disturbDelayMax = 0f,
-                disturbedAction = RepeaterAction(10, NASPlugin.FromRaw(618)),
+                disturbedAction = RepeaterAction(10, Block.FromRaw(618)),
                 dropHandler = CustomDrop(172, 1)
             };
             i = 610;

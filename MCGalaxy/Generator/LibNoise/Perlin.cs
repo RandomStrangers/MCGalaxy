@@ -40,7 +40,6 @@ namespace MCGalaxy
             for (int octave = 0; octave < OctaveCount; octave++)
             {
                 double signal = GradientNoise.GradientCoherentNoise(x, y, z, Seed + octave);
-                //signal = cachedNoise3(x, y, z);
                 value += signal * curPersistence;
                 x *= Lacunarity;
                 y *= Lacunarity;

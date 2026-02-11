@@ -171,8 +171,7 @@ namespace MCGalaxy
         public AccessController CanAffect(Player p, ushort x, ushort y, ushort z)
         {
             Zone[] zones = Zones.Items;
-            if (zones.Length == 0) goto checkRank; // TODO: avoid this
-            // Check zones specifically allowed in
+            if (zones.Length == 0) goto checkRank;
             for (int i = 0; i < zones.Length; i++)
             {
                 Zone zn = zones[i];
@@ -182,7 +181,6 @@ namespace MCGalaxy
                 if (p.group.Permission >= cfg.BuildMin) return null;
                 if (cfg.BuildWhitelist.Count > 0 && cfg.BuildWhitelist.CaselessContains(p.name)) return null;
             }
-            // Check zones denied from
             for (int i = 0; i < zones.Length; i++)
             {
                 Zone zn = zones[i];
@@ -275,7 +273,7 @@ namespace MCGalaxy
         }
         public void Blockchange(int b, ushort block, bool overRide = false,
                                 PhysicsArgs data = default, bool addUndo = true)
-        { //Block change made by physics
+        {
             if (!DoPhysicsBlockchange(b, block, overRide, data, addUndo)) return;
             IntToPos(b, out ushort x, out ushort y, out ushort z);
             BroadcastChange(x, y, z, block);
@@ -341,7 +339,6 @@ namespace MCGalaxy
                 {
                     AddCheck(b, false, data);
                 }
-                // Save bandwidth not sending identical looking blocks, like air/op_air changes.
                 return !Block.VisuallyEquals(old, block);
             }
             catch

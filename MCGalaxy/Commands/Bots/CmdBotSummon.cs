@@ -25,21 +25,35 @@ namespace MCGalaxy.Commands.Bots
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            {
+                Help(p);
+                return; 
+            }
             if (!LevelInfo.Check(p, data.Rank, p.Level, "summon that bot")) return;
             string[] args = message.SplitSpaces(2);
             PlayerBot bot = Matcher.FindBots(p, args[0]);
             if (bot == null) return;
-            if (!bot.EditableBy(p, "summon")) { return; }
-            Position pos; byte yaw, pitch;
+            if (!bot.EditableBy(p, "summon")) 
+            {
+                return;
+            }
+            Position pos;
+            byte yaw, pitch;
             if (args.Length == 1)
             {
-                pos = p.Pos; yaw = p.Rot.RotY; pitch = p.Rot.HeadX;
+                pos = p.Pos; 
+                yaw = p.Rot.RotY; 
+                pitch = p.Rot.HeadX;
             }
             else
             {
                 args = args[1].SplitSpaces();
-                if (args.Length < 3) { Help(p); return; }
+                if (args.Length < 3)
+                { 
+                    Help(p);
+                    return; 
+                }
                 if (!CmdTp.GetTeleportCoords(p, bot, args, false, out pos, out yaw, out pitch)) return;
             }
             bot.Pos = pos; bot.SetYawPitch(yaw, pitch);

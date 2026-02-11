@@ -93,7 +93,6 @@ namespace MCGalaxy.Eco
             }
             else
             {
-                // use a numbered map by default
                 for (int i = 1; i < 100; i++)
                 {
                     name = p.name + "_" + i;

@@ -8,9 +8,8 @@ namespace MCGalaxy
     {
         [JsonIgnore] public ColorDesc[] selectorColors = NASColor.defaultColors;
         [JsonIgnore] public NASItem HeldItem => items[selectedItemIndex] ?? NASItem.Fist;
-        [JsonIgnore] public bool bagOpen = false;
+        [JsonIgnore] public bool bagOpen = false, deleting = false;
         [JsonIgnore] public int slotToMoveTo = -1;
-        [JsonIgnore] public bool deleting = false;
         public NASItem[] items = new NASItem[27];
         public int selectedItemIndex = 0;
         public bool GetItem(NASItem item)
@@ -97,14 +96,16 @@ namespace MCGalaxy
             if (slotToMoveTo != -1)
             {
                 MoveBar(direction, ref slotToMoveTo);
-                return;
             }
-            MoveBar(direction, ref selectedItemIndex);
-            if (heldItemBeforeScrolled != HeldItem)
+            else
             {
-                NASPlayer.StartCooldown(p, np.inventory.HeldItem.Prop.recharge);
-                np.ResetBreaking();
-                NASEffect.UndefineEffect(p, 249);
+                MoveBar(direction, ref selectedItemIndex);
+                if (heldItemBeforeScrolled != HeldItem)
+                {
+                    NASPlayer.StartCooldown(p, np.inventory.HeldItem.Prop.recharge);
+                    np.ResetBreaking();
+                    NASEffect.UndefineEffect(p, 249);
+                }
             }
         }
         public void MoveBar(int direction, ref int selection)
@@ -144,9 +145,11 @@ namespace MCGalaxy
                 DisplayItemBar(0, "&7↑ª", "&7ª↑", CpeMessageType.BottomRight3);
                 DisplayItemBar(9, "&7←¥", "&7₧→", CpeMessageType.BottomRight2);
                 DisplayItemBar(18, "&7↓º", "&7º↓", CpeMessageType.BottomRight1);
-                return;
             }
-            DisplayItemBar();
+            else
+            {
+                DisplayItemBar();
+            }
         }
         public void DisplayItemBar(int offset = 0, string prefix = "&7←«", string suffix = "%7»→",
                                    CpeMessageType location = CpeMessageType.BottomRight1)
@@ -245,8 +248,7 @@ namespace MCGalaxy
                 }
             }
             builder.Append(suffix);
-            string final = builder.ToString();
-            SendCpeMessage(location, final);
+            SendCpeMessage(location, builder.ToString());
         }
         public void DeleteItem(bool confirmed = false)
         {
@@ -255,32 +257,30 @@ namespace MCGalaxy
                 return;
             }
             NASItem item = items[selectedItemIndex];
-            if (item == null)
+            if (item != null)
             {
-                return;
-            }
-            if (deleting)
-            {
+                if (deleting)
+                {
+                    if (!confirmed)
+                    {
+                        Message("Are you sure you want to delete {0}&S?", item.displayName);
+                        Message("Press P to Put it in the trash.");
+                        return;
+                    }
+                    Message("Deleted {0}.", item.name);
+                    items[selectedItemIndex] = null;
+                    deleting = false;
+                    UpdateItemDisplay();
+                    return;
+                }
                 if (!confirmed)
                 {
                     Message("Are you sure you want to delete {0}&S?", item.displayName);
                     Message("Press P to Put it in the trash.");
-                    return;
+                    deleting = true;
+                    UpdateItemDisplay();
                 }
-                Message("Deleted {0}.", item.name);
-                items[selectedItemIndex] = null;
-                deleting = false;
-                UpdateItemDisplay();
-                return;
             }
-            if (confirmed)
-            {
-                return;
-            }
-            Message("Are you sure you want to delete {0}&S?", item.displayName);
-            Message("Press P to Put it in the trash.");
-            deleting = true;
-            UpdateItemDisplay();
         }
         public void BreakItem(ref NASItem item)
         {
@@ -310,17 +310,16 @@ namespace MCGalaxy
                 {10,"X"},
             };
             NASItem item = items[selectedItemIndex];
-            if (item == null)
+            if (item != null)
             {
-                return;
-            }
-            Message("Tool name: {0}", item.displayName);
-            Message("Tool durability: {0}/{1}", item.HP, item.Prop.baseHP);
-            foreach (KeyValuePair<string, int> x in item.enchants)
-            {
-                if (x.Value > 0)
+                Message("Tool name: {0}", item.displayName);
+                Message("Tool durability: {0}/{1}", item.HP, item.Prop.baseHP);
+                foreach (KeyValuePair<string, int> x in item.enchants)
                 {
-                    Message(x.Key + " " + nums[x.Value]);
+                    if (x.Value > 0)
+                    {
+                        Message(x.Key + " " + nums[x.Value]);
+                    }
                 }
             }
         }

@@ -63,7 +63,6 @@ namespace MCGalaxy.Commands.World
             string[] words = message.SplitSpaces();
             if (words.Length < 2)
             {
-                //Cannot be seen with os since two args guaranteed provided
                 p.Message("You must provide a level name and the backup to delete.");
                 p.Message("A backup is usually a number, but may also be named.");
                 p.Message("See &T/help restore &7to display backups.");
@@ -81,8 +80,6 @@ namespace MCGalaxy.Commands.World
                 }
                 else
                 {
-                    // Don't use message, since they could have typed /deletebackup earth 1 derp
-                    // and it should not tell you to type "[...] derp confirm"
                     p.Message("If you are sure, type &T/deletebackup {0} {1} confirm", map, backup);
                 }
                 return;

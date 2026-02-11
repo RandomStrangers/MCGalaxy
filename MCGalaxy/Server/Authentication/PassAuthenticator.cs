@@ -28,11 +28,7 @@ namespace MCGalaxy.Authentication
             Activate();
         }
         public static bool HasPassword(string name) => GetHashPath(name) != null;
-        public static bool VerifyPassword(string name, string password)
-        {
-            string path = GetHashPath(name);
-            return path != null && CheckHash(path, name, password);
-        }
+        public static bool VerifyPassword(string name, string password) => GetHashPath(name) != null && CheckHash(GetHashPath(name), name, password);
         public static void StorePassword(string name, string password)
         {
             Directory.CreateDirectory("extra/passwords/");
@@ -40,12 +36,11 @@ namespace MCGalaxy.Authentication
         }
         public static bool ResetPassword(string name)
         {
-            string path = GetHashPath(name);
-            if (path == null)
+            if (GetHashPath(name) == null)
             {
                 return false;
             }
-            FileIO.TryDelete(path);
+            FileIO.TryDelete(GetHashPath(name));
             return true;
         }
         static string GetHashPath(string name) => File.Exists(HashPath(name)) ? HashPath(name) : null;
@@ -81,15 +76,13 @@ namespace MCGalaxy.Authentication
         }
         public static void AutoVerify(Player p, string mppass)
         {
-            if (!HasPassword(p.name))
+            if (HasPassword(p.name))
             {
-                return;
+                if (VerifyPassword(p.name, mppass))
+                {
+                    Verify(p);
+                }
             }
-            if (!VerifyPassword(p.name, mppass))
-            {
-                return;
-            }
-            Verify(p);
         }
         protected static void Activate()
         {

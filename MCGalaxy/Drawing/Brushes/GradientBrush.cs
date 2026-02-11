@@ -29,7 +29,9 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name => "Gradient";
         public override void Configure(DrawOp op, Player p)
         {
-            xLen = op.SizeX; yLen = op.SizeY; zLen = op.SizeZ;
+            xLen = op.SizeX; 
+            yLen = op.SizeY; 
+            zLen = op.SizeZ;
             if (axis <= CustomModelAnimAxis.Z)
             {
                 _axis = axis;

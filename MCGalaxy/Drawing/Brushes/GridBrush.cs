@@ -31,16 +31,17 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name => "Grid";
         public override ushort NextBlock(DrawOp op)
         {
-            int dx = (op.Coords.X - op.Min.X) % blocksCount; if (dx < 0) dx += blocksCount;
-            int dy = (op.Coords.Y - op.Min.Y) % blocksCount; if (dy < 0) dy += blocksCount;
-            int dz = (op.Coords.Z - op.Min.Z) % blocksCount; if (dz < 0) dz += blocksCount;
-            // On the grid boundary planes
-            if (dx < gridSize || dy < gridSize || dz < gridSize)
-            {
-                if (dx < gridSize && dz < gridSize) return gridBlock;
-                return dx < gridSize && dy < gridSize ? gridBlock : dy < gridSize && dz < gridSize ? gridBlock : borderBlock;
-            }
-            return cellBlock;
+            int dx = (op.Coords.X - op.Min.X) % blocksCount; 
+            if (dx < 0) dx += blocksCount;
+            int dy = (op.Coords.Y - op.Min.Y) % blocksCount; 
+            if (dy < 0) dy += blocksCount;
+            int dz = (op.Coords.Z - op.Min.Z) % blocksCount;
+            if (dz < 0) dz += blocksCount;
+            return dx < gridSize || dy < gridSize || dz < gridSize
+                ? dx < gridSize && dz < gridSize
+                    ? gridBlock
+                    : dx < gridSize && dy < gridSize ? gridBlock : dy < gridSize && dz < gridSize ? gridBlock : borderBlock
+                : cellBlock;
         }
     }
 }

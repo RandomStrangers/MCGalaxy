@@ -128,11 +128,9 @@ namespace MCGalaxy.Blocks
             while ((line = r.ReadLine()) != null)
             {
                 if (line.IsCommentLine()) continue;
-                // Format - ID : Lowest : Disallow : Allow
                 line.Replace(" ", "").FixedSplit(args, ':');
                 if (!ushort.TryParse(args[0], out ushort block))
                 {
-                    // Old format - Name : Lowest : Disallow : Allow
                     block = Block.Parse(Player.Console, args[0]);
                 }
                 if (block == 0xff) continue;

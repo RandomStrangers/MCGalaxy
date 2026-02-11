@@ -24,7 +24,11 @@ namespace MCGalaxy.Commands.World
         public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { LevelOperations.OutputBackups(p, p.Level); return; }
+            if (message.Length == 0) 
+            {
+                LevelOperations.OutputBackups(p, p.Level);
+                return; 
+            }
             Level lvl;
             string[] args = message.SplitSpaces();
             if (args.Length >= 2)
@@ -36,7 +40,8 @@ namespace MCGalaxy.Commands.World
             {
                 if (p.IsSuper)
                 {
-                    SuperRequiresArgs(p, "level name"); return;
+                    SuperRequiresArgs(p, "level name");
+                    return;
                 }
                 lvl = p.Level;
             }
@@ -56,7 +61,6 @@ namespace MCGalaxy.Commands.World
         {
             lock (lvl.saveLock)
             {
-                //File.Copy(LevelInfo.BackupFilePath(lvl.name, backup), LevelInfo.MapPath(lvl.name), true);
                 FileIO.TryCopy(LevelInfo.BackupFilePath(lvl.name, backup), LevelInfo.MapPath(lvl.name), true);
                 lvl.SaveChanges = false;
             }
@@ -68,7 +72,6 @@ namespace MCGalaxy.Commands.World
             else
             {
                 Logger.Log(LogType.Warning, "Restore nulled");
-                //File.Copy(LevelInfo.MapPath(lvl.name) + ".backup", LevelInfo.MapPath(lvl.name), true);
                 FileIO.TryCopy(LevelInfo.MapPath(lvl.name) + ".backup", LevelInfo.MapPath(lvl.name), true);
             }
         }

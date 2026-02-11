@@ -37,9 +37,9 @@ namespace MCGalaxy.Commands.Moderation
             if (reason.Length == 0 || reason[0] != '@') return reason;
             reason = reason.Substring(1);
             if (!NumberUtils.TryParseInt32(reason, out ruleNum)) return "@" + reason;
-            // Treat @num as a shortcut for rule #num
             Dictionary<int, string> sections = GetRuleSections();
-            sections.TryGetValue(ruleNum, out string rule); return rule;
+            sections.TryGetValue(ruleNum, out string rule); 
+            return rule;
         }
         static Dictionary<int, string> GetRuleSections()
         {
@@ -57,13 +57,12 @@ namespace MCGalaxy.Commands.Moderation
             for (int i = 0; i < rule.Length; i++)
             {
                 char c = rule[i];
-                bool isNumber = c >= '0' && c <= '9';
-                bool isLetter = (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+                bool isNumber = c >= '0' && c <= '9',
+                    isLetter = (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
                 if (!isNumber && !isLetter) continue;
-                // Found start of a word, but didn't find a number - assume this is a non-numbered rule
                 if (isLetter && ruleNum == -1) return;
                 if (isNumber)
-                { // e.g. line is: 1) Do not do X
+                {
                     if (ruleNum == -1) ruleNum = 0;
                     ruleNum *= 10;
                     ruleNum += c - '0';
@@ -126,7 +125,8 @@ namespace MCGalaxy.Commands.Moderation
         {
             if (p.name.CaselessEq(target))
             {
-                p.Message("You cannot {0} yourself", action); return null;
+                p.Message("You cannot {0} yourself", action);
+                return null;
             }
             Group group = PlayerInfo.GetGroup(target);
             return !Command.CheckRank(p, data, target, group.Permission, action, false) ? null : group;
@@ -142,10 +142,8 @@ namespace MCGalaxy.Commands.Moderation
             if (confirmed != null) reason = confirmed;
             if (match != null)
             {
-                // Does matching name exactly equal name given by user?
                 if (Server.ToRawUsername(match).CaselessEq(Server.ToRawUsername(name)))
                     return match;
-                // Not an exact match, user might have made a mistake
                 p.Message("1 player matches \"{0}\": {1}", name, match);
             }
             if (confirmed != null) return name;
@@ -158,20 +156,20 @@ namespace MCGalaxy.Commands.Moderation
         {
             Player target = PlayerInfo.FindMatches(p, name, out int matches);
             if (matches > 1) return null;
-            if (matches == 1) { name = target.name; return name; }
+            if (matches == 1) 
+            { 
+                name = target.name; 
+                return name; 
+            }
             p.Message("Searching PlayerDB...");
             return PlayerDB.MatchNames(p, name);
         }
-        static string IsConfirmed(string reason)
-        {
-            if (reason == null) return null;
-            return reason.CaselessEq("confirm")
+        static string IsConfirmed(string reason) => reason == null
+                ? null
+                : reason.CaselessEq("confirm")
                 ? ""
                 : reason.CaselessEnds(" confirm") ? reason.Substring(0, reason.Length - " confirm".Length) : null;
-        }
-        static bool ValidIP(string str) =>
-            // IPAddress.TryParse returns "0.0.0.123" for "123", we do not want that behaviour
-            str.IndexOf(':') >= 0 || str.Split('.').Length == 4;
+        static bool ValidIP(string str) => str.IndexOf(':') >= 0 || str.Split('.').Length == 4;
         /// <summary> Attempts to either parse the message directly as an IP,
         /// or finds the IP of the account whose name matches the message. </summary>
         /// <remarks> "@input" can be used to always find IP by matching account name. <br/>
@@ -182,17 +180,18 @@ namespace MCGalaxy.Commands.Moderation
             if (IPAddress.TryParse(message, out _) && ValidIP(message))
             {
                 string account = Server.FromRawUsername(message);
-                // TODO ip.ToString()
                 if (PlayerDB.FindName(account) == null) return message;
-                // ClassiCube.net used to allow registering accounts with . anywhere in name,
-                //  so some older names can be parsed as valid IPs. Warn in this case
                 p.Message("Note: \"{0}\" is both an IP and an account name. "
                           + "If you meant the account, use &T/{1} @{0}", message, cmd);
                 return message;
             }
             if (message[0] == '@') message = message.Remove(0, 1);
             Player who = PlayerInfo.FindMatches(p, message);
-            if (who != null) { name = who.name; return who.ip; }
+            if (who != null) 
+            { 
+                name = who.name; 
+                return who.ip;
+            }
             p.Message("Searching PlayerDB..");
             name = PlayerDB.FindOfflineIPMatches(p, message, out string dbIP);
             return dbIP;

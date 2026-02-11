@@ -26,14 +26,20 @@ namespace MCGalaxy.Commands.Eco
             if (!Economy.CheckIsEnabled(p, this)) return;
             string[] parts = message.SplitSpaces(2);
             Item item = Economy.GetItem(parts[0]);
-            if (item == null) { Help(p); return; }
+            if (item == null) 
+            {
+                Help(p); 
+                return; 
+            }
             if (!item.Enabled)
             {
-                p.Message("&WThe {0} item is not currently buyable.", item.Name); return;
+                p.Message("&WThe {0} item is not currently buyable.", item.Name); 
+                return;
             }
             if (data.Rank < item.PurchaseRank)
             {
-                Formatter.MessageNeedMinPerm(p, "+ can purchase a " + item.Name, item.PurchaseRank); return;
+                Formatter.MessageNeedMinPerm(p, "+ can purchase a " + item.Name, item.PurchaseRank); 
+                return;
             }
             item.OnPurchase(p, parts.Length == 1 ? "" : parts[1]);
         }

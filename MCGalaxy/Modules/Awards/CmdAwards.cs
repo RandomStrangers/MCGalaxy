@@ -22,7 +22,11 @@ namespace MCGalaxy.Modules.Awards
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
-            if (args.Length > 2) { Help(p); return; }
+            if (args.Length > 2) 
+            {
+                Help(p);
+                return; 
+            }
             int offset = 0;
             string name = p.name;
             if (args.Length == 2 || (message.Length > 0 && !IsListModifier(args[0])))
@@ -32,11 +36,15 @@ namespace MCGalaxy.Modules.Awards
                 if (name == null) return;
             }
             List<Award> awards = AwardsList.Awards;
-            if (awards.Count == 0) { p.Message("This server has no awards yet."); return; }
+            if (awards.Count == 0) 
+            { 
+                p.Message("This server has no awards yet.");
+                return;
+            }
             List<string> playerAwards = PlayerAwards.Get(name);
             void printer(Player p_, Award award) => PrintAward(p_, award, playerAwards);
-            string cmd = name.Length == 0 ? "awards" : "awards " + name;
-            string modifier = args.Length > offset ? args[offset] : "";
+            string cmd = name.Length == 0 ? "awards" : "awards " + name,
+                modifier = args.Length > offset ? args[offset] : "";
             p.Message("Awards {0} &Shas:", p.FormatNick(name));
             Paginator.Output(p, awards, printer,
                              cmd, "Awards", modifier);

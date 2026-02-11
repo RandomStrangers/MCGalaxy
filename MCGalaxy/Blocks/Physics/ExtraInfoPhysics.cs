@@ -24,11 +24,15 @@ namespace MCGalaxy.Blocks.Physics
                 C.Data.ResetTypes();
             if (!C.Data.HasWait) return false;
             int waitTime = 0;
-            if (C.Data.Type1 == PhysicsArgs.Wait) waitTime = C.Data.Value1;
-            if (C.Data.Type2 == PhysicsArgs.Wait) waitTime = C.Data.Value2;
-            if (C.Data.Data <= waitTime) { C.Data.Data++; return true; }
-            if (C.Data.Type1 == PhysicsArgs.Wait) C.Data.Type1 = 0;
-            if (C.Data.Type2 == PhysicsArgs.Wait) C.Data.Type2 = 0;
+            if (C.Data.Type1 == 1) waitTime = C.Data.Value1;
+            if (C.Data.Type2 == 1) waitTime = C.Data.Value2;
+            if (C.Data.Data <= waitTime) 
+            { 
+                C.Data.Data++;
+                return true; 
+            }
+            if (C.Data.Type1 == 1) C.Data.Type1 = 0;
+            if (C.Data.Type2 == 1) C.Data.Type2 = 0;
             return false;
         }
         public static bool DoNormal(Level lvl, ref PhysInfo C)
@@ -41,32 +45,47 @@ namespace MCGalaxy.Blocks.Physics
             args.ExtBlock = C.Data.ExtBlock;
             if (args.Wait)
             {
-                if (C.Data.Data <= args.WaitTime) { C.Data.Data++; return true; }
-                if (C.Data.Type1 == PhysicsArgs.Wait) C.Data.Type1 = 0;
-                if (C.Data.Type2 == PhysicsArgs.Wait) C.Data.Type2 = 0;
+                if (C.Data.Data <= args.WaitTime) 
+                { 
+                    C.Data.Data++; 
+                    return true; 
+                }
+                if (C.Data.Type1 == 1) C.Data.Type1 = 0;
+                if (C.Data.Type2 == 1) C.Data.Type2 = 0;
             }
             DoOther(lvl, ref C, ref args);
             return false;
         }
-        // cache to avoid allocation each time accessed
-        internal static ExtraInfoHandler doorsHandler = DoDoorsOnly;
-        internal static ExtraInfoHandler normalHandler = DoNormal;
+        internal static ExtraInfoHandler doorsHandler = DoDoorsOnly,
+            normalHandler = DoNormal;
         static void ParseType(byte type, ref ExtraInfoArgs args, byte value)
         {
             switch (type)
             {
-                case PhysicsArgs.Wait:
-                    args.Wait = true; args.WaitTime = value; break;
-                case PhysicsArgs.Drop:
-                    args.Drop = true; args.DropNum = value; break;
-                case PhysicsArgs.Dissipate:
-                    args.Dissipate = true; args.DissipateNum = value; break;
-                case PhysicsArgs.Revert:
-                    args.Revert = true; args.RevertType = value; break;
-                case PhysicsArgs.Explode:
-                    args.Explode = true; args.ExplodeNum = value; break;
-                case PhysicsArgs.Rainbow:
-                    args.Rainbow = true; args.RainbowNum = value; break;
+                case 1:
+                    args.Wait = true; 
+                    args.WaitTime = value; 
+                    break;
+                case 4:
+                    args.Drop = true;
+                    args.DropNum = value; 
+                    break;
+                case 3:
+                    args.Dissipate = true;
+                    args.DissipateNum = value; 
+                    break;
+                case 2:
+                    args.Revert = true;
+                    args.RevertType = value; 
+                    break;
+                case 5:
+                    args.Explode = true;
+                    args.ExplodeNum = value;
+                    break;
+                case 6:
+                    args.Rainbow = true; 
+                    args.RainbowNum = value; 
+                    break;
             }
         }
         static void DoOther(Level lvl, ref PhysInfo C, ref ExtraInfoArgs args)
@@ -87,8 +106,6 @@ namespace MCGalaxy.Blocks.Physics
                 C.Data.Data = PhysicsArgs.RemoveFromChecks;
             }
             ushort x = C.X, y = C.Y, z = C.Z;
-            // Not setting drop = false can cause occasional leftover blocks, since C.extraInfo is emptied, so
-            // drop can generate another block with no dissipate/explode information.
             if (args.Dissipate && rand.Next(1, 100) <= args.DissipateNum)
             {
                 if (!lvl.listUpdateExists.Get(x, y, z))

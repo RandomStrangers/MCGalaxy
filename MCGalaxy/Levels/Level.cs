@@ -412,7 +412,6 @@ namespace MCGalaxy
             }
             return false;
         }
-        readonly object dbLock = new();
         public void SaveBlockDBChanges()
         {
             lock (dbLock)

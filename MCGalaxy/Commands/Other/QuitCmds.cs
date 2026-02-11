@@ -60,7 +60,11 @@ namespace MCGalaxy.Commands.Misc
         public override bool UseableWhenFrozen => true;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length > 0) { Help(p); return; }
+            if (message.Length > 0) 
+            { 
+                Help(p);
+                return;
+            }
             int code = new Random().Next(int.MinValue, int.MaxValue);
             p.Leave("Server crash! Error code 0x" + code.ToString("X8").TrimStart('0'));
         }

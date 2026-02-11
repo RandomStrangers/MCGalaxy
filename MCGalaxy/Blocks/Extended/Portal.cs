@@ -62,27 +62,19 @@ namespace MCGalaxy.Blocks.Extended
             p.SendPosition(pos, rot);
             return true;
         }
-        internal static Vec3U16 ParseCoords(ISqlRecord record)
+        internal static Vec3U16 ParseCoords(ISqlRecord record) => new()
         {
-            Vec3U16 pos = new()
-            {
-                X = (ushort)record.GetInt32(0),
-                Y = (ushort)record.GetInt32(1),
-                Z = (ushort)record.GetInt32(2)
-            };
-            return pos;
-        }
-        static PortalExit ParseExit(ISqlRecord record)
+            X = (ushort)record.GetInt32(0),
+            Y = (ushort)record.GetInt32(1),
+            Z = (ushort)record.GetInt32(2)
+        };
+        static PortalExit ParseExit(ISqlRecord record) => new()
         {
-            PortalExit data = new()
-            {
-                Map = record.GetText(0),
-                X = (ushort)record.GetInt32(1),
-                Y = (ushort)record.GetInt32(2),
-                Z = (ushort)record.GetInt32(3)
-            };
-            return data;
-        }
+            Map = record.GetText(0),
+            X = (ushort)record.GetInt32(1),
+            Y = (ushort)record.GetInt32(2),
+            Z = (ushort)record.GetInt32(3)
+        };
         /// <summary> Returns whether a Portals table for the given map exists in the DB. </summary>
         public static bool ExistsInDB(string map) => Database.TableExists("Portals" + map);
         /// <summary> Returns the coordinates for all portals in the given map. </summary>
@@ -120,7 +112,6 @@ namespace MCGalaxy.Blocks.Extended
             }
             Database.CreateTable("Portals" + dst, LevelDB.createPortals);
             Database.CopyAllRows("Portals" + src, "Portals" + dst);
-            // Fixup portal exists that go to the same map
             string sql = SqlUtils.WithTable("UPDATE {table} SET ExitMap=@1 WHERE ExitMap=@0", "Portals" + dst);
             Database.Execute(sql, src, dst);
         }

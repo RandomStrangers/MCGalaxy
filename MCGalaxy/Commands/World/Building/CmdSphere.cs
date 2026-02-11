@@ -29,9 +29,11 @@ namespace MCGalaxy.Commands.Building
         protected override DrawMode GetMode(string[] parts)
         {
             string msg = parts[0];
-            if (msg == "solid") return DrawMode.solid;
-            if (msg == "hollow") return DrawMode.hollow;
-            return msg == "circle" ? DrawMode.circle : msg == "hollowcircle" ? DrawMode.hcircle : DrawMode.normal;
+            return msg == "solid"
+                ? DrawMode.solid
+                : msg == "hollow"
+                ? DrawMode.hollow
+                : msg == "circle" ? DrawMode.circle : msg == "hollowcircle" ? DrawMode.hcircle : DrawMode.normal;
         }
         protected override DrawOp GetDrawOp(DrawArgs dArgs) => dArgs.Mode switch
         {
@@ -53,29 +55,29 @@ namespace MCGalaxy.Commands.Building
         }
         static Vec3S32 GetRadius(DrawMode mode, Vec3S32[] m)
         {
-            int dx = Math.Abs(m[0].X - m[1].X);
-            int dy = Math.Abs(m[0].Y - m[1].Y);
-            int dz = Math.Abs(m[0].Z - m[1].Z);
+            int dx = Math.Abs(m[0].X - m[1].X),
+                dy = Math.Abs(m[0].Y - m[1].Y),
+                dz = Math.Abs(m[0].Z - m[1].Z);
             bool circle = mode == DrawMode.circle || mode == DrawMode.hcircle;
             if (!circle)
             {
                 int R = (int)Math.Sqrt(dx * dx + dy * dy + dz * dz);
-                return new Vec3S32(R, R, R);
+                return new(R, R, R);
             }
             else if (dx >= dy && dz >= dy)
             {
                 int R = (int)Math.Sqrt(dx * dx + dz * dz);
-                return new Vec3S32(R, 0, R);
+                return new(R, 0, R);
             }
             else if (dz >= dx)
             {
                 int R = (int)Math.Sqrt(dy * dy + dz * dz);
-                return new Vec3S32(0, R, R);
+                return new(0, R, R);
             }
             else
             {
                 int R = (int)Math.Sqrt(dx * dx + dy * dy);
-                return new Vec3S32(R, R, 0);
+                return new(R, R, 0);
             }
         }
         public override void Help(Player p)

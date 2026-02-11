@@ -27,9 +27,6 @@ namespace MCGalaxy
         public override object Parse(string value)
         {
             if (value == "-1.0") return -1;
-            // "-1" was used in past as value for "ENV_USE_DEFAULT", so must keep
-            //  doing that for backwards compatibility
-            // (would have been better to use "" for default, but too late now)
             int num = ParseInteger(value, -1, minValue, maxValue);
             if (num == -1) num = EnvConfig.ENV_USE_DEFAULT;
             return num;
@@ -37,13 +34,11 @@ namespace MCGalaxy
         public override string Serialise(object value)
         {
             int num = (int)value;
-            // -1 is already used for "use default", so use this instead
             if (num == -1) return "-1.0";
             if (num == EnvConfig.ENV_USE_DEFAULT) num = -1;
             return NumberUtils.StringifyInt(num);
         }
     }
-    // Hacky workaround for old ExponentialFog attribute which was a bool
     class ConfigExpFogAttribute : ConfigEnvIntAttribute
     {
         public ConfigExpFogAttribute(string name) : base(name, -1, 1) { }
@@ -53,7 +48,6 @@ namespace MCGalaxy
     {
         public const int ENV_USE_DEFAULT = int.MaxValue;
         const int envRange = 0xFFFFFF;
-        // Environment settings
         [ConfigEnvInt("Weather", -1, 2)]
         public int Weather = ENV_USE_DEFAULT;
         /// <summary> Elevation of the "ocean" that surrounds maps. Default is map height / 2. </summary>
@@ -122,7 +116,6 @@ namespace MCGalaxy
         public bool LightingModeLocked = false;
         public void ResetEnv()
         {
-            // TODO: Rewrite using ConfigElement somehow
             Weather = ENV_USE_DEFAULT;
             EdgeLevel = ENV_USE_DEFAULT;
             SidesOffset = ENV_USE_DEFAULT;
@@ -154,9 +147,7 @@ namespace MCGalaxy
             if (i == 1) return CloudColor;
             if (i == 2) return FogColor;
             if (i == 3) return ShadowColor;
-            if (i == 4) return LightColor;
-            if (i == 5) return SkyboxColor;
-            return i == 6 ? LavaLightColor : i == 7 ? LampLightColor : null;
+            return i == 4 ? LightColor : i == 5 ? SkyboxColor : i == 6 ? LavaLightColor : i == 7 ? LampLightColor : null;
         }
         public int GetEnvProp(EnvProp i)
         {
@@ -169,9 +160,11 @@ namespace MCGalaxy
             if (i == EnvProp.WeatherSpeed) return WeatherSpeed;
             if (i == EnvProp.WeatherFade) return WeatherFade;
             if (i == EnvProp.ExpFog) return ExpFog;
-            if (i == EnvProp.SidesOffset) return SidesOffset;
-            if (i == EnvProp.SkyboxHorSpeed) return SkyboxHorSpeed;
-            return i == EnvProp.SkyboxVerSpeed ? SkyboxVerSpeed : i == EnvProp.Weather ? Weather : ENV_USE_DEFAULT;
+            return i == EnvProp.SidesOffset
+                ? SidesOffset
+                : i == EnvProp.SkyboxHorSpeed
+                ? SkyboxHorSpeed
+                : i == EnvProp.SkyboxVerSpeed ? SkyboxVerSpeed : i == EnvProp.Weather ? Weather : ENV_USE_DEFAULT;
         }
         /// <summary> Calculates the default value for the given env property </summary>
         public static int DefaultEnvProp(EnvProp i, int height)
@@ -180,16 +173,15 @@ namespace MCGalaxy
             if (i == EnvProp.EdgeBlock) return Block.Water;
             if (i == EnvProp.EdgeLevel) return height / 2;
             if (i == EnvProp.CloudsLevel) return height + 2;
-            if (i == EnvProp.CloudsSpeed) return 256;
-            if (i == EnvProp.WeatherSpeed) return 256;
-            return i == EnvProp.WeatherFade ? 128 : i == EnvProp.SidesOffset ? -2 : 0;
+            return i == EnvProp.CloudsSpeed
+                ? 256
+                : i == EnvProp.WeatherSpeed ? 256 : i == EnvProp.WeatherFade ? 128 : i == EnvProp.SidesOffset ? -2 : 0;
         }
     }
     public abstract class AreaConfig : EnvConfig
     {
         [ConfigString("MOTD", "General", "ignore", true)]
         public string MOTD = "ignore";
-        // Permission settings
         [ConfigBool("Buildable", "Permissions", true)]
         public bool Buildable = true;
         [ConfigBool("Deletable", "Permissions", true)]
@@ -198,7 +190,6 @@ namespace MCGalaxy
         public LevelPermission BuildMin = LevelPermission.Guest;
         [ConfigPerm("PerBuildMax", "Permissions", LevelPermission.Owner)]
         public LevelPermission BuildMax = LevelPermission.Owner;
-        // Other blacklists/whitelists
         [ConfigStringList("BuildWhitelist", "Permissions")]
         public List<string> BuildWhitelist = new();
         [ConfigStringList("BuildBlacklist", "Permissions")]
@@ -225,19 +216,16 @@ namespace MCGalaxy
         public string Terrain = "";
         [ConfigString("TexturePack", "Env", "", true)]
         public string TexturePack = "";
-        // Permission settings
         [ConfigString("RealmOwner", "Permissions", "", true)]
         public string RealmOwner = "";
         [ConfigPerm("PerVisit", "Permissions", LevelPermission.Guest)]
         public LevelPermission VisitMin = LevelPermission.Guest;
         [ConfigPerm("PerVisitMax", "Permissions", LevelPermission.Owner)]
         public LevelPermission VisitMax = LevelPermission.Owner;
-        // Other blacklists/whitelists
         [ConfigStringList("VisitWhitelist", "Permissions")]
         public List<string> VisitWhitelist = new();
         [ConfigStringList("VisitBlacklist", "Permissions")]
         public List<string> VisitBlacklist = new();
-        // Physics settings
         [ConfigInt("Physics", "Physics", 0, 0, 5)]
         public int Physics;
         [ConfigInt("Physics overload", "Physics", 1500)]
@@ -258,7 +246,6 @@ namespace MCGalaxy
         public bool GrassGrow = true;
         [ConfigString("TreeType", "Physics", "fern", false)]
         public string TreeType = "fern";
-        // Survival settings
         [ConfigInt("Drown", "Survival", 70)]
         public int DrownTime = 70;
         [ConfigBool("Edge water", "Survival", false)]

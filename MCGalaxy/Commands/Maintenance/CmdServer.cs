@@ -144,7 +144,11 @@ namespace MCGalaxy.Commands.Maintenance
         static bool CheckPerms(Player p) => p.IsConsole || !Server.Config.OwnerName.CaselessEq("Notch") && p.name.CaselessEq(Server.Config.OwnerName);
         void DoImport(Player p, string[] args)
         {
-            if (args.Length == 1) { p.Message("You need to provide the table name to import."); return; }
+            if (args.Length == 1) 
+            { 
+                p.Message("You need to provide the table name to import."); 
+                return; 
+            }
             if (!Formatter.ValidName(p, args[1], "table")) return;
             if (!File.Exists(args[1] + ".sql")) 
             { 

@@ -20,8 +20,8 @@ namespace MCGalaxy.Blocks.Physics
         public static unsafe void DoWaterOrLava(Level lvl, ref PhysInfo C)
         {
             Random rand = lvl.physRandom;
-            ushort x = C.X, y = C.Y, z = C.Z;
-            ushort below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
+            ushort x = C.X, y = C.Y, z = C.Z,
+                below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
             if (below == 0)
             {
                 lvl.AddUpdate(index, C.Block, C.Data);
@@ -42,7 +42,7 @@ namespace MCGalaxy.Blocks.Physics
                 {
                     int randIndx = rand.Next(k),
                         temp = indices[k];
-                    indices[k] = indices[randIndx]; // move random num to end of list.
+                    indices[k] = indices[randIndx];
                     indices[randIndx] = temp;
                 }
                 for (int j = 0; j < 25; j++)
@@ -58,7 +58,7 @@ namespace MCGalaxy.Blocks.Physics
                         }
                         else
                         {
-                            posX = (ushort)((posX + x + 1) / 2); // ceiling division
+                            posX = (ushort)((posX + x + 1) / 2);
                         }
                         if (posZ < z)
                         {
@@ -90,7 +90,7 @@ namespace MCGalaxy.Blocks.Physics
             {
                 int randIndx = rand.Next(k),
                     temp = indices[k];
-                indices[k] = indices[randIndx]; // move random num to end of list.
+                indices[k] = indices[randIndx];
                 indices[randIndx] = temp;
             }
             for (int j = 0; j < 6; j++)

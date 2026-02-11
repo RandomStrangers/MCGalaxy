@@ -33,14 +33,13 @@ namespace MCGalaxy.Drawing.Ops
                 }
                 else
                 {
-                    // first 'vertical line flags' is at highest position
-                    ulong flags = letters[c]; int shift = 56;
+                    ulong flags = letters[c]; 
+                    int shift = 56;
                     while (flags != 0)
                     {
-                        // get the current flags
                         byte yUsed = (byte)(flags >> shift);
-                        // clear current flags and move to next
-                        flags &= (1UL << shift) - 1; shift -= 8;
+                        flags &= (1UL << shift) - 1; 
+                        shift -= 8;
                         blocks += Scale * Scale * CountBits(yUsed);
                     }
                 }
@@ -60,7 +59,10 @@ namespace MCGalaxy.Drawing.Ops
                 dir.Z = p2.Z > p1.Z ? 1 : -1;
             }
             pos = p1;
-            foreach (char c in Text) { DrawLetter(Player, c, brush, output); }
+            foreach (char c in Text)
+            {
+                DrawLetter(Player, c, brush, output);
+            }
         }
         void DrawLetter(Player p, char c, Brush brush, DrawOpOutput output)
         {
@@ -80,11 +82,13 @@ namespace MCGalaxy.Drawing.Ops
                     {
                         if ((yUsed & (1 << j)) == 0) continue;
                         for (int ver = 0; ver < Scale; ver++)
+                        {
                             for (int hor = 0; hor < Scale; hor++)
                             {
                                 int x = pos.X + dir.X * hor, y = pos.Y + j * Scale + ver, z = pos.Z + dir.Z * hor;
                                 output(Place((ushort)x, (ushort)y, (ushort)z, brush));
                             }
+                        }
                     }
                     pos += dir * Scale;
                 }
@@ -104,19 +108,6 @@ namespace MCGalaxy.Drawing.Ops
         static WriteDrawOp()
         {
             letters = new ulong[256];
-            // Each letter is represented as 8 bytes
-            // Each byte represents a vertical line in that letter.
-            // For each byte, each set bit means place a block at y offset equal to the index of that bit.
-            // For example, take the letter 'A', which is 0x0F140F0000000000UL
-            // Taking each byte in the 'A' until value is 0, we get 0x0F 0x14 0x0F, which becomes
-            //       y = 7
-            //       y = 6
-            //       y = 5
-            //  █    y = 4
-            // █ █   y = 3
-            // ███   y = 2
-            // █ █   y = 1
-            // █ █   y = 0
             letters['A'] = 0x0F140F0000000000UL;
             letters['B'] = 0x1F150A0000000000UL;
             letters['C'] = 0x0E11110000000000UL;
@@ -156,13 +147,10 @@ namespace MCGalaxy.Drawing.Ops
             letters['!'] = 0x1D00000000000000UL;
             letters['"'] = 0x1800180000000000UL;
             letters['#'] = 0x0A1F0A1F0A000000UL;
-            // $ is missing
             letters['%'] = 0x1102040811000000UL;
-            // & is missing
             letters['\''] = 0x1800000000000000UL;
             letters['('] = 0x0E11000000000000UL;
             letters[')'] = 0x110E000000000000UL;
-            // * is missing
             letters['+'] = 0x040E040000000000UL;
             letters[','] = 0x0103000000000000UL;
             letters['-'] = 0x0404040000000000UL;

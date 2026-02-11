@@ -136,7 +136,6 @@ namespace MCGalaxy
             Position pos = lvl.SpawnPos;
             Orientation rot = p.Rot;
             byte yaw = lvl.rotx, pitch = lvl.roty;
-            // in case player disconnected mid-way through loading map
             if (p.Socket.Disconnected) return;
             OnPlayerSpawningEvent.Call(p, ref pos, ref yaw, ref pitch, false);
             rot.RotY = yaw; 

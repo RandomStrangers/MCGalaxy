@@ -22,9 +22,17 @@ namespace MCGalaxy.Commands.World
         public override CommandAlias[] Aliases => new[] { new CommandAlias("MapLoad"), new CommandAlias("WLoad") };
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p);
+                return;
+            }
             string[] args = message.SplitSpaces();
-            if (args.Length > 2) { Help(p); return; }
+            if (args.Length > 2) 
+            { 
+                Help(p);
+                return;
+            }
             LevelActions.Load(p, args[0], true);
         }
         public override void Help(Player p)

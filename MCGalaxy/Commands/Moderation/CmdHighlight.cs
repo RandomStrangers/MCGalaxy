@@ -68,7 +68,12 @@ namespace MCGalaxy.Commands.Moderation
             HighlightPlayer(p, args.delta, args.who, args.ids, marks);
             return false;
         }
-        struct HighlightAreaArgs { public string who; public int[] ids; public TimeSpan delta; }
+        struct HighlightAreaArgs 
+        { 
+            public string who; 
+            public int[] ids;
+            public TimeSpan delta;
+        }
         static void HighlightPlayer(Player p, TimeSpan delta, string who, int[] ids, Vec3S32[] marks)
         {
             HighlightDrawOp op = new()

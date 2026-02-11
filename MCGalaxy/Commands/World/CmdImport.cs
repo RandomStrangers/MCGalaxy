@@ -25,14 +25,17 @@ namespace MCGalaxy.Commands.World
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            {
+                Help(p);
+                return;
+            }
             if (!Directory.Exists(Paths.ImportsDir))
             {
                 Directory.CreateDirectory(Paths.ImportsDir);
             }
             if (message.CaselessEq("all"))
             {
-                //string[] paths = Directory.GetFiles(Paths.ImportsDir);
                 string[] paths = FileIO.TryGetFiles(Paths.ImportsDir);
                 ImportFiles(p, paths);
             }
@@ -51,9 +54,8 @@ namespace MCGalaxy.Commands.World
             HttpUtil.FilterURL(ref url);
             byte[] data = HttpUtil.DownloadData(url, p);
             if (data == null) return;
-            // if data is not NULL, URL must be valid
-            string path = new Uri(url).AbsolutePath;
-            string map = Path.GetFileNameWithoutExtension(path);
+            string path = new Uri(url).AbsolutePath,
+                map = Path.GetFileNameWithoutExtension(path);
             if (!Formatter.ValidMapName(p, map)) return;
             using Stream src = new MemoryStream(data);
             ImportFrom(p, src, path);
@@ -62,7 +64,6 @@ namespace MCGalaxy.Commands.World
         {
             foreach (string path in paths)
             {
-                //using (Stream src = File.OpenRead(path))
                 using Stream src = FileIO.TryOpenRead(path);
                 ImportFrom(p, src, path);
             }
@@ -75,7 +76,6 @@ namespace MCGalaxy.Commands.World
             {
                 path = Path.ChangeExtension(path, imp.Extension);
                 if (!File.Exists(path)) continue;
-                //using (Stream src = File.OpenRead(path)) {
                 using Stream src = FileIO.TryOpenRead(path);
                 Import(p, imp, src, map); return;
             }

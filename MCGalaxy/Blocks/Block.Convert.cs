@@ -40,13 +40,12 @@ namespace MCGalaxy
         public static ushort Parse(Player p, string input)
         {
             BlockDefinition[] defs = p.IsSuper ? BlockDefinition.GlobalDefs : p.Level.CustomBlockDefs;
-            // raw ID is treated specially, before names
             if (ushort.TryParse(input, out ushort block))
             {
                 if (block < 66 || (block <= 767 && defs[FromRaw(block)] != null))
                 {
                     return FromRaw(block);
-                } // TODO redo to use ExistsFor?
+                }
             }
             BlockDefinition def = BlockDefinition.ParseName(input, defs);
             if (def != null) return def.GetBlock();
@@ -58,68 +57,44 @@ namespace MCGalaxy
         /// block compatible for the given classic protocol version </summary>
         public static byte ConvertClassic(byte block, byte protocolVersion)
         {
-            // protocol version 7 only supports up to Obsidian block
             if (protocolVersion >= 7)
             {
                 return block <= Obsidian ? block : v7_fallback[block - CobblestoneSlab];
             }
-            // protocol version 6 only supports up to Gold block
             if (protocolVersion >= 6)
             {
                 return block <= Gold ? block : v6_fallback[block - Iron];
             }
-            // protocol version 5 only supports up to Glass block
             if (protocolVersion >= 5)
             {
                 return block <= Glass ? block : v5_fallback[block - Red];
             }
-            // protocol version 4 only supports up to Leaves block
-            //  protocol version 3 seems to have same support
-            //  TODO what even changed between 3 and 4?
             return block <= Leaves ? block : v4_fallback[block - Sponge];
         }
         static readonly byte[] v7_fallback = {
-            // CobbleSlab Rope      Sandstone Snow Fire  LightPink ForestGreen Brown
                Slab,      Mushroom, Sand,     Air, Lava, Pink,     Green,      Dirt,
-            // DeepBlue Turquoise Ice    CeramicTile Magma     Pillar Crate StoneBrick
                Blue,    Cyan,     Glass, Iron,       Obsidian, White, Wood, Stone
         };
         static readonly byte[] v6_fallback = {
-            // Iron   DoubleSlab Slab  Brick TNT  Bookshelf MossyRocks   Obsidian
                Stone, Gray,      Gray, Red,  Red, Wood,     Cobblestone, Black,
-            // CobbleSlab   Rope      Sandstone Snow Fire  LightPink ForestGreen Brown
                Cobblestone, Mushroom, Sand,     Air, Lava, Pink,     Green,      Dirt,
-            // DeepBlue Turquoise Ice    CeramicTile Magma        Pillar Crate StoneBrick
                Blue,    Cyan,     Glass, Gold,       Cobblestone, White, Wood, Stone
         };
         static readonly byte[] v5_fallback = {
-            // Red   Orange Yellow Lime  Green Teal  Aqua  Cyan
                Sand, Sand,  Sand,  Sand, Sand, Sand, Sand, Sand,
-            // Blue  Indigo Violet Magenta Pink  Black  Gray   White
                Sand, Sand,  Sand,  Sand,   Sand, Stone, Stone, Sand,
-            // Dandelion Rose     BrownShroom RedShroom Gold
                Sapling,  Sapling, Sapling,    Sapling,  Sponge,
-            // Iron   DoubleSlab Slab   Brick        TNT   Bookshelf MossyRocks   Obsidian
                Stone, Stone,     Stone, Cobblestone, Sand, Wood,     Cobblestone, Cobblestone,
-            // CobbleSlab   Rope     Sandstone Snow Fire  LightPink ForestGreen Brown
                Cobblestone, Sapling, Sand,     Air, Lava, Sand,     Sand,       Dirt,
-            // DeepBlue Turquoise Ice    CeramicTile Magma        Pillar Crate StoneBrick
                Sand,    Sand,     Glass, Stone,      Cobblestone, Stone, Wood, Stone
         };
         static readonly byte[] v4_fallback = {
-            // Sponge   Glass
                GoldOre, Leaves,
-            // Red   Orange Yellow Lime  Green Teal  Aqua  Cyan
                Sand, Sand,  Sand,  Sand, Sand, Sand, Sand, Sand,
-            // Blue  Indigo Violet Magenta Pink  Black  Gray   White
                Sand, Sand,  Sand,  Sand,   Sand, Stone, Stone, Sand,
-            // Dandelion Rose     BrownShroom RedShroom Gold
                Sapling,  Sapling, Sapling,    Sapling,  GoldOre,
-            // Iron   DoubleSlab Slab   Brick        TNT   Bookshelf MossyRocks   Obsidian
                Stone, Stone,     Stone, Cobblestone, Sand, Wood,     Cobblestone, Cobblestone,
-            // CobbleSlab   Rope     Sandstone Snow Fire  LightPink ForestGreen Brown
                Cobblestone, Sapling, Sand,     Air, Lava, Sand,     Sand,       Dirt,
-            // DeepBlue Turquoise Ice     CeramicTile Magma        Pillar Crate StoneBrick
                Sand,    Sand,     Leaves, Stone,      Cobblestone, Stone, Wood, Stone
         };
         /// <summary> Converts physics block IDs to their visual block IDs </summary>
@@ -127,141 +102,136 @@ namespace MCGalaxy
         /// <example> Op_Glass becomes Glass, Door_Log becomes Log </example>
         public static ushort Convert(ushort block) => block switch
         {
-            FlagBase => Mushroom,
-            Op_Glass => Glass,
-            Op_Obsidian => Obsidian,
-            Op_Brick => Brick,
-            Op_Stone => Stone,
-            Op_Cobblestone => Cobblestone,
-            Op_Air => Air,//Must be cuboided / replaced
-            Op_Water => StillWater,
-            Op_Lava => StillLava,
-            108 => Cobblestone,
-            LavaSponge => Sponge,
-            FloatWood => Wood,
-            FastLava => Lava,
-            71 or 72 => White,
-            Door_Log => Log,
-            Door_Obsidian => Obsidian,
-            Door_Glass => Glass,
-            Door_Stone => Stone,
-            Door_Leaves => Leaves,
-            Door_Sand => Sand,
-            Door_Wood => Wood,
-            Door_Green => Green,
-            Door_TNT => TNT,
-            Door_Slab => Slab,
-            Door_Iron => Iron,
-            Door_Dirt => Dirt,
-            Door_Grass => Grass,
-            Door_Blue => Blue,
-            Door_Bookshelf => Bookshelf,
-            Door_Gold => Gold,
-            Door_Cobblestone => Cobblestone,
-            Door_Red => Red,
-            Door_Orange => Orange,
-            Door_Yellow => Yellow,
-            Door_Lime => Lime,
-            Door_Teal => Teal,
-            Door_Aqua => Aqua,
-            Door_Cyan => Cyan,
-            Door_Indigo => Indigo,
-            Door_Purple => Violet,
-            Door_Magenta => Magenta,
-            Door_Pink => Pink,
-            Door_Black => Black,
-            Door_Gray => Gray,
-            Door_White => White,
-            tDoor_Log => Log,
-            tDoor_Obsidian => Obsidian,
-            tDoor_Glass => Glass,
-            tDoor_Stone => Stone,
-            tDoor_Leaves => Leaves,
-            tDoor_Sand => Sand,
-            tDoor_Wood => Wood,
-            tDoor_Green => Green,
-            tDoor_TNT => TNT,
-            tDoor_Slab => Slab,
-            tDoor_Air => Air,
-            tDoor_Water => StillWater,
-            tDoor_Lava => StillLava,
-            oDoor_Log => Log,
-            oDoor_Obsidian => Obsidian,
-            oDoor_Glass => Glass,
-            oDoor_Stone => Stone,
-            oDoor_Leaves => Leaves,
-            oDoor_Sand => Sand,
-            oDoor_Wood => Wood,
-            oDoor_Green => Green,
-            oDoor_TNT => TNT,
-            oDoor_Slab => Slab,
-            oDoor_Lava => StillLava,
-            oDoor_Water => StillWater,
-            MB_White => White,
-            MB_Black => Black,
-            MB_Air => Air,
-            MB_Water => StillWater,
-            MB_Lava => StillLava,
-            WaterDown => Water,
-            LavaDown => Lava,
-            WaterFaucet => Aqua,
-            LavaFaucet => Orange,
-            FiniteWater => Water,
-            FiniteLava => Lava,
-            FiniteFaucet => Cyan,
-            Portal_Air => Air,
-            Portal_Water => StillWater,
-            Portal_Lava => StillLava,
-            Door_Air => Air,
-            Door_AirActivatable => Air,
-            Door_Water => StillWater,
-            Door_Lava => StillLava,
-            Portal_Blue => Cyan,
-            Portal_Orange => Orange,
-            C4 => TNT,
-            C4Detonator => Red,
-            TNT_Small => TNT,
-            TNT_Big => TNT,
-            TNT_Explosion => Lava,
-            LavaFire => Lava,
-            TNT_Nuke => TNT,
-            RocketStart => Glass,
-            RocketHead => Gold,
-            Fireworks => Iron,
-            Deadly_Water => StillWater,
-            Deadly_Lava => StillLava,
-            Deadly_Air => Air,
-            Deadly_ActiveWater => Water,
-            Deadly_ActiveLava => Lava,
-            Deadly_FastLava => Lava,
-            Magma => Lava,
-            Geyser => Water,
-            Checkpoint => Air,
-            Air_Flood or Door_Log_air or Air_FloodLayer or Air_FloodDown or Air_FloodUp or 205 or 206 or 207 or 208 or 209 or 210 or 213 or 214 or 215 or 216 or Door_Air_air or 225 or 254 or 81 or 226 or 227 or 228 or 229 or 84 or 66 or 67 or 68 or 69 => Air,
-            Door_Green_air => Red,
-            Door_TNT_air => Lava,
-            oDoor_Log_air or oDoor_Obsidian_air or oDoor_Glass_air or oDoor_Stone_air or oDoor_Leaves_air or oDoor_Sand_air or oDoor_Wood_air or oDoor_Slab_air or oDoor_Lava_air or oDoor_Water_air => Air,
-            oDoor_Green_air => Red,
-            oDoor_TNT_air => StillLava,
-            Train => Aqua,
-            Snake => Black,
-            SnakeTail => CoalOre,
-            Creeper => TNT,
-            ZombieBody => MossyRocks,
-            ZombieHead => Lime,
-            Bird_White => White,
-            Bird_Black => Black,
-            Bird_Lava => Lava,
-            Bird_Red => Red,
-            Bird_Water => Water,
-            Bird_Blue => Blue,
-            Bird_Killer => Lava,
-            Fish_Betta => Blue,
-            Fish_Gold => Gold,
-            Fish_Salmon => Red,
-            Fish_Shark => Gray,
-            Fish_Sponge => Sponge,
-            Fish_LavaShark => Obsidian,
+            70 => 39,
+            100 => 20,
+            101 => 49,
+            102 => 45,
+            103 => 1,
+            104 => 4,
+            106 => 9,
+            107 => 11,
+            108 => 4,
+            109 => 19,
+            110 => 5,
+            112 => 10,
+            71 or 72 => 36,
+            111 => 17,
+            113 => 49,
+            114 => 20,
+            115 => 1,
+            116 => 18,
+            117 => 12,
+            118 => 5,
+            119 => 25,
+            120 => 46,
+            121 => 44,
+            220 => 42,
+            221 => 3,
+            222 => 2,
+            223 => 29,
+            224 => 47,
+            253 => 41,
+            80 => 4,
+            83 => 21,
+            85 => 22,
+            86 => 23,
+            87 => 24,
+            89 => 26,
+            90 => 27,
+            91 => 28,
+            92 => 30,
+            93 => 31,
+            94 => 32,
+            95 => 33,
+            96 => 34,
+            97 => 35,
+            98 => 36,
+            122 => 17,
+            123 => 49,
+            124 => 20,
+            125 => 1,
+            126 => 18,
+            127 => 12,
+            128 => 5,
+            129 => 25,
+            135 => 46,
+            136 => 44,
+            138 => 9,
+            139 => 11,
+            148 => 17,
+            149 => 49,
+            150 => 20,
+            151 => 1,
+            152 => 18,
+            153 => 12,
+            154 => 5,
+            155 => 25,
+            156 => 46,
+            157 => 44,
+            158 => 11,
+            159 => 9,
+            130 => 36,
+            131 => 34,
+            133 => 9,
+            134 => 11,
+            140 or 193 or 196 or 237 or 145 => 8,
+            141 => 10,
+            143 => 27,
+            144 => 22,
+            146 => 10,
+            147 => 28,
+            161 => 9,
+            162 => 11,
+            166 => 9,
+            167 => 11,
+            175 => 28,
+            176 => 22,
+            74 => 46,
+            75 => 21,
+            182 => 46,
+            183 => 46,
+            184 => 10,
+            185 => 10,
+            186 => 46,
+            187 => 20,
+            188 => 41,
+            189 => 42,
+            191 => 9,
+            190 => 11,
+            194 => 10,
+            73 => 10,
+            195 => 10,
+            197 or 200 or 201 or 202 or 203 or 204
+                or 205 or 206 or 207 or 208 or 209
+                or 210 or 213 or 214 or 215 or 216
+                or 217 or 225 or 254 or 81 or 226
+                or 227 or 228 or 229 or 84 or 66
+                or 67 or 68 or 69 or 137 or 105
+                or 132 or 160 or 165 or 164 or 192
+                or 168 or 169 or 170 or 171 or 172
+                or 173 or 174 or 179 or 180 or 181 => 0,
+            211 => 21,
+            212 => 10,
+            177 => 21,
+            178 => 11,
+            230 => 27,
+            251 => 34,
+            252 => 16,
+            231 => 46,
+            232 => 48,
+            233 => 24,
+            235 => 36,
+            236 => 34,
+            238 => 10,
+            239 => 21,
+            240 => 29,
+            242 => 10,
+            249 => 29,
+            245 => 41,
+            248 => 21,
+            247 => 35,
+            246 => 19,
+            250 => 49,
             _ => block,
         };
     }

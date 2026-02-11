@@ -29,7 +29,8 @@ namespace MCGalaxy.Commands.Maintenance
             {
                 if (shutdownTask == null)
                 {
-                    p.Message("No server shutdown is in progress."); return;
+                    p.Message("No server shutdown is in progress."); 
+                    return;
                 }
                 Log("Shutdown aborted.");
                 Server.MainScheduler.Cancel(shutdownTask);
@@ -40,7 +41,8 @@ namespace MCGalaxy.Commands.Maintenance
                 if (shutdownTask != null)
                 {
                     p.Message("Server is already shutting down, use " +
-                                   "&T/Shutdown abort &Sto abort the shutdown."); return;
+                                   "&T/Shutdown abort &Sto abort the shutdown."); 
+                    return;
                 }
                 if (message.Length == 0) message = "10";
                 string reason;
@@ -57,7 +59,11 @@ namespace MCGalaxy.Commands.Maintenance
                     reason = message;
                 }
                 int delaySec = (int)delay.TotalSeconds;
-                if (delaySec <= 0) { p.Message("Countdown time must be greater than zero"); return; }
+                if (delaySec <= 0) 
+                { 
+                    p.Message("Countdown time must be greater than zero");
+                    return; 
+                }
                 DoShutdown(delaySec, reason);
             }
         }

@@ -25,22 +25,27 @@ namespace MCGalaxy.Commands.Fun
         {
             if (!p.Level.Config.Guns)
             {
-                p.Message("Guns cannot be used on this map!"); return;
+                p.Message("Guns cannot be used on this map!"); 
+                return;
             }
             if (p.weapon != null && message.Length == 0)
             {
-                p.weapon.Disable(); return;
+                p.weapon.Disable(); 
+                return;
             }
             WeaponType type = Weapon.ParseType(message);
-            if (type == WeaponType.Invalid) { Help(p); return; }
+            if (type == WeaponType.Invalid) 
+            {
+                Help(p);
+                return;
+            }
             GetGun(type).Enable(p);
         }
-        static Gun GetGun(WeaponType type)
-        {
-            if (type == WeaponType.Destroy) return new PenetrativeGun();
-            if (type == WeaponType.Teleport) return new TeleportGun();
-            return type == WeaponType.Explode ? new ExplosiveGun() : type == WeaponType.Laser ? new LaserGun() : new Gun();
-        }
+        static Gun GetGun(WeaponType type) => type == WeaponType.Destroy
+                ? new PenetrativeGun()
+                : type == WeaponType.Teleport
+                ? new TeleportGun()
+                : type == WeaponType.Explode ? new ExplosiveGun() : type == WeaponType.Laser ? new LaserGun() : new Gun();
         public override void Help(Player p)
         {
             p.Message("&T/Gun [at end]");

@@ -21,10 +21,8 @@ namespace MCGalaxy.Drawing.Ops
     public class RedoSelfDrawOp : DrawOp
     {
         public override string Name => "RedoSelf";
-        /// <summary> Point in time that the /undo should go backwards up to. </summary>
-        public DateTime Start = DateTime.MinValue;
-        /// <summary> Point in time that the /undo should start updating blocks. </summary>
-        public DateTime End = DateTime.MaxValue;
+        public DateTime Start = DateTime.MinValue,
+            End = DateTime.MaxValue;
         public RedoSelfDrawOp()
         {
             Flags = BlockDBFlags.RedoSelf;
@@ -36,7 +34,6 @@ namespace MCGalaxy.Drawing.Ops
             int[] ids = NameConverter.FindIds(Player.name);
             if (ids.Length == 0) return;
             this.output = output;
-            // can't use "using" as it creates a local var, and read lock reference may be changed by DrawOpPerformer class
             try
             {
                 BlockDBReadLock = Level.BlockDB.Locker.AccquireRead();
@@ -53,11 +50,11 @@ namespace MCGalaxy.Drawing.Ops
         void RedoBlock(BlockDBEntry e)
         {
             ushort block = e.OldBlock;
-            if (block == Block.Invalid) return; // Exported BlockDB SQL table entries don't have previous block
-            if ((e.Flags & BlockDBFlags.UndoSelf) == 0) return; // not an undo
-            int x = e.Index % dims.X;
-            int y = e.Index / dims.X / dims.Z;
-            int z = e.Index / dims.X % dims.Z;
+            if (block == Block.Invalid) return;
+            if ((e.Flags & BlockDBFlags.UndoSelf) == 0) return;
+            int x = e.Index % dims.X,
+                y = e.Index / dims.X / dims.Z,
+                z = e.Index / dims.X % dims.Z;
             output(Place((ushort)x, (ushort)y, (ushort)z, block));
         }
     }

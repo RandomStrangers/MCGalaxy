@@ -22,28 +22,44 @@ namespace MCGalaxy.Commands.Moderation
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (p.possessed) { p.Message("You're currently being &4possessed&S!"); return; }
+            if (p.possessed) 
+            { 
+                p.Message("You're currently being &4possessed&S!");
+                return; 
+            }
             string[] args = message.SplitSpaces(2);
             string name = args[0];
             bool stealth = false;
             if (message == "#")
             {
-                if (p.following.Length > 0) { stealth = true; name = ""; }
-                else { Help(p); return; }
+                if (p.following.Length > 0)
+                {
+                    stealth = true; 
+                    name = ""; 
+                }
+                else 
+                { 
+                    Help(p); 
+                    return; 
+                }
             }
             else if (args.Length > 1 && args[0] == "#")
             {
                 if (p.hidden) stealth = true;
                 name = args[1];
             }
-            if (name.Length == 0 && p.following.Length == 0) { Help(p); return; }
+            if (name.Length == 0 && p.following.Length == 0) 
+            { 
+                Help(p); 
+                return; 
+            }
             if (name.CaselessEq(p.following) || (name.Length == 0 && p.following.Length > 0))
             {
                 Unfollow(p, data, stealth);
             }
             else
             {
-                Follow(p, name, data, stealth);
+                Follow(p, name, data);
             }
         }
         static void Unfollow(Player p, CommandData data, bool stealth)
@@ -62,11 +78,15 @@ namespace MCGalaxy.Commands.Moderation
                 p.Message("You are still hidden.");
             }
         }
-        static void Follow(Player p, string name, CommandData data, bool _)
+        static void Follow(Player p, string name, CommandData data)
         {
             Player target = PlayerInfo.FindMatches(p, name);
             if (target == null) return;
-            if (target == p) { p.Message("Cannot follow yourself."); return; }
+            if (target == p) 
+            { 
+                p.Message("Cannot follow yourself.");
+                return;
+            }
             if (!CheckRank(p, data, target, "follow", false)) return;
             if (target.following.Length > 0)
             {

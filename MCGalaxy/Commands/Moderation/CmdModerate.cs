@@ -21,7 +21,11 @@ namespace MCGalaxy.Commands.Moderation
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length > 0) { Help(p); return; }
+            if (message.Length > 0) 
+            { 
+                Help(p);
+                return;
+            }
             if (Server.chatmod)
             {
                 Chat.MessageAll("Chat moderation has been disabled. Everyone can now speak.");

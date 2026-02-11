@@ -23,7 +23,11 @@ namespace MCGalaxy.Commands.Misc
         public override CommandAlias[] Aliases => new[] { new CommandAlias("TPAccept", "accept"), new CommandAlias("TPDeny", "deny") };
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0)
+            { 
+                Help(p); 
+                return;
+            }
             if (message.CaselessEq("accept"))
             {
                 DoAccept(p);
@@ -41,15 +45,25 @@ namespace MCGalaxy.Commands.Misc
         {
             Player target = PlayerInfo.FindMatches(p, message);
             if (target == null) return;
-            if (target == p) { p.Message("You cannot /tpa to yourself."); return; }
-            if (target.Ignores.Names.CaselessContains(p.name)) { ShowSentMessage(p, target); return; }
+            if (target == p) 
+            {
+                p.Message("You cannot /tpa to yourself.");
+                return; 
+            }
+            if (target.Ignores.Names.CaselessContains(p.name)) 
+            { 
+                ShowSentMessage(p, target); 
+                return;
+            }
             if (target.name.CaselessEq(p.currentTpa))
             {
-                p.Message("You still have a pending teleport request with this player."); return;
+                p.Message("You still have a pending teleport request with this player.");
+                return;
             }
             if (p.Level != target.Level && target.Level.IsMuseum)
             {
-                p.Message("{0} &Sis in a museum.", p.FormatNick(target)); return;
+                p.Message("{0} &Sis in a museum.", p.FormatNick(target)); 
+                return;
             }
             if (target.Loading)
             {
@@ -85,13 +99,18 @@ namespace MCGalaxy.Commands.Misc
         }
         void DoAccept(Player p)
         {
-            if (!p.Request) { p.Message("You do not have any pending teleport requests."); return; }
+            if (!p.Request) 
+            { 
+                p.Message("You do not have any pending teleport requests.");
+                return; 
+            }
             Player sender = PlayerInfo.FindExact(p.senderName);
             p.Request = false;
             p.senderName = "";
             if (sender == null)
             {
-                p.Message("The player who requested to teleport to you isn't online anymore."); return;
+                p.Message("The player who requested to teleport to you isn't online anymore."); 
+                return;
             }
             p.Message("You have accepted {0}&S's teleportation request.", p.FormatNick(sender));
             sender.Message("{0} &Shas accepted your request. Teleporting now...", sender.FormatNick(p));
@@ -100,13 +119,18 @@ namespace MCGalaxy.Commands.Misc
         }
         void DoDeny(Player p)
         {
-            if (!p.Request) { p.Message("You do not have any pending teleport requests."); return; }
+            if (!p.Request) 
+            {
+                p.Message("You do not have any pending teleport requests."); 
+                return; 
+            }
             Player sender = PlayerInfo.FindExact(p.senderName);
             p.Request = false;
             p.senderName = "";
             if (sender == null)
             {
-                p.Message("The player who requested to teleport to you isn't online anymore."); return;
+                p.Message("The player who requested to teleport to you isn't online anymore.");
+                return;
             }
             p.Message("You have denied {0}&S's teleportation request.", p.FormatNick(sender));
             sender.Message("{0} &Shas denied your request.", sender.FormatNick(p));

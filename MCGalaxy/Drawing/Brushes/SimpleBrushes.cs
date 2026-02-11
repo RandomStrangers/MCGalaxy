@@ -22,24 +22,24 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name => "Normal";
         public override ushort NextBlock(DrawOp op) => block;
     }
-    // CheckeredPaletteBrush of { b1, b1, b2, b2 }
     public sealed class StripedBrush : Brush
     {
         readonly ushort b1, b2;
         public StripedBrush(ushort block1, ushort block2)
         {
-            b1 = block1; b2 = block2;
+            b1 = block1;
+            b2 = block2;
         }
         public override string Name => "Striped";
         public override ushort NextBlock(DrawOp op) => ((op.Coords.X + op.Coords.Y + op.Coords.Z) & 3) <= 1 ? b1 : b2;
     }
-    // CheckeredPaletteBrush of { b1, b2 }
     public sealed class CheckeredBrush : Brush
     {
         readonly ushort b1, b2;
         public CheckeredBrush(ushort block1, ushort block2)
         {
-            b1 = block1; b2 = block2;
+            b1 = block1; 
+            b2 = block2;
         }
         public override string Name => "Checkered";
         public override ushort NextBlock(DrawOp op) => ((op.Coords.X + op.Coords.Y + op.Coords.Z) & 1) == 0 ? b1 : b2;

@@ -34,30 +34,21 @@ namespace MCGalaxy
         public static NASBlock[] blocks = new NASBlock[768], blocksIndexedByServerushort;
         public static NASBlock Default;
         public static int[] DefaultDurabilities = new int[(int)NASMaterial.Count];
-        public ushort selfID,
-            parentID,
-            alternateID;
+        public ushort selfID, parentID, alternateID;
         public List<ushort> childIDs = null;
         public NASMaterial material;
-        public int tierOfToolNeededToBreak,
-            durability,
-            resourceCost,
-            expGivenMax = 0,
-            expGivenMin = 0;
+        public int tierOfToolNeededToBreak, durability, resourceCost,
+            expGivenMax = 0, expGivenMin = 0;
         public Type type;
-        public float damageDoneToTool,
-            fallDamageMultiplier = -1,
-            disturbDelayMax = 0f,
-            disturbDelayMin = 0f,
-            beginDelayMax = 0f,
-            beginDelayMin = 0f;
+        public float damageDoneToTool, fallDamageMultiplier = -1,
+            disturbDelayMax = 0f, disturbDelayMin = 0f,
+            beginDelayMax = 0f, beginDelayMin = 0f;
         public NASFunc<NASPlayer, ushort, NASDrop> dropHandler;
         public NASStation station;
         public NASContainer container;
         public bool collides = true;
         public AABB bounds;
-        public NASBlockAction disturbedAction = null,
-            instantAction = null;
+        public NASBlockAction disturbedAction = null, instantAction = null;
         public NASBlockInteraction interaction = null;
         public NASBlockExistAction existAction = null;
         public NASBlockCollideAction collideAction = null;
@@ -74,7 +65,7 @@ namespace MCGalaxy
             {
                 damageDoneToTool = 0;
             }
-            dropHandler = DefaultDropHandler;
+            dropHandler = (np, id) => new(id);
             resourceCost = 1;
             station = null;
         }
@@ -128,7 +119,7 @@ namespace MCGalaxy
                 id = parentID;
             }
             string name;
-            ushort block = NASPlugin.FromRaw(id);
+            ushort block = Block.FromRaw(id);
             if (block >= 66 && block < 256)
             {
                 name = "Physics block";
@@ -156,6 +147,5 @@ namespace MCGalaxy
             }
             return name.Split('-')[0];
         }
-        public static NASDrop DefaultDropHandler(NASPlayer np, ushort id) => new(id);
     }
 }

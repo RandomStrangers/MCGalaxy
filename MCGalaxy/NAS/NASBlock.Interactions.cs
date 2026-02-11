@@ -167,7 +167,7 @@ namespace MCGalaxy
                                                                                 }
                                                                                 ushort aboveHere = np.nl.GetBlock(x, y + 1, z);
                                                                                 float maxHP = np.inventory.HeldItem.Prop.baseHP;
-                                                                                if (np.inventory.HeldItem.name.CaselessContains("emerald") && aboveHere == NASPlugin.FromRaw(650))
+                                                                                if (np.inventory.HeldItem.name.CaselessContains("emerald") && aboveHere == Block.FromRaw(650))
                                                                                 {
                                                                                     np.inventory.HeldItem.HP = np.inventory.HeldItem.HP + (0.4f * maxHP);
                                                                                     if (np.inventory.HeldItem.HP > maxHP)
@@ -178,7 +178,7 @@ namespace MCGalaxy
                                                                                     np.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
                                                                                     return;
                                                                                 }
-                                                                                if (np.inventory.HeldItem.name.CaselessContains("diamond") && aboveHere == NASPlugin.FromRaw(631))
+                                                                                if (np.inventory.HeldItem.name.CaselessContains("diamond") && aboveHere == Block.FromRaw(631))
                                                                                 {
                                                                                     np.inventory.HeldItem.HP = np.inventory.HeldItem.HP + (0.4f * maxHP);
                                                                                     if (np.inventory.HeldItem.HP > maxHP)
@@ -189,7 +189,7 @@ namespace MCGalaxy
                                                                                     np.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
                                                                                     return;
                                                                                 }
-                                                                                if (np.inventory.HeldItem.name.CaselessContains("gold") && aboveHere == NASPlugin.FromRaw(41))
+                                                                                if (np.inventory.HeldItem.name.CaselessContains("gold") && aboveHere == Block.FromRaw(41))
                                                                                 {
                                                                                     np.inventory.HeldItem.HP = np.inventory.HeldItem.HP + (0.4f * maxHP);
                                                                                     if (np.inventory.HeldItem.HP > maxHP)
@@ -200,7 +200,7 @@ namespace MCGalaxy
                                                                                     np.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
                                                                                     return;
                                                                                 }
-                                                                                if (np.inventory.HeldItem.name.CaselessContains("iron") && aboveHere == NASPlugin.FromRaw(42))
+                                                                                if (np.inventory.HeldItem.name.CaselessContains("iron") && aboveHere == Block.FromRaw(42))
                                                                                 {
                                                                                     np.inventory.HeldItem.HP = np.inventory.HeldItem.HP + (0.4f * maxHP);
                                                                                     if (np.inventory.HeldItem.HP > maxHP)
@@ -211,7 +211,7 @@ namespace MCGalaxy
                                                                                     np.Message("Repaired your {0}!", np.inventory.HeldItem.displayName);
                                                                                     return;
                                                                                 }
-                                                                                if (aboveHere == NASPlugin.FromRaw(171) && np.nl.blockEntities[x + " " + (y + 1) + " " + z].CanAccess(np) && np.nl.blockEntities[x + " " + (y + 1) + " " + z].blockText != "")
+                                                                                if (aboveHere == Block.FromRaw(171) && np.nl.blockEntities[x + " " + (y + 1) + " " + z].CanAccess(np) && np.nl.blockEntities[x + " " + (y + 1) + " " + z].blockText != "")
                                                                                 {
                                                                                     string[] words = np.nl.blockEntities[x + " " + (y + 1) + " " + z].blockText.Split(new[] { ':' }, 2);
                                                                                     np.inventory.HeldItem.displayName = words[1].Remove(0, 1);
@@ -441,7 +441,7 @@ namespace MCGalaxy
                                                                                       {
                                                                                           for (int offY = 2 - withY; offY + withY <= 245; offY++)
                                                                                           {
-                                                                                              if (grab.GetBlock((ushort)(offX + withX), (ushort)(offY + withY), (ushort)(offZ + withZ)) == NASPlugin.FromRaw(457))
+                                                                                              if (grab.GetBlock((ushort)(offX + withX), (ushort)(offY + withY), (ushort)(offZ + withZ)) == Block.FromRaw(457))
                                                                                               {
                                                                                                   double tempDist = Math.Sqrt(offX * offX + offZ * offZ);
                                                                                                   if (tempDist < minDist)
@@ -466,7 +466,7 @@ namespace MCGalaxy
                                                                                       {
                                                                                           ushort block1 = grab.FastGetBlock((ushort)withX, (ushort)(withY + offY), (ushort)withZ),
                                                                                           block2 = grab.FastGetBlock((ushort)withX, (ushort)(withY + offY + 1), (ushort)withZ);
-                                                                                          if (block2 == 0 && (block1 == NASPlugin.FromRaw(457) || block1 == 0))
+                                                                                          if (block2 == 0 && (block1 == Block.FromRaw(457) || block1 == 0))
                                                                                           {
                                                                                               dY = offY;
                                                                                               worked = true;
@@ -526,11 +526,11 @@ namespace MCGalaxy
                                                                                            }
                                                                                            if (button == MouseButton.Right)
                                                                                            {
-                                                                                               if (toggle == NASPlugin.FromRaw(675) || toggle == NASPlugin.FromRaw(196))
+                                                                                               if (toggle == Block.FromRaw(675) || toggle == Block.FromRaw(196))
                                                                                                {
                                                                                                    np.nl.blockEntities[x + " " + y + " " + z].strength = 15;
                                                                                                }
-                                                                                               if (toggle == NASPlugin.FromRaw(674))
+                                                                                               if (toggle == Block.FromRaw(674))
                                                                                                {
                                                                                                    np.nl.blockEntities[x + " " + y + " " + z].strength = 0;
                                                                                                }
@@ -636,12 +636,12 @@ namespace MCGalaxy
                                                                                          }
                                                                                          else if (nasBlock.container.type == NASContainerType.Gravestone)
                                                                                          {
-                                                                                             string file = NASPlugin.GetDeathPath(np.p.name);
+                                                                                             string file = NAS.GetDeathPath(np.p.name);
                                                                                              if (!File.Exists(file))
                                                                                              {
-                                                                                                 File.Create(NASPlugin.GetDeathPath(np.p.name)).Dispose();
+                                                                                                 File.Create(NAS.GetDeathPath(np.p.name)).Dispose();
                                                                                              }
-                                                                                             string[] locations = FileIO.TryReadAllLines(NASPlugin.GetDeathPath(np.p.name)),
+                                                                                             string[] locations = FileIO.TryReadAllLines(NAS.GetDeathPath(np.p.name)),
                                                                                              newLocations = new string[locations.Length];
                                                                                              for (int i = 0; i < locations.Length; i++)
                                                                                              {
@@ -650,7 +650,7 @@ namespace MCGalaxy
                                                                                                      newLocations[i] = locations[i];
                                                                                                  }
                                                                                              }
-                                                                                             FileIO.TryWriteAllLines(NASPlugin.GetDeathPath(np.p.name), newLocations);
+                                                                                             FileIO.TryWriteAllLines(NAS.GetDeathPath(np.p.name), newLocations);
                                                                                              RemoveAll(np, bEntity, bEntity.lockedBy.Length == 0);
                                                                                              bEntity.lockedBy = "";
                                                                                          }

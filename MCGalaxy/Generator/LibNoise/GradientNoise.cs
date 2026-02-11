@@ -284,14 +284,12 @@ namespace MCGalaxy
         };
         public static double GradientCoherentNoise(double x, double y, double z, int seed)
         {
-            // NOTE: Incorrect logic, should be >= 0.0 (kept for compatibility)
             int x0 = x > 0.0 ? (int)x : (int)x - 1,
                 x1 = x0 + 1,
                 y0 = y > 0.0 ? (int)y : (int)y - 1,
                 y1 = y0 + 1,
                 z0 = z > 0.0 ? (int)z : (int)z - 1,
                 z1 = z0 + 1;
-            // case NoiseQuality.Standard:
             double xs = SCurve3(x - x0),
                 ys = SCurve3(y - y0),
                 zs = SCurve3(z - z0),

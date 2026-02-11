@@ -25,7 +25,11 @@ namespace MCGalaxy.Commands.Info
         {
             if (message.Length == 0)
             {
-                if (p.IsSuper) { SuperRequiresArgs(p, "player name"); return; }
+                if (p.IsSuper) 
+                { 
+                    SuperRequiresArgs(p, "player name"); 
+                    return; 
+                }
                 message = p.name;
             }
             if (!Formatter.ValidPlayerName(p, message)) return;
@@ -44,8 +48,8 @@ namespace MCGalaxy.Commands.Info
         }
         static void Show(Player p, string name, DateTime first, DateTime last)
         {
-            TimeSpan firstDelta = DateTime.Now - first;
-            TimeSpan lastDelta = DateTime.Now - last;
+            TimeSpan firstDelta = DateTime.Now - first,
+                lastDelta = DateTime.Now - last;
             name = p.FormatNick(name);
             p.Message("{0} &Swas first seen at {1:H:mm} on {1:yyyy-MM-dd} ({2} ago)", name, first, firstDelta.Shorten());
             p.Message("{0} &Swas last seen at {1:H:mm} on {1:yyyy-MM-dd} ({2} ago)", name, last, lastDelta.Shorten());

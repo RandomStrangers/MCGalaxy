@@ -22,7 +22,6 @@ namespace MCGalaxy.Events.EntityEvents
         public static void Call(Entity e, ref string tabName, ref string tabGroup, Player dst)
         {
             IEvent<OnTabListEntryAdded>[] items = handlers.Items;
-            // Can't use CallCommon because we need to pass arguments by ref
             for (int i = 0; i < items.Length; i++)
             {
                 try
@@ -43,12 +42,16 @@ namespace MCGalaxy.Events.EntityEvents
         public static void Call(Entity e, Player dst)
         {
             IEvent<OnTabListEntryRemoved>[] items = handlers.Items;
-            // Don't use CallCommon, because this event is called very frequently
-            // and want to avoid lots of pointless temp mem allocations
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(e, dst); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(e, dst);
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]);
+                }
             }
         }
     }
@@ -59,7 +62,6 @@ namespace MCGalaxy.Events.EntityEvents
         public static void Call(Entity e, ref string name, ref string skin, ref string model, Player dst)
         {
             IEvent<OnEntitySpawned>[] items = handlers.Items;
-            // Can't use CallCommon because we need to pass arguments by ref
             for (int i = 0; i < items.Length; i++)
             {
                 try
@@ -82,8 +84,14 @@ namespace MCGalaxy.Events.EntityEvents
             IEvent<OnEntityDespawned>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(e, dst); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(e, dst); 
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -94,11 +102,16 @@ namespace MCGalaxy.Events.EntityEvents
         public static void Call(Entity e, ref string model, Player dst)
         {
             IEvent<OnSendingModel>[] items = handlers.Items;
-            // Can't use CallCommon because we need to pass arguments by ref
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(e, ref model, dst); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(e, ref model, dst); 
+                }
+                catch (Exception ex)
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -110,11 +123,16 @@ namespace MCGalaxy.Events.EntityEvents
         public static void Call(Player p, ref bool canSee, Entity target)
         {
             IEvent<OnGettingCanSeeEntity>[] items = handlers.Items;
-            // Can't use CallCommon because we need to pass arguments by ref
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, ref canSee, target); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(p, ref canSee, target);
+                }
+                catch (Exception ex) 
+                {
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }

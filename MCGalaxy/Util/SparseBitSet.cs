@@ -53,8 +53,8 @@ namespace MCGalaxy.Util
                 bits[index] = chunk;
             }
             index = (x & 0xF) | (z & 0xF) << 4 | (y & 0xF) << 8;
-            chunk[index >> 3] &= (byte)~(1 << (index & 0x7)); // reset bit
-            chunk[index >> 3] |= (byte)((bit ? 1 : 0) << (index & 0x7)); // set new bit
+            chunk[index >> 3] &= (byte)~(1 << (index & 0x7));
+            chunk[index >> 3] |= (byte)((bit ? 1 : 0) << (index & 0x7));
         }
         /// <summary> Attempts to sets the 1 bit of data associated with the given coordinates to true. </summary>
         /// <remarks> true if the 1 bit of data was not already set to true, false if it was. </remarks>
@@ -72,13 +72,13 @@ namespace MCGalaxy.Util
             {
                 return false;
             }
-            chunk[index >> 3] |= (byte)(1 << (index & 0x7)); // set new bit
+            chunk[index >> 3] |= (byte)(1 << (index & 0x7));
             return true;
         }
         /// <summary> Resets all bits of data to false. </summary>
         public void Clear()
         {
-            byte[][] bits_ = bits; // local var to avoid JIT bounds check
+            byte[][] bits_ = bits;
             for (int i = 0; i < bits_.Length; i++)
             {
                 bits_[i] = null;

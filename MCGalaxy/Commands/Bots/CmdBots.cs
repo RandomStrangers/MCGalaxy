@@ -32,8 +32,8 @@ namespace MCGalaxy.Commands.Bots
                 if (lvl == null) return;
             }
             PlayerBot[] bots = lvl.Bots.Items;
-            string cmd = (lvl == p.Level) ? "bots" : "bots " + lvl.name;
-            string modifier = args.Length > offset ? args[offset] : "";
+            string cmd = (lvl == p.Level) ? "bots" : "bots " + lvl.name,
+                modifier = args.Length > offset ? args[offset] : "";
             p.Message("Bots in " + lvl.ColoredName + ":");
             Paginator.Output(p, bots, FormatBot, cmd, "Bots", modifier);
         }
@@ -45,7 +45,10 @@ namespace MCGalaxy.Commands.Bots
             {
                 desc += "[" + bot.AIName + "]";
             }
-            else if (bot.hunt) { desc += "[Hunt]"; }
+            else if (bot.hunt) 
+            {
+                desc += "[Hunt]";
+            }
             if (bot.kill) desc += "-kill";
             return desc;
         }

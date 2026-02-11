@@ -24,43 +24,60 @@ namespace MCGalaxy.Commands.Chatting
         public override CommandAlias[] Aliases => new[] { new CommandAlias("Deafen", "all") };
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            {
+                Help(p); 
+                return; 
+            }
             string[] args = message.SplitSpaces();
             string action = args[0].ToLower();
             if (action == "all")
             {
-                Toggle(p, ref p.Ignores.All, "{0} ignoring all chat"); return;
+                Toggle(p, ref p.Ignores.All, "{0} ignoring all chat"); 
+                return;
             }
             else if (action == "irc")
             {
-                if (args.Length > 1) { IgnoreIRCNick(p, args[1]); }
-                else { Toggle(p, ref p.Ignores.IRC, "{0} ignoring IRC chat"); }
+                if (args.Length > 1) 
+                {
+                    IgnoreIRCNick(p, args[1]); 
+                }
+                else 
+                { 
+                    Toggle(p, ref p.Ignores.IRC, "{0} ignoring IRC chat"); 
+                }
                 return;
             }
             else if (action == "titles")
             {
-                Toggle(p, ref p.Ignores.Titles, "{1}Player titles {0} show before names in chat"); return;
+                Toggle(p, ref p.Ignores.Titles, "{1}Player titles {0} show before names in chat"); 
+                return;
             }
             else if (action == "nicks")
             {
                 Toggle(p, ref p.Ignores.Nicks, "{1}Custom player nicks {0} show in chat");
-                TabList.Update(p, true); return;
+                TabList.Update(p, true); 
+                return;
             }
             else if (action == "8ball")
             {
-                Toggle(p, ref p.Ignores.EightBall, "{0} ignoring &T/8ball"); return;
+                Toggle(p, ref p.Ignores.EightBall, "{0} ignoring &T/8ball"); 
+                return;
             }
             else if (action == "drawoutput")
             {
-                Toggle(p, ref p.Ignores.DrawOutput, "{0} ignoring draw command output"); return;
+                Toggle(p, ref p.Ignores.DrawOutput, "{0} ignoring draw command output");
+                return;
             }
             else if (action == "worldchanges")
             {
-                Toggle(p, ref p.Ignores.WorldChanges, "{0} ignoring world changes"); return;
+                Toggle(p, ref p.Ignores.WorldChanges, "{0} ignoring world changes");
+                return;
             }
             else if (IsListAction(action))
             {
-                p.Ignores.Output(p); return;
+                p.Ignores.Output(p);
+                return;
             }
             if (p.Ignores.Names.CaselessRemove(action))
             {
@@ -122,7 +139,11 @@ namespace MCGalaxy.Commands.Chatting
         }
         public override void Help(Player p, string message)
         {
-            if (!message.CaselessEq("special")) { Help(p); return; }
+            if (!message.CaselessEq("special")) 
+            { 
+                Help(p); 
+                return; 
+            }
             p.Message("&HSpecial names for &T/Ignore [name]");
             p.Message("&H all - all chat is ignored.");
             p.Message("&H irc - IRC chat is ignored.");

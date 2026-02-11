@@ -60,7 +60,9 @@ namespace MCGalaxy.Core
                     return false;
                 }
             }
-            catch { } // TODO log error
+            catch 
+            { 
+            }
             return true;
         }
         static bool CheckPlayersCount(Player p)

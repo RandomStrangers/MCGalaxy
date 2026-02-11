@@ -200,7 +200,6 @@ namespace MCGalaxy.Bots
             bot.DisplayName = DisplayName;
             bot.cur = CurInstruction;
             bot.curJump = CurJump;
-            // NOTE: This field wasn't in old json
             if (CurSpeed != 0) bot.movementSpeed = CurSpeed;
             bot.ClickedOnText = ClickedOnText;
             bot.DeathMessage = DeathMessage;

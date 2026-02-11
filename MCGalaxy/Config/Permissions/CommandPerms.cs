@@ -88,7 +88,6 @@ namespace MCGalaxy.Commands
             while ((line = r.ReadLine()) != null)
             {
                 if (line.IsCommentLine()) continue;
-                // Format - Name : Lowest : Disallow : Allow
                 line.Replace(" ", "").FixedSplit(args, ':');
                 try
                 {

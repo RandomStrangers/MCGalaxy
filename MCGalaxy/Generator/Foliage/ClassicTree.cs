@@ -7,7 +7,6 @@ namespace MCGalaxy.Generator.Foliage
     public sealed class ClassicTree : Tree
     {
         public JavaRandom rng;
-        // 61 = max number of leaves possible, +1 for extra log
         public override long EstimateBlocksAffected() => height + 65;
         public override int DefaultSize(Random rnd) { EnsureRNG(rnd); return 5 + rng.Next(3); }
         public override void SetData(Random rnd, int value)
@@ -21,12 +20,10 @@ namespace MCGalaxy.Generator.Foliage
         {
             int baseHeight = height - 4,
                 topStartY = y + baseHeight + 2;
-            // trunk
             for (int dy = 0; dy < height - 1; dy++)
             {
                 output(x, (ushort)(y + dy), z, Block.Log);
             }
-            // leaves bottom layer
             for (int yy = y + baseHeight; yy < topStartY; yy++)
             {
                 for (int dz = -2; dz <= 2; dz++)
@@ -47,7 +44,6 @@ namespace MCGalaxy.Generator.Foliage
                     }
                 }
             }
-            // leaves top layer
             for (int yy = topStartY; yy < y + height; yy++)
             {
                 for (int dz = -1; dz <= 1; dz++)

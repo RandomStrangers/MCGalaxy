@@ -109,14 +109,18 @@ namespace MCGalaxy.Blocks.Physics
                 if (dropType <= 2)
                 {
                     lvl.AddUpdate(C.Index, Block.CoalOre, default(PhysicsArgs));
-                    C.Data.Type1 = PhysicsArgs.Drop; C.Data.Value1 = 63;
-                    C.Data.Type2 = PhysicsArgs.Dissipate; C.Data.Value2 = 10;
+                    C.Data.Type1 = 4; 
+                    C.Data.Value1 = 63;
+                    C.Data.Type2 = 3; 
+                    C.Data.Value2 = 10;
                 }
                 else if (dropType <= 4)
                 {
                     lvl.AddUpdate(C.Index, Block.Obsidian, default(PhysicsArgs));
-                    C.Data.Type1 = PhysicsArgs.Drop; C.Data.Value1 = 63;
-                    C.Data.Type2 = PhysicsArgs.Dissipate; C.Data.Value2 = 10;
+                    C.Data.Type1 = 4; 
+                    C.Data.Value1 = 63;
+                    C.Data.Type2 = 3; 
+                    C.Data.Value2 = 10;
                 }
                 else if (dropType <= 8)
                 {

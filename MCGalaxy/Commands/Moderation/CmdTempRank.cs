@@ -59,11 +59,13 @@ namespace MCGalaxy.Commands.Moderation
             if (!CommandParser.GetTimespan(p, args[2], ref duration, "temp rank for", "h")) return;
             if (Server.tempRanks.Contains(target))
             {
-                p.Message("&WThe player already has a temporary rank assigned!"); return;
+                p.Message("&WThe player already has a temporary rank assigned!");
+                return;
             }
             if (p.name.CaselessEq(target))
             {
-                p.Message("&WYou cannot assign yourself a temporary rank."); return;
+                p.Message("&WYou cannot assign yourself a temporary rank.");
+                return;
             }
             Group curRank = PlayerInfo.GetGroup(target);
             string reason = args.Length > 3 ? args[3] : "assigning temp rank";
@@ -85,7 +87,7 @@ namespace MCGalaxy.Commands.Moderation
             }
             string[] parts = line.SplitSpaces();
             Group curRank = PlayerInfo.GetGroup(target);
-            Group oldRank = Group.Find(parts[4 - 1]); // -1 because data, not whole line
+            Group oldRank = Group.Find(parts[4 - 1]);
             if (oldRank == null) return;
             string reason = "temp rank unassigned";
             if (!CmdSetRank.CanChangeRank(target, curRank, oldRank, p, data, ref reason)) return;
@@ -130,12 +132,12 @@ namespace MCGalaxy.Commands.Moderation
             string[] args = data.SplitSpaces();
             if (args.Length < 4) return;
             string assigner = args[0];
-            DateTime assigned = long.Parse(args[1]).FromUnixTime();
-            DateTime expiry = long.Parse(args[2]).FromUnixTime();
-            string oldRank = Group.GetColoredName(args[3]);
-            string tempRank = Group.GetColoredName(args[4]);
-            TimeSpan assignDelta = DateTime.UtcNow - assigned;
-            TimeSpan expireDelta = expiry - DateTime.UtcNow;
+            DateTime assigned = long.Parse(args[1]).FromUnixTime(),
+                expiry = long.Parse(args[2]).FromUnixTime();
+            string oldRank = Group.GetColoredName(args[3]),
+                tempRank = Group.GetColoredName(args[4]);
+            TimeSpan assignDelta = DateTime.UtcNow - assigned,
+                expireDelta = expiry - DateTime.UtcNow;
             p.Message("Temp rank information for {0}:", p.FormatNick(name));
             p.Message("  From {0} &Sto {1}&S, by {2} &a{3} &Sago, expires in &a{4}",
                            oldRank, tempRank, assigner,

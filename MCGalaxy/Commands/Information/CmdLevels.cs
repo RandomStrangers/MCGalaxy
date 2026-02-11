@@ -25,7 +25,6 @@ namespace MCGalaxy.Commands.Info
         public override void Use(Player p, string message, CommandData data)
         {
             string[] files = LevelInfo.AllMapNames();
-            // Files list is not guaranteed to be in alphabetical order
             Array.Sort(files, new AlphanumComparator());
             LevelInfo.ListMaps(p, files, "Levels", "Levels", "levels", message);
         }

@@ -27,7 +27,7 @@ namespace MCGalaxy
         }
         public static bool Setup()
         {
-            if (!FileIO.TryReadBytes(NASPlugin.Path + "selectorColors.png", out byte[] data))
+            if (!FileIO.TryReadBytes(NAS.Path + "selectorColors.png", out byte[] data))
             {
                 Logger.Log(LogType.Warning, "Could not locate selectorColors.png (needed for tool health/selection colors)");
                 return false;

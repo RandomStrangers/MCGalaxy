@@ -90,22 +90,17 @@ namespace MCGalaxy
             {
                 return num * TimeSpan.TicksPerMinute;
             }
-            if (unit.CaselessEq("h"))
-            {
-                return num * TimeSpan.TicksPerHour;
-            }
-            if (unit.CaselessEq("d"))
-            {
-                return num * TimeSpan.TicksPerDay;
-            }
-            return unit.CaselessEq("w")
+            return unit.CaselessEq("h")
+                ? num * TimeSpan.TicksPerHour
+                : unit.CaselessEq("d")
+                ? num * TimeSpan.TicksPerDay
+                : unit.CaselessEq("w")
                 ? num * TimeSpan.TicksPerDay * 7
                 : unit.CaselessEq("ms") ? num * TimeSpan.TicksPerMillisecond : throw new FormatException(unit);
         }
         static string GetUnit(string value, int i)
         {
             string unit = "";
-            // Find all alphabetical chars
             for (; i < value.Length; i++)
             {
                 char c = value[i];

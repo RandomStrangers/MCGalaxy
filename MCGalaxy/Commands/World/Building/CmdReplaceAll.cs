@@ -57,12 +57,16 @@ namespace MCGalaxy.Commands.Building
             {
                 Vec3U16 p1 = Clamp(Min), p2 = Clamp(Max);
                 for (ushort y = p1.Y; y <= p2.Y; y++)
+                {
                     for (ushort z = p1.Z; z <= p2.Z; z++)
+                    {
                         for (ushort x = p1.X; x <= p2.X; x++)
                         {
                             Coords.X = x; Coords.Y = y; Coords.Z = z;
                             if (brush.NextBlock(this) != Block.Invalid) Total++;
                         }
+                    }
+                }
             }
         }
         public override void Help(Player p)

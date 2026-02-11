@@ -18,10 +18,8 @@ namespace MCGalaxy
 {
     public abstract class Entity
     {
-        // Raw orientation/position - access must be threadsafe
         volatile uint _rot;
         long _pos;
-        // Last sent orientation/position, for delta calculation
         public Orientation _lastRot;
         public Position _lastPos;
         /// <summary>

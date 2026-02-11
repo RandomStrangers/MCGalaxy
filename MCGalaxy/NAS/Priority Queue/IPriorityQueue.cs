@@ -2,6 +2,20 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
+    public class GenericPriorityQueueNode<TPriority>
+    {
+        public TPriority Priority { get; set; }
+        public int QueueIndex { get; set; }
+        public long InsertionIndex { get; set; }
+        public object Queue { get; set; }
+    }
+    public interface IFixedSizePriorityQueue<TItem, in TPriority> : IPriorityQueue<TItem, TPriority>
+        where TPriority : IComparable<TPriority>
+    {
+        void Resize(int maxNodes);
+        int MaxSize { get; }
+        void ResetNode(TItem node);
+    }
     public interface IPriorityQueue<TItem, in TPriority> : IEnumerable<TItem>
         where TPriority : IComparable<TPriority>
     {

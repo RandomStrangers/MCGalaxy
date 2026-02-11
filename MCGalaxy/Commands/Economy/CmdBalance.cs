@@ -38,7 +38,8 @@ namespace MCGalaxy.Commands.Eco
             }
             else
             {
-                target = who.name; money = who.money;
+                target = who.name; 
+                money = who.money;
             }
             string targetName = p.FormatNick(target);
             p.Message("Economy stats for {0}&S:", targetName);
@@ -54,9 +55,9 @@ namespace MCGalaxy.Commands.Eco
         static void Output(Player p, string value, string type)
         {
             if (value == null) return;
-            if (!AdjustRelative(ref value, " on %f"))
+            if (!AdjustRelative(ref value, " on &f"))
             {
-                AdjustRelative(ref value, " - Date: %f"); // old date format for purchases
+                AdjustRelative(ref value, " - Date: &f");
             }
             p.Message(" Last {0}: {1}", type, value);
         }
@@ -65,10 +66,9 @@ namespace MCGalaxy.Commands.Eco
             int index = value.IndexOf(dateStart);
             if (index == -1) return false;
             string prefix = value.Substring(0, index);
-            index += dateStart.Length; // skip over the date start bit
-            const int dateLength = 19;
-            string date = value.Substring(index, dateLength);
-            index += dateLength;
+            index += dateStart.Length;
+            string date = value.Substring(index, 19);
+            index += 19;
             string suffix = "";
             if (index < value.Length)
                 suffix = value.Substring(index);

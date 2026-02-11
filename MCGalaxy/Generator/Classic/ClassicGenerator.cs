@@ -1,5 +1,4 @@
 // Copyright 2014-2017 ClassicalSharp | Licensed under BSD-3
-// Based on: https://github.com/ClassiCube/ClassiCube/wiki/Minecraft-Classic-map-generation-algorithm
 using MCGalaxy.Generator.Foliage;
 using System;
 namespace MCGalaxy.Generator.Classic
@@ -100,11 +99,9 @@ namespace MCGalaxy.Generator.Classic
             {
                 blocks[mapIndex++] = Block.Lava;
             }
-            // Invariant: the lowest value dirtThickness can possible be is -14
             int stoneHeight = minHeight - 14;
-            if (stoneHeight <= 0) return 1; // no layer is fully stone
+            if (stoneHeight <= 0) return 1;
             byte cliff = biome.Cliff;
-            // We can quickly fill in bottom solid layers
             count = stoneHeight * Length * Width;
             for (int i = 0; i < count; i++)
             {
@@ -188,7 +185,8 @@ namespace MCGalaxy.Generator.Classic
             {
                 FloodFill(index1, water);
                 FloodFill(index2, water);
-                index1 += Width; index2 += Width;
+                index1 += Width; 
+                index2 += Width;
             }
         }
         void FloodFillWater()
@@ -216,7 +214,6 @@ namespace MCGalaxy.Generator.Classic
         void CreateSurfaceLayer()
         {
             OctaveNoise n1 = new(8, rnd), n2 = new(8, rnd);
-            // TODO: update heightmap
             byte surface = biome.Surface,
                 sandy = biome.BeachSandy,
                 rocky = biome.BeachRocky,
@@ -327,7 +324,6 @@ namespace MCGalaxy.Generator.Classic
                             tree.Generate((ushort)treeX, (ushort)treeY, (ushort)treeZ, (xT, yT, zT, bT) =>
                                   {
                                       int idx = (yT * Length + zT) * Width + xT;
-                                      // don't place leafs over trunk
                                       if (bT == Block.Leaves && blocks[idx] == Block.Log) return;
                                       blocks[idx] = (byte)bT;
                                   });
@@ -339,11 +335,9 @@ namespace MCGalaxy.Generator.Classic
         Tree GetTreeGen() => biome.TreeType == null ? null : biome.TreeType == "" ? new ClassicTree() { rng = rnd } : Tree.TreeTypes[biome.TreeType]();
         bool CanGrowTree(int treeX, int treeY, int treeZ, int treeHeight)
         {
-            // check tree bounds
             if (treeY < 0 || (treeY + treeHeight - 1) >= Height) return false;
             if (treeX - 2 < 0 || treeX + 2 >= Width) return false;
             if (treeZ - 2 < 0 || treeZ + 2 >= Length) return false;
-            // check tree base
             int baseHeight = treeHeight - 4;
             for (int y = treeY; y < treeY + baseHeight; y++)
             {
@@ -356,7 +350,6 @@ namespace MCGalaxy.Generator.Classic
                     }
                 }
             }
-            // and also check canopy
             for (int y = treeY + baseHeight; y < treeY + treeHeight; y++)
             {
                 for (int z = treeZ - 2; z <= treeZ + 2; z++)

@@ -21,7 +21,6 @@ namespace MCGalaxy.Blocks.Physics
         {
             Random rand = lvl.physRandom;
             ushort x = C.X, y = C.Y, z = C.Z;
-            // Make zombie fall down
             if (lvl.IsAirAt(x, (ushort)(y - 1), z))
             {
                 lvl.AddUpdate(C.Index, Block.ZombieHead);
@@ -100,7 +99,6 @@ namespace MCGalaxy.Blocks.Physics
         }
         static bool MoveZombie(Level lvl, ref PhysInfo C, ushort x, ushort y, ushort z)
         {
-            // Move zombie up or down blocks
             if (lvl.IsAirAt(x, (ushort)(y - 1), z, out int index) && lvl.IsAirAt(x, y, z))
             {
             }

@@ -27,9 +27,9 @@ namespace MCGalaxy.Commands.Building
         protected override DrawMode GetMode(string[] parts)
         {
             string msg = parts[0];
-            if (msg == "normal") return DrawMode.solid;
-            if (msg == "walls") return DrawMode.walls;
-            return msg == "straight" ? DrawMode.straight : msg == "connected" ? DrawMode.wire : DrawMode.normal;
+            return msg == "normal"
+                ? DrawMode.solid
+                : msg == "walls" ? DrawMode.walls : msg == "straight" ? DrawMode.straight : msg == "connected" ? DrawMode.wire : DrawMode.normal;
         }
         protected override DrawOp GetDrawOp(DrawArgs dArgs)
         {
@@ -52,15 +52,18 @@ namespace MCGalaxy.Commands.Building
             int dx = Math.Abs(m[0].X - m[1].X), dy = Math.Abs(m[0].Y - m[1].Y), dz = Math.Abs(m[0].Z - m[1].Z);
             if (dx > dy && dx > dz)
             {
-                m[1].Y = m[0].Y; m[1].Z = m[0].Z;
+                m[1].Y = m[0].Y; 
+                m[1].Z = m[0].Z;
             }
             else if (dy > dx && dy > dz)
             {
-                m[1].X = m[0].X; m[1].Z = m[0].Z;
+                m[1].X = m[0].X;
+                m[1].Z = m[0].Z;
             }
             else if (dz > dy && dz > dx)
             {
-                m[1].X = m[0].X; m[1].Y = m[0].Y;
+                m[1].X = m[0].X;
+                m[1].Y = m[0].Y;
             }
         }
         protected override void GetBrush(DrawArgs dArgs)
@@ -75,7 +78,6 @@ namespace MCGalaxy.Commands.Building
             if (!base.DoDraw(p, marks, state, block)) return false;
             DrawArgs dArgs = (DrawArgs)state;
             if (dArgs.Mode != DrawMode.wire) return true;
-            // special for connected line mode
             p.MakeSelection(MarksCount, "Selecting endpoints for &S" + dArgs.Op.Name, dArgs, DoDraw);
             Vec3U16 pos = p.lastClick;
             p.DoBlockchangeCallback(pos.X, pos.Y, pos.Z, p.GetHeldBlock());

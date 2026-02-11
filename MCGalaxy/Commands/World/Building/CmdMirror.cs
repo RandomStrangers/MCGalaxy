@@ -24,10 +24,15 @@ namespace MCGalaxy.Commands.Building
         public override CommandAlias[] Aliases => new[] { new CommandAlias("Flip") };
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p); 
+                return;
+            }
             if (p.CurrentCopy == null)
             {
-                p.Message("You haven't copied anything yet"); return;
+                p.Message("You haven't copied anything yet");
+                return;
             }
             CopyState cState = p.CurrentCopy;
             BlockDefinition[] defs = p.Level.CustomBlockDefs;

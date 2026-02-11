@@ -27,7 +27,6 @@ namespace MCGalaxy
             InitReduceTable();
             LoadBadWords();
         }
-        // Replace any words containing a bad word inside it (including partial bad word matches)
         public static string Parse(string text)
         {
             string[] words = text.SplitSpaces(),
@@ -56,7 +55,6 @@ namespace MCGalaxy
             {
                 if (reduced[i].Contains(badWord))
                 {
-                    // If a bad word is found anywhere in the word, replace the word
                     words[i] = Censor(Colors.Strip(words[i]).Length);
                     return;
                 }
@@ -66,14 +64,11 @@ namespace MCGalaxy
         static void InitReduceTable()
         {
             if (reduceKeys != null) return;
-            // Because some letters are similar (Like i and l), they are reduced to the same form.
-            // For example, the word "@t3$5t ll" is reduced to "atesst ii";
             reduceKeys = "@|i3|l3|(|3|ph|6|#|l|!|1|0|9|$|5|vv|2".Split('|');
             reduceValues = "a|b|b|c|e|f|g|h|i|i|i|o|q|s|s|w|z".Split('|');
         }
         static void LoadBadWords()
         {
-            // Duplicated literal const values? tsk x1000
             TextFile goodWordsFile = TextFile.Files["Profanity filter exceptions"],
                 badWordsFile = TextFile.Files["Profanity filter"];
             goodWordsFile.EnsureExists();
@@ -86,7 +81,6 @@ namespace MCGalaxy
             }
             goodWords = goodWordsFile.GetTextWithoutComments();
             badWords = badWordsFile.GetTextWithoutComments();
-            // Run the badwords through the reducer to ensure things like Ls become Is and everything is lowercase
             for (int i = 0; i < badWords.Count; i++)
             {
                 badWords[i] = Reduce(badWords[i]);

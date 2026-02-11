@@ -37,8 +37,6 @@ namespace MCGalaxy.Network
             {
                 Logger.LogError("Error retrieving DNS information for " + hostUrl, ex);
             }
-            // Replace www, as otherwise the 'Finding www.classicube.net url..'
-            //  message appears as a clickable link in the Logs textbox in GUI
             hostUrl = hostUrl.Replace("www.", "");
             Logger.Log(LogType.SystemActivity, "Finding " + hostUrl + " url..");
         }
@@ -90,7 +88,6 @@ namespace MCGalaxy.Network
         {
             if (string.IsNullOrEmpty(text)) return false;
             if (text == LastResponse) return false;
-            // only need to process responses that have changed
             LastResponse = text;
             return true;
         }
@@ -104,12 +101,6 @@ namespace MCGalaxy.Network
         static string GetError(string json)
         {
             JsonReader reader = new(json);
-            // silly design, but form of json is:
-            // {
-            //   "errors": [ ["Error 1"], ["Error 2"] ],
-            //   "response": "",
-            //   "status": "fail"
-            // }
             if (reader.Parse() is not JsonObject obj || !obj.ContainsKey("errors")) return null;
             if (obj["errors"] is not JsonArray errors) return null;
             foreach (object raw in errors)

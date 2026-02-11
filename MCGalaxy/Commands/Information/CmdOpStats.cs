@@ -24,13 +24,17 @@ namespace MCGalaxy.Commands.Info
         public override bool UseableWhenFrozen => true;
         public override void Use(Player p, string message, CommandData data)
         {
-            string end = DateTime.Now.ToInvariantDateString();
-            string start = "thismonth";
+            string end = DateTime.Now.ToInvariantDateString(),
+                start = "thismonth";
             string[] args = message.SplitSpaces();
             string name;
             if (message.Length == 0 || ValidTimespan(message.ToLower()))
             {
-                if (p.IsSuper) { SuperRequiresArgs(p, "player name"); return; }
+                if (p.IsSuper) 
+                { 
+                    SuperRequiresArgs(p, "player name"); 
+                    return;
+                }
                 name = p.name;
                 if (message.Length > 0) start = message.ToLower();
             }
@@ -65,38 +69,32 @@ namespace MCGalaxy.Commands.Info
             }
             else
             {
-                Help(p); return;
+                Help(p); 
+                return;
             }
             p.Message("OpStats for {0} &Ssince {1}", p.FormatNick(name), start);
-            int reviews = Count(start, end, name, "review", "LIKE 'next'");
-            int ranks = Count(start, end, name, "setrank", "!=''");
-            int promotes = Count(start, end, name, "setrank", "LIKE '+up%'");
-            int demotes = Count(start, end, name, "setrank", "LIKE '-down%'");
-            int promotesOld = Count(start, end, name, "promote");
-            int demotesOld = Count(start, end, name, "demote");
-            int mutes = Count(start, end, name, "mute");
-            int freezes = Count(start, end, name, "freeze");
-            int warns = Count(start, end, name, "warn");
-            int kicks = Count(start, end, name, "kick");
-            int bans = Count(start, end, name, "ban");
-            int kickbans = Count(start, end, name, "kickban");
-            int ipbans = Count(start, end, name, "banip");
-            int xbans = Count(start, end, name, "xban");
-            int tempbans = Count(start, end, name, "tempban");
+            int reviews = Count(start, end, name, "review", "LIKE 'next'"),
+                ranks = Count(start, end, name, "setrank", "!=''"),
+                promotes = Count(start, end, name, "setrank", "LIKE '+up%'"),
+                demotes = Count(start, end, name, "setrank", "LIKE '-down%'"),
+                mutes = Count(start, end, name, "mute"),
+                freezes = Count(start, end, name, "freeze"),
+                warns = Count(start, end, name, "warn"),
+                kicks = Count(start, end, name, "kick"),
+                bans = Count(start, end, name, "ban"),
+                kickbans = Count(start, end, name, "kickban"),
+                ipbans = Count(start, end, name, "banip"),
+                xbans = Count(start, end, name, "xban"),
+                tempbans = Count(start, end, name, "tempban");
             p.Message("  &a{0}&S bans, &a{1}&S IP-bans, &a{2}&S tempbans",
                            bans + kickbans + xbans, ipbans + xbans, tempbans);
             p.Message("  &a{0}&S mutes, &a{1}&S warns, &a{2}&S freezes, &a{3}&S kicks",
                            mutes, warns, freezes, kicks + kickbans + xbans);
             p.Message("  &a{0}&S reviews, &a{1}&S ranks (&a{2}&S promotes, &a{3}&S demotes)",
-                           reviews, ranks + promotesOld + demotesOld,
-                           promotes + promotesOld, demotes + demotesOld);
+                           reviews, ranks, promotes, demotes);
         }
         static bool ValidTimespan(string value) => value == "today" || value == "yesterday" || value == "thismonth" || value == "lastmonth" || value == "all";
-        static int Count(string start, string end, string name, string cmd, string msg = "!=''")
-        {
-            const string whereSQL = "WHERE Time >= @0 AND Time < @1 AND Name LIKE @2 AND Cmd LIKE @3 AND Cmdmsg ";
-            return Database.CountRows("Opstats", whereSQL + msg, start, end, name, cmd);
-        }
+        static int Count(string start, string end, string name, string cmd, string msg = "!=''") => Database.CountRows("Opstats", "WHERE Time >= @0 AND Time < @1 AND Name LIKE @2 AND Cmd LIKE @3 AND Cmdmsg " + msg, start, end, name, cmd);
         public override void Help(Player p)
         {
             p.Message("&T/OpStats [player] today/yesterday/thismonth/lastmonth/all");

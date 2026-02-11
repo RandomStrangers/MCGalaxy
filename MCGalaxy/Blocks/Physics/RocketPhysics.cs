@@ -25,7 +25,9 @@ namespace MCGalaxy.Blocks.Physics
             int dirZ = rand.Next(1, 10) <= 5 ? 1 : -1;
             ushort x = C.X, y = C.Y, z = C.Z;
             for (int cx = -dirX; cx != 2 * dirX; cx += dirX)
+            {
                 for (int cy = -dirY; cy != 2 * dirY; cy += dirY)
+                {
                     for (int cz = -dirZ; cz != 2 * dirZ; cz += dirZ)
                     {
                         ushort rocketTail = lvl.GetBlock((ushort)(x + cx), (ushort)(y + cy), (ushort)(z + cz));
@@ -48,6 +50,8 @@ namespace MCGalaxy.Blocks.Physics
                                 lvl.AddUpdate(C.Index, Block.LavaFire, default(PhysicsArgs));
                         }
                     }
+                }
+            }
         }
     }
 }

@@ -54,7 +54,6 @@ namespace MCGalaxy.Blocks
                 p.lastCheckpointIndex = index;
                 return true;
             }
-            // allow activating other blocks (e.g. /mb message above it)
             return false;
         }
     }

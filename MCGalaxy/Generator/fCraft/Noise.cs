@@ -24,8 +24,6 @@ namespace MCGalaxy.Generator.fCraft
         public static float InterpolateCosine(float v00, float v01, float v10, float v11, float x, float y) => InterpolateCosine(InterpolateCosine(v00, v10, x),
                                       InterpolateCosine(v01, v11, x),
                                       y);
-        // Cubic and Catmull-Rom Spline interpolation methods by Paul Bourke
-        // http://local.wasp.uwa.edu.au/~pbourke/miscellaneous/interpolation/
         public static float InterpolateCubic(float v0, float v1, float v2, float v3, float mu) => (v3 - v2 - v0 + v1) * mu * (mu * mu) + (v0 - v1 - (v3 - v2 - v0 + v1)) * (mu * mu) + (v2 - v0) * mu + v1;
         public float StaticNoise(int x, int y)
         {
@@ -108,11 +106,10 @@ namespace MCGalaxy.Generator.fCraft
             CalculateNormalizationParams(map, low, high, out float multiplier, out float constant);
             for (int i = 0; i < map.Length; i++)
             {
-                map[i] = map[i] * multiplier + constant; // (map[i] - min) * multiplier + low
+                map[i] = map[i] * multiplier + constant;
             }
         }
         #endregion
-        // assumes normalized input
         public static void Marble(float[] map)
         {
             for (int i = 0; i < map.Length; i++)
@@ -160,7 +157,6 @@ namespace MCGalaxy.Generator.fCraft
                     }
                     else
                     {
-                        // NOTE: the wrong -X1 here| is for compatibility with original incorrect code
                         output[i] = (heightmap[i - X2 - Y2] + heightmap[i - X1 - Y2] * 4 + heightmap[i - Y2] * 7 + heightmap[i + X1 - Y2] * 4 + heightmap[i + X2 - Y2] +
                                      heightmap[i - X1 - Y1] * 4 + heightmap[i - X1 - Y1] * 16 + heightmap[i - Y1] * 26 + heightmap[i + X1 - Y1] * 16 + heightmap[i + X2 - Y1] * 4 +
                                      heightmap[i - X2] * 7 + heightmap[i - X1] * 26 + heightmap[i] * 41 + heightmap[i + X1] * 26 + heightmap[i + X2] * 7 +
@@ -175,7 +171,7 @@ namespace MCGalaxy.Generator.fCraft
         public static float[] CalculateSlope(float[] heightmap, int width, int length)
         {
             float[] output = new float[width * length];
-            int X1 = length, Y1 = 1; // e.g. map[index + X1] == map[x + 1, y]
+            int X1 = length, Y1 = 1;
             for (int x = 0, i = 0; x < width; x++)
             {
                 for (int y = 0; y < length; y++, i++)

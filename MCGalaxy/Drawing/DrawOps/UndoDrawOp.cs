@@ -49,7 +49,6 @@ namespace MCGalaxy.Drawing.Ops
         void PerformUndo()
         {
             if (ids.Length == 0) return;
-            // can't use "using" as it creates a local var, and read lock reference may be changed by DrawOpPerformer class
             try
             {
                 BlockDBReadLock = Level.BlockDB.Locker.AccquireRead();
@@ -63,10 +62,10 @@ namespace MCGalaxy.Drawing.Ops
             if (oldest == null) return;
             foreach (KeyValuePair<int, ushort> kvp in oldest)
             {
-                int index = kvp.Key;
-                int x = index % dims.X;
-                int y = index / dims.X / dims.Z;
-                int z = index / dims.X % dims.Z;
+                int index = kvp.Key,
+                    x = index % dims.X,
+                    y = index / dims.X / dims.Z,
+                    z = index / dims.X % dims.Z;
                 output(Place((ushort)x, (ushort)y, (ushort)z, kvp.Value));
             }
         }
@@ -77,10 +76,10 @@ namespace MCGalaxy.Drawing.Ops
         void UndoBlock(BlockDBEntry e)
         {
             ushort block = e.OldBlock;
-            if (block == Block.Invalid) return; // Exported BlockDB SQL table entries don't have previous block
-            int x = e.Index % dims.X;
-            int y = e.Index / dims.X / dims.Z;
-            int z = e.Index / dims.X % dims.Z;
+            if (block == Block.Invalid) return;
+            int x = e.Index % dims.X,
+                y = e.Index / dims.X / dims.Z,
+                z = e.Index / dims.X % dims.Z;
             if (x < Min.X || y < Min.Y || z < Min.Z) return;
             if (x > Max.X || y > Max.Y || z > Max.Z) return;
             if (conservative)

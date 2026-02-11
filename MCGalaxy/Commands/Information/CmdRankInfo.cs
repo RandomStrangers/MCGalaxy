@@ -34,7 +34,8 @@ namespace MCGalaxy.Commands.Info
             string nick = p.FormatNick(name);
             if (rankings.Count == 0)
             {
-                p.Message("{0} &Shas no rankings.", nick); return;
+                p.Message("{0} &Shas no rankings.", nick); 
+                return;
             }
             else
             {
@@ -54,12 +55,11 @@ namespace MCGalaxy.Commands.Info
                 }
                 else
                 {
-                    // Backwards compatibility with old format
-                    int min = NumberUtils.ParseInt32(args[2]);
-                    int hour = NumberUtils.ParseInt32(args[3]);
-                    int day = NumberUtils.ParseInt32(args[4]);
-                    int month = NumberUtils.ParseInt32(args[5]);
-                    int year = NumberUtils.ParseInt32(args[6]);
+                    int min = NumberUtils.ParseInt32(args[2]),
+                        hour = NumberUtils.ParseInt32(args[3]),
+                        day = NumberUtils.ParseInt32(args[4]),
+                        month = NumberUtils.ParseInt32(args[5]),
+                        year = NumberUtils.ParseInt32(args[6]);
                     delta = DateTime.Now - new DateTime(year, month, day, hour, min, 0);
                     newRank = args[7]; oldRank = args[8];
                     offset = 9;

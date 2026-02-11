@@ -22,7 +22,11 @@ namespace MCGalaxy.Commands.Fun
         public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            {
+                Help(p); 
+                return; 
+            }
             Player who = PlayerInfo.FindMatches(p, message, out int matches);
             if (matches > 1) return;
             if (who == null)
@@ -30,7 +34,8 @@ namespace MCGalaxy.Commands.Fun
                 Level lvl = Matcher.FindLevels(p, message);
                 if (lvl == null)
                 {
-                    p.Message("Could not find player or map specified"); return;
+                    p.Message("Could not find player or map specified");
+                    return;
                 }
                 Player[] players = PlayerInfo.Online.Items;
                 foreach (Player pl in players)

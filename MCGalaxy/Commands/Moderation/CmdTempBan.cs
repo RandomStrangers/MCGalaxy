@@ -24,7 +24,11 @@ namespace MCGalaxy.Commands.Moderation
         public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p); 
+                return; 
+            }
             string[] args = message.SplitSpaces(3);
             string reason = args.Length > 2 ? args[2] : "";
             string target = ModActionCmd.FindName(p, "temp ban", "TempBan",
@@ -40,7 +44,11 @@ namespace MCGalaxy.Commands.Moderation
             }
             TimeSpan span = TimeSpan.FromHours(1);
             if (args.Length > 1 && !CommandParser.GetTimespan(p, args[1], ref span, "temp ban for", "m")) return;
-            if (span.TotalSeconds < 1) { p.Message("Cannot temp ban someone for less than a second."); return; }
+            if (span.TotalSeconds < 1) 
+            { 
+                p.Message("Cannot temp ban someone for less than a second.");
+                return; 
+            }
             reason = ModActionCmd.ExpandReason(p, reason);
             if (reason == null) return;
             ModAction action = new(target, p, ModActionType.Ban, reason, span)

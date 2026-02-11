@@ -48,11 +48,7 @@ namespace MCGalaxy.Blocks
             return def;
         }
         /// <summary> Gets the default height of a block. A value of 16 is full height. </summary>
-        public static byte Height(ushort b)
-        {
-            if (b == Block.Slab) return 8;
-            return b == Block.CobblestoneSlab ? (byte)8 : b == Block.Snow ? (byte)2 : (byte)16;
-        }
+        public static byte Height(ushort b) => b == Block.Slab ? (byte)8 : b == Block.CobblestoneSlab ? (byte)8 : b == Block.Snow ? (byte)2 : (byte)16;
         /// <summary> Gets whether a block is full bright / light emitting by default. </summary>
         public static bool FullBright(ushort b) => b == Block.Lava || b == Block.StillLava
                 || b == Block.MagmaBlock || b == Block.Fire;
@@ -60,9 +56,9 @@ namespace MCGalaxy.Blocks
         public static byte FogDensity(ushort b)
         {
             if (b == Block.Water || b == Block.StillWater)
-                return 11; // (128 * 0.1f - 1);
+                return 11;
             if (b == Block.Lava || b == Block.StillLava)
-                return 229; // (128 * 1.8f - 1);
+                return 229;
             return 0;
         }
         /// <summary> Gets the default fog color of a block. </summary>
@@ -95,12 +91,12 @@ namespace MCGalaxy.Blocks
             if (b == Block.Glass) return SoundType.Glass;
             if (b == Block.Dirt || b == Block.Gravel)
                 return SoundType.Gravel;
-            if (b == Block.Grass || b == Block.Sapling || b == Block.TNT
-                || b == Block.Leaves || b == Block.Sponge)
-                return SoundType.Grass;
-            if (b >= Block.Dandelion && b <= Block.RedMushroom)
-                return SoundType.Grass;
-            return b >= Block.Water && b <= Block.StillLava
+            return b == Block.Grass || b == Block.Sapling || b == Block.TNT
+                || b == Block.Leaves || b == Block.Sponge
+                ? SoundType.Grass
+                : b >= Block.Dandelion && b <= Block.RedMushroom
+                ? SoundType.Grass
+                : b >= Block.Water && b <= Block.StillLava
                 ? SoundType.None
                 : b >= Block.Stone && b <= Block.StoneBrick ? SoundType.Stone : SoundType.None;
         }
@@ -109,11 +105,11 @@ namespace MCGalaxy.Blocks
         {
             if (b == Block.Air || b == Block.Invalid) return 4;
             if (b == Block.Leaves) return 2;
-            if (b == Block.Ice || b == Block.Water || b == Block.StillWater)
-                return 3;
-            if (b == Block.Glass || b == Block.Leaves)
-                return 1;
-            return b >= Block.Dandelion && b <= Block.RedMushroom
+            return b == Block.Ice || b == Block.Water || b == Block.StillWater
+                ? (byte)3
+                : b == Block.Glass || b == Block.Leaves
+                ? (byte)1
+                : b >= Block.Dandelion && b <= Block.RedMushroom
                 ? (byte)5
                 : b == Block.Sapling || b == Block.Rope || b == Block.Fire ? (byte)5 : (byte)0;
         }
@@ -124,7 +120,6 @@ namespace MCGalaxy.Blocks
             "_Snow_Fire_Light pink_Forest green_Brown_Deep blue_Turquoise_Ice_Ceramic tile_Magma_Pillar_Crate_Stone brick";
         static string Name(ushort block)
         {
-            // Find start and end of this particular block name
             int start = 0;
             for (int i = 0; i < block; i++)
                 start = RawNames.IndexOf('_', start) + 1;

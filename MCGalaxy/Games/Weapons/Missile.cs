@@ -25,7 +25,9 @@ namespace MCGalaxy.Games
     {
         public override string Name => "Missile";
         public WeaponType type;
-        protected override void OnDisabled(Player p) { }
+        protected override void OnDisabled(Player p) 
+        { 
+        }
         protected override void OnActivated(Vec3F32 dir, ushort block)
         {
             MissileData args = new()
@@ -53,7 +55,11 @@ namespace MCGalaxy.Games
         void MissileCallback(SchedulerTask task)
         {
             MissileData args = (MissileData)task.State;
-            if (args.moving) { PerformMove(args); return; }
+            if (args.moving) 
+            { 
+                PerformMove(args);
+                return;
+            }
             if (args.visible.Count > 0)
             {
                 Vec3U16 pos = args.visible[0];
@@ -123,7 +129,9 @@ namespace MCGalaxy.Games
         {
             LineDrawOp.DrawLine(pos.X, pos.Y, pos.Z, 2, lookedAt.X, lookedAt.Y, lookedAt.Z, buffer);
             Vec3U16 end = (Vec3U16)buffer[buffer.Count - 1];
-            pos.X = end.X; pos.Y = end.Y; pos.Z = end.Z;
+            pos.X = end.X; 
+            pos.Y = end.Y; 
+            pos.Z = end.Z;
             buffer.Clear();
         }
     }
@@ -134,7 +142,6 @@ namespace MCGalaxy.Games
         {
             if (p.Level.LevelPhysics < 2) return true;
             if (!p.Level.Props[block].LavaKills) return true;
-            // Penetrative missile goes through blocks lava can go through
             p.Level.Blockchange(pos.X, pos.Y, pos.Z, Block.Air);
             return false;
         }

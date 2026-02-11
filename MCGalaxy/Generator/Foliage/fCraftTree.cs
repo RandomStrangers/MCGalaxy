@@ -5,7 +5,6 @@ namespace MCGalaxy.Generator.fCraft
 {
     sealed class FCraftTree : Tree
     {
-        // 66 = max number of leaves possible
         public override long EstimateBlocksAffected() => height + 66;
         public override int DefaultSize(Random rnd) => rnd.Next(5, 8);
         public override void SetData(Random rnd, int value)
@@ -21,14 +20,11 @@ namespace MCGalaxy.Generator.fCraft
             }
             for (int dy = -1; dy < height / 2; dy++)
             {
-                // Should we draw thin (2x2) or thicker (4x4) foliage
                 int radius = (dy >= (height / 2) - 2) ? 1 : 2;
-                // Draw the foliage
                 for (int dx = -radius; dx < radius + 1; dx++)
                 {
                     for (int dz = -radius; dz < radius + 1; dz++)
                     {
-                        // Drop random leaves from the edges
                         if (rnd.NextDouble() > 0.618 && Math.Abs(dx) == Math.Abs(dz) && Math.Abs(dx) == radius)
                             continue;
                         output((ushort)(x + dx), (ushort)(y + height + dy - 1), (ushort)(z + dz), 18);

@@ -18,16 +18,8 @@ namespace MCGalaxy.DB
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct BlockDBEntry
     {
-        /// <summary> ID within Players table of player who made the change. </summary>
-        public int PlayerID;
-        /// <summary> Seconds since BlockDB.Epoch that this change occured at. </summary>
-        public int TimeDelta;
-        /// <summary> Packed coordinates of where the change occured at. </summary>
-        public int Index;
-        /// <summary> Raw block that was previously there before the change. </summary>
-        public byte OldRaw;
-        /// <summary> Raw block that is now there due to the change. </summary>
-        public byte NewRaw;
+        public int PlayerID, TimeDelta, Index;
+        public byte OldRaw, NewRaw;
         /// <summary> Flags for the block change. </summary>
         public ushort Flags;
         public readonly ushort OldBlock => (ushort)(OldRaw | ((Flags & BlockDBFlags.OldExtended) >> 6) | ((Flags & BlockDBFlags.OldExtended2) >> 3));
@@ -36,15 +28,8 @@ namespace MCGalaxy.DB
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct BlockDBCacheEntry
     {
-        /// <summary> ID within Players table of player who made the change, and block flags </summary>
-        /// <remarks> lowest 8 bits for block flags, remaining 24 bits for player id. </remarks>
-        public int Packed;
-        /// <summary> Packed coordinates of where the change occured at. </summary>
-        public int Index;
-        /// <summary> Raw block that was previously there before the change. </summary>
-        public byte OldRaw;
-        /// <summary> Raw block that is now there due to the change. </summary>
-        public byte NewRaw;
+        public int Packed, Index;
+        public byte OldRaw, NewRaw;
         /// <summary> Time offset for the block change. </summary>
         public ushort TimeDelta;
     }

@@ -23,7 +23,11 @@ namespace MCGalaxy.Commands.Moderation
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(2);
-            if (args.Length < 2) { Help(p); return; }
+            if (args.Length < 2)
+            { 
+                Help(p); 
+                return; 
+            }
             if (!Ban.ChangeBanReason(args[0], args[1]))
             {
                 p.Message("That player isn't banned.");

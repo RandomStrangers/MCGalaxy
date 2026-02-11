@@ -26,7 +26,6 @@ namespace MCGalaxy.Modules.Relay.Discord
         };
         public static string EscapeMarkdown(string message)
         {
-            // don't let user use bold/italic etc markdown
             for (int i = 0; i < markdown_special.Length; i++)
             {
                 message = message.Replace(markdown_special[i], markdown_escaped[i]);

@@ -19,11 +19,9 @@ namespace MCGalaxy.Commands.Chatting
     {
         public override string Name => "Eat";
         public override string Type => CommandTypes.Chat;
-        // Custom command, so can still be used even when economy is disabled
         public override void Use(Player p, string message, CommandData data)
         {
-            Item item = Economy.GetItem("Snack");
-            item.OnPurchase(p, message);
+            Economy.GetItem("Snack").OnPurchase(p, message);
         }
         public override void Help(Player p)
         {

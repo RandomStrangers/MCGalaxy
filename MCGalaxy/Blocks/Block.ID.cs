@@ -28,7 +28,6 @@ namespace MCGalaxy
             ExtendedClass[2] = 198;
             ExtendedClass[3] = 199;
         }
-        // Original blocks
         public const byte Air = 0;
         public const byte Stone = 1;
         public const byte Grass = 2;
@@ -36,7 +35,7 @@ namespace MCGalaxy
         public const byte Cobblestone = 4;
         public const byte Wood = 5;
         public const byte Sapling = 6;
-        public const byte Bedrock = 7;// adminium
+        public const byte Bedrock = 7;
         public const byte Water = 8;
         public const byte StillWater = 9;
         public const byte Lava = 10;
@@ -79,7 +78,6 @@ namespace MCGalaxy
         public const byte Bookshelf = 47;
         public const byte MossyRocks = 48;
         public const byte Obsidian = 49;
-        // CPE blocks
         public const byte CobblestoneSlab = 50;
         public const byte Rope = 51;
         public const byte Sandstone = 52;
@@ -96,22 +94,12 @@ namespace MCGalaxy
         public const byte Pillar = 63;
         public const byte Crate = 64;
         public const byte StoneBrick = 65;
-        //public const byte Door_Pink_air  = 66;     // unused in core
-        //public const byte Door_Black_Air = 67;     // unused in core
-        //public const byte Door_Gray_Air  = 68;     // unused in core
-        //public const byte Door_White_Air = 69;     // unused in core
         public const byte FlagBase = 70;
-        //Seasons
-        //public const byte FallSnow = 71;           // unused in core
-        //public const byte Snow = 72;               // unused in core
         public const byte Deadly_FastLava = 73;
         public const byte C4 = 74;
         public const byte C4Detonator = 75;
-        // 76, 77, 78, 79 free
         public const byte Door_Cobblestone = 80;
-        //public const byte Door_Cobblestone_air = 81;// unused in core
         public const byte Door_Red = 83;
-        //public const byte Door_Red_air = 84;        // unused in core
         public const byte Door_Orange = 85;
         public const byte Door_Yellow = 86;
         public const byte Door_Lime = 87;
@@ -133,7 +121,6 @@ namespace MCGalaxy
         public const byte Op_Air = 105;
         public const byte Op_Water = 106;
         public const byte Op_Lava = 107;
-        //public const byte GrieferStone = 108;        // unused in core
         public const byte LavaSponge = 109;
         public const byte FloatWood = 110;
         public const byte Door_Log = 111;
@@ -147,7 +134,6 @@ namespace MCGalaxy
         public const byte Door_Green = 119;
         public const byte Door_TNT = 120;
         public const byte Door_Slab = 121;
-        // tdoors
         public const byte tDoor_Log = 122;
         public const byte tDoor_Obsidian = 123;
         public const byte tDoor_Glass = 124;
@@ -156,19 +142,16 @@ namespace MCGalaxy
         public const byte tDoor_Sand = 127;
         public const byte tDoor_Wood = 128;
         public const byte tDoor_Green = 129;
-        // Message blocks
         public const byte MB_White = 130;
         public const byte MB_Black = 131;
         public const byte MB_Air = 132;
         public const byte MB_Water = 133;
         public const byte MB_Lava = 134;
-        // More tdoors
         public const byte tDoor_TNT = 135;
         public const byte tDoor_Slab = 136;
         public const byte tDoor_Air = 137;
         public const byte tDoor_Water = 138;
         public const byte tDoor_Lava = 139;
-        // "finite" liquids
         public const byte WaterDown = 140;
         public const byte LavaDown = 141;
         public const byte WaterFaucet = 143;
@@ -176,7 +159,6 @@ namespace MCGalaxy
         public const byte FiniteWater = 145;
         public const byte FiniteLava = 146;
         public const byte FiniteFaucet = 147;
-        // ODoor blocks
         public const byte oDoor_Log = 148;
         public const byte oDoor_Obsidian = 149;
         public const byte oDoor_Glass = 150;
@@ -189,18 +171,14 @@ namespace MCGalaxy
         public const byte oDoor_Slab = 157;
         public const byte oDoor_Lava = 158;
         public const byte oDoor_Water = 159;
-        // Movement portals
         public const byte Portal_Air = 160;
         public const byte Portal_Water = 161;
         public const byte Portal_Lava = 162;
-        // BlockDefinitions
         public const byte custom_block = 163;
-        // Movement doors
         public const byte Door_Air = 164;
-        public const byte Door_AirActivatable = 165; // air_switch
+        public const byte Door_AirActivatable = 165;
         public const byte Door_Water = 166;
         public const byte Door_Lava = 167;
-        // Odoor air forms
         public const byte oDoor_Log_air = 168;
         public const byte oDoor_Obsidian_air = 169;
         public const byte oDoor_Glass_air = 170;
@@ -208,16 +186,13 @@ namespace MCGalaxy
         public const byte oDoor_Leaves_air = 172;
         public const byte oDoor_Sand_air = 173;
         public const byte oDoor_Wood_air = 174;
-        // Solid portals
         public const byte Portal_Blue = 175;
         public const byte Portal_Orange = 176;
-        // More odoor air forms
         public const byte oDoor_Green_air = 177;
         public const byte oDoor_TNT_air = 178;
         public const byte oDoor_Slab_air = 179;
         public const byte oDoor_Lava_air = 180;
         public const byte oDoor_Water_air = 181;
-        // Explosions
         public const byte TNT_Small = 182;
         public const byte TNT_Big = 183;
         public const byte TNT_Explosion = 184;
@@ -226,54 +201,33 @@ namespace MCGalaxy
         public const byte RocketStart = 187;
         public const byte RocketHead = 188;
         public const byte Fireworks = 189;
-        // Killer blocks
         public const byte Deadly_Lava = 190;
         public const byte Deadly_Water = 191;
         public const byte Deadly_Air = 192;
         public const byte Deadly_ActiveWater = 193;
         public const byte Deadly_ActiveLava = 194;
-        // Special liquid blocks
         public const byte Magma = 195;
         public const byte Geyser = 196;
         public const byte Checkpoint = 197;
         public const byte custom_block_2 = 198;
         public const byte custom_block_3 = 199;
-        // Air type blocks
         public const byte Air_Flood = 200;
         public const byte Door_Log_air = 201;
         public const byte Air_FloodLayer = 202;
         public const byte Air_FloodDown = 203;
         public const byte Air_FloodUp = 204;
-        //public const byte Door_Obsidian_air = 205;   // unused in core
-        //public const byte Door_Glass_air = 206;      // unused in core
-        //public const byte Door_Stone_air = 207;      // unused in core
-        //public const byte Door_Leaves_air = 208;     // unused in core
-        //public const byte Door_Sand_air = 209;       // unused in core
-        //public const byte Door_Wood_air = 210;       // unused in core
         public const byte Door_Green_air = 211;
         public const byte Door_TNT_air = 212;
-        //public const byte Door_Slab_air = 213;       // unused in core
-        //public const byte Door_AirActivatable_air = 214;
-        //public const byte Door_Water_air = 215;      // unused in core
-        //public const byte Door_Lava_air = 216;       // unused in core
         public const byte Door_Air_air = 217;
-        // 218, 219 free
         public const byte Door_Iron = 220;
         public const byte Door_Dirt = 221;
         public const byte Door_Grass = 222;
         public const byte Door_Blue = 223;
         public const byte Door_Bookshelf = 224;
-        //public const byte Door_Iron_air = 225;       // unused in core
-        //public const byte Door_Dirt_air = 226;       // unused in core
-        //public const byte Door_Grass_air = 227;      // unused in core
-        //public const byte Door_Blue_air = 228;       // unused in core
-        //public const byte Door_Bookshelf_air = 229;  // unused in core
         public const byte Train = 230;
         public const byte Creeper = 231;
         public const byte ZombieBody = 232;
         public const byte ZombieHead = 233;
-        // 234 free
-        // Bird blocks
         public const byte Bird_White = 235;
         public const byte Bird_Black = 236;
         public const byte Bird_Water = 237;
@@ -281,8 +235,6 @@ namespace MCGalaxy
         public const byte Bird_Red = 239;
         public const byte Bird_Blue = 240;
         public const byte Bird_Killer = 242;
-        // 243, 244 free
-        // Fish/Shark blocks
         public const byte Fish_Gold = 245;
         public const byte Fish_Sponge = 246;
         public const byte Fish_Shark = 247;
@@ -292,7 +244,6 @@ namespace MCGalaxy
         public const byte Snake = 251;
         public const byte SnakeTail = 252;
         public const byte Door_Gold = 253;
-        //public const byte Door_Gold_air = 254;       // unused in core
         public const byte Invalid = 0xff;
     }
 }

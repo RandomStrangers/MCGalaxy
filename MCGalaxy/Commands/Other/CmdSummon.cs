@@ -27,7 +27,11 @@ namespace MCGalaxy.Commands.Misc
         public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can summon all players") };
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            {
+                Help(p); 
+                return;
+            }
             if (!message.CaselessEq("all"))
             {
                 SummonPlayer(p, message, data);
@@ -62,9 +66,9 @@ namespace MCGalaxy.Commands.Misc
                 target.summonedMap = p.Level.name;
                 PlayerActions.ChangeMap(target, p.Level);
                 target.summonedMap = null;
-                p.BlockUntilLoad(10); // wait for them to load
+                p.BlockUntilLoad(10);
             }
-            if (p.Level != target.Level) return; // in case they were unable to move to this level
+            if (p.Level != target.Level) return;
             target.AFKCooldown = DateTime.UtcNow.AddSeconds(2);
             target.SendPosition(p.Pos, p.Rot);
             target.Message("You were summoned by {0}&S.", target.FormatNick(p));

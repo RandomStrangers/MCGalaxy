@@ -45,8 +45,6 @@ namespace MCGalaxy
     {
         static int sessionCounter;
         public static Player Console = new ConsolePlayer();
-        //This is so that plugin devs can declare a player without needing a socket..
-        //They would still have to do p.Dispose()..
         public Player(string playername)
         {
             name = playername;
@@ -94,7 +92,7 @@ namespace MCGalaxy
         }
         public override bool CanSeeEntity(Entity target)
         {
-            if (target == this) return true; // always see self
+            if (target == this) return true;
             bool canSee = CanSee(target as Player, Rank);
             OnGettingCanSeeEntityEvent.Call(this, ref canSee, target);
             return canSee;
@@ -104,7 +102,6 @@ namespace MCGalaxy
         {
             Zone zone = ZoneIn;
             string motd = zone == null ? "ignore" : zone.Config.MOTD;
-            // fallback to level MOTD, then rank MOTD, then server MOTD
             if (motd == "ignore") motd = Level.Config.MOTD;
             if (motd == "ignore") motd = string.IsNullOrEmpty(group.MOTD) ? Server.Config.MOTD : group.MOTD;
             OnGettingMotdEvent.Call(this, ref motd);
@@ -148,7 +145,6 @@ namespace MCGalaxy
             bool cancel = false;
             OnInfoSaveEvent.Call(this, ref cancel);
             if (cancel) return;
-            // Player disconnected before SQL data was retrieved
             if (!gotSQLData) return;
             long blocks = PlayerData.Pack(TotalPlaced, TotalModified),
                 drawn = PlayerData.Pack(TotalDeleted, TotalDrawn);
@@ -187,7 +183,7 @@ namespace MCGalaxy
         public void Kick(string discMsg)
         {
             string chatMsg = discMsg;
-            if (chatMsg.Length > 0) chatMsg = "(" + chatMsg + ")"; // old format
+            if (chatMsg.Length > 0) chatMsg = "(" + chatMsg + ")";
             LeaveServer(chatMsg, discMsg, true, false);
         }
         /// <summary> Disconnects the players from the server,
@@ -202,7 +198,6 @@ namespace MCGalaxy
             leftServer = true;
             CriticalTasks.Clear();
             ZoneIn = null;
-            // Disconnected before sent handshake
             if (name == null)
             {
                 Socket?.Close();
@@ -289,11 +284,13 @@ namespace MCGalaxy
             if (IsConsole) return true;
             if (muted)
             {
-                Message("Cannot {0} &Swhile muted", action); return false;
+                Message("Cannot {0} &Swhile muted", action);
+                return false;
             }
             if (Server.chatmod && !voice)
             {
-                Message("Cannot {0} &Swhile chat moderation is on without &T/Voice&S", action); return false;
+                Message("Cannot {0} &Swhile chat moderation is on without &T/Voice&S", action); 
+                return false;
             }
             if (Unverified)
             {
@@ -353,7 +350,6 @@ namespace MCGalaxy
         {
             long adjust = modified - TotalModified;
             TotalModified = modified;
-            // adjust so that SessionModified is unaffected
             startModified += adjust;
         }
         public void MakeSelection(int marks, string title, object state,
@@ -393,7 +389,6 @@ namespace MCGalaxy
                 RevertBlock(x, y, z);
                 selMarks[selIndex] = new(x, y, z);
                 selMarkCallback?.Invoke(p, selMarks, selIndex, selState, block);
-                // Mark callback cancelled selection
                 if (selCallback == null) return;
                 selIndex++;
                 if (selIndex == 1 && selTitle != null)

@@ -28,14 +28,23 @@ namespace MCGalaxy.Modules.Awards
             }
             else if (message.CaselessStarts("take "))
             {
-                message = message.Substring(5); take = true;
+                message = message.Substring(5); 
+                take = true;
             }
             string[] args = message.SplitSpaces(2);
-            if (args.Length < 2) { Help(p); return; }
+            if (args.Length < 2) 
+            { 
+                Help(p); 
+                return; 
+            }
             string plName = PlayerInfo.FindMatchesPreferOnline(p, args[0]);
             if (plName == null) return;
             string award = AwardsList.FindMatch(p, args[1]);
-            if (award == null) { p.Message("Use &T/Awards &Sfor a list of awards"); return; }
+            if (award == null) 
+            { 
+                p.Message("Use &T/Awards &Sfor a list of awards");
+                return; 
+            }
             string displayName = p.FormatNick(plName);
             if (!take)
             {

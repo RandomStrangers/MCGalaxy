@@ -22,8 +22,7 @@ namespace MCGalaxy.Drawing
     {
         byte[] blocks;
         byte[][] extBlocks;
-        public int X, Y, Z, 
-            OriginX, OriginY, OriginZ, 
+        public int X, Y, Z, OriginX, OriginY, OriginZ, 
             Width, Height, Length, UsedBlocks;
         public bool PasteAir;
         public Vec3S32 Offset;
@@ -35,9 +34,8 @@ namespace MCGalaxy.Drawing
         internal int OppositeOriginX => OriginX == X ? X + Width - 1 : X;
         internal int OppositeOriginY => OriginY == Y ? Y + Height - 1 : Y;
         internal int OppositeOriginZ => OriginZ == Z ? Z + Length - 1 : Z;
-        const int chunkSize = 0x1000, chunkShift = 12, chunkMask = 0xFFF;
         public int Volume => Width * Height * Length;
-        public int ExtChunks => (Volume + (chunkSize - 1)) / chunkSize;
+        public int ExtChunks => (Volume + (0x1000 - 1)) / 0x1000;
         public string Summary => Volume + " blocks from " + CopySource + ", " + (DateTime.UtcNow - CopyTime).Shorten(true) + " ago";
         public CopyState(int x, int y, int z, int width, int height, int length)
         {
@@ -75,21 +73,21 @@ namespace MCGalaxy.Drawing
             byte raw = blocks[index];
             ushort extended = Block.ExtendedBase[raw];
             if (extended == 0) return raw;
-            byte[] chunk = extBlocks[index >> chunkShift];
-            return chunk == null ? Block.Air : (ushort)(extended | chunk[index & chunkMask]);
+            byte[] chunk = extBlocks[index >> 12];
+            return chunk == null ? Block.Air : (ushort)(extended | chunk[index & 0xFFF]);
         }
         public void Set(ushort block, int index)
         {
             if (block >= 256)
             {
                 blocks[index] = Block.ExtendedClass[block >> 8];
-                byte[] chunk = extBlocks[index >> chunkShift];
+                byte[] chunk = extBlocks[index >> 12];
                 if (chunk == null)
                 {
-                    chunk = new byte[chunkSize];
-                    extBlocks[index >> chunkShift] = chunk;
+                    chunk = new byte[0x1000];
+                    extBlocks[index >> 12] = chunk;
                 }
-                chunk[index & chunkMask] = (byte)block;
+                chunk[index & 0xFFF] = (byte)block;
             }
             else
             {
@@ -97,15 +95,11 @@ namespace MCGalaxy.Drawing
             }
         }
         public void Set(ushort block, int x, int y, int z) => Set(block, (y * Length + z) * Width + x);
-        const int identifier1 = 0x434F5059; // version 1, 'COPY' (copy)
-        const int identifier2 = 0x434F5043; // 'COPC' (copy compressed)
-        const int identifier3 = 0x434F504F; // 'COPO' (copy optimised)
-        const int identifier4 = 0x434F5053; // 'COPS' (copy sparse)
         /// <summary> Saves this copy state to the given stream. </summary>
         public void SaveTo(Stream stream)
         {
             BinaryWriter w = new(stream);
-            w.Write(identifier4);
+            w.Write(0x434F5053);
             w.Write(X);
             w.Write(Y); 
             w.Write(Z);
@@ -130,7 +124,7 @@ namespace MCGalaxy.Drawing
             w.Write(OriginX); 
             w.Write(OriginY); 
             w.Write(OriginZ);
-            w.Write((byte)0x0f); // 0ffset
+            w.Write((byte)0x0f);
             w.Write(Offset.X); 
             w.Write(Offset.Y);
             w.Write(Offset.Z);
@@ -141,7 +135,7 @@ namespace MCGalaxy.Drawing
         {
             BinaryReader r = new(stream);
             int id = r.ReadInt32();
-            if (!(id == identifier1 || id == identifier2 || id == identifier3 || id == identifier4))
+            if (!(id == 0x434F5059 || id == 0x434F5043 || id == 0x434F504F || id == 0x434F5053))
                 throw new InvalidDataException("invalid identifier");
             X = r.ReadInt32();
             Y = r.ReadInt32();
@@ -151,12 +145,10 @@ namespace MCGalaxy.Drawing
             Length = r.ReadInt32();
             LoadBlocks(r, id);
             UsedBlocks = Volume;
-            // origin is not present in version 1
-            if (id == identifier1) return;
+            if (id == 0x434F5059) return;
             OriginX = r.ReadInt32();
             OriginY = r.ReadInt32(); 
             OriginZ = r.ReadInt32();
-            // was added in later (ReadByte also catches end of stream)
             if (stream.ReadByte() != 0x0f) return;
             Offset.X = r.ReadInt32(); 
             Offset.Y = r.ReadInt32(); 
@@ -167,8 +159,8 @@ namespace MCGalaxy.Drawing
         {
             byte[] allExtBlocks;
             int dataLen;
-            extBlocks = new byte[(Volume + (chunkSize - 1)) / chunkSize][];
-            if (id == identifier1)
+            extBlocks = new byte[(Volume + (0x1000 - 1)) / 0x1000][];
+            if (id == 0x434F5059)
             {
                 blocks = r.ReadBytes(Volume);
                 allExtBlocks = r.ReadBytes(Volume);
@@ -178,13 +170,13 @@ namespace MCGalaxy.Drawing
             {
                 dataLen = r.ReadInt32();
                 blocks = r.ReadBytes(dataLen).Decompress(Volume);
-                if (id == identifier2)
+                if (id == 0x434F5043)
                 {
                     dataLen = r.ReadInt32();
                     allExtBlocks = r.ReadBytes(dataLen).Decompress(Volume);
                     UnpackExtBlocks(allExtBlocks);
                 }
-                else if (id == identifier3)
+                else if (id == 0x434F504F)
                 {
                     dataLen = r.ReadInt32();
                     allExtBlocks = r.ReadBytes(dataLen).Decompress((Volume + 7) / 8);
@@ -196,7 +188,7 @@ namespace MCGalaxy.Drawing
                     {
                         if (r.ReadByte() == 0) continue;
                         dataLen = r.ReadUInt16();
-                        extBlocks[i] = r.ReadBytes(dataLen).Decompress(chunkSize);
+                        extBlocks[i] = r.ReadBytes(dataLen).Decompress(0x1000);
                     }
                 }
             }
@@ -214,45 +206,11 @@ namespace MCGalaxy.Drawing
             for (int i = 0; i < blocks.Length; i++)
             {
                 bool isExt = (allExtBlocks[i >> 3] & (1 << (i & 0x7))) != 0;
-                if (isExt) { Set((ushort)(256 | blocks[i]), i); }
+                if (isExt) 
+                { 
+                    Set((ushort)(256 | blocks[i]), i);
+                }
             }
-        }
-        /// <summary> Loads this copy state from the given stream, using the very old format. </summary>
-        public void LoadFromOld(Stream _, Stream underlying)
-        {
-            byte[] raw = new byte[underlying.Length];
-            underlying.Read(raw, 0, (int)underlying.Length);
-            raw = raw.Decompress(16);
-            if (raw.Length == 0) return;
-            CalculateBounds(raw);
-            for (int i = 0; i < raw.Length; i += 7)
-            {
-                ushort x = MemUtils.ReadU16_LE(raw, i + 0);
-                ushort y = MemUtils.ReadU16_LE(raw, i + 2);
-                ushort z = MemUtils.ReadU16_LE(raw, i + 4);
-                byte rawBlock = raw[i + 6];
-                Set(rawBlock, x - X, y - Y, z - Z);
-            }
-            UsedBlocks = Volume;
-            OriginX = X; OriginY = Y; OriginZ = Z;
-        }
-        void CalculateBounds(byte[] raw)
-        {
-            int minX = int.MaxValue, minY = int.MaxValue, minZ = int.MaxValue;
-            int maxX = int.MinValue, maxY = int.MinValue, maxZ = int.MinValue;
-            for (int i = 0; i < raw.Length; i += 7)
-            {
-                ushort x = MemUtils.ReadU16_LE(raw, i + 0);
-                ushort y = MemUtils.ReadU16_LE(raw, i + 2);
-                ushort z = MemUtils.ReadU16_LE(raw, i + 4);
-                minX = Math.Min(x, minX); maxX = Math.Max(x, maxX);
-                minY = Math.Min(y, minY); maxY = Math.Max(y, maxY);
-                minZ = Math.Min(z, minZ); maxZ = Math.Max(z, maxZ);
-            }
-            Init(minX, minY, minZ,
-                 maxX - minX + 1,
-                 maxY - minY + 1,
-                 maxZ - minZ + 1);
         }
     }
 }

@@ -24,7 +24,8 @@ namespace MCGalaxy.Commands.CPE
         {
             if (message.CaselessEq("preset"))
             {
-                ExplainPresets(p); return;
+                ExplainPresets(p);
+                return;
             }
             Level lvl = null;
             EnvConfig cfg = null;
@@ -38,10 +39,13 @@ namespace MCGalaxy.Commands.CPE
             {
                 message = message.Substring("level ".Length);
             }
-            // Work on current level by default
             if (cfg == null)
             {
-                if (p.IsSuper) { p.Message("&WWhen using &T/Env &Wfrom {0}, only &T/Env Global &Wis supported", p.SuperName); return; }
+                if (p.IsSuper) 
+                { 
+                    p.Message("&WWhen using &T/Env &Wfrom {0}, only &T/Env Global &Wis supported", p.SuperName);
+                    return;
+                }
                 lvl = p.Level; 
                 cfg = lvl.Config;
                 area = lvl.ColoredName;
@@ -49,14 +53,21 @@ namespace MCGalaxy.Commands.CPE
             }
             string[] args = message.SplitSpaces(2);
             string opt = args[0], value = args.Length > 1 ? args[1] : "";
-            if (!Handle(p, lvl, opt, value, cfg, area)) { Help(p); }
+            if (!Handle(p, lvl, opt, value, cfg, area)) 
+            { 
+                Help(p); 
+            }
         }
         internal static bool Handle(Player p, Level lvl, string type, string value, EnvConfig cfg, string area)
         {
             if (type.CaselessEq("preset"))
             {
                 EnvPreset preset = EnvPreset.Find(value);
-                if (preset == null) { ExplainPresets(p); return false; }
+                if (preset == null) 
+                { 
+                    ExplainPresets(p); 
+                    return false; 
+                }
                 cfg.SkyColor = preset.Sky;
                 cfg.CloudColor = preset.Clouds;
                 cfg.FogColor = preset.Fog;
@@ -122,7 +133,8 @@ namespace MCGalaxy.Commands.CPE
             }
             else if (message.CaselessEq("presets"))
             {
-                ExplainPresets(p); return;
+                ExplainPresets(p); 
+                return;
             }
             EnvOption opt = EnvOptions.Find(message);
             if (opt != null)

@@ -25,12 +25,12 @@ namespace MCGalaxy.Commands.Misc
         {
             if (!Hacks.CanUseHacks(p))
             {
-                p.Message("You cannot use &T/Descend &Son this map."); return;
+                p.Message("You cannot use &T/Descend &Son this map."); 
+                return;
             }
-            // Move starting position down half a block since players are a little bit above the ground.
             int x = p.Pos.BlockX, y = (p.Pos.Y - 51 - 4) / 32, z = p.Pos.BlockZ;
             if (y > p.Level.Height) y = p.Level.Height;
-            y--; // start at block below initially
+            y--;
             int freeY = -1;
             if (p.Level.IsValidPos(x, y, z))
             {

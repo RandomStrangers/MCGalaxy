@@ -328,11 +328,7 @@ namespace MCGalaxy.Util.Imaging
                 }
             }
         }
-        static byte ByteClamp(float value)
-        {
-            int n = (int)value;
-            return n < 0 ? (byte)0 : n > 255 ? (byte)255 : (byte)n;
-        }
+        static byte ByteClamp(float value) => ((int)value) < 0 ? (byte)0 : ((int)value) > 255 ? (byte)255 : (byte)(int)value;
         void DecodeBlock(JpegComponent comp, byte[] src, int* block)
         {
             HuffmanTable table = dc_huff_tables[comp.DCHuffTable];

@@ -25,7 +25,8 @@ namespace MCGalaxy.Commands.Misc
         {
             if (!Hacks.CanUseHacks(p))
             {
-                p.Message("You cannot use &T/Ascend &Son this map."); return;
+                p.Message("You cannot use &T/Ascend &Son this map."); 
+                return;
             }
             int x = p.Pos.BlockX, y = p.Pos.BlockY, z = p.Pos.BlockZ;
             if (y < 0) y = 0;

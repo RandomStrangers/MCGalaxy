@@ -28,9 +28,17 @@ namespace MCGalaxy.Drawing
             if (angle == 90 || angle == 270) transform = Transform(defs, rotX_90_270, null);
             else if (angle == 180) transform = Transform(defs, rotX_180, null);
             else transform = Transform(defs, null, null);
-            int[] m = new int[] { posX, negZ, posY };
-            if (angle == 180) { m[1] = negY; m[2] = negZ; }
-            if (angle == 270) { m[1] = posZ; m[2] = negY; }
+            int[] m = new int[] { 0, 5, 2 };
+            if (angle == 180) 
+            {
+                m[1] = 3; 
+                m[2] = 5; 
+            }
+            if (angle == 270) 
+            {
+                m[1] = 4; 
+                m[2] = 3; 
+            }
             return Rotate(state, newState, m, transform);
         }
         static readonly string[] rotY_90 = new string[] { "N", "E", "S", "W", "NE", "SE", "SW", "NW", "WE", "NS", "WE", "NS" };
@@ -46,9 +54,17 @@ namespace MCGalaxy.Drawing
             else if (angle == 180) transform = Transform(defs, rotY_180, null);
             else if (angle == 270) transform = Transform(defs, null, rotY_270);
             else transform = Transform(defs, null, null);
-            int[] m = new int[] { negZ, posY, posX };
-            if (angle == 180) { m[0] = negX; m[2] = negZ; }
-            if (angle == 270) { m[0] = posZ; m[2] = negX; }
+            int[] m = new int[] { 5, 2, 0 };
+            if (angle == 180) 
+            {
+                m[0] = 1;
+                m[2] = 5; 
+            }
+            if (angle == 270) 
+            { 
+                m[0] = 4; 
+                m[2] = 1; 
+            }
             return Rotate(state, newState, m, transform);
         }
         static readonly string[] rotZ_90_270 = new string[] { "WE", "UD" };
@@ -62,9 +78,17 @@ namespace MCGalaxy.Drawing
             if (angle == 90 || angle == 270) transform = Transform(defs, rotZ_90_270, null);
             else if (angle == 180) transform = Transform(defs, rotZ_180, null);
             else transform = Transform(defs, null, null);
-            int[] m = new int[] { posY, negX, posZ };
-            if (angle == 180) { m[0] = negX; m[1] = negY; }
-            if (angle == 270) { m[0] = negY; m[1] = posX; }
+            int[] m = new int[] { 2, 1, 4 };
+            if (angle == 180)
+            {
+                m[0] = 1; 
+                m[1] = 3; 
+            }
+            if (angle == 270) 
+            { 
+                m[0] = 3;
+                m[1] = 0;
+            }
             return Rotate(state, newState, m, transform);
         }
         static CopyState Rotate(CopyState state, CopyState flipped, int[] m, ushort[] transform)
@@ -83,22 +107,22 @@ namespace MCGalaxy.Drawing
             flipped.OriginX = state.X + Rotate(m[0], oX, oY, oZ, state);
             flipped.OriginY = state.Y + Rotate(m[1], oX, oY, oZ, state);
             flipped.OriginZ = state.Z + Rotate(m[2], oX, oY, oZ, state);
-            // Offset is relative to Origin
-            oX += state.Offset.X; oY += state.Offset.Y; oZ += state.Offset.Z;
+            oX += state.Offset.X;
+            oY += state.Offset.Y;
+            oZ += state.Offset.Z;
             flipped.Offset.X = state.X + Rotate(m[0], oX, oY, oZ, state) - flipped.OriginX;
             flipped.Offset.Y = state.Y + Rotate(m[1], oX, oY, oZ, state) - flipped.OriginY;
             flipped.Offset.Z = state.Z + Rotate(m[2], oX, oY, oZ, state) - flipped.OriginZ;
             return flipped;
         }
-        const int posX = 0, negX = 1, posY = 2, negY = 3, posZ = 4, negZ = 5;
         static int Rotate(int row, int x, int y, int z, CopyState state) => row switch
         {
-            posX => x,
-            negX => state.Width - 1 - x,
-            posY => y,
-            negY => state.Height - 1 - y,
-            posZ => z,
-            negZ => state.Length - 1 - z,
+            0 => x,
+            1 => state.Width - 1 - x,
+            2 => y,
+            3 => state.Height - 1 - y,
+            4 => z,
+            5 => state.Length - 1 - z,
             _ => 0,
         };
         static CopyState Clone(CopyState state)
@@ -114,8 +138,6 @@ namespace MCGalaxy.Drawing
         static readonly string[] mirrorX = new string[] { "W", "E", "NW", "NE", "SW", "SE" };
         public static void MirrorX(CopyState state, BlockDefinition[] defs)
         {
-            // ceiling division by 2, because for odd length, we still want to
-            // mirror the middle row to rotate directional blocks
             int midX = (state.Width + 1) / 2, maxX = state.Width - 1;
             state.OriginX = state.OppositeOriginX;
             state.Offset.X = -state.Offset.X;
@@ -126,11 +148,11 @@ namespace MCGalaxy.Drawing
                 {
                     for (int x = 0; x < midX; x++)
                     {
-                        int endX = maxX - x;
-                        int beg = state.GetIndex(x, y, z);
-                        int end = state.GetIndex(endX, y, z);
-                        ushort blockA = transform[state.Get(beg)];
-                        ushort blockB = transform[state.Get(end)];
+                        int endX = maxX - x,
+                            beg = state.GetIndex(x, y, z),
+                            end = state.GetIndex(endX, y, z);
+                        ushort blockA = transform[state.Get(beg)],
+                            blockB = transform[state.Get(end)];
                         state.Set(blockB, beg); state.Set(blockA, end);
                     }
                 }
@@ -145,17 +167,19 @@ namespace MCGalaxy.Drawing
             ushort[] transform = Transform(defs, mirrorY, null);
             for (int y = 0; y < midY; y++)
             {
-                int endY = maxY - y;
-                int beg = state.GetIndex(0, y, 0);
-                int end = state.GetIndex(0, endY, 0);
+                int endY = maxY - y,
+                    beg = state.GetIndex(0, y, 0),
+                    end = state.GetIndex(0, endY, 0);
                 for (int z = 0; z < state.Length; z++)
                 {
                     for (int x = 0; x < state.Width; x++)
                     {
-                        ushort blockA = transform[state.Get(beg)];
-                        ushort blockB = transform[state.Get(end)];
-                        state.Set(blockB, beg); state.Set(blockA, end);
-                        beg++; end++;
+                        ushort blockA = transform[state.Get(beg)],
+                            blockB = transform[state.Get(end)];
+                        state.Set(blockB, beg); 
+                        state.Set(blockA, end);
+                        beg++; 
+                        end++;
                     }
                 }
             }
@@ -171,15 +195,17 @@ namespace MCGalaxy.Drawing
             {
                 for (int z = 0; z < midZ; z++)
                 {
-                    int endZ = maxZ - z;
-                    int beg = state.GetIndex(0, y, z);
-                    int end = state.GetIndex(0, y, endZ);
+                    int endZ = maxZ - z,
+                        beg = state.GetIndex(0, y, z),
+                        end = state.GetIndex(0, y, endZ);
                     for (int x = 0; x < state.Width; x++)
                     {
-                        ushort blockA = transform[state.Get(beg)];
-                        ushort blockB = transform[state.Get(end)];
-                        state.Set(blockB, beg); state.Set(blockA, end);
-                        beg++; end++;
+                        ushort blockA = transform[state.Get(beg)],
+                            blockB = transform[state.Get(end)];
+                        state.Set(blockB, beg); 
+                        state.Set(blockA, end);
+                        beg++; 
+                        end++;
                     }
                 }
             }
@@ -192,7 +218,6 @@ namespace MCGalaxy.Drawing
                 transform[i] = (ushort)i;
             }
             if (mirrorDirs == null && rotateDirs == null) return transform;
-            // Rotate/Mirror directional blocks
             for (int i = 0; i < defs.Length; i++)
             {
                 if (defs[i] == null) continue;
@@ -219,7 +244,6 @@ namespace MCGalaxy.Drawing
             for (int j = 0; j < mirrorDirs.Length; j++)
             {
                 if (!mirrorDirs[j].CaselessEq(dir)) continue;
-                // Find the mirrored directional block opposite to this one
                 string name = defs[i].Name.Substring(0, dirIndex);
                 int mirrorIdx = (j & 1) == 0 ? 1 : -1;
                 string mirrorDir = mirrorDirs[j + mirrorIdx];
@@ -233,8 +257,6 @@ namespace MCGalaxy.Drawing
             for (int j = 0; j < rotateDirs.Length; j++)
             {
                 if (!rotateDirs[j].CaselessEq(dir)) continue;
-                // Find the next directional block to this one in sequence
-                // Each sequence is a group of 4 directional blocks
                 string name = defs[i].Name.Substring(0, dirIndex);
                 int sequence = j / 4 * 4;
                 string rotateDir = rotateDirs[sequence + ((j + 1) % 4)];

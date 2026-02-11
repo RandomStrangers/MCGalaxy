@@ -82,7 +82,7 @@ namespace MCGalaxy.Commands.World
             if (message.Length == 0) message = "128 128 128";
             else if (bits.Length < 3) message = "128 128 128 " + message;
             string[] genArgs = (level + " " + message.TrimEnd()).SplitSpaces(6);
-            CmdNewLvl newLvl = (CmdNewLvl)Command.Find("NewLvl"); // TODO: this is a nasty hack, find a better way
+            CmdNewLvl newLvl = (CmdNewLvl)Command.Find("NewLvl");
             Level lvl = newLvl.GenerateMap(p, genArgs);
             if (lvl == null) return;
             MapGen.SetRealmPerms(p, lvl);
@@ -106,7 +106,7 @@ namespace MCGalaxy.Commands.World
         {
             if (message.CaselessStarts("*backup"))
             {
-                string[] args = message.SplitSpaces(2); //"flag", "other args"
+                string[] args = message.SplitSpaces(2);
                 if (args.Length == 1)
                 {
                     p.Message("You must provide a backup to delete.");
@@ -198,14 +198,11 @@ namespace MCGalaxy.Commands.World
             }
             if (NumberUtils.TryParseInt32(message, out _))
             {
-                //If it's a number, use exact goto logic like before
                 GotoExact(p, map); 
                 return;
             }
             if (Formatter.ValidMapName(p, map))
             {
-                //Allow partial match for going to renamed os map
-                //Works funky with level auto load off...? TOO BAD! No one should ever use that setting
                 PlayerActions.ChangeMap(p, map);
             }
         }
@@ -357,7 +354,6 @@ namespace MCGalaxy.Commands.World
         };
         static void HandlePervisit(Player p, string message)
         {
-            // Older realm maps didn't put you on visit whitelist, so make sure we put the owner here
             AccessController access = p.Level.VisitAccess;
             if (!access.Whitelisted.CaselessContains(p.name))
             {
@@ -484,7 +480,6 @@ namespace MCGalaxy.Commands.World
         static void HandleTour(Player p, string arg)
         {
             int direction = 1;
-            // Allow "/os visit next" to work for consistency's sake
             if (arg.Length > 0 && !arg.CaselessEq("next"))
             {
                 if (arg.CaselessEq("prev") || arg.CaselessEq("previous") || arg.CaselessEq("back"))
@@ -498,12 +493,16 @@ namespace MCGalaxy.Commands.World
                     return;
                 }
             }
-            Level curLevel = p.Level; // Cache in case another thread changes it
+            Level curLevel = p.Level;
             string[] owners = curLevel.Config.RealmOwner.SplitComma();
             string curLevelOwner = null;
             foreach (string owner in owners)
             {
-                if (curLevel.name.CaselessStarts(owner)) { curLevelOwner = owner; break; }
+                if (curLevel.name.CaselessStarts(owner)) 
+                {
+                    curLevelOwner = owner; 
+                    break; 
+                }
             }
             if (curLevelOwner == null)
             {
@@ -544,11 +543,9 @@ namespace MCGalaxy.Commands.World
             if (!PlayerActions.ChangeMap(p, realms[curIndex]))
             {
                 blockedFromJoining = true;
-                // Try going to the next one until you get to one that can actually be visited
                 goto tryAgain;
             }
         }
-        //Placed at the end so that the help arrays aren't null
         internal static SubCommandGroup subCommandGroup = new(commandShortcut,
                 new List<SubCommand>() {
                     new("Add",        HandleAdd,        addHelp,  false, new string[] { "create", "new" }),

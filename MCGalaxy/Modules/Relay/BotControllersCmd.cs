@@ -21,11 +21,15 @@ namespace MCGalaxy.Modules.Relay
         protected abstract RelayBot Bot { get; }
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p); 
+                return;
+            }
             string[] parts = message.SplitSpaces();
             RelayBot bot = Bot;
-            string cmd = parts[0].ToLower();
-            string arg = parts.Length > 1 ? parts[1] : "";
+            string cmd = parts[0].ToLower(),
+                arg = parts.Length > 1 ? parts[1] : "";
             switch (cmd)
             {
                 case "reload":
@@ -33,7 +37,11 @@ namespace MCGalaxy.Modules.Relay
                     p.Message("{0} controllers reloaded!", bot.RelayName);
                     break;
                 case "add":
-                    if (arg.Length == 0) { p.Message("You need to provide a name to add."); return; }
+                    if (arg.Length == 0)
+                    { 
+                        p.Message("You need to provide a name to add.");
+                        return; 
+                    }
                     if (!bot.Controllers.Add(arg))
                     {
                         p.Message("{0} is already in the {1} controllers list.", arg, bot.RelayName);
@@ -45,7 +53,11 @@ namespace MCGalaxy.Modules.Relay
                     }
                     break;
                 case "remove":
-                    if (arg.Length == 0) { p.Message("You need to provide a name to remove."); return; }
+                    if (arg.Length == 0) 
+                    { 
+                        p.Message("You need to provide a name to remove."); 
+                        return; 
+                    }
                     if (!bot.Controllers.Remove(arg))
                     {
                         p.Message("{0} is not in the {1} controllers list.", arg, bot.RelayName);
@@ -72,18 +84,21 @@ namespace MCGalaxy.Modules.Relay
                     if (Server.Config.IRCControllerRank > data.Rank)
                     {
                         p.Message("Cannot change the {0} controllers rank, " +
-                                  "as it is currently a rank higher than yours.", bot.RelayName); return;
+                                  "as it is currently a rank higher than yours.", bot.RelayName);
+                        return;
                     }
                     if (grp.Permission > data.Rank)
                     {
-                        p.Message("Cannot set the {0} controllers rank to a rank higher than yours.", bot.RelayName); return;
+                        p.Message("Cannot set the {0} controllers rank to a rank higher than yours.", bot.RelayName);
+                        return;
                     }
                     Server.Config.IRCControllerRank = grp.Permission;
                     Server.Save();
                     p.Message("Set {0} controller rank to {1}&S.", bot.RelayName, grp.ColoredName);
                     break;
                 default:
-                    Help(p); break;
+                    Help(p);
+                    break;
             }
         }
         public override void Help(Player p)

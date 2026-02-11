@@ -21,16 +21,23 @@ namespace MCGalaxy.Commands.Moderation
         public override string Name => "Mute";
         public override string Type => CommandTypes.Moderation;
         public override LevelPermission DefaultRank => LevelPermission.Operator;
-        const string UNMUTE_FLAG = "-unmute";
-        public override CommandAlias[] Aliases => new[] { new CommandAlias("Unmute", UNMUTE_FLAG) };
+        public override CommandAlias[] Aliases => new[] { new CommandAlias("Unmute", "-unmute") };
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p); 
+                return;
+            }
             string[] args = message.SplitSpaces(3);
             string target;
-            if (args[0].CaselessEq(UNMUTE_FLAG))
+            if (args[0].CaselessEq("-unmute"))
             {
-                if (args.Length == 1) { Help(p); return; }
+                if (args.Length == 1) 
+                { 
+                    Help(p);
+                    return;
+                }
                 target = PlayerInfo.FindMatchesPreferOnline(p, args[1]);
                 if (target == null) return;
                 if (!Server.muted.Contains(target))
@@ -72,7 +79,11 @@ namespace MCGalaxy.Commands.Moderation
         {
             reason = ModActionCmd.ExpandReason(p, reason);
             if (reason == null) return;
-            if (p.name == target) { p.Message("You cannot unmute yourself."); return; }
+            if (p.name == target) 
+            { 
+                p.Message("You cannot unmute yourself.");
+                return; 
+            }
             ModAction action = new(target, p, ModActionType.Unmuted, reason);
             OnModActionEvent.Call(action);
         }

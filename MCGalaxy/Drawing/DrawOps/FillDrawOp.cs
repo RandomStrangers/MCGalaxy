@@ -55,59 +55,104 @@ namespace MCGalaxy.Drawing.Ops
             SparseBitSet bits = new(lvl.Width, lvl.Height, lvl.Length);
             List<int> buffer = new();
             Queue<int> temp = new();
-            const int max = 65536;
             int count = 0, oneY = lvl.Width * lvl.Length;
-            int* pos = stackalloc int[max];
+            int* pos = stackalloc int[65536];
             pos[0] = index; count++;
             while (count > 0 && buffer.Count <= p.group.DrawLimit)
             {
                 index = pos[count - 1]; count--;
-                ushort x = (ushort)(index % lvl.Width);
-                ushort y = (ushort)(index / lvl.Width / lvl.Length);
-                ushort z = (ushort)(index / lvl.Width % lvl.Length);
-                if (temp.Count > 0) { pos[count] = temp.Dequeue(); count++; }
+                ushort x = (ushort)(index % lvl.Width),
+                    y = (ushort)(index / lvl.Width / lvl.Length),
+                    z = (ushort)(index / lvl.Width % lvl.Length);
+                if (temp.Count > 0) 
+                {
+                    pos[count] = temp.Dequeue(); 
+                    count++;
+                }
                 if (!bits.TrySetOn(x, y, z)) continue;
                 buffer.Add(index);
                 if (mode != DrawMode.verticalX)
-                { // x
+                {
                     if (lvl.GetBlock((ushort)(x + 1), y, z) == block)
                     {
-                        if (count == max) { temp.Enqueue(index + 1); }
-                        else { pos[count] = index + 1; count++; }
+                        if (count == 65536) 
+                        { 
+                            temp.Enqueue(index + 1); 
+                        }
+                        else 
+                        { 
+                            pos[count] = index + 1;
+                            count++;
+                        }
                     }
                     if (lvl.GetBlock((ushort)(x - 1), y, z) == block)
                     {
-                        if (count == max) { temp.Enqueue(index - 1); }
-                        else { pos[count] = index - 1; count++; }
+                        if (count == 65536) 
+                        { 
+                            temp.Enqueue(index - 1); 
+                        }
+                        else 
+                        { 
+                            pos[count] = index - 1;
+                            count++; 
+                        }
                     }
                 }
                 if (mode != DrawMode.verticalZ)
-                { // z
+                {
                     if (lvl.GetBlock(x, y, (ushort)(z + 1)) == block)
                     {
-                        if (count == max) { temp.Enqueue(index + lvl.Width); }
-                        else { pos[count] = index + lvl.Width; count++; }
+                        if (count == 65536) 
+                        { 
+                            temp.Enqueue(index + lvl.Width); 
+                        }
+                        else 
+                        { 
+                            pos[count] = index + lvl.Width;
+                            count++; 
+                        }
                     }
                     if (lvl.GetBlock(x, y, (ushort)(z - 1)) == block)
                     {
-                        if (count == max) { temp.Enqueue(index - lvl.Width); }
-                        else { pos[count] = index - lvl.Width; count++; }
+                        if (count == 65536) 
+                        { 
+                            temp.Enqueue(index - lvl.Width); 
+                        }
+                        else 
+                        {
+                            pos[count] = index - lvl.Width;
+                            count++;
+                        }
                     }
                 }
                 if (!(mode == DrawMode.down || mode == DrawMode.layer))
-                { // y up
+                {
                     if (lvl.GetBlock(x, (ushort)(y + 1), z) == block)
                     {
-                        if (count == max) { temp.Enqueue(index + oneY); }
-                        else { pos[count] = index + oneY; count++; }
+                        if (count == 65536) 
+                        { 
+                            temp.Enqueue(index + oneY); 
+                        }
+                        else 
+                        {
+                            pos[count] = index + oneY;
+                            count++; 
+                        }
                     }
                 }
                 if (!(mode == DrawMode.up || mode == DrawMode.layer))
-                { // y down
+                {
                     if (lvl.GetBlock(x, (ushort)(y - 1), z) == block)
                     {
-                        if (count == max) { temp.Enqueue(index - oneY); }
-                        else { pos[count] = index - oneY; count++; }
+                        if (count == 65536) 
+                        {
+                            temp.Enqueue(index - oneY); 
+                        }
+                        else 
+                        { 
+                            pos[count] = index - oneY;
+                            count++; 
+                        }
                     }
                 }
             }

@@ -62,7 +62,7 @@ namespace MCGalaxy
         public static void Load(Plugin pl, bool auto)
         {
             string ver = pl.MCGalaxy_Version;
-            if (!string.IsNullOrEmpty(ver) && new Version(ver) > new Version(Server.InternalVersion))
+            if (!string.IsNullOrEmpty(ver) && new Version(ver) > new Version("1.9.5.3"))
             {
                 string msg = string.Format("Plugin '{0}' requires a more recent version of {1}!", pl.Name, Server.SoftwareName);
                 throw new InvalidOperationException(msg);
@@ -138,7 +138,6 @@ namespace MCGalaxy
             LoadCorePlugin(new IPThrottler());
             LoadCorePlugin(new WarpsPlugin());
             LoadCorePlugin(new CompilerPlugin());
-            Load(new NASPlugin(), true);
             Compiler.AutoloadPlugins();
         }
         static void LoadCorePlugin(Plugin plugin)

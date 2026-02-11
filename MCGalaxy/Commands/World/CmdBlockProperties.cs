@@ -24,18 +24,31 @@ namespace MCGalaxy.Commands.World
         public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p);
+                return; 
+            }
             string[] args = message.SplitSpaces(4);
-            if (args.Length < 2) { Help(p); return; }
+            if (args.Length < 2) 
+            {
+                Help(p);
+                return; 
+            }
             BlockProps[] scope = GetScope(p, data, args[0]);
             if (scope == null) return;
             if (IsListAction(args[1]) && (args.Length == 2 || IsListModifier(args[2])))
             {
-                ListProps(p, scope, args); return;
+                ListProps(p, scope, args); 
+                return;
             }
             ushort block = GetBlock(p, scope, args[1]);
             if (block == Block.Invalid) return;
-            if (args.Length < 3) { Help(p); return; }
+            if (args.Length < 3) 
+            {
+                Help(p); 
+                return; 
+            }
             string opt = args[2];
             if (opt.CaselessEq("copy"))
             {
@@ -55,7 +68,11 @@ namespace MCGalaxy.Commands.World
             if (scope.CaselessEq("core") || scope.CaselessEq("global")) return Block.Props;
             if (scope.CaselessEq("level"))
             {
-                if (p.IsSuper) { p.Message("Cannot use level scope from {0}.", p.SuperName); return null; }
+                if (p.IsSuper) 
+                {
+                    p.Message("Cannot use level scope from {0}.", p.SuperName); 
+                    return null; 
+                }
                 return !LevelInfo.Check(p, data.Rank, p.Level, "change properties of blocks in this level") ? null : p.Level.Props;
             }
             p.Message("&WScope must be: global or level");
@@ -123,14 +140,18 @@ namespace MCGalaxy.Commands.World
         void ListProps(Player p, BlockProps[] scope, string[] args)
         {
             List<ushort> filtered = FilterProps(scope);
-            string cmd = "BlockProps " + args[0] + " list";
-            string modifier = args.Length > 2 ? args[2] : "";
+            string cmd = "BlockProps " + args[0] + " list",
+                modifier = args.Length > 2 ? args[2] : "";
             Paginator.Output(p, filtered, b => BlockProps.ScopedName(scope, p, b),
                              cmd, "modified blocks", modifier);
         }
         void CopyProps(Player p, BlockProps[] scope, ushort block, string[] args)
         {
-            if (args.Length < 4) { Help(p); return; }
+            if (args.Length < 4) 
+            { 
+                Help(p); 
+                return; 
+            }
             ushort dst = GetBlock(p, scope, args[3]);
             if (dst == Block.Invalid) return;
             scope[dst] = scope[block];
@@ -150,7 +171,11 @@ namespace MCGalaxy.Commands.World
         void SetProps(Player p, BlockProps[] scope, ushort block, string[] args)
         {
             BlockOption opt = BlockOptions.Find(args[2]);
-            if (opt == null) { Help(p); return; }
+            if (opt == null) 
+            { 
+                Help(p); 
+                return; 
+            }
             string value = args.Length > 3 ? args[3] : "";
             opt.SetFunc(p, scope, block, value);
             scope[block].ChangedScope |= BlockProps.ScopeId(scope);

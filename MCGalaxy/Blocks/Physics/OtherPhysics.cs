@@ -26,7 +26,8 @@ namespace MCGalaxy.Blocks.Physics
             ushort yCur = y;
             do
             {
-                index = lvl.IntOffset(index, 0, -1, 0); yCur--;// Get block below each loop
+                index = lvl.IntOffset(index, 0, -1, 0);
+                yCur--;
                 ushort cur = lvl.GetBlock(x, yCur, z);
                 if (cur == Block.Invalid) break;
                 bool hitBlock = false;
@@ -37,7 +38,6 @@ namespace MCGalaxy.Blocks.Physics
                     case Block.Lava:
                         movedDown = true;
                         break;
-                    //Adv physics crushes plants with sand
                     case Block.Sapling:
                     case Block.Dandelion:
                     case Block.Rose:
@@ -86,10 +86,14 @@ namespace MCGalaxy.Blocks.Physics
             Random rand = lvl.physRandom;
             ushort x = C.X, y = C.Y, z = C.Z;
             if (lvl.LevelPhysics > 1)
-            { //Adv physics kills flowers and mushroos in water/lava
+            {
                 ActivateablePhysics.CheckNeighbours(lvl, x, y, z);
             }
-            if (!lvl.Config.GrowTrees) { C.Data.Data = PhysicsArgs.RemoveFromChecks; return; }
+            if (!lvl.Config.GrowTrees) 
+            { 
+                C.Data.Data = PhysicsArgs.RemoveFromChecks;
+                return; 
+            }
             if (C.Data.Data < 20)
             {
                 if (rand.Next(20) == 0) C.Data.Data++;
@@ -114,8 +118,8 @@ namespace MCGalaxy.Blocks.Physics
                 ushort above = lvl.GetBlock(x, (ushort)(y + 1), z);
                 if (lvl.LightPasses(above))
                 {
-                    ushort block = lvl.GetBlock(x, y, z);
-                    ushort grass = lvl.Props[block].GrassBlock;
+                    ushort block = lvl.GetBlock(x, y, z),
+                        grass = lvl.Props[block].GrassBlock;
                     lvl.AddUpdate(C.Index, grass);
                 }
                 C.Data.Data = PhysicsArgs.RemoveFromChecks;
@@ -127,15 +131,19 @@ namespace MCGalaxy.Blocks.Physics
         }
         public static void DoGrassDie(Level lvl, ref PhysInfo C)
         {
-            if (!lvl.Config.GrassGrow) { C.Data.Data = PhysicsArgs.RemoveFromChecks; return; }
+            if (!lvl.Config.GrassGrow) 
+            {
+                C.Data.Data = PhysicsArgs.RemoveFromChecks; 
+                return; 
+            }
             ushort x = C.X, y = C.Y, z = C.Z;
             if (C.Data.Data > 20)
             {
                 ushort above = lvl.GetBlock(x, (ushort)(y + 1), z);
                 if (!lvl.LightPasses(above))
                 {
-                    ushort block = lvl.GetBlock(x, y, z);
-                    ushort dirt = lvl.Props[block].DirtBlock;
+                    ushort block = lvl.GetBlock(x, y, z),
+                        dirt = lvl.Props[block].DirtBlock;
                     lvl.AddUpdate(C.Index, dirt);
                 }
                 C.Data.Data = PhysicsArgs.RemoveFromChecks;
@@ -147,11 +155,13 @@ namespace MCGalaxy.Blocks.Physics
         }
         public static void DoSponge(Level lvl, ref PhysInfo C, bool lava)
         {
-            ushort target = lava ? Block.Lava : Block.Water;
-            ushort alt = lava ? Block.StillLava : Block.StillWater;
-            ushort x = C.X, y = C.Y, z = C.Z;
+            ushort target = lava ? Block.Lava : Block.Water,
+                alt = lava ? Block.StillLava : Block.StillWater,
+                x = C.X, y = C.Y, z = C.Z;
             for (int yy = y - 2; yy <= y + 2; ++yy)
+            {
                 for (int zz = z - 2; zz <= z + 2; ++zz)
+                {
                     for (int xx = x - 2; xx <= x + 2; ++xx)
                     {
                         ushort block = lvl.GetBlock((ushort)xx, (ushort)yy, (ushort)zz, out int index);
@@ -160,29 +170,39 @@ namespace MCGalaxy.Blocks.Physics
                             lvl.AddUpdate(index, Block.Air, default(PhysicsArgs));
                         }
                     }
+                }
+            }
+
             C.Data.Data = PhysicsArgs.RemoveFromChecks;
         }
         public static void DoSpongeRemoved(Level lvl, int b, bool lava)
         {
-            ushort target = lava ? Block.Lava : Block.Water;
-            ushort alt = lava ? Block.StillLava : Block.StillWater;
+            ushort target = lava ? Block.Lava : Block.Water,
+                alt = lava ? Block.StillLava : Block.StillWater;
             lvl.IntToPos(b, out ushort x, out ushort y, out ushort z);
             for (int yy = -3; yy <= +3; ++yy)
+            {
                 for (int zz = -3; zz <= +3; ++zz)
+                {
                     for (int xx = -3; xx <= +3; ++xx)
                     {
                         if (Math.Abs(xx) == 3 || Math.Abs(yy) == 3 || Math.Abs(zz) == 3)
-                        { // Calc only edge
+                        {
                             ushort block = lvl.GetBlock((ushort)(x + xx), (ushort)(y + yy), (ushort)(z + zz), out int index);
                             if (Block.Convert(block) == target || Block.Convert(block) == alt)
                                 lvl.AddCheck(index);
                         }
                     }
+                }
+            }
         }
         public static void DoOther(Level lvl, ref PhysInfo C)
         {
-            if (lvl.LevelPhysics <= 1) { C.Data.Data = PhysicsArgs.RemoveFromChecks; return; }
-            //Adv physics kills flowers and mushroos in water/lava
+            if (lvl.LevelPhysics <= 1) 
+            {
+                C.Data.Data = PhysicsArgs.RemoveFromChecks; 
+                return; 
+            }
             ActivateablePhysics.CheckNeighbours(lvl, C.X, C.Y, C.Z);
             C.Data.Data = PhysicsArgs.RemoveFromChecks;
         }

@@ -96,7 +96,7 @@ namespace MCGalaxy.Commands.Info
         static void PrintEmotes(Player p, string message)
         {
             char[] emotes = EmotesHandler.ControlCharReplacements.ToCharArray();
-            emotes[0] = EmotesHandler.ExtendedCharReplacements[0]; // replace NULL with house
+            emotes[0] = EmotesHandler.ExtendedCharReplacements[0];
             string[] args = message.SplitSpaces(2);
             string modifier = args.Length > 1 ? args[1] : "";
             Paginator.Output(p, emotes, PrintEmote,
@@ -137,10 +137,10 @@ namespace MCGalaxy.Commands.Info
                       message, Block.GetName(p, Block.Convert(block)));
             BlockPerms.GetPlace(block).MessageCannotUse(p, "use");
             BlockPerms.GetDelete(block).MessageCannotUse(p, "delete");
-            DescribePhysics(p, message, block);
+            DescribePhysics(p, block);
             return true;
         }
-        void DescribePhysics(Player p, string _, ushort b)
+        void DescribePhysics(Player p, ushort b)
         {
             BlockProps props = p.IsSuper ? Block.Props[b] : p.Level.Props[b];
             if (props.IsDoor)

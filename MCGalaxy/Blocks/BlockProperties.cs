@@ -81,7 +81,6 @@ namespace MCGalaxy.Blocks
         }
         static void LoadCore(string path, BlockProps[] list, byte scope, bool mapOld)
         {
-            //string[] lines = File.ReadAllLines(path);
             string[] lines = FileIO.TryReadAllLines(path);
             for (int i = 0; i < lines.Length; i++)
             {

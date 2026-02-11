@@ -33,10 +33,15 @@ namespace MCGalaxy.Commands.Eco
             else
             {
                 Item item = Economy.GetItem(message);
-                if (item == null) { Help(p); return; }
+                if (item == null) 
+                {
+                    Help(p); 
+                    return;
+                }
                 if (!item.Enabled)
                 {
-                    p.Message("&WThe " + item.ShopName + " item is not currently buyable."); return;
+                    p.Message("&WThe " + item.ShopName + " item is not currently buyable.");
+                    return;
                 }
                 item.OnStoreCommand(p);
             }

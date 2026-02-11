@@ -35,7 +35,8 @@ namespace MCGalaxy.Eco
             }
             if (msg.Length > 64)
             {
-                p.Message("&WLogin message must be 64 characters or less."); return;
+                p.Message("&WLogin message must be 64 characters or less."); 
+                return;
             }
             if (!PlayerOperations.SetLoginMessage(p, p.name, msg)) return;
             Economy.MakePurchase(p, Price, "&3LoginMessage: &f" + msg);
@@ -61,7 +62,8 @@ namespace MCGalaxy.Eco
             }
             if (msg.Length > 64)
             {
-                p.Message("&WLogin message must be 64 characters or less."); return;
+                p.Message("&WLogin message must be 64 characters or less.");
+                return;
             }
             if (!PlayerOperations.SetLogoutMessage(p, p.name, msg)) return;
             Economy.MakePurchase(p, Price, "&3LogoutMessage: &f" + msg);

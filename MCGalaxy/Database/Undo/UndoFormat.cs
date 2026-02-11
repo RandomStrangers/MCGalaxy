@@ -23,7 +23,6 @@ namespace MCGalaxy.Undo
         {
             DrawOpName = op; 
             LevelName = map;
-            // Use same time method as DoBlockchange writing to undo buffer
             int timeDelta = (int)DateTime.UtcNow.Subtract(Server.StartTime).TotalSeconds;
             Start = Server.StartTime.AddTicks(timeDelta * TimeSpan.TicksPerSecond);
         }

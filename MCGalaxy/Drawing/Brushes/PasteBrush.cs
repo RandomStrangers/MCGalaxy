@@ -24,7 +24,6 @@ namespace MCGalaxy.Drawing.Brushes
         public override void Configure(DrawOp op, Player p) => op.Flags = BlockDBFlags.Pasted;
         public override ushort NextBlock(DrawOp op)
         {
-            // Figure out local coords for this block
             int x = (op.Coords.X - op.Min.X) % state.Width;
             if (x < 0) x += state.Width;
             int y = (op.Coords.Y - op.Min.Y) % state.Height;
@@ -42,7 +41,7 @@ namespace MCGalaxy.Drawing.Brushes
         public override ushort NextBlock(DrawOp op)
         {
             ushort block = base.NextBlock(op);
-            ushort[] include = Include; // local var to avoid JIT bounds check
+            ushort[] include = Include;
             for (int i = 0; i < include.Length; i++)
             {
                 if (block == include[i]) return block;
@@ -57,7 +56,7 @@ namespace MCGalaxy.Drawing.Brushes
         public override ushort NextBlock(DrawOp op)
         {
             ushort block = base.NextBlock(op);
-            ushort[] exclude = Exclude; // local var to avoid JIT bounds check
+            ushort[] exclude = Exclude;
             for (int i = 0; i < exclude.Length; i++)
             {
                 if (block == exclude[i]) return Block.Invalid;

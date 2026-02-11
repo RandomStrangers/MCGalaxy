@@ -24,7 +24,11 @@ namespace MCGalaxy.Commands.World
         public override CommandAlias[] Aliases => new[] { new CommandAlias("WLock"), new CommandAlias("WUnlock") };
         public override void Use(Player p, string map, CommandData data)
         {
-            if (map.Length == 0) { Help(p); return; }
+            if (map.Length == 0) 
+            {
+                Help(p);
+                return; 
+            }
             if (!Formatter.ValidMapName(p, map)) return;
             map = Matcher.FindMaps(p, map);
             if (map == null) return;

@@ -38,15 +38,17 @@ namespace MCGalaxy.Drawing.Ops
             int height = Height;
             for (ushort y = p1.Y; y <= p2.Y; y++)
             {
-                int dy = Invert ? y - Min.Y : Max.Y - y;
-                int curRadius = Radius * (dy + 1) / height;
+                int dy = Invert ? y - Min.Y : Max.Y - y,
+                    curRadius = Radius * (dy + 1) / height;
                 for (ushort z = p1.Z; z <= p2.Z; z++)
+                {
                     for (ushort x = p1.X; x <= p2.X; x++)
                     {
                         int dx = C.X - x, dz = C.Z - z;
                         if (Math.Abs(dx) > curRadius || Math.Abs(dz) > curRadius) continue;
                         output(Place(x, y, z, brush));
                     }
+                }
             }
         }
     }
@@ -56,9 +58,9 @@ namespace MCGalaxy.Drawing.Ops
         public AdvHollowPyramidDrawOp(bool invert = false) => Invert = invert;
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
-            long R = Radius, H = Height;
-            long outer = R * R * H / 3;
-            long inner = (R - 1) * (R - 1) * (H - 1) / 3;
+            long R = Radius, H = Height,
+                outer = R * R * H / 3,
+                inner = (R - 1) * (R - 1) * (H - 1) / 3;
             return outer - inner;
         }
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
@@ -68,10 +70,11 @@ namespace MCGalaxy.Drawing.Ops
             int height = Height;
             for (ushort y = p1.Y; y <= p2.Y; y++)
             {
-                int dy = Invert ? y - Min.Y : Max.Y - y;
-                int curRadius = Radius * (dy + 1) / height;
-                int curRadius2 = Radius * dy / height;
+                int dy = Invert ? y - Min.Y : Max.Y - y,
+                    curRadius = Radius * (dy + 1) / height,
+                    curRadius2 = Radius * dy / height;
                 for (ushort z = p1.Z; z <= p2.Z; z++)
+                {
                     for (ushort x = p1.X; x <= p2.X; x++)
                     {
                         int xx = Math.Abs(C.X - x), zz = Math.Abs(C.Z - z);
@@ -80,6 +83,7 @@ namespace MCGalaxy.Drawing.Ops
                             xx <= curRadius2 && zz <= curRadius2) continue;
                         output(Place(x, y, z, brush));
                     }
+                }
             }
         }
     }

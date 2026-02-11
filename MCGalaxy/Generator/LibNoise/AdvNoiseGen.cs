@@ -45,13 +45,13 @@ namespace MCGalaxy.Generator
             module.Seed = args.Seed;
             MapGenBiome biome = MapGenBiome.Get(args.Biome);
             for (int z = 0; z < length; ++z)
+            {
                 for (int x = 0; x < width; ++x)
                 {
                     double noise = module.GetValue(x, 10, z);
                     int dirtHeight = (int)Math.Floor(noise * 10) + half;
                     if (dirtHeight < waterHeight)
                     {
-                        // column is underwater
                         for (int y = waterHeight; y >= dirtHeight; y--)
                         {
                             lvl.SetTile((ushort)x, (ushort)y, (ushort)z, biome.Water);
@@ -59,7 +59,6 @@ namespace MCGalaxy.Generator
                     }
                     else
                     {
-                        // top of column is above water
                         int sandHeight = (int)Math.Floor(noise * 15) + half;
                         byte topBlock = dirtHeight < sandHeight ? biome.Surface : biome.BeachSandy;
                         lvl.SetTile((ushort)x, (ushort)dirtHeight, (ushort)z, topBlock);
@@ -70,6 +69,7 @@ namespace MCGalaxy.Generator
                         lvl.SetTile((ushort)x, (ushort)y, (ushort)z, block);
                     }
                 }
+            }
             return true;
         }
         static bool Gen3D(Player p, Level lvl, IModule module, MapGenArgs args)

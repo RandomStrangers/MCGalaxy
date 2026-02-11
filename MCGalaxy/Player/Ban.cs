@@ -31,9 +31,7 @@ namespace MCGalaxy
         public static void UnpackTempBanData(string line, out string reason, out string banner, out DateTime expiry)
         {
             string[] parts = line.SplitSpaces(3);
-            // banner name used to be p.truename
             banner = Server.FromRawUsername(parts[0]);
-            // Timestamp used to be raw DateTime ticks, is now UTC timestamp
             long timestamp = long.Parse(parts[1]);
             try
             {
@@ -70,7 +68,6 @@ namespace MCGalaxy
             {
                 string[] parts = line.SplitSpaces();
                 if (parts.Length <= 5 || parts[1] != who) continue;
-                // banner name used to be p.truename
                 banner = Server.FromRawUsername(parts[0]);
                 reason = parts[2].Replace("%20", " ");
                 time = GetDate(parts[4]);
@@ -93,7 +90,6 @@ namespace MCGalaxy
             {
                 string[] parts = line.SplitSpaces();
                 if (parts.Length <= 3 || parts[1] != who) continue;
-                // unbanner name used to be p.truename
                 unbanner = Server.FromRawUsername(parts[0]);
                 reason = parts[2].Replace("%20", " ");
                 time = GetDate(parts[3]);
@@ -107,10 +103,6 @@ namespace MCGalaxy
         {
             raw = raw.Replace("%20", " ").Replace(",", "");
             if (long.TryParse(raw, out long timestap)) return timestap.FromUnixTime();
-            /* Old form of timestamps in bans/unbans:
-               DateTime now = DateTime.Now;
-               return now.DayOfWeek + "%20" + now.Day + "%20" + now.Month + "%20" + now.Year + ",%20at%20" + now.Hour + ":" + now.Minute;
-             */
             string[] date = raw.SplitSpaces(),
                 minuteHour = date[5].Split(':');
             int hour = NumberUtils.ParseInt32(minuteHour[0]),

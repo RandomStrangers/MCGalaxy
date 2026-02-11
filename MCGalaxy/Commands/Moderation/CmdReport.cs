@@ -28,7 +28,11 @@ namespace MCGalaxy.Commands.Moderation
         public override CommandAlias[] Aliases => new CommandAlias[] { new("Reports", "list") };
         public override void Use(Player p, string message)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p);
+                return; 
+            }
             string[] args = message.SplitSpaces(2);
             if (!Directory.Exists("extra/reported"))
                 Directory.CreateDirectory("extra/reported");
@@ -76,7 +80,8 @@ namespace MCGalaxy.Commands.Moderation
         {
             if (args.Length != 2)
             {
-                p.Message("You need to provide a player's name."); return;
+                p.Message("You need to provide a player's name."); 
+                return;
             }
             if (!CheckExtraPerm(p, 1)) return;
             string target = PlayerDB.MatchNames(p, args[1]);
@@ -84,9 +89,9 @@ namespace MCGalaxy.Commands.Moderation
             string nick = p.FormatNick(target);
             if (!HasReports(target))
             {
-                p.Message("{0} &Shas not been reported.", nick); return;
+                p.Message("{0} &Shas not been reported.", nick);
+                return;
             }
-            //string[] reports = File.ReadAllLines("extra/reported/" + target + ".txt");
             string[] reports = FileIO.TryReadAllLines("extra/reported/" + target + ".txt");
             p.MessageLines(reports);
         }
@@ -94,7 +99,8 @@ namespace MCGalaxy.Commands.Moderation
         {
             if (args.Length != 2)
             {
-                p.Message("You need to provide a player's name."); return;
+                p.Message("You need to provide a player's name.");
+                return;
             }
             if (!CheckExtraPerm(p, 1)) return;
             string target = PlayerDB.MatchNames(p, args[1]);
@@ -102,7 +108,8 @@ namespace MCGalaxy.Commands.Moderation
             string nick = p.FormatNick(target);
             if (!HasReports(target))
             {
-                p.Message("{0} &Shas not been reported.", nick); return;
+                p.Message("{0} &Shas not been reported.", nick); 
+                return;
             }
             if (!Directory.Exists("extra/reportedbackups"))
                 Directory.CreateDirectory("extra/reportedbackups");
@@ -117,7 +124,10 @@ namespace MCGalaxy.Commands.Moderation
             if (!Directory.Exists("extra/reportedbackups"))
                 Directory.CreateDirectory("extra/reportedbackups");
             string[] users = GetReportedUsers();
-            foreach (string user in users) { DeleteReport(user); }
+            foreach (string user in users) 
+            { 
+                DeleteReport(user); 
+            }
             p.Message("&aYou have cleared all reports!");
             Chat.MessageFromOps(p, "λNICK &ccleared ALL reports!");
             Logger.Log(LogType.UserActivity, p.name + " cleared ALL reports!");
@@ -126,7 +136,8 @@ namespace MCGalaxy.Commands.Moderation
         {
             if (args.Length != 2)
             {
-                p.Message("You need to provide a reason for the report."); return;
+                p.Message("You need to provide a reason for the report.");
+                return;
             }
             string target = PlayerDB.MatchNames(p, args[0]);
             if (target == null) return;
@@ -146,7 +157,6 @@ namespace MCGalaxy.Commands.Moderation
             string reason = ModActionCmd.ExpandReason(p, args[1]);
             if (reason == null) return;
             reports.Add(reason + " - Reported by " + p.name + " at " + DateTime.Now);
-            //File.WriteAllLines(ReportPath(target), reports.ToArray());
             FileIO.TryWriteAllLines(ReportPath(target), reports.ToArray());
             p.Message("&aReport sent! It should be viewed when a {0} &ais online",
                       checkPerms.Describe());
@@ -162,7 +172,6 @@ namespace MCGalaxy.Commands.Moderation
         static string ReportPath(string user) => "extra/reported/" + user + ".txt";
         static string[] GetReportedUsers()
         {
-            //string[] users = Directory.GetFiles("extra/reported", "*.txt");
             string[] users = FileIO.TryGetFiles("extra/reported", "*.txt");
             for (int i = 0; i < users.Length; i++)
             {
@@ -174,7 +183,6 @@ namespace MCGalaxy.Commands.Moderation
         {
             string backup = "extra/reportedbackups/" + user + ".txt";
             FileIO.TryDelete(backup);
-            //File.Move(ReportPath(user), backup);
             FileIO.TryMove(ReportPath(user), backup);
         }
         public override void Help(Player p)

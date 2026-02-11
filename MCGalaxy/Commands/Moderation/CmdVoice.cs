@@ -21,7 +21,11 @@ namespace MCGalaxy.Commands.Moderation
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0 && p.IsSuper) { SuperRequiresArgs(p, "player name"); return; }
+            if (message.Length == 0 && p.IsSuper)
+            {
+                SuperRequiresArgs(p, "player name"); 
+                return; 
+            }
             Player target = message.Length == 0 ? p : PlayerInfo.FindMatches(p, message);
             if (target == null) return;
             if (!CheckRank(p, data, target, "voice", true)) return;

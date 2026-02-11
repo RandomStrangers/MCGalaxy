@@ -56,7 +56,7 @@ namespace MCGalaxy.Commands.CPE
                 return;
             }
             switch (parts[0])
-            { // TODO IsCreateCommand
+            {
                 case "add":
                 case "create":
                     AddHandler(p, parts, args); 
@@ -377,7 +377,7 @@ namespace MCGalaxy.Commands.CPE
             {
                 if (CommandParser.GetUShort(p, value, "Texture ID", ref def.TopTex))
                 {
-                    step += def.Shape == 0 ? 5 : 1; // skip other texture steps for sprites
+                    step += def.Shape == 0 ? 5 : 1;
                     if (def.Shape == 0) def.SetAllTex(def.TopTex);
                 }
             }
@@ -453,7 +453,9 @@ namespace MCGalaxy.Commands.CPE
                 ColorDesc rgb = default;
                 if (CommandParser.GetHex(p, value, ref rgb))
                 {
-                    def.FogR = rgb.R; def.FogG = rgb.G; def.FogB = rgb.B;
+                    def.FogR = rgb.R;
+                    def.FogG = rgb.G; 
+                    def.FogB = rgb.B;
                     step++;
                 }
             }
@@ -609,8 +611,6 @@ namespace MCGalaxy.Commands.CPE
                         return false;
                     }
                     BlockDefinition[] defs = args.defs;
-                    // Don't let multiple blocks be assigned to same order
-                    // TODO move out of CustomBlockCommand class
                     if (order != def.RawID && order != 0)
                     {
                         for (int i = 0; i < defs.Length; i++)
@@ -679,7 +679,7 @@ namespace MCGalaxy.Commands.CPE
             {
                 changed |= DoEdit(p, parts, args, Block.FromRaw((ushort)i));
             }
-            if (changed) BlockDefinition.Save(args.global, args.level); // TODO SaveChanged(bool changed, bool global, Level lvl) func
+            if (changed) BlockDefinition.Save(args.global, args.level);
         }
         static void UpdateBlock(Player p, BlockDefinitionsArgs args, BlockDefinition def)
         {
@@ -692,8 +692,7 @@ namespace MCGalaxy.Commands.CPE
         {
             ushort block = def.GetBlock();
             BlockDefinition old = args.defs[block];
-            if (!args.global && old == BlockDefinition.GlobalDefs[block]) old = null; // TODO ExistsInScope
-            // in case the list is modified before we finish the command.
+            if (!args.global && old == BlockDefinition.GlobalDefs[block]) old = null;
             if (old != null)
             {
                 block = GetFreeBlock(p, args);
@@ -725,7 +724,6 @@ namespace MCGalaxy.Commands.CPE
         static ushort GetFreeBlock(Player p, BlockDefinitionsArgs args)
         {
             BlockDefinition[] defs = args.defs;
-            // Start from opposite ends to avoid overlap
             if (args.global)
             {
                 for (ushort b = 66; b <= 767; b++)
@@ -777,23 +775,20 @@ namespace MCGalaxy.Commands.CPE
         {
             string[] coords = parts.SplitSpaces();
             if (coords.Length != 3) return false;
-            // TODO: Having to cast to sbyte here is yucky. blockdefs code should be fixed instead
-            Vec3S32 P = new((sbyte)x, (sbyte)z, (sbyte)y); // blockdef files have z being height, we use y being height
+            Vec3S32 P = new((sbyte)x, (sbyte)z, (sbyte)y);
             if (!CommandParser.GetCoords(p, coords, 0, ref P)) return false;
             if (!CommandParser.CheckRange(p, P.X, "X", -127, 127)) return false;
             if (!CommandParser.CheckRange(p, P.Y, "Y", -127, 127)) return false;
             if (!CommandParser.CheckRange(p, P.Z, "Z", -127, 127)) return false;
-            // TODO: Improve output message with relative coords (currently shows "Set max for Stone to ~ ~8 ~")
             x = (byte)P.X; 
             z = (byte)P.Y; 
-            y = (byte)P.Z; // blockdef files have z being height, we use y being height
+            y = (byte)P.Z;
             return true;
         }
         static bool CheckRaw(Player p, string arg, BlockDefinitionsArgs args,
                              out int raw, bool air = false)
         {
             int min = air ? 0 : 1, max = 767;
-            // Check for block names (can't use standard parsing behaviour)
             if (!NumberUtils.TryParseInt32(arg, out raw))
             {
                 BlockDefinition def = BlockDefinition.ParseName(arg, args.defs);
@@ -811,7 +806,6 @@ namespace MCGalaxy.Commands.CPE
                                    out int min, out int max, bool air = false)
         {
             bool success;
-            // Either "[id]" or "[min]-[max]"
             if (CommandParser.IsRawBlockRange(arg, out string[] bits))
             {
                 success = CheckRaw(p, bits[0], args, out min, air)
@@ -837,7 +831,6 @@ namespace MCGalaxy.Commands.CPE
             BlockProps[] scope = args.global ? Block.Props : lvl.Props;
             int changed = scope[block].ChangedScope & BlockProps.ScopeId(scope);
             if (changed != 0) return;
-            // properties not manually modified, revert (e.g. make grass die in shadow again)
             scope[block] = BlockProps.MakeDefault(scope, lvl, block);
             BlockProps.ApplyChanges(scope, lvl, block, false);
         }
@@ -861,7 +854,6 @@ namespace MCGalaxy.Commands.CPE
             for (int i = 0; i < help.Length; i++)
             {
                 string msg = help[i];
-                // TODO: Ugly hardcoding, but not really worth doing properly
                 if (step == 4 && def.Shape == 0) msg = msg.Replace("top texture", "texture");
                 p.Message(msg);
             }
@@ -885,9 +877,11 @@ namespace MCGalaxy.Commands.CPE
             if (prop == "draw") return "blockdraw";
             if (prop == "mincoords") return "min";
             if (prop == "maxcoords") return "max";
-            if (prop == "density") return "fogdensity";
-            if (prop == "col" || prop == "fogcol") return "fogcolor";
-            return prop == "fogcolour" ? "fogcolor" : prop == "fallbackid" || prop == "fallbackblock" ? "fallback" : prop;
+            return prop == "density"
+                ? "fogdensity"
+                : prop == "col" || prop == "fogcol"
+                ? "fogcolor"
+                : prop == "fogcolour" ? "fogcolor" : prop == "fallbackid" || prop == "fallbackblock" ? "fallback" : prop;
         }
         static readonly string[] stepsHelp = new string[] {
             null, null, "name", "shape", "toptex", "sidetex", "bottomtex", "min", "max", "collide",

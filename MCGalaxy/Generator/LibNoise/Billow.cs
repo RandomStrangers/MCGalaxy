@@ -34,8 +34,7 @@ namespace MCGalaxy
         }
         public override double GetValue(double x, double y, double z)
         {
-            double value = 0.0;
-            double curPersistence = 1.0;
+            double value = 0.0, curPersistence = 1.0;
             x *= Frequency;
             y *= Frequency;
             z *= Frequency;

@@ -25,14 +25,12 @@ namespace MCGalaxy.Blocks.Physics
                 C.Data.Data = PhysicsArgs.RemoveFromChecks;
                 return;
             }
-            // Delay checking for leaf decay for a random amount of time
             if (C.Data.Data < 5)
             {
                 Random rand = lvl.physRandom;
                 if (rand.Next(10) == 0) C.Data.Data++;
                 return;
             }
-            // Perform actual leaf decay, then remove from physics list
             if (DoLeafDecay(lvl, ref C))
             {
                 lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
@@ -40,24 +38,16 @@ namespace MCGalaxy.Blocks.Physics
             }
             C.Data.Data = PhysicsArgs.RemoveFromChecks;
         }
-        // radius of box around the given leaf block that is checked for logs
-        const int range = 4;
-        const int blocksPerAxis = range * 2 + 1;
-        const int oneX = 1; // index + oneX = (X + 1, Y, Z)
-        const int oneY = blocksPerAxis; // index + oneY = (X, Y + 1, Z)
-        const int oneZ = blocksPerAxis * blocksPerAxis;
         static bool DoLeafDecay(Level lvl, ref PhysInfo C)
         {
-            int* dists = stackalloc int[blocksPerAxis * blocksPerAxis * blocksPerAxis];
+            int* dists = stackalloc int[729];
             ushort x = C.X, y = C.Y, z = C.Z;
             int idx = 0;
-            // The general overview of this algorithm is that it finds all log blocks
-            //  from (x - range, y - range, z - range) to (x + range, y + range, z + range),
-            //  and then tries to find a path from any of those logs to the block at (x, y, z).
-            // Note that these paths can only travel through leaf blocks
-            for (int xx = -range; xx <= range; xx++)
-                for (int yy = -range; yy <= range; yy++)
-                    for (int zz = -range; zz <= range; zz++, idx++)
+            for (int xx = -4; xx <= 4; xx++)
+            {
+                for (int yy = -4; yy <= 4; yy++)
+                {
+                    for (int zz = -4; zz <= 4; zz++, idx++)
                     {
                         int index = lvl.PosToInt((ushort)(x + xx), (ushort)(y + yy), (ushort)(z + zz));
                         byte type = index < 0 ? Block.Air : lvl.blocks[index];
@@ -68,44 +58,50 @@ namespace MCGalaxy.Blocks.Physics
                         else
                             dists[idx] = -1;
                     }
-            // TODO optimisable?
-            for (int dist = 1; dist <= range; dist++)
+                }
+            }
+            for (int dist = 1; dist <= 4; dist++)
             {
                 idx = 0;
-                for (int xx = -range; xx <= range; xx++)
-                    for (int yy = -range; yy <= range; yy++)
-                        for (int zz = -range; zz <= range; zz++, idx++)
+                for (int xx = -4; xx <= 4; xx++)
+                {
+                    for (int yy = -4; yy <= 4; yy++)
+                    {
+                        for (int zz = -4; zz <= 4; zz++, idx++)
                         {
                             if (dists[idx] != dist - 1) continue;
-                            // if this block is X-1 dist away from a log, potentially update neighbours as X blocks away from a log
-                            if (xx > -range) PropagateDist(dists, dist, idx - oneX);
-                            if (xx < range) PropagateDist(dists, dist, idx + oneX);
-                            if (yy > -range) PropagateDist(dists, dist, idx - oneY);
-                            if (yy < range) PropagateDist(dists, dist, idx + oneY);
-                            if (zz > -range) PropagateDist(dists, dist, idx - oneZ);
-                            if (zz < range) PropagateDist(dists, dist, idx + oneZ);
+                            if (xx > -4) PropagateDist(dists, dist, idx - 1);
+                            if (xx < 4) PropagateDist(dists, dist, idx + 1);
+                            if (yy > -4) PropagateDist(dists, dist, idx - 9);
+                            if (yy < 4) PropagateDist(dists, dist, idx + 9);
+                            if (zz > -4) PropagateDist(dists, dist, idx - 81);
+                            if (zz < 4) PropagateDist(dists, dist, idx + 81);
                         }
+                    }
+                }
             }
-            // calculate index of (0, 0, 0)
-            idx = range * oneX + range * oneY + range * oneZ;
+            idx = 364;
             return dists[idx] < 0;
         }
         static void PropagateDist(int* dists, int dist, int index)
         {
-            // distances can only propagate through leaf blocks
             if (dists[index] == -2) dists[index] = dist;
         }
         public static void DoLog(Level lvl, ref PhysInfo C)
         {
             ushort x = C.X, y = C.Y, z = C.Z;
-            for (int xx = -range; xx <= range; xx++)
-                for (int yy = -range; yy <= range; yy++)
-                    for (int zz = -range; zz <= range; zz++)
+            for (int xx = -4; xx <= 4; xx++)
+            {
+                for (int yy = -4; yy <= 4; yy++)
+                {
+                    for (int zz = -4; zz <= 4; zz++)
                     {
                         int index = lvl.PosToInt((ushort)(x + xx), (ushort)(y + yy), (ushort)(z + zz));
                         if (index < 0 || lvl.blocks[index] != Block.Leaves) continue;
                         lvl.AddCheck(index);
                     }
+                }
+            }
             C.Data.Data = PhysicsArgs.RemoveFromChecks;
         }
     }

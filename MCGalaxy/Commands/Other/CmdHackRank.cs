@@ -25,10 +25,15 @@ namespace MCGalaxy.Commands.Misc
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p); 
+                return; 
+            }
             if (p.hackrank)
             {
-                p.Message("&WYou have already hacked a rank!"); return;
+                p.Message("&WYou have already hacked a rank!"); 
+                return;
             }
             Group grp = Matcher.FindRanks(p, message);
             if (grp == null) return;
@@ -37,7 +42,7 @@ namespace MCGalaxy.Commands.Misc
         void DoFakeRank(Player p, Group newRank)
         {
             p.hackrank = true;
-            CmdFakeRank.DoFakerank(p, p, newRank);
+            CmdFakeRank.DoFakerank(p, newRank);
             DoKick(p, newRank);
         }
         void DoKick(Player p, Group newRank)
@@ -59,7 +64,11 @@ namespace MCGalaxy.Commands.Misc
             string msg = "for hacking the rank " + args.newRank.ColoredName;
             who.Leave("kicked (" + msg + "&S)", "Kicked " + msg);
         }
-        class HackRankArgs { public string name; public Group newRank; }
+        class HackRankArgs 
+        { 
+            public string name; 
+            public Group newRank; 
+        }
         public override void Help(Player p)
         {
             p.Message("&T/HackRank [rank] &H- Hacks a rank");

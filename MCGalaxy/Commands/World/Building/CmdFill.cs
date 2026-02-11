@@ -33,9 +33,11 @@ namespace MCGalaxy.Commands.Building
             if (msg == "normal") return DrawMode.solid;
             if (msg == "up") return DrawMode.up;
             if (msg == "down") return DrawMode.down;
-            if (msg == "layer") return DrawMode.layer;
-            if (msg == "vertical_x") return DrawMode.verticalX;
-            return msg == "vertical_z" ? DrawMode.verticalZ : msg == "2d" ? DrawMode.volcano : DrawMode.normal;
+            return msg == "layer"
+                ? DrawMode.layer
+                : msg == "vertical_x"
+                ? DrawMode.verticalX
+                : msg == "vertical_z" ? DrawMode.verticalZ : msg == "2d" ? DrawMode.volcano : DrawMode.normal;
         }
         protected override DrawOp GetDrawOp(DrawArgs dArg) => new FillDrawOp();
         protected override void GetBrush(DrawArgs dArgs)
@@ -71,9 +73,9 @@ namespace MCGalaxy.Commands.Building
         }
         static DrawMode Calc2DFill(Player p, Vec3S32[] marks)
         {
-            int lenX = Math.Abs(p.Pos.BlockX - marks[0].X);
-            int lenY = Math.Abs(p.Pos.BlockY - marks[0].Y);
-            int lenZ = Math.Abs(p.Pos.BlockZ - marks[0].Z);
+            int lenX = Math.Abs(p.Pos.BlockX - marks[0].X),
+                lenY = Math.Abs(p.Pos.BlockY - marks[0].Y),
+                lenZ = Math.Abs(p.Pos.BlockZ - marks[0].Z);
             return lenY >= lenX && lenY >= lenZ ? DrawMode.layer : lenX >= lenZ ? DrawMode.verticalX : DrawMode.verticalZ;
         }
         static bool IsConfirmed(string message) => message.CaselessEq("confirm") || message.CaselessEnds(" confirm");

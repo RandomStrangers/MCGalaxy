@@ -27,7 +27,11 @@ namespace MCGalaxy.Commands.Chatting
         public override void Use(Player p, string message, CommandData data)
         {
             string[] parts = message.SplitSpaces(2);
-            if (parts.Length <= 1) { Help(p); return; }
+            if (parts.Length <= 1) 
+            {
+                Help(p);
+                return; 
+            }
             if (!MessageCmd.CanSpeak(p, "Send")) return;
             string name = PlayerDB.MatchNames(p, parts[0]);
             if (name == null) return;

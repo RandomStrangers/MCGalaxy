@@ -99,18 +99,18 @@ namespace MCGalaxy.Blocks.Physics
                 Value2 = (byte)block,
                 ExtBlock = (byte)(block >> 8)
             };
-            physForm = Block.Door_Log_air; // air
+            physForm = Block.Door_Log_air; 
             if (block == Block.Door_Air || block == Block.Door_AirActivatable)
             {
                 args.Value1 = 4 - 1;
             }
             else if (block == Block.Door_Green)
             {
-                physForm = Block.Door_Green_air; // red wool
+                physForm = Block.Door_Green_air;
             }
             else if (block == Block.Door_TNT)
             {
-                args.Value1 = 4 - 1; physForm = Block.Door_TNT_air; // lava
+                args.Value1 = 4 - 1; physForm = Block.Door_TNT_air;
             }
             return args;
         }
@@ -129,29 +129,18 @@ namespace MCGalaxy.Blocks.Physics
             CheckAt(lvl, x, y, (ushort)(z + 1));
             CheckAt(lvl, x, y, (ushort)(z - 1));
             CheckAt(lvl, x, (ushort)(y + 1), z);
-            // NOTE: omission of y-1 to match original behaviour
         }
-        // TODO: Stop checking block type and just always call lvl.AddCheck
         internal static void CheckAt(Level lvl, ushort x, ushort y, ushort z)
         {
             ushort block = lvl.GetBlock(x, y, z, out int index);
             switch (block)
             {
-                //case Block.water:
-                //case Block.lava:
                 case Block.Sapling:
                 case Block.Sand:
                 case Block.Gravel:
                 case Block.Log:
                 case Block.Leaves:
                 case Block.FloatWood:
-                    /*case Block.lava_fast:
-                    case Block.WaterDown:
-                    case Block.LavaDown:
-                    case Block.deathlava:
-                    case Block.deathwater:
-                    case Block.geyser:
-                    case Block.magma:*/
                     lvl.AddCheck(index);
                     break;
                 default:

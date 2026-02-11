@@ -52,8 +52,10 @@ namespace MCGalaxy.Modules.Warps
         }
         void Make(Warp warp, string name, Player p)
         {
-            warp.Pos = p.Pos; warp.Name = name;
-            warp.Yaw = p.Rot.RotY; warp.Pitch = p.Rot.HeadX;
+            warp.Pos = p.Pos; 
+            warp.Name = name;
+            warp.Yaw = p.Rot.RotY; 
+            warp.Pitch = p.Rot.HeadX;
             warp.Level = p.Level.name;
         }
         public void Update(Warp warp, Player p)
@@ -74,7 +76,7 @@ namespace MCGalaxy.Modules.Warps
             }
             if (p.Level.name.CaselessEq(warp.Level))
             {
-                p.SendPosition(warp.Pos, new Orientation(warp.Yaw, warp.Pitch));
+                p.SendPosition(warp.Pos, new(warp.Yaw, warp.Pitch));
                 p.Message("Sent you to waypoint/warp {0}", warp.Name);
             }
             else
@@ -83,12 +85,8 @@ namespace MCGalaxy.Modules.Warps
             }
         }
         /// <summary> Find partial matches of 'name' against this list of warps. </summary>
-        public Warp FindMatch(Player p, string name)
-        {
-            string group = (this == Global) ? "warps" : "waypoints";
-            return Matcher.Find(p, name, out int matches, Items,
-                                null, wp => wp.Name, group);
-        }
+        public Warp FindMatch(Player p, string name) => Matcher.Find(p, name, out int matches, Items,
+                                null, wp => wp.Name, (this == Global) ? "warps" : "waypoints");
         public void Load()
         {
             if (!File.Exists(Filename)) return;
@@ -119,7 +117,6 @@ namespace MCGalaxy.Modules.Warps
                     }
                 }
             }
-            // don't change live list while still loading warps
             Items = warps;
         }
         public void Save()

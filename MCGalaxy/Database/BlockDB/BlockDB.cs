@@ -62,8 +62,6 @@ namespace MCGalaxy.DB
             if (cancel) return;
             BlockDBFile format = ValidateBackingFile(path);
             using Stream s = OpenWrite(path);
-            // This truncates the lower 4 bits off - so e.g. if a power off occurred
-            // and 21 bytes were in the file, this sets the position to byte 16
             s.Position = s.Length & ~0x0F;
             format.WriteEntries(s, Cache);
             Cache.Clear();

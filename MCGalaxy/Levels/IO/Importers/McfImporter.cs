@@ -44,7 +44,6 @@ namespace MCGalaxy.Levels.IO
                 rotx = header[12],
                 roty = header[13]
             };
-            // 2 bytes for perbuild and pervisit
             byte[] blocks = new byte[2 * lvl.blocks.Length];
             gs.Read(blocks, 0, blocks.Length);
             for (int i = 0; i < blocks.Length / 2; ++i)

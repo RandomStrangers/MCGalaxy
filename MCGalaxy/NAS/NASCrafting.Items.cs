@@ -246,8 +246,8 @@ namespace MCGalaxy
                     { 631, 0, 631 },
                     { 631, 0, 631 },
                 }
-            };
-            NASRecipe emeraldPickaxe = new(new("Emerald Pickaxe"))
+            },
+            emeraldPickaxe = new(new("Emerald Pickaxe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -255,8 +255,8 @@ namespace MCGalaxy
                     {  0, 78, 0 },
                     {  0, 78, 0 }
                 }
-            };
-            NASRecipe emeraldShovel = new(new("Emerald Shovel"))
+            },
+            emeraldShovel = new(new("Emerald Shovel"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -264,8 +264,8 @@ namespace MCGalaxy
                     {  78 },
                     {  78 }
                 }
-            };
-            NASRecipe emeraldAxe = new(new("Emerald Axe"))
+            },
+            emeraldAxe = new(new("Emerald Axe"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -273,8 +273,8 @@ namespace MCGalaxy
                     { 650, 78 },
                     {  0, 78 }
                 }
-            };
-            NASRecipe emeraldSword = new(new("Emerald Sword"))
+            },
+            emeraldSword = new(new("Emerald Sword"))
             {
                 usesAlternateID = true,
                 pattern = new ushort[,] {
@@ -282,38 +282,38 @@ namespace MCGalaxy
                     { 650 },
                     { 78 }
                 }
-            };
-            NASRecipe emeraldhelm = new(new("Emerald Helmet"))
+            },
+            emeraldhelm = new(new("Emerald Helmet"))
             {
                 pattern = new ushort[,] {
                     { 650, 650, 650 },
                     { 650, 0, 650 },
                 }
-            };
-            NASRecipe emeraldchest = new(new("Emerald Chestplate"))
+            },
+            emeraldchest = new(new("Emerald Chestplate"))
             {
                 pattern = new ushort[,] {
                     { 650, 0, 650 },
                     { 650, 650, 650 },
                     { 650, 650, 650 },
                 }
-            };
-            NASRecipe emeraldlegs = new(new("Emerald Leggings"))
+            },
+            emeraldlegs = new(new("Emerald Leggings"))
             {
                 pattern = new ushort[,] {
                     { 650, 650, 650 },
                     { 650, 0, 650 },
                     { 650, 0, 650 },
                 }
-            };
-            NASRecipe emeraldboots = new(new("Emerald Boots"))
+            },
+            emeraldboots = new(new("Emerald Boots"))
             {
                 pattern = new ushort[,] {
                     { 650, 0, 650 },
                     { 650, 0, 650 },
                 }
-            };
-            NASRecipe key = new(new("Key"))
+            },
+            key = new(new("Key"))
             {
                 usesParentID = true,
                 pattern = new ushort[,] {
@@ -321,15 +321,15 @@ namespace MCGalaxy
                     {  149, 148,  0  },
                     {  149, 148,  0  }
                 }
-            };
-            NASRecipe shears = new(new("Shears"))
+            },
+            shears = new(new("Shears"))
             {
                 pattern = new ushort[,] {
                     {  0, 42 },
                     {  42, 0 }
                 }
-            };
-            NASRecipe fishing = new(new("Fishing Rod"))
+            },
+            fishing = new(new("Fishing Rod"))
             {
                 usesParentID = true,
                 usesAlternateID = true,

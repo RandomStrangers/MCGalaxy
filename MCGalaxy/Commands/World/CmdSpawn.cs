@@ -26,7 +26,11 @@ namespace MCGalaxy.Commands.World
                 p.Message("You cannot use &T/Spawn &Son this map.");
                 p.isFlying = false; return;
             }
-            if (message.Length > 0) { Help(p); return; }
+            if (message.Length > 0) 
+            { 
+                Help(p);
+                return;
+            }
             PlayerActions.RespawnAt(p, p.Level.SpawnPos, p.Level.rotx, p.Level.roty);
         }
         public override void Help(Player p)

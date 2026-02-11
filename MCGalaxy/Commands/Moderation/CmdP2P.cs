@@ -24,10 +24,22 @@ namespace MCGalaxy.Commands.Moderation
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p); 
+                return; 
+            }
             string[] args = message.SplitSpaces();
-            if (args.Length > 2) { Help(p); return; }
-            if (args.Length == 1) { p.Message("You did not specify the target player."); return; }
+            if (args.Length > 2) 
+            { 
+                Help(p); 
+                return; 
+            }
+            if (args.Length == 1) 
+            { 
+                p.Message("You did not specify the target player."); 
+                return;
+            }
             Player source = PlayerInfo.FindMatches(p, args[0]);
             Player target = PlayerInfo.FindMatches(p, args[1]);
             if (source == null || target == null) return;

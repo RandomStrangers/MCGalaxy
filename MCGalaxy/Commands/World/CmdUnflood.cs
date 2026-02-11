@@ -23,11 +23,14 @@ namespace MCGalaxy.Commands.World
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p); 
+                return;
+            }
             if (!message.CaselessEq("all") && !CommandParser.GetBlock(p, message, out _)) return;
             Level lvl = p.Level;
             if (!LevelInfo.Check(p, data.Rank, lvl, "unflood this level")) return;
-            // TODO: Probably should look at lvl.physTickLock here
             bool paused = lvl.PhysicsPaused;
             lvl.PhysicsPaused = true;
             try
@@ -39,7 +42,6 @@ namespace MCGalaxy.Commands.World
             }
             finally
             {
-                // always restore paused state, even some if ReplaceAll somehow fails
                 lvl.PhysicsPaused = paused;
             }
             lvl.Message("Unflooded!");

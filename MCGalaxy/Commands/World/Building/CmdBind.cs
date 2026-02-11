@@ -22,9 +22,17 @@ namespace MCGalaxy.Commands.Building
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p);
+                return;
+            }
             string[] args = message.SplitSpaces();
-            if (args.Length > 2) { Help(p); return; }
+            if (args.Length > 2)
+            {
+                Help(p); 
+                return; 
+            }
             if (args[0].CaselessEq("clear"))
             {
                 for (int b = 0; b < p.BlockBindings.Length; b++)
@@ -37,7 +45,8 @@ namespace MCGalaxy.Commands.Building
             if (!CommandParser.GetBlock(p, args[0], out ushort src)) return;
             if (Block.IsPhysicsType(src))
             {
-                p.Message("Physics blocks cannot be bound to another block."); return;
+                p.Message("Physics blocks cannot be bound to another block.");
+                return;
             }
             if (args.Length == 2)
             {
@@ -49,7 +58,8 @@ namespace MCGalaxy.Commands.Building
             {
                 if (p.BlockBindings[src] == src)
                 {
-                    p.Message("{0} is not bound.", Block.GetName(p, src)); return;
+                    p.Message("{0} is not bound.", Block.GetName(p, src));
+                    return;
                 }
                 p.BlockBindings[src] = src;
                 p.Message("Unbound {0}.", Block.GetName(p, src));

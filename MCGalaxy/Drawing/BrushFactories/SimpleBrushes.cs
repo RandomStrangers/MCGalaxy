@@ -32,8 +32,6 @@ namespace MCGalaxy.Drawing.Brushes
                 ? !CommandParser.IsBlockAllowed(p, "draw with", args.Block) ? null : (Brush)new SolidBrush(args.Block)
                 : !CommandParser.GetBlockIfAllowed(p, args.Message, "draw with", out ushort block) ? null : (Brush)new SolidBrush(block);
         }
-        // Usually this shouldn't be overriden, but since SolidBrush is the default brush,
-        //  it's worth overriding this to avoid an unnecessary object allocation
         public override bool Validate(BrushArgs args) => args.Message.Length == 0 || CommandParser.GetBlockIfAllowed(args.Player, args.Message, "draw with", out _);
     }
     public sealed class CheckeredBrushFactory : BrushFactory
@@ -49,8 +47,6 @@ namespace MCGalaxy.Drawing.Brushes
         public override Brush Construct(BrushArgs args)
         {
             Player p = args.Player;
-            // avoid allocating the arrays for the most common case
-            // TODO remove?
             if (args.Message.Length == 0)
             {
                 return !CommandParser.IsBlockAllowed(p, "draw with", args.Block) ? null : (Brush)new CheckeredBrush(args.Block, Block.Invalid);
@@ -138,8 +134,9 @@ namespace MCGalaxy.Drawing.Brushes
                 return !CommandParser.IsBlockAllowed(p, "draw with", args.Block) ? null : (Brush)new StripedBrush(args.Block, Block.Invalid);
             }
             string[] parts = args.Message.SplitSpaces();
-            if (!CommandParser.GetBlockIfAllowed(p, parts[0], "draw with", out ushort block1, true)) return null;
-            return parts.Length == 1
+            return !CommandParser.GetBlockIfAllowed(p, parts[0], "draw with", out ushort block1, true)
+                ? null
+                : parts.Length == 1
                 ? new StripedBrush(block1, Block.Invalid)
                 : !CommandParser.GetBlockIfAllowed(p, parts[1], "draw with", out ushort block2, true) ? null : (Brush)new StripedBrush(block1, block2);
         }

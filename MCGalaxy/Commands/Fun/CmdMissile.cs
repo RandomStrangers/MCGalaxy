@@ -25,23 +25,27 @@ namespace MCGalaxy.Commands.Fun
         {
             if (!p.Level.Config.Guns)
             {
-                p.Message("Missiles cannot be used on this map!"); return;
+                p.Message("Missiles cannot be used on this map!");
+                return;
             }
             if (p.weapon != null && message.Length == 0)
             {
-                p.weapon.Disable(); return;
+                p.weapon.Disable(); 
+                return;
             }
             WeaponType type = Weapon.ParseType(message);
-            if (type == WeaponType.Invalid) { Help(p); return; }
+            if (type == WeaponType.Invalid) 
+            {
+                Help(p); 
+                return; 
+            }
             Missile missile = GetMissile(type);
             missile.type = type;
             missile.Enable(p);
         }
-        static Missile GetMissile(WeaponType type)
-        {
-            if (type == WeaponType.Destroy) return new PenetrativeMissile();
-            return type == WeaponType.Teleport ? new TeleportMissile() : type == WeaponType.Explode ? new ExplosiveMissile() : new Missile();
-        }
+        static Missile GetMissile(WeaponType type) => type == WeaponType.Destroy
+                ? new PenetrativeMissile()
+                : type == WeaponType.Teleport ? new TeleportMissile() : type == WeaponType.Explode ? new ExplosiveMissile() : new Missile();
         public override void Help(Player p)
         {
             p.Message("&T/Missile [at end]");

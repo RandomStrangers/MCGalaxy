@@ -49,10 +49,12 @@ namespace MCGalaxy.Commands.Building
                 {
                     if (x >= lvl.Width) continue;
                     for (ushort yy = (ushort)(y - 1); yy <= (ushort)(y + 1); yy++)
+                    {
                         for (ushort zz = (ushort)(z - 1); zz <= (ushort)(z + 1); zz++)
                         {
                             DoBlock(p, lvl, block, x, yy, zz);
                         }
+                    }
                 }
             }
             else
@@ -61,10 +63,12 @@ namespace MCGalaxy.Commands.Building
                 {
                     if (z >= lvl.Length) break;
                     for (ushort yy = (ushort)(y - 1); yy <= (ushort)(y + 1); yy++)
+                    {
                         for (ushort xx = (ushort)(x - 1); xx <= (ushort)(x + 1); xx++)
                         {
                             DoBlock(p, lvl, block, xx, yy, z);
                         }
+                    }
                 }
             }
             p.Message("Drilled " + numBlocks + " blocks.");

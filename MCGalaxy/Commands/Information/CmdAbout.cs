@@ -84,16 +84,14 @@ namespace MCGalaxy.Commands.Info
                 entry.Flags = BlockDBFlags.ManualPlace;
                 byte flags = ParseFlags(row[2]);
                 if ((flags & 1) == 0)
-                { // block was placed
+                {
                     entry.NewRaw = byte.Parse(row[3]);
                     if ((flags & 2) != 0) entry.Flags |= BlockDBFlags.NewExtended;
                 }
                 BlockDBChange.Output(p, row[0], entry);
             }
         }
-        static byte ParseFlags(string value) =>
-            // This used to be a 'deleted' boolean, so we need to make sure we account for that
-            value.CaselessEq("true") ? (byte)1 : value.CaselessEq("false") ? (byte)0 : byte.Parse(value);
+        static byte ParseFlags(string value) => value.CaselessEq("true") ? (byte)1 : value.CaselessEq("false") ? (byte)0 : byte.Parse(value);
         static void OutputEntry(Player p, ref bool foundAny, Dictionary<int, string> names, BlockDBEntry entry)
         {
             if (!names.TryGetValue(entry.PlayerID, out string name))

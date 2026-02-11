@@ -42,17 +42,21 @@ namespace MCGalaxy.Commands.Building
         bool DoMeasure(Player p, Vec3S32[] m, object state, ushort block)
         {
             List<ushort> toCount = (List<ushort>)state;
-            Vec3S32 min = Vec3S32.Min(m[0], m[1]);
-            Vec3S32 max = Vec3S32.Max(m[0], m[1]);
+            Vec3S32 min = Vec3S32.Min(m[0], m[1]),
+                max = Vec3S32.Max(m[0], m[1]);
             int[] counts = new int[1024];
             for (ushort y = (ushort)min.Y; y <= (ushort)max.Y; y++)
+            {
                 for (ushort z = (ushort)min.Z; z <= (ushort)max.Z; z++)
+                {
                     for (ushort x = (ushort)min.X; x <= (ushort)max.X; x++)
                     {
                         counts[p.Level.FastGetBlock(x, y, z)]++;
                     }
-            int width = max.X - min.X + 1, height = max.Y - min.Y + 1, length = max.Z - min.Z + 1;
-            int volume = width * height * length;
+                }
+            }
+            int width = max.X - min.X + 1, height = max.Y - min.Y + 1, length = max.Z - min.Z + 1,
+                volume = width * height * length;
             p.Message("Measuring from &a({0}) &Sto &a({1})", min, max);
             p.Message("  &b{0} &Swide, &b{1} &Shigh, &b{2} &Slong, {3} blocks",
                            width, height, length, volume);
@@ -69,7 +73,7 @@ namespace MCGalaxy.Commands.Building
         static List<ushort> MostFrequentBlocks(int[] countsRaw)
         {
             ushort[] blocks = new ushort[1024];
-            int[] counts = new int[1024]; // copy array as Sort works in place
+            int[] counts = new int[1024];
             int total = 0;
             for (int i = 0; i < blocks.Length; i++)
             {

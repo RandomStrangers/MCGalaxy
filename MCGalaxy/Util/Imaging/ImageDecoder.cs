@@ -53,14 +53,9 @@ namespace MCGalaxy.Util.Imaging
             ImageDecoder decoder = DetectFrom(src);
             return decoder != null ? decoder.Decode(src) : throw new UnknownImageFormatException();
         }
-        static ImageDecoder DetectFrom(byte[] src)
-        {
-            if (PngDecoder.DetectHeader(src))
-            {
-                return new PngDecoder();
-            }
-            return GifDecoder.DetectHeader(src) ? new GifDecoder() : JpegDecoder.DetectHeader(src) ? new JpegDecoder() : (ImageDecoder)null;
-        }
+        static ImageDecoder DetectFrom(byte[] src) => PngDecoder.DetectHeader(src)
+                ? new PngDecoder()
+                : GifDecoder.DetectHeader(src) ? new GifDecoder() : JpegDecoder.DetectHeader(src) ? new JpegDecoder() : (ImageDecoder)null;
         public abstract Bitmap2D Decode(byte[] src);
     }
     public sealed class UnknownImageFormatException : Exception

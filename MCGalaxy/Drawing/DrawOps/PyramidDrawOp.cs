@@ -32,11 +32,15 @@ namespace MCGalaxy.Drawing.Ops
             long total = 0;
             while (p1.Y >= 0 && p1.Y < lvl.Height && p1.X <= p2.X && p1.Z <= p2.Z)
             {
-                baseOp.Min = p1; baseOp.Max = p2;
+                baseOp.Min = p1; 
+                baseOp.Max = p2;
                 total += baseOp.BlocksAffected(lvl, marks);
-                p1.X++; p2.X--;
-                p1.Z++; p2.Z--;
-                p1.Y += yDir; p2.Y = p1.Y;
+                p1.X++; 
+                p2.X--;
+                p1.Z++; 
+                p2.Z--;
+                p1.Y += yDir; 
+                p2.Y = p1.Y;
             }
             return total;
         }
@@ -46,11 +50,15 @@ namespace MCGalaxy.Drawing.Ops
             baseOp.Setup(Player, Level, marks);
             while (p1.Y >= 0 && p1.Y < Level.Height && p1.X <= p2.X && p1.Z <= p2.Z)
             {
-                baseOp.Min = p1; baseOp.Max = p2;
+                baseOp.Min = p1;
+                baseOp.Max = p2;
                 baseOp.Perform(marks, brush, output);
-                p1.X++; p2.X--;
-                p1.Z++; p2.Z--;
-                p1.Y += yDir; p2.Y = p1.Y;
+                p1.X++; 
+                p2.X--;
+                p1.Z++; 
+                p2.Z--;
+                p1.Y += yDir;
+                p2.Y = p1.Y;
             }
         }
     }
@@ -84,14 +92,21 @@ namespace MCGalaxy.Drawing.Ops
                 wallOp.Perform(marks, brush, output);
                 if (p1.Y >= Level.Height || Math.Abs(p2.X - p1.X) <= 1 || Math.Abs(p2.Z - p1.Z) <= 1)
                     return;
-                p1.X++; p2.X--;
-                p1.Z++; p2.Z--;
-                wallOp.Min = p1; wallOp.Max = p2;
-                baseOp.Min = p1; baseOp.Max = p2;
+                p1.X++; 
+                p2.X--;
+                p1.Z++;
+                p2.Z--;
+                wallOp.Min = p1; 
+                wallOp.Max = p2;
+                baseOp.Min = p1;
+                baseOp.Max = p2;
                 baseOp.Perform(marks, airBrush, output);
-                p1.Y = (ushort)(p1.Y + yDir); p2.Y = p1.Y;
-                wallOp.Min = p1; wallOp.Max = p2;
-                baseOp.Min = p1; baseOp.Max = p2;
+                p1.Y = (ushort)(p1.Y + yDir);
+                p2.Y = p1.Y;
+                wallOp.Min = p1; 
+                wallOp.Max = p2;
+                baseOp.Min = p1; 
+                baseOp.Max = p2;
             }
         }
     }

@@ -22,7 +22,7 @@ namespace MCGalaxy.Network
     public abstract class IGameSession : INetProtocol
     {
         public byte ProtocolVersion;
-        public byte[] fallback = new byte[256]; // fallback for classic+CPE block IDs
+        public byte[] fallback = new byte[256];
         public ushort MaxRawBlock = 49;
         public bool hasCpe, hasCustomBlocks, hasExtBlocks,
             hasBlockDefs, hasBulkBlockUpdate;
@@ -40,9 +40,7 @@ namespace MCGalaxy.Network
                 while (read < bufferLen)
                 {
                     int packetLen = HandlePacket(buffer, read, bufferLen - read);
-                    // Partial packet received
                     if (packetLen == 0) break;
-                    // Packet processed, onto next
                     read += packetLen;
                 }
             }
@@ -127,12 +125,9 @@ namespace MCGalaxy.Network
             else
             {
                 raw = Block.Convert(block);
-                // show invalid physics blocks as Orange
                 if (raw >= 66) raw = 22;
             }
             if (raw > MaxRawBlock) raw = p.Level.GetFallback(block);
-            // Check if a custom block replaced a core block
-            //  If so, assume fallback is the better block to display
             if (!hasBlockDefs && raw < 66)
             {
                 BlockDefinition def = p.Level.CustomBlockDefs[raw];

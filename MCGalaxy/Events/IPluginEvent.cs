@@ -13,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using System;
-// kept in this namespace for backwards compatbility
 namespace MCGalaxy
 {
     /// <summary> Importance of an event handler (See IEvent). </summary>
@@ -94,20 +93,21 @@ namespace MCGalaxy.Events
             for (int i = 0; i < items.Length; i++)
             {
                 IEvent<IMethod> handler = items[i];
-                try { action(handler.method); }
-                catch (Exception ex) { LogHandlerException(ex, handler); }
+                try 
+                {
+                    action(handler.method);
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, handler); 
+                }
             }
         }
-        protected static void LogHandlerException(Exception ex, IEvent<IMethod> handler)
-        {
-            string msg = MethodFormat("Method {0} errored when calling {1} event", handler.method);
-            Logger.LogError(msg, ex);
-        }
+        protected static void LogHandlerException(Exception ex, IEvent<IMethod> handler) => Logger.LogError(MethodFormat("Method {0} errored when calling {1} event", handler.method), ex);
         static string MethodFormat(string format, IMethod method)
         {
             Delegate del = (Delegate)(object)method;
-            string fullName = del.Method.ReflectedType.FullName + "." + del.Method.Name;
-            return string.Format(format, fullName, typeof(IMethod).Name);
+            return string.Format(format, del.Method.ReflectedType.FullName + "." + del.Method.Name, typeof(IMethod).Name);
         }
     }
 }

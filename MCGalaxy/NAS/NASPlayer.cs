@@ -1,3 +1,4 @@
+using MCGalaxy.Commands;
 using MCGalaxy.DB;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Maths;
@@ -17,7 +18,6 @@ namespace MCGalaxy
         public override bool SuperUseable => false;
         public override bool MuseumUsable => false;
         public override bool MessageBlockRestricted => true;
-        public override LevelPermission DefaultRank => LevelPermission.Guest;
         public override void Use(Player p, string message) => Use(NASPlayer.GetPlayer(p), message);
         public abstract void Use(NASPlayer np, string message);
     }
@@ -31,20 +31,10 @@ namespace MCGalaxy
         public override string Name => "Gravestones";
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override bool SuperUseable => true;
-        public bool IsSuper(Player p, string message, string type)
-        {
-            if (message.Length > 0 || !p.IsSuper)
-            {
-                return false;
-            }
-            SuperNeedsArgs(p, type);
-            return true;
-        }
-        public void SuperNeedsArgs(Player p, string type) => p.Message("When using /{0} from {2}, you must provide a {1}.", Name, type, p.SuperName);
         public override void Execute(Player p, string message)
         {
             string PlayerName;
-            if (IsSuper(p, message, "player name"))
+            if (CheckSuper(p, message, "player name"))
             {
                 return;
             }
@@ -64,7 +54,7 @@ namespace MCGalaxy
                     return;
                 }
             }
-            string file = NASPlugin.GetDeathPath(PlayerName);
+            string file = NAS.GetDeathPath(PlayerName);
             if (!File.Exists(file))
             {
                 p.Message("{0}&S has no gravestones recorded!", PlayerName);
@@ -107,7 +97,7 @@ namespace MCGalaxy
         public override string Name => "MyGravestones";
         public override void Use(NASPlayer np, string message)
         {
-            string file = NASPlugin.GetDeathPath(np.p.name);
+            string file = NAS.GetDeathPath(np.p.name);
             if (!File.Exists(file))
             {
                 np.Message("You have no gravestones recorded!");
@@ -143,7 +133,7 @@ namespace MCGalaxy
             np.Message("Your gravestones:");
             np.MessageLines(deaths);
         }
-        public override void Help(Player p) => p.Message("&T/MyGravestones &H- Views the location of the your own gravestones");
+        public override void Help(Player p) => p.Message("&T/MyGravestones &H- Views the location of your own gravestones");
     }
     public class CmdPVP : NASCommand
     {
@@ -215,7 +205,7 @@ namespace MCGalaxy
                 return;
             }
         }
-        public override void Help(Player p) => p.Message("&T/NASSpawn &H- Toggles hasBeenSpawned");
+        public override void Help(Player p) => p.Message("&T/NASSpawn &H- Toggles HasBeenSpawned");
     }
     public class CmdSpawnDungeon : NASCommand
     {
@@ -255,75 +245,116 @@ namespace MCGalaxy
             p.Message("&HToggles how you enter items into barrels.");
         }
     }
+    public enum NASDamageSource
+    {
+        Falling, Suffocating, Drowning, Entity, None, Murder
+    }
+    public class NASEntity
+    {
+        [JsonIgnore] public NASLevel nl;
+        public bool holdingBreath = false;
+        public virtual bool CanTakeDamage(NASDamageSource source) => true;
+        public virtual bool TakeDamage(float damage, NASDamageSource source, string customDeathReason = "") => !CanTakeDamage(source) && false;
+    }
     public partial class NASPlayer : NASEntity
     {
         public static byte[] fallback = new byte[256];
         [JsonIgnore] public Player p;
         [JsonIgnore] public NASBlock heldNasBlock = NASBlock.Default;
         [JsonIgnore] public ushort breakX = ushort.MaxValue, breakY = ushort.MaxValue, breakZ = ushort.MaxValue;
-        [JsonIgnore] public int breakAttempt = 0;
+        [JsonIgnore] public int breakAttempt = 0, round = 0;
         [JsonIgnore] public DateTime? lastAirClickDate = null;
-        [JsonIgnore] public DateTime lastLeftClickReleaseDate = DateTime.MinValue;
-        [JsonIgnore] public bool justBrokeOrPlaced = false;
+        [JsonIgnore] public DateTime lastLeftClickReleaseDate = DateTime.MinValue,
+            lastSuffocationDate = DateTime.MinValue,
+            datePositionCheckingIsAllowed = DateTime.MinValue;
+        [JsonIgnore] public bool justBrokeOrPlaced = false, 
+            SendingMap = false, hasBeenSpawned = false, isDead = false, 
+            headingToBed = false, isChewing = false, isInserting = false,
+            placePortal = false, atBorder = true;
         [JsonIgnore] public byte craftingAreaID = 0;
-        [JsonIgnore]
-        public bool isChewing = false,
-            isInserting = false;
         [JsonIgnore] public int[] interactCoords;
-        [JsonIgnore] public bool SendingMap = false;
-        [JsonIgnore] public const string Path = NASPlugin.Path + "PlayerData/",
+        [JsonIgnore] public const string Path = NAS.Path + "PlayerData/",
             DeathsPath = Path + "Deaths/";
         [JsonIgnore] public Scheduler PlayerSavingScheduler;
         [JsonIgnore] public SchedulerTask PlayerSaveTask;
-        [JsonIgnore]
-        public bool hasBeenSpawned = false,
-            isDead = false,
-            headingToBed = false;
-        [JsonIgnore]
-        public Pixel targetFogColor = new(255, 255, 255, 255),
+        [JsonIgnore] public Pixel targetFogColor = new(255, 255, 255, 255),
             curFogColor = new(255, 255, 255, 255);
-        [JsonIgnore]
-        public float targetRenderDistance = Server.Config.MaxFogDistance,
+        [JsonIgnore] public float AirPrev,
+            targetRenderDistance = Server.Config.MaxFogDistance,
             curRenderDistance = Server.Config.MaxFogDistance;
-        [JsonIgnore] public bool SetInventoryNotif = false;
         [JsonIgnore] public Player lastAttackedPlayer = null;
         [JsonIgnore] public string reason = null;
         [JsonIgnore] public CpeMessageType whereHealthIsDisplayed = CpeMessageType.BottomRight2;
-        public bool bigUpdate = false, 
-            oldBarrel = true,
-            pvpEnabled = false;
+        [JsonIgnore]
+        public AABB bounds = AABB.Make(new(0, 0, 0), new(16, 26 * 2, 16)),
+            eyeBounds = AABB.Make(new(0, 24 * 2 - 2, 0), new(4, 4, 4));
+        [JsonIgnore] public NASTransferInfo transferInfo = null;
+        public bool bigUpdate = false, oldBarrel = true, pvpEnabled = false;
         public NASInventory inventory;
         public Position spawnCoords;
         public int[] bedCoords;
-        public string spawnMap;
+        public string spawnMap, levelName;
         public DateTime pvpCooldown;
-        public int kills = 0,
-            exp = 0,
-            levels = 0, 
-            resetCount = 0;
+        public int kills = 0, exp = 0, levels = 0, resetCount = 0;
+        public byte yaw, pitch;
+        public Vec3S32 location, lastGroundedLocation;
+        public float HP, Air;
         public static Dictionary<string, DateTime> cooldowns = new();
+        [JsonIgnore]
+        public bool CanDoStuffBasedOnPosition
+        {
+            get
+            {
+                return DateTime.UtcNow >= datePositionCheckingIsAllowed;
+            }
+            set
+            {
+                if (!value)
+                {
+                    datePositionCheckingIsAllowed = DateTime.UtcNow.AddMilliseconds(2000 + p.Session.Ping.HighestPing());
+                }
+            }
+        }
         public void Message(string message, params object[] args) => p.Message(string.Format(message, args));
         public void MessageLines(IEnumerable<string> lines) => p.MessageLines(lines);
         public void Send(byte[] buffer) => p.Socket.Send(buffer, SendFlags.None);
         public void ResetBreaking()
         {
             breakX = breakY = breakZ = ushort.MaxValue;
-            if (p.Extras.Contains("nas_taskDisplayMeter"))
+            if (p.Extras.Contains("NAS_taskDisplayMeter"))
             {
-                NASBlockChange.breakScheduler.Cancel((SchedulerTask)p.Extras["nas_taskDisplayMeter"]);
+                NASBlockChange.breakScheduler.Cancel((SchedulerTask)p.Extras["NAS_taskDisplayMeter"]);
             }
+        }
+        public void SaveStatsTask(SchedulerTask _) => Save();
+        public void Save()
+        {
+            if (this != null)
+            {
+                string jsonString = JsonConvert.SerializeObject(this, Formatting.Indented);
+                FileIO.TryWriteAllText(NAS.GetSavePath(p), jsonString);
+                FileIO.TryWriteAllText(NAS.GetTextPath(p), jsonString);
+            }
+        }
+        public void SetLocation(string levelName, Position pos, Orientation rot)
+        {
+            this.levelName = levelName;
+            location.X = pos.X;
+            location.Y = pos.Y;
+            location.Z = pos.Z;
+            yaw = rot.RotY;
+            pitch = rot.HeadX;
         }
         public static NASPlayer GetPlayer(Player p)
         {
-            if (!p.Extras.Contains(NASPlugin.PlayerKey))
+            if (!p.Extras.Contains(NAS.PlayerKey))
             {
                 NASPlayer np = new(p);
-                Orientation rot = new(Server.mainLevel.rotx, Server.mainLevel.roty);
-                SetLocation(np, Server.mainLevel.name, Server.mainLevel.SpawnPos, rot);
-                p.Extras[NASPlugin.PlayerKey] = np;
+                np.SetLocation(Server.mainLevel.name, Server.mainLevel.SpawnPos, new(Server.mainLevel.rotx, Server.mainLevel.roty));
+                p.Extras[NAS.PlayerKey] = np;
                 return np;
             }
-            return (NASPlayer)p.Extras[NASPlugin.PlayerKey];
+            return (NASPlayer)p.Extras[NAS.PlayerKey];
         }
         public bool CanDamage() => !p.invincible && !p.Game.Referee && pvpEnabled;
         public NASPlayer(Player p)
@@ -336,7 +367,10 @@ namespace MCGalaxy
                 p = p
             };
             spawnCoords = Server.mainLevel.SpawnPos;
-            bedCoords = new int[] { 238, 94, 179 };
+            bedCoords = new int[] 
+            {
+                238, 94, 179 
+            };
             spawnMap = Server.mainLevel.name;
         }
         public void SetPlayer(Player p)
@@ -657,9 +691,17 @@ namespace MCGalaxy
                 p.Message("Please update to the latest ClassiCube build to hit with knockback.");
             }
         }
-        public override void ChangeHealth(float diff)
+        public void ChangeHealth(float diff)
         {
-            base.ChangeHealth(diff);
+            HP += diff;
+            if (HP < 0)
+            {
+                HP = 0;
+            }
+            if (HP > 10)
+            {
+                HP = 10;
+            }
             DisplayHealth();
         }
         public float DamageSaved(bool takeDamage = false)
@@ -847,8 +889,7 @@ namespace MCGalaxy
                 Die(customDeathReason);
                 return true;
             }
-            SchedulerTask taskDisplayRed;
-            taskDisplayRed = Server.MainScheduler.QueueOnce(FinishTakeDamage, this, TimeSpan.FromMilliseconds(100));
+            SchedulerTask taskDisplayRed = Server.MainScheduler.QueueOnce(FinishTakeDamage, this, TimeSpan.FromMilliseconds(100));
             return false;
         }
         public static void FinishTakeDamage(SchedulerTask task) => (task.State as NASPlayer).DisplayHealth();
@@ -897,16 +938,33 @@ namespace MCGalaxy
                     Message("Sorry, you've lost all your stuff.");
                 }
             }
-            nl.SetBlock(x, y, z, NASPlugin.FromRaw(647));
+            nl.SetBlock(x, y, z, Block.FromRaw(647));
             NASBlockEntity blockEntity = new()
             {
                 drop = deathDrop
             };
             nl.blockEntities.Add(x + " " + y + " " + z, blockEntity);
             Message("You dropped a gravestone at {0} {1} {2} in {3}", x, y, z, p.Level.name);
-            FileIO.TryAppendAllText(NASPlugin.GetDeathPath(p.name), x + " " + y + " " + z + " in " + p.Level.name);
+            FileIO.TryAppendAllText(NAS.GetDeathPath(p.name), x + " " + y + " " + z + " in " + p.Level.name);
             nl.blockEntities[x + " " + y + " " + z].lockedBy = p.name;
             nl.blockEntities[x + " " + y + " " + z].drop.exp = GetExp();
+        }
+        public string OxygenString()
+        {
+            if (Air == 10)
+            {
+                return "";
+            }
+            if (Air == 0)
+            {
+                return "&r?";
+            }
+            StringBuilder builder = new("", 16);
+            for (int i = 0; i < Air; ++i)
+            {
+                builder.Append('°');
+            }
+            return builder.ToString();
         }
         public bool CanPlaceGraveStone(int x, int y, int z) => NASBlock.CanPhysicsKillThis(nl.GetBlock(x, y, z)) || NASBlock.IsThisLiquid(nl.GetBlock(x, y, z));
         public void SendCpeMessage(CpeMessageType type, string message) => p.SendCpeMessage(type, message);
@@ -918,7 +976,6 @@ namespace MCGalaxy
                 HP = 10;
             }
             StringBuilder builder = new("&8", 16);
-            string final;
             float totalLostHealth = 10 - HP,
                 lostHealthRemaining = totalLostHealth;
             for (int i = 0; i < totalLostHealth; ++i)
@@ -938,8 +995,7 @@ namespace MCGalaxy
             {
                 builder.Append("♥");
             }
-            final = builder.ToString();
-            return final;
+            return builder.ToString();
         }
         public string AttackRecharge()
         {
@@ -948,15 +1004,9 @@ namespace MCGalaxy
                 return "&aα";
             }
             double cooldownPercent = (cooldowns[p.name] - DateTime.UtcNow).TotalMilliseconds / inventory.HeldItem.Prop.recharge;
-            if (cooldownPercent >= 0.66)
-            {
-                return "&4α";
-            }
-            if (cooldownPercent >= 0.33)
-            {
-                return "&oα";
-            }
-            return cooldownPercent > 0 ? "&eα" : cooldownPercent <= 0 ? "&aα" : "&hα";
+            return cooldownPercent >= 0.66
+                ? "&4α"
+                : cooldownPercent >= 0.33 ? "&oα" : cooldownPercent > 0 ? "&eα" : cooldownPercent <= 0 ? "&aα" : "&hα";
         }
         public string ArmorDisplay()
         {
@@ -972,9 +1022,29 @@ namespace MCGalaxy
             builder.Append(levels.ToString());
             return builder.ToString();
         }
-        public override void UpdateAir()
+        public void UpdateAir()
         {
-            base.UpdateAir();
+            AirPrev = Air;
+            if (holdingBreath)
+            {
+                Air -= 0.03125f;
+                if (Air < 0)
+                {
+                    Air = 0;
+                }
+            }
+            else
+            {
+                Air += 0.03125f;
+                if (Air > 10)
+                {
+                    Air = 10;
+                }
+            }
+            if (Air == 0)
+            {
+                TakeDamage(0.125f, NASDamageSource.Drowning);
+            }
             if (Air != AirPrev && Air == Math.Floor(Air))
             {
                 DisplayHealth();
@@ -1010,7 +1080,7 @@ namespace MCGalaxy
             if (!precise)
             {
                 P = p.Pos.FeetBlockCoords;
-                if (!GetCoords(p, args, 0, ref P))
+                if (!CommandParser.GetCoords(p, args, 0, ref P))
                 {
                     return false;
                 }
@@ -1019,7 +1089,7 @@ namespace MCGalaxy
             else
             {
                 P = new(p.Pos.X, p.Pos.Y - 51, p.Pos.Z);
-                if (!GetCoords(p, args, 0, ref P))
+                if (!CommandParser.GetCoords(p, args, 0, ref P))
                 {
                     return false;
                 }
@@ -1028,7 +1098,7 @@ namespace MCGalaxy
             int angle = 0;
             if (args.Length > 3)
             {
-                if (!GetInt(p, args[3], "Yaw angle", ref angle, -360, 360))
+                if (!CommandParser.GetInt(p, args[3], "Yaw angle", ref angle, -360, 360))
                 {
                     return false;
                 }
@@ -1036,7 +1106,7 @@ namespace MCGalaxy
             }
             if (args.Length > 4)
             {
-                if (!GetInt(p, args[4], "Pitch angle", ref angle, -360, 360))
+                if (!CommandParser.GetInt(p, args[4], "Pitch angle", ref angle, -360, 360))
                 {
                     return false;
                 }

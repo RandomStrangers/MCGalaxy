@@ -37,14 +37,12 @@ namespace MCGalaxy
         [ConfigByte] public byte FogR;
         [ConfigByte] public byte FogG;
         [ConfigByte] public byte FogB;
-        // BlockDefinitionsExt fields
         [ConfigByte] public byte MinX;
         [ConfigByte] public byte MinY;
         [ConfigByte] public byte MinZ;
         [ConfigByte] public byte MaxX;
         [ConfigByte] public byte MaxY;
         [ConfigByte] public byte MaxZ;
-        // BlockDefinitionsExt version 2 fields
         [ConfigUShort] public ushort LeftTex;
         [ConfigUShort] public ushort RightTex;
         [ConfigUShort] public ushort FrontTex;
@@ -108,7 +106,6 @@ namespace MCGalaxy
             elems ??= ConfigElement.GetAll(typeof(BlockDefinition));
             try
             {
-                //string json = File.ReadAllText(path);
                 string json = FileIO.TryReadAllText(path);
                 JsonReader reader = new(json)
                 {
@@ -135,9 +132,7 @@ namespace MCGalaxy
                     {
                         defs[block] = def;
                     }
-                    // In case user manually edited fallback in the json file
                     def.FallBack = Math.Min(def.FallBack, (byte)65);
-                    // Sync Brightness setting it has not been set before
                     if (def.Brightness == -1)
                     {
                         if (def.FullBright) 
@@ -172,7 +167,6 @@ namespace MCGalaxy
             for (int i = 0; i < defs.Length; i++)
             {
                 BlockDefinition def = defs[i];
-                // don't want to save global blocks in the level's custom blocks list
                 if (!global && def == GlobalDefs[i]) def = null;
                 if (def == null) continue;
                 w.Write(separator);
@@ -194,8 +188,6 @@ namespace MCGalaxy
             {
                 Logger.LogError("Error backing up global block defs", ex);
             }
-            // As the BlockDefinition instances in levels will now be different
-            // to the instances in GlobalDefs, we need to update them.
             if (oldDefs != null) UpdateLoadedLevels(oldDefs);
         }
         static void UpdateLoadedLevels(BlockDefinition[] oldGlobalDefs)
@@ -206,7 +198,6 @@ namespace MCGalaxy
                 for (int b = 0; b < lvl.CustomBlockDefs.Length; b++)
                 {
                     if (lvl.CustomBlockDefs[b] != oldGlobalDefs[b]) continue;
-                    // Can't use normal lvl.HasCustomProps here because we changed global list
                     if ((lvl.Props[b].ChangedScope & 2) == 0)
                     {
                         lvl.Props[b] = Block.Props[b];
@@ -318,7 +309,6 @@ namespace MCGalaxy
                 order_to_blocks[b] = -1;
                 block_to_orders[b] = -1;
             }
-            // Fill slots with explicit order
             for (int i = 0; i < defs.Length; i++)
             {
                 BlockDefinition def = defs[i];
@@ -331,7 +321,6 @@ namespace MCGalaxy
                 }
                 block_to_orders[def.RawID] = def.InventoryOrder;
             }
-            // Put blocks into their default slot if slot is unused
             for (int i = 0; i < defs.Length; i++)
             {
                 BlockDefinition def = defs[i];
@@ -344,7 +333,6 @@ namespace MCGalaxy
                     block_to_orders[raw] = raw;
                 }
             }
-            // Push blocks whose slots conflict with other blocks into free slots at end
             for (int i = defs.Length - 1; i >= 0; i--)
             {
                 BlockDefinition def = defs[i];
@@ -365,7 +353,6 @@ namespace MCGalaxy
                 if (order == -1) order = 0;
                 BlockDefinition def = defs[Block.FromRaw((ushort)raw)];
                 if (def == null && raw >= 66) continue;
-                // Special case, don't want 255 getting hidden by default
                 if (raw == 255 && def.InventoryOrder == -1) continue;
                 pl.Send(Packet.SetInventoryOrder((ushort)raw, (ushort)order, pl.Session.hasExtBlocks));
             }
@@ -377,15 +364,12 @@ namespace MCGalaxy
             {
                 if (!global && pl.Level != level) continue;
                 if (pl.Session.hasBlockDefs) continue;
-                // If custom block is replacing core block, need to always reload for fallback
-                // But if level doesn't use custom blocks, don't need to reload for the player
                 if (block >= 66 && !pl.Level.MightHaveCustomBlocks()) continue;
                 PlayerActions.ReloadMap(pl);
             }
         }
         public static BlockDefinition ParseName(string name, BlockDefinition[] defs)
         {
-            // air is deliberately skipped
             for (int b = 1; b < defs.Length; b++)
             {
                 BlockDefinition def = defs[b];

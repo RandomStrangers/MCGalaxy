@@ -23,8 +23,16 @@ namespace MCGalaxy.Commands.World
         public override CommandAlias[] Aliases => new CommandAlias[] { new("KillPhysics", "kill") };
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { ShowPhysics(p); return; }
-            if (message.CaselessEq("kill")) { KillPhysics(p); return; }
+            if (message.Length == 0) 
+            { 
+                ShowPhysics(p); 
+                return; 
+            }
+            if (message.CaselessEq("kill")) 
+            { 
+                KillPhysics(p); 
+                return; 
+            }
             string[] args = message.SplitSpaces();
             Level lvl = p.IsSuper ? Server.mainLevel : p.Level;
             int state = 0, stateI = args.Length == 1 ? 0 : 1;

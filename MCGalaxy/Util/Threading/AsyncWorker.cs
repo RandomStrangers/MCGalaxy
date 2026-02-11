@@ -44,7 +44,6 @@ namespace MCGalaxy
                     Logger.LogError(ex);
                 }
             }
-            // cleanup state
             try
             {
                 lock (queueLock)
@@ -65,7 +64,6 @@ namespace MCGalaxy
             }
             catch (ObjectDisposedException)
             {
-                // for very rare case where handle's already been destroyed
             }
         }
         protected void WaitForWork() => handle.WaitOne();

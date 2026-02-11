@@ -21,17 +21,29 @@ namespace MCGalaxy.Commands.Moderation
         public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { List(p, ""); return; }
+            if (message.Length == 0) 
+            {
+                List(p, "");
+                return; 
+            }
             string[] args = message.SplitSpaces();
             string cmd = args[0];
             if (IsCreateAction(cmd))
             {
-                if (args.Length < 2) { Help(p); return; }
+                if (args.Length < 2) 
+                {
+                    Help(p);
+                    return; 
+                }
                 Add(p, args[1]);
             }
             else if (IsDeleteAction(cmd))
             {
-                if (args.Length < 2) { Help(p); return; }
+                if (args.Length < 2) 
+                {
+                    Help(p);
+                    return;
+                }
                 Remove(p, args[1]);
             }
             else if (IsListAction(cmd))

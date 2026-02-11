@@ -37,7 +37,7 @@ namespace MCGalaxy.Generator.Foliage
         public abstract void Generate(ushort x, ushort y, ushort z, TreeOutput output);
         /// <summary> Returns true if any green or trunk blocks are in the cube centred at (x, y, z) of extent 'size'. </summary>
         public static bool TreeCheck(Level lvl, ushort x, ushort y, ushort z, short size)
-        { //return true if tree is near
+        {
             for (int dy = -size; dy <= size; ++dy)
             {
                 for (int dz = -size; dz <= size; ++dz)
@@ -50,7 +50,7 @@ namespace MCGalaxy.Generator.Foliage
                 }
             }
             return false;
-        } // TODO move to generic helper function
+        }
         public static Dictionary<string, TreeConstructor> TreeTypes =
             new() {
             { "Fern", () => new NormalTree() },   { "Cactus", () => new CactusTree() },

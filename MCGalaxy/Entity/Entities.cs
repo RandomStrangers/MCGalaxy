@@ -217,17 +217,13 @@ namespace MCGalaxy
         public static void GlobalUpdate()
         {
             Player[] players = PlayerInfo.Online.Items;
-            PlayerBot.GlobalUpdatePosition(); //Bots update their positions internally first
-            // We need to cache the player's position before iterating.
-            // Avoids the very rare issue of player's position changing mid-way through iteration,
-            // which can cause this player to show minorly offset to other players.
+            PlayerBot.GlobalUpdatePosition();
             foreach (Player p in players)
             {
                 p._positionUpdatePos = p.Pos;
             }
             foreach (Player p in players)
             {
-                //TODO: Maytbe set _lastPos in here
                 p.EntityList.BroadcastEntityPositions();
             }
             foreach (Player p in players)
@@ -235,7 +231,7 @@ namespace MCGalaxy
                 p._lastPos = p._positionUpdatePos; 
                 p._lastRot = p.Rot;
             }
-            PlayerBot.GlobalPostBroadcastPosition(); //Need to set bot's _lastPos and _lastRot
+            PlayerBot.GlobalPostBroadcastPosition();
         }
         #endregion
     }

@@ -50,8 +50,6 @@ namespace MCGalaxy.Levels.IO
             byte[] blocks = root["BlockArray"].ByteArrayValue;
             lvl = new(name, width, height, length, blocks);
             ReadSpawn(root, lvl);
-            // Can't use ConvertCustom, as that changes lvl.blocks
-            // (aka the array containing the lower 8 bits of block ids)
             if (root.Contains("BlockArray2"))
             {
                 ReadExtBlocks(root, lvl);
@@ -162,7 +160,6 @@ namespace MCGalaxy.Levels.IO
                 {
                     RawID = props["ID"].ByteValue
                 };
-                // can't change "ID" to short since backwards compatibility
                 if (props.Contains("ID2"))
                 {
                     def.RawID = (ushort)props["ID2"].ShortValue;
@@ -177,7 +174,6 @@ namespace MCGalaxy.Levels.IO
                 def.BlockDraw = props["BlockDraw"].ByteValue;
                 byte[] fog = props["Fog"].ByteArrayValue;
                 def.FogDensity = fog[0];
-                // Fix for older ClassicalSharp versions which saved wrong value for density = 0
                 if (def.FogDensity == 0xFF)
                 {
                     def.FogDensity = 0;
@@ -205,13 +201,11 @@ namespace MCGalaxy.Levels.IO
                                def.Name, def.RawID);
                     continue;
                 }
-                // Don't define level custom block if same as global custom block
                 BlockDefinition globalDef = BlockDefinition.GlobalDefs[block];
                 if (PropsEquals(def, globalDef))
                 {
                     continue;
                 }
-                // Attempt to give this block a better fallback block than air
                 if (globalDef != null)
                 {
                     def.FallBack = globalDef.FallBack;

@@ -33,7 +33,11 @@ namespace MCGalaxy.Drawing.Brushes
         {
             string[] parts = args.Message.SplitSpaces(3);
             Player p = args.Player;
-            if (parts.Length < 2) { p.MessageLines(Help); return null; }
+            if (parts.Length < 2)
+            { 
+                p.MessageLines(Help); 
+                return null; 
+            }
             if (!CommandParser.GetBlockIfAllowed(p, parts[0], "replace", out target)) return null;
             BrushFactory factory = FindMatch(p, parts[1]);
             if (factory == null) return null;

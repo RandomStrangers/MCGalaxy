@@ -32,26 +32,43 @@ namespace MCGalaxy.Commands.Moderation
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(4);
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            {
+                Help(p);
+                return; 
+            }
             string opt = args[0];
             if (IsCreateAction(opt))
             {
-                if (args.Length == 1) { Help(p); return; }
+                if (args.Length == 1) 
+                {
+                    Help(p);
+                    return;
+                }
                 CreateZone(p, args, data, 1);
             }
             else if (IsDeleteAction(opt))
             {
-                if (args.Length == 1) { Help(p); return; }
+                if (args.Length == 1) 
+                { 
+                    Help(p); 
+                    return; 
+                }
                 DeleteZone(p, args, data);
             }
             else if (opt.CaselessEq("perbuild") || opt.CaselessEq("set"))
             {
-                if (args.Length <= 2) { Help(p); return; }
+                if (args.Length <= 2)
+                {
+                    Help(p);
+                    return; 
+                }
                 Zone zone = Matcher.FindZones(p, p.Level, args[1]);
                 if (zone == null) return;
                 if (!zone.Access.CheckDetailed(p, data.Rank))
                 {
-                    p.Message("Hence, you cannot edit this zone."); return;
+                    p.Message("Hence, you cannot edit this zone."); 
+                    return;
                 }
                 else if (opt.CaselessEq("perbuild"))
                 {
@@ -78,8 +95,6 @@ namespace MCGalaxy.Commands.Moderation
             Zone z = new();
             z.Access.Min = p.Level.BuildAccess.Min;
             z.Access.Max = p.Level.BuildAccess.Max;
-            // TODO readd once performance issues with massive zone build blacklists are fixed
-            //z.Access.CloneAccess(p.Level.BuildAccess);
             z.Config.Name = args[offset];
             if (!PermissionCmd.Do(p, args, offset + 1, false, z.Access, data, p.Level)) return;
             p.Message("Creating zone " + z.ColoredName);
@@ -107,7 +122,8 @@ namespace MCGalaxy.Commands.Moderation
             if (zone == null) return;
             if (!zone.Access.CheckDetailed(p, data.Rank))
             {
-                p.Message("Hence, you cannot delete this zone."); return;
+                p.Message("Hence, you cannot delete this zone.");
+                return;
             }
             zone.RemoveFrom(lvl);
             p.Message("Zone {0} &Sdeleted", zone.ColoredName);
@@ -148,7 +164,8 @@ namespace MCGalaxy.Commands.Moderation
             }
             else
             {
-                Help(p, "properties"); return;
+                Help(p, "properties"); 
+                return;
             }
             p.Level.Save(true);
         }
@@ -221,7 +238,10 @@ namespace MCGalaxy.Commands.Moderation
                 bool allowed = z.Access.CheckAllowed(p);
                 p.Message("  Zone {0} &S- {1}{2}", z.ColoredName, allowed ? "&a" : "&c", status);
             }
-            if (!found) { p.Message("No zones affect this block."); }
+            if (!found) 
+            {
+                p.Message("No zones affect this block."); 
+            }
             return true;
         }
         public override void Help(Player p) => p.Message("&T/ZoneTest &H- Lists all zones affecting a block");
@@ -258,7 +278,11 @@ namespace MCGalaxy.Commands.Moderation
             if (message.Length == 0)
             {
                 z = p.ZoneIn;
-                if (z == null) { p.Message("&STo use &T/ZoneMark &Swithout providing a zone name, you must be standing in a zone"); return; }
+                if (z == null) 
+                { 
+                    p.Message("&STo use &T/ZoneMark &Swithout providing a zone name, you must be standing in a zone"); 
+                    return;
+                }
             }
             else
             {

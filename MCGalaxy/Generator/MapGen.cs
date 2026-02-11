@@ -86,7 +86,7 @@ namespace MCGalaxy.Generator
             if (!NumberUtils.TryParseInt32(seed, out int value))
                 value = seed.GetHashCode();
             return new Random(value);
-        } // TODO move to CmdMaze
+        }
         public static List<MapGen> Generators = new();
         public static MapGen Find(string theme)
         {

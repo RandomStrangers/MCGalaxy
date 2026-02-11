@@ -45,7 +45,6 @@ namespace MCGalaxy.Commands.Building
             P = p.Level.ClampPos(P);
             if (DoMark(p, P.X, P.Y, P.Z)) return;
             Vec3U16 mark = (Vec3U16)P;
-            // We only want to activate blocks in the world
             ushort old = p.Level.GetBlock(mark.X, mark.Y, mark.Z);
             if (!p.CheckManualChange(old, true)) return;
             HandleDelete handler = p.Level.DeleteHandlers[old];
@@ -62,12 +61,15 @@ namespace MCGalaxy.Commands.Building
         bool ParseCoords(string message, Player p, ref Vec3S32 P)
         {
             string[] args = message.SplitSpaces();
-            // Expand /mark ~4 into /mark ~4 ~4 ~4
             if (args.Length == 1)
             {
                 args = new string[] { message, message, message };
             }
-            if (args.Length != 3) { Help(p); return false; }
+            if (args.Length != 3) 
+            { 
+                Help(p); 
+                return false; 
+            }
             AdjustArg(ref args[0], ref P.X, "X", p.lastClick.X);
             AdjustArg(ref args[1], ref P.Y, "Y", p.lastClick.Y);
             AdjustArg(ref args[2], ref P.Z, "Z", p.lastClick.Z);
@@ -78,12 +80,10 @@ namespace MCGalaxy.Commands.Building
             if (!arg.CaselessStarts(axis)) return;
             if (arg.Length == 1)
             {
-                // just 'X' changes input to coordinate of last click
                 arg = NumberUtils.StringifyInt(last);
             }
             else
             {
-                // assume wanting input relative to last click, e.g. 'X~3'
                 arg = arg.Substring(1);
                 value = last;
             }

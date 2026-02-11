@@ -26,10 +26,13 @@ namespace MCGalaxy.Commands.Maintenance
         public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("SetInfo") };
         delegate void DBSetter(string name, string column, string data);
-        const int type_norm = 0, type_lo = 1, type_hi = 2;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p); 
+                return; 
+            }
             string[] args = message.SplitSpaces(3);
             args[0] = PlayerInfo.FindMatchesPreferOnline(p, args[0]);
             if (args[0] == null) return;
@@ -37,7 +40,8 @@ namespace MCGalaxy.Commands.Maintenance
             if (args.Length == 1)
             {
                 p.Message("&WYou must specify a type to modify.");
-                MessageValidTypes(p); return;
+                MessageValidTypes(p); 
+                return;
             }
             string opt = args[1].ToLower();
             if (opt == "firstlogin")
@@ -53,25 +57,30 @@ namespace MCGalaxy.Commands.Maintenance
             else if (opt == "logins")
             {
                 SetInteger(p, args, PlayerData.ColumnLogins, 1000000000, who,
-                           v => who.TimesVisited = v, type_norm);
+                           v => who.TimesVisited = v, 0);
             }
             else if (opt == "deaths")
             {
                 SetInteger(p, args, PlayerData.ColumnDeaths, 100000000, who,
-                           v => who.TimesDied = v, type_norm);
+                           v => who.TimesDied = v, 0);
             }
             else if (opt == "money")
             {
                 SetInteger(p, args, PlayerData.ColumnMoney, 100000000, who,
-                           v => who.money = v, type_norm);
+                           v => who.money = v, 0);
             }
             else if (opt == "title")
             {
                 if (args.Length < 3)
                 {
-                    p.Message("Title can be up to 20 characters. Use \"null\" to remove the title"); return;
+                    p.Message("Title can be up to 20 characters. Use \"null\" to remove the title");
+                    return;
                 }
-                if (args[2].Length >= 20) { p.Message("Title must be under 20 characters"); return; }
+                if (args[2].Length >= 20) 
+                { 
+                    p.Message("Title must be under 20 characters"); 
+                    return; 
+                }
                 if (args[2] == "null") args[2] = "";
                 if (who != null)
                 {
@@ -85,11 +94,13 @@ namespace MCGalaxy.Commands.Maintenance
             {
                 if (args.Length < 3)
                 {
-                    p.Message("A new IP address must be provided."); return;
+                    p.Message("A new IP address must be provided."); 
+                    return;
                 }
                 if (!IPAddress.TryParse(args[2], out IPAddress ip))
                 {
-                    p.Message("&W\"{0}\" is not a valid IP address.", args[2]); return;
+                    p.Message("&W\"{0}\" is not a valid IP address.", args[2]);
+                    return;
                 }
                 who?.SetIP(ip);
                 PlayerDB.Update(args[0], PlayerData.ColumnIP, args[2]);
@@ -98,32 +109,32 @@ namespace MCGalaxy.Commands.Maintenance
             else if (opt == "modified")
             {
                 SetInteger(p, args, PlayerData.ColumnBlocks, int.MaxValue, who,
-                           v => who.SetBaseTotalModified(v), type_lo);
+                           v => who.SetBaseTotalModified(v), 1);
             }
             else if (opt == "drawn")
             {
                 SetInteger(p, args, PlayerData.ColumnDrawn, int.MaxValue, who,
-                           v => who.TotalDrawn = v, type_lo);
+                           v => who.TotalDrawn = v, 1);
             }
             else if (opt == "placed")
             {
                 SetInteger(p, args, PlayerData.ColumnBlocks, int.MaxValue, who,
-                           v => who.TotalPlaced = v, type_hi);
+                           v => who.TotalPlaced = v, 2);
             }
             else if (opt == "deleted")
             {
                 SetInteger(p, args, PlayerData.ColumnDrawn, int.MaxValue, who,
-                           v => who.TotalDeleted = v, type_hi);
+                           v => who.TotalDeleted = v, 2);
             }
             else if (opt == "totalkicked")
             {
                 SetInteger(p, args, PlayerData.ColumnKicked, 16777215, who,
-                           v => who.TimesBeenKicked = v, type_norm);
+                           v => who.TimesBeenKicked = v, 0);
             }
             else if (opt == "messages")
             {
                 SetInteger(p, args, PlayerData.ColumnMessages, 16777215, who,
-                           v => who.TotalMessagesSent = v, type_norm);
+                           v => who.TotalMessagesSent = v, 0);
             }
             else if (opt == "timespent")
             {
@@ -150,7 +161,8 @@ namespace MCGalaxy.Commands.Maintenance
         {
             if (args.Length < 3)
             {
-                p.Message("Color format: color name, or \"null\" to reset to default color."); return;
+                p.Message("Color format: color name, or \"null\" to reset to default color."); 
+                return;
             }
             string col = args[2] == "null" ? "" : Matcher.FindColor(p, args[2]);
             if (col == null) return;
@@ -213,7 +225,8 @@ namespace MCGalaxy.Commands.Maintenance
         {
             if (args.Length < 3)
             {
-                p.Message("You must specify a positive integer, which can be {0} at most.", max); return;
+                p.Message("You must specify a positive integer, which can be {0} at most.", max); 
+                return;
             }
             int value = 0;
             if (!CommandParser.GetInt(p, args[2], "Amount", ref value, 0, max)) return;
@@ -224,16 +237,15 @@ namespace MCGalaxy.Commands.Maintenance
             else
             {
                 string dbValue = args[2];
-                // special case handling for packed forms of totalBlocks and totalCuboided
                 if (type == 1)
                 {
-                    long packed = GetLong(args[0], column) & ~((1L << 38) - 1); // hi value only
+                    long packed = GetLong(args[0], column) & ~((1L << 38) - 1);
                     packed |= (uint)value;
                     dbValue = packed.ToString();
                 }
                 else if (type == 2)
                 {
-                    long packed = GetLong(args[0], column) & ((1L << 38) - 1); // lo value only
+                    long packed = GetLong(args[0], column) & ((1L << 38) - 1); 
                     packed |= ((long)value) << 38;
                     dbValue = packed.ToString();
                 }

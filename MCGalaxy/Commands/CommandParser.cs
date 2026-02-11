@@ -63,7 +63,6 @@ namespace MCGalaxy.Commands
             try
             {
                 span = input.ParseShort(defUnit);
-                // Typically span gets added to current time, so check span isn't too big here
                 DateTime.UtcNow.Add(span).AddYears(1);
                 return true;
             }
@@ -166,8 +165,6 @@ namespace MCGalaxy.Commands
                 GetCoordInt(p, args[argsOffset + 2], "Z coordinate", ref P.Z);
         static bool ParseRelative(ref string arg)
         {
-            // ~ is preferred for compatibility with modern minecraft command syntax
-            // # is also accepted since ~ cannot be typed in original minecraft classic
             bool relative = arg.Length > 0 && (arg[0] == '~' || arg[0] == '#');
             if (relative) arg = arg.Substring(1);
             return relative;
@@ -176,7 +173,6 @@ namespace MCGalaxy.Commands
         public static bool GetCoordInt(Player p, string arg, string argName, ref int value)
         {
             bool relative = ParseRelative(ref arg);
-            // ~ should work as ~0
             if (relative && arg.Length == 0) return true;
             int cur = value;
             if (!GetInt(p, arg, argName, ref value)) return false;
@@ -187,7 +183,6 @@ namespace MCGalaxy.Commands
         public static bool GetCoordFloat(Player p, string arg, string argName, ref float value)
         {
             bool relative = ParseRelative(ref arg);
-            // ~ should work as ~0
             if (relative && arg.Length == 0) return true;
             float cur = value;
             if (!GetReal(p, arg, argName, ref value)) return false;
@@ -196,7 +191,6 @@ namespace MCGalaxy.Commands
         }
         static bool IsSkipBlock(string input, out ushort block)
         {
-            // Skip/None block for draw operations
             if (input.CaselessEq("skip") || input.CaselessEq("none"))
             {
                 block = 0xff; 
@@ -225,7 +219,7 @@ namespace MCGalaxy.Commands
         public static bool IsBlockAllowed(Player p, string action, ushort block)
         {
             if (p.group.CanPlace[block]) return true;
-            BlockPerms.GetPlace(block).MessageCannotUse(p, action); // TODO: Delete permissions too?
+            BlockPerms.GetPlace(block).MessageCannotUse(p, action);
             return false;
         }
         public static int GetBlocks(Player p, string input,

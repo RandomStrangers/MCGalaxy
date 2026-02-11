@@ -31,7 +31,6 @@ namespace MCGalaxy.Commands.Building
         {
             DrawArgs dArgs = MakeArgs(p, message);
             if (dArgs.Op == null) return;
-            // Validate the brush syntax is correct
             BrushFactory factory = MakeBrush(dArgs);
             BrushArgs bArgs = new(p, dArgs.BrushArgs, dArgs.Block);
             if (!factory.Validate(bArgs)) return;
@@ -99,10 +98,10 @@ namespace MCGalaxy.Commands.Building
     {
         normal, solid, hollow, walls,
         holes, wire, random,
-        vertical, reverse, straight,           // line
-        up, down, layer, verticalX, verticalZ, // fill
-        cone, hcone, icone, hicone, volcano,   // draw
-        pyramid, hpyramid, ipyramid, hipyramid,// draw
-        sphere, hsphere, circle, hcircle       // draw
+        vertical, reverse, straight,
+        up, down, layer, verticalX, verticalZ,
+        cone, hcone, icone, hicone, volcano, 
+        pyramid, hpyramid, ipyramid, hipyramid,
+        sphere, hsphere, circle, hcircle
     }
 }

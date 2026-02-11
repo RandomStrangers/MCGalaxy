@@ -45,9 +45,6 @@ namespace MCGalaxy
         /// <summary> Adds a block update to the end of the queue. </summary>
         public void Add(int index, ushort block)
         {
-            // Bit packing format
-            // 32-63: index
-            // 0-31 : block type
             ulong flags = (ulong)index << posShift;
             flags |= block;
             lock (locker) Add(flags);

@@ -37,17 +37,12 @@ namespace MCGalaxy
                 xCandidate = 0,
                 yCandidate = 0,
                 zCandidate = 0;
-            // Inside each unit cube, there is a seed point at a random position.  Go
-            // through each of the nearby cubes until we find a cube with a seed point
-            // that is closest to the specified position.
             for (int zCur = zInt - 2; zCur <= zInt + 2; zCur++)
             {
                 for (int yCur = yInt - 2; yCur <= yInt + 2; yCur++)
                 {
                     for (int xCur = xInt - 2; xCur <= xInt + 2; xCur++)
                     {
-                        // Calculate the position and distance to the seed point inside of
-                        // this unit cube.
                         double xPos = xCur + ValueNoise(xCur, yCur, zCur, Seed),
                             yPos = yCur + ValueNoise(xCur, yCur, zCur, Seed + 1),
                             zPos = zCur + ValueNoise(xCur, yCur, zCur, Seed + 2),
@@ -57,8 +52,6 @@ namespace MCGalaxy
                             dist = xDist * xDist + yDist * yDist + zDist * zDist;
                         if (dist < minDist)
                         {
-                            // This seed point is closer to any others found so far, so record
-                            // this seed point.
                             minDist = dist;
                             xCandidate = xPos;
                             yCandidate = yPos;
@@ -70,13 +63,10 @@ namespace MCGalaxy
             int x0 = xCandidate > 0.0 ? (int)xCandidate : (int)xCandidate - 1,
                 y0 = yCandidate > 0.0 ? (int)yCandidate : (int)yCandidate - 1,
                 z0 = zCandidate > 0.0 ? (int)zCandidate : (int)zCandidate - 1;
-            // Return the calculated distance with the displacement value applied.
             return Displacement * ValueNoise(x0, y0, z0, 0);
         }
         static double ValueNoise(int x, int y, int z, int seed)
         {
-            // All constants are primes and must remain prime in order for this noise
-            // function to work correctly.
             int n = (
                 1619 * x
               + 31337 * y

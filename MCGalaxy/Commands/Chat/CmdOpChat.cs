@@ -24,7 +24,11 @@ namespace MCGalaxy.Commands.Chatting
         public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can read opchat messages") };
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length > 0) { ChatModes.MessageOps(p, message); return; }
+            if (message.Length > 0) 
+            { 
+                ChatModes.MessageOps(p, message); 
+                return; 
+            }
             p.opchat = !p.opchat;
             if (p.opchat) p.Message("All messages will now be sent to OPs only");
             else p.Message("OP chat turned off");

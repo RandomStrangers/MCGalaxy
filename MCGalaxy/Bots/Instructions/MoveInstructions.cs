@@ -66,7 +66,7 @@ namespace MCGalaxy.Bots
             bot.movement = true;
             if (bot.Pos.BlockX == bot.TargetPos.BlockX && bot.Pos.BlockZ == bot.TargetPos.BlockZ)
             {
-                bot.SetYawPitch(target.RotX, target.RotY); // TODO don't call
+                bot.SetYawPitch(target.RotX, target.RotY);
                 bot.movement = false;
                 bot.NextInstruction(); 
                 return false;

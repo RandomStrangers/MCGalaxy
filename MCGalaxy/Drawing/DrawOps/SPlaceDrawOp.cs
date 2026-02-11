@@ -21,16 +21,11 @@ namespace MCGalaxy.Drawing.Ops
     {
         public override string Name => "SPlace";
         public int Distance, Interval;
-        public override long BlocksAffected(Level lvl, Vec3S32[] marks)
-        {
-            if (Interval <= 0) return 2;
-            // divide Distance by Interval rounding up
-            return 1 + (Distance + (Interval - 1)) / Interval;
-        }
+        public override long BlocksAffected(Level lvl, Vec3S32[] marks) => Interval <= 0 ? 2 : 1 + (Distance + (Interval - 1)) / Interval;
         public override void Perform(Vec3S32[] m, Brush brush, DrawOpOutput output)
         {
-            int dirX = 0, dirY = 0, dirZ = 0;
-            int dx = Math.Abs(m[1].X - m[0].X), dy = Math.Abs(m[1].Y - m[0].Y), dz = Math.Abs(m[1].Z - m[0].Z);
+            int dirX = 0, dirY = 0, dirZ = 0,
+                dx = Math.Abs(m[1].X - m[0].X), dy = Math.Abs(m[1].Y - m[0].Y), dz = Math.Abs(m[1].Z - m[0].Z);
             if (dy > dx && dy > dz)
             {
                 dirY = m[1].Y > m[0].Y ? 1 : -1;
@@ -43,18 +38,20 @@ namespace MCGalaxy.Drawing.Ops
             {
                 dirZ = m[1].Z > m[0].Z ? 1 : -1;
             }
-            ushort endX = (ushort)(m[0].X + dirX * Distance);
-            ushort endY = (ushort)(m[0].Y + dirY * Distance);
-            ushort endZ = (ushort)(m[0].Z + dirZ * Distance);
+            ushort endX = (ushort)(m[0].X + dirX * Distance),
+                endY = (ushort)(m[0].Y + dirY * Distance),
+                endZ = (ushort)(m[0].Z + dirZ * Distance);
             output(Place(endX, endY, endZ, brush));
             if (Interval > 0)
             {
-                int x = m[0].X, y = m[0].Y, z = m[0].Z;
-                int delta = 0;
+                int x = m[0].X, y = m[0].Y, z = m[0].Z,
+                    delta = 0;
                 while (Level.IsValidPos(x, y, z) && delta < Distance)
                 {
                     output(Place((ushort)x, (ushort)y, (ushort)z, brush));
-                    x += dirX * Interval; y += dirY * Interval; z += dirZ * Interval;
+                    x += dirX * Interval; 
+                    y += dirY * Interval; 
+                    z += dirZ * Interval;
                     delta += Interval;
                 }
             }

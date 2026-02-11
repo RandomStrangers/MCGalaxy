@@ -38,14 +38,12 @@ namespace MCGalaxy.DB
             entry.Index = x + Dims.X * (z + Dims.Z * y);
             entry.OldRaw = (byte)old; 
             entry.NewRaw = (byte)block;
-            // Bit flags -> bit index
             for (int i = 0; i <= 13; i++)
             {
                 if ((flags & (1 << i)) == 0) continue;
                 entry.Packed |= i; 
                 break;
             }
-            // Icky, match extended BlockDBFlags flags >> 4
             entry.Packed |= (old & (1 << 9)) >> 5;
             entry.Packed |= (block & (1 << 9)) >> 4;
             entry.Packed |= (old & (1 << 8)) >> 2;
@@ -57,7 +55,6 @@ namespace MCGalaxy.DB
                 {
                     AddNextNode();
                 }
-                // pack the time delta
                 entry.TimeDelta = (ushort)Math.Abs(timeDelta - Head.BaseTimeDelta);
                 Head.Entries[Head.Count] = entry;
                 Head.Count++; 
@@ -73,7 +70,6 @@ namespace MCGalaxy.DB
                 BlockDBCacheNode cur = Tail;
                 while (cur != null)
                 {
-                    // Unlink the nodes
                     cur.Prev = null;
                     BlockDBCacheNode next = cur.Next;
                     cur.Next = null;
@@ -92,7 +88,6 @@ namespace MCGalaxy.DB
             if (Head != null) Head.Next = newHead;
             Head = newHead;
             Tail ??= Head;
-            // use smaller increases at first to minimise memory usage
             if (nextSize == 50 * 1000) nextSize = 100 * 1000;
             if (nextSize == 20 * 1000) nextSize = 50 * 1000;
             if (nextSize == 10 * 1000) nextSize = 20 * 1000;
@@ -102,10 +97,7 @@ namespace MCGalaxy.DB
     public sealed class BlockDBCacheNode
     {
         public BlockDBCacheNode Prev, Next;
-        /// <summary> The number of actually used entries within this particular node. </summary>
-        public int Count;
-        /// <summary> The base offset time delta for this node, relative to BlockDB.Epoch. </summary>
-        public int BaseTimeDelta;
+        public int Count, BaseTimeDelta;
         /// <summary> Buffered list of entries, pre-allocated to avoid resizing costs. </summary>
         public BlockDBCacheEntry[] Entries;
         public BlockDBCacheNode(int capacity)

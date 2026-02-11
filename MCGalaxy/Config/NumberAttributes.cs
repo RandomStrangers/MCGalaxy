@@ -19,7 +19,6 @@ namespace MCGalaxy.Config
     {
         public ConfigIntegerAttribute(string name, string section)
             : base(name, section) { }
-        // separate function to avoid boxing in derived classes
         protected int ParseInteger(string raw, int def, int min, int max)
         {
             if (!NumberUtils.TryParseInt32(raw, out int value))

@@ -26,7 +26,11 @@ namespace MCGalaxy.Commands.Moderation
         public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Builder, "are not patrolled") };
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length > 0) { Help(p); return; }
+            if (message.Length > 0) 
+            { 
+                Help(p); 
+                return;
+            }
             List<Player> candidates = GetPatrolCandidates(p, data);
             if (candidates.Count == 0)
             {

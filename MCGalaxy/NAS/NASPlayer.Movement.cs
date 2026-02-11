@@ -1,4 +1,5 @@
 using MCGalaxy.Events.PlayerEvents;
+using MCGalaxy.Maths;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using MCGalaxy.Util.Imaging;
@@ -11,8 +12,7 @@ namespace MCGalaxy
     {
         [JsonIgnore] public Position posBeforeMapChange;
         [JsonIgnore] public byte yawBeforeMapChange, pitchBeforeMapChange;
-        [JsonIgnore]
-        public int chunkOffsetX, chunkOffsetZ,
+        [JsonIgnore] public int chunkOffsetX, chunkOffsetZ, 
             travelX = -1, travelY = -1, travelZ = -1;
         public NASTransferInfo(Player p, int chunkOffsetX, int chunkOffsetZ, int x, int y, int z)
         {
@@ -35,27 +35,6 @@ namespace MCGalaxy
     }
     public partial class NASPlayer
     {
-        [JsonIgnore] public DateTime datePositionCheckingIsAllowed = DateTime.MinValue;
-        [JsonIgnore] public bool placePortal = false;
-        [JsonIgnore] public int round = 0;
-        [JsonIgnore] public bool atBorder = true;
-        [JsonIgnore] public NASTransferInfo transferInfo = null;
-        [JsonIgnore]
-        public bool CanDoStuffBasedOnPosition
-        {
-            get
-            {
-                return DateTime.UtcNow >= datePositionCheckingIsAllowed;
-            }
-            set
-            {
-                PingList pingList = p.Session.Ping;
-                if (!value)
-                {
-                    datePositionCheckingIsAllowed = DateTime.UtcNow.AddMilliseconds(2000 + pingList.HighestPing());
-                }
-            }
-        }
         public static void Register() => OnPlayerSpawningEvent.Register(OnPlayerSpawning, Priority.High);
         public static void Unregister() => OnPlayerSpawningEvent.Unregister(OnPlayerSpawning);
         public static void OnPlayerSpawning(Player p, ref Position pos, ref byte yaw, ref byte pitch, bool respawning)
@@ -69,11 +48,11 @@ namespace MCGalaxy
             ushort raw;
             if (block >= 256)
             {
-                raw = NASPlugin.ToRaw(block);
+                raw = Block.ToRaw(block);
             }
             else
             {
-                raw = NASPlugin.Convert(block);
+                raw = Block.Convert(block);
                 if (raw >= 66)
                 {
                     raw = 22;
@@ -96,16 +75,6 @@ namespace MCGalaxy
                 raw = fallback[(byte)raw];
             }
             return raw;
-        }
-        public void SaveStatsTask(SchedulerTask _) => Save();
-        public void Save()
-        {
-            if (this != null)
-            {
-                string jsonString = JsonConvert.SerializeObject(this, Formatting.Indented);
-                FileIO.TryWriteAllText(NASPlugin.GetSavePath(p), jsonString);
-                FileIO.TryWriteAllText(NASPlugin.GetTextPath(p), jsonString);
-            }
         }
         public void SpawnPlayer(Level level, ref Position spawnPos, ref byte yaw, ref byte pitch)
         {
@@ -131,8 +100,7 @@ namespace MCGalaxy
                 }
                 CommandData data = p.DefaultCmdData;
                 data.Context = CommandContext.SendCmd;
-                Orientation rot = new(Server.mainLevel.rotx, Server.mainLevel.roty);
-                SetLocation(this, spawnMap, spawnCoords, rot);
+                SetLocation(spawnMap, spawnCoords, new(Server.mainLevel.rotx, Server.mainLevel.roty));
                 if (!headingToBed)
                 {
                     SendCpeMessage(CpeMessageType.Announcement, "&cY O U  D I E D");
@@ -172,8 +140,8 @@ namespace MCGalaxy
                         int orX = transferInfo.travelX,
                             orY = transferInfo.travelY,
                             orZ = transferInfo.travelZ;
-                        SetSafetyBlock(orX, orY - 1, orZ, NASPlugin.FromRaw(162));
-                        SetSafetyBlock(orX, orY + 2, orZ, NASPlugin.FromRaw(162));
+                        SetSafetyBlock(orX, orY - 1, orZ, Block.FromRaw(162));
+                        SetSafetyBlock(orX, orY + 2, orZ, Block.FromRaw(162));
                         ushort temp = nl.GetBlock(orX, orY + 1, orZ);
                         if (temp != 0 && !nl.blockEntities.ContainsKey(orX + " " + (orY + 1) + " " + orZ))
                         {
@@ -181,10 +149,10 @@ namespace MCGalaxy
                             nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, 1 << 2, temp, 0);
                         }
                         temp = nl.GetBlock(orX, orY, orZ);
-                        if (temp != NASPlugin.FromRaw(457) && !nl.blockEntities.ContainsKey(orX + " " + orY + " " + orZ))
+                        if (temp != Block.FromRaw(457) && !nl.blockEntities.ContainsKey(orX + " " + orY + " " + orZ))
                         {
-                            nl.SetBlock(orX, orY, orZ, NASPlugin.FromRaw(457));
-                            nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, 1 << 2, temp, NASPlugin.FromRaw(457));
+                            nl.SetBlock(orX, orY, orZ, Block.FromRaw(457));
+                            nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, 1 << 2, temp, Block.FromRaw(457));
                         }
                         placePortal = false;
                     }
@@ -236,6 +204,57 @@ namespace MCGalaxy
                 return;
             }
             hasBeenSpawned = true;
+        }
+        public void DoNASBlockCollideActions(Position entityPos)
+        {
+            if (nl == null)
+            {
+                return;
+            }
+            AABB worldAABB = bounds.OffsetPosition(entityPos);
+            worldAABB.Min.X++;
+            worldAABB.Min.Y++;
+            worldAABB.Min.Z++;
+            AABB eyeAABB = eyeBounds.OffsetPosition(entityPos);
+            eyeAABB.Min.X++;
+            eyeAABB.Min.Y++;
+            eyeAABB.Min.Z++;
+            worldAABB = worldAABB.Expand(-1);
+            Vec3S32 min = worldAABB.BlockMin, max = worldAABB.BlockMax;
+            for (int y = min.Y; y <= max.Y; y++)
+            {
+                for (int z = min.Z; z <= max.Z; z++)
+                {
+                    for (int x = min.X; x <= max.X; x++)
+                    {
+                        foreach (Player pl in PlayerInfo.Online.Items)
+                        {
+                            ushort xP = (ushort)x, yP = (ushort)y, zP = (ushort)z;
+                            nl.lvl ??= pl.Level;
+                            ushort block = nl.lvl.GetBlock(xP, yP, zP);
+                            if (block == 0)
+                            {
+                                block = 0;
+                            }
+                            if (block == 0xff)
+                            {
+                                continue;
+                            }
+                            NASBlock nb = NASBlock.blocksIndexedByServerushort[block];
+                            AABB blockBB = nb.bounds.Offset(x * 32, y * 32, z * 32);
+                            if (!AABB.Intersects(ref worldAABB, ref blockBB))
+                            {
+                                continue;
+                            }
+                            if (nb == null || nb.collideAction == null)
+                            {
+                                continue;
+                            }
+                            nb.collideAction(this, nb, AABB.Intersects(ref eyeAABB, ref blockBB), xP, yP, zP);
+                        }
+                    }
+                }
+            }
         }
         public void DoMovement(Position next, byte _, byte __)
         {
@@ -372,8 +391,7 @@ namespace MCGalaxy
             { 
                 return false; 
             }
-            string mapName;
-            mapName = map;
+            string mapName = map;
             NASGen.GetSeedAndChunkOffset(map, ref seed, ref chunkOffsetX, ref chunkOffsetZ);
             if (File.Exists(NASLevel.GetFileName(mapName)))
             {
@@ -397,8 +415,7 @@ namespace MCGalaxy
                     mapName = mapName,
                     seed = seed
                 };
-                SchedulerTask taskGenMap;
-                taskGenMap = NASGen.genScheduler.QueueOnce(GenTask, info, new TimeSpan(0, 0, 5));
+                SchedulerTask taskGenMap = NASGen.genScheduler.QueueOnce(GenTask, info, new TimeSpan(0, 0, 5));
                 return false;
             }
         }
@@ -418,15 +435,8 @@ namespace MCGalaxy
             Level lvl = null;
             try
             {
-                string width = NASGen.mapWideness.ToString(),
-                    height = NASGen.mapTallness.ToString(),
-                    length = NASGen.mapWideness.ToString();
-                lvl = NASLevel.GenerateMap(info.p, info.mapName, width, height, length, info.seed);
-                if (lvl == null)
-                {
-                    return;
-                }
-                lvl.Save(true);
+                lvl = NASLevel.GenerateMap(info.p, info.mapName, NASGen.mapWideness.ToString(), NASGen.mapTallness.ToString(), NASGen.mapWideness.ToString(), info.seed);
+                lvl?.Save(true);
             }
             finally
             {

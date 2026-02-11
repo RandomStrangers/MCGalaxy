@@ -24,7 +24,11 @@ namespace MCGalaxy.Commands.Fun
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p); 
+                return;
+            }
             if (message.CaselessEq("me")) message = p.name;
             string[] args = message.SplitSpaces();
             Vec3S32 P = p.Pos.BlockCoords;
@@ -59,8 +63,8 @@ namespace MCGalaxy.Commands.Fun
                 return false;
             }
             pos = lvl.ClampPos(pos);
-            ushort x = (ushort)pos.X, y = (ushort)pos.Y, z = (ushort)pos.Z;
-            ushort old = lvl.GetBlock(x, y, z);
+            ushort x = (ushort)pos.X, y = (ushort)pos.Y, z = (ushort)pos.Z,
+                old = lvl.GetBlock(x, y, z);
             if (!lvl.CheckAffect(p, x, y, z, old, Block.TNT)) return false;
             lvl.MakeExplosion(x, y, z, 1);
             return true;

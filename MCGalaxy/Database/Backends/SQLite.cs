@@ -131,7 +131,6 @@ namespace MCGalaxy.SQL
         static volatile string[] ids;
         internal static string[] GetNames(int count)
         {
-            // Avoid allocation overhead from string concat every query by caching
             string[] names = ids;
             if (names == null || count > names.Length)
             {
@@ -169,18 +168,15 @@ namespace MCGalaxy.SQL
         }
         public void LoadDependencies()
         {
-            // on macOS/Linux, system provided sqlite3 native library is used
             if (!IOperatingSystem.DetectOS().IsWindows) return;
             CheckFile("sqlite3_x32.dll");
             CheckFile("sqlite3_x64.dll");
-            // sqlite3.dll is the .DLL that MCGalaxy will actually load on Windows
             try
             {
                 if (File.Exists(IntPtr.Size == 8 ? "sqlite3_x64.dll" : "sqlite3_x32.dll")) FileIO.TryCopy(IntPtr.Size == 8 ? "sqlite3_x64.dll" : "sqlite3_x32.dll", "sqlite3.dll", true);
             }
             catch (Exception ex)
             {
-                // e.g. can happen when multiple server instances running
                 Logger.LogError("Error moving SQLite dll", ex);
             }
         }
@@ -189,7 +185,6 @@ namespace MCGalaxy.SQL
         public List<string> AllTables()
         {
             List<string> tables = GetStrings("SELECT name from sqlite_master WHERE type='table'");
-            // exclude sqlite built-in database tables
             for (int i = tables.Count - 1; i >= 0; i--)
             {
                 if (tables[i].StartsWith("sqlite_")) tables.RemoveAt(i);
@@ -213,8 +208,6 @@ namespace MCGalaxy.SQL
                 ColumnDesc col = columns[i];
                 sql.Append(col.Column).Append(' ');
                 sql.Append(col.FormatType());
-                // When the primary key isn't autoincrement, we use the same form as mysql
-                // Otherwise we have to use sqlite's 'PRIMARY KEY AUTO_INCREMENT' form
                 if (col.PrimaryKey)
                 {
                     if (!col.AutoIncrement) priKey = col.Column;

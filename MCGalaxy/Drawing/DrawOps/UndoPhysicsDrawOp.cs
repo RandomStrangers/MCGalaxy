@@ -32,9 +32,11 @@ namespace MCGalaxy.Drawing.Ops
                 {
                     try
                     {
-                        if (!CheckBlockPhysics(Player, Level, i)) break;
+                        if (!CheckBlockPhysics(Level, i)) break;
                     }
-                    catch { }
+                    catch 
+                    { 
+                    }
                 }
             }
             else
@@ -44,27 +46,31 @@ namespace MCGalaxy.Drawing.Ops
                 {
                     try
                     {
-                        if (!CheckBlockPhysics(Player, Level, i)) break;
+                        if (!CheckBlockPhysics(Level, i)) break;
                     }
-                    catch { }
+                    catch 
+                    {
+                    }
                 }
                 for (int i = Level.UndoBuffer.Count - 1; i > count; i--)
                 {
                     try
                     {
-                        if (!CheckBlockPhysics(Player, Level, i)) break;
+                        if (!CheckBlockPhysics(Level, i)) break;
                     }
-                    catch { }
+                    catch 
+                    { 
+                    }
                 }
             }
         }
-        bool CheckBlockPhysics(Player _, Level lvl, int i)
+        bool CheckBlockPhysics(Level lvl, int i)
         {
             Level.UndoPos undo = lvl.UndoBuffer[i];
             if (undo.Time < Start) return false;
             lvl.IntToPos(undo.Index, out ushort x, out ushort y, out ushort z);
-            ushort cur = lvl.GetBlock(x, y, z);
-            ushort newBlock = undo.NewBlock;
+            ushort cur = lvl.GetBlock(x, y, z),
+                newBlock = undo.NewBlock;
             if (cur == newBlock || Block.Convert(cur) == Block.Water || Block.Convert(cur) == Block.Lava)
             {
                 lvl.Blockchange(x, y, z, undo.OldBlock, true, default, false);

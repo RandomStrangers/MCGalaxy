@@ -1,5 +1,4 @@
 // Copyright 2014-2017 ClassicalSharp | Licensed under BSD-3
-// Based on: https://github.com/ClassiCube/ClassiCube/wiki/Minecraft-Classic-map-generation-algorithm
 using System;
 namespace MCGalaxy.Generator.Classic
 {
@@ -34,7 +33,7 @@ namespace MCGalaxy.Generator.Classic
         }
         void FloodFill(int startIndex, byte block)
         {
-            if (startIndex < 0) return; // y below map, immediately ignore
+            if (startIndex < 0) return;
             FastIntStack stack = new(4);
             stack.Push(startIndex);
             while (stack.Size > 0)
@@ -83,7 +82,7 @@ namespace MCGalaxy.Generator.Classic
         public int Next(int n)
         {
             if ((n & -n) == n)
-            { // i.e., n is a power of 2
+            {
                 seed = (seed * 0x5DEECE66DL + 0xBL) & ((1L << 48) - 1);
                 long raw = (long)((ulong)seed >> (48 - 31));
                 return (int)((n * raw) >> 31);

@@ -26,15 +26,34 @@ namespace MCGalaxy.Commands.Moderation
         public override CommandAlias[] Aliases => new CommandAlias[] { new("IPBan") };
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p); 
+                return;
+            }
             string[] args = message.SplitSpaces(2);
             string addr = ModActionCmd.FindIP(p, args[0], "BanIP", out _);
             if (addr == null) return;
-            if (!IPAddress.TryParse(addr, out IPAddress ip)) { p.Message("\"{0}\" is not a valid IP.", addr); return; }
-            if (IPAddress.IsLoopback(ip)) { p.Message("You cannot IP ban the server."); return; }
-            if (ip.Equals(p.IP)) { p.Message("You cannot IP ban yourself."); return; }
-            if (Server.bannedIP.Contains(addr)) { p.Message("{0} is already IP banned.", addr); return; }
-            // Check if IP is shared by any other higher ranked accounts
+            if (!IPAddress.TryParse(addr, out IPAddress ip)) 
+            { 
+                p.Message("\"{0}\" is not a valid IP.", addr); 
+                return;
+            }
+            if (IPAddress.IsLoopback(ip)) 
+            {
+                p.Message("You cannot IP ban the server.");
+                return; 
+            }
+            if (ip.Equals(p.IP)) 
+            { 
+                p.Message("You cannot IP ban yourself."); 
+                return;
+            }
+            if (Server.bannedIP.Contains(addr)) 
+            { 
+                p.Message("{0} is already IP banned.", addr); 
+                return;
+            }
             if (!CheckIP(p, data, addr)) return;
             string reason = args.Length > 1 ? args[1] : "";
             reason = ModActionCmd.ExpandReason(p, reason);

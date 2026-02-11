@@ -39,12 +39,11 @@ namespace MCGalaxy.Core
             p.prevMsg = "";
             p.showMBs = false;
             p.showPortals = false;
-            p.SetModel(p.Model); // in case had been using a level-only custom block for their model
+            p.SetModel(p.Model);
             p.ZoneIn = null;
             OnChangedZoneEvent.Call(p);
             p.SendCurrentTextures();
             p.SendCurrentBlockPermissions();
-            // TODO: unshow old zones here??
             Zone[] zones = level.Zones.Items;
             foreach (Zone zn in zones) 
             { 
@@ -71,7 +70,6 @@ namespace MCGalaxy.Core
         {
             if (action != MouseAction.Pressed) return;
             if (id != Entities.SelfID && ClickOnBot(p, id)) return;
-            // if Deletable is enabled, handle MBs/Portals in SetBlock instead
             if (p.Level.Config.Deletable || !p.Level.IsValidPos(x, y, z)) return;
             ushort block = p.Level.GetBlock(x, y, z);
             bool isMB = p.Level.Props[block].IsMessageBlock,

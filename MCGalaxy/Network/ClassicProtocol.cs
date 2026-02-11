@@ -22,7 +22,6 @@ namespace MCGalaxy.Network
 {
     public class ClassicProtocol : IGameSession
     {
-        // these are checked very frequently, so avoid overhead of .Supports(
         bool hasEmoteFix, hasTwoWayPing, hasExtTexs, hasTextColors,
             hasHeldBlock, hasLongerMessages, finishedCpeLogin;
         int extensionCount;
@@ -62,7 +61,7 @@ namespace MCGalaxy.Network
                 case 58: 
                     return HandleNotifyPositionAction(buffer, offset, left);
                 case 19:
-                    return left < 2 ? 0 : 2; // only ever one level anyways
+                    return left < 2 ? 0 : 2;
                 default:
                     player.Leave("Unhandled opcode \"" + buffer[offset] + "\"!", true);
                     return left;
@@ -85,21 +84,13 @@ namespace MCGalaxy.Network
         #region Classic processing
         int HandleLogin(byte[] buffer, int offset, int left)
         {
-            // protocol versions < 6 didn't have the usertype field,
-            //  hence this two-packet-size-handling monstrosity
             int old_size = 1 + 1 + 64 + 64,
                 new_size = 1 + 1 + 64 + 64 + 1;
-            // the packet must be at least old_size long
             if (left < old_size) return 0;
             ProtocolVersion = buffer[offset + 1];
-            // check size now that know whether usertype field is included or not
             int size = ProtocolVersion >= 6 ? new_size : old_size;
             if (left < size) return 0;
             if (player.loggedIn) return size;
-            // usertype field has different meanings depending on protocol version
-            //  Version 7 - 0x42 for CPE supporting client, should be 0 otherwise
-            //  Version 6 - should be 0
-            //  Version 5 - field does not exist
             if (ProtocolVersion >= 7)
             {
                 hasCpe = buffer[offset + 130] == 0x42 && Server.Config.EnableCPE;
@@ -145,7 +136,7 @@ namespace MCGalaxy.Network
             if (hasHeldBlock)
             {
                 held = ReadBlock(buffer, offset + 1);
-                if (hasExtBlocks) offset++; // correct offset for position later
+                if (hasExtBlocks) offset++;
             }
             int x, y, z;
             if (player.hasExtPositions)
@@ -153,7 +144,7 @@ namespace MCGalaxy.Network
                 x = MemUtils.ReadI32_BE(buffer, offset + 2);
                 y = MemUtils.ReadI32_BE(buffer, offset + 6);
                 z = MemUtils.ReadI32_BE(buffer, offset + 10);
-                offset += 6; // for yaw/pitch offset below
+                offset += 6;
             }
             else
             {
@@ -171,8 +162,6 @@ namespace MCGalaxy.Network
             int size = 1 + 1 + 64;
             if (left < size) return 0;
             if (!player.loggedIn) return size;
-            // In original clasic, this field is 'player ID' and so useless
-            // With LongerMessages extension, this field has been repurposed
             bool continued = hasLongerMessages && buffer[offset + 1] != 0;
             string text = NetUtils.ReadString(buffer, offset + 2);
             player.ProcessChat(text, continued);
@@ -193,7 +182,6 @@ namespace MCGalaxy.Network
         {
             extensions = CpeExtension.GetAllEnabled();
             Send(Packet.ExtInfo((byte)(extensions.Length + 1)));
-            // fix for old classicube java client, doesn't reply if only send EnvMapAppearance with version 2
             Send(Packet.ExtEntry(CpeExt.EnvMapAppearance, 1));
             foreach (CpeExt ext in extensions)
             {
@@ -214,7 +202,7 @@ namespace MCGalaxy.Network
             if (left < size) return 0;
             appName = NetUtils.ReadString(buffer, offset + 1);
             extensionCount = buffer[offset + 66];
-            CheckReadAllExtensions(); // in case client supports 0 CPE packets
+            CheckReadAllExtensions();
             return size;
         }
         int HandleExtEntry(byte[] buffer, int offset, int left)
@@ -223,7 +211,6 @@ namespace MCGalaxy.Network
             if (left < size) return 0;
             string extName = NetUtils.ReadString(buffer, offset + 1);
             int extVersion = MemUtils.ReadI32_BE(buffer, offset + 65);
-            // TODO: Classic+ client seems to use a custom protocol
             if (extVersion == 0x03110003)
             {
                 player.Leave("Classic+ Client is unsupported");
@@ -273,16 +260,13 @@ namespace MCGalaxy.Network
             if (left < 4) return 0;
             bool serverToClient = buffer[offset + 1] != 0;
             ushort data = MemUtils.ReadU16_BE(buffer, offset + 2);
-            //player.Message("&bServerToClient? {0}, data {1}", serverToClient, data);
             if (!serverToClient)
             {
-                // Client-> server ping, immediately send reply.
                 Send(Packet.TwoWayPing(false, data));
             }
             else
             {
                 Ping.UnIgnorePosition(data);
-                // Server -> client ping, set time received for reply.
                 Ping.Update(data);
             }
             return 4;
@@ -377,21 +361,11 @@ namespace MCGalaxy.Network
         #region Classic packet sending
         public override void SendTeleport(byte id, Position pos, Orientation rot)
         {
-            // Some classic < 0.0.19 versions have issues with sending teleport packet with ID 255
-            //   0.0.16a - does nothing
-            //   0.0.17a - does nothing
-            //   0.0.18a - works fine (https://minecraft.fandom.com/wiki/Java_Edition_Classic_0.0.18a)
-            // Skins weren't implemented until 0.0.19a, so it's fine to spam send SpawnEntity packets
-            //  (downside is that client's respawn position is also changed due to using SpawnEntity)
-            // Unfortunately, there is no easy way to tell the difference between 0.0.17a and 0.0.18a,
-            //  so this workaround still affects 0.0.18 clients even though it is unnecessary
             if (id == 0xFF && ProtocolVersion < 5)
             {
-                // TODO keep track of 'last spawn name', in case self entity name was changed by OnEntitySpawnedEvent
                 SendSpawnEntity(id, player.color + player.truename, player.SkinName, pos, rot);
                 return;
             }
-            // NOTE: Classic clients require offseting own entity by 22 units vertically
             bool self = id == 0xFF;
             if (self) pos.Y -= 22;
             SendTeleportCore(self, Packet.Teleport(id, pos, rot, player.hasExtPositions));
@@ -405,7 +379,6 @@ namespace MCGalaxy.Network
             }
             bool absoluteSelf = (moveMode == TeleportMoveMode.AbsoluteInstant ||
                 moveMode == TeleportMoveMode.AbsoluteSmooth) && id == 0xFF;
-            // NOTE: Classic clients require offseting own entity by 22 units vertically when using absolute location updates
             if (absoluteSelf) pos.Y -= 22;
             SendTeleportCore(absoluteSelf, Packet.TeleportExt(id, usePos, moveMode, useOri, interpolateOri, pos, rot, player.hasExtPositions));
             return true;
@@ -426,16 +399,11 @@ namespace MCGalaxy.Network
         public override void SendRemoveEntity(byte id) => Send(Packet.RemoveEntity(id));
         public override void SendChat(string message)
         {
-            // See comment in CleanupColors
             char[] buffer = LineWrapper.CleanupColors(message, out int bufferLen,
                                                       hasTextColors, hasTextColors);
             List<string> lines = LineWrapper.Wordwrap(buffer, bufferLen, hasEmoteFix);
-            // Need to combine chat line packets into one Send call, so that
-            // multi-line messages from multiple threads don't interleave
             for (int i = 0; i < lines.Count;)
             {
-                // Send buffer max size is 4096 bytes
-                // Divide by 66 (size of chat packet) gives ~62 lines
                 int count = Math.Min(62, lines.Count - i);
                 byte[] data = new byte[count * 66];
                 for (int j = 0; j < count; i++, j++)
@@ -454,7 +422,6 @@ namespace MCGalaxy.Network
         }
         public override bool SendSetUserType(byte type)
         {
-            // this packet doesn't exist before protocol version 7
             if (ProtocolVersion < 7) return false;
             Send(Packet.UserType(type));
             return true;
@@ -496,7 +463,7 @@ namespace MCGalaxy.Network
                 ushort block = Block.FromRaw(raw);
                 if (block >= 1024)
                 {
-                    model = "humanoid"; // invalid block ids
+                    model = "humanoid";
                 }
                 else
                 {
@@ -584,7 +551,6 @@ namespace MCGalaxy.Network
             }
             else
             {
-                // TODO respawn self directly instead of using Entities.Spawn
                 Entities.Spawn(player, player, pos, rot);
             }
         }
@@ -603,12 +569,7 @@ namespace MCGalaxy.Network
         {
             name = CleanupColors(name);
             bool self = id == 0xFF;
-            // NOTE: Classic clients require offseting own entity by 22 units vertically
             if (self) pos.Y -= 22;
-            // SpawnEntity for self ID behaves differently in Classic 0.0.16a
-            //  - yaw and pitch fields are swapped
-            //  - pitch is inverted
-            // (other entities do NOT require this adjustment however)
             if (self && ProtocolVersion <= 3)
             {
                 byte temp = rot.HeadX;
@@ -658,7 +619,6 @@ namespace MCGalaxy.Network
                 }
             }
             LevelChunkStream.SendLevel(this, level, volume);
-            // Force players to read the MOTD (clamped to 3 seconds at most)
             if (level.Config.LoadDelay > 0)
                 Thread.Sleep(level.Config.LoadDelay);
             Send(Packet.LevelFinalise(level.Width, level.Height, level.Length));
@@ -700,10 +660,7 @@ namespace MCGalaxy.Network
             byte version = ProtocolVersion;
             if (version == 3) return "Classic 0.0.16";
             if (version == 4) return "Classic 0.0.17-0.0.18";
-            if (version == 5) return "Classic 0.0.19";
-            if (version == 6) return "Classic 0.0.20-0.0.23";
-            // Might really be Classicube in Classic Mode, Charged Miners, etc though
-            return "Classic 0.28-0.30";
+            return version == 5 ? "Classic 0.0.19" : version == 6 ? "Classic 0.0.20-0.0.23" : "Classic 0.28-0.30";
         }
         public override unsafe void GetPositionPacket(ref byte* ptr, byte id, bool srcExtPos, bool extPos,
                                                     Position pos, Position oldPos, Orientation rot, Orientation oldRot)

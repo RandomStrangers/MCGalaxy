@@ -20,7 +20,7 @@ namespace MCGalaxy
         {
             _queue = new(10, priorityComparer);
             _itemToNodesCache = new(itemEquality);
-            _nullNodesCache = new List<SimpleNode>();
+            _nullNodesCache = new();
         }
         public SimpleNode GetExistingNode(TItem item) => item == null
                 ? _nullNodesCache.Count > 0 ? _nullNodesCache[0] : null
@@ -43,13 +43,7 @@ namespace MCGalaxy
             }
         }
         public int Count => _queue.Count;
-        public TItem First
-        {
-            get
-            {
-                return _queue.Count <= 0 ? throw new InvalidOperationException("Cannot call .First on an empty queue") : _queue.First.Data;
-            }
-        }
+        public TItem First => _queue.Count <= 0 ? throw new InvalidOperationException("Cannot call .First on an empty queue") : _queue.First.Data;
         public void Clear()
         {
             _queue.Clear();
@@ -86,7 +80,7 @@ namespace MCGalaxy
             }
             else if (!_itemToNodesCache.TryGetValue(item, out nodes))
             {
-                nodes = new List<SimpleNode>();
+                nodes = new();
                 _itemToNodesCache[item] = nodes;
             }
             SimpleNode node = EnqueueNoLockOrCache(item, priority);

@@ -36,8 +36,6 @@ namespace MCGalaxy.DB
             dims = default;
             byte[] header = new byte[16];
             StreamUtils.ReadFully(s, header, 0, header.Length);
-            // Check constants are expected
-            // TODO: check 8 byte string identifier
             ushort fileVersion = ReadU16(header, 8);
             if (fileVersion != 1)
                 throw new NotSupportedException("only version 1 is supported");
@@ -81,7 +79,6 @@ namespace MCGalaxy.DB
             }
         }
         public long CountEntries(Stream s) => (s.Length / 16) - 1;
-        // Inlined WriteI32/WriteU16 for better performance
         static void WriteEntry(BlockDBEntry entry, byte[] bulk, int index)
         {
             bulk[index + 0] = (byte)entry.PlayerID;
@@ -121,7 +118,7 @@ namespace MCGalaxy.DB
                 pos -= count * 16;
                 s.Position = pos;
                 StreamUtils.ReadFully(s, bulk, 0, count * 16);
-                s.Position = pos; // set correct position for next backward read
+                s.Position = pos;
             }
             return count;
         }

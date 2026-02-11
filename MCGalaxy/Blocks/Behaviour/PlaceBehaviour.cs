@@ -46,14 +46,13 @@ namespace MCGalaxy.Blocks
             {
                 return p.ChangeBlock(x, y, z, block);
             }
-            p.SendBlockchange(x, y, z, Block.Air); // send the air block back only to the user
+            p.SendBlockchange(x, y, z, Block.Air);
             p.ChangeBlock(x, (ushort)(y - 1), z, p.Level.Props[block].StackBlock);
             return ChangeResult.Modified;
         }
         internal static ChangeResult C4(Player p, ushort _, ushort x, ushort y, ushort z)
         {
             if (p.Level.LevelPhysics == 0 || p.Level.LevelPhysics == 5) return ChangeResult.Unchanged;
-            // Use red wool to detonate c4
             if (p.BlockBindings[p.ClientHeldBlock] == Block.Red)
             {
                 p.Message("Placed detonator block, delete it to detonate.");

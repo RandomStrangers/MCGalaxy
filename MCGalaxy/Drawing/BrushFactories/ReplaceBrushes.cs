@@ -31,12 +31,14 @@ namespace MCGalaxy.Drawing.Brushes
             string[] parts = args.Message.SplitSpaces();
             if (args.Message.Length == 0)
             {
-                args.Player.Message("You need at least one block to replace."); return null;
+                args.Player.Message("You need at least one block to replace.");
+                return null;
             }
             int count = parts.Length == 1 ? 1 : parts.Length - 1;
             ushort[] toAffect = GetBlocks(args.Player, 0, count, parts);
-            if (toAffect == null) return null;
-            return !GetTargetBlock(args, parts, out ushort target)
+            return toAffect == null
+                ? null
+                : !GetTargetBlock(args, parts, out ushort target)
                 ? null
                 : not ? new ReplaceNotBrush(toAffect, target) : new ReplaceBrush(toAffect, target);
         }
@@ -50,7 +52,7 @@ namespace MCGalaxy.Drawing.Brushes
             }
             foreach (ushort b in blocks)
             {
-                if (b == Block.Invalid) continue; // "Skip" block
+                if (b == Block.Invalid) continue;
                 if (!CommandParser.IsBlockAllowed(p, "replace", b)) return null;
             }
             return blocks.ToArray();
@@ -62,7 +64,8 @@ namespace MCGalaxy.Drawing.Brushes
             if (parts.Length == 1)
             {
                 if (!CommandParser.IsBlockAllowed(p, "draw with", args.Block)) return false;
-                target = args.Block; return true;
+                target = args.Block;
+                return true;
             }
             return CommandParser.GetBlockIfAllowed(p, parts[parts.Length - 1], "draw with", out target);
         }

@@ -24,7 +24,11 @@ namespace MCGalaxy
         internal static void SaveBlockDB(Level lvl)
         {
             if (lvl.BlockDB.Cache.Head == null) return;
-            if (!lvl.Config.UseBlockDB) { lvl.BlockDB.Cache.Clear(); return; }
+            if (!lvl.Config.UseBlockDB) 
+            {
+                lvl.BlockDB.Cache.Clear(); 
+                return; 
+            }
             using (IDisposable wLock = lvl.BlockDB.Locker.AccquireWrite(60 * 1000))
             {
                 if (wLock == null)

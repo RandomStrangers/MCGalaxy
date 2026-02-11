@@ -44,7 +44,6 @@ namespace MCGalaxy.Drawing
             Palettes.Add(new ImagePalette("SimpleGrayscale", GrayscaleSimple));
             if (!Directory.Exists("extra/palettes"))
                 Directory.CreateDirectory("extra/palettes");
-            //string[] files = Directory.GetFiles("extra/palettes");
             string[] files = FileIO.TryGetFiles("extra/palettes");
             foreach (string file in files)
                 LoadPalette(file);
@@ -54,7 +53,6 @@ namespace MCGalaxy.Drawing
             string name = Path.GetFileNameWithoutExtension(file);
             ImagePalette palette = Find(name);
             if (palette != null) Palettes.Remove(palette);
-            //string[] lines = File.ReadAllLines(file);
             string[] lines = FileIO.TryReadAllLines(file);
             List<PaletteEntry> entries = new();
             string[] parts = new string[5];
@@ -62,7 +60,7 @@ namespace MCGalaxy.Drawing
             {
                 if (line.IsCommentLine()) continue;
                 line.FixedSplit(parts, ':');
-                if (parts[3] == null || parts[4] != null) continue; // not a proper line
+                if (parts[3] == null || parts[4] != null) continue;
                 entries.Add(ParseEntry(parts));
             }
             palette = new ImagePalette(name, entries.ToArray());
@@ -72,10 +70,10 @@ namespace MCGalaxy.Drawing
         {
             ushort block = ushort.Parse(parts[0]);
             block = Block.MapOldRaw(block);
-            byte r = byte.Parse(parts[1]);
-            byte g = byte.Parse(parts[2]);
-            byte b = byte.Parse(parts[3]);
-            return new PaletteEntry(r, g, b, block);
+            byte r = byte.Parse(parts[1]),
+                g = byte.Parse(parts[2]),
+                b = byte.Parse(parts[3]);
+            return new(r, g, b, block);
         }
         public void Save()
         {
@@ -89,13 +87,13 @@ namespace MCGalaxy.Drawing
         {
             ImagePalette palette = new(name, null);
             Palettes.Add(palette);
-            using (File.Create(palette.FileName)) { }
+            using (File.Create(palette.FileName)) 
+            {
+            }
         }
         public static void Remove(ImagePalette palette)
         {
             Palettes.Remove(palette);
-            //if (!File.Exists(palette.FileName)) return;
-            //File.Delete(palette.FileName);
             FileIO.TryDelete(palette.FileName);
         }
         static readonly PaletteEntry[] Color = new PaletteEntry[] {
@@ -144,7 +142,10 @@ namespace MCGalaxy.Drawing
         public ushort Block;
         public PaletteEntry(byte r, byte g, byte b, ushort block)
         {
-            R = r; G = g; B = b; Block = block;
+            R = r;
+            G = g; 
+            B = b;
+            Block = block;
         }
     }
 }

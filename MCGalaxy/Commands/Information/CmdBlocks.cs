@@ -80,7 +80,8 @@ namespace MCGalaxy.Commands.Info
             if (Block.IsPhysicsType(block))
             {
                 p.Message("&bComplex information for \"{0}\":", name);
-                OutputPhysicsInfo(p, scope, block); return;
+                OutputPhysicsInfo(p, scope, block); 
+                return;
             }
             string msg = "";
             for (ushort b = 66; b < 256; b++)
@@ -102,7 +103,6 @@ namespace MCGalaxy.Commands.Info
         {
             ushort conv = Block.Convert(b);
             p.Message("&c  Appears as a \"{0}\" block", Block.GetName(p, conv));
-            // TODO: Use scope[b] instead of hardcoded global
             if (Block.LightPass(b)) p.Message("  Allows light through");
             if (Block.NeedRestart(b)) p.Message("  The block's physics will auto-start");
             if (Physics(scope, b))
@@ -118,11 +118,7 @@ namespace MCGalaxy.Commands.Info
             if (Mover(scope, conv)) p.Message("  Can be activated by walking through it");
         }
         static bool Mover(BlockProps[] scope, ushort conv) => BlockBehaviour.GetWalkthroughHandler(conv, scope, Block.Walkthrough(conv)) != null;
-        static bool Physics(BlockProps[] scope, ushort b)
-        {
-            if (scope[b].IsMessageBlock || scope[b].IsPortal) return false;
-            return !scope[b].IsDoor && !scope[b].IsTDoor && !scope[b].OPBlock && BlockBehaviour.GetPhysicsHandler(b, Block.Props) != null;
-        }
+        static bool Physics(BlockProps[] scope, ushort b) => !scope[b].IsMessageBlock && !scope[b].IsPortal && !scope[b].IsDoor && !scope[b].IsTDoor && !scope[b].OPBlock && BlockBehaviour.GetPhysicsHandler(b, Block.Props) != null;
         public override void Help(Player p)
         {
             p.Message("&T/Blocks &H- Lists all basic blocks");

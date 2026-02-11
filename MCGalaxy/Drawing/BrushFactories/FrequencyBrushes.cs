@@ -26,23 +26,19 @@ namespace MCGalaxy.Drawing.Brushes
                                      Predicate<string> argFilter,
                                      Predicate<string> argHandler)
         {
-            string[] parts = args.Message.SplitSpaces(); // out List blocks
+            string[] parts = args.Message.SplitSpaces();
             Player p = args.Player;
             int minArgs = Math.Max(2, parts.Length);
-            blocks = new List<ushort>(minArgs);
-            freqs = new List<int>(minArgs);
+            blocks = new(minArgs);
+            freqs = new(minArgs);
             for (int i = 0; i < parts.Length; i++)
             {
                 if (parts[i].Length == 0) continue;
-                // Brush specific arguments
                 if (argFilter(parts[i]))
                 {
                     if (!argHandler(parts[i])) return false;
                     continue;
                 }
-                // Arguments use the format of either:
-                //  1) block
-                //  2) block/frequency
                 int sepIndex = parts[i].IndexOf('/');
                 string arg = sepIndex >= 0 ? parts[i].Substring(0, sepIndex) : parts[i];
                 int count = CommandParser.GetBlocks(p, arg, blocks, true);
@@ -54,15 +50,15 @@ namespace MCGalaxy.Drawing.Brushes
                     if (!CommandParser.GetInt(p, arg, "Frequency", ref freq, 1, 2000)) return false;
                 }
                 for (int j = 0; j < count; j++)
+                {
                     freqs.Add(freq);
+                }
             }
-            // treat 0 arguments as the same as if it was 1 argument of "held block"
             if (blocks.Count == 0)
             {
                 blocks.Add(args.Block);
                 freqs.Add(1);
             }
-            // if only 1 block given, treat second block as 'unchanged'/'skip'
             if (blocks.Count == 1)
             {
                 blocks.Add(Block.Invalid);
@@ -70,7 +66,7 @@ namespace MCGalaxy.Drawing.Brushes
             }
             foreach (ushort b in blocks)
             {
-                if (b == Block.Invalid) continue; // "Skip" block
+                if (b == Block.Invalid) continue;
                 if (!CommandParser.IsBlockAllowed(p, "draw with", b)) return false;
             }
             return true;
@@ -85,7 +81,9 @@ namespace MCGalaxy.Drawing.Brushes
             for (int i = 0, index = 0; i < toAffect.Count; i++)
             {
                 for (int j = 0; j < freqs[i]; j++)
+                {
                     blocks[index++] = toAffect[i];
+                }
             }
             return blocks;
         }
@@ -128,7 +126,6 @@ namespace MCGalaxy.Drawing.Brushes
             ushort[] blocks = FrequencyBrush.Combine(toAffect, freqs);
             return new GradientBrush(blocks, axis);
         }
-        // TODO: Need to unify axis parsing code across MCGalaxy
         static CustomModelAnimAxis GetAxis(ref BrushArgs args)
         {
             CustomModelAnimAxis axis = (CustomModelAnimAxis)200;

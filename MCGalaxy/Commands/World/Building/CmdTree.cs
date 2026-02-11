@@ -49,13 +49,12 @@ namespace MCGalaxy.Commands.Building
             TreeDrawOp op = (TreeDrawOp)dArgs.Op;
             if (op.Size != -1)
             {
-                dArgs.BrushArgs = dArgs.Message.Splice(2, 0); // type, value/height, brush args
+                dArgs.BrushArgs = dArgs.Message.Splice(2, 0);
             }
             else
             {
-                dArgs.BrushArgs = dArgs.Message.Splice(1, 0); // type, brush args
+                dArgs.BrushArgs = dArgs.Message.Splice(1, 0);
             }
-            // use leaf blocks by default
             if (dArgs.BrushName.CaselessEq("Normal") && dArgs.BrushArgs.Length == 0)
             {
                 dArgs.BrushArgs = Block.Leaves.ToString();

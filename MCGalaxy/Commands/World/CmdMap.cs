@@ -27,15 +27,19 @@ namespace MCGalaxy.Commands.World
             if (CheckSuper(p, message, "level name")) return;
             if (message.Length == 0)
             {
-                PrintMapInfo(p, p.Level.Config); return;
+                PrintMapInfo(p, p.Level.Config); 
+                return;
             }
             string[] args = message.SplitSpaces(3);
-            string value;
-            string optName;
+            string value, optName;
             Level lvl;
             if (IsMapOption(args))
             {
-                if (p.IsSuper) { SuperRequiresArgs(p, "level name"); return; }
+                if (p.IsSuper) 
+                { 
+                    SuperRequiresArgs(p, "level name"); 
+                    return;
+                }
                 lvl = p.Level;
                 optName = args[0];
                 args = message.SplitSpaces(2);
@@ -73,7 +77,6 @@ namespace MCGalaxy.Commands.World
         {
             LevelOption opt = LevelOptions.Find(args[0]);
             if (opt == null) return false;
-            // In rare case someone uses /map motd motd My MOTD
             if (opt.Name == LevelOptions.MOTD && (args.Length == 1 || !args[1].CaselessStarts("motd "))) return true;
             int argsCount = HasArgument(opt.Name) ? 2 : 1;
             return args.Length == argsCount;
@@ -124,7 +127,8 @@ namespace MCGalaxy.Commands.World
             LevelOption opt = LevelOptions.Find(message);
             if (opt == null)
             {
-                p.Message("Unrecognised option \"{0}\".", message); return;
+                p.Message("Unrecognised option \"{0}\".", message); 
+                return;
             }
             bool isMotd = opt.Name == LevelOptions.MOTD;
             string suffix = isMotd ? " <value>" : (HasArgument(opt.Name) ? " [value]" : "");

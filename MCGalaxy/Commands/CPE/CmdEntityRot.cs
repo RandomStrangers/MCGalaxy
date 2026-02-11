@@ -54,7 +54,8 @@ namespace MCGalaxy.Commands.CPE
             string[] bits = args.SplitSpaces();
             if (bits.Length != 2)
             {
-                p.Message("You need to provide an axis name and angle."); return false;
+                p.Message("You need to provide an axis name and angle."); 
+                return false;
             }
             int angle = 0;
             if (!CommandParser.GetInt(p, bits[1], "Angle", ref angle, -360, 360)) return false;
@@ -68,7 +69,8 @@ namespace MCGalaxy.Commands.CPE
             }
             else
             {
-                p.Message("Axis name must be X or Z."); return false;
+                p.Message("Axis name must be X or Z."); 
+                return false;
             }
             return true;
         }

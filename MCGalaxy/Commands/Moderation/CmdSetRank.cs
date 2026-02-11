@@ -27,9 +27,13 @@ namespace MCGalaxy.Commands.Moderation
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(3);
-            if (args.Length < 2) { Help(p); return; }
-            string rankName, target;
-            string reason = args.Length > 2 ? args[2] : null;
+            if (args.Length < 2) 
+            { 
+                Help(p);
+                return;
+            }
+            string rankName, target,
+                reason = args.Length > 2 ? args[2] : null;
             if (args[0].CaselessEq("+up"))
             {
                 rankName = args[0];
@@ -48,7 +52,8 @@ namespace MCGalaxy.Commands.Moderation
             if (target == null) return;
             if (p.name.CaselessEq(target))
             {
-                p.Message("Cannot change your own rank."); return;
+                p.Message("Cannot change your own rank.");
+                return;
             }
             Group curRank = PlayerInfo.GetGroup(target);
             Group newRank = TargetRank(p, rankName, curRank);
@@ -77,21 +82,25 @@ namespace MCGalaxy.Commands.Moderation
             if (reason == null) return false;
             if (newRank == banned)
             {
-                p.Message("Use &T/Ban &Sto change a player's rank to {0}&S.", banned.ColoredName); return false;
+                p.Message("Use &T/Ban &Sto change a player's rank to {0}&S.", banned.ColoredName); 
+                return false;
             }
             if (curRank == banned)
             {
-                p.Message("Use &T/Unban &Sto change a player's rank from &S{0}.", banned.ColoredName); return false;
+                p.Message("Use &T/Unban &Sto change a player's rank from &S{0}.", banned.ColoredName); 
+                return false;
             }
             if (!CheckRank(p, data, name, curRank.Permission, "change the rank of", false)) return false;
             if (newRank.Permission >= data.Rank)
             {
-                p.Message("Cannot rank a player to a rank equal to or higher than yours."); return false;
+                p.Message("Cannot rank a player to a rank equal to or higher than yours."); 
+                return false;
             }
             if (newRank.Permission == curRank.Permission)
             {
                 p.Message("{0} &Sis already ranked {1}.",
-                          p.FormatNick(name), curRank.ColoredName); return false;
+                          p.FormatNick(name), curRank.ColoredName);
+                return false;
             }
             bool cancel = false;
             OnChangingGroupEvent.Call(name, curRank, newRank, ref cancel);
@@ -108,7 +117,8 @@ namespace MCGalaxy.Commands.Moderation
                 Group next = Group.GroupList[index - 1];
                 if (next.Permission > LevelPermission.Banned) return next;
             }
-            p.Message("No lower ranks exist"); return null;
+            p.Message("No lower ranks exist");
+            return null;
         }
         static Group NextRankUp(Player p, Group curRank)
         {
@@ -118,7 +128,8 @@ namespace MCGalaxy.Commands.Moderation
                 Group next = Group.GroupList[index + 1];
                 return next;
             }
-            p.Message("No higher ranks exist"); return null;
+            p.Message("No higher ranks exist"); 
+            return null;
         }
         public override void Help(Player p)
         {

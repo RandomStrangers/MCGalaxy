@@ -35,7 +35,6 @@ namespace MCGalaxy.Core
         internal static void HandleCommand(Player p, string cmd, string _, CommandData __)
         {
             if (!Server.Config.CoreSecretCommands) return;
-            // DO NOT REMOVE THE TWO COMMANDS BELOW, /PONY AND /RAINBOWDASHLIKESCOOLTHINGS. -EricKilla
             if (cmd == "pony")
             {
                 p.cancelcommand = true;

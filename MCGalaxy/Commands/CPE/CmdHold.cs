@@ -23,14 +23,19 @@ namespace MCGalaxy.Commands.CPE
         public override bool SuperUseable => false;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p);
+                return; 
+            }
             string[] args = message.SplitSpaces(2);
             if (!CommandParser.GetBlock(p, args[0], out ushort block)) return;
             bool locked = false;
             if (args.Length > 1 && !CommandParser.GetBool(p, args[1], ref locked)) return;
             if (Block.IsPhysicsType(block))
             {
-                p.Message("Cannot hold physics blocks"); return;
+                p.Message("Cannot hold physics blocks");
+                return;
             }
             if (p.Session.SendHoldThis(block, locked))
             {

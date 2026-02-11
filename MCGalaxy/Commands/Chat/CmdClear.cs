@@ -24,6 +24,16 @@ namespace MCGalaxy.Commands.Chatting
         public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Admin, "can clear chat for everyone") };
         public override void Use(Player p, string message)
         {
+            if (p.IsSuper)
+            {
+                Player[] players = PlayerInfo.Online.Items;
+                foreach (Player pl in players)
+                {
+                    ClearChat(pl);
+                }
+                Chat.MessageAll("&4Global Chat cleared.");
+                return;
+            }
             if (!message.CaselessEq("global"))
             {
                 ClearChat(p);

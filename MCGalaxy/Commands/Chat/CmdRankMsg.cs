@@ -23,13 +23,18 @@ namespace MCGalaxy.Commands.Chatting
         public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override bool UseableWhenFrozen => true;
         public override bool MessageBlockRestricted => true;
+        public override bool UpdatesLastCmd => false;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p);
+                return; 
+            }
             if (!MessageCmd.CanSpeak(p, Name)) return;
             string[] args = message.SplitSpaces(2);
-            string rank = args.Length == 1 ? p.group.Name : args[0];
-            string text = args[args.Length - 1];
+            string rank = args.Length == 1 ? p.group.Name : args[0],
+                text = args[args.Length - 1];
             Group grp = Matcher.FindRanks(p, rank);
             if (grp == null) return;
             string msg = grp.Color + "<" + grp.Name + ">λNICK: &f" + text;

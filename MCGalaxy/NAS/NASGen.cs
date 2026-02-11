@@ -97,11 +97,7 @@ namespace MCGalaxy
             }
             seed = bits[0];
             string[] chunks = bits[1].Split(',');
-            if (chunks.Length <= 1)
-            {
-                return false;
-            }
-            return int.TryParse(chunks[0], out chunkOffsetX) && int.TryParse(chunks[1], out chunkOffsetZ);
+            return chunks.Length > 1 && int.TryParse(chunks[0], out chunkOffsetX) && int.TryParse(chunks[1], out chunkOffsetZ);
         }
         public static bool Gen(Player p, Level lvl, MapGenArgs args)
         {
@@ -543,7 +539,7 @@ namespace MCGalaxy
                         double value = adjNoise.GetValue(xVal, yVal, zVal);
                         if (value > threshold)
                         {
-                            lvl.SetBlock((ushort)x, (ushort)y, (ushort)z, NASPlugin.FromRaw(451));
+                            lvl.SetBlock((ushort)x, (ushort)y, (ushort)z, Block.FromRaw(451));
                         }
                     }
                 }
@@ -575,7 +571,7 @@ namespace MCGalaxy
                                 }
                                 if (r.Next(0, 320) == 0)
                                 {
-                                    lvl.SetBlock(x, (ushort)(y + 1), z, NASPlugin.FromRaw(456));
+                                    lvl.SetBlock(x, (ushort)(y + 1), z, Block.FromRaw(456));
                                 }
                             }
                         }
@@ -601,7 +597,7 @@ namespace MCGalaxy
                         }
                         if (biome == 2)
                         {
-                            topSoil = NASPlugin.FromRaw(139);
+                            topSoil = Block.FromRaw(139);
                         }
                         if ((lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z) == 3 || (lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z) == 12 && biome == 1)) &&
                             lvl.FastGetBlock((ushort)x, (ushort)(y + 1), (ushort)z) == 0)
@@ -710,7 +706,7 @@ namespace MCGalaxy
                             }
                             if (r.NextDouble() <= 0.05)
                             {
-                                lvl.SetBlock((ushort)x, oceanHeight, (ushort)z, NASPlugin.FromRaw(449));
+                                lvl.SetBlock((ushort)x, oceanHeight, (ushort)z, Block.FromRaw(449));
                             }
                         }
                     }
@@ -825,7 +821,7 @@ namespace MCGalaxy
                         {
                             if (lvl.FastGetBlock(xPl, yPl, zPl) == 1 || lvl.FastGetBlock(xPl, yPl, zPl) == 48)
                             {
-                                lvl.SetBlock(xPl, yPl, zPl, biome >= 0 ? NASPlugin.FromRaw(429) : NASPlugin.FromRaw(452));
+                                lvl.SetBlock(xPl, yPl, zPl, biome >= 0 ? Block.FromRaw(429) : Block.FromRaw(452));
                             }
                         }
                     }
@@ -915,7 +911,7 @@ namespace MCGalaxy
             ushort hereBlock = lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z);
             if (hereBlock == 1 || hereBlock == 52 || hereBlock == 48)
             {
-                lvl.SetBlock((ushort)x, (ushort)y, (ushort)z, NASPlugin.FromRaw(oreID));
+                lvl.SetBlock((ushort)x, (ushort)y, (ushort)z, Block.FromRaw(oreID));
             }
             else
             {
@@ -961,21 +957,21 @@ namespace MCGalaxy
                 lvl.CustomBlockDefs[8].FogR = 72;
                 lvl.CustomBlockDefs[8].FogG = 94;
                 lvl.CustomBlockDefs[8].FogB = 24;
-                lvl.CustomBlockDefs[NASPlugin.FromRaw(129)] = BlockDefinition.GlobalDefs[NASPlugin.FromRaw(129)].Copy();
-                lvl.CustomBlockDefs[NASPlugin.FromRaw(129)].Name = "#Grass";
-                lvl.CustomBlockDefs[NASPlugin.FromRaw(129)].FogR = 176;
-                lvl.CustomBlockDefs[NASPlugin.FromRaw(129)].FogG = 191;
-                lvl.CustomBlockDefs[NASPlugin.FromRaw(129)].FogB = 176;
+                lvl.CustomBlockDefs[Block.FromRaw(129)] = BlockDefinition.GlobalDefs[Block.FromRaw(129)].Copy();
+                lvl.CustomBlockDefs[Block.FromRaw(129)].Name = "#Grass";
+                lvl.CustomBlockDefs[Block.FromRaw(129)].FogR = 176;
+                lvl.CustomBlockDefs[Block.FromRaw(129)].FogG = 191;
+                lvl.CustomBlockDefs[Block.FromRaw(129)].FogB = 176;
                 lvl.CustomBlockDefs[3] = BlockDefinition.GlobalDefs[3].Copy();
                 lvl.CustomBlockDefs[3].Name = "#Dirt";
                 lvl.CustomBlockDefs[3].FogR = 176;
                 lvl.CustomBlockDefs[3].FogG = 191;
                 lvl.CustomBlockDefs[3].FogB = 176;
-                lvl.CustomBlockDefs[NASPlugin.FromRaw(130)] = BlockDefinition.GlobalDefs[NASPlugin.FromRaw(130)].Copy();
-                lvl.CustomBlockDefs[NASPlugin.FromRaw(130)].Name = "#Tall grass";
-                lvl.CustomBlockDefs[NASPlugin.FromRaw(130)].FogR = 176;
-                lvl.CustomBlockDefs[NASPlugin.FromRaw(130)].FogG = 191;
-                lvl.CustomBlockDefs[NASPlugin.FromRaw(130)].FogB = 176;
+                lvl.CustomBlockDefs[Block.FromRaw(130)] = BlockDefinition.GlobalDefs[Block.FromRaw(130)].Copy();
+                lvl.CustomBlockDefs[Block.FromRaw(130)].Name = "#Tall grass";
+                lvl.CustomBlockDefs[Block.FromRaw(130)].FogR = 176;
+                lvl.CustomBlockDefs[Block.FromRaw(130)].FogG = 191;
+                lvl.CustomBlockDefs[Block.FromRaw(130)].FogB = 176;
                 BlockDefinition.Save(false, lvl);
             }
             for (int y = 0; y < lvl.Height - 1; y++)
@@ -1022,28 +1018,9 @@ namespace MCGalaxy
             {
                 return true;
             }
-            if (lvl.IsAirAt((ushort)x, (ushort)(y + 1), (ushort)z))
-            {
-                return true;
-            }
-            if (lvl.IsAirAt((ushort)x, (ushort)(y - 1), (ushort)z))
-            {
-                return true;
-            }
-            return lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z + 1)) || lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1));
+            return lvl.IsAirAt((ushort)x, (ushort)(y + 1), (ushort)z) || lvl.IsAirAt((ushort)x, (ushort)(y - 1), (ushort)z) || lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z + 1)) || lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1));
         }
-        public bool BlockExposed2(int x, int y, int z)
-        {
-            if (lvl.IsAirAt((ushort)(x + 1), (ushort)y, (ushort)z))
-            {
-                return true;
-            }
-            if (lvl.IsAirAt((ushort)(x - 1), (ushort)y, (ushort)z))
-            {
-                return true;
-            }
-            return lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z + 1)) || lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1));
-        }
+        public bool BlockExposed2(int x, int y, int z) => lvl.IsAirAt((ushort)(x + 1), (ushort)y, (ushort)z) || lvl.IsAirAt((ushort)(x - 1), (ushort)y, (ushort)z) || lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z + 1)) || lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1));
         public void GenDungeons()
         {
             p.Message("Generating structures");
@@ -1071,7 +1048,7 @@ namespace MCGalaxy
                     {
                         if (rng.Next(0, 3) == 0)
                         {
-                            level.SetBlock((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz), NASPlugin.FromRaw(180));
+                            level.SetBlock((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz), Block.FromRaw(180));
                         }
                         else
                         {
@@ -1097,7 +1074,7 @@ namespace MCGalaxy
                 {
                     for (int dz = 2; dz < 7; dz++)
                     {
-                        level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), NASPlugin.FromRaw(476));
+                        level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), Block.FromRaw(476));
                     }
                 }
                 level.SetTile((ushort)(x + 3), (ushort)(y + 2), (ushort)(z + 4), 0);
@@ -1120,11 +1097,11 @@ namespace MCGalaxy
                 level.SetTile((ushort)(x + 2), (ushort)(y + 1), (ushort)(z + 6), 48);
                 level.SetTile((ushort)(x + 6), (ushort)(y + 1), (ushort)(z + 2), 48);
                 level.SetTile((ushort)(x + 6), (ushort)(y + 1), (ushort)(z + 6), 48);
-                level.SetBlock((ushort)(x + 2), (ushort)(y + 1), (ushort)(z + 4), NASPlugin.FromRaw(469));
-                level.SetBlock((ushort)(x + 6), (ushort)(y + 1), (ushort)(z + 4), NASPlugin.FromRaw(469));
-                level.SetBlock((ushort)(x + 4), (ushort)(y + 1), (ushort)(z + 2), NASPlugin.FromRaw(469));
-                level.SetBlock((ushort)(x + 4), (ushort)(y + 1), (ushort)(z + 6), NASPlugin.FromRaw(469));
-                level.SetBlock((ushort)(x + 4), (ushort)(y + 2), (ushort)(z + 4), NASPlugin.FromRaw(457));
+                level.SetBlock((ushort)(x + 2), (ushort)(y + 1), (ushort)(z + 4), Block.FromRaw(469));
+                level.SetBlock((ushort)(x + 6), (ushort)(y + 1), (ushort)(z + 4), Block.FromRaw(469));
+                level.SetBlock((ushort)(x + 4), (ushort)(y + 1), (ushort)(z + 2), Block.FromRaw(469));
+                level.SetBlock((ushort)(x + 4), (ushort)(y + 1), (ushort)(z + 6), Block.FromRaw(469));
+                level.SetBlock((ushort)(x + 4), (ushort)(y + 2), (ushort)(z + 4), Block.FromRaw(457));
                 GenLoot(x + 1, y + 2, z + 1, level, rng, nsl, forced, p);
                 GenLoot(x + 7, y + 2, z + 7, level, rng, nsl, forced, p);
                 return;
@@ -1142,7 +1119,7 @@ namespace MCGalaxy
                 {
                     for (int dz = 1; dz < 8; dz++)
                     {
-                        level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), (rng.Next(2) == 0) ? (ushort)65 : NASPlugin.FromRaw(685));
+                        level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), (rng.Next(2) == 0) ? (ushort)65 : Block.FromRaw(685));
                     }
                 }
                 GenLoot(x + 4, y + 3, z + 4, level, rng, nsl, forced, p);
@@ -1154,13 +1131,13 @@ namespace MCGalaxy
                 {
                     int dx = rng.Next(1, 8),
                         dz = rng.Next(1, 8);
-                    level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), NASPlugin.FromRaw(604));
+                    level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), Block.FromRaw(604));
                 }
                 for (int count = 0; count < 4; count++)
                 {
                     int dx = rng.Next(1, 8),
                         dz = rng.Next(1, 8);
-                    level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), NASPlugin.FromRaw(653));
+                    level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), Block.FromRaw(653));
                 }
                 GenLoot(x + 4, y + 2, z + 4, level, rng, nsl, forced, p);
                 return;
@@ -1193,10 +1170,10 @@ namespace MCGalaxy
                 {
                     for (int dz = 1; dz < 8; dz++)
                     {
-                        level.SetBlock((ushort)(x + dx), (ushort)(y + 1), (ushort)(z + dz), NASPlugin.FromRaw(129));
+                        level.SetBlock((ushort)(x + dx), (ushort)(y + 1), (ushort)(z + dz), Block.FromRaw(129));
                     }
                 }
-                level.SetBlock((ushort)(x + 4), (ushort)(y + 3), (ushort)(z + 4), NASPlugin.FromRaw(171));
+                level.SetBlock((ushort)(x + 4), (ushort)(y + 3), (ushort)(z + 4), Block.FromRaw(171));
                 NASBlockEntity bEntity = new()
                 {
                     blockText = "&mCongratulations. You touched grass."
@@ -1218,7 +1195,7 @@ namespace MCGalaxy
         }
         public static void GenLoot(int x, int y, int z, Level level, Random rng, NASLevel nsl, bool forced, Player p)
         {
-            level.SetBlock((ushort)x, (ushort)y, (ushort)z, NASPlugin.FromRaw(647));
+            level.SetBlock((ushort)x, (ushort)y, (ushort)z, Block.FromRaw(647));
             NASBlockEntity bEntity = new()
             {
                 drop = new(41, rng.Next(1, 5))

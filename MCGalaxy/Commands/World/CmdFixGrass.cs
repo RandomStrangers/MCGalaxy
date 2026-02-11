@@ -46,7 +46,8 @@ namespace MCGalaxy.Commands.World
             }
             else
             {
-                Help(p); return;
+                Help(p);
+                return;
             }
             p.Message("Place or break two blocks to determine the bounds within which grass/dirt is fixed");
             p.MakeSelection(2, "Selecting corners for &SFixGrass", op, DoFixGrass);

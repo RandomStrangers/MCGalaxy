@@ -20,15 +20,24 @@ namespace MCGalaxy.Commands.Moderation
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(3);
-            if (args.Length < 2) { Help(p); return; }
+            if (args.Length < 2) 
+            {
+                Help(p);
+                return; 
+            }
             string cmdName = args[0], cmdArgs = "", msg;
             Search(ref cmdName, ref cmdArgs);
             Command cmd = Find(cmdName);
-            if (cmd == null) { p.Message("Could not find command entered"); return; }
+            if (cmd == null) 
+            {
+                p.Message("Could not find command entered");
+                return; 
+            }
             if (!p.CanUse(cmd))
             {
                 cmd.Permissions.MessageCannotUse(p);
-                p.Message("Therefore you cannot change the permissions of &T/{0}", cmd.Name); return;
+                p.Message("Therefore you cannot change the permissions of &T/{0}", cmd.Name); 
+                return;
             }
             if (args.Length == 2)
             {
@@ -43,7 +52,8 @@ namespace MCGalaxy.Commands.Moderation
                 CommandExtraPerms perms = CommandExtraPerms.Find(cmd.Name, num);
                 if (perms == null)
                 {
-                    p.Message("This command has no extra permission by that number."); return;
+                    p.Message("This command has no extra permission by that number.");
+                    return;
                 }
                 msg = SetPerms(p, args, data, perms, "extra permission", "use", "usable");
                 if (msg != null)
@@ -58,7 +68,6 @@ namespace MCGalaxy.Commands.Moderation
         void UpdateExtraPerms(CommandExtraPerms perms, Player p, string msg)
         {
             CommandExtraPerms.Save();
-            //Announce(p, cmd.name + "&S's extra permission " + idx + " was set to " + grp.ColoredName);
             Announce(p, perms.CmdName + " extra permission #" + perms.Num + msg);
         }
         public override void Help(Player p)
@@ -72,7 +81,11 @@ namespace MCGalaxy.Commands.Moderation
         }
         public override void Help(Player p, string message)
         {
-            if (!message.CaselessEq("advanced")) { base.Help(p, message); return; }
+            if (!message.CaselessEq("advanced")) 
+            { 
+                base.Help(p, message);
+                return; 
+            }
             p.Message("&T/CmdSet [cmd] +[rank]");
             p.Message("&HAllows a specific rank to use [cmd]");
             p.Message("&T/CmdSet [cmd] -[rank]");

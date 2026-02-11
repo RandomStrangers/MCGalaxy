@@ -37,11 +37,9 @@ namespace MCGalaxy
                 }
             }
         }
-        // Put a lock on sending messages so that MessageLines is not interrupted by other messages
         public void Message(string message, params object[] args) => Message(string.Format(message, args));
         public virtual void Message(string message)
         {
-            // Message should start with server color if no initial color
             if (message.Length > 0 && !(message[0] == '&' || message[0] == '%')) message = "&S" + message;
             message = Chat.Format(message, this);
             lock (messageLocker)
@@ -79,8 +77,6 @@ namespace MCGalaxy
             string motd = GetMotd();
             motd = Chat.Format(motd, this);
             OnSendingMotdEvent.Call(this, ref motd);
-            // Change -hax into +hax etc when in Referee mode
-            //  (can't just do Replace('-', '+') though, that breaks -push)
             if (Game.Referee)
             {
                 motd = motd
@@ -140,12 +136,10 @@ namespace MCGalaxy
             {
                 Session.SendTeleport(0xFF, pos, rot);
             }
-            // Forcibly move the player since their position won't naturally update
             if (frozen || Session.Ping.IgnorePosition) Pos = pos;
         }
         public void SendBlockchange(ushort x, ushort y, ushort z, ushort block)
         {
-            //if (x < 0 || y < 0 || z < 0) return;
             if (x >= Level.Width || y >= Level.Height || z >= Level.Length) return;
             Session.SendBlockchange(x, y, z, block);
         }
@@ -171,19 +165,16 @@ namespace MCGalaxy
             string url = GetTextureUrl();
             if (Supports(CpeExt.EnvMapAspect, 2))
             {
-                // reset all other textures back to client default.
                 if (url != lastUrl) Send(Packet.EnvMapUrlV2("", hasCP437));
                 Send(Packet.EnvMapUrlV2(url, hasCP437));
             }
             else if (Supports(CpeExt.EnvMapAspect))
             {
-                // reset all other textures back to client default.
                 if (url != lastUrl) Send(Packet.EnvMapUrl("", hasCP437));
                 Send(Packet.EnvMapUrl(url, hasCP437));
             }
             else if (Supports(CpeExt.EnvMapAppearance, 2))
             {
-                // reset all other textures back to client default.
                 if (url != lastUrl)
                 {
                     Send(Packet.MapAppearanceV2("", side, edge, edgeHeight, cloudsHeight, maxFogDist, hasCP437));
@@ -200,7 +191,6 @@ namespace MCGalaxy
         public void SendCurrentBlockPermissions()
         {
             if (!Supports(CpeExt.BlockPermissions)) return;
-            // Write the block permissions as one bulk TCP packet
             SendAllBlockPermissions();
         }
         void SendAllBlockPermissions()
@@ -214,7 +204,6 @@ namespace MCGalaxy
                 ushort block = Block.FromRaw((ushort)i);
                 bool place = group.CanPlace[block] && Level.Config.Buildable,
                     delete = group.CanDelete[block] && (Level.Config.Deletable || i == Block.Air);
-                // Placing air is the same as deleting existing block at that position in the world
                 if (block == 0) place &= delete;
                 Packet.WriteBlockPermission((ushort)i, place, delete, extBlocks, bulk, i * size);
             }
@@ -252,7 +241,6 @@ namespace MCGalaxy
                 if (instance == items[i].data) return id;
                 used[id] = 1;
             }
-            // find unused ID, or 255 if none unused
             for (id = 0; id < 255; id++)
             {
                 if (used[id] == 0) break;

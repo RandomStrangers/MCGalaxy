@@ -39,7 +39,6 @@ namespace MCGalaxy
             {
                 props.IsPortal = true;
             }
-            // oDoor blocks
             if (b >= oDoor_Log && b <= oDoor_Wood)
             {
                 props.oDoorBlock = (ushort)(oDoor_Log_air + (b - oDoor_Log));
@@ -56,7 +55,6 @@ namespace MCGalaxy
             {
                 props.oDoorBlock = (ushort)(oDoor_Green + (b - oDoor_Green_air));
             }
-            // Water/Lava kills
             props.LavaKills = b == Wood || b == Log
                 || b == Sponge || b == Bookshelf || b == Leaves || b == Crate;
             if ((b >= Red && b <= White) || (b >= LightPink && b <= Turquoise))
@@ -81,25 +79,21 @@ namespace MCGalaxy
                 props.DeathMessage = deathMsg;
                 props.KillerBlock = true;
             }
-            // Block specific properties
             if (b == Slab) props.StackBlock = DoubleSlab;
             if (b == CobblestoneSlab) props.StackBlock = Cobblestone;
             if (b == Dirt) props.GrassBlock = Grass;
             if (b == Grass) props.DirtBlock = Dirt;
             return props;
         }
-        static bool IsDoor(ushort b)
-        {
-            if (b >= Door_Obsidian && b <= Door_Slab) return true;
-            if (b >= Door_Iron && b <= Door_Bookshelf) return true;
-            return b >= Door_Orange && b <= Door_White || b >= Door_Air && b <= Door_Lava || b == Door_Cobblestone || b == Door_Red || b == Door_Log || b == Door_Gold;
-        }
+        static bool IsDoor(ushort b) => b >= Door_Obsidian && b <= Door_Slab || b >= Door_Iron && b <= Door_Bookshelf || b >= Door_Orange && b <= Door_White || b >= Door_Air && b <= Door_Lava || b == Door_Cobblestone || b == Door_Red || b == Door_Log || b == Door_Gold;
         static AnimalAI GetAI(ushort b)
         {
             if (b == Bird_Black || b == Bird_White || b == Bird_Lava || b == Bird_Water) return AnimalAI.Fly;
-            if (b == Bird_Red || b == Bird_Blue || b == Bird_Killer) return AnimalAI.KillerAir;
-            if (b == Fish_Betta || b == Fish_Shark) return AnimalAI.KillerWater;
-            return b == Fish_LavaShark
+            return b == Bird_Red || b == Bird_Blue || b == Bird_Killer
+                ? AnimalAI.KillerAir
+                : b == Fish_Betta || b == Fish_Shark
+                ? AnimalAI.KillerWater
+                : b == Fish_LavaShark
                 ? AnimalAI.KillerLava
                 : b == Fish_Gold || b == Fish_Salmon || b == Fish_Sponge ? AnimalAI.FleeWater : AnimalAI.None;
         }
@@ -118,9 +112,11 @@ namespace MCGalaxy
             if (b == Fish_Shark) return "@p &Swas eaten by a &cshark.";
             if (b == LavaFire) return "@p &Sburnt to a &ccrisp.";
             if (b == RocketHead) return "@p &Swas &cin a fiery explosion.";
-            if (b == ZombieBody) return "@p &Sdied due to lack of &5brain.";
-            if (b == Creeper) return "@p &Swas killed &cb-SSSSSSSSSSSSSS";
-            return b == Fish_LavaShark ? "@p &Swas eaten by a ... LAVA SHARK?!" : b == Snake ? "@p &Swas bit by a deadly snake." : null;
+            return b == ZombieBody
+                ? "@p &Sdied due to lack of &5brain."
+                : b == Creeper
+                ? "@p &Swas killed &cb-SSSSSSSSSSSSSS"
+                : b == Fish_LavaShark ? "@p &Swas eaten by a ... LAVA SHARK?!" : b == Snake ? "@p &Swas bit by a deadly snake." : null;
         }
         internal static void SetDefaultNames()
         {

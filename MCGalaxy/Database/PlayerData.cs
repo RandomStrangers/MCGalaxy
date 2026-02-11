@@ -92,7 +92,6 @@ namespace MCGalaxy.DB
                 IP = record.GetText(ColumnIP),
                 DatabaseID = record.GetInt(ColumnID)
             };
-            // Backwards compatibility with old format
             string rawTime = record.GetText(ColumnTimeSpent);
             try
             {
@@ -126,14 +125,12 @@ namespace MCGalaxy.DB
         internal static string ParseColor(string raw)
         {
             if (raw.Length == 0) return raw;
-            // Try parse color name, then color code
             string col = Colors.Parse(raw);
             return col.Length > 0 ? col : Colors.Name(raw).Length == 0 ? "" : raw;
         }
         static DateTime ParseDateTime(ISqlRecord record, string name)
         {
             int i = record.GetOrdinal(name);
-            // dates are a major pain
             string raw = record.GetStringValue(i);
             if (raw.TryParseInvariantDateString(out DateTime dt)) return dt;
             try

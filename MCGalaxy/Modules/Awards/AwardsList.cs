@@ -79,7 +79,7 @@ namespace MCGalaxy.Modules.Awards
                 w.WriteLine("Climbing the ladder : Earned a rank advancement");
                 w.WriteLine("Do you live here? : Joined the server a huge bunch of times");
             }
-            Awards = new List<Award>();
+            Awards = new();
             PropertiesFile.Read("text/awardsList.txt", ProcessLine, ':');
         }
         static void ProcessLine(string award, string desc)

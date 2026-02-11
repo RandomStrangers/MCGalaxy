@@ -24,7 +24,11 @@ namespace MCGalaxy.Commands.Info
         public override void Use(Player p, string message, CommandData data)
         {
             List<OnlineListEntry> all = PlayerInfo.GetOnlineList(p, data.Rank, out int total);
-            if (message.Length > 0) { ListOfRank(p, message, all); return; }
+            if (message.Length > 0)
+            { 
+                ListOfRank(p, message, all); 
+                return; 
+            }
             p.Message("There {0} &a{1} &Splayer{2} online.",
                       total == 1 ? "is" : "are",
                       total, total.Plural());

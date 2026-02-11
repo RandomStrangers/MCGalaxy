@@ -56,7 +56,8 @@ namespace MCGalaxy.Commands.Misc
             }
             else
             {
-                Help(p); return;
+                Help(p);
+                return;
             }
             Entity dst = bot ?? (Entity)target;
             PlayerOperations.TeleportToEntity(p, dst);
@@ -70,14 +71,12 @@ namespace MCGalaxy.Commands.Misc
             pitch = ori.Rot.HeadX;
             if (!precise)
             {
-                // relative to feet block coordinates
                 P = p.Pos.FeetBlockCoords;
                 if (!CommandParser.GetCoords(p, args, 0, ref P)) return false;
                 pos = Position.FromFeetBlockCoords(P.X, P.Y, P.Z);
             }
             else
             {
-                // relative to feet position exactly
                 P = new(p.Pos.X, p.Pos.Y - 51, p.Pos.Z);
                 if (!CommandParser.GetCoords(p, args, 0, ref P)) return false;
                 pos = new(P.X, P.Y + 51, P.Z);

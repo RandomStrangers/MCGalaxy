@@ -30,7 +30,7 @@ namespace MCGalaxy
         WeatherSpeed = 6, WeatherFade = 7, ExpFog = 8,
         SidesOffset = 9, SkyboxHorSpeed = 10, SkyboxVerSpeed = 11,
         Max,
-        Weather = 255, // this is internal, not an official env prop
+        Weather = 255,
     }
     public enum EntityProp : byte
     {
@@ -175,7 +175,6 @@ namespace MCGalaxy
                 e.Enabled = true;
             }
             PropertiesFile.Read(Paths.CPEDisabledFile, ParseLine, '=');
-            // file is out of sync with actual list
             if (supportedCount == All.Length) return;
             try
             {

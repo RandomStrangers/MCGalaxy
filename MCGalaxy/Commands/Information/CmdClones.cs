@@ -28,7 +28,11 @@ namespace MCGalaxy.Commands.Info
         {
             if (message.Length == 0)
             {
-                if (p.IsSuper) { SuperRequiresArgs(p, "IP address"); return; }
+                if (p.IsSuper) 
+                {
+                    SuperRequiresArgs(p, "IP address"); 
+                    return; 
+                }
                 message = p.ip;
             }
             else

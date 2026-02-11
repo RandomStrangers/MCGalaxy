@@ -16,7 +16,7 @@ namespace MCGalaxy
         public static JsonSerializer serializer = new();
         public static Scheduler weatherScheduler;
         public static SchedulerTask task;
-        public const string Path = NASPlugin.Path + "CoreData/";
+        public const string Path = NAS.Path + "CoreData/";
         public static string globalSkyColor, globalCloudColor,
             globalSunColor, globalShadowColor, 
             TimeFilePath = Path + "time.json";

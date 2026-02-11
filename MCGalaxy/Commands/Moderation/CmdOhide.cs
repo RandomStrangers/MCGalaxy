@@ -22,7 +22,11 @@ namespace MCGalaxy.Commands.Moderation
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p);
+                return;
+            }
             string[] args = message.SplitSpaces();
             Player target = PlayerInfo.FindMatches(p, args[0]);
             if (target == null) return;

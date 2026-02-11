@@ -57,7 +57,7 @@ namespace MCGalaxy
     }
     public delegate void LogHandler(LogType type, string message);
     /// <summary> Centralised class for outputting log messages. </summary>
-    /// <remarks> Outputs can be a file on disc, GUI, the console, etc subscribed to the LogHandler delegate. </remarks>
+    /// <remarks> Outputs can be a file on disc, the console, etc subscribed to the LogHandler delegate. </remarks>
     public static class Logger
     {
         public static LogHandler LogHandler;
@@ -72,20 +72,14 @@ namespace MCGalaxy
                 }
                 catch (Exception ex)
                 {
-                    // a LogHandler threw an exception, try to log that error
-                    LogLoggerError(ex);
+                    try
+                    {
+                        LogHandler(LogType.Error, FormatException(ex));
+                    }
+                    catch
+                    {
+                    }
                 }
-            }
-        }
-        static void LogLoggerError(Exception ex)
-        {
-            try
-            {
-                LogHandler(LogType.Error, FormatException(ex));
-            }
-            catch
-            {
-                // give up if the problematic LogHandler still throws an error
             }
         }
         public static void Log(LogType type, string format, params object[] args) => Log(type, string.Format(format, args));
@@ -109,7 +103,6 @@ namespace MCGalaxy
         }
         static void DescribeError(Exception ex, StringBuilder sb)
         {
-            // Attempt to gather this info. Skip anything that you can't read for whatever reason
             try
             {
                 sb.AppendLine("Type: " + ex.GetType().Name);
@@ -138,12 +131,15 @@ namespace MCGalaxy
             catch
             {
             }
-            // Exception-specific extra details
             try
             {
                 if (ex is ReflectionTypeLoadException refEx)
                 {
-                    LogLoaderErrors(refEx, sb);
+                    sb.AppendLine("## Loader exceptions ##");
+                    foreach (Exception loadEx in refEx.LoaderExceptions)
+                    {
+                        DescribeError(loadEx, sb);
+                    }
                 }
             }
             catch
@@ -168,17 +164,6 @@ namespace MCGalaxy
             }
             catch
             {
-            }
-        }
-        static void LogLoaderErrors(ReflectionTypeLoadException ex, StringBuilder sb)
-        {
-            // For errors with loading plugins (e.g. missing dependancy) you get a
-            //   Message: Unable to load one or more of the requested types. Retrieve the LoaderExceptions property for more information.
-            // which is pretty useless by itself, so specifically handle this case
-            sb.AppendLine("## Loader exceptions ##");
-            foreach (Exception loadEx in ex.LoaderExceptions)
-            {
-                DescribeError(loadEx, sb);
             }
         }
     }

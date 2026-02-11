@@ -97,7 +97,7 @@ namespace MCGalaxy.Commands.Building
         }
         static void ClearCopySlot(Player p, int num)
         {
-            int i = num - 1; //We know that i is 0 at min bc num passed to this is 1 at min
+            int i = num - 1;
             List<CopyState> copySlots = p.CopySlots;
             if (i >= copySlots.Count || copySlots[i] == null)
             {

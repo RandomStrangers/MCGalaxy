@@ -54,17 +54,6 @@ namespace MCGalaxy
             }
             Database.CreateTable("Opstats", opstatsTable);
             Database.CreateTable("Players", playersTable);
-            //since MCForge 5.5.11 we are cleaning up the table Playercmds
-            //if Playercmds exists copy-filter to Opstats and remove Playercmds
-            if (Database.TableExists("Playercmds"))
-            {
-                foreach (string cmd in Opstats)
-                {
-                    Database.Execute(string.Format("INSERT INTO Opstats (Time, Name, Cmd, Cmdmsg) SELECT Time, Name, Cmd, Cmdmsg FROM Playercmds WHERE {0};", "cmd = '" + cmd + "'"));
-                }
-                Database.Execute(string.Format("INSERT INTO Opstats (Time, Name, Cmd, Cmdmsg) SELECT Time, Name, Cmd, Cmdmsg FROM Playercmds WHERE {0};", "cmd = 'review' AND cmdmsg = 'next'"));
-                Database.DeleteTable("Playercmds");
-            }
             List<string> columns = SQLiteBackend.Instance.ColumnNames("Players");
             if (columns.Count == 0)
             {

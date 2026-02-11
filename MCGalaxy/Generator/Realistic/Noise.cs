@@ -27,7 +27,6 @@ namespace MCGalaxy.Generator.Realistic
         public static void GenerateNormalized(float[] array, float persistence, int octaves, int width, int height, int seed, float zoom)
         {
             float min = float.MaxValue, max = float.MinValue;
-            //Generate raw float data
             for (int y = 0; y < height; ++y)
             {
                 for (int x = 0; x < width; ++x)
@@ -44,7 +43,6 @@ namespace MCGalaxy.Generator.Realistic
                     max = sum > max ? sum : max;
                 }
             }
-            //Normalize
             float range = max - min;
             for (int i = 0; i < array.Length; ++i)
             {
@@ -57,19 +55,11 @@ namespace MCGalaxy.Generator.Realistic
             int n = x + y * 57 + seed;
             n = (n << 13) ^ n;
             return (float)(1.0 - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
-            //return value is always in range [-1.0, 1.0]
         }
         static unsafe float InterpolatedNoise(float x, float y, int seed)
         {
             int wholeX = (int)x, wholeY = (int)y, i = 0;
             float fracX = x - wholeX, fracY = y - wholeY;
-            // Calculates the smoothed noise for the 4 cells around the given point,
-            //  then interpolates between the smoothed noise results of the 4 cells
-            //   -1 0 1 2
-            // -1 * * * *
-            //  0 * X X *
-            //  1 * X X *
-            //  2 * * * *
             float* noise = stackalloc float[16];
             for (int yy = -1; yy <= 2; yy++)
             {

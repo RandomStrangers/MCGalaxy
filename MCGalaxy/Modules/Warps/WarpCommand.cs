@@ -31,7 +31,11 @@ namespace MCGalaxy.Modules.Warps
         {
             string[] args = message.SplitSpaces();
             string cmd = args[0];
-            if (cmd.Length == 0) { Help(p); return; }
+            if (cmd.Length == 0)
+            { 
+                Help(p); 
+                return; 
+            }
             bool checkExtraPerms = warps == WarpList.Global;
             if (IsListAction(cmd))
             {
@@ -50,7 +54,11 @@ namespace MCGalaxy.Modules.Warps
             if (IsCreateAction(cmd))
             {
                 if (checkExtraPerms && !CheckExtraPerm(p, 1)) return;
-                if (warps.Exists(name)) { p.Message("{0} already exists", group); return; }
+                if (warps.Exists(name)) 
+                { 
+                    p.Message("{0} already exists", group); 
+                    return; 
+                }
                 warps.Create(name, p);
                 p.Message("{0} {1} created.", group, name);
             }

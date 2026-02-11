@@ -117,9 +117,7 @@ namespace MCGalaxy.Modules.Relay
         {
             if (!Connected) return;
             canReconnect = false;
-            // silent, as otherwise it'll duplicate disconnect messages with IOThread
             try { DoDisconnect(reason); } catch { }
-            // wait for worker to completely finish
             try { worker.Join(); } catch { }
         }
         /// <summary> Disconnects from the external communication service and then connects again </summary>
@@ -148,18 +146,15 @@ namespace MCGalaxy.Modules.Relay
                 {
                     Logger.Log(LogType.Warning, "Disconnected from {0} ({1}), retrying in {2} seconds..",
                                RelayName, ex.Message, 30);
-                    // SocketException is usually due to complete connection dropout
                     retries = 0;
                     Thread.Sleep(30 * 1000);
                 }
                 catch (IOException ex)
                 {
-                    // IOException is an expected error, so don't log full details
                     Logger.Log(LogType.Warning, "{0} read error ({1})", RelayName, ex.Message);
                 }
                 catch (ObjectDisposedException ex)
                 {
-                    // ObjectDisposedException is an expected error, so don't log full details
                     Logger.Log(LogType.Warning, "{0} read error ({1})", RelayName, ex.Message);
                 }
                 catch (Exception ex)
@@ -211,7 +206,6 @@ namespace MCGalaxy.Modules.Relay
             BannedCommands = new List<string>() { "IRCBot", "DiscordBot", "OpRules", "IRCControllers", "DiscordControllers" };
             if (!File.Exists("text/irccmdblacklist.txt"))
             {
-                //File.WriteAllLines("text/irccmdblacklist.txt", new string[] {
                 FileIO.TryWriteAllLines("text/irccmdblacklist.txt", new string[] {
                                        "# Here you can put commands that cannot be used from the IRC bot.",
                                        "# Lines starting with \"#\" are ignored." });
@@ -250,7 +244,8 @@ namespace MCGalaxy.Modules.Relay
             fakeGuest.group = Group.DefaultRank;
             if (scopeFilter(fakeGuest, arg) && (filter == null || filter(fakeGuest, arg)))
             {
-                SendPublicMessage(msg); return;
+                SendPublicMessage(msg); 
+                return;
             }
             fakeStaff.group = GetControllerRank();
             if (scopeFilter(fakeStaff, arg) && (filter == null || filter(fakeStaff, arg)))
@@ -283,7 +278,6 @@ namespace MCGalaxy.Modules.Relay
         /// <summary> Simplifies some fancy characters (e.g. simplifies ” to ") </summary>
         protected void SimplifyCharacters(StringBuilder sb)
         {
-            // simplify fancy quotes
             sb.Replace("“", "\"");
             sb.Replace("”", "\"");
             sb.Replace("‘", "'");
@@ -300,8 +294,8 @@ namespace MCGalaxy.Modules.Relay
             OnDirectMessageEvent.Call(this, channel, user, message, ref cancel);
             if (cancel) return;
             string[] parts = message.SplitSpaces(2);
-            string cmdName = parts[0].ToLower();
-            string cmdArgs = parts.Length > 1 ? parts[1] : "";
+            string cmdName = parts[0].ToLower(),
+                cmdArgs = parts.Length > 1 ? parts[1] : "";
             if (HandleListPlayers(user, channel, cmdName, false)) return;
             Command.Search(ref cmdName, ref cmdArgs);
             if (!CanUseCommand(user, cmdName, out string error))
@@ -322,9 +316,8 @@ namespace MCGalaxy.Modules.Relay
             if (cancel) return;
             string[] parts = message.SplitSpaces(3);
             string rawCmd = parts[0].ToLower();
-            bool chat = Channels.CaselessContains(channel);
-            bool opchat = OpChannels.CaselessContains(channel);
-            // Only reply to .who on channels configured to listen on
+            bool chat = Channels.CaselessContains(channel),
+                opchat = OpChannels.CaselessContains(channel);
             if ((chat || opchat) && HandleListPlayers(user, channel, rawCmd, opchat)) return;
             if (rawCmd.CaselessEq(Server.Config.IRCCommandPrefix))
             {
@@ -369,8 +362,8 @@ namespace MCGalaxy.Modules.Relay
         protected virtual void MessagePlayers(RelayPlayer p) => Command.Find("Players").Use(p, "", p.DefaultCmdData);
         bool HandleCommand(RelayUser user, string channel, string _, string[] parts)
         {
-            string cmdName = parts.Length > 1 ? parts[1].ToLower() : "";
-            string cmdArgs = parts.Length > 2 ? parts[2].Trim() : "";
+            string cmdName = parts.Length > 1 ? parts[1].ToLower() : "",
+                cmdArgs = parts.Length > 2 ? parts[2].Trim() : "";
             Command.Search(ref cmdName, ref cmdArgs);
             if (!CanUseCommand(user, cmdName, out string error))
             {
@@ -383,7 +376,11 @@ namespace MCGalaxy.Modules.Relay
         {
             Command cmd = Command.Find(cmdName);
             Player p = new RelayPlayer(channel, user, this);
-            if (cmd == null) { p.Message("Unknown command \"{0}\"", cmdName); return false; }
+            if (cmd == null)
+            { 
+                p.Message("Unknown command \"{0}\"", cmdName); 
+                return false; 
+            }
             string logCmd = cmdArgs.Length == 0 ? cmdName : cmdName + " " + cmdArgs;
             Logger.Log(LogType.CommandUsage, "/{0} (by {1} from {2})", logCmd, user.Nick, RelayName);
             try
@@ -413,13 +410,11 @@ namespace MCGalaxy.Modules.Relay
             error = null;
             if (!Controllers.Contains(user.ID))
             {
-                // Intentionally show no message to non-controller users to avoid spam
                 if ((DateTime.UtcNow - lastWarn).TotalSeconds <= 60) return false;
                 lastWarn = DateTime.UtcNow;
                 error = "Only " + RelayName + " Controllers are allowed to use in-game commands from " + RelayName;
                 return false;
             }
-            // Make sure controller is actually allowed to execute commands right now
             if (!CheckController(user.ID, ref error)) return false;
             if (BannedCommands.CaselessContains(cmd))
             {
@@ -434,7 +429,6 @@ namespace MCGalaxy.Modules.Relay
         protected Group GetControllerRank()
         {
             LevelPermission perm = Server.Config.IRCControllerRank;
-            // find highest rank <= IRC controller rank
             for (int i = Group.GroupList.Count - 1; i >= 0; i--)
             {
                 Group grp = Group.GroupList[i];
@@ -456,8 +450,7 @@ namespace MCGalaxy.Modules.Relay
                 Bot = bot;
                 if (user != null)
                 {
-                    string nick = "(" + bot.RelayName + " " + user.Nick + ")";
-                    DatabaseID = NameConverter.InvalidNameID(nick);
+                    DatabaseID = NameConverter.InvalidNameID("(" + bot.RelayName + " " + user.Nick + ")");
                 }
                 SuperName = bot.RelayName;
             }

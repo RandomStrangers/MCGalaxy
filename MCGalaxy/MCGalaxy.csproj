@@ -641,7 +641,7 @@
     <Compile Include="NAS\NASGlobalSupressions.cs" />
     <Compile Include="NAS\NASCrafting.Items.cs" />
     <Compile Include="NAS\NASNameGenerator.cs" />
-    <Compile Include="NAS\NASPluginEvents.cs" />
+    <Compile Include="NAS\NASEvents.cs" />
     <Compile Include="NAS\NASUtils.cs" />
     <Compile Include="NAS\NASCollision.cs" />
     <Compile Include="NAS\NASCrafting.Setup.cs" />
@@ -660,17 +660,14 @@
     <Compile Include="NAS\NASItemProp.cs" />
     <Compile Include="NAS\NASBlock.cs" />
     <Compile Include="NAS\NASBlockChange.cs" />
-    <Compile Include="NAS\NASEntity.cs" />
     <Compile Include="NAS\NASGen.cs" />
     <Compile Include="NAS\NASLevel.cs" />
     <Compile Include="NAS\NASPlayer.Movement.cs" />
     <Compile Include="NAS\NASPlayerInventory.cs" />
-    <Compile Include="NAS\NASPlugin.cs" />
+    <Compile Include="NAS\NAS.cs" />
     <Compile Include="NAS\NASPlayer.cs" />
     <Compile Include="NAS\NASTree.cs" />
     <Compile Include="NAS\Priority Queue\GenericPriorityQueue.cs" />
-    <Compile Include="NAS\Priority Queue\GenericPriorityQueueNode.cs" />
-    <Compile Include="NAS\Priority Queue\IFixedSizePriorityQueue.cs" />
     <Compile Include="NAS\Priority Queue\IPriorityQueue.cs" />
     <Compile Include="NAS\Priority Queue\SimplePriorityQueue.cs" />
     <Compile Include="NAS\NASPlayerInventory.Items.cs" />

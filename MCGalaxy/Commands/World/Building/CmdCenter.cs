@@ -34,7 +34,6 @@ namespace MCGalaxy.Commands.Building
             if ((lenX & 1) == 1) Place(p, x + 1, y, z);
             if ((lenZ & 1) == 1) Place(p, x, y, z + 1);
             if ((lenX & 1) == 1 && (lenZ & 1) == 1) Place(p, x + 1, y, z + 1);
-            // Top layer blocks
             if ((lenY & 1) == 1)
             {
                 Place(p, x, y + 1, z);

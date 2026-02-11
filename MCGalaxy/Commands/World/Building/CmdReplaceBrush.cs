@@ -28,7 +28,8 @@ namespace MCGalaxy.Commands.Building
             if (!p.CanUse(replaceCmd) || !p.CanUse("Brush"))
             {
                 p.Message("You cannot use &T/Brush &Sand/or &T/" + replaceCmd +
-                          "&S, so therefore cannot use this command."); return null;
+                          "&S, so therefore cannot use this command."); 
+                return null;
             }
             DrawOp op = new CuboidDrawOp
             {

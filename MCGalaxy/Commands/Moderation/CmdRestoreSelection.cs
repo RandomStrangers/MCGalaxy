@@ -27,7 +27,11 @@ namespace MCGalaxy.Commands.Moderation
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            {
+                Help(p); 
+                return;
+            }
             if (!Formatter.ValidMapName(p, message)) return;
             string path = LevelInfo.BackupFilePath(p.Level.name, message);
             if (File.Exists(path))
@@ -50,7 +54,6 @@ namespace MCGalaxy.Commands.Moderation
                 Source = source
             };
             if (DrawOpPerformer.Do(op, null, p, marks)) return false;
-            // Not high enough draw limit
             source.Dispose();
             return false;
         }

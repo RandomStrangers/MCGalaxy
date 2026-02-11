@@ -29,17 +29,22 @@ namespace MCGalaxy.Drawing.Transforms
         public override Transform Construct(Player p, string message)
         {
             string[] args = message.SplitSpaces();
-            if (args.Length < 3 || args.Length > 4) { p.MessageLines(Help); return null; }
+            if (args.Length < 3 || args.Length > 4) 
+            { 
+                p.MessageLines(Help); 
+                return null; 
+            }
             float angleX = 0, angleY = 0, angleZ = 0;
             RotateTransform rotater = new();
             if (!ParseAngle(p, args[0], ref angleX)) return null;
             if (!ParseAngle(p, args[1], ref angleY)) return null;
             if (!ParseAngle(p, args[2], ref angleZ)) return null;
             rotater.SetAngles(angleX, angleY, angleZ);
-            if (args.Length == 3) return rotater; // no centre argument
+            if (args.Length == 3) return rotater; 
             if (!IsCentre(args[args.Length - 1]))
             {
-                p.Message("The mode must be either \"centre\", or not given."); return null;
+                p.Message("The mode must be either \"centre\", or not given."); 
+                return null;
             }
             rotater.CentreOrigin = true;
             return rotater;
@@ -48,7 +53,8 @@ namespace MCGalaxy.Drawing.Transforms
         {
             if (!CommandParser.GetReal(p, input, "Angle", ref angle, -360, 360))
             {
-                p.MessageLines(HelpString); return false;
+                p.MessageLines(HelpString); 
+                return false;
             }
             return true;
         }

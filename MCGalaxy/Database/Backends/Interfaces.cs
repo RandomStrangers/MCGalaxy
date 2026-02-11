@@ -57,13 +57,11 @@ namespace MCGalaxy.SQL
         public override bool IsDBNull(int i) => GetAffinity(i) == TypeAffinity.Null;
         public override object GetValue(int i) => stmt.GetValue(i, GetAffinity(i));
         public override string GetStringValue(int col) => GetString(col);
-        public override string DumpValue(int col)
-        {
-            if (GetAffinity(col) == TypeAffinity.Null) return "NULL";
-            if (GetAffinity(col) == TypeAffinity.Text || GetAffinity(col) == TypeAffinity.Blob)
-                return SqlUtils.QuoteString(GetString(col));
-            return GetString(col);
-        }
+        public override string DumpValue(int col) => GetAffinity(col) == TypeAffinity.Null
+                ? "NULL"
+                : GetAffinity(col) == TypeAffinity.Text || GetAffinity(col) == TypeAffinity.Blob
+                ? SqlUtils.QuoteString(GetString(col))
+                : GetString(col);
         public override string GetName(int i) => stmt.ColumnName(i);
         public override int GetOrdinal(string name)
         {
@@ -87,9 +85,8 @@ namespace MCGalaxy.SQL
             CheckClosed();
             while (true)
             {
-                stmt = _command.NextStatement(); // next statement to execute
-                readState = 1; // set the state to "done reading"
-                // reached the end of the statements, no more resultsets
+                stmt = _command.NextStatement();
+                readState = 1;
                 if (stmt == null) return false;
                 columns = stmt.ColumnCount();
                 if (stmt.Step())
@@ -98,15 +95,12 @@ namespace MCGalaxy.SQL
                 }
                 else if (columns == 0)
                 {
-                    // No rows or columns returned, move to the next statement
                     rowsAffected += stmt.conn.Changes;
                     continue;
                 }
                 else
                 {
-                    // This statement returned columns but no rows
                 }
-                // Found a row-returning resultset eligible to be returned!
                 fieldNames = null;
                 return true;
             }
@@ -114,15 +108,14 @@ namespace MCGalaxy.SQL
         public bool Read()
         {
             CheckClosed();
-            // First Row was already read at NextResult() level, so don't step again here
             if (readState == -1)
             {
                 readState = 0; return true;
             }
             else if (readState == 0)
-            { // Actively reading rows
+            { 
                 if (stmt.Step()) return true;
-                readState = 1; // Finished reading rows
+                readState = 1;
             }
             return false;
         }

@@ -32,7 +32,6 @@ namespace MCGalaxy.Modules.Relay.Discord
         {
             if (queue.Count == 0) return null;
             DiscordApiMessage first = queue.Dequeue();
-            // try to combine messages to minimise API calls
             while (queue.Count > 0)
             {
                 DiscordApiMessage next = queue.Peek();
@@ -46,8 +45,15 @@ namespace MCGalaxy.Modules.Relay.Discord
         {
             DiscordApiMessage msg = null;
             WebResponse res = null;
-            lock (queueLock) { msg = GetNextRequest(); }
-            if (msg == null) { WaitForWork(); return; }
+            lock (queueLock) 
+            { 
+                msg = GetNextRequest();
+            }
+            if (msg == null)
+            { 
+                WaitForWork(); 
+                return;
+            }
             for (int retry = 0; retry < 10; retry++)
             {
                 try
@@ -80,34 +86,28 @@ namespace MCGalaxy.Modules.Relay.Discord
                     return;
                 }
             }
-            // Avoid triggering HTTP 429 error if possible
-            string remaining = res.Headers["X-RateLimit-Remaining"];
-            if (remaining == "1") SleepForRetryPeriod(res);
+            if (res.Headers["X-RateLimit-Remaining"] == "1") SleepForRetryPeriod(res);
         }
         static bool HandleErrorResponse(WebException ex, DiscordApiMessage msg, int retry)
         {
             string err = HttpUtil.GetErrorResponse(ex);
             HttpStatusCode status = GetStatus(ex);
-            // 429 errors simply require retrying after sleeping for a bit
             if (status == (HttpStatusCode)429)
             {
                 SleepForRetryPeriod(ex.Response);
                 return true;
             }
-            // 500 errors might be temporary Discord outage, so still retry a few times
-            if (status >= (HttpStatusCode)500 && status <= (HttpStatusCode)504)
+            if (status >= HttpStatusCode.InternalServerError && status <= HttpStatusCode.GatewayTimeout)
             {
                 LogWarning(ex);
                 LogResponse(err);
                 return retry < 2;
             }
-            // If unable to reach Discord at all, immediately give up
             if (ex.Status == WebExceptionStatus.NameResolutionFailure)
             {
                 LogWarning(ex);
                 return false;
             }
-            // May be caused by connection dropout/reset, so still retry a few times
             if (ex.InnerException is IOException)
             {
                 LogWarning(ex);
@@ -118,35 +118,26 @@ namespace MCGalaxy.Modules.Relay.Discord
             return false;
         }
         static HttpStatusCode GetStatus(WebException ex) => ex.Response == null ? 0 : ((HttpWebResponse)ex.Response).StatusCode;
-        static void LogError(Exception ex, DiscordApiMessage msg)
-        {
-            string target = "(" + msg.Method + " " + msg.Path + ")";
-            Logger.LogError("Error sending request to Discord API " + target, ex);
-        }
+        static void LogError(Exception ex, DiscordApiMessage msg) => Logger.LogError("Error sending request to Discord API (" + msg.Method + " " + msg.Path + ")", ex);
         static void LogWarning(Exception ex) => Logger.Log(LogType.Warning, "Error sending request to Discord API - " + ex.Message);
         static void LogResponse(string err)
         {
             if (string.IsNullOrEmpty(err)) return;
-            // Discord sometimes returns <html>..</html> responses for internal server errors
-            //  most of this is useless content, so just truncate these particular errors
             if (err.Length > 200) err = err.Substring(0, 200) + "...";
             Logger.Log(LogType.Warning, "Discord API returned: " + err);
         }
         static void SleepForRetryPeriod(WebResponse res)
         {
-            string resetAfter = res.Headers["X-RateLimit-Reset-After"];
-            string retryAfter = res.Headers["Retry-After"];
+            string resetAfter = res.Headers["X-RateLimit-Reset-After"],
+                retryAfter = res.Headers["Retry-After"];
             if (NumberUtils.TryParseSingle(resetAfter, out float delay) && delay > 0)
             {
-                // Prefer Discord "X-RateLimit-Reset-After" (millisecond precision)
             }
             else if (NumberUtils.TryParseSingle(retryAfter, out delay) && delay > 0)
             {
-                // Fallback to general "Retry-After" header
             }
             else
             {
-                // No recommended retry delay.. 30 seconds is a good bet
                 delay = 30;
             }
             Logger.Log(LogType.SystemActivity, "Discord bot ratelimited! Trying again in {0} seconds..", delay);

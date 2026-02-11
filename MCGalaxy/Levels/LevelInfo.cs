@@ -20,6 +20,10 @@ using System.Collections.Generic;
 using System.IO;
 namespace MCGalaxy
 {
+    public struct SearchArgs
+    {
+        public string Visit, Build, LoadOnGoto;
+    }
     public static class LevelInfo
     {
         /// <summary> Array of all current loaded levels. </summary>
@@ -304,10 +308,6 @@ namespace MCGalaxy
             {
                 args.LoadOnGoto = value;
             }
-        }
-        struct SearchArgs
-        {
-            public string Visit, Build, LoadOnGoto;
         }
     }
 }

@@ -22,7 +22,6 @@ namespace MCGalaxy.DB
         /// <summary> Returns the name associated with the given ID, or ID#[id] if not found </summary>
         public static string FindName(int id)
         {
-            // Only returns non-null if id > MaxPlayerID - invalid.Count
             string name = Server.invalidIds.GetAt(0x00FFFFFF - id);
             if (name != null) return name;
             name = Database.ReadString("Players", "Name", "WHERE ID=@0", id);

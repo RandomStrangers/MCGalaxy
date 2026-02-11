@@ -25,7 +25,7 @@ namespace MCGalaxy
             byte grpPerm = (byte)(LevelPermission.Console - p.Rank);
             if (!Server.Config.TablistRankSorted) grpPerm = 1;
             GetEntry(p, dst, out string name, out string group);
-            name = Colors.Escape(name); // for nicks
+            name = Colors.Escape(name);
             dst.EntityList.SendAddTabEntry(p, p.truename, name, group, grpPerm);
         }
         static void GetEntry(Player p, Player dst, out string name, out string group)
@@ -35,7 +35,11 @@ namespace MCGalaxy
             group = Server.Config.TablistGlobal ? "On " + map : "&fPlayers";
             name = dst.Ignores.Nicks ? p.color + p.truename : p.ColoredName;
             OnTabListEntryAddedEvent.Call(p, ref name, ref group, dst);
-            if (p.hidden && p.IsAfk) { name += " &f(Hid, &7AFK)"; return; }
+            if (p.hidden && p.IsAfk) 
+            { 
+                name += " &f(Hid, &7AFK)";
+                return; 
+            }
             if (p.hidden) name += " &f(Hid)";
             if (p.IsAfk) name += " &7(AFK)";
         }

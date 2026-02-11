@@ -6,18 +6,15 @@ using System.Collections.Generic;
 using System.IO;
 namespace MCGalaxy
 {
-    public partial class NASPlugin : Plugin
+    public partial class NAS
     {
-        public override string Name => "NAS";
-        public override string Creator => "JuneSolis";
         public static List<string> Devs = new()
         {
             "JuneSolis",
         };
         public const string PlayerKey = "NAS_NASPlayer",
             Path = "NAS/";
-        static bool LoadedOnStartup = false,
-            firstEverLoad = false;
+        static bool firstEverLoad = false;
         public static Command[] Commands = new Command[]
         {
             new CmdBarrelMode(),
@@ -37,12 +34,8 @@ namespace MCGalaxy
             EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/NAS/Uploads/global.json", "blockdefs/global.json");
             EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/NAS/Newtonsoft.Json.dll", "Newtonsoft.Json.dll");
         }
-        public override void Load(bool startup)
+        public static void Load()
         {
-            if (startup)
-            {
-                LoadedOnStartup = true;
-            }
             EnsureDirectoriesExist(Path, NASPlayer.Path,
                 NASTimeCycle.Path, NASEffect.Path,
                 NASLevel.Path, NASBlock.Path,
@@ -105,8 +98,9 @@ namespace MCGalaxy
             {
                 GenLevel();
             }
+            Logger.Log(LogType.SystemActivity, "NAS loaded.");
         }
-        public void PvP(Player p, Player target)
+        public static void PvP(Player p, Player target)
         {
             if (NASPlayer.GetPlayer(target).pvpEnabled)
             {
@@ -117,25 +111,25 @@ namespace MCGalaxy
                 p.Message("&S  " + target.Pronouns.Subject.Capitalize() + " " + target.Pronouns.PresentPerfectVerb + " PVP &cdisabled&S.");
             }
         }
-        public void Dev(Player p, Player target)
+        public static void Dev(Player p, Player target)
         {
-            if (IsDev(target))
+            if (Devs.CaselessContains(target.truename))
             {
-                p.Message("&S  {0} developer.", Name.Capitalize());
+                p.Message("&S  NAS developer.");
             }
         }
-        public void Dev(Player p, PlayerData target)
+        public static void Dev(Player p, PlayerData target)
         {
-            if (IsDev(target))
+            if (Devs.CaselessContains(target.Name))
             {
-                p.Message("&S  {0} developer.", Name.Capitalize());
+                p.Message("&S  NAS developer.");
             }
         }
-        public void Kills(Player p, Player target) => p.Message("&S  " + target.Pronouns.Subject.Capitalize() + " " + target.Pronouns.PresentPerfectVerb + " " + NASPlayer.GetPlayer(target).kills + " kills.");
-        public override void Unload(bool shutdown)
+        public static void Kills(Player p, Player target) => p.Message("&S  " + target.Pronouns.Subject.Capitalize() + " " + target.Pronouns.PresentPerfectVerb + " " + NASPlayer.GetPlayer(target).kills + " kills.");
+        public static void Unload()
         {
             Chat.MessageAll("Attempting to unload NAS.");
-            if (!shutdown && (LoadedOnStartup || core.Contains(this)))
+            if (!Server.shuttingDown)
             {
                 throw new InvalidOperationException("You cannot unload NAS manually, it can only be unloaded on server shutdown.");
             }

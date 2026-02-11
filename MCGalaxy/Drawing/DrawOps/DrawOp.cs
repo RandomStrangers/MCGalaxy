@@ -30,14 +30,8 @@ namespace MCGalaxy.Drawing.Ops
     public delegate void DrawOpOutput(DrawOpBlock block);
     public abstract class DrawOp
     {
-        //public long TotalAffected; // blocks affected by the draw operation
-        public long TotalModified; // blocks actually modified (e.g. some may not be due to permissions)
-        /// <summary> Minimum coordinates of the bounds of this draw operation </summary>
-        public Vec3S32 Min;
-        /// <summary> Maximum coordinates of the bounds of this draw operation </summary>
-        public Vec3S32 Max;
-        /// <summary> Coordinates of the first point selected by the player </summary>
-        public Vec3S32 Origin;
+        public long TotalModified;
+        public Vec3S32 Min, Max, Origin;
         /// <summary> Coordinates of the current block being processed by this draw operation </summary>
         /// <remarks> Note: You should treat this as coordinates, it is a DrawOpBlock struct for performance reasons. </remarks>
         public DrawOpBlock Coords;
@@ -49,10 +43,7 @@ namespace MCGalaxy.Drawing.Ops
         public ushort Flags = BlockDBFlags.Drawn;
         /// <summary> Lock held on the associated level's BlockDB. Can be null and usually is null. </summary>
         public IDisposable BlockDBReadLock;
-        /// <summary> Whether this draw operation can be undone. </summary>
-        public bool Undoable = true;
-        /// <summary> Whether this draw operation can be used on maps that have drawing disabled. </summary>
-        public bool AlwaysUsable;
+        public bool Undoable = true, AlwaysUsable;
         public int SizeX => Max.X - Min.X + 1;
         public int SizeY => Max.Y - Min.Y + 1;
         public int SizeZ => Max.Z - Min.Z + 1;
@@ -112,7 +103,7 @@ namespace MCGalaxy.Drawing.Ops
             pos.X = Math.Max(0, Math.Min(pos.X, clip.X));
             pos.Y = Math.Max(0, Math.Min(pos.Y, clip.Y));
             pos.Z = Math.Max(0, Math.Min(pos.Z, clip.Z));
-            return new Vec3U16((ushort)pos.X, (ushort)pos.Y, (ushort)pos.Z);
+            return new((ushort)pos.X, (ushort)pos.Y, (ushort)pos.Z);
         }
     }
 }

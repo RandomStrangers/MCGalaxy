@@ -39,8 +39,6 @@ namespace MCGalaxy.Modules.Relay.IRC
         {
             if (!ready) return;
             message = ConvertMessage(message);
-            // IRC messages can't have \r or \n in them
-            //  https://stackoverflow.com/questions/13898584/insert-line-breaks-into-an-irc-message
             if (message.IndexOf('\n') == -1)
             {
                 conn.SendMessage(channel, message);
@@ -89,7 +87,6 @@ namespace MCGalaxy.Modules.Relay.IRC
             }
             catch
             {
-                // no point logging disconnect failures
             }
             UnhookIRCEvents();
         }
@@ -116,7 +113,6 @@ namespace MCGalaxy.Modules.Relay.IRC
         static readonly Regex ircTwoColorCode = new("(\x03\\d{1,2}),\\d{1,2}");
         protected override string ParseMessage(string input)
         {
-            // get rid of background color component of some IRC color codes.
             input = ircTwoColorCode.Replace(input, "$1");
             StringBuilder sb = new(input);
             for (int i = 0; i < ircColors.Length; i++)
@@ -128,12 +124,11 @@ namespace MCGalaxy.Modules.Relay.IRC
                 sb.Replace(ircSingle[i], ircReplacements[i]);
             }
             SimplifyCharacters(sb);
-            // remove misc formatting chars
             sb.Replace(BOLD, "");
             sb.Replace(ITALIC, "");
             sb.Replace(UNDERLINE, "");
-            sb.Replace("\x03", "&f"); // color reset
-            sb.Replace("\x0f", "&f"); // reset
+            sb.Replace("\x03", "&f");
+            sb.Replace("\x0f", "&f");
             return sb.ToString();
         }
         /// <summary> Formats a message for displaying on IRC </summary>
@@ -141,11 +136,10 @@ namespace MCGalaxy.Modules.Relay.IRC
         string ConvertMessage(string message)
         {
             if (string.IsNullOrEmpty(message.Trim())) message = ".";
-            const string resetSignal = "\x03\x0F";
             message = ConvertMessageCommon(message);
-            message = message.Replace("%S", "&f"); // TODO remove
+            message = message.Replace("%S", "&f"); 
             message = message.Replace("&S", "&f");
-            message = message.Replace("&f", resetSignal);
+            message = message.Replace("&f", "\x03\x0F");
             message = ToIRCColors(message);
             return message;
         }
@@ -179,7 +173,6 @@ namespace MCGalaxy.Modules.Relay.IRC
         }
         void HookIRCEvents()
         {
-            // Regster events for incoming
             conn.OnNick += OnNick;
             conn.OnRegistered += OnRegistered;
             conn.OnAction += OnAction;
@@ -199,7 +192,6 @@ namespace MCGalaxy.Modules.Relay.IRC
         }
         void UnhookIRCEvents()
         {
-            // Regster events for incoming
             conn.OnNick -= OnNick;
             conn.OnRegistered -= OnRegistered;
             conn.OnAction -= OnAction;
@@ -217,11 +209,7 @@ namespace MCGalaxy.Modules.Relay.IRC
             conn.OnPrivateNotice -= OnPrivateNotice;
             conn.OnPrivateAction -= OnPrivateAction;
         }
-        void OnAction(string user, string channel, string description)
-        {
-            string nick = Connection.ExtractNick(user);
-            MessageInGame(nick, string.Format("&I(IRC) * {0} {1}", nick, description));
-        }
+        void OnAction(string user, string channel, string description) => MessageInGame(Connection.ExtractNick(user), string.Format("&I(IRC) * {0} {1}", Connection.ExtractNick(user), description));
         void OnJoin(string user, string channel)
         {
             string nick = Connection.ExtractNick(user);
@@ -244,7 +232,6 @@ namespace MCGalaxy.Modules.Relay.IRC
         void OnQuit(string user, string reason)
         {
             string nick = Connection.ExtractNick(user);
-            // Old bot was disconnected, try to reclaim it
             if (nick == botNick) conn.SendNick(botNick);
             nicks.OnLeft(nick);
             if (nick == botNick) return;
@@ -281,8 +268,14 @@ namespace MCGalaxy.Modules.Relay.IRC
         void JoinChannels()
         {
             Logger.Log(LogType.RelayActivity, "Joining IRC channels...");
-            foreach (string chan in Channels) { Join(chan); }
-            foreach (string chan in OpChannels) { Join(chan); }
+            foreach (string chan in Channels) 
+            { 
+                Join(chan); 
+            }
+            foreach (string chan in OpChannels) 
+            { 
+                Join(chan);
+            }
             ready = true;
         }
         void OnPublicNotice(string user, string channel, string notice)
@@ -309,7 +302,6 @@ namespace MCGalaxy.Modules.Relay.IRC
         void OnNick(string user, string newNick)
         {
             string nick = Connection.ExtractNick(user);
-            // We have successfully reclaimed our nick, so try to sign in again.
             if (newNick == botNick) Authenticate();
             if (newNick.Trim().Length == 0) return;
             nicks.OnChangedNick(nick, newNick);

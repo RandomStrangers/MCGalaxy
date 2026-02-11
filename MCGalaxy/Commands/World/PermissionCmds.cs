@@ -59,7 +59,8 @@ namespace MCGalaxy.Commands.World
             if (name == null) return false;
             if (!include && name.CaselessEq(p.name))
             {
-                p.Message("&WYou cannot blacklist yourself."); return false;
+                p.Message("&WYou cannot blacklist yourself."); 
+                return false;
             }
             if (include)
             {
@@ -77,14 +78,16 @@ namespace MCGalaxy.Commands.World
         public abstract bool IsVisit { get; }
         public override void Use(Player p, string message, CommandData data)
         {
-            const string maxPrefix = "-max ";
-            bool max = message.CaselessStarts(maxPrefix);
-            if (max) message = message.Substring(maxPrefix.Length);
+            bool max = message.CaselessStarts("-max ");
+            if (max) message = message.Substring("-max ".Length);
             string[] args = message.SplitSpaces();
-            if (message.Length == 0 || args.Length > 2) { Help(p); return; }
+            if (message.Length == 0 || args.Length > 2) 
+            {
+                Help(p);
+                return; 
+            }
             if (args.Length == 1)
             {
-                // special case /perbuild [permission] to current level
                 if (p.IsSuper)
                 {
                     SuperRequiresArgs(p, "level name");

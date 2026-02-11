@@ -28,7 +28,6 @@ namespace MCGalaxy
         public DateTime ModifiedDate;
         public void MakeZip64Placeholder()
         {
-            // signify to use zip64 version of these fields instead
             CompressedSize = uint.MaxValue;
             UncompressedSize = uint.MaxValue;
             LocalHeaderOffset = uint.MaxValue;
@@ -136,10 +135,8 @@ namespace MCGalaxy
             {
                 entry.ModifiedDate = DateTime.Now;
             }
-            // leave some room to fill in header later
             int headerSize = 30 + entry.Filename.Length + 20;
             stream.Write(buffer, 0, headerSize);
-            // set bit flag for non-ascii filename
             foreach (char c in file)
             {
                 if (c < ' ' || c > '~')
@@ -161,7 +158,6 @@ namespace MCGalaxy
         }
         public void FinishEntries()
         {
-            // account for central directory too
             zip64 = numEntries >= ushort.MaxValue || stream.Length >= (int.MaxValue - 4 * 1000 * 1000);
             long pos = stream.Position;
             for (int i = 0; i < numEntries; i++)
@@ -192,7 +188,6 @@ namespace MCGalaxy
             zip64EndOffset = stream.Position;
             WriteZip64EndOfCentralDirectoryRecord();
             WriteZip64EndOfCentralDirectoryLocator();
-            // signify to use zip64 record to find data
             numEntries = ushort.MaxValue;
             centralDirOffset = uint.MaxValue;
             centralDirSize = uint.MaxValue;
@@ -217,13 +212,11 @@ namespace MCGalaxy
             w.Write((ushort)entry.Filename.Length);
             w.Write(20);
             w.Write(entry.Filename);
-            // not using zip64, fill in with empty data
             if (!zip64)
             {
                 w.Write(emptyZip64Local);
                 return;
             }
-            // zip64 extra data entry
             w.Write(0x0001);
             w.Write((ushort)16);
             w.Write(copy.UncompressedSize);
@@ -250,10 +243,10 @@ namespace MCGalaxy
             w.Write((uint)entry.UncompressedSize);
             w.Write((ushort)entry.Filename.Length);
             w.Write(extraLen);
-            w.Write((ushort)0);  // file comment length
-            w.Write((ushort)0);  // disc number
-            w.Write((ushort)0);  // internal attributes
-            w.Write(0);          // external attributes
+            w.Write((ushort)0);
+            w.Write((ushort)0);
+            w.Write((ushort)0);
+            w.Write(0);
             w.Write((uint)entry.LocalHeaderOffset);
             w.Write(entry.Filename);
             if (!zip64)
@@ -280,8 +273,8 @@ namespace MCGalaxy
             w.Write((2 * 2) + (2 * 4) + (4 * 8));
             w.Write(45);
             w.Write(45);
-            w.Write(0); // disc number
-            w.Write(0); // disc number of central directory
+            w.Write(0);
+            w.Write(0);
             w.Write((long)numEntries);
             w.Write((long)numEntries);
             w.Write(centralDirSize);
@@ -291,21 +284,21 @@ namespace MCGalaxy
         {
             BinaryWriter w = writer;
             w.Write(0x07064b50);
-            w.Write(0); // disc number of zip64 end of central directory
+            w.Write(0);
             w.Write(zip64EndOffset);
-            w.Write(1); // total number of discs
+            w.Write(1);
         }
         void WriteEndOfCentralDirectoryRecord()
         {
             BinaryWriter w = writer;
             w.Write(0x06054b50);
-            w.Write((ushort)0); // disc number
-            w.Write((ushort)0); // disc number of start
+            w.Write((ushort)0);
+            w.Write((ushort)0);
             w.Write((ushort)numEntries);
             w.Write((ushort)numEntries);
             w.Write((uint)centralDirSize);
             w.Write((uint)centralDirOffset);
-            w.Write((ushort)0);  // comment length
+            w.Write((ushort)0);
         }
     }
 }

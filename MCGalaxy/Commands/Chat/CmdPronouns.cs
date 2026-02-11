@@ -21,16 +21,23 @@ namespace MCGalaxy.Commands.Chatting
         public override string Type => CommandTypes.Chat;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            {
+                Help(p); 
+                return;
+            }
             string[] names = message.SplitSpaces();
             Dictionary<string, Pronouns> pros = new();
             foreach (string name in names)
             {
                 Pronouns pro = Pronouns.FindMatch(p, name);
-                if (pro == null) { HelpList(p); return; }
+                if (pro == null) 
+                { 
+                    HelpList(p); 
+                    return; 
+                }
                 pros[pro.Name] = pro;
             }
-            // Disallow using default pronouns along with other pronouns (it's weird..?)
             if (pros.Count > 1 && pros.ContainsKey(Pronouns.Default.Name))
             {
                 pros.Remove(Pronouns.Default.Name);

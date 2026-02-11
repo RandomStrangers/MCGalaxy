@@ -19,7 +19,9 @@ namespace MCGalaxy.Drawing.Brushes
     {
         public static string DefaultBrush = "Normal";
         public abstract string Name { get; }
-        public virtual void Configure(DrawOp op, Player p) { }
+        public virtual void Configure(DrawOp op, Player p) 
+        { 
+        }
         /// <summary> Returns the next block that should be placed in the world,
         /// based on the draw operation's current state. </summary>
         /// <remarks> Returns Block.Invalid if no block should be placed. </remarks>

@@ -35,7 +35,6 @@ namespace MCGalaxy.Tasks
         static void TemprankCallback(string[] args)
         {
             CmdTempRank.Delete(Player.Console, args[0], Player.Console.DefaultCmdData);
-            // Handle case of old rank no longer existing
             if (Server.tempRanks.Remove(args[0]))
             {
                 Server.tempRanks.Save();
@@ -78,11 +77,9 @@ namespace MCGalaxy.Tasks
         static TimeSpan NextRun(PlayerExtList list)
         {
             DateTime nextRun = DateTime.MaxValue.AddYears(-1);
-            // Lock because we want to ensure list not modified from under us
             lock (list.locker)
             {
                 List<string> lines = list.AllLines();
-                // Line format: name assigner assigntime expiretime [whatever other data, we don't care]
                 foreach (string line in lines)
                 {
                     string[] args = line.SplitSpaces();

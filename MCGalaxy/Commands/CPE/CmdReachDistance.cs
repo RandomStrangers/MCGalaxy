@@ -25,14 +25,16 @@ namespace MCGalaxy.Commands.CPE
         {
             if (message.Length == 0)
             {
-                p.Message("Your reach distance is {0} blocks", p.ReachDistance); return;
+                p.Message("Your reach distance is {0} blocks", p.ReachDistance);
+                return;
             }
             float dist = 0;
             if (!CommandParser.GetReal(p, message, "Distance", ref dist, 0, 1024)) return;
             int packedDist = (int)(dist * 32);
             if (packedDist > short.MaxValue)
             {
-                p.Message("\"{0}\", is too long a reach distance. Max is 1023 blocks.", message); return;
+                p.Message("\"{0}\", is too long a reach distance. Max is 1023 blocks.", message); 
+                return;
             }
             if (p.Session.SendSetReach(dist))
             {
@@ -43,7 +45,8 @@ namespace MCGalaxy.Commands.CPE
             }
             else
             {
-                p.Message("Your client doesn't support changing your reach distance."); return;
+                p.Message("Your client doesn't support changing your reach distance.");
+                return;
             }
         }
         public override void Help(Player p)

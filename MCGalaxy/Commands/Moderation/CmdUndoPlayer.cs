@@ -36,7 +36,11 @@ namespace MCGalaxy.Commands.Moderation
                 message = message.Substring("-area".Length).TrimStart();
             }
             if (CheckSuper(p, message, "player name")) return;
-            if (message.Length == 0) { p.Message("You need to provide a player name."); return; }
+            if (message.Length == 0)
+            { 
+                p.Message("You need to provide a player name."); 
+                return; 
+            }
             string[] parts = message.SplitSpaces();
             int[] ids = GetIds(p, parts, data, out string[] names);
             if (ids == null) return;
@@ -65,7 +69,12 @@ namespace MCGalaxy.Commands.Moderation
             UndoPlayer(p, args.delta, args.names, args.ids, marks);
             return false;
         }
-        struct UndoAreaArgs { public string[] names; public int[] ids; public TimeSpan delta; }
+        struct UndoAreaArgs
+        {
+            public string[] names; 
+            public int[] ids; 
+            public TimeSpan delta; 
+        }
         static void UndoPlayer(Player p, TimeSpan delta, string[] names, int[] ids, Vec3S32[] marks)
         {
             UndoDrawOp op = new()
@@ -77,7 +86,6 @@ namespace MCGalaxy.Commands.Moderation
             };
             if (p.IsSuper)
             {
-                // undo them across all loaded levels
                 Level[] levels = LevelInfo.Loaded.Items;
                 foreach (Level lvl in levels)
                 {
@@ -92,7 +100,7 @@ namespace MCGalaxy.Commands.Moderation
             }
             string namesStr = names.Join(name => p.FormatNick(name));
             if (op.found)
-            { // TODO bug assumes no other queued drawops
+            {
                 Chat.MessageGlobal("Undid {1}&S's changes for the past &b{0}", delta.Shorten(true), namesStr);
                 Logger.Log(LogType.UserActivity, "Actions of {0} for the past {1} were undone.", names.Join(), delta.Shorten(true));
             }

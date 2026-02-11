@@ -51,7 +51,7 @@ namespace MCGalaxy
             }
             else
             {
-                bounds = new(0, 0, 0, 32, DefaultSet.Height(NASPlugin.Convert(serverushort)) * 2, 32);
+                bounds = new(0, 0, 0, 32, DefaultSet.Height(Block.Convert(serverushort)) * 2, 32);
             }
             NASBlock nb = NASBlock.Get(ConvertToClientushort(serverushort));
             if (nb.fallDamageMultiplier == -1)
@@ -68,11 +68,11 @@ namespace MCGalaxy
             ushort clientushort;
             if (serverushort >= 256)
             {
-                clientushort = NASPlugin.ToRaw(serverushort);
+                clientushort = Block.ToRaw(serverushort);
             }
             else
             {
-                clientushort = NASPlugin.Convert(serverushort);
+                clientushort = Block.Convert(serverushort);
                 if (clientushort >= 66)
                 {
                     clientushort = 2;

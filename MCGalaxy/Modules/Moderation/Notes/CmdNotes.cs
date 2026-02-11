@@ -51,8 +51,8 @@ namespace MCGalaxy.Modules.Moderation.Notes
                 foreach (string note in allNotes)
                 {
                     string[] sections = note.SplitSpaces();
-                    if (sections.Length <= 3) continue; // Malformed note, don't include
-                    if (sections[1] == NoteAcronym.OpNoted.Acronym) continue; // Only Ops may see this note, don't include
+                    if (sections.Length <= 3) continue;
+                    if (sections[1] == NoteAcronym.OpNoted.Acronym) continue;
                     visibleNotes.Add(note);
                 }
             }
@@ -66,7 +66,6 @@ namespace MCGalaxy.Modules.Moderation.Notes
             {
                 p.Message("  Notes for {0}:", nick);
             }
-            // special case "/Notes" to show latest notes by default
             if (modifier.Length == 0)
             {
                 Paginator.Output(p, visibleNotes, PrintNote, cmd, "Notes",

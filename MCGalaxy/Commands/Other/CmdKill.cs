@@ -22,8 +22,12 @@ namespace MCGalaxy.Commands.Misc
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
-            if (!MessageCmd.CanSpeak(p, Name)) return; // do not allow using kill to spam every 2 secs
+            if (message.Length == 0) 
+            {
+                Help(p);
+                return;
+            }
+            if (!MessageCmd.CanSpeak(p, Name)) return;
             string[] args = message.SplitSpaces(2);
             Player target = PlayerInfo.FindMatches(p, args[0]);
             if (target == null)

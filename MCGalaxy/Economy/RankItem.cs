@@ -77,15 +77,17 @@ namespace MCGalaxy.Eco
         {
             if (args.Length > 0)
             {
-                p.Message("&WYou cannot provide a rank name, use &T/Buy rank &Wto buy the NEXT rank."); return;
+                p.Message("&WYou cannot provide a rank name, use &T/Buy rank &Wto buy the NEXT rank."); 
+                return;
             }
             RankEntry nextRank = NextRank(p);
             if (nextRank == null)
             {
-                p.Message("&WYou are already at or past the max buyable rank"); return;
+                p.Message("&WYou are already at or past the max buyable rank"); 
+                return;
             }
             if (!CheckPrice(p, nextRank.Price, "the next rank")) return;
-            Group rank = Group.Find(nextRank.Perm); // TODO: What if null reference happens here
+            Group rank = Group.Find(nextRank.Perm);
             Command.Find("SetRank").Use(Player.Console, p.name + " " + rank.Name);
             p.Message("You bought the rank " + rank.ColoredName);
             Economy.MakePurchase(p, nextRank.Price, "&3Rank: " + rank.ColoredName);
@@ -96,7 +98,11 @@ namespace MCGalaxy.Eco
             {
                 Group grp = Matcher.FindRanks(p, args[2]);
                 if (grp == null) return;
-                if (p.Rank < grp.Permission) { p.Message("&WCannot set price of a rank higher than yours."); return; }
+                if (p.Rank < grp.Permission) 
+                {
+                    p.Message("&WCannot set price of a rank higher than yours.");
+                    return;
+                }
                 int cost = 0;
                 if (!CommandParser.GetInt(p, args[3], "Price", ref cost, 0)) return;
                 p.Message("&aSet price of rank {0} &ato &f{1} &3{2}", grp.ColoredName, cost, Server.Config.Currency);

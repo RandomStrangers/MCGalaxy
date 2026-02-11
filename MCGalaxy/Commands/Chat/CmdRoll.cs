@@ -39,11 +39,8 @@ namespace MCGalaxy.Commands.Chatting
                 min = max;
                 max = tmp;
             }
-            // rand.Next(min, max) is exclusive of max, so we need to use (max + 1)
-            int adjMax = max == int.MaxValue ? int.MaxValue : max + 1;
-            // Don't want RNG to get seeded the same if /roll is called in quick succession
-            // (since it uses Environment.TickCount, which only has 10-15 millisecond accuracy)
-            int number;
+            int adjMax = max == int.MaxValue ? int.MaxValue : max + 1,
+                number;
             lock (rngLock)
             {
                 rng ??= new();

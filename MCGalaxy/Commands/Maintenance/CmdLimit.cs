@@ -23,7 +23,11 @@ namespace MCGalaxy.Commands.Maintenance
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0)
+            {
+                Help(p); 
+                return;
+            }
             bool hasLimit = args.Length > 1;
             if (args[0].CaselessEq("rt") || args[0].CaselessEq("reloadthreshold"))
             {
@@ -48,41 +52,53 @@ namespace MCGalaxy.Commands.Maintenance
                     SetLimit(p, "Physics undo max entries", ref Server.Config.PhysicsUndo, limit, hasLimit);
                     return;
             }
-            if (args.Length < 2) { Help(p); return; }
-            if (args.Length == 2) { p.Message("You need to provide a rank name for this type."); return; }
+            if (args.Length < 2) 
+            {
+                Help(p);
+                return; 
+            }
+            if (args.Length == 2) 
+            { 
+                p.Message("You need to provide a rank name for this type."); 
+                return;
+            }
             Group grp = Matcher.FindRanks(p, args[2]);
             if (grp == null) return;
             switch (args[0].ToLower())
             {
                 case "draw":
                     Chat.MessageAll(grp.ColoredName + "&S's draw limit set to &b" + limit);
-                    grp.DrawLimit = limit; break;
+                    grp.DrawLimit = limit; 
+                    break;
                 case "maxundo":
                     Chat.MessageAll(grp.ColoredName + "&S's undo limit set to &b" + limit);
-                    grp.MaxUndo = TimeSpan.FromSeconds(limit); break;
+                    grp.MaxUndo = TimeSpan.FromSeconds(limit);
+                    break;
                 case "gen":
                     Chat.MessageAll(grp.ColoredName + "&S's map gen volume limit set to &b" + limit);
-                    grp.GenVolume = limit; break;
+                    grp.GenVolume = limit;
+                    break;
                 case "realms":
                     Chat.MessageAll(grp.ColoredName + "&S's max realms set to &b" + limit);
-                    grp.OverseerMaps = limit; break;
+                    grp.OverseerMaps = limit; 
+                    break;
                 default:
-                    Help(p); return;
+                    Help(p);
+                    return;
             }
             Group.SaveAll(Group.GroupList);
         }
         static void SetLimitPercent(Player p, ref float target, float value, bool hasValue)
         {
-            const string type = "Threshold before drawing reloads map";
             if (hasValue) target = value / 100.0f;
             string percent = (target * 100).ToString("F2") + "%";
             if (!hasValue)
             {
-                p.Message(type + ": &b" + percent);
+                p.Message("Threshold before drawing reloads map: &b" + percent);
             }
             else
             {
-                Chat.MessageAll(type + " set to &b" + percent);
+                Chat.MessageAll("Threshold before drawing reloads map set to &b" + percent);
                 Server.Save();
             }
         }

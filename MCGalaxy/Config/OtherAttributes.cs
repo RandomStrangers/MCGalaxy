@@ -120,7 +120,6 @@ namespace MCGalaxy.Config
                 Logger.Log(LogType.Warning, "Config key \"{0}\" is not a valid boolean, using default of {1}", Name, defValue);
                 values[i] = defValue;
             }
-            // shouldn't usually happen, but handle anyways
             for (; i < values.Length; i++) values[i] = defValue;
             return values;
         }

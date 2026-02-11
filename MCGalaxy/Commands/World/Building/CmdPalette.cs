@@ -25,7 +25,11 @@ namespace MCGalaxy.Commands.Building
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(5);
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0)
+            {
+                Help(p); 
+                return; 
+            }
             if (args[0].CaselessEq("create"))
             {
                 HandleCreate(p, args);
@@ -53,7 +57,11 @@ namespace MCGalaxy.Commands.Building
         }
         void HandleCreate(Player p, string[] args)
         {
-            if (args.Length != 2) { Help(p); return; }
+            if (args.Length != 2) 
+            { 
+                Help(p);
+                return;
+            }
             if (!Formatter.ValidFilename(p, args[1])) return;
             ImagePalette palette = ImagePalette.Find(args[1]);
             if (palette != null)
@@ -68,7 +76,11 @@ namespace MCGalaxy.Commands.Building
         }
         void HandleDelete(Player p, string[] args)
         {
-            if (args.Length != 2) { Help(p); return; }
+            if (args.Length != 2) 
+            {
+                Help(p); 
+                return; 
+            }
             ImagePalette palette = ImagePalette.Find(args[1]);
             if (palette == null)
             {
@@ -82,11 +94,16 @@ namespace MCGalaxy.Commands.Building
         }
         void HandleAdd(Player p, string[] args)
         {
-            if (args.Length != 4) { Help(p); return; }
+            if (args.Length != 4) 
+            {
+                Help(p); 
+                return; 
+            }
             ImagePalette palette = ImagePalette.Find(args[1]);
             if (palette == null)
             {
-                p.Message("Palette {0} does not exist.", args[1]); return;
+                p.Message("Palette {0} does not exist.", args[1]); 
+                return;
             }
             if (!CommandParser.GetBlock(p, args[2], out ushort block)) return;
             ColorDesc rgb = default;
@@ -106,11 +123,16 @@ namespace MCGalaxy.Commands.Building
         }
         void HandleRemove(Player p, string[] args)
         {
-            if (args.Length != 3) { Help(p); return; }
+            if (args.Length != 3) 
+            { 
+                Help(p); 
+                return; 
+            }
             ImagePalette palette = ImagePalette.Find(args[1]);
             if (palette == null)
             {
-                p.Message("Palette {0} does not exist.", args[1]); return;
+                p.Message("Palette {0} does not exist.", args[1]); 
+                return;
             }
             if (!CommandParser.GetBlock(p, args[2], out ushort block)) return;
             RemoveEntry(p, palette, block);
@@ -130,7 +152,8 @@ namespace MCGalaxy.Commands.Building
             }
             if (newEntries.Count == entries.Length)
             {
-                p.Message("Block not found in entries of palette {0}", palette.Name); return;
+                p.Message("Block not found in entries of palette {0}", palette.Name);
+                return;
             }
             palette.Entries = newEntries.ToArray();
             palette.Save();
@@ -138,11 +161,16 @@ namespace MCGalaxy.Commands.Building
         }
         void HandleEntries(Player p, string[] args)
         {
-            if (args.Length < 2 || args.Length > 3) { Help(p); return; }
+            if (args.Length < 2 || args.Length > 3) 
+            { 
+                Help(p);
+                return;
+            }
             ImagePalette palette = ImagePalette.Find(args[1]);
             if (palette == null)
             {
-                p.Message("Palette {0} does not exist.", args[1]); return;
+                p.Message("Palette {0} does not exist.", args[1]);
+                return;
             }
             string modifer = args.Length > 2 ? args[2] : "";
             Paginator.Output(p, palette.Entries, PrintEntry,

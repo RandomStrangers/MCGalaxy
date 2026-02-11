@@ -41,12 +41,14 @@ namespace MCGalaxy.Drawing.Ops
         void Fix(DrawOpOutput output, bool fixGrass, bool fixDirt)
         {
             Level lvl = Level;
-            int maxY = lvl.Height - 1, oneY = lvl.Width * lvl.Length;
-            int index, width = lvl.Width, length = lvl.Length;
+            int maxY = lvl.Height - 1, oneY = lvl.Width * lvl.Length,
+                index, width = lvl.Width, length = lvl.Length;
             ushort above, block;
             Vec3U16 p1 = Clamp(Min), p2 = Clamp(Max);
             for (ushort y = p1.Y; y <= p2.Y; y++)
+            {
                 for (ushort z = p1.Z; z <= p2.Z; z++)
+                {
                     for (ushort x = p1.X; x <= p2.X; x++)
                     {
                         index = x + width * (z + y * length);
@@ -64,16 +66,20 @@ namespace MCGalaxy.Drawing.Ops
                             if (!lvl.LightPasses(above)) output(Place(x, y, z, dirt));
                         }
                     }
+                }
+            }
         }
         void FixLight(DrawOpOutput output)
         {
             Level lvl = Level;
-            int oneY = lvl.Width * lvl.Length;
-            int index, width = lvl.Width, length = lvl.Length;
+            int oneY = lvl.Width * lvl.Length,
+                index, width = lvl.Width, length = lvl.Length;
             ushort above, block;
             Vec3U16 p1 = Clamp(Min), p2 = Clamp(Max);
             for (ushort y = p1.Y; y <= p2.Y; y++)
+            {
                 for (ushort z = p1.Z; z <= p2.Z; z++)
+                {
                     for (ushort x = p1.X; x <= p2.X; x++)
                     {
                         index = x + width * (z + y * length);
@@ -84,7 +90,11 @@ namespace MCGalaxy.Drawing.Ops
                             for (int i = 1; i < (lvl.Height - y); i++)
                             {
                                 above = lvl.FastGetBlock(index + oneY * i);
-                                if (!lvl.LightPasses(above)) { inShadow = true; break; }
+                                if (!lvl.LightPasses(above)) 
+                                { 
+                                    inShadow = true;
+                                    break; 
+                                }
                             }
                             ushort grass = lvl.Props[block].GrassBlock;
                             if (!inShadow) output(Place(x, y, z, grass));
@@ -94,12 +104,18 @@ namespace MCGalaxy.Drawing.Ops
                             for (int i = 1; i < (lvl.Height - y); i++)
                             {
                                 above = lvl.FastGetBlock(index + oneY * i);
-                                if (!lvl.LightPasses(above)) { inShadow = true; break; }
+                                if (!lvl.LightPasses(above)) 
+                                { 
+                                    inShadow = true;
+                                    break; 
+                                }
                             }
                             ushort dirt = lvl.Props[block].DirtBlock;
                             if (inShadow) output(Place(x, y, z, dirt));
                         }
                     }
+                }
+            }
         }
     }
 }

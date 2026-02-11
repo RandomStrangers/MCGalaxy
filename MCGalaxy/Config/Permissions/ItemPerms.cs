@@ -111,7 +111,7 @@ namespace MCGalaxy
         }
         protected string Serialise()
         {
-            StringBuilder sb = new(); // TODO: cache stringbuilder across calls?
+            StringBuilder sb = new();
             sb.Append(ItemName);
             sb.Append(" : ");
             sb.Append(NumberUtils.StringifyInt((int)MinRank));

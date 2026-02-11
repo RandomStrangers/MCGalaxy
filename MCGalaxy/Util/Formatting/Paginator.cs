@@ -27,7 +27,6 @@ namespace MCGalaxy
         {
             List<string> matches = new();
             Regex regex = null;
-            // wildcard matching
             if (keyword.Contains("*") || keyword.Contains("?"))
             {
                 string pattern = "^" + Regex.Escape(keyword).Replace("\\?", ".").Replace("\\*", ".*") + "$";
@@ -54,7 +53,6 @@ namespace MCGalaxy
                         continue;
                     }
                 }
-                // format this item for display
                 if (listFormatter != null)
                 {
                     name = listFormatter(item);
@@ -103,7 +101,7 @@ namespace MCGalaxy
                                   StringFormatter<T> formatter, ItemPrinter<T> printer,
                                   string cmd, string type, int start, int perPage)
         {
-            start = Utils.Clamp(start - 1, 0, items.Count - 1); // want item numbers to start at 1
+            start = Utils.Clamp(start - 1, 0, items.Count - 1);
             int end = Math.Min(start + perPage, items.Count);
             OutputItems(p, items, start, end, formatter, printer);
             if (items.Count == 0)

@@ -25,11 +25,15 @@ namespace MCGalaxy.Drawing.Ops
         {
             Vec3U16 p1 = Clamp(Min), p2 = Clamp(Max);
             for (ushort y = p1.Y; y <= p2.Y; y++)
+            {
                 for (ushort z = p1.Z; z <= p2.Z; z++)
+                {
                     for (ushort x = p1.X; x <= p2.X; x++)
                     {
                         output(Place(x, y, z, brush));
                     }
+                }
+            }
         }
     }
     public class CuboidHollowsDrawOp : DrawOp
@@ -37,10 +41,10 @@ namespace MCGalaxy.Drawing.Ops
         public override string Name => "Cuboid Hollow";
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
-            int lenX = SizeX, lenY = SizeY, lenZ = SizeZ;
-            int xQuadsVol = Math.Min(lenX, 2) * lenY * lenZ;
-            int yQuadsVol = Math.Max(0, Math.Min(lenY, 2) * (lenX - 2) * lenZ); // we need to avoid double counting overlaps
-            int zQuadsVol = Math.Max(0, Math.Min(lenZ, 2) * (lenX - 2) * (lenY - 2));
+            int lenX = SizeX, lenY = SizeY, lenZ = SizeZ,
+                xQuadsVol = Math.Min(lenX, 2) * lenY * lenZ,
+                yQuadsVol = Math.Max(0, Math.Min(lenY, 2) * (lenX - 2) * lenZ),
+                zQuadsVol = Math.Max(0, Math.Min(lenZ, 2) * (lenX - 2) * (lenY - 2));
             return xQuadsVol + yQuadsVol + zQuadsVol;
         }
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
@@ -66,28 +70,34 @@ namespace MCGalaxy.Drawing.Ops
                              Brush brush, DrawOpOutput output)
         {
             for (ushort y = y1; y <= y2; y++)
+            {
                 for (ushort z = z1; z <= z2; z++)
                 {
                     output(Place(x, y, z, brush));
                 }
+            }
         }
         protected void QuadY(ushort y, ushort x1, ushort z1, ushort x2, ushort z2,
                              Brush brush, DrawOpOutput output)
         {
             for (ushort z = z1; z <= z2; z++)
+            {
                 for (ushort x = x1; x <= x2; x++)
                 {
                     output(Place(x, y, z, brush));
                 }
+            }
         }
         protected void QuadZ(ushort z, ushort y1, ushort x1, ushort y2, ushort x2,
                              Brush brush, DrawOpOutput output)
         {
             for (ushort y = y1; y <= y2; y++)
+            {
                 for (ushort x = x1; x <= x2; x++)
                 {
                     output(Place(x, y, z, brush));
                 }
+            }
         }
     }
     public class CuboidWallsDrawOp : CuboidHollowsDrawOp
@@ -95,9 +105,9 @@ namespace MCGalaxy.Drawing.Ops
         public override string Name => "Cuboid Walls";
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
-            int lenX = SizeX, lenY = SizeY, lenZ = SizeZ;
-            int xQuadsVol = Math.Min(lenX, 2) * lenY * lenZ;
-            int zQuadsVol = Math.Max(0, Math.Min(lenZ, 2) * (lenX - 2) * lenY); // we need to avoid double counting overlaps
+            int lenX = SizeX, lenY = SizeY, lenZ = SizeZ,
+                xQuadsVol = Math.Min(lenX, 2) * lenY * lenZ,
+                zQuadsVol = Math.Max(0, Math.Min(lenZ, 2) * (lenX - 2) * lenY); // we need to avoid double counting overlaps
             return xQuadsVol + zQuadsVol;
         }
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
@@ -116,9 +126,9 @@ namespace MCGalaxy.Drawing.Ops
         public override string Name => "Cuboid Wireframe";
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
-            int lenX = SizeX, lenY = SizeY, lenZ = SizeZ;
-            int horSidesvol = 2 * (lenX * 2 + lenZ * 2); // TODO: slightly overestimated by at most four blocks.
-            int verSidesVol = Math.Max(0, lenY - 2) * 4;
+            int lenX = SizeX, lenY = SizeY, lenZ = SizeZ,
+                horSidesvol = 2 * (lenX * 2 + lenZ * 2),
+                verSidesVol = Math.Max(0, lenY - 2) * 4;
             return horSidesvol + verSidesVol;
         }
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)

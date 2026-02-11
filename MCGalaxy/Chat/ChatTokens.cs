@@ -40,7 +40,6 @@ namespace MCGalaxy
         }
         public static void Apply(StringBuilder sb, Player p)
         {
-            // only apply standard $tokens when necessary
             for (int i = 0; i < sb.Length; i++)
             {
                 if (sb[i] != '$') continue;
@@ -159,7 +158,6 @@ namespace MCGalaxy
             foreach (string line in lines)
             {
                 if (line.StartsWith("//") || line.Length == 0) continue;
-                // Need to handle special case of :discord: emotes
                 int offset = 0;
                 if (line[0] == ':')
                 {
@@ -168,7 +166,7 @@ namespace MCGalaxy
                     offset = emoteEnd + 1;
                 }
                 int separator = FindColon(line, offset);
-                if (separator == -1) continue; // not a proper line
+                if (separator == -1) continue;
                 string key = line.Substring(0, separator).Trim().Replace("\\:", ":"),
                     value = line.Substring(separator + 1).Trim();
                 if (key.Length == 0) continue;
@@ -180,7 +178,6 @@ namespace MCGalaxy
             for (int i = offset; i < s.Length; i++)
             {
                 if (s[i] != ':') continue;
-                // "\:" is used to specify 'this colon is not the separator'
                 if (i > 0 && s[i - 1] == '\\') continue;
                 return i;
             }

@@ -66,7 +66,9 @@ namespace MCGalaxy.Drawing.Brushes
         public ushort Block;
         public BrushArgs(Player p, string message, ushort block)
         {
-            Player = p; Message = message; Block = block;
+            Player = p; 
+            Message = message; 
+            Block = block;
         }
     }
 }

@@ -31,24 +31,24 @@ namespace MCGalaxy.Drawing.Brushes
         };
         public override Brush Construct(BrushArgs args)
         {
-            NoiseArgs n = default;
-            // Constants borrowed from fCraft to match it
-            n.Amplitude = 1;
-            n.Frequency = 0.08f;
-            n.Octaves = 3;
-            n.Seed = int.MinValue;
-            n.Persistence = 0.75f;
-            n.Lacunarity = 2;
+            NoiseArgs n = new()
+            {
+                Amplitude = 1,
+                Frequency = 0.08f,
+                Octaves = 3,
+                Seed = int.MinValue,
+                Persistence = 0.75f,
+                Lacunarity = 2
+            };
             bool ok = FrequencyBrush.GetBlocks(args, out List<ushort> toAffect, out List<int> freqs,
                                                Filter, arg => Handler(arg, args.Player, ref n));
             return !ok ? null : (Brush)new CloudyBrush(toAffect, freqs, n);
         }
-        // Only want to handle non block options.
         static bool Filter(string arg) => arg.Length >= 2 && (arg[1] == '_' || arg[1] == '=');
         static bool Handler(string arg, Player p, ref NoiseArgs args)
         {
             char opt = arg[0];
-            arg = arg.Substring(2); // get part after _ or =
+            arg = arg.Substring(2);
             if (opt == 'l') return ParseDecimal(p, arg, ref args.Lacunarity, 2.00f);
             if (opt == 'a') return ParseDecimal(p, arg, ref args.Amplitude, 1.00f);
             if (opt == 'f') return ParseDecimal(p, arg, ref args.Frequency, 0.08f);
@@ -71,7 +71,8 @@ namespace MCGalaxy.Drawing.Brushes
         static bool ParseDecimal(Player p, string arg, ref float target, float scale)
         {
             if (!CommandParser.GetReal(p, arg, "Value", ref target)) return false;
-            target *= scale; return true;
+            target *= scale;
+            return true;
         }
     }
     public struct NoiseArgs

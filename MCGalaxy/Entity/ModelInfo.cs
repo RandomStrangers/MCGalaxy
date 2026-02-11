@@ -30,8 +30,6 @@ namespace MCGalaxy
             BaseSize.Z = sizeZ;
             EyeHeight = eyeHeight;
         }
-        // Eye height may be 1-2 pixels different from client's eye height,
-        // because we're really after the centre of the entity's head
         public static List<ModelInfo> Models = new() {
             new("humanoid",    18,56,18, 28),
             new("sit",         18,56,18, 18),
@@ -60,9 +58,7 @@ namespace MCGalaxy
             string str = sep == -1 ? null : model.Substring(sep + 1);
             if (!NumberUtils.TryParseSingle(str, out float scale)) scale = 1.0f;
             if (scale < 0.01f) scale = 0.01f;
-            // backwards compatibility for giant model
             if (model.CaselessEq("giant")) scale *= 2;
-            // special handling for hold model
             if (model.CaselessStarts("hold|") && scale > 1) scale = 1;
             return scale;
         }
@@ -81,15 +77,14 @@ namespace MCGalaxy
             {
                 ushort block = Block.FromRaw(raw);
                 bb = Block.BlockAABB(block, entity.Level);
-                bb = bb.Offset(-16, 0, -16); // centre around [-16, 16] instead of [0, 32]
+                bb = bb.Offset(-16, 0, -16);
             }
             else
             {
                 bb = AABB.Make(new(0, 0, 0), Get(model).BaseSize);
             }
-            bb = bb.Expand(-1); // adjust the model AABB inwards slightly
+            bb = bb.Expand(-1);
             Vec3F32 scale = CalcScale(entity);
-            // always limit max scale for collisions performance
             float max = DefaultMaxScale(model);
             scale.X = Math.Min(scale.X, max);
             scale.Y = Math.Min(scale.Y, max);
@@ -107,10 +102,10 @@ namespace MCGalaxy
         {
             Vec3F32 scale = CalcScale(entity);
             string model = GetRawModel(entity.Model);
-            if (ushort.TryParse(model, out ushort raw) && raw <= 767) return 16; //lazily return middle of full block if it thinks it's a block ID.
+            if (ushort.TryParse(model, out ushort raw) && raw <= 767) return 16; 
             float eyeHeight = Get(model).EyeHeight;
             eyeHeight *= scale.Y;
-            eyeHeight *= 2f; //multiply by two because world positions are measured in half-pixels
+            eyeHeight *= 2f; 
             return (int)eyeHeight;
         }
     }

@@ -19,7 +19,6 @@ using MCGalaxy.Network;
 using MCGalaxy.Util.Imaging;
 using System;
 using System.IO;
-using System.Threading;
 namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdImageprint : Command2

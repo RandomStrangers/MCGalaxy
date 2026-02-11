@@ -29,12 +29,16 @@ namespace MCGalaxy.Events.PlayerEvents
         public static void Call(Player p, string message)
         {
             IEvent<OnPlayerChat>[] items = handlers.Items;
-            // Don't use CallCommon, because this event is called very frequently
-            // and want to avoid lots of pointless temp mem allocations
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, message); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(p, message); 
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -47,8 +51,14 @@ namespace MCGalaxy.Events.PlayerEvents
             IEvent<OnPlayerMove>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, next, yaw, pitch, ref cancel); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                {
+                    items[i].method(p, next, yaw, pitch, ref cancel); 
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -62,8 +72,14 @@ namespace MCGalaxy.Events.PlayerEvents
             IEvent<OnPlayerCommand>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, cmd, args, data); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(p, cmd, args, data); 
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -77,8 +93,14 @@ namespace MCGalaxy.Events.PlayerEvents
             IEvent<OnPlayerHelp>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, target, ref cancel); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(p, target, ref cancel); 
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -124,8 +146,14 @@ namespace MCGalaxy.Events.PlayerEvents
             IEvent<OnPlayerDying>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, block, ref cancel); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(p, block, ref cancel); 
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -139,8 +167,14 @@ namespace MCGalaxy.Events.PlayerEvents
             IEvent<OnPlayerDied>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, block, ref cooldown); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(p, block, ref cooldown); 
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -166,8 +200,14 @@ namespace MCGalaxy.Events.PlayerEvents
             IEvent<OnBlockChanging>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, x, y, z, block, placing, ref cancel); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(p, x, y, z, block, placing, ref cancel);
+                }
+                catch (Exception ex) 
+                {
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -180,8 +220,14 @@ namespace MCGalaxy.Events.PlayerEvents
             IEvent<OnBlockChanged>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, x, y, z, result); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(p, x, y, z, result); 
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -198,8 +244,14 @@ namespace MCGalaxy.Events.PlayerEvents
             IEvent<OnPlayerClick>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, btn, action, yaw, pitch, entityID, x, y, z, face); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(p, btn, action, yaw, pitch, entityID, x, y, z, face); 
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -212,8 +264,14 @@ namespace MCGalaxy.Events.PlayerEvents
             IEvent<OnNotifyAction>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, action, value); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(p, action, value); 
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]);
+                }
             }
         }
     }
@@ -226,8 +284,14 @@ namespace MCGalaxy.Events.PlayerEvents
             IEvent<OnNotifyPositionAction>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, action, x, y, z); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                {
+                    items[i].method(p, action, x, y, z); 
+                }
+                catch (Exception ex) 
+                {
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -240,8 +304,14 @@ namespace MCGalaxy.Events.PlayerEvents
             IEvent<OnMessageReceived>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, ref message, ref cancel); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(p, ref message, ref cancel); 
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]);
+                }
             }
         }
     }
@@ -263,11 +333,16 @@ namespace MCGalaxy.Events.PlayerEvents
         public static void Call(Player p, Level lvl, ref bool canJoin)
         {
             IEvent<OnJoiningLevel>[] items = handlers.Items;
-            // Can't use CallCommon because we need to pass arguments by ref
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, lvl, ref canJoin); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(p, lvl, ref canJoin); 
+                }
+                catch (Exception ex) 
+                {
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -278,11 +353,16 @@ namespace MCGalaxy.Events.PlayerEvents
         public static void Call(Player p, Level prevLevel, Level level, ref bool announce)
         {
             IEvent<OnJoinedLevel>[] items = handlers.Items;
-            // Can't use CallCommon because we need to pass arguments by ref
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, prevLevel, level, ref announce); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                {
+                    items[i].method(p, prevLevel, level, ref announce); 
+                }
+                catch (Exception ex) 
+                {
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -316,11 +396,16 @@ namespace MCGalaxy.Events.PlayerEvents
         public static void Call(Player p, ref string color)
         {
             IEvent<OnSettingColor>[] items = handlers.Items;
-            // Can't use CallCommon because we need to pass arguments by ref
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, ref color); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                {
+                    items[i].method(p, ref color); 
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -332,11 +417,16 @@ namespace MCGalaxy.Events.PlayerEvents
         public static void Call(Player p, ref string motd)
         {
             IEvent<OnGettingMotd>[] items = handlers.Items;
-            // Can't use CallCommon because we need to pass arguments by ref
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, ref motd); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(p, ref motd);
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]);
+                }
             }
         }
     }
@@ -348,11 +438,16 @@ namespace MCGalaxy.Events.PlayerEvents
         public static void Call(Player p, ref string motd)
         {
             IEvent<OnSendingMotd>[] items = handlers.Items;
-            // Can't use CallCommon because we need to pass arguments by ref
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, ref motd); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try
+                { 
+                    items[i].method(p, ref motd); 
+                }
+                catch (Exception ex) 
+                {
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -363,11 +458,16 @@ namespace MCGalaxy.Events.PlayerEvents
         public static void Call(Player p, ref Position pos, ref byte yaw, ref byte pitch, bool respawning)
         {
             IEvent<OnPlayerSpawning>[] items = handlers.Items;
-            // Can't use CallCommon because we need to pass arguments by ref
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, ref pos, ref yaw, ref pitch, respawning); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(p, ref pos, ref yaw, ref pitch, respawning);
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -389,11 +489,16 @@ namespace MCGalaxy.Events.PlayerEvents
         public static void Call(Player p, LevelPermission plRank, ref bool canSee, Player target)
         {
             IEvent<OnGettingCanSee>[] items = handlers.Items;
-            // Can't use CallCommon because we need to pass arguments by ref
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(p, plRank, ref canSee, target); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                {
+                    items[i].method(p, plRank, ref canSee, target);
+                }
+                catch (Exception ex) 
+                {
+                    LogHandlerException(ex, items[i]);
+                }
             }
         }
     }

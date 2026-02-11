@@ -28,15 +28,11 @@ namespace MCGalaxy.Network
         protected abstract void OnGotHeader(string name, string value);
         void ProcessHeader(string raw)
         {
-            // end of all headers
             if (raw.Length == 0) OnGotAllHeaders();
-            // check that got a proper header
             int sep = raw.IndexOf(':');
             if (sep == -1) return;
             string name = raw.Substring(0, sep),
                 value = raw.Substring(sep + 1).Trim();
-            // RFC 6455, section 1.3 - Opening Handshake
-            //   To this end, the WebSocket client's handshake is an HTTP Upgrade request
             if (name.CaselessEq("Connection"))
             {
                 conn = value.CaselessContains("Upgrade");
@@ -56,7 +52,6 @@ namespace MCGalaxy.Network
             for (i = 0; i < bufferLen - 1;)
             {
                 int end = -1;
-                // find end of header
                 for (int j = i; j < bufferLen - 1; j++)
                 {
                     if (buffer[j] != '\r' || buffer[j + 1] != '\n') continue;
@@ -73,14 +68,7 @@ namespace MCGalaxy.Network
         int state, opcode, frameLen, maskRead, frameRead;
         private readonly byte[] mask = new byte[4];
         private byte[] frame;
-        int GetDisconnectReason()
-        {
-            if (frameLen < 2) return 1000;
-            // RFC 6455, section 5.5.1 - Close
-            //   If there is a body, the first two bytes of the body MUST
-            //    be a 2-byte unsigned integer (in network byte order)...
-            return (frame[0] << 8) | frame[1];
-        }
+        int GetDisconnectReason() => frameLen < 2 ? 1000 : (frame[0] << 8) | frame[1];
         void DecodeFrame()
         {
             for (int i = 0; i < frameLen; i++)
@@ -89,7 +77,6 @@ namespace MCGalaxy.Network
             }
             switch (opcode)
             {
-                // TODO: reply to ping frames
                 case 0:
                 case 2:
                 case 1:
@@ -97,7 +84,6 @@ namespace MCGalaxy.Network
                     HandleData(frame, frameLen);
                     break;
                 case 8:
-                    // Connection is getting closed
                     Disconnect(GetDisconnectReason()); 
                     break;
                 default:
@@ -117,25 +103,20 @@ namespace MCGalaxy.Network
                 case 1:
                     if (offset >= len) break;
                     int flags = data[offset] & 0x7F;
-                    // if mask bit is     zero: maskRead is set to 0x80 (therefore skipping reading the 4 bytes)
-                    // if mask bit is non-zero: maskRead is set to 0x00 (therefore actually reading the data)
                     maskRead = 0x80 - (data[offset] & 0x80);
                     offset++;
                     if (flags == 127)
                     {
-                        // unsupported 8 byte extended length
                         Disconnect(1009);
                         return len;
                     }
                     else if (flags == 126)
                     {
-                        // two byte extended length
                         state = 2;
                         goto case 2;
                     }
                     else
                     {
-                        // length is inline
                         frameLen = flags;
                         state = 4;
                         goto case 4;

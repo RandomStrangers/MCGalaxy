@@ -94,7 +94,6 @@ namespace MCGalaxy.Network
         }
         Stream CompressMapHeader(int volume)
         {
-            // FastMap sends volume in LevelInit packet instead
             if (session.Supports(CpeExt.FastMap))
             {
                 return new DeflateStream(this, CompressionMode.Compress, true);
@@ -113,20 +112,17 @@ namespace MCGalaxy.Network
             ClassicProtocol s = dst.session;
             byte[] blocks = lvl.blocks;
             float progScale = 100.0f / blocks.Length;
-            // Store on stack instead of performing function call for every block in map
             byte* conv = stackalloc byte[256];
             for (int i = 0; i < 256; i++)
             {
                 conv[i] = (byte)s.ConvertBlock((ushort)i);
             }
-            // compress the map data in 64 kb chunks
             for (int i = 0; i < blocks.Length; ++i)
             {
                 buffer[bIndex] = conv[blocks[i]];
                 bIndex++;
                 if (bIndex == bufferSize)
                 {
-                    // '0' to indicate this chunk has lower 8 bits of block ids
                     dst.chunkValue = s.hasExtBlocks ? (byte)0 : (byte)(i * progScale);
                     stream.Write(buffer, 0, bufferSize);
                     bIndex = 0;
@@ -142,7 +138,6 @@ namespace MCGalaxy.Network
             ClassicProtocol s = dst.session;
             byte[] blocks = lvl.blocks;
             float progScale = 100.0f / blocks.Length;
-            // Store on stack instead of performing function call for every block in map
             byte* conv = stackalloc byte[1024],
                 convExt = conv + 256,
                 convExt2 = conv + 256 * 2,
@@ -151,10 +146,8 @@ namespace MCGalaxy.Network
             {
                 conv[j] = (byte)s.ConvertBlock((ushort)j);
             }
-            // compress the map data in 64 kb chunks
             if (s.hasExtBlocks)
             {
-                // Initially assume all custom blocks are <= 255
                 int i;
                 for (i = 0; i < blocks.Length; i++)
                 {
@@ -182,16 +175,13 @@ namespace MCGalaxy.Network
                         bIndex = 0;
                     }
                 }
-                // Check if map only used custom blocks <= 255
                 if (bIndex > 0) stream.Write(buffer, 0, bIndex);
                 if (i == blocks.Length) return;
                 bIndex = 0;
-                // Nope - have to go slower path now
                 using LevelChunkStream dst2 = new(s);
                 using Stream stream2 = dst2.CompressMapHeader(blocks.Length);
-                dst2.chunkValue = 1; // 'extended' blocks
+                dst2.chunkValue = 1;
                 byte[] buffer2 = new byte[bufferSize];
-                // Need to fill in all the upper 8 bits of blocks before this one with 0
                 for (int j = 0; j < i; j += bufferSize)
                 {
                     int len = Math.Min(bufferSize, i - j);

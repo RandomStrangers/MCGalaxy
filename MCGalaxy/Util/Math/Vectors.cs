@@ -114,7 +114,6 @@ namespace MCGalaxy.Maths
         public static Vec3F32 Normalise(Vec3F32 a)
         {
             float invLen = 1 / a.Length;
-            // handle zero vector
             if (invLen == float.PositiveInfinity)
             {
                 return a;

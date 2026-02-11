@@ -31,7 +31,7 @@ namespace MCGalaxy.Blocks.Physics
                 else Door(lvl, ref C);
             }
             if (C.Data.Data <= C.Data.Value1)
-            { // value1 for wait time
+            { 
                 C.Data.Data++;
             }
             else
@@ -42,7 +42,6 @@ namespace MCGalaxy.Blocks.Physics
                 C.Data.Data = 255;
             }
         }
-        // Change anys door blocks nearby into air forms
         static void Door(Level lvl, ref PhysInfo C)
         {
             ushort x = C.X, y = C.Y, z = C.Z,

@@ -65,7 +65,6 @@ namespace MCGalaxy.Modules.Relay.Discord
         SslStream stream;
         bool readable;
         public DiscordWebsocket(string apiPath) => path = apiPath;
-        // stubs
         public override bool LowLatency { set { } }
         public override IPAddress IP => null;
         public void Connect()
@@ -92,7 +91,6 @@ namespace MCGalaxy.Modules.Relay.Discord
             }
             catch
             {
-                // ignore errors when closing socket
             }
         }
         protected override void OnDisconnected(int reason)
@@ -107,7 +105,6 @@ namespace MCGalaxy.Modules.Relay.Discord
             }
             else if (reason == 4014)
             {
-                // privileged intent since August 2022 https://support-dev.discord.com/hc/en-us/articles/4404772028055
                 CanReconnect = false;
                 throw new InvalidOperationException("Discord relay: Message Content Intent is not enabled in Bot Account settings, " +
                     "therefore Discord will prevent the bot from being able to see the contents of Discord messages\n" +
@@ -146,9 +143,6 @@ namespace MCGalaxy.Modules.Relay.Discord
             }
             else if (opcode == 9)
             {
-                // See notes at https://discord.com/developers/docs/topics/gateway#resuming
-                //  (note that in this implementation, if resume fails, the bot just
-                //   gives up altogether instead of trying to resume again later)
                 Session.ID = null;
                 Session.LastSeq = null;
                 Logger.Log(LogType.Warning, "Discord relay: Resuming failed, trying again in 5 seconds");
@@ -167,7 +161,6 @@ namespace MCGalaxy.Modules.Relay.Discord
         }
         void HandleDispatch(JsonObject obj)
         {
-            // update last sequence number
             if (obj.TryGetValue("s", out object sequence))
                 Session.LastSeq = (string)sequence;
             string eventName = (string)obj["t"];

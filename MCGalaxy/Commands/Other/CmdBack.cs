@@ -23,7 +23,8 @@ namespace MCGalaxy.Commands.Misc
         {
             if (p.PreTeleportMap == null)
             {
-                p.Message("You have not teleported anywhere yet"); return;
+                p.Message("You have not teleported anywhere yet");
+                return;
             }
             if (!p.Level.name.CaselessEq(p.PreTeleportMap))
                 PlayerActions.ChangeMap(p, p.PreTeleportMap);

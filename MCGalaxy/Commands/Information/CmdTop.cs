@@ -26,13 +26,18 @@ namespace MCGalaxy.Commands.Info
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
-            if (args.Length < 2) { Help(p); return; }
+            if (args.Length < 2) 
+            { 
+                Help(p); 
+                return; 
+            }
             int maxResults = 0, offset = 0;
             if (!CommandParser.GetInt(p, args[0], "Max results", ref maxResults, 1, 15)) return;
             TopStat stat = TopStat.Find(args[1]);
             if (stat == null)
             {
-                p.Message("&WNo stat found with name \"{0}\".", args[1]); return;
+                p.Message("&WNo stat found with name \"{0}\".", args[1]);
+                return;
             }
             if (args.Length > 2)
             {

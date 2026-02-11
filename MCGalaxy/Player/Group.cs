@@ -159,7 +159,6 @@ namespace MCGalaxy
             }
             else
             {
-                // Add some default ranks
                 Add(LevelPermission.Builder, 4096, 5, "Builder", "&2", GEN_LIMIT, 3); // 16^3 draw volume
                 Add(LevelPermission.AdvBuilder, 262144, 15, "AdvBuilder", "&3", GEN_LIMIT, 5); // 64^3
                 Add(LevelPermission.Operator, 2097152, 90, "Operator", "&c", GEN_LIMIT, 8); // 128^3
@@ -203,25 +202,21 @@ namespace MCGalaxy
         void LoadPlayers()
         {
             string desired = NumberUtils.StringifyInt((int)Permission) + "_rank";
-            // Try to use the auto filename format
             if (filename == null || !filename.StartsWith(desired))
                 MoveToDesired(desired);
             Players = PlayerList.Load("ranks/" + filename);
         }
         void MoveToDesired(string desired)
         {
-            // rank doesn't exist to begin with
             if (filename == null || !File.Exists("ranks/" + filename))
             {
                 filename = desired + ".txt";
-                // TODO: should start backwards from z to a
             }
             else if (MoveToFile(desired + ".txt"))
             {
             }
             else
             {
-                // try appending a and z if duplicate file
                 for (char c = 'a'; c <= 'z'; c++)
                 {
                     if (MoveToFile(desired + c + ".txt")) return;
@@ -264,7 +259,6 @@ namespace MCGalaxy
             else
             {
                 if (temp == null) return;
-                // for prefix we need to keep space at end
                 if (!key.CaselessEq("Prefix"))
                 {
                     value = value.Trim();
@@ -279,7 +273,6 @@ namespace MCGalaxy
         static void AddGroup(Group temp)
         {
             string name = temp.Name;
-            // Try to rename conflicing ranks first
             if (name.CaselessEq("op") || name.CaselessEq("Console"))
             {
                 Logger.Log(LogType.Warning, "Cannot have a rank named 'op' or 'console'", name);
@@ -299,7 +292,7 @@ namespace MCGalaxy
                 Logger.Log(LogType.Warning, "Cannot have 2 ranks set at permission level " + (int)temp.Permission);
             }
             else if (temp.Permission > LevelPermission.Owner)
-            { // also handles LevelPermission.Null
+            {
                 Logger.Log(LogType.Warning, "Invalid permission level for rank {0}", temp.Name);
             }
             else

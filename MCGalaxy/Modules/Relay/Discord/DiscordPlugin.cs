@@ -55,7 +55,6 @@ namespace MCGalaxy.Modules.Relay.Discord
         static ConfigElement[] cfg;
         public void Load()
         {
-            // create default config file
             if (!File.Exists(PROPS_PATH)) Save();
             cfg ??= ConfigElement.GetAll(typeof(DiscordConfig));
             ConfigElement.ParseFile(cfg, PROPS_PATH, this);

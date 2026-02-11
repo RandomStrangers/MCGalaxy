@@ -21,8 +21,8 @@ namespace MCGalaxy.Blocks.Physics
         {
             C.Data.Data++;
             if (C.Data.Data < 3) return;
-            ushort x = C.X, y = C.Y, z = C.Z;
-            ushort below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
+            ushort x = C.X, y = C.Y, z = C.Z,
+                below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
             if (below == Block.Air)
             {
                 lvl.AddUpdate(index, Block.Magma, default(PhysicsArgs));
@@ -58,8 +58,8 @@ namespace MCGalaxy.Blocks.Physics
         public static void DoGeyser(Level lvl, ref PhysInfo C)
         {
             C.Data.Data++;
-            ushort x = C.X, y = C.Y, z = C.Z;
-            ushort below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
+            ushort x = C.X, y = C.Y, z = C.Z,
+                below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
             if (below == Block.Air)
             {
                 lvl.AddUpdate(index, Block.Geyser, default(PhysicsArgs));
@@ -94,8 +94,8 @@ namespace MCGalaxy.Blocks.Physics
         }
         public static void DoWaterfall(Level lvl, ref PhysInfo C)
         {
-            ushort x = C.X, y = C.Y, z = C.Z;
-            ushort below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
+            ushort x = C.X, y = C.Y, z = C.Z,
+                below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
             switch (below)
             {
                 case Block.Air:
@@ -119,8 +119,8 @@ namespace MCGalaxy.Blocks.Physics
         }
         public static void DoLavafall(Level lvl, ref PhysInfo C)
         {
-            ushort x = C.X, y = C.Y, z = C.Z;
-            ushort below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
+            ushort x = C.X, y = C.Y, z = C.Z,
+                below = lvl.GetBlock(x, (ushort)(y - 1), z, out int index);
             switch (below)
             {
                 case Block.Air:

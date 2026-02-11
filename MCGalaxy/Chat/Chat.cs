@@ -58,7 +58,7 @@ namespace MCGalaxy
         /// <summary> Returns true if the target player is ignoring chat messags by source. </summary>
         public static bool Ignoring(Player target, Player source)
         {
-            if (target.Ignores.All) return source != target; // don't ignore messages from self
+            if (target.Ignores.All) return source != target;
             return source != null && target.Ignores.Names.CaselessContains(source.name);
         }
         public static bool FilterAll(Player pl, object arg) => true;
@@ -96,7 +96,6 @@ namespace MCGalaxy
         public static void MessageFrom(Player source, string msg,
                                        ChatMessageFilter filter = null, bool relay = false)
         {
-            // super players don't have a level
             if (source.Level == null || source.Level.SeesServerWideChat)
             {
                 MessageFrom(ChatScope.Global, source, msg, null, filter, relay);
@@ -126,7 +125,6 @@ namespace MCGalaxy
         public static void MessageChat(Player source, string msg,
                                        ChatMessageFilter filter = null, bool relay = false)
         {
-            // super players don't have a level
             if (source.Level == null || source.Level.SeesServerWideChat)
             {
                 MessageChat(ChatScope.Global, source, msg, null, filter, relay);
@@ -146,13 +144,11 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             ChatMessageFilter scopeFilter = scopeFilters[(int)scope];
             bool counted = false;
-            // Filter out bad words
             if (Server.Config.ProfanityFiltering) msg = ProfanityFilter.Parse(msg);
             OnChatEvent.Call(scope, source, ref msg, arg, ref filter, relay);
             foreach (Player pl in players)
             {
                 if (Ignoring(pl, source)) continue;
-                // Always show message to self too (unless ignoring self)
                 if (pl != source)
                 {
                     if (!scopeFilter(pl, arg)) continue;
@@ -165,7 +161,6 @@ namespace MCGalaxy
                 }
                 else
                 {
-                    // don't send PM back to self
                     if (scope == ChatScope.PM) continue;
                 }
                 pl.Message(UnescapeMessage(pl, source, msg));
@@ -183,8 +178,6 @@ namespace MCGalaxy
         internal static string ParseInput(string text, out bool isCommand)
         {
             isCommand = false;
-            // Typing //Command appears in chat as /command
-            // Suggested by McMrCat
             if (text.StartsWith("//")) return text.Substring(1);
             if (text[0] != '/') return text;
             isCommand = true;
@@ -229,7 +222,6 @@ namespace MCGalaxy
                     {
                         if (highestRemainingMsg == null || msg.priority > highestRemainingMsg.priority) highestRemainingMsg = msg;
                     }
-                    // revert to the highest priority remaining message
                     if (highestRemainingMsg != null) message = highestRemainingMsg.message;
                 }
                 else
@@ -244,7 +236,6 @@ namespace MCGalaxy
                     }
                     curMsg.message = message;
                 }
-                // don't send if there is a a higher priority message currently in this field
                 foreach (PersistentMessage msg in field)
                 {
                     if (msg.priority > priority) return false;

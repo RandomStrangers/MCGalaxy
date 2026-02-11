@@ -24,11 +24,16 @@ namespace MCGalaxy.Events.ServerEvents
         public static void Call(Heartbeat service, ref string name)
         {
             IEvent<OnSendingHeartbeat>[] items = handlers.Items;
-            // Can't use CallCommon because we need to pass arguments by ref
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(service, ref name); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                {
+                    items[i].method(service, ref name); 
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -59,11 +64,16 @@ namespace MCGalaxy.Events.ServerEvents
         public static void Call(Socket s, ref bool cancel, ref bool announce)
         {
             IEvent<OnConnectionReceived>[] items = handlers.Items;
-            // Can't use CallCommon because we need to pass arguments by ref
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(s, ref cancel, ref announce); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(s, ref cancel, ref announce); 
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -77,8 +87,14 @@ namespace MCGalaxy.Events.ServerEvents
             IEvent<OnChatSys>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(scope, ref msg, arg, ref filter, relay); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(scope, ref msg, arg, ref filter, relay);
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]);
+                }
             }
         }
     }
@@ -92,8 +108,14 @@ namespace MCGalaxy.Events.ServerEvents
             IEvent<OnChatFrom>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(scope, source, ref msg, arg, ref filter, relay); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                {
+                    items[i].method(scope, source, ref msg, arg, ref filter, relay);
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -107,8 +129,14 @@ namespace MCGalaxy.Events.ServerEvents
             IEvent<OnChat>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(scope, source, ref msg, arg, ref filter, relay); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try
+                { 
+                    items[i].method(scope, source, ref msg, arg, ref filter, relay);
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }

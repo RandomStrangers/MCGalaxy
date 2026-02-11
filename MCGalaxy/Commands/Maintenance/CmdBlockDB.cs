@@ -27,7 +27,11 @@ namespace MCGalaxy.Commands.Maintenance
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
-            if (args.Length == 1 && p.IsSuper) { SuperRequiresArgs(p, "map name"); return; }
+            if (args.Length == 1 && p.IsSuper) 
+            {
+                SuperRequiresArgs(p, "map name"); 
+                return;
+            }
             Level lvl = p.IsSuper ? null : p.Level;
             if (args.Length > 1)
             {

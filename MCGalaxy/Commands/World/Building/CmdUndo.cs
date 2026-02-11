@@ -29,7 +29,11 @@ namespace MCGalaxy.Commands.Building
         public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message)
         {
-            if (message.Length == 0) { UndoLastDrawOp(p); return; }
+            if (message.Length == 0) 
+            {
+                UndoLastDrawOp(p); 
+                return;
+            }
             string[] parts = message.SplitSpaces();
             bool undoPhysics = parts[0].CaselessEq("physics");
             TimeSpan delta = GetDelta(p, p.name, parts, undoPhysics ? 1 : 0);
@@ -38,8 +42,14 @@ namespace MCGalaxy.Commands.Building
                 p.Message("If you are trying to undo another player, use &T/UndoPlayer");
                 return;
             }
-            if (undoPhysics) { UndoPhysics(p, delta); }
-            else { UndoSelf(p, delta); }
+            if (undoPhysics) 
+            { 
+                UndoPhysics(p, delta);
+            }
+            else 
+            { 
+                UndoSelf(p, delta); 
+            }
         }
         void UndoLastDrawOp(Player p)
         {
@@ -75,7 +85,8 @@ namespace MCGalaxy.Commands.Building
             if (!CheckExtraPerm(p, 1)) return;
             if (!p.CanUse("Physics"))
             {
-                p.Message("&WYou can only undo physics if you can use &T/Physics"); return;
+                p.Message("&WYou can only undo physics if you can use &T/Physics");
+                return;
             }
             CmdPhysics.SetPhysics(p.Level, 0);
             UndoPhysicsDrawOp op = new()

@@ -25,38 +25,25 @@ namespace MCGalaxy
 {
     public sealed partial class Level : IDisposable
     {
-        /// <summary>
-        /// The name of the map file, sans extension.
-        /// </summary>
-        public string MapName;
-        /// <summary>
-        /// Same as MapName, unless <cref>IsMuseum</cref>, then it will be prefixed and suffixed to denote museum.
-        /// </summary>
-        public string name;
+        public string MapName, name;
         public string ColoredName => Config.Color + name;
         public LevelConfig Config = new();
         public byte rotx, roty;
-        public ushort spawnx, spawny, spawnz;
+        public ushort spawnx, spawny, spawnz, Width, Height, Length;
         public Position SpawnPos => new(16 + spawnx * 32, 32 + spawny * 32, 16 + spawnz * 32);
         public BlockDefinition[] CustomBlockDefs = new BlockDefinition[1024];
         public BlockProps[] Props = new BlockProps[1024];
         public ExtrasCollection Extras = new();
         public VolatileArray<PlayerBot> Bots = new();
-        bool unloadedBots;
+        bool unloadedBots, physThreadStarted = false;
         public HandleDelete[] DeleteHandlers = new HandleDelete[1024];
         public HandlePlace[] PlaceHandlers = new HandlePlace[1024];
         public HandleWalkthrough[] WalkthroughHandlers = new HandleWalkthrough[1024];
         public HandlePhysics[] PhysicsHandlers = new HandlePhysics[1024];
         internal HandlePhysics[] physicsDoorsHandlers = new HandlePhysics[1024];
         internal AABB[] blockAABBs = new AABB[1024];
-        /// <summary> The width of this level (Number of blocks across in X dimension) </summary>
-        public ushort Width;
-        /// <summary> The height of this level (Number of blocks tall in Y dimension) </summary>
-        public ushort Height;
-        /// <summary> The length of this level (Number of blocks across in Z dimension) </summary>
-        public ushort Length;
-        /// <summary> Whether this level should be treated as a readonly museum </summary>
-        public bool IsMuseum;
+        public bool IsMuseum, Changed, SaveChanges = true,
+            ChangedSinceBackup, PhysicsPaused, hasPortals, hasMessageBlocks;
         public int ReloadThreshold => Math.Max(10000, (int)(Server.Config.DrawReloadThreshold * Width * Height * Length));
         /// <summary> Maximum valid X coordinate (Width - 1) </summary>
         public int MaxX => Width - 1;
@@ -64,35 +51,26 @@ namespace MCGalaxy
         public int MaxY => Height - 1;
         /// <summary> Maximum valid Z coordinate (Length - 1) </summary>
         public int MaxZ => Length - 1;
-        public bool Changed;
-        /// <summary> Whether block changes made on this level should be saved to the BlockDB and .lvl files. </summary>
-        public bool SaveChanges = true;
-        public bool ChangedSinceBackup;
         /// <summary> Whether players on this level sees server-wide chat. </summary>
         public bool SeesServerWideChat => Config.ServerWideChat && Server.Config.ServerWideChat;
-        internal readonly object saveLock = new(), botsIOLock = new();
+        internal readonly object saveLock = new(), botsIOLock = new(),
+            physTickLock = new();
         public BlockQueue blockqueue = new();
         BufferedBlockSender bulkSender;
         public List<UndoPos> UndoBuffer = new();
         public VolatileArray<Zone> Zones = new();
         public BlockDB BlockDB;
         public LevelAccessController VisitAccess, BuildAccess;
-        // Physics fields and settings
         public int LevelPhysics => Physicsint;
         int Physicsint;
-        public int currentUndo;
-        public int lastCheck, lastUpdate;
-        internal FastList<Check> ListCheck = new(); //A list of blocks that need to be updated
-        internal FastList<Update> ListUpdate = new(); //A list of block to change after calculation
+        public int currentUndo, lastCheck, lastUpdate;
+        internal FastList<Check> ListCheck = new();
+        internal FastList<Update> ListUpdate = new();
         internal SparseBitSet listCheckExists, listUpdateExists;
         public Random physRandom = new();
-        public bool PhysicsPaused;
         Thread physThread;
-        readonly object physThreadLock = new();
-        internal readonly object physTickLock = new();
-        bool physThreadStarted = false;
+        readonly object physThreadLock = new(), dbLock = new();
         internal DateTime lastBackup;
         public List<C4Data> C4list = new();
-        public bool hasPortals, hasMessageBlocks;
     }
 }

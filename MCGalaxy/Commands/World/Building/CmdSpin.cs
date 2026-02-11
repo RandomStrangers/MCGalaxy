@@ -27,22 +27,25 @@ namespace MCGalaxy.Commands.Building
             if (message.Length == 0) message = "y";
             if (p.CurrentCopy == null)
             {
-                p.Message("You haven't copied anything yet"); return;
+                p.Message("You haven't copied anything yet");
+                return;
             }
             CopyState cState = p.CurrentCopy;
             string opt = message.ToLower();
             BlockDefinition[] defs = p.Level.CustomBlockDefs;
-            // /Mirror used to be part of spin
-            if (opt.CaselessStarts("mirror"))
-            {
-                p.Message("&T/Spin {0} &Sis deprecated. Use &T/Mirror &Sinstead", opt);
-                return;
-            }
             string[] args = opt.SplitSpaces();
             char axis = 'Y';
             int angle = 90;
-            if (!Handle(ref axis, ref angle, args[0])) { Help(p); return; }
-            if (args.Length > 1 && !Handle(ref axis, ref angle, args[1])) { Help(p); return; }
+            if (!Handle(ref axis, ref angle, args[0])) 
+            {
+                Help(p); 
+                return; 
+            }
+            if (args.Length > 1 && !Handle(ref axis, ref angle, args[1])) 
+            { 
+                Help(p); 
+                return;
+            }
             CopyState newState = cState;
             if (angle == 0)
             {
@@ -68,11 +71,11 @@ namespace MCGalaxy.Commands.Building
         {
             if (arg == "x" || arg == "y" || arg == "z")
             {
-                axis = char.ToUpper(arg[0]); return true;
+                axis = char.ToUpper(arg[0]);
+                return true;
             }
             else if (NumberUtils.TryParseInt32(arg, out int value))
             {
-                // Clamp to [0, 360)
                 value %= 360;
                 if (value < 0) value += 360;
                 angle = value;

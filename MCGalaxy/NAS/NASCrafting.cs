@@ -20,8 +20,7 @@ namespace MCGalaxy
         public string name;
         public ushort[,] pattern;
         public NASStationType stationType = NASStationType.Normal;
-        public bool usesParentID = false,
-            usesAlternateID = false,
+        public bool usesParentID = false, usesAlternateID = false,
             shapeless = false;
         public NASDrop drop;
         public NASRecipe(NASItem item)
@@ -321,11 +320,11 @@ namespace MCGalaxy
                         ushort num;
                         if (blockID >= 256)
                         {
-                            num = NASPlugin.ToRaw(blockID);
+                            num = Block.ToRaw(blockID);
                         }
                         else
                         {
-                            num = NASPlugin.Convert(blockID);
+                            num = Block.Convert(blockID);
                             if (num >= 66)
                             {
                                 num = 22;
@@ -353,11 +352,11 @@ namespace MCGalaxy
                         ushort num;
                         if (blockID >= 256)
                         {
-                            num = NASPlugin.ToRaw(blockID);
+                            num = Block.ToRaw(blockID);
                         }
                         else
                         {
-                            num = NASPlugin.Convert(blockID);
+                            num = Block.Convert(blockID);
                             if (num >= 66)
                             {
                                 num = 22;

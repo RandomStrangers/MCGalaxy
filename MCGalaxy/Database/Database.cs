@@ -164,7 +164,7 @@ namespace MCGalaxy.SQL
                 }
                 catch (Exception ex)
                 {
-                    e = ex; // try yet again
+                    e = ex;
                 }
             }
             Logger.LogError("Error executing SQL statement: " + sql, e);

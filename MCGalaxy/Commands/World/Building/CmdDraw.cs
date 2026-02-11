@@ -33,29 +33,59 @@ namespace MCGalaxy.Commands.Building
             if (msg == "hpyramid") return DrawMode.hpyramid;
             if (msg == "ipyramid") return DrawMode.ipyramid;
             if (msg == "hipyramid") return DrawMode.hipyramid;
-            if (msg == "sphere") return DrawMode.sphere;
-            if (msg == "hsphere") return DrawMode.hsphere;
-            return msg == "volcano" ? DrawMode.volcano : msg == "cylinder" ? DrawMode.hollow : DrawMode.normal;
+            return msg == "sphere"
+                ? DrawMode.sphere
+                : msg == "hsphere"
+                ? DrawMode.hsphere
+                : msg == "volcano" ? DrawMode.volcano : msg == "cylinder" ? DrawMode.hollow : DrawMode.normal;
         }
         protected override DrawOp GetDrawOp(DrawArgs dArgs)
         {
             DrawOp op = null;
             switch (dArgs.Mode)
             {
-                case DrawMode.cone: op = new ConeDrawOp(); break;
-                case DrawMode.hcone: op = new AdvHollowConeDrawOp(); break;
-                case DrawMode.icone: op = new ConeDrawOp(true); break;
-                case DrawMode.hicone: op = new AdvHollowConeDrawOp(true); break;
-                case DrawMode.pyramid: op = new AdvPyramidDrawOp(); break;
-                case DrawMode.hpyramid: op = new AdvHollowPyramidDrawOp(); break;
-                case DrawMode.ipyramid: op = new AdvPyramidDrawOp(true); break;
-                case DrawMode.hipyramid: op = new AdvHollowPyramidDrawOp(true); break;
-                case DrawMode.sphere: op = new AdvSphereDrawOp(); break;
-                case DrawMode.hsphere: op = new AdvHollowSphereDrawOp(); break;
-                case DrawMode.volcano: op = new AdvVolcanoDrawOp(); break;
-                case DrawMode.hollow: op = new CylinderDrawOp(); break;
+                case DrawMode.cone: 
+                    op = new ConeDrawOp(); 
+                    break;
+                case DrawMode.hcone: 
+                    op = new AdvHollowConeDrawOp();
+                    break;
+                case DrawMode.icone:
+                    op = new ConeDrawOp(true);
+                    break;
+                case DrawMode.hicone: 
+                    op = new AdvHollowConeDrawOp(true);
+                    break;
+                case DrawMode.pyramid:
+                    op = new AdvPyramidDrawOp();
+                    break;
+                case DrawMode.hpyramid:
+                    op = new AdvHollowPyramidDrawOp();
+                    break;
+                case DrawMode.ipyramid:
+                    op = new AdvPyramidDrawOp(true);
+                    break;
+                case DrawMode.hipyramid: 
+                    op = new AdvHollowPyramidDrawOp(true); 
+                    break;
+                case DrawMode.sphere: 
+                    op = new AdvSphereDrawOp();
+                    break;
+                case DrawMode.hsphere: 
+                    op = new AdvHollowSphereDrawOp(); 
+                    break;
+                case DrawMode.volcano: 
+                    op = new AdvVolcanoDrawOp();
+                    break;
+                case DrawMode.hollow: 
+                    op = new CylinderDrawOp();
+                    break;
             }
-            if (op == null) { Help(dArgs.Player); return null; }
+            if (op == null) 
+            { 
+                Help(dArgs.Player); 
+                return null;
+            }
             AdvDrawMeta meta = new();
             bool success = false;
             string[] args = dArgs.Message.SplitSpaces();
@@ -102,7 +132,8 @@ namespace MCGalaxy.Commands.Building
             }
             else
             {
-                m[0].Y -= radius; m[1].Y += radius;
+                m[0].Y -= radius;
+                m[1].Y += radius;
             }
         }
         protected override void GetBrush(DrawArgs dArgs)
@@ -110,12 +141,11 @@ namespace MCGalaxy.Commands.Building
             int argsUsed = UsesHeight(dArgs) ? 3 : 2;
             dArgs.BrushArgs = dArgs.Message.Splice(argsUsed, 0);
         }
-        class AdvDrawMeta { public int radius, height; }
-        static bool UsesHeight(DrawArgs args)
+        class AdvDrawMeta
         {
-            DrawMode mode = args.Mode;
-            return !(mode == DrawMode.sphere || mode == DrawMode.hsphere);
+            public int radius, height;
         }
+        static bool UsesHeight(DrawArgs args) => args.Mode is not (DrawMode.sphere or DrawMode.hsphere);
         public override void Help(Player p)
         {
             p.Message("&T/Draw [object] [baseradius] [height] <brush args>");

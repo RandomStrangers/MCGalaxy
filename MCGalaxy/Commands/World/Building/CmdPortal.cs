@@ -41,12 +41,13 @@ namespace MCGalaxy.Commands.Building
             }
             else if (args.Length >= 2)
             {
-                Help(p); return;
+                Help(p); 
+                return;
             }
             pArgs.Block = GetBlock(p, block);
             if (pArgs.Block == Block.Invalid) return;
             if (!CommandParser.IsBlockAllowed(p, "place a portal of", pArgs.Block)) return;
-            pArgs.Entries = new List<PortalPos>();
+            pArgs.Entries = new();
             p.Message("Place an &aEntry block &Sfor the portal");
             p.ClearBlockchange();
             p.blockchangeObject = pArgs;
@@ -54,10 +55,13 @@ namespace MCGalaxy.Commands.Building
         }
         ushort GetBlock(Player p, string name)
         {
-            if (name == "show") { ShowPortals(p); return Block.Invalid; }
+            if (name == "show") 
+            { 
+                ShowPortals(p); 
+                return Block.Invalid; 
+            }
             ushort block = Block.Parse(p, name);
             if (block != Block.Invalid && p.Level.Props[block].IsPortal) return block;
-            // Hardcoded aliases for backwards compatibility
             block = Block.Invalid;
             if (name.Length == 0) block = Block.Portal_Blue;
             if (name == "blue") block = Block.Portal_Blue;
@@ -66,7 +70,8 @@ namespace MCGalaxy.Commands.Building
             if (name == "water") block = Block.Portal_Water;
             if (name == "lava") block = Block.Portal_Lava;
             if (p.Level.Props[block].IsPortal) return block;
-            Help(p); return Block.Invalid;
+            Help(p);
+            return Block.Invalid;
         }
         static bool IsPortalBlock(Level lvl, Vec3U16 pos)
         {
@@ -79,18 +84,24 @@ namespace MCGalaxy.Commands.Building
             ushort old = p.Level.GetBlock(x, y, z);
             if (!p.Level.CheckAffect(p, x, y, z, old, args.Block))
             {
-                p.RevertBlock(x, y, z); return;
+                p.RevertBlock(x, y, z);
+                return;
             }
             p.ClearBlockchange();
             if (args.Multi && block == Block.Red && args.Entries.Count > 0)
             {
-                ExitChange(p, x, y, z, block); return;
+                ExitChange(p, x, y, z, block);
+                return;
             }
             p.Level.UpdateBlock(p, x, y, z, args.Block);
             p.SendBlockchange(x, y, z, Block.Green);
-            PortalPos Port;
-            Port.Map = p.Level.name;
-            Port.x = x; Port.y = y; Port.z = z;
+            PortalPos Port = new()
+            {
+                Map = p.Level.name,
+                x = x,
+                y = y,
+                z = z
+            };
             args.Entries.Add(Port);
             p.blockchangeObject = args;
             if (!args.Multi)
@@ -128,8 +139,17 @@ namespace MCGalaxy.Commands.Building
             p.blockchangeObject = args;
             p.Blockchange += EntryChange;
         }
-        class PortalArgs { public List<PortalPos> Entries; public ushort Block; public bool Multi; }
-        struct PortalPos { public ushort x, y, z; public string Map; }
+        class PortalArgs 
+        {
+            public List<PortalPos> Entries;
+            public ushort Block; 
+            public bool Multi;
+        }
+        struct PortalPos 
+        { 
+            public ushort x, y, z; 
+            public string Map; 
+        }
         static void ShowPortals(Player p)
         {
             p.showPortals = !p.showPortals;
@@ -143,19 +163,15 @@ namespace MCGalaxy.Commands.Building
                     bool exists = IsPortalBlock(p.Level, pos);
                     Vec3U16 exitPos = new(exit.X, exit.Y, exit.Z);
                     if (exists && !exits.Contains(exitPos)) exits.Add(exitPos);
-                    // Show Entry
                     ushort entryBlock = exists ? Block.Green : Block.Black;
                     p.SendBlockchange(pos.X, pos.Y, pos.Z, entryBlock);
-                    // Show Exit
                     if (exit.Map != p.Level.MapName) continue;
                     ushort exitBlock = exists || exits.Contains(exitPos) ? Block.Red : Block.Black;
                     p.SendBlockchange(exit.X, exit.Y, exit.Z, exitBlock);
                 }
                 else
                 {
-                    // Revert Entry
                     p.RevertBlock(pos.X, pos.Y, pos.Z);
-                    // Revert Exit
                     if (exit.Map != p.Level.MapName) continue;
                     p.RevertBlock(exit.X, exit.Y, exit.Z);
                 }
@@ -166,11 +182,12 @@ namespace MCGalaxy.Commands.Building
         static string Format(ushort block, Player p, BlockProps[] props)
         {
             if (!props[block].IsPortal) return null;
-            // We want to use the simple aliases if possible
             if (block == Block.Portal_Orange) return "orange";
-            if (block == Block.Portal_Blue) return "blue";
-            if (block == Block.Portal_Air) return "air";
-            return block == Block.Portal_Lava ? "lava" : block == Block.Portal_Water ? "water" : Block.GetName(p, block);
+            return block == Block.Portal_Blue
+                ? "blue"
+                : block == Block.Portal_Air
+                ? "air"
+                : block == Block.Portal_Lava ? "lava" : block == Block.Portal_Water ? "water" : Block.GetName(p, block);
         }
         static List<string> SupportedBlocks(Player p)
         {

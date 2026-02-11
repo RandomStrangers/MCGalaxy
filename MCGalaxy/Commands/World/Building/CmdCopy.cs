@@ -275,10 +275,6 @@ namespace MCGalaxy.Commands.Building
                 {
                     state.LoadFrom(gs);
                 }
-                else
-                {
-                    state.LoadFromOld(gs, fs);
-                }
                 state.CopySource = "file " + file;
                 p.CurrentCopy = state;
             }
@@ -287,9 +283,8 @@ namespace MCGalaxy.Commands.Building
         static string FindCopy(string player, string file)
         {
             string path = "extra/savecopy/" + player + "/" + file;
-            bool existsNew = File.Exists(path + ".cpb"),
-                existsOld = File.Exists(path + ".cpy");
-            if (!existsNew && !existsOld)
+            bool existsNew = File.Exists(path + ".cpb");
+            if (!existsNew)
             {
                 return null;
             }

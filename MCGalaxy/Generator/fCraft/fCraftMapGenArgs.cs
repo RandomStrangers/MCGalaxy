@@ -34,7 +34,6 @@ namespace MCGalaxy.Generator.fCraft
             },
             MapGenTemplate.Atoll => new FCraftMapGenArgs
             {
-                //Biome = MapGenBiome.SANDY, TODO maybe?
                 MaxHeight = 2,
                 MaxDepth = 39,
                 UseBias = true,

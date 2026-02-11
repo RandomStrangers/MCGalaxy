@@ -28,18 +28,18 @@ namespace MCGalaxy.Commands.Info
             if (message.Length == 0) message = p.name;
             string target = PlayerInfo.FindMatchesPreferOnline(p, message);
             if (target == null) return;
-            string nick = p.FormatNick(target);
-            string tempData = Server.tempBans.Get(target);
-            string tempBanner = null, tempReason = null;
+            string nick = p.FormatNick(target),
+                tempData = Server.tempBans.Get(target),
+                tempBanner = null, tempReason = null;
             DateTime tempExpiry = DateTime.MinValue;
             if (!string.IsNullOrEmpty(tempData))
             {
                 Ban.UnpackTempBanData(tempData, out tempReason, out tempBanner, out tempExpiry);
             }
-            bool permaBanned = Group.BannedRank.Players.Contains(target);
-            bool isBanned = permaBanned || tempExpiry >= DateTime.UtcNow;
-            string msg = nick;
-            string ip = PlayerDB.FindIP(target);
+            bool permaBanned = Group.BannedRank.Players.Contains(target),
+                isBanned = permaBanned || tempExpiry >= DateTime.UtcNow;
+            string msg = nick,
+                ip = PlayerDB.FindIP(target);
             bool ipBanned = ip != null && Server.bannedIP.Contains(ip);
             if (!ipBanned && isBanned) msg += " &Sis &cBANNED";
             else if (!ipBanned && !isBanned) msg += " &Sis not banned";

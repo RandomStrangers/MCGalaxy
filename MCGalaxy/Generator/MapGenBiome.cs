@@ -56,7 +56,7 @@ namespace MCGalaxy.Generator
             Bedrock = Block.Stone,
             BeachSandy = Block.Sand,
             BeachRocky = Block.Gravel,
-            TreeType = "", // "use default for generator"
+            TreeType = "",
         },
         arctic = new()
         {
@@ -146,7 +146,7 @@ namespace MCGalaxy.Generator
             Bedrock = Block.Stone,
             BeachSandy = Block.Grass,
             BeachRocky = Block.Grass,
-            TreeType = "", // "use default for generator"
+            TreeType = "",
             Horizon = Block.Grass,
         },
         space = new()

@@ -27,7 +27,11 @@ namespace MCGalaxy.Commands.Info
         {
             if (message.Length == 0)
             {
-                if (p.IsSuper) { SuperRequiresArgs(p, "player name"); return; }
+                if (p.IsSuper) 
+                { 
+                    SuperRequiresArgs(p, "player name");
+                    return;
+                }
                 message = p.name;
             }
             if (!Formatter.ValidPlayerName(p, message)) return;

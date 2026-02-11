@@ -28,10 +28,15 @@ namespace MCGalaxy.Commands.Building
             Player p = dArgs.Player;
             if (!p.CanUse("Write"))
             {
-                p.Message("You must be able to use &T/Write &Sto use &T/WriteText."); return null;
+                p.Message("You must be able to use &T/Write &Sto use &T/WriteText.");
+                return null;
             }
             string[] args = dArgs.Message.SplitSpaces(3);
-            if (args.Length < 3) { Help(p); return null; }
+            if (args.Length < 3) 
+            { 
+                Help(p); 
+                return null; 
+            }
             byte scale = 1, spacing = 1;
             if (!CommandParser.GetByte(p, args[0], "Scale", ref scale)) return null;
             if (!CommandParser.GetByte(p, args[1], "Spacing", ref spacing)) return null;
@@ -62,7 +67,11 @@ namespace MCGalaxy.Commands.Building
         public override string Name => "Write";
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            {
+                Help(p); 
+                return; 
+            }
             base.Use(p, "1 1 " + message, data);
         }
         public override void Help(Player p)

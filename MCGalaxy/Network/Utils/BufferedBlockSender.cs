@@ -21,7 +21,6 @@ namespace MCGalaxy.Network
     {
         public Level level;
         public Player player;
-        // fields below should not be modified by code outside of BufferedBlockSender
         public int[] indices = new int[256];
         public ushort[] blocks = new ushort[256];
         public int count;
@@ -96,7 +95,6 @@ namespace MCGalaxy.Network
                     return ext;
                 }
             }
-            // Different clients support varying types of blocks
             if (s.hasBulkBlockUpdate && s.hasBlockDefs && count >= 160)
             {
                 bulk ??= MakeBulk();
@@ -104,20 +102,16 @@ namespace MCGalaxy.Network
             }
             else if (s.hasBlockDefs)
             {
-                // supports all 255 blocks (classicube enhanced client)
                 normal ??= MakeNormal();
                 return normal;
             }
             else if (!s.hasCustomBlocks && s.ProtocolVersion == 7)
             {
-                // supports original 45 blocks (classic client)
                 classic ??= MakeLimited(s.fallback);
                 return classic;
             }
             else
             {
-                // other support combination (CPE only, preclassic, etc)
-                //  don't bother trying to optimise for this case
                 return s.MakeBulkBlockchange(this);
             }
         }

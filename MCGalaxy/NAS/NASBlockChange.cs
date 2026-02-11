@@ -42,9 +42,9 @@ namespace MCGalaxy
             breakScheduler ??= new("BlockBreakScheduler");
             repeaterScheduler ??= new("RepeaterScheduler");
             fishingScheduler ??= new("FishingScheduler");
-            if (!FileIO.TryReadBytes(NASPlugin.Path + "terrain.png", out byte[] data))
+            if (!FileIO.TryReadBytes(NAS.Path + "terrain.png", out byte[] data))
             {
-                Logger.Log(LogType.Warning, "Could not read {0} (needed for block particle colors)", NASPlugin.Path + "terrain.png");
+                Logger.Log(LogType.Warning, "Could not read {0} (needed for block particle colors)", NAS.Path + "terrain.png");
                 return false;
             }
             Bitmap2D terrain = ImageDecoder.DecodeFrom(data);
@@ -52,10 +52,10 @@ namespace MCGalaxy
             terrain.Height /= 16;
             for (ushort blockID = 0; blockID <= 767; blockID++)
             {
-                BlockDefinition def = BlockDefinition.GlobalDefs[NASPlugin.FromRaw(blockID)];
+                BlockDefinition def = BlockDefinition.GlobalDefs[Block.FromRaw(blockID)];
                 if (def == null && blockID < 66)
                 {
-                    def = DefaultSet.MakeCustomBlock(NASPlugin.FromRaw(blockID));
+                    def = DefaultSet.MakeCustomBlock(Block.FromRaw(blockID));
                 }
                 if (def == null)
                 {
@@ -167,7 +167,7 @@ namespace MCGalaxy
                     return;
                 }
             }
-            if (np.nl.GetBlock(x, y, z + 1) == NASPlugin.FromRaw(703) || np.nl.GetBlock(x, y - 1, z) == NASPlugin.FromRaw(703))
+            if (np.nl.GetBlock(x, y, z + 1) == Block.FromRaw(703) || np.nl.GetBlock(x, y - 1, z) == Block.FromRaw(703))
             {
                 np.Message("&mCan't obstruct a bed!");
                 CancelPlacedBlock(p, x, y, z, np, ref cancel);
@@ -406,10 +406,10 @@ namespace MCGalaxy
                     y = y,
                     z = z
                 };
-                BlockDefinition def = BlockDefinition.GlobalDefs[NASPlugin.FromRaw(clientushort)];
+                BlockDefinition def = BlockDefinition.GlobalDefs[Block.FromRaw(clientushort)];
                 if (def == null && clientushort < 66)
                 {
-                    def = DefaultSet.MakeCustomBlock(NASPlugin.FromRaw(clientushort));
+                    def = DefaultSet.MakeCustomBlock(Block.FromRaw(clientushort));
                 }
                 if (def != null)
                 {

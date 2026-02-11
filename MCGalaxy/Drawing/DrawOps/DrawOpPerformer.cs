@@ -36,7 +36,6 @@ namespace MCGalaxy.Drawing.Ops
             Zone[] zones = lvl.Zones.Items;
             for (int i = 0; i < zones.Length; i++)
             {
-                // player could potentially modify blocks in this particular zone
                 if (zones[i].Access.CheckAllowed(p)) return false;
             }
             return !lvl.BuildAccess.CheckDetailed(p);
@@ -84,7 +83,6 @@ namespace MCGalaxy.Drawing.Ops
             lock (p.pendingDrawOpsLock)
             {
                 p.PendingDrawOps.Add(item);
-                // Another thread is already processing draw ops.
                 if (p.PendingDrawOps.Count > 1) return;
             }
             ProcessDrawOps(p);
@@ -99,8 +97,6 @@ namespace MCGalaxy.Drawing.Ops
                     if (p.PendingDrawOps.Count == 0) return;
                     item = p.PendingDrawOps[0];
                     p.PendingDrawOps.RemoveAt(0);
-                    // Flush any remaining draw ops if the player has left the server.
-                    // (so as to not keep alive references)
                     if (p.Socket != null && p.Socket.Disconnected)
                     {
                         p.PendingDrawOps.Clear();
@@ -127,7 +123,7 @@ namespace MCGalaxy.Drawing.Ops
             bool needsReload = op.TotalModified >= outputter.reloadThreshold;
             if (op.Undoable) entry.Finish(p);
             if (needsReload) DoReload(p, op.Level);
-            op.TotalModified = 0; // reset total modified (as drawop instances are reused in static mode)
+            op.TotalModified = 0;
         }
         static void DoReload(Player p, Level lvl)
         {
@@ -153,12 +149,9 @@ namespace MCGalaxy.Drawing.Ops
                 ushort old = lvl.blocks[index],
                     extended = Block.ExtendedBase[old];
                 if (extended > 0) old = (ushort)(extended | lvl.FastGetExtTile(b.X, b.Y, b.Z));
-                // Check to make sure the block is actually different
                 if (old == b.Block) return;
-                // And check that the block can be used
                 Group grp = p.group;
                 if (!grp.CanDelete[old] || !grp.CanPlace[b.Block]) return;
-                // Check if player can affect block at coords in world
                 AccessController denier = lvl.CanAffect(p, b.X, b.Y, b.Z);
                 if (denier != null)
                 {
@@ -169,7 +162,6 @@ namespace MCGalaxy.Drawing.Ops
                     }
                     return;
                 }
-                // Set the block (inlined)
                 lvl.Changed = true;
                 if (b.Block >= 256)
                 {
@@ -186,8 +178,7 @@ namespace MCGalaxy.Drawing.Ops
                 }
                 lvl.BlockDB.Cache.Add(p, b.X, b.Y, b.Z, op.Flags, old, b.Block);
                 p.TotalModified++;
-                p.TotalDrawn++; // increment block stats inline
-                // Potentially buffer the block change
+                p.TotalDrawn++;
                 if (op.TotalModified == reloadThreshold)
                 {
                     if (!p.Ignores.DrawOutput)
@@ -212,10 +203,8 @@ namespace MCGalaxy.Drawing.Ops
                     }
                 }
                 op.TotalModified++;
-                // Attempt to prevent BlockDB in-memory cache from growing too large (> 1,000,000 entries)
                 int count = lvl.BlockDB.Cache.Count;
                 if (count == 0 || (count % 1000000) != 0) return;
-                // if drawop has a read lock on BlockDB (e.g. undo/redo), we must release it here
                 bool hasReadLock = false;
                 if (op.BlockDBReadLock != null)
                 {

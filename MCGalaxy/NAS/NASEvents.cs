@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using System;
 namespace MCGalaxy
 {
-    public partial class NASPlugin
+    public partial class NAS
     {
         public static void OnPlayerCommand(Player p, string name, string message, CommandData data)
         {
@@ -19,7 +19,7 @@ namespace MCGalaxy
                 foreach (Command _cmd in Command.allCmds)
                 {
                     Group group = Group.Find(LevelPermission.Operator);
-                    group ??= Group.Find(p.Rank);
+                    group ??= p.group;
                     new CmdCmdSet().Use(p, _cmd.Name + " " + group.Name);
                 }
                 p.cancelcommand = true;
@@ -263,6 +263,19 @@ namespace MCGalaxy
             }
             p.cancelcommand = true;
             NASPlayer np = NASPlayer.GetPlayer(p);
+            if (message.CaselessEq("save"))
+            {
+                try
+                {
+                    np.Save();
+                }
+                catch (Exception ex)
+                {
+                    np.Message("There was an error saving your data!");
+                    Logger.Log(LogType.Warning, "Error {0} while saving " + p.truename + " NAS data!", ex);
+                }
+                return;
+            }
             string[] words = message.Split(' ');
             if (words.Length > 1 && words[0].CaselessEq("hotbar"))
             {
@@ -422,16 +435,15 @@ namespace MCGalaxy
             level.Config.CloudColor = NASTimeCycle.globalCloudColor;
             level.Config.LightColor = NASTimeCycle.globalSunColor;
         }
-        public void HandleSentMap(Player p, Level prevLevel, Level level)
+        public static void HandleSentMap(Player p, Level prevLevel, Level level)
         {
             NASPlayer np = NASPlayer.GetPlayer(p);
-            if (!np.SendingMap)
+            if (np.SendingMap)
             {
-                return;
+                np.inventory.p = p;
+                np.inventory.Setup(p);
+                np.SendingMap = false;
             }
-            np.inventory.p = p;
-            np.inventory.Setup(p);
-            np.SendingMap = false;
         }
         public static bool Load(Player p, string file, out NASPlayer np)
         {
@@ -456,8 +468,7 @@ namespace MCGalaxy
             if (!Load(p, path, out NASPlayer np) && !Load(p, pathText, out np))
             {
                 np = new(p);
-                Orientation rot = new(Server.mainLevel.rotx, Server.mainLevel.roty);
-                NASEntity.SetLocation(np, Server.mainLevel.name, Server.mainLevel.SpawnPos, rot);
+                np.SetLocation(Server.mainLevel.name, Server.mainLevel.SpawnPos, new(Server.mainLevel.rotx, Server.mainLevel.roty));
                 p.Extras[PlayerKey] = np;
             }
             np.DisplayHealth();

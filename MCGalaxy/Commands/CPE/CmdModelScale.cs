@@ -60,17 +60,19 @@ namespace MCGalaxy.Commands.CPE
         bool ParseArgs(Player dst, Entity e, string args, out string axis)
         {
             string[] bits = args.SplitSpaces(2);
-            if (bits.Length < 2) { Help(dst); axis = null; return false; }
+            if (bits.Length < 2) 
+            {
+                Help(dst); 
+                axis = null; 
+                return false; 
+            }
             axis = bits[0].ToUpper();
             string scale = bits[1];
-            if (axis == "X") return ParseScale(dst, e, axis, scale, ref e.ScaleX);
-            return axis == "Y" ? ParseScale(dst, e, axis, scale, ref e.ScaleY) : axis == "Z" && ParseScale(dst, e, axis, scale, ref e.ScaleZ);
+            return axis == "X"
+                ? ParseScale(dst, e, axis, scale, ref e.ScaleX)
+                : axis == "Y" ? ParseScale(dst, e, axis, scale, ref e.ScaleY) : axis == "Z" && ParseScale(dst, e, axis, scale, ref e.ScaleZ);
         }
-        static bool ParseScale(Player dst, Entity e, string axis, string scale, ref float value)
-        {
-            float max = ModelInfo.MaxScale(e, e.Model);
-            return CommandParser.GetReal(dst, scale, axis + " scale", ref value, 0, max);
-        }
+        static bool ParseScale(Player dst, Entity e, string axis, string scale, ref float value) => CommandParser.GetReal(dst, scale, axis + " scale", ref value, 0, ModelInfo.MaxScale(e, e.Model));
         public override void Help(Player p)
         {
             p.Message("&T/ModelScale [name] X/Y/Z [scale] &H- Sets scale for a player");

@@ -89,12 +89,11 @@ namespace MCGalaxy.Network
         /// <summary> Starts pumping heartbeats </summary>
         public static void Start()
         {
-            OnBeat(null); // immedately call so URL is shown as soon as possible in console
+            OnBeat(null);
             Server.Heartbeats.QueueRepeat(OnBeat, null, TimeSpan.FromSeconds(30));
         }
         static void OnBeat(SchedulerTask task)
         {
-            // no point if can't accept connections anyways
             if (Server.Listener.Listening)
             {
                 foreach (Heartbeat beat in Heartbeats)
@@ -107,11 +106,9 @@ namespace MCGalaxy.Network
         internal static void ReloadDefault()
         {
             string urls = Server.Config.HeartbeatURL;
-            // don't reload heartbeats unless absolutely have to
             if (urls != lastUrls)
             {
                 lastUrls = urls;
-                // TODO only reload default heartbeats, don't clear all
                 Heartbeats.Clear();
                 foreach (string url in urls.SplitComma())
                 {
@@ -125,13 +122,10 @@ namespace MCGalaxy.Network
                 }
             }
         }
-        // e.g. classicube.net only supports ipv4 servers, so we need to make
-        // sure we are using its ipv4 address when POSTing heartbeats there
         protected string EnsureIPv4Url(string hostUrl)
         {
             bool hasIPv6 = false;
             IPAddress firstIPv4 = null;
-            // proxying doesn't work properly with https:// URLs
             if (URL.CaselessStarts("https://")) return null;
             IPAddress[] addresses = Dns.GetHostAddresses(hostUrl);
             foreach (IPAddress ip in addresses)

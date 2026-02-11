@@ -29,7 +29,8 @@ namespace MCGalaxy.Commands.Misc
             if (!Hacks.CanUseFly(p))
             {
                 p.Message("You cannot use &T/Fly &Son this map.");
-                p.isFlying = false; return;
+                p.isFlying = false;
+                return;
             }
             p.isFlying = !p.isFlying;
             if (!p.isFlying) return;
@@ -45,14 +46,17 @@ namespace MCGalaxy.Commands.Misc
         {
             public Player player;
             public Position oldPos = default;
-            public List<Vec3U16> lastGlass = new();
-            public List<Vec3U16> glassCoords = new();
+            public List<Vec3U16> lastGlass = new(), glassCoords = new();
         }
         static void FlyCallback(SchedulerTask task)
         {
             FlyState state = (FlyState)task.State;
             Player p = state.player;
-            if (state.player.isFlying) { DoFly(state); return; }
+            if (state.player.isFlying) 
+            {
+                DoFly(state);
+                return; 
+            }
             foreach (Vec3U16 pos in state.lastGlass)
             {
                 p.SendBlockchange(pos.X, pos.Y, pos.Z, Block.Air);
@@ -64,16 +68,25 @@ namespace MCGalaxy.Commands.Misc
         {
             Player p = state.player;
             if (p.Pos.X == state.oldPos.X && p.Pos.Y == state.oldPos.Y && p.Pos.Z == state.oldPos.Z) return;
-            int x = p.Pos.BlockX, z = p.Pos.BlockZ;
-            int y = (p.Pos.Y - 60) / 32;
+            int x = p.Pos.BlockX, z = p.Pos.BlockZ,
+                y = (p.Pos.Y - 60) / 32;
             for (int yy = y - 1; yy <= y; yy++)
+            {
                 for (int zz = z - 2; zz <= z + 2; zz++)
+                {
                     for (int xx = x - 2; xx <= x + 2; xx++)
                     {
-                        Vec3U16 pos;
-                        pos.X = (ushort)xx; pos.Y = (ushort)yy; pos.Z = (ushort)zz;
+                        Vec3U16 pos = new()
+                        {
+                            X = (ushort)xx,
+                            Y = (ushort)yy,
+                            Z = (ushort)zz
+                        };
                         if (p.Level.IsAirAt(pos.X, pos.Y, pos.Z)) state.glassCoords.Add(pos);
                     }
+                }
+            }
+
             foreach (Vec3U16 P in state.glassCoords)
             {
                 if (state.lastGlass.Contains(P)) continue;

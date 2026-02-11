@@ -97,7 +97,9 @@ namespace MCGalaxy.Blocks.Physics
                             int size, Random rand, int prob, TNTImmuneFilter filter)
         {
             for (int xx = x - size; xx <= (x + size); ++xx)
+            {
                 for (int yy = y - size; yy <= (y + size); ++yy)
+                {
                     for (int zz = z - size; zz <= (z + size); ++zz)
                     {
                         ushort b = lvl.GetBlock((ushort)xx, (ushort)yy, (ushort)zz, out int index);
@@ -120,9 +122,13 @@ namespace MCGalaxy.Blocks.Physics
                             }
                             else
                             {
-                                PhysicsArgs args = default;
-                                args.Type1 = PhysicsArgs.Drop; args.Value1 = 50;
-                                args.Type2 = PhysicsArgs.Dissipate; args.Value2 = 8;
+                                PhysicsArgs args = new()
+                                {
+                                    Type1 = 4,
+                                    Value1 = 50,
+                                    Type2 = 3,
+                                    Value2 = 8
+                                };
                                 lvl.AddCheck(index, false, args);
                             }
                         }
@@ -135,6 +141,8 @@ namespace MCGalaxy.Blocks.Physics
                             lvl.AddCheck(index);
                         }
                     }
+                }
+            }
         }
     }
 }

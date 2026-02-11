@@ -29,7 +29,8 @@ namespace MCGalaxy.Commands.Moderation
         {
             if (message.Length > 0 && p.possess.Length > 0)
             {
-                p.Message("Stop your current possession first."); return;
+                p.Message("Stop your current possession first.");
+                return;
             }
             bool silent = false;
             if (message.CaselessEq("silent"))

@@ -23,11 +23,7 @@ namespace MCGalaxy.Levels.IO
     {
         public override string Extension => ".fcm";
         public override string Description => "fCraft/800Craft/ProCraft map";
-        public override Vec3U16 ReadDimensions(Stream src)
-        {
-            BinaryReader reader = new(src);
-            return ReadHeader(reader);
-        }
+        public override Vec3U16 ReadDimensions(Stream src) => ReadHeader(new BinaryReader(src));
         public override Level Read(Stream src, string name, bool metadata)
         {
             BinaryReader reader = new(src);
@@ -40,19 +36,19 @@ namespace MCGalaxy.Levels.IO
                 rotx = reader.ReadByte(),
                 roty = reader.ReadByte()
             };
-            reader.ReadUInt32();  // date modified
-            reader.ReadUInt32();  // date created
-            reader.ReadBytes(16); // uuid
-            reader.ReadBytes(26); // layer index
+            reader.ReadUInt32();
+            reader.ReadUInt32();
+            reader.ReadBytes(16);
+            reader.ReadBytes(26);
             int metaSize = reader.ReadInt32();
             using (DeflateStream ds = new(src, CompressionMode.Decompress))
             {
                 reader = new BinaryReader(ds);
                 for (int i = 0; i < metaSize; i++)
                 {
-                    string group = ReadString(reader);
-                    string key = ReadString(reader);
-                    string value = ReadString(reader);
+                    string group = ReadString(reader),
+                        key = ReadString(reader),
+                        value = ReadString(reader);
                     if (group != "zones") continue;
                     try
                     {
@@ -74,10 +70,12 @@ namespace MCGalaxy.Levels.IO
             {
                 throw new InvalidDataException("Unexpected constant in .fcm file");
             }
-            Vec3U16 dims;
-            dims.X = reader.ReadUInt16();
-            dims.Y = reader.ReadUInt16();
-            dims.Z = reader.ReadUInt16();
+            Vec3U16 dims = new()
+            {
+                X = reader.ReadUInt16(),
+                Y = reader.ReadUInt16(),
+                Z = reader.ReadUInt16()
+            };
             return dims;
         }
         static string ReadString(BinaryReader reader)
@@ -92,7 +90,6 @@ namespace MCGalaxy.Levels.IO
             string[] parts = raw.Split(comma);
             string[] header = parts[0].SplitSpaces();
             Zone zone = new();
-            // fCraft uses Z for height
             zone.Config.Name = header[0];
             zone.MinX = ushort.Parse(header[1]);
             zone.MinZ = ushort.Parse(header[2]);
@@ -100,16 +97,13 @@ namespace MCGalaxy.Levels.IO
             zone.MaxX = ushort.Parse(header[4]);
             zone.MaxZ = ushort.Parse(header[5]);
             zone.MaxY = ushort.Parse(header[6]);
-            // fCraft uses name#identifier for ranks
             string minRaw = header[7];
             int idStart = minRaw.IndexOf('#');
             if (idStart >= 0) minRaw = minRaw.Substring(0, idStart);
             Group minRank = Group.Find(minRaw);
             if (minRank != null) zone.Config.BuildMin = minRank.Permission;
-            // Extended ProCraft zone header adds colour
             if (header.Length > 8)
             {
-                // header[8] is bool for 'showzone'
                 zone.Config.ShowColor = header[9];
                 zone.Config.ShowAlpha = byte.Parse(header[10]);
             }

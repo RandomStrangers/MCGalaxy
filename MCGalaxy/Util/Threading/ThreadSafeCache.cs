@@ -44,7 +44,6 @@ namespace MCGalaxy.Util
             {
                 foreach (KeyValuePair<string, DateTime> kvp in access)
                 {
-                    // Has the cached item last been accessed in 5 minutes?
                     if ((now - kvp.Value).TotalMinutes <= 5)
                     {
                         continue;

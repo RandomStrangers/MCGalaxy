@@ -36,7 +36,6 @@ namespace MCGalaxy.Commands.Info
             string map = env ? (args.Length > 1 ? args[1] : "") : args[0];
             Level lvl = map.Length == 0 ? p.Level : null;
             MapInfo info = new();
-            // User provided specific map name
             if (lvl == null)
             {
                 map = Matcher.FindMaps(p, map);
@@ -51,10 +50,10 @@ namespace MCGalaxy.Commands.Info
             {
                 info.FromMap(map);
             }
-            // shouldn't be able to see env of levels can't vsit
             if (env && map.Length > 0 && !info.Visit.CheckDetailed(p, data.Rank))
             {
-                p.Message("Hence, you cannot see its environment settings"); return;
+                p.Message("Hence, you cannot see its environment settings");
+                return;
             }
             if (env) ShowEnv(p, info, info.Config);
             else ShowNormal(p, info, info.Config, args.Length > 1 && args[1].CaselessEq("all"));
@@ -172,8 +171,11 @@ namespace MCGalaxy.Commands.Info
             public LevelConfig Config;
             public void FromLevel(Level lvl)
             {
-                Name = lvl.name; MapName = lvl.MapName;
-                Width = lvl.Width; Height = lvl.Height; Length = lvl.Length;
+                Name = lvl.name; 
+                MapName = lvl.MapName;
+                Width = lvl.Width; 
+                Height = lvl.Height; 
+                Length = lvl.Length;
                 BlockDBEntries = lvl.BlockDB.TotalEntries();
                 Config = lvl.Config;
                 Visit = lvl.VisitAccess;
@@ -204,11 +206,7 @@ namespace MCGalaxy.Commands.Info
                 int default_ = block ? Block.Invalid : EnvConfig.ENV_USE_DEFAULT;
                 return value != default_ ? value : EnvConfig.DefaultEnvProp(i, Height);
             }
-            public string GetSkybox(EnvProp i)
-            {
-                int angle = Get(i);
-                return angle == 0 ? "none" : (angle / 1024.0).ToString("F3") + "/s";
-            }
+            public string GetSkybox(EnvProp i) => Get(i) == 0 ? "none" : (Get(i) / 1024.0).ToString("F3") + "/s";
         }
         static string Color(string src) => (src == null || src.Length == 0 || src == "-1") ? "&bnone" : "&b" + src;
         public override void Help(Player p)

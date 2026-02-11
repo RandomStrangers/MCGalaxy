@@ -32,18 +32,15 @@ namespace MCGalaxy.Generator.Foliage
             maxExtent = (int)(numBranches * 0.3f) + 1;
             maxBranchHeight = (int)(numBranches * 0.3f) + 1;
             trunkHeight = rnd.Next(4, 5 + (int)(maxBranchHeight / 1.5f));
-            // calculate variables
-            size = Math.Max(maxExtent, 2); // max of initial cluster and all other clusters
-            height = (trunkHeight * 5 / 4) + maxBranchHeight + 2; // branchEndY
+            size = Math.Max(maxExtent, 2);
+            height = (trunkHeight * 5 / 4) + maxBranchHeight + 2;
         }
         public override void Generate(ushort x, ushort y, ushort z, TreeOutput output)
         {
-            // Generate base tree
-            Vec3S32 p1 = new(x, y, z);
-            Vec3S32 p2 = new(x, y + trunkHeight, z);
+            Vec3S32 p1 = new(x, y, z),
+                p2 = new(x, y + trunkHeight, z);
             Line(p1, p2, output);
             GenCluster(x, y + trunkHeight, z, output);
-            // Generate branches
             for (int i = 0; i < numBranches; i++)
             {
                 MakeBranch(x, y, z, output);
@@ -51,8 +48,8 @@ namespace MCGalaxy.Generator.Foliage
         }
         void MakeBranch(int x, int y, int z, TreeOutput output)
         {
-            int branchX = rnd.Next(-maxExtent, maxExtent);
-            int branchZ = rnd.Next(-maxExtent, maxExtent),
+            int branchX = rnd.Next(-maxExtent, maxExtent),
+                branchZ = rnd.Next(-maxExtent, maxExtent),
                 branchStartY = rnd.Next((trunkHeight / 4) + 1, trunkHeight + (trunkHeight / 4)),
                 branchEndY = branchStartY + rnd.Next(1, maxBranchHeight + 3);
             Vec3S32 p1 = new(x, y + branchStartY, z),

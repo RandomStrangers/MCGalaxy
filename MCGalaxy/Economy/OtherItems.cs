@@ -43,7 +43,6 @@ namespace MCGalaxy.Eco
             Chat.MessageFrom(p, "λNICK &S" + action, null);
             p.CheckForMessageSpam();
             p.NextEat = DateTime.UtcNow.AddSeconds(10);
-            // intentionally not using Economy.MakePurchase here
             p.SetMoney(p.money - Price);
         }
     }

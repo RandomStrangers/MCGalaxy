@@ -48,34 +48,34 @@ namespace MCGalaxy
         public ushort height;
         public List<NASBlockLocation> blocksThatMustBeDisturbed = new();
         public Dictionary<string, NASBlockEntity> blockEntities = new();
-        public const string Path = NASPlugin.Path + "LevelData/",
+        public const string Path = NAS.Path + "LevelData/",
             Extension = ".json";
         public ushort[] observers =
         {
-            NASPlugin.FromRaw(415),
-            NASPlugin.FromRaw(416),
-            NASPlugin.FromRaw(417),
-            NASPlugin.FromRaw(418),
-            NASPlugin.FromRaw(419),
-            NASPlugin.FromRaw(420),
+            Block.FromRaw(415),
+            Block.FromRaw(416),
+            Block.FromRaw(417),
+            Block.FromRaw(418),
+            Block.FromRaw(419),
+            Block.FromRaw(420),
         },
         repeatersOff =
         {
-            NASPlugin.FromRaw(176),
-            NASPlugin.FromRaw(177),
-            NASPlugin.FromRaw(174),
-            NASPlugin.FromRaw(175),
-            NASPlugin.FromRaw(172),
-            NASPlugin.FromRaw(173),
+            Block.FromRaw(176),
+            Block.FromRaw(177),
+            Block.FromRaw(174),
+            Block.FromRaw(175),
+            Block.FromRaw(172),
+            Block.FromRaw(173),
         },
         repeatersOn =
         {
-            NASPlugin.FromRaw(617),
-            NASPlugin.FromRaw(618),
-            NASPlugin.FromRaw(615),
-            NASPlugin.FromRaw(616),
-            NASPlugin.FromRaw(613),
-            NASPlugin.FromRaw(614),
+            Block.FromRaw(617),
+            Block.FromRaw(618),
+            Block.FromRaw(615),
+            Block.FromRaw(616),
+            Block.FromRaw(613),
+            Block.FromRaw(614),
         };
         public static Level GenerateMap(Player p, string mapName, string width, string height, string length, string seed)
         {

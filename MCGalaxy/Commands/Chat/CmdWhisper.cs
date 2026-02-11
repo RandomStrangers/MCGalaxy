@@ -32,7 +32,12 @@ namespace MCGalaxy.Commands.Chatting
             else
             {
                 Player target = PlayerInfo.FindMatches(p, message);
-                if (target == null) { p.whisperTo = ""; p.whisper = false; return; }
+                if (target == null) 
+                {
+                    p.whisperTo = "";
+                    p.whisper = false;
+                    return;
+                }
                 p.whisper = true;
                 p.whisperTo = target.name;
                 p.Message("Auto-whisper enabled. All messages will now be sent to {0}.", p.FormatNick(target));

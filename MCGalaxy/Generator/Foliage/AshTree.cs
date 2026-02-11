@@ -35,7 +35,6 @@ namespace MCGalaxy.Generator.Foliage
         }
         public override void Generate(ushort x, ushort y, ushort z, TreeOutput output)
         {
-            // Generate base trunk
             Vec3S32 p1 = new(x, y, z),
                 p2 = new(x, y + height, z);
             Line(p1, p2, output);

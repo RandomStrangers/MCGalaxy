@@ -30,7 +30,11 @@ namespace MCGalaxy.Commands.Building
         public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Admin, "can use moderation commands in MBs") };
         public override void Use(Player p, string message)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p);
+                return;
+            }
             bool allMessage = false;
             MBArgs mbArgs = new();
             string[] args = message.SplitSpaces(2);
@@ -44,7 +48,8 @@ namespace MCGalaxy.Commands.Building
             }
             else if (args.Length == 1)
             {
-                p.Message("You need to provide text to put in the messageblock."); return;
+                p.Message("You need to provide text to put in the messageblock.");
+                return;
             }
             else
             {
@@ -57,11 +62,14 @@ namespace MCGalaxy.Commands.Building
         }
         ushort GetBlock(Player p, string name, ref bool allMessage)
         {
-            if (name == "show") { ShowMessageBlocks(p); return Block.Invalid; }
+            if (name == "show") 
+            {
+                ShowMessageBlocks(p); 
+                return Block.Invalid; 
+            }
             ushort block = Block.Parse(p, name);
             if (block != Block.Invalid && p.Level.Props[block].IsMessageBlock)
                 return block;
-            // Hardcoded aliases for backwards compatibility
             block = Block.MB_White;
             if (name == "white") block = Block.MB_White;
             if (name == "black") block = Block.MB_Black;
@@ -70,7 +78,8 @@ namespace MCGalaxy.Commands.Building
             if (name == "lava") block = Block.MB_Lava;
             allMessage = block == Block.MB_White && name != "white";
             if (p.Level.Props[block].IsMessageBlock) return block;
-            Help(p); return Block.Invalid;
+            Help(p);
+            return Block.Invalid;
         }
         static bool IsMBBlock(Level lvl, Vec3U16 pos)
         {
@@ -107,7 +116,11 @@ namespace MCGalaxy.Commands.Building
                 MessageBlock.Set(map, x, y, z, args.Message);
             }
         }
-        class MBArgs { public string Message; public ushort Block; }
+        class MBArgs 
+        { 
+            public string Message; 
+            public ushort Block; 
+        }
         void ShowMessageBlocks(Player p)
         {
             p.showMBs = !p.showMBs;
@@ -130,11 +143,10 @@ namespace MCGalaxy.Commands.Building
         static string Format(ushort block, Player p, BlockProps[] props)
         {
             if (!props[block].IsMessageBlock) return null;
-            // We want to use the simple aliases if possible
             if (block == Block.MB_Black) return "black";
-            if (block == Block.MB_White) return "white";
-            if (block == Block.MB_Air) return "air";
-            return block == Block.MB_Lava ? "lava" : block == Block.MB_Water ? "water" : Block.GetName(p, block);
+            return block == Block.MB_White
+                ? "white"
+                : block == Block.MB_Air ? "air" : block == Block.MB_Lava ? "lava" : block == Block.MB_Water ? "water" : Block.GetName(p, block);
         }
         static List<string> SupportedBlocks(Player p)
         {

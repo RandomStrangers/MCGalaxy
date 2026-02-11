@@ -27,12 +27,14 @@ namespace MCGalaxy.Commands.Building
         {
             if (message.Length == 0)
             {
-                p.Message("Your current brush is: " + p.BrushName); return;
+                p.Message("Your current brush is: " + p.BrushName);
+                return;
             }
             string[] args = message.SplitSpaces(2);
             if (IsListAction(args[0]))
             {
-                BrushFactory.List(p); return;
+                BrushFactory.List(p); 
+                return;
             }
             BrushFactory brush = BrushFactory.FindMatch(p, args[0]);
             if (brush == null) return;

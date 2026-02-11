@@ -21,15 +21,11 @@ namespace MCGalaxy.Drawing.Ops
     public class HighlightDrawOp : DrawOp
     {
         public override string Name => "Highlight";
-        // Some servers like to set custom default highlight blocks due to using custom blocks
-        public static ushort DefaultPlaceHighlight = Block.Green;
-        public static ushort DefaultDeleteHighlight = Block.Red;
-        /// <summary> Point in time that the /highlight should go backwards up to. </summary>
+        public static ushort DefaultPlaceHighlight = Block.Green,
+            DefaultDeleteHighlight = Block.Red;
         public DateTime Start = DateTime.MinValue;
-        /// <summary> Block to highlight placements with. </summary>
-        public ushort PlaceHighlight = DefaultPlaceHighlight;
-        /// <summary> Block to highlight deletions with. </summary>
-        public ushort DeleteHighlight = DefaultDeleteHighlight;
+        public ushort PlaceHighlight = DefaultPlaceHighlight,
+            DeleteHighlight = DefaultDeleteHighlight;
         internal string who;
         internal int[] ids;
         internal int totalChanges = 0;
@@ -49,7 +45,6 @@ namespace MCGalaxy.Drawing.Ops
         void PerformHighlight()
         {
             if (ids.Length == 0) return;
-            // can't use "using" as it creates a local var, and read lock reference may be changed by DrawOpPerformer class
             try
             {
                 BlockDBReadLock = Level.BlockDB.Locker.AccquireRead();
@@ -65,15 +60,15 @@ namespace MCGalaxy.Drawing.Ops
         void HighlightBlock(BlockDBEntry e)
         {
             ushort oldBlock = e.OldBlock;
-            if (oldBlock == Block.Invalid) return; // Exported BlockDB SQL table entries don't have previous block
-            ushort newBlock = e.NewBlock;
-            ushort highlight = (newBlock == Block.Air
+            if (oldBlock == Block.Invalid) return;
+            ushort newBlock = e.NewBlock,
+                highlight = (newBlock == Block.Air
                                   || Block.Convert(oldBlock) == Block.Water || oldBlock == Block.StillWater
                                   || Block.Convert(oldBlock) == Block.Lava || oldBlock == Block.StillLava)
                 ? DeleteHighlight : PlaceHighlight;
-            int x = e.Index % dims.X;
-            int y = e.Index / dims.X / dims.Z;
-            int z = e.Index / dims.X % dims.Z;
+            int x = e.Index % dims.X,
+                y = e.Index / dims.X / dims.Z,
+                z = e.Index / dims.X % dims.Z;
             if (x < Min.X || y < Min.Y || z < Min.Z) return;
             if (x > Max.X || y > Max.Y || z > Max.Z) return;
             output(Place((ushort)x, (ushort)y, (ushort)z, highlight));

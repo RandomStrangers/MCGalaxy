@@ -20,21 +20,24 @@ namespace MCGalaxy.Commands.Moderation
         public override string Name => "BlockSet";
         public override void Use(Player p, string message, CommandData data)
         {
-            bool canPlace = true; const string PLACE_PREFIX = "place ";
-            bool canDelete = true; const string DELETE_PREFIX = "delete ";
+            bool canPlace = true, canDelete = true;
             string placeMsg = null, deleteMsg = null;
-            if (message.CaselessStarts(PLACE_PREFIX))
+            if (message.CaselessStarts("place "))
             {
                 canDelete = false;
-                message = message.Substring(PLACE_PREFIX.Length);
+                message = message.Substring("place ".Length);
             }
-            else if (message.CaselessStarts(DELETE_PREFIX))
+            else if (message.CaselessStarts("delete "))
             {
                 canPlace = false;
-                message = message.Substring(DELETE_PREFIX.Length);
+                message = message.Substring("delete ".Length);
             }
             string[] args = message.SplitSpaces(2);
-            if (args.Length < 2) { Help(p); return; }
+            if (args.Length < 2) 
+            { 
+                Help(p);
+                return; 
+            }
             if (!CommandParser.GetBlockIfAllowed(p, args[0], "change permissions of", out ushort block)) return;
             if (canPlace)
             {
@@ -89,7 +92,6 @@ namespace MCGalaxy.Commands.Moderation
             p.Message("&HAllows a specific rank to use and delete [block]");
             p.Message("&T/BlockSet [block] -[rank]");
             p.Message("&HPrevents a specific rank from using or deleting [block]");
-            // TODO place and delete messages
         }
     }
 }

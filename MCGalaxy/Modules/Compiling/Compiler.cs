@@ -126,7 +126,6 @@ namespace MCGalaxy.Modules.Compiling
         }
         static byte[] GetDebugData(string path)
         {
-            // Cmdtest.dll -> Cmdtest.pdb
             string pdb_path = Path.ChangeExtension(path, ".pdb");
             byte[] bytes;
             try
@@ -146,7 +145,6 @@ namespace MCGalaxy.Modules.Compiling
             {
                 return null;
             }
-            // Cmdtest.dll -> Cmdtest.dll.mdb
             string mdb_path = path + ".mdb";
             try
             {
@@ -228,8 +226,6 @@ namespace MCGalaxy.Modules.Compiling
             {
                 return;
             }
-            // Ensure that plugin files are loaded in a consistent order,
-            //  in case plugins have a dependency on other plugins
             Array.Sort(files);
             foreach (string path in files)
             {

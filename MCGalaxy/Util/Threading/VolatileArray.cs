@@ -71,7 +71,6 @@ namespace MCGalaxy
                     {
                         continue;
                     }
-                    // For some reason item wasn't in the list
                     if (j == newItems.Length)
                     {
                         return false;
@@ -79,7 +78,6 @@ namespace MCGalaxy
                     newItems[j] = Items[i];
                     j++;
                 }
-                // Handle very rare case when an item has been added twice
                 if (newItems.Length != j)
                 {
                     T[] temp = new T[j];

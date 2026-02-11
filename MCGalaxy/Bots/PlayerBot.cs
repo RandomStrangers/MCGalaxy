@@ -21,17 +21,15 @@ namespace MCGalaxy
 {
     public sealed class PlayerBot : Entity
     {
-        public bool hunt = false, kill = false;
+        public bool hunt = false, kill = false,
+            nodUp = false, movement = false;
         public string AIName = "", color, name, DisplayName, 
             ClickedOnText, DeathMessage, Owner;
         public string ColoredName => color + DisplayName;
         public Level level;
-        public int cur = 0, countdown = 0;
-        public bool nodUp = false;
+        public int cur = 0, countdown = 0, movementSpeed = 3;
         public List<InstructionData> Instructions = new();
         public Position TargetPos;
-        public bool movement = false;
-        public int movementSpeed = 3;
         internal int curJump = 0;
         public long CreationDate = 0;
         public PlayerBot(string n, Level lvl)
@@ -82,7 +80,6 @@ namespace MCGalaxy
         }
         public static void Add(PlayerBot bot, bool save = true)
         {
-            // Lock to ensure that no two bots can end up with the same playerid
             lock (bot.Level.Bots.locker)
             {
                 bot.Level.Bots.Add(bot);
@@ -212,10 +209,8 @@ namespace MCGalaxy
                 RecalcDownExtent(ref bb, steps, dx, dz);
                 RecalcUpExtent(ref bb, steps, dx, dz);
             }
-            // Advance the AABB to the bot's next position
             bb = bb.Offset(dx, 0, dz);
             AABB bbCopy = bb;
-            // Attempt to drop the bot down up to 1 block
             int hitY = -32;
             for (int dy = 0; dy >= -32; dy--)
             {
@@ -236,7 +231,6 @@ namespace MCGalaxy
                 bb.Min.Y--; 
                 bb.Max.Y--;
             }
-            // Does the bot fall down a block
             if (hitY < 0)
             {
                 pos.X += dx; 
@@ -247,7 +241,6 @@ namespace MCGalaxy
                 RecalcUpExtent(ref bb, steps, dx, dz);
                 return;
             }
-            // Attempt to move the bot up to 1 block
             bb = bbCopy;
             for (int dy = 0; dy <= 32; dy++)
             {
@@ -311,7 +304,7 @@ namespace MCGalaxy
             }
             if (string.IsNullOrEmpty(ClickedOnText)) return;
             ItemPerms perms = CommandExtraPerms.Find("About", 1) ?? new ItemPerms(LevelPermission.AdvBuilder);
-            if (!perms.UsableBy(p)) return; //don't show bot's ClickedOnText if player isn't allowed to see message block contents
+            if (!perms.UsableBy(p)) return;
             p.Message("  Clicked-on text: {0}", ClickedOnText);
         }
     }

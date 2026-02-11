@@ -63,21 +63,18 @@ namespace MCGalaxy.Commands.CPE
                 Server.models.Remove(who.name);
             }
             Server.models.Save();
-            // Remove model scale too when resetting model
             if (orig.Length == 0) CmdModelScale.UpdateSavedScale(who);
         }
         static string ParseModel(Player dst, Entity e, string model)
         {
-            // Reset entity's model
             if (model.Length == 0)
             {
                 e.ScaleX = 0; e.ScaleY = 0; e.ScaleZ = 0;
                 return "humanoid";
             }
             model = model.ToLower();
-            model = model.Replace(':', '|'); // since users assume : is for scale instead of |.
+            model = model.Replace(':', '|');
             float max = ModelInfo.MaxScale(e, model);
-            // restrict player model scale, but bots can have unlimited model scale
             if (ModelInfo.GetRawScale(model) > max)
             {
                 dst.Message("&WScale must be {0} or less for {1} model",

@@ -25,10 +25,14 @@ namespace MCGalaxy.Commands.Info
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces(3);
-            if (args.Length < 2) { Help(p); return; }
-            string list = args[0].ToLower();
-            string keyword = args[1];
-            string modifier = args.Length > 2 ? args[2] : "";
+            if (args.Length < 2) 
+            { 
+                Help(p);
+                return;
+            }
+            string list = args[0].ToLower(),
+                keyword = args[1],
+                modifier = args.Length > 2 ? args[2] : "";
             if (list == "block" || list == "blocks")
             {
                 SearchBlocks(p, keyword, modifier);
@@ -82,7 +86,6 @@ namespace MCGalaxy.Commands.Info
             List<string> shortcuts = Paginator.Filter(allCmds, keyword, cmd => cmd.Shortcut,
                                                      cmd => !string.IsNullOrEmpty(cmd.Shortcut),
                                                      GetColoredName);
-            // Match both names and shortcuts
             foreach (string shortcutCmd in shortcuts)
             {
                 if (commands.CaselessContains(shortcutCmd)) continue;
@@ -130,7 +133,6 @@ namespace MCGalaxy.Commands.Info
         static void SearchPlayers(Player p, string keyword, string modifier)
         {
             List<string> names = new();
-            // TODO supporting more than 100 matches somehow
             Database.ReadRows("Players", "Name", r => names.Add(r.GetText(0)),
                               "WHERE Name LIKE @0 ESCAPE '#' LIMIT 100 COLLATE NOCASE",
                               "%" + keyword.Replace("_", "#_").Replace('*', '%').Replace('?', '_') + "%");

@@ -24,11 +24,10 @@ namespace MCGalaxy.Commands.Building
             Player p = dArgs.Player;
             if (dArgs.Message.Length == 0)
             {
-                p.Message("Block name is required."); return null;
+                p.Message("Block name is required.");
+                return null;
             }
             string[] parts = dArgs.Message.SplitSpaces(2);
-            // NOTE: Don't need to check if allowed to use block here
-            // (OutlineDrawOp skips all blocks that are equal to target)
             if (!CommandParser.GetBlock(p, parts[0], out ushort target)) return null;
             OutlineDrawOp op = new()
             {
@@ -46,14 +45,13 @@ namespace MCGalaxy.Commands.Building
             if (type == "right") return OutlineDrawOp.Side.Right;
             if (type == "front") return OutlineDrawOp.Side.Front;
             if (type == "back") return OutlineDrawOp.Side.Back;
-            if (type == "down") return OutlineDrawOp.Side.Down;
-            if (type == "up") return OutlineDrawOp.Side.Up;
-            return type == "layer" ? OutlineDrawOp.Side.Layer : type == "all" ? OutlineDrawOp.Side.All : OutlineDrawOp.Side.Unspecified;
+            return type == "down"
+                ? OutlineDrawOp.Side.Down
+                : type == "up"
+                ? OutlineDrawOp.Side.Up
+                : type == "layer" ? OutlineDrawOp.Side.Layer : type == "all" ? OutlineDrawOp.Side.All : OutlineDrawOp.Side.Unspecified;
         }
-        // Parts is just Command.Use's message.SplitSpaces()
-        protected override DrawMode GetMode(string[] parts) =>
-            // Need to return "normal" if a unique side was typed, otherwise "not normal". This tells the ModeArgsCount how to work correctly
-            GetSides(parts) == OutlineDrawOp.Side.Unspecified ? DrawMode.normal : DrawMode.solid;
+        protected override DrawMode GetMode(string[] parts) => GetSides(parts) == OutlineDrawOp.Side.Unspecified ? DrawMode.normal : DrawMode.solid;
         protected override void GetBrush(DrawArgs dArgs) => dArgs.BrushArgs = dArgs.Message.Splice(dArgs.ModeArgsCount + 1, 0);
         public override void Help(Player p)
         {

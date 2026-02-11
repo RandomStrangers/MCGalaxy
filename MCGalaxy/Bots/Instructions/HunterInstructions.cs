@@ -67,8 +67,6 @@ namespace MCGalaxy.Bots
             dx = Math.Abs(dx);
             dy = Math.Abs(dy);
             dz = Math.Abs(dz);
-            // If we are very close to a player, switch from trying to look
-            // at them to just facing the opposite direction to them
             if (dx < 4 && dz < 4)
             {
                 rot.RotY = (byte)(p.Rot.RotY + 128);

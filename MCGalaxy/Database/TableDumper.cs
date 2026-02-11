@@ -53,7 +53,6 @@ namespace MCGalaxy.SQL
         {
             if (!gottenRows) MakeInsertFormat(record);
             sql.WriteLine(insertCols);
-            //The values themselves can be integers or strings, or null
             for (int col = 0; col < numColumns; col++)
             {
                 sql.Write(record.DumpValue(col));

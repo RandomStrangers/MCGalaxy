@@ -26,7 +26,11 @@ namespace MCGalaxy.Commands.Maintenance
         public override void Use(Player p, string text, CommandData data)
         {
             string[] args = text.SplitSpaces();
-            if (args.Length != 2) { Help(p); return; }
+            if (args.Length != 2)
+            {
+                Help(p);
+                return;
+            }
             string src = GetName(p, args[0]), dst = GetName(p, args[1]);
             if (src == null || dst == null) return;
             Group srcGroup = Group.GroupIn(src), dstGroup = Group.GroupIn(dst);
@@ -43,12 +47,14 @@ namespace MCGalaxy.Commands.Maintenance
             if (!Formatter.ValidPlayerName(p, name)) return null;
             if (PlayerInfo.FindExact(name) != null)
             {
-                p.Message("\"{0}\" must be offline to use &T/InfoSwap", name); return null;
+                p.Message("\"{0}\" must be offline to use &T/InfoSwap", name); 
+                return null;
             }
             string match = PlayerDB.FindName(name);
             if (match == null)
             {
-                p.Message("\"{0}\" was not found in the database.", name); return null;
+                p.Message("\"{0}\" was not found in the database.", name);
+                return null;
             }
             return match;
         }
@@ -56,9 +62,9 @@ namespace MCGalaxy.Commands.Maintenance
         {
             int tmpNum = new Random().Next(0, 10000000);
             string tmpName = "-tmp" + tmpNum + "-";
-            Database.UpdateRows("Players", "Name=@1", "WHERE Name=@0", dst, tmpName); // PLAYERS[dst] = tmp
-            Database.UpdateRows("Players", "Name=@1", "WHERE Name=@0", src, dst);     // PLAYERS[src] = dst
-            Database.UpdateRows("Players", "Name=@1", "WHERE Name=@0", tmpName, src); // PLAYERS[tmp] = src
+            Database.UpdateRows("Players", "Name=@1", "WHERE Name=@0", dst, tmpName);
+            Database.UpdateRows("Players", "Name=@1", "WHERE Name=@0", src, dst);
+            Database.UpdateRows("Players", "Name=@1", "WHERE Name=@0", tmpName, src);
         }
         static void SwapGroups(string src, string dst, Group srcGroup, Group dstGroup)
         {

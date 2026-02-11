@@ -30,7 +30,9 @@ namespace MCGalaxy.Drawing.Ops
         {
             Vec3U16 p1 = Clamp(Min), p2 = Clamp(Max);
             for (ushort y = p1.Y; y <= p2.Y; y++)
+            {
                 for (ushort z = p1.Z; z <= p2.Z; z++)
+                {
                     for (ushort x = p1.X; x <= p2.X; x++)
                     {
                         bool hollow = true;
@@ -50,6 +52,8 @@ namespace MCGalaxy.Drawing.Ops
                         }
                         if (hollow) output(Place(x, y, z, Block.Air));
                     }
+                }
+            }
         }
         void CheckTile(int x, int y, int z, ref bool hollow)
         {
@@ -79,7 +83,9 @@ namespace MCGalaxy.Drawing.Ops
         {
             Vec3U16 p1 = Clamp(Min), p2 = Clamp(Max);
             for (ushort y = p1.Y; y <= p2.Y; y++)
+            {
                 for (ushort z = p1.Z; z <= p2.Z; z++)
+                {
                     for (ushort x = p1.X; x <= p2.X; x++)
                     {
                         bool outline = false;
@@ -92,6 +98,8 @@ namespace MCGalaxy.Drawing.Ops
                         if (outline && Level.GetBlock(x, y, z) != Target)
                             output(Place(x, y, z, brush));
                     }
+                }
+            }
         }
     }
     public class RainbowDrawOp : CuboidDrawOp
@@ -115,8 +123,8 @@ namespace MCGalaxy.Drawing.Ops
             {
                 stepZ = 1;
             }
-            int repeat = RainbowBrush.blocks.Length;
-            int i = repeat - 1;
+            int repeat = RainbowBrush.blocks.Length,
+                i = repeat - 1;
             brush = new RainbowBrush();
             for (ushort y = p1.Y; y <= p2.Y; y++)
             {
@@ -131,8 +139,9 @@ namespace MCGalaxy.Drawing.Ops
                         i = (i + stepX) % repeat;
                         if (AllowAir || !Level.IsAirAt(x, y, z))
                         {
-                            // Need this because RainbowBrush works on world coords
-                            Coords.X = (ushort)i; Coords.Y = 0; Coords.Z = 0;
+                            Coords.X = (ushort)i;
+                            Coords.Y = 0; 
+                            Coords.Z = 0;
                             ushort block = brush.NextBlock(this);
                             output(Place(x, y, z, block));
                         }

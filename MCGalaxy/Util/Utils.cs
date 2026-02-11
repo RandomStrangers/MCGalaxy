@@ -103,7 +103,6 @@ namespace MCGalaxy
         public static unsafe void Memset(IntPtr srcPtr, byte value, int startIndex, int bytes)
         {
             byte* srcByte = (byte*)srcPtr + startIndex;
-            // Make sure that aligned write/read is used for the bulk copy
             while (bytes > 0 && (startIndex & 0x7) != 0)
             {
                 *srcByte = value; 

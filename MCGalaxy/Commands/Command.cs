@@ -66,7 +66,7 @@ namespace MCGalaxy
         public virtual CommandParallelism Parallelism => Type.CaselessEq(CommandTypes.Information) ? CommandParallelism.NoAndWarn : CommandParallelism.Yes;
         public CommandPerms Permissions;
         public static List<Command> allCmds = new();
-        public static bool IsCore(Command cmd) => cmd.GetType().Assembly == Assembly.GetExecutingAssembly(); // TODO common method
+        public static bool IsCore(Command cmd) => cmd.GetType().Assembly == Assembly.GetExecutingAssembly();
         public static List<Command> CopyAll() => new(allCmds);
         public static void InitAll()
         {
@@ -184,8 +184,6 @@ namespace MCGalaxy
         public static bool Unregister(Command cmd)
         {
             bool removed = allCmds.Remove(cmd);
-            // typical usage: Command.Unregister(Command.Find("xyz"))
-            // So don't throw exception if Command.Find returned null
             if (cmd != null) Alias.UnregisterDefaults(cmd);
             return removed;
         }
@@ -206,7 +204,6 @@ namespace MCGalaxy
         {
             if (cmdName.Length == 0) return;
             Alias alias = Alias.Find(cmdName);
-            // Aliases override built in command shortcuts
             if (alias == null)
             {
                 foreach (Command cmd in allCmds)
@@ -241,7 +238,6 @@ namespace MCGalaxy
         public CommandContext Context;
         public Vec3S32 MBCoords;
     }
-    // Clunky design, but needed to stay backwards compatible with custom commands
     public abstract class Command2 : Command
     {
         public override void Use(Player p, string message) => Use(p, message, p.DefaultCmdData);

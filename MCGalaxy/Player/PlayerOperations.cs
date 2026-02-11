@@ -51,7 +51,6 @@ namespace MCGalaxy
             }
             else
             {
-                // Don't allow changing while muted
                 if (!p.CheckCanSpeak("change login messages")) return false;
                 p.Message("Login message of {0} &Swas changed to: {1}",
                           p.FormatNick(target), message);
@@ -69,7 +68,6 @@ namespace MCGalaxy
             }
             else
             {
-                // Don't allow changing while muted
                 if (!p.CheckCanSpeak("change logout messages")) return false;
                 p.Message("Logout message of {0} &Swas changed to: {1}",
                           p.FormatNick(target), message);
@@ -95,7 +93,6 @@ namespace MCGalaxy
             else
             {
                 if (!p.CheckCanSpeak("change nicks")) return false;
-                // TODO: select color from database?
                 string color = who != null ? who.color : Group.GroupIn(target).Color;
                 MessageAction(p, target, who, "λACTOR &Schanged λTARGET nick to " + color + nick);
             }
@@ -177,7 +174,6 @@ namespace MCGalaxy
         /// on whether the actor is the same player as the target or not </remarks>
         internal static void MessageAction(Player actor, string target, Player who, string message)
         {
-            // TODO: this needs to be compoletely rethought
             bool global = who == null || actor.IsSuper
                             || (!actor.Level.SeesServerWideChat && actor.Level != who.Level);
             if (actor == who)
@@ -214,7 +210,7 @@ namespace MCGalaxy
                 target.BlockUntilLoad(10);
             }
             if (p.Level != lvl && !PlayerActions.ChangeMap(p, lvl.name)) return;
-            p.BlockUntilLoad(10); // Wait for player to spawn in new map
+            p.BlockUntilLoad(10);
             p.SendPosition(dst.Pos, dst.Rot);
         }
         static void SavePreTeleportState(Player p)

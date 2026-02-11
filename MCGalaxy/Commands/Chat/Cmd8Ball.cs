@@ -30,7 +30,11 @@ namespace MCGalaxy.Commands.Chatting
         public override void Use(Player p, string question, CommandData data)
         {
             if (!MessageCmd.CanSpeak(p, Name)) return;
-            if (question.Length == 0) { Help(p); return; }
+            if (question.Length == 0) 
+            {
+                Help(p);
+                return; 
+            }
             TimeSpan delta = nextUse - DateTime.UtcNow;
             if (delta.TotalSeconds > 0)
             {

@@ -102,7 +102,6 @@ namespace MCGalaxy.Blocks.Physics
         }
         static bool MoveSnake(Level lvl, ref PhysInfo C, ushort x, ushort y, ushort z)
         {
-            // Move snake up or down blocks
             if (lvl.IsAirAt(x, (ushort)(y - 1), z, out int index) && lvl.IsAirAt(x, y, z))
             {
             }
@@ -118,9 +117,13 @@ namespace MCGalaxy.Blocks.Physics
             }
             if (lvl.AddUpdate(index, C.Block))
             {
-                PhysicsArgs args = default;
-                args.Type1 = PhysicsArgs.Wait; args.Value1 = 5;
-                args.Type2 = PhysicsArgs.Revert; args.Value2 = Block.Air;
+                PhysicsArgs args = new()
+                {
+                    Type1 = 1,
+                    Value1 = 5,
+                    Type2 = 2,
+                    Value2 = Block.Air
+                };
                 lvl.AddUpdate(C.Index, Block.SnakeTail, args, true);
                 return true;
             }
@@ -128,16 +131,20 @@ namespace MCGalaxy.Blocks.Physics
         }
         static bool MoveSnakeY(Level lvl, ref PhysInfo C, ushort x, ushort y, ushort z)
         {
-            ushort block = lvl.GetBlock(x, y, z, out int index);
-            ushort above = lvl.GetBlock(x, (ushort)(y + 1), z);
-            ushort above2 = lvl.GetBlock(x, (ushort)(y + 2), z);
+            ushort block = lvl.GetBlock(x, y, z, out int index),
+                above = lvl.GetBlock(x, (ushort)(y + 1), z),
+                above2 = lvl.GetBlock(x, (ushort)(y + 2), z);
             if (block == Block.Air && (above == Block.Grass || above == Block.Dirt && above2 == Block.Air))
             {
                 if (lvl.AddUpdate(index, C.Block))
                 {
-                    PhysicsArgs args = default;
-                    args.Type1 = PhysicsArgs.Wait; args.Value1 = 5;
-                    args.Type2 = PhysicsArgs.Revert; args.Value2 = Block.Air;
+                    PhysicsArgs args = new()
+                    {
+                        Type1 = 1,
+                        Value1 = 5,
+                        Type2 = 2,
+                        Value2 = Block.Air
+                    };
                     lvl.AddUpdate(C.Index, Block.SnakeTail, args, true);
                     return true;
                 }

@@ -61,7 +61,7 @@ namespace MCGalaxy
             offset = pixelSize / 32;
             return true;
         }
-        public const string Path = NASPlugin.Path + "Effects/";
+        public const string Path = NAS.Path + "Effects/";
         public static NASEffect breakMeter, breakEarth, breakLeaves;
         public static NASEffect[] breakEffects = new NASEffect[(int)NASMaterial.Count];
         public static bool Setup()

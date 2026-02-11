@@ -29,15 +29,27 @@ namespace MCGalaxy.Commands.Moderation
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
-            if (args.Length > 2) { Help(p); return; }
+            if (args.Length > 2) 
+            {
+                Help(p); 
+                return; 
+            }
             string skin = args.Length > 1 ? args[1] : "";
             string name = args[0];
             if (name.Length == 0)
             {
-                if (p.possess.Length == 0) { p.Message("&WNot possessing anyone"); return; }
+                if (p.possess.Length == 0) 
+                { 
+                    p.Message("&WNot possessing anyone"); 
+                    return; 
+                }
                 Player target = PlayerInfo.FindExact(p.possess);
                 p.possess = "";
-                if (target == null) { p.Message("Possession disabled."); return; }
+                if (target == null) 
+                { 
+                    p.Message("Possession disabled.");
+                    return; 
+                }
                 Unpossess(target);
                 p.invincible = false;
                 Find("Hide").Use(p, "", data);
@@ -48,14 +60,20 @@ namespace MCGalaxy.Commands.Moderation
                 Player target = PlayerInfo.FindMatches(p, name);
                 if (target == null) return;
                 if (!CheckRank(p, data, target, "teleport", false)) return;
-                if (p == target) { p.Message("&WCannot possess yourself!"); return; }
+                if (p == target)
+                { 
+                    p.Message("&WCannot possess yourself!"); 
+                    return; 
+                }
                 if (target.possess.Length > 0)
                 {
-                    p.Message("That player is currently possessing someone!"); return;
+                    p.Message("That player is currently possessing someone!");
+                    return;
                 }
                 if (target.following.Length > 0)
                 {
-                    p.Message("That player is either following someone or already possessed."); return;
+                    p.Message("That player is either following someone or already possessed."); 
+                    return;
                 }
                 if (p.possess.Length > 0)
                 {

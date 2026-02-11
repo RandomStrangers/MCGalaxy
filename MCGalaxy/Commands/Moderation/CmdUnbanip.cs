@@ -24,13 +24,29 @@ namespace MCGalaxy.Commands.Moderation
         public override CommandAlias[] Aliases => new CommandAlias[] { new("UnIPBan") };
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p);
+                return; 
+            }
             string[] args = message.SplitSpaces(2);
             string addr = ModActionCmd.FindIP(p, args[0], "UnbanIP", out _);
             if (addr == null) return;
-            if (!IPAddress.TryParse(addr, out IPAddress ip)) { p.Message("\"{0}\" is not a valid IP.", addr); return; }
-            if (ip.Equals(p.IP)) { p.Message("You cannot un-IP ban yourself."); return; }
-            if (!Server.bannedIP.Contains(addr)) { p.Message(addr + " is not a banned IP."); return; }
+            if (!IPAddress.TryParse(addr, out IPAddress ip)) 
+            {
+                p.Message("\"{0}\" is not a valid IP.", addr); 
+                return; 
+            }
+            if (ip.Equals(p.IP)) 
+            { 
+                p.Message("You cannot un-IP ban yourself.");
+                return; 
+            }
+            if (!Server.bannedIP.Contains(addr)) 
+            {
+                p.Message(addr + " is not a banned IP."); 
+                return;
+            }
             string reason = args.Length > 1 ? args[1] : "";
             reason = ModActionCmd.ExpandReason(p, reason);
             if (reason == null) return;

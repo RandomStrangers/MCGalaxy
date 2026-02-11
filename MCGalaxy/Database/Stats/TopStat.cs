@@ -69,7 +69,6 @@ namespace MCGalaxy.DB
             new DBTopStat("Drawn", "Most blocks drawn", "Players",
                         PlayerData.ColumnDrawn + " & " + ((1L << 38) - 1), FormatInteger),
             new DBTopStat("Placed", "Most blocks placed", "Players",
-                        // TODO: Check if this works on MySQL too
                         PlayerData.ColumnBlocks + " >> 38 & " + ((1L << 26) - 1),
                         FormatInteger),
             new DBTopStat("Deleted", "Most blocks deleted", "Players",

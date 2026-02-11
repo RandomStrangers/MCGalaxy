@@ -24,7 +24,8 @@ namespace MCGalaxy.Commands.Moderation
             string grpName = args[1];
             if (!perms.UsableBy(data.Rank))
             {
-                p.Message("You rank cannot {1} this {0}.", type, actionNoun); return null;
+                p.Message("You rank cannot {1} this {0}.", type, actionNoun); 
+                return null;
             }
             if (grpName[0] == '+')
             {
@@ -39,7 +40,8 @@ namespace MCGalaxy.Commands.Moderation
                 if (grp == null) return null;
                 if (data.Rank == grp.Permission)
                 {
-                    p.Message("&WCannot deny permissions for your own rank"); return null;
+                    p.Message("&WCannot deny permissions for your own rank");
+                    return null;
                 }
                 perms.Disallow(grp.Permission);
                 return " &Sis no longer " + actionAdjective + " by " + grp.ColoredName;

@@ -27,13 +27,18 @@ namespace MCGalaxy.Commands.Building
             ushort distance = 0, interval = 0;
             Player p = dArgs.Player;
             string message = dArgs.Message;
-            if (message.Length == 0) { Help(p); return null; }
+            if (message.Length == 0)
+            { 
+                Help(p);
+                return null; 
+            }
             string[] parts = message.SplitSpaces();
             if (!CommandParser.GetUShort(p, parts[0], "Distance", ref distance, 1)) return null;
             if (parts.Length > 1 && !CommandParser.GetUShort(p, parts[1], "Interval", ref interval, 1)) return null;
             if (interval >= distance)
             {
-                p.Message("&WThe Interval cannot be greater than the distance."); return null;
+                p.Message("&WThe Interval cannot be greater than the distance."); 
+                return null;
             }
             SPlaceDrawOp op = new()
             {
@@ -45,7 +50,11 @@ namespace MCGalaxy.Commands.Building
         protected override void GetMarks(DrawArgs dArgs, ref Vec3S32[] m)
         {
             Player p = dArgs.Player;
-            if (m[0] == m[1]) { p.Message("No direction was selected"); m = null; }
+            if (m[0] == m[1])
+            {
+                p.Message("No direction was selected");
+                m = null; 
+            }
         }
         protected override void GetBrush(DrawArgs dArgs)
         {

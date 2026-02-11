@@ -27,14 +27,10 @@ namespace MCGalaxy.Network
             if (ip.AddressFamily == AddressFamily.InterNetwork)
             {
                 byte[] addr = ip.GetAddressBytes();
-                // range of 172.16.0.0 - 172.31.255.255
                 if (addr[0] == 172 && addr[1] >= 16 && addr[1] <= 31) return true;
-                // range of 192.168.0.0 to 192.168.255.255
                 if (addr[0] == 192 && addr[1] == 168) return true;
-                // range of 10.0.0.0 to 10.255.255.255
                 if (addr[0] == 10) return true;
             }
-            // TODO: Are there more IPv6 address ranges than just this?
             return ip.IsIPv6LinkLocal;
         }
         /// <summary> Returns whether the given IP is an IPv4 mapped IPv6 address </summary>
@@ -42,8 +38,6 @@ namespace MCGalaxy.Network
         {
             if (ip.AddressFamily != AddressFamily.InterNetworkV6) return false;
             byte[] addr = ip.GetAddressBytes();
-            // IPv4 mapped addresses have the format
-            //  0000:0000:0000:0000:0000:FFFF:[ipv4 address]
             for (int i = 0; i < 10; i++)
             {
                 if (addr[i] != 0) return false;
@@ -65,8 +59,6 @@ namespace MCGalaxy.Network
         public static IPAddress GetIP(Socket s)
         {
             IPAddress addr = ((IPEndPoint)s.RemoteEndPoint).Address;
-            // Convert IPv4 mapped addresses to IPv4 addresses for consistency
-            //  (e.g. so IPv4 mapped LAN IPs are treated as LAN IPs)
             if (IPUtil.IsIPv4Mapped(addr)) addr = IPUtil.MapToIPV4(addr);
             return addr;
         }

@@ -33,8 +33,14 @@ namespace MCGalaxy.Events.LevelEvents
             IEvent<OnLevelLoad>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(name, path, ref cancel); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                { 
+                    items[i].method(name, path, ref cancel); 
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -46,8 +52,14 @@ namespace MCGalaxy.Events.LevelEvents
             IEvent<OnLevelSave>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(lvl, ref cancel); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                {
+                    items[i].method(lvl, ref cancel); 
+                }
+                catch (Exception ex) 
+                {
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -59,8 +71,14 @@ namespace MCGalaxy.Events.LevelEvents
             IEvent<OnLevelUnload>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(lvl, ref cancel); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try
+                { 
+                    items[i].method(lvl, ref cancel); 
+                }
+                catch (Exception ex) 
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }
@@ -153,8 +171,14 @@ namespace MCGalaxy.Events.LevelEvents
             IEvent<OnMainLevelChanging>[] items = handlers.Items;
             for (int i = 0; i < items.Length; i++)
             {
-                try { items[i].method(ref map); }
-                catch (Exception ex) { LogHandlerException(ex, items[i]); }
+                try 
+                {
+                    items[i].method(ref map);
+                }
+                catch (Exception ex)
+                { 
+                    LogHandlerException(ex, items[i]); 
+                }
             }
         }
     }

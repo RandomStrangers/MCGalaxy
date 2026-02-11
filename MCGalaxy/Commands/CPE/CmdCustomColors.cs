@@ -24,7 +24,11 @@ namespace MCGalaxy.Commands.CPE
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p);
+                return; 
+            }
             string cmd = args[0];
             if (IsCreateAction(cmd))
             {
@@ -50,7 +54,11 @@ namespace MCGalaxy.Commands.CPE
         }
         void AddHandler(Player p, string[] args)
         {
-            if (args.Length <= 4) { Help(p); return; }
+            if (args.Length <= 4) 
+            { 
+                Help(p); 
+                return; 
+            }
             char code = args[1][0];
             if (code >= 'A' && code <= 'F') code += ' ';
             if (code == ' ' || code == '\0' || code == '\u00a0' || code == '%' || code == '&')
@@ -66,13 +74,19 @@ namespace MCGalaxy.Commands.CPE
             if (!CheckName(p, args[2]) || !CheckFallback(p, args[3], code, out char fallback)) return;
             ColorDesc col = default;
             if (!CommandParser.GetHex(p, args[4], ref col)) return;
-            col.Code = code; col.Fallback = fallback; col.Name = args[2];
+            col.Code = code; 
+            col.Fallback = fallback; 
+            col.Name = args[2];
             Colors.Update(col);
             p.Message("Successfully added '{0}' color", code);
         }
         void RemoveHandler(Player p, string[] args)
         {
-            if (args.Length < 2) { Help(p); return; }
+            if (args.Length < 2) 
+            {
+                Help(p);
+                return;
+            }
             char code = ParseColor(p, args[1]);
             if (code == '\0') return;
             Colors.Update(Colors.DefaultCol(code));
@@ -88,7 +102,6 @@ namespace MCGalaxy.Commands.CPE
             Paginator.Output(p, validColors, PrintColor,
                              cmd, "Colors", modifier);
         }
-        // Not very elegant, because we don't want the % to be escaped like everywhere else
         internal static void PrintColor(Player p, ColorDesc col)
         {
             string format = "{0} &{1}({2})&S - %&S{1}, falls back to &{3}%&{3}{3}";
@@ -97,7 +110,11 @@ namespace MCGalaxy.Commands.CPE
         }
         void EditHandler(Player p, string[] args)
         {
-            if (args.Length < 4) { Help(p); return; }
+            if (args.Length < 4) 
+            { 
+                Help(p);
+                return; 
+            }
             char code = ParseColor(p, args[1]);
             if (code == '\0') return;
             ColorDesc col = Colors.Get(code);
@@ -118,11 +135,14 @@ namespace MCGalaxy.Commands.CPE
                 ColorDesc rgb = default;
                 if (!CommandParser.GetHex(p, args[3], ref rgb)) return;
                 p.Message("Set hex color of {0} to {1}", col.Name, Utils.Hex(rgb.R, rgb.G, rgb.B));
-                col.R = rgb.R; col.G = rgb.G; col.B = rgb.B;
+                col.R = rgb.R; 
+                col.G = rgb.G;
+                col.B = rgb.B;
             }
             else
             {
-                Help(p); return;
+                Help(p); 
+                return;
             }
             Colors.Update(col);
         }
@@ -158,7 +178,6 @@ namespace MCGalaxy.Commands.CPE
             {
                 p.Message("{0} must be a standard color code.", fallback); return false;
             }
-            // Can't change fallback of standard colour code
             if (Colors.IsStandard(code)) fallback = code;
             if (fallback >= 'A' && fallback <= 'F') fallback += ' ';
             return true;

@@ -142,7 +142,7 @@ namespace MCGalaxy
         readonly Queue<SerialCommand> serialCmds = new();
         readonly object serialCmdsLock = new(),
             messageLocker = new(), joinLock = new(),
-            selLock = new();
+            selLock = new(), blockchangeLock = new();
         Vec3S32[] selMarks;
         object selState;
         SelectionHandler selCallback;

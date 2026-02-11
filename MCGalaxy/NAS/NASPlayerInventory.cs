@@ -76,8 +76,7 @@ namespace MCGalaxy
                     {
                         info.showToNormalChat = true;
                     }
-                    SchedulerTask taskDisplayHeldBlock;
-                    taskDisplayHeldBlock = Server.MainScheduler.QueueOnce(DisplayHeldBlockTask, info, TimeSpan.FromMilliseconds(i * 125));
+                    SchedulerTask taskDisplayHeldBlock = Server.MainScheduler.QueueOnce(DisplayHeldBlockTask, info, TimeSpan.FromMilliseconds(i * 125));
                 }
             }
             NASDrop leftovers = null;
@@ -106,8 +105,7 @@ namespace MCGalaxy
             blocks[clientushort] += amount;
             if (displayChange)
             {
-                NASBlock nb = NASBlock.Get(clientushort);
-                DisplayHeldBlock(nb, amount, showToNormalChat);
+                DisplayHeldBlock(NASBlock.Get(clientushort), amount, showToNormalChat);
             }
             if (blocks[clientushort] > 0)
             {
@@ -137,17 +135,9 @@ namespace MCGalaxy
             }
             SendCpeMessage(whereHeldBlockIsDisplayed, display);
         }
-        public string DisplayedBlockString(NASBlock nasBlock)
-        {
-            NASPlayer np = NASPlayer.GetPlayer(p);
-            if (nasBlock.parentID == 0)
-            {
-                return "┤";
-            }
-            int amount = GetAmount(nasBlock.parentID);
-            string hand = amount <= 0 ? "┤" : "╕¼";
-            return "[" + amount + "] " + nasBlock.GetName(np) + " " + hand;
-        }
+        public string DisplayedBlockString(NASBlock nasBlock) => nasBlock.parentID == 0
+                ? "┤"
+                : "[" + GetAmount(nasBlock.parentID) + "] " + nasBlock.GetName(NASPlayer.GetPlayer(p)) + " " + (GetAmount(nasBlock.parentID) <= 0 ? "┤" : "╕¼");
         public static void DisplayHeldBlockTask(SchedulerTask task)
         {
             NASDisplayInfo info = (NASDisplayInfo)task.State;
@@ -169,10 +159,10 @@ namespace MCGalaxy
         }
         public void UnhideBlock(ushort clientushort)
         {
-            BlockDefinition def = BlockDefinition.GlobalDefs[NASPlugin.FromRaw(clientushort)];
+            BlockDefinition def = BlockDefinition.GlobalDefs[Block.FromRaw(clientushort)];
             if (def == null && clientushort < 66)
             {
-                def = DefaultSet.MakeCustomBlock(NASPlugin.FromRaw(clientushort));
+                def = DefaultSet.MakeCustomBlock(Block.FromRaw(clientushort));
             }
             if (def == null)
             {
@@ -185,10 +175,10 @@ namespace MCGalaxy
             {
                 foreach (ushort childID in nasBlock.childIDs)
                 {
-                    def = BlockDefinition.GlobalDefs[NASPlugin.FromRaw(childID)];
+                    def = BlockDefinition.GlobalDefs[Block.FromRaw(childID)];
                     if (def == null && childID < 66)
                     {
-                        def = DefaultSet.MakeCustomBlock(NASPlugin.FromRaw(childID));
+                        def = DefaultSet.MakeCustomBlock(Block.FromRaw(childID));
                     }
                     if (def == null)
                     {

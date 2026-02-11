@@ -49,7 +49,6 @@ namespace MCGalaxy.Modules.Relay.Discord
         }
         public override JsonObject ToJson()
         {
-            // only allow pinging certain groups
             JsonObject allowed = new()
             {
                 { "parse", Allowed ?? default_allowed }
@@ -64,10 +63,9 @@ namespace MCGalaxy.Modules.Relay.Discord
         {
             if (prior is not ChannelSendMessage msg || msg.Path != Path) return false;
             if (content.Length + msg.content.Length > 1024) return false;
-            // TODO: is stringbuilder even beneficial here
             msg.content.Append('\n');
             msg.content.Append(content.ToString());
-            content.Length = 0; // clear this
+            content.Length = 0;
             return true;
         }
     }
@@ -103,7 +101,6 @@ namespace MCGalaxy.Modules.Relay.Discord
                         }
                     }
                 },
-                // no pinging anything
                 { "allowed_mentions", new JsonObject()
                     {
                         { "parse", new JsonArray() }

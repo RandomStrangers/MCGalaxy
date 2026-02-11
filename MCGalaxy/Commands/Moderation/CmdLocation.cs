@@ -30,14 +30,19 @@ namespace MCGalaxy.Commands.Moderation
         {
             if (message.Length == 0)
             {
-                if (p.IsSuper) { SuperRequiresArgs(p, "player name or IP"); return; }
+                if (p.IsSuper) 
+                {
+                    SuperRequiresArgs(p, "player name or IP"); 
+                    return; 
+                }
                 message = p.name;
             }
             string name, ip = ModActionCmd.FindIP(p, message, "Location", out name);
             if (ip == null) return;
             if (IPUtil.IsPrivate(IPAddress.Parse(ip)))
             {
-                p.Message("&WPlayer has an internal IP, cannot trace"); return;
+                p.Message("&WPlayer has an internal IP, cannot trace"); 
+                return;
             }
             string json;
             try
@@ -53,13 +58,17 @@ namespace MCGalaxy.Commands.Moderation
             }
             JsonReader reader = new(json);
             JsonObject obj = (JsonObject)reader.Parse();
-            if (obj == null) { p.Message("&WError parsing GeoIP info"); return; }
+            if (obj == null) 
+            { 
+                p.Message("&WError parsing GeoIP info");
+                return; 
+            }
             obj.TryGetValue("region", out object region);
             obj.TryGetValue("country", out object country);
             string fullName = CountryUtils.GetName(country.ToString());
             if (fullName != null) country = fullName;
-            string suffix = HasExtraPerm(data.Rank, 1) ? "&b{1}&S/&b{2}" : "&b{2}";
-            string nick = name == null ? ip : "of " + p.FormatNick(name);
+            string suffix = HasExtraPerm(data.Rank, 1) ? "&b{1}&S/&b{2}" : "&b{2}",
+                nick = name == null ? ip : "of " + p.FormatNick(name);
             p.Message("The IP {0} &Straces to: " + suffix, nick, region, country);
         }
         public override void Help(Player p)

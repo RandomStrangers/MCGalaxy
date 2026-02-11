@@ -24,7 +24,11 @@ namespace MCGalaxy.Commands.Eco
         {
             data = new EcoTransaction();
             string[] args = message.SplitSpaces(3);
-            if (args.Length < 2) { Help(p); return false; }
+            if (args.Length < 2) 
+            { 
+                Help(p);
+                return false; 
+            }
             if (!Economy.CheckIsEnabled(p, this)) return false;
             data.TargetName = args[0];
             data.Reason = args.Length > 2 ? args[2] : null;

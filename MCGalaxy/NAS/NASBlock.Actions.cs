@@ -111,10 +111,10 @@ namespace MCGalaxy
             256|96,
             256|130,
             256|651,
-            NASPlugin.FromRaw(644),
-            NASPlugin.FromRaw(645),
-            NASPlugin.FromRaw(646),
-            NASPlugin.FromRaw(461),
+            Block.FromRaw(644),
+            Block.FromRaw(645),
+            Block.FromRaw(646),
+            Block.FromRaw(461),
             53
         },
         waterSet = new ushort[]
@@ -173,118 +173,118 @@ namespace MCGalaxy
         },
         pistonUp =
         {
-            NASPlugin.FromRaw(704),
-            NASPlugin.FromRaw(705),
-            NASPlugin.FromRaw(706)
+            Block.FromRaw(704),
+            Block.FromRaw(705),
+            Block.FromRaw(706)
         },
         stickyPistonUp =
         {
-            NASPlugin.FromRaw(678),
-            NASPlugin.FromRaw(679),
-            NASPlugin.FromRaw(680)
+            Block.FromRaw(678),
+            Block.FromRaw(679),
+            Block.FromRaw(680)
         },
         pistonDown =
         {
-            NASPlugin.FromRaw(707),
-            NASPlugin.FromRaw(708),
-            NASPlugin.FromRaw(709)
+            Block.FromRaw(707),
+            Block.FromRaw(708),
+            Block.FromRaw(709)
         },
         stickyPistonDown =
         {
-            NASPlugin.FromRaw(710),
-            NASPlugin.FromRaw(711),
-            NASPlugin.FromRaw(712)
+            Block.FromRaw(710),
+            Block.FromRaw(711),
+            Block.FromRaw(712)
         },
         pistonNorth =
         {
-            NASPlugin.FromRaw(389),
-            NASPlugin.FromRaw(390),
-            NASPlugin.FromRaw(391)
+            Block.FromRaw(389),
+            Block.FromRaw(390),
+            Block.FromRaw(391)
         },
         pistonEast =
         {
-            NASPlugin.FromRaw(392),
-            NASPlugin.FromRaw(393),
-            NASPlugin.FromRaw(394)
+            Block.FromRaw(392),
+            Block.FromRaw(393),
+            Block.FromRaw(394)
         },
         pistonSouth =
         {
-            NASPlugin.FromRaw(395),
-            NASPlugin.FromRaw(396),
-            NASPlugin.FromRaw(397)
+            Block.FromRaw(395),
+            Block.FromRaw(396),
+            Block.FromRaw(397)
         },
         pistonWest =
         {
-            NASPlugin.FromRaw(398),
-            NASPlugin.FromRaw(399),
-            NASPlugin.FromRaw(400)
+            Block.FromRaw(398),
+            Block.FromRaw(399),
+            Block.FromRaw(400)
         },
         stickyPistonNorth =
         {
-            NASPlugin.FromRaw(401),
-            NASPlugin.FromRaw(402),
-            NASPlugin.FromRaw(403)
+            Block.FromRaw(401),
+            Block.FromRaw(402),
+            Block.FromRaw(403)
         },
         stickyPistonEast =
         {
-            NASPlugin.FromRaw(404),
-            NASPlugin.FromRaw(405),
-            NASPlugin.FromRaw(406)
+            Block.FromRaw(404),
+            Block.FromRaw(405),
+            Block.FromRaw(406)
         },
         stickyPistonSouth =
         {
-            NASPlugin.FromRaw(407),
-            NASPlugin.FromRaw(408),
-            NASPlugin.FromRaw(409)
+            Block.FromRaw(407),
+            Block.FromRaw(408),
+            Block.FromRaw(409)
         },
         stickyPistonWest =
         {
-            NASPlugin.FromRaw(410),
-            NASPlugin.FromRaw(411),
-            NASPlugin.FromRaw(412)
+            Block.FromRaw(410),
+            Block.FromRaw(411),
+            Block.FromRaw(412)
         },
         unpushable =
         {
-            NASPlugin.FromRaw(690),
-            NASPlugin.FromRaw(647),
-            NASPlugin.FromRaw(216),
-            NASPlugin.FromRaw(217),
-            NASPlugin.FromRaw(218),
-            NASPlugin.FromRaw(219),
-            NASPlugin.FromRaw(602),
-            NASPlugin.FromRaw(603),
-            NASPlugin.FromRaw(143),
-            NASPlugin.FromRaw(171),
-            NASPlugin.FromRaw(54),
-            NASPlugin.FromRaw(703),
-            NASPlugin.FromRaw(7),
-            NASPlugin.FromRaw(767),
-            NASPlugin.FromRaw(674),
-            NASPlugin.FromRaw(675),
-            NASPlugin.FromRaw(195),
-            NASPlugin.FromRaw(196),
-            NASPlugin.FromRaw(172),
-            NASPlugin.FromRaw(173),
-            NASPlugin.FromRaw(174),
-            NASPlugin.FromRaw(175),
-            NASPlugin.FromRaw(176),
-            NASPlugin.FromRaw(177),
-            NASPlugin.FromRaw(612),
-            NASPlugin.FromRaw(613),
-            NASPlugin.FromRaw(614),
-            NASPlugin.FromRaw(615),
-            NASPlugin.FromRaw(616),
-            NASPlugin.FromRaw(617),
-            NASPlugin.FromRaw(413),
-            NASPlugin.FromRaw(414),
-            NASPlugin.FromRaw(439),
-            NASPlugin.FromRaw(440),
-            NASPlugin.FromRaw(441),
-            NASPlugin.FromRaw(442),
-            NASPlugin.FromRaw(443),
-            NASPlugin.FromRaw(444),
-            NASPlugin.FromRaw(673),
-            NASPlugin.FromRaw(457),
+            Block.FromRaw(690),
+            Block.FromRaw(647),
+            Block.FromRaw(216),
+            Block.FromRaw(217),
+            Block.FromRaw(218),
+            Block.FromRaw(219),
+            Block.FromRaw(602),
+            Block.FromRaw(603),
+            Block.FromRaw(143),
+            Block.FromRaw(171),
+            Block.FromRaw(54),
+            Block.FromRaw(703),
+            Block.FromRaw(7),
+            Block.FromRaw(767),
+            Block.FromRaw(674),
+            Block.FromRaw(675),
+            Block.FromRaw(195),
+            Block.FromRaw(196),
+            Block.FromRaw(172),
+            Block.FromRaw(173),
+            Block.FromRaw(174),
+            Block.FromRaw(175),
+            Block.FromRaw(176),
+            Block.FromRaw(177),
+            Block.FromRaw(612),
+            Block.FromRaw(613),
+            Block.FromRaw(614),
+            Block.FromRaw(615),
+            Block.FromRaw(616),
+            Block.FromRaw(617),
+            Block.FromRaw(413),
+            Block.FromRaw(414),
+            Block.FromRaw(439),
+            Block.FromRaw(440),
+            Block.FromRaw(441),
+            Block.FromRaw(442),
+            Block.FromRaw(443),
+            Block.FromRaw(444),
+            Block.FromRaw(673),
+            Block.FromRaw(457),
         },
         wireSetActive =
         {
@@ -334,17 +334,17 @@ namespace MCGalaxy
         },
         wheatSet = new ushort[]
         {
-            NASPlugin.FromRaw(644),
-            NASPlugin.FromRaw(645),
-            NASPlugin.FromRaw(646),
-            NASPlugin.FromRaw(461)
+            Block.FromRaw(644),
+            Block.FromRaw(645),
+            Block.FromRaw(646),
+            Block.FromRaw(461)
         },
         ironSet = new ushort[]
         {
-            NASPlugin.FromRaw(729),
-            NASPlugin.FromRaw(730),
-            NASPlugin.FromRaw(731),
-            NASPlugin.FromRaw(479)
+            Block.FromRaw(729),
+            Block.FromRaw(730),
+            Block.FromRaw(731),
+            Block.FromRaw(479)
         },
         soilForPlants = new ushort[]
         {
@@ -413,7 +413,7 @@ namespace MCGalaxy
         public static int CanReplaceBlockAt(NASLevel nl, int x, int y, int z, ushort[] set, int spreadIndex)
         {
             ushort hereBlock = nl.GetBlock(x, y, z);
-            if (nl.GetBlock(x, y - 1, z) == NASPlugin.FromRaw(703))
+            if (nl.GetBlock(x, y - 1, z) == Block.FromRaw(703))
             {
                 return -1;
             }
@@ -627,7 +627,7 @@ namespace MCGalaxy
         public static NASBlockAction FallingBlockAction(ushort serverushort) => (nl, nasBlock, x, y, z) =>
                                                                                          {
                                                                                              ushort blockUnder = nl.GetBlock(x, y - 1, z);
-                                                                                             if (nl.GetBlock(x, y - 2, z) == NASPlugin.FromRaw(703))
+                                                                                             if (nl.GetBlock(x, y - 2, z) == Block.FromRaw(703))
                                                                                              {
                                                                                                  return;
                                                                                              }
@@ -639,9 +639,9 @@ namespace MCGalaxy
                                                                                          };
         public static NASBlockAction GrassBlockAction(ushort grass, ushort dirt) => (nl, nasBlock, x, y, z) =>
                                                                                              {
-                                                                                                 if (grass == NASPlugin.FromRaw(139) && nl.biome != 2)
+                                                                                                 if (grass == Block.FromRaw(139) && nl.biome != 2)
                                                                                                  {
-                                                                                                     nl.SetBlock(x, y, z, NASPlugin.FromRaw(129));
+                                                                                                     nl.SetBlock(x, y, z, Block.FromRaw(129));
                                                                                                  }
                                                                                                  ushort aboveHere = nl.GetBlock(x, y + 1, z);
                                                                                                  if (!nl.lvl.LightPasses(aboveHere))
@@ -785,17 +785,17 @@ namespace MCGalaxy
                                                                                               {
                                                                                                   if (leaf == 18)
                                                                                                   {
-                                                                                                      nl.SetBlock(x, y - 1, z, NASPlugin.FromRaw(648));
+                                                                                                      nl.SetBlock(x, y - 1, z, Block.FromRaw(648));
                                                                                                   }
-                                                                                                  if (leaf == NASPlugin.FromRaw(103))
+                                                                                                  if (leaf == Block.FromRaw(103))
                                                                                                   {
-                                                                                                      nl.SetBlock(x, y - 1, z, NASPlugin.FromRaw(702));
+                                                                                                      nl.SetBlock(x, y - 1, z, Block.FromRaw(702));
                                                                                                   }
                                                                                               }
                                                                                           };
         public static NASBlockAction GrowAction(ushort grow) => (nl, nasBlock, x, y, z) =>
                                                                          {
-                                                                             if (grow == NASPlugin.FromRaw(667))
+                                                                             if (grow == Block.FromRaw(667))
                                                                              {
                                                                                  if (12 == nl.GetBlock(x, y - 1, z))
                                                                                  {
@@ -877,7 +877,7 @@ namespace MCGalaxy
             {
                 return;
             }
-            if ((iteration >= 10 && leaf == NASPlugin.FromRaw(104)) || (iteration >= 5 && leaf != NASPlugin.FromRaw(104)))
+            if ((iteration >= 10 && leaf == Block.FromRaw(104)) || (iteration >= 5 && leaf != Block.FromRaw(104)))
             {
                 return;
             }
@@ -895,7 +895,7 @@ namespace MCGalaxy
                                                                   {
                                                                       if (r.Next(0, 8) == 0)
                                                                       {
-                                                                          nl.SetBlock(x, y, z, NASPlugin.FromRaw(131));
+                                                                          nl.SetBlock(x, y, z, Block.FromRaw(131));
                                                                       }
                                                                       else
                                                                       {
@@ -1019,28 +1019,28 @@ namespace MCGalaxy
                                                                                                                                                       ushort[] dontpush =
                                                                                                                                                       {
                     0, 0, 0, 0,
-                    NASPlugin.FromRaw(680),
-                    NASPlugin.FromRaw(706),
-                    NASPlugin.FromRaw(709),
-                    NASPlugin.FromRaw(712)
+                    Block.FromRaw(680),
+                    Block.FromRaw(706),
+                    Block.FromRaw(709),
+                    Block.FromRaw(712)
                                                                                                                                                       };
                                                                                                                                                       if (axis.CaselessEq("x"))
                                                                                                                                                       {
                                                                                                                                                           changeX = dir;
                                                                                                                                                           changeZ = 0;
-                                                                                                                                                          dontpush[0] = NASPlugin.FromRaw(391);
-                                                                                                                                                          dontpush[1] = NASPlugin.FromRaw(397);
-                                                                                                                                                          dontpush[2] = NASPlugin.FromRaw(403);
-                                                                                                                                                          dontpush[3] = NASPlugin.FromRaw(409);
+                                                                                                                                                          dontpush[0] = Block.FromRaw(391);
+                                                                                                                                                          dontpush[1] = Block.FromRaw(397);
+                                                                                                                                                          dontpush[2] = Block.FromRaw(403);
+                                                                                                                                                          dontpush[3] = Block.FromRaw(409);
                                                                                                                                                       }
                                                                                                                                                       if (axis.CaselessEq("z"))
                                                                                                                                                       {
                                                                                                                                                           changeZ = dir;
                                                                                                                                                           changeX = 0;
-                                                                                                                                                          dontpush[0] = NASPlugin.FromRaw(394);
-                                                                                                                                                          dontpush[1] = NASPlugin.FromRaw(400);
-                                                                                                                                                          dontpush[2] = NASPlugin.FromRaw(406);
-                                                                                                                                                          dontpush[3] = NASPlugin.FromRaw(412);
+                                                                                                                                                          dontpush[0] = Block.FromRaw(394);
+                                                                                                                                                          dontpush[1] = Block.FromRaw(400);
+                                                                                                                                                          dontpush[2] = Block.FromRaw(406);
+                                                                                                                                                          dontpush[3] = Block.FromRaw(412);
                                                                                                                                                       }
                                                                                                                                                       if (type.CaselessEq("off"))
                                                                                                                                                       {
@@ -1309,14 +1309,14 @@ namespace MCGalaxy
                                                                                                                                       {
                                                                                                                                           ushort[] dontpush =
                                                                                                                                           {
-                    NASPlugin.FromRaw(391),
-                    NASPlugin.FromRaw(397),
-                    NASPlugin.FromRaw(403),
-                    NASPlugin.FromRaw(409),
-                    NASPlugin.FromRaw(394),
-                    NASPlugin.FromRaw(400),
-                    NASPlugin.FromRaw(406),
-                    NASPlugin.FromRaw(412),
+                    Block.FromRaw(391),
+                    Block.FromRaw(397),
+                    Block.FromRaw(403),
+                    Block.FromRaw(409),
+                    Block.FromRaw(394),
+                    Block.FromRaw(400),
+                    Block.FromRaw(406),
+                    Block.FromRaw(412),
                                                                                                                                           };
                                                                                                                                           if (type.CaselessEq("off"))
                                                                                                                                           {
@@ -1555,14 +1555,14 @@ namespace MCGalaxy
                                                                                                                                             {
                                                                                                                                                 ushort[] dontpush =
                                                                                                                                                 {
-                    NASPlugin.FromRaw(391),
-                    NASPlugin.FromRaw(397),
-                    NASPlugin.FromRaw(403),
-                    NASPlugin.FromRaw(409),
-                    NASPlugin.FromRaw(394),
-                    NASPlugin.FromRaw(400),
-                    NASPlugin.FromRaw(406),
-                    NASPlugin.FromRaw(412),
+                    Block.FromRaw(391),
+                    Block.FromRaw(397),
+                    Block.FromRaw(403),
+                    Block.FromRaw(409),
+                    Block.FromRaw(394),
+                    Block.FromRaw(400),
+                    Block.FromRaw(406),
+                    Block.FromRaw(412),
                                                                                                                                                 };
                                                                                                                                                 NASBlockEntity[] b = new NASBlockEntity[5];
                                                                                                                                                 if (nl.blockEntities.ContainsKey(x + " " + (y - changeY) + " " + z))
@@ -1828,15 +1828,11 @@ namespace MCGalaxy
             {
                 return returnedBlock;
             }
-            if (ConvertBody(block, stickyPistonNorth, out returnedBlock))
-            {
-                return returnedBlock;
-            }
-            if (ConvertBody(block, stickyPistonEast, out returnedBlock))
-            {
-                return returnedBlock;
-            }
-            return ConvertBody(block, stickyPistonSouth, out returnedBlock)
+            return ConvertBody(block, stickyPistonNorth, out returnedBlock)
+                ? returnedBlock
+                : ConvertBody(block, stickyPistonEast, out returnedBlock)
+                ? returnedBlock
+                : ConvertBody(block, stickyPistonSouth, out returnedBlock)
                 ? returnedBlock
                 : ConvertBody(block, stickyPistonWest, out returnedBlock) ? returnedBlock : returnedBlock;
         }
@@ -1991,7 +1987,7 @@ namespace MCGalaxy
                                                                            }
                                                                            if (!stoodOn)
                                                                            {
-                                                                               nl.SetBlock(x, y, z, NASPlugin.FromRaw(610));
+                                                                               nl.SetBlock(x, y, z, Block.FromRaw(610));
                                                                                nl.blockEntities[x + " " + y + " " + z].strength = 0;
                                                                            }
                                                                            else
@@ -2099,7 +2095,7 @@ namespace MCGalaxy
                                                                      {
                                                                          return;
                                                                      }
-                                                                     nl.SetBlock(x, y, z, NASPlugin.FromRaw(195));
+                                                                     nl.SetBlock(x, y, z, Block.FromRaw(195));
                                                                      nl.blockEntities[x + " " + y + " " + z].strength = 0;
                                                                  };
         public static NASBlockAction DispenserAction(int changeX, int changeY, int changeZ) => (nl, nasBlock, x, y, z) =>
@@ -2207,7 +2203,7 @@ namespace MCGalaxy
                                                                                                                 }
                                                                                                                 if (addedushort == 0)
                                                                                                                 {
-                                                                                                                    nl.SetBlock(x + changeX, y + changeY, z + changeZ, NASPlugin.FromRaw(clientushort));
+                                                                                                                    nl.SetBlock(x + changeX, y + changeY, z + changeZ, Block.FromRaw(clientushort));
                                                                                                                     if (Get(bs.ID).container != null)
                                                                                                                     {
                                                                                                                         nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new());
@@ -2216,7 +2212,7 @@ namespace MCGalaxy
                                                                                                                 }
                                                                                                                 if (bEntity.drop == null)
                                                                                                                 {
-                                                                                                                    nl.SetBlock(x + changeX, y + changeY, z + changeZ, NASPlugin.FromRaw(clientushort));
+                                                                                                                    nl.SetBlock(x + changeX, y + changeY, z + changeZ, Block.FromRaw(clientushort));
                                                                                                                     bEntity.drop = new(addedushort);
                                                                                                                     return;
                                                                                                                 }
@@ -2228,7 +2224,7 @@ namespace MCGalaxy
                                                                                                                         {
                                                                                                                             stack.amount += 1;
                                                                                                                         }
-                                                                                                                        nl.SetBlock(x + changeX, y + changeY, z + changeZ, NASPlugin.FromRaw(clientushort));
+                                                                                                                        nl.SetBlock(x + changeX, y + changeY, z + changeZ, Block.FromRaw(clientushort));
                                                                                                                         if (Get(bs.ID).container != null)
                                                                                                                         {
                                                                                                                             nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new());
@@ -2244,7 +2240,7 @@ namespace MCGalaxy
                                                                                                                 {
                                                                                                                     bEntity.drop.blockStacks.Add(new(addedushort));
                                                                                                                 }
-                                                                                                                nl.SetBlock(x + changeX, y + changeY, z + changeZ, NASPlugin.FromRaw(clientushort));
+                                                                                                                nl.SetBlock(x + changeX, y + changeY, z + changeZ, Block.FromRaw(clientushort));
                                                                                                                 if (Get(bs.ID).container != null)
                                                                                                                 {
                                                                                                                     nl.blockEntities.Add(x + changeX + " " + (y + changeY) + " " + (z + changeZ), new());
@@ -2270,7 +2266,7 @@ namespace MCGalaxy
                                                                     }
                                                                     if (absorbed)
                                                                     {
-                                                                        nl.SetBlock(x, y, z, NASPlugin.FromRaw(428));
+                                                                        nl.SetBlock(x, y, z, Block.FromRaw(428));
                                                                     }
                                                                 };
         public static NASBlockAction NeedsSupportAction() => (nl, nasBlock, x, y, z) =>

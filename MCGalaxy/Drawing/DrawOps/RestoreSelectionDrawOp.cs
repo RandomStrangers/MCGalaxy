@@ -35,11 +35,15 @@ namespace MCGalaxy.Drawing.Ops
             Max.Z = Math.Min(Max.Z, Source.Length - 1);
             Vec3U16 p1 = Clamp(Min), p2 = Clamp(Max);
             for (ushort y = p1.Y; y <= p2.Y; y++)
+            {
                 for (ushort z = p1.Z; z <= p2.Z; z++)
+                {
                     for (ushort x = p1.X; x <= p2.X; x++)
                     {
                         output(Place(x, y, z, Source.FastGetBlock(x, y, z)));
                     }
+                }
+            }
             Source.Dispose();
         }
     }

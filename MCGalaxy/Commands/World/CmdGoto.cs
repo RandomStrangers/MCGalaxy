@@ -28,12 +28,16 @@ namespace MCGalaxy.Commands.World
         public override CommandParallelism Parallelism => CommandParallelism.NoAndWarn;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            {
+                Help(p);
+                return; 
+            }
             if (message.CaselessStarts("-random"))
             {
                 Random r = new();
-                string[] files = LevelInfo.AllMapFiles();
-                string[] args = message.SplitSpaces(2);
+                string[] files = LevelInfo.AllMapFiles(),
+                    args = message.SplitSpaces(2);
                 int attempts = 0;
                 GrResult res;
                 do
@@ -51,11 +55,13 @@ namespace MCGalaxy.Commands.World
                 PlayerActions.ChangeMap(p, message);
             }
         }
-        enum GrResult { NoLevels, NoPermission, Success }
+        enum GrResult 
+        {
+            NoLevels, NoPermission, Success 
+        }
         static GrResult TryGotoRandom(Player p, Random r, string[] files, string[] args)
         {
             string map;
-            // randomly visit a specified subset of all levels
             if (args.Length > 1)
             {
                 List<string> maps = Paginator.Filter(files, args[1],
@@ -74,7 +80,6 @@ namespace MCGalaxy.Commands.World
             }
             if (p.Level.name == map)
             {
-                // try again silently
                 return GrResult.NoPermission;
             }
             bool changed = PlayerActions.ChangeMap(p, map);

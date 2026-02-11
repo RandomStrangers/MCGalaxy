@@ -36,7 +36,7 @@ namespace MCGalaxy.Tasks
         readonly List<SchedulerTask> tasks = new();
         readonly AutoResetEvent handle = new(false);
         readonly object taskLock = new();
-        volatile SchedulerTask curTask; // for .ToString()
+        volatile SchedulerTask curTask;
         public Scheduler(string name) => StartThread(name, Loop);
         /// <summary> Queues an action that is asynchronously executed one time, as soon as possible. </summary>
         public SchedulerTask QueueOnce(SchedulerCallback callback) => EnqueueTask(new SchedulerTask(callback, null, TimeSpan.Zero, false));
@@ -138,7 +138,6 @@ namespace MCGalaxy.Tasks
                     {
                         remaining = int.MaxValue;
                     }
-                    // minimum wait time is 1 millisecond
                     remaining = Math.Max(1, remaining);
                     wait = Math.Min(wait, remaining);
                 }

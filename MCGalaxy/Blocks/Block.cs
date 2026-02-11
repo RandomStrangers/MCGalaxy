@@ -59,7 +59,6 @@ namespace MCGalaxy
             }
             SetDefaultNames();
             string propsPath = Paths.BlockPropsPath("default");
-            // backwards compatibility with older versions
             if (!File.Exists(propsPath))
             {
                 BlockProps.Load("core", Props, 1, false);
@@ -85,10 +84,7 @@ namespace MCGalaxy
         /// <summary> Converts a server block ID to a raw/client block ID </summary>
         /// <remarks> Undefined behaviour for physics block IDs </remarks>
         public static ushort ToRaw(ushort raw) => raw < 66 ? raw : (ushort)(raw - 256);
-        public static ushort MapOldRaw(ushort raw) =>
-            // old raw form was: 0 - 65 core block ids, 66 - 255 custom block ids
-            // 256+ remain unchanged
-            IsPhysicsType(raw) ? ((ushort)(raw + 256)) : raw;
+        public static ushort MapOldRaw(ushort raw) => IsPhysicsType(raw) ? ((ushort)(raw + 256)) : raw;
         public static bool IsPhysicsType(ushort block) => block >= 66 && block < 256;
         public static bool VisuallyEquals(ushort a, ushort b) => Convert(a) == Convert(b);
     }

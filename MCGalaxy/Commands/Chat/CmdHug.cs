@@ -20,7 +20,11 @@ namespace MCGalaxy.Commands.Chatting
         public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can death hug") };
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            {
+                Help(p);
+                return; 
+            }
             string[] args = message.SplitSpaces();
             string hugType = null;
             if (args.Length > 1)
@@ -29,7 +33,11 @@ namespace MCGalaxy.Commands.Chatting
                 if (args[1] == "loving" || args[1] == "creepy" || args[1] == "friendly" || args[1] == "deadly")
                     hugType = args[1];
             }
-            if (hugType == null) { TryMessageAction(p, args[0], "λNICK &Shugged λTARGET", false); return; }
+            if (hugType == null) 
+            { 
+                TryMessageAction(p, args[0], "λNICK &Shugged λTARGET", false); 
+                return; 
+            }
             TryMessageAction(p, args[0], "λNICK &Sgave λTARGET &Sa " + hugType + " hug", false);
             if (hugType == "deadly")
             {

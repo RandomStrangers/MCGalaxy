@@ -36,7 +36,11 @@ namespace MCGalaxy.Commands.Chatting
             else
             {
                 string nameTag = nick.CaselessEq("empty") ? "" : nick;
-                if (Colors.StripUsed(nick).Length > 62) { p.Message("Name must be 62 or fewer letters."); return; }
+                if (Colors.StripUsed(nick).Length > 62) 
+                { 
+                    p.Message("Name must be 62 or fewer letters.");
+                    return; 
+                }
                 p.Message("You changed the name of bot " + bot.ColoredName + " &Sto &c" + nameTag);
                 bot.DisplayName = Colors.Escape(nick);
             }

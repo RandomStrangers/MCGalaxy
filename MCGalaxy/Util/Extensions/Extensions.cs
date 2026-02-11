@@ -108,7 +108,6 @@ namespace MCGalaxy
                 split[i] = value.Substring(start, end - start);
                 start = end + 1;
             }
-            // If not enough split strings, set remaining to null
             for (; i < split.Length; i++)
             {
                 split[i] = null;
@@ -118,7 +117,6 @@ namespace MCGalaxy
         /// instead of a array consisting of "" that a .Split() call would. </summary>
         public static string[] SplitComma(this string str)
         {
-            // Don't want an array of one entry of empty string
             if (str.Length == 0)
             {
                 return emptyStrs;
@@ -159,7 +157,6 @@ namespace MCGalaxy
             }
             return dst.ToArray();
         }
-        // Duplicated to avoid the memory allocation overhead from formatter delegate
         public static string Join(this IEnumerable<string> items, string separator = ", ")
         {
             StringBuilder builder = new();

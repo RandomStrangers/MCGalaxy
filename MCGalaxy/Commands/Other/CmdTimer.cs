@@ -23,8 +23,16 @@ namespace MCGalaxy.Commands.Misc
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (p.cmdTimer) { p.Message("Can only have one timer at a time. Use /abort to cancel your previous timer."); return; }
-            if (message.Length == 0) { Help(p); return; }
+            if (p.cmdTimer) 
+            {
+                p.Message("Can only have one timer at a time. Use /abort to cancel your previous timer."); 
+                return; 
+            }
+            if (message.Length == 0)
+            {
+                Help(p); 
+                return;
+            }
             int TotalTime = 0;
             try
             {
@@ -36,7 +44,11 @@ namespace MCGalaxy.Commands.Misc
             {
                 TotalTime = 60;
             }
-            if (TotalTime > 300) { p.Message("Cannot have more than 5 minutes in a timer"); return; }
+            if (TotalTime > 300)
+            { 
+                p.Message("Cannot have more than 5 minutes in a timer");
+                return; 
+            }
             TimerArgs args = new()
             {
                 Message = message,

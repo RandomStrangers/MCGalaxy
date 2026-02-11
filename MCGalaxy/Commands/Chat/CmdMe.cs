@@ -22,8 +22,16 @@ namespace MCGalaxy.Commands.Chatting
         public override bool UseableWhenFrozen => true;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { p.Message("You"); return; }
-            if (p.joker) { p.Message("Cannot use /me while jokered."); return; }
+            if (message.Length == 0) 
+            {
+                p.Message("You"); 
+                return; 
+            }
+            if (p.joker) 
+            { 
+                p.Message("Cannot use /me while jokered.");
+                return; 
+            }
             if (!MessageCmd.CanSpeak(p, "Me")) return;
             string msg = p.color + "*" + Colors.StripUsed(p.DisplayName) + " " + message;
             Chat.MessageChat(p, msg, null, true);

@@ -119,7 +119,7 @@ namespace MCGalaxy.Generator
             0xD => -y + z,
             0xE => y - x,
             0xF => -y - z,
-            _ => 0,// never happens
+            _ => 0,
         };
         static float Lerp(float a, float b, float t) => a + t * (b - a);
     }

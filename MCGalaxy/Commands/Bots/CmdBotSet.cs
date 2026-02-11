@@ -25,12 +25,19 @@ namespace MCGalaxy.Commands.Bots
         public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can set bots to be killer") };
         public override void Use(Player p, string message)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            {
+                Help(p);
+                return; 
+            }
             string[] args = message.SplitSpaces();
             PlayerBot bot = Matcher.FindBots(p, args[0]);
             if (bot == null) return;
             if (!LevelInfo.Check(p, p.Rank, p.Level, "change AI of bots in this level")) return;
-            if (!bot.EditableBy(p, "change the AI of")) { return; }
+            if (!bot.EditableBy(p, "change the AI of")) 
+            { 
+                return; 
+            }
             if (args.Length == 1)
             {
                 bot.Instructions.Clear();
@@ -42,7 +49,8 @@ namespace MCGalaxy.Commands.Bots
             }
             else if (args.Length != 2)
             {
-                Help(p); return;
+                Help(p); 
+                return;
             }
             string ai = args[1].ToLower();
             if (ai.CaselessEq("hunt"))

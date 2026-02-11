@@ -24,11 +24,16 @@ namespace MCGalaxy.Commands.World
         public override bool MessageBlockRestricted => true;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (message.Length == 0) { Help(p); return; }
+            if (message.Length == 0) 
+            { 
+                Help(p); 
+                return; 
+            }
             string[] args = message.ToLower().SplitSpaces();
             if (args.Length < 2)
             {
-                p.Message("You did not specify the destination level name."); return;
+                p.Message("You did not specify the destination level name.");
+                return;
             }
             string src = Matcher.FindMaps(p, args[0]);
             if (src == null) return;

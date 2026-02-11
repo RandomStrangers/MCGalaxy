@@ -21,7 +21,6 @@ namespace MCGalaxy
         static bool EndsInEmote(char[] line, int length, int lineLength)
         {
             length = Math.Min(length, lineLength);
-            // skip trailing spaces
             for (; length > 0 & line[length - 1] == ' '; length--) 
             { 
             }
@@ -41,8 +40,6 @@ namespace MCGalaxy
         }
         static string MakeLine(char[] line, int length, bool emotePad)
         {
-            // necessary to remove useless trailing color codes,
-            //  as crashes original minecraft classic otherwise
             length = TrimTrailingInvisible(line, length);
             if (emotePad) line[length++] = '\'';
             return new(line, 0, length);
@@ -51,15 +48,11 @@ namespace MCGalaxy
         {
             char c = line[i];
             if (c == ' ') return true;
-            // For e.g. "item1/item2/item3", want to wordwrap on the '/'
-            // However for "item1 /command", want to wordwrap BEFORE '/'
-            // TODO: This probably needs to account for colour codes
             return (c == '-' || c == '\\') && line[i - 1] != ' ';
         }
         static bool StartsWithColor(char[] message, int messageLen, int offset) => message[offset] == '&'
                 && (offset + 1) < messageLen
                 && Colors.Lookup(message[offset + 1]) != '\0';
-        // TODO: Add outputLine argument, instead of returning string list
         public static List<string> Wordwrap(char[] message, int messageLen, bool supportsEmotes)
         {
             List<string> lines = new();
@@ -69,12 +62,10 @@ namespace MCGalaxy
             for (int offset = 0; offset < messageLen;)
             {
                 int length = 0;
-                // "Line1", "> Line2", "> Line3"
                 if (!firstLine)
                 {
                     line[0] = '>'; line[1] = ' ';
                     length += 2;
-                    // Make sure split up lines have the right colour
                     if (lastColor != 'f' && !StartsWithColor(message, messageLen, offset))
                     {
                         line[2] = '&'; line[3] = lastColor;
@@ -83,8 +74,6 @@ namespace MCGalaxy
                 }
                 else if (!supportsEmotes)
                 {
-                    // If message starts with emote or space then prepend &f
-                    // (otherwise original minecraft classic client trims it)
                     char first = message[0];
                     if (first <= ' ' || first > '~')
                     {
@@ -92,9 +81,6 @@ namespace MCGalaxy
                         length += 2;
                     }
                 }
-                // Copy across text up to current line length
-                // Also trim leading spaces on subsequent lines
-                // (note that first line is NOT trimmed for spaces)
                 bool foundStart = firstLine;
                 for (; length < 65 && offset < messageLen;)
                 {
@@ -107,39 +93,30 @@ namespace MCGalaxy
                 }
                 int lineLength = 64;
                 bool emotePad = false;
-                // Check if need to add a padding ' to line end
-                // (Lines ending in emote are trimmed by minecraft classic client)
                 if (!supportsEmotes && EndsInEmote(line, length, lineLength))
                 {
                     lineLength--;
-                    // If last character on line was an emote, but second last
-                    // is NOT an emote, then don't add the trailing ' to line
-                    // TODO: avoid calling twice? probably doesn't even matter
                     emotePad = EndsInEmote(line, length, lineLength);
                 }
-                // No need for any more linewrapping?
                 if (length <= lineLength)
                 {
                     lines.Add(MakeLine(line, length, emotePad));
                     break;
                 }
                 firstLine = false;
-                // Try to split up this line nicely
                 for (int i = lineLength - 1; i > 64 - 20; i--)
                 {
                     if (!IsWrapper(line, i)) continue;
-                    i++; // include line wrapper character on this line
+                    i++;
                     offset -= length - i;
                     length = i;
                     break;
                 }
-                // Couldn't split line up? Deal with leftover characters next line
                 if (length > lineLength)
                 {
                     offset -= length - lineLength;
                     length = lineLength;
                 }
-                // Don't split up line in middle of colour code
                 if (line[length - 1] == '&')
                 { 
                     length--; 
@@ -169,39 +146,27 @@ namespace MCGalaxy
             for (int i = 0; i < value.Length; i++)
             {
                 char c = value[i];
-                // Definitely not a colour code
                 if (c != '&')
                 {
                     if (c != ' ') combinable = false;
                     chars[len++] = c;
                     continue;
                 }
-                // Maybe still not a colour code
                 if (i == value.Length - 1 || (col = Colors.Lookup(value[i + 1])) == '\0')
                 {
-                    // Treat the & like a normal character
-                    //  For clients not supporting standalone '&', show '%' instead
                     combinable = false;
                     chars[len++] = fullAmpersands ? '&' : '%';
                     continue;
                 }
                 if (!customColors) col = Colors.Get(col).Fallback;
-                // Don't append duplicate colour codes
                 if (lastColor != col)
                 {
-                    // If no gap or only whitepsace since prior color code,
-                    //  then just replace the prior color code with this one
                     if (combinable)
                     {
-                        //  e.g. "&a&bTest"   -> "&bTest"
-                        //  e.g. "&a  &bTest" -> "&b  Test"
-                        // (it's particularly useful to replace prior color codes
-                        //  since original classic trims leading whitespace)
                         chars[lastIdx + 1] = col;
                     }
                     else
                     {
-                        // can't simplify, so just append this color code
                         lastIdx = len;
                         chars[len++] = '&';
                         chars[len++] = col;
@@ -209,12 +174,11 @@ namespace MCGalaxy
                     lastColor = col;
                     combinable = true;
                 }
-                i++; // skip over color code
+                i++;
             }
             bufferLen = TrimTrailingInvisible(chars, len);
             return chars;
         }
-        // Trims trailing color codes and whitespace
         static int TrimTrailingInvisible(char[] chars, int len)
         {
             while (len >= 2)
@@ -227,7 +191,7 @@ namespace MCGalaxy
                 }
                 if (chars[len - 2] != '&') break;
                 if (Colors.Lookup(c) == '\0') break;
-                len -= 2; // remove color code
+                len -= 2;
             }
             return len;
         }

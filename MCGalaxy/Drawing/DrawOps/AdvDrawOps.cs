@@ -30,24 +30,24 @@ namespace MCGalaxy.Drawing.Ops
     public class AdvSphereDrawOp : AdvDrawOp
     {
         public override string Name => "Adv Sphere";
-        public override long BlocksAffected(Level lvl, Vec3S32[] marks)
-        {
-            double R = Radius;
-            return (long)ShapedDrawOp.EllipsoidVolume(R, R, R);
-        }
+        public override long BlocksAffected(Level lvl, Vec3S32[] marks) => (long)ShapedDrawOp.EllipsoidVolume(Radius, Radius, Radius);
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             int upper = (Radius + 1) * (Radius + 1);
             Vec3U16 p1 = Clamp(Min), p2 = Clamp(Max);
             Vec3S32 C = (Min + Max) / 2;
             for (ushort y = p1.Y; y <= p2.Y; y++)
+            {
                 for (ushort z = p1.Z; z <= p2.Z; z++)
+                {
                     for (ushort x = p1.X; x <= p2.X; x++)
                     {
                         int dist = (C.X - x) * (C.X - x) + (C.Y - y) * (C.Y - y) + (C.Z - z) * (C.Z - z);
                         if (dist < upper)
                             output(Place(x, y, z, brush));
                     }
+                }
+            }
         }
     }
     public class AdvHollowSphereDrawOp : AdvDrawOp
@@ -55,25 +55,29 @@ namespace MCGalaxy.Drawing.Ops
         public override string Name => "Adv Hollow Sphere";
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
-            double R = Radius;
-            double outer = ShapedDrawOp.EllipsoidVolume(R, R, R);
-            double inner = ShapedDrawOp.EllipsoidVolume(R - 1, R - 1, R - 1);
+            double R = Radius,
+                outer = ShapedDrawOp.EllipsoidVolume(R, R, R),
+                inner = ShapedDrawOp.EllipsoidVolume(R - 1, R - 1, R - 1);
             return (long)(outer - inner);
         }
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
-            int upper = (Radius + 1) * (Radius + 1);
-            int inner = (Radius - 1) * (Radius - 1);
+            int upper = (Radius + 1) * (Radius + 1),
+                inner = (Radius - 1) * (Radius - 1);
             Vec3U16 p1 = Clamp(Min), p2 = Clamp(Max);
             Vec3S32 C = (Min + Max) / 2;
             for (ushort y = p1.Y; y <= p2.Y; y++)
+            {
                 for (ushort z = p1.Z; z <= p2.Z; z++)
+                {
                     for (ushort x = p1.X; x <= p2.X; x++)
                     {
                         int dist = (C.X - x) * (C.X - x) + (C.Y - y) * (C.Y - y) + (C.Z - z) * (C.Z - z);
                         if (dist < upper && dist >= inner)
                             output(Place(x, y, z, brush));
                     }
+                }
+            }
         }
     }
 }

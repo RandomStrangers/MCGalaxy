@@ -22,7 +22,8 @@ namespace MCGalaxy.Drawing.Brushes
         protected readonly Brush replacement;
         public ReplaceBrushBrush(ushort include, Brush replacement)
         {
-            target = include; this.replacement = replacement;
+            target = include; 
+            this.replacement = replacement;
         }
         public override string Name => "ReplaceBrush";
         public override void Configure(DrawOp op, Player p)
@@ -32,8 +33,8 @@ namespace MCGalaxy.Drawing.Brushes
         }
         public override ushort NextBlock(DrawOp op)
         {
-            ushort x = op.Coords.X, y = op.Coords.Y, z = op.Coords.Z;
-            ushort block = op.Level.GetBlock(x, y, z); // TODO FastGetBlock
+            ushort x = op.Coords.X, y = op.Coords.Y, z = op.Coords.Z,
+                block = op.Level.GetBlock(x, y, z);
             return block != target ? Block.Invalid : replacement.NextBlock(op);
         }
     }
@@ -44,8 +45,8 @@ namespace MCGalaxy.Drawing.Brushes
         public override string Name => "ReplaceNotBrush";
         public override ushort NextBlock(DrawOp op)
         {
-            ushort x = op.Coords.X, y = op.Coords.Y, z = op.Coords.Z;
-            ushort block = op.Level.GetBlock(x, y, z); // TODO FastGetBlock
+            ushort x = op.Coords.X, y = op.Coords.Y, z = op.Coords.Z,
+                block = op.Level.GetBlock(x, y, z);
             return block == target ? Block.Invalid : replacement.NextBlock(op);
         }
     }

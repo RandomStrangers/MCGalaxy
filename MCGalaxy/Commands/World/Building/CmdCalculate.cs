@@ -23,28 +23,53 @@ namespace MCGalaxy.Commands.Building
         public override void Use(Player p, string message, CommandData data)
         {
             string[] args = message.SplitSpaces();
-            if (args.Length < 2) { Help(p); return; }
+            if (args.Length < 2) 
+            { 
+                Help(p);
+                return; 
+            }
             double result = 0;
             string r1 = args[0], op = args[1], r2 = null;
             if (!NumberUtils.TryParseDouble(r1, out double n1))
             {
-                p.Message("&W\"{0}\" is not a valid number.", r1); return;
+                p.Message("&W\"{0}\" is not a valid number.", r1); 
+                return;
             }
             char sym = op[0];
             string format;
             if (sym == '+' || sym == '-' || sym == '*' || sym == '/' || sym == '^')
             {
-                if (args.Length == 2 || op.Length > 1) { Help(p); return; }
+                if (args.Length == 2 || op.Length > 1) 
+                {
+                    Help(p); 
+                    return;
+                }
                 r2 = args[2];
                 if (!NumberUtils.TryParseDouble(r2, out double n2))
                 {
-                    p.Message("&W\"{0}\" is not a valid number.", r2); return;
+                    p.Message("&W\"{0}\" is not a valid number.", r2);
+                    return;
                 }
-                if (sym == '+') { result = n1 + n2; }
-                if (sym == '-') { result = n1 - n2; }
-                if (sym == '*') { result = n1 * n2; }
-                if (sym == '/') { result = n1 / n2; }
-                if (sym == '^') { result = Math.Pow(n1, n2); }
+                if (sym == '+') 
+                { 
+                    result = n1 + n2; 
+                }
+                if (sym == '-') 
+                {
+                    result = n1 - n2; 
+                }
+                if (sym == '*') 
+                { 
+                    result = n1 * n2; 
+                }
+                if (sym == '/') 
+                { 
+                    result = n1 / n2; 
+                }
+                if (sym == '^') 
+                {
+                    result = Math.Pow(n1, n2);
+                }
                 format = "&aResult&f: {0} {1} {2} = {3}";
             }
             else if (op == "sqrt")

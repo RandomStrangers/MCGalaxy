@@ -34,10 +34,10 @@ namespace MCGalaxy.Blocks.Physics
         }
         public static void DoLava(Level lvl, ref PhysInfo C)
         {
-            // upper 3 bits are time delay
             if (C.Data.Data < (4 << 5))
             {
-                C.Data.Data += 1 << 5; return;
+                C.Data.Data += 1 << 5;
+                return;
             }
             if (lvl.Config.FiniteLiquids)
             {
@@ -58,7 +58,7 @@ namespace MCGalaxy.Blocks.Physics
             {
                 DoLavaRandowFlow(lvl, ref C, false);
                 if (C.Data.Data != PhysicsArgs.RemoveFromChecks)
-                    C.Data.Data = 0; // no lava delay
+                    C.Data.Data = 0;
             }
             else
             {
@@ -128,7 +128,6 @@ namespace MCGalaxy.Blocks.Physics
                 {
                     data |= flowed_yMin;
                 }
-                // Have we spread now (or been blocked from spreading) in all directions?
                 C.Data.Data = data;
                 if (!C.Data.HasWait && (data & 0x1F) == 0x1F)
                 {
@@ -136,7 +135,7 @@ namespace MCGalaxy.Blocks.Physics
                 }
             }
             else
-            { //was placed near sponge
+            {
                 lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
                 if (!C.Data.HasWait)
                 {
@@ -161,7 +160,7 @@ namespace MCGalaxy.Blocks.Physics
                 LiquidPhysics.PhysWater(lvl, x, (ushort)(y - 1), z, block);
             }
             else
-            { //was placed near sponge
+            {
                 lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
             }
             if (!C.Data.HasWait) C.Data.Data = PhysicsArgs.RemoveFromChecks;
@@ -184,7 +183,6 @@ namespace MCGalaxy.Blocks.Physics
                 case Block.Invalid:
                     return true;
                 default:
-                    // Adv physics kills flowers, mushroom blocks in water
                     if (!lvl.Props[block].WaterKills) break;
                     if (lvl.LevelPhysics > 1 && !lvl.CheckSpongeWater(x, y, z)) return false;
                     break;
@@ -198,7 +196,6 @@ namespace MCGalaxy.Blocks.Physics
             if (!lvl.CheckSpongeLava(x, y, z))
             {
                 byte data = C.Data.Data;
-                // Upper 3 bits are time flags - reset random delay
                 data &= flowed_maskAll;
                 data |= (byte)(rand.Next(3) << 5);
                 ushort block = C.Block;
@@ -247,7 +244,6 @@ namespace MCGalaxy.Blocks.Physics
                 {
                     data |= flowed_yMin;
                 }
-                // Have we spread now (or been blocked from spreading) in all directions?
                 C.Data.Data = data;
                 if ((!checkWait || !C.Data.HasWait) && (data & flowed_maskAll) == flowed_maskAll)
                 {
@@ -255,7 +251,7 @@ namespace MCGalaxy.Blocks.Physics
                 }
             }
             else
-            { //was placed near sponge
+            {
                 lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
                 if (!checkWait || !C.Data.HasWait)
                 {
@@ -276,7 +272,7 @@ namespace MCGalaxy.Blocks.Physics
                 LiquidPhysics.PhysLava(lvl, x, (ushort)(y - 1), z, block);
             }
             else
-            { //was placed near sponge
+            {
                 lvl.AddUpdate(C.Index, Block.Air, default(PhysicsArgs));
             }
             if (!checkWait || !C.Data.HasWait)
@@ -301,7 +297,6 @@ namespace MCGalaxy.Blocks.Physics
                 case Block.Invalid:
                     return true;
                 default:
-                    // Adv physics kills flowers, wool, mushrooms, and wood type blocks in lava
                     if (!lvl.Props[block].LavaKills) break;
                     if (lvl.LevelPhysics > 1 && !lvl.CheckSpongeLava(x, y, z)) return false;
                     break;

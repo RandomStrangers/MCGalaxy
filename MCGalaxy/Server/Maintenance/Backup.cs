@@ -63,7 +63,6 @@ namespace MCGalaxy
             for (int i = 0; i < all.Length; i++)
             {
                 string path = all[i];
-                // convert to zip entry form
                 path = path.Replace('\\', '/').Replace("./", "");
                 if (lite && path.Contains("extra/undo/"))
                 {
@@ -85,7 +84,6 @@ namespace MCGalaxy
                 {
                     continue;
                 }
-                // ignore files in root folder
                 if (path.IndexOf('/') == -1)
                 {
                     continue;
@@ -100,11 +98,9 @@ namespace MCGalaxy
             for (int i = 0; i < paths.Count; i++)
             {
                 string path = paths[i];
-                // .lvl contents are already compressed, no point in compressing again
                 bool compressThis = compress && !path.CaselessContains(".lvl") && path.CaselessContains(".mcf");
                 try
                 {
-                    //using Stream src = File.OpenRead(path);
                     using Stream src = FileIO.TryOpenRead(path);
                     writer.WriteEntry(src, path, compressThis);
                 }
@@ -148,12 +144,10 @@ namespace MCGalaxy
                     {
                         continue;
                     }
-                    // If DB is in there, they backed it up, meaning they want it restored
                     using Stream part = reader.GetEntry(i, out path);
                     ReplaceDatabase(part);
                 }
             }
-            // To make life easier, we reload settings now, to make it less likely to need restart
             Server.LoadAllSettings();
             p.Message("Server restored" + (errors > 0 ? " with errors. May be a partial restore" : ""));
             p.Message("It is recommended that you restart the server, although this is not required.");
@@ -180,8 +174,7 @@ namespace MCGalaxy
             {
                 try
                 {
-                    string dir = Path.GetDirectoryName(path);
-                    Directory.CreateDirectory(dir);
+                    Directory.CreateDirectory(Path.GetDirectoryName(path));
                     Extract(part, path);
                     return path;
                 }
@@ -196,7 +189,6 @@ namespace MCGalaxy
         }
         static void BackupDatabase(StreamWriter sql)
         {
-            // NOTE: This does NOT account for foreign keys, BLOBs etc. It only works for what we actually put in the DB.
             sql.WriteLine("-- {0} SQL database dump", Server.SoftwareNameVersioned);
             sql.WriteLine("-- Host: {0}", Server.Config.MySQLHost);
             sql.WriteLine("-- Generated on {0:yyyy-MM-dd} at {0:HH:mm:ss}", DateTime.Now);
@@ -232,7 +224,6 @@ namespace MCGalaxy
         }
         internal static void ImportSql(Stream sql)
         {
-            // Import data (we only have CREATE TABLE and INSERT INTO statements)
             using StreamReader reader = new(sql);
             ImportBulk(reader);
         }
@@ -242,7 +233,7 @@ namespace MCGalaxy
             List<string> buffer = new();
             try
             {
-                bulk = new SqlTransaction();
+                bulk = new();
                 while (!reader.EndOfStream)
                 {
                     string cmd = NextStatement(reader, buffer);
@@ -256,16 +247,13 @@ namespace MCGalaxy
                         cmd = cmd.Remove(0, index);
                         cmd = cmd.Replace(" unsigned", " UNSIGNED");
                     }
-                    //Run the command in the transaction.
                     if (bulk.Execute(cmd, null))
                     {
                         continue;
                     }
-                    // Something went wrong.. commit what we've imported so far.
-                    // We need to recreate connection otherwise every helper.Execute fails
                     bulk.Commit();
                     bulk.Dispose();
-                    bulk = new SqlTransaction();
+                    bulk = new();
                 }
                 bulk.Commit();
             }
@@ -282,12 +270,12 @@ namespace MCGalaxy
             {
                 if (line.StartsWith("--"))
                 {
-                    continue; // comment
+                    continue;
                 }
                 line = line.Trim();
                 if (line.Length == 0)
                 {
-                    continue; // whitespace
+                    continue;
                 }
                 buffer.Add(line);
                 if (line[line.Length - 1] == ';')

@@ -411,7 +411,7 @@ namespace MCGalaxy
             }
             return lvl;
         }
-        public static Level LoadMuseum(Player _, string name, string mapName, string path)
+        public static Level LoadMuseum(string name, string mapName, string path)
         {
             Level lvl = GetMuseum(name, path);
             lvl.MapName = mapName;

@@ -36,19 +36,22 @@ namespace MCGalaxy.Drawing.Ops
         public override long BlocksAffected(Level lvl, Vec3S32[] marks) => (long)EllipsoidVolume(XRadius, YRadius, ZRadius);
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
-            /* Courtesy of fCraft's awesome Open-Source'ness :D */
-            double cx = XCentre, cy = YCentre, cz = ZCentre;
-            double rx = XRadius, ry = YRadius, rz = ZRadius;
-            double rx2 = 1 / (rx * rx), ry2 = 1 / (ry * ry), rz2 = 1 / (rz * rz);
+            double cx = XCentre, cy = YCentre, cz = ZCentre,
+                rx = XRadius, ry = YRadius, rz = ZRadius,
+                rx2 = 1 / (rx * rx), ry2 = 1 / (ry * ry), rz2 = 1 / (rz * rz);
             Vec3U16 min = Clamp(Min), max = Clamp(Max);
             for (ushort y = min.Y; y <= max.Y; y++)
+            {
                 for (ushort z = min.Z; z <= max.Z; z++)
+                {
                     for (ushort x = min.X; x <= max.X; x++)
                     {
                         double dx = x - cx, dy = y - cy, dz = z - cz;
                         if (dx * dx * rx2 + dy * dy * ry2 + dz * dz * rz2 <= 1)
                             output(Place(x, y, z, brush));
                     }
+                }
+            }
         }
     }
     public class EllipsoidHollowDrawOp : ShapedDrawOp
@@ -56,34 +59,39 @@ namespace MCGalaxy.Drawing.Ops
         public override string Name => "Ellipsoid Hollow";
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
-            double rx = XRadius, ry = YRadius, rz = ZRadius;
-            double outer = EllipsoidVolume(rx, ry, rz);
-            double inner = EllipsoidVolume(rx - 1, ry - 1, rz - 1);
+            double rx = XRadius, ry = YRadius, rz = ZRadius,
+                outer = EllipsoidVolume(rx, ry, rz),
+                inner = EllipsoidVolume(rx - 1, ry - 1, rz - 1);
             return (long)(outer - inner);
         }
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
-            /* Courtesy of fCraft's awesome Open-Source'ness :D */
-            double cx = XCentre, cy = YCentre, cz = ZCentre;
-            double rx = XRadius, ry = YRadius, rz = ZRadius;
-            double outer_rx2 = 1 / (rx * rx);
-            double outer_ry2 = 1 / (ry * ry);
-            double outer_rz2 = 1 / (rz * rz);
-            double inner_rx2 = 1 / ((rx - 1) * (rx - 1));
-            double inner_ry2 = 1 / ((ry - 1) * (ry - 1));
-            double inner_rz2 = 1 / ((rz - 1) * (rz - 1));
+            double cx = XCentre, cy = YCentre, cz = ZCentre,
+                rx = XRadius, ry = YRadius, rz = ZRadius,
+                outer_rx2 = 1 / (rx * rx),
+                outer_ry2 = 1 / (ry * ry),
+                outer_rz2 = 1 / (rz * rz),
+                inner_rx2 = 1 / ((rx - 1) * (rx - 1)),
+                inner_ry2 = 1 / ((ry - 1) * (ry - 1)),
+                inner_rz2 = 1 / ((rz - 1) * (rz - 1));
             Vec3U16 min = Clamp(Min), max = Clamp(Max);
             for (ushort y = min.Y; y <= max.Y; y++)
+            {
                 for (ushort z = min.Z; z <= max.Z; z++)
+                {
                     for (ushort x = min.X; x <= max.X; x++)
                     {
                         double dx = x - cx, dy = y - cy, dz = z - cz;
-                        dx *= dx; dy *= dy; dz *= dz;
+                        dx *= dx; 
+                        dy *= dy; 
+                        dz *= dz;
                         if (dx * outer_rx2 + dy * outer_ry2 + dz * outer_rz2 > 1)
-                            continue; // outside ellipsoid radius
+                            continue;
                         if (dx * inner_rx2 + dy * inner_ry2 + dz * inner_rz2 > 1)
                             output(Place(x, y, z, brush));
                     }
+                }
+            }
         }
     }
     public class CylinderDrawOp : ShapedDrawOp
@@ -91,32 +99,36 @@ namespace MCGalaxy.Drawing.Ops
         public override string Name => "Cylinder";
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
         {
-            double rx = XRadius, rz = ZRadius, h = Height;
-            double outer = CylinderVolume(rx, rz, h);
-            double inner = CylinderVolume(rx - 1, rz - 1, h);
+            double rx = XRadius, rz = ZRadius, h = Height,
+                outer = CylinderVolume(rx, rz, h),
+                inner = CylinderVolume(rx - 1, rz - 1, h);
             return (long)(outer - inner);
         }
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
-            /* Courtesy of fCraft's awesome Open-Source'ness :D */
-            double cx = XCentre, cz = ZCentre;
-            double rx = XRadius, rz = ZRadius;
-            double outer_rx2 = 1 / (rx * rx);
-            double outer_rz2 = 1 / (rz * rz);
-            double inner_rx2 = 1 / ((rx - 1) * (rx - 1));
-            double inner_rz2 = 1 / ((rz - 1) * (rz - 1));
+            double cx = XCentre, cz = ZCentre,
+                rx = XRadius, rz = ZRadius,
+                outer_rx2 = 1 / (rx * rx),
+                outer_rz2 = 1 / (rz * rz),
+                inner_rx2 = 1 / ((rx - 1) * (rx - 1)),
+                inner_rz2 = 1 / ((rz - 1) * (rz - 1));
             Vec3U16 p1 = Clamp(Min), p2 = Clamp(Max);
             for (ushort y = p1.Y; y <= p2.Y; y++)
+            {
                 for (ushort z = p1.Z; z <= p2.Z; z++)
+                {
                     for (ushort x = p1.X; x <= p2.X; x++)
                     {
                         double dx = x - cx, dz = z - cz;
-                        dx *= dx; dz *= dz;
+                        dx *= dx; 
+                        dz *= dz;
                         if (dx * outer_rx2 + dz * outer_rz2 > 1)
-                            continue; // outside cylinder radius
+                            continue;
                         if (dx * inner_rx2 + dz * inner_rz2 > 1)
                             output(Place(x, y, z, brush));
                     }
+                }
+            }
         }
     }
     public class ConeDrawOp : ShapedDrawOp
@@ -133,17 +145,19 @@ namespace MCGalaxy.Drawing.Ops
             for (ushort y = p1.Y; y <= p2.Y; y++)
             {
                 int dy = Invert ? y - Min.Y : Max.Y - y;
-                double T = (double)(dy + 1) / height;
-                double rx = (Max.X - Min.X) / 2.0 * T + 0.25;
-                double rz = (Max.Z - Min.Z) / 2.0 * T + 0.25;
-                double rx2 = 1 / (rx * rx), rz2 = 1 / (rz * rz);
+                double T = (double)(dy + 1) / height,
+                    rx = (Max.X - Min.X) / 2.0 * T + 0.25,
+                    rz = (Max.Z - Min.Z) / 2.0 * T + 0.25,
+                    rx2 = 1 / (rx * rx), rz2 = 1 / (rz * rz);
                 for (ushort z = p1.Z; z <= p2.Z; z++)
+                {
                     for (ushort x = p1.X; x <= p2.X; x++)
                     {
                         double dx = x - cx, dz = z - cz;
                         if (dx * dx * rx2 + dz * dz * rz2 <= 1)
                             output(Place(x, y, z, brush));
                     }
+                }
             }
         }
     }

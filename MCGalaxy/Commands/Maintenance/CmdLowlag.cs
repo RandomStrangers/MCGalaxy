@@ -14,12 +14,15 @@
 */
 namespace MCGalaxy.Commands.Maintenance
 {
-    public sealed class CmdLowlag : Command2
+    public class CmdLowlag : Command
     {
         public override string Name => "LowLag";
         public override string Type => CommandTypes.Moderation;
         public override LevelPermission DefaultRank => LevelPermission.Operator;
-        public override void Use(Player p, string message, CommandData data)
+        public string IntervalMessage(int interval) => Server.Config.PositionUpdateInterval <= 0
+                ? "  Player positions are updated &aconstantly&S."
+                : "Positions now update every &b" + interval + " &Smilliseconds.";
+        public override void Use(Player p, string message)
         {
             if (message.Length == 0 && Server.Config.PositionUpdateInterval > 1000)
             {
@@ -34,12 +37,13 @@ namespace MCGalaxy.Commands.Maintenance
             else
             {
                 int interval = 0;
-                if (!CommandParser.GetInt(p, message, "Interval", ref interval, 20, 2000)) return;
+                if (!CommandParser.GetInt(p, message, "Interval", ref interval, 0, 2000)) return;
                 Server.Config.PositionUpdateInterval = interval;
-                Chat.MessageAll("Positions now update every &b" + interval + " &Smilliseconds.");
+                Chat.MessageAll(IntervalMessage(interval));
             }
             Server.Save();
         }
+
         public override void Help(Player p)
         {
             p.Message("&T/LowLag [interval in milliseconds]");
