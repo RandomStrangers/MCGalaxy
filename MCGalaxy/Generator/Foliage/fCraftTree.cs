@@ -16,7 +16,7 @@ namespace MCGalaxy.Generator.fCraft
         {
             for (int dy = 0; dy < height; dy++)
             {
-                output(x, (ushort)(y + dy), z, 17);
+                output(x, (ushort)(y + dy), z, TrunkBlock);
             }
             for (int dy = -1; dy < height / 2; dy++)
             {
@@ -27,7 +27,7 @@ namespace MCGalaxy.Generator.fCraft
                     {
                         if (rnd.NextDouble() > 0.618 && Math.Abs(dx) == Math.Abs(dz) && Math.Abs(dx) == radius)
                             continue;
-                        output((ushort)(x + dx), (ushort)(y + height + dy - 1), (ushort)(z + dz), 18);
+                        output((ushort)(x + dx), (ushort)(y + height + dy - 1), (ushort)(z + dz), LeafBlock);
                     }
                 }
             }

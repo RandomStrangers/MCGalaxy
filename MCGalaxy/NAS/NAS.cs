@@ -65,19 +65,19 @@ namespace MCGalaxy
             NASBlock.Setup();
             if (!NASEffect.Setup())
             {
-                Log("NAS: FAILED to load. Please report this to randomstrangers on Discord!");
+                Log("NAS: FAILED to load. Please report this to junesolis1819 on Discord!");
                 return;
             }
             if (!NASBlockChange.Setup())
             {
-                Log("NAS: FAILED to load. Please report this to randomstrangers on Discord!");
+                Log("NAS: FAILED to load. Please report this to junesolis1819 on Discord!");
                 return;
             }
             NASItemProp.Setup();
             NASCrafting.Setup();
             if (!NASColor.Setup())
             {
-                Log("NAS: FAILED to load. Please report this to randomstrangers on Discord!");
+                Log("NAS: FAILED to load. Please report this to junesolis1819 on Discord!");
                 return;
             }
             NASCollision.Setup();

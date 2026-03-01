@@ -8,7 +8,11 @@ namespace MCGalaxy.Generator.Foliage
     {
         public JavaRandom rng;
         public override long EstimateBlocksAffected() => height + 65;
-        public override int DefaultSize(Random rnd) { EnsureRNG(rnd); return 5 + rng.Next(3); }
+        public override int DefaultSize(Random rnd) 
+        { 
+            EnsureRNG(rnd); 
+            return 5 + rng.Next(3); 
+        }
         public override void SetData(Random rnd, int value)
         {
             height = value;
@@ -22,7 +26,7 @@ namespace MCGalaxy.Generator.Foliage
                 topStartY = y + baseHeight + 2;
             for (int dy = 0; dy < height - 1; dy++)
             {
-                output(x, (ushort)(y + dy), z, Block.Log);
+                output(x, (ushort)(y + dy), z, TrunkBlock);
             }
             for (int yy = y + baseHeight; yy < topStartY; yy++)
             {
@@ -34,12 +38,12 @@ namespace MCGalaxy.Generator.Foliage
                             zz = (ushort)(z + dz);
                         if (Math.Abs(dx) == 2 && Math.Abs(dz) == 2)
                         {
-                            if (rng.NextFloat() >= 0.5)
-                                output(xx, (ushort)yy, zz, Block.Leaves);
+                            if (rng.NextFloat() >= 0.5f)
+                                output(xx, (ushort)yy, zz, LeafBlock);
                         }
                         else
                         {
-                            output(xx, (ushort)yy, zz, Block.Leaves);
+                            output(xx, (ushort)yy, zz, LeafBlock);
                         }
                     }
                 }
@@ -54,11 +58,11 @@ namespace MCGalaxy.Generator.Foliage
                             zz = (ushort)(z + dz);
                         if (dx == 0 || dz == 0)
                         {
-                            output(xx, (ushort)yy, zz, Block.Leaves);
+                            output(xx, (ushort)yy, zz, LeafBlock);
                         }
                         else if (yy == topStartY && rng.NextFloat() >= 0.5)
                         {
-                            output(xx, (ushort)yy, zz, Block.Leaves);
+                            output(xx, (ushort)yy, zz, LeafBlock);
                         }
                     }
                 }
