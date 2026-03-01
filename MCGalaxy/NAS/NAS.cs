@@ -1,7 +1,6 @@
 using MCGalaxy.DB;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Events.ServerEvents;
-using System;
 using System.Collections.Generic;
 using System.IO;
 namespace MCGalaxy
@@ -42,11 +41,6 @@ namespace MCGalaxy
                 NASPlayer.DeathsPath, "blockprops",
                 "blockdefs", "text");
             EnsureNASFilesExist();
-            if (!File.Exists("Newtonsoft.Json.dll"))
-            {
-                Log("NAS: FAILED to load. Could not find Newtonsoft.Json.dll");
-                return;
-            }
             if (!File.Exists("NAS/Loaded.txt"))
             {
                 firstEverLoad = true;
@@ -63,23 +57,13 @@ namespace MCGalaxy
             Register(Commands);
             NASPlayer.Register();
             NASBlock.Setup();
-            if (!NASEffect.Setup())
-            {
-                Log("NAS: FAILED to load. Please report this to junesolis1819 on Discord!");
-                return;
-            }
-            if (!NASBlockChange.Setup())
+            if (!NASEffect.Setup() || !NASBlockChange.Setup() || !NASColor.Setup())
             {
                 Log("NAS: FAILED to load. Please report this to junesolis1819 on Discord!");
                 return;
             }
             NASItemProp.Setup();
             NASCrafting.Setup();
-            if (!NASColor.Setup())
-            {
-                Log("NAS: FAILED to load. Please report this to junesolis1819 on Discord!");
-                return;
-            }
             NASCollision.Setup();
             OnPlayerConnectEvent.Register(OnPlayerConnect, Priority.High);
             OnPlayerClickEvent.Register(OnPlayerClick, Priority.High);
@@ -128,11 +112,6 @@ namespace MCGalaxy
         public static void Kills(Player p, Player target) => p.Message("&S  " + target.Pronouns.Subject.Capitalize() + " " + target.Pronouns.PresentPerfectVerb + " " + NASPlayer.GetPlayer(target).kills + " kills.");
         public static void Unload()
         {
-            Chat.MessageAll("Attempting to unload NAS.");
-            if (!Server.shuttingDown)
-            {
-                throw new InvalidOperationException("You cannot unload NAS manually, it can only be unloaded on server shutdown.");
-            }
             NASPlayer.Unregister();
             NASColor.TakeDown();
             Command.Unregister(Commands);

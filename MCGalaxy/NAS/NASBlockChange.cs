@@ -125,7 +125,7 @@ namespace MCGalaxy
             if (!np.hasBeenSpawned)
             {
                 np.Message("&chasBeenSpawned is &cfalse&S, this shouldn't happen if you didn't just die.");
-                np.Message("&bPlease report to randomstrangers on Discord what you were doing before this happened");
+                np.Message("&bPlease report to junesolis1819 on Discord what you were doing before this happened");
             }
         }
         public static void CancelPlacedBlock(Player p, ushort x, ushort y, ushort z, NASPlayer np, ref bool cancel)
@@ -202,13 +202,12 @@ namespace MCGalaxy
             {
                 return;
             }
-            if (!NASLevel.IsNASLevel(p.Level))
+            if (NASLevel.IsNASLevel(p.Level))
             {
-                return;
+                NASBlock nasBlock = NASBlock.blocksIndexedByServerushort[p.Level.GetBlock(x, y, z)];
+                nasBlock.existAction?.Invoke(NASPlayer.GetPlayer(p), nasBlock, true, x, y, z);
+                NASLevel.Get(p.Level.name)?.SimulateSetBlock(x, y, z);
             }
-            NASBlock nasBlock = NASBlock.blocksIndexedByServerushort[p.Level.GetBlock(x, y, z)];
-            nasBlock.existAction?.Invoke(NASPlayer.GetPlayer(p), nasBlock, true, x, y, z);
-            NASLevel.Get(p.Level.name)?.SimulateSetBlock(x, y, z);
         }
         public static void BreakTask(SchedulerTask task)
         {
