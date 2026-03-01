@@ -50,7 +50,7 @@ namespace MCGalaxy.Generator.Foliage
         public virtual void MakeTrunk() { }
         /// <summary> Generates the foliage </summary>
         public virtual void MakeFoliage() { }
-        protected void Place(int x, int y, int z, byte block)
+        protected void Place(int x, int y, int z, ushort block)
         {
             if (x < 0 || y < 0 || z < 0) return;
             output((ushort)x, (ushort)y, (ushort)z, block);
@@ -74,7 +74,7 @@ namespace MCGalaxy.Generator.Foliage
         /// perpendicular to. 0 indicates the x axis, 1 the y, 2 the z.  The
         /// section will extend along the other two axies.
         /// </remarks>
-        protected void CrossSection(Vec3S32 center, float radius, int diraxis, byte block)
+        protected void CrossSection(Vec3S32 center, float radius, int diraxis, ushort block)
         {
             int rad = (int)(radius + 0.618f);
             if (rad <= 0) return;
@@ -110,7 +110,7 @@ namespace MCGalaxy.Generator.Foliage
             float[] level_radius = foliage_shape;
             foreach (float i in level_radius)
             {
-                CrossSection(center, i, 1, Block.Leaves);
+                CrossSection(center, i, 1, LeafBlock);
                 center.Y += 1;
             }
         }
@@ -156,7 +156,7 @@ namespace MCGalaxy.Generator.Foliage
                 coord[secidx2] = secloc2;
                 float primdist = Math.Abs(delta[primidx]);
                 float radius = endsize + (startsize - endsize) * Math.Abs(delta[primidx] - primoffset) / primdist;
-                CrossSection(coord, radius, primidx, Block.Log);
+                CrossSection(coord, radius, primidx, TrunkBlock);
             }
         }
         /// <summary> Generates the foliage for the tree </summary>
@@ -168,7 +168,7 @@ namespace MCGalaxy.Generator.Foliage
             }
             foreach (Vec3S32 coord in foliage_coords)
             {
-                Place(coord.X, coord.Y, coord.Z, Block.Leaves);
+                Place(coord.X, coord.Y, coord.Z, LeafBlock);
             }
         }
         /// <summary> Generates the branches </summary>
@@ -423,12 +423,12 @@ namespace MCGalaxy.Generator.Foliage
             for (int dy = 0; dy <= height; dy++)
             {
                 ushort yy = (ushort)(y + dy);
-                if (dy < height) output(x, yy, z, Block.Log);
+                if (dy < height) output(x, yy, z, TrunkBlock);
                 for (int i = 0; i < 2; i++)
                 {
                     int dx = rnd.NextDouble() >= 0.5 ? 1 : -1;
                     int dz = rnd.NextDouble() >= 0.5 ? 1 : -1;
-                    output((ushort)(x + dx), yy, (ushort)(z + dz), Block.Leaves);
+                    output((ushort)(x + dx), yy, (ushort)(z + dz), LeafBlock);
                 }
             }
         }
@@ -446,12 +446,12 @@ namespace MCGalaxy.Generator.Foliage
         public override void Generate(ushort x, ushort y, ushort z, TreeOutput output)
         {
             for (int dy = 0; dy <= height; dy++)
-                if (dy < height) output(x, (ushort)(y + dy), z, Block.Log);
+                if (dy < height) output(x, (ushort)(y + dy), z, TrunkBlock);
             for (int dz = -2; dz <= 2; dz++)
                 for (int dx = -2; dx <= 2; dx++)
                 {
                     if (Math.Abs(dx) != Math.Abs(dz)) continue;
-                    output((ushort)(x + dx), (ushort)(y + height), (ushort)(z + dz), Block.Leaves);
+                    output((ushort)(x + dx), (ushort)(y + height), (ushort)(z + dz), LeafBlock);
                 }
         }
     }

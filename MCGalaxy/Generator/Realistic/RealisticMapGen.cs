@@ -166,14 +166,14 @@ namespace MCGalaxy.Generator.Realistic
             {
                 if (lvl.IsAirAt(x, (ushort)(height + 1), z) && lvl.GetBlock(x, height, z) == biome.Surface)
                 {
-                    if (rng.Next(13) == 0 && !Tree.TreeCheck(lvl, x, height, z, treeDist))
+                    if (rng.Next(13) == 0 && !Tree.TreeCheck(lvl, x, height, z, treeDist, tree.TrunkBlock))
                     {
                         tree.SetData(rng, tree.DefaultSize(rng));
                         tree.Generate(x, (ushort)(height + 1), z, (xT, yT, zT, bT) =>
-                                      {
-                                          if (lvl.IsAirAt(xT, yT, zT))
-                                              lvl.SetTile(xT, yT, zT, (byte)bT);
-                                      });
+                        {
+                            if (lvl.IsAirAt(xT, yT, zT))
+                                lvl.SetTile(xT, yT, zT, (byte)bT);
+                        });
                     }
                 }
             }
