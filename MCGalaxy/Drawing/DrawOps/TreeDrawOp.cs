@@ -28,15 +28,17 @@ namespace MCGalaxy.Drawing.Ops
 {
     public class TreeDrawOp : DrawOp
     {
-        public override string Name => "Tree";
+        public override string Name { get { return "Tree"; } }
         public Random random = new();
         public Tree Tree;
         public int Size = -1;
-        public override long BlocksAffected(Level lvl, Vec3S32[] marks) => Tree.EstimateBlocksAffected();
+        public override long BlocksAffected(Level lvl, Vec3S32[] marks) { return Tree.EstimateBlocksAffected(); }
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             Vec3U16 P = Clamp(marks[0]);
             Level lvl = Level;
+            // Need to make a list of leave coordinates, because otherwise
+            // drawing tree with /scale won't work properly
             List<Vec3U16> leaves = new();
             Tree.Generate(P.X, P.Y, P.Z, (xT, yT, zT, bT) =>
                           {
@@ -46,7 +48,7 @@ namespace MCGalaxy.Drawing.Ops
                               }
                               else if (lvl.IsAirAt(xT, yT, zT))
                               {
-                                  leaves.Add(new(xT, yT, zT));
+                                  leaves.Add(new Vec3U16(xT, yT, zT));
                               }
                           });
             foreach (Vec3U16 pos in leaves)
@@ -60,10 +62,8 @@ namespace MCGalaxy.Drawing.Ops
             int value = Size != -1 ? Size : Tree.DefaultSize(random);
             Tree.SetData(random, value);
             Max.Y += Tree.height;
-            Min.X -= Tree.size;
-            Min.Z -= Tree.size;
-            Max.X += Tree.size; 
-            Max.Z += Tree.size;
+            Min.X -= Tree.size; Min.Z -= Tree.size;
+            Max.X += Tree.size; Max.Z += Tree.size;
         }
     }
 }
