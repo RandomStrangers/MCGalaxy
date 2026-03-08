@@ -27,5 +27,5 @@ jobs:
       - uses: ./.github/actions/notify_failure
         if: failure()
         with:
-          NOTIFY_MESSAGE: 'Failed to build MCGalaxy-NAS! <@999409543001931788>'
+          NOTIFY_MESSAGE: 'Failed to build MCGalaxy-NAS! <@1197175943119245432>'
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
