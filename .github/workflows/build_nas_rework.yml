@@ -35,7 +35,7 @@ jobs:
       - uses: ./.github/actions/notify_failure
         if: failure()
         with:
-          NOTIFY_MESSAGE: 'Failed to produce MCGalaxy .NET 2.0 NAS build! <@999409543001931788>'
+          NOTIFY_MESSAGE: 'Failed to produce MCGalaxy .NET 2.0 NAS build! <@1197175943119245432>'
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
    
 #============================================
@@ -63,7 +63,7 @@ jobs:
       - uses: ./.github/actions/notify_failure
         if: failure()
         with:
-          NOTIFY_MESSAGE: 'Failed to produce MCGalaxy .NET 4.0 NAS build! <@999409543001931788>'
+          NOTIFY_MESSAGE: 'Failed to produce MCGalaxy .NET 4.0 NAS build! <@1197175943119245432>'
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
 
 #============================================
@@ -123,7 +123,7 @@ jobs:
       - uses: ./.github/actions/notify_failure
         if: failure()
         with:
-          NOTIFY_MESSAGE: 'Failed to produce MCGalaxy dotnet6.0 NAS build! <@999409543001931788>'
+          NOTIFY_MESSAGE: 'Failed to produce MCGalaxy dotnet6.0 NAS build! <@1197175943119245432>'
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
 
 #============================================
@@ -156,5 +156,5 @@ jobs:
       - uses: ./.github/actions/notify_failure
         if: failure()
         with:
-          NOTIFY_MESSAGE: 'Failed to produce MCGalaxy dotnet8.0 NAS build! <@999409543001931788>'
+          NOTIFY_MESSAGE: 'Failed to produce MCGalaxy dotnet8.0 NAS build! <@1197175943119245432>'
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'

@@ -116,7 +116,7 @@ namespace NotAwesomeSurvival
             if (!np.hasBeenSpawned)
             {
                 np.Message("&chasBeenSpawned is &cfalse&S, this shouldn't happen if you didn't just die.");
-                np.Message("&bPlease report to junesolis1819 on Discord what you were doing before this happened");
+                np.Message("&bPlease report to " + Nas.DiscordAccountName + " on Discord what you were doing before this happened");
             }
         }
         public static void CancelPlacedBlock(Player p, ushort x, ushort y, ushort z, NasPlayer np, ref bool cancel)

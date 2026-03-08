@@ -25,7 +25,8 @@ namespace NotAwesomeSurvival
             SavePath = Path + "playerdata/",
             CoreSavePath = Path + "coredata/",
             EffectsPath = Path + "effects/",
-            NasVersion = "1.0.6.2";
+            NasVersion = "1.0.6.3", 
+            DiscordAccountName = "may.wildflower";
         public static bool LoadedOnStartup = false,
             firstEverPluginLoad = false;
         public static Command[] Commands = new Command[]
@@ -164,7 +165,7 @@ namespace NotAwesomeSurvival
         }
         public static void FailedLoad()
         {
-            Log("NAS: FAILED to load plugin. Please report this to junesolis1819 on Discord!");
+            Log("NAS: FAILED to load plugin. Please report this to " + DiscordAccountName + " on Discord!");
         }
         public override void Unload(bool shutdown)
         {
