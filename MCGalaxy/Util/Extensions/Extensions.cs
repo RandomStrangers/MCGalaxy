@@ -39,9 +39,7 @@ namespace MCGalaxy
             }
             List<string> keysToRemove = MatchingKeys(dict, matcher);
             foreach (string key in keysToRemove)
-            {
                 dict.Remove(key);
-            }
         }
         /// <summary> Same as value.Split(' '), but doesn't allocate ' ' each time. </summary>
         /// <example> "abc def xyz".SplitSpaces() becomes "abc", "def", "xyz" </example>
@@ -52,17 +50,11 @@ namespace MCGalaxy
         public static DateTime Floor(this DateTime date, TimeSpan span) => new(date.Ticks / span.Ticks * span.Ticks);
         public static bool IsNullOrWhiteSpace(this string value)
         {
-            if (value as object is null)
-            {
+            if (value as object == null)
                 return true;
-            }
             for (int i = 0; i < value.Length; i++)
-            {
                 if (!char.IsWhiteSpace(value[i]))
-                {
                     return false;
-                }
-            }
             return true;
         }
         /// <summary> Works like value.Split(' '), removing first 'startCount' and last 'endCount' elements,
@@ -77,9 +69,7 @@ namespace MCGalaxy
             {
                 start = value.IndexOf(' ', start) + 1;
                 if (start == 0)
-                {
                     return "";
-                }
             }
             value = value.Substring(start);
             int end = value.Length;
@@ -87,9 +77,7 @@ namespace MCGalaxy
             {
                 end = value.LastIndexOf(' ', end - 1);
                 if (end == -1)
-                {
                     return "";
-                }
             }
             return value.Substring(0, end);
         }
@@ -102,29 +90,21 @@ namespace MCGalaxy
             {
                 int end = value.IndexOf(splitter, start);
                 if (end == -1)
-                {
                     end = value.Length;
-                }
                 split[i] = value.Substring(start, end - start);
                 start = end + 1;
             }
             for (; i < split.Length; i++)
-            {
                 split[i] = null;
-            }
         }
         /// <summary> Trims spaces then calls Split(','). However, returns an empty array on empty input,
         /// instead of a array consisting of "" that a .Split() call would. </summary>
         public static string[] SplitComma(this string str)
         {
             if (str.Length == 0)
-            {
                 return emptyStrs;
-            }
             if (str.IndexOf(' ') >= 0)
-            {
                 str = str.Replace(" ", "");
-            }
             return str.Length == 0 ? emptyStrs : str.Split(comma);
         }
         public static void Separate(this string str, char splitter,
@@ -139,9 +119,7 @@ namespace MCGalaxy
         {
             using MemoryStream ms = new();
             using (GZipStream gs = new(ms, CompressionMode.Compress, true))
-            {
                 gs.Write(bytes, 0, bytes.Length);
-            }
             ms.Position = 0;
             return ms.ToArray();
         }
@@ -152,9 +130,7 @@ namespace MCGalaxy
             using MemoryStream dst = new(capacity);
             int count = 0;
             while ((count = src.Read(buffer, 0, 4096)) > 0)
-            {
                 dst.Write(buffer, 0, count);
-            }
             return dst.ToArray();
         }
         public static string Join(this IEnumerable<string> items, string separator = ", ")
@@ -164,13 +140,9 @@ namespace MCGalaxy
             foreach (string value in items)
             {
                 if (value == null)
-                {
                     continue;
-                }
                 if (!first)
-                {
                     builder.Append(separator);
-                }
                 builder.Append(value);
                 first = false;
             }
@@ -185,13 +157,9 @@ namespace MCGalaxy
             {
                 string value = formatter(item);
                 if (value == null)
-                {
                     continue;
-                }
                 if (!first)
-                {
                     builder.Append(separator);
-                }
                 builder.Append(value);
                 first = false;
             }
@@ -204,23 +172,15 @@ namespace MCGalaxy
         public static bool CaselessContains(this List<string> items, string value)
         {
             foreach (string item in items)
-            {
                 if (item.Equals(value, StringComparison.OrdinalIgnoreCase))
-                {
                     return true;
-                }
-            }
             return false;
         }
         public static bool CaselessContains(this string[] items, string value)
         {
             for (int i = 0; i < items.Length; i++)
-            {
                 if (items[i].Equals(value, StringComparison.OrdinalIgnoreCase))
-                {
                     return true;
-                }
-            }
             return false;
         }
         public static bool CaselessRemove(this List<string> items, string value)
@@ -228,9 +188,7 @@ namespace MCGalaxy
             for (int i = 0; i < items.Count; i++)
             {
                 if (!items[i].Equals(value, StringComparison.OrdinalIgnoreCase))
-                {
                     continue;
-                }
                 items.RemoveAt(i);
                 return true;
             }
@@ -239,12 +197,8 @@ namespace MCGalaxy
         public static int CaselessIndexOf(this List<string> items, string value)
         {
             for (int i = 0; i < items.Count; i++)
-            {
                 if (items[i].Equals(value, StringComparison.OrdinalIgnoreCase))
-                {
                     return i;
-                }
-            }
             return -1;
         }
     }

@@ -32,29 +32,17 @@ namespace MCGalaxy.Modules.Moderation.Review
         public override void Use(Player p, string message)
         {
             if (message.Length == 0 || message.CaselessEq("enter"))
-            {
                 HandleEnter(p);
-            }
             else if (IsListAction(message))
-            {
                 HandleView(p);
-            }
             else if (message.CaselessEq("leave"))
-            {
                 HandleLeave(p);
-            }
             else if (message.CaselessEq("next"))
-            {
                 HandleNext(p);
-            }
             else if (message.CaselessEq("clear"))
-            {
                 HandleClear(p);
-            }
             else
-            {
                 Help(p);
-            }
         }
         void HandleEnter(Player p)
         {
@@ -78,13 +66,11 @@ namespace MCGalaxy.Modules.Moderation.Review
             ItemPerms nextPerms = CommandExtraPerms.Find("Review", 2);
             bool anyStaff = false;
             foreach (Player pl in PlayerInfo.GetOnlineCanSee(p, p.Rank))
-            {
                 if (nextPerms.UsableBy(pl))
                 {
                     anyStaff = true;
                     break;
                 }
-            }
             Server.reviewlist.Add(p.name);
             int pos = Server.reviewlist.IndexOf(p.name) + 1;
             p.Message("You entered the &creview &Squeue at &aposition #" + pos);
@@ -122,9 +108,8 @@ namespace MCGalaxy.Modules.Moderation.Review
                 p.Message("You have left the review queue!");
             }
             else
-            {
                 p.Message("You weren't in the review queue to begin with.");
-            }
+
         }
         void HandleNext(Player p)
         {

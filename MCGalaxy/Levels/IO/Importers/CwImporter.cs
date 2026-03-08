@@ -29,21 +29,15 @@ namespace MCGalaxy.Levels.IO
             file.LoadFromStream(src);
             ReadData(file.RootTag, name, out Level lvl);
             if (!metadata)
-            {
                 return lvl;
-            }
             if (file.RootTag.Contains("Metadata"))
-            {
                 ReadMetadata((NbtCompound)file.RootTag["Metadata"], lvl);
-            }
             return lvl;
         }
         static void ReadData(NbtCompound root, string name, out Level lvl)
         {
             if (root["FormatVersion"].ByteValue > 1)
-            {
                 throw new NotSupportedException("Only version 1 of ClassicWorld format is supported.");
-            }
             ushort width = (ushort)root["X"].ShortValue,
                 height = (ushort)root["Y"].ShortValue,
                 length = (ushort)root["Z"].ShortValue;
@@ -64,9 +58,7 @@ namespace MCGalaxy.Levels.IO
             for (int i = 0; i < lo.Length; i++)
             {
                 if (hi[i] == 0 && lo[i] <= 65)
-                {
                     continue;
-                }
                 lvl.IntToPos(i, out ushort x, out ushort y, out ushort z);
                 int b = ((hi[i] << 8) | lo[i]) + 256;
                 lvl.SetBlock(x, y, z, (ushort)b);
@@ -90,21 +82,13 @@ namespace MCGalaxy.Levels.IO
             {
                 NbtCompound cpe = (NbtCompound)root["CPE"];
                 if (cpe.Contains("EnvWeatherType"))
-                {
                     lvl.Config.Weather = cpe["EnvWeatherType"]["WeatherType"].ByteValue;
-                }
                 if (cpe.Contains("EnvMapAppearance"))
-                {
                     ParseEnvMapAppearance(cpe, lvl);
-                }
                 if (cpe.Contains("EnvColors"))
-                {
                     ParseEnvColors(cpe, lvl);
-                }
                 if (cpe.Contains("BlockDefinitions"))
-                {
                     ParseBlockDefinitions(cpe, lvl);
-                }
             }
         }
         static void ParseEnvMapAppearance(NbtCompound cpe, Level lvl)
@@ -117,13 +101,9 @@ namespace MCGalaxy.Levels.IO
             {
                 string url = comp["TextureURL"].StringValue;
                 if (url.CaselessContains(".png"))
-                {
                     lvl.Config.Terrain = url == Server.Config.DefaultTerrain ? "" : url;
-                }
                 else
-                {
                     lvl.Config.TexturePack = url == Server.Config.DefaultTexture ? "" : url;
-                }
             }
         }
         static void ParseEnvColors(NbtCompound cpe, Level lvl)
@@ -138,9 +118,7 @@ namespace MCGalaxy.Levels.IO
         static string GetColor(NbtCompound comp, string type)
         {
             if (!comp.Contains(type))
-            {
                 return "";
-            }
             NbtCompound rgb = (NbtCompound)comp[type];
             short r = rgb["R"].ShortValue, g = rgb["G"].ShortValue, b = rgb["B"].ShortValue;
             return r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255 ? "" : r.ToString("X2") + g.ToString("X2") + b.ToString("X2");
@@ -152,18 +130,14 @@ namespace MCGalaxy.Levels.IO
             foreach (NbtTag tag in blocks)
             {
                 if (tag.TagType != NbtTagType.Compound)
-                {
                     continue;
-                }
                 NbtCompound props = (NbtCompound)tag;
                 BlockDefinition def = new()
                 {
                     RawID = props["ID"].ByteValue
                 };
                 if (props.Contains("ID2"))
-                {
                     def.RawID = (ushort)props["ID2"].ShortValue;
-                }
                 def.Name = props["Name"].StringValue;
                 def.CollideType = props["CollideType"].ByteValue;
                 def.Speed = props["Speed"].FloatValue;
@@ -175,18 +149,14 @@ namespace MCGalaxy.Levels.IO
                 byte[] fog = props["Fog"].ByteArrayValue;
                 def.FogDensity = fog[0];
                 if (def.FogDensity == 0xFF)
-                {
                     def.FogDensity = 0;
-                }
                 def.FogR = fog[1];
                 def.FogG = fog[2];
                 def.FogB = fog[3];
                 byte[] tex = props["Textures"].ByteArrayValue;
                 ImportTexs(def, tex, 0);
                 if (tex.Length > 6)
-                {
                     ImportTexs(def, tex, 6);
-                }
                 byte[] coords = props["Coords"].ByteArrayValue;
                 def.MinX = coords[0];
                 def.MinZ = coords[1];
@@ -203,24 +173,16 @@ namespace MCGalaxy.Levels.IO
                 }
                 BlockDefinition globalDef = BlockDefinition.GlobalDefs[block];
                 if (PropsEquals(def, globalDef))
-                {
                     continue;
-                }
                 if (globalDef != null)
-                {
                     def.FallBack = globalDef.FallBack;
-                }
                 else if (def.RawID <= 65)
-                {
                     def.FallBack = (byte)def.RawID;
-                }
                 lvl.UpdateCustomBlock(block, def);
                 hasBlockDefs = true;
             }
             if (hasBlockDefs)
-            {
                 BlockDefinition.Save(false, lvl);
-            }
         }
         static void ImportTexs(BlockDefinition def, byte[] tex, int i)
         {

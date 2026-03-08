@@ -33,17 +33,11 @@ namespace MCGalaxy.Eco
         {
             line.Separate(':', out string prop, out string value);
             if (prop.CaselessEq("enabled"))
-            {
                 Enabled = value.CaselessEq("true");
-            }
             else if (prop.CaselessEq("purchaserank"))
-            {
                 PurchaseRank = (LevelPermission)NumberUtils.ParseInt32(value);
-            }
             else
-            {
                 Parse(prop, value);
-            }
         }
         /// <summary> Parses item-specific properties from the given configuration </remarks>
         public abstract void Parse(string prop, string value);
@@ -99,9 +93,7 @@ namespace MCGalaxy.Eco
                 p.Message("Min purchase rank for {0} item set to {1}&S.", Name, grp.ColoredName);
             }
             else
-            {
                 OnSetup(p, args);
-            }
         }
         protected static bool CheckPrice(Player p, int price, string item)
         {
@@ -121,9 +113,7 @@ namespace MCGalaxy.Eco
         public override void Parse(string prop, string value)
         {
             if (prop.CaselessEq("price"))
-            {
                 Price = NumberUtils.ParseInt32(value);
-            }
         }
         public override void Serialise(List<string> cfg) => cfg.Add("price:" + Price);
         protected bool CheckPrice(Player p) => CheckPrice(p, Price, "a " + Name);
@@ -137,9 +127,7 @@ namespace MCGalaxy.Eco
                 Price = cost;
             }
             else
-            {
                 p.Message("Supported actions: enable, disable, price [cost]");
-            }
         }
         protected internal override void OnSetupHelp(Player p)
         {
@@ -150,14 +138,9 @@ namespace MCGalaxy.Eco
         protected internal override void OnStoreOverview(Player p)
         {
             if (p.Rank >= PurchaseRank)
-            {
                 p.Message("&6{0} &S- &a{1} &S{2}", Name, Price, Server.Config.Currency);
-            }
             else
-            {
-                string grpName = Group.GetColoredName(PurchaseRank);
-                p.Message("&6{0} &S({3}&S+) - &a{1} &S{2}", Name, Price, Server.Config.Currency, grpName);
-            }
+                p.Message("&6{0} &S({3}&S+) - &a{1} &S{2}", Name, Price, Server.Config.Currency, Group.GetColoredName(PurchaseRank));
         }
         protected internal override void OnStoreCommand(Player p)
         {

@@ -45,16 +45,12 @@ namespace MCGalaxy.Util
                 foreach (KeyValuePair<string, DateTime> kvp in access)
                 {
                     if ((now - kvp.Value).TotalMinutes <= 5)
-                    {
                         continue;
-                    }
                     free ??= new();
                     free.Add(kvp.Key);
                 }
                 if (free == null)
-                {
                     return;
-                }
                 foreach (string key in free)
                 {
                     items.Remove(key);

@@ -87,17 +87,20 @@ namespace MCGalaxy.Eco
             }
             if (!CheckPrice(p, preset.price, "that map")) return;
             string name = null;
-            if (args.Length > 1)
+            switch (args.Length)
             {
-                name = p.name + "_" + args[1];
-            }
-            else
-            {
-                for (int i = 1; i < 100; i++)
-                {
-                    name = p.name + "_" + i;
-                    if (!LevelInfo.MapExists(name)) break;
-                }
+                case > 1:
+                    name = p.name + "_" + args[1];
+                    break;
+                default:
+                    {
+                        for (int i = 1; i < 100; i++)
+                        {
+                            name = p.name + "_" + i;
+                            if (!LevelInfo.MapExists(name)) break;
+                        }
+                        break;
+                    }
             }
             p.Message("&aCreating level: '&f" + name + "&a' . . .");
             ushort x = 0, y = 0, z = 0;
@@ -126,21 +129,13 @@ namespace MCGalaxy.Eco
             LevelPreset preset = FindPreset(args[2]);
             string cmd = args[1];
             if (Command.IsCreateAction(cmd))
-            {
                 AddPreset(p, args, preset);
-            }
             else if (Command.IsDeleteAction(cmd))
-            {
                 RemovePreset(p, preset);
-            }
             else if (Command.IsEditAction(cmd))
-            {
                 EditPreset(p, args, preset);
-            }
             else
-            {
                 OnSetupHelp(p);
-            }
         }
         void AddPreset(Player p, string[] args, LevelPreset preset)
         {
@@ -250,18 +245,14 @@ namespace MCGalaxy.Eco
                 return;
             }
             foreach (LevelPreset preset in Presets)
-            {
                 p.Message("&6{0} &S({1}, {2}, {3}) {4}: &a{5} &S{6}",
                           preset.name, preset.x, preset.y, preset.z,
                           preset.type, preset.price, Server.Config.Currency);
-            }
         }
         public LevelPreset FindPreset(string name)
         {
             foreach (LevelPreset preset in Presets)
-            {
                 if (preset.name.CaselessEq(name)) return preset;
-            }
             return null;
         }
     }

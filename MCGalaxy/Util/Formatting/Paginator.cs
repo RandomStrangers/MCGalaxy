@@ -35,28 +35,20 @@ namespace MCGalaxy
             foreach (T item in input)
             {
                 if (filter != null && !filter(item))
-                {
                     continue;
-                }
                 string name = nameGetter(item);
                 if (regex != null)
                 {
                     if (!regex.IsMatch(name))
-                    {
                         continue;
-                    }
                 }
                 else
                 {
                     if (!name.CaselessContains(keyword))
-                    {
                         continue;
-                    }
                 }
                 if (listFormatter != null)
-                {
                     name = listFormatter(item);
-                }
                 matches.Add(name);
             }
             return matches;
@@ -78,9 +70,7 @@ namespace MCGalaxy
             {
                 OutputPage(p, items, formatter, printer, cmd, type, 1, perPage);
                 if (total <= perPage)
-                {
                     return;
-                }
                 p.Message("To see all {0}, use &T/{1} all", type, cmd);
             }
             else if (modifier.CaselessEq("all"))
@@ -89,13 +79,9 @@ namespace MCGalaxy
                 p.Message("Showing {0} 1-{1} (out of {1})", type, items.Count);
             }
             else if (!NumberUtils.TryParseInt32(modifier, out int page))
-            {
                 p.Message("Input must be either \"all\" or an integer.");
-            }
             else
-            {
                 OutputPage(p, items, formatter, printer, cmd, type, page, perPage);
-            }
         }
         static void OutputPage<T>(Player p, IList<T> items,
                                   StringFormatter<T> formatter, ItemPrinter<T> printer,
@@ -104,44 +90,35 @@ namespace MCGalaxy
             start = Utils.Clamp(start - 1, 0, items.Count - 1);
             int end = Math.Min(start + perPage, items.Count);
             OutputItems(p, items, start, end, formatter, printer);
-            if (items.Count == 0)
+            switch (items.Count)
             {
-                p.Message("Showing {0} 0-0 (out of 0)", type);
-            }
-            else if (end < items.Count)
-            {
-                p.Message("Showing {0} {1}-{2} (out of {3}) Next: &T/{4} {5}",
-                          type, start + 1, end, items.Count, cmd, start + 1 + perPage);
-            }
-            else
-            {
-                p.Message("Showing {0} {1}-{2} (out of {3})",
-                          type, start + 1, end, items.Count);
+                case 0:
+                    p.Message("Showing {0} 0-0 (out of 0)", type);
+                    break;
+                default:
+                    if (end < items.Count)
+                        p.Message("Showing {0} {1}-{2} (out of {3}) Next: &T/{4} {5}",
+                                  type, start + 1, end, items.Count, cmd, start + 1 + perPage);
+                    else
+                        p.Message("Showing {0} {1}-{2} (out of {3})",
+                                  type, start + 1, end, items.Count);
+                    break;
             }
         }
         static void OutputItems<T>(Player p, IList<T> items, int beg, int end,
                                    StringFormatter<T> formatter, ItemPrinter<T> printer)
         {
             if (printer != null)
-            {
                 for (int i = beg; i < end; i++)
-                {
                     printer(p, items[i]);
-                }
-            }
             else
-            {
-                IEnumerable<string> output = Subset(items, beg, end, formatter);
-                p.Message(output.Join());
-            }
+                p.Message(Subset(items, beg, end, formatter).Join());
         }
         static IEnumerable<string> Subset<T>(IList<T> items, int start, int end,
                                              StringFormatter<T> formatter)
         {
             for (int i = start; i < end; i++)
-            {
                 yield return formatter(items[i]);
-            }
             yield break;
         }
     }

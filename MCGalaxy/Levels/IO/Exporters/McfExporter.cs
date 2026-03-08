@@ -25,15 +25,11 @@ namespace MCGalaxy.Levels.IO
         {
             using Stream gs = new GZipStream(dst, CompressionMode.Compress);
             if (lvl.blocks == null || lvl.IsMuseum)
-            {
                 return;
-            }
             bool cancel = false;
             OnLevelSaveEvent.Call(lvl, ref cancel);
             if (cancel)
-            {
                 return;
-            }
             byte[] header = new byte[16];
             BitConverter.GetBytes(1874).CopyTo(header, 0);
             gs.Write(header, 0, 2);
@@ -56,16 +52,12 @@ namespace MCGalaxy.Levels.IO
                 if (lvl.blocks[i] < 57)
                 {
                     if (lvl.blocks[i] != Block.Air)
-                    {
                         blockVal = lvl.blocks[i];
-                    }
                 }
                 else
                 {
                     if (Block.Convert(lvl.blocks[i]) != Block.Air)
-                    {
                         blockVal = Block.Convert(lvl.blocks[i]);
-                    }
                 }
                 level[i * 2] = (byte)blockVal;
                 level[i * 2 + 1] = (byte)(blockVal >> 8);

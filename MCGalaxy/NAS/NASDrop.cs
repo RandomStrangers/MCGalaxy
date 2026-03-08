@@ -48,28 +48,20 @@ namespace MCGalaxy
             for (int i = 0; i < inv.blocks.Length; i++)
             {
                 if (inv.blocks[i] == 0)
-                {
                     continue;
-                }
                 blockStacks.Add(new((ushort)i, inv.blocks[i]));
             }
             if (blockStacks.Count == 0)
-            {
                 blockStacks = null;
-            }
             items = new();
             foreach (NASItem item in inv.items)
             {
                 if (item == null)
-                {
                     continue;
-                }
                 items.Add(item);
             }
             if (items.Count == 0)
-            {
                 items = null;
-            }
         }
     }
     public class NASBlockStack

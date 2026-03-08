@@ -65,18 +65,17 @@ namespace MCGalaxy
             }
             string whitelist = "";
             if (Whitelisted.Count > 0)
-            {
                 whitelist = "(and " + Whitelisted.Join(pl => p.FormatNick(pl)) + "&S) ";
-            }
-            if (access == AccessResult.BelowMinRank)
+            switch (access)
             {
-                p.Message("Only {2}&S+ {3}may {0} {1}",
-                               Action, ColoredName, Group.GetColoredName(Min), whitelist);
-            }
-            else if (access == AccessResult.AboveMaxRank)
-            {
-                p.Message("Only {2} &Sand below {3}may {0} {1}",
-                               Action, ColoredName, Group.GetColoredName(Max), whitelist);
+                case AccessResult.BelowMinRank:
+                    p.Message("Only {2}&S+ {3}may {0} {1}",
+                                           Action, ColoredName, Group.GetColoredName(Min), whitelist);
+                    break;
+                case AccessResult.AboveMaxRank:
+                    p.Message("Only {2} &Sand below {3}may {0} {1}",
+                                                   Action, ColoredName, Group.GetColoredName(Max), whitelist);
+                    break;
             }
             return false;
         }
@@ -87,9 +86,7 @@ namespace MCGalaxy
         {
             perms.Append(Group.GetColoredName(Min) + "&S+");
             if (Max < LevelPermission.Owner)
-            {
                 perms.Append(" up to " + Group.GetColoredName(Max));
-            }
             bool shortened = false;
             DescribeList(p, perms, Whitelisted, ", {0}", shorten, ref shortened);
             if (Blacklisted.Count == 0) return shortened;
@@ -105,10 +102,7 @@ namespace MCGalaxy
             int displayCount = list.Count;
             if (shorten && list.Count > 5) displayCount = 5;
             for (int i = 0; i < displayCount; i++)
-            {
-                string name = list[i];
-                perms.Append(string.Format(format, p.FormatNick(name)));
-            }
+                perms.Append(string.Format(format, p.FormatNick(list[i])));
             if (list.Count > displayCount)
             {
                 shortened = true;
@@ -163,22 +157,14 @@ namespace MCGalaxy
             OnListChanged(p, lvl, target, false, removed);
             return true;
         }
-        public void OnPermissionChanged(Player p, Level lvl, Group grp, string type)
-        {
-            string msg = type + Type + " rank changed to " + grp.ColoredName;
-            ApplyChanges(p, lvl, msg);
-        }
+        public void OnPermissionChanged(Player p, Level lvl, Group grp, string type) => ApplyChanges(p, lvl, type + Type + " rank changed to " + grp.ColoredName);
         public void OnListChanged(Player p, Level lvl, string name, bool whitelist, bool removedFromOpposite)
         {
             string msg = p.FormatNick(name);
             if (removedFromOpposite)
-            {
                 msg += " &Swas removed from the " + Type + (whitelist ? " blacklist" : " whitelist");
-            }
             else
-            {
                 msg += " &Swas " + Type + (whitelist ? " whitelisted" : " blacklisted");
-            }
             ApplyChanges(p, lvl, msg);
         }
         protected abstract void ApplyChanges(Player p, Level lvl, string msg);
@@ -187,7 +173,8 @@ namespace MCGalaxy
             string mode = max ? "max" : "min";
             if (!CheckDetailed(p, plRank))
             {
-                p.Message("&WHence you cannot change the {1} {0} rank.", Type, mode); return false;
+                p.Message("&WHence you cannot change the {1} {0} rank.", Type, mode); 
+                return false;
             }
             if (perm <= plRank || max && perm == LevelPermission.Owner) return true;
             p.Message("&WYou cannot change the {1} {0} rank of {2} &Wto a rank higher than yours.",
@@ -199,7 +186,8 @@ namespace MCGalaxy
             if (!CheckDetailed(p, plRank))
             {
                 string mode = whitelist ? "whitelist" : "blacklist";
-                p.Message("&WHence you cannot modify the {0} {1}.", Type, mode); return false;
+                p.Message("&WHence you cannot modify the {0} {1}.", Type, mode);
+                return false;
             }
             Group group = PlayerInfo.GetGroup(name);
             if (group.Permission <= plRank) return true;
@@ -260,9 +248,7 @@ namespace MCGalaxy
             Logger.Log(LogType.UserActivity, "{0} &Son {1}", msg, lvlName);
             lvl?.Message("<Local>" + msg);
             if (p != Player.Console && p.Level != lvl)
-            {
                 p.Message("{0} &Son {1} &Sby you.", msg, ColoredName);
-            }
         }
         void Update(Level lvl)
         {
@@ -275,9 +261,7 @@ namespace MCGalaxy
                 if (p.Level != lvl) continue;
                 bool allowed = CheckAllowed(p);
                 if (!isVisit)
-                {
                     p.AllowBuild = allowed;
-                }
                 else if (!allowed)
                 {
                     p.Message("&WNo longer allowed to visit &S{0}", ColoredName);

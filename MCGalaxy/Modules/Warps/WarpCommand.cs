@@ -84,9 +84,7 @@ namespace MCGalaxy.Modules.Warps
                 if (warp != null) warps.Goto(warp, p);
             }
             else
-            {
                 Help(p);
-            }
         }
         protected static WarpList LoadList(string path)
         {

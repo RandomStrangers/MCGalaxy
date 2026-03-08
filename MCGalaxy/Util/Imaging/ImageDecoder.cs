@@ -36,16 +36,10 @@ namespace MCGalaxy.Util.Imaging
         protected static bool MatchesSignature(byte[] data, byte[] sig)
         {
             if (data.Length < sig.Length)
-            {
                 return false;
-            }
             for (int i = 0; i < sig.Length; i++)
-            {
                 if (data[i] != sig[i])
-                {
                     return false;
-                }
-            }
             return true;
         }
         public static Bitmap2D DecodeFrom(byte[] src)

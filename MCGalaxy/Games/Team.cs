@@ -57,30 +57,21 @@ namespace MCGalaxy.Games
         public void UpdatePrefix()
         {
             foreach (string name in Members)
-            {
-                Player p = PlayerInfo.FindExact(name);
-                p?.SetPrefix();
-            }
+                PlayerInfo.FindExact(name)?.SetPrefix();
         }
         public static List<Team> Teams = new();
         static readonly object ioLock = new();
         public static Team TeamIn(Player p)
         {
             foreach (Team team in Teams)
-            {
-                List<string> members = team.Members;
-                if (members.CaselessContains(p.name)) return team;
-            }
+                if (team.Members.CaselessContains(p.name)) return team;
             return null;
         }
         public static Team Find(string name)
         {
             name = Colors.Strip(name);
             foreach (Team team in Teams)
-            {
-                string teamName = Colors.Strip(team.Name);
-                if (name.CaselessEq(teamName)) return team;
-            }
+                if (name.CaselessEq(Colors.Strip(team.Name))) return team;
             return null;
         }
         public static void Add(Team team)

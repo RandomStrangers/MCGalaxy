@@ -17,18 +17,14 @@ namespace MCGalaxy
         {
             long totalPossible = 0;
             for (long i = 0; i < intArray.LongLength; i++)
-            {
                 totalPossible += intArray[i];
-            }
             long chosen = new Random().Next((int)totalPossible),
                 chancesSoFar = 0;
             for (long j = 0; j < intArray.LongLength; j++)
             {
                 chancesSoFar += intArray[j];
                 if (chancesSoFar > chosen)
-                {
                     return j;
-                }
             }
             return 0;
         }
@@ -37,9 +33,7 @@ namespace MCGalaxy
             string newName = "";
             long numberConsonants = numConsonants[IndexSelect(numConsonantsChance)];
             for (long i = 0; i < numberConsonants; i++)
-            {
                 newName += consonant[IndexSelect(consonantChance)];
-            }
             return newName;
         }
         string MakeVowelBlock()
@@ -47,9 +41,7 @@ namespace MCGalaxy
             string newName = "";
             long numberVowels = numVowels[IndexSelect(numVowelsChance)];
             for (long i = 0; i < numberVowels; i++)
-            {
                 newName += vowel[IndexSelect(vowelChance)];
-            }
             return newName;
         }
         public string MakeName()
@@ -57,9 +49,7 @@ namespace MCGalaxy
             long numberSyllables = numSyllables[IndexSelect(numSyllablesChance)];
             string newName = "";
             for (long i = 0; i < numberSyllables; i++)
-            {
                 newName += MakeConsonantBlock() + MakeVowelBlock() + MakeConsonantBlock();
-            }
             return char.ToUpper(newName[0]) + newName.Substring(1);
         }
     }

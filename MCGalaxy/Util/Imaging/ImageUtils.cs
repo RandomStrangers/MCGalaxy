@@ -61,28 +61,20 @@ namespace MCGalaxy.Util.Imaging
                 float sy = (y + 0.5f) * scaleY;
                 int sy0 = (int)sy;
                 if (sy0 >= maxY)
-                {
                     sy0 = maxY;
-                }
                 int sy1 = sy0 + 1;
                 if (sy1 >= maxY)
-                {
                     sy1 = maxY;
-                }
                 float dy = sy - sy0;
                 for (int x = 0; x < dstWidth; x++)
                 {
                     float sx = (x + 0.5f) * scaleX;
                     int sx0 = (int)sx;
                     if (sx0 >= maxX)
-                    {
                         sx0 = maxX;
-                    }
                     int sx1 = sx0 + 1;
                     if (sx1 >= maxX)
-                    {
                         sx1 = maxX;
-                    }
                     float dx = sx - sx0;
                     Pixel p00 = pixels[sy0 * stride + sx0],
                         p10 = pixels[sy0 * stride + sx1],

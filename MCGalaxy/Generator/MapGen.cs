@@ -45,9 +45,7 @@ namespace MCGalaxy.Generator
                     if (!ArgParser(arg)) return false;
                 }
                 else if (NumberUtils.TryParseInt32(arg, out Seed))
-                {
                     gotSeed = true;
-                }
                 else
                 {
                     Biome = MapGenBiome.FindMatch(p, arg);
@@ -91,9 +89,7 @@ namespace MCGalaxy.Generator
         public static MapGen Find(string theme)
         {
             foreach (MapGen gen in Generators)
-            {
                 if (gen.Theme.CaselessEq(theme)) return gen;
-            }
             return null;
         }
         static string FilterThemes(GenType type) => Generators.Join(g => g.Type == type ? g.Theme : null);

@@ -49,36 +49,22 @@ namespace MCGalaxy
         static void InitDatabase()
         {
             if (!Directory.Exists("blockdb"))
-            {
                 Directory.CreateDirectory("blockdb");
-            }
             Database.CreateTable("Opstats", opstatsTable);
             Database.CreateTable("Players", playersTable);
             List<string> columns = SQLiteBackend.Instance.ColumnNames("Players");
             if (columns.Count == 0)
-            {
                 return;
-            }
             if (!columns.CaselessContains("Color"))
-            {
                 Database.AddColumn("Players", new("color", ColumnType.VarChar, 6));
-            }
             if (!columns.CaselessContains("Title_Color"))
-            {
                 Database.AddColumn("Players", new("title_color", ColumnType.VarChar, 6));
-            }
             if (!columns.CaselessContains("TimeSpent"))
-            {
                 Database.AddColumn("Players", new("TimeSpent", ColumnType.VarChar, 20));
-            }
             if (!columns.CaselessContains("TotalCuboided"))
-            {
                 Database.AddColumn("Players", new("totalCuboided", ColumnType.Int64));
-            }
             if (!columns.CaselessContains("Messages"))
-            {
                 Database.AddColumn("Players", new("Messages", ColumnType.UInt24));
-            }
         }
     }
 }

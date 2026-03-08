@@ -48,13 +48,9 @@ namespace MCGalaxy
                 signal *= weight;
                 weight = signal * gain;
                 if (weight > 1.0)
-                {
                     weight = 1.0;
-                }
                 if (weight < 0.0)
-                {
                     weight = 0.0;
-                }
                 value += signal * SpectralWeights[octave];
                 x *= Lacunarity;
                 y *= Lacunarity;

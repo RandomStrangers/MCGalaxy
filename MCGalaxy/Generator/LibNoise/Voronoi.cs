@@ -38,9 +38,7 @@ namespace MCGalaxy
                 yCandidate = 0,
                 zCandidate = 0;
             for (int zCur = zInt - 2; zCur <= zInt + 2; zCur++)
-            {
                 for (int yCur = yInt - 2; yCur <= yInt + 2; yCur++)
-                {
                     for (int xCur = xInt - 2; xCur <= xInt + 2; xCur++)
                     {
                         double xPos = xCur + ValueNoise(xCur, yCur, zCur, Seed),
@@ -58,8 +56,6 @@ namespace MCGalaxy
                             zCandidate = zPos;
                         }
                     }
-                }
-            }
             int x0 = xCandidate > 0.0 ? (int)xCandidate : (int)xCandidate - 1,
                 y0 = yCandidate > 0.0 ? (int)yCandidate : (int)yCandidate - 1,
                 z0 = zCandidate > 0.0 ? (int)zCandidate : (int)zCandidate - 1;

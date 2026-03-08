@@ -16,17 +16,13 @@ namespace MCGalaxy
             foreach (Level lvl in loaded)
             {
                 if (!lvl.SaveChanges)
-                {
                     continue;
-                }
                 NASLevel nl = NASLevel.Get(lvl.name);
                 string jsonString = JsonConvert.SerializeObject(nl, Formatting.Indented),
                     fileName = NASLevel.GetFileName(nl.lvl.name);
                 bool saved = lvl.Save(true) && FileIO.TryWriteAllText(fileName, jsonString);
                 if (!saved)
-                {
                     p.Message("Saving of level {0} &Swas cancelled", lvl.ColoredName);
-                }
             }
             Chat.MessageGlobal("All levels have been saved.");
         }
@@ -68,12 +64,8 @@ namespace MCGalaxy
         public static void EnsureDirectoriesExist(params string[] paths)
         {
             foreach (string path in paths)
-            {
                 if (!Directory.Exists(path))
-                {
                     Directory.CreateDirectory(path);
-                }
-            }
         }
         public static string GetSavePath(Player p) => NASPlayer.Path + p.name + ".json";
         public static string GetDeathPath(string name) => NASPlayer.DeathsPath + name + ".txt";
@@ -81,19 +73,13 @@ namespace MCGalaxy
         public static bool EnsureFileExists(string url, string file)
         {
             if (File.Exists(file))
-            {
                 return true;
-            }
             try
             {
                 using (WebClient client = new())
-                {
                     client.DownloadFile(url, file);
-                }
                 if (File.Exists(file))
-                {
                     return true;
-                }
             }
             catch (Exception ex)
             {
@@ -105,18 +91,14 @@ namespace MCGalaxy
                     return false;
                 }
                 else
-                {
                     EnsureFileExists(url, file);
-                }
             }
             return false;
         }
         public static void Register(params Command[] commands)
         {
             foreach (Command cmd in commands)
-            {
                 Command.Register(cmd);
-            }
         }
         public static void Log(string format, params object[] args) => Logger.Log(LogType.Warning, string.Format(format, args));
         public static bool HandleErrorResponse(WebException ex, string msg, long retry)
@@ -134,9 +116,7 @@ namespace MCGalaxy
                 if (!string.IsNullOrEmpty(err))
                 {
                     if (err.Length > 200)
-                    {
                         err = err.Substring(0, 200) + "...";
-                    }
                     Logger.Log(LogType.Warning, "Github API returned: " + err);
                 }
                 return retry < 2;
@@ -155,9 +135,7 @@ namespace MCGalaxy
             if (!string.IsNullOrEmpty(err))
             {
                 if (err.Length > 200)
-                {
                     err = err.Substring(0, 200) + "...";
-                }
                 Logger.Log(LogType.Warning, "Github API returned: " + err);
             }
             return false;

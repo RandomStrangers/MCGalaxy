@@ -51,16 +51,14 @@ namespace MCGalaxy.Modules.Security
             {
                 if (!ips.TryGetValue(ipStr, out IPThrottleEntry entry))
                 {
-                    entry = new IPThrottleEntry();
+                    entry = new();
                     ips[ipStr] = entry;
                 }
                 // Check if that IP is repeatedly trying to connect
                 if (entry.BlockedUntil < now)
                 {
                     if (!entry.AddSpamEntry(Server.Config.IPSpamCount, Server.Config.IPSpamInterval))
-                    {
                         entry.BlockedUntil = now.Add(Server.Config.IPSpamBlockTime);
-                    }
                     return;
                 }
                 entry.FailedLogins++;
@@ -99,7 +97,11 @@ namespace MCGalaxy.Modules.Security
         {
             lock (ipsLock)
             {
-                if (!Server.Config.IPSpamCheck) { ips.Clear(); return; }
+                if (!Server.Config.IPSpamCheck) 
+                {
+                    ips.Clear(); 
+                    return; 
+                }
                 // Find all connections which last joined before the connection spam check interval
                 DateTime threshold = DateTime.UtcNow.Add(-Server.Config.IPSpamInterval);
                 List<string> expired = null;
@@ -107,14 +109,12 @@ namespace MCGalaxy.Modules.Security
                 {
                     DateTime lastJoin = kvp.Value[kvp.Value.Count - 1];
                     if (lastJoin >= threshold) continue;
-                    expired ??= new List<string>();
+                    expired ??= new();
                     expired.Add(kvp.Key);
                 }
                 if (expired == null) return;
                 foreach (string ip in expired)
-                {
                     ips.Remove(ip);
-                }
             }
         }
     }

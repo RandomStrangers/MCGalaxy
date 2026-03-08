@@ -119,9 +119,7 @@ namespace MCGalaxy.Network
             ushort raw;
             Player p = player;
             if (block >= 256)
-            {
                 raw = Block.ToRaw(block);
-            }
             else
             {
                 raw = Block.Convert(block);

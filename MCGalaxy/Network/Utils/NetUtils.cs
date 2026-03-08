@@ -54,9 +54,7 @@ namespace MCGalaxy
         public static void WriteBlock(ushort raw, byte[] array, int index, bool extBlocks)
         {
             if (extBlocks)
-            {
                 array[index++] = (byte)(raw >> 8);
-            }
             array[index++] = (byte)raw;
         }
         public static unsafe string ReadString(byte[] data, int offset)
@@ -67,10 +65,8 @@ namespace MCGalaxy
             {
                 byte code = data[i + offset];
                 if (code == 0) code = 0x20;
-                if (length == 0 && code != 0x20) 
-                { 
-                    length = i + 1; 
-                }
+                if (length == 0 && code != 0x20)
+                    length = i + 1;
                 characters[i] = ((char)code).Cp437ToUnicode();
             }
             return new(characters, 0, length);

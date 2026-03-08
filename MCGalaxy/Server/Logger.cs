@@ -137,9 +137,7 @@ namespace MCGalaxy
                 {
                     sb.AppendLine("## Loader exceptions ##");
                     foreach (Exception loadEx in refEx.LoaderExceptions)
-                    {
                         DescribeError(loadEx, sb);
-                    }
                 }
             }
             catch
@@ -148,9 +146,7 @@ namespace MCGalaxy
             try
             {
                 if (ex is SocketException sockEx)
-                {
                     sb.AppendLine("Error: " + sockEx.SocketErrorCode);
-                }
             }
             catch
             {
@@ -158,9 +154,7 @@ namespace MCGalaxy
             try
             {
                 if (ex is TypeLoadException typeEx)
-                {
                     sb.AppendLine("Loading type: " + typeEx.TypeName);
-                }
             }
             catch
             {

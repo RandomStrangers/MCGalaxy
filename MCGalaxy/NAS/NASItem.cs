@@ -14,13 +14,12 @@ namespace MCGalaxy
         {
             get
             {
-                if (HP == int.MaxValue)
+                switch (HP)
                 {
-                    return NASColor.defaultColors;
-                }
-                if (HP <= 1)
-                {
-                    return NASColor.direHealthColors;
+                    case int.MaxValue:
+                        return NASColor.defaultColors;
+                    case <= 1:
+                        return NASColor.direHealthColors;
                 }
                 float healthPercent = HP / Prop.baseHP;
                 return healthPercent > 0.5f
@@ -57,9 +56,7 @@ namespace MCGalaxy
         public bool TakeDamage(float amount)
         {
             if (HP == int.MaxValue)
-            {
                 return false;
-            }
             HP -= amount;
             return HP <= 0;
         }
@@ -68,12 +65,8 @@ namespace MCGalaxy
             try
             {
                 foreach (KeyValuePair<string, int> x in enchants)
-                {
                     if (x.Value > 0)
-                    {
                         return true;
-                    }
-                }
                 return false;
             }
             catch
@@ -84,9 +77,7 @@ namespace MCGalaxy
         public int Enchant(string s)
         {
             if (enchants.ContainsKey(s))
-            {
                 return enchants[s];
-            }
             enchants.Add(s, 0);
             return 0;
         }

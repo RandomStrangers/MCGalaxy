@@ -21,12 +21,8 @@ namespace MCGalaxy.Authentication
         public static bool Verify(Player p, string mppass)
         {
             foreach (AuthService auth in AuthService.Services)
-            {
                 if (Authenticate(auth, p, mppass))
-                {
                     return true;
-                }
-            }
             return false;
         }
         static readonly System.Text.ASCIIEncoding enc = new();
@@ -36,18 +32,14 @@ namespace MCGalaxy.Authentication
         {
             byte[] hash = null;
             lock (md5Lock)
-            {
                 hash = md5.ComputeHash(enc.GetBytes(salt + name));
-            }
             return Utils.ToHexString(hash);
         }
         static bool Authenticate(AuthService auth, Player p, string mppass)
         {
             string calc = CalcMppass(p.truename, auth.Salt);
             if (!mppass.CaselessEq(calc))
-            {
                 return false;
-            }
             auth.AcceptPlayer(p);
             return true;
         }

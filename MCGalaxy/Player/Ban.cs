@@ -123,13 +123,9 @@ namespace MCGalaxy
             {
                 string[] parts = line.SplitSpaces();
                 if (parts.Length > 1 && parts[1] == name)
-                {
                     found = true;
-                }
                 else
-                {
                     sb.AppendLine(line);
-                }
             }
             if (found) FileIO.TryWriteAllText(list.file, sb.ToString());
             return found;
@@ -151,9 +147,7 @@ namespace MCGalaxy
                     sb.AppendLine(string.Join(" ", parts));
                 }
                 else
-                {
                     sb.AppendLine(line);
-                }
             }
             if (found) FileIO.TryWriteAllText(list.file, sb.ToString());
             return found;

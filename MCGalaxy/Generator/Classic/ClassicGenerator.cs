@@ -44,7 +44,6 @@ namespace MCGalaxy.Generator.Classic
             int index = 0;
             short[] hMap = new short[Width * Length];
             for (int z = 0; z < Length; z++)
-            {
                 for (int x = 0; x < Width; x++)
                 {
                     double hLow = n1.Compute(x * 1.3f, z * 1.3f) / 12 - 2, height = hLow;
@@ -58,7 +57,6 @@ namespace MCGalaxy.Generator.Classic
                     minHeight = adjHeight < minHeight ? adjHeight : minHeight;
                     hMap[index++] = (short)adjHeight;
                 }
-            }
             heightmap = hMap;
         }
         void CreateStrata()
@@ -69,7 +67,6 @@ namespace MCGalaxy.Generator.Classic
             byte ground = biome.Ground,
                 cliff = biome.Cliff;
             for (int z = 0; z < Length; z++)
-            {
                 for (int x = 0; x < Width; x++)
                 {
                     int dirtThickness = (int)(n.Compute(x, z) / 24 - 4),
@@ -80,33 +77,30 @@ namespace MCGalaxy.Generator.Classic
                     int mapIndex = minStoneY * oneY + z * Width + x;
                     for (int y = minStoneY; y <= stoneHeight; y++)
                     {
-                        blocks[mapIndex] = cliff; mapIndex += oneY;
+                        blocks[mapIndex] = cliff; 
+                        mapIndex += oneY;
                     }
                     stoneHeight = Math.Max(stoneHeight, 0);
                     mapIndex = (stoneHeight + 1) * oneY + z * Width + x;
                     for (int y = stoneHeight + 1; y <= dirtHeight; y++)
                     {
-                        blocks[mapIndex] = ground; mapIndex += oneY;
+                        blocks[mapIndex] = ground; 
+                        mapIndex += oneY;
                     }
                 }
-            }
         }
         int CreateStrataFast()
         {
             int count = Length * Width, 
                 mapIndex = 0;
             for (int i = 0; i < count; i++)
-            {
                 blocks[mapIndex++] = Block.Lava;
-            }
             int stoneHeight = minHeight - 14;
             if (stoneHeight <= 0) return 1;
             byte cliff = biome.Cliff;
             count = stoneHeight * Length * Width;
             for (int i = 0; i < count; i++)
-            {
                 blocks[mapIndex++] = cliff;
-            }
             return stoneHeight;
         }
         void CarveCaves()
@@ -220,7 +214,6 @@ namespace MCGalaxy.Generator.Classic
                 water = biome.Water;
             int hMapIndex = 0;
             for (int z = 0; z < Length; z++)
-            {
                 for (int x = 0; x < Width; x++)
                 {
                     int y = heightmap[hMapIndex++];
@@ -228,15 +221,10 @@ namespace MCGalaxy.Generator.Classic
                     int index = (y * Length + z) * Width + x;
                     byte blockAbove = y >= (Height - 1) ? Block.Air : blocks[index + oneY];
                     if (blockAbove == water && (n2.Compute(x, z) > 12))
-                    {
                         blocks[index] = rocky;
-                    }
                     else if (blockAbove == Block.Air)
-                    {
                         blocks[index] = (y <= waterLevel && (n1.Compute(x, z) > 8)) ? sandy : surface;
-                    }
                 }
-            }
         }
         void PlantFlowers()
         {
@@ -335,32 +323,22 @@ namespace MCGalaxy.Generator.Classic
         Tree GetTreeGen() => biome.TreeType == null ? null : biome.TreeType == "" ? new ClassicTree() { rng = rnd } : Tree.TreeTypes[biome.TreeType]();
         bool CanGrowTree(int treeX, int treeY, int treeZ, int treeHeight)
         {
-            if (treeY < 0 || (treeY + treeHeight - 1) >= Height) return false;
-            if (treeX - 2 < 0 || treeX + 2 >= Width) return false;
-            if (treeZ - 2 < 0 || treeZ + 2 >= Length) return false;
+            if (treeY < 0 || (treeY + treeHeight - 1) >= Height || treeX - 2 < 0 || treeX + 2 >= Width || treeZ - 2 < 0 || treeZ + 2 >= Length) return false;
             int baseHeight = treeHeight - 4;
             for (int y = treeY; y < treeY + baseHeight; y++)
-            {
                 for (int z = treeZ - 1; z <= treeZ + 1; z++)
-                {
                     for (int x = treeX - 1; x <= treeX + 1; x++)
                     {
                         int index = (y * Length + z) * Width + x;
                         if (blocks[index] != 0) return false;
                     }
-                }
-            }
             for (int y = treeY + baseHeight; y < treeY + treeHeight; y++)
-            {
                 for (int z = treeZ - 2; z <= treeZ + 2; z++)
-                {
                     for (int x = treeX - 2; x <= treeX + 2; x++)
                     {
                         int index = (y * Length + z) * Width + x;
                         if (blocks[index] != 0) return false;
                     }
-                }
-            }
             return true;
         }
         public static void RegisterGenerators() => MapGen.Register("Classic", GenType.Simple, Gen, MapGen.DEFAULT_HELP);

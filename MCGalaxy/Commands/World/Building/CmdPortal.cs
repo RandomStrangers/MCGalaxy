@@ -182,12 +182,15 @@ namespace MCGalaxy.Commands.Building
         static string Format(ushort block, Player p, BlockProps[] props)
         {
             if (!props[block].IsPortal) return null;
-            if (block == Block.Portal_Orange) return "orange";
-            return block == Block.Portal_Blue
+            return block switch
+            {
+                Block.Portal_Orange => "orange",
+                _ => block == Block.Portal_Blue
                 ? "blue"
                 : block == Block.Portal_Air
                 ? "air"
-                : block == Block.Portal_Lava ? "lava" : block == Block.Portal_Water ? "water" : Block.GetName(p, block);
+                : block == Block.Portal_Lava ? "lava" : block == Block.Portal_Water ? "water" : Block.GetName(p, block)
+            };
         }
         static List<string> SupportedBlocks(Player p)
         {

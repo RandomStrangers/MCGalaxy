@@ -37,9 +37,7 @@ namespace MCGalaxy.Modules.Warps
         public Warp Find(string name)
         {
             foreach (Warp wp in Items)
-            {
                 if (wp.Name.CaselessEq(name)) return wp;
-            }
             return null;
         }
         public bool Exists(string name) => Find(name) != null;
@@ -71,18 +69,14 @@ namespace MCGalaxy.Modules.Warps
         public void Goto(Warp warp, Player p)
         {
             if (!p.Level.name.CaselessEq(warp.Level))
-            {
                 PlayerActions.ChangeMap(p, warp.Level);
-            }
             if (p.Level.name.CaselessEq(warp.Level))
             {
                 p.SendPosition(warp.Pos, new(warp.Yaw, warp.Pitch));
                 p.Message("Sent you to waypoint/warp {0}", warp.Name);
             }
             else
-            {
                 p.Message("&WUnable to send you to the warp as the map it is on is not loaded.");
-            }
         }
         /// <summary> Find partial matches of 'name' against this list of warps. </summary>
         public Warp FindMatch(Player p, string name) => Matcher.Find(p, name, out int matches, Items,
@@ -123,10 +117,8 @@ namespace MCGalaxy.Modules.Warps
         {
             using StreamWriter w = FileIO.CreateGuarded(Filename);
             foreach (Warp warp in Items)
-            {
                 w.WriteLine(warp.Name + ":" + warp.Level + ":" + warp.Pos.X + ":" +
                             warp.Pos.Y + ":" + warp.Pos.Z + ":" + warp.Yaw + ":" + warp.Pitch);
-            }
         }
     }
 }

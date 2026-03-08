@@ -77,14 +77,10 @@ namespace MCGalaxy.Network
         {
             IPAddress localIP;
             if (Server.Listener.IP != null)
-            {
                 localIP = Server.Listener.IP;
-            }
             else if (!IPAddress.TryParse(Server.Config.ListenIP, out localIP))
-            {
                 return null;
-            }
-            return remoteEP.AddressFamily != localIP.AddressFamily ? null : new IPEndPoint(localIP, 0);
+            return remoteEP.AddressFamily != localIP.AddressFamily ? null : new(localIP, 0);
         }
         public static SslStream WrapSSLStream(Stream source, string host)
         {
@@ -102,9 +98,7 @@ namespace MCGalaxy.Network
             if (skin[0] == '+')
                 skin = "https://minotar.net/skin/" + skin.Substring(1) + ".png";
             if (skin.CaselessStarts("http://") || skin.CaselessStarts("https"))
-            {
                 FilterURL(ref skin);
-            }
             if (skin.Length > 64)
             {
                 p.Message("&WThe skin must be 64 characters or less.");
@@ -118,13 +112,9 @@ namespace MCGalaxy.Network
             if (!url.CaselessStarts("http://") && !url.CaselessStarts("https://"))
                 url = "http://" + url;
             if (url.CaselessStarts("http://www.dropbox"))
-            {
                 url = AdjustDropbox(url, "http://www.dropbox".Length);
-            }
             else if (url.CaselessStarts("https://www.dropbox"))
-            {
                 url = AdjustDropbox(url, "https://www.dropbox".Length);
-            }
             url = url.Replace("dl.dropboxusercontent.com", "dl.dropbox.com");
         }
         static string AdjustDropbox(string url, int prefixLen)
@@ -208,8 +198,7 @@ namespace MCGalaxy.Network
                 WebException webEx = (WebException)ex;
                 try
                 {
-                    int status = (int)((HttpWebResponse)webEx.Response).StatusCode;
-                    return "(" + status + " error) from ";
+                    return "(" + (int)((HttpWebResponse)webEx.Response).StatusCode + " error) from ";
                 }
                 catch
                 {

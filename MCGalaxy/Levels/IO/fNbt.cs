@@ -57,13 +57,7 @@ namespace fNbt
         readonly Dictionary<string, NbtTag> tags = new();
         public NbtCompound() { }
         public NbtCompound(string tagName) => Name = tagName;
-        public override NbtTag this[string tagName]
-        {
-            get
-            {
-                return tags.TryGetValue(tagName, out NbtTag result) ? result : null;
-            }
-        }
+        public override NbtTag this[string tagName] => tags.TryGetValue(tagName, out NbtTag result) ? result : null;
         public bool Contains(string tagName) => tags.ContainsKey(tagName);
         internal override void ReadTag(NbtBinaryReader reader)
         {
@@ -246,9 +240,7 @@ namespace fNbt
         {
             short length = ReadInt16();
             if (length < 0)
-            {
                 throw new InvalidDataException("Negative string length given");
-            }
             if (length < strBuffer.Length)
             {
                 int offset = 0;

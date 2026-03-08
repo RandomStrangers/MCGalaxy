@@ -25,11 +25,14 @@ namespace MCGalaxy.Commands.Building
         protected override DrawMode GetMode(string[] parts)
         {
             string msg = parts[0];
-            if (msg == "solid") return DrawMode.solid;
-            if (msg == "hollow") return DrawMode.hollow;
-            return msg == "walls"
+            return msg switch
+            {
+                "solid" => DrawMode.solid,
+                "hollow" => DrawMode.hollow,
+                _ => msg == "walls"
                 ? DrawMode.walls
-                : msg == "holes" ? DrawMode.holes : msg == "wire" ? DrawMode.wire : msg == "random" ? DrawMode.random : DrawMode.normal;
+                : msg == "holes" ? DrawMode.holes : msg == "wire" ? DrawMode.wire : msg == "random" ? DrawMode.random : DrawMode.normal
+            };
         }
         protected override DrawOp GetDrawOp(DrawArgs dArgs) => dArgs.Mode switch
         {

@@ -39,13 +39,9 @@ namespace MCGalaxy.Network
         {
             indices[count] = index;
             if (Block.IsPhysicsType(block))
-            {
                 blocks[count] = Block.Convert(block);
-            }
             else
-            {
                 blocks[count] = block;
-            }
             count++;
             if (count == 256) Flush();
         }
@@ -111,9 +107,7 @@ namespace MCGalaxy.Network
                 return classic;
             }
             else
-            {
                 return s.MakeBulkBlockchange(this);
-            }
         }
         byte[] MakeBulkExt()
         {
@@ -129,9 +123,7 @@ namespace MCGalaxy.Network
                 data[j++] = (byte)index;
             }
             for (int i = 0, j = 2 + 256 * sizeof(int); i < count; i++)
-            {
                 data[j++] = (byte)blocks[i];
-            }
             for (int i = 0, j = 2 + 256 * (sizeof(int) + 1); i < count; i += 4)
             {
                 int flags = 0;

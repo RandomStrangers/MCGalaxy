@@ -48,15 +48,14 @@ namespace MCGalaxy.Levels.IO
             for (; ; )
             {
                 int section = gs.ReadByte();
-                if (section == 0xFC)
+                switch (section)
                 {
-                    ReadPhysicsSection(lvl, gs); 
-                    continue;
-                }
-                if (section == 0x51)
-                {
-                    ReadZonesSection(lvl, gs);
-                    continue;
+                    case 0xFC:
+                        ReadPhysicsSection(lvl, gs);
+                        continue;
+                    case 0x51:
+                        ReadZonesSection(lvl, gs);
+                        continue;
                 }
                 return lvl;
             }
@@ -80,9 +79,7 @@ namespace MCGalaxy.Levels.IO
             if (read == 0 || data[0] != 0xBD) return;
             int index = 0;
             for (int y = 0; y < lvl.ChunksY; y++)
-            {
                 for (int z = 0; z < lvl.ChunksZ; z++)
-                {
                     for (int x = 0; x < lvl.ChunksX; x++)
                     {
                         read = gs.Read(data, 0, 1);
@@ -94,8 +91,6 @@ namespace MCGalaxy.Levels.IO
                         }
                         index++;
                     }
-                }
-            }
         }
         static void ReadPhysicsSection(Level lvl, Stream gs)
         {
@@ -111,7 +106,6 @@ namespace MCGalaxy.Levels.IO
             byte[] buffer = new byte[Math.Min(count, 1024) * 8];
             Check C;
             fixed (byte* ptr = buffer)
-            {
                 for (int i = 0; i < count; i += 1024)
                 {
                     int entries = Math.Min(1024, count - i),
@@ -127,7 +121,6 @@ namespace MCGalaxy.Levels.IO
                         lvl.ListCheck.Items[i + j] = C;
                     }
                 }
-            }
         }
         static void ReadZonesSection(Level lvl, Stream gs)
         {
@@ -135,7 +128,6 @@ namespace MCGalaxy.Levels.IO
             int count = TryRead_I32(buffer, gs);
             if (count == 0) return;
             for (int i = 0; i < count; i++)
-            {
                 try
                 {
                     ParseZone(lvl, ref buffer, gs);
@@ -144,7 +136,6 @@ namespace MCGalaxy.Levels.IO
                 {
                     Logger.LogError("Error importing zone #" + i + " from MCSharp map", ex);
                 }
-            }
         }
         static void ParseZone(Level lvl, ref byte[] buffer, Stream gs)
         {

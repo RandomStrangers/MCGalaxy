@@ -21,9 +21,7 @@ namespace MCGalaxy
             desc.Code = '`';
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
-            {
                 p.Session.SendSetTextColor(desc);
-            }
         }
         public static bool Setup()
         {
@@ -64,13 +62,9 @@ namespace MCGalaxy
         public static void TakeDown()
         {
             if (task != null)
-            {
                 Server.MainScheduler.Cancel(task);
-            }
             if (GoldTask != null)
-            {
                 Server.MainScheduler.Cancel(GoldTask);
-            }
         }
         public static void Update(SchedulerTask task)
         {
@@ -79,16 +73,11 @@ namespace MCGalaxy
             foreach (Player p in players)
             {
                 if (!p.Supports(CpeExt.TextColors))
-                {
                     continue;
-                }
                 NASPlayer np = NASPlayer.GetPlayer(p);
                 if (np == null)
-                {
                     continue;
-                }
-                ColorDesc desc = np.inventory.selectorColors[index];
-                np.Send(Packet.SetTextColor(desc));
+                np.Send(Packet.SetTextColor(np.inventory.selectorColors[index]));
             }
         }
     }

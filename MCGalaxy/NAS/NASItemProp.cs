@@ -31,20 +31,14 @@ namespace MCGalaxy
                 {"Unbreaking",false},
             };
             foreach (KeyValuePair<string, bool> x in enchants)
-            {
                 allowedEnchants[x.Key] = x.Value;
-            }
             if (effectiveAgainst != NASMaterial.None)
-            {
                 materialsEffectiveAgainst = new()
                 {
                     effectiveAgainst
                 };
-            }
             else
-            {
                 materialsEffectiveAgainst = null;
-            }
             this.tier = tier;
             this.percentageOfTimeSaved = percentageOfTimeSaved;
             baseHP = 200;

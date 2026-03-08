@@ -28,7 +28,6 @@ namespace MCGalaxy.Generator.Realistic
         {
             float min = float.MaxValue, max = float.MinValue;
             for (int y = 0; y < height; ++y)
-            {
                 for (int x = 0; x < width; ++x)
                 {
                     float sum = 0, frequency = 1, amplitude = 1;
@@ -42,12 +41,9 @@ namespace MCGalaxy.Generator.Realistic
                     min = sum < min ? sum : min;
                     max = sum > max ? sum : max;
                 }
-            }
             float range = max - min;
             for (int i = 0; i < array.Length; ++i)
-            {
                 array[i] = (array[i] - min) / range;
-            }
         }
         static float Interpolate(float a, float b, float x) => a * (1 - ((float)(1 - Math.Cos(x * 3.1415927f)) * 0.5f)) + b * ((float)(1 - Math.Cos(x * 3.1415927f)) * 0.5f);
         static float Noise(int x, int y, int seed)
@@ -62,12 +58,8 @@ namespace MCGalaxy.Generator.Realistic
             float fracX = x - wholeX, fracY = y - wholeY;
             float* noise = stackalloc float[16];
             for (int yy = -1; yy <= 2; yy++)
-            {
                 for (int xx = -1; xx <= 2; xx++)
-                {
                     noise[i++] = Noise(wholeX + xx, wholeY + yy, seed);
-                }
-            }
             float n00 = SmoothNoise(noise, (0 + 1) * 1 + (0 + 1) * 4),
                 n10 = SmoothNoise(noise, (1 + 1) * 1 + (0 + 1) * 4),
                 n01 = SmoothNoise(noise, (0 + 1) * 1 + (1 + 1) * 4),

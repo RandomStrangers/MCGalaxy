@@ -32,13 +32,9 @@ namespace MCGalaxy
             if (skin == null) return;
             Player who = PlayerInfo.FindExact(target);
             if (p == who)
-            {
                 p.Message("Changed your own skin to &c" + skin);
-            }
             else
-            {
                 MessageAction(p, target, who, "λACTOR &Schanged λTARGET skin to &c" + skin);
-            }
             PlayerActions.SetSkin(target, skin);
         }
         /// <summary> Attempts to change the login message of the target player </summary>
@@ -46,9 +42,7 @@ namespace MCGalaxy
         public static bool SetLoginMessage(Player p, string target, string message)
         {
             if (message.Length == 0)
-            {
                 p.Message("Login message of {0} &Swas removed", p.FormatNick(target));
-            }
             else
             {
                 if (!p.CheckCanSpeak("change login messages")) return false;
@@ -63,9 +57,7 @@ namespace MCGalaxy
         public static bool SetLogoutMessage(Player p, string target, string message)
         {
             if (message.Length == 0)
-            {
                 p.Message("Logout message of {0} &Swas removed", p.FormatNick(target));
-            }
             else
             {
                 if (!p.CheckCanSpeak("change logout messages")) return false;
@@ -115,9 +107,7 @@ namespace MCGalaxy
             }
             Player who = PlayerInfo.FindExact(target);
             if (title.Length == 0)
-            {
                 MessageAction(p, target, who, "λACTOR &Sremoved λTARGET title");
-            }
             else
             {
                 if (!p.CheckCanSpeak("change titles")) return false;
@@ -134,9 +124,7 @@ namespace MCGalaxy
             string color = "";
             Player who = PlayerInfo.FindExact(target);
             if (name.Length == 0)
-            {
                 MessageAction(p, target, who, "λACTOR &Sremoved λTARGET title color");
-            }
             else
             {
                 color = Matcher.FindColor(p, name);

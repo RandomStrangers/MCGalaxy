@@ -78,17 +78,11 @@ namespace MCGalaxy.Modules.Moderation.Notes
         public static string GetAcronym(ModAction action)
         {
             if (action.Type == ModActionType.Ban)
-            {
                 return action.Duration.Ticks != 0 ? TempBanned.Acronym : Banned.Acronym;
-            }
             string modActionString = action.Type.ToString();
             foreach (NoteAcronym na in All)
-            {
-                if (na.Action == modActionString) 
-                { 
-                    return na.Acronym; 
-                }
-            }
+                if (na.Action == modActionString)
+                    return na.Acronym;
             return null;
         }
         /// <summary>
@@ -97,12 +91,8 @@ namespace MCGalaxy.Modules.Moderation.Notes
         public static string GetAction(string acronym)
         {
             foreach (NoteAcronym na in All)
-            {
-                if (na.Acronym == acronym) 
-                {
-                    return na.Action; 
-                }
-            }
+                if (na.Acronym == acronym)
+                    return na.Action;
             return acronym;
         }
     }

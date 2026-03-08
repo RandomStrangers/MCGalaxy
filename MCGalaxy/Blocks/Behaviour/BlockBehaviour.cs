@@ -29,19 +29,16 @@ namespace MCGalaxy.Blocks
     public static class BlockBehaviour
     {
         /// <summary> Retrieves the default place block handler for the given block. </summary>
-        internal static HandlePlace GetPlaceHandler(ushort block, BlockProps[] props)
+        internal static HandlePlace GetPlaceHandler(ushort block, BlockProps[] props) => block switch
         {
-            return block switch
-            {
-                Block.C4 => PlaceBehaviour.C4,
-                Block.C4Detonator => PlaceBehaviour.C4Det,
-                _ => props[block].GrassBlock != Block.Invalid
-                                ? PlaceBehaviour.DirtGrow
-                                : props[block].DirtBlock != Block.Invalid
-                                ? PlaceBehaviour.GrassDie
-                                : props[block].StackBlock != Block.Air ? PlaceBehaviour.Stack : null,
-            };
-        }
+            Block.C4 => PlaceBehaviour.C4,
+            Block.C4Detonator => PlaceBehaviour.C4Det,
+            _ => props[block].GrassBlock != Block.Invalid
+                            ? PlaceBehaviour.DirtGrow
+                            : props[block].DirtBlock != Block.Invalid
+                            ? PlaceBehaviour.GrassDie
+                            : props[block].StackBlock != Block.Air ? PlaceBehaviour.Stack : null,
+        };
         static readonly HandleDelete DB_revert = DeleteBehaviour.RevertDoor,
             DB_oDoor = DeleteBehaviour.ODoor,
             DB_Door = DeleteBehaviour.Door;
@@ -190,15 +187,15 @@ namespace MCGalaxy.Blocks
                 : null;
         }
         /// <summary> Retrieves the default physics block handler for the given block. </summary>
-        internal static HandlePhysics GetPhysicsDoorsHandler(ushort block, BlockProps[] props)
+        internal static HandlePhysics GetPhysicsDoorsHandler(ushort block, BlockProps[] props) => block switch
         {
-            if (block == Block.Air) return PH_do_Door;
-            return block == Block.Door_Log_air
-                ? PH_do_Door
-                : block == Block.Door_TNT_air
-                ? PH_do_Door
-                : block == Block.Door_Green_air ? PH_do_Door : props[block].oDoorBlock != Block.Invalid ? PH_do_oDoor : null;
-        }
+            Block.Air => PH_do_Door,
+            _ => block == Block.Door_Log_air
+            ? PH_do_Door
+            : block == Block.Door_TNT_air
+            ? PH_do_Door
+            : block == Block.Door_Green_air ? PH_do_Door : props[block].oDoorBlock != Block.Invalid ? PH_do_oDoor : null
+        };
         static HandlePhysics AnimalAIHandler(AnimalAI ai)
         {
             if (ai == AnimalAI.Fly) return BirdPhysics.Do;

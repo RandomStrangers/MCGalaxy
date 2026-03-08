@@ -29,9 +29,7 @@ namespace MCGalaxy.Generator
                 return true;
             };
             if (!args.ParseArgs(p))
-            {
                 return false;
-            }
             if (url == null)
             {
                 p.Message("You need to provide a url for the image.");
@@ -40,14 +38,10 @@ namespace MCGalaxy.Generator
             MapGenBiome biome = MapGenBiome.Get(args.Biome);
             byte[] data = HttpUtil.DownloadImage(url, p);
             if (data == null)
-            {
                 return false;
-            }
             Bitmap2D bmp = ImageUtils.DecodeImage(data, p);
             if (bmp == null)
-            {
                 return false;
-            }
             int index = 0, oneY = lvl.Width * lvl.Length,
                 lvlWidth = lvl.Width,
                 lvlLength = lvl.Length;
@@ -61,7 +55,6 @@ namespace MCGalaxy.Generator
             byte[] hmap = resized ? ResizeHeightmap(bmp, lvlWidth, lvlLength)
                 : ComputeHeightmap(bmp);
             for (int z = 0; z < lvlLength; z++)
-            {
                 for (int x = 0; x < lvlWidth; x++)
                 {
                     int height = hmap[index];
@@ -77,16 +70,11 @@ namespace MCGalaxy.Generator
                     }
                     height = height * lvl.Height / 255;
                     for (int y = 0; y < height - 1; y++)
-                    {
                         lvl.blocks[index + oneY * y] = layer;
-                    }
                     if (height > 0)
-                    {
                         lvl.blocks[index + oneY * (height - 1)] = top;
-                    }
                     index++;
                 }
-            }
             return true;
         }
         static bool IsCliff(int height, byte[] hmap, Level lvl, int x, int z) => x < lvl.Width && x >= 0 && z < lvl.Length && z >= 0 && height >= hmap[z * lvl.Width + x] + 2;
@@ -95,13 +83,11 @@ namespace MCGalaxy.Generator
             byte[] hmap = new byte[bmp.Width * bmp.Height];
             int i = 0;
             for (int y = 0; y < bmp.Height; y++)
-            {
                 for (int x = 0; x < bmp.Width; x++)
                 {
                     hmap[i] = bmp.Pixels[i].R;
                     i++;
                 }
-            }
             return hmap;
         }
         static byte[] ResizeHeightmap(Bitmap2D bmp, int dstWidth, int dstHeight)

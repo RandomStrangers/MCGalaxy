@@ -51,9 +51,7 @@ namespace MCGalaxy.Modules.Compiling
             Assembly source = args.RequestingAssembly;
             Assembly match = ResolvePluginAssembly(source, args.Name);
             if (match != null)
-            {
                 return match;
-            }
             Logger.Log(LogType.Warning, "{0} [{1}] tried to load [{2}], but it could not be found",
                        IsPluginDLL(source) ? "Custom command/plugin" : "Assembly",
                        source == null ? "(unknown)" : source.FullName,
@@ -62,25 +60,15 @@ namespace MCGalaxy.Modules.Compiling
         }
         static Assembly ResolvePluginAssembly(Assembly source, string target)
         {
-            if (source == null)
-            {
+            if (source == null || !IsPluginDLL(source))
                 return null;
-            }
-            if (!IsPluginDLL(source))
-            {
-                return null;
-            }
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (Assembly assem in assemblies)
             {
                 if (!IsPluginDLL(assem))
-                {
                     continue;
-                }
                 if (target == assem.FullName)
-                {
                     return assem;
-                }
             }
             ;
             return null;
@@ -94,9 +82,7 @@ namespace MCGalaxy.Modules.Compiling
             foreach (Type t in lib.GetTypes())
             {
                 if (t.IsAbstract || t.IsInterface || !t.IsSubclassOf(typeof(T)))
-                {
                     continue;
-                }
                 object instance = Activator.CreateInstance(t);
                 if (instance == null)
                 {
@@ -111,18 +97,8 @@ namespace MCGalaxy.Modules.Compiling
         public static Assembly LoadAssembly(string path, bool loadDebug = true)
         {
             if (!FileIO.TryReadBytes(path, out byte[] data))
-            {
                 return null;
-            }
-            if (loadDebug)
-            {
-                byte[] debug = GetDebugData(path);
-                return Assembly.Load(data, debug);
-            }
-            else
-            {
-                return Assembly.Load(data);
-            }
+            return loadDebug ? Assembly.Load(data, GetDebugData(path)) : Assembly.Load(data);
         }
         static byte[] GetDebugData(string path)
         {
@@ -142,9 +118,7 @@ namespace MCGalaxy.Modules.Compiling
                 return null;
             }
             if (!Server.RunningOnMono())
-            {
                 return null;
-            }
             string mdb_path = path + ".mdb";
             try
             {
@@ -164,13 +138,9 @@ namespace MCGalaxy.Modules.Compiling
         {
             string[] files = FileIO.TryGetFiles(COMMANDS_DLL_DIR, "*.dll");
             if (files == null)
-            {
                 return;
-            }
             foreach (string path in files)
-            {
                 AutoloadCommands(path);
-            }
         }
         static void AutoloadCommands(string path)
         {
@@ -193,15 +163,11 @@ namespace MCGalaxy.Modules.Compiling
             Assembly lib = LoadAssembly(path);
             List<Command> commands = LoadTypes<Command>(lib);
             if (commands.Count == 0)
-            {
                 throw new InvalidOperationException("No commands in " + path);
-            }
             foreach (Command cmd in commands)
             {
                 if (Command.Find(cmd.Name) != null)
-                {
                     throw new AlreadyLoadedException("/" + cmd.Name + " is already loaded");
-                }
                 Command.Register(cmd);
             }
             return commands;
@@ -209,26 +175,20 @@ namespace MCGalaxy.Modules.Compiling
         public static string DescribeLoadError(string path, Exception ex)
         {
             string file = Path.GetFileName(path);
-            if (ex is BadImageFormatException)
+            return ex switch
             {
-                return "&W" + file + " is not a valid assembly, or has an invalid dependency. Details in the error log.";
-            }
-            else if (ex is FileLoadException)
-            {
-                return "&W" + file + " or one of its dependencies could not be loaded. Details in the error log.";
-            }
-            return "&WAn unknown error occured. Details in the error log.";
+                BadImageFormatException => "&W" + file + " is not a valid assembly, or has an invalid dependency. Details in the error log.",
+                FileLoadException => "&W" + file + " or one of its dependencies could not be loaded. Details in the error log.",
+                _ => "&WAn unknown error occured. Details in the error log.",
+            };
         }
         public static void AutoloadPlugins()
         {
             string[] files = FileIO.TryGetFiles(PLUGINS_DIR, "*.dll");
             if (files == null)
-            {
                 return;
-            }
             Array.Sort(files);
             foreach (string path in files)
-            {
                 try
                 {
                     LoadPlugin(path, true);
@@ -237,7 +197,6 @@ namespace MCGalaxy.Modules.Compiling
                 {
                     Logger.LogError("Error loading plugins from " + path, ex);
                 }
-            }
         }
         /// <summary> Loads all plugins from the given .dll path. </summary>
         public static List<Plugin> LoadPlugin(string path, bool auto)
@@ -247,9 +206,7 @@ namespace MCGalaxy.Modules.Compiling
             foreach (Plugin pl in plugins)
             {
                 if (Plugin.FindCustom(pl.Name) != null)
-                {
                     throw new AlreadyLoadedException("Plugin " + pl.Name + " is already loaded");
-                }
                 Plugin.Load(pl, auto);
             }
             return plugins;
@@ -331,9 +288,7 @@ namespace MCGalaxy.Modules.Compiling
         protected static void AddCoreAssembly(StringBuilder sb)
         {
             if (Server.RunningOnMono())
-            {
                 return;
-            }
             string coreAssemblyFileName = typeof(object).Assembly.Location;
             if (!string.IsNullOrEmpty(coreAssemblyFileName))
             {
@@ -344,9 +299,7 @@ namespace MCGalaxy.Modules.Compiling
         protected static void AddReferencedAssemblies(StringBuilder sb, List<string> referenced)
         {
             foreach (string path in referenced)
-            {
                 sb.AppendFormat("/R:{0} ", Quote(path));
-            }
         }
         protected static string GetExecutable()
         {
@@ -363,12 +316,8 @@ namespace MCGalaxy.Modules.Compiling
                 "/usr/bin/mcs",
             };
             foreach (string path in paths)
-            {
                 if (File.Exists(path))
-                {
                     return path;
-                }
-            }
             return paths[0];
         }
         public static ICompilerErrors Compile(string[] srcPaths, string dstPath, List<string> referenced)
@@ -377,14 +326,9 @@ namespace MCGalaxy.Modules.Compiling
                 exe = GetExecutable();
             ICompilerErrors errors = new();
             List<string> output = new();
-            int retValue = Compile(exe, args, output);
-            if (retValue != 0)
-            {
+            if (Compile(exe, args, output) != 0)
                 foreach (string line in output)
-                {
                     ProcessCompilerOutputLine(errors, line);
-                }
-            }
             return errors;
         }
         protected static string GetCommandLineArguments(string[] srcPaths, string dstPath,
@@ -400,9 +344,7 @@ namespace MCGalaxy.Modules.Compiling
             sb.Append("/D:DEBUG /debug+ /optimize- ");
             sb.Append("/warnaserror- /unsafe ");
             foreach (string path in srcPaths)
-            {
                 sb.AppendFormat("{0} ", Quote(path));
-            }
             return sb.ToString();
         }
         protected static string Quote(string value) => "\"" + value.Trim() + "\"";
@@ -433,18 +375,14 @@ namespace MCGalaxy.Modules.Compiling
             Match m = new Regex(@"(^(.*)(\(([0-9]+),([0-9]+)\)): )(error|warning) ([A-Z]+[0-9]+) ?: (.*)").Match(line);
             bool full;
             if (m.Success)
-            {
                 full = true;
-            }
             else
             {
                 m = new Regex(@"(error|warning) ([A-Z]+[0-9]+) ?: (.*)").Match(line);
                 full = false;
             }
             if (!m.Success)
-            {
                 return;
-            }
             ICompilerError ce = new();
             if (full)
             {
@@ -542,9 +480,7 @@ namespace MCGalaxy
         {
             ICompilerErrors errors = Compile(srcPaths, dstPath, ProcessInput(srcPaths, "//"));
             if (!errors.HasErrors || !logErrors)
-            {
                 return errors;
-            }
             SourceMap sources = new(srcPaths);
             StringBuilder sb = new();
             sb.AppendLine("############################################################");
@@ -556,22 +492,16 @@ namespace MCGalaxy
                 string type = err.IsWarning ? "Warning" : "Error";
                 sb.AppendLine(DescribeError(err, srcPaths, "") + ":");
                 if (err.Line > 0)
-                {
                     sb.AppendLine(sources.Get(err.FileName, err.Line - 1));
-                }
                 if (err.Column > 0)
-                {
                     sb.Append(' ', err.Column - 1);
-                }
                 sb.AppendLine("^-- " + type + " #" + err.ErrorNumber + " - " + err.ErrorText);
                 sb.AppendLine();
                 sb.AppendLine("-------------------------");
                 sb.AppendLine();
             }
             using (StreamWriter w = new(ERROR_LOG_PATH, true))
-            {
                 w.Write(sb.ToString());
-            }
             return errors;
         }
         public static string DescribeError(ICompilerError err, string[] srcs, string text) => string.Format("{0}{1}{2}{3}", err.IsWarning ? "Warning" : "Error", text,
@@ -600,9 +530,7 @@ namespace MCGalaxy
             while ((line = r.ReadLine()) != null)
             {
                 if (line.CaselessStarts(refPrefix))
-                {
                     referenced.Add(GetDLL(line));
-                }
                 else if (line.CaselessStarts(plgPrefix))
                 {
                     path = Path.Combine(PLUGINS_DIR, GetDLL(line));
@@ -634,12 +562,8 @@ namespace MCGalaxy
         int FindFile(string file)
         {
             for (int i = 0; i < files.Length; i++)
-            {
                 if (file.CaselessEq(files[i]))
-                {
                     return i;
-                }
-            }
             return -1;
         }
         /// <summary> Returns the given line in the given source code file </summary>
@@ -647,9 +571,7 @@ namespace MCGalaxy
         {
             int i = FindFile(file);
             if (i == -1)
-            {
                 return "";
-            }
             List<string> source = sources[i];
             if (source == null)
             {

@@ -15,9 +15,7 @@ namespace MCGalaxy.Generator.Classic
                 zEnd = Floor(Math.Min(z + radius, Length - 1));
             float radiusSq = radius * radius;
             for (int yy = yBeg; yy <= yEnd; yy++)
-            {
                 for (int zz = zBeg; zz <= zEnd; zz++)
-                {
                     for (int xx = xBeg; xx <= xEnd; xx++)
                     {
                         int dx = xx - x, dy = yy - y, dz = zz - z;
@@ -28,8 +26,6 @@ namespace MCGalaxy.Generator.Classic
                                 blocks[index] = block;
                         }
                     }
-                }
-            }
         }
         void FloodFill(int startIndex, byte block)
         {

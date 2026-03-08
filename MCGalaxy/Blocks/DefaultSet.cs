@@ -53,14 +53,12 @@ namespace MCGalaxy.Blocks
         public static bool FullBright(ushort b) => b == Block.Lava || b == Block.StillLava
                 || b == Block.MagmaBlock || b == Block.Fire;
         /// <summary> Gets the default fog density of a block, in packed form. </summary>
-        public static byte FogDensity(ushort b)
+        public static byte FogDensity(ushort b) => b switch
         {
-            if (b == Block.Water || b == Block.StillWater)
-                return 11;
-            if (b == Block.Lava || b == Block.StillLava)
-                return 229;
-            return 0;
-        }
+            Block.Water or Block.StillWater => 11,
+            Block.Lava or Block.StillLava => 229,
+            _ => 0
+        };
         /// <summary> Gets the default fog color of a block. </summary>
         public static ColorDesc FogColor(ushort b) => b == Block.Water || b == Block.StillWater
                 ? new(5, 5, 51)
@@ -76,43 +74,41 @@ namespace MCGalaxy.Blocks
             if (b == Block.Glass) return SoundType.Glass;
             if (b == Block.Rope) return SoundType.Cloth;
             if (Draw(b) == 5) return SoundType.None;
-            if (b >= Block.Red && b <= Block.White)
-                return SoundType.Cloth;
-            if (b >= Block.LightPink && b <= Block.Turquoise)
-                return SoundType.Cloth;
-            if (b == Block.Iron || b == Block.Gold)
-                return SoundType.Metal;
-            if (b == Block.Bookshelf || b == Block.Wood
-                || b == Block.Log || b == Block.Crate || b == Block.Fire)
-                return SoundType.Wood;
-            if (b == Block.Rope) return SoundType.Cloth;
-            if (b == Block.Sand) return SoundType.Sand;
-            if (b == Block.Snow) return SoundType.Snow;
-            if (b == Block.Glass) return SoundType.Glass;
-            if (b == Block.Dirt || b == Block.Gravel)
-                return SoundType.Gravel;
-            return b == Block.Grass || b == Block.Sapling || b == Block.TNT
+            return b switch
+            {
+                >= Block.Red and <= Block.White => SoundType.Cloth,
+                >= Block.LightPink and <= Block.Turquoise => SoundType.Cloth,
+                Block.Iron or Block.Gold => SoundType.Metal,
+                Block.Bookshelf or Block.Wood
+or Block.Log or Block.Crate or Block.Fire => SoundType.Wood,
+                Block.Rope => SoundType.Cloth,
+                Block.Sand => SoundType.Sand,
+                Block.Snow => SoundType.Snow,
+                Block.Glass => SoundType.Glass,
+                Block.Dirt or Block.Gravel => SoundType.Gravel,
+                _ => b == Block.Grass || b == Block.Sapling || b == Block.TNT
                 || b == Block.Leaves || b == Block.Sponge
                 ? SoundType.Grass
                 : b >= Block.Dandelion && b <= Block.RedMushroom
                 ? SoundType.Grass
                 : b >= Block.Water && b <= Block.StillLava
                 ? SoundType.None
-                : b >= Block.Stone && b <= Block.StoneBrick ? SoundType.Stone : SoundType.None;
+                : b >= Block.Stone && b <= Block.StoneBrick ? SoundType.Stone : SoundType.None
+            };
         }
         /// <summary> Gets the default draw type of a block, see DrawType class. </summary>
-        public static byte Draw(ushort b)
+        public static byte Draw(ushort b) => b switch
         {
-            if (b == Block.Air || b == Block.Invalid) return 4;
-            if (b == Block.Leaves) return 2;
-            return b == Block.Ice || b == Block.Water || b == Block.StillWater
-                ? (byte)3
-                : b == Block.Glass || b == Block.Leaves
-                ? (byte)1
-                : b >= Block.Dandelion && b <= Block.RedMushroom
-                ? (byte)5
-                : b == Block.Sapling || b == Block.Rope || b == Block.Fire ? (byte)5 : (byte)0;
-        }
+            Block.Air or Block.Invalid => 4,
+            Block.Leaves => 2,
+            _ => b == Block.Ice || b == Block.Water || b == Block.StillWater
+            ? (byte)3
+            : b == Block.Glass || b == Block.Leaves
+            ? (byte)1
+            : b >= Block.Dandelion && b <= Block.RedMushroom
+            ? (byte)5
+            : b == Block.Sapling || b == Block.Rope || b == Block.Fire ? (byte)5 : (byte)0
+        };
         const string RawNames = "Air_Stone_Grass_Dirt_Cobblestone_Wood_Sapling_Bedrock_Water_Still water_Lava" +
             "_Still lava_Sand_Gravel_Gold ore_Iron ore_Coal ore_Log_Leaves_Sponge_Glass_Red_Orange_Yellow_Lime_Green" +
             "_Teal_Aqua_Cyan_Blue_Indigo_Violet_Magenta_Pink_Black_Gray_White_Dandelion_Rose_Brown mushroom_Red mushroom" +

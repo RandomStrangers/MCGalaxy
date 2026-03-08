@@ -35,24 +35,16 @@ namespace MCGalaxy
         {
             string PlayerName;
             if (CheckSuper(p, message, "player name"))
-            {
                 return;
-            }
             if (string.IsNullOrEmpty(message))
-            {
                 PlayerName = p.name;
-            }
             else
             {
                 PlayerData target = PlayerDB.Match(p, message);
                 if (target != null)
-                {
                     PlayerName = target.Name;
-                }
                 else
-                {
                     return;
-                }
             }
             string file = NAS.GetDeathPath(PlayerName);
             if (!File.Exists(file))
@@ -66,16 +58,12 @@ namespace MCGalaxy
             for (long i = 0; i < deaths2.LongLength; i++)
             {
                 if (!deaths2[i].IsNullOrWhiteSpace())
-                {
                     foreach (char c in deaths2[i])
                     {
                         string cString = c.ToString();
                         if (char.IsWhiteSpace(c))
-                        {
                             deaths2[i] = deaths2[i].Replace(cString, "");
-                        }
                     }
-                }
                 if (deaths2[i].IsNullOrWhiteSpace())
                 {
                     deaths2[i] = null;
@@ -109,16 +97,12 @@ namespace MCGalaxy
             for (long i = 0; i < deaths2.LongLength; i++)
             {
                 if (!deaths2[i].IsNullOrWhiteSpace())
-                {
                     foreach (char c in deaths2[i])
                     {
                         string cString = c.ToString();
                         if (char.IsWhiteSpace(c))
-                        {
                             deaths2[i] = deaths2[i].Replace(cString, "");
-                        }
                     }
-                }
                 if (deaths2[i].IsNullOrWhiteSpace())
                 {
                     deaths2[i] = null;
@@ -322,9 +306,7 @@ namespace MCGalaxy
         {
             breakX = breakY = breakZ = ushort.MaxValue;
             if (p.Extras.Contains("NAS_taskDisplayMeter"))
-            {
                 NASBlockChange.breakScheduler.Cancel((SchedulerTask)p.Extras["NAS_taskDisplayMeter"]);
-            }
         }
         public void SaveStatsTask(SchedulerTask _) => Save();
         public void Save()
@@ -386,38 +368,24 @@ namespace MCGalaxy
                     yPlacing = y,
                     zPlacing = z;
                 if (face == TargetBlockFace.AwayX)
-                {
                     xPlacing++;
-                }
                 if (face == TargetBlockFace.TowardsX)
-                {
                     xPlacing--;
-                }
                 if (face == TargetBlockFace.AwayY)
-                {
                     yPlacing++;
-                }
                 if (face == TargetBlockFace.TowardsY)
-                {
                     yPlacing--;
-                }
                 if (face == TargetBlockFace.AwayZ)
-                {
                     zPlacing++;
-                }
                 if (face == TargetBlockFace.TowardsZ)
-                {
                     zPlacing--;
-                }
                 if (p.Level.GetBlock(xPlacing, yPlacing, zPlacing) == 0)
                 {
                     AABB worldAABB = bounds.OffsetPosition(p.Pos),
                         blockAABB = new(0, 0, 0, 32, 32, 32);
                     blockAABB = blockAABB.Offset(xPlacing * 32, yPlacing * 32, zPlacing * 32);
                     if (!AABB.Intersects(ref worldAABB, ref blockAABB))
-                    {
                         return;
-                    }
                 }
             }
             ushort serverushort = p.Level.GetBlock(x, y, z),
@@ -428,9 +396,7 @@ namespace MCGalaxy
                 if (!CanDoStuffBasedOnPosition)
                 {
                     if (action == MouseAction.Released)
-                    {
                         Message("&cPlease wait a moment before interacting with blocks");
-                    }
                     return;
                 }
                 nasBlock.interaction(this, button, action, nasBlock, x, y, z);
@@ -468,46 +434,32 @@ namespace MCGalaxy
             }
             int expRequired;
             if (levels <= 16)
-            {
                 expRequired = 2 * levels + 7;
-            }
             else
             {
                 if (levels <= 31)
-                {
                     expRequired = 5 * levels - 38;
-                }
                 else
-                {
                     expRequired = 9 * levels - 158;
-                }
             }
             exp += amount;
             while (exp >= expRequired)
             {
                 if (exp >= expRequired && levels == 99)
-                {
                     exp = expRequired - 1;
-                }
                 if (exp >= expRequired)
                 {
                     exp -= expRequired;
                     levels += 1;
                 }
                 if (levels <= 16)
-                {
                     expRequired = 2 * levels + 7;
-                }
                 else
                 {
                     if (levels <= 31)
-                    {
                         expRequired = 5 * levels - 38;
-                    }
                     else
-                    {
                         expRequired = 9 * levels - 158;
-                    }
                 }
             }
         }
@@ -515,9 +467,7 @@ namespace MCGalaxy
         {
             levels += amount;
             if (levels > 99)
-            {
                 levels = 99;
-            }
         }
         public int GetExp() => levels <= 16
                 ? exp + (int)Math.Pow(levels, 2) + 6 * levels
@@ -527,50 +477,28 @@ namespace MCGalaxy
         public static void ClickOnPlayer(Player p, byte entity, MouseButton button, MouseAction action)
         {
             NASPlayer np = GetPlayer(p);
-            if (entity == 0xFF)
-            {
+            if (entity == 0xFF || (button == MouseButton.Right && np.inventory.HeldItem.Prop.knockback >= 0) || (button == MouseButton.Left && np.inventory.HeldItem.Prop.knockback < 0) || button == MouseButton.Middle || action == MouseAction.Pressed)
                 return;
-            }
-            if ((button == MouseButton.Right && np.inventory.HeldItem.Prop.knockback >= 0) || (button == MouseButton.Left && np.inventory.HeldItem.Prop.knockback < 0) || button == MouseButton.Middle || action == MouseAction.Pressed)
-            {
-                return;
-            }
             if (!cooldowns.ContainsKey(p.name))
-            {
                 cooldowns.Add(p.name, DateTime.UtcNow);
-            }
             TimeSpan kbdelay = new(0);
             Player[] players = PlayerInfo.Online.Items;
             for (int i = 0; i < players.Length; i++)
             {
-                if (!p.EntityList.GetID(players[i], out byte ID))
-                {
+                if (!p.EntityList.GetID(players[i], out byte ID) || ID != entity)
                     continue;
-                }
-                if (ID != entity)
-                {
-                    continue;
-                }
                 Player who = players[i];
                 if (!np.CanDamage())
                 {
                     string reason = "";
                     if (np.p.Game.Referee)
-                    {
                         reason = "are a referee";
-                    }
                     if (np.p.invincible)
-                    {
                         reason = "are invincible";
-                    }
                     if (!np.pvpEnabled)
-                    {
                         reason = "do not have PVP enabled";
-                    }
                     if (!np.hasBeenSpawned)
-                    {
                         reason = "are not spawned";
-                    }
                     np.Message("&SYou cannot damage {0} &Sbecause you currently {1}.", who.DisplayName, reason);
                     return;
                 }
@@ -588,23 +516,17 @@ namespace MCGalaxy
                 }
                 StartCooldown(p, np.inventory.HeldItem.Prop.recharge + (int)(kbdelay.Ticks / TimeSpan.TicksPerMillisecond));
                 if (delta.LengthSquared > (reachSq + 1))
-                {
                     return;
-                }
                 NASItem Held = np.inventory.HeldItem;
                 if (Held.Prop.damage > 0.5f)
                 {
                     if (Held.TakeDamage(7))
-                    {
                         np.inventory.BreakItem(ref Held);
-                    }
                 }
                 else
                 {
                     if (Held.TakeDamage(1))
-                    {
                         np.inventory.BreakItem(ref Held);
-                    }
                 }
                 np.inventory.UpdateItemDisplay();
                 NASPlayer w = GetPlayer(who);
@@ -613,36 +535,22 @@ namespace MCGalaxy
                 {
                     string reason = "";
                     if (w.p.Game.Referee)
-                    {
                         reason = who.Pronouns.PresentVerb + " a referee";
-                    }
                     if (w.p.invincible)
-                    {
                         reason = who.Pronouns.PresentVerb + " invincible";
-                    }
                     if (w.headingToBed)
-                    {
                         reason = who.Pronouns.PresentVerb + " heading to bed";
-                    }
                     if (who.Pos.FeetBlockCoords.X == w.bedCoords[0] && who.Pos.FeetBlockCoords.Y == w.bedCoords[1] && who.Pos.FeetBlockCoords.Z == w.bedCoords[2])
-                    {
                         reason = who.Pronouns.PresentVerb + " in bed";
-                    }
                     if (!w.pvpEnabled)
                     {
                         if (who.Pronouns.Plural)
-                        {
                             reason = "do not have PVP enabled";
-                        }
                         else
-                        {
                             reason = "does not have PVP enabled";
-                        }
                     }
                     if (!w.hasBeenSpawned)
-                    {
                         reason = w.p.Pronouns.PresentVerb + " not spawned";
-                    }
                     np.Message("&SYou cannot damage {0} &Sbecause " + who.Pronouns.Subject + " currently {1}.", who.DisplayName, reason);
                     return;
                 }
@@ -650,9 +558,7 @@ namespace MCGalaxy
                 {
                     float added = 0;
                     if (np.inventory.HeldItem.Enchant("Sharpness") != 0)
-                    {
                         added += 1;
-                    }
                     added += np.inventory.HeldItem.Enchant("Sharpness") * 0.5f;
                     w.TakeDamage(np.inventory.HeldItem.Prop.damage + added, NASDamageSource.Entity, "@p %f" + who.Pronouns.PastVerb + " slain by " + p.ColoredName + " %fusing " + np.inventory.HeldItem.displayName);
                     NASFishingInfo info = new()
@@ -683,25 +589,17 @@ namespace MCGalaxy
                 yChange = -dir.Y;
             }
             if (who.Supports(CpeExt.VelocityControl) && p.Supports(CpeExt.VelocityControl))
-            {
                 who.Send(Packet.VelocityControl(-dir.X * mult, 0.5f + (yChange * mult), -dir.Z * mult, 0, 1, 0));
-            }
             else
-            {
                 p.Message("Please update to the latest ClassiCube build to hit with knockback.");
-            }
         }
         public void ChangeHealth(float diff)
         {
             HP += diff;
             if (HP < 0)
-            {
                 HP = 0;
-            }
             if (HP > 10)
-            {
                 HP = 10;
-            }
             DisplayHealth();
         }
         public float DamageSaved(bool takeDamage = false)
@@ -712,9 +610,7 @@ namespace MCGalaxy
             armor += SearchItem("leggings", takeDamage).Prop.armor;
             armor += SearchItem("boots", takeDamage).Prop.armor;
             if (armor > 20f)
-            {
                 armor = 20f;
-            }
             return armor;
         }
         public int EnchantLevels(string ench)
@@ -732,58 +628,33 @@ namespace MCGalaxy
             int i, index = 0;
             bool done = false;
             for (i = 0; i < inventory.items.Length; i++)
-            {
-                if (inventory.items[i] != null)
+                if (inventory.items[i] != null && inventory.items[i].armor > armor &&
+                    inventory.items[i].name.CaselessContains(type))
                 {
-                    if (inventory.items[i].armor > armor &&
-                        inventory.items[i].name.CaselessContains(type))
-                    {
-                        armor = inventory.items[i].Prop.armor;
-                        index = i;
-                        done = true;
-                        break;
-                    }
+                    armor = inventory.items[i].Prop.armor;
+                    index = i;
+                    done = true;
+                    break;
                 }
-            }
             NASItem saved = new("Key");
             if (done)
-            {
                 saved = inventory.items[index];
-            }
             if (done)
-            {
                 saved.enchants = inventory.items[index].enchants;
-            }
             if (armor > 0f && takeDamage)
             {
                 double toolDamageChance = 60 + (40.0 / inventory.items[index].Enchant("Unbreaking") + 1);
                 Random r = new();
                 if (r.NextDouble() < toolDamageChance && inventory.items[index].TakeDamage(1))
-                {
                     inventory.BreakItem(ref inventory.items[index]);
-                }
                 inventory.UpdateItemDisplay();
             }
             return saved;
         }
         public override bool CanTakeDamage(NASDamageSource source)
         {
-            if (!pvpEnabled && (source == NASDamageSource.Murder || source == NASDamageSource.Entity))
-            {
+            if (!pvpEnabled && (source == NASDamageSource.Murder || source == NASDamageSource.Entity) || p.invincible || p.Game.Referee || headingToBed || p.Pos.FeetBlockCoords.X == bedCoords[0] && p.Pos.FeetBlockCoords.Y == bedCoords[1] && p.Pos.FeetBlockCoords.Z == bedCoords[2])
                 return false;
-            }
-            if (p.invincible || p.Game.Referee)
-            {
-                return false;
-            }
-            if (headingToBed)
-            {
-                return false;
-            }
-            if (p.Pos.FeetBlockCoords.X == bedCoords[0] && p.Pos.FeetBlockCoords.Y == bedCoords[1] && p.Pos.FeetBlockCoords.Z == bedCoords[2])
-            {
-                return false;
-            }
             if (!hasBeenSpawned)
             {
                 Message("If you get this message for more than 5 seconds, rejoin.");
@@ -793,9 +664,7 @@ namespace MCGalaxy
             {
                 TimeSpan timeSinceSuffocation = DateTime.UtcNow.Subtract(lastSuffocationDate);
                 if (timeSinceSuffocation.TotalMilliseconds < 500)
-                {
                     return false;
-                }
                 lastSuffocationDate = DateTime.UtcNow;
             }
             return true;
@@ -813,34 +682,20 @@ namespace MCGalaxy
         public override bool TakeDamage(float damage, NASDamageSource source, string customDeathReason = "")
         {
             if (HP > 10)
-            {
                 HP = 10;
-            }
-            if (!CanTakeDamage(source))
-            {
+            if (!CanTakeDamage(source) || damage == 0)
                 return false;
-            }
-            if (damage == 0)
-            {
-                return false;
-            }
             if (source != NASDamageSource.Drowning)
             {
                 damage *= 1 - ((1 - (damage / 50)) * (DamageSaved(true) * 0.04f));
                 damage *= 1 - (EnchantLevels("Protection") * 0.04f);
                 if (damage > 1f)
-                {
                     damage = (float)Math.Round(damage * 2f) / 2f;
-                }
             }
             if (source == NASDamageSource.Falling && EnchantLevels("Feather Falling") > 0)
-            {
                 damage = Math.Max(0, damage - EnchantLevels("Feather Falling"));
-            }
             if (damage == 0)
-            {
                 return false;
-            }
             ChangeHealth(-damage);
             curFogColor = new(255, 255, 0, 0);
             Position next = p.Pos;
@@ -848,38 +703,19 @@ namespace MCGalaxy
                 z = Utils.Clamp(next.BlockZ, 0, (ushort)(p.Level.Length - 1));
             ushort y = (ushort)Utils.Clamp(next.BlockY, 0, (ushort)(p.Level.Height - 1));
             if (y < NASGen.oceanHeight)
-            {
                 y = NASGen.oceanHeight;
-            }
             float fogMultiplier = 1f + (damage * damage * 0.08f);
             int distanceBelow = nl.biome < 0 ? 0 : y - next.BlockY;
-            if (distanceBelow >= NASGen.diamondDepth)
-            {
-                curRenderDistance = 128 * fogMultiplier;
-            }
-            else if (distanceBelow >= NASGen.goldDepth)
-            {
-                curRenderDistance = 192 * fogMultiplier;
-            }
-            else if (distanceBelow >= NASGen.ironDepth)
-            {
-                curRenderDistance = 192 * fogMultiplier;
-            }
-            else if (distanceBelow >= NASGen.coalDepth || nl.biome < 0)
-            {
-                curRenderDistance = 256 * fogMultiplier;
-            }
-            else
-            {
-                curRenderDistance = Server.Config.MaxFogDistance * 0.7f;
-            }
+            curRenderDistance = distanceBelow >= NASGen.diamondDepth
+                ? 128 * fogMultiplier
+                : distanceBelow >= NASGen.goldDepth || distanceBelow >= NASGen.ironDepth
+                    ? 192 * fogMultiplier
+                    : distanceBelow >= NASGen.coalDepth || nl.biome < 0 ? 256 * fogMultiplier : Server.Config.MaxFogDistance * 0.7f;
             DisplayHealth("f", "&7[", "&7]");
             if (HP <= 0)
             {
                 if (customDeathReason.Length == 0)
-                {
                     customDeathReason = DeathReason(source, p);
-                }
                 if (source == NASDamageSource.Entity)
                 {
                     GetPlayer(lastAttackedPlayer).kills++;
@@ -905,30 +741,20 @@ namespace MCGalaxy
         {
             NASDrop deathDrop = new(inventory);
             if (deathDrop.blockStacks == null && deathDrop.items == null)
-            {
                 return;
-            }
             Vec3S32 gravePos = p.Pos.FeetBlockCoords;
             p.Level.ClampPos(gravePos);
             int x = gravePos.X,
                 y = gravePos.Y,
                 z = gravePos.Z;
             if (x < 0)
-            {
                 x = 0;
-            }
             if (z < 0)
-            {
                 z = 0;
-            }
             if (x > 383)
-            {
                 x = 383;
-            }
             if (z > 383)
-            {
                 z = 383;
-            }
             while (!CanPlaceGraveStone(x, y, z))
             {
                 y++;
@@ -952,18 +778,12 @@ namespace MCGalaxy
         public string OxygenString()
         {
             if (Air == 10)
-            {
                 return "";
-            }
             if (Air == 0)
-            {
                 return "&r?";
-            }
             StringBuilder builder = new("", 16);
             for (int i = 0; i < Air; ++i)
-            {
                 builder.Append('°');
-            }
             return builder.ToString();
         }
         public bool CanPlaceGraveStone(int x, int y, int z) => NASBlock.CanPhysicsKillThis(nl.GetBlock(x, y, z)) || NASBlock.IsThisLiquid(nl.GetBlock(x, y, z));
@@ -972,37 +792,32 @@ namespace MCGalaxy
         public string HealthString(string healthColor)
         {
             if (HP > 10)
-            {
                 HP = 10;
-            }
             StringBuilder builder = new("&8", 16);
             float totalLostHealth = 10 - HP,
                 lostHealthRemaining = totalLostHealth;
             for (int i = 0; i < totalLostHealth; ++i)
             {
-                if (lostHealthRemaining < 1)
+                switch (lostHealthRemaining)
                 {
-                    builder.Append("&" + healthColor + "╝");
-                }
-                else
-                {
-                    builder.Append("♥");
+                    case < 1:
+                        builder.Append("&" + healthColor + "╝");
+                        break;
+                    default:
+                        builder.Append("♥");
+                        break;
                 }
                 lostHealthRemaining--;
             }
             builder.Append("&" + healthColor);
             for (int i = 0; i < (int)HP; ++i)
-            {
                 builder.Append("♥");
-            }
             return builder.ToString();
         }
         public string AttackRecharge()
         {
             if (!cooldowns.ContainsKey(p.name))
-            {
                 return "&aα";
-            }
             double cooldownPercent = (cooldowns[p.name] - DateTime.UtcNow).TotalMilliseconds / inventory.HeldItem.Prop.recharge;
             return cooldownPercent >= 0.66
                 ? "&4α"
@@ -1029,44 +844,32 @@ namespace MCGalaxy
             {
                 Air -= 0.03125f;
                 if (Air < 0)
-                {
                     Air = 0;
-                }
             }
             else
             {
                 Air += 0.03125f;
                 if (Air > 10)
-                {
                     Air = 10;
-                }
             }
             if (Air == 0)
-            {
                 TakeDamage(0.125f, NASDamageSource.Drowning);
-            }
             if (Air != AirPrev && Air == Math.Floor(Air))
-            {
                 DisplayHealth();
-            }
         }
         public void UpdateHeldBlock()
         {
             ushort clientushort = ConvertBlock(p.ClientHeldBlock);
             NASBlock nasBlock = NASBlock.Get(clientushort);
             if (nasBlock.parentID != heldNasBlock.parentID)
-            {
                 inventory.DisplayHeldBlock(nasBlock);
-            }
             heldNasBlock = nasBlock;
         }
         public void Teleport(string message)
         {
             bool preciseTP = message.CaselessStarts("-precise ");
             if (preciseTP)
-            {
                 message = message.Substring("-precise ".Length);
-            }
             string[] args = message.SplitSpaces();
             TeleportCoords(args, preciseTP);
         }
@@ -1081,35 +884,27 @@ namespace MCGalaxy
             {
                 P = p.Pos.FeetBlockCoords;
                 if (!CommandParser.GetCoords(p, args, 0, ref P))
-                {
                     return false;
-                }
                 pos = Position.FromFeetBlockCoords(P.X, P.Y, P.Z);
             }
             else
             {
                 P = new(p.Pos.X, p.Pos.Y - 51, p.Pos.Z);
                 if (!CommandParser.GetCoords(p, args, 0, ref P))
-                {
                     return false;
-                }
                 pos = new(P.X, P.Y + 51, P.Z);
             }
             int angle = 0;
             if (args.Length > 3)
             {
                 if (!CommandParser.GetInt(p, args[3], "Yaw angle", ref angle, -360, 360))
-                {
                     return false;
-                }
                 yaw = Orientation.DegreesToPacked(angle);
             }
             if (args.Length > 4)
             {
                 if (!CommandParser.GetInt(p, args[4], "Pitch angle", ref angle, -360, 360))
-                {
                     return false;
-                }
                 pitch = Orientation.DegreesToPacked(angle);
             }
             return true;
@@ -1117,21 +912,15 @@ namespace MCGalaxy
         public void TeleportCoords(string[] args, bool precise)
         {
             if (!GetTeleportCoords(p, args, precise, out Position pos, out byte yaw, out byte pitch))
-            {
                 return;
-            }
             PlayerOperations.TeleportToCoords(p, pos, new(yaw, pitch));
         }
         public void SendToMain()
         {
             if (p.Level == Server.mainLevel)
-            {
                 PlayerActions.Respawn(p);
-            }
             else
-            {
                 PlayerActions.ChangeMap(p, Server.mainLevel);
-            }
         }
     }
 }

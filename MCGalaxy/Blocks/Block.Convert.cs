@@ -55,22 +55,13 @@ namespace MCGalaxy
         public static string GetColoredName(Player p, ushort block) => Group.GetColor(BlockPerms.GetPlace(block).MinRank) + GetName(p, block);
         /// <summary> Converts a block &lt;= CPE_MAX_BLOCK into a suitable
         /// block compatible for the given classic protocol version </summary>
-        public static byte ConvertClassic(byte block, byte protocolVersion)
+        public static byte ConvertClassic(byte block, byte protocolVersion) => protocolVersion switch
         {
-            if (protocolVersion >= 7)
-            {
-                return block <= Obsidian ? block : v7_fallback[block - CobblestoneSlab];
-            }
-            if (protocolVersion >= 6)
-            {
-                return block <= Gold ? block : v6_fallback[block - Iron];
-            }
-            if (protocolVersion >= 5)
-            {
-                return block <= Glass ? block : v5_fallback[block - Red];
-            }
-            return block <= Leaves ? block : v4_fallback[block - Sponge];
-        }
+            >= 7 => block <= Obsidian ? block : v7_fallback[block - CobblestoneSlab],
+            >= 6 => block <= Gold ? block : v6_fallback[block - Iron],
+            >= 5 => block <= Glass ? block : v5_fallback[block - Red],
+            _ => block <= Leaves ? block : v4_fallback[block - Sponge]
+        };
         static readonly byte[] v7_fallback = {
                Slab,      Mushroom, Sand,     Air, Lava, Pink,     Green,      Dirt,
                Blue,    Cyan,     Glass, Iron,       Obsidian, White, Wood, Stone

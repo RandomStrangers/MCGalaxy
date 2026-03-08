@@ -47,14 +47,10 @@ namespace MCGalaxy.Network
             {
                 int copy = Math.Min(1024 - index, count);
                 if (copy <= 8)
-                {
                     for (int i = 0; i < copy; i++)
                         data[index + i + 3] = buffer[offset + i];
-                }
                 else
-                {
                     Buffer.BlockCopy(buffer, offset, data, index + 3, copy);
-                }
                 offset += copy; 
                 index += copy; 
                 count -= copy;
@@ -84,20 +80,14 @@ namespace MCGalaxy.Network
             using LevelChunkStream dst = new(session);
             using Stream stream = dst.CompressMapHeader(volume);
             if (level.MightHaveCustomBlocks())
-            {
                 CompressMap(level, stream, dst);
-            }
             else
-            {
                 CompressMapSimple(level, stream, dst);
-            }
         }
         Stream CompressMapHeader(int volume)
         {
             if (session.Supports(CpeExt.FastMap))
-            {
                 return new DeflateStream(this, CompressionMode.Compress, true);
-            }
             Stream stream = new GZipStream(this, CompressionMode.Compress, true);
             byte[] buffer = new byte[4];
             NetUtils.WriteI32(volume, buffer, 0);
@@ -114,9 +104,7 @@ namespace MCGalaxy.Network
             float progScale = 100.0f / blocks.Length;
             byte* conv = stackalloc byte[256];
             for (int i = 0; i < 256; i++)
-            {
                 conv[i] = (byte)s.ConvertBlock((ushort)i);
-            }
             for (int i = 0; i < blocks.Length; ++i)
             {
                 buffer[bIndex] = conv[blocks[i]];
@@ -143,9 +131,7 @@ namespace MCGalaxy.Network
                 convExt2 = conv + 256 * 2,
                 convExt3 = conv + 256 * 3;
             for (int j = 0; j < 1024; j++)
-            {
                 conv[j] = (byte)s.ConvertBlock((ushort)j);
-            }
             if (s.hasExtBlocks)
             {
                 int i;
@@ -153,21 +139,11 @@ namespace MCGalaxy.Network
                 {
                     byte block = blocks[i];
                     if (block == 163)
-                    {
                         buffer[bIndex] = lvl.GetExtTile(i);
-                    }
-                    else if (block == 198)
-                    {
+                    else if (block == 198 || block == 199)
                         break;
-                    }
-                    else if (block == 199)
-                    {
-                        break;
-                    }
                     else
-                    {
                         buffer[bIndex] = conv[block];
-                    }
                     bIndex++;
                     if (bIndex == bufferSize)
                     {
@@ -225,22 +201,11 @@ namespace MCGalaxy.Network
                 for (int i = 0; i < blocks.Length; i++)
                 {
                     byte block = blocks[i];
-                    if (block == 163)
+                    buffer[bIndex] = block switch
                     {
-                        buffer[bIndex] = convExt[lvl.GetExtTile(i)];
-                    }
-                    else if (block == 198)
-                    {
-                        buffer[bIndex] = convExt2[lvl.GetExtTile(i)];
-                    }
-                    else if (block == 199)
-                    {
-                        buffer[bIndex] = convExt3[lvl.GetExtTile(i)];
-                    }
-                    else
-                    {
-                        buffer[bIndex] = conv[block];
-                    }
+                        163 => convExt[lvl.GetExtTile(i)],
+                        _ => block == 198 ? convExt2[lvl.GetExtTile(i)] : block == 199 ? convExt3[lvl.GetExtTile(i)] : conv[block],
+                    };
                     bIndex++;
                     if (bIndex == bufferSize)
                     {

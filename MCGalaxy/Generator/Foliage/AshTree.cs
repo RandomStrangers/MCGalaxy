@@ -39,9 +39,7 @@ namespace MCGalaxy.Generator.Foliage
                 p2 = new(x, y + height, z);
             Line(p1, p2, output);
             for (int i = 0; i < branchAmount; i++)
-            {
                 DoBranch(x, y, z, output);
-            }
         }
         void DoBranch(int x, int y, int z, TreeOutput output)
         {
@@ -66,9 +64,7 @@ namespace MCGalaxy.Generator.Foliage
         {
             LineDrawOp.DrawLine(p1.X, p1.Y, p1.Z, 10000, p2.X, p2.Y, p2.Z, branch);
             foreach (Vec3S32 P in branch)
-            {
                 output((ushort)P.X, (ushort)P.Y, (ushort)P.Z, TrunkBlock);
-            }
             branch.Clear();
         }
     }

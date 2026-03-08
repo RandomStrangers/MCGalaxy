@@ -46,29 +46,32 @@ namespace MCGalaxy.Maths
         public readonly AABB Adjust(int x, int y, int z)
         {
             AABB bb = this;
-            if (x >= 0)
+            switch (x)
             {
-                bb.Max.X += x;
+                case >= 0:
+                    bb.Max.X += x;
+                    break;
+                default:
+                    bb.Min.X += x;
+                    break;
             }
-            else
+            switch (y)
             {
-                bb.Min.X += x;
+                case >= 0:
+                    bb.Max.Y += y;
+                    break;
+                default:
+                    bb.Min.Y += y;
+                    break;
             }
-            if (y >= 0)
+            switch (z)
             {
-                bb.Max.Y += y;
-            }
-            else
-            {
-                bb.Min.Y += y;
-            }
-            if (z >= 0)
-            {
-                bb.Max.Z += z;
-            }
-            else
-            {
-                bb.Min.Z += z;
+                case >= 0:
+                    bb.Max.Z += z;
+                    break;
+                default:
+                    bb.Min.Z += z;
+                    break;
             }
             return bb;
         }
@@ -97,28 +100,20 @@ namespace MCGalaxy.Maths
                         ushort block = lvl.GetBlock((ushort)x, (ushort)y, (ushort)z);
                         AABB blockBB = lvl.blockAABBs[block].Offset(x * 32, y * 32, z * 32);
                         if (!Intersects(ref bb, ref blockBB))
-                        {
                             continue;
-                        }
                         BlockDefinition def = lvl.GetBlockDef(block);
                         if (def != null)
                         {
                             if (DefaultSet.IsSolid(def.CollideType))
-                            {
                                 return true;
-                            }
                         }
                         else if (block == Block.Invalid)
                         {
                             if (y < lvl.Height)
-                            {
                                 return true;
-                            }
                         }
                         else if (!Block.Walkthrough(Block.Convert(block)))
-                        {
                             return true;
-                        }
                     }
                 }
             }
@@ -129,9 +124,7 @@ namespace MCGalaxy.Maths
             Vec3S32 min = bb.BlockMin, max = bb.BlockMax;
             int volume = (max.X - min.X + 1) * (max.Y - min.Y + 1) * (max.Z - min.Z + 1);
             if (volume > aabbs.Length)
-            {
                 aabbs = new AABB[volume];
-            }
             int count = 0;
             for (int y = min.Y; y <= max.Y; y++)
             {
@@ -148,23 +141,15 @@ namespace MCGalaxy.Maths
                         blockBB.Max.Y += y * 32;
                         blockBB.Max.Z += z * 32;
                         if (!Intersects(ref bb, ref blockBB))
-                        {
                             continue;
-                        }
                         BlockDefinition def = lvl.GetBlockDef(block);
                         bool solid;
                         if (def != null)
-                        {
                             solid = DefaultSet.IsSolid(def.CollideType);
-                        }
                         else
-                        {
                             solid = block == Block.Invalid || !Block.Walkthrough(Block.Convert(block));
-                        }
                         if (!solid)
-                        {
                             continue;
-                        }
                         aabbs[count] = blockBB;
                         count++;
                     }

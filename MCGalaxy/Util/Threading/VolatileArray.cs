@@ -31,9 +31,7 @@ namespace MCGalaxy
                 for (int i = 0; i < Items.Length; i++)
                 {
                     if (ReferenceEquals(Items[i], value))
-                    {
                         return false;
-                    }
                     newItems[i] = Items[i];
                 }
                 newItems[Items.Length] = value;
@@ -44,15 +42,9 @@ namespace MCGalaxy
         public bool Contains(T value)
         {
             lock (locker)
-            {
                 for (int i = 0; i < Items.Length; i++)
-                {
                     if (ReferenceEquals(Items[i], value))
-                    {
                         return true;
-                    }
-                }
-            }
             return false;
         }
         public bool Remove(T value)
@@ -60,21 +52,15 @@ namespace MCGalaxy
             lock (locker)
             {
                 if (Items.Length == 0)
-                {
                     return false;
-                }
                 T[] newItems = new T[Items.Length - 1];
                 int j = 0;
                 for (int i = 0; i < Items.Length; i++)
                 {
                     if (ReferenceEquals(Items[i], value))
-                    {
                         continue;
-                    }
                     if (j == newItems.Length)
-                    {
                         return false;
-                    }
                     newItems[j] = Items[i];
                     j++;
                 }
@@ -82,15 +68,11 @@ namespace MCGalaxy
                 {
                     T[] temp = new T[j];
                     for (int i = 0; i < temp.Length; i++)
-                    {
                         temp[i] = newItems[i];
-                    }
                     Items = temp;
                 }
                 else
-                {
                     Items = newItems;
-                }
             }
             return true;
         }
@@ -99,14 +81,10 @@ namespace MCGalaxy
             lock (locker)
             {
                 if (Items.Length == 0)
-                {
                     return false;
-                }
                 T[] newItems = new T[Items.Length - 1];
                 for (int i = 1; i < Items.Length; i++)
-                {
                     newItems[i - 1] = Items[i];
-                }
                 Items = newItems;
             }
             return true;
@@ -114,9 +92,7 @@ namespace MCGalaxy
         public void Clear()
         {
             lock (locker)
-            {
                 Items = new T[0];
-            }
         }
     }
 }

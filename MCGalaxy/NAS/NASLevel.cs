@@ -99,9 +99,7 @@ namespace MCGalaxy
             foreach (Level lvl in loadedLevels)
             {
                 if (!all.ContainsKey(lvl.name))
-                {
                     return;
-                }
                 Unload(lvl.name, all[lvl.name]);
             }
             OnLevelLoadedEvent.Unregister(OnLevelLoaded);
@@ -113,9 +111,7 @@ namespace MCGalaxy
         public bool Save(string name = "")
         {
             if (string.IsNullOrEmpty(name))
-            {
                 name = lvl.name;
-            }
             EndTickTask();
             lvl.Save(true);
             string jsonString = JsonConvert.SerializeObject(this, Formatting.Indented),
@@ -128,41 +124,27 @@ namespace MCGalaxy
         public static NASLevel Get(string name)
         {
             if (all.ContainsKey(name))
-            {
                 return all[name];
-            }
             else
             {
                 NASLevel nl = new();
                 string fileName = GetFileName(name);
-                if (File.Exists(fileName))
-                {
-                    string jsonString = FileIO.TryReadAllText(fileName);
-                    nl = JsonConvert.DeserializeObject<NASLevel>(jsonString);
-                    return nl;
-                }
-                return nl;
+                return File.Exists(fileName) ? JsonConvert.DeserializeObject<NASLevel>(FileIO.TryReadAllText(fileName)) : nl;
             }
         }
         public static void Unload(string name, NASLevel nl) => nl.Save(name);
         public static int MakeInt(string seed)
         {
             if (seed.Length == 0)
-            {
                 return new Random().Next();
-            }
             if (!int.TryParse(seed, out int value))
-            {
                 value = seed.GetHashCode();
-            }
             return value;
         }
         public static void OnLevelLoaded(Level lvl)
         {
             if (NASBlock.blocksIndexedByServerushort == null)
-            {
                 return;
-            }
             NASLevel nl;
             string fileName = GetFileName(lvl.name);
             if (File.Exists(fileName))
@@ -171,22 +153,16 @@ namespace MCGalaxy
                 nl = JsonConvert.DeserializeObject<NASLevel>(jsonString);
                 nl.lvl = lvl;
                 if (!all.ContainsKey(lvl.name))
-                {
                     all.Add(lvl.name, nl);
-                }
                 nl.BeginTickTask();
                 if (nl.biome < 0)
-                {
                     nl.dungeons = false;
-                }
                 if (nl.dungeons)
                 {
                     Random rng = new(MakeInt(lvl.name));
                     int dungeonCount = rng.Next(3, 6);
                     for (int done = 0; done <= dungeonCount; done++)
-                    {
                         NASGen.GenerateDungeon(rng, lvl, nl);
-                    }
                     nl.dungeons = true;
                 }
             }
@@ -194,18 +170,14 @@ namespace MCGalaxy
         public static void OnLevelUnload(Level lvl, ref bool cancel)
         {
             if (!all.ContainsKey(lvl.name))
-            {
                 return;
-            }
             Unload(lvl.name, all[lvl.name]);
         }
         public static void OnLevelDeleted(string name)
         {
             string fileName = Path + name + Extension;
             if (File.Exists(fileName))
-            {
                 FileIO.TryDelete(fileName);
-            }
         }
         public static void OnLevelRenamed(string srcMap, string dstMap)
         {
@@ -220,9 +192,7 @@ namespace MCGalaxy
         {
             TickScheduler ??= new("NASLevelTickScheduler");
             foreach (NASBlockLocation blockLoc in blocksThatMustBeDisturbed)
-            {
                 DisturbBlock(blockLoc.X, blockLoc.Y, blockLoc.Z);
-            }
             blocksThatMustBeDisturbed.Clear();
             schedulerTask = TickScheduler.QueueRepeat(TickLevelCallback, this, tickDelay);
         }
@@ -231,17 +201,13 @@ namespace MCGalaxy
             TickScheduler ??= new("NASLevelTickScheduler");
             TickScheduler.Cancel(schedulerTask);
             if (tickQueue.Count == 0)
-            {
                 return;
-            }
             blocksThatMustBeDisturbed = new();
             foreach (NASQueuedBlockUpdate qb in tickQueue)
             {
                 NASBlockLocation blockLoc = new(qb);
                 if (blocksThatMustBeDisturbed.Contains(blockLoc))
-                {
                     continue;
-                }
                 blocksThatMustBeDisturbed.Add(blockLoc);
             }
             tickQueue.Clear();
@@ -249,23 +215,17 @@ namespace MCGalaxy
         public static void TickLevelCallback(SchedulerTask task)
         {
             if (task.State != null)
-            {
                 (task.State as NASLevel)?.Tick();
-            }
         }
         public void Tick()
         {
             if (tickQueue.Count < 1)
-            {
                 return;
-            }
             int actions = 0;
             while (tickQueue.First.date < DateTime.UtcNow)
             {
                 if (actions > 64)
-                {
                     break;
-                }
                 NASQueuedBlockUpdate qb = tickQueue.First;
                 if (lvl != null)
                 {
@@ -273,31 +233,16 @@ namespace MCGalaxy
                     if (block > 0)
                     {
                         ushort u = NASBlock.blocksIndexedByServerushort[block].selfID;
-                        if (u > 0)
-                        {
-                            if (u == qb.nb.selfID)
-                            {
-                                if (this != null)
-                                {
-                                    if (qb.nb != null)
-                                    {
-                                        qb.da(this, qb.nb, qb.x, qb.y, qb.z);
-                                    }
-                                }
-                            }
-                        }
+                        if (u > 0 && u == qb.nb.selfID && this != null && qb.nb != null)
+                            qb.da(this, qb.nb, qb.x, qb.y, qb.z);
                     }
                 }
                 else
-                {
                     return;
-                }
                 tickQueue.Dequeue();
                 actions++;
                 if (tickQueue.Count < 1)
-                {
                     break;
-                }
             }
         }
         public void SetBlock(int x, int y, int z, ushort serverushort, bool disturbDiagonals = false)
@@ -310,9 +255,7 @@ namespace MCGalaxy
                 z >= lvl.Length ||
                 z < 0 ||
                 serverushort == 255)
-            {
                 return;
-            }
             lvl.Blockchange((ushort)x, (ushort)y, (ushort)z, serverushort);
             DisturbBlocks(x, y, z, disturbDiagonals);
         }
@@ -330,9 +273,7 @@ namespace MCGalaxy
                 y < 0 ||
                 z >= lvl.Length ||
                 z < 0)
-            {
                 return;
-            }
             DisturbBlocks(x, y, z, disturbDiagonals);
         }
         public void DisturbBlocks(int x, int y, int z, bool diagonals = false)
@@ -340,21 +281,13 @@ namespace MCGalaxy
             if (diagonals)
             {
                 for (int xOff = -1; xOff <= 1; xOff++)
-                {
                     for (int yOff = -1; yOff <= 1; yOff++)
-                    {
                         for (int zOff = -1; zOff <= 1; zOff++)
-                        {
                             DisturbBlock(x, y, z, xOff, yOff, zOff);
-                        }
-                    }
-                }
                 return;
             }
             if (NASBlock.IsPartOfSet(observers, lvl.GetBlock((ushort)x, (ushort)y, (ushort)z)) == -1)
-            {
                 DisturbBlock(x, y, z);
-            }
             DisturbBlock(x, y, z, 1, 0, 0);
             DisturbBlock(x, y, z, -1, 0, 0);
             DisturbBlock(x, y, z, 0, 1, 0);
@@ -371,59 +304,37 @@ namespace MCGalaxy
                 y + changeY < 0 ||
                 z + changeZ >= lvl.Length ||
                 z + changeZ < 0)
-            {
                 return;
-            }
             ushort block = lvl.FastGetBlock((ushort)(x + changeX), (ushort)(y + changeY), (ushort)(z + changeZ));
             int index = NASBlock.IsPartOfSet(observers, block);
             if (index == -1)
-            {
                 index = NASBlock.IsPartOfSet(repeatersOff, block);
-            }
             if (index == -1)
-            {
                 index = NASBlock.IsPartOfSet(repeatersOn, block);
-            }
             if (index != -1 && Math.Abs(changeX) + Math.Abs(changeY) + Math.Abs(changeZ) == 1)
             {
                 bool cancel = true;
                 if (index == 0 && changeZ == 1)
-                {
                     cancel = false;
-                }
                 if (index == 1 && changeX == -1)
-                {
                     cancel = false;
-                }
                 if (index == 2 && changeZ == -1)
-                {
                     cancel = false;
-                }
                 if (index == 3 && changeX == 1)
-                {
                     cancel = false;
-                }
                 if (index == 4 && changeY == -1)
-                {
                     cancel = false;
-                }
                 if (index == 5 && changeY == 1)
-                {
                     cancel = false;
-                }
                 if (cancel)
-                {
                     return;
-                }
             }
             x += changeX;
             y += changeY;
             z += changeZ;
             NASBlock nb = NASBlock.blocksIndexedByServerushort[block];
             if (nb.disturbedAction == null)
-            {
                 return;
-            }
             NASQueuedBlockUpdate qb = new()
             {
                 x = x,
@@ -437,9 +348,7 @@ namespace MCGalaxy
             qb.da = nb.disturbedAction;
             tickQueue.Enqueue(qb, qb.date);
             if (nb.instantAction == null)
-            {
                 return;
-            }
             qb = new()
             {
                 x = x,

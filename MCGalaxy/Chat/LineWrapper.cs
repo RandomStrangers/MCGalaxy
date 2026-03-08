@@ -47,8 +47,11 @@ namespace MCGalaxy
         static bool IsWrapper(char[] line, int i)
         {
             char c = line[i];
-            if (c == ' ') return true;
-            return (c == '-' || c == '\\') && line[i - 1] != ' ';
+            return c switch
+            {
+                ' ' => true,
+                _ => (c == '-' || c == '\\') && line[i - 1] != ' '
+            };
         }
         static bool StartsWithColor(char[] message, int messageLen, int offset) => message[offset] == '&'
                 && (offset + 1) < messageLen

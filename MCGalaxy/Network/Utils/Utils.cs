@@ -27,9 +27,15 @@ namespace MCGalaxy.Network
             if (ip.AddressFamily == AddressFamily.InterNetwork)
             {
                 byte[] addr = ip.GetAddressBytes();
-                if (addr[0] == 172 && addr[1] >= 16 && addr[1] <= 31) return true;
-                if (addr[0] == 192 && addr[1] == 168) return true;
-                if (addr[0] == 10) return true;
+                switch (addr[0])
+                {
+                    case 172 when addr[1] >= 16 && addr[1] <= 31:
+                        return true;
+                    case 192 when addr[1] == 168:
+                        return true;
+                    case 10:
+                        return true;
+                }
             }
             return ip.IsIPv6LinkLocal;
         }
@@ -39,9 +45,7 @@ namespace MCGalaxy.Network
             if (ip.AddressFamily != AddressFamily.InterNetworkV6) return false;
             byte[] addr = ip.GetAddressBytes();
             for (int i = 0; i < 10; i++)
-            {
                 if (addr[i] != 0) return false;
-            }
             return addr[10] == 0xFF && addr[11] == 0xFF;
         }
         /// <summary> Converts an IPv4 mapped IPv6 address into an IPv4 address </summary>

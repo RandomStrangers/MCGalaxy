@@ -27,42 +27,26 @@ namespace MCGalaxy.Modules.Compiling
         {
             string[] args = message.SplitSpaces();
             bool plugin = args[0].CaselessEq("plugin");
-            string name;
-            if (plugin)
-            {
-                name = args.Length > 1 ? args[1] : "";
-            }
-            else
-            {
-                name = args[0];
-            }
+            string name = plugin ? args.Length > 1 ? args[1] : "" : args[0];
             if (name.Length == 0)
             {
                 Help(p);
                 return;
             }
             if (!Formatter.ValidFilename(p, name))
-            {
                 return;
-            }
             string[] paths = name.SplitComma();
             if (plugin)
-            {
                 CompilePlugin(p, paths);
-            }
             else
-            {
                 CompileCommand(p, paths);
-            }
         }
         protected virtual void CompilePlugin(Player p, string[] paths)
         {
             string pln = paths[0],
                 dstPath = Compiler.PluginDLLPath(pln);
             for (int i = 0; i < paths.Length; i++)
-            {
                 paths[i] = Compiler.PluginPath(paths[i]);
-            }
             paths = TryDirectory(Compiler.PLUGINS_DIR, pln, paths);
             Compile(p, "Plugin", paths, dstPath);
         }
@@ -71,9 +55,7 @@ namespace MCGalaxy.Modules.Compiling
             foreach (string path in srcs)
             {
                 if (File.Exists(path))
-                {
                     continue;
-                }
                 p.Message("File &9{0} &Snot found.", path);
                 return;
             }
@@ -91,14 +73,10 @@ namespace MCGalaxy.Modules.Compiling
                           Compiler.DescribeError(err, srcs, " #" + err.ErrorNumber));
                 logged++;
                 if (logged >= 5)
-                {
                     break;
-                }
             }
             if (logged < errors.Count)
-            {
                 p.Message(" &W.. and {0} more", errors.Count - logged);
-            }
             p.Message("&WCompiling failed. See " + Compiler.ERROR_LOG_PATH + " for more detail");
         }
         protected virtual void CompileCommand(Player p, string[] paths)
@@ -106,18 +84,14 @@ namespace MCGalaxy.Modules.Compiling
             string cmd = paths[0],
                 dstPath = Compiler.CommandDLLPath(cmd);
             for (int i = 0; i < paths.Length; i++)
-            {
                 paths[i] = Compiler.CommandPath(paths[i]);
-            }
             paths = TryDirectory(Compiler.COMMANDS_SOURCE_DIR, cmd, paths);
             Compile(p, "Command", paths, dstPath);
         }
         string[] TryDirectory(string root, string name, string[] srcPaths)
         {
             if (File.Exists(srcPaths[0]))
-            {
                 return srcPaths;
-            }
             string dir = Path.Combine(root, name);
             return !Directory.Exists(dir) ? srcPaths : FileIO.TryGetFiles(dir, "*" + Compiler.FileExtension);
         }

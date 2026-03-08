@@ -43,9 +43,7 @@ namespace MCGalaxy
             byte[][] customBlocks = CustomBlocks;
             if (customBlocks == null) return false;
             for (int i = 0; i < customBlocks.Length; i++)
-            {
                 if (customBlocks[i] != null) return true;
-            }
             return false;
         }
         /// <summary> Converts the given coordinates to a position index </summary>
@@ -162,9 +160,7 @@ namespace MCGalaxy
                 FastSetExtTile(x, y, z, (byte)block);
             }
             else
-            {
                 blocks[index] = (byte)block;
-            }
         }
         /// <summary> Returns the AccessController denying the player from changing blocks at the given coordinates. </summary>
         /// <remarks> If no AccessController denies the player, returns null. </remarks>
@@ -209,9 +205,7 @@ namespace MCGalaxy
         {
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
-            {
                 if (p.Level == this) p.SendBlockchange(x, y, z, block);
-            }
         }
         public void Blockchange(Player p, ushort x, ushort y, ushort z, ushort block)
         {
@@ -231,13 +225,9 @@ namespace MCGalaxy
                 if (!CheckAffect(p, x, y, z, old, block)) return ChangeResult.Unchanged;
                 if (old == block) return ChangeResult.Unchanged;
                 if (old == 19 && LevelPhysics > 0 && block != 19)
-                {
                     OtherPhysics.DoSpongeRemoved(this, PosToInt(x, y, z), false);
-                }
                 if (old == 109 && LevelPhysics > 0 && block != 109)
-                {
                     OtherPhysics.DoSpongeRemoved(this, PosToInt(x, y, z), true);
-                }
                 p.TotalModified++;
                 if (drawn) p.TotalDrawn++;
                 else if (block == 0) p.TotalDeleted++;
@@ -252,9 +242,7 @@ namespace MCGalaxy
                 {
                     SetTile(x, y, z, (byte)block);
                     if (old >= 256)
-                    {
                         FastRevertExtTile(x, y, z);
-                    }
                 }
                 errorLocation = "Adding physics";
                 if (LevelPhysics > 0 && ActivatesPhysics(block)) AddCheck(PosToInt(x, y, z));
@@ -290,27 +278,19 @@ namespace MCGalaxy
             if (extended > 0) old = (ushort)(extended | GetExtTile(b));
             try
             {
-                if (!overRide)
-                {
-                    if (Props[old].OPBlock || (Props[block].OPBlock && data.Raw != 0)) return false;
-                }
+                if (!overRide && (Props[old].OPBlock || (Props[block].OPBlock && data.Raw != 0)))
+                    return false;
                 if (old == 19 && LevelPhysics > 0 && block != 19)
-                {
                     OtherPhysics.DoSpongeRemoved(this, b, false);
-                }
                 if (old == 109 && LevelPhysics > 0 && block != 109)
-                {
                     OtherPhysics.DoSpongeRemoved(this, b, true);
-                }
                 if (addUndo)
                 {
                     UndoPos uP = default;
                     uP.Index = b;
                     uP.SetData(old, block);
                     if (UndoBuffer.Count < Server.Config.PhysicsUndo)
-                    {
                         UndoBuffer.Add(uP);
-                    }
                     else
                     {
                         if (currentUndo >= Server.Config.PhysicsUndo)
@@ -336,9 +316,7 @@ namespace MCGalaxy
                     }
                 }
                 if (LevelPhysics > 0 && (ActivatesPhysics(block) || data.Raw != 0))
-                {
                     AddCheck(b, false, data);
-                }
                 return !Block.VisuallyEquals(old, block);
             }
             catch
@@ -356,13 +334,9 @@ namespace MCGalaxy
             BlockDB.Cache.Add(p, x, y, z, flags, old, block);
             if (result == ChangeResult.VisuallySame) return;
             if (buffered)
-            {
                 p.Level.blockqueue.Add(index, block);
-            }
             else
-            {
                 BroadcastChange(x, y, z, block);
-            }
         }
         public Vec3S32 ClampPos(Vec3S32 P)
         {

@@ -54,9 +54,7 @@ namespace MCGalaxy.Modules.Awards
         public static List<string> Get(string player)
         {
             foreach (PlayerAward a in Awards)
-            {
                 if (a.Player.CaselessEq(player)) return a.Awards;
-            }
             return null;
         }
         /// <summary> Returns a summarised form of the player's awards </summary>
@@ -68,9 +66,7 @@ namespace MCGalaxy.Modules.Awards
             if (awards == null || total == 0) return "0/" + total + " (0%)";
             int count = 0;
             for (int i = 0; i < awards.Count; i++)
-            {
                 if (AwardsList.Exists(awards[i])) count++;
-            }
             double percentHas = Math.Round((double)count / total * 100, 2);
             return count + "/" + total + " (" + percentHas + "%)";
         }
@@ -79,10 +75,8 @@ namespace MCGalaxy.Modules.Awards
         {
             lock (saveLock)
                 using (StreamWriter w = FileIO.CreateGuarded("text/playerAwards.txt"))
-                {
                     foreach (PlayerAward a in Awards)
                         w.WriteLine(a.Player + " : " + a.Awards.Join(","));
-                }
         }
         public static void Load()
         {
@@ -98,16 +92,10 @@ namespace MCGalaxy.Modules.Awards
                 Awards = new()
             };
             if (value.IndexOf(',') != -1)
-            {
                 foreach (string award in value.Split(','))
-                {
                     a.Awards.Add(award);
-                }
-            }
             else
-            {
                 a.Awards.Add(value);
-            }
             Awards.Add(a);
         }
     }

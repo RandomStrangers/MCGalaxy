@@ -42,9 +42,7 @@ namespace MCGalaxy.Generator.Foliage
             Line(p1, p2, output);
             GenCluster(x, y + trunkHeight, z, output);
             for (int i = 0; i < numBranches; i++)
-            {
                 MakeBranch(x, y, z, output);
-            }
         }
         void MakeBranch(int x, int y, int z, TreeOutput output)
         {
@@ -75,23 +73,15 @@ namespace MCGalaxy.Generator.Foliage
         void Cuboid(Vec3S32 p1, Vec3S32 p2, TreeOutput output)
         {
             for (int y = p1.Y; y <= p2.Y; y++)
-            {
                 for (int z = p1.Z; z <= p2.Z; z++)
-                {
                     for (int x = p1.X; x <= p2.X; x++)
-                    {
                         output((ushort)x, (ushort)y, (ushort)z, LeafBlock);
-                    }
-                }
-            }
         }
         void Line(Vec3S32 p1, Vec3S32 p2, TreeOutput output)
         {
             LineDrawOp.DrawLine(p1.X, p1.Y, p1.Z, 10000, p2.X, p2.Y, p2.Z, branch);
             foreach (Vec3S32 P in branch)
-            {
                 output((ushort)P.X, (ushort)P.Y, (ushort)P.Z, TrunkBlock);
-            }
             branch.Clear();
         }
     }

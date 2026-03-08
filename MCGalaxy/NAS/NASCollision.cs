@@ -12,9 +12,7 @@ namespace MCGalaxy
         {
             NASBlock.blocksIndexedByServerushort = new NASBlock[1024];
             for (ushort blockID = 0; blockID < 1024; blockID++)
-            {
                 NASBlock.blocksIndexedByServerushort[blockID] = GetNasBlockAndFillInCollisionInformation(blockID, lvl);
-            }
             NASLevel.OnLevelLoaded(lvl);
         }
         public static NASBlock GetNasBlockAndFillInCollisionInformation(ushort serverushort, Level lvl)
@@ -45,14 +43,8 @@ namespace MCGalaxy
                         break;
                 }
             }
-            else if (serverushort >= 256)
-            {
-                bounds = new(0, 0, 0, 32, 32, 32);
-            }
             else
-            {
-                bounds = new(0, 0, 0, 32, DefaultSet.Height(Block.Convert(serverushort)) * 2, 32);
-            }
+                bounds = serverushort >= 256 ? new(0, 0, 0, 32, 32, 32) : new(0, 0, 0, 32, DefaultSet.Height(Block.Convert(serverushort)) * 2, 32);
             NASBlock nb = NASBlock.Get(ConvertToClientushort(serverushort));
             if (nb.fallDamageMultiplier == -1)
             {
@@ -66,17 +58,16 @@ namespace MCGalaxy
         public static ushort ConvertToClientushort(ushort serverushort)
         {
             ushort clientushort;
-            if (serverushort >= 256)
+            switch (serverushort)
             {
-                clientushort = Block.ToRaw(serverushort);
-            }
-            else
-            {
-                clientushort = Block.Convert(serverushort);
-                if (clientushort >= 66)
-                {
-                    clientushort = 2;
-                }
+                case >= 256:
+                    clientushort = Block.ToRaw(serverushort);
+                    break;
+                default:
+                    clientushort = Block.Convert(serverushort);
+                    if (clientushort >= 66)
+                        clientushort = 2;
+                    break;
             }
             return clientushort;
         }
@@ -88,19 +79,13 @@ namespace MCGalaxy
             entityPos.X += entityAABB.Max.X;
             entityPos.Z += entityAABB.Max.Z;
             if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier))
-            {
                 return true;
-            }
             entityPos.X += entityAABB.Min.X * 2;
             if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier))
-            {
                 return true;
-            }
             entityPos.Z += entityAABB.Min.Z * 2;
             if (NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier))
-            {
                 return true;
-            }
             entityPos.X += entityAABB.Max.X * 2;
             return NASTouchesGround(lvl, worldAABB, entityPos, out fallDamageMultiplier);
         }
@@ -114,14 +99,10 @@ namespace MCGalaxy
                                                  (ushort)y,
                                                  (ushort)z);
             if (serverushort == 0)
-            {
                 return false;
-            }
             NASBlock nasBlock = NASBlock.blocksIndexedByServerushort[serverushort];
             if (!nasBlock.collides)
-            {
                 return false;
-            }
             fallDamageMultiplier = nasBlock.fallDamageMultiplier;
             AABB blockAABB = nasBlock.bounds;
             blockAABB.Max.Y = 32;

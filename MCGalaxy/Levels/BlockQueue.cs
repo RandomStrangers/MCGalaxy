@@ -33,12 +33,8 @@ namespace MCGalaxy
         {
             Level[] loaded = LevelInfo.Loaded.Items;
             foreach (Level lvl in loaded)
-            {
                 lock (lvl.blockqueue.locker)
-                {
                     lvl.blockqueue.Process(lvl);
-                }
-            }
             bulkSender.level = null;
             task.Delay = TimeSpan.FromMilliseconds(Interval);
         }

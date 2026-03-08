@@ -34,8 +34,14 @@ namespace MCGalaxy
         public override string Serialise(object value)
         {
             int num = (int)value;
-            if (num == -1) return "-1.0";
-            if (num == EnvConfig.ENV_USE_DEFAULT) num = -1;
+            switch (num)
+            {
+                case -1:
+                    return "-1.0";
+                case EnvConfig.ENV_USE_DEFAULT:
+                    num = -1;
+                    break;
+            }
             return NumberUtils.StringifyInt(num);
         }
     }
@@ -141,42 +147,42 @@ namespace MCGalaxy
             LightingModeLocked = false;
         }
         internal const int ENV_COLOR_COUNT = 7;
-        public string GetColor(int i)
+        public string GetColor(int i) => i switch
         {
-            if (i == 0) return SkyColor;
-            if (i == 1) return CloudColor;
-            if (i == 2) return FogColor;
-            if (i == 3) return ShadowColor;
-            return i == 4 ? LightColor : i == 5 ? SkyboxColor : i == 6 ? LavaLightColor : i == 7 ? LampLightColor : null;
-        }
-        public int GetEnvProp(EnvProp i)
+            0 => SkyColor,
+            1 => CloudColor,
+            2 => FogColor,
+            3 => ShadowColor,
+            _ => i == 4 ? LightColor : i == 5 ? SkyboxColor : i == 6 ? LavaLightColor : i == 7 ? LampLightColor : null
+        };
+        public int GetEnvProp(EnvProp i) => i switch
         {
-            if (i == EnvProp.SidesBlock) return EdgeBlock;
-            if (i == EnvProp.EdgeBlock) return HorizonBlock;
-            if (i == EnvProp.EdgeLevel) return EdgeLevel;
-            if (i == EnvProp.CloudsLevel) return CloudsHeight;
-            if (i == EnvProp.MaxFog) return MaxFogDistance;
-            if (i == EnvProp.CloudsSpeed) return CloudsSpeed;
-            if (i == EnvProp.WeatherSpeed) return WeatherSpeed;
-            if (i == EnvProp.WeatherFade) return WeatherFade;
-            if (i == EnvProp.ExpFog) return ExpFog;
-            return i == EnvProp.SidesOffset
-                ? SidesOffset
-                : i == EnvProp.SkyboxHorSpeed
-                ? SkyboxHorSpeed
-                : i == EnvProp.SkyboxVerSpeed ? SkyboxVerSpeed : i == EnvProp.Weather ? Weather : ENV_USE_DEFAULT;
-        }
+            EnvProp.SidesBlock => EdgeBlock,
+            EnvProp.EdgeBlock => HorizonBlock,
+            EnvProp.EdgeLevel => EdgeLevel,
+            EnvProp.CloudsLevel => CloudsHeight,
+            EnvProp.MaxFog => MaxFogDistance,
+            EnvProp.CloudsSpeed => CloudsSpeed,
+            EnvProp.WeatherSpeed => WeatherSpeed,
+            EnvProp.WeatherFade => WeatherFade,
+            EnvProp.ExpFog => ExpFog,
+            _ => i == EnvProp.SidesOffset
+            ? SidesOffset
+            : i == EnvProp.SkyboxHorSpeed
+            ? SkyboxHorSpeed
+            : i == EnvProp.SkyboxVerSpeed ? SkyboxVerSpeed : i == EnvProp.Weather ? Weather : ENV_USE_DEFAULT
+        };
         /// <summary> Calculates the default value for the given env property </summary>
-        public static int DefaultEnvProp(EnvProp i, int height)
+        public static int DefaultEnvProp(EnvProp i, int height) => i switch
         {
-            if (i == EnvProp.SidesBlock) return Block.Bedrock;
-            if (i == EnvProp.EdgeBlock) return Block.Water;
-            if (i == EnvProp.EdgeLevel) return height / 2;
-            if (i == EnvProp.CloudsLevel) return height + 2;
-            return i == EnvProp.CloudsSpeed
-                ? 256
-                : i == EnvProp.WeatherSpeed ? 256 : i == EnvProp.WeatherFade ? 128 : i == EnvProp.SidesOffset ? -2 : 0;
-        }
+            EnvProp.SidesBlock => Block.Bedrock,
+            EnvProp.EdgeBlock => Block.Water,
+            EnvProp.EdgeLevel => height / 2,
+            EnvProp.CloudsLevel => height + 2,
+            _ => i == EnvProp.CloudsSpeed
+            ? 256
+            : i == EnvProp.WeatherSpeed ? 256 : i == EnvProp.WeatherFade ? 128 : i == EnvProp.SidesOffset ? -2 : 0
+        };
     }
     public abstract class AreaConfig : EnvConfig
     {

@@ -41,25 +41,17 @@ namespace MCGalaxy
             {
                 Dictionary<ushort, int> patternCost = new();
                 for (int x = 0; x < pattern.GetLength(1); x++)
-                {
                     for (int y = 0; y < pattern.GetLength(0); y++)
-                    {
                         FillDict(NASBlock.Get(pattern[y, x]).parentID, ref patternCost);
-                    }
-                }
                 return patternCost;
             }
         }
         public static void FillDict(ushort ID, ref Dictionary<ushort, int> stacks)
         {
             if (stacks.ContainsKey(ID))
-            {
                 stacks[ID]++;
-            }
             else
-            {
                 stacks.Add(ID, 1);
-            }
         }
         public bool MatchesShapeless(NASBlock[,] area)
         {
@@ -68,33 +60,20 @@ namespace MCGalaxy
             Dictionary<ushort, int> patternStacks = new(),
                 areaStacks = new();
             for (int patternX = 0; patternX < patternWidth; patternX++)
-            {
                 for (int patternY = 0; patternY < patternHeight; patternY++)
-                {
-                    ushort required = pattern[patternY, patternX];
-                    FillDict(required, ref patternStacks);
-                }
-            }
+                    FillDict(pattern[patternY, patternX], ref patternStacks);
             for (int x = 0; x < 3; x++)
-            {
                 for (int y = 0; y < 3; y++)
                 {
                     NASBlock suppliedNB = area[x, y];
                     if (usesAlternateID)
-                    {
                         suppliedNB = NASBlock.Get(suppliedNB.alternateID);
-                    }
                     FillDict(usesParentID ? suppliedNB.parentID : suppliedNB.selfID, ref areaStacks);
                 }
-            }
             bool matches = true;
             foreach (KeyValuePair<ushort, int> pair in patternStacks)
-            {
                 if (!(areaStacks.ContainsKey(pair.Key) && areaStacks[pair.Key] == pair.Value))
-                {
                     matches = false;
-                }
-            }
             return matches;
         }
         public bool Matches(NASBlock[,] area)
@@ -102,30 +81,17 @@ namespace MCGalaxy
             int patternWidth = pattern.GetLength(1),
                 patternHeight = pattern.GetLength(0);
             for (int x = 0; x < 3; x++)
-            {
                 for (int y = 0; y < 3; y++)
-                {
                     if (TestRecipe(area, x, y, true) || TestRecipe(area, x, y, false))
                     {
                         int minX = x, maxX = x + patternWidth,
                             minY = y, maxY = y + patternHeight;
                         for (int _x = 0; _x < 3; _x++)
-                        {
                             for (int _y = 0; _y < 3; _y++)
-                            {
-                                if (_x < minX || _x >= maxX || _y < minY || _y >= maxY)
-                                {
-                                    if (area[_x, _y].selfID != 0)
-                                    {
-                                        return false;
-                                    }
-                                }
-                            }
-                        }
+                                if ((_x < minX || _x >= maxX || _y < minY || _y >= maxY) && area[_x, _y].selfID != 0)
+                                    return false;
                         return true;
                     }
-                }
-            }
             return false;
         }
         public bool TestRecipe(NASBlock[,] area, int offsetX, int offsetY, bool mirrored)
@@ -133,25 +99,17 @@ namespace MCGalaxy
             int patternWidth = pattern.GetLength(1),
                 patternHeight = pattern.GetLength(0);
             if (offsetX + patternWidth > 3 || offsetY + patternHeight > 3)
-            {
                 return false;
-            }
             for (int x = 0; x < patternWidth; x++)
-            {
                 for (int y = 0; y < patternHeight; y++)
                 {
                     int xPattern = mirrored ? patternWidth - 1 - x : x;
                     NASBlock suppliedNB = area[x + offsetX, y + offsetY];
                     if (usesAlternateID)
-                    {
                         suppliedNB = NASBlock.Get(suppliedNB.alternateID);
-                    }
                     if ((usesParentID ? suppliedNB.parentID : suppliedNB.selfID) != pattern[y, xPattern])
-                    {
                         return false;
-                    }
                 }
-            }
             return true;
         }
     }
@@ -232,42 +190,26 @@ namespace MCGalaxy
         {
             bool WE = ori == NASOrientation.WE;
             if (WE)
-            {
                 startX--;
-            }
             else
-            {
                 startZ--;
-            }
             startY += 3;
             if (WE)
-            {
                 for (ushort y = startY; y > startY - 3; y--)
-                {
                     for (ushort x = startX; x < startX + 3; x++)
                     {
                         nl.SetBlock(x, y, startZ, 0);
                         if (nl.blockEntities.ContainsKey(x + " " + y + " " + startZ))
-                        {
                             nl.blockEntities.Remove(x + " " + y + " " + startZ);
-                        }
                     }
-                }
-            }
             else
-            {
                 for (ushort y = startY; y > startY - 3; y--)
-                {
                     for (ushort z = startZ; z < startZ + 3; z++)
                     {
                         nl.SetBlock(startX, y, z, 0);
                         if (nl.blockEntities.ContainsKey(startX + " " + y + " " + z))
-                        {
                             nl.blockEntities.Remove(startX + " " + y + " " + z);
-                        }
                     }
-                }
-            }
         }
         public static NASRecipe GetRecipe(NASLevel nl, ushort x, ushort y, ushort z, NASStation station)
         {
@@ -275,20 +217,14 @@ namespace MCGalaxy
             foreach (NASRecipe recipe in recipes)
             {
                 if (recipe.stationType != station.type)
-                {
                     continue;
-                }
                 if (recipe.shapeless)
                 {
                     if (recipe.MatchesShapeless(area))
-                    {
                         return recipe;
-                    }
                 }
                 else if (recipe.Matches(area))
-                {
                     return recipe;
-                }
             }
             return null;
         }
@@ -297,38 +233,30 @@ namespace MCGalaxy
             NASBlock[,] area = new NASBlock[3, 3];
             bool WE = ori == NASOrientation.WE;
             if (WE)
-            {
                 startX--;
-            }
             else
-            {
                 startZ--;
-            }
             startY += 3;
             int indexX = 0, indexY = 0;
             if (WE)
-            {
                 for (ushort y = startY; y > startY - 3; y--)
                 {
                     for (ushort x = startX; x < startX + 3; x++)
                     {
                         ushort blockID = nl.lvl.GetBlock(x, y, startZ);
                         if (blockID == 0xff)
-                        {
                             blockID = 0;
-                        }
                         ushort num;
-                        if (blockID >= 256)
+                        switch (blockID)
                         {
-                            num = Block.ToRaw(blockID);
-                        }
-                        else
-                        {
-                            num = Block.Convert(blockID);
-                            if (num >= 66)
-                            {
-                                num = 22;
-                            }
+                            case >= 256:
+                                num = Block.ToRaw(blockID);
+                                break;
+                            default:
+                                num = Block.Convert(blockID);
+                                if (num >= 66)
+                                    num = 22;
+                                break;
                         }
                         NASBlock nb = NASBlock.Get(num);
                         area[indexX, indexY] = nb;
@@ -337,30 +265,25 @@ namespace MCGalaxy
                     indexX = 0;
                     indexY++;
                 }
-            }
             else
-            {
                 for (ushort y = startY; y > startY - 3; y--)
                 {
                     for (ushort z = startZ; z < startZ + 3; z++)
                     {
                         ushort blockID = nl.lvl.GetBlock(startX, y, z);
                         if (blockID == 0xff)
-                        {
                             blockID = 0;
-                        }
                         ushort num;
-                        if (blockID >= 256)
+                        switch (blockID)
                         {
-                            num = Block.ToRaw(blockID);
-                        }
-                        else
-                        {
-                            num = Block.Convert(blockID);
-                            if (num >= 66)
-                            {
-                                num = 22;
-                            }
+                            case >= 256:
+                                num = Block.ToRaw(blockID);
+                                break;
+                            default:
+                                num = Block.Convert(blockID);
+                                if (num >= 66)
+                                    num = 22;
+                                break;
                         }
                         NASBlock nb = NASBlock.Get(num);
                         area[indexX, indexY] = nb;
@@ -369,7 +292,6 @@ namespace MCGalaxy
                     indexX = 0;
                     indexY++;
                 }
-            }
             return area;
         }
     }

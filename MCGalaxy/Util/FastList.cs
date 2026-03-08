@@ -25,17 +25,13 @@ namespace MCGalaxy.Util
         public void Add(T item)
         {
             if (Count == Items.Length)
-            {
                 EnsureCapacity(Count + 1);
-            }
             Items[Count++] = item;
         }
         public void Clear()
         {
             if (Count == 0)
-            {
                 return;
-            }
             Array.Clear(Items, 0, Count);
             Count = 0;
         }
@@ -43,27 +39,19 @@ namespace MCGalaxy.Util
         {
             Count--;
             if (index < Count)
-            {
                 Array.Copy(Items, index + 1, Items, index, Count - index);
-            }
             Items[Count] = default;
         }
         void EnsureCapacity(int threshold)
         {
             if (Items.Length >= threshold)
-            {
                 return;
-            }
             int newSize = Items.Length * 2;
             if (newSize < threshold)
-            {
                 newSize = threshold;
-            }
             T[] array = new T[newSize];
             if (Count > 0)
-            {
                 Array.Copy(Items, 0, array, 0, Count);
-            }
             Items = array;
         }
     }

@@ -54,9 +54,7 @@ namespace MCGalaxy
             {
                 BlockDefinition def = BlockDefinition.GlobalDefs[Block.FromRaw(blockID)];
                 if (def == null && blockID < 66)
-                {
                     def = DefaultSet.MakeCustomBlock(Block.FromRaw(blockID));
-                }
                 if (def == null)
                 {
                     blockColors[blockID] = new(255,255,255,255);
@@ -72,29 +70,21 @@ namespace MCGalaxy
         public static void SetBreakID(byte value)
         {
             if (value <= 249)
-            {
                 value = 255;
-            }
             BreakEffectID = value;
         }
         public static void BreakBlock(NASPlayer np, ushort x, ushort y, ushort z, ushort serverushort, NASBlock nasBlock)
         {
             if (np.nl == null)
-            {
                 return;
-            }
             ushort here = np.p.Level.GetBlock(x, y, z);
             if (here != serverushort)
-            {
                 return;
-            }
             if (nasBlock.container != null &&
                 np.nl.blockEntities.ContainsKey(x + " " + y + " " + z) &&
                 (np.nl.blockEntities[x + " " + y + " " + z].drop != null || !np.nl.blockEntities[x + " " + y + " " + z].CanAccess(np))
                )
-            {
                 return;
-            }
             if (np.isInserting)
             {
                 np.Message("&ePlease insert items into the container before breaking blocks.");
@@ -108,10 +98,8 @@ namespace MCGalaxy
                 np.GiveExp(r.Next(nasBlock.expGivenMin, nasBlock.expGivenMax + 1));
             }
             else
-            {
                 np.Message("Why the hell are you trying to get {0}? It's not even a real block..",
                           Block.GetName(np.p, serverushort));
-            }
             nasBlock.existAction?.Invoke(np, nasBlock, false, x, y, z);
             np.p.Level.BlockDB.Cache.Add(np.p, x, y, z, 1 << 0, here, 0);
             np.nl.SetBlock(x, y, z, 0);
@@ -125,7 +113,7 @@ namespace MCGalaxy
             if (!np.hasBeenSpawned)
             {
                 np.Message("&chasBeenSpawned is &cfalse&S, this shouldn't happen if you didn't just die.");
-                np.Message("&bPlease report to junesolis1819 on Discord what you were doing before this happened");
+                np.Message("&bPlease report to " + NAS.DiscordAccountName + " on Discord what you were doing before this happened");
             }
         }
         public static void CancelPlacedBlock(Player p, ushort x, ushort y, ushort z, NASPlayer np, ref bool cancel)
@@ -133,16 +121,12 @@ namespace MCGalaxy
             cancel = true;
             p.RevertBlock(x, y, z);
             if (!np.isDead)
-            {
                 np.Teleport("-precise ~ ~ ~");
-            }
         }
         public static void PlaceBlock(Player p, ushort x, ushort y, ushort z, ushort serverushort, bool placing, ref bool cancel)
         {
             if (p.Level.Config.Deletable && p.Level.Config.Buildable)
-            {
                 return;
-            }
             if (!placing)
             {
                 p.Message("&cYou shouldn't be allowed to do this.");
@@ -158,14 +142,11 @@ namespace MCGalaxy
                 CancelPlacedBlock(p, x, y, z, np, ref cancel);
                 return;
             }
-            if ((nasBlock.selfID == 10 || nasBlock.selfID == 476 || nasBlock.selfID == 178) && p.Level.name.Contains("0,0") && !p.Level.name.Contains("nether"))
+            if ((nasBlock.selfID == 10 || nasBlock.selfID == 476 || nasBlock.selfID == 178) && p.Level.name.Contains("0,0") && !p.Level.name.Contains("nether") && p.Rank < LevelPermission.Admin)
             {
-                if (p.Rank < LevelPermission.Admin)
-                {
-                    np.Message("&mCan't do that at 0,0.");
-                    CancelPlacedBlock(p, x, y, z, np, ref cancel);
-                    return;
-                }
+                np.Message("&mCan't do that at 0,0.");
+                CancelPlacedBlock(p, x, y, z, np, ref cancel);
+                return;
             }
             if (np.nl.GetBlock(x, y, z + 1) == Block.FromRaw(703) || np.nl.GetBlock(x, y - 1, z) == Block.FromRaw(703))
             {
@@ -199,9 +180,7 @@ namespace MCGalaxy
         public static void OnBlockChanged(Player p, ushort x, ushort y, ushort z, ChangeResult _)
         {
             if (p.Level.Config.Deletable && p.Level.Config.Buildable)
-            {
                 return;
-            }
             if (NASLevel.IsNASLevel(p.Level))
             {
                 NASBlock nasBlock = NASBlock.blocksIndexedByServerushort[p.Level.GetBlock(x, y, z)];
@@ -232,9 +211,7 @@ namespace MCGalaxy
                 double toolDamageChance = 1.0 / (breakInfo.toolUsed.Enchant("Unbreaking") + 1);
                 Random r = new();
                 if (r.NextDouble() < toolDamageChance && breakInfo.toolUsed.TakeDamage(nasBlock.damageDoneToTool))
-                {
                     np.inventory.BreakItem(ref breakInfo.toolUsed);
-                }
                 np.inventory.UpdateItemDisplay();
                 np.lastLeftClickReleaseDate = DateTime.UtcNow;
                 np.ResetBreaking();
@@ -297,21 +274,15 @@ namespace MCGalaxy
                 NASItem heldItem = np.inventory.HeldItem;
                 bool toolEffective = false;
                 if (heldItem.Prop.materialsEffectiveAgainst != null)
-                {
                     foreach (NASMaterial mat in heldItem.Prop.materialsEffectiveAgainst)
-                    {
                         if (nasBlock.material == mat)
                         {
                             toolEffective = true;
                             break;
                         }
-                    }
-                }
                 bool canBreakBlock = heldItem.Prop.tier >= nasBlock.tierOfToolNeededToBreak && toolEffective;
                 if (nasBlock.tierOfToolNeededToBreak <= 0)
-                {
                     canBreakBlock = true;
-                }
                 if (!canBreakBlock)
                 {
                     np.ResetBreaking();
@@ -321,17 +292,13 @@ namespace MCGalaxy
                 if (serverushort == 0)
                 {
                     if (np.lastAirClickDate == null)
-                    {
                         np.lastAirClickDate = DateTime.UtcNow;
-                    }
                     np.ResetBreaking();
                     NASEffect.UndefineEffect(p, 249);
                     return;
                 }
                 if (np.breakX == x && np.breakY == y && np.breakZ == z)
-                {
                     return;
-                }
                 NASEffect.UndefineEffect(p, 249);
                 np.breakX = x;
                 np.breakY = y;
@@ -362,9 +329,7 @@ namespace MCGalaxy
                     millisecs = (int)(millisecs * multiplier);
                 }
                 if (millisecs < 0)
-                {
                     millisecs = 0;
-                }
                 TimeSpan breakTime = TimeSpan.FromMilliseconds(np.SearchItem("helmet").Enchant("Aqua Affinity") == 0 && np.holdingBreath ? millisecs * 8 : millisecs);
                 if (np.lastAirClickDate != null)
                 {
@@ -407,35 +372,21 @@ namespace MCGalaxy
                 };
                 BlockDefinition def = BlockDefinition.GlobalDefs[Block.FromRaw(clientushort)];
                 if (def == null && clientushort < 66)
-                {
                     def = DefaultSet.MakeCustomBlock(Block.FromRaw(clientushort));
-                }
                 if (def != null)
                 {
                     if (face == TargetBlockFace.AwayX)
-                    {
                         DoOffset(def.MaxX, true, ref meterInfo.x);
-                    }
                     if (face == TargetBlockFace.TowardsX)
-                    {
                         DoOffset(def.MinX, false, ref meterInfo.x);
-                    }
                     if (face == TargetBlockFace.AwayY)
-                    {
                         DoOffset(def.MaxZ, true, ref meterInfo.y);
-                    }
                     if (face == TargetBlockFace.TowardsY)
-                    {
                         DoOffset(def.MinZ, false, ref meterInfo.y);
-                    }
                     if (face == TargetBlockFace.AwayZ)
-                    {
                         DoOffset(def.MaxY, true, ref meterInfo.z);
-                    }
                     if (face == TargetBlockFace.TowardsZ)
-                    {
                         DoOffset(def.MinY, false, ref meterInfo.z);
-                    }
                 }
                 p.Extras["NAS_taskDisplayMeter"] = breakScheduler.QueueOnce(MeterTask, meterInfo, TimeSpan.FromMilliseconds(100));
             }

@@ -47,13 +47,9 @@ namespace MCGalaxy.Games
             buffer.level = p.Level;
             AmmunitionData args = (AmmunitionData)task.State;
             if (args.moving)
-            {
                 args.moving = TickGun(args, buffer);
-            }
             else
-            {
                 task.Repeating = TickRevert(task, buffer);
-            }
             buffer.Flush();
         }
         bool TickGun(AmmunitionData args, BufferedBlockSender buffer)
@@ -63,9 +59,7 @@ namespace MCGalaxy.Games
                 Vec3U16 pos = args.PosAt(args.iterations);
                 args.iterations++;
                 ushort cur = p.Level.GetBlock(pos.X, pos.Y, pos.Z);
-                if (cur == Block.Invalid) return false;
-                if (cur != Block.Air && !args.all.Contains(pos) && OnHitBlock(args, pos, cur))
-                    return false;
+                if (cur == Block.Invalid || cur != Block.Air && !args.all.Contains(pos) && OnHitBlock(args, pos, cur)) return false;
                 buffer.Add(p.Level.PosToInt(pos.X, pos.Y, pos.Z), args.block);
                 args.visible.Add(pos);
                 args.all.Add(pos);
@@ -127,13 +121,9 @@ namespace MCGalaxy.Games
         protected override void OnHitPlayer(AmmunitionData args, Player pl)
         {
             if (pl.Level.LevelPhysics >= 3)
-            {
                 pl.HandleDeath(Block.Cobblestone, "@p &Swas blown up by " + p.ColoredName, true);
-            }
             else
-            {
                 base.OnHitPlayer(args, pl);
-            }
         }
     }
     public class LaserGun : ExplosiveGun
@@ -151,9 +141,7 @@ namespace MCGalaxy.Games
             else
             {
                 foreach (Vec3U16 pos in args.visible)
-                {
                     BufferedRevert(pos, buffer);
-                }
                 args.visible.Clear();
             }
             return args.visible.Count > 0;

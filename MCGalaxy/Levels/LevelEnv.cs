@@ -127,20 +127,15 @@ namespace MCGalaxy
                 {
                 }
                 else if (value.CaselessEq("sun"))
-                {
                     weather = 0;
-                }
                 else if (value.CaselessEq("rain"))
-                {
                     weather = 1;
-                }
                 else if (value.CaselessEq("snow"))
-                {
                     weather = 2;
-                }
                 if (weather < 0 || weather > 2)
                 {
-                    p.Message("Weather can be either sun, rain, or snow."); return;
+                    p.Message("Weather can be either sun, rain, or snow."); 
+                    return;
                 }
                 string type = weather == 0 ? "&SSun" : (weather == 1 ? "&1Rain" : "&fSnow");
                 p.Message("Set weather for {0} &Sto {1} ({2}&S)", area, weather, type);
@@ -174,7 +169,8 @@ namespace MCGalaxy
                 if (!CommandParser.GetBlock(p, input, out ushort block)) return;
                 if (Block.IsPhysicsType(block))
                 {
-                    p.Message("&WCannot use physics block ids for &T/env"); return;
+                    p.Message("&WCannot use physics block ids for &T/env"); 
+                    return;
                 }
                 string name = Block.GetName(p, block);
                 target = block;

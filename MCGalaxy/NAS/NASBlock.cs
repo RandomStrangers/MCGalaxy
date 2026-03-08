@@ -62,9 +62,7 @@ namespace MCGalaxy
             durability = DefaultDurabilities[(int)mat];
             damageDoneToTool = 1f;
             if (material == NASMaterial.Leaves || durability == 0)
-            {
                 damageDoneToTool = 0;
-            }
             dropHandler = (np, id) => new(id);
             resourceCost = 1;
             station = null;
@@ -79,9 +77,7 @@ namespace MCGalaxy
             selfID = id;
             alternateID = id;
             if (blocks[parent.parentID].childIDs == null)
-            {
                 blocks[parent.parentID].childIDs = new();
-            }
             blocks[parent.parentID].childIDs.Add(id);
             parentID = parent.parentID;
             material = parent.material;
@@ -91,59 +87,41 @@ namespace MCGalaxy
             dropHandler = parent.dropHandler;
             resourceCost = parent.resourceCost;
             if (parent.station != null)
-            {
                 station = new(parent.station);
-            }
             if (parent.container != null)
-            {
                 container = new(parent.container);
-            }
             if (parent.disturbedAction != null)
-            {
                 disturbedAction = parent.disturbedAction;
-            }
             if (parent.interaction != null)
-            {
                 interaction = parent.interaction;
-            }
             if (parent.existAction != null)
-            {
                 existAction = parent.existAction;
-            }
         }
         public static NASBlock Get(ushort clientushort) => blocks[clientushort] ?? Default;
         public string GetName(NASPlayer np, ushort id = ushort.MaxValue)
         {
             if (id == ushort.MaxValue)
-            {
                 id = parentID;
-            }
             string name;
             ushort block = Block.FromRaw(id);
-            if (block >= 66 && block < 256)
+            switch (block)
             {
-                name = "Physics block";
-            }
-            else
-            {
-                BlockDefinition def;
-                if (!np.p.IsSuper)
-                {
-                    def = np.p.Level.GetBlockDef(block);
-                    def ??= BlockDefinition.GlobalDefs[block];
-                }
-                else
-                {
-                    def = BlockDefinition.GlobalDefs[block];
-                }
-                if (def != null)
-                {
-                    name = def.Name;
-                }
-                else
-                {
-                    name = "Unknown";
-                }
+                case >= 66 and < 256:
+                    name = "Physics block";
+                    break;
+                default:
+                    {
+                        BlockDefinition def;
+                        if (!np.p.IsSuper)
+                        {
+                            def = np.p.Level.GetBlockDef(block);
+                            def ??= BlockDefinition.GlobalDefs[block];
+                        }
+                        else
+                            def = BlockDefinition.GlobalDefs[block];
+                        name = def != null ? def.Name : "Unknown";
+                        break;
+                    }
             }
             return name.Split('-')[0];
         }

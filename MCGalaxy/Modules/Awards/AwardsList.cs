@@ -44,18 +44,12 @@ namespace MCGalaxy.Modules.Awards
         public static Award FindExact(string name)
         {
             foreach (Award award in Awards)
-            {
                 if (award.Name.CaselessEq(name)) return award;
-            }
             return null;
         }
         /// <summary> Finds partial matches of 'name' against the list of all awards </summary>
-        public static string FindMatch(Player p, string name)
-        {
-            Award award = Matcher.Find(p, name, out int matches, Awards,
-                                       null, a => a.Name, "awards");
-            return award?.Name;
-        }
+        public static string FindMatch(Player p, string name) => Matcher.Find(p, name, out int matches, Awards,
+                                       null, a => a.Name, "awards")?.Name;
         static readonly object saveLock = new();
         public static void Save()
         {
@@ -64,9 +58,7 @@ namespace MCGalaxy.Modules.Awards
                 {
                     WriteHeader(w);
                     foreach (Award a in Awards)
-                    {
                         w.WriteLine(a.Name + " : " + a.Description);
-                    }
                 }
         }
         public static void Load()

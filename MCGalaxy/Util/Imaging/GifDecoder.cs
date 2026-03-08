@@ -32,9 +32,7 @@ namespace MCGalaxy.Util.Imaging
         {
             SetBuffer(src);
             if (!DetectHeader(src))
-            {
                 Fail("sig invalid");
-            }
             AdvanceOffset(gif87Sig.Length);
             Bitmap2D bmp = new();
             ReadGlobalHeader(src, bmp);
@@ -53,9 +51,7 @@ namespace MCGalaxy.Util.Imaging
                 bgIndex = src[offset + 5];
             bool hasGlobalPal = (flags & 0x80) != 0;
             if (hasGlobalPal)
-            {
                 globalPal = ReadPalette(src, flags);
-            }
             bmp.AllocatePixels();
         }
         Pixel[] ReadPalette(byte[] src, byte flags)
@@ -99,22 +95,16 @@ namespace MCGalaxy.Util.Imaging
             int offset = AdvanceOffset(1);
             byte type = src[offset++];
             if (type == 0xF9)
-            {
                 ReadGraphicsControl(src);
-            }
             else
-            {
                 SkipSubBlocks(src);
-            }
         }
         void ReadGraphicsControl(byte[] src)
         {
             int offset = AdvanceOffset(1);
             byte length = src[offset];
             if (length < 4)
-            {
                 Fail("graphics control extension too short");
-            }
             offset = AdvanceOffset(length);
             bool hasTrans = (src[offset + 0] & 0x01) != 0;
             byte tcIndex = src[offset + 3];
@@ -126,9 +116,7 @@ namespace MCGalaxy.Util.Imaging
             offset = AdvanceOffset(1);
             length = src[offset];
             if (length != 0)
-            {
                 Fail("graphics control should be one sub block");
-            }
         }
         void SkipSubBlocks(byte[] src)
         {
@@ -137,9 +125,7 @@ namespace MCGalaxy.Util.Imaging
                 int offset = AdvanceOffset(1);
                 byte length = src[offset++];
                 if (length == 0)
-                {
                     return;
-                }
                 AdvanceOffset(length);
             }
         }
@@ -152,32 +138,22 @@ namespace MCGalaxy.Util.Imaging
                 imageH = MemUtils.ReadU16_LE(src, offset + 6);
             byte flags = src[offset + 8];
             if ((flags & 0x40) != 0)
-            {
                 Fail("Interlaced GIF unsupported");
-            }
             if (imageX + imageW > bmp.Width)
-            {
                 Fail("Invalid X dimensions");
-            }
             if (imageY + imageH > bmp.Height)
-            {
                 Fail("Invalid Y dimensions");
-            }
             bool hasLocalPal = (flags & 0x80) != 0;
             Pixel[] localPal = null;
             if (hasLocalPal)
-            {
                 localPal = ReadPalette(src, flags);
-            }
             Pixel[] pal = localPal ?? globalPal;
             int dst_index = 0;
             bool fastPath = imageX == 0 && imageY == 0 && imageW == bmp.Width && imageH == bmp.Height;
             offset = AdvanceOffset(1);
             byte minCodeSize = src[offset];
             if (minCodeSize >= 12)
-            {
                 Fail("codesize too long");
-            }
             curSubBlockLeft = 0;
             subBlocksEnd = false;
             int codeLen = minCodeSize + 1,
@@ -208,9 +184,7 @@ namespace MCGalaxy.Util.Imaging
                         bufLen += 8;
                     }
                     if (bufLen < codeLen)
-                    {
                         Fail("not enough bits for code");
-                    }
                 }
                 int code = (int)(bufVal & codeMask);
                 bufVal >>= codeLen;
@@ -230,13 +204,9 @@ namespace MCGalaxy.Util.Imaging
                     prevCode = -1;
                 }
                 else if (code == stopCode)
-                {
                     break;
-                }
                 if (code > availCode)
-                {
                     Fail("invalid code");
-                }
                 if (prevCode >= 0 && availCode < 1 << 12)
                 {
                     int chainCode = code == availCode ? prevCode : code;
@@ -255,16 +225,13 @@ namespace MCGalaxy.Util.Imaging
                 prevCode = code;
                 int chain_len = dict[code].len;
                 if (fastPath)
-                {
                     for (int i = chain_len - 1; i >= 0; i--)
                     {
                         byte palIndex = dict[code].value;
                         bmp.Pixels[dst_index + i] = pal[palIndex];
                         code = dict[code].prev;
                     }
-                }
                 else
-                {
                     for (int i = chain_len - 1; i >= 0; i--)
                     {
                         int index = dst_index + i;
@@ -274,7 +241,6 @@ namespace MCGalaxy.Util.Imaging
                         bmp.Pixels[globalY * bmp.Width + globalX] = pal[palIndex];
                         code = dict[code].prev;
                     }
-                }
                 dst_index += chain_len;
             }
         }
@@ -288,9 +254,7 @@ namespace MCGalaxy.Util.Imaging
             if (curSubBlockLeft == 0)
             {
                 if (subBlocksEnd)
-                {
                     return -1;
-                }
                 subBlocksOffset = AdvanceOffset(1);
                 curSubBlockLeft = buf_data[subBlocksOffset++];
                 if (curSubBlockLeft == 0)

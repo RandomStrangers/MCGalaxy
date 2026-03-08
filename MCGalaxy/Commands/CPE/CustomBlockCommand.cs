@@ -866,23 +866,23 @@ namespace MCGalaxy.Commands.CPE
             for (int i = 0; i < help.Length; i++)
                 p.Message(help[i].Replace("Type", "Use"));
         }
-        static string MapPropertyName(string prop)
+        static string MapPropertyName(string prop) => prop switch
         {
-            if (prop == "side" || prop == "all" || prop == "top" || prop == "bottom"
-                || prop == "left" || prop == "right" || prop == "front" || prop == "back") return prop + "tex";
-            if (prop == "sides" || prop == "sidestex") return "sidetex";
-            if (prop == "light") return "blockslight";
-            if (prop == "bright") return "fullbright";
-            if (prop == "walksound") return "sound";
-            if (prop == "draw") return "blockdraw";
-            if (prop == "mincoords") return "min";
-            if (prop == "maxcoords") return "max";
-            return prop == "density"
-                ? "fogdensity"
-                : prop == "col" || prop == "fogcol"
-                ? "fogcolor"
-                : prop == "fogcolour" ? "fogcolor" : prop == "fallbackid" || prop == "fallbackblock" ? "fallback" : prop;
-        }
+            "side" or "all" or "top" or "bottom"
+or "left" or "right" or "front" or "back" => prop + "tex",
+            "sides" or "sidestex" => "sidetex",
+            "light" => "blockslight",
+            "bright" => "fullbright",
+            "walksound" => "sound",
+            "draw" => "blockdraw",
+            "mincoords" => "min",
+            "maxcoords" => "max",
+            _ => prop == "density"
+            ? "fogdensity"
+            : prop == "col" || prop == "fogcol"
+            ? "fogcolor"
+            : prop == "fogcolour" ? "fogcolor" : prop == "fallbackid" || prop == "fallbackblock" ? "fallback" : prop
+        };
         static readonly string[] stepsHelp = new string[] {
             null, null, "name", "shape", "toptex", "sidetex", "bottomtex", "min", "max", "collide",
             "speed", "blockslight", "sound", "fullbright", "blockdraw", "fogdensity", "fogcolor", "fallback" };

@@ -114,10 +114,8 @@ namespace MCGalaxy
             get { return CurrentCopySlot >= CopySlots.Count ? null : CopySlots[CurrentCopySlot]; }
             set
             {
-                while (CurrentCopySlot >= CopySlots.Count) 
-                { 
-                    CopySlots.Add(null); 
-                }
+                while (CurrentCopySlot >= CopySlots.Count)
+                    CopySlots.Add(null);
                 CopySlots[CurrentCopySlot] = value;
             }
         }

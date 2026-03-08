@@ -27,9 +27,7 @@ namespace MCGalaxy.Network
         void DisableIPV6OnlyListener()
         {
             if (socket.AddressFamily != AddressFamily.InterNetworkV6)
-            {
                 return;
-            }
             try
             {
                 socket.SetSocketOption(SocketOptionLevel.IPv6, (SocketOptionName)27, false);
@@ -42,7 +40,6 @@ namespace MCGalaxy.Network
         void EnableAddressReuse()
         {
             if (Server.RunningOnMono())
-            {
                 try
                 {
                     socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, 1);
@@ -50,14 +47,11 @@ namespace MCGalaxy.Network
                 catch
                 {
                 }
-            }
         }
         public void Listen(IPAddress ip, int port)
         {
             if (IP == ip && Port == port)
-            {
                 return;
-            }
             Close();
             IP = ip;
             Port = port;
@@ -83,17 +77,15 @@ namespace MCGalaxy.Network
         void AcceptNextAsync()
         {
             for (int i = 0; i < 3; i++)
-            {
                 try
                 {
-                    socket.BeginAccept(acceptCallback, this); 
+                    socket.BeginAccept(acceptCallback, this);
                     return;
                 }
                 catch (Exception ex)
                 {
                     Logger.LogError(ex);
                 }
-            }
         }
         static readonly AsyncCallback acceptCallback = new(AcceptCallback);
         static void AcceptCallback(IAsyncResult result)
@@ -108,31 +100,25 @@ namespace MCGalaxy.Network
                     bool cancel = false, announce = true;
                     OnConnectionReceivedEvent.Call(raw, ref cancel, ref announce);
                     if (cancel)
-                    {
-                        try 
-                        { 
-                            raw.Close(); 
-                        } 
-                        catch 
-                        { 
+                        try
+                        {
+                            raw.Close();
                         }
-                    }
+                        catch
+                        {
+                        }
                     else
                     {
                         s = new TcpSocket(raw);
                         if (announce)
-                        {
                             Logger.Log(LogType.UserActivity, s.IP + " connected to the server.");
-                        }
                         s.Init();
                     }
                 }
                 catch (Exception ex)
                 {
                     if (ex is not SocketException)
-                    {
                         Logger.LogError(ex);
-                    }
                     s?.Close();
                 }
                 listen.AcceptNextAsync();

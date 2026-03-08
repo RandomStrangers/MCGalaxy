@@ -29,9 +29,7 @@ namespace MCGalaxy
         public static void Init(SchedulerTask _)
         {
             if (!Directory.Exists("text/pronouns/"))
-            {
                 Directory.CreateDirectory("text/pronouns/");
-            }
             Default = new("default", "they", "their", "themselves", true, "them");
             if (!File.Exists("props/pronouns.properties"))
             {
@@ -50,9 +48,7 @@ namespace MCGalaxy
                     w.WriteLine("# For instance, \"and he has captured the flag\" vs \"and they have captured the flag\".");
                     w.WriteLine();
                     foreach (Pronouns p in Loaded)
-                    {
                         p.Write(w);
-                    }
                 }
                 Logger.Log(LogType.SystemActivity, "CREATED NEW: props/pronouns.properties");
             }
@@ -71,10 +67,8 @@ namespace MCGalaxy
                     while (!r.EndOfStream)
                     {
                         string line = r.ReadLine();
-                        if (string.IsNullOrEmpty(line) || line.StartsWith("#")) 
-                        { 
-                            continue; 
-                        }
+                        if (string.IsNullOrEmpty(line) || line.StartsWith("#"))
+                            continue;
                         LoadFrom(line);
                     }
                 }
@@ -84,9 +78,7 @@ namespace MCGalaxy
                 }
             }
             foreach (Player p in PlayerInfo.Online.Items)
-            {
                 p.pronounsList = GetFor(p.name);
-            }
         }
         static void LoadFrom(string line)
         {
@@ -100,14 +92,10 @@ namespace MCGalaxy
             }
             string name = words[0];
             bool plural;
-            if (words[4].CaselessEq("singular")) 
-            { 
-                plural = false; 
-            }
-            else if (words[4].CaselessEq("plural")) 
-            { 
-                plural = true; 
-            }
+            if (words[4].CaselessEq("singular"))
+                plural = false;
+            else if (words[4].CaselessEq("plural"))
+                plural = true;
             else
             {
                 Logger.Log(LogType.Warning, "Failed to load the pronouns \"{0}\" because the 5th argument was not \"singular\" or \"plural\"", name);
@@ -120,21 +108,13 @@ namespace MCGalaxy
             }
             string tpos;
             if (words.Length > 5)
-            {
                 tpos = words[5];
-            }
             else if (name.CaselessContains("him"))
-            {
                 tpos = "him";
-            }
             else if (name.CaselessContains("her"))
-            {
                 tpos = "her";
-            }
             else
-            {
                 tpos = Default.ThirdPersonObjectiveSingular;
-            }
             Loaded.Add(new(name, words[1], words[2], words[3], plural, tpos));
         }
         static string PlayerPath(string playerName) => "text/pronouns/" + playerName + ".txt";
@@ -149,23 +129,19 @@ namespace MCGalaxy
                 string data;
                 lock (locker)
                 {
-                    if (!File.Exists(myPath)) 
-                    {
-                        return new() 
+                    if (!File.Exists(myPath))
+                        return new()
                         {
-                            Default 
+                            Default
                         };
-                    }
                     data = FileIO.TryReadAllText(myPath);
                 }
                 data = data.Trim();
                 if (data.Length == 0)
-                {
                     return new()
                     {
                         Default
                     };
-                }
                 List<Pronouns> pros = new();
                 string[] names = data.SplitSpaces();
                 foreach (string name in names)
@@ -196,25 +172,17 @@ namespace MCGalaxy
         public static Pronouns FindExact(string name)
         {
             lock (locker)
-            {
                 foreach (Pronouns p in Loaded)
-                {
-                    if (name.CaselessEq(p.Name)) 
-                    { 
+                    if (name.CaselessEq(p.Name))
                         return p;
-                    }
-                }
-            }
             return null;
         }
         /// <summary> Finds partial matches of 'name' against the list of all pronouns </summary>
         public static Pronouns FindMatch(Player p, string name)
         {
             lock (locker)
-            {
                 return Matcher.Find(p, name, out int matches, Loaded,
                                            null, pro => pro.Name, "pronouns");
-            }
         }
         /// <summary>
         /// Returns a list of the names of all currently available pronouns.
@@ -223,12 +191,8 @@ namespace MCGalaxy
         {
             List<string> names = new();
             lock (locker)
-            {
                 foreach (Pronouns p in Loaded)
-                {
                     names.Add(p.Name);
-                }
-            }
             return names;
         }
         public static string ListFor(Player p, string separator) => p.pronounsList.Join((pro) => pro.Name, separator);

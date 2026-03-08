@@ -68,9 +68,7 @@ namespace MCGalaxy.Modules.Awards
                 }
             }
             else
-            {
                 Help(p);
-            }
         }
         public override void Help(Player p)
         {

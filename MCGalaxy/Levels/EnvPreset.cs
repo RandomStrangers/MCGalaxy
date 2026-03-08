@@ -48,18 +48,13 @@ namespace MCGalaxy
             EnvPreset preset = FindDefault(value);
             if (preset != null) return preset;
             if (File.Exists("presets/" + value.ToLower() + ".env"))
-            {
-                string text = FileIO.TryReadAllText("presets/" + value.ToLower() + ".env");
-                return new(text);
-            }
+                return new(FileIO.TryReadAllText("presets/" + value.ToLower() + ".env"));
             return null;
         }
         static EnvPreset FindDefault(string name)
         {
             foreach (KeyValuePair<string, string> kvp in Presets)
-            {
                 if (kvp.Key.CaselessEq(name)) return new(kvp.Value);
-            }
             return null;
         }
         public static void ListFor(Player p)

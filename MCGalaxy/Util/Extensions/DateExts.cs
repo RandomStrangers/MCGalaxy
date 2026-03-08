@@ -27,14 +27,10 @@ namespace MCGalaxy
         {
             DateTime now = DateTime.UtcNow;
             if (log.Count > 0 && log.Count >= maxEntries)
-            {
                 log.RemoveAt(0);
-            }
             log.Add(now);
             if (log.Count < maxEntries)
-            {
                 return true;
-            }
             TimeSpan oldestDelta = now - log[0];
             return oldestDelta > checkInterval;
         }

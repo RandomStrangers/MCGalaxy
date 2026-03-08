@@ -53,21 +53,15 @@ namespace MCGalaxy.Network
         {
             int measures = 0;
             for (int i = 0; i < Entries.Length; i++)
-            {
                 if (Valid(i)) measures++;
-            }
             return measures;
         }
         public int LowestPing()
         {
             double ms = 100000000;
             for (int i = 0; i < Entries.Length; i++)
-            {
-                if (Valid(i)) 
-                {
-                    ms = Math.Min(ms, Entries[i].Latency); 
-                }
-            }
+                if (Valid(i))
+                    ms = Math.Min(ms, Entries[i].Latency);
             return (int)ms;
         }
         public int AveragePing()
@@ -75,24 +69,19 @@ namespace MCGalaxy.Network
             double ms = 0;
             int measures = 0;
             for (int i = 0; i < Entries.Length; i++)
-            {
-                if (Valid(i)) 
+                if (Valid(i))
                 {
-                    ms += Entries[i].Latency; measures++;
+                    ms += Entries[i].Latency;
+                    measures++;
                 }
-            }
             return measures == 0 ? 0 : (int)(ms / measures);
         }
         public int HighestPing()
         {
             double ms = 0;
             for (int i = 0; i < Entries.Length; i++)
-            {
-                if (Valid(i)) 
-                { 
-                    ms = Math.Max(ms, Entries[i].Latency); 
-                }
-            }
+                if (Valid(i))
+                    ms = Math.Max(ms, Entries[i].Latency);
             return (int)ms;
         }
         public string Format() => string.Format("Lowest ping {0}ms, average {1}ms, highest {2}ms",

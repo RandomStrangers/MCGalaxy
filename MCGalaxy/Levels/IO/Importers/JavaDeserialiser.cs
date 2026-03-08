@@ -104,9 +104,7 @@ namespace MCGalaxy.Levels.IO
             }
             obj.ClassData = new JClassData[descs.Count];
             for (int i = descs.Count - 1; i >= 0; i--)
-            {
                 obj.ClassData[i] = ClassData(descs[i]);
-            }
             return obj;
         }
         JArray NewArray()
@@ -118,18 +116,19 @@ namespace MCGalaxy.Levels.IO
             handles.Add(array);
             char type = array.Desc.Name[1];
             int size = ReadInt32();
-            if (type == 'B')
+            switch (type)
             {
-                array.Values = ReadBytes(size);
-            }
-            else
-            {
-                object[] values = new object[size];
-                for (int i = 0; i < values.Length; i++)
-                {
-                    values[i] = Value(type);
-                }
-                array.Values = values;
+                case 'B':
+                    array.Values = ReadBytes(size);
+                    break;
+                default:
+                    {
+                        object[] values = new object[size];
+                        for (int i = 0; i < values.Length; i++)
+                            values[i] = Value(type);
+                        array.Values = values;
+                        break;
+                    }
             }
             return array;
         }
@@ -144,9 +143,7 @@ namespace MCGalaxy.Levels.IO
             desc.Flags = ReadUInt8();
             desc.Fields = new JFieldDesc[ReadUInt16()];
             for (int i = 0; i < desc.Fields.Length; i++)
-            {
                 desc.Fields[i] = FieldDesc();
-            }
             SkipAnnotation();
             desc.SuperClass = ClassDesc();
             return desc;
@@ -182,44 +179,47 @@ namespace MCGalaxy.Levels.IO
         JClassData ClassData(JClassDesc desc)
         {
             if ((desc.Flags & 0x02) == 0)
-            {
                 throw new InvalidDataException("Invalid class data flags: " + desc.Flags);
-            }
             JClassData data = new()
             {
                 Values = new object[desc.Fields.Length]
             };
             for (int i = 0; i < data.Values.Length; i++)
-            {
                 data.Values[i] = Value(desc.Fields[i].Type);
-            }
             if ((desc.Flags & 0x01) != 0)
-            {
                 SkipAnnotation();
-            }
             return data;
         }
         unsafe object Value(char type)
         {
-            if (type == 'B') return ReadUInt8();
-            if (type == 'C') return (char)ReadUInt16();
-            if (type == 'D') 
-            { 
-                long tmp = ReadInt64(); 
-                return *(double*)&tmp; 
+            switch (type)
+            {
+                case 'B':
+                    return ReadUInt8();
+                case 'C':
+                    return (char)ReadUInt16();
+                case 'D':
+                    {
+                        long tmp = ReadInt64();
+                        return *(double*)&tmp;
+                    }
+                case 'F':
+                    {
+                        int tmp = ReadInt32();
+                        return *(float*)&tmp;
+                    }
+                default:
+                    return type switch
+                    {
+                        'I' => ReadInt32(),
+                        'J' => ReadInt64(),
+                        _ => type == 'S'
+                        ? ReadInt16()
+                        : type == 'Z'
+                        ? ReadUInt8() != 0
+                        : type == 'L' ? ReadObject() : type == '[' ? ReadObject() : throw new InvalidDataException("Invalid value code: " + type)
+                    };
             }
-            if (type == 'F') 
-            { 
-                int tmp = ReadInt32(); 
-                return *(float*)&tmp; 
-            }
-            if (type == 'I') return ReadInt32();
-            if (type == 'J') return ReadInt64();
-            return type == 'S'
-                ? ReadInt16()
-                : type == 'Z'
-                ? ReadUInt8() != 0
-                : type == 'L' ? ReadObject() : type == '[' ? ReadObject() : throw new InvalidDataException("Invalid value code: " + type);
         }
         JFieldDesc FieldDesc()
         {
@@ -227,34 +227,29 @@ namespace MCGalaxy.Levels.IO
             byte type = ReadUInt8();
             desc.Type = (char)type;
             if (type == 'B' || type == 'C' || type == 'D' || type == 'F' || type == 'I' || type == 'J' || type == 'S' || type == 'Z')
-            {
                 desc.Name = ReadUtf8();
-            }
             else if (type == '[' || type == 'L')
             {
                 desc.Name = ReadUtf8();
                 desc.ClassName = (string)ReadObject();
             }
             else
-            {
                 throw new InvalidDataException("Invalid field type: " + type);
-            }
             return desc;
         }
         void SkipAnnotation()
         {
             byte typeCode;
             while ((typeCode = ReadUInt8()) != 0x78)
-            {
-                if (typeCode == 0x77)
+                switch (typeCode)
                 {
-                    ReadBytes(ReadUInt8());
+                    case 0x77:
+                        ReadBytes(ReadUInt8());
+                        break;
+                    default:
+                        ReadObject(typeCode);
+                        break;
                 }
-                else
-                {
-                    ReadObject(typeCode);
-                }
-            }
         }
     }
 }

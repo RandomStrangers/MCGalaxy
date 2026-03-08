@@ -29,36 +29,27 @@ namespace MCGalaxy
         }
         public bool TryGet(string key, out object value)
         {
-            lock (locker) 
-            {
-                return dict.TryGetValue(key, out value); 
-            }
+            lock (locker)
+                return dict.TryGetValue(key, out value);
         }
         public void Clear()
         {
             lock (locker)
-            {
                 dict.Clear();
-            }
         }
         public bool Contains(string key)
         {
             lock (locker)
-            {
                 return dict.ContainsKey(key);
-            }
         }
         public bool Remove(string key)
         {
             lock (locker)
-            {
                 return dict.Remove(key);
-            }
         }
         public bool GetBoolean(string key, bool defaultValue = false)
         {
             if (dict.TryGetValue(key, out object value))
-            {
                 try
                 {
                     return Convert.ToBoolean(value);
@@ -66,13 +57,11 @@ namespace MCGalaxy
                 catch (Exception)
                 {
                 }
-            }
             return defaultValue;
         }
         public int GetInt(string key, int defaultValue = 0)
         {
             if (dict.TryGetValue(key, out object value))
-            {
                 try
                 {
                     return Convert.ToInt32(value);
@@ -80,13 +69,11 @@ namespace MCGalaxy
                 catch (Exception)
                 {
                 }
-            }
             return defaultValue;
         }
         public string GetString(string key, string defaultValue = null)
         {
             if (dict.TryGetValue(key, out object value))
-            {
                 try
                 {
                     return Convert.ToString(value);
@@ -94,7 +81,6 @@ namespace MCGalaxy
                 catch (Exception)
                 {
                 }
-            }
             return defaultValue;
         }
     }

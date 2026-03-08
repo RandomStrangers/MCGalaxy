@@ -30,14 +30,17 @@ namespace MCGalaxy.Commands.Building
         protected override DrawMode GetMode(string[] parts)
         {
             string msg = parts[0];
-            if (msg == "normal") return DrawMode.solid;
-            if (msg == "up") return DrawMode.up;
-            if (msg == "down") return DrawMode.down;
-            return msg == "layer"
+            return msg switch
+            {
+                "normal" => DrawMode.solid,
+                "up" => DrawMode.up,
+                "down" => DrawMode.down,
+                _ => msg == "layer"
                 ? DrawMode.layer
                 : msg == "vertical_x"
                 ? DrawMode.verticalX
-                : msg == "vertical_z" ? DrawMode.verticalZ : msg == "2d" ? DrawMode.volcano : DrawMode.normal;
+                : msg == "vertical_z" ? DrawMode.verticalZ : msg == "2d" ? DrawMode.volcano : DrawMode.normal
+            };
         }
         protected override DrawOp GetDrawOp(DrawArgs dArg) => new FillDrawOp();
         protected override void GetBrush(DrawArgs dArgs)

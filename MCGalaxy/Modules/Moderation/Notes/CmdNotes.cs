@@ -42,9 +42,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
             List<string> allNotes = Server.Notes.FindAllExact(name);
             List<string> visibleNotes;
             if (p.group.Permission >= Chat.OpchatPerms.MinRank)
-            {
                 visibleNotes = allNotes;
-            }
             else
             {
                 visibleNotes = new();
@@ -63,9 +61,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
                 return;
             }
             else
-            {
                 p.Message("  Notes for {0}:", nick);
-            }
             if (modifier.Length == 0)
             {
                 Paginator.Output(p, visibleNotes, PrintNote, cmd, "Notes",

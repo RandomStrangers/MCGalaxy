@@ -39,9 +39,7 @@ namespace MCGalaxy
         {
             DateTime now = DateTime.Now;
             if (now.Year == last.Year && now.Month == last.Month && now.Day == last.Day)
-            {
                 return;
-            }
             last = now;
             msg.Path = "logs/" + now.ToString("yyyy-MM-dd") + ".txt";
             err.Path = "logs/errors/" + now.ToString("yyyy-MM-dd") + "error.txt";
@@ -62,16 +60,12 @@ namespace MCGalaxy
                         sb.Append('-', 25);
                         string output = sb.ToString();
                         lock (logLock)
-                        {
                             err.Cache.Enqueue(output);
-                        }
                         message = "!!!Error! See " + err.Path + " for more information.";
                     }
                     string now = DateTime.Now.ToString("(HH:mm:ss) ");
                     lock (logLock)
-                    {
                         msg.Cache.Enqueue(now + message);
-                    }
                 }
             }
         }
@@ -82,17 +76,11 @@ namespace MCGalaxy
                 int errsCount = err.Cache.Count,
                     msgsCount = msg.Cache.Count;
                 if (errsCount > 0 || msgsCount > 0)
-                {
                     UpdatePaths();
-                }
                 if (errsCount > 0)
-                {
                     err.FlushCache();
-                }
                 if (msgsCount > 0)
-                {
                     msg.FlushCache();
-                }
             }
         }
         public static void Dispose()
@@ -104,9 +92,7 @@ namespace MCGalaxy
                 lock (logLock)
                 {
                     if (err.Cache.Count > 0)
-                    {
                         err.FlushCache();
-                    }
                     msg.Cache.Clear();
                 }
             }
@@ -134,9 +120,7 @@ namespace MCGalaxy
                     return;
                 }
                 while (Cache.Count > 0)
-                {
                     writer.WriteLine(Colors.Strip(Cache.Dequeue()));
-                }
                 writer.Flush();
             }
             catch

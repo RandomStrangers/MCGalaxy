@@ -39,9 +39,7 @@ namespace MCGalaxy
             {
                 if ((other.Loading && p != other) || p.Level != other.Level) continue;
                 if (p != other && other.CanSeeEntity(p))
-                {
                     Spawn(other, p, pos, rot, possession);
-                }
                 else if (p == other && self)
                 {
                     other.Pos = pos; 
@@ -63,14 +61,8 @@ namespace MCGalaxy
                 if (p.Level != other.Level) continue;
                 bool despawn = other.CanSeeEntity(p);
                 if (!toVisible) despawn = !despawn;
-                if (p != other && despawn)
-                {
+                if (p != other && despawn || p == other && self)
                     Despawn(other, p);
-                }
-                else if (p == other && self)
-                {
-                    Despawn(other, p);
-                }
             }
         }
         /// <summary>
@@ -102,26 +94,20 @@ namespace MCGalaxy
             GlobalSpawn(p, pos, rot, true);
             if (!bots) return;
             PlayerBot[] botsList = p.Level.Bots.Items;
-            foreach (PlayerBot b in botsList) 
-            {
+            foreach (PlayerBot b in botsList)
                 Spawn(p, b);
-            }
         }
         /// <summary> Despawns this player to all other players, and despawns all others players to this player. </summary>
         internal static void DespawnEntities(Player p, bool bots = true)
         {
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player other in players)
-            {
                 if (p.Level == other.Level && p != other) Despawn(p, other);
-            }
             GlobalDespawn(p, true);
             if (!bots) return;
             PlayerBot[] botsList = p.Level.Bots.Items;
-            foreach (PlayerBot b in botsList) 
-            { 
+            foreach (PlayerBot b in botsList)
                 Despawn(p, b);
-            }
         }
         public static void Spawn(Player dst, PlayerBot b)
         {
@@ -186,9 +172,7 @@ namespace MCGalaxy
         public static void UpdateEntityRot(Entity e, EntityProp prop, int degrees)
         {
             if (!(prop == EntityProp.RotX || prop == EntityProp.RotY || prop == EntityProp.RotZ))
-            {
                 throw new ArgumentException("You may only pass EntityProp.RotX, EntityProp.RotY, or EntityProp.RotZ to UpdateEntityRot");
-            }
             Orientation rot = e.Rot;
             byte packedDeg = Orientation.DegreesToPacked(degrees);
             if (prop == EntityProp.RotX) rot.RotX = packedDeg;
@@ -219,13 +203,9 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             PlayerBot.GlobalUpdatePosition();
             foreach (Player p in players)
-            {
                 p._positionUpdatePos = p.Pos;
-            }
             foreach (Player p in players)
-            {
                 p.EntityList.BroadcastEntityPositions();
-            }
             foreach (Player p in players)
             {
                 p._lastPos = p._positionUpdatePos; 

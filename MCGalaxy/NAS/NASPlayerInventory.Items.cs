@@ -21,14 +21,12 @@ namespace MCGalaxy
                 return true;
             }
             for (int i = 0; i < 27; i++)
-            {
                 if (items[i] == null)
                 {
                     items[i] = item;
                     Message("You got {0}&S!", item.displayName);
                     return true;
                 }
-            }
             Message("You can't get {0}&S because your tool bag is full.", item.displayName);
             return false;
         }
@@ -52,26 +50,18 @@ namespace MCGalaxy
                 np.whereHealthIsDisplayed = CpeMessageType.BottomRight2;
             }
             if (slotToMoveTo != -1)
-            {
                 MoveBar(0, ref slotToMoveTo);
-            }
             else
-            {
                 MoveBar(0, ref selectedItemIndex);
-            }
             DisplayHeldBlock(np.heldNasBlock);
             np.DisplayHealth();
         }
         public void DoItemMove()
         {
             if (slotToMoveTo == -1)
-            {
                 slotToMoveTo = selectedItemIndex;
-            }
             else
-            {
                 FinalizeItemMove();
-            }
             UpdateItemDisplay();
         }
         public void FinalizeItemMove()
@@ -89,14 +79,12 @@ namespace MCGalaxy
             if (!np.hasBeenSpawned)
             {
                 Message("&chasBeenSpawned is &cfalse&S, this shouldn't happen if you didn't just die.");
-                Message("&bPlease report to randomstrangers on Discord what you were doing before this happened");
+                Message("&bPlease report to " + NAS.DiscordAccountName + " on Discord what you were doing before this happened");
             }
             NASItem heldItemBeforeScrolled = HeldItem;
             deleting = false;
             if (slotToMoveTo != -1)
-            {
                 MoveBar(direction, ref slotToMoveTo);
-            }
             else
             {
                 MoveBar(direction, ref selectedItemIndex);
@@ -118,13 +106,9 @@ namespace MCGalaxy
                 if (offset <= 18)
                 {
                     if (selection == offset + 8 && selection + direction == offset + 9)
-                    {
                         direction -= 9;
-                    }
                     else if (selection == offset && selection + direction == offset - 1)
-                    {
                         direction += 9;
-                    }
                     offset += 9;
                     goto thing;
                 }
@@ -132,9 +116,7 @@ namespace MCGalaxy
             selection += direction;
             selection %= length;
             if (selection < 0)
-            {
                 selection += length;
-            }
             UpdateItemDisplay();
         }
         public void UpdateItemDisplay()
@@ -147,9 +129,7 @@ namespace MCGalaxy
                 DisplayItemBar(18, "&7↓º", "&7º↓", CpeMessageType.BottomRight1);
             }
             else
-            {
                 DisplayItemBar();
-            }
         }
         public void DisplayItemBar(int offset = 0, string prefix = "&7←«", string suffix = "%7»→",
                                    CpeMessageType location = CpeMessageType.BottomRight1)
@@ -163,89 +143,57 @@ namespace MCGalaxy
                     selectionNext = moving ? i + 1 == slotToMoveTo : i + 1 == selectedItemIndex;
                 int itemIndex = i;
                 if (handsHere)
-                {
                     builder.Append("&h╣");
-                }
                 else if (selectionHere && !moving)
                 {
                     if (deleting)
-                    {
                         builder.Append("&h╙");
-                    }
                     else
                     {
                         NASItem item2 = items[itemIndex];
                         if (item2 != null && item2.Prop.color == "`")
-                        {
                             builder.Append("&`ƒ");
-                        }
                         else
-                        {
                             builder.Append("&hƒ");
-                        }
                     }
                 }
                 else if (i == offset)
-                {
                     builder.Append("⌐");
-                }
                 if (handsHere)
-                {
                     itemIndex = selectedItemIndex;
-                }
                 else if (moving && !handsHere && selectionHere)
-                {
                     itemIndex = slotToMoveTo;
-                }
                 NASItem item = items[itemIndex];
                 if (item == null)
                 {
                     if (itemIndex > 22)
-                    {
                         builder.Append("&e¬");
-                    }
                     else
-                    {
                         builder.Append("¬");
-                    }
                 }
                 else
                 {
                     if (item.Prop.character == "¬" && itemIndex > 22)
-                    {
                         builder.Append("&e¬");
-                    }
                     else
-                    {
                         builder.Append(item.ColoredIcon);
-                    }
                 }
                 if (handsHere)
-                {
                     builder.Append("&h╕");
-                }
                 else if (selectionHere && !moving)
                 {
                     if (deleting)
-                    {
                         builder.Append("&h╙");
-                    }
                     else
                     {
                         if (item != null && item.Prop.color == "`")
-                        {
                             builder.Append("&`" + "½");
-                        }
                         else
-                        {
                             builder.Append((item != null && item.Enchanted() ? "&5" : "&h") + "½");
-                        }
                     }
                 }
                 else if (!selectionNext || i == 9 + offset - 1)
-                {
                     builder.Append("⌐");
-                }
             }
             builder.Append(suffix);
             SendCpeMessage(location, builder.ToString());
@@ -253,9 +201,7 @@ namespace MCGalaxy
         public void DeleteItem(bool confirmed = false)
         {
             if (slotToMoveTo != -1)
-            {
                 return;
-            }
             NASItem item = items[selectedItemIndex];
             if (item != null)
             {
@@ -285,14 +231,12 @@ namespace MCGalaxy
         public void BreakItem(ref NASItem item)
         {
             for (int i = 0; i < 27; i++)
-            {
                 if (item == items[i])
                 {
                     Message("Your {0}&S broke!", item.displayName);
                     items[i] = null;
                     break;
                 }
-            }
         }
         public void ToolInfo()
         {
@@ -315,12 +259,8 @@ namespace MCGalaxy
                 Message("Tool name: {0}", item.displayName);
                 Message("Tool durability: {0}/{1}", item.HP, item.Prop.baseHP);
                 foreach (KeyValuePair<string, int> x in item.enchants)
-                {
                     if (x.Value > 0)
-                    {
                         Message(x.Key + " " + nums[x.Value]);
-                    }
-                }
             }
         }
     }

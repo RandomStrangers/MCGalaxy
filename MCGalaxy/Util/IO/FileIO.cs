@@ -215,9 +215,7 @@ namespace MCGalaxy
                     old = realPath + ".old";
                 TryDelete(old);
                 if (TryMove(dst, old))
-                {
                     TryDelete(old);
-                }
                 TryMove(src, dst);
             }
         }

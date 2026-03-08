@@ -36,9 +36,7 @@ namespace MCGalaxy.Util
             int index = (x >> 4) + chunksX * ((z >> 4) + (y >> 4) * chunksZ);
             byte[] chunk = bits[index];
             if (chunk == null)
-            {
                 return false;
-            }
             index = (x & 0xF) | (z & 0xF) << 4 | (y & 0xF) << 8;
             return (chunk[index >> 3] & (1 << (index & 0x7))) != 0;
         }
@@ -69,9 +67,7 @@ namespace MCGalaxy.Util
             }
             index = (x & 0xF) | (z & 0xF) << 4 | (y & 0xF) << 8;
             if ((chunk[index >> 3] & (1 << (index & 0x7))) != 0)
-            {
                 return false;
-            }
             chunk[index >> 3] |= (byte)(1 << (index & 0x7));
             return true;
         }
@@ -80,9 +76,7 @@ namespace MCGalaxy.Util
         {
             byte[][] bits_ = bits;
             for (int i = 0; i < bits_.Length; i++)
-            {
                 bits_[i] = null;
-            }
         }
     }
 }

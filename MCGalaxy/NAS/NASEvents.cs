@@ -13,9 +13,7 @@ namespace MCGalaxy
             if (name.CaselessEq("setall"))
             {
                 if (p.Rank < LevelPermission.Operator)
-                {
                     return;
-                }
                 foreach (Command _cmd in Command.allCmds)
                 {
                     Group group = Group.Find(LevelPermission.Operator);
@@ -25,43 +23,38 @@ namespace MCGalaxy
                 p.cancelcommand = true;
                 return;
             }
-            if (name.CaselessEq("reload"))
+            if (name.CaselessEq("reload") && p.CanUse(name))
             {
-                if (p.CanUse(name))
+                NASPlayer npl = NASPlayer.GetPlayer(p);
+                if (message.CaselessEq("all") && HasExtraPerm(npl, name, 1))
                 {
-                    NASPlayer npl = NASPlayer.GetPlayer(p);
-                    if (message.CaselessEq("all") && HasExtraPerm(npl, name, 1))
+                    Player[] players = PlayerInfo.Online.Items;
+                    foreach (Player player in players)
                     {
-                        Player[] players = PlayerInfo.Online.Items;
-                        foreach (Player player in players)
+                        NASPlayer n = NASPlayer.GetPlayer(player);
+                        n.SendingMap = true;
+                    }
+                }
+                else if (message.Length > 0 && HasExtraPerm(npl, name, 1))
+                {
+                    Player[] players = PlayerInfo.Online.Items;
+                    foreach (Player player in players)
+                    {
+                        Level lvl = Matcher.FindLevels(npl.p, message);
+                        if (player.Level.name.CaselessEq(lvl.name))
                         {
                             NASPlayer n = NASPlayer.GetPlayer(player);
                             n.SendingMap = true;
                         }
                     }
-                    else if (message.Length > 0 && HasExtraPerm(npl, name, 1))
-                    {
-                        Player[] players = PlayerInfo.Online.Items;
-                        foreach (Player player in players)
-                        {
-                            Level lvl = Matcher.FindLevels(npl.p, message);
-                            if (player.Level.name.CaselessEq(lvl.name))
-                            {
-                                NASPlayer n = NASPlayer.GetPlayer(player);
-                                n.SendingMap = true;
-                            }
-                        }
-                    }
-                    npl.SendingMap = true;
                 }
+                npl.SendingMap = true;
             }
             if (name.CaselessEq("gentree"))
             {
                 p.cancelcommand = true;
                 if (p.Rank < LevelPermission.Operator)
-                {
                     return;
-                }
                 string[] messageString = message.SplitSpaces();
                 NASTree.GenSwampTree(NASLevel.Get(p.Level.name), new Random(), int.Parse(messageString[0]), int.Parse(messageString[1]), int.Parse(messageString[2]));
                 return;
@@ -71,107 +64,88 @@ namespace MCGalaxy
                 p.cancelcommand = true;
                 int mins = NASTimeCycle.cyc.minutes;
                 string time = "12am";
-                if (mins < 1200 && mins >= 600)
+                switch (mins)
                 {
-                    time = "1am";
-                }
-                else if (mins < 1800)
-                {
-                    time = "2am";
-                }
-                else if (mins < 2400)
-                {
-                    time = "3am";
-                }
-                else if (mins < 3000)
-                {
-                    time = "4am";
-                }
-                else if (mins < 3600)
-                {
-                    time = "5am";
-                }
-                else if (mins < 4200)
-                {
-                    time = "6am";
-                }
-                else if (mins < 4800)
-                {
-                    time = "7am";
-                }
-                else if (mins < 5400)
-                {
-                    time = "8am";
-                }
-                else if (mins < 6000)
-                {
-                    time = "9am";
-                }
-                else if (mins < 6600)
-                {
-                    time = "10am";
-                }
-                else if (mins < 7200)
-                {
-                    time = "11am";
-                }
-                else if (mins < 7800)
-                {
-                    time = "12pm";
-                }
-                else if (mins < 8400)
-                {
-                    time = "1pm";
-                }
-                else if (mins < 9000)
-                {
-                    time = "2pm";
-                }
-                else if (mins < 9600)
-                {
-                    time = "3pm";
-                }
-                else if (mins < 10200)
-                {
-                    time = "4pm";
-                }
-                else if (mins < 10800)
-                {
-                    time = "5pm";
-                }
-                else if (mins < 11400)
-                {
-                    time = "6pm";
-                }
-                else if (mins < 12000)
-                {
-                    time = "7pm";
-                }
-                else if (mins < 12600)
-                {
-                    time = "8pm";
-                }
-                else if (mins < 13200)
-                {
-                    time = "9pm";
-                }
-                else if (mins < 13800)
-                {
-                    time = "10pm";
-                }
-                else if (mins < 14400)
-                {
-                    time = "11pm";
+                    case < 1200 and >= 600:
+                        time = "1am";
+                        break;
+                    case < 1800:
+                        time = "2am";
+                        break;
+                    case < 2400:
+                        time = "3am";
+                        break;
+                    case < 3000:
+                        time = "4am";
+                        break;
+                    case < 3600:
+                        time = "5am";
+                        break;
+                    case < 4200:
+                        time = "6am";
+                        break;
+                    case < 4800:
+                        time = "7am";
+                        break;
+                    case < 5400:
+                        time = "8am";
+                        break;
+                    case < 6000:
+                        time = "9am";
+                        break;
+                    case < 6600:
+                        time = "10am";
+                        break;
+                    case < 7200:
+                        time = "11am";
+                        break;
+                    case < 7800:
+                        time = "12pm";
+                        break;
+                    case < 8400:
+                        time = "1pm";
+                        break;
+                    case < 9000:
+                        time = "2pm";
+                        break;
+                    case < 9600:
+                        time = "3pm";
+                        break;
+                    case < 10200:
+                        time = "4pm";
+                        break;
+                    case < 10800:
+                        time = "5pm";
+                        break;
+                    case < 11400:
+                        time = "6pm";
+                        break;
+                    case < 12000:
+                        time = "7pm";
+                        break;
+                    case < 12600:
+                        time = "8pm";
+                        break;
+                    case < 13200:
+                        time = "9pm";
+                        break;
+                    case < 13800:
+                        time = "10pm";
+                        break;
+                    case < 14400:
+                        time = "11pm";
+                        break;
                 }
                 p.Message("The time is currently {0}.", time);
                 int day = NASTimeCycle.cyc.day;
-                if (day == 1)
+                switch (day)
                 {
-                    p.Message("1 day has passed since the start of the world.");
-                }
-                else
-                {
-                    p.Message("{0} days have passed since the start of the world.", day);
+                    case 1:
+                        p.Message("1 day has passed since the start of the world.");
+                        break;
+                    default:
+                        p.Message("{0} days have passed since the start of the world.", day);
+                        break;
                 }
                 return;
             }
@@ -183,29 +157,17 @@ namespace MCGalaxy
                     int time = 0;
                     string setTime = message.SplitSpaces()[1];
                     if (setTime.CaselessEq("sunrise"))
-                    {
                         time = 8 * NASTimeCycle.hourMinutes;
-                    }
                     else if (setTime.CaselessEq("day"))
-                    {
                         time = 7 * NASTimeCycle.hourMinutes;
-                    }
                     else if (setTime.CaselessEq("sunset"))
-                    {
                         time = 19 * NASTimeCycle.hourMinutes;
-                    }
                     else if (setTime.CaselessEq("night"))
-                    {
                         time = 20 * NASTimeCycle.hourMinutes;
-                    }
                     else if (setTime.CaselessEq("midnight"))
-                    {
                         time = 0;
-                    }
                     else if (!CommandParser.GetInt(p, setTime, "Amount", ref time, 0))
-                    {
                         return;
-                    }
                     NASTimeCycle.cycleCurrentTime = time % NASTimeCycle.cycleMaxTime;
                 }
             }
@@ -218,9 +180,7 @@ namespace MCGalaxy
             if (name.CaselessEq("color"))
             {
                 if (message.Length == 0)
-                {
                     return;
-                }
                 string[] args = message.Split(' ');
                 string color = args[args.Length - 1];
                 if (Matcher.FindColor(p, color).CaselessEq("&h"))
@@ -249,18 +209,14 @@ namespace MCGalaxy
             {
                 p.cancelcommand = true;
                 if (p.Rank < LevelPermission.Operator)
-                {
                     return;
-                }
                 NASPlayer nw = NASPlayer.GetPlayer(PlayerInfo.FindMatches(p, message));
                 nw.lastAttackedPlayer = p;
                 nw.TakeDamage(50, NASDamageSource.Entity, "@p &fwas smote by " + p.ColoredName);
                 return;
             }
             if (!name.CaselessEq("NAS"))
-            {
                 return;
-            }
             p.cancelcommand = true;
             NASPlayer np = NASPlayer.GetPlayer(p);
             if (message.CaselessEq("save"))
@@ -286,9 +242,7 @@ namespace MCGalaxy
                     if (hotbarFunc.CaselessEq("bagopen"))
                     {
                         if (!np.inventory.bagOpen)
-                        {
                             return;
-                        }
                         if (func2.CaselessEq("left"))
                         {
                             np.inventory.MoveItemBarSelection(-1);
@@ -367,9 +321,7 @@ namespace MCGalaxy
             {
                 int items = 0;
                 if (!CommandParser.GetInt(p, message, "Amount", ref items, 0))
-                {
                     return;
-                }
                 if (items == 0)
                 {
                     p.cancelchat = true;
@@ -381,9 +333,7 @@ namespace MCGalaxy
                 NASBlock nasBlock = NASBlock.Get(clientushort);
                 int amount = np.inventory.GetAmount(nasBlock.parentID);
                 if (items > amount)
-                {
                     items = amount;
-                }
                 if (amount < 1)
                 {
                     np.Message("You don't have any {0} to store.", nasBlock.GetName(np));
@@ -403,7 +353,6 @@ namespace MCGalaxy
                     return;
                 }
                 foreach (NASBlockStack stack in bEntity.drop.blockStacks)
-                {
                     if (stack.ID == nasBlock.parentID)
                     {
                         np.inventory.SetAmount(nasBlock.parentID, -items, true, true);
@@ -413,7 +362,6 @@ namespace MCGalaxy
                         np.isInserting = false;
                         return;
                     }
-                }
                 if (bEntity.drop.blockStacks.Count >= NASContainer.BlockStackLimit)
                 {
                     np.Message("It can't contain more than {0} stacks of blocks.", NASContainer.BlockStackLimit);
@@ -475,9 +423,7 @@ namespace MCGalaxy
             np.inventory.ClearHotbar();
             np.inventory.DisplayHeldBlock(NASBlock.Default);
             if (!np.bigUpdate || np.resetCount != 1)
-            {
                 np.UpdateValues();
-            }
             np.Send(Packet.TextHotKey("NASHotkey", "/NAS hotbar left◙", 16, 0, true));
             np.Send(Packet.TextHotKey("NASHotkey", "/NAS hotbar right◙", 18, 0, true));
             np.Send(Packet.TextHotKey("NASHotkey", "/NAS hotbar up◙", 200, 0, true));
@@ -508,14 +454,10 @@ namespace MCGalaxy
             ushort x, ushort y, ushort z, TargetBlockFace face)
         {
             if (p.Level.Config.Deletable && p.Level.Config.Buildable)
-            {
                 return;
-            }
             NASPlayer.ClickOnPlayer(p, entity, button, action);
             if (button == MouseButton.Left)
-            {
                 NASBlockChange.HandleLeftClick(p, button, action, yaw, pitch, entity, x, y, z, face);
-            }
             NASPlayer np = NASPlayer.GetPlayer(p);
             if (button == MouseButton.Middle && action == MouseAction.Pressed)
             {
@@ -524,13 +466,9 @@ namespace MCGalaxy
             {
             }
             if (!np.justBrokeOrPlaced)
-            {
                 np.HandleInteraction(button, action, x, y, z, entity, face);
-            }
             if (action == MouseAction.Released)
-            {
                 np.justBrokeOrPlaced = false;
-            }
         }
         public static void OnBlockChanging(Player p, ushort x, ushort y, ushort z, ushort block, bool placing, ref bool cancel) => NASBlockChange.PlaceBlock(p, x, y, z, block, placing, ref cancel);
         public static void OnBlockChanged(Player p, ushort x, ushort y, ushort z, ChangeResult result) => NASBlockChange.OnBlockChanged(p, x, y, z, result);

@@ -38,13 +38,9 @@ namespace MCGalaxy
         public override int Read(byte[] buffer, int offset, int count)
         {
             if (CompressedLen <= 0)
-            {
                 return 0;
-            }
             if (count >= CompressedLen)
-            {
                 count = (int)CompressedLen;
-            }
             count = stream.Read(buffer, offset, count);
             CompressedLen -= count;
             return count;
@@ -52,9 +48,7 @@ namespace MCGalaxy
         public override int ReadByte()
         {
             if (CompressedLen <= 0)
-            {
                 return -1;
-            }
             CompressedLen--;
             return stream.ReadByte();
         }
@@ -71,7 +65,7 @@ namespace MCGalaxy
         public ZipReader(Stream stream)
         {
             this.stream = stream;
-            reader = new BinaryReader(stream);
+            reader = new(stream);
         }
         public Stream GetEntry(int i, out string file)
         {
@@ -118,9 +112,7 @@ namespace MCGalaxy
                 stream.Seek(-i, SeekOrigin.End);
                 sig = r.ReadUInt32();
                 if (sig == 0x06054b50)
-                {
                     break;
-                }
             }
             if (sig != 0x06054b50)
             {
@@ -129,9 +121,7 @@ namespace MCGalaxy
             }
             ReadEndOfCentralDirectoryRecord();
             if (centralDirOffset != uint.MaxValue)
-            {
                 return;
-            }
             Logger.Log(LogType.SystemActivity, "Backup .zip is using ZIP64 format");
             stream.Seek(-i - 20, SeekOrigin.End);
             sig = r.ReadUInt32();
@@ -165,21 +155,15 @@ namespace MCGalaxy
                 extraLen = r.ReadUInt16();
             entry.Filename = r.ReadBytes(filenameLen);
             if (extraLen == 0)
-            {
                 return entry;
-            }
             long extraEnd = stream.Position + extraLen;
             if (r.ReadUInt16() == 1)
             {
                 r.ReadUInt16();
                 if (entry.UncompressedSize == uint.MaxValue)
-                {
                     entry.UncompressedSize = r.ReadInt64();
-                }
                 if (entry.CompressedSize == uint.MaxValue)
-                {
                     entry.CompressedSize = r.ReadInt64();
-                }
             }
             stream.Seek(extraEnd, SeekOrigin.Begin);
             return entry;
@@ -205,25 +189,17 @@ namespace MCGalaxy
             entry.LocalHeaderOffset = r.ReadUInt32();
             entry.Filename = r.ReadBytes(filenameLen);
             if (extraLen == 0)
-            {
                 return entry;
-            }
             long extraEnd = stream.Position + extraLen;
             if (r.ReadUInt16() == 1)
             {
                 r.ReadUInt16();
                 if (entry.UncompressedSize == uint.MaxValue)
-                {
                     entry.UncompressedSize = r.ReadInt64();
-                }
                 if (entry.CompressedSize == uint.MaxValue)
-                {
                     entry.CompressedSize = r.ReadInt64();
-                }
                 if (entry.LocalHeaderOffset == uint.MaxValue)
-                {
                     entry.LocalHeaderOffset = r.ReadInt64();
-                }
             }
             stream.Seek(extraEnd, SeekOrigin.Begin);
             return entry;

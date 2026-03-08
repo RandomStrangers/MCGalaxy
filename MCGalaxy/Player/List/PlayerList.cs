@@ -65,18 +65,14 @@ namespace MCGalaxy
         internal string GetAt(int index)
         {
             lock (locker)
-            {
                 return index < 0 || index >= names.Count ? null : names[index];
-            }
         }
         /// <summary> Finds matches within this list for the given name. </summary>
         public string FindMatches(Player p, string name, string type, out int matches)
         {
             lock (locker)
-            {
                 return Matcher.Find(p, name, out matches, names,
                                     null, n => n, type, 20);
-            }
         }
         /// <summary> Outputs list of players using MultiPageOutput.Output. </summary>
         /// <remarks> Names are formatted using Player.FormatNick(). </remarks>
@@ -84,9 +80,7 @@ namespace MCGalaxy
         {
             List<string> list = All();
             if (list.Count == 0)
-            {
                 p.Message("There are no {0}.", group);
-            }
             else
             {
                 p.Message("{0}:", group.Capitalize());
@@ -100,9 +94,7 @@ namespace MCGalaxy
         {
             List<string> list = All();
             if (list.Count == 0)
-            {
                 p.Message("There are no {0}.", group);
-            }
             else
             {
                 p.Message("{0}:", group.Capitalize());
@@ -122,9 +114,7 @@ namespace MCGalaxy
         void SaveEntries(StreamWriter w)
         {
             lock (locker)
-            {
                 foreach (string p in names) w.WriteLine(p);
-            }
         }
         public static PlayerList Load(string path)
         {
@@ -142,9 +132,7 @@ namespace MCGalaxy
             {
                 string line = null;
                 while ((line = r.ReadLine()) != null)
-                {
                     list.names.Add(line);
-                }
             }
             return list;
         }

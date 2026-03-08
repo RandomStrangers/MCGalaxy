@@ -47,41 +47,29 @@ namespace MCGalaxy
         {
             ushort raw;
             if (block >= 256)
-            {
                 raw = Block.ToRaw(block);
-            }
             else
             {
                 raw = Block.Convert(block);
                 if (raw >= 66)
-                {
                     raw = 22;
-                }
             }
             if (raw > 767)
-            {
                 raw = p.Level.GetFallback(block);
-            }
             if (!p.Session.hasBlockDefs && raw < 66)
             {
                 BlockDefinition def = p.Level.CustomBlockDefs[raw];
                 if (def != null)
-                {
                     raw = def.FallBack;
-                }
             }
             if (!p.Session.hasCustomBlocks)
-            {
                 raw = fallback[(byte)raw];
-            }
             return raw;
         }
         public void SpawnPlayer(Level level, ref Position spawnPos, ref byte yaw, ref byte pitch)
         {
             if (!NASLevel.IsNASLevel(level))
-            {
                 return;
-            }
             CanDoStuffBasedOnPosition = false;
             inventory.Setup(p);
             if (isDead)
@@ -167,9 +155,7 @@ namespace MCGalaxy
         {
             ushort oldBlock = nl.GetBlock(x, y, z);
             if (nl.blockEntities.ContainsKey(x + " " + y + " " + z))
-            {
                 return;
-            }
             if (NASBlock.Get(NASCollision.ConvertToClientushort(oldBlock)).collideAction != NASBlock.DefaultSolidCollideAction())
             {
                 nl.SetBlock(x, y, z, block);
@@ -185,14 +171,10 @@ namespace MCGalaxy
         public void SpawnPlayerFirstTime(Level level, ref Position spawnPos, ref byte yaw, ref byte pitch)
         {
             if (hasBeenSpawned)
-            {
                 return;
-            }
             atBorder = true;
             if (!p.Model.Contains("|0.93023255813953488372093023255814"))
-            {
                 SetModel();
-            }
             spawnPos = new(location.X, location.Y, location.Z);
             yaw = this.yaw;
             pitch = this.pitch;
@@ -208,9 +190,7 @@ namespace MCGalaxy
         public void DoNASBlockCollideActions(Position entityPos)
         {
             if (nl == null)
-            {
                 return;
-            }
             AABB worldAABB = bounds.OffsetPosition(entityPos);
             worldAABB.Min.X++;
             worldAABB.Min.Y++;
@@ -222,56 +202,36 @@ namespace MCGalaxy
             worldAABB = worldAABB.Expand(-1);
             Vec3S32 min = worldAABB.BlockMin, max = worldAABB.BlockMax;
             for (int y = min.Y; y <= max.Y; y++)
-            {
                 for (int z = min.Z; z <= max.Z; z++)
-                {
                     for (int x = min.X; x <= max.X; x++)
-                    {
                         foreach (Player pl in PlayerInfo.Online.Items)
                         {
                             ushort xP = (ushort)x, yP = (ushort)y, zP = (ushort)z;
                             nl.lvl ??= pl.Level;
                             ushort block = nl.lvl.GetBlock(xP, yP, zP);
                             if (block == 0)
-                            {
                                 block = 0;
-                            }
                             if (block == 0xff)
-                            {
                                 continue;
-                            }
                             NASBlock nb = NASBlock.blocksIndexedByServerushort[block];
                             AABB blockBB = nb.bounds.Offset(x * 32, y * 32, z * 32);
                             if (!AABB.Intersects(ref worldAABB, ref blockBB))
-                            {
                                 continue;
-                            }
                             if (nb == null || nb.collideAction == null)
-                            {
                                 continue;
-                            }
                             nb.collideAction(this, nb, AABB.Intersects(ref eyeAABB, ref blockBB), xP, yP, zP);
                         }
-                    }
-                }
-            }
         }
         public void DoMovement(Position next, byte _, byte __)
         {
             UpdateHeldBlock();
             if (CanDoStuffBasedOnPosition)
-            {
                 UpdateAir();
-            }
             CheckMapCrossing(p.Pos);
             if (CanDoStuffBasedOnPosition)
-            {
                 DoNASBlockCollideActions(next);
-            }
             if (CanDoStuffBasedOnPosition)
-            {
                 UpdatePosition(p.Pos, p.Level.name);
-            }
             CheckGround(p.Pos);
             UpdateCaveFog(next);
             round++;
@@ -294,9 +254,7 @@ namespace MCGalaxy
             {
                 float fallHeight = lastGroundedLocation.Y - next.Y;
                 if (!CanDoStuffBasedOnPosition && fallHeight > 0 && !hasBeenSpawned)
-                {
                     Message("&WTrying to take fall damage but can't.");
-                }
                 if (fallHeight > 0 && CanDoStuffBasedOnPosition)
                 {
                     fallHeight /= 32f;
@@ -338,16 +296,12 @@ namespace MCGalaxy
         public bool TryGoMapAt(int dirX, int dirZ)
         {
             if (atBorder)
-            {
                 return false;
-            }
             atBorder = true;
             int chunkOffsetX = 0, chunkOffsetZ = 0;
             string seed = "DEFAULT";
             if (!NASGen.GetSeedAndChunkOffset(p.Level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ))
-            {
                 return false;
-            }
             string mapName;
             chunkOffsetX += dirX;
             chunkOffsetZ += dirZ;
@@ -373,24 +327,19 @@ namespace MCGalaxy
                     mapName = mapName,
                     seed = seed
                 };
-                SchedulerTask taskGenMap;
-                taskGenMap = NASGen.genScheduler.QueueOnce(GenTask, info, new TimeSpan(0, 0, 5));
+                SchedulerTask taskGenMap = NASGen.genScheduler.QueueOnce(GenTask, info, new TimeSpan(0, 0, 5));
                 return false;
             }
         }
         public bool NetherTravel(string map, NASTransferInfo trans)
         {
             if (atBorder)
-            {
                 return false;
-            }
             atBorder = true;
             int chunkOffsetX = 0, chunkOffsetZ = 0;
             string seed = "DEFAULT";
-            if (!NASGen.GetSeedAndChunkOffset(p.Level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ)) 
-            { 
-                return false; 
-            }
+            if (!NASGen.GetSeedAndChunkOffset(p.Level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ))
+                return false;
             string mapName = map;
             NASGen.GetSeedAndChunkOffset(map, ref seed, ref chunkOffsetX, ref chunkOffsetZ);
             if (File.Exists(NASLevel.GetFileName(mapName)))
@@ -447,24 +396,18 @@ namespace MCGalaxy
         public void UpdateCaveFog(Position next)
         {
             if (!NASLevel.all.ContainsKey(p.Level.name))
-            {
                 return;
-            }
             if (curRenderDistance > targetRenderDistance)
             {
                 curRenderDistance *= 1 - 0.03125f;
                 if (curRenderDistance < targetRenderDistance)
-                {
                     curRenderDistance = targetRenderDistance;
-                }
             }
             else if (curRenderDistance < targetRenderDistance)
             {
                 curRenderDistance *= 1 + 0.03125f;
                 if (curRenderDistance > targetRenderDistance)
-                {
                     curRenderDistance = targetRenderDistance;
-                }
             }
             curFogColor = ScaleColor(curFogColor, targetFogColor);
             Send(Packet.EnvMapProperty(EnvProp.MaxFog, (int)curRenderDistance));
@@ -474,13 +417,9 @@ namespace MCGalaxy
             z = Utils.Clamp(z, 0, (ushort)(p.Level.Length - 1));
             ushort height = (ushort)Utils.Clamp(z, 0, (ushort)(p.Level.Height - 1));
             if (next.BlockCoords == p.Pos.BlockCoords)
-            {
                 return;
-            }
             if (height < NASGen.oceanHeight)
-            {
                 height = NASGen.oceanHeight;
-            }
             int distanceBelow = nl.biome < 0 ? 0 : height - next.BlockY, expFog;
             if (distanceBelow >= NASGen.diamondDepth)
             {
@@ -518,13 +457,9 @@ namespace MCGalaxy
         public static byte ScaleChannel(byte curChannel, byte goalChannel)
         {
             if (curChannel > goalChannel)
-            {
                 curChannel--;
-            }
             else if (curChannel < goalChannel)
-            {
                 curChannel++;
-            }
             return curChannel;
         }
     }

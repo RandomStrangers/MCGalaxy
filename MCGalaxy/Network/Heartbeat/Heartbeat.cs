@@ -95,12 +95,8 @@ namespace MCGalaxy.Network
         static void OnBeat(SchedulerTask task)
         {
             if (Server.Listener.Listening)
-            {
                 foreach (Heartbeat beat in Heartbeats)
-                {
                     beat.Pump();
-                }
-            }
         }
         static string lastUrls;
         internal static void ReloadDefault()

@@ -25,19 +25,22 @@ namespace MCGalaxy.Commands.Building
         protected override DrawMode GetMode(string[] parts)
         {
             string msg = parts[0];
-            if (msg == "cone") return DrawMode.cone;
-            if (msg == "hcone") return DrawMode.hcone;
-            if (msg == "icone") return DrawMode.icone;
-            if (msg == "hicone") return DrawMode.hicone;
-            if (msg == "pyramid") return DrawMode.pyramid;
-            if (msg == "hpyramid") return DrawMode.hpyramid;
-            if (msg == "ipyramid") return DrawMode.ipyramid;
-            if (msg == "hipyramid") return DrawMode.hipyramid;
-            return msg == "sphere"
+            return msg switch
+            {
+                "cone" => DrawMode.cone,
+                "hcone" => DrawMode.hcone,
+                "icone" => DrawMode.icone,
+                "hicone" => DrawMode.hicone,
+                "pyramid" => DrawMode.pyramid,
+                "hpyramid" => DrawMode.hpyramid,
+                "ipyramid" => DrawMode.ipyramid,
+                "hipyramid" => DrawMode.hipyramid,
+                _ => msg == "sphere"
                 ? DrawMode.sphere
                 : msg == "hsphere"
                 ? DrawMode.hsphere
-                : msg == "volcano" ? DrawMode.volcano : msg == "cylinder" ? DrawMode.hollow : DrawMode.normal;
+                : msg == "volcano" ? DrawMode.volcano : msg == "cylinder" ? DrawMode.hollow : DrawMode.normal
+            };
         }
         protected override DrawOp GetDrawOp(DrawArgs dArgs)
         {

@@ -49,9 +49,7 @@ namespace MCGalaxy
                 return false;
             }
             if (Server.Config.ClassicubeAccountPlus)
-            {
                 name += "+";
-            }
             OnPlayerStartConnectingEvent.Call(this, mppass);
             if (cancelconnecting) 
             { 
@@ -59,9 +57,7 @@ namespace MCGalaxy
                 return false;
             }
             if (!verifiedName && NeedsVerification())
-            {
                 ExtraAuthenticator.AutoVerify(this, mppass);
-            }
             Level = Server.mainLevel;
             Loading = true;
             return !Socket.Disconnected;
@@ -82,15 +78,11 @@ namespace MCGalaxy
             {
                 clone = FindClone(truename);
                 if (clone != null && (verifiedName || Server.Config.VerifyNames))
-                {
                     PlayerInfo.Online.Remove(clone);
-                }
                 PlayerInfo.Online.Add(this);
             }
             if (clone != null && (verifiedName || Server.Config.VerifyNames))
-            {
                 clone.Leave(ip == clone.ip ? "(Reconnecting)" : "(Reconnecting from a different IP)");
-            }
             else if (clone != null)
             {
                 Leave(null, "Already logged in!", true); 
@@ -100,33 +92,26 @@ namespace MCGalaxy
             LoadCpeData();
             SendRawMap(null, Level);
             if (Socket.Disconnected)
-            {
                 return;
-            }
             loggedIn = true;
             GetPlayerStats();
             ShowWelcome();
             CheckState();
             string nick = PlayerDB.LoadNick(name);
             if (nick != null)
-            {
                 DisplayName = nick;
-            }
             Game.Team = Team.TeamIn(this);
             SetPrefix();
-            if (Server.noEmotes.Contains(name)) 
-            { 
-                parseEmotes = !Server.Config.ParseEmotes; 
-            }
+            if (Server.noEmotes.Contains(name))
+                parseEmotes = !Server.Config.ParseEmotes;
             hideRank = Rank;
             hidden = CanUse("Hide") && Server.hidden.Contains(name);
             if (hidden)
-            {
                 Message("&8Reminder: You are still hidden.");
-            }
             if (Chat.AdminchatPerms.UsableBy(this) && Server.Config.AdminsJoinSilently)
             {
-                hidden = true; adminchat = true;
+                hidden = true; 
+                adminchat = true;
             }
             OnPlayerConnectEvent.Call(this);
             if (cancellogin)
@@ -137,13 +122,9 @@ namespace MCGalaxy
             Server.Background.QueueOnce(ShowAltsTask, name, TimeSpan.Zero);
             string joinMsg = "&a+ λFULL &S" + PlayerInfo.GetLoginMessage(this);
             if (hidden)
-            {
                 joinMsg = "&8(hidden)" + joinMsg;
-            }
             if (Server.Config.GuestJoinsNotify || Rank > LevelPermission.Guest)
-            {
                 Chat.MessageFrom(ChatScope.All, this, joinMsg, null, Chat.FilterVisible(this), !hidden);
-            }
             if (Server.Config.AgreeToRulesOnEntry && Rank == LevelPermission.Guest && !Server.agreed.Contains(name))
             {
                 Message("&9You must read the &c/Rules &9and &c/Agree &9to them before you can build and use commands!");
@@ -154,14 +135,10 @@ namespace MCGalaxy
             {
                 int count = Database.CountRows("Inbox" + name);
                 if (count > 0)
-                {
                     Message("You have &a" + count + " &Smessages in &T/Inbox");
-                }
             }
             if (Server.Config.PositionUpdateInterval > 1000)
-            {
                 Message("Lowlag mode is currently &aON.");
-            }
             Logger.Log(LogType.UserActivity, "{0} [{1}] connected using {2}.", truename, IP, Session.ClientName());
             PlayerActions.PostSentMap(this, null, Level, false);
             Loading = false;
@@ -170,12 +147,8 @@ namespace MCGalaxy
         {
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
-            {
                 if (pl.truename.CaselessEq(name))
-                {
                     return pl;
-                }
-            }
             return null;
         }
         void ShowWelcome()
@@ -196,14 +169,10 @@ namespace MCGalaxy
         {
             string skin = Server.skins.Get(name);
             if (!string.IsNullOrEmpty(skin))
-            {
                 SkinName = skin;
-            }
             string model = Server.models.Get(name);
             if (!string.IsNullOrEmpty(model))
-            {
                 Model = model;
-            }
             string modelScales = Server.modelScales.Get(name);
             if (!string.IsNullOrEmpty(modelScales))
             {
@@ -233,9 +202,7 @@ namespace MCGalaxy
                                     "WHERE Name=@0", name);
             }
             else
-            {
                 data = PlayerDB.FindExact(name, "*", PlayerData.Parse);
-            }
             if (data == null)
             {
                 PlayerData.Create(this);
@@ -266,19 +233,11 @@ namespace MCGalaxy
         {
             string name = (string)task.State;
             Player p = PlayerInfo.FindExact(name);
-            if (p == null || p.Socket.Disconnected)
-            {
+            if (p == null || p.Socket.Disconnected || IPAddress.IsLoopback(p.IP))
                 return;
-            }
-            if (IPAddress.IsLoopback(p.IP))
-            {
-                return;
-            }
             List<string> alts = PlayerInfo.FindAccounts(p.ip);
-            if (alts.Count == 0)
-            {
-                return;
-            }
+            while (alts.CaselessRemove(p.name)) { }
+            if (alts.Count == 0) return;
             string altsMsg = "λNICK &Sis lately known as: " + alts.Join();
             Chat.MessageFrom(p, altsMsg,
                              (pl, obj) => pl.CanSee(p) && Chat.OpchatPerms.UsableBy(pl));

@@ -88,9 +88,7 @@ namespace MCGalaxy
         {
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
-            {
                 if (p.Level == lvl) Show(p);
-            }
         }
         public void Unshow(Player p)
         {
@@ -100,9 +98,7 @@ namespace MCGalaxy
         {
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
-            {
                 if (p.Level == lvl) Unshow(p);
-            }
         }
         public void AddTo(Level level) => level.Zones.Add(this);
         public void RemoveFrom(Level level)

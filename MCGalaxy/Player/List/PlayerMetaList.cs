@@ -25,7 +25,7 @@ namespace MCGalaxy
         public PlayerMetaList(string file)
         {
             this.file = file;
-            locker = new object();
+            locker = new();
         }
         public void EnsureExists()
         {
@@ -49,9 +49,7 @@ namespace MCGalaxy
             {
                 string line;
                 while ((line = r.ReadLine()) != null)
-                {
                     if (line.CaselessStarts(name)) entries.Add(line);
-                }
             }
             return entries;
         }

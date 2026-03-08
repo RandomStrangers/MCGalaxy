@@ -30,27 +30,19 @@ namespace MCGalaxy
                 Send(Packet.SetInventoryOrder(clientushort, 0, true));
             }
             for (ushort clientushort = 1; clientushort <= 767; clientushort++)
-            {
                 if (GetAmount(clientushort) > 0)
-                {
                     UnhideBlock(clientushort);
-                }
-            }
             MoveBar(0, ref selectedItemIndex);
         }
         public void ClearHotbar()
         {
             for (byte i = 0; i <= 9; i++)
-            {
                 Send(Packet.SetHotbar(0, i, true));
-            }
         }
         public NASDrop GetDrop(NASDrop drop, bool showToNormalChat = false, bool overrideBool = false)
         {
             if (drop == null)
-            {
                 return null;
-            }
             if (drop.exp > 0)
             {
                 NASPlayer.GetPlayer(p).GiveExp(drop.exp);
@@ -69,13 +61,9 @@ namespace MCGalaxy
                         amountChanged = bs.amount
                     };
                     if (drop.blockStacks.Count == 1 || overrideBool)
-                    {
                         info.showToNormalChat = showToNormalChat;
-                    }
                     else
-                    {
                         info.showToNormalChat = true;
-                    }
                     SchedulerTask taskDisplayHeldBlock = Server.MainScheduler.QueueOnce(DisplayHeldBlockTask, info, TimeSpan.FromMilliseconds(i * 125));
                 }
             }
@@ -83,19 +71,13 @@ namespace MCGalaxy
             if (drop.items != null)
             {
                 foreach (NASItem item in drop.items)
-                {
                     if (!GetItem(item))
                     {
                         if (leftovers == null)
-                        {
                             leftovers = new(item);
-                        }
                         else
-                        {
                             leftovers.items.Add(item);
-                        }
                     }
-                }
                 UpdateItemDisplay();
             }
             return leftovers;
@@ -104,35 +86,25 @@ namespace MCGalaxy
         {
             blocks[clientushort] += amount;
             if (displayChange)
-            {
                 DisplayHeldBlock(NASBlock.Get(clientushort), amount, showToNormalChat);
-            }
             if (blocks[clientushort] > 0)
             {
                 UnhideBlock(clientushort);
                 return;
             }
             else
-            {
                 HideBlock(clientushort);
-            }
         }
         public int GetAmount(ushort clientushort) => blocks[clientushort];
         public void DisplayHeldBlock(NASBlock nasBlock, int amountChanged = 0, bool showToNormalChat = false)
         {
             string display = DisplayedBlockString(nasBlock);
             if (amountChanged > 0)
-            {
                 display = "&a+" + amountChanged + " &f" + display;
-            }
             if (amountChanged < 0)
-            {
                 display = "&c" + amountChanged + " &f" + display;
-            }
             if (showToNormalChat)
-            {
                 Message(display);
-            }
             SendCpeMessage(whereHeldBlockIsDisplayed, display);
         }
         public string DisplayedBlockString(NASBlock nasBlock) => nasBlock.parentID == 0
@@ -149,45 +121,33 @@ namespace MCGalaxy
             Send(Packet.SetInventoryOrder(clientushort, 0, true));
             NASBlock nasBlock = NASBlock.blocks[clientushort];
             if (nasBlock.childIDs != null)
-            {
                 foreach (ushort childID in nasBlock.childIDs)
                 {
                     Send(Packet.BlockPermission(childID, false, false, true));
                     Send(Packet.SetInventoryOrder(childID, 0, true));
                 }
-            }
         }
         public void UnhideBlock(ushort clientushort)
         {
             BlockDefinition def = BlockDefinition.GlobalDefs[Block.FromRaw(clientushort)];
             if (def == null && clientushort < 66)
-            {
                 def = DefaultSet.MakeCustomBlock(Block.FromRaw(clientushort));
-            }
             if (def == null)
-            {
                 return;
-            }
             Send(Packet.BlockPermission(clientushort, true, false, true));
             Send(Packet.SetInventoryOrder(clientushort, (def.InventoryOrder == -1) ? clientushort : (ushort)def.InventoryOrder, true));
             NASBlock nasBlock = NASBlock.blocks[clientushort];
             if (nasBlock.childIDs != null)
-            {
                 foreach (ushort childID in nasBlock.childIDs)
                 {
                     def = BlockDefinition.GlobalDefs[Block.FromRaw(childID)];
                     if (def == null && childID < 66)
-                    {
                         def = DefaultSet.MakeCustomBlock(Block.FromRaw(childID));
-                    }
                     if (def == null)
-                    {
                         continue;
-                    }
                     Send(Packet.BlockPermission(childID, true, false, true));
                     Send(Packet.SetInventoryOrder(childID, (def.InventoryOrder == -1) ? childID : (ushort)def.InventoryOrder, true));
                 }
-            }
         }
     }
 }

@@ -66,9 +66,7 @@ namespace MCGalaxy
             foreach (T item in items)
             {
                 if (filter != null && !filter(item))
-                {
                     continue;
-                }
                 string itemName = nameGetter(item);
                 if (itemName.Equals(name, comp))
                 {
@@ -76,28 +74,21 @@ namespace MCGalaxy
                     return item;
                 }
                 if (itemName.IndexOf(name, comp) < 0)
-                {
                     continue;
-                }
                 match = item;
                 matches++;
                 if (matches <= limit)
-                {
                     output.Append(itemFormatter(item)).Append("&S, ");
-                }
                 else if (matches == limit + 1)
-                {
                     output.Append("(and more), ");
-                }
             }
-            if (matches == 1)
+            switch (matches)
             {
-                return match;
-            }
-            if (matches == 0)
-            {
-                p.Message("No {0} match \"{1}\".", group, name);
-                return default;
+                case 1:
+                    return match;
+                case 0:
+                    p.Message("No {0} match \"{1}\".", group, name);
+                    return default;
             }
             string count = matches > limit ? limit + "+ " : matches + " ",
                 names = output.ToString(0, output.Length - 2);

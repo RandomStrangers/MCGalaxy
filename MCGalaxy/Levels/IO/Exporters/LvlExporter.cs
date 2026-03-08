@@ -69,26 +69,23 @@ namespace MCGalaxy.Levels.IO
             gs.WriteByte(0xBD);
             int index = 0;
             for (int y = 0; y < lvl.ChunksY; y++)
-            {
                 for (int z = 0; z < lvl.ChunksZ; z++)
-                {
                     for (int x = 0; x < lvl.ChunksX; x++)
                     {
                         byte[] chunk = lvl.CustomBlocks[index];
-                        if (chunk == null)
+                        switch (chunk)
                         {
-                            gs.WriteByte(0);
-                        }
-                        else
-                        {
-                            gs.WriteByte(1);
-                            Buffer.BlockCopy(chunk, 0, buffer, 0, chunk.Length);
-                            gs.Write(buffer, 0, chunk.Length);
+                            case null:
+                                gs.WriteByte(0);
+                                break;
+                            default:
+                                gs.WriteByte(1);
+                                Buffer.BlockCopy(chunk, 0, buffer, 0, chunk.Length);
+                                gs.Write(buffer, 0, chunk.Length);
+                                break;
                         }
                         index++;
                     }
-                }
-            }
         }
         static void WritePhysicsSection(Level lvl, Stream gs, byte[] buffer)
         {

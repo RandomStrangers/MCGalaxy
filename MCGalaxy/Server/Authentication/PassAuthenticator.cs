@@ -37,9 +37,7 @@ namespace MCGalaxy.Authentication
         public static bool ResetPassword(string name)
         {
             if (GetHashPath(name) == null)
-            {
                 return false;
-            }
             FileIO.TryDelete(GetHashPath(name));
             return true;
         }
@@ -50,39 +48,24 @@ namespace MCGalaxy.Authentication
         static bool ArraysEqual(byte[] a, byte[] b)
         {
             if (a.Length != b.Length)
-            {
                 return false;
-            }
             for (int i = 0; i < a.Length; i++)
-            {
                 if (a[i] != b[i])
-                {
                     return false;
-                }
-            }
             return true;
         }
         public static void RequiresVerification(Player p, string action) => p.Message("&WYou must first verify with &T/Pass [password] &Wbefore you can {0}", action);
         public static void NeedVerification(Player p)
         {
             if (!HasPassword(p.name))
-            {
                 p.Message("&WPlease set your account verification password with &T/SetPass [password]");
-            }
             else
-            {
                 p.Message("&WPlease complete account verification with &T/Pass [password]");
-            }
         }
         public static void AutoVerify(Player p, string mppass)
         {
-            if (HasPassword(p.name))
-            {
-                if (VerifyPassword(p.name, mppass))
-                {
-                    Verify(p);
-                }
-            }
+            if (HasPassword(p.name) && VerifyPassword(p.name, mppass))
+                Verify(p);
         }
         protected static void Activate()
         {
@@ -97,9 +80,7 @@ namespace MCGalaxy.Authentication
         static void OnPlayerHelp(Player p, string target, ref bool cancel)
         {
             if (!(target.CaselessEq("pass") || target.CaselessEq("password") || target.CaselessEq("setpass")))
-            {
                 return;
-            }
             PrintHelp(p);
             cancel = true;
         }
@@ -141,17 +122,17 @@ namespace MCGalaxy.Authentication
                 return;
             }
             string[] args = message.SplitSpaces(2);
-            if (args.Length == 2 && args[0].CaselessEq("set"))
+            switch (args.Length)
             {
-                DoSetPassword(p, args[1]);
-            }
-            else if (args.Length == 2 && args[0].CaselessEq("reset"))
-            {
-                DoResetPassword(p, args[1], data);
-            }
-            else
-            {
-                DoVerifyPassword(p, message);
+                case 2 when args[0].CaselessEq("set"):
+                    DoSetPassword(p, args[1]);
+                    break;
+                case 2 when args[0].CaselessEq("reset"):
+                    DoResetPassword(p, args[1], data);
+                    break;
+                default:
+                    DoVerifyPassword(p, message);
+                    break;
             }
         }
         static void DoVerifyPassword(Player p, string password)
@@ -206,9 +187,7 @@ namespace MCGalaxy.Authentication
         {
             string target = PlayerInfo.FindMatchesPreferOnline(p, name);
             if (target == null)
-            {
                 return;
-            }
             if (p.Unverified)
             {
                 RequiresVerification(p, "can reset verification passwords");
@@ -221,13 +200,9 @@ namespace MCGalaxy.Authentication
                 return;
             }
             if (ResetPassword(target))
-            {
                 p.Message("Reset verification password for {0}", p.FormatNick(target));
-            }
             else
-            {
                 p.Message("{0} &Sdoes not have a verification password.", p.FormatNick(target));
-            }
         }
         static void PrintHelp(Player p)
         {

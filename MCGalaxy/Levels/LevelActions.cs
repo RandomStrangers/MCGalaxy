@@ -31,14 +31,10 @@ namespace MCGalaxy
         public static bool Backup(string map, string backupName, string ext = ".lvl")
         {
             if (ext.CaselessContains(".lvl"))
-            {
                 ext = LevelInfo.GetExt(map);
-            }
             string basePath = LevelInfo.BackupBasePath(map);
             if (!Directory.Exists(basePath))
-            {
                 Directory.CreateDirectory(basePath);
-            }
             string path = Path.Combine(basePath, backupName);
             Directory.CreateDirectory(path);
             bool lvl = DoAction(LevelInfo.MapPath(map, ext), Path.Combine(path, map + ext), 2),
@@ -66,9 +62,7 @@ namespace MCGalaxy
             }
             List<Player> players = null;
             if (lvl != null)
-            {
                 players = lvl.GetPlayers();
-            }
             if (lvl != null && !lvl.Unload())
             {
                 p.Message("Unable to rename the level, because it could not be unloaded. " +
@@ -81,22 +75,16 @@ namespace MCGalaxy
             BlockDBFile.MoveBackingFile(src, dst);
             OnLevelRenamedEvent.Call(src, dst);
             if (players == null)
-            {
                 return true;
-            }
             Load(p, dst, false);
             foreach (Player pl in players)
-            {
                 PlayerActions.ChangeMap(pl, dst);
-            }
             return true;
         }
         static void RenameDatabaseTables(Player p, string src, string dst)
         {
             if (Database.TableExists("Block" + src))
-            {
                 Database.RenameTable("Block" + src, "Block" + dst);
-            }
             object srcLocker = ThreadSafeCache.DBCache.GetLocker(src),
                 dstLocker = ThreadSafeCache.DBCache.GetLocker(dst);
             lock (srcLocker)
@@ -106,9 +94,7 @@ namespace MCGalaxy
                     Portal.MoveAll(src, dst);
                     MessageBlock.MoveAll(src, dst);
                     if (Database.TableExists("Zone" + src))
-                    {
                         Database.RenameTable("Zone" + src, "Zone" + dst);
-                    }
                 }
             }
             p.Message("Updating portals that go to {0}..", src);
@@ -116,9 +102,7 @@ namespace MCGalaxy
             foreach (string table in tables)
             {
                 if (!table.StartsWith("Portals"))
-                {
                     continue;
-                }
                 Database.UpdateRows(table, "ExitMap=@1",
                                     "WHERE ExitMap=@0", src, dst);
             }
@@ -140,22 +124,16 @@ namespace MCGalaxy
             }
             p.Message("Created backup.");
             if (!Directory.Exists("levels/deleted"))
-            {
                 Directory.CreateDirectory("levels/deleted");
-            }
             if (File.Exists(Paths.DeletedMapFile(map)))
             {
                 int num = 0;
                 while (File.Exists(Paths.DeletedMapFile(map + num)))
-                {
                     num++;
-                }
                 FileIO.TryMove(LevelInfo.MapPath(map), Paths.DeletedMapFile(map + num));
             }
             else
-            {
                 FileIO.TryMove(LevelInfo.MapPath(map), Paths.DeletedMapFile(map));
-            }
             DoAll(map, "", 0);
             DeleteDatabaseTables(map);
             BlockDBFile.DeleteBackingFile(map);
@@ -169,17 +147,13 @@ namespace MCGalaxy
         public static void DeleteBackup(Player p, string map, string backup)
         {
             if (!LevelInfo.GetBackupPath(p, map, backup, out _))
-            {
                 return;
-            }
             foreach (Player pl in PlayerInfo.Online.Items)
-            {
                 if (pl.Level.MapName.CaselessEq(map) && pl.Level.IsMuseum)
                 {
                     pl.Level.MovePlayersToMain();
                     pl.Level.Unload(true, false);
                 }
-            }
             FileIO.TryDeleteDirectory(LevelInfo.BackupDirPath(map, backup), true);
             p.Message("Deleted backup {0}.", backup);
         }
@@ -206,17 +180,13 @@ namespace MCGalaxy
             foreach (Player pl in players)
             {
                 if (pl.Level != old)
-                {
                     continue;
-                }
                 pl.Level = lvl;
                 PlayerActions.ReloadMap(pl);
             }
             old.Unload(true, false);
             if (old == Server.mainLevel)
-            {
                 Server.mainLevel = lvl;
-            }
         }
         /// <summary> Copies a level and its related metadata. </summary>
         /// <remarks> Backups and BlockDB are NOT copied. </remarks>
@@ -229,9 +199,7 @@ namespace MCGalaxy
             }
             Level lvl = LevelInfo.FindExact(src);
             if (lvl != null && !lvl.Save(true))
-            {
                 p.Message("&WUnable to save {0}! Some recent block changes may not be copied.", src);
-            }
             FileIO.TryCopy(LevelInfo.MapPath(src), LevelInfo.MapPath(dst));
             DoAll(src, dst, 2);
             CopyDatabaseTables(src, dst);
@@ -243,13 +211,11 @@ namespace MCGalaxy
             object srcLocker = ThreadSafeCache.DBCache.GetLocker(src),
                 dstLocker = ThreadSafeCache.DBCache.GetLocker(dst);
             lock (srcLocker)
-            {
                 lock (dstLocker)
                 {
                     Portal.CopyAll(src, dst);
                     MessageBlock.CopyAll(src, dst);
                 }
-            }
         }
         /// <summary> Reloads the given level for all players in that level </summary>
         /// <param name="src"> The player that triggered the reload </param>
@@ -260,26 +226,16 @@ namespace MCGalaxy
             foreach (Player p in players)
             {
                 if (p.Level != lvl)
-                {
                     continue;
-                }
                 PlayerActions.ReloadMap(p);
                 if (!announce)
-                {
                     continue;
-                }
                 if (src == null || !p.CanSee(src))
-                {
                     p.Message("&bMap reloaded");
-                }
                 else
-                {
                     p.Message("&bMap reloaded by " + p.FormatNick(src));
-                }
                 if (src.CanSee(p))
-                {
                     src.Message("&4Finished reloading for " + src.FormatNick(p));
-                }
             }
         }
         static void DoAll(string src, string dst, byte action)
@@ -302,22 +258,20 @@ namespace MCGalaxy
         static bool DoAction(string src, string dst, byte action)
         {
             if (!File.Exists(src))
-            {
                 return true;
-            }
             try
             {
-                if (action == 0)
+                switch (action)
                 {
-                    FileIO.TryDelete(src);
-                }
-                else if (action == 1)
-                {
-                    FileIO.TryMove(src, dst);
-                }
-                else if (action == 2)
-                {
-                    FileIO.TryCopy(src, dst, true);
+                    case 0:
+                        FileIO.TryDelete(src);
+                        break;
+                    case 1:
+                        FileIO.TryMove(src, dst);
+                        break;
+                    case 2:
+                        FileIO.TryCopy(src, dst, true);
+                        break;
                 }
                 return true;
             }
@@ -340,9 +294,7 @@ namespace MCGalaxy
             {
                 Level lvl = ReadLevel(p, map);
                 if (lvl == null || !lvl.CanJoin(p))
-                {
                     return null;
-                }
                 cur = LevelInfo.FindExact(map);
                 if (cur != null)
                 {
@@ -351,9 +303,7 @@ namespace MCGalaxy
                 }
                 LevelInfo.Add(lvl);
                 if (!announce)
-                {
                     return lvl;
-                }
                 string autoloadMsg = "Level " + lvl.ColoredName + " &Sloaded.";
                 Chat.Message(ChatScope.All, autoloadMsg, null, Chat.FilterVisible(p));
                 return lvl;
@@ -368,9 +318,7 @@ namespace MCGalaxy
             Logger.Log(LogType.Warning, "Attempting to load {1} for {0}", map, type);
             Level lvl = Level.Load(map, path);
             if (lvl != null)
-            {
                 return lvl;
-            }
             p.Message("&WLoading {1} of {0} failed.", map, type);
             return null;
         }
@@ -378,9 +326,7 @@ namespace MCGalaxy
         {
             Level lvl = Level.Load(map);
             if (lvl != null)
-            {
                 return lvl;
-            }
             string path = LevelInfo.MapPath(map) + ".backup";
             if (!File.Exists(path))
             {
@@ -389,9 +335,7 @@ namespace MCGalaxy
             }
             lvl = ReadBackup(p, map, path, "backup copy");
             if (lvl != null)
-            {
                 return lvl;
-            }
             path = Paths.PrevMapFile(map);
             lvl = ReadBackup(p, map, path, "previous save");
             if (lvl != null)
@@ -406,9 +350,7 @@ namespace MCGalaxy
                 lvl = ReadBackup(p, map, path, "latest backup");
             }
             else
-            {
                 p.Message("&WLatest backup of {0} does not exist.", map);
-            }
             return lvl;
         }
         public static Level LoadMuseum(string name, string mapName, string path)
@@ -428,18 +370,14 @@ namespace MCGalaxy
             {
                 Level lvl = pl.Level;
                 if (!lvl.IsMuseum || lvl.name != name)
-                {
                     continue;
-                }
                 Level clone = new()
                 {
                     blocks = lvl.blocks,
                     CustomBlocks = lvl.CustomBlocks
                 };
                 if (clone.blocks == null || clone.CustomBlocks == null)
-                {
                     break;
-                }
                 clone.Init(name, lvl.Width, lvl.Height, lvl.Length);
                 return clone;
             }
@@ -457,34 +395,26 @@ namespace MCGalaxy
             height = Math.Min(lvl.Height, res.Height);
             length = Math.Min(lvl.Length, res.Length);
             for (int y = 0; y < height; y++)
-            {
                 for (int z = 0; z < length; z++)
                 {
                     int srcI = lvl.Width * (z + y * lvl.Length),
                         dstI = res.Width * (z + y * res.Length);
                     Buffer.BlockCopy(src, srcI, dst, dstI, width);
                 }
-            }
             width = Math.Min(lvl.ChunksX, res.ChunksX);
             height = Math.Min(lvl.ChunksY, res.ChunksY);
             length = Math.Min(lvl.ChunksZ, res.ChunksZ);
             for (int cy = 0; cy < height; cy++)
-            {
                 for (int cz = 0; cz < length; cz++)
-                {
                     for (int cx = 0; cx < width; cx++)
                     {
                         src = lvl.CustomBlocks[(cy * lvl.ChunksZ + cz) * lvl.ChunksX + cx];
                         if (src == null)
-                        {
                             continue;
-                        }
                         dst = new byte[16 * 16 * 16];
                         res.CustomBlocks[(cy * res.ChunksZ + cz) * res.ChunksX + cx] = dst;
                         Buffer.BlockCopy(src, 0, dst, 0, 16 * 16 * 16);
                     }
-                }
-            }
             res.spawnx = lvl.spawnx;
             res.spawny = lvl.spawny;
             res.spawnz = lvl.spawnz;

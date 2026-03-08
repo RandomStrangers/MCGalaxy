@@ -21,9 +21,7 @@ namespace MCGalaxy
         public static string Capitalize(this string str)
         {
             if (string.IsNullOrEmpty(str))
-            {
                 return str;
-            }
             char[] a = str.ToCharArray();
             a[0] = char.ToUpper(a[0]);
             return new(a);
@@ -36,26 +34,18 @@ namespace MCGalaxy
         public static bool ContainsAllIn(this string str, string alphabet)
         {
             foreach (char c in str)
-            {
                 if (alphabet.IndexOf(c) == -1)
-                {
                     return false;
-                }
-            }
             return true;
         }
         /// <summary> Converts a string consisting of code page 437 indices into unicode. </summary>
         public static string Cp437ToUnicode(this string str)
         {
             if (!HasSpecial(str))
-            {
                 return str;
-            }
             char[] c = str.ToCharArray();
             for (int i = 0; i < str.Length; i++)
-            {
                 c[i] = Cp437ToUnicode(str[i]);
-            }
             return new(c);
         }
         /// <summary> Converts a unicode string into a string consisting of code page 437 indices. </summary>
@@ -63,64 +53,47 @@ namespace MCGalaxy
         public static string UnicodeToCp437(this string str)
         {
             if (!HasSpecial(str))
-            {
                 return str;
-            }
             char[] c = str.ToCharArray();
             for (int i = 0; i < str.Length; i++)
-            {
                 c[i] = UnicodeToCp437(str[i]);
-            }
             return new(c);
         }
         /// <summary> Converts a code page 437 indice into unicode. </summary>
         public static char Cp437ToUnicode(this char c)
         {
             if (c < 0x20)
-            {
                 return EmotesHandler.ControlCharReplacements[c];
-            }
             else if (c < 0x7F)
-            {
                 return c;
-            }
             else if (c <= 0xFF)
-            {
                 return EmotesHandler.ExtendedCharReplacements[c - 0x7F];
-            }
             return '?';
         }
         /// <summary> Converts a unicode character into a code page 437 indice. </summary>
         public static char UnicodeToCp437(this char c)
         {
             int cpIndex;
-            if (c >= ' ' && c <= '~')
+            switch (c)
             {
-                return c;
-            }
-            else if ((cpIndex = EmotesHandler.ControlCharReplacements.IndexOf(c)) >= 0)
-            {
-                return (char)cpIndex;
-            }
-            else if ((cpIndex = EmotesHandler.ExtendedCharReplacements.IndexOf(c)) >= 0)
-            {
-                return (char)(cpIndex + 127);
+                case >= ' ' and <= '~':
+                    return c;
+                default:
+                    if ((cpIndex = EmotesHandler.ControlCharReplacements.IndexOf(c)) >= 0)
+                        return (char)cpIndex;
+                    else if ((cpIndex = EmotesHandler.ExtendedCharReplacements.IndexOf(c)) >= 0)
+                        return (char)(cpIndex + 127);
+                    break;
             }
             return '?';
         }
         static bool HasSpecial(string str)
         {
             if (string.IsNullOrEmpty(str))
-            {
                 return false;
-            }
             for (int i = 0; i < str.Length; i++)
-            {
                 if (str[i] < ' ' || str[i] > '~')
-                {
                     return true;
-                }
-            }
             return false;
         }
         public static string[] SplitExact(this string str, int maxArgs)
@@ -128,9 +101,7 @@ namespace MCGalaxy
             string[] output = new string[maxArgs],
                 input = string.IsNullOrEmpty(str) ? new string[0] : str.SplitSpaces(maxArgs);
             for (int i = 0; i < output.Length; i++)
-            {
                 output[i] = i < input.Length ? input[i] : "";
-            }
             return output;
         }
     }

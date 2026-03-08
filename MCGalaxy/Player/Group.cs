@@ -75,34 +75,11 @@ namespace MCGalaxy
             AfkKickTime = TimeSpan.FromMinutes(afkMins);
             OverseerMaps = realms;
         }
-        /// <summary> Creates a copy of this group, except for members list and usable commands and blocks. </summary>
-        public Group CopyConfig()
-        {
-            Group copy = new()
-            {
-                Name = Name,
-                Color = Color,
-                Permission = Permission,
-                DrawLimit = DrawLimit,
-                MaxUndo = MaxUndo,
-                MOTD = MOTD,
-                GenVolume = GenVolume,
-                OverseerMaps = OverseerMaps,
-                AfkKicked = AfkKicked,
-                AfkKickTime = AfkKickTime,
-                Prefix = Prefix,
-                CopySlots = CopySlots,
-                filename = filename
-            };
-            return copy;
-        }
         public static Group Find(string name)
         {
             MapName(ref name);
             foreach (Group grp in GroupList)
-            {
                 if (grp.Name.CaselessEq(name)) return grp;
-            }
             return null;
         }
         internal static void MapName(ref string name)
@@ -113,9 +90,7 @@ namespace MCGalaxy
         public static Group GroupIn(string playerName)
         {
             foreach (Group grp in GroupList)
-            {
                 if (grp.Players.Contains(playerName)) return grp;
-            }
             return DefaultRank;
         }
         public static string GetColoredName(LevelPermission perm) => Find(perm) != null ? Find(perm).ColoredName : "&f" + NumberUtils.StringifyInt((int)perm);
@@ -145,18 +120,14 @@ namespace MCGalaxy
             GroupList.Add(grp);
             grp.LoadPlayers();
             if (reloading)
-            {
                 BlockPerms.SetUsable(grp);
-            }
             OnGroupLoadedEvent.Call(grp);
         }
         public static void LoadAll()
         {
             GroupList = new List<Group>();
             if (File.Exists(Paths.RankPropsFile))
-            {
                 LoadFromDisc();
-            }
             else
             {
                 Add(LevelPermission.Builder, 4096, 5, "Builder", "&2", GEN_LIMIT, 3); // 16^3 draw volume
@@ -180,9 +151,7 @@ namespace MCGalaxy
             SaveAll(GroupList);
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
-            {
                 UpdateGroup(p);
-            }
         }
         static void UpdateGroup(Player p)
         {
@@ -194,9 +163,7 @@ namespace MCGalaxy
         public static void SaveAll(List<Group> givenList)
         {
             lock (saveLock)
-            {
                 SaveGroups(givenList);
-            }
             OnGroupSaveEvent.Call();
         }
         void LoadPlayers()
@@ -209,19 +176,13 @@ namespace MCGalaxy
         void MoveToDesired(string desired)
         {
             if (filename == null || !File.Exists("ranks/" + filename))
-            {
                 filename = desired + ".txt";
-            }
             else if (MoveToFile(desired + ".txt"))
             {
             }
             else
-            {
                 for (char c = 'a'; c <= 'z'; c++)
-                {
                     if (MoveToFile(desired + c + ".txt")) return;
-                }
-            }
         }
         bool MoveToFile(string newFile)
         {
@@ -260,13 +221,9 @@ namespace MCGalaxy
             {
                 if (temp == null) return;
                 if (!key.CaselessEq("Prefix"))
-                {
                     value = value.Trim();
-                }
                 else
-                {
                     value = value.TrimStart();
-                }
                 ConfigElement.Parse(cfg, temp, key, value);
             }
         }
@@ -284,21 +241,13 @@ namespace MCGalaxy
                 temp.Name = "RENAMED_" + name;
             }
             if (Find(temp.Name) != null)
-            {
                 Logger.Log(LogType.Warning, "Cannot add the rank {0} twice", temp.Name);
-            }
             else if (Find(temp.Permission) != null)
-            {
                 Logger.Log(LogType.Warning, "Cannot have 2 ranks set at permission level " + (int)temp.Permission);
-            }
             else if (temp.Permission > LevelPermission.Owner)
-            {
                 Logger.Log(LogType.Warning, "Invalid permission level for rank {0}", temp.Name);
-            }
             else
-            {
                 Register(temp);
-            }
         }
         static void SaveGroups(List<Group> givenList)
         {
@@ -341,9 +290,7 @@ namespace MCGalaxy
             {
                 w.WriteLine("RankName = " + group.Name);
                 foreach (ConfigElement elem in cfg)
-                {
                     w.WriteLine(elem.Format(group));
-                }
                 w.WriteLine();
             }
         }

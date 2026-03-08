@@ -31,19 +31,13 @@ namespace MCGalaxy.Util
         public void EnsureExists()
         {
             if (File.Exists(Filename))
-            {
                 return;
-            }
             Logger.Log(LogType.SystemActivity, Filename + " does not exist, creating");
             using StreamWriter w = new(Filename);
             if (DefaultText == null)
-            {
                 return;
-            }
             for (int i = 0; i < DefaultText.Length; i++)
-            {
                 w.WriteLine(DefaultText[i]);
-            }
         }
         public string[] GetText() => FileIO.TryReadAllLines(Filename);
         /// <summary>
@@ -57,9 +51,7 @@ namespace MCGalaxy.Util
             foreach (string line in lines)
             {
                 if (line.StartsWith("#") || line.Trim().Length == 0)
-                {
                     continue;
-                }
                 text.Add(line);
             }
             return text;

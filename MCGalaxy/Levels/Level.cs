@@ -48,30 +48,20 @@ namespace MCGalaxy
         internal void Init(string name, ushort width, ushort height, ushort length)
         {
             if (width < 1)
-            {
                 width = 1;
-            }
             if (height < 1)
-            {
                 height = 1;
-            }
             if (length < 1)
-            {
                 length = 1;
-            }
             Width = width;
             Height = height;
             Length = length;
             for (int i = 0; i < CustomBlockDefs.Length; i++)
-            {
                 CustomBlockDefs[i] = BlockDefinition.GlobalDefs[i];
-            }
             blocks ??= new byte[width * height * length];
             LoadDefaultProps();
             for (int i = 0; i < blockAABBs.Length; i++)
-            {
                 blockAABBs[i] = Block.BlockAABB((ushort)i, this);
-            }
             UpdateAllBlockHandlers();
             this.name = name;
             MapName = name.ToLower();
@@ -108,26 +98,18 @@ namespace MCGalaxy
         {
             Zone[] zones = Zones.Items;
             foreach (Zone zone in zones)
-            {
                 if (zone.Config.Name.CaselessEq(name))
-                {
                     return zone;
-                }
-            }
             return null;
         }
         public bool CanJoin(Player p)
         {
             if (p.IsConsole || this == Server.mainLevel)
-            {
                 return true;
-            }
             bool skip = p.summonedMap != null && p.summonedMap.CaselessEq(name);
             LevelPermission plRank = skip ? LevelPermission.Console : p.Rank;
             if (!VisitAccess.CheckDetailed(p, plRank))
-            {
                 return false;
-            }
             if (Server.lockdown.Contains(name))
             {
                 p.Message("The level " + name + " is locked.");
@@ -154,9 +136,7 @@ namespace MCGalaxy
         public bool Unload(bool silent = false, bool save = true)
         {
             if (Server.mainLevel == this)
-            {
                 return false;
-            }
             if (IsMuseum)
             {
                 Cleanup();
@@ -171,13 +151,9 @@ namespace MCGalaxy
             }
             MovePlayersToMain();
             if (save && SaveChanges && Changed)
-            {
                 Save();
-            }
             if (save && SaveChanges)
-            {
                 SaveBlockDBChanges();
-            }
             MovePlayersToMain();
             LevelInfo.Remove(this);
             try
@@ -195,9 +171,7 @@ namespace MCGalaxy
             }
             Cleanup();
             if (!silent)
-            {
                 Chat.MessageOps(ColoredName + " &Swas unloaded.");
-            }
             Logger.Log(LogType.SystemActivity, name + " was unloaded.");
             return true;
         }
@@ -205,20 +179,16 @@ namespace MCGalaxy
         {
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
-            {
                 if (p.Level == this)
                 {
                     p.Message("You were moved to the main level as " + ColoredName + " &Swas unloaded.");
                     PlayerActions.ChangeMap(p, Server.mainLevel);
                 }
-            }
         }
         public void SaveSettings()
         {
             if (!IsMuseum)
-            {
                 Config.SaveFor(MapName);
-            }
         }
         public bool CheckClear(ushort x, ushort y, ushort z) => x >= Width || y >= Height || z >= Length || !listCheckExists.Get(x, y, z);
         /// <summary> Attempts to save this level (can be cancelled) </summary>
@@ -227,13 +197,9 @@ namespace MCGalaxy
         public bool Save(bool force = false, string ext = ".lvl")
         {
             if (blocks == null || IsMuseum)
-            {
                 return false;
-            }
             if (ext.CaselessContains(".lvl"))
-            {
                 ext = LevelInfo.GetExt(name);
-            }
             string path = LevelInfo.MapPath(MapName, ext);
             bool cancel = false;
             OnLevelSaveEvent.Call(this, ref cancel);
@@ -244,28 +210,16 @@ namespace MCGalaxy
             try
             {
                 if (!Directory.Exists("levels"))
-                {
                     Directory.CreateDirectory("levels");
-                }
                 if (!Directory.Exists("levels/level properties"))
-                {
                     Directory.CreateDirectory("levels/level properties");
-                }
                 if (!Directory.Exists("levels/prev"))
-                {
                     Directory.CreateDirectory("levels/prev");
-                }
                 if (Changed || force || !File.Exists(path))
-                {
                     lock (saveLock)
-                    {
                         SaveCore(path);
-                    }
-                }
                 else
-                {
                     Logger.Log(LogType.SystemActivity, "Skipping level save for " + name + ".");
-                }
             }
             catch (Exception e)
             {
@@ -280,9 +234,7 @@ namespace MCGalaxy
         void SaveCore(string path)
         {
             if (blocks == null)
-            {
                 return;
-            }
             if (File.Exists(path))
             {
                 string prevPath = Paths.PrevMapFile(name);
@@ -306,9 +258,7 @@ namespace MCGalaxy
             if (ChangedSinceBackup || force)
             {
                 if (backup.Length == 0)
-                {
                     backup = LevelInfo.NextBackup(name);
-                }
                 if (!LevelActions.Backup(name, backup))
                 {
                     Logger.Log(LogType.Warning, "FAILED TO INCREMENTAL BACKUP :" + name);
@@ -325,9 +275,7 @@ namespace MCGalaxy
             bool cancel = false;
             OnLevelLoadEvent.Call(name, path, ref cancel);
             if (cancel)
-            {
                 return null;
-            }
             if (!File.Exists(path))
             {
                 Logger.Log(LogType.Warning, "Attempted to load level {0}, but {1} does not exist.", name, path);
@@ -361,13 +309,9 @@ namespace MCGalaxy
             {
                 string propsPath = LevelInfo.PropsPath(lvl.MapName);
                 if (lvl.Config.Load(propsPath))
-                {
                     lvl.SetPhysics(lvl.Config.Physics);
-                }
                 else
-                {
                     Logger.Log(LogType.ConsoleMessage, ".properties file for level {0} was not found.", lvl.MapName);
-                }
             }
             catch (Exception e)
             {
@@ -379,9 +323,7 @@ namespace MCGalaxy
             for (int b = 0; b < defs.Length; b++)
             {
                 if (defs[b] == null)
-                {
                     continue;
-                }
                 lvl.UpdateCustomBlock((ushort)b, defs[b]);
             }
             lvl.UpdateBlockProps();
@@ -394,9 +336,7 @@ namespace MCGalaxy
             foreach (Player p in players)
             {
                 if (p.Level != this)
-                {
                     continue;
-                }
                 p.SendCurrentBlockPermissions();
             }
         }
@@ -404,32 +344,22 @@ namespace MCGalaxy
         {
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
-            {
                 if (p.Level == this)
-                {
                     return true;
-                }
-            }
             return false;
         }
         public void SaveBlockDBChanges()
         {
             lock (dbLock)
-            {
                 LevelDB.SaveBlockDB(this);
-            }
         }
         public List<Player> GetPlayers()
         {
             Player[] players = PlayerInfo.Online.Items;
             List<Player> onLevel = new();
             foreach (Player p in players)
-            {
                 if (p.Level == this)
-                {
                     onLevel.Add(p);
-                }
-            }
             return onLevel;
         }
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -454,28 +384,20 @@ namespace MCGalaxy
         void LoadDefaultProps()
         {
             for (int b = 0; b < Props.Length; b++)
-            {
                 Props[b] = BlockProps.MakeDefault(Props, this, (ushort)b);
-            }
         }
         public void UpdateBlockProps()
         {
             LoadDefaultProps();
             if (!File.Exists(Paths.BlockPropsPath("_" + MapName)))
-            {
                 BlockProps.Load("lvl_" + MapName, Props, 2, true);
-            }
             else
-            {
                 BlockProps.Load("_" + MapName, Props, 2, false);
-            }
         }
         public void UpdateAllBlockHandlers()
         {
             for (int i = 0; i < Props.Length; i++)
-            {
                 UpdateBlockHandlers((ushort)i);
-            }
         }
         public void UpdateBlockHandlers(ushort block)
         {
@@ -496,9 +418,7 @@ namespace MCGalaxy
         {
             int edgeLevel = Config.EdgeLevel;
             if (edgeLevel == EnvConfig.ENV_USE_DEFAULT)
-            {
                 edgeLevel = Height / 2;
-            }
             return edgeLevel;
         }
     }

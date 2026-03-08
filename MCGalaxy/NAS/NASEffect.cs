@@ -67,24 +67,12 @@ namespace MCGalaxy
         public static bool Setup()
         {
             breakMeter = new();
-            if (!breakMeter.Load("breakmeter"))
-            {
-                return false;
-            }
             breakEarth = new();
-            if (!breakEarth.Load("breakdust"))
-            {
-                return false;
-            }
             breakLeaves = new();
-            if (!breakLeaves.Load("breakleaf"))
-            {
+            if (!breakMeter.Load("breakmeter") || !breakEarth.Load("breakdust") || !breakLeaves.Load("breakleaf"))
                 return false;
-            }
             for (int i = 0; i < (int)NASMaterial.Count; i++)
-            {
                 breakEffects[i] = breakEarth;
-            }
             breakEffects[(int)NASMaterial.Leaves] = breakLeaves;
             return true;
         }
@@ -105,14 +93,7 @@ namespace MCGalaxy
                 green = effect.tintGreen;
                 blue = effect.tintBlue;
             }
-            if (lifetime != null)
-            {
-                baseLifetime = (float)lifetime;
-            }
-            else
-            {
-                baseLifetime = effect.baseLifetime;
-            }
+            baseLifetime = lifetime != null ? (float)lifetime : effect.baseLifetime;
             p.Send(Packet.DefineEffect(
                                         ID,
                                         effect.pixelU1,
@@ -143,9 +124,7 @@ namespace MCGalaxy
         public static void Spawn(Player p, byte ID, NASEffect effect, float x, float y, float z, float originX, float originY, float originZ)
         {
             if (!p.Supports(CpeExt.CustomParticles))
-            {
                 return;
-            }
             x += 0.5f;
             y += 0.5f;
             z += 0.5f;

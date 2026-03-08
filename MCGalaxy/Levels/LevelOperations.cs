@@ -38,16 +38,12 @@ namespace MCGalaxy
             {
                 string restore = LevelInfo.BackupNameFrom(path);
                 if (NumberUtils.TryParseInt32(restore, out int num))
-                {
                     continue;
-                }
                 count++;
                 custom.Append(", " + restore);
             }
             if (count == 0)
-            {
                 return;
-            }
             p.Message("&b" + count + " &Sof these are custom-named restores:");
             p.Message(custom.ToString(2, custom.Length - 2));
         }
@@ -56,9 +52,7 @@ namespace MCGalaxy
             string map = lvl.name;
             bool auto = backup.Length == 0;
             if (auto)
-            {
                 backup = LevelInfo.NextBackup(map);
-            }
             TimeSpan delta = lvl.lastBackup - DateTime.UtcNow;
             if (delta.TotalSeconds >= 0)
             {

@@ -49,18 +49,14 @@ namespace MCGalaxy.Tasks
         public bool Cancel(SchedulerTask task)
         {
             lock (taskLock)
-            {
                 return tasks.Remove(task);
-            }
         }
         /// <summary> Recalculates the delay until there is a task to execute. </summary>
         /// <remarks> Useful for when external code changes the delay of a scheduled task. </remarks>
         public void Recheck()
         {
             lock (taskLock)
-            {
                 handle.Set();
-            }
         }
         SchedulerTask EnqueueTask(SchedulerTask task)
         {
@@ -77,9 +73,7 @@ namespace MCGalaxy.Tasks
             {
                 SchedulerTask task = GetNextTask();
                 if (task != null)
-                {
                     DoTask(task);
-                }
                 handle.WaitOne(GetWaitTime(), false);
             }
         }
@@ -88,17 +82,13 @@ namespace MCGalaxy.Tasks
             DateTime minTime = DateTime.UtcNow.AddMilliseconds(1);
             SchedulerTask minTask = null;
             lock (taskLock)
-            {
                 foreach (SchedulerTask task in tasks)
                 {
                     if (task.NextRun >= minTime)
-                    {
                         continue;
-                    }
                     minTime = task.NextRun;
                     minTask = task;
                 }
-            }
             return minTask;
         }
         void DoTask(SchedulerTask task)
@@ -114,34 +104,24 @@ namespace MCGalaxy.Tasks
             }
             curTask = null;
             if (task.Repeating)
-            {
                 task.NextRun = DateTime.UtcNow.Add(task.Delay);
-            }
             else
-            {
                 lock (taskLock)
-                {
                     tasks.Remove(task);
-                }
-            }
         }
         int GetWaitTime()
         {
             long wait = int.MaxValue;
             DateTime now = DateTime.UtcNow;
             lock (taskLock)
-            {
                 foreach (SchedulerTask task in tasks)
                 {
                     long remaining = (long)(task.NextRun - now).TotalMilliseconds;
                     if (remaining > int.MaxValue)
-                    {
                         remaining = int.MaxValue;
-                    }
                     remaining = Math.Max(1, remaining);
                     wait = Math.Min(wait, remaining);
                 }
-            }
             return wait == int.MaxValue ? -1 : (int)wait;
         }
         public override string ToString()

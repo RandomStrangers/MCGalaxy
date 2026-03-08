@@ -30,9 +30,7 @@ namespace MCGalaxy
             Player[] players = Online.Items;
             Dictionary<string, bool> uniqueIPs = new();
             foreach (Player p in players)
-            {
                 if (!p.hidden) uniqueIPs[p.ip] = true;
-            }
             return uniqueIPs.Count;
         }
         /// <summary> Matches given name against the names of all online players that the given player can see </summary>
@@ -75,9 +73,7 @@ namespace MCGalaxy
             Player[] players = Online.Items;
             name = Server.ToRawUsername(name);
             foreach (Player p in players)
-            {
                 if (p.truename.CaselessEq(name)) return p;
-            }
             return null;
         }
         static void ReadAccounts(ISqlRecord record, List<string> names)
@@ -106,9 +102,7 @@ namespace MCGalaxy
         {
             List<Player> list = new();
             foreach (Player pl in players)
-            {
                 if (p.CanSee(pl, plRank)) list.Add(pl);
-            }
             return list;
         }
         public static List<Player> GetOnlineCanSee(Player p, LevelPermission plRank) => OnlyCanSee(p, plRank, Online.Items);

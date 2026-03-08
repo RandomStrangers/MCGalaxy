@@ -8,19 +8,12 @@ namespace MCGalaxy
         public static NASBlockCollideAction DefaultSolidCollideAction() => (ne, nasBlock, headSurrounded, x, y, z) =>
                                                                                     {
                                                                                         if (headSurrounded)
-                                                                                        {
                                                                                             ne.TakeDamage(1.5f, NASDamageSource.Suffocating);
-                                                                                        }
                                                                                     };
         public static NASBlockCollideAction LavaCollideAction() => (ne, nasBlock, headSurrounded, x, y, z) =>
                                                                             {
-                                                                                if (headSurrounded)
-                                                                                {
-                                                                                    if (ne.CanTakeDamage(NASDamageSource.Drowning))
-                                                                                    {
-                                                                                        ne.holdingBreath = true;
-                                                                                    }
-                                                                                }
+                                                                                if (headSurrounded && ne.CanTakeDamage(NASDamageSource.Drowning))
+                                                                                    ne.holdingBreath = true;
                                                                                 ne.TakeDamage(1.5f, NASDamageSource.Suffocating, "@p &cmelted in lava.");
                                                                             };
         public static NASBlockCollideAction FireCollideAction() => (ne, nasBlock, headSurrounded, x, y, z) =>
@@ -35,27 +28,18 @@ namespace MCGalaxy
                                                                                 {
                                                                                     ne.nl.SetBlock(x, y, z, Block.FromRaw(611));
                                                                                     if (!ne.nl.blockEntities.ContainsKey(x + " " + y + " " + z))
-                                                                                    {
                                                                                         ne.nl.blockEntities.Add(x + " " + y + " " + z, new());
-                                                                                    }
                                                                                     ne.nl.blockEntities[x + " " + y + " " + z].strength = 15;
                                                                                 };
         public static NASBlockCollideAction LiquidCollideAction() => (ne, nasBlock, headSurrounded, x, y, z) =>
                                                                               {
-                                                                                  if (headSurrounded)
-                                                                                  {
-                                                                                      if (ne.CanTakeDamage(NASDamageSource.Drowning))
-                                                                                      {
-                                                                                          ne.holdingBreath = true;
-                                                                                      }
-                                                                                  }
+                                                                                  if (headSurrounded && ne.CanTakeDamage(NASDamageSource.Drowning))
+                                                                                      ne.holdingBreath = true;
                                                                               };
         public static NASBlockCollideAction AirCollideAction() => (ne, nasBlock, headSurrounded, x, y, z) =>
                                                                            {
                                                                                if (headSurrounded)
-                                                                               {
                                                                                    ne.holdingBreath = false;
-                                                                               }
                                                                            };
     }
 }

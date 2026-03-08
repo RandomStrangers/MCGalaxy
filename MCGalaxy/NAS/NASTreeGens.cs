@@ -19,13 +19,9 @@ namespace MCGalaxy
         public override void Generate(ushort x, ushort y, ushort z, TreeOutput output)
         {
             for (ushort dy = 0; dy < height + size - 1; dy++)
-            {
                 output(x, (ushort)(y + dy), z, Block.FromRaw(242));
-            }
             for (int dy = -size; dy <= size; ++dy)
-            {
                 for (int dz = -size; dz <= size; ++dz)
-                {
                     for (int dx = -size; dx <= size; ++dx)
                     {
                         int dist = (int)Math.Sqrt(dx * dx + dy * dy + dz * dz);
@@ -33,13 +29,9 @@ namespace MCGalaxy
                         {
                             ushort xx = (ushort)(x + dx), yy = (ushort)(y + dy + height), zz = (ushort)(z + dz);
                             if (xx != x || zz != z || dy >= size - 1)
-                            {
                                 output(xx, yy, zz, Block.FromRaw(103));
-                            }
                         }
                     }
-                }
-            }
         }
     }
     public class SwampTree : Tree
@@ -55,14 +47,11 @@ namespace MCGalaxy
         public override void Generate(ushort x, ushort y, ushort z, TreeOutput output)
         {
             for (int i = 0; i <= height; i++)
-            {
                 output(x, (ushort)(y + i), z, 17);
-            }
             for (int j = height - 2; j <= height + 1; j++)
             {
                 int num = (j > height - 1) ? 2 : 3;
                 for (int k = -num; k <= num; k++)
-                {
                     for (int l = -num; l <= num; l++)
                     {
                         ushort num2 = (ushort)(x + l),
@@ -73,9 +62,7 @@ namespace MCGalaxy
                             if (Math.Abs(l) == num && Math.Abs(k) == num)
                             {
                                 if (j <= height && rnd.Next(2) == 0)
-                                {
                                     output(num2, y2, num3, Block.FromRaw(146));
-                                }
                             }
                             else
                             {
@@ -84,14 +71,11 @@ namespace MCGalaxy
                                 {
                                     output(num2, (ushort)(height - 3 + y), num3, Block.FromRaw(107));
                                     if (rnd.Next(3) == 0)
-                                    {
                                         output(num2, (ushort)(height - 4 + y), num3, Block.FromRaw(107));
-                                    }
                                 }
                             }
                         }
                     }
-                }
             }
         }
     }
@@ -115,9 +99,7 @@ namespace MCGalaxy
                 p2 = new(x, y + height, z);
             Line(p, p2, output);
             for (int i = 0; i < branchAmount; i++)
-            {
                 DoBranch(x, y, z, output);
-            }
         }
         public void DoBranch(int x, int y, int z, TreeOutput output)
         {
@@ -146,9 +128,7 @@ namespace MCGalaxy
         {
             ThingDrawOp.DrawLine(p1.X, p1.Y, p1.Z, 10000, p2.X, p2.Y, p2.Z, branch);
             foreach (Vec3S32 current in branch)
-            {
                 output((ushort)current.X, (ushort)current.Y, (ushort)current.Z, Block.FromRaw(250));
-            }
             branch.Clear();
         }
     }
@@ -177,16 +157,10 @@ namespace MCGalaxy
             {
                 Vec3U16 vec3U3 = (Vec3U16)list[i];
                 if (WallsMode)
-                {
                     for (ushort num = vec3U.Y; num <= vec3U2.Y; num += 1)
-                    {
                         output(Place(vec3U3.X, num, vec3U3.Z, brush));
-                    }
-                }
                 else
-                {
                     output(Place(vec3U3.X, vec3U3.Y, vec3U3.Z, brush));
-                }
             }
         }
         public override long BlocksAffected(Level lvl, Vec3S32[] marks)
@@ -233,19 +207,13 @@ namespace MCGalaxy
             line2.axis = 1;
             line3.axis = 2;
             if (num >= num2 && num >= num3)
-            {
                 DoLine(line2, line3, line, num, array, maxLen, buffer);
-            }
             else
             {
                 if (num2 >= num && num2 >= num3)
-                {
                     DoLine(line, line3, line2, num2, array, maxLen, buffer);
-                }
                 else
-                {
                     DoLine(line2, line, line3, num3, array, maxLen, buffer);
-                }
             }
             Vec3S32 item = new()
             {

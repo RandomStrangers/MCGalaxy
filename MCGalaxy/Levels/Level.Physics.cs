@@ -30,13 +30,9 @@ namespace MCGalaxy
         {
             if (IsMuseum) return;
             if (LevelPhysics == 0 && level != 0 && blocks != null)
-            {
                 for (int i = 0; i < blocks.Length; i++)
-                {
                     if (blocks[i] > 183 && Block.NeedRestart(blocks[i]))
                         AddCheck(i);
-                }
-            }
             if (LevelPhysics != level) OnPhysicsLevelChangedEvent.Call(this, level);
             if (level > 0 && LevelPhysics == 0) StartPhysics();
             Physicsint = level;
@@ -152,20 +148,14 @@ namespace MCGalaxy
                     C.Block = blocks[chk.Index];
                     ushort extended = Block.ExtendedBase[C.Block];
                     if (extended > 0)
-                    {
                         C.Block = (ushort)(extended | FastGetExtTile(C.X, C.Y, C.Z));
-                    }
                     if ((C.Data.Raw & 0x3F) == 0 || C.Data.Type1 == 7 || extraHandler(this, ref C))
                     {
                         HandlePhysics handler = handlers[C.Block];
                         if (handler != null)
-                        {
                             handler(this, ref C);
-                        }
                         else if ((C.Data.Raw & 0x3F) == 0 || !C.Data.HasWait)
-                        {
                             C.Data.Data = 255;
-                        }
                     }
                     ListCheck.Items[i].data = C.Data;
                 }
@@ -262,9 +252,7 @@ namespace MCGalaxy
                 if (overRide)
                 {
                     if (data.ExtBlock != 0 && (data.Raw & 0x3F) == 0)
-                    {
                         data.Raw &= ~((1u << 30) | (1u << 31));
-                    }
                     AddCheck(index, true, data);
                     Blockchange((ushort)x, (ushort)y, (ushort)z, block, true, data);
                     return true;
@@ -273,13 +261,9 @@ namespace MCGalaxy
                 {
                 }
                 else if (block == 12 || block == 13)
-                {
                     RemoveUpdatesAtPos(index);
-                }
                 else
-                {
                     return false;
-                }
                 data.Data = (byte)block;
                 Update update = new()
                 {
@@ -308,7 +292,8 @@ namespace MCGalaxy
                     listCheckExists.Set(x, y, z, false);
                     continue;
                 }
-                items[j] = items[i]; j++;
+                items[j] = items[i]; 
+                j++;
             }
             ListCheck.Items = items;
             ListCheck.Count = j;
@@ -336,9 +321,7 @@ namespace MCGalaxy
         public void ClearPhysics()
         {
             for (int i = 0; i < ListCheck.Count; i++)
-            {
                 RevertPhysics(ListCheck.Items[i]);
-            }
             ClearPhysicsLists();
         }
         void RevertPhysics(Check C)
@@ -355,15 +338,15 @@ namespace MCGalaxy
             try
             {
                 PhysicsArgs args = C.data;
-                if (args.Type1 == 2)
+                switch (args.Type1)
                 {
-                    ushort block = (ushort)(args.Value1 | (args.ExtBlock << 8));
-                    Blockchange(C.Index, block, true, default);
-                }
-                else if (args.Type2 == 2)
-                {
-                    ushort block = (ushort)(args.Value2 | (args.ExtBlock << 8));
-                    Blockchange(C.Index, block, true, default);
+                    case 2:
+                        Blockchange(C.Index, (ushort)(args.Value1 | (args.ExtBlock << 8)), true, default);
+                        break;
+                    default:
+                        if (args.Type2 == 2)
+                            Blockchange(C.Index, (ushort)(args.Value2 | (args.ExtBlock << 8)), true, default);
+                        break;
                 }
             }
             catch (Exception e)

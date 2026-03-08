@@ -32,9 +32,7 @@ namespace MCGalaxy.Modules.Compiling
         {
             Plugin plugin = Plugin.FindCustom(name);
             if (plugin == null)
-            {
                 return;
-            }
             Compiler.UnloadPlugin(p, plugin);
         }
         protected override void CompileCommand(Player p, string[] paths)
@@ -51,9 +49,7 @@ namespace MCGalaxy.Modules.Compiling
             Search(ref cmdName, ref cmdArgs);
             Command cmd = Find(cmdName);
             if (cmd == null)
-            {
                 return;
-            }
             Compiler.UnloadCommand(p, cmd);
         }
         public override void Help(Player p)

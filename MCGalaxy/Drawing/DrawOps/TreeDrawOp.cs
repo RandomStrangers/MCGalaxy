@@ -32,7 +32,7 @@ namespace MCGalaxy.Drawing.Ops
         public Random random = new();
         public Tree Tree;
         public int Size = -1;
-        public override long BlocksAffected(Level lvl, Vec3S32[] marks) { return Tree.EstimateBlocksAffected(); }
+        public override long BlocksAffected(Level lvl, Vec3S32[] marks) => Tree.EstimateBlocksAffected();
         public override void Perform(Vec3S32[] marks, Brush brush, DrawOpOutput output)
         {
             Vec3U16 P = Clamp(marks[0]);

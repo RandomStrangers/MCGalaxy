@@ -45,9 +45,7 @@ namespace MCGalaxy
                     lines.Add(name + Separator + data);
                 }
                 else
-                {
                     lines[names.CaselessIndexOf(name)] = name + Separator + data;
-                }
             }
         }
         /// <summary> Returns whether the given name was removed from this list. </summary>
@@ -92,9 +90,7 @@ namespace MCGalaxy
         void SaveEntries(StreamWriter w)
         {
             lock (locker)
-            {
                 foreach (string line in lines) w.WriteLine(line);
-            }
         }
         public static PlayerExtList Load(string path, char separator = ' ')
         {

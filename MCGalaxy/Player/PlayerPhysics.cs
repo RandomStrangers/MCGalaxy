@@ -72,9 +72,7 @@ namespace MCGalaxy.Blocks.Physics
                     if (!DefaultSet.IsSolid(collide)) continue;
                     int fallHeight = p.startFallY - bb.Min.Y;
                     if (fallHeight > p.Level.Config.FallHeight * 32)
-                    {
                         p.HandleDeath(0, null, false, true);
-                    }
                     p.startFallY = -1;
                     return;
                 }
@@ -95,9 +93,7 @@ namespace MCGalaxy.Blocks.Physics
                 p.startFallY = -1;
                 DateTime now = DateTime.UtcNow;
                 if (p.drownTime == DateTime.MaxValue)
-                {
                     p.drownTime = now.AddSeconds(p.Level.Config.DrownTime / 10.0);
-                }
                 if (now > p.drownTime)
                 {
                     p.HandleDeath(bHead);

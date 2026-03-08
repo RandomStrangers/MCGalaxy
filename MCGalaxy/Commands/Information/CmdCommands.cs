@@ -152,18 +152,18 @@ namespace MCGalaxy.Commands.Info
                           .CompareTo(b.Permissions.MinRank));
             }
         }
-        static string MapCategory(string type)
+        static string MapCategory(string type) => type switch
         {
-            if (type == "build") return CommandTypes.Building;
-            if (type == "chat") return CommandTypes.Chat;
-            if (type == "economy") return CommandTypes.Economy;
-            if (type == "game") return CommandTypes.Games;
-            return type == "mod"
-                ? CommandTypes.Moderation
-                : type == "other"
-                ? CommandTypes.Other
-                : type == "world" ? CommandTypes.World : type == "information" ? CommandTypes.Information : type;
-        }
+            "build" => CommandTypes.Building,
+            "chat" => CommandTypes.Chat,
+            "economy" => CommandTypes.Economy,
+            "game" => CommandTypes.Games,
+            _ => type == "mod"
+            ? CommandTypes.Moderation
+            : type == "other"
+            ? CommandTypes.Other
+            : type == "world" ? CommandTypes.World : type == "information" ? CommandTypes.Information : type
+        };
         internal static string GetCategories()
         {
             Dictionary<string, bool> categories = new();

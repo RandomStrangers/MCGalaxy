@@ -15,7 +15,6 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using MCGalaxy.DB;
 using MCGalaxy.Maths;
 using System;
 using System.Collections.Generic;
@@ -164,13 +163,9 @@ namespace MCGalaxy.Generator.Foliage
         public override void MakeFoliage()
         {
             foreach (Vec3S32 coord in foliage_coords)
-            {
                 FoilageCluster(coord);
-            }
             foreach (Vec3S32 coord in foliage_coords)
-            {
                 Place(coord.X, coord.Y, coord.Z, LeafBlock);
-            }
         }
         /// <summary> Generates the branches </summary>
         protected void MakeBranches()
@@ -247,9 +242,7 @@ namespace MCGalaxy.Generator.Foliage
                 }
             }
             else
-            {
                 startrad = trunkradius;
-            }
             TaperedCylinder(new(x, starty, z), new(x, midy, z), startrad, midrad);
             TaperedCylinder(new(x, midy, z), new(x, topy, z), midrad, endrad);
             MakeBranches();
@@ -301,19 +294,12 @@ namespace MCGalaxy.Generator.Foliage
             if (y < height * (0.282 + 0.1 * Math.Sqrt(Random())))
                 return double.MaxValue;
             double radius = height / 2.0,
-                adj = height / 2.0 - y, dist;
-            if (adj == 0)
+                adj = height / 2.0 - y;
+            double dist = adj switch
             {
-                dist = radius;
-            }
-            else if (Math.Abs(adj) >= radius)
-            {
-                dist = 0;
-            }
-            else
-            {
-                dist = Math.Sqrt(radius * radius - adj * adj);
-            }
+                0 => radius,
+                _ => Math.Abs(adj) >= radius ? 0 : Math.Sqrt(radius * radius - adj * adj),
+            };
             return dist * 0.618;
         }
     }
@@ -422,17 +408,13 @@ namespace MCGalaxy.Generator.Foliage
         public override void Generate(ushort x, ushort y, ushort z, TreeOutput output)
         {
             for (int dy = 0; dy <= height; dy++)
-            {
                 if (dy < height) output(x, (ushort)(y + dy), z, TrunkBlock);
-            }
             for (int dz = -2; dz <= 2; dz++)
-            {
                 for (int dx = -2; dx <= 2; dx++)
                 {
                     if (Math.Abs(dx) != Math.Abs(dz)) continue;
                     output((ushort)(x + dx), (ushort)(y + height), (ushort)(z + dz), LeafBlock);
                 }
-            }
         }
     }
 }

@@ -74,9 +74,7 @@ namespace MCGalaxy
             if (opt.CaselessEq("flow")) opt = Flow;
             if (opt.CaselessEq("tree")) opt = Trees;
             foreach (LevelOption option in Options)
-            {
                 if (option.Name.CaselessEq(opt)) return option;
-            }
             return null;
         }
         static void SetMotd(Player p, Level lvl, string value)
@@ -87,13 +85,9 @@ namespace MCGalaxy
             foreach (Player pl in players)
             {
                 if (pl.Supports(CpeExt.InstantMOTD))
-                {
                     pl.SendMapMotd();
-                }
                 else
-                {
                     PlayerActions.ReloadMap(pl);
-                }
             }
         }
         static void SetOwner(Player p, Level lvl, string value)
@@ -151,9 +145,7 @@ namespace MCGalaxy
             Toggle(p, l, ref l.Config.ServerWideChat, "Local level only chat", true);
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
-            {
                 if (pl.Level == l) TabList.Update(pl, true);
-            }
         }
         static void SetDrawing(Player p, Level l, string v) => Toggle(p, l, ref l.Config.Drawing, "Drawing commands");
         static void SetLoadDelay(Player p, Level l, string value)
@@ -174,7 +166,8 @@ namespace MCGalaxy
             if (!CommandParser.GetInt(p, value, "Physics overload", ref raw, 500)) return;
             if (p.Rank < LevelPermission.Admin && raw > 2500)
             {
-                p.Message("Only SuperOPs may set physics overload higher than 2500"); return;
+                p.Message("Only SuperOPs may set physics overload higher than 2500"); 
+                return;
             }
             SetInt(l, raw, ref l.Config.PhysicsOverload, "Physics overload");
         }

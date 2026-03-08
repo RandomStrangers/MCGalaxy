@@ -72,29 +72,21 @@ namespace MCGalaxy
         {
             MapGen gen = MapGen.Find("NASGen");
             if (gen != null)
-            {
                 MapGen.Generators.Remove(gen);
-            }
         }
         public static int MakeInt(string seed)
         {
             if (seed.Length == 0)
-            {
                 return new Random().Next();
-            }
             if (!int.TryParse(seed, out int value))
-            {
                 value = seed.GetHashCode();
-            }
             return value;
         }
         public static bool GetSeedAndChunkOffset(string mapName, ref string seed, ref int chunkOffsetX, ref int chunkOffsetZ)
         {
             string[] bits = mapName.Split('_');
             if (bits.Length <= 1)
-            {
                 return false;
-            }
             seed = bits[0];
             string[] chunks = bits[1].Split(',');
             return chunks.Length > 1 && int.TryParse(chunks[0], out chunkOffsetX) && int.TryParse(chunks[1], out chunkOffsetZ);
@@ -134,13 +126,9 @@ namespace MCGalaxy
                 biome = new Random().Next(0, 7)
             };
             if (lvl.name.CaselessContains("nether"))
-            {
                 instance.biome = -1;
-            }
             if (lvl.name.CaselessContains("test"))
-            {
                 instance.biome = 0;
-            }
             instance.Do();
             lvl.Config.Deletable = false;
             lvl.Config.MOTD = "-hax +thirdperson maxspeed=1.5";
@@ -157,21 +145,15 @@ namespace MCGalaxy
             GenTerrain();
             CalcHeightmap();
             if (biome >= 0)
-            {
                 GenSoil();
-            }
             GenCaves();
             if (biome < 0)
-            {
                 GenRandom();
-            }
             GenPlants();
             GenOre();
             GenWaterSources();
             if (biome >= 0)
-            {
                 GenDungeons();
-            }
             nl.dungeons = true;
             NASLevel.Unload(lvl.name, nl);
         }
@@ -179,9 +161,7 @@ namespace MCGalaxy
         {
             adjNoise.OctaveCount = biome == -1 ? 7 : 2;
             if (biome == 2)
-            {
                 lvl.Config.Weather = 2;
-            }
             if (biome < 0)
             {
                 lvl.Config.EdgeLevel = 30;
@@ -190,13 +170,10 @@ namespace MCGalaxy
             }
             lvl.SaveSettings();
             if (biome < 0)
-            {
                 return;
-            }
             p.Message("Calculating temperatures");
             temps = new float[lvl.Width, lvl.Length];
             for (double z = 0; z < lvl.Length; ++z)
-            {
                 for (double x = 0; x < lvl.Width; ++x)
                 {
                     double scale = 150,
@@ -209,7 +186,6 @@ namespace MCGalaxy
                     val /= 2;
                     temps[(int)x, (int)z] = val;
                 }
-            }
         }
         public void GenTerrain()
         {
@@ -221,7 +197,6 @@ namespace MCGalaxy
             for (double y = 0; y < height; y++)
             {
                 for (double z = 0; z < length; ++z)
-                {
                     for (double x = 0; x < width; ++x)
                     {
                         if (y == 0 || (y == height - 1 && biome < 0))
@@ -287,49 +262,50 @@ namespace MCGalaxy
                         double value = adjNoise.GetValue(xVal, yVal, zVal);
                         if (value > threshold || (biome == 6 && y < oceanHeight - 10))
                         {
-                            if (biome == 1)
+                            switch (biome)
                             {
-                                lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 52);
-                            }
-                            else
-                            {
-                                if (biome < 0)
-                                {
-                                    lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 48);
-                                }
-                                else
-                                {
-                                    lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 1);
-                                }
+                                case 1:
+                                    lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 52);
+                                    break;
+                                default:
+                                    switch (biome)
+                                    {
+                                        case < 0:
+                                            lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 48);
+                                            break;
+                                        default:
+                                            lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 1);
+                                            break;
+                                    }
+                                    break;
                             }
                         }
                         else if (y < oceanHeight)
                         {
-                            if (biome == 1)
+                            switch (biome)
                             {
-                                lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 12);
-                            }
-                            else
-                            {
-                                if (y == (oceanHeight - 1) && biome == 2)
-                                {
-                                    lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 60);
-                                }
-                                else
-                                {
-                                    if (biome < 0 && y < oceanHeight / 2)
+                                case 1:
+                                    lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 12);
+                                    break;
+                                default:
+                                    if (y == (oceanHeight - 1) && biome == 2)
+                                        lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 60);
+                                    else
                                     {
-                                        lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 10);
+                                        switch (biome)
+                                        {
+                                            case < 0 when y < oceanHeight / 2:
+                                                lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 10);
+                                                break;
+                                            case >= 0:
+                                                lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 8);
+                                                break;
+                                        }
                                     }
-                                    else if (biome >= 0)
-                                    {
-                                        lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 8);
-                                    }
-                                }
+                                    break;
                             }
                         }
                     }
-                }
                 TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
                 if (span > TimeSpan.FromSeconds(5))
                 {
@@ -348,9 +324,7 @@ namespace MCGalaxy
                 height = lvl.Height
             };
             for (ushort z = 0; z < lvl.Length; ++z)
-            {
                 for (ushort x = 0; x < lvl.Width; ++x)
-                {
                     for (ushort y = 1; y < lvl.Height; ++y)
                     {
                         ushort curBlock = lvl.FastGetBlock(x, y, z);
@@ -360,8 +334,6 @@ namespace MCGalaxy
                             break;
                         }
                     }
-                }
-            }
             nl.lvl = lvl;
             nl.biome = biome;
         }
@@ -376,45 +348,37 @@ namespace MCGalaxy
             for (int y = 0; y < height - 1; y++)
             {
                 for (int z = 0; z < length; ++z)
-                {
                     for (int x = 0; x < width; ++x)
                     {
-                        if (biome == 1)
+                        soil = biome switch
                         {
-                            soil = 12;
-                        }
-                        else
-                        {
-                            soil = 3;
-                        }
+                            1 => 12,
+                            _ => 3,
+                        };
                         if (NASBlock.IsPartOfSet(stoneTypes, lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z)) != -1 && (
                             NASBlock.IsPartOfSet(stoneTypes, lvl.FastGetBlock((ushort)x, (ushort)(y + 1), (ushort)z)) == -1)
                                     && ShouldThereBeSoil(x, y, z))
                         {
                             soil = GetSoilType();
-                            if (y <= oceanHeight - 12 && biome != 6)
+                            switch (y)
                             {
-                                soil = 13;
-                            }
-                            else if (y <= oceanHeight && biome != 6)
-                            {
-                                soil = 12;
+                                case <= oceanHeight - 12 when biome != 6:
+                                    soil = 13;
+                                    break;
+                                case <= oceanHeight when biome != 6:
+                                    soil = 12;
+                                    break;
                             }
                             int startY = y;
                             for (int yCol = startY; yCol > startY - 2 - r.Next(0, 2); yCol--)
                             {
                                 if (yCol < 0)
-                                {
                                     break;
-                                }
                                 if (lvl.FastGetBlock((ushort)x, (ushort)yCol, (ushort)z) == 1 || lvl.FastGetBlock((ushort)x, (ushort)yCol, (ushort)z) == 52)
-                                {
                                     lvl.SetBlock((ushort)x, (ushort)yCol, (ushort)z, soil);
-                                }
                             }
                         }
                     }
-                }
                 TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
                 if (span > TimeSpan.FromSeconds(5))
                 {
@@ -433,16 +397,10 @@ namespace MCGalaxy
                 neighborZ = z + offZ;
             if (neighborX >= lvl.Width || neighborX < 0 ||
                 neighborZ >= lvl.Length || neighborZ < 0)
-            {
                 return false;
-            }
             for (int i = 0; i < 4; i++)
-            {
                 if (!lvl.IsAirAt((ushort)neighborX, (ushort)(y - i), (ushort)neighborZ))
-                {
                     return false;
-                }
-            }
             return true;
         }
         public void GenCaves()
@@ -456,29 +414,20 @@ namespace MCGalaxy
             for (double y = 0; y < height; y++)
             {
                 for (double z = 0; z < length; ++z)
-                {
                     for (double x = 0; x < width; ++x)
                     {
                         double threshold = 0.55;
                         int caveHeight = biome < 0 ? height : lvl.Height - 7;
                         if (y > caveHeight)
-                        {
                             threshold += 0.05 * (y - caveHeight);
-                        }
                         if (threshold > 1.5)
-                        {
                             continue;
-                        }
                         bool tryCave = false;
                         ushort thisBlock = lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z);
                         if (thisBlock == 1 || thisBlock == 3 || thisBlock == 52 || thisBlock == 48)
-                        {
                             tryCave = true;
-                        }
                         if (!tryCave)
-                        {
                             continue;
-                        }
                         double xVal = (x + offsetX) / 15, yVal = y / 7, zVal = (z + offsetZ) / 15;
                         xVal += 1;
                         yVal += 1;
@@ -486,17 +435,17 @@ namespace MCGalaxy
                         double value = adjNoise.GetValue(xVal, yVal, zVal);
                         if (value > threshold)
                         {
-                            if (y <= 4)
+                            switch (y)
                             {
-                                lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 10);
-                            }
-                            else
-                            {
-                                lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 0);
+                                case <= 4:
+                                    lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 10);
+                                    break;
+                                default:
+                                    lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 0);
+                                    break;
                             }
                         }
                     }
-                }
                 TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
                 if (span > TimeSpan.FromSeconds(5))
                 {
@@ -518,31 +467,23 @@ namespace MCGalaxy
             for (double y = 0; y < height; y++)
             {
                 for (double z = 0; z < length; ++z)
-                {
                     for (double x = 0; x < width; ++x)
                     {
                         double threshold = 0.7;
                         bool tryPlace = false;
                         ushort thisBlock = lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z);
                         if (thisBlock == 1 || thisBlock == 3 || thisBlock == 52 || thisBlock == 48)
-                        {
                             tryPlace = true;
-                        }
                         if (!tryPlace)
-                        {
                             continue;
-                        }
                         double xVal = (x + offsetX) / 35, yVal = y / 35, zVal = (z + offsetZ) / 35;
                         xVal += 1;
                         yVal += 1;
                         zVal += 1;
                         double value = adjNoise.GetValue(xVal, yVal, zVal);
                         if (value > threshold)
-                        {
                             lvl.SetBlock((ushort)x, (ushort)y, (ushort)z, Block.FromRaw(451));
-                        }
                     }
-                }
                 TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
                 if (span > TimeSpan.FromSeconds(5))
                 {
@@ -558,25 +499,15 @@ namespace MCGalaxy
             if (biome < 0)
             {
                 for (ushort y = 0; y < (ushort)(lvl.Height - 1); y++)
-                {
                     for (ushort z = 0; z < lvl.Length; ++z)
-                    {
                         for (ushort x = 0; x < lvl.Width; ++x)
-                        {
                             if (lvl.FastGetBlock(x, (ushort)(y + 1), z) == 0 && lvl.FastGetBlock(x, y, z) == 48)
                             {
                                 if (r.Next(0, 320) == 0)
-                                {
                                     lvl.SetTile(x, (ushort)(y + 1), z, 54);
-                                }
                                 if (r.Next(0, 320) == 0)
-                                {
                                     lvl.SetBlock(x, (ushort)(y + 1), z, Block.FromRaw(456));
-                                }
                             }
-                        }
-                    }
-                }
                 return;
             }
             adjNoise.Seed = MakeInt(seed + "tree");
@@ -587,18 +518,13 @@ namespace MCGalaxy
             for (int y = 0; y < (ushort)height; y++)
             {
                 for (int z = 0; z < length; ++z)
-                {
                     for (int x = 0; x < width; ++x)
                     {
                         topSoil = 256 | 129;
                         if (biome == 1)
-                        {
                             topSoil = 12;
-                        }
                         if (biome == 2)
-                        {
                             topSoil = Block.FromRaw(139);
-                        }
                         if ((lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z) == 3 || (lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z) == 12 && biome == 1)) &&
                             lvl.FastGetBlock((ushort)x, (ushort)(y + 1), (ushort)z) == 0)
                         {
@@ -609,82 +535,67 @@ namespace MCGalaxy
                                 yVal += 1;
                                 zVal += 1;
                                 double value = adjNoise.GetValue(xVal, yVal, zVal);
-                                if (value > r.NextDouble() || biome == 3 || biome == 4 || biome == 6)
-                                {
+                                if (value > r.NextDouble() || biome == 3 || biome == 4 || biome == 6 || r.Next(0, 20) == 0)
                                     GenTree((ushort)x, (ushort)(y + 1), (ushort)z);
-                                }
-                                else if (r.Next(0, 20) == 0)
-                                {
-                                    GenTree((ushort)x, (ushort)(y + 1), (ushort)z);
-                                }
                             }
                             else if (biome != 1)
-                            {
-                                if (r.Next(0, 10) == 0)
+                                switch (r.Next(0, 10))
                                 {
-                                    lvl.SetBlock((ushort)x, (ushort)(y + 1), (ushort)z, 256 | 130);
-                                }
-                                else
-                                {
-                                    if (biome == 2)
-                                    {
-                                        lvl.SetBlock((ushort)x, (ushort)(y + 1), (ushort)z, 53);
-                                    }
-                                    if (biome == 5)
-                                    {
-                                        if (r.Next(0, 2) == 0)
+                                    case 0:
+                                        lvl.SetBlock((ushort)x, (ushort)(y + 1), (ushort)z, 256 | 130);
+                                        break;
+                                    default:
                                         {
-                                            int flowerChance = r.Next(0, 10);
-                                            if (flowerChance == 0)
-                                            {
-                                                nl.SetBlock(x, y + 1, z, 256 | 96);
-                                            }
-                                            else
-                                            {
-                                                if (flowerChance == 1)
+                                            if (biome == 2)
+                                                lvl.SetBlock((ushort)x, (ushort)(y + 1), (ushort)z, 53);
+                                            if (biome == 5)
+                                                if (r.Next(0, 2) == 0)
                                                 {
-                                                    nl.SetBlock(x, y + 1, z, 37);
-                                                }
-                                                else
-                                                {
-                                                    if (flowerChance == 2)
+                                                    int flowerChance = r.Next(0, 10);
+                                                    switch (flowerChance)
                                                     {
-                                                        nl.SetBlock(x, y + 1, z, 38);
-                                                    }
-                                                    else
-                                                    {
-                                                        if (flowerChance == 3)
-                                                        {
-                                                            nl.SetBlock(x, y + 1, z, 256 | 651);
-                                                        }
-                                                        else
-                                                        {
-                                                            if (flowerChance == 4)
+                                                        case 0:
+                                                            nl.SetBlock(x, y + 1, z, 256 | 96);
+                                                            break;
+                                                        default:
+                                                            switch (flowerChance)
                                                             {
-                                                                if (r.Next(0, 20) == 0)
-                                                                {
-                                                                    nl.SetBlock(x, y + 1, z, 256 | 604);
-                                                                }
+                                                                case 1:
+                                                                    nl.SetBlock(x, y + 1, z, 37);
+                                                                    break;
+                                                                default:
+                                                                    switch (flowerChance)
+                                                                    {
+                                                                        case 2:
+                                                                            nl.SetBlock(x, y + 1, z, 38);
+                                                                            break;
+                                                                        default:
+                                                                            switch (flowerChance)
+                                                                            {
+                                                                                case 3:
+                                                                                    nl.SetBlock(x, y + 1, z, 256 | 651);
+                                                                                    break;
+                                                                                case 4:
+                                                                                    if (r.Next(0, 20) == 0)
+                                                                                        nl.SetBlock(x, y + 1, z, 256 | 604);
+                                                                                    break;
+                                                                                case 5:
+                                                                                    nl.SetBlock(x, y + 1, z, 256 | 201);
+                                                                                    break;
+                                                                            }
+                                                                            break;
+                                                                    }
+                                                                    break;
                                                             }
-                                                            else
-                                                            {
-                                                                if (flowerChance == 5)
-                                                                {
-                                                                    nl.SetBlock(x, y + 1, z, 256 | 201);
-                                                                }
-                                                            }
-                                                        }
+                                                            break;
                                                     }
                                                 }
-                                            }
+                                            break;
                                         }
-                                    }
                                 }
-                            }
                             lvl.SetBlock((ushort)x, (ushort)y, (ushort)z, topSoil);
                         }
                     }
-                }
                 TimeSpan span = DateTime.UtcNow.Subtract(dateStartLayer);
                 if (span > TimeSpan.FromSeconds(5))
                 {
@@ -693,104 +604,67 @@ namespace MCGalaxy
                 }
             }
             if (biome == 6)
-            {
                 for (int z = 0; z < length; ++z)
-                {
                     for (int x = 0; x < width; ++x)
-                    {
                         if (NASBlock.IsPartOfSet(NASBlock.waterSet, lvl.FastGetBlock((ushort)x, oceanHeight - 1, (ushort)z)) != -1)
                         {
                             if (lvl.FastGetBlock((ushort)x, oceanHeight, (ushort)z) != 0)
-                            {
                                 continue;
-                            }
                             if (r.NextDouble() <= 0.05)
-                            {
                                 lvl.SetBlock((ushort)x, oceanHeight, (ushort)z, Block.FromRaw(449));
-                            }
                         }
-                    }
-                }
-            }
             p.Message("Foliage gen 100% complete.");
         }
         public void GenTree(ushort x, ushort y, ushort z)
         {
-            if (biome == 3)
+            switch (biome)
             {
-                if (r.Next(3) == 0)
-                {
+                case 3:
+                    if (r.Next(3) == 0)
+                        return;
+                    NASTree.GenBirchTree(nl, r, x, y, z);
                     return;
-                }
-                NASTree.GenBirchTree(nl, r, x, y, z);
-                return;
-            }
-            if (biome == 4)
-            {
-                if (r.Next(3) == 0)
-                {
+                case 4:
+                    if (r.Next(3) == 0)
+                        return;
+                    NASTree.GenOakTree(nl, r, x, y, z);
                     return;
-                }
-                NASTree.GenOakTree(nl, r, x, y, z);
-                return;
-            }
-            if (biome == 6)
-            {
-                if (r.Next(2) != 0)
-                {
+                case 6:
+                    if (r.Next(2) != 0 || y > oceanHeight + 6)
+                        return;
+                    NASTree.GenSwampTree(nl, r, x, y, z);
                     return;
-                }
-                if (y > oceanHeight + 6)
-                {
-                    return;
-                }
-                NASTree.GenSwampTree(nl, r, x, y, z);
-                return;
-            }
-            if (biome == 1)
-            {
-                if (r.Next(5) == 0)
-                {
-                    lvl.SetBlock(x, y, z, 256 | 106);
-                    lvl.SetBlock(x, (ushort)(y + 1), z, 256 | 106);
-                    lvl.SetBlock(x, (ushort)(y + 2), z, 256 | 106);
-                    return;
-                }
-            }
-            else
-            {
-                if (biome == 2)
-                {
-                    NASTree.GenSpruceTree(nl, r, x, y, z);
-                }
-                else
-                {
-                    topSoil = 3;
+                case 1:
                     if (r.Next(5) == 0)
                     {
+                        lvl.SetBlock(x, y, z, 256 | 106);
+                        lvl.SetBlock(x, (ushort)(y + 1), z, 256 | 106);
+                        lvl.SetBlock(x, (ushort)(y + 2), z, 256 | 106);
+                        return;
+                    }
+                    break;
+                case 2:
+                    NASTree.GenSpruceTree(nl, r, x, y, z);
+                    break;
+                default:
+                    topSoil = 3;
+                    if (r.Next(5) == 0)
                         NASTree.GenBirchTree(nl, r, x, y, z);
-                    }
                     else
-                    {
                         NASTree.GenOakTree(nl, r, x, y, z);
-                    }
-                }
+                    break;
             }
         }
         public ushort GetSoilType() => biome == 1 ? (ushort)12 : (ushort)3;
         public void GenOre()
         {
             for (int y = 0; y < lvl.Height - 1; y++)
-            {
                 for (int z = 0; z < lvl.Length; ++z)
-                {
                     for (int x = 0; x < lvl.Width; ++x)
                     {
                         ushort curBlock = lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z);
                         if (NASBlock.IsPartOfSet(stoneTypes, curBlock) == -1)
-                        {
                             continue;
-                        }
                         if (biome >= 0)
                         {
                             TryGenOre(x, y, z, ironDepth, ironChance, 628, 3);
@@ -800,53 +674,31 @@ namespace MCGalaxy
                             TryGenOre(x, y, z, coalDepth, coalChance, 627, r.Next(3, 4), 0.5);
                         }
                         if (biome == 1)
-                        {
                             TryGenOre(x, y, z, coalDepth, quartzChance, 586, 3);
-                        }
                         if (biome < 0)
                         {
                             TryGenOre(x, y, z, -1000, coalChance, 454, 3);
                             TryGenOre(x, y, z, -1000, goldChance, 455, 2);
                         }
                     }
-                }
-            }
             for (ushort xPl = 0; xPl <= 383; xPl++)
-            {
                 for (ushort yPl = 0; yPl <= 20; yPl++)
-                {
                     for (ushort zPl = 0; zPl <= 383; zPl++)
-                    {
-                        if (yPl <= 10 || r.Next(yPl - 9) == 0)
-                        {
-                            if (lvl.FastGetBlock(xPl, yPl, zPl) == 1 || lvl.FastGetBlock(xPl, yPl, zPl) == 48)
-                            {
-                                lvl.SetBlock(xPl, yPl, zPl, biome >= 0 ? Block.FromRaw(429) : Block.FromRaw(452));
-                            }
-                        }
-                    }
-                }
-            }
+                        if ((yPl <= 10 || r.Next(yPl - 9) == 0) && (lvl.FastGetBlock(xPl, yPl, zPl) == 1 || lvl.FastGetBlock(xPl, yPl, zPl) == 48))
+                            lvl.SetBlock(xPl, yPl, zPl, biome >= 0 ? Block.FromRaw(429) : Block.FromRaw(452));
         }
         public bool TryGenOre(int x, int y, int z, int oreDepth, float oreChance, ushort oreID, int size = 0, double vsf = 0.4)
         {
             double chance = (double)(oreChance / 100);
             int height = nl.heightmap[x, z];
             if (height < oceanHeight)
-            {
                 height = oceanHeight;
-            }
             int hmbyhttdfttrh = lvl.Height - height;
             hmbyhttdfttrh += oreDepth;
             if (y <= lvl.Height - hmbyhttdfttrh && r.NextDouble() <= chance)
             {
-                if (r.NextDouble() > 0.5)
-                {
-                    if (BlockExposed(x, y, z))
-                    {
-                        return false;
-                    }
-                }
+                if (r.NextDouble() > 0.5 && BlockExposed(x, y, z))
+                    return false;
                 GenerateOreCluster(x, y, z, oreID, size, vsf);
                 return true;
             }
@@ -858,20 +710,13 @@ namespace MCGalaxy
             int height = nl.heightmap[x, z],
                 genY = new Random().Next(0, 20);
             if (height < oceanHeight)
-            {
                 height = oceanHeight;
-            }
             int hmbyhttdfttrh = lvl.Height - height;
             hmbyhttdfttrh += oreDepth;
             if (y <= lvl.Height - hmbyhttdfttrh && r.NextDouble() <= chance)
             {
-                if (r.NextDouble() > 0.5)
-                {
-                    if (BlockExposed(x, y, z))
-                    {
-                        return false;
-                    }
-                }
+                if (r.NextDouble() > 0.5 && BlockExposed(x, y, z))
+                    return false;
                 GenerateOreCluster(x, genY, z, oreID, size, vsf);
                 return true;
             }
@@ -883,20 +728,13 @@ namespace MCGalaxy
             int height = nl.heightmap[x, z],
                 genY = new Random().Next(0, 15);
             if (height < oceanHeight)
-            {
                 height = oceanHeight;
-            }
             int hmbyhttdfttrh = lvl.Height - height;
             hmbyhttdfttrh += oreDepth;
             if (y <= lvl.Height - hmbyhttdfttrh && r.NextDouble() <= chance)
             {
-                if (r.NextDouble() > 0.5)
-                {
-                    if (BlockExposed(x, y, z))
-                    {
-                        return false;
-                    }
-                }
+                if (r.NextDouble() > 0.5 && BlockExposed(x, y, z))
+                    return false;
                 GenerateOreCluster(x, genY, z, oreID, size, vsf);
                 return true;
             }
@@ -905,48 +743,34 @@ namespace MCGalaxy
         public void GenerateOreCluster(int x, int y, int z, ushort oreID, int iteration, double chance = 0.4)
         {
             if (x < 0 || y < 0 || z < 0 || x > mapWideness - 1 || z > mapWideness - 1 || y > mapTallness - 1)
-            {
                 return;
-            }
             ushort hereBlock = lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z);
-            if (hereBlock == 1 || hereBlock == 52 || hereBlock == 48)
+            switch (hereBlock)
             {
-                lvl.SetBlock((ushort)x, (ushort)y, (ushort)z, Block.FromRaw(oreID));
-            }
-            else
-            {
-                return;
+                case 1:
+                case 52:
+                case 48:
+                    lvl.SetBlock((ushort)x, (ushort)y, (ushort)z, Block.FromRaw(oreID));
+                    break;
+                default:
+                    return;
             }
             iteration--;
             if (iteration == 0)
-            {
                 return;
-            }
             Random rng = new();
             if (rng.NextDouble() <= chance)
-            {
                 GenerateOreCluster(x + 1, y, z, oreID, iteration);
-            }
             if (rng.NextDouble() <= chance)
-            {
                 GenerateOreCluster(x - 1, y, z, oreID, iteration);
-            }
             if (rng.NextDouble() <= chance)
-            {
                 GenerateOreCluster(x, y + 1, z, oreID, iteration);
-            }
             if (rng.NextDouble() <= chance)
-            {
                 GenerateOreCluster(x, y - 1, z, oreID, iteration);
-            }
             if (rng.NextDouble() <= chance)
-            {
                 GenerateOreCluster(x, y, z + 1, oreID, iteration);
-            }
             if (rng.NextDouble() <= chance)
-            {
                 GenerateOreCluster(x, y, z - 1, oreID, iteration);
-            }
         }
         public void GenWaterSources()
         {
@@ -975,215 +799,151 @@ namespace MCGalaxy
                 BlockDefinition.Save(false, lvl);
             }
             for (int y = 0; y < lvl.Height - 1; y++)
-            {
                 for (int z = 0; z < lvl.Length; ++z)
-                {
                     for (int x = 0; x < lvl.Width; ++x)
                     {
                         ushort curBlock = lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z);
-                        if (curBlock == 10)
-                        {
-                            if (BlockExposed2(x, y, z))
-                            {
-                                nl.blocksThatMustBeDisturbed.Add(new(x, y, z));
-                            }
-                        }
+                        if (curBlock == 10 && BlockExposed2(x, y, z))
+                            nl.blocksThatMustBeDisturbed.Add(new(x, y, z));
                         if (NASBlock.IsPartOfSet(stoneTypes, curBlock) == -1)
-                        {
                             continue;
-                        }
-                        if (r.NextDouble() < 0.00025)
+                        if (r.NextDouble() < 0.00025 && BlockExposed(x, y, z))
                         {
-                            if (BlockExposed(x, y, z))
-                            {
-                                if (NASBlock.IsPartOfSet(stoneTypes, lvl.FastGetBlock((ushort)x, (ushort)(y + 1), (ushort)z)) == -1)
-                                {
-                                    continue;
-                                }
-                                lvl.SetTile((ushort)x, (ushort)y, (ushort)z, (byte)(biome < 0 ? 10 : 9));
-                                nl.blocksThatMustBeDisturbed.Add(new(x, y, z));
-                            }
+                            if (NASBlock.IsPartOfSet(stoneTypes, lvl.FastGetBlock((ushort)x, (ushort)(y + 1), (ushort)z)) == -1)
+                                continue;
+                            lvl.SetTile((ushort)x, (ushort)y, (ushort)z, (byte)(biome < 0 ? 10 : 9));
+                            nl.blocksThatMustBeDisturbed.Add(new(x, y, z));
                         }
                     }
-                }
-            }
         }
-        public bool BlockExposed(int x, int y, int z)
-        {
-            if (lvl.IsAirAt((ushort)(x + 1), (ushort)y, (ushort)z))
-            {
-                return true;
-            }
-            if (lvl.IsAirAt((ushort)(x - 1), (ushort)y, (ushort)z))
-            {
-                return true;
-            }
-            return lvl.IsAirAt((ushort)x, (ushort)(y + 1), (ushort)z) || lvl.IsAirAt((ushort)x, (ushort)(y - 1), (ushort)z) || lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z + 1)) || lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1));
-        }
+        public bool BlockExposed(int x, int y, int z) => lvl.IsAirAt((ushort)(x + 1), (ushort)y, (ushort)z) || lvl.IsAirAt((ushort)(x - 1), (ushort)y, (ushort)z) || lvl.IsAirAt((ushort)x, (ushort)(y + 1), (ushort)z) || lvl.IsAirAt((ushort)x, (ushort)(y - 1), (ushort)z) || lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z + 1)) || lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1));
         public bool BlockExposed2(int x, int y, int z) => lvl.IsAirAt((ushort)(x + 1), (ushort)y, (ushort)z) || lvl.IsAirAt((ushort)(x - 1), (ushort)y, (ushort)z) || lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z + 1)) || lvl.IsAirAt((ushort)x, (ushort)y, (ushort)(z - 1));
         public void GenDungeons()
         {
             p.Message("Generating structures");
             int dungeonCount = r.Next(3, 6);
             for (int done = 0; done <= dungeonCount; done++)
-            {
                 GenerateDungeon(r, lvl, nl);
-            }
         }
         public static void GenerateDungeon(NASPlayer np, int x, int y, int z, Level level, NASLevel nsl)
         {
             Random rng = new(MakeInt(level.name));
             if (np.p != null)
-            {
                 GenerateDungeon(rng, x + 2, y, z + 2, level, nsl, true, np.p);
-            }
         }
         public static void GenerateDungeon(Random rng, int x, int y, int z, Level level, NASLevel nsl, bool forced, Player p)
         {
             for (int dx = 0; dx < 9; dx++)
-            {
                 for (int dy = 0; dy < 7; dy++)
-                {
                     for (int dz = 0; dz < 9; dz++)
-                    {
-                        if (rng.Next(0, 3) == 0)
+                        switch (rng.Next(0, 3))
                         {
-                            level.SetBlock((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz), Block.FromRaw(180));
+                            case 0:
+                                level.SetBlock((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz), Block.FromRaw(180));
+                                break;
+                            default:
+                                level.SetTile((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz), 65);
+                                break;
                         }
-                        else
-                        {
-                            level.SetTile((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz), 65);
-                        }
-                    }
-                }
-            }
             for (int dx = 1; dx < 8; dx++)
-            {
                 for (int dy = 2; dy < 6; dy++)
-                {
                     for (int dz = 1; dz < 8; dz++)
-                    {
                         level.SetTile((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz), 0);
-                    }
-                }
-            }
             int dungeonType = rng.Next(0, 6);
-            if (dungeonType == 0)
+            switch (dungeonType)
             {
-                for (int dx = 2; dx < 7; dx++)
-                {
-                    for (int dz = 2; dz < 7; dz++)
+                case 0:
                     {
-                        level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), Block.FromRaw(476));
+                        for (int dx = 2; dx < 7; dx++)
+                            for (int dz = 2; dz < 7; dz++)
+                                level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), Block.FromRaw(476));
+                        level.SetTile((ushort)(x + 3), (ushort)(y + 2), (ushort)(z + 4), 0);
+                        level.SetTile((ushort)(x + 5), (ushort)(y + 2), (ushort)(z + 4), 0);
+                        level.SetTile((ushort)(x + 4), (ushort)(y + 2), (ushort)(z + 3), 0);
+                        level.SetTile((ushort)(x + 4), (ushort)(y + 2), (ushort)(z + 5), 0);
+                        level.SetTile((ushort)(x + 3), (ushort)(y + 1), (ushort)(z + 4), 0);
+                        level.SetTile((ushort)(x + 5), (ushort)(y + 1), (ushort)(z + 4), 0);
+                        level.SetTile((ushort)(x + 4), (ushort)(y + 1), (ushort)(z + 3), 0);
+                        level.SetTile((ushort)(x + 4), (ushort)(y + 1), (ushort)(z + 5), 0);
+                        level.SetTile((ushort)(x + 4), (ushort)(y + 4), (ushort)(z + 4), 65);
+                        level.SetTile((ushort)(x + 4), (ushort)(y + 5), (ushort)(z + 4), 10);
+                        nsl.blocksThatMustBeDisturbed.Add(new(x + 4, y + 5, z + 4));
+                        GenLoot(x + 4, y + 2, z + 4, level, rng, nsl, forced, p);
+                        return;
                     }
-                }
-                level.SetTile((ushort)(x + 3), (ushort)(y + 2), (ushort)(z + 4), 0);
-                level.SetTile((ushort)(x + 5), (ushort)(y + 2), (ushort)(z + 4), 0);
-                level.SetTile((ushort)(x + 4), (ushort)(y + 2), (ushort)(z + 3), 0);
-                level.SetTile((ushort)(x + 4), (ushort)(y + 2), (ushort)(z + 5), 0);
-                level.SetTile((ushort)(x + 3), (ushort)(y + 1), (ushort)(z + 4), 0);
-                level.SetTile((ushort)(x + 5), (ushort)(y + 1), (ushort)(z + 4), 0);
-                level.SetTile((ushort)(x + 4), (ushort)(y + 1), (ushort)(z + 3), 0);
-                level.SetTile((ushort)(x + 4), (ushort)(y + 1), (ushort)(z + 5), 0);
-                level.SetTile((ushort)(x + 4), (ushort)(y + 4), (ushort)(z + 4), 65);
-                level.SetTile((ushort)(x + 4), (ushort)(y + 5), (ushort)(z + 4), 10);
-                nsl.blocksThatMustBeDisturbed.Add(new(x + 4, y + 5, z + 4));
-                GenLoot(x + 4, y + 2, z + 4, level, rng, nsl, forced, p);
-                return;
-            }
-            if (dungeonType == 1)
-            {
-                level.SetTile((ushort)(x + 2), (ushort)(y + 1), (ushort)(z + 2), 48);
-                level.SetTile((ushort)(x + 2), (ushort)(y + 1), (ushort)(z + 6), 48);
-                level.SetTile((ushort)(x + 6), (ushort)(y + 1), (ushort)(z + 2), 48);
-                level.SetTile((ushort)(x + 6), (ushort)(y + 1), (ushort)(z + 6), 48);
-                level.SetBlock((ushort)(x + 2), (ushort)(y + 1), (ushort)(z + 4), Block.FromRaw(469));
-                level.SetBlock((ushort)(x + 6), (ushort)(y + 1), (ushort)(z + 4), Block.FromRaw(469));
-                level.SetBlock((ushort)(x + 4), (ushort)(y + 1), (ushort)(z + 2), Block.FromRaw(469));
-                level.SetBlock((ushort)(x + 4), (ushort)(y + 1), (ushort)(z + 6), Block.FromRaw(469));
-                level.SetBlock((ushort)(x + 4), (ushort)(y + 2), (ushort)(z + 4), Block.FromRaw(457));
-                GenLoot(x + 1, y + 2, z + 1, level, rng, nsl, forced, p);
-                GenLoot(x + 7, y + 2, z + 7, level, rng, nsl, forced, p);
-                return;
-            }
-            if (dungeonType == 2)
-            {
-                for (int dx = 1; dx < 8; dx++)
-                {
-                    for (int dz = 1; dz < 8; dz++)
+                case 1:
+                    level.SetTile((ushort)(x + 2), (ushort)(y + 1), (ushort)(z + 2), 48);
+                    level.SetTile((ushort)(x + 2), (ushort)(y + 1), (ushort)(z + 6), 48);
+                    level.SetTile((ushort)(x + 6), (ushort)(y + 1), (ushort)(z + 2), 48);
+                    level.SetTile((ushort)(x + 6), (ushort)(y + 1), (ushort)(z + 6), 48);
+                    level.SetBlock((ushort)(x + 2), (ushort)(y + 1), (ushort)(z + 4), Block.FromRaw(469));
+                    level.SetBlock((ushort)(x + 6), (ushort)(y + 1), (ushort)(z + 4), Block.FromRaw(469));
+                    level.SetBlock((ushort)(x + 4), (ushort)(y + 1), (ushort)(z + 2), Block.FromRaw(469));
+                    level.SetBlock((ushort)(x + 4), (ushort)(y + 1), (ushort)(z + 6), Block.FromRaw(469));
+                    level.SetBlock((ushort)(x + 4), (ushort)(y + 2), (ushort)(z + 4), Block.FromRaw(457));
+                    GenLoot(x + 1, y + 2, z + 1, level, rng, nsl, forced, p);
+                    GenLoot(x + 7, y + 2, z + 7, level, rng, nsl, forced, p);
+                    return;
+                case 2:
                     {
-                        level.SetTile((ushort)(x + dx), (ushort)(y + 1), (ushort)(z + dz), 10);
+                        for (int dx = 1; dx < 8; dx++)
+                            for (int dz = 1; dz < 8; dz++)
+                                level.SetTile((ushort)(x + dx), (ushort)(y + 1), (ushort)(z + dz), 10);
+                        for (int dx = 1; dx < 8; dx++)
+                            for (int dz = 1; dz < 8; dz++)
+                                level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), rng.Next(2) == 0 ? (ushort)65 : Block.FromRaw(685));
+                        GenLoot(x + 4, y + 3, z + 4, level, rng, nsl, forced, p);
+                        return;
                     }
-                }
-                for (int dx = 1; dx < 8; dx++)
-                {
-                    for (int dz = 1; dz < 8; dz++)
+                case 3:
                     {
-                        level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), (rng.Next(2) == 0) ? (ushort)65 : Block.FromRaw(685));
-                    }
-                }
-                GenLoot(x + 4, y + 3, z + 4, level, rng, nsl, forced, p);
-                return;
-            }
-            if (dungeonType == 3)
-            {
-                for (int count = 0; count < 4; count++)
-                {
-                    int dx = rng.Next(1, 8),
-                        dz = rng.Next(1, 8);
-                    level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), Block.FromRaw(604));
-                }
-                for (int count = 0; count < 4; count++)
-                {
-                    int dx = rng.Next(1, 8),
-                        dz = rng.Next(1, 8);
-                    level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), Block.FromRaw(653));
-                }
-                GenLoot(x + 4, y + 2, z + 4, level, rng, nsl, forced, p);
-                return;
-            }
-            if (dungeonType == 4)
-            {
-                for (int dx = 1; dx < 8; dx++)
-                {
-                    for (int dy = 1; dy < 6; dy++)
-                    {
-                        for (int dz = 1; dz < 8; dz++)
+                        for (int count = 0; count < 4; count++)
                         {
-                            if (rng.Next(8) == 0)
-                            {
-                                level.SetTile((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz), 10);
-                            }
-                            else
-                            {
-                                level.SetTile((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz), 1);
-                            }
+                            int dx = rng.Next(1, 8),
+                                dz = rng.Next(1, 8);
+                            level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), Block.FromRaw(604));
                         }
+                        for (int count = 0; count < 4; count++)
+                        {
+                            int dx = rng.Next(1, 8),
+                                dz = rng.Next(1, 8);
+                            level.SetBlock((ushort)(x + dx), (ushort)(y + 2), (ushort)(z + dz), Block.FromRaw(653));
+                        }
+                        GenLoot(x + 4, y + 2, z + 4, level, rng, nsl, forced, p);
+                        return;
                     }
-                }
-                GenLoot(x + 4, y + 1, z + 4, level, rng, nsl, forced, p);
-                return;
-            }
-            if (dungeonType == 5)
-            {
-                for (int dx = 1; dx < 8; dx++)
-                {
-                    for (int dz = 1; dz < 8; dz++)
+                case 4:
                     {
-                        level.SetBlock((ushort)(x + dx), (ushort)(y + 1), (ushort)(z + dz), Block.FromRaw(129));
+                        for (int dx = 1; dx < 8; dx++)
+                            for (int dy = 1; dy < 6; dy++)
+                                for (int dz = 1; dz < 8; dz++)
+                                    switch (rng.Next(8))
+                                    {
+                                        case 0:
+                                            level.SetTile((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz), 10);
+                                            break;
+                                        default:
+                                            level.SetTile((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz), 1);
+                                            break;
+                                    }
+                        GenLoot(x + 4, y + 1, z + 4, level, rng, nsl, forced, p);
+                        return;
                     }
-                }
-                level.SetBlock((ushort)(x + 4), (ushort)(y + 3), (ushort)(z + 4), Block.FromRaw(171));
-                NASBlockEntity bEntity = new()
-                {
-                    blockText = "&mCongratulations. You touched grass."
-                };
-                if (!nsl.blockEntities.ContainsKey(x + 4 + " " + (y + 3) + " " + (z + 4)))
-                {
-                    nsl.blockEntities.Add(x + 4 + " " + (y + 3) + " " + (z + 4), bEntity);
-                }
-                GenLoot(x + 4, y + 2, z + 4, level, rng, nsl, forced, p);
-                return;
+                case 5:
+                    {
+                        for (int dx = 1; dx < 8; dx++)
+                            for (int dz = 1; dz < 8; dz++)
+                                level.SetBlock((ushort)(x + dx), (ushort)(y + 1), (ushort)(z + dz), Block.FromRaw(129));
+                        level.SetBlock((ushort)(x + 4), (ushort)(y + 3), (ushort)(z + 4), Block.FromRaw(171));
+                        NASBlockEntity bEntity = new()
+                        {
+                            blockText = "&mCongratulations. You touched grass."
+                        };
+                        if (!nsl.blockEntities.ContainsKey(x + 4 + " " + (y + 3) + " " + (z + 4)))
+                            nsl.blockEntities.Add(x + 4 + " " + (y + 3) + " " + (z + 4), bEntity);
+                        GenLoot(x + 4, y + 2, z + 4, level, rng, nsl, forced, p);
+                        return;
+                    }
             }
         }
         public static void GenerateDungeon(Random rng, Level level, NASLevel nsl)
@@ -1202,33 +962,18 @@ namespace MCGalaxy
             };
             bEntity.drop.blockStacks.Add(new(729, rng.Next(0, 3)));
             if (rng.Next(2) == 0)
-            {
                 bEntity.drop.blockStacks.Add(new(631, rng.Next(1, 3)));
-            }
             if (rng.Next(4) == 0)
-            {
                 bEntity.drop.blockStacks.Add(new(650));
-            }
             if (rng.Next(3) == 0)
-            {
                 bEntity.drop.blockStacks.Add(new(478));
-            }
             if (rng.Next(3) == 0)
-            {
                 bEntity.drop.blockStacks.Add(new(204));
-            }
             if (nsl.blockEntities.ContainsKey(x + " " + y + " " + z))
-            {
                 nsl.blockEntities.Remove(x + " " + y + " " + z);
-            }
             nsl.blockEntities.Add(x + " " + y + " " + z, bEntity);
-            if (forced)
-            {
-                if (!p.IsSuper)
-                {
-                    PlayerActions.ReloadMap(p);
-                }
-            }
+            if (forced && !p.IsSuper)
+                PlayerActions.ReloadMap(p);
         }
     }
 }

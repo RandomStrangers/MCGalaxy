@@ -43,22 +43,17 @@ namespace MCGalaxy.Authentication
             {
                 rng.GetBytes(one);
                 if (!AcceptableSaltChar((char)one[0]))
-                {
                     continue;
-                }
-                str[i] = (char)one[0]; i++;
+                str[i] = (char)one[0]; 
+                i++;
             }
             return new string(str);
         }
         public static AuthService GetOrCreate(string url, bool canSave = true)
         {
             foreach (AuthService s in Services)
-            {
                 if (s.URL.CaselessEq(url))
-                {
                     return s;
-                }
-            }
             AuthService service = new()
             {
                 URL = url,
@@ -66,7 +61,6 @@ namespace MCGalaxy.Authentication
             };
             Services.Add(service);
             if (canSave)
-            {
                 try
                 {
                     SaveServices();
@@ -75,7 +69,6 @@ namespace MCGalaxy.Authentication
                 {
                     Logger.LogError("Error saving authservices.properties", ex);
                 }
-            }
             return service;
         }
         /// <summary> Updates list of authentication services from authservices.properties </summary>
@@ -87,23 +80,17 @@ namespace MCGalaxy.Authentication
         static void ParseProperty(string key, string value, ref AuthService cur)
         {
             if (key.CaselessEq("URL"))
-            {
                 cur = GetOrCreate(value, false);
-            }
             else if (key.CaselessEq("name-suffix"))
             {
                 if (cur == null)
-                {
                     return;
-                }
                 cur.NameSuffix = value;
             }
             else if (key.CaselessEq("skin-prefix"))
             {
                 if (cur == null)
-                {
                     return;
-                }
                 cur.SkinPrefix = value;
             }
         }

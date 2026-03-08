@@ -14,9 +14,7 @@ namespace MCGalaxy
         public GenericPriorityQueue(int maxNodes, Comparison<TPriority> comparer)
         {
             if (maxNodes <= 0)
-            {
                 throw new InvalidOperationException("New queue size cannot be smaller than 1");
-            }
             _numNodes = 0;
             _nodes = new TItem[maxNodes + 1];
             _numNodesEverEnqueued = 0;
@@ -39,21 +37,13 @@ namespace MCGalaxy
         public void Enqueue(TItem node, TPriority priority)
         {
             if (node == null)
-            {
                 throw new ArgumentNullException("node");
-            }
             if (_numNodes >= _nodes.Length - 1)
-            {
                 throw new InvalidOperationException("Queue is full - node cannot be added: " + node);
-            }
             if (node.Queue != null && !Equals(node.Queue))
-            {
                 throw new InvalidOperationException("node.Enqueue was called on a node from another queue.  Please call originalQueue.ResetNode() first");
-            }
             if (Contains(node))
-            {
                 throw new InvalidOperationException("Node is already enqueued: " + node);
-            }
             node.Queue = this;
             node.Priority = priority;
             _numNodes++;
@@ -65,30 +55,28 @@ namespace MCGalaxy
         public void CascadeUp(TItem node)
         {
             int parent;
-            if (node.QueueIndex > 1)
+            switch (node.QueueIndex)
             {
-                parent = node.QueueIndex >> 1;
-                TItem parentNode = _nodes[parent];
-                if (HasHigherPriority(parentNode, node))
-                {
+                case > 1:
+                    {
+                        parent = node.QueueIndex >> 1;
+                        TItem parentNode = _nodes[parent];
+                        if (HasHigherPriority(parentNode, node))
+                            return;
+                        _nodes[node.QueueIndex] = parentNode;
+                        parentNode.QueueIndex = node.QueueIndex;
+                        node.QueueIndex = parent;
+                        break;
+                    }
+                default:
                     return;
-                }
-                _nodes[node.QueueIndex] = parentNode;
-                parentNode.QueueIndex = node.QueueIndex;
-                node.QueueIndex = parent;
-            }
-            else
-            {
-                return;
             }
             while (parent > 1)
             {
                 parent >>= 1;
                 TItem parentNode = _nodes[parent];
                 if (HasHigherPriority(parentNode, node))
-                {
                     break;
-                }
                 _nodes[node.QueueIndex] = parentNode;
                 parentNode.QueueIndex = node.QueueIndex;
                 node.QueueIndex = parent;
@@ -100,9 +88,7 @@ namespace MCGalaxy
             int finalQueueIndex = node.QueueIndex,
                 childLeftIndex = 2 * finalQueueIndex;
             if (childLeftIndex > _numNodes)
-            {
                 return;
-            }
             int childRightIndex = childLeftIndex + 1;
             TItem childLeft = _nodes[childLeftIndex];
             if (HasHigherPriority(childLeft, node))
@@ -130,9 +116,7 @@ namespace MCGalaxy
                 }
             }
             else if (childRightIndex > _numNodes)
-            {
                 return;
-            }
             else
             {
                 TItem childRight = _nodes[childRightIndex];
@@ -143,9 +127,7 @@ namespace MCGalaxy
                     finalQueueIndex = childRightIndex;
                 }
                 else
-                {
                     return;
-                }
             }
             while (true)
             {
@@ -210,14 +192,10 @@ namespace MCGalaxy
         public TItem Dequeue()
         {
             if (_numNodes <= 0)
-            {
                 throw new InvalidOperationException("Cannot call Dequeue() on an empty queue");
-            }
             if (!IsValidQueue())
-            {
                 throw new InvalidOperationException("Queue has been corrupted (Did you update a node priority manually instead of calling UpdatePriority()?" +
-                                                    "Or add the same node to two different queues?)");
-            }
+                    "Or add the same node to two different queues?)");
             TItem returnMe = _nodes[1];
             if (_numNodes == 1)
             {
@@ -236,13 +214,9 @@ namespace MCGalaxy
         public void Resize(int maxNodes)
         {
             if (maxNodes <= 0)
-            {
                 throw new InvalidOperationException("Queue size cannot be smaller than 1");
-            }
             if (maxNodes < _numNodes)
-            {
                 throw new InvalidOperationException("Called Resize(" + maxNodes + "), but current queue contains " + _numNodes + " nodes");
-            }
             TItem[] newArray = new TItem[maxNodes + 1];
             int highestIndexToCopy = Math.Min(maxNodes, _numNodes);
             Array.Copy(_nodes, newArray, highestIndexToCopy + 1);
@@ -252,46 +226,35 @@ namespace MCGalaxy
         public void UpdatePriority(TItem node, TPriority priority)
         {
             if (node == null)
-            {
                 throw new ArgumentNullException("node");
-            }
             if (node.Queue != null && !Equals(node.Queue))
-            {
                 throw new InvalidOperationException("node.UpdatePriority was called on a node from another queue");
-            }
             if (!Contains(node))
-            {
                 throw new InvalidOperationException("Cannot call UpdatePriority() on a node which is not enqueued: " + node);
-            }
             node.Priority = priority;
             OnNodeUpdated(node);
         }
         public void OnNodeUpdated(TItem node)
         {
             int parentIndex = node.QueueIndex >> 1;
-            if (parentIndex > 0 && HasHigherPriority(node, _nodes[parentIndex]))
+            switch (parentIndex)
             {
-                CascadeUp(node);
-            }
-            else
-            {
-                CascadeDown(node);
+                case > 0 when HasHigherPriority(node, _nodes[parentIndex]):
+                    CascadeUp(node);
+                    break;
+                default:
+                    CascadeDown(node);
+                    break;
             }
         }
         public void Remove(TItem node)
         {
             if (node == null)
-            {
                 throw new ArgumentNullException("node");
-            }
             if (node.Queue != null && !Equals(node.Queue))
-            {
                 throw new InvalidOperationException("node.Remove was called on a node from another queue");
-            }
             if (!Contains(node))
-            {
                 throw new InvalidOperationException("Cannot call Remove() on a node which is not enqueued: " + node);
-            }
             if (node.QueueIndex == _numNodes)
             {
                 _nodes[_numNodes] = null;
@@ -308,26 +271,18 @@ namespace MCGalaxy
         public void ResetNode(TItem node)
         {
             if (node == null)
-            {
                 throw new ArgumentNullException("node");
-            }
             if (node.Queue != null && !Equals(node.Queue))
-            {
                 throw new InvalidOperationException("node.ResetNode was called on a node from another queue");
-            }
             if (Contains(node))
-            {
                 throw new InvalidOperationException("node.ResetNode was called on a node that is still in the queue");
-            }
             node.Queue = null;
             node.QueueIndex = 0;
         }
         public IEnumerator<TItem> GetEnumerator()
         {
             for (int i = 1; i <= _numNodes; i++)
-            {
                 yield return _nodes[i];
-            }
         }
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         public bool IsValidQueue()
@@ -338,14 +293,10 @@ namespace MCGalaxy
                 {
                     int childLeftIndex = 2 * i;
                     if (childLeftIndex < _nodes.Length && _nodes[childLeftIndex] != null && HasHigherPriority(_nodes[childLeftIndex], _nodes[i]))
-                    {
                         return false;
-                    }
                     int childRightIndex = childLeftIndex + 1;
                     if (childRightIndex < _nodes.Length && _nodes[childRightIndex] != null && HasHigherPriority(_nodes[childRightIndex], _nodes[i]))
-                    {
                         return false;
-                    }
                 }
             }
             return true;

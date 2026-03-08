@@ -97,9 +97,7 @@ namespace MCGalaxy.Eco
             {
                 w.WriteLine();
                 foreach (string prop in kvp.Value)
-                {
                     w.WriteLine(kvp.Key + ":" + prop);
-                }
             }
         }
         public static List<Item> Items = new() {
@@ -114,9 +112,7 @@ namespace MCGalaxy.Eco
             {
                 if (name.CaselessEq(item.Name)) return item;
                 foreach (string alias in item.Aliases)
-                {
                     if (name.CaselessEq(alias)) return item;
-                }
             }
             return null;
         }
@@ -124,9 +120,7 @@ namespace MCGalaxy.Eco
         {
             List<Item> enabled = new();
             foreach (Item item in Items)
-            {
                 if (item.Enabled) enabled.Add(item);
-            }
             return enabled;
         }
         /// <summary> Gets comma separated list of enabled items. </summary>

@@ -33,12 +33,8 @@ namespace MCGalaxy
         {
             Level[] loaded = Loaded.Items;
             foreach (Level lvl in loaded)
-            {
                 if (lvl.name.CaselessEq(name))
-                {
                     return lvl;
-                }
-            }
             return null;
         }
         public static void Add(Level lvl)
@@ -62,9 +58,7 @@ namespace MCGalaxy
         {
             string[] files = AllMapFiles();
             for (int i = 0; i < files.Length; i++)
-            {
                 files[i] = Path.GetFileNameWithoutExtension(files[i]);
-            }
             return files;
         }
         public static bool MapExists(string name) => File.Exists(MapPath(name));
@@ -94,9 +88,7 @@ namespace MCGalaxy
             {
                 string backupName = BackupNameFrom(path);
                 if (!NumberUtils.TryParseInt32(backupName, out int num))
-                {
                     continue;
-                }
                 latest = Math.Max(num, latest);
             }
             return latest;
@@ -146,9 +138,7 @@ namespace MCGalaxy
         {
             lvl = FindExact(map);
             if (lvl != null)
-            {
                 return lvl.Config;
-            }
             string propsPath = PropsPath(map);
             LevelConfig cfg = new();
             cfg.Load(propsPath);
@@ -158,13 +148,9 @@ namespace MCGalaxy
         {
             cfg = GetConfig(map, out Level lvl);
             if (p.IsConsole)
-            {
                 return true;
-            }
             if (lvl != null)
-            {
                 return Check(p, plRank, lvl, action);
-            }
             AccessController visit = new LevelAccessController(cfg, map, true);
             AccessController build = new LevelAccessController(cfg, map, false);
             if (!visit.CheckDetailed(p, plRank) || !build.CheckDetailed(p, plRank))
@@ -178,9 +164,7 @@ namespace MCGalaxy
         public static bool Check(Player p, LevelPermission plRank, Level lvl, string action)
         {
             if (p.IsConsole)
-            {
                 return true;
-            }
             if (!lvl.VisitAccess.CheckDetailed(p, plRank) || !lvl.BuildAccess.CheckDetailed(p, plRank))
             {
                 p.Message("Hence, you cannot {0}.", action);
@@ -191,12 +175,8 @@ namespace MCGalaxy
         public static bool ValidName(string map)
         {
             foreach (char c in map)
-            {
                 if (!SqlUtils.ValidNameChar(c))
-                {
                     return false;
-                }
-            }
             return true;
         }
         public static bool IsRealmOwner(string name, string map)
@@ -206,12 +186,8 @@ namespace MCGalaxy
             if (owners.Length > 0)
             {
                 foreach (string owner in owners)
-                {
                     if (owner.CaselessEq(name))
-                    {
                         return true;
-                    }
-                }
                 return false;
             }
             return Server.Config.ClassicubeAccountPlus && map.CaselessStarts(name);
@@ -220,13 +196,9 @@ namespace MCGalaxy
         {
             bool plus = Server.Config.ClassicubeAccountPlus;
             if (!plus || map.IndexOf('+') == -1)
-            {
                 return null;
-            }
             while (map.Length > 0 && char.IsNumber(map[map.Length - 1]))
-            {
                 map = map.Substring(0, map.Length - 1);
-            }
             return PlayerDB.FindName(map);
         }
         /// <summary>
@@ -241,12 +213,8 @@ namespace MCGalaxy
             string[] allMaps = AllMapNames();
             List<string> owned = new();
             foreach (string lvlName in allMaps)
-            {
                 if (IsPersonalRealmOwner(playerName, lvlName))
-                {
                     owned.Add(lvlName);
-                }
-            }
             owned.Sort(new AlphanumComparator());
             return owned;
         }
@@ -261,18 +229,8 @@ namespace MCGalaxy
             RetrieveProps(map, out LevelPermission visitP, out LevelPermission buildP, out bool loadOnGoto);
             LevelPermission maxPerm = visitP;
             if (maxPerm < buildP)
-            {
                 maxPerm = buildP;
-            }
-            string visit;
-            if (showVisitable)
-            {
-                visit = loadOnGoto && p.Rank >= visitP ? "" : " &c[no]";
-            }
-            else
-            {
-                visit = "";
-            }
+            string visit = showVisitable ? loadOnGoto && p.Rank >= visitP ? "" : " &c[no]" : "";
             return Group.GetColor(maxPerm) + map + visit;
         }
         static void RetrieveProps(string level, out LevelPermission visit,
@@ -284,30 +242,21 @@ namespace MCGalaxy
             string propsPath = PropsPath(level);
             SearchArgs args = new();
             if (!PropertiesFile.Read(propsPath, ref args, ProcessLine))
-            {
                 return;
-            }
             visit = Group.ParsePermOrName(args.Visit, visit);
             build = Group.ParsePermOrName(args.Build, build);
             if (!bool.TryParse(args.LoadOnGoto, out loadOnGoto))
-            {
                 loadOnGoto = true;
-            }
         }
         static void ProcessLine(string key, string value, ref SearchArgs args)
         {
             if (key.CaselessEq("pervisit"))
-            {
                 args.Visit = value;
-            }
             else if (key.CaselessEq("perbuild"))
-            {
                 args.Build = value;
-            }
             else if (key.CaselessEq("loadongoto"))
-            {
                 args.LoadOnGoto = value;
-            }
+
         }
     }
 }

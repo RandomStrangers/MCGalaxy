@@ -46,9 +46,7 @@ namespace MCGalaxy
         public static ModelInfo Get(string model)
         {
             foreach (ModelInfo m in Models)
-            {
                 if (m.Model.CaselessEq(model)) return m;
-            }
             return Models[0];
         }
         public static string GetRawModel(string model) => model.IndexOf('|') == -1 ? model : model.Substring(0, model.IndexOf('|'));
@@ -80,9 +78,7 @@ namespace MCGalaxy
                 bb = bb.Offset(-16, 0, -16);
             }
             else
-            {
                 bb = AABB.Make(new(0, 0, 0), Get(model).BaseSize);
-            }
             bb = bb.Expand(-1);
             Vec3F32 scale = CalcScale(entity);
             float max = DefaultMaxScale(model);

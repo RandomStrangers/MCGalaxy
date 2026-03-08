@@ -43,9 +43,7 @@ namespace MCGalaxy
         {
             PropertiesFile.Read(Paths.ServerPropsFile, (key, value) => ConfigElement.Parse(serverConfig, Config, key, value));
             if (!Directory.Exists(Config.BackupDirectory))
-            {
                 Config.BackupDirectory = "levels/backups";
-            }
             SetMainLevel(Config.MainLevel);
             Save();
         }
@@ -193,9 +191,7 @@ namespace MCGalaxy
             try
             {
                 if (!Directory.Exists(dir))
-                {
                     Directory.CreateDirectory(dir);
-                }
             }
             catch (Exception ex)
             {
@@ -210,9 +206,7 @@ namespace MCGalaxy
             ImagePalette.Load();
             Load();
             if (commands)
-            {
                 Command.InitAll();
-            }
             AuthService.UpdateList();
             Heartbeat.ReloadDefault();
             Group.LoadAll();
@@ -240,9 +234,7 @@ namespace MCGalaxy
             lock (stopLock)
             {
                 if (stopThread != null)
-                {
                     return stopThread;
-                }
                 stopThread = new(() => ShutdownThread(restart, msg));
                 stopThread.Start();
                 return stopThread;
@@ -262,9 +254,7 @@ namespace MCGalaxy
             {
                 Player[] players = PlayerInfo.Online.Items;
                 foreach (Player p in players)
-                {
                     p.Leave(msg);
-                }
             }
             catch (Exception ex)
             {
@@ -275,9 +265,7 @@ namespace MCGalaxy
             {
                 INetSocket[] pending = INetSocket.pending.Items;
                 foreach (INetSocket p in pending)
-                {
                     p.Send(kick, SendFlags.None);
-                }
             }
             catch (Exception ex)
             {
@@ -289,9 +277,7 @@ namespace MCGalaxy
             try
             {
                 if (SetupFinished && !Config.AutoLoadMaps)
-                {
                     FileIO.TryWriteAllText("text/autoload.txt", SaveAllLevels());
-                }
             }
             catch (Exception ex)
             {
@@ -312,9 +298,7 @@ namespace MCGalaxy
             {
             }
             if (restarting)
-            {
                 IOperatingSystem.DetectOS().RestartProcess();
-            }
             Environment.Exit(0);
         }
         public static string SaveAllLevels()
@@ -351,23 +335,17 @@ namespace MCGalaxy
         static void RandomMessage(SchedulerTask _)
         {
             if (PlayerInfo.Online.Count > 0 && announcements.Length > 0)
-            {
                 Chat.MessageGlobal(announcements[new Random().Next(0, announcements.Length)]);
-            }
         }
         public static bool SetMainLevel(string map)
         {
             OnMainLevelChangingEvent.Call(ref map);
             string main = mainLevel != null ? mainLevel.name : Config.MainLevel;
             if (map.CaselessEq(main))
-            {
                 return false;
-            }
             Level lvl = LevelInfo.FindExact(map) ?? LevelActions.Load(Player.Console, map, false);
             if (lvl == null)
-            {
                 return false;
-            }
             SetMainLevel(lvl);
             return true;
         }
@@ -386,9 +364,7 @@ namespace MCGalaxy
             long end = GC.GetTotalMemory(false);
             double deltaKB = (start - end) / 1024.0;
             if (deltaKB < 100.0)
-            {
                 return;
-            }
             Logger.Log(LogType.BackgroundActivity, "GC performed in {0:F2} ms (tracking {1:F2} KB, freed {2:F2} KB)",
                        sw.Elapsed.TotalMilliseconds, end / 1024.0, deltaKB);
         }
@@ -400,13 +376,9 @@ namespace MCGalaxy
         public static string FromRawUsername(string name)
         {
             if (!Config.ClassicubeAccountPlus)
-            {
                 return name;
-            }
             if (!name.Contains("+"))
-            {
                 name += "+";
-            }
             return name;
         }
     }

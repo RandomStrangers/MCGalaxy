@@ -51,12 +51,8 @@ namespace MCGalaxy
         public static Plugin FindCustom(string name)
         {
             foreach (Plugin pl in custom)
-            {
                 if (pl.Name.CaselessEq(name))
-                {
                     return pl;
-                }
-            }
             return null;
         }
         public static void Load(Plugin pl, bool auto)
@@ -76,20 +72,14 @@ namespace MCGalaxy
                     Logger.Log(LogType.SystemActivity, "Plugin {0} loaded...build: {1}", pl.Name, pl.Build);
                 }
                 else
-                {
                     Logger.Log(LogType.SystemActivity, "Plugin {0} was not loaded, you can load it with /pload", pl.Name);
-                }
             }
             catch
             {
                 if (!string.IsNullOrEmpty(pl.Creator))
-                {
                     Logger.Log(LogType.Warning, "You can go bug {0} about {1} failing to load.", pl.Creator, pl.Name);
-                }
                 if (custom.Contains(pl))
-                {
                     custom.Remove(pl);
-                }
                 throw;
             }
         }
@@ -119,14 +109,10 @@ namespace MCGalaxy
         public static void UnloadAll()
         {
             for (int i = 0; i < custom.Count; i++)
-            {
                 UnloadPlugin(custom[i], true);
-            }
             custom.Clear();
             for (int i = 0; i < core.Count; i++)
-            {
                 UnloadPlugin(core[i], true);
-            }
         }
         public static void LoadAll()
         {

@@ -60,9 +60,7 @@ namespace MCGalaxy.Network
         {
             if (!checkedAddr) CheckAddress();
             if (proxyUrl != null)
-            {
                 request.Proxy = new WebProxy(proxyUrl);
-            }
         }
         protected override void OnResponse(WebResponse response)
         {
@@ -70,9 +68,7 @@ namespace MCGalaxy.Network
             if (NeedsProcessing(text))
             {
                 if (!text.Contains("\"errors\":"))
-                {
                     OnSuccess(text);
-                }
                 else
                 {
                     string error = GetError(text) ?? "Error while finding URL. Is the port open?";
@@ -86,8 +82,7 @@ namespace MCGalaxy.Network
         }
         bool NeedsProcessing(string text)
         {
-            if (string.IsNullOrEmpty(text)) return false;
-            if (text == LastResponse) return false;
+            if (string.IsNullOrEmpty(text) || text == LastResponse) return false;
             LastResponse = text;
             return true;
         }
@@ -101,12 +96,9 @@ namespace MCGalaxy.Network
         static string GetError(string json)
         {
             JsonReader reader = new(json);
-            if (reader.Parse() is not JsonObject obj || !obj.ContainsKey("errors")) return null;
-            if (obj["errors"] is not JsonArray errors) return null;
+            if (reader.Parse() is not JsonObject obj || !obj.ContainsKey("errors") || obj["errors"] is not JsonArray errors) return null;
             foreach (object raw in errors)
-            {
                 if (raw is JsonArray err && err.Count > 0) return (string)err[0];
-            }
             return null;
         }
         static string Truncate(string text) => text.Length < 256 ? text : text.Substring(0, 256) + "..";

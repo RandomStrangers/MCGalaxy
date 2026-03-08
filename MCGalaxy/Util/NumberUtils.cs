@@ -20,36 +20,20 @@ namespace MCGalaxy
         public static bool TryParseSingle(string s, out float result)
         {
             if (s != null && s.IndexOf(',') >= 0)
-            {
                 s = s.Replace(',', '.');
-            }
             result = 0;
-            if (!float.TryParse(s, NumberStyles.Integer | NumberStyles.AllowDecimalPoint, NumberFormatInfo.InvariantInfo, out float temp))
-            {
+            if (!float.TryParse(s, NumberStyles.Integer | NumberStyles.AllowDecimalPoint, NumberFormatInfo.InvariantInfo, out float temp) || float.IsInfinity(temp) || float.IsNaN(temp))
                 return false;
-            }
-            if (float.IsInfinity(temp) || float.IsNaN(temp))
-            {
-                return false;
-            }
             result = temp;
             return true;
         }
         public static bool TryParseDouble(string s, out double result)
         {
             if (s != null && s.IndexOf(',') >= 0)
-            {
                 s = s.Replace(',', '.');
-            }
             result = 0;
-            if (!double.TryParse(s, NumberStyles.Integer | NumberStyles.AllowDecimalPoint, NumberFormatInfo.InvariantInfo, out double temp))
-            {
+            if (!double.TryParse(s, NumberStyles.Integer | NumberStyles.AllowDecimalPoint, NumberFormatInfo.InvariantInfo, out double temp) || double.IsInfinity(temp) || double.IsNaN(temp))
                 return false;
-            }
-            if (double.IsInfinity(temp) || double.IsNaN(temp))
-            {
-                return false;
-            }
             result = temp;
             return true;
         }

@@ -78,9 +78,7 @@ namespace MCGalaxy
                 dst.Write(buffer, 0, count);
                 totalLen += count;
                 for (int i = 0; i < count; i++)
-                {
                     Crc32 = crc32Table[(Crc32 ^ buffer[i]) & 0xFF] ^ (Crc32 >> 8);
-                }
             }
             return totalLen;
         }
@@ -94,13 +92,9 @@ namespace MCGalaxy
                 for (int j = 0; j < 8; j++)
                 {
                     if ((c & 1) != 0)
-                    {
                         c = 0xEDB88320 ^ (c >> 1);
-                    }
                     else
-                    {
                         c >>= 1;
-                    }
                 }
                 crc32Table[i] = c;
             }
@@ -120,7 +114,7 @@ namespace MCGalaxy
         public ZipWriter(Stream stream)
         {
             this.stream = stream;
-            writer = new BinaryWriter(stream);
+            writer = new(stream);
         }
         public void WriteEntry(Stream src, string file, bool compress)
         {
@@ -138,19 +132,13 @@ namespace MCGalaxy
             int headerSize = 30 + entry.Filename.Length + 20;
             stream.Write(buffer, 0, headerSize);
             foreach (char c in file)
-            {
                 if (c < ' ' || c > '~')
-                {
                     entry.BitFlags |= 1 << 11;
-                }
-            }
             ZipWriterStream dst = new(stream);
             entry.UncompressedSize = dst.WriteStream(src, buffer, compress);
             dst.stream = null;
             if (compress && entry.UncompressedSize > 0)
-            {
                 entry.CompressionMethod = 8;
-            }
             entry.CompressedSize = dst.CompressedLen;
             entry.Crc32 = dst.Crc32 ^ uint.MaxValue;
             entries.Add(entry);
@@ -173,14 +161,10 @@ namespace MCGalaxy
         {
             centralDirOffset = stream.Position;
             for (int i = 0; i < numEntries; i++)
-            {
                 WriteCentralDirectoryRecord(entries[i]);
-            }
             centralDirSize = stream.Position - centralDirOffset;
             if (zip64)
-            {
                 WriteZip64EndOfCentralDirectory();
-            }
             WriteEndOfCentralDirectoryRecord();
         }
         void WriteZip64EndOfCentralDirectory()
@@ -198,9 +182,7 @@ namespace MCGalaxy
             BinaryWriter w = writer;
             ZipEntry copy = entry;
             if (zip64)
-            {
                 entry.MakeZip64Placeholder();
-            }
             w.Write(0x04034b50);
             w.Write(version);
             w.Write(entry.BitFlags);
@@ -229,9 +211,7 @@ namespace MCGalaxy
             BinaryWriter w = writer;
             ZipEntry copy = entry;
             if (zip64)
-            {
                 entry.MakeZip64Placeholder();
-            }
             w.Write(0x02014b50);
             w.Write(version);
             w.Write(version);
@@ -250,9 +230,7 @@ namespace MCGalaxy
             w.Write((uint)entry.LocalHeaderOffset);
             w.Write(entry.Filename);
             if (!zip64)
-            {
                 return;
-            }
             w.Write((ushort)1);
             w.Write((ushort)24);
             w.Write(copy.UncompressedSize);

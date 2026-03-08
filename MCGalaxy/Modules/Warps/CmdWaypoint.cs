@@ -22,9 +22,7 @@ namespace MCGalaxy.Modules.Warps
         public override void Use(Player p, string message)
         {
             if (!p.Extras.Contains("MCG_WAYPOINTS"))
-            {
                 p.Extras["MCG_WAYPOINTS"] = LoadList(Paths.WAYPOINTS_DIR + p.name + ".save");
-            }
             WarpList waypoints = (WarpList)p.Extras["MCG_WAYPOINTS"];
             UseCore(p, message, waypoints, "Waypoint");
         }

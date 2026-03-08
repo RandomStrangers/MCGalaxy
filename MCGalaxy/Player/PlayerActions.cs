@@ -22,13 +22,9 @@ namespace MCGalaxy
         {
             string rawName = Server.ToRawUsername(target);
             if (skin == rawName)
-            {
                 Server.skins.Remove(target);
-            }
             else
-            {
                 Server.skins.Update(target, skin);
-            }
             Server.skins.Save();
             Player who = PlayerInfo.FindExact(target);
             if (who == null) return;

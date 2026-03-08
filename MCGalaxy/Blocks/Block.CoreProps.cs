@@ -86,38 +86,36 @@ namespace MCGalaxy
             return props;
         }
         static bool IsDoor(ushort b) => b >= Door_Obsidian && b <= Door_Slab || b >= Door_Iron && b <= Door_Bookshelf || b >= Door_Orange && b <= Door_White || b >= Door_Air && b <= Door_Lava || b == Door_Cobblestone || b == Door_Red || b == Door_Log || b == Door_Gold;
-        static AnimalAI GetAI(ushort b)
+        static AnimalAI GetAI(ushort b) => b switch
         {
-            if (b == Bird_Black || b == Bird_White || b == Bird_Lava || b == Bird_Water) return AnimalAI.Fly;
-            return b == Bird_Red || b == Bird_Blue || b == Bird_Killer
-                ? AnimalAI.KillerAir
-                : b == Fish_Betta || b == Fish_Shark
-                ? AnimalAI.KillerWater
-                : b == Fish_LavaShark
-                ? AnimalAI.KillerLava
-                : b == Fish_Gold || b == Fish_Salmon || b == Fish_Sponge ? AnimalAI.FleeWater : AnimalAI.None;
-        }
-        static string GetDeathMessage(ushort b)
+            Bird_Black or Bird_White or Bird_Lava or Bird_Water => AnimalAI.Fly,
+            _ => b == Bird_Red || b == Bird_Blue || b == Bird_Killer
+            ? AnimalAI.KillerAir
+            : b == Fish_Betta || b == Fish_Shark
+            ? AnimalAI.KillerWater
+            : b == Fish_LavaShark
+            ? AnimalAI.KillerLava
+            : b == Fish_Gold || b == Fish_Salmon || b == Fish_Sponge ? AnimalAI.FleeWater : AnimalAI.None
+        };
+        static string GetDeathMessage(ushort b) => b switch
         {
-            if (b == TNT_Explosion) return "@p &S&cblew into pieces.";
-            if (b == Deadly_Air) return "@p &Swalked into &cnerve gas and suffocated.";
-            if (b == Deadly_Water || b == Deadly_ActiveWater)
-                return "@p &Sstepped in &dcold water and froze.";
-            if (b == Deadly_Lava || b == Deadly_ActiveLava || b == Deadly_FastLava)
-                return "@p &Sstood in &cmagma and melted.";
-            if (b == Magma) return "@p &Swas hit by &cflowing magma and melted.";
-            if (b == Geyser) return "@p &Swas hit by &cboiling water and melted.";
-            if (b == Bird_Killer) return "@p &Swas hit by a &cphoenix and burnt.";
-            if (b == Train) return "@p &Swas hit by a &ctrain.";
-            if (b == Fish_Shark) return "@p &Swas eaten by a &cshark.";
-            if (b == LavaFire) return "@p &Sburnt to a &ccrisp.";
-            if (b == RocketHead) return "@p &Swas &cin a fiery explosion.";
-            return b == ZombieBody
-                ? "@p &Sdied due to lack of &5brain."
-                : b == Creeper
-                ? "@p &Swas killed &cb-SSSSSSSSSSSSSS"
-                : b == Fish_LavaShark ? "@p &Swas eaten by a ... LAVA SHARK?!" : b == Snake ? "@p &Swas bit by a deadly snake." : null;
-        }
+            TNT_Explosion => "@p &S&cblew into pieces.",
+            Deadly_Air => "@p &Swalked into &cnerve gas and suffocated.",
+            Deadly_Water or Deadly_ActiveWater => "@p &Sstepped in &dcold water and froze.",
+            Deadly_Lava or Deadly_ActiveLava or Deadly_FastLava => "@p &Sstood in &cmagma and melted.",
+            Magma => "@p &Swas hit by &cflowing magma and melted.",
+            Geyser => "@p &Swas hit by &cboiling water and melted.",
+            Bird_Killer => "@p &Swas hit by a &cphoenix and burnt.",
+            Train => "@p &Swas hit by a &ctrain.",
+            Fish_Shark => "@p &Swas eaten by a &cshark.",
+            LavaFire => "@p &Sburnt to a &ccrisp.",
+            RocketHead => "@p &Swas &cin a fiery explosion.",
+            _ => b == ZombieBody
+            ? "@p &Sdied due to lack of &5brain."
+            : b == Creeper
+            ? "@p &Swas killed &cb-SSSSSSSSSSSSSS"
+            : b == Fish_LavaShark ? "@p &Swas eaten by a ... LAVA SHARK?!" : b == Snake ? "@p &Swas bit by a deadly snake." : null
+        };
         internal static void SetDefaultNames()
         {
             Aliases.Clear();

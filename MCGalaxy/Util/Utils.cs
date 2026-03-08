@@ -31,7 +31,7 @@ namespace MCGalaxy
                 hex[i * 2 + 0] = HexEncode(value >> 4);
                 hex[i * 2 + 1] = HexEncode(value & 0x0F);
             }
-            return new string(hex);
+            return new(hex);
         }
         static char HexEncode(int i) => i < 10 ? (char)(i + '0') : (char)(i - 10 + 'a');
         public static int Clamp(int value, int lo, int hi) => Math.Max(Math.Min(value, hi), lo);
@@ -44,9 +44,7 @@ namespace MCGalaxy
             {
                 string line;
                 while ((line = r.ReadLine()) != null)
-                {
                     lines.Add(line);
-                }
             }
             return lines;
         }
@@ -151,9 +149,7 @@ namespace MCGalaxy
             {
                 int read = s.Read(data, offset, count);
                 if (read == 0)
-                {
                     throw new EndOfStreamException("End of stream reading data");
-                }
                 offset += read;
                 count -= read;
             }

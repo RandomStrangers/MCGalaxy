@@ -42,60 +42,40 @@ namespace MCGalaxy
                 string part = parts[i];
                 if (part.CaselessEq("-hax") || (part.CaselessEq("-ophax") && isOp))
                 {
-                    fly = false; 
-                    noclip = false; 
+                    fly = false;
+                    noclip = false;
                     speed = false;
-                    respawn = false; 
+                    respawn = false;
                     thirdPerson = false;
                 }
                 else if (part.CaselessEq("+hax") || (part.CaselessEq("+ophax") && isOp))
                 {
-                    fly = true; 
-                    noclip = true; 
-                    speed = true; 
-                    respawn = true; 
+                    fly = true;
+                    noclip = true;
+                    speed = true;
+                    respawn = true;
                     thirdPerson = true;
                 }
-                else if (part.CaselessEq("+noclip")) 
-                { 
-                    noclip = true; 
-                }
-                else if (part.CaselessEq("+fly")) 
-                { 
-                    fly = true; 
-                }
+                else if (part.CaselessEq("+noclip"))
+                    noclip = true;
+                else if (part.CaselessEq("+fly"))
+                    fly = true;
                 else if (part.CaselessEq("+speed"))
-                { 
-                    speed = true; 
-                }
+                    speed = true;
                 else if (part.CaselessEq("+respawn"))
-                {
-                    respawn = true; 
-                }
-                else if (part.CaselessEq("+thirdperson")) 
-                { 
+                    respawn = true;
+                else if (part.CaselessEq("+thirdperson"))
                     thirdPerson = true;
-                }
-                else if (part.CaselessEq("-noclip")) 
-                { 
-                    noclip = false; 
-                }
-                else if (part.CaselessEq("-fly")) 
-                { 
+                else if (part.CaselessEq("-noclip"))
+                    noclip = false;
+                else if (part.CaselessEq("-fly"))
                     fly = false;
-                }
-                else if (part.CaselessEq("-speed")) 
-                {
-                    speed = false; 
-                }
-                else if (part.CaselessEq("-respawn")) 
-                { 
-                    respawn = false; 
-                }
-                else if (part.CaselessEq("-thirdperson")) 
-                { 
-                    thirdPerson = false; 
-                }
+                else if (part.CaselessEq("-speed"))
+                    speed = false;
+                else if (part.CaselessEq("-respawn"))
+                    respawn = false;
+                else if (part.CaselessEq("-thirdperson"))
+                    thirdPerson = false;
                 if (!part.CaselessStarts("jumpheight=")) continue;
                 string heightPart = part.Substring(part.IndexOf('=') + 1);
                 if (NumberUtils.TryParseSingle(heightPart, out float value))

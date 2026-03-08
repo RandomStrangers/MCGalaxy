@@ -12,7 +12,7 @@ namespace MCGalaxy
             "JuneSolis",
         };
         public const string PlayerKey = "NAS_NASPlayer",
-            Path = "NAS/";
+            Path = "NAS/", DiscordAccountName = "may.wildflower";
         static bool firstEverLoad = false;
         public static Command[] Commands = new Command[]
         {
@@ -47,9 +47,7 @@ namespace MCGalaxy
                 FileIO.TryWriteAllText("NAS/Loaded.txt", "Do not delete this file unless you are using NAS for the first time!");
             }
             if (firstEverLoad)
-            {
                 LoadFirstTime();
-            }
             OnlineStat.Stats.Add(PvP);
             OnlineStat.Stats.Add(Kills);
             OnlineStat.Stats.Add(Dev);
@@ -59,7 +57,7 @@ namespace MCGalaxy
             NASBlock.Setup();
             if (!NASEffect.Setup() || !NASBlockChange.Setup() || !NASColor.Setup())
             {
-                Log("NAS: FAILED to load. Please report this to junesolis1819 on Discord!");
+                Log("NAS: FAILED to load. Please report this to " + DiscordAccountName + " on Discord!");
                 return;
             }
             NASItemProp.Setup();
@@ -78,36 +76,25 @@ namespace MCGalaxy
             NASGen.Setup();
             NASLevel.Setup();
             NASTimeCycle.Setup();
-            if (firstEverLoad)
-            {
-                GenLevel();
-            }
+            if (firstEverLoad) GenLevel();
             Logger.Log(LogType.SystemActivity, "NAS loaded.");
         }
         public static void PvP(Player p, Player target)
         {
             if (NASPlayer.GetPlayer(target).pvpEnabled)
-            {
                 p.Message("&S  " + target.Pronouns.Subject.Capitalize() + " " + target.Pronouns.PresentPerfectVerb + " PVP &2enabled&S.");
-            }
             else
-            {
                 p.Message("&S  " + target.Pronouns.Subject.Capitalize() + " " + target.Pronouns.PresentPerfectVerb + " PVP &cdisabled&S.");
-            }
         }
         public static void Dev(Player p, Player target)
         {
             if (Devs.CaselessContains(target.truename))
-            {
                 p.Message("&S  NAS developer.");
-            }
         }
         public static void Dev(Player p, PlayerData target)
         {
             if (Devs.CaselessContains(target.Name))
-            {
                 p.Message("&S  NAS developer.");
-            }
         }
         public static void Kills(Player p, Player target) => p.Message("&S  " + target.Pronouns.Subject.Capitalize() + " " + target.Pronouns.PresentPerfectVerb + " " + NASPlayer.GetPlayer(target).kills + " kills.");
         public static void Unload()

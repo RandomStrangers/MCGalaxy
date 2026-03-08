@@ -324,9 +324,7 @@ namespace MCGalaxy.Network
             buffer[0] = 40;
             NetUtils.Write(url, buffer, 1, hasCP437);
             if (url.Length > 64)
-            {
                 NetUtils.Write(url.Substring(64), buffer, 65, hasCP437);
-            }
             return buffer;
         }
         public static byte[] EnvMapProperty(EnvProp prop, int value)
@@ -451,19 +449,13 @@ namespace MCGalaxy.Network
                                          Position pos, Orientation rot, bool extPos)
         {
             byte flags = 0;
-            if (usePos) 
-            { 
+            if (usePos)
                 flags |= 1;
-            }
             flags |= (byte)((byte)moveMode << 1);
-            if (useOri) 
-            {
-                flags |= 16; 
-            }
-            if (interpolateOri) 
-            { 
-                flags |= 32; 
-            }
+            if (useOri)
+                flags |= 16;
+            if (interpolateOri)
+                flags |= 32;
             byte[] buffer = new byte[11 + (extPos ? 6 : 0)];
             buffer[0] = 54;
             buffer[1] = entityID;
@@ -538,9 +530,7 @@ namespace MCGalaxy.Network
                 NetUtils.WriteU16(value, buffer, i); i += 2;
             }
             else
-            {
                 buffer[i++] = (byte)value;
-            }
         }
         static void MakeDefineBlockStart(BlockDefinition def, byte[] buffer, ref int i, bool uniqueSideTexs,
                                          bool hasCP437, bool extBlocks, bool extTexs)
@@ -561,16 +551,12 @@ namespace MCGalaxy.Network
                 WriteTex(buffer, ref i, def.BackTex, extTexs);
             }
             else
-            {
                 WriteTex(buffer, ref i, def.RightTex, extTexs);
-            }
             WriteTex(buffer, ref i, def.BottomTex, extTexs);
             buffer[i++] = (byte)(def.BlocksLight ? 0 : 1);
             buffer[i++] = def.WalkSound;
             if (def.Brightness <= 0)
-            {
                 buffer[i++] = 0;
-            }
             else
             {
                 byte brightness = (byte)Math.Max(0, Math.Min(def.Brightness, 15));

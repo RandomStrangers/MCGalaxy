@@ -83,9 +83,7 @@ namespace MCGalaxy
             foreach (string map in maps)
             {
                 if (map.CaselessEq(Config.MainLevel))
-                {
                     continue;
-                }
                 LevelActions.Load(Player.Console, map, false);
             }
         }

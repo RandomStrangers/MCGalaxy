@@ -42,9 +42,7 @@ namespace MCGalaxy.Network
             {
                 IdentifyProtocol(data[0]);
                 if (protocol == null)
-                {
                     return;
-                }
             }
             byte[] src;
             if (leftLen == 0)
@@ -56,9 +54,7 @@ namespace MCGalaxy.Network
             {
                 int totalLen = leftLen + len;
                 if (totalLen > leftData.Length)
-                {
                     Array.Resize(ref leftData, totalLen);
-                }
                 Buffer.BlockCopy(data, 0, leftData, leftLen, len);
                 src = leftData;
                 leftLen = totalLen;
@@ -66,17 +62,11 @@ namespace MCGalaxy.Network
             int processedLen = protocol.ProcessReceived(src, leftLen);
             leftLen -= processedLen;
             if (leftLen == 0)
-            {
                 return;
-            }
             if (leftData == null || leftLen > leftData.Length)
-            {
                 leftData = new byte[leftLen];
-            }
             for (int i = 0; i < leftLen; i++)
-            {
                 leftData[i] = src[processedLen + i];
-            }
         }
         internal static VolatileArray<INetSocket> pending = new();
         public static ProtocolConstructor[] Protocols = new ProtocolConstructor[256];
@@ -84,13 +74,9 @@ namespace MCGalaxy.Network
         {
             ProtocolConstructor cons = Protocols[opcode];
             if (cons != null)
-            {
                 protocol = cons(this);
-            }
             if (protocol != null)
-            {
                 return;
-            }
             Logger.Log(LogType.UserActivity, "Disconnected {0} (unknown opcode {1})", IP, opcode);
             Close();
         }
@@ -143,9 +129,7 @@ namespace MCGalaxy.Network
         void ReceiveNextAsync()
         {
             if (!socket.ReceiveAsync(recvArgs))
-            {
                 RecvCallback(null, recvArgs);
-            }
         }
         static void RecvCallback(object sender, SocketAsyncEventArgs e)
         {
@@ -162,9 +146,7 @@ namespace MCGalaxy.Network
                     }
                     s.HandleReceived(s.recvBuffer, recvLen);
                     if (!s.Disconnected)
-                    {
                         s.ReceiveNextAsync();
-                    }
                 }
                 catch (SocketException)
                 {
@@ -184,9 +166,7 @@ namespace MCGalaxy.Network
         public override void Send(byte[] buffer, SendFlags flags)
         {
             if (Disconnected || !socket.Connected)
-            {
                 return;
-            }
             try
             {
                 if ((flags & SendFlags.Synchronous) != 0)
@@ -197,13 +177,9 @@ namespace MCGalaxy.Network
                 lock (sendLock)
                 {
                     if (sendInProgress)
-                    {
                         sendQueue.Enqueue(buffer);
-                    }
                     else
-                    {
                         sendInProgress = TrySendAsync(buffer);
-                    }
                 }
             }
             catch (SocketException)
@@ -217,16 +193,10 @@ namespace MCGalaxy.Network
         bool TrySendAsync(byte[] buffer)
         {
             if (buffer.Length <= 16)
-            {
                 for (int i = 0; i < buffer.Length; i++)
-                {
                     sendBuffer[i] = buffer[i];
-                }
-            }
             else
-            {
                 Buffer.BlockCopy(buffer, 0, sendBuffer, 0, buffer.Length);
-            }
             sendArgs.SetBuffer(0, buffer.Length);
             return socket.SendAsync(sendArgs);
         }
@@ -242,28 +212,20 @@ namespace MCGalaxy.Network
                         int sent = e.BytesTransferred,
                             count = e.Count;
                         if (sent >= count || sent <= 0)
-                        {
                             break;
-                        }
                         s.sendArgs.SetBuffer(e.Offset + sent, e.Count - sent);
                         s.sendInProgress = s.socket.SendAsync(s.sendArgs);
                         if (s.sendInProgress)
-                        {
                             return;
-                        }
                     }
                     s.sendInProgress = false;
                     while (s.sendQueue.Count > 0)
                     {
                         s.sendInProgress = s.TrySendAsync(s.sendQueue.Dequeue());
                         if (s.sendInProgress)
-                        {
                             return;
-                        }
                         if (s.Disconnected)
-                        {
                             s.sendQueue.Clear();
-                        }
                     }
                 }
             }
@@ -302,11 +264,9 @@ namespace MCGalaxy.Network
             catch 
             { 
             }
-            lock (sendLock) 
-            { 
-                sendQueue.Clear(); 
-            }
-            try 
+            lock (sendLock)
+                sendQueue.Clear();
+            try
             { 
                 recvArgs.Dispose(); 
             } 

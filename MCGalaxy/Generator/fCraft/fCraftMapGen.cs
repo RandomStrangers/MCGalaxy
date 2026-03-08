@@ -88,19 +88,13 @@ namespace MCGalaxy.Generator.fCraft
             float[] corners = new float[4];
             int c = 0;
             for (int i = 0; i < args.RaisedCorners; i++)
-            {
                 corners[c++] = args.Bias;
-            }
             for (int i = 0; i < args.LoweredCorners; i++)
-            {
                 corners[c++] = -args.Bias;
-            }
             float midpoint = args.MidPoint * args.Bias;
             int[] keys = new int[corners.Length];
-            for (int i = 0; i < corners.Length; i++) 
-            { 
-                keys[i] = rand.Next(); 
-            }
+            for (int i = 0; i < corners.Length; i++)
+                keys[i] = rand.Next();
             Array.Sort(keys, corners);
             Noise.ApplyBias(heightmap, _width, _length,
                             corners[0], corners[1], corners[2], corners[3], midpoint);
@@ -117,9 +111,7 @@ namespace MCGalaxy.Generator.fCraft
             }
             float aboveWaterMultiplier = 0;
             if (desiredWaterLevel != 1)
-            {
                 aboveWaterMultiplier = args.MaxHeight / (1 - desiredWaterLevel);
-            }
             float[] blurred;
             if (args.CliffSmoothing)
             {
@@ -128,9 +120,7 @@ namespace MCGalaxy.Generator.fCraft
                 slopemap = Noise.CalculateSlope(blurred, _width, _length);
             }
             else
-            {
                 slopemap = Noise.CalculateSlope(heightmap, _width, _length);
-            }
             float[] altmap = null;
             if (args.MaxHeightVariation != 0 || args.MaxDepthVariation != 0)
             {
@@ -160,7 +150,6 @@ namespace MCGalaxy.Generator.fCraft
                 snowStartThreshold = args.SnowAltitude - args.SnowTransition,
                 snowThreshold = args.SnowAltitude;
             for (int x = 0, i = 0; x < width; x++)
-            {
                 for (int z = 0; z < length; z++, i++)
                 {
                     int level;
@@ -169,9 +158,7 @@ namespace MCGalaxy.Generator.fCraft
                     {
                         float depth = args.MaxDepth;
                         if (altmap != null)
-                        {
                             depth += altmap[i] * args.MaxDepthVariation;
-                        }
                         slope = slopemap[i] * depth;
                         level = args.WaterLevel - (int)Math.Round((1 - heightmap[i] / desiredWaterLevel) * depth);
                         surfaceMap[i] = (ushort)args.WaterLevel;
@@ -179,9 +166,7 @@ namespace MCGalaxy.Generator.fCraft
                         {
                             int index = (args.WaterLevel * length + z) * width + x;
                             if (args.WaterLevel >= 0 && args.WaterLevel < mapHeight)
-                            {
                                 map.blocks[index] = bWater;
-                            }
                             for (int yy = args.WaterLevel; yy > level && yy >= 0; yy--)
                             {
                                 if (yy < mapHeight)
@@ -193,127 +178,56 @@ namespace MCGalaxy.Generator.fCraft
                             {
                                 index -= length * width;
                                 if (yy >= mapHeight) continue;
-                                if (level - yy < 3)
-                                {
-                                    map.blocks[index] = bSeaFloor;
-                                }
-                                else
-                                {
-                                    map.blocks[index] = bBedrock;
-                                }
+                                map.blocks[index] = level - yy < 3 ? bSeaFloor : bBedrock;
                             }
                         }
                         else
                         {
                             int index = (level * length + z) * width + x;
                             if (level >= 0 && level < mapHeight)
-                            {
-                                if (slope < args.CliffThreshold)
-                                {
-                                    map.blocks[index] = bGroundSurface;
-                                }
-                                else
-                                {
-                                    map.blocks[index] = bCliff;
-                                }
-                            }
+                                map.blocks[index] = slope < args.CliffThreshold ? bGroundSurface : bCliff;
                             for (int yy = level - 1; yy >= 0; yy--)
                             {
                                 index -= length * width;
                                 if (yy >= mapHeight) continue;
-                                if (level - yy < groundThickness)
-                                {
-                                    if (slope < args.CliffThreshold)
-                                    {
-                                        map.blocks[index] = bGround;
-                                    }
-                                    else
-                                    {
-                                        map.blocks[index] = bCliff;
-                                    }
-                                }
-                                else
-                                {
-                                    map.blocks[index] = bBedrock;
-                                }
+                                map.blocks[index] = level - yy < groundThickness ? slope < args.CliffThreshold ? bGround : bCliff : bBedrock;
                             }
                         }
                     }
                     else
                     {
-                        float height;
-                        if (altmap != null)
-                        {
-                            height = args.MaxHeight + altmap[i] * args.MaxHeightVariation;
-                        }
-                        else
-                        {
-                            height = args.MaxHeight;
-                        }
+                        float height = altmap != null ? args.MaxHeight + altmap[i] * args.MaxHeightVariation : args.MaxHeight;
                         slope = slopemap[i] * height;
-                        if (height != 0)
-                        {
-                            level = args.WaterLevel + (int)Math.Round((heightmap[i] - desiredWaterLevel) * aboveWaterMultiplier / args.MaxHeight * height);
-                        }
-                        else
-                        {
-                            level = args.WaterLevel;
-                        }
+                        level = height != 0
+                            ? args.WaterLevel + (int)Math.Round((heightmap[i] - desiredWaterLevel) * aboveWaterMultiplier / args.MaxHeight * height)
+                            : args.WaterLevel;
                         surfaceMap[i] = (ushort)level;
                         bool snow = args.AddSnow &&
                             (level > snowThreshold ||
                              (level > snowStartThreshold && rand.NextDouble() < (level - snowStartThreshold) / (double)(snowThreshold - snowStartThreshold)));
                         int index = (level * length + z) * width + x;
                         if (level >= 0 && level < mapHeight)
-                        {
-                            if (slope < args.CliffThreshold)
-                            {
-                                map.blocks[index] = snow ? Block.White : bGroundSurface;
-                            }
-                            else
-                            {
-                                map.blocks[index] = bCliff;
-                            }
-                        }
+                            map.blocks[index] = slope < args.CliffThreshold ? snow ? Block.White : bGroundSurface : bCliff;
                         for (int yy = level - 1; yy >= 0; yy--)
                         {
                             index -= length * width;
                             if (yy >= mapHeight) continue;
-                            if (level - yy < groundThickness)
-                            {
-                                if (slope < args.CliffThreshold)
-                                {
-                                    map.blocks[index] = snow ? Block.White : bGround;
-                                }
-                                else
-                                {
-                                    map.blocks[index] = bCliff;
-                                }
-                            }
-                            else
-                            {
-                                map.blocks[index] = bBedrock;
-                            }
+                            map.blocks[index] = level - yy < groundThickness ? slope < args.CliffThreshold ? snow ? Block.White : bGround : bCliff : bBedrock;
                         }
                     }
                 }
-            }
         }
         void AddBeaches(Level map)
         {
             int beachExtentSqr = (args.BeachExtent + 1) * (args.BeachExtent + 1);
             for (int x = 0; x < map.Width; x++)
-            {
                 for (int z = 0; z < map.Length; z++)
-                {
                     for (int y = args.WaterLevel; y <= args.WaterLevel + args.BeachHeight; y++)
                     {
                         if (map.GetBlock((ushort)x, (ushort)y, (ushort)z) != bGroundSurface) continue;
                         bool found = false;
                         for (int dx = -args.BeachExtent; !found && dx <= args.BeachExtent; dx++)
-                        {
                             for (int dz = -args.BeachExtent; !found && dz <= args.BeachExtent; dz++)
-                            {
                                 for (int dy = -args.BeachHeight; dy <= 0; dy++)
                                 {
                                     if (dx * dx + dy * dy + dz * dz > beachExtentSqr) continue;
@@ -326,19 +240,13 @@ namespace MCGalaxy.Generator.fCraft
                                         break;
                                     }
                                 }
-                            }
-                        }
                         if (found)
                         {
                             map.SetTile((ushort)x, (ushort)y, (ushort)z, bSeaFloor);
                             if (y > 0 && map.GetBlock((ushort)x, (ushort)(y - 1), (ushort)z) == bGround)
-                            {
                                 map.SetTile((ushort)x, (ushort)(y - 1), (ushort)z, bSeaFloor);
-                            }
                         }
                     }
-                }
-            }
         }
         void GenerateTrees(Level map)
         {
@@ -347,7 +255,6 @@ namespace MCGalaxy.Generator.fCraft
             Random rn = new();
             int width = _width, length = _length;
             for (int x = 0; x < width; x += rn.Next(minTrunkPadding, maxTrunkPadding + 1))
-            {
                 for (int z = 0; z < length; z += rn.Next(minTrunkPadding, maxTrunkPadding + 1))
                 {
                     int nx = x + rn.Next(-(minTrunkPadding / 2), (maxTrunkPadding / 2) + 1),
@@ -361,13 +268,12 @@ namespace MCGalaxy.Generator.fCraft
                         if (ny + nh + nh / 2 > map.Height)
                             continue;
                         tree.Generate((ushort)nx, (ushort)(ny + 1), (ushort)nz, (xT, yT, zT, bT) =>
-                                      {
-                                          if (map.IsAirAt(xT, yT, zT))
-                                              map.SetTile(xT, yT, zT, (byte)bT);
-                                      });
+                        {
+                            if (map.IsAirAt(xT, yT, zT))
+                                map.SetTile(xT, yT, zT, (byte)bT);
+                        });
                     }
                 }
-            }
         }
         #endregion
         public static void RegisterGenerators()

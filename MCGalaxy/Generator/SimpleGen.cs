@@ -110,15 +110,9 @@ namespace MCGalaxy.Generator
             byte[] blocks = lvl.blocks;
             maxY = Math.Min(maxY, lvl.MaxY);
             for (int y = minY; y <= maxY; y++)
-            {
                 for (int z = minZ; z <= maxZ; z++)
-                {
                     for (int x = minX; x <= maxX; x++)
-                    {
                         blocks[x + width * (z + y * length)] = nextBlock();
-                    }
-                }
-            }
         }
     }
 }

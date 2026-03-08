@@ -34,17 +34,11 @@ namespace MCGalaxy.Network
             string name = raw.Substring(0, sep),
                 value = raw.Substring(sep + 1).Trim();
             if (name.CaselessEq("Connection"))
-            {
                 conn = value.CaselessContains("Upgrade");
-            }
             else if (name.CaselessEq("Upgrade"))
-            {
                 upgrade = value.CaselessEq("websocket");
-            }
             else
-            {
                 OnGotHeader(name, value);
-            }
         }
         int ReadHeaders(byte[] buffer, int bufferLen)
         {
@@ -72,9 +66,7 @@ namespace MCGalaxy.Network
         void DecodeFrame()
         {
             for (int i = 0; i < frameLen; i++)
-            {
                 frame[i] ^= mask[i & 3];
-            }
             switch (opcode)
             {
                 case 0:
@@ -165,9 +157,7 @@ namespace MCGalaxy.Network
                 if (readingHeaders) return offset;
             }
             while (offset < bufferLen)
-            {
                 offset = ProcessData(buffer, offset, bufferLen);
-            }
             return offset;
         }
         protected static byte[] WrapDisconnect(int reason)
@@ -212,24 +202,16 @@ namespace MCGalaxy.Network
         protected override void OnGotAllHeaders()
         {
             if (conn && upgrade && version && verKey != null)
-            {
                 AcceptConnection();
-            }
             else
-            {
                 Close();
-            }
         }
         protected override void OnGotHeader(string name, string value)
         {
             if (name.CaselessEq("Sec-WebSocket-Version"))
-            {
                 version = value.CaselessEq("13");
-            }
             else if (name.CaselessEq("Sec-WebSocket-Key"))
-            {
                 verKey = value;
-            }
         }
         protected static byte[] WrapData(byte[] data)
         {
@@ -243,9 +225,7 @@ namespace MCGalaxy.Network
                 packet[3] = (byte)data.Length;
             }
             else
-            {
                 packet[1] = (byte)data.Length;
-            }
             Buffer.BlockCopy(data, 0, packet, headerLen, data.Length);
             return packet;
         }
@@ -258,20 +238,14 @@ namespace MCGalaxy.Network
         protected override void OnGotAllHeaders()
         {
             if (conn && upgrade && verKey == ComputeKey("xTNDiuZRoMKtxrnJDWyLmA=="))
-            {
                 AcceptConnection();
-            }
             else
-            {
                 Close();
-            }
         }
         protected override void OnGotHeader(string name, string value)
         {
             if (name.CaselessEq("Sec-WebSocket-Accept"))
-            {
                 verKey = value;
-            }
         }
         protected static byte[] WrapData(byte[] data)
         {
@@ -285,9 +259,7 @@ namespace MCGalaxy.Network
                 packet[3] = (byte)data.Length;
             }
             else
-            {
                 packet[1] = (byte)data.Length;
-            }
             packet[1] |= 0x80;
             Buffer.BlockCopy(data, 0, packet, headerLen + 4, data.Length);
             return packet;

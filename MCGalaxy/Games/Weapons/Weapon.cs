@@ -42,9 +42,7 @@ namespace MCGalaxy.Games
             p.ClearBlockchange();
             p.weapon = this;
             if (p.Supports(CpeExt.PlayerClick))
-            {
                 OnEnabled(p, true);
-            }
             else
             {
                 OnEnabled(p, false);
@@ -109,9 +107,7 @@ namespace MCGalaxy.Games
                 if (Math.Abs(pl.Pos.BlockX - pos.X) <= 1
                     && Math.Abs(pl.Pos.BlockY - pos.Y) <= 1
                     && Math.Abs(pl.Pos.BlockZ - pos.Z) <= 1)
-                {
                     return pl;
-                }
             }
             return null;
         }

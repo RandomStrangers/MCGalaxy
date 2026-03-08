@@ -31,7 +31,6 @@ namespace MCGalaxy.Tasks
             int delay = players.Length == 0 ? 100 : 20;
             task.Delay = TimeSpan.FromMilliseconds(delay);
             for (int i = 0; i < players.Length; i++)
-            {
                 try
                 {
                     TickPlayer(players[i]);
@@ -40,7 +39,6 @@ namespace MCGalaxy.Tasks
                 {
                     Logger.LogError("Error ticking players", ex);
                 }
-            }
         }
         static void TickPlayer(Player p)
         {
@@ -52,9 +50,7 @@ namespace MCGalaxy.Tasks
                     p.following = "";
                     p.possessed = false;
                     if (who != null && who.possess == p.name)
-                    {
                         who.possess = "";
-                    }
                     return;
                 }
                 p.SendPosition(who.Pos, who.Rot);
@@ -63,9 +59,7 @@ namespace MCGalaxy.Tasks
             {
                 Player who = PlayerInfo.FindExact(p.possess);
                 if (who == null || who.Level != p.Level)
-                {
                     p.possess = "";
-                }
             }
             SchedulerTask[] tasks = p.CriticalTasks.Items;
             DateTime now = DateTime.UtcNow;
@@ -73,15 +67,11 @@ namespace MCGalaxy.Tasks
             {
                 SchedulerTask task = tasks[i];
                 if (now < task.NextRun)
-                {
                     continue;
-                }
                 task.Callback(task);
                 task.NextRun = now.Add(task.Delay);
                 if (task.Repeating)
-                {
                     continue;
-                }
                 p.CriticalTasks.Remove(task);
             }
         }
@@ -96,25 +86,15 @@ namespace MCGalaxy.Tasks
             foreach (Player p in players)
             {
                 p.Session.SendPing();
-                if (Server.Config.AutoAfkTime.Ticks <= 0)
-                {
+                if (Server.Config.AutoAfkTime.Ticks <= 0 || DateTime.UtcNow < p.AFKCooldown)
                     return;
-                }
-                if (DateTime.UtcNow < p.AFKCooldown)
-                {
-                    return;
-                }
                 if (p.IsAfk)
                 {
                     TimeSpan time = p.group.AfkKickTime;
                     if (p.AutoAfk)
-                    {
                         time += Server.Config.AutoAfkTime;
-                    }
                     if (p.group.AfkKicked && p.LastAction.Add(time) < DateTime.UtcNow)
-                    {
                         p.Leave("Auto-kick, AFK for " + p.group.AfkKickTime.Shorten(true, true));
-                    }
                 }
                 else
                 {
@@ -137,9 +117,7 @@ namespace MCGalaxy.Tasks
                 try
                 {
                     if (!lvl.SaveChanges)
-                    {
                         continue;
-                    }
                     lvl.SaveBlockDBChanges();
                 }
                 catch (Exception ex)
@@ -158,9 +136,7 @@ namespace MCGalaxy.Tasks
                 try
                 {
                     if (!lvl.Changed || !lvl.SaveChanges)
-                    {
                         continue;
-                    }
                     lvl.Save();
                     if (count == 0)
                     {
@@ -178,18 +154,14 @@ namespace MCGalaxy.Tasks
                 }
             }
             if (count <= 0)
-            {
                 count = 15;
-            }
             task.State = count;
             task.Delay = Server.Config.BackupInterval;
             Player[] players = PlayerInfo.Online.Items;
             try
             {
                 foreach (Player p in players)
-                {
                     p.SaveStats();
-                }
             }
             catch (Exception ex)
             {
@@ -197,20 +169,14 @@ namespace MCGalaxy.Tasks
             }
             players = PlayerInfo.Online.Items;
             if (players.Length <= 0)
-            {
                 return;
-            }
             string all = players.Join(p => p.name);
             if (all.Length > 0)
-            {
                 Logger.Log(LogType.BackgroundActivity, "!PLAYERS ONLINE: " + all);
-            }
             levels = LevelInfo.Loaded.Items;
             all = levels.Join(l => l.name);
             if (all.Length > 0)
-            {
                 Logger.Log(LogType.BackgroundActivity, "!LEVELS ONLINE: " + all);
-            }
         }
     }
 }

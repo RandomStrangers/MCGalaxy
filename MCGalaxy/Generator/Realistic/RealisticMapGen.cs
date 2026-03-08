@@ -57,9 +57,7 @@ namespace MCGalaxy.Generator.Realistic
             Logger.Log(LogType.SystemActivity, "Generating terrain..");
             GeneratePerlinNoise(overlay, lvl);
             if (args.GenOverlay2)
-            {
                 GeneratePerlinNoise(overlayT, lvl);
-            }
             float rangeLo = args.RangeLow,
                 rangeHi = args.RangeHigh;
             treeDens = args.TreeDensity;
@@ -75,18 +73,14 @@ namespace MCGalaxy.Generator.Realistic
                     height = Evaluate(lvl, Range(terrain[i], rangeLo, rangeHi) - offset);
                 }
                 else
-                {
                     height = Evaluate(lvl, Range(terrain[i], rangeLo, rangeHi));
-                }
                 if (height > waterHeight)
                 {
                     GenAboveWaterColumn(x, height, z, lvl, i);
                     GenFoliage(x, height, z, lvl, i);
                 }
                 else
-                {
                     GenUnderwaterColumn(x, height, z, lvl, i);
-                }
             }
             return true;
         }
@@ -110,9 +104,7 @@ namespace MCGalaxy.Generator.Realistic
                     if (overlay[index] < 0.72f)
                     {
                         if (args.IslandColumns && height <= waterHeight + 2)
-                        {
                             lvl.blocks[pos] = biome.BeachSandy;
-                        }
                         else
                         {
                             if (yy == 0) lvl.blocks[pos] = biome.Surface;
@@ -121,9 +113,7 @@ namespace MCGalaxy.Generator.Realistic
                         }
                     }
                     else
-                    {
                         lvl.blocks[pos] = biome.Cliff;
-                    }
                     pos -= lvl.Width * lvl.Length;
                 }
             }
@@ -135,9 +125,7 @@ namespace MCGalaxy.Generator.Realistic
                     lvl.blocks[pos] = yy < 3 ? biome.Cliff : biome.BeachSandy;
                     pos -= lvl.Width * lvl.Length;
                     if (overlay[index] < 0.3f && rng.Next(13) >= 9)
-                    {
                         lvl.SetTile(x, (ushort)(height + 1), z, biome.Water);
-                    }
                     topBlock = rng.Next(100) % 3 == 1 ? Block.Black : biome.Surface;
                 }
                 lvl.SetTile(x, height, z, topBlock);
@@ -159,20 +147,14 @@ namespace MCGalaxy.Generator.Realistic
                         break;
                 }
             }
-            if (tree != null && overlay[index] < 0.65f && overlayT[index] < treeDens)
+            if (tree != null && overlay[index] < 0.65f && overlayT[index] < treeDens && lvl.IsAirAt(x, (ushort)(height + 1), z) && lvl.GetBlock(x, height, z) == biome.Surface && rng.Next(13) == 0 && !Tree.TreeCheck(lvl, x, height, z, treeDist, tree.TrunkBlock))
             {
-                if (lvl.IsAirAt(x, (ushort)(height + 1), z) && lvl.GetBlock(x, height, z) == biome.Surface)
+                tree.SetData(rng, tree.DefaultSize(rng));
+                tree.Generate(x, (ushort)(height + 1), z, (xT, yT, zT, bT) =>
                 {
-                    if (rng.Next(13) == 0 && !Tree.TreeCheck(lvl, x, height, z, treeDist, tree.TrunkBlock))
-                    {
-                        tree.SetData(rng, tree.DefaultSize(rng));
-                        tree.Generate(x, (ushort)(height + 1), z, (xT, yT, zT, bT) =>
-                        {
-                            if (lvl.IsAirAt(xT, yT, zT))
-                                lvl.SetTile(xT, yT, zT, (byte)bT);
-                        });
-                    }
-                }
+                    if (lvl.IsAirAt(xT, yT, zT))
+                        lvl.SetTile(xT, yT, zT, (byte)bT);
+                });
             }
         }
         void GenUnderwaterColumn(ushort x, ushort height, ushort z, Level lvl, int index)
@@ -184,18 +166,14 @@ namespace MCGalaxy.Generator.Realistic
                 for (ushort yy = 0; waterHeight - yy >= 0; yy++)
                 {
                     if (waterHeight - yy > height)
-                    {
                         lvl.blocks[pos] = biome.Water;
-                    }
                     else if (waterHeight - yy > height - 3)
                     {
                         block = overlay[index] < 0.75f ? biome.BeachSandy : biome.BeachRocky;
                         lvl.blocks[pos] = block;
                     }
                     else
-                    {
                         lvl.blocks[pos] = biome.Cliff;
-                    }
                     pos -= lvl.Width * lvl.Length;
                 }
             }
@@ -203,25 +181,11 @@ namespace MCGalaxy.Generator.Realistic
             {
                 for (ushort yy = 0; waterHeight - yy >= 0; yy++)
                 {
-                    if (waterHeight - yy > height - 1)
-                    {
-                        lvl.blocks[pos] = biome.Water;
-                    }
-                    else if (waterHeight - yy > height - 3)
-                    {
-                        if (overlay[index] < 0.9f)
-                        {
-                            lvl.blocks[pos] = yy < height ? biome.Water : biome.BeachSandy;
-                        }
-                        else
-                        {
-                            lvl.blocks[pos] = biome.Water;
-                        }
-                    }
-                    else
-                    {
-                        lvl.blocks[pos] = biome.Bedrock;
-                    }
+                    lvl.blocks[pos] = waterHeight - yy > height - 1
+                        ? biome.Water
+                        : waterHeight - yy > height - 3
+                            ? overlay[index] < 0.9f ? yy < height ? biome.Water : biome.BeachSandy : biome.Water
+                            : biome.Bedrock;
                     pos -= lvl.Width * lvl.Length;
                 }
             }

@@ -23,9 +23,7 @@ namespace MCGalaxy.Modules.Awards
         {
             bool take = false;
             if (message.CaselessStarts("give "))
-            {
                 message = message.Substring(5);
-            }
             else if (message.CaselessStarts("take "))
             {
                 message = message.Substring(5); 
@@ -54,13 +52,9 @@ namespace MCGalaxy.Modules.Awards
                     PlayerAwards.Save();
                 }
                 else if (plName.CaselessEq(p.name))
-                {
                     p.Message("You already have that award.");
-                }
                 else
-                {
                     p.Message("{0} &Salready has that award.", displayName);
-                }
             }
             else
             {
@@ -70,13 +64,9 @@ namespace MCGalaxy.Modules.Awards
                     PlayerAwards.Save();
                 }
                 else if (plName.CaselessEq(p.name))
-                {
                     p.Message("You did not have that award to begin with.");
-                }
                 else
-                {
                     p.Message("{0} &Sdid not have that award to begin with.", displayName);
-                }
             }
         }
         public override void Help(Player p)

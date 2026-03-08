@@ -60,38 +60,22 @@ namespace MCGalaxy.Util.Imaging
                 {
                 }
                 else if (marker == 0xFFD9)
-                {
                     return;
-                }
-                else if (marker >= 0xFFE0 && marker <= 0xFFEF)
-                {
+                else if (marker >= 0xFFE0 && marker <= 0xFFEF || marker == 0xFFFE || marker == 0xFFDD)
                     SkipMarker(src);
-                }
-                else if (marker == 0xFFFE || marker == 0xFFDD)
-                {
-                    SkipMarker(src);
-                }
                 else if (marker == 0xFFC4)
-                {
                     ReadHuffmanTable(src);
-                }
                 else if (marker == 0xFFDB)
-                {
                     ReadQuantisationTables(src);
-                }
                 else if (marker == 0xFFC0)
-                {
                     ReadFrameStart(src, bmp);
-                }
                 else if (marker == 0xFFDA)
                 {
                     ReadScanStart(src);
                     DecodeMCUs(src, bmp);
                 }
                 else
-                {
                     Fail("unknown marker:" + marker.ToString("X4"));
-                }
             }
         }
         void SkipMarker(byte[] src)
@@ -109,25 +93,17 @@ namespace MCGalaxy.Util.Imaging
             while (length > 0)
             {
                 if (length < 65)
-                {
                     Fail("quant table too short: " + length);
-                }
                 length -= 65;
                 byte flags = src[offset++];
                 if ((flags & 0xF0) != 0)
-                {
                     Fail("16 bit quant table unsupported");
-                }
                 int idx = flags & 0x03;
                 if (quant_tables[idx] == null)
-                {
                     quant_tables[idx] = new byte[64];
-                }
                 byte[] table = quant_tables[idx];
                 for (int i = 0; i < table.Length; i++)
-                {
                     table[i] = src[offset++];
-                }
             }
         }
         void ReadHuffmanTable(byte[] src)
@@ -159,44 +135,32 @@ namespace MCGalaxy.Util.Imaging
             {
                 byte count = src[offset++];
                 if (count > (1 << (i + 1)))
-                {
                     Fail("too many codewords for bit length");
-                }
                 counts[i] = count;
                 table.firstCodewords[i] = (ushort)code;
                 table.firstOffsets[i] = (ushort)total;
                 total += count;
                 if (count != 0)
-                {
                     table.endCodewords[i] = (ushort)(code + count);
-                }
                 code = (code + count) << 1;
             }
             if (total > 256)
-            {
                 Fail("too many values");
-            }
             int valueIdx = 0;
             for (int i = 0; i < counts.Length; i++)
-            {
                 for (int j = 0; j < counts[i]; j++)
                 {
                     byte value = src[offset++];
                     table.values[valueIdx++] = value;
                     int len = i + 1;
                     if (len > 8)
-                    {
                         continue;
-                    }
                     ushort packed = (ushort)((len << 8) | value);
                     int codeword = table.firstCodewords[i] + j;
                     codeword <<= 8 - len;
                     for (int k = 0; k < 1 << (8 - len); k++)
-                    {
                         table.fast[codeword + k] = packed;
-                    }
                 }
-            }
             return 16 + total;
         }
         void ReadFrameStart(byte[] src, Bitmap2D bmp)
@@ -206,9 +170,7 @@ namespace MCGalaxy.Util.Imaging
             offset = AdvanceOffset(length - 2);
             byte bits = src[offset + 0];
             if (bits != 8)
-            {
                 Fail("bits per sample");
-            }
             bmp.Height = MemUtils.ReadU16_BE(src, offset + 1);
             bmp.Width = MemUtils.ReadU16_BE(src, offset + 3);
             bmp.AllocatePixels();
@@ -259,9 +221,7 @@ namespace MCGalaxy.Util.Imaging
             for (int i = 0; i < comps.Length; i++)
             {
                 if (comps[i].ID != compID)
-                {
                     continue;
-                }
                 comps[i].DCHuffTable = (byte)(tables >> 4);
                 comps[i].ACHuffTable = (byte)(tables & 0x0F);
                 comps[i].PredDCValue = 0;
@@ -280,7 +240,6 @@ namespace MCGalaxy.Util.Imaging
             float* output = stackalloc float[64];
             YCbCr[] colors = new YCbCr[mcu_w * mcu_h];
             for (int mcuY = 0; mcuY < mcus_y; mcuY++)
-            {
                 for (int mcuX = 0; mcuX < mcus_x; mcuX++)
                 {
                     if (hit_rst)
@@ -307,7 +266,6 @@ namespace MCGalaxy.Util.Imaging
                         baseY = mcuY * mcu_h,
                         j = 0;
                     for (int YY = 0; YY < mcu_w; YY++)
-                    {
                         for (int XX = 0; XX < mcu_h; XX++, j++)
                         {
                             int globalX = baseX + XX,
@@ -324,9 +282,7 @@ namespace MCGalaxy.Util.Imaging
                                 bmp.Pixels[globalY * bmp.Width + globalX] = p;
                             }
                         }
-                    }
                 }
-            }
         }
         static byte ByteClamp(float value) => ((int)value) < 0 ? (byte)0 : ((int)value) > 255 ? (byte)255 : (byte)(int)value;
         void DecodeBlock(JpegComponent comp, byte[] src, int* block)
@@ -338,9 +294,7 @@ namespace MCGalaxy.Util.Imaging
             comp.PredDCValue = dc_value;
             byte[] dequant = quant_tables[comp.QuantTable];
             for (int j = 0; j < 64; j++)
-            {
                 block[j] = 0;
-            }
             block[0] = dc_value * dequant[0];
             table = ac_huff_tables[comp.ACHuffTable];
             int idx = 1;
@@ -348,21 +302,15 @@ namespace MCGalaxy.Util.Imaging
             {
                 int code = ReadHuffman(table, src);
                 if (code == 0)
-                {
                     break;
-                }
                 int bits = code & 0x0F,
                     num_zeros = code >> 4;
                 if (bits == 0)
                 {
                     if (code == 0)
-                    {
                         break;
-                    }
                     if (num_zeros != 15)
-                    {
                         Fail("too many zeroes");
-                    }
                     idx += 16;
                 }
                 else
@@ -523,9 +471,7 @@ namespace MCGalaxy.Util.Imaging
                         continue;
                     }
                     else if (type != 0)
-                    {
                         Fail("unexpected marker");
-                    }
                 }
                 bit_buf <<= 8;
                 bit_buf |= next;
@@ -580,46 +526,34 @@ namespace MCGalaxy.Util.Imaging
         int ReadBiasedValue(byte[] src, int bits)
         {
             if (bits == 0)
-            {
                 return 0;
-            }
             RefillBits(src);
             int value = ReadBits(bits),
                 midpoint = 1 << (bits - 1);
             if (value < midpoint)
-            {
                 value += (-1 << bits) + 1;
-            }
             return value;
         }
         static JpegBlockOutput GetBlockOutputFunction(JpegComponent comp)
         {
             if (comp.SamplesPerBlockX == 1 && comp.SamplesPerBlockY == 1)
-            {
-                if (comp.ID == 1)
+                switch (comp.ID)
                 {
-                    return Y_1x1Output;
+                    case 1:
+                        return Y_1x1Output;
+                    case 2:
+                        return Cb_1x1Output;
+                    case 3:
+                        return Cr_1x1Output;
                 }
-                if (comp.ID == 2)
-                {
-                    return Cb_1x1Output;
-                }
-                if (comp.ID == 3)
-                {
-                    return Cr_1x1Output;
-                }
-            }
             if (comp.SamplesPerBlockX == 2 && comp.SamplesPerBlockY == 2)
-            {
-                if (comp.ID == 2)
+                switch (comp.ID)
                 {
-                    return Cb_2x2Output;
+                    case 2:
+                        return Cb_2x2Output;
+                    case 3:
+                        return Cr_2x2Output;
                 }
-                if (comp.ID == 3)
-                {
-                    return Cr_2x2Output;
-                }
-            }
             return Generic_BlockOutput;
         }
         static void Generic_BlockOutput(JpegComponent comp, YCbCr[] colors, int mcu_w,
@@ -628,33 +562,29 @@ namespace MCGalaxy.Util.Imaging
             int samplesX = comp.SamplesPerBlockX,
                 samplesY = comp.SamplesPerBlockY;
             for (int y = 0; y < 8; y++)
-            {
                 for (int x = 0; x < 8; x++)
                 {
                     float sample = output[y * 8 + x];
                     for (int py = 0; py < samplesY; py++)
-                    {
                         for (int px = 0; px < samplesX; px++)
                         {
                             int YY = (baseY + y) * samplesY + py,
                                 XX = (baseX + x) * samplesX + px,
                                 idx = YY * mcu_w + XX;
-                            if (i == 0)
+                            switch (i)
                             {
-                                colors[idx].Y = sample;
-                            }
-                            else if (i == 1)
-                            {
-                                colors[idx].Cb = sample;
-                            }
-                            else if (i == 2)
-                            {
-                                colors[idx].Cr = sample;
+                                case 0:
+                                    colors[idx].Y = sample;
+                                    break;
+                                case 1:
+                                    colors[idx].Cb = sample;
+                                    break;
+                                case 2:
+                                    colors[idx].Cr = sample;
+                                    break;
                             }
                         }
-                    }
                 }
-            }
         }
         static void Y_1x1Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
                                 int i, float* output, int baseX, int baseY)
@@ -663,9 +593,7 @@ namespace MCGalaxy.Util.Imaging
             {
                 int dst = (baseY + y) * mcu_w + baseX + 0;
                 for (int x = 0; x < 8; x++)
-                {
                     colors[dst++].Y = output[src++];
-                }
             }
         }
         static void Cb_1x1Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
@@ -675,9 +603,7 @@ namespace MCGalaxy.Util.Imaging
             {
                 int dst = (baseY + y) * mcu_w + baseX + 0;
                 for (int x = 0; x < 8; x++)
-                {
                     colors[dst++].Cb = output[src++];
-                }
             }
         }
         static void Cr_1x1Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
@@ -687,9 +613,7 @@ namespace MCGalaxy.Util.Imaging
             {
                 int dst = (baseY + y) * mcu_w + baseX + 0;
                 for (int x = 0; x < 8; x++)
-                {
                     colors[dst++].Cr = output[src++];
-                }
             }
         }
         static void Cb_2x2Output(JpegComponent comp, YCbCr[] colors, int mcu_w,

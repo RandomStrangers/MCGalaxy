@@ -67,16 +67,13 @@ namespace MCGalaxy.Levels.IO
         static Vec3U16 ReadHeader(BinaryReader reader)
         {
             if (reader.ReadInt32() != 0x0FC2AF40 || reader.ReadByte() != 13)
-            {
                 throw new InvalidDataException("Unexpected constant in .fcm file");
-            }
-            Vec3U16 dims = new()
+            return new()
             {
                 X = reader.ReadUInt16(),
                 Y = reader.ReadUInt16(),
                 Z = reader.ReadUInt16()
             };
-            return dims;
         }
         static string ReadString(BinaryReader reader)
         {
@@ -108,15 +105,9 @@ namespace MCGalaxy.Levels.IO
                 zone.Config.ShowAlpha = byte.Parse(header[10]);
             }
             if (parts[1].Length > 0)
-            {
-                string[] whitelist = parts[1].SplitSpaces();
-                zone.Config.BuildWhitelist.AddRange(whitelist);
-            }
+                zone.Config.BuildWhitelist.AddRange(parts[1].SplitSpaces());
             if (parts[2].Length > 0)
-            {
-                string[] blacklist = parts[2].SplitSpaces();
-                zone.Config.BuildBlacklist.AddRange(blacklist);
-            }
+                zone.Config.BuildBlacklist.AddRange(parts[2].SplitSpaces());
             zone.AddTo(lvl);
         }
     }

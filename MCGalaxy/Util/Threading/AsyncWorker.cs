@@ -32,9 +32,7 @@ namespace MCGalaxy
             for (; ; )
             {
                 if (terminating)
-                {
                     break;
-                }
                 try
                 {
                     HandleNext();
@@ -47,9 +45,7 @@ namespace MCGalaxy
             try
             {
                 lock (queueLock)
-                {
                     queue.Clear();
-                }
                 handle.Close();
             }
             catch
@@ -78,9 +74,7 @@ namespace MCGalaxy
         public void QueueAsync(T msg)
         {
             lock (queueLock)
-            {
                 queue.Enqueue(msg);
-            }
             WakeupWorker();
         }
     }

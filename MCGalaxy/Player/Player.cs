@@ -64,9 +64,7 @@ namespace MCGalaxy
             partialLog = new List<DateTime>(20);
             session.ID = Interlocked.Increment(ref sessionCounter) & ((1 << 20) - 1);
             for (int b = 0; b < BlockBindings.Length; b++)
-            {
                 BlockBindings[b] = (ushort)b;
-            }
         }
         public override Level Level 
         { 
@@ -249,9 +247,7 @@ namespace MCGalaxy
             if (!isKick)
             {
                 if (Server.Config.GuestLeavesNotify || Rank > LevelPermission.Guest)
-                {
                     Chat.MessageFrom(ChatScope.All, this, "&c- λFULL &S" + chatMsg, null, Chat.FilterVisible(this), !hidden);
-                }
                 Logger.Log(LogType.UserActivity, "{0} disconnected ({1}&S).", truename, chatMsg);
             }
             else
@@ -264,9 +260,7 @@ namespace MCGalaxy
         {
             Extras.Clear();
             foreach (CopyState cState in CopySlots)
-            {
                 cState?.Clear();
-            }
             CopySlots.Clear();
             DrawOps.Clear();
             spamChecker?.Clear();
@@ -334,9 +328,7 @@ namespace MCGalaxy
         {
             if (!(msg.CaselessEq(a) || msg.CaselessEq(b))) return false;
             if (p.voted)
-            {
                 p.Message("&cYou have already voted!");
-            }
             else
             {
                 totalVotes++;
@@ -392,13 +384,9 @@ namespace MCGalaxy
                 if (selCallback == null) return;
                 selIndex++;
                 if (selIndex == 1 && selTitle != null)
-                {
                     SendCpeMessage(CpeMessageType.BottomRight2, "Mark #1" + FormatSelectionMark(selMarks[0]));
-                }
                 else if (selIndex == 2 && selTitle != null)
-                {
                     SendCpeMessage(CpeMessageType.BottomRight1, "Mark #2" + FormatSelectionMark(selMarks[1]));
-                }
                 if (selIndex != selMarks.Length) return;
                 string title = selTitle;
                 object state = selState;
@@ -408,9 +396,7 @@ namespace MCGalaxy
                 block = p.BlockBindings[block];
                 bool canRepeat = callback(this, selMarks, state, block);
                 if (canRepeat && staticCommands)
-                {
                     MakeSelection(selIndex, title, state, callback, markCallback);
-                }
             }
         }
         string FormatSelectionMark(Vec3S32 P) => ": &S(" + P.X + ", " + P.Y + ", " + P.Z + ")";

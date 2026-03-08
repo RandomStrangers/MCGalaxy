@@ -41,16 +41,12 @@ namespace MCGalaxy.Generator.Foliage
                                      short size, ushort trunk)
         {
             for (int dy = -size; dy <= size; ++dy)
-            {
                 for (int dz = -size; dz <= size; ++dz)
-                {
                     for (int dx = -size; dx <= size; ++dx)
                     {
                         ushort block = lvl.GetBlock((ushort)(x + dx), (ushort)(y + dy), (ushort)(z + dz));
                         if (block == trunk) return true;
                     }
-                }
-            }
             return false;
         } // TODO move to generic helper function
 
@@ -67,9 +63,7 @@ namespace MCGalaxy.Generator.Foliage
         public static Tree Find(string name)
         {
             foreach (KeyValuePair<string, TreeConstructor> entry in TreeTypes)
-            {
                 if (entry.Key.CaselessEq(name)) return entry.Value();
-            }
             return null;
         }
     }

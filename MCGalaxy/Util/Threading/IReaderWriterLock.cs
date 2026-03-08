@@ -35,13 +35,9 @@ namespace MCGalaxy.Util
             public void Dispose()
             {
                 if (writeMode)
-                {
                     locker.ExitWriteLock();
-                }
                 else
-                {
                     locker.ExitReadLock();
-                }
                 locker = null;
             }
         }

@@ -127,17 +127,17 @@ namespace MCGalaxy
         /// <summary> Maps internal system color codes to their actual color codes. </summary>
         /// <remarks> Also converts uppercase standard color codes to lowercase. </remarks>
         /// <returns> Whether given color code was a valid color code. </returns>
-        public static char Lookup(char col)
+        public static char Lookup(char col) => col switch
         {
-            if (col >= 'A' && col <= 'F') return (char)(col + ' ');
-            if ((col >= '0' && col <= '9') || (col >= 'a' && col <= 'f')) return col;
-            if (col == 'S') return Server.Config.DefaultColor[1];
-            return col == 'H'
-                ? Server.Config.HelpDescriptionColor[1]
-                : col == 'T'
-                ? Server.Config.HelpSyntaxColor[1]
-                : col == 'I' ? Server.Config.IRCColor[1] : col == 'W' ? Server.Config.WarningErrorColor[1] : IsDefined(col) ? col : '\0';
-        }
+            >= 'A' and <= 'F' => (char)(col + ' '),
+            >= '0' and <= '9' or >= 'a' and <= 'f' => col,
+            'S' => Server.Config.DefaultColor[1],
+            _ => col == 'H'
+            ? Server.Config.HelpDescriptionColor[1]
+            : col == 'T'
+            ? Server.Config.HelpSyntaxColor[1]
+            : col == 'I' ? Server.Config.IRCColor[1] : col == 'W' ? Server.Config.WarningErrorColor[1] : IsDefined(col) ? col : '\0'
+        };
         public static bool IsSystem(char col) => col == 'S' || col == 'H' || col == 'T' || col == 'I' || col == 'W';
         /// <summary> Converts percentage color codes to their actual/real color codes. </summary>
         /// <remarks> Does not escape percentage codes that are part of urls. </remarks>

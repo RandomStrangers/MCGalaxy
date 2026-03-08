@@ -60,17 +60,17 @@ namespace MCGalaxy.Maths
             }
             set
             {
-                if (index == 0)
+                switch (index)
                 {
-                    X = value;
-                }
-                else if (index == 1)
-                {
-                    Y = value;
-                }
-                else
-                {
-                    Z = value;
+                    case 0:
+                        X = value;
+                        break;
+                    case 1:
+                        Y = value;
+                        break;
+                    default:
+                        Z = value;
+                        break;
                 }
             }
         }
@@ -115,9 +115,7 @@ namespace MCGalaxy.Maths
         {
             float invLen = 1 / a.Length;
             if (invLen == float.PositiveInfinity)
-            {
                 return a;
-            }
             a.X *= invLen;
             a.Y *= invLen;
             a.Z *= invLen;

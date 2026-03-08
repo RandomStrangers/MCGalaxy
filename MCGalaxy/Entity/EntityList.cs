@@ -68,9 +68,7 @@ namespace MCGalaxy
         WaitingEntity IsWaitingToSpawn(Entity e)
         {
             foreach (WaitingEntity vis in invisible)
-            {
                 if (vis.e == e) return vis;
-            }
             return null;
         }
         readonly Stack<byte> freeIDs;
@@ -107,9 +105,7 @@ namespace MCGalaxy
             lock (locker)
             {
                 if (tabObjects.TryGetValue(o, out TabObject tabby))
-                {
                     tabby.UpdateFields(name, nick, group, groupRank);
-                }
                 else
                 {
                     int tentativeID = FindFreeTabID(o, self);
@@ -134,20 +130,17 @@ namespace MCGalaxy
                 }
             }
             for (int i = maxEntityID; i >= 0; i--)
-            {
                 if (usedTabIDs[i] == false)
                 {
                     usedTabIDs[i] = true;
                     return i;
                 }
-            }
             return -1;
         }
         public void SendRemoveTabEntry(object o)
         {
             if (!p.hasExtList) return;
             lock (locker)
-            {
                 if (tabObjects.TryGetValue(o, out TabObject tabby))
                 {
                     tabby = tabObjects[o];
@@ -155,10 +148,6 @@ namespace MCGalaxy
                     tabObjects.Remove(o);
                     p.Session.SendRemoveTabEntry(tabby.id);
                 }
-                else
-                {
-                }
-            }
         }
         #endregion
         readonly byte maxEntityID;
@@ -168,11 +157,9 @@ namespace MCGalaxy
             this.maxEntityID = maxEntityID;
             lock (locker)
             {
-                freeIDs = new Stack<byte>(maxEntityID);
+                freeIDs = new(maxEntityID);
                 for (int i = maxEntityID; i >= 0; i--)
-                {
                     freeIDs.Push((byte)i);
-                }
                 usedTabIDs = new bool[maxEntityID + 1];
             }
         }
@@ -194,9 +181,6 @@ namespace MCGalaxy
                         vis = new(e, ID, name);
                         visible[e] = vis;
                     }
-                    else
-                    {
-                    }
                     Spawn(vis, pos, rot, skin, name, model);
                     if (tabList) AddTab(e);
                     if (tabObjects.TryGetValue(vis.e, out TabObject tabby) && tabby.id != vis.id)
@@ -207,10 +191,7 @@ namespace MCGalaxy
                     return true;
                 }
                 if (IsWaitingToSpawn(e) == null)
-                {
-                    WaitingEntity waiting = new(e, 0, name, tabList);
-                    invisible.Add(waiting);
-                }
+                    invisible.Add(new(e, 0, name, tabList));
                 return false;
             }
         }
@@ -244,9 +225,7 @@ namespace MCGalaxy
                     return true;
                 }
                 else
-                {
                     return false;
-                }
             }
         }
         void Spawn(VisibleEntity vis, Position pos, Orientation rot, string skin, string name, string model)
@@ -272,9 +251,7 @@ namespace MCGalaxy
         void SendModel(VisibleEntity vis, string model)
         {
             if (p.hasChangeModel)
-            {
                 p.Session.SendChangeModel(vis.id, model);
-            }
         }
         void SendRot(VisibleEntity vis, Orientation rot)
         {
@@ -320,13 +297,11 @@ namespace MCGalaxy
         public bool GetID(Entity e, out byte id)
         {
             lock (locker)
-            {
                 if (visible.TryGetValue(e, out VisibleEntity vis))
                 {
                     id = vis.id;
                     return true;
                 }
-            }
             id = 0;
             return false;
         }
@@ -344,9 +319,7 @@ namespace MCGalaxy
                     if (!pair.Key.autoBroadcastPosition) continue;
                     cachedVisible[pair.Key] = pair.Value;
                     if (pair.Key.untracked)
-                    {
                         pair.Key._positionUpdatePos = pair.Key.Pos;
-                    }
                 }
             }
             foreach (KeyValuePair<Entity, VisibleEntity> pair in cachedVisible)
@@ -369,10 +342,8 @@ namespace MCGalaxy
             int count = (int)(ptr - src);
             if (count == 0) return;
             byte[] packet = new byte[count];
-            for (int i = 0; i < packet.Length; i++) 
-            { 
+            for (int i = 0; i < packet.Length; i++)
                 packet[i] = src[i];
-            }
             dst.Send(packet);
             foreach (KeyValuePair<Entity, VisibleEntity> pair in cachedVisible)
             {

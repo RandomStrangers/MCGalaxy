@@ -41,15 +41,18 @@ namespace MCGalaxy.Commands.Building
         {
             if (parts.Length == 1) return OutlineDrawOp.Side.Unspecified;
             string type = parts[1];
-            if (type == "left") return OutlineDrawOp.Side.Left;
-            if (type == "right") return OutlineDrawOp.Side.Right;
-            if (type == "front") return OutlineDrawOp.Side.Front;
-            if (type == "back") return OutlineDrawOp.Side.Back;
-            return type == "down"
+            return type switch
+            {
+                "left" => OutlineDrawOp.Side.Left,
+                "right" => OutlineDrawOp.Side.Right,
+                "front" => OutlineDrawOp.Side.Front,
+                "back" => OutlineDrawOp.Side.Back,
+                _ => type == "down"
                 ? OutlineDrawOp.Side.Down
                 : type == "up"
                 ? OutlineDrawOp.Side.Up
-                : type == "layer" ? OutlineDrawOp.Side.Layer : type == "all" ? OutlineDrawOp.Side.All : OutlineDrawOp.Side.Unspecified;
+                : type == "layer" ? OutlineDrawOp.Side.Layer : type == "all" ? OutlineDrawOp.Side.All : OutlineDrawOp.Side.Unspecified
+            };
         }
         protected override DrawMode GetMode(string[] parts) => GetSides(parts) == OutlineDrawOp.Side.Unspecified ? DrawMode.normal : DrawMode.solid;
         protected override void GetBrush(DrawArgs dArgs) => dArgs.BrushArgs = dArgs.Message.Splice(dArgs.ModeArgsCount + 1, 0);

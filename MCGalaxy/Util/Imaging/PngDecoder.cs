@@ -62,9 +62,7 @@ namespace MCGalaxy.Util.Imaging
             bool reachedEnd = false;
             SetBuffer(src);
             if (!DetectHeader(src))
-            {
                 Fail("sig invalid");
-            }
             AdvanceOffset(pngSig.Length);
             while (!reachedEnd)
             {
@@ -76,43 +74,37 @@ namespace MCGalaxy.Util.Imaging
                     case ('I' << 24) | ('H' << 16) | ('D' << 8) | 'R':
                         {
                             if (dataSize != 13)
-                            {
                                 Fail("Header size");
-                            }
                             offset = AdvanceOffset(13);
                             bmp.Width = MemUtils.ReadI32_BE(src, offset + 0);
                             bmp.Height = MemUtils.ReadI32_BE(src, offset + 4);
-                            if (bmp.Width < 0 || bmp.Width > 32768)
+                            switch (bmp.Width)
                             {
-                                Fail("too wide");
+                                case < 0:
+                                case > 32768:
+                                    Fail("too wide");
+                                    break;
                             }
-                            if (bmp.Height < 0 || bmp.Height > 32768)
+                            switch (bmp.Height)
                             {
-                                Fail("too tall");
+                                case < 0:
+                                case > 32768:
+                                    Fail("too tall");
+                                    break;
                             }
                             bitsPerSample = src[offset + 8];
                             colorspace = src[offset + 9];
                             if (bitsPerSample == 16)
-                            {
                                 Fail("16 bpp");
-                            }
                             rowExpander = GetRowExpander(colorspace, bitsPerSample);
                             if (rowExpander == null)
-                            {
                                 Fail("Colorspace/bpp combination");
-                            }
                             if (src[offset + 10] != 0)
-                            {
                                 Fail("Compression method");
-                            }
                             if (src[offset + 11] != 0)
-                            {
                                 Fail("Filter");
-                            }
                             if (src[offset + 12] != 0)
-                            {
                                 Fail("Interlaced unsupported");
-                            }
                             bytesPerPixel = ((samplesPerPixel[colorspace] * bitsPerSample) + 7) >> 3;
                             scanline_size = ((samplesPerPixel[colorspace] * bitsPerSample * bmp.Width) + 7) >> 3;
                             bmp.AllocatePixels();
@@ -121,13 +113,9 @@ namespace MCGalaxy.Util.Imaging
                     case ('P' << 24) | ('L' << 16) | ('T' << 8) | 'E':
                         {
                             if (dataSize > 256 * 3)
-                            {
                                 Fail("Palette size");
-                            }
                             if ((dataSize % 3) != 0)
-                            {
                                 Fail("Palette align");
-                            }
                             offset = AdvanceOffset(dataSize);
                             palette ??= CreatePalette();
                             for (int i = 0; i < dataSize; i += 3)
@@ -140,44 +128,41 @@ namespace MCGalaxy.Util.Imaging
                         break;
                     case ('t' << 24) | ('R' << 16) | ('N' << 8) | 'S':
                         {
-                            if (colorspace == 0)
+                            switch (colorspace)
                             {
-                                if (dataSize != 2)
-                                {
-                                    Fail("tRNS size");
-                                }
-                                offset = AdvanceOffset(dataSize);
-                                byte rgb = src[offset + 1];
-                                trnsColor = ExpandRGB(bitsPerSample, rgb, rgb, rgb);
-                            }
-                            else if (colorspace == 3)
-                            {
-                                if (dataSize > 256)
-                                {
-                                    Fail("tRNS size");
-                                }
-                                offset = AdvanceOffset(dataSize);
-                                palette ??= CreatePalette();
-                                for (int i = 0; i < dataSize; i++)
-                                {
-                                    palette[i].A = src[offset + i];
-                                }
-                            }
-                            else if (colorspace == 2)
-                            {
-                                if (dataSize != 6)
-                                {
-                                    Fail("tRNS size");
-                                }
-                                offset = AdvanceOffset(dataSize);
-                                byte r = src[offset + 1],
-                                    g = src[offset + 3],
-                                    b = src[offset + 5];
-                                trnsColor = ExpandRGB(bitsPerSample, r, g, b);
-                            }
-                            else
-                            {
-                                Fail("tRNS/colorspace combination");
+                                case 0:
+                                    {
+                                        if (dataSize != 2)
+                                            Fail("tRNS size");
+                                        offset = AdvanceOffset(dataSize);
+                                        byte rgb = src[offset + 1];
+                                        trnsColor = ExpandRGB(bitsPerSample, rgb, rgb, rgb);
+                                        break;
+                                    }
+                                case 3:
+                                    {
+                                        if (dataSize > 256)
+                                            Fail("tRNS size");
+                                        offset = AdvanceOffset(dataSize);
+                                        palette ??= CreatePalette();
+                                        for (int i = 0; i < dataSize; i++)
+                                            palette[i].A = src[offset + i];
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        if (dataSize != 6)
+                                            Fail("tRNS size");
+                                        offset = AdvanceOffset(dataSize);
+                                        byte r = src[offset + 1],
+                                            g = src[offset + 3],
+                                            b = src[offset + 5];
+                                        trnsColor = ExpandRGB(bitsPerSample, r, g, b);
+                                        break;
+                                    }
+                                default:
+                                    Fail("tRNS/colorspace combination");
+                                    break;
                             }
                         }
                         break;
@@ -203,26 +188,20 @@ namespace MCGalaxy.Util.Imaging
             }
             all_idats.Position = 0;
             using (DeflateStream comp = new(all_idats, CompressionMode.Decompress))
-            {
                 DecompressImage(comp, bmp, palette, trnsColor);
-            }
             return bmp;
         }
         static Pixel[] CreatePalette()
         {
             Pixel[] pal = new Pixel[256];
             for (int i = 0; i < pal.Length; i++)
-            {
                 pal[i] = Pixel.BLACK;
-            }
             return pal;
         }
         void DecompressImage(Stream src, Bitmap2D bmp, Pixel[] palette, Pixel trnsColor)
         {
             if (bmp.Pixels == null)
-            {
                 Fail("no data");
-            }
             byte[] line = new byte[scanline_size],
                 tmp, prior = new byte[scanline_size],
                 one = new byte[1];
@@ -232,14 +211,10 @@ namespace MCGalaxy.Util.Imaging
                 {
                     int read = src.Read(one, 0, 1);
                     if (read == 0)
-                    {
                         Fail("scanline");
-                    }
                     byte method = one[0];
                     if (method > 4)
-                    {
                         Fail("Scanline");
-                    }
                     StreamUtils.ReadFully(src, line, 0, scanline_size);
                     ReconstructRow(method, bytesPerPixel, line, prior, scanline_size);
                     rowExpander(bmp.Width, palette, line, dst + y * bmp.Width);
@@ -249,27 +224,15 @@ namespace MCGalaxy.Util.Imaging
                 }
             }
             if (trnsColor.A == 0)
-            {
                 MakeTransparent(bmp.Pixels, trnsColor);
-            }
             return;
         }
         static void MakeTransparent(Pixel[] img, Pixel color)
         {
             for (int i = 0; i < img.Length; i++)
             {
-                if (img[i].R != color.R)
-                {
+                if (img[i].R != color.R || img[i].G != color.G || img[i].B != color.B)
                     continue;
-                }
-                if (img[i].G != color.G)
-                {
-                    continue;
-                }
-                if (img[i].B != color.B)
-                {
-                    continue;
-                }
                 img[i].A = 0;
             }
         }
@@ -279,14 +242,10 @@ namespace MCGalaxy.Util.Imaging
             int offset = AdvanceOffset(2);
             byte method = src[offset + 0];
             if ((method & 0x0F) != 0x08)
-            {
                 Fail("Zlib method");
-            }
             byte flags = src[offset + 1];
             if ((flags & 0x20) != 0)
-            {
                 Fail("Zlip flags");
-            }
             read_zlib_header = true;
         }
         static void ReconstructRow(byte type, int bytesPerPixel, byte[] line, byte[] prior, int lineLen)
@@ -296,31 +255,21 @@ namespace MCGalaxy.Util.Imaging
             {
                 case 1:
                     for (i = bytesPerPixel, j = 0; i < lineLen; i++, j++)
-                    {
                         line[i] += line[j];
-                    }
                     return;
                 case 2:
                     for (i = 0; i < lineLen; i++)
-                    {
                         line[i] += prior[i];
-                    }
                     return;
                 case 3:
                     for (i = 0; i < bytesPerPixel; i++)
-                    {
                         line[i] += (byte)(prior[i] >> 1);
-                    }
                     for (j = 0; i < lineLen; i++, j++)
-                    {
                         line[i] += (byte)((prior[i] + line[j]) >> 1);
-                    }
                     return;
                 case 4:
                     for (i = 0; i < bytesPerPixel; i++)
-                    {
                         line[i] += prior[i];
-                    }
                     for (j = 0; i < lineLen; i++, j++)
                     {
                         byte a = line[j], b = prior[i], c = prior[j];
@@ -329,17 +278,11 @@ namespace MCGalaxy.Util.Imaging
                             pb = Math.Abs(p - b),
                             pc = Math.Abs(p - c);
                         if (pa <= pb && pa <= pc)
-                        {
                             line[i] += a;
-                        }
                         else if (pb <= pc)
-                        {
                             line[i] += b;
-                        }
                         else
-                        {
                             line[i] += c;
-                        }
                     }
                     return;
             }
@@ -393,30 +336,22 @@ namespace MCGalaxy.Util.Imaging
         static void Expand_INDEXED_1(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
             for (int i = 0; i < width; i++)
-            {
                 dst[i] = palette[Get_1BPP(src, i)];
-            }
         }
         static void Expand_INDEXED_2(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
             for (int i = 0; i < width; i++)
-            {
                 dst[i] = palette[Get_2BPP(src, i)];
-            }
         }
         static void Expand_INDEXED_4(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
             for (int i = 0; i < width; i++)
-            {
                 dst[i] = palette[Get_4BPP(src, i)];
-            }
         }
         static void Expand_INDEXED_8(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
             for (int i = 0; i < width; i++)
-            {
                 dst[i] = palette[src[i]];
-            }
         }
         static void Expand_GRAYSCALE_A_8(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {

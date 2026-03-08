@@ -63,55 +63,49 @@ namespace MCGalaxy.Platform
         {
             string bitType = " unknown bit type (IntPtr size is " + IntPtr.Size + ")",
                 name = "Unix";
-            if (IntPtr.Size == 8)
+            switch (IntPtr.Size)
             {
-                bitType = " 64-bit";
-            }
-            else if (IntPtr.Size == 4)
-            {
-                bitType = " 32-bit";
-            }
-            else if (IntPtr.Size == 2)
-            {
-                bitType = " 16-bit";
+                case 8:
+                    bitType = " 64-bit";
+                    break;
+                case 4:
+                    bitType = " 32-bit";
+                    break;
+                case 2:
+                    bitType = " 16-bit";
+                    break;
             }
             IOperatingSystem operatingSystem = DetectOS();
-            if (operatingSystem is MonoOS)
+            switch (operatingSystem)
             {
-                name = "Mono";
-            }
-            else if (operatingSystem is WindowsOS)
-            {
-                name = "Windows";
-            }
-            else if (operatingSystem is MacOS)
-            {
-                name = "Mac";
-            }
-            else if (operatingSystem is LinuxOS)
-            {
-                name = "Linux";
-            }
-            else if (operatingSystem is FreeBSD_OS)
-            {
-                name = "FreeBSD";
-            }
-            else if (operatingSystem is NetBSD_OS)
-            {
-                name = "NetBSD";
-            }
-            else if (operatingSystem is UnixOS)
-            {
-                name = "Unix";
+                case MonoOS:
+                    name = "Mono";
+                    break;
+                case WindowsOS:
+                    name = "Windows";
+                    break;
+                case MacOS:
+                    name = "Mac";
+                    break;
+                case LinuxOS:
+                    name = "Linux";
+                    break;
+                case FreeBSD_OS:
+                    name = "FreeBSD";
+                    break;
+                case NetBSD_OS:
+                    name = "NetBSD";
+                    break;
+                case UnixOS:
+                    name = "Unix";
+                    break;
             }
             return name + bitType;
         }
         public static unsafe IOperatingSystem DetectOS()
         {
             if (Server.RunningOnMono())
-            {
                 return new MonoOS();
-            }
             else
             {
                 PlatformID platform = Environment.OSVersion.Platform;
@@ -120,13 +114,9 @@ namespace MCGalaxy.Platform
                     linuxOS = new LinuxOS(),
                     mac = new MacOS();
                 if (IsWindowsPlatform(platform))
-                {
                     return winOS;
-                }
                 else if (platform == PlatformID.MacOSX)
-                {
                     return mac;
-                }
                 else
                 {
                     sbyte* utsname = stackalloc sbyte[8192];
@@ -251,9 +241,7 @@ namespace MCGalaxy.Platform
             {
                 string line = r.ReadLine();
                 if (line.StartsWith("cpu "))
-                {
                     return ParseCpuLine(line);
-                }
             }
             return new()
             {

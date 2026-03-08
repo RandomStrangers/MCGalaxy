@@ -24,16 +24,12 @@ namespace MCGalaxy.Modules.Compiling
         protected override void CompileCommand(Player p, string[] paths)
         {
             foreach (string cmd in paths)
-            {
                 CreateFile(p, cmd, Compiler.CommandPath(cmd), "command &fCmd", Compiler.GenExampleCommand(cmd));
-            }
         }
         protected override void CompilePlugin(Player p, string[] paths)
         {
             foreach (string name in paths)
-            {
                 CreateFile(p, name, Compiler.PluginPath(name), "plugin &f", Compiler.GenExamplePlugin(name, p.IsSuper ? Server.Config.Name : p.truename));
-            }
         }
         static bool CreateFile(Player p, string name, string path, string type, string source)
         {

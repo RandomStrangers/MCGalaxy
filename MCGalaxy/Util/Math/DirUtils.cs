@@ -21,54 +21,58 @@ namespace MCGalaxy.Maths
         {
             dirX = 0;
             dirZ = 0;
-            if (yaw < (0 + (64 / 4 * 3)) || yaw > (256 - (64 / 4 * 3)))
+            switch (yaw)
             {
-                dirZ = -1;
+                case < 0 + 64 / 4 * 3:
+                case > 256 - 64 / 4 * 3:
+                    dirZ = -1;
+                    break;
+                case > 128 - 64 / 4 * 3 and < 128 + 64 / 4 * 3:
+                    dirZ = 1;
+                    break;
             }
-            else if (yaw > (128 - (64 / 4 * 3)) && yaw < (128 + (64 / 4 * 3)))
+            switch (yaw)
             {
-                dirZ = 1;
-            }
-            if (yaw > (64 - (64 / 4 * 3)) && yaw < (64 + (64 / 4 * 3)))
-            {
-                dirX = 1;
-            }
-            else if (yaw > (192 - (64 / 4 * 3)) && yaw < (192 + (64 / 4 * 3)))
-            {
-                dirX = -1;
+                case > 64 - 64 / 4 * 3 and < 64 + 64 / 4 * 3:
+                    dirX = 1;
+                    break;
+                case > 192 - 64 / 4 * 3 and < 192 + 64 / 4 * 3:
+                    dirX = -1;
+                    break;
             }
         }
         public static void FourYaw(byte yaw, out int dirX, out int dirZ)
         {
             dirX = 0;
             dirZ = 0;
-            if (yaw <= (0 + (64 / 2)) || yaw >= (256 - (64 / 2)))
+            switch (yaw)
             {
-                dirZ = -1;
-            }
-            else if (yaw <= (128 - (64 / 2)))
-            {
-                dirX = 1;
-            }
-            else if (yaw <= (128 + (64 / 2)))
-            {
-                dirZ = 1;
-            }
-            else
-            {
-                dirX = -1;
+                case <= 0 + 64 / 2:
+                case >= 256 - 64 / 2:
+                    dirZ = -1;
+                    break;
+                case <= 128 - 64 / 2:
+                    dirX = 1;
+                    break;
+                case <= 128 + 64 / 2:
+                    dirZ = 1;
+                    break;
+                default:
+                    dirX = -1;
+                    break;
             }
         }
         public static void Pitch(byte pitch, out int dirY)
         {
             dirY = 0;
-            if (pitch >= 192 && pitch <= (192 + 32))
+            switch (pitch)
             {
-                dirY = 1;
-            }
-            else if (pitch >= 32 && pitch <= 64)
-            {
-                dirY = -1;
+                case >= 192 and <= 192 + 32:
+                    dirY = 1;
+                    break;
+                case >= 32 and <= 64:
+                    dirY = -1;
+                    break;
             }
         }
         static Vec3F32 GetDirVector(double yaw, double pitch) => new((float)(Math.Sin(yaw) * Math.Cos(pitch)), (float)-Math.Sin(pitch), (float)(-Math.Cos(yaw) * Math.Cos(pitch)));

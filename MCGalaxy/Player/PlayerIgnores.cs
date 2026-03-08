@@ -37,13 +37,9 @@ namespace MCGalaxy
                     if (line == "&drawoutput") { DrawOutput = true; continue; }
                     if (line == "&worldchanges") { WorldChanges = true; continue; }
                     if (line.StartsWith("&irc_"))
-                    {
                         IRCNicks.Add(line.Substring("&irc_".Length));
-                    }
                     else
-                    {
                         Names.Add(line);
-                    }
                 }
             }
             catch (IOException ex)
@@ -52,9 +48,7 @@ namespace MCGalaxy
             }
             bool special = All || IRC || Titles || Nicks || EightBall || DrawOutput || WorldChanges;
             if (special || Names.Count > 0 || IRCNicks.Count > 0)
-            {
                 p.Message("&cType &a/ignore list &cto see who you are still ignoring");
-            }
         }
         public void Save(Player p)
         {
@@ -71,8 +65,8 @@ namespace MCGalaxy
                 if (EightBall) w.WriteLine("&8ball");
                 if (DrawOutput) w.WriteLine("&drawoutput");
                 if (WorldChanges) w.WriteLine("&worldchanges");
-                foreach (string nick in IRCNicks) { w.WriteLine("&irc_" + nick); }
-                foreach (string name in Names) { w.WriteLine(name); }
+                foreach (string nick in IRCNicks) w.WriteLine("&irc_" + nick);
+                foreach (string name in Names) w.WriteLine(name);
             }
             catch (IOException ex)
             {

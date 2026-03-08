@@ -31,9 +31,7 @@ namespace MCGalaxy.Levels.IO
             {
                 byte raw = blocks[i];
                 if (raw <= 65)
-                {
                     continue;
-                }
                 blocks[i] = 163;
                 lvl.IntToPos(i, out ushort x, out ushort y, out ushort z);
                 lvl.FastSetExtTile(x, y, z, raw);
@@ -55,12 +53,8 @@ namespace MCGalaxy.Levels.IO
             string p = path.Replace(".prev", "")
                 .Replace(".backup", "");
             foreach (IMapImporter imp in Formats)
-            {
                 if (p.CaselessEnds(imp.Extension))
-                {
                     return imp;
-                }
-            }
             return null;
         }
         /// <summary> Decodes the given level file into a Level instance </summary>
@@ -92,21 +86,15 @@ namespace MCGalaxy.Levels.IO
             string p = path.Replace(".prev", "")
                 .Replace(".backup", "");
             foreach (IMapExporter exp in Formats)
-            {
                 if (p.CaselessEnds(exp.Extension))
-                {
                     return exp;
-                }
-            }
             return null;
         }
         public static void Encode(string path, Level lvl)
         {
             IMapExporter exp = GetFor(path);
             if (exp == null)
-            {
                 Logger.Log(LogType.Warning, "No exporter found for {0}, cannot save level!", path);
-            }
             else
             {
                 using FileStream fs = File.Create(path);

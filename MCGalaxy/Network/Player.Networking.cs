@@ -30,12 +30,8 @@ namespace MCGalaxy
         public void MessageLines(IEnumerable<string> lines)
         {
             lock (messageLocker)
-            {
-                foreach (string line in lines) 
-                { 
-                    Message(line); 
-                }
-            }
+                foreach (string line in lines)
+                    Message(line);
         }
         public void Message(string message, params object[] args) => Message(string.Format(message, args));
         public virtual void Message(string message)
@@ -43,9 +39,7 @@ namespace MCGalaxy
             if (message.Length > 0 && !(message[0] == '&' || message[0] == '%')) message = "&S" + message;
             message = Chat.Format(message, this);
             lock (messageLocker)
-            {
                 SendRawMessage(message);
-            }
         }
         void SendRawMessage(string message)
         {
@@ -133,9 +127,7 @@ namespace MCGalaxy
         public void SendPosition(Position pos, Orientation rot)
         {
             if (!Session.SendTeleport(0xFF, pos, rot, TeleportMoveMode.AbsoluteInstant))
-            {
                 Session.SendTeleport(0xFF, pos, rot);
-            }
             if (frozen || Session.Ping.IgnorePosition) Pos = pos;
         }
         public void SendBlockchange(ushort x, ushort y, ushort z, ushort block)
@@ -149,9 +141,7 @@ namespace MCGalaxy
         {
             string url = Level.Config.TexturePack.Length == 0 ? Level.Config.Terrain : Level.Config.TexturePack;
             if (url.Length == 0)
-            {
                 url = Server.Config.DefaultTexture.Length == 0 ? Server.Config.DefaultTerrain : Server.Config.DefaultTexture;
-            }
             return url;
         }
         public void SendCurrentTextures()
@@ -176,9 +166,7 @@ namespace MCGalaxy
             else if (Supports(CpeExt.EnvMapAppearance, 2))
             {
                 if (url != lastUrl)
-                {
                     Send(Packet.MapAppearanceV2("", side, edge, edgeHeight, cloudsHeight, maxFogDist, hasCP437));
-                }
                 Send(Packet.MapAppearanceV2(url, side, edge, edgeHeight, cloudsHeight, maxFogDist, hasCP437));
                 lastUrl = url;
             }
@@ -212,9 +200,7 @@ namespace MCGalaxy
         public bool AddVisibleSelection(string label, Vec3U16 min, Vec3U16 max, ColorDesc color, object instance)
         {
             lock (selections.locker)
-            {
                 return Session.SendAddSelection(FindOrAddSelection(selections.Items, instance), label, min, max, color);
-            }
         }
         public bool RemoveVisibleSelection(object instance)
         {
@@ -242,9 +228,7 @@ namespace MCGalaxy
                 used[id] = 1;
             }
             for (id = 0; id < 255; id++)
-            {
                 if (used[id] == 0) break;
-            }
             VisibleSelection sel = new()
             {
                 data = instance,

@@ -39,9 +39,7 @@ namespace MCGalaxy.Eco
         public override void Serialise(List<string> cfg)
         {
             foreach (RankEntry rank in Ranks)
-            {
                 cfg.Add("price:" + (int)rank.Perm + ":" + rank.Price);
-            }
         }
         public RankEntry GetOrAdd(LevelPermission perm)
         {
@@ -58,9 +56,7 @@ namespace MCGalaxy.Eco
         public RankEntry Find(LevelPermission perm)
         {
             foreach (RankEntry rank in Ranks)
-            {
                 if (rank.Perm == perm) return rank;
-            }
             return null;
         }
         public bool Remove(LevelPermission perm) => Ranks.Remove(Find(perm));
@@ -68,9 +64,7 @@ namespace MCGalaxy.Eco
         {
             if (p.IsSuper) return null;
             foreach (RankEntry rank in Ranks)
-            {
                 if (rank.Perm > p.Rank) return rank;
-            }
             return null;
         }
         public override void OnPurchase(Player p, string args)
@@ -118,18 +112,12 @@ namespace MCGalaxy.Eco
                     return; 
                 }
                 if (Remove(grp.Permission))
-                {
                     p.Message("&aMade rank {0} &ano longer buyable", grp.ColoredName);
-                }
                 else
-                {
                     p.Message("&WThat rank was not buyable to begin with.");
-                }
             }
             else
-            {
                 OnSetupHelp(p);
-            }
         }
         protected internal override void OnSetupHelp(Player p)
         {
@@ -143,14 +131,10 @@ namespace MCGalaxy.Eco
         {
             RankEntry next = NextRank(p);
             if (next == null)
-            {
                 p.Message("&6Rankup &S- &Wno further ranks to buy.");
-            }
             else
-            {
                 p.Message("&6Rankup to {0} &S- &a{1} &S{2}",
                                Group.GetColoredName(next.Perm), next.Price, Server.Config.Currency);
-            }
         }
         protected internal override void OnStoreCommand(Player p)
         {
@@ -164,10 +148,8 @@ namespace MCGalaxy.Eco
             p.Message("&fThe highest buyable rank is: {0}", Group.GetColoredName(maxRank));
             p.Message("&WYou can only buy ranks one at a time, in sequential order.");
             foreach (RankEntry rank in Ranks)
-            {
                 p.Message("&6{0} &S- &a{1} &S{2}",
                                Group.GetColoredName(rank.Perm), rank.Price, Server.Config.Currency);
-            }
         }
     }
 }

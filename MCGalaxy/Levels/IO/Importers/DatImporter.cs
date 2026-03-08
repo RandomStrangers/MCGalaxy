@@ -84,13 +84,9 @@ namespace MCGalaxy.Levels.IO
         static Level ReadFormat2(Level lvl, JavaReader r)
         {
             if (r.ReadUInt16() != 0xACED)
-            {
                 throw new InvalidDataException("Invalid stream magic");
-            }
             if (r.ReadUInt16() != 0x0005)
-            {
                 throw new InvalidDataException("Invalid stream version");
-            }
             JObject obj = (JObject)r.ReadObject();
             ParseRootObject(lvl, obj);
             return lvl;
@@ -105,33 +101,19 @@ namespace MCGalaxy.Levels.IO
                 JFieldDesc f = fields[i];
                 object value = values[i];
                 if (f.Name == "width")
-                {
                     lvl.Width = U16(value);
-                }
                 if (f.Name == "height")
-                {
                     lvl.Length = U16(value);
-                }
                 if (f.Name == "depth")
-                {
                     lvl.Height = U16(value);
-                }
                 if (f.Name == "blocks")
-                {
                     lvl.blocks = (byte[])((JArray)value).Values;
-                }
                 if (f.Name == "xSpawn")
-                {
                     lvl.spawnx = U16(value);
-                }
                 if (f.Name == "ySpawn")
-                {
                     lvl.spawny = U16(value);
-                }
                 if (f.Name == "zSpawn")
-                {
                     lvl.spawnz = U16(value);
-                }
             }
         }
     }

@@ -166,9 +166,7 @@ namespace MCGalaxy.Generator
         public static MapGenBiome Get(string biome)
         {
             foreach (KeyValuePair<string, MapGenBiome> kvp in Biomes)
-            {
                 if (kvp.Key.CaselessEq(biome)) return kvp.Value;
-            }
             return forest;
         }
         public static string FindMatch(Player p, string biome)

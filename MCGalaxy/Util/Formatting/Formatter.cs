@@ -26,32 +26,22 @@ namespace MCGalaxy
             PrintAliases(p, cmd);
             List<CommandExtraPerms> extraPerms = CommandExtraPerms.FindAll(cmd.Name);
             if (cmd.ExtraPerms == null)
-            {
                 extraPerms.Clear();
-            }
             if (extraPerms.Count == 0)
-            {
                 return;
-            }
             p.Message("&TExtra permissions:");
             foreach (CommandExtraPerms extra in extraPerms)
-            {
                 p.Message("{0}) {1} {2}", extra.Num, extra.Describe(), extra.Desc);
-            }
         }
         static void PrintAliases(Player p, Command cmd)
         {
             StringBuilder dst = new("Shortcuts: &T");
             if (!string.IsNullOrEmpty(cmd.Shortcut))
-            {
                 dst.Append('/').Append(cmd.Shortcut).Append(", ");
-            }
             FindAliases(Alias.coreAliases, cmd, dst);
             FindAliases(Alias.aliases, cmd, dst);
             if (dst.Length == "Shortcuts: &T".Length)
-            {
                 return;
-            }
             p.Message(dst.ToString(0, dst.Length - 2));
         }
         static void FindAliases(List<Alias> aliases, Command cmd, StringBuilder dst)
@@ -59,9 +49,7 @@ namespace MCGalaxy
             foreach (Alias a in aliases)
             {
                 if (!a.Target.CaselessEq(cmd.Name))
-                {
                     continue;
-                }
                 dst.Append('/').Append(a.Trigger);
                 if (a.Format == null)
                 {
@@ -70,9 +58,7 @@ namespace MCGalaxy
                 }
                 string name = string.IsNullOrEmpty(cmd.Shortcut) ? cmd.Name : cmd.Shortcut;
                 if (name.Length > cmd.Name.Length)
-                {
                     name = cmd.Name;
-                }
                 string args = a.Format.Replace("{args}", "[args]");
                 dst.Append(" for /").Append(name + " " + args);
                 dst.Append(", ");
@@ -84,26 +70,20 @@ namespace MCGalaxy
         {
             string alphabet = Player.USERNAME_ALPHABET + "+";
             foreach (AuthService service in AuthService.Services)
-            {
                 alphabet += service.NameSuffix;
-            }
             return IsValidName(p, name, "player", alphabet);
         }
         public static bool IsValidName(Player p, string name, string type, string alphabet)
         {
             if (name.Length > 0 && name.ContainsAllIn(alphabet))
-            {
                 return true;
-            }
             p.Message("\"{0}\" is not a valid {1} name.", name, type);
             return false;
         }
         public static bool ValidMapName(Player p, string name)
         {
             if (LevelInfo.ValidName(name))
-            {
                 return true;
-            }
             p.Message("\"{0}\" is not a valid level name.", name);
             return false;
         }
@@ -156,16 +136,12 @@ namespace MCGalaxy
         {
             nameLength = name.Length;
             if (!char.IsDigit(name[name.Length - 1]))
-            {
                 return -1;
-            }
             int decimalShift = 1, number = 0;
             for (int i = name.Length - 1; i >= 0; i--)
             {
                 if (!char.IsDigit(name[i]))
-                {
                     return number;
-                }
                 nameLength--;
                 int digit = name[i] - '0';
                 number += digit * decimalShift;

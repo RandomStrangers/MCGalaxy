@@ -42,13 +42,9 @@ namespace MCGalaxy
             {
                 ZipWriter writer = new(stream);
                 if (files)
-                {
                     SaveFiles(writer, filesList, compress);
-                }
                 if (db)
-                {
                     SaveDatabase(writer, compress);
-                }
                 writer.FinishEntries();
                 writer.WriteFooter();
                 Logger.Log(LogType.SystemActivity, "Compressed all data!");
@@ -64,30 +60,13 @@ namespace MCGalaxy
             {
                 string path = all[i];
                 path = path.Replace('\\', '/').Replace("./", "");
-                if (lite && path.Contains("extra/undo/"))
-                {
+                if (lite && path.Contains("extra/undo/") 
+                    || lite && path.Contains("extra/undoPrevious/")
+                    || lite && path.Contains("levels/prev")
+                    || lite && path.Contains("levels/backups/")
+                    || lite && path.Contains("blockdb/")
+                    || path.IndexOf('/') == -1)
                     continue;
-                }
-                if (lite && path.Contains("extra/undoPrevious/"))
-                {
-                    continue;
-                }
-                if (lite && path.Contains("levels/prev"))
-                {
-                    continue;
-                }
-                if (lite && path.Contains("levels/backups/"))
-                {
-                    continue;
-                }
-                if (lite && path.Contains("blockdb/"))
-                {
-                    continue;
-                }
-                if (path.IndexOf('/') == -1)
-                {
-                    continue;
-                }
                 paths.Add(path);
             }
             return paths;
@@ -109,9 +88,7 @@ namespace MCGalaxy
                     Logger.LogError("Failed to backup file: " + path, ex);
                 }
                 if (i == 0 || (i % 100) != 0)
-                {
                     continue;
-                }
                 Logger.Log(LogType.SystemActivity, "Backed up {0}/{1} files", i, paths.Count);
             }
         }
@@ -119,9 +96,7 @@ namespace MCGalaxy
         {
             Logger.Log(LogType.SystemActivity, "Compressing Database...");
             using (Stream src = FileIO.TryOpenRead("SQL_NAS.sql"))
-            {
                 writer.WriteEntry(src, "SQL_NAS.sql", compress);
-            }
             Logger.Log(LogType.SystemActivity, "Database compressed");
         }
         public static void Extract(Player p)
@@ -137,13 +112,9 @@ namespace MCGalaxy
                 {
                     string path = ExtractItem(reader, i, ref errors);
                     if (i > 0 && (i % 100) == 0)
-                    {
                         Logger.Log(LogType.SystemActivity, "Restored {0}/{1} files", i, entries);
-                    }
                     if (!path.CaselessEq("SQL_NAS.sql"))
-                    {
                         continue;
-                    }
                     using Stream part = reader.GetEntry(i, out path);
                     ReplaceDatabase(part);
                 }
@@ -158,9 +129,7 @@ namespace MCGalaxy
             int read = 0;
             using Stream dst = File.Create(path);
             while ((read = src.Read(buf, 0, buf.Length)) > 0)
-            {
                 dst.Write(buf, 0, read);
-            }
         }
         static string ExtractItem(ZipReader reader, int i, ref int errors)
         {
@@ -196,9 +165,7 @@ namespace MCGalaxy
             sql.WriteLine();
             List<string> tables = SQLiteBackend.Instance.AllTables();
             foreach (string name in tables)
-            {
                 BackupTable(name, sql);
-            }
         }
         public static void BackupTable(string tableName, StreamWriter sql)
         {
@@ -217,9 +184,7 @@ namespace MCGalaxy
                 BackupDatabase(new StreamWriter(backup));
             List<string> tables = SQLiteBackend.Instance.AllTables();
             foreach (string table in tables)
-            {
                 Database.DeleteTable(table);
-            }
             ImportSql(sql);
         }
         internal static void ImportSql(Stream sql)
@@ -238,9 +203,7 @@ namespace MCGalaxy
                 {
                     string cmd = NextStatement(reader, buffer);
                     if (cmd == null || cmd.Length == 0)
-                    {
                         continue;
-                    }
                     int index = cmd.ToUpper().IndexOf("CREATE TABLE");
                     if (index >= 0)
                     {
@@ -248,9 +211,7 @@ namespace MCGalaxy
                         cmd = cmd.Replace(" unsigned", " UNSIGNED");
                     }
                     if (bulk.Execute(cmd, null))
-                    {
                         continue;
-                    }
                     bulk.Commit();
                     bulk.Dispose();
                     bulk = new();
@@ -269,19 +230,13 @@ namespace MCGalaxy
             while ((line = r.ReadLine()) != null)
             {
                 if (line.StartsWith("--"))
-                {
                     continue;
-                }
                 line = line.Trim();
                 if (line.Length == 0)
-                {
                     continue;
-                }
                 buffer.Add(line);
                 if (line[line.Length - 1] == ';')
-                {
                     break;
-                }
             }
             return buffer.Join("");
         }

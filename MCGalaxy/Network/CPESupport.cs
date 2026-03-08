@@ -170,10 +170,8 @@ namespace MCGalaxy
         public static void LoadDisabledList()
         {
             supportedCount = 0;
-            foreach (CpeExtension e in All) 
-            { 
+            foreach (CpeExtension e in All)
                 e.Enabled = true;
-            }
             PropertiesFile.Read(Paths.CPEDisabledFile, ParseLine, '=');
             if (supportedCount == All.Length) return;
             try

@@ -45,18 +45,13 @@ namespace MCGalaxy.Generator
             module.Seed = args.Seed;
             MapGenBiome biome = MapGenBiome.Get(args.Biome);
             for (int z = 0; z < length; ++z)
-            {
                 for (int x = 0; x < width; ++x)
                 {
                     double noise = module.GetValue(x, 10, z);
                     int dirtHeight = (int)Math.Floor(noise * 10) + half;
                     if (dirtHeight < waterHeight)
-                    {
                         for (int y = waterHeight; y >= dirtHeight; y--)
-                        {
                             lvl.SetTile((ushort)x, (ushort)y, (ushort)z, biome.Water);
-                        }
-                    }
                     else
                     {
                         int sandHeight = (int)Math.Floor(noise * 15) + half;
@@ -69,7 +64,6 @@ namespace MCGalaxy.Generator
                         lvl.SetTile((ushort)x, (ushort)y, (ushort)z, block);
                     }
                 }
-            }
             return true;
         }
         static bool Gen3D(Player p, Level lvl, IModule module, MapGenArgs args)
@@ -80,17 +74,13 @@ namespace MCGalaxy.Generator
             MapGenBiome biome = MapGenBiome.Get(args.Biome);
             int width = lvl.Width, height = lvl.Height, length = lvl.Length;
             for (int y = 0; y < height; y++)
-            {
                 for (int z = 0; z < length; ++z)
-                {
                     for (int x = 0; x < width; ++x)
                     {
                         double value = module.GetValue(x, y, z);
                         if (value >= 0.1)
                             lvl.SetTile((ushort)x, (ushort)y, (ushort)z, biome.Surface);
                     }
-                }
-            }
             return true;
         }
         static bool Gen3DYAdjust(Player p, Level lvl, IModule module, MapGenArgs args)
@@ -101,17 +91,13 @@ namespace MCGalaxy.Generator
             MapGenBiome biome = MapGenBiome.Get(args.Biome);
             int width = lvl.Width, height = lvl.Height, length = lvl.Length;
             for (int y = 0; y < height; y++)
-            {
                 for (int z = 0; z < length; ++z)
-                {
                     for (int x = 0; x < width; ++x)
                     {
                         double value = Math.Floor((module.GetValue(x, y, z) + 2) * 10);
                         if (value > 30 * y / height)
                             lvl.SetTile((ushort)x, (ushort)y, (ushort)z, biome.Surface);
                     }
-                }
-            }
             return true;
         }
     }

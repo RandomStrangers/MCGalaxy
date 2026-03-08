@@ -143,10 +143,13 @@ namespace MCGalaxy.Commands.Building
         static string Format(ushort block, Player p, BlockProps[] props)
         {
             if (!props[block].IsMessageBlock) return null;
-            if (block == Block.MB_Black) return "black";
-            return block == Block.MB_White
+            return block switch
+            {
+                Block.MB_Black => "black",
+                _ => block == Block.MB_White
                 ? "white"
-                : block == Block.MB_Air ? "air" : block == Block.MB_Lava ? "lava" : block == Block.MB_Water ? "water" : Block.GetName(p, block);
+                : block == Block.MB_Air ? "air" : block == Block.MB_Lava ? "lava" : block == Block.MB_Water ? "water" : Block.GetName(p, block)
+            };
         }
         static List<string> SupportedBlocks(Player p)
         {

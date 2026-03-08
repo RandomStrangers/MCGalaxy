@@ -19,10 +19,7 @@ namespace MCGalaxy.Commands.Chatting
     {
         public override string Name => "Eat";
         public override string Type => CommandTypes.Chat;
-        public override void Use(Player p, string message, CommandData data)
-        {
-            Economy.GetItem("Snack").OnPurchase(p, message);
-        }
+        public override void Use(Player p, string message, CommandData data) => Economy.GetItem("Snack").OnPurchase(p, message);
         public override void Help(Player p)
         {
             SimpleItem item = (SimpleItem)Economy.GetItem("Snack");

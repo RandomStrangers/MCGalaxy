@@ -140,8 +140,7 @@ namespace MCGalaxy.Games
         public override string Name => "Penetrative missile";
         protected override bool OnHitBlock(MissileData args, Vec3U16 pos, ushort block)
         {
-            if (p.Level.LevelPhysics < 2) return true;
-            if (!p.Level.Props[block].LavaKills) return true;
+            if (p.Level.LevelPhysics < 2 || !p.Level.Props[block].LavaKills) return true;
             p.Level.Blockchange(pos.X, pos.Y, pos.Z, Block.Air);
             return false;
         }
@@ -152,13 +151,9 @@ namespace MCGalaxy.Games
         protected override void OnHitPlayer(MissileData args, Player pl)
         {
             if (pl.Level.LevelPhysics >= 3)
-            {
                 pl.HandleDeath(Block.Cobblestone, "@p &Swas blown up by " + p.ColoredName, true);
-            }
             else
-            {
                 base.OnHitPlayer(args, pl);
-            }
         }
         protected override bool OnHitBlock(MissileData args, Vec3U16 pos, ushort block)
         {

@@ -8,9 +8,7 @@ namespace MCGalaxy.Generator.Classic
         public ImprovedNoise(JavaRandom rnd)
         {
             for (int i = 0; i < 256; i++)
-            {
                 p[i] = (byte)i;
-            }
             for (int i = 0; i < 256; i++)
             {
                 byte temp;
@@ -20,9 +18,7 @@ namespace MCGalaxy.Generator.Classic
                 p[j] = temp;
             }
             for (int i = 0; i < 256; i++)
-            {
                 p[i + 256] = p[i];
-            }
         }
         public double Compute(double x, double y)
         {
@@ -55,9 +51,7 @@ namespace MCGalaxy.Generator.Classic
         {
             baseNoise = new ImprovedNoise[octaves];
             for (int i = 0; i < octaves; i++)
-            {
                 baseNoise[i] = new ImprovedNoise(rnd);
-            }
         }
         public double Compute(double x, double y)
         {

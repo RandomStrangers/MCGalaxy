@@ -33,9 +33,7 @@ namespace MCGalaxy
             cyc.minutes = minutes;
             cyc.cycle = cycle;
             if (!File.Exists(TimeFilePath))
-            {
                 File.Create(TimeFilePath).Dispose();
-            }
             using StreamWriter sw = new(TimeFilePath);
             using JsonWriter writer = new JsonTextWriter(sw);
             serializer.Serialize(writer, cyc);
@@ -74,25 +72,15 @@ namespace MCGalaxy
                 dayCycle++;
             }
             if (cycleCurrentTime >= 7 * hourMinutes & cycleCurrentTime < 8 * hourMinutes)
-            {
                 dayCycle = NASDayCycles.Sunrise;
-            }
             if (cycleCurrentTime >= 8 * hourMinutes & cycleCurrentTime < 19 * hourMinutes)
-            {
                 dayCycle = NASDayCycles.Day;
-            }
             if (cycleCurrentTime >= 19 * hourMinutes & cycleCurrentTime < 20 * hourMinutes)
-            {
                 dayCycle = NASDayCycles.Sunset;
-            }
             if (cycleCurrentTime >= 20 * hourMinutes & cycleCurrentTime < 24 * hourMinutes)
-            {
                 dayCycle = NASDayCycles.Night;
-            }
             if (cycleCurrentTime == 24 * hourMinutes | cycleCurrentTime == 0 | cycleCurrentTime < 7 * hourMinutes)
-            {
                 dayCycle = NASDayCycles.Midnight;
-            }
             switch (dayCycle)
             {
                 case NASDayCycles.Sunrise:
@@ -135,67 +123,45 @@ namespace MCGalaxy
             foreach (Level lvl in LevelInfo.Loaded.Items)
             {
                 NASLevel nl = NASLevel.Get(lvl);
-                if (nl != null)
+                if (nl != null && nl.biome >= 0)
                 {
-                    if (nl.biome >= 0)
+                    if (lvl.Config.LightColor != sun)
                     {
-                        if (lvl.Config.LightColor != sun)
-                        {
-                            changed = true;
-                            lvl.Config.LightColor = sun;
-                        }
-                        if (lvl.Config.CloudColor != cloud)
-                        {
-                            changed = true;
-                            lvl.Config.CloudColor = cloud;
-                        }
-                        if (lvl.Config.SkyColor != sky)
-                        {
-                            changed = true;
-                            lvl.Config.SkyColor = sky;
-                        }
-                        if (lvl.Config.ShadowColor != shadow)
-                        {
-                            changed = true;
-                            lvl.Config.ShadowColor = shadow;
-                        }
-                        if (changed)
-                        {
-                            lvl.SaveSettings();
-                        }
+                        changed = true;
+                        lvl.Config.LightColor = sun;
                     }
+                    if (lvl.Config.CloudColor != cloud)
+                    {
+                        changed = true;
+                        lvl.Config.CloudColor = cloud;
+                    }
+                    if (lvl.Config.SkyColor != sky)
+                    {
+                        changed = true;
+                        lvl.Config.SkyColor = sky;
+                    }
+                    if (lvl.Config.ShadowColor != shadow)
+                    {
+                        changed = true;
+                        lvl.Config.ShadowColor = shadow;
+                    }
+                    if (changed)
+                        lvl.SaveSettings();
                 }
             }
             foreach (Player p in PlayerInfo.Online.Items)
             {
                 NASLevel nl = NASLevel.Get(p.Level);
-                if (nl != null)
+                if (nl != null && nl.biome >= 0 && changed && p.Supports(CpeExt.EnvColors))
                 {
-                    if (nl.biome >= 0)
-                    {
-                        if (changed)
-                        {
-                            if (p.Supports(CpeExt.EnvColors))
-                            {
-                                if (Colors.TryParseHex(sky, out ColorDesc c))
-                                {
-                                    p.Send(Packet.EnvColor(0, c.R, c.G, c.B));
-                                }
-                                if (Colors.TryParseHex(cloud, out c))
-                                {
-                                    p.Send(Packet.EnvColor(1, c.R, c.G, c.B));
-                                }
-                                if (Colors.TryParseHex(shadow, out c))
-                                {
-                                    p.Send(Packet.EnvColor(3, c.R, c.G, c.B));
-                                }
-                                if (Colors.TryParseHex(sun, out c))
-                                {
-                                    p.Send(Packet.EnvColor(4, c.R, c.G, c.B));
-                                }
-                            }
-                        }
-                    }
+                    if (Colors.TryParseHex(sky, out ColorDesc c))
+                        p.Send(Packet.EnvColor(0, c.R, c.G, c.B));
+                    if (Colors.TryParseHex(cloud, out c))
+                        p.Send(Packet.EnvColor(1, c.R, c.G, c.B));
+                    if (Colors.TryParseHex(shadow, out c))
+                        p.Send(Packet.EnvColor(3, c.R, c.G, c.B));
+                    if (Colors.TryParseHex(sun, out c))
+                        p.Send(Packet.EnvColor(4, c.R, c.G, c.B));
                 }
             }
         }
