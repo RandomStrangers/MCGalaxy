@@ -121,17 +121,9 @@ namespace MCGalaxy
             Server.DoGC();
             return true;
         }
-        public static NASLevel Get(string name)
-        {
-            if (all.ContainsKey(name))
-                return all[name];
-            else
-            {
-                NASLevel nl = new();
-                string fileName = GetFileName(name);
-                return File.Exists(fileName) ? JsonConvert.DeserializeObject<NASLevel>(FileIO.TryReadAllText(fileName)) : nl;
-            }
-        }
+        public static NASLevel Get(string name) => all.ContainsKey(name)
+                ? all[name]
+                : File.Exists(GetFileName(name)) ? JsonConvert.DeserializeObject<NASLevel>(FileIO.TryReadAllText(GetFileName(name))) : new();
         public static void Unload(string name, NASLevel nl) => nl.Save(name);
         public static int MakeInt(string seed)
         {
@@ -149,8 +141,7 @@ namespace MCGalaxy
             string fileName = GetFileName(lvl.name);
             if (File.Exists(fileName))
             {
-                string jsonString = FileIO.TryReadAllText(fileName);
-                nl = JsonConvert.DeserializeObject<NASLevel>(jsonString);
+                nl = JsonConvert.DeserializeObject<NASLevel>(FileIO.TryReadAllText(fileName));
                 nl.lvl = lvl;
                 if (!all.ContainsKey(lvl.name))
                     all.Add(lvl.name, nl);
@@ -183,10 +174,7 @@ namespace MCGalaxy
         {
             string fileName = Path + srcMap + Extension;
             if (File.Exists(fileName))
-            {
-                string newFileName = Path + dstMap + Extension;
-                FileIO.TryMove(fileName, newFileName);
-            }
+                FileIO.TryMove(fileName, Path + dstMap + Extension);
         }
         public void BeginTickTask()
         {

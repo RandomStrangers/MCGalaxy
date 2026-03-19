@@ -51,17 +51,11 @@ namespace MCGalaxy.Commands.World
             }
             string opt = args[2];
             if (opt.CaselessEq("copy"))
-            {
                 CopyProps(p, scope, block, args);
-            }
             else if (opt.CaselessEq("reset") || IsDeleteAction(opt))
-            {
                 ResetProps(p, scope, block);
-            }
             else
-            {
                 SetProps(p, scope, block, args);
-            }
         }
         static BlockProps[] GetScope(Player p, CommandData data, string scope)
         {
@@ -80,12 +74,10 @@ namespace MCGalaxy.Commands.World
         }
         static ushort GetBlock(Player p, BlockProps[] scope, string str)
         {
-            Player pScope = scope == Block.Props ? Player.Console : p;
+            Player pScope = scope == Block.Props ? Player.NASConsole : p;
             ushort block = Block.Parse(pScope, str);
             if (block == Block.Invalid)
-            {
                 p.Message("&WThere is no block \"{0}\".", str);
-            }
             return block;
         }
         internal static void Detail(Player p, BlockProps[] scope, ushort block)
@@ -106,25 +98,17 @@ namespace MCGalaxy.Commands.World
             if (props.OPBlock) p.Message("  Is not affected by explosions");
             if (props.IsRails) p.Message("  Can be used as rails for &T/Train");
             if (props.AnimalAI != AnimalAI.None)
-            {
                 p.Message("  Has the {0} AI behaviour", props.AnimalAI);
-            }
             if (props.StackBlock != Block.Air)
-            {
                 p.Message("  Stacks as {0} when placed on top of itself",
                           BlockProps.ScopedName(scope, p, props.StackBlock));
-            }
             if (props.Drownable) p.Message("&H  Players can drown in this block");
             if (props.GrassBlock != Block.Invalid)
-            {
                 p.Message("  Grows into {0} when in sunlight",
                           BlockProps.ScopedName(scope, p, props.GrassBlock));
-            }
             if (props.DirtBlock != Block.Invalid)
-            {
                 p.Message("  Decays into {0} when in shadow",
                           BlockProps.ScopedName(scope, p, props.DirtBlock));
-            }
         }
         static List<ushort> FilterProps(BlockProps[] scope)
         {
@@ -203,13 +187,9 @@ namespace MCGalaxy.Commands.World
             }
             BlockOption opt = BlockOptions.Find(message);
             if (opt != null)
-            {
                 p.Message(opt.Help);
-            }
             else
-            {
                 p.Message("&WUnrecognised property \"{0}\"", message);
-            }
         }
     }
 }

@@ -30,21 +30,21 @@ using System.Net;
 using System.Threading;
 namespace MCGalaxy
 {
-    sealed class ConsolePlayer : Player
+    sealed class NASConsolePlayer : Player
     {
-        public ConsolePlayer() : base("(console)")
+        public NASConsolePlayer() : base("(NAS)")
         {
-            group = Group.ConsoleRank;
+            group = Group.NASConsoleRank;
             color = "&S";
-            SuperName = "Console";
+            SuperName = "NAS";
         }
-        public override string FullName => "Console [&a" + Server.Config.ConsoleName + "&S]";
-        public override void Message(string message) => Logger.Log(LogType.ConsoleMessage, message);
+        public override string FullName => "NAS [&a" + Server.Config.NASName + "&S]";
+        public override void Message(string message) => Logger.Log(LogType.NASConsoleMessage, message);
     }
     public partial class Player : Entity, IDisposable
     {
         static int sessionCounter;
-        public static Player Console = new ConsolePlayer();
+        public static Player NASConsole = new NASConsolePlayer();
         public Player(string playername)
         {
             name = playername;
@@ -272,10 +272,10 @@ namespace MCGalaxy
         internal byte UserType() => group.CanPlace[7] ? (byte)100 : (byte)0;
         #endregion
         /// <summary> Returns whether the player is currently allowed to talk. </summary>
-        public bool CanSpeak() => IsConsole || (!muted && !Unverified && (voice || !Server.chatmod));
+        public bool CanSpeak() => IsNASConsole || (!muted && !Unverified && (voice || !Server.chatmod));
         public bool CheckCanSpeak(string action)
         {
-            if (IsConsole) return true;
+            if (IsNASConsole) return true;
             if (muted)
             {
                 Message("Cannot {0} &Swhile muted", action);

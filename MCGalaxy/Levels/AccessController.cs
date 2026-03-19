@@ -247,7 +247,7 @@ namespace MCGalaxy
             Update(lvl);
             Logger.Log(LogType.UserActivity, "{0} &Son {1}", msg, lvlName);
             lvl?.Message("<Local>" + msg);
-            if (p != Player.Console && p.Level != lvl)
+            if (p != Player.NASConsole && p.Level != lvl)
                 p.Message("{0} &Son {1} &Sby you.", msg, ColoredName);
         }
         void Update(Level lvl)

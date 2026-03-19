@@ -27,13 +27,9 @@ namespace MCGalaxy
     public enum LevelPermission
     {
         Banned = -20, Guest = 0, Builder = 30, AdvBuilder = 50,
-        Operator = 80, Admin = 100, Owner = 120, Console = 127,
+        Operator = 80, Admin = 100, Owner = 120, NASConsole = 127,
         Null = 150
     }
-    public enum BuildType
-    {
-        Normal, ModifyOnly, NoModify
-    };
     public sealed partial class Level : IDisposable
     {
         public Level(string name, ushort width, ushort height, ushort length) => Init(name, width, height, length);
@@ -104,10 +100,10 @@ namespace MCGalaxy
         }
         public bool CanJoin(Player p)
         {
-            if (p.IsConsole || this == Server.mainLevel)
+            if (p.IsNASConsole || this == Server.mainLevel)
                 return true;
             bool skip = p.summonedMap != null && p.summonedMap.CaselessEq(name);
-            LevelPermission plRank = skip ? LevelPermission.Console : p.Rank;
+            LevelPermission plRank = skip ? LevelPermission.NASConsole : p.Rank;
             if (!VisitAccess.CheckDetailed(p, plRank))
                 return false;
             if (Server.lockdown.Contains(name))
@@ -311,7 +307,7 @@ namespace MCGalaxy
                 if (lvl.Config.Load(propsPath))
                     lvl.SetPhysics(lvl.Config.Physics);
                 else
-                    Logger.Log(LogType.ConsoleMessage, ".properties file for level {0} was not found.", lvl.MapName);
+                    Logger.Log(LogType.NASConsoleMessage, ".properties file for level {0} was not found.", lvl.MapName);
             }
             catch (Exception e)
             {

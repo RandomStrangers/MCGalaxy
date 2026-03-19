@@ -15,29 +15,19 @@ namespace MCGalaxy
             {
                 blockStacks = new();
                 foreach (NASBlockStack bs in parent.blockStacks)
-                {
-                    NASBlockStack bsClone = new(bs.ID, bs.amount);
-                    blockStacks.Add(bsClone);
-                }
+                    blockStacks.Add(new(bs.ID, bs.amount));
             }
             if (parent.items != null)
             {
                 items = new();
                 foreach (NASItem item in parent.items)
-                {
-                    NASItem itemClone = new(item.name);
-                    items.Add(itemClone);
-                }
+                    items.Add(new(item.name));
             }
         }
-        public NASDrop(ushort clientushort, int amount = 1)
-        {
-            NASBlockStack bs = new(clientushort, amount);
-            blockStacks = new()
+        public NASDrop(ushort clientushort, int amount = 1) => blockStacks = new()
             {
-                bs
+                new(clientushort, amount)
             };
-        }
         public NASDrop(NASItem item) => items = new()
             {
                 item

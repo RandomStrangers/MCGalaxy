@@ -39,17 +39,11 @@ namespace MCGalaxy
                                                  string plName, LevelPermission plRank,
                                                  string action, bool canAffectOwnRank)
         {
-            if (p.name.CaselessEq(plName)) return true;
-            if (p.IsConsole || plRank < data.Rank) return true;
-            if (canAffectOwnRank && plRank == data.Rank) return true;
+            if (p.name.CaselessEq(plName) || p.IsNASConsole || plRank < data.Rank || canAffectOwnRank && plRank == data.Rank) return true;
             if (canAffectOwnRank)
-            {
                 p.Message("Can only {0} players ranked {1} &Sor below", action, p.group.ColoredName);
-            }
             else
-            {
                 p.Message("Can only {0} players ranked below {1}", action, p.group.ColoredName);
-            }
             return false;
         }
         public string CheckOwn(Player p, string name, string type)

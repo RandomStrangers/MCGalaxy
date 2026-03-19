@@ -664,7 +664,6 @@ namespace MCGalaxy
                                                 }
                                                 break;
                                         }
-
                                         break;
                                     }
                             }

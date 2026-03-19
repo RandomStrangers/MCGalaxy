@@ -157,7 +157,6 @@ namespace MCGalaxy
                 return;
             }
             Help(np.p);
-            return;
         }
         public override void Help(Player p)
         {
@@ -180,13 +179,11 @@ namespace MCGalaxy
             {
                 np.Message("HasBeenSpawned set to false. Use &T/NASSpawn &Hto turn it back on.");
                 np.hasBeenSpawned = false;
-                return;
             }
             else if (!np.hasBeenSpawned)
             {
                 np.hasBeenSpawned = true;
                 np.Message("HasBeenSpawned set to true.");
-                return;
             }
         }
         public override void Help(Player p) => p.Message("&T/NASSpawn &H- Toggles HasBeenSpawned");
@@ -201,11 +198,7 @@ namespace MCGalaxy
             np.Message("Generating dungeon.");
             NASGen.GenerateDungeon(np, np.p.Pos.BlockCoords.X, np.p.Pos.BlockCoords.Y, np.p.Pos.BlockCoords.Z, np.p.Level, NASLevel.Get(np.p.Level.name));
         }
-        public override void Help(Player p)
-        {
-            p.Message("&T/SpawnDungeon");
-            p.Message("&HGenerates a dungeon.");
-        }
+        public override void Help(Player p) => p.Message("&T/SpawnDungeon &H- Generates a dungeon.");
     }
     public class CmdBarrelMode : NASCommand
     {
@@ -223,11 +216,7 @@ namespace MCGalaxy
                 np.oldBarrel = true;
             }
         }
-        public override void Help(Player p)
-        {
-            p.Message("&T/BarrelMode");
-            p.Message("&HToggles how you enter items into barrels.");
-        }
+        public override void Help(Player p) => p.Message("&T/BarrelMode &H- Toggles how you enter items into barrels.");
     }
     public enum NASDamageSource
     {
@@ -294,9 +283,7 @@ namespace MCGalaxy
             set
             {
                 if (!value)
-                {
                     datePositionCheckingIsAllowed = DateTime.UtcNow.AddMilliseconds(2000 + p.Session.Ping.HighestPing());
-                }
             }
         }
         public void Message(string message, params object[] args) => p.Message(string.Format(message, args));
@@ -312,11 +299,7 @@ namespace MCGalaxy
         public void Save()
         {
             if (this != null)
-            {
-                string jsonString = JsonConvert.SerializeObject(this, Formatting.Indented);
-                FileIO.TryWriteAllText(NAS.GetSavePath(p), jsonString);
-                FileIO.TryWriteAllText(NAS.GetTextPath(p), jsonString);
-            }
+                FileIO.TryWriteAllText(NAS.GetSavePath(p), JsonConvert.SerializeObject(this, Formatting.Indented));
         }
         public void SetLocation(string levelName, Position pos, Orientation rot)
         {

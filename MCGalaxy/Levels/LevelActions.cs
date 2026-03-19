@@ -359,7 +359,7 @@ namespace MCGalaxy
             lvl.MapName = mapName;
             lvl.IsMuseum = true;
             Level.LoadMetadata(lvl);
-            lvl.BuildAccess.Min = LevelPermission.Console;
+            lvl.BuildAccess.Min = LevelPermission.NASConsole;
             lvl.Config.Physics = 0;
             return lvl;
         }

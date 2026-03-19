@@ -69,6 +69,8 @@ namespace MCGalaxy.Util.Imaging
                     ReadQuantisationTables(src);
                 else if (marker == 0xFFC0)
                     ReadFrameStart(src, bmp);
+                else if (marker == 0xFFC2)
+                    Fail("Progressive JPEGs unsupported");
                 else if (marker == 0xFFDA)
                 {
                     ReadScanStart(src);

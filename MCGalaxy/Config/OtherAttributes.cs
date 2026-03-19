@@ -52,10 +52,10 @@ namespace MCGalaxy.Config
                 Logger.Log(LogType.Warning, "Config key \"{0}\" cannot be below banned rank.", Name);
                 perm = LevelPermission.Banned;
             }
-            if (perm > LevelPermission.Console)
+            if (perm > LevelPermission.NASConsole)
             {
-                Logger.Log(LogType.Warning, "Config key \"{0}\" cannot be above console rank.", Name);
-                perm = LevelPermission.Console;
+                Logger.Log(LogType.Warning, "Config key \"{0}\" cannot be above NAS rank.", Name);
+                perm = LevelPermission.NASConsole;
             }
             return perm;
         }

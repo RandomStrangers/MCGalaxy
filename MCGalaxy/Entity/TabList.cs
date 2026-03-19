@@ -22,7 +22,7 @@ namespace MCGalaxy
         public static void Add(Player dst, Player p)
         {
             if (!dst.hasExtList) return;
-            byte grpPerm = (byte)(LevelPermission.Console - p.Rank);
+            byte grpPerm = (byte)(LevelPermission.NASConsole - p.Rank);
             if (!Server.Config.TablistRankSorted) grpPerm = 1;
             GetEntry(p, dst, out string name, out string group);
             name = Colors.Escape(name);

@@ -90,7 +90,7 @@ namespace MCGalaxy
             }
             AccessController visitAccess = new LevelAccessController(cfg, map, true);
             bool skip = p.summonedMap != null && p.summonedMap.CaselessEq(map);
-            LevelPermission plRank = skip ? LevelPermission.Console : p.Rank;
+            LevelPermission plRank = skip ? LevelPermission.NASConsole : p.Rank;
             if (!visitAccess.CheckDetailed(p, plRank)) return false;
             LevelActions.Load(p, map, false);
             Level lvl = LevelInfo.FindExact(map);

@@ -73,7 +73,7 @@ namespace MCGalaxy
         public LevelPermission hideRank = LevelPermission.Banned;
         public float ReachDistance = 5;
         public readonly bool IsSuper;
-        public bool IsConsole => this == Console;
+        public bool IsNASConsole => this == NASConsole;
         public virtual string FullName => color + prefix + DisplayName;
         public string ColoredName => color + DisplayName;
         public string GroupPrefix => group.Prefix.Length == 0 ? "" : "&f" + group.Prefix;

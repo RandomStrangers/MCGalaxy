@@ -49,11 +49,17 @@ namespace MCGalaxy
         public bool Contains(TItem item) => item == null ? _nullNodesCache.Count > 0 : _itemToNodesCache.ContainsKey(item);
         public TItem Dequeue()
         {
-            if (_queue.Count <= 0)
-                throw new InvalidOperationException("Cannot call Dequeue() on an empty queue");
-            SimpleNode node = _queue.Dequeue();
-            RemoveFromNodeCache(node);
-            return node.Data;
+            switch (_queue.Count)
+            {
+                case <= 0:
+                    throw new InvalidOperationException("Cannot call Dequeue() on an empty queue");
+                default:
+                    {
+                        SimpleNode node = _queue.Dequeue();
+                        RemoveFromNodeCache(node);
+                        return node.Data;
+                    }
+            }
         }
         public SimpleNode EnqueueNoLockOrCache(TItem item, TPriority priority)
         {

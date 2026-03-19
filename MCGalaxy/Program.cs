@@ -24,24 +24,16 @@ namespace MCGalaxy
         static void HandleChat(string text)
         {
             if (text != null)
-            {
                 text = text.Trim();
-            }
-            if (string.IsNullOrEmpty(text))
-            {
+            if (string.IsNullOrEmpty(text) || ChatModes.Handle(Player.NASConsole, text))
                 return;
-            }
-            if (ChatModes.Handle(Player.Console, text))
-            {
-                return;
-            }
-            Chat.MessageChat(ChatScope.Global, Player.Console, "λFULL: &f" + text, null, null, true);
+            Chat.MessageChat(ChatScope.Global, Player.NASConsole, "λFULL: &f" + text, null, null, true);
         }
         static void RepeatCommand()
         {
             if (lastCMD.Length == 0)
             {
-                Logger.Log(LogType.CommandUsage, "(console): Cannot repeat command - no commands used yet.");
+                Logger.Log(LogType.CommandUsage, "{0}: Cannot repeat command - no commands used yet.", Player.NASConsole.name);
                 return;
             }
             Logger.Log(LogType.CommandUsage, "Repeating &T/" + lastCMD);
@@ -50,55 +42,50 @@ namespace MCGalaxy
         static void HandleCommand(string text)
         {
             if (text != null)
-            {
                 text = text.Trim();
-            }
             if (string.IsNullOrEmpty(text))
             {
-                Logger.Log(LogType.CommandUsage, "(console): Whitespace commands are not allowed.");
+                Logger.Log(LogType.CommandUsage, "{0}: Whitespace commands are not allowed.", Player.NASConsole.name);
                 return;
             }
             if (text[0] == '/' && text.Length > 1)
-            {
                 text = text.Substring(1);
-            }
             lastCMD = text;
             text.Separate(' ', out string name, out string args);
             if (name.CaselessEq("exit"))
-            {
                 Environment.Exit(0);
-            }
             Command.Search(ref name, ref args);
             Command cmd = Command.Find(name);
             if (cmd == null)
             {
-                Logger.Log(LogType.CommandUsage, "(console): Unknown command \"{0}\"", name);
+                Logger.Log(LogType.CommandUsage, "{0}: Unknown command \"{1}\"", Player.NASConsole.name, name);
                 return;
             }
             if (!cmd.SuperUseable)
             {
-                Logger.Log(LogType.CommandUsage, "(console): /{0} can only be used in-game.", cmd.Name);
+                Logger.Log(LogType.CommandUsage, "{0}: /{1} can only be used in-game.", Player.NASConsole.name, cmd.Name);
                 return;
             }
-            Utils.StartBackgroundThread("ConsoleCMD_" + name,
+            Utils.StartBackgroundThread("NASCMD_" + name,
                 () =>
                 {
                     try
                     {
-                        cmd.Use(Player.Console, args);
-                        if (args.Length == 0)
+                        cmd.Use(Player.NASConsole, args);
+                        switch (args.Length)
                         {
-                            Logger.Log(LogType.CommandUsage, "(console) used /" + cmd.Name);
-                        }
-                        else
-                        {
-                            Logger.Log(LogType.CommandUsage, "(console) used /" + cmd.Name + " " + args);
+                            case 0:
+                                Logger.Log(LogType.CommandUsage, "{0} used /" + cmd.Name, Player.NASConsole.name);
+                                break;
+                            default:
+                                Logger.Log(LogType.CommandUsage, "{0} used /" + cmd.Name + " " + args, Player.NASConsole.name);
+                                break;
                         }
                     }
                     catch (Exception ex)
                     {
                         Logger.LogError(ex);
-                        Logger.Log(LogType.CommandUsage, "(console): FAILED COMMAND");
+                        Logger.Log(LogType.CommandUsage, "{0}: FAILED COMMAND", Player.NASConsole.name);
                     }
                 });
         }
@@ -124,18 +111,12 @@ namespace MCGalaxy
             for (int i = start; i < message.Length; i++)
             {
                 if (message[i] != '&')
-                {
                     continue;
-                }
                 if (i == message.Length - 1)
-                {
                     return -1;
-                }
                 char col = Colors.Lookup(message[i + 1]);
                 if (col != '\0')
-                {
                     return i;
-                }
             }
             return -1;
         }
@@ -150,6 +131,7 @@ namespace MCGalaxy
             catch
             {
                 Console.Out.WriteLine("Failed to set working directory to '{0}', running in current directory..", path);
+                Console.Out.Flush();
             }
             FileLogger.Init();
             AppDomain.CurrentDomain.UnhandledException += GlobalExHandler;
@@ -174,8 +156,7 @@ namespace MCGalaxy
             {
                 case ConsoleSpecialKey.ControlBreak:
                     Write("&e-- Server shutdown (Ctrl+Break) --");
-                    Thread stopThread = Server.Stop(false, Server.Config.DefaultShutdownMessage);
-                    stopThread.Join();
+                    Server.Stop(false, Server.Config.DefaultShutdownMessage).Join();
                     break;
                 case ConsoleSpecialKey.ControlC:
                     e.Cancel = true;
@@ -190,15 +171,12 @@ namespace MCGalaxy
             FileLogger.Flush(null);
             Thread.Sleep(500);
             if (Server.Config.restartOnError)
-            {
-                Thread stopThread = Server.Stop(true, "Server restart - unhandled error");
-                stopThread.Join();
-            }
+                Server.Stop(true, "Server restart - unhandled error").Join();
         }
         static void GlobalExHandler(object sender, UnhandledExceptionEventArgs e) => LogAndRestart((Exception)e.ExceptionObject);
         static void LogMessage(LogType type, string message)
         {
-            if (Server.Config.ConsoleLogging[(int)type])
+            if (Server.Config.NASLogging[(int)type])
             {
                 switch (type)
                 {
@@ -221,9 +199,7 @@ namespace MCGalaxy
         {
             int beg = raw.IndexOf(Environment.NewLine + "Message: ");
             if (beg == -1)
-            {
                 return "";
-            }
             beg += (Environment.NewLine + "Message: ").Length;
             int end = raw.IndexOf(Environment.NewLine, beg);
             return end == -1 ? "" : " (" + raw.Substring(beg, end - beg) + ")";
@@ -258,17 +234,11 @@ namespace MCGalaxy
                     }
                     msg = msg.Trim();
                     if (msg == "/")
-                    {
                         RepeatCommand();
-                    }
                     else if (msg.Length > 0 && msg[0] == '/')
-                    {
                         HandleCommand(msg.Substring(1));
-                    }
                     else
-                    {
                         HandleChat(msg);
-                    }
                 }
                 catch (UnauthorizedAccessException)
                 {
@@ -292,29 +262,28 @@ namespace MCGalaxy
                 char curCol = col;
                 string part = OutputPart(ref col, ref index, message);
                 if (part.Length == 0)
-                {
                     continue;
-                }
                 ConsoleColor color = GetConsoleColor(curCol);
-                if (color == ConsoleColor.White)
+                switch (color)
                 {
-                    Console.ResetColor();
-                }
-                else
-                {
-                    Console.ForegroundColor = color;
+                    case ConsoleColor.White:
+                        Console.ResetColor();
+                        break;
+                    default:
+                        Console.ForegroundColor = color;
+                        break;
                 }
                 Console.Out.Write(part);
+                Console.Out.Flush();
             }
             Console.ResetColor();
             Console.Out.WriteLine();
+            Console.Out.Flush();
         }
         static ConsoleColor GetConsoleColor(char c)
         {
             if (c == 'S')
-            {
                 return ConsoleColor.White;
-            }
             Colors.Map(ref c);
             switch (c)
             {
@@ -352,9 +321,7 @@ namespace MCGalaxy
                     return ConsoleColor.White;
                 default:
                     if (!Colors.IsDefined(c))
-                    {
                         return ConsoleColor.White;
-                    }
                     return GetConsoleColor(Colors.Get(c).Fallback);
             }
         }

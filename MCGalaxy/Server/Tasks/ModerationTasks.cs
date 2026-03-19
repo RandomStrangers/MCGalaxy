@@ -34,16 +34,16 @@ namespace MCGalaxy.Tasks
         internal static void TemprankCalcNextRun() => CalcNextRun(temprankTask, Server.tempRanks);
         static void TemprankCallback(string[] args)
         {
-            CmdTempRank.Delete(Player.Console, args[0], Player.Console.DefaultCmdData);
+            CmdTempRank.Delete(Player.NASConsole, args[0], Player.NASConsole.DefaultCmdData);
             if (Server.tempRanks.Remove(args[0]))
                 Server.tempRanks.Save();
         }
         internal static void FreezeCheckTask(SchedulerTask task) => DoTask(task, Server.frozen, FreezeCallback);
         internal static void FreezeCalcNextRun() => CalcNextRun(freezeTask, Server.frozen);
-        static void FreezeCallback(string[] args) => OnModActionEvent.Call(new(args[0], Player.Console, ModActionType.Unfrozen, "auto unfreeze"));
+        static void FreezeCallback(string[] args) => OnModActionEvent.Call(new(args[0], Player.NASConsole, ModActionType.Unfrozen, "auto unfreeze"));
         internal static void MuteCheckTask(SchedulerTask task) => DoTask(task, Server.muted, MuteCallback);
         internal static void MuteCalcNextRun() => CalcNextRun(muteTask, Server.muted);
-        static void MuteCallback(string[] args) => OnModActionEvent.Call(new(args[0], Player.Console, ModActionType.Unmuted, "auto unmute"));
+        static void MuteCallback(string[] args) => OnModActionEvent.Call(new(args[0], Player.NASConsole, ModActionType.Unmuted, "auto unmute"));
         static void DoTask(SchedulerTask task, PlayerExtList list, Action<string[]> callback)
         {
             List<string> lines = list.AllLines();

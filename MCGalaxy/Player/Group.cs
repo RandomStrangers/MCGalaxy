@@ -26,8 +26,8 @@ namespace MCGalaxy
     {
         public static Group BannedRank => Find(LevelPermission.Banned);
         public static Group GuestRank => Find(LevelPermission.Guest);
-        public static Group DefaultRank;
-        public static Group ConsoleRank = new(LevelPermission.Console, int.MaxValue, TimeSpan.MaxValue, "Console", "&0", int.MaxValue, int.MaxValue);
+        public static Group DefaultRank,
+            NASConsoleRank = new(LevelPermission.NASConsole, int.MaxValue, TimeSpan.MaxValue, "NAS", "&0", int.MaxValue, int.MaxValue);
         public static List<Group> GroupList = new();
         public static List<Group> AllRanks = new();
         static bool reloading;
@@ -65,14 +65,13 @@ namespace MCGalaxy
         public Group() { }
         private Group(LevelPermission perm, int drawLimit, TimeSpan undoMins, string name, string color, int volume, int realms)
         {
-            int afkMins = perm <= LevelPermission.AdvBuilder ? 45 : 60;
             Permission = perm;
             DrawLimit = drawLimit;
             MaxUndo = undoMins;
             Name = name;
             Color = color;
             GenVolume = volume;
-            AfkKickTime = TimeSpan.FromMinutes(afkMins);
+            AfkKickTime = TimeSpan.FromMinutes(perm <= LevelPermission.AdvBuilder ? 45 : 60);
             OverseerMaps = realms;
         }
         public static Group Find(string name)
@@ -86,7 +85,7 @@ namespace MCGalaxy
         {
             if (name.CaselessEq("op")) name = "operator";
         }
-        public static Group Find(LevelPermission perm) => perm == LevelPermission.Console ? ConsoleRank : GroupList.Find(grp => grp.Permission == perm);
+        public static Group Find(LevelPermission perm) => perm == LevelPermission.NASConsole ? NASConsoleRank : GroupList.Find(grp => grp.Permission == perm);
         public static Group GroupIn(string playerName)
         {
             foreach (Group grp in GroupList)
@@ -145,7 +144,7 @@ namespace MCGalaxy
             DefaultRank ??= GuestRank;
             AllRanks.Clear();
             AllRanks.AddRange(GroupList);
-            AllRanks.Add(ConsoleRank);
+            AllRanks.Add(NASConsoleRank);
             OnGroupLoadEvent.Call();
             reloading = true;
             SaveAll(GroupList);
@@ -230,9 +229,9 @@ namespace MCGalaxy
         static void AddGroup(Group temp)
         {
             string name = temp.Name;
-            if (name.CaselessEq("op") || name.CaselessEq("Console"))
+            if (name.CaselessEq("op") || name.CaselessEq("NAS"))
             {
-                Logger.Log(LogType.Warning, "Cannot have a rank named 'op' or 'console'", name);
+                Logger.Log(LogType.Warning, "Cannot have a rank named 'op' or 'NAS'", name);
                 temp.Name = "RENAMED_" + name;
             }
             else if (Find(name) != null)

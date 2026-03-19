@@ -1,4 +1,4 @@
-/*
+﻿/*
     Copyright 2015-2024 MCGalaxy
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -49,15 +49,7 @@ namespace MCGalaxy
         [ConfigUShort] public ushort BackTex;
         [ConfigInt(null, null, -1, -1)]
         public int InventoryOrder = -1;
-        /// <summary>
-        /// 0-15 value for how far this block casts light (for fancy lighting option).
-        /// -1 means this property has not been set by the user before
-        /// </summary>
         [ConfigInt(null, null, -1, -1, 15)] public int Brightness = -1;
-        /// <summary>
-        /// Does this block use the lamplight environment color for light casting? (for fancy lighting option)
-        /// If false, uses the lavalight environment color
-        /// </summary>
         [ConfigBool] public bool UseLampBrightness;
         public ushort GetBlock() => Block.FromRaw(RawID);
         public void SetBlock(ushort b) => RawID = Block.ToRaw(b);
@@ -125,25 +117,12 @@ namespace MCGalaxy
                     if (string.IsNullOrEmpty(def.Name)) continue;
                     ushort block = def.GetBlock();
                     if (block >= defs.Length)
-                    {
                         Logger.Log(LogType.Warning, "Invalid block ID: " + def.RawID);
-                    }
                     else
-                    {
                         defs[block] = def;
-                    }
                     def.FallBack = Math.Min(def.FallBack, (byte)65);
                     if (def.Brightness == -1)
-                    {
-                        if (def.FullBright) 
-                        {
-                            def.Brightness = 15; 
-                        }
-                        else 
-                        { 
-                            def.Brightness = 0; 
-                        }
-                    }
+                        def.Brightness = def.FullBright ? 15 : 0;
                 }
             }
             catch (Exception ex)
@@ -152,7 +131,12 @@ namespace MCGalaxy
             }
             return defs;
         }
-        public static void Save(bool global, Level lvl) => Save(global, global ? GlobalDefs : lvl.CustomBlockDefs, global ? "blockdefs/global.json" : Paths.MapBlockDefs(lvl.MapName));
+        public static void Save(bool global, Level lvl)
+        {
+            string path = global ? "blockdefs/global.json" : Paths.MapBlockDefs(lvl.MapName);
+            BlockDefinition[] defs = global ? GlobalDefs : lvl.CustomBlockDefs;
+            Save(global, defs, path);
+        }
         public static void Save(bool global, BlockDefinition[] defs, string path)
         {
             elems ??= ConfigElement.GetAll(typeof(BlockDefinition));
@@ -199,9 +183,7 @@ namespace MCGalaxy
                 {
                     if (lvl.CustomBlockDefs[b] != oldGlobalDefs[b]) continue;
                     if ((lvl.Props[b].ChangedScope & 2) == 0)
-                    {
                         lvl.Props[b] = Block.Props[b];
-                    }
                     lvl.UpdateCustomBlock((ushort)b, GlobalDefs[b]);
                 }
             }
@@ -212,7 +194,7 @@ namespace MCGalaxy
             bool global = defs == GlobalDefs;
             if (global) UpdateGlobalCustom(block, def);
             defs[block] = def;
-            if (global) Block.SetDefaultNames();
+            if (global) BlockNames.UpdateCore();
             if (!global) level.UpdateCustomBlock(block, def);
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
@@ -228,7 +210,7 @@ namespace MCGalaxy
             bool global = defs == GlobalDefs;
             if (global) UpdateGlobalCustom(block, null);
             defs[block] = null;
-            if (global) Block.SetDefaultNames();
+            if (global) BlockNames.UpdateCore();
             if (!global) level.UpdateCustomBlock(block, null);
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
@@ -266,26 +248,20 @@ namespace MCGalaxy
         public void SetSideTex(ushort id)
         {
             LeftTex = id; 
-            RightTex = id;
+            RightTex = id; 
             FrontTex = id; 
             BackTex = id;
         }
         public void SetFullBright(bool fullBright) => SetBrightness(fullBright ? 15 : 0, false);
-        /// <summary>
-        /// Does not validate that the range falls within 0-15
-        /// </summary>
         public void SetBrightness(int brightness, bool lamp)
         {
             Brightness = brightness;
             UseLampBrightness = lamp;
-            if (Brightness > 0) 
-            { 
-                FullBright = true; 
-            }
-            else 
-            { 
-                FullBright = false; 
-            }
+            FullBright = Brightness switch
+            {
+                > 0 => true,
+                _ => false,
+            };
         }
         internal static void SendLevelCustomBlocks(Player pl)
         {
@@ -312,8 +288,7 @@ namespace MCGalaxy
             for (int i = 0; i < defs.Length; i++)
             {
                 BlockDefinition def = defs[i];
-                if (def == null || def.RawID > maxRaw) continue;
-                if (def.InventoryOrder == -1) continue;
+                if (def == null || def.RawID > maxRaw || def.InventoryOrder == -1) continue;
                 if (def.InventoryOrder != 0)
                 {
                     if (order_to_blocks[def.InventoryOrder] != -1) continue;
@@ -325,8 +300,7 @@ namespace MCGalaxy
             {
                 BlockDefinition def = defs[i];
                 int raw = def != null ? def.RawID : i;
-                if (raw > maxRaw || (def == null && raw >= 66)) continue;
-                if (def != null && def.InventoryOrder >= 0) continue;
+                if (raw > maxRaw || (def == null && raw >= 66) || def != null && def.InventoryOrder >= 0) continue;
                 if (order_to_blocks[raw] == -1)
                 {
                     order_to_blocks[raw] = raw;
@@ -337,8 +311,7 @@ namespace MCGalaxy
             {
                 BlockDefinition def = defs[i];
                 int raw = def != null ? def.RawID : i;
-                if (raw > maxRaw || (def == null && raw >= 66)) continue;
-                if (block_to_orders[raw] != -1) continue;
+                if (raw > maxRaw || (def == null && raw >= 66) || block_to_orders[raw] != -1) continue;
                 for (int slot = count - 1; slot >= 1; slot--)
                 {
                     if (order_to_blocks[slot] != -1) continue;
@@ -352,8 +325,7 @@ namespace MCGalaxy
                 int order = block_to_orders[raw];
                 if (order == -1) order = 0;
                 BlockDefinition def = defs[Block.FromRaw((ushort)raw)];
-                if (def == null && raw >= 66) continue;
-                if (raw == 255 && def.InventoryOrder == -1) continue;
+                if (def == null && raw >= 66 || raw == 255 && def.InventoryOrder == -1) continue;
                 pl.Send(Packet.SetInventoryOrder((ushort)raw, (ushort)order, pl.Session.hasExtBlocks));
             }
         }
@@ -362,9 +334,7 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                if (!global && pl.Level != level) continue;
-                if (pl.Session.hasBlockDefs) continue;
-                if (block >= 66 && !pl.Level.MightHaveCustomBlocks()) continue;
+                if (!global && pl.Level != level || pl.Session.hasBlockDefs || block >= 66 && !pl.Level.MightHaveCustomBlocks()) continue;
                 PlayerActions.ReloadMap(pl);
             }
         }

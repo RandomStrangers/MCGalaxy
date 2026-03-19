@@ -18,10 +18,7 @@ namespace MCGalaxy
                 if (!lvl.SaveChanges)
                     continue;
                 NASLevel nl = NASLevel.Get(lvl.name);
-                string jsonString = JsonConvert.SerializeObject(nl, Formatting.Indented),
-                    fileName = NASLevel.GetFileName(nl.lvl.name);
-                bool saved = lvl.Save(true) && FileIO.TryWriteAllText(fileName, jsonString);
-                if (!saved)
+                if (!lvl.Save(true) && FileIO.TryWriteAllText(NASLevel.GetFileName(nl.lvl.name), JsonConvert.SerializeObject(nl, Formatting.Indented)))
                     p.Message("Saving of level {0} &Swas cancelled", lvl.ColoredName);
             }
             Chat.MessageGlobal("All levels have been saved.");
@@ -35,7 +32,7 @@ namespace MCGalaxy
                 Log("NAS: {0} is not a valid NAS level, generating a new NAS level to replace it!", Server.mainLevel.name);
                 seed = new NASNameGenerator().MakeName().ToLower();
                 string mapName = seed + "_0,0";
-                NASLevel.GenerateMap(Player.Console,
+                NASLevel.GenerateMap(Player.NASConsole,
                                            mapName,
                                            NASGen.mapWideness.ToString(),
                                            NASGen.mapTallness.ToString(),
@@ -69,7 +66,6 @@ namespace MCGalaxy
         }
         public static string GetSavePath(Player p) => NASPlayer.Path + p.name + ".json";
         public static string GetDeathPath(string name) => NASPlayer.DeathsPath + name + ".txt";
-        public static string GetTextPath(Player p) => NASPlayer.Path + p.name + ".txt";
         public static bool EnsureFileExists(string url, string file)
         {
             if (File.Exists(file))
@@ -94,11 +90,6 @@ namespace MCGalaxy
                     EnsureFileExists(url, file);
             }
             return false;
-        }
-        public static void Register(params Command[] commands)
-        {
-            foreach (Command cmd in commands)
-                Command.Register(cmd);
         }
         public static void Log(string format, params object[] args) => Logger.Log(LogType.Warning, string.Format(format, args));
         public static bool HandleErrorResponse(WebException ex, string msg, long retry)

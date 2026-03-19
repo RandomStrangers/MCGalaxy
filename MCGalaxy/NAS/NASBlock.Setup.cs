@@ -723,13 +723,14 @@ namespace MCGalaxy
                 dropHandler = (NasPlayer, dropID) =>
                 {
                     NASDrop drop = new(18, 1);
-                    if (r.Next(0, 8) == 0)
-                    { 
-                        drop.blockStacks.Add(new(6, 1));
-                    }
-                    else
+                    switch (r.Next(0, 8))
                     {
-                        drop = new(18, 1);
+                        case 0:
+                            drop.blockStacks.Add(new(6, 1));
+                            break;
+                        default:
+                            drop = new(18, 1);
+                            break;
                     }
                     return drop;
                 }
@@ -743,13 +744,14 @@ namespace MCGalaxy
                 dropHandler = (NasPlayer, dropID) =>
                 {
                     NASDrop drop = new(103, 1);
-                    if (r.Next(0, 8) == 0)
+                    switch (r.Next(0, 8))
                     {
-                        drop.blockStacks.Add(new(154, 1));
-                    }
-                    else
-                    {
-                        drop = new(103, 1);
+                        case 0:
+                            drop.blockStacks.Add(new(154, 1));
+                            break;
+                        default:
+                            drop = new(103, 1);
+                            break;
                     }
                     return drop;
                 }
@@ -781,13 +783,14 @@ namespace MCGalaxy
                 dropHandler = (NasPlayer, dropID) =>
                 {
                     NASDrop drop = new(19, 1);
-                    if (r.Next(0, 8) == 0)
+                    switch (r.Next(0, 8))
                     {
-                        drop.blockStacks.Add(new(689, 1));
-                    }
-                    else
-                    {
-                        drop = new(19, 1);
+                        case 0:
+                            drop.blockStacks.Add(new(689, 1));
+                            break;
+                        default:
+                            drop = new(19, 1);
+                            break;
                     }
                     return drop;
                 }
@@ -1291,9 +1294,7 @@ namespace MCGalaxy
                 {
                     NASDrop finalDrop = new(729, r.Next(1, 4));
                     if (r.Next(0, 2) == 0)
-                    {
                         finalDrop.blockStacks.Add(new(624, 1));
-                    }
                     return finalDrop;
                 }
             };
@@ -1328,13 +1329,14 @@ namespace MCGalaxy
                 dropHandler = (NasPlayer, dropID) =>
                 {
                     NASDrop drop = new(146, 1);
-                    if (r.Next(0, 8) == 0)
+                    switch (r.Next(0, 8))
                     {
-                        drop.blockStacks.Add(new(450, 1));
-                    }
-                    else
-                    {
-                        drop = new(146, 1);
+                        case 0:
+                            drop.blockStacks.Add(new(450, 1));
+                            break;
+                        default:
+                            drop = new(146, 1);
+                            break;
                     }
                     return drop;
                 }
@@ -1582,13 +1584,9 @@ namespace MCGalaxy
                 interaction = EatInteraction(set4, 0, -2.5f)
             };
             for (i = 484; i < 524; i++)
-            {
                 blocks[i] = new(i, NASMaterial.Stone, DefaultDurabilities[(int)NASMaterial.Stone], 1);
-            }
             for (i = 713; i <= 728; i++)
-            {
                 blocks[i] = new(i, NASMaterial.Organic, 2);
-            }
             i = 655;
             blocks[i] = new(i, NASMaterial.Glass)
             {

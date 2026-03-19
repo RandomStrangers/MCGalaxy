@@ -215,13 +215,12 @@ namespace MCGalaxy
                 else
                     DoLine(line2, line, line3, num3, array, maxLen, buffer);
             }
-            Vec3S32 item = new()
+            buffer.Add(new()
             {
                 X = array[0],
                 Y = array[1],
                 Z = array[2]
-            };
-            buffer.Add(item);
+            });
         }
         public static void DoLine(Line l1, Line l2, Line l3, int len, int[] pixel, int maxLen, List<Vec3S32> buffer)
         {
@@ -230,13 +229,12 @@ namespace MCGalaxy
                 num3 = 0;
             while (num3 < len && num3 < maxLen - 1)
             {
-                Vec3S32 item = new()
+                buffer.Add(new()
                 {
                     X = pixel[0],
                     Y = pixel[1],
                     Z = pixel[2]
-                };
-                buffer.Add(item);
+                });
                 if (num > 0)
                 {
                     pixel[l1.axis] += l1.dir;

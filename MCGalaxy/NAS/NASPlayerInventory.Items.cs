@@ -58,10 +58,15 @@ namespace MCGalaxy
         }
         public void DoItemMove()
         {
-            if (slotToMoveTo == -1)
-                slotToMoveTo = selectedItemIndex;
-            else
-                FinalizeItemMove();
+            switch (slotToMoveTo)
+            {
+                case -1:
+                    slotToMoveTo = selectedItemIndex;
+                    break;
+                default:
+                    FinalizeItemMove();
+                    break;
+            }
             UpdateItemDisplay();
         }
         public void FinalizeItemMove()
@@ -164,19 +169,20 @@ namespace MCGalaxy
                 else if (moving && !handsHere && selectionHere)
                     itemIndex = slotToMoveTo;
                 NASItem item = items[itemIndex];
-                if (item == null)
+                switch (item)
                 {
-                    if (itemIndex > 22)
-                        builder.Append("&e¬");
-                    else
-                        builder.Append("¬");
-                }
-                else
-                {
-                    if (item.Prop.character == "¬" && itemIndex > 22)
-                        builder.Append("&e¬");
-                    else
-                        builder.Append(item.ColoredIcon);
+                    case null:
+                        if (itemIndex > 22)
+                            builder.Append("&e¬");
+                        else
+                            builder.Append("¬");
+                        break;
+                    default:
+                        if (item.Prop.character == "¬" && itemIndex > 22)
+                            builder.Append("&e¬");
+                        else
+                            builder.Append(item.ColoredIcon);
+                        break;
                 }
                 if (handsHere)
                     builder.Append("&h╕");

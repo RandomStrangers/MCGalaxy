@@ -79,10 +79,8 @@ namespace MCGalaxy.Bots
         }
         public static void Save(Level lvl) 
         { 
-            lock (lvl.botsIOLock) 
-            {
-                SaveCore(lvl); 
-            } 
+            lock (lvl.botsIOLock)
+                SaveCore(lvl);
         }
         static void SaveCore(Level lvl)
         {
@@ -117,7 +115,7 @@ namespace MCGalaxy.Bots
             if (string.IsNullOrEmpty(props.AI)) return;
             try
             {
-                ScriptFile.Parse(Player.Console, bot, props.AI);
+                ScriptFile.Parse(Player.NASConsole, bot, props.AI);
             }
             catch (Exception ex)
             {
@@ -184,7 +182,7 @@ namespace MCGalaxy.Bots
         }
         public void ApplyTo(PlayerBot bot)
         {
-            bot.SetInitialPos(new Position(X, Y, Z));
+            bot.SetInitialPos(new(X, Y, Z));
             bot.SetYawPitch(RotX, RotY);
             Orientation rot = bot.Rot;
             rot.RotX = BodyX; 

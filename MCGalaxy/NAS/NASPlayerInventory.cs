@@ -58,12 +58,9 @@ namespace MCGalaxy
                     {
                         inv = this,
                         nasBlock = NASBlock.Get(bs.ID),
-                        amountChanged = bs.amount
+                        amountChanged = bs.amount,
+                        showToNormalChat = drop.blockStacks.Count != 1 && !overrideBool || showToNormalChat
                     };
-                    if (drop.blockStacks.Count == 1 || overrideBool)
-                        info.showToNormalChat = showToNormalChat;
-                    else
-                        info.showToNormalChat = true;
                     SchedulerTask taskDisplayHeldBlock = Server.MainScheduler.QueueOnce(DisplayHeldBlockTask, info, TimeSpan.FromMilliseconds(i * 125));
                 }
             }
@@ -72,12 +69,15 @@ namespace MCGalaxy
             {
                 foreach (NASItem item in drop.items)
                     if (!GetItem(item))
-                    {
-                        if (leftovers == null)
-                            leftovers = new(item);
-                        else
-                            leftovers.items.Add(item);
-                    }
+                        switch (leftovers)
+                        {
+                            case null:
+                                leftovers = new(item);
+                                break;
+                            default:
+                                leftovers.items.Add(item);
+                                break;
+                        }
                 UpdateItemDisplay();
             }
             return leftovers;
@@ -87,13 +87,15 @@ namespace MCGalaxy
             blocks[clientushort] += amount;
             if (displayChange)
                 DisplayHeldBlock(NASBlock.Get(clientushort), amount, showToNormalChat);
-            if (blocks[clientushort] > 0)
+            switch (blocks[clientushort])
             {
-                UnhideBlock(clientushort);
-                return;
+                case > 0:
+                    UnhideBlock(clientushort);
+                    return;
+                default:
+                    HideBlock(clientushort);
+                    break;
             }
-            else
-                HideBlock(clientushort);
         }
         public int GetAmount(ushort clientushort) => blocks[clientushort];
         public void DisplayHeldBlock(NASBlock nasBlock, int amountChanged = 0, bool showToNormalChat = false)

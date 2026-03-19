@@ -357,7 +357,7 @@ namespace MCGalaxy.Commands.World
             AccessController access = p.Level.VisitAccess;
             if (!access.Whitelisted.CaselessContains(p.name))
             {
-                access.Whitelist(Player.Console, LevelPermission.Console, p.Level, p.name);
+                access.Whitelist(Player.NASConsole, LevelPermission.NASConsole, p.Level, p.name);
             }
             if (message.Length == 0)
             {

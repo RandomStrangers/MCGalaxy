@@ -173,6 +173,6 @@ namespace MCGalaxy.Blocks
             if (save) Save(path, scope, scopeId);
         }
         internal static byte ScopeId(BlockProps[] scope) => scope == Block.Props ? (byte)1 : (byte)2;
-        public static string ScopedName(BlockProps[] scope, Player p, ushort block) => scope == Block.Props ? Block.GetName(Player.Console, block) : Block.GetName(p, block);
+        public static string ScopedName(BlockProps[] scope, Player p, ushort block) => scope == Block.Props ? Block.GetName(Player.NASConsole, block) : Block.GetName(p, block);
     }
 }

@@ -46,13 +46,16 @@ namespace MCGalaxy
         public ushort ConvertBlock(ushort block)
         {
             ushort raw;
-            if (block >= 256)
-                raw = Block.ToRaw(block);
-            else
+            switch (block)
             {
-                raw = Block.Convert(block);
-                if (raw >= 66)
-                    raw = 22;
+                case >= 256:
+                    raw = Block.ToRaw(block);
+                    break;
+                default:
+                    raw = Block.Convert(block);
+                    if (raw >= 66)
+                        raw = 22;
+                    break;
             }
             if (raw > 767)
                 raw = p.Level.GetFallback(block);
@@ -110,40 +113,43 @@ namespace MCGalaxy
             }
             if (transferInfo != null)
             {
-                if (transferInfo.travelX == -1)
+                switch (transferInfo.travelX)
                 {
-                    transferInfo.CalcNewPos();
-                    spawnPos = transferInfo.posBeforeMapChange;
-                    spawnPos.X = spawnPos.BlockX * 32 + 16;
-                    spawnPos.Z = spawnPos.BlockZ * 32 + 16;
-                }
-                else
-                {
-                    spawnPos = transferInfo.posBeforeMapChange;
-                    spawnPos.X = transferInfo.travelX * 32 + 16;
-                    spawnPos.Y = transferInfo.travelY * 32 + 51;
-                    spawnPos.Z = transferInfo.travelZ * 32 + 16;
-                    if (placePortal)
-                    {
-                        int orX = transferInfo.travelX,
-                            orY = transferInfo.travelY,
-                            orZ = transferInfo.travelZ;
-                        SetSafetyBlock(orX, orY - 1, orZ, Block.FromRaw(162));
-                        SetSafetyBlock(orX, orY + 2, orZ, Block.FromRaw(162));
-                        ushort temp = nl.GetBlock(orX, orY + 1, orZ);
-                        if (temp != 0 && !nl.blockEntities.ContainsKey(orX + " " + (orY + 1) + " " + orZ))
+                    case -1:
+                        transferInfo.CalcNewPos();
+                        spawnPos = transferInfo.posBeforeMapChange;
+                        spawnPos.X = spawnPos.BlockX * 32 + 16;
+                        spawnPos.Z = spawnPos.BlockZ * 32 + 16;
+                        break;
+                    default:
                         {
-                            nl.SetBlock(orX, orY + 1, orZ, 0);
-                            nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, 1 << 2, temp, 0);
+                            spawnPos = transferInfo.posBeforeMapChange;
+                            spawnPos.X = transferInfo.travelX * 32 + 16;
+                            spawnPos.Y = transferInfo.travelY * 32 + 51;
+                            spawnPos.Z = transferInfo.travelZ * 32 + 16;
+                            if (placePortal)
+                            {
+                                int orX = transferInfo.travelX,
+                                    orY = transferInfo.travelY,
+                                    orZ = transferInfo.travelZ;
+                                SetSafetyBlock(orX, orY - 1, orZ, Block.FromRaw(162));
+                                SetSafetyBlock(orX, orY + 2, orZ, Block.FromRaw(162));
+                                ushort temp = nl.GetBlock(orX, orY + 1, orZ);
+                                if (temp != 0 && !nl.blockEntities.ContainsKey(orX + " " + (orY + 1) + " " + orZ))
+                                {
+                                    nl.SetBlock(orX, orY + 1, orZ, 0);
+                                    nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, 1 << 2, temp, 0);
+                                }
+                                temp = nl.GetBlock(orX, orY, orZ);
+                                if (temp != Block.FromRaw(457) && !nl.blockEntities.ContainsKey(orX + " " + orY + " " + orZ))
+                                {
+                                    nl.SetBlock(orX, orY, orZ, Block.FromRaw(457));
+                                    nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, 1 << 2, temp, Block.FromRaw(457));
+                                }
+                                placePortal = false;
+                            }
+                            break;
                         }
-                        temp = nl.GetBlock(orX, orY, orZ);
-                        if (temp != Block.FromRaw(457) && !nl.blockEntities.ContainsKey(orX + " " + orY + " " + orZ))
-                        {
-                            nl.SetBlock(orX, orY, orZ, Block.FromRaw(457));
-                            nl.lvl.BlockDB.Cache.Add(p, (ushort)orX, (ushort)orY, (ushort)orZ, 1 << 2, temp, Block.FromRaw(457));
-                        }
-                        placePortal = false;
-                    }
                 }
                 yaw = transferInfo.yawBeforeMapChange;
                 pitch = transferInfo.pitchBeforeMapChange;
@@ -215,9 +221,7 @@ namespace MCGalaxy
                                 continue;
                             NASBlock nb = NASBlock.blocksIndexedByServerushort[block];
                             AABB blockBB = nb.bounds.Offset(x * 32, y * 32, z * 32);
-                            if (!AABB.Intersects(ref worldAABB, ref blockBB))
-                                continue;
-                            if (nb == null || nb.collideAction == null)
+                            if (!AABB.Intersects(ref worldAABB, ref blockBB) || nb == null || nb.collideAction == null)
                                 continue;
                             nb.collideAction(this, nb, AABB.Intersects(ref eyeAABB, ref blockBB), xP, yP, zP);
                         }
@@ -421,35 +425,33 @@ namespace MCGalaxy
             if (height < NASGen.oceanHeight)
                 height = NASGen.oceanHeight;
             int distanceBelow = nl.biome < 0 ? 0 : height - next.BlockY, expFog;
-            if (distanceBelow >= NASGen.diamondDepth)
+            switch (distanceBelow)
             {
-                targetRenderDistance = 128;
-                targetFogColor = NASGen.diamondFogColor;
-                expFog = 1;
-            }
-            else if (distanceBelow >= NASGen.goldDepth)
-            {
-                targetRenderDistance = 192;
-                targetFogColor = NASGen.goldFogColor;
-                expFog = 1;
-            }
-            else if (distanceBelow >= NASGen.ironDepth)
-            {
-                targetRenderDistance = 192;
-                targetFogColor = NASGen.ironFogColor;
-                expFog = 1;
-            }
-            else if (distanceBelow >= NASGen.coalDepth)
-            {
-                targetRenderDistance = 256;
-                targetFogColor = NASGen.coalFogColor;
-                expFog = 1;
-            }
-            else
-            {
-                targetRenderDistance = Server.Config.MaxFogDistance;
-                targetFogColor = new(255, 255, 255, 255);
-                expFog = 0;
+                case >= NASGen.diamondDepth:
+                    targetRenderDistance = 128;
+                    targetFogColor = NASGen.diamondFogColor;
+                    expFog = 1;
+                    break;
+                case >= NASGen.goldDepth:
+                    targetRenderDistance = 192;
+                    targetFogColor = NASGen.goldFogColor;
+                    expFog = 1;
+                    break;
+                case >= NASGen.ironDepth:
+                    targetRenderDistance = 192;
+                    targetFogColor = NASGen.ironFogColor;
+                    expFog = 1;
+                    break;
+                case >= NASGen.coalDepth:
+                    targetRenderDistance = 256;
+                    targetFogColor = NASGen.coalFogColor;
+                    expFog = 1;
+                    break;
+                default:
+                    targetRenderDistance = Server.Config.MaxFogDistance;
+                    targetFogColor = new(255, 255, 255, 255);
+                    expFog = 0;
+                    break;
             }
             Send(Packet.EnvMapProperty(EnvProp.ExpFog, expFog));
         }

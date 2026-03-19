@@ -35,9 +35,7 @@ namespace MCGalaxy
                                                                                                                         {
                                                                                                                             lvl.SetBlock(X, Y, Z, block);
                                                                                                                             if (broadcastChange)
-                                                                                                                            {
                                                                                                                                 lvl.BroadcastChange(X, Y, Z, block);
-                                                                                                                            }
                                                                                                                         }
                                                                                                                     });
     }

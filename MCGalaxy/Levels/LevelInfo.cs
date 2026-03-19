@@ -147,7 +147,7 @@ namespace MCGalaxy
         public static bool Check(Player p, LevelPermission plRank, string map, string action, out LevelConfig cfg)
         {
             cfg = GetConfig(map, out Level lvl);
-            if (p.IsConsole)
+            if (p.IsNASConsole)
                 return true;
             if (lvl != null)
                 return Check(p, plRank, lvl, action);
@@ -163,7 +163,7 @@ namespace MCGalaxy
         public static bool Check(Player p, LevelPermission plRank, string map, string action) => Check(p, plRank, map, action, out _);
         public static bool Check(Player p, LevelPermission plRank, Level lvl, string action)
         {
-            if (p.IsConsole)
+            if (p.IsNASConsole)
                 return true;
             if (!lvl.VisitAccess.CheckDetailed(p, plRank) || !lvl.BuildAccess.CheckDetailed(p, plRank))
             {

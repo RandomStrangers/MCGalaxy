@@ -50,8 +50,7 @@ namespace MCGalaxy
                 using JsonWriter writer = new JsonTextWriter(sw);
                 serializer.Serialize(writer, cyc);
             }
-            string jsonString = FileIO.TryReadAllText(TimeFilePath);
-            NASTimeCycle ntc = JsonConvert.DeserializeObject<NASTimeCycle>(jsonString);
+            NASTimeCycle ntc = JsonConvert.DeserializeObject<NASTimeCycle>(FileIO.TryReadAllText(TimeFilePath));
             dayCycle = ntc.cycle;
             gameday = ntc.day;
             cycleCurrentTime = ntc.minutes;

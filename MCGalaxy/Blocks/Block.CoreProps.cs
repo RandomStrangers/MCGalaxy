@@ -1,4 +1,4 @@
-/*
+﻿/*
     Copyright 2015-2024 MCGalaxy
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -13,65 +13,84 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Blocks;
-using System.Collections.Generic;
 namespace MCGalaxy
 {
     public static partial class Block
     {
         public static BlockProps[] Props = new BlockProps[1024];
-        public static Dictionary<string, byte> Aliases = new();
         internal static BlockProps MakeDefaultProps(ushort b)
         {
             BlockProps props = BlockProps.MakeEmpty();
-            if ((b >= Op_Glass && b <= Op_Lava) || b == Invalid || b == RocketStart || b == Bedrock)
+            switch (b)
             {
-                props.OPBlock = true;
+                case >= Op_Glass and <= Op_Lava:
+                case Invalid:
+                case RocketStart:
+                case Bedrock:
+                    props.OPBlock = true;
+                    break;
             }
-            if ((b >= tDoor_Log && b <= tDoor_Green) || (b >= tDoor_TNT && b <= tDoor_Lava))
+            switch (b)
             {
-                props.IsTDoor = true;
+                case >= tDoor_Log and <= tDoor_Green:
+                case >= tDoor_TNT and <= tDoor_Lava:
+                    props.IsTDoor = true;
+                    break;
             }
             if (b >= MB_White && b <= MB_Lava)
-            {
                 props.IsMessageBlock = true;
-            }
-            if (b == Portal_Blue || b == Portal_Orange || (b >= Portal_Air && b <= Portal_Lava))
+            switch (b)
             {
-                props.IsPortal = true;
+                case Portal_Blue:
+                case Portal_Orange:
+                case >= Portal_Air and <= Portal_Lava:
+                    props.IsPortal = true;
+                    break;
             }
             if (b >= oDoor_Log && b <= oDoor_Wood)
-            {
                 props.oDoorBlock = (ushort)(oDoor_Log_air + (b - oDoor_Log));
-            }
             if (b >= oDoor_Green && b <= oDoor_Water)
-            {
                 props.oDoorBlock = (ushort)(oDoor_Green_air + (b - oDoor_Green));
-            }
             if (b >= oDoor_Log_air && b <= oDoor_Wood_air)
-            {
                 props.oDoorBlock = (ushort)(oDoor_Log + (b - oDoor_Log_air));
-            }
             if (b >= oDoor_Green_air && b <= oDoor_Water_air)
-            {
                 props.oDoorBlock = (ushort)(oDoor_Green + (b - oDoor_Green_air));
-            }
             props.LavaKills = b == Wood || b == Log
                 || b == Sponge || b == Bookshelf || b == Leaves || b == Crate;
-            if ((b >= Red && b <= White) || (b >= LightPink && b <= Turquoise))
+            switch (b)
             {
-                props.LavaKills = true;
+                case >= Red and <= White:
+                case >= LightPink and <= Turquoise:
+                    props.LavaKills = true;
+                    break;
             }
-            if (b == Air || b == Sapling || (b >= Dandelion && b <= RedMushroom))
+            switch (b)
             {
-                props.LavaKills = true;
-                props.WaterKills = true;
+                case Air:
+                case Sapling:
+                case >= Dandelion and <= RedMushroom:
+                    props.LavaKills = true;
+                    props.WaterKills = true;
+                    break;
             }
             props.IsDoor = IsDoor(b);
             props.AnimalAI = GetAI(b);
             props.IsRails = b == Red || b == Op_Air;
             props.Drownable = b >= Water && b <= StillLava;
-            if (b == Water || b == StillWater) props.DeathMessage = "@p &S&cdrowned.";
-            if (b == Lava || b == StillLava) props.DeathMessage = "@p &Sburnt to a &ccrisp.";
+            switch (b)
+            {
+                case Water:
+                case StillWater:
+                    props.DeathMessage = "@p &S&cdrowned.";
+                    break;
+            }
+            switch (b)
+            {
+                case Lava:
+                case StillLava:
+                    props.DeathMessage = "@p &Sburnt to a &ccrisp.";
+                    break;
+            }
             if (b == Air) props.DeathMessage = "@p &Shit the floor &chard.";
             string deathMsg = GetDeathMessage(b);
             if (deathMsg != null)
@@ -85,17 +104,22 @@ namespace MCGalaxy
             if (b == Grass) props.DirtBlock = Dirt;
             return props;
         }
-        static bool IsDoor(ushort b) => b >= Door_Obsidian && b <= Door_Slab || b >= Door_Iron && b <= Door_Bookshelf || b >= Door_Orange && b <= Door_White || b >= Door_Air && b <= Door_Lava || b == Door_Cobblestone || b == Door_Red || b == Door_Log || b == Door_Gold;
+        static bool IsDoor(ushort b) => b switch
+        {
+            >= Door_Obsidian and <= Door_Slab => true,
+            >= Door_Iron and <= Door_Bookshelf => true,
+            >= Door_Orange and <= Door_White => true,
+            >= Door_Air and <= Door_Lava => true,
+            _ => b == Door_Cobblestone || b == Door_Red || b == Door_Log || b == Door_Gold,
+        };
         static AnimalAI GetAI(ushort b) => b switch
         {
             Bird_Black or Bird_White or Bird_Lava or Bird_Water => AnimalAI.Fly,
-            _ => b == Bird_Red || b == Bird_Blue || b == Bird_Killer
-            ? AnimalAI.KillerAir
-            : b == Fish_Betta || b == Fish_Shark
-            ? AnimalAI.KillerWater
-            : b == Fish_LavaShark
-            ? AnimalAI.KillerLava
-            : b == Fish_Gold || b == Fish_Salmon || b == Fish_Sponge ? AnimalAI.FleeWater : AnimalAI.None
+            Bird_Red or Bird_Blue or Bird_Killer => AnimalAI.KillerAir,
+            Fish_Betta or Fish_Shark => AnimalAI.KillerWater,
+            Fish_LavaShark => AnimalAI.KillerLava,
+            Fish_Gold or Fish_Salmon or Fish_Sponge => AnimalAI.FleeWater,
+            _ => AnimalAI.None,
         };
         static string GetDeathMessage(ushort b) => b switch
         {
@@ -110,138 +134,11 @@ namespace MCGalaxy
             Fish_Shark => "@p &Swas eaten by a &cshark.",
             LavaFire => "@p &Sburnt to a &ccrisp.",
             RocketHead => "@p &Swas &cin a fiery explosion.",
-            _ => b == ZombieBody
-            ? "@p &Sdied due to lack of &5brain."
-            : b == Creeper
-            ? "@p &Swas killed &cb-SSSSSSSSSSSSSS"
-            : b == Fish_LavaShark ? "@p &Swas eaten by a ... LAVA SHARK?!" : b == Snake ? "@p &Swas bit by a deadly snake." : null
+            ZombieBody => "@p &Sdied due to lack of &5brain.",
+            Creeper => "@p &Swas killed &cb-SSSSSSSSSSSSSS",
+            Fish_LavaShark => "@p &Swas eaten by a ... LAVA SHARK?!",
+            Snake => "@p &Swas bit by a deadly snake.",
+            _ => null,
         };
-        internal static void SetDefaultNames()
-        {
-            Aliases.Clear();
-            SetDefaultAliases();
-            int start = 0;
-            string default_names =
-                "Air@Stone@Grass@Dirt@Cobblestone@Wood@Sapling@Bedrock@" +
-                "Active_Water@Water@Active_Lava@Lava@Sand@Gravel@Gold_Ore@Iron_Ore@" +
-                "Coal@Log@Leaves@Sponge@Glass@Red@Orange@Yellow@" +
-                "Lime@Green@Teal@Aqua@Cyan@Blue@Indigo@Violet@" +
-                "Magenta@Pink@Black@Gray@White@Dandelion@Rose@Brown_Shroom@" +
-                "Red_Shroom@Gold@Iron@DoubleSlab@Slab@Brick@TNT@BookShelf@" +
-                "MossyRocks@Obsidian@CobblestoneSlab@Rope@SandStone@Snow@Fire@LightPink@" +
-                "ForestGreen@Brown@DeepBlue@Turquoise@Ice@CeramicTile@MagmaBlock@Pillar@" +
-                "Crate@StoneBrick@@@@@FlagBase@@" +
-                "@Fast_Hot_Lava@C4@C4_Det@@@@@" +
-                "Door_Cobblestone@@@Door_Red@@Door_Orange@Door_Yellow@Door_LightGreen@" +
-                "@Door_AquaGreen@Door_Cyan@Door_LightBlue@Door_Purple@Door_LightPurple@Door_Pink@Door_DarkPink@" +
-                "Door_DarkGrey@Door_LightGrey@Door_White@@Op_Glass@Opsidian@Op_Brick@Op_Stone@" +
-                "Op_Cobblestone@Op_Air@Op_Water@Op_Lava@@Lava_Sponge@Wood_Float@Door@" +
-                "Lava_Fast@Door_Obsidian@Door_Glass@Door_Stone@Door_Leaves@Door_Sand@Door_Wood@Door_Green@" +
-                "Door_TNT@Door_Stair@tDoor@tDoor_Obsidian@tDoor_Glass@tDoor_Stone@tDoor_Leaves@tDoor_Sand@" +
-                "tDoor_Wood@tDoor_Green@White_Message@Black_Message@Air_Message@Water_Message@Lava_Message@tDoor_TNT@" +
-                "tDoor_Stair@tDoor_Air@tDoor_Water@tDoor_lava@Waterfall@Lavafall@@Water_Faucet@" +
-                "Lava_Faucet@Finite_Water@Finite_Lava@Finite_Faucet@oDoor@oDoor_Obsidian@oDoor_Glass@oDoor_Stone@" +
-                "oDoor_Leaves@oDoor_Sand@oDoor_Wood@oDoor_Green@oDoor_TNT@oDoor_Stair@oDoor_Lava@oDoor_Water@" +
-                "Air_Portal@Water_Portal@Lava_Portal@Custom_Block@Air_Door@Air_Switch@Door_Water@Door_Lava@" +
-                "oDoor_Air@oDoor_Obsidian_Air@oDoor_Glass_Air@oDoor_Stone_Air@oDoor_Leaves_Air@oDoor_Sand_Air@oDoor_Wood_Air@Blue_Portal@" +
-                "Orange_Portal@oDoor_Red@oDoor_TNT_Air@oDoor_Stair_Air@oDoor_Lava_Air@oDoor_Water_Air@Small_TNT@Big_TNT@" +
-                "TNT_Explosion@Lava_Fire@Nuke_TNT@RocketStart@RocketHead@Firework@Hot_Lava@Cold_Water@" +
-                "Nerve_Gas@Active_Cold_Water@Active_Hot_Lava@Magma@Geyser@Checkpoint@@@" +
-                "Air_Flood@Door_Air@Air_Flood_Layer@Air_Flood_Down@Air_Flood_Up@@@@" +
-                "@@@Door8_Air@Door9_Air@@@@" +
-                "@@@@Door_Iron@Door_Dirt@Door_Grass@Door_Blue@" +
-                "Door_Book@@@@@@Train@Creeper@" +
-                "Zombie@Zombie_Head@@Dove@Pidgeon@Duck@Phoenix@Red_Robin@" +
-                "Blue_Bird@@Killer_Phoenix@@@GoldFish@Sea_Sponge@Shark@" +
-                "Salmon@Betta_Fish@Lava_Shark@Snake@Snake_Tail@Door_Gold@@@";
-            for (int b = 0; b < 256; b++)
-            {
-                int end = default_names.IndexOf('@', start);
-                string name = start == end ? "unknown" : default_names.Substring(start, end - start);
-                start = end + 1;
-                if (b > 0 && b < 66)
-                {
-                    BlockDefinition def = BlockDefinition.GlobalDefs[b];
-                    if (def != null) name = def.Name;
-                }
-                coreNames[b] = name;
-                name = name.ToLower();
-                if (name != "unknown")
-                    Aliases[name] = (byte)b;
-                if (name.IndexOf('_') >= 0)
-                    Aliases[name.Replace("_", "")] = (byte)b;
-            }
-        }
-        static void SetDefaultAliases()
-        {
-            Dictionary<string, byte> aliases = Aliases;
-            aliases["planks"] = Wood; 
-            aliases["tree"] = Log;
-            aliases["stairs"] = Slab; 
-            aliases["slab"] = Slab;
-            aliases["doubleslab"] = DoubleSlab;
-            aliases["slabfull"] = DoubleSlab;
-            aliases["solid"] = Bedrock;
-            aliases["admintite"] = Bedrock;
-            aliases["blackrock"] = Bedrock;
-            aliases["activewater"] = Water;
-            aliases["activelava"] = Lava;
-            aliases["fhl"] = Deadly_FastLava;
-            aliases["water_door"] = Door_Water;
-            aliases["lava_door"] = Door_Lava;
-            aliases["acw"] = Deadly_ActiveWater;
-            aliases["ahl"] = Deadly_ActiveLava;
-            aliases["door_tree"] = Door_Log; 
-            aliases["door2"] = Door_Obsidian;
-            aliases["door3"] = Door_Glass;
-            aliases["door4"] = Door_Stone;
-            aliases["door5"] = Door_Leaves; 
-            aliases["door6"] = Door_Sand;
-            aliases["door7"] = Door_Wood; 
-            aliases["door8"] = Door_Green;
-            aliases["door9"] = Door_TNT;
-            aliases["door10"] = Door_Slab;
-            aliases["door11"] = Door_Iron;
-            aliases["door12"] = Door_Dirt;
-            aliases["door13"] = Door_Grass; 
-            aliases["door14"] = Door_Blue;
-            aliases["door15"] = Door_Bookshelf;
-            aliases["door16"] = Door_Gold;
-            aliases["door17"] = Door_Cobblestone;
-            aliases["door18"] = Door_Red;
-            aliases["tdoor_tree"] = tDoor_Log; 
-            aliases["tdoor2"] = tDoor_Obsidian;
-            aliases["tdoor3"] = tDoor_Glass;
-            aliases["tdoor4"] = tDoor_Stone;
-            aliases["tdoor5"] = tDoor_Leaves;
-            aliases["tdoor6"] = tDoor_Sand;
-            aliases["tdoor7"] = tDoor_Wood; 
-            aliases["tdoor8"] = tDoor_Green;
-            aliases["tdoor9"] = tDoor_TNT;
-            aliases["tdoor10"] = tDoor_Slab;
-            aliases["tair_switch"] = tDoor_Air;
-            aliases["tdoor11"] = tDoor_Air;
-            aliases["tdoor12"] = tDoor_Water; 
-            aliases["tdoor13"] = tDoor_Lava;
-            aliases["odoor_tree"] = oDoor_Log;
-            aliases["odoor2"] = oDoor_Obsidian;
-            aliases["odoor3"] = oDoor_Glass; 
-            aliases["odoor4"] = oDoor_Stone;
-            aliases["odoor5"] = oDoor_Leaves;
-            aliases["odoor6"] = oDoor_Sand;
-            aliases["odoor7"] = oDoor_Wood; 
-            aliases["odoor8"] = oDoor_Green;
-            aliases["odoor9"] = oDoor_TNT;
-            aliases["odoor10"] = oDoor_Slab;
-            aliases["odoor11"] = oDoor_Lava; 
-            aliases["odoor12"] = oDoor_Water;
-            aliases["steps"] = Slab; 
-            aliases["double_steps"] = DoubleSlab;
-            aliases["step"] = Slab; 
-            aliases["double_step"] = DoubleSlab;
-            aliases["grey"] = Gray; 
-            aliases["door_darkgray"] = Door_Black;
-            aliases["door_lightgray"] = Door_Gray;
-        }
     }
 }

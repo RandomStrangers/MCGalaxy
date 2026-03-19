@@ -16,6 +16,22 @@ using System;
 using System.IO;
 namespace MCGalaxy
 {
+    public class GuardedWriter : StreamWriter
+    {
+        readonly string realPath;
+        public GuardedWriter(string path) : base(path + ".tmp") => realPath = path;
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            string src = realPath + ".tmp",
+                dst = realPath,
+                old = realPath + ".old";
+            FileIO.TryDelete(old);
+            if (FileIO.TryMove(dst, old))
+                FileIO.TryDelete(old);
+            FileIO.TryMove(src, dst);
+        }
+    }
     /// <summary> Provides utility methods for File I/O operations. </summary>
     public static class FileIO
     {
@@ -203,21 +219,5 @@ namespace MCGalaxy
         /// and only overwrites the real file when .Dispose() is called </summary>
         /// <remarks> Reduces the chance of data corruption in full disks </remarks>
         public static StreamWriter CreateGuarded(string path) => new GuardedWriter(path);
-        class GuardedWriter : StreamWriter
-        {
-            readonly string realPath;
-            public GuardedWriter(string path) : base(path + ".tmp") => realPath = path;
-            protected override void Dispose(bool disposing)
-            {
-                base.Dispose(disposing);
-                string src = realPath + ".tmp",
-                    dst = realPath,
-                    old = realPath + ".old";
-                TryDelete(old);
-                if (TryMove(dst, old))
-                    TryDelete(old);
-                TryMove(src, dst);
-            }
-        }
     }
 }

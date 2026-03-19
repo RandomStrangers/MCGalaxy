@@ -78,12 +78,10 @@ namespace MCGalaxy
             if (np.nl == null)
                 return;
             ushort here = np.p.Level.GetBlock(x, y, z);
-            if (here != serverushort)
-                return;
-            if (nasBlock.container != null &&
+            if (here != serverushort || nasBlock.container != null &&
                 np.nl.blockEntities.ContainsKey(x + " " + y + " " + z) &&
                 (np.nl.blockEntities[x + " " + y + " " + z].drop != null || !np.nl.blockEntities[x + " " + y + " " + z].CanAccess(np))
-               )
+)
                 return;
             if (np.isInserting)
             {
@@ -92,10 +90,8 @@ namespace MCGalaxy
             }
             if (nasBlock.parentID != 0)
             {
-                NASDrop drop = nasBlock.dropHandler(np, nasBlock.parentID);
-                np.inventory.GetDrop(drop);
-                Random r = new();
-                np.GiveExp(r.Next(nasBlock.expGivenMin, nasBlock.expGivenMax + 1));
+                np.inventory.GetDrop(nasBlock.dropHandler(np, nasBlock.parentID));
+                np.GiveExp(new Random().Next(nasBlock.expGivenMin, nasBlock.expGivenMax + 1));
             }
             else
                 np.Message("Why the hell are you trying to get {0}? It's not even a real block..",

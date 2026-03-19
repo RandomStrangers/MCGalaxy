@@ -41,23 +41,16 @@ namespace MCGalaxy
         public static AABB BlockAABB(ushort block, Level lvl)
         {
             BlockDefinition def = lvl.GetBlockDef(block);
-            if (def != null)
-            {
-                return new(def.MinX * 2, def.MinZ * 2, def.MinY * 2,
-                                def.MaxX * 2, def.MaxZ * 2, def.MaxY * 2);
-            }
-            if (block >= 256) return new(0, 0, 0, 32, 32, 32);
-            ushort core = Convert(block);
-            return new(0, 0, 0, 32, DefaultSet.Height(core) * 2, 32);
+            return def != null
+                ? new(def.MinX * 2, def.MinZ * 2, def.MinY * 2,
+                                def.MaxX * 2, def.MaxZ * 2, def.MaxY * 2)
+                : block >= 256 ? new(0, 0, 0, 32, 32, 32) : new(0, 0, 0, 32, DefaultSet.Height(Convert(block)) * 2, 32);
         }
         public static void SetBlocks()
         {
             BlockProps[] props = Props;
             for (int b = 0; b < props.Length; b++)
-            {
                 props[b] = MakeDefaultProps((ushort)b);
-            }
-            SetDefaultNames();
             string propsPath = Paths.BlockPropsPath("default");
             if (!File.Exists(propsPath))
             {
@@ -65,9 +58,7 @@ namespace MCGalaxy
                 BlockProps.Load("global", Props, 1, true);
             }
             else
-            {
                 BlockProps.Load("default", Props, 1, false);
-            }
             UpdateLoadedLevels();
         }
         public static void UpdateLoadedLevels()
@@ -79,10 +70,7 @@ namespace MCGalaxy
                 lvl.UpdateAllBlockHandlers();
             }
         }
-        /// <summary> Converts a raw/client block ID to a server block ID </summary>
         public static ushort FromRaw(ushort raw) => raw < 66 ? raw : (ushort)(raw + 256);
-        /// <summary> Converts a server block ID to a raw/client block ID </summary>
-        /// <remarks> Undefined behaviour for physics block IDs </remarks>
         public static ushort ToRaw(ushort raw) => raw < 66 ? raw : (ushort)(raw - 256);
         public static ushort MapOldRaw(ushort raw) => IsPhysicsType(raw) ? ((ushort)(raw + 256)) : raw;
         public static bool IsPhysicsType(ushort block) => block >= 66 && block < 256;

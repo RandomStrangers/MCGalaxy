@@ -215,13 +215,9 @@ namespace MCGalaxy
                             threshDiv = temps[(int)x, (int)z];
                             threshDiv *= 1.5;
                             if (threshDiv <= 0)
-                            {
                                 threshDiv = 0;
-                            }
                             if (threshDiv > 1)
-                            {
                                 threshDiv = 1;
-                            }
                         }
                         double averageLandHeightAboveSeaLevel = biome == -1 ? 10 : 1,
                             minimumFlatness = biome == -1 ? 0 : 5,
@@ -231,27 +227,26 @@ namespace MCGalaxy
                             * (minimumFlatness + (maxFlatnessAdded * threshDiv));
                         if (threshold < -1.5)
                         {
-                            if (biome == 1)
+                            switch (biome)
                             {
-                                lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 52);
-                            }
-                            else
-                            {
-                                if (biome < 0)
-                                {
-                                    lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 48);
-                                }
-                                else
-                                {
-                                    lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 1);
-                                }
-                                continue;
+                                case 1:
+                                    lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 52);
+                                    break;
+                                default:
+                                    switch (biome)
+                                    {
+                                        case < 0:
+                                            lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 48);
+                                            break;
+                                        default:
+                                            lvl.SetTile((ushort)x, (ushort)y, (ushort)z, 1);
+                                            break;
+                                    }
+                                    continue;
                             }
                         }
                         if (threshold > 1.5)
-                        {
                             continue;
-                        }
                         double xVal = (x + offsetX) / 200, yVal = y / (250 + (biome == -1 ? 40 : 150 * threshDiv)), zVal = (z + offsetZ) / 200;
                         xVal *= 2;
                         yVal *= 2;
@@ -374,8 +369,13 @@ namespace MCGalaxy
                             {
                                 if (yCol < 0)
                                     break;
-                                if (lvl.FastGetBlock((ushort)x, (ushort)yCol, (ushort)z) == 1 || lvl.FastGetBlock((ushort)x, (ushort)yCol, (ushort)z) == 52)
-                                    lvl.SetBlock((ushort)x, (ushort)yCol, (ushort)z, soil);
+                                switch (lvl.FastGetBlock((ushort)x, (ushort)yCol, (ushort)z))
+                                {
+                                    case 1:
+                                    case 52:
+                                        lvl.SetBlock((ushort)x, (ushort)yCol, (ushort)z, soil);
+                                        break;
+                                }
                             }
                         }
                     }
@@ -424,8 +424,15 @@ namespace MCGalaxy
                             continue;
                         bool tryCave = false;
                         ushort thisBlock = lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z);
-                        if (thisBlock == 1 || thisBlock == 3 || thisBlock == 52 || thisBlock == 48)
-                            tryCave = true;
+                        switch (thisBlock)
+                        {
+                            case 1:
+                            case 3:
+                            case 52:
+                            case 48:
+                                tryCave = true;
+                                break;
+                        }
                         if (!tryCave)
                             continue;
                         double xVal = (x + offsetX) / 15, yVal = y / 7, zVal = (z + offsetZ) / 15;
@@ -472,8 +479,15 @@ namespace MCGalaxy
                         double threshold = 0.7;
                         bool tryPlace = false;
                         ushort thisBlock = lvl.FastGetBlock((ushort)x, (ushort)y, (ushort)z);
-                        if (thisBlock == 1 || thisBlock == 3 || thisBlock == 52 || thisBlock == 48)
-                            tryPlace = true;
+                        switch (thisBlock)
+                        {
+                            case 1:
+                            case 3:
+                            case 52:
+                            case 48:
+                                tryPlace = true;
+                                break;
+                        }
                         if (!tryPlace)
                             continue;
                         double xVal = (x + offsetX) / 35, yVal = y / 35, zVal = (z + offsetZ) / 35;
@@ -548,48 +562,47 @@ namespace MCGalaxy
                                         {
                                             if (biome == 2)
                                                 lvl.SetBlock((ushort)x, (ushort)(y + 1), (ushort)z, 53);
-                                            if (biome == 5)
-                                                if (r.Next(0, 2) == 0)
+                                            if (biome == 5 && r.Next(0, 2) == 0)
+                                            {
+                                                int flowerChance = r.Next(0, 10);
+                                                switch (flowerChance)
                                                 {
-                                                    int flowerChance = r.Next(0, 10);
-                                                    switch (flowerChance)
-                                                    {
-                                                        case 0:
-                                                            nl.SetBlock(x, y + 1, z, 256 | 96);
-                                                            break;
-                                                        default:
-                                                            switch (flowerChance)
-                                                            {
-                                                                case 1:
-                                                                    nl.SetBlock(x, y + 1, z, 37);
-                                                                    break;
-                                                                default:
-                                                                    switch (flowerChance)
-                                                                    {
-                                                                        case 2:
-                                                                            nl.SetBlock(x, y + 1, z, 38);
-                                                                            break;
-                                                                        default:
-                                                                            switch (flowerChance)
-                                                                            {
-                                                                                case 3:
-                                                                                    nl.SetBlock(x, y + 1, z, 256 | 651);
-                                                                                    break;
-                                                                                case 4:
-                                                                                    if (r.Next(0, 20) == 0)
-                                                                                        nl.SetBlock(x, y + 1, z, 256 | 604);
-                                                                                    break;
-                                                                                case 5:
-                                                                                    nl.SetBlock(x, y + 1, z, 256 | 201);
-                                                                                    break;
-                                                                            }
-                                                                            break;
-                                                                    }
-                                                                    break;
-                                                            }
-                                                            break;
-                                                    }
+                                                    case 0:
+                                                        nl.SetBlock(x, y + 1, z, 256 | 96);
+                                                        break;
+                                                    default:
+                                                        switch (flowerChance)
+                                                        {
+                                                            case 1:
+                                                                nl.SetBlock(x, y + 1, z, 37);
+                                                                break;
+                                                            default:
+                                                                switch (flowerChance)
+                                                                {
+                                                                    case 2:
+                                                                        nl.SetBlock(x, y + 1, z, 38);
+                                                                        break;
+                                                                    default:
+                                                                        switch (flowerChance)
+                                                                        {
+                                                                            case 3:
+                                                                                nl.SetBlock(x, y + 1, z, 256 | 651);
+                                                                                break;
+                                                                            case 4:
+                                                                                if (r.Next(0, 20) == 0)
+                                                                                    nl.SetBlock(x, y + 1, z, 256 | 604);
+                                                                                break;
+                                                                            case 5:
+                                                                                nl.SetBlock(x, y + 1, z, 256 | 201);
+                                                                                break;
+                                                                        }
+                                                                        break;
+                                                                }
+                                                                break;
+                                                        }
+                                                        break;
                                                 }
+                                            }
                                             break;
                                         }
                                 }
@@ -951,7 +964,7 @@ namespace MCGalaxy
             int genX = rng.Next(10, mapWideness - 10),
                 genZ = rng.Next(10, mapWideness - 10),
                 genY = rng.Next(0, 15);
-            GenerateDungeon(rng, genX, genY, genZ, level, nsl, false, Player.Console);
+            GenerateDungeon(rng, genX, genY, genZ, level, nsl, false, Player.NASConsole);
         }
         public static void GenLoot(int x, int y, int z, Level level, Random rng, NASLevel nsl, bool forced, Player p)
         {

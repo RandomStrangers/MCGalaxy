@@ -28,12 +28,12 @@ namespace MCGalaxy
         {
             try
             {
-                mainLevel = LevelActions.Load(Player.Console, Config.MainLevel, false);
+                mainLevel = LevelActions.Load(Player.NASConsole, Config.MainLevel, false);
                 if (mainLevel == null)
                 {
                     Logger.Log(LogType.SystemActivity, "main level not found, generating..");
                     mainLevel = new(Config.MainLevel, 128, 64, 128);
-                    MapGen.Find("Flat").Generate(Player.Console, mainLevel, "");
+                    MapGen.Find("Flat").Generate(Player.NASConsole, mainLevel, "");
                     mainLevel.Save();
                     Level.LoadMetadata(mainLevel);
                     LevelInfo.Add(mainLevel);
@@ -59,7 +59,7 @@ namespace MCGalaxy
         {
             agreed = PlayerList.Load("ranks/agreed.txt");
             invalidIds = PlayerList.Load("extra/invalidids.txt");
-            Player.Console.DatabaseID = NameConverter.InvalidNameID("(console)");
+            Player.NASConsole.DatabaseID = NameConverter.InvalidNameID("(NAS)");
             hidden = PlayerList.Load("ranks/hidden.txt");
             vip = PlayerList.Load("text/vip.txt");
             noEmotes = PlayerList.Load("text/emotelist.txt");
@@ -84,7 +84,7 @@ namespace MCGalaxy
             {
                 if (map.CaselessEq(Config.MainLevel))
                     continue;
-                LevelActions.Load(Player.Console, map, false);
+                LevelActions.Load(Player.NASConsole, map, false);
             }
         }
         static void SetupSocket(SchedulerTask _)

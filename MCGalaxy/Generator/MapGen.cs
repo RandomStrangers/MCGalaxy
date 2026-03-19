@@ -182,11 +182,11 @@ namespace MCGalaxy.Generator
         internal static void SetRealmPerms(Player p, Level lvl)
         {
             lvl.Config.RealmOwner = p.name;
-            lvl.BuildAccess.Whitelist(Player.Console, LevelPermission.Console, lvl, p.name);
-            lvl.VisitAccess.Whitelist(Player.Console, LevelPermission.Console, lvl, p.name);
+            lvl.BuildAccess.Whitelist(Player.NASConsole, LevelPermission.NASConsole, lvl, p.name);
+            lvl.VisitAccess.Whitelist(Player.NASConsole, LevelPermission.NASConsole, lvl, p.name);
             Group grp = Group.Find(Server.Config.OSPerbuildDefault);
             if (grp == null) return;
-            lvl.BuildAccess.SetMin(Player.Console, LevelPermission.Console, lvl, grp);
+            lvl.BuildAccess.SetMin(Player.NASConsole, LevelPermission.NASConsole, lvl, grp);
         }
     }
 }

@@ -54,7 +54,7 @@ namespace MCGalaxy.Bots
             string ai = (string)data.Metadata;
             if (File.Exists("bots/" + ai))
             {
-                ScriptFile.Parse(Player.Console, bot, ai);
+                ScriptFile.Parse(Player.NASConsole, bot, ai);
                 return true;
             }
             bot.NextInstruction(); 

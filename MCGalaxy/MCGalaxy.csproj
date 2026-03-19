@@ -72,6 +72,7 @@
     <Compile Include="Blocks\Block.cs" />
     <Compile Include="Blocks\Block.ID.cs" />
     <Compile Include="Blocks\BlockDefinitions.cs" />
+    <Compile Include="Blocks\BlockNames.cs" />
     <Compile Include="Blocks\BlockOptions.cs" />
     <Compile Include="Blocks\BlockProperties.cs" />
     <Compile Include="Blocks\DefaultSet.cs" />
@@ -549,6 +550,7 @@
     <Compile Include="Modules\Warps\Warp.cs" />
     <Compile Include="Modules\Warps\WarpCommand.cs" />
     <Compile Include="Modules\Warps\WarpPlugin.cs" />
+    <Compile Include="NAS\NASWayPoint.cs" />
     <Compile Include="Network\BaseWebSocket.cs" />
     <Compile Include="Network\ClassicProtocol.cs" />
     <Compile Include="Network\CPESupport.cs" />

@@ -203,8 +203,8 @@ namespace MCGalaxy
         public bool ProfanityFiltering = false;
         [ConfigString("profanity-replacement", "Chat", "*")]
         public string ProfanityReplacement = "*";
-        [ConfigString("host-state", "Chat", "Alive")]
-        public string ConsoleName = "Alive";
+        [ConfigString("NAS-state", "Chat", "Alive")]
+        public string NASName = "Alive";
         [ConfigColor("defaultColor", "Colors", "&e")]
         public string DefaultColor = "&e";
         [ConfigColor("irc-color", "Colors", "&5")]
@@ -249,8 +249,8 @@ namespace MCGalaxy
         public bool LogNotes = true;
         [ConfigBoolArray("file-logging", "Logging", true, 17)]
         public bool[] FileLogging = defLogLevels;
-        [ConfigBoolArray("console-logging", "Logging", true, 17)]
-        public bool[] ConsoleLogging = defLogLevels;
+        [ConfigBoolArray("NAS-logging", "Logging", true, 17)]
+        public bool[] NASLogging = defLogLevels;
         [ConfigBool("mute-on-spam", "Spam control", false)]
         public bool ChatSpamCheck = false;
         [ConfigInt("spam-messages", "Spam control", 8, 0, 10000)]

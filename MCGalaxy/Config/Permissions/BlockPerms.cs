@@ -69,9 +69,7 @@ namespace MCGalaxy.Blocks
         public static void ApplyChanges()
         {
             foreach (Group grp in Group.AllRanks)
-            {
                 SetUsable(grp);
-            }
         }
         public static void SetUsable(Group grp)
         {
@@ -81,9 +79,7 @@ namespace MCGalaxy.Blocks
         static void SetUsableList(BlockPerms[] list, bool[] permsList, Group grp)
         {
             foreach (BlockPerms perms in list)
-            {
                 permsList[perms.ID] = perms.UsableBy(grp.Permission);
-            }
         }
         /// <summary> Loads list of block permissions from disc. </summary>
         public static void Load()
@@ -130,9 +126,7 @@ namespace MCGalaxy.Blocks
                 if (line.IsCommentLine()) continue;
                 line.Replace(" ", "").FixedSplit(args, ':');
                 if (!ushort.TryParse(args[0], out ushort block))
-                {
-                    block = Block.Parse(Player.Console, args[0]);
-                }
+                    block = Block.Parse(Player.NASConsole, args[0]);
                 if (block == 0xff) continue;
                 try
                 {
@@ -163,25 +157,21 @@ namespace MCGalaxy.Blocks
             {
                 BlockProps props = Block.Props[block];
                 LevelPermission min;
-                if (block == 0xff)
+                switch (block)
                 {
-                    min = LevelPermission.Admin;
-                }
-                else if (props.OPBlock)
-                {
-                    min = LevelPermission.Operator;
-                }
-                else if (props.IsDoor || props.IsTDoor || props.oDoorBlock != 0xff)
-                {
-                    min = LevelPermission.Builder;
-                }
-                else if (props.IsPortal || props.IsMessageBlock)
-                {
-                    min = LevelPermission.AdvBuilder;
-                }
-                else
-                {
-                    min = DefaultPerm(block);
+                    case 0xff:
+                        min = LevelPermission.Admin;
+                        break;
+                    default:
+                        if (props.OPBlock)
+                            min = LevelPermission.Operator;
+                        else if (props.IsDoor || props.IsTDoor || props.oDoorBlock != 0xff)
+                            min = LevelPermission.Builder;
+                        else if (props.IsPortal || props.IsMessageBlock)
+                            min = LevelPermission.AdvBuilder;
+                        else
+                            min = DefaultPerm(block);
+                        break;
                 }
                 Set(block, min, PlaceList, null, null);
                 Set(block, min, DeleteList, null, null);

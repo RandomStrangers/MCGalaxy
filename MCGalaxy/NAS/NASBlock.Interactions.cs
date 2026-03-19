@@ -1,5 +1,4 @@
 using MCGalaxy.Events.PlayerEvents;
-using MCGalaxy.Modules.Warps;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 using Newtonsoft.Json;
@@ -116,16 +115,13 @@ namespace MCGalaxy
                                                                            Position coords = np.p.Pos;
                                                                            np.Teleport(x + " " + y + " " + z);
                                                                            np.spawnCoords = np.p.Pos;
-                                                                           WarpList list = new()
-                                                                           {
-                                                                               Filename = "extra/Waypoints/" + np.p.name + "_nas.txt"
-                                                                           };
+                                                                           NASWayPointList list = new();
                                                                            if (!np.p.Extras.Contains("NAS_WAYPOINTS"))
                                                                                np.p.Extras["NAS_WAYPOINTS"] = list;
-                                                                           WarpList waypoints = (WarpList)np.p.Extras["NAS_WAYPOINTS"];
-                                                                           if (!waypoints.Exists("Bed"))
-                                                                               waypoints.Create("Bed", np.p);
-                                                                           waypoints.Update(waypoints.Find("Bed"), np.p);
+                                                                           NASWayPointList NASWaypoints = (NASWayPointList)np.p.Extras["NAS_WAYPOINTS"];
+                                                                           if (!NASWaypoints.Exists("Bed"))
+                                                                               NASWaypoints.Create("Bed", np);
+                                                                           NASWaypoints.Update(NASWaypoints.Find("Bed"), np);
                                                                            np.Teleport("-precise " + coords.X + " " + (coords.Y - 50) + " " + coords.Z);
                                                                            np.spawnMap = np.p.Level.name;
                                                                            np.bedCoords = new int[]

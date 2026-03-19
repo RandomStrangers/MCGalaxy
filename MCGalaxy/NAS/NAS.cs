@@ -38,8 +38,8 @@ namespace MCGalaxy
             EnsureDirectoriesExist(Path, NASPlayer.Path,
                 NASTimeCycle.Path, NASEffect.Path,
                 NASLevel.Path, NASBlock.Path,
-                NASPlayer.DeathsPath, "blockprops",
-                "blockdefs", "text");
+                NASPlayer.DeathsPath, NASWayPointList.Path,
+                "blockprops", "blockdefs", "text");
             EnsureNASFilesExist();
             if (!File.Exists("NAS/Loaded.txt"))
             {
@@ -52,7 +52,7 @@ namespace MCGalaxy
             OnlineStat.Stats.Add(Kills);
             OnlineStat.Stats.Add(Dev);
             OfflineStat.Stats.Add(Dev);
-            Register(Commands);
+            Command.Register(Commands);
             NASPlayer.Register();
             NASBlock.Setup();
             if (!NASEffect.Setup() || !NASBlockChange.Setup() || !NASColor.Setup())

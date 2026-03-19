@@ -22,7 +22,7 @@ namespace MCGalaxy
             if (text.Length >= 2 && text[0] == '@' && text[1] == '@')
             {
                 text = text.Remove(0, 2);
-                MessageDirect(p, Player.Console, text);
+                MessageDirect(p, Player.NASConsole, text);
                 return true;
             }
             if (text[0] == '@' || p.whisper)
@@ -113,7 +113,7 @@ namespace MCGalaxy
                 return; 
             }
             Logger.Log(LogType.PrivateChat, "{0} @{1}: {2}", p.name, target.name, message);
-            if (!p.IsConsole)
+            if (!p.IsNASConsole)
             {
                 p.Message("[<] {0}: &f{1}", p.FormatNick(target), message);
             }

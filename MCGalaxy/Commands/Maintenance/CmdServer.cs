@@ -57,20 +57,16 @@ namespace MCGalaxy.Commands.Maintenance
         {
             Server.Config.Public = true;
             p.Message("Server is now public!");
-            if (!p.IsConsole)
-            {
+            if (!p.IsNASConsole)
                 Logger.Log(LogType.SystemActivity, "Server is now public!");
-            }
             Server.Save();
         }
         void SetPrivate(Player p)
         {
             Server.Config.Public = false;
             p.Message("Server is now private!");
-            if (!p.IsConsole)
-            {
+            if (!p.IsNASConsole)
                 Logger.Log(LogType.SystemActivity, "Server is now private!");
-            }
             Server.Save();
         }
         void DoReload(Player p)
@@ -136,12 +132,12 @@ namespace MCGalaxy.Commands.Maintenance
         {
             if (!CheckPerms(p))
             {
-                p.Message("Only Console or the Server Owner can restore the server."); 
+                p.Message("Only NAS or the Server Owner can restore the server."); 
                 return;
             }
             Backup.Extract(p);
         }
-        static bool CheckPerms(Player p) => p.IsConsole || !Server.Config.OwnerName.CaselessEq("Notch") && p.name.CaselessEq(Server.Config.OwnerName);
+        static bool CheckPerms(Player p) => p.IsNASConsole || !Server.Config.OwnerName.CaselessEq("Notch") && p.name.CaselessEq(Server.Config.OwnerName);
         void DoImport(Player p, string[] args)
         {
             if (args.Length == 1) 

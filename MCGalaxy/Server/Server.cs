@@ -211,6 +211,7 @@ namespace MCGalaxy
             Heartbeat.ReloadDefault();
             Group.LoadAll();
             CommandPerms.Load();
+            BlockNames.UpdateCore();
             Block.SetBlocks();
             BlockPerms.Load();
             AwardsList.Load();
@@ -252,8 +253,7 @@ namespace MCGalaxy
             Listener.Close();
             try
             {
-                Player[] players = PlayerInfo.Online.Items;
-                foreach (Player p in players)
+                foreach (Player p in PlayerInfo.Online.Items)
                     p.Leave(msg);
             }
             catch (Exception ex)
@@ -263,8 +263,7 @@ namespace MCGalaxy
             byte[] kick = Packet.Kick(msg, false);
             try
             {
-                INetSocket[] pending = INetSocket.pending.Items;
-                foreach (INetSocket p in pending)
+                foreach (INetSocket p in INetSocket.pending.Items)
                     p.Send(kick, SendFlags.None);
             }
             catch (Exception ex)
@@ -343,7 +342,7 @@ namespace MCGalaxy
             string main = mainLevel != null ? mainLevel.name : Config.MainLevel;
             if (map.CaselessEq(main))
                 return false;
-            Level lvl = LevelInfo.FindExact(map) ?? LevelActions.Load(Player.Console, map, false);
+            Level lvl = LevelInfo.FindExact(map) ?? LevelActions.Load(Player.NASConsole, map, false);
             if (lvl == null)
                 return false;
             SetMainLevel(lvl);

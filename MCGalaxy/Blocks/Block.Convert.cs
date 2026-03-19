@@ -1,4 +1,4 @@
-/*
+﻿/*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -17,44 +17,25 @@ namespace MCGalaxy
 {
     public static partial class Block
     {
-        static readonly string[] coreNames = new string[256];
-        public static bool Undefined(ushort block) => IsPhysicsType(block) && coreNames[block].CaselessEq("unknown");
-        public static bool ExistsGlobal(ushort b) => ExistsFor(Player.Console, b);
+        public static bool Undefined(ushort block) => IsPhysicsType(block) && BlockNames.coreNames[block].CaselessEq("unknown");
         public static bool ExistsFor(Player p, ushort b) => b < 256 ? !Undefined(b) : !p.IsSuper ? p.Level.GetBlockDef(b) != null : BlockDefinition.GlobalDefs[b] != null;
-        /// <summary> Gets the name for the block with the given block ID </summary>
-        /// <remarks> Block names can differ depending on the player's level </remarks>
         public static string GetName(Player p, ushort block)
         {
-            if (IsPhysicsType(block)) return coreNames[block];
-            BlockDefinition def;
-            if (!p.IsSuper)
-            {
-                def = p.Level.GetBlockDef(block);
-            }
-            else
-            {
-                def = BlockDefinition.GlobalDefs[block];
-            }
-            return def != null ? def.Name.Replace(" ", "") : block < 66 ? coreNames[block] : ToRaw(block).ToString();
+            if (IsPhysicsType(block)) return BlockNames.coreNames[block];
+            BlockDefinition def = !p.IsSuper ? p.Level.GetBlockDef(block) : BlockDefinition.GlobalDefs[block];
+            return def != null ? def.Name.Replace(" ", "") : block < 66 ? BlockNames.coreNames[block] : ToRaw(block).ToString();
         }
         public static ushort Parse(Player p, string input)
         {
             BlockDefinition[] defs = p.IsSuper ? BlockDefinition.GlobalDefs : p.Level.CustomBlockDefs;
-            if (ushort.TryParse(input, out ushort block))
-            {
-                if (block < 66 || (block <= 767 && defs[FromRaw(block)] != null))
-                {
-                    return FromRaw(block);
-                }
-            }
+            if (ushort.TryParse(input, out ushort block) && (block < 66 || (block <= 767 && defs[FromRaw(block)] != null)))
+                return FromRaw(block);
             BlockDefinition def = BlockDefinition.ParseName(input, defs);
             if (def != null) return def.GetBlock();
-            bool success = Aliases.TryGetValue(input.ToLower(), out byte coreID);
+            bool success = BlockNames.Aliases.TryGetValue(input.ToLower(), out byte coreID);
             return success ? coreID : Invalid;
         }
         public static string GetColoredName(Player p, ushort block) => Group.GetColor(BlockPerms.GetPlace(block).MinRank) + GetName(p, block);
-        /// <summary> Converts a block &lt;= CPE_MAX_BLOCK into a suitable
-        /// block compatible for the given classic protocol version </summary>
         public static byte ConvertClassic(byte block, byte protocolVersion) => protocolVersion switch
         {
             >= 7 => block <= Obsidian ? block : v7_fallback[block - CobblestoneSlab],
@@ -88,9 +69,6 @@ namespace MCGalaxy
                Cobblestone, Sapling, Sand,     Air, Lava, Sand,     Sand,       Dirt,
                Sand,    Sand,     Leaves, Stone,      Cobblestone, Stone, Wood, Stone
         };
-        /// <summary> Converts physics block IDs to their visual block IDs </summary>
-        /// <remarks> If block ID is not converted, returns input block ID </remarks>
-        /// <example> Op_Glass becomes Glass, Door_Log becomes Log </example>
         public static ushort Convert(ushort block) => block switch
         {
             70 => 39,

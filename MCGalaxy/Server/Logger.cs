@@ -52,8 +52,8 @@ namespace MCGalaxy
         RankChat,
         /// <summary> Debug messages. </summary>
         Debug,
-        /// <summary> Message shown to console. </summary>
-        ConsoleMessage,
+        /// <summary> Message shown to NASConsole. </summary>
+        NASConsoleMessage,
     }
     public delegate void LogHandler(LogType type, string message);
     /// <summary> Centralised class for outputting log messages. </summary>

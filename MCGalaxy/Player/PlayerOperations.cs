@@ -179,7 +179,7 @@ namespace MCGalaxy
             else
             {
                 message = message.Replace("λACTOR", actor.ColoredName)
-                                 .Replace("λTARGET", Player.Console.FormatNick(target) + "&S's");
+                                 .Replace("λTARGET", Player.NASConsole.FormatNick(target) + "&S's");
                 Chat.MessageAll(message);
             }
         }

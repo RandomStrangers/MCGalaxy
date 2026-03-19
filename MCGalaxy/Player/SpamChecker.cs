@@ -57,7 +57,7 @@ namespace MCGalaxy
             {
                 if (chatLog.AddSpamEntry(Server.Config.ChatSpamCount, Server.Config.ChatSpamInterval))
                     return false;
-                OnModActionEvent.Call(new(p.name, Player.Console, ModActionType.Muted, "&0Auto mute for spamming", Server.Config.ChatSpamMuteTime));
+                OnModActionEvent.Call(new(p.name, Player.NASConsole, ModActionType.Muted, "&0Auto mute for spamming", Server.Config.ChatSpamMuteTime));
                 return true;
             }
         }

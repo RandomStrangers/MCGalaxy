@@ -82,7 +82,7 @@ namespace MCGalaxy.Eco
             }
             if (!CheckPrice(p, nextRank.Price, "the next rank")) return;
             Group rank = Group.Find(nextRank.Perm);
-            Command.Find("SetRank").Use(Player.Console, p.name + " " + rank.Name);
+            Command.Find("SetRank").Use(Player.NASConsole, p.name + " " + rank.Name);
             p.Message("You bought the rank " + rank.ColoredName);
             Economy.MakePurchase(p, nextRank.Price, "&3Rank: " + rank.ColoredName);
         }

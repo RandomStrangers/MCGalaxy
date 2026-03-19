@@ -25,14 +25,15 @@ namespace MCGalaxy.Commands
             Trigger = trigger;
             target = target.Trim();
             int space = target.IndexOf(' ');
-            if (space < 0)
+            switch (space)
             {
-                Target = target;
-            }
-            else
-            {
-                Target = target.Substring(0, space);
-                Format = target.Substring(space + 1);
+                case < 0:
+                    Target = target;
+                    break;
+                default:
+                    Target = target.Substring(0, space);
+                    Format = target.Substring(space + 1);
+                    break;
             }
         }
         public Alias(string trigger, string target, string format)
@@ -64,13 +65,14 @@ namespace MCGalaxy.Commands
             sw.WriteLine("#    e.g. \"mod : setrank {args} mod\" means /mod is treated as /setrank <args given by user> mod");
             foreach (Alias a in aliases)
             {
-                if (a.Format == null)
+                switch (a.Format)
                 {
-                    sw.WriteLine(a.Trigger + " : " + a.Target);
-                }
-                else
-                {
-                    sw.WriteLine(a.Trigger + " : " + a.Target + " " + a.Format);
+                    case null:
+                        sw.WriteLine(a.Trigger + " : " + a.Target);
+                        break;
+                    default:
+                        sw.WriteLine(a.Trigger + " : " + a.Target + " " + a.Format);
+                        break;
                 }
             }
         }

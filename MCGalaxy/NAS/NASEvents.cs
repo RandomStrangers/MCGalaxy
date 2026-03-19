@@ -393,12 +393,11 @@ namespace MCGalaxy
                 np.SendingMap = false;
             }
         }
-        public static bool Load(Player p, string file, out NASPlayer np)
+        public static bool Load(Player p, out NASPlayer np)
         {
             try
             {
-                string jsonString = FileIO.TryReadAllText(file);
-                np = JsonConvert.DeserializeObject<NASPlayer>(jsonString);
+                np = JsonConvert.DeserializeObject<NASPlayer>(FileIO.TryReadAllText(GetSavePath(p)));
                 np.SetPlayer(p);
                 p.Extras[PlayerKey] = np;
                 return true;
@@ -411,9 +410,7 @@ namespace MCGalaxy
         }
         public static void OnPlayerConnect(Player p)
         {
-            string path = GetSavePath(p),
-                pathText = GetTextPath(p);
-            if (!Load(p, path, out NASPlayer np) && !Load(p, pathText, out np))
+            if (!Load(p, out NASPlayer np))
             {
                 np = new(p);
                 np.SetLocation(Server.mainLevel.name, Server.mainLevel.SpawnPos, new(Server.mainLevel.rotx, Server.mainLevel.roty));
@@ -438,7 +435,7 @@ namespace MCGalaxy
             np.PlayerSavingScheduler ??= new("SavingScheduler" + p.name);
             np.PlayerSaveTask = np.PlayerSavingScheduler.QueueRepeat(np.SaveStatsTask, null, TimeSpan.FromSeconds(5));
         }
-        public static void OnShutdown(bool restarting, string reason) => SaveAll(Player.Console);
+        public static void OnShutdown(bool restarting, string reason) => SaveAll(Player.NASConsole);
         public static void OnPlayerDisconnect(Player p, string reason)
         {
             NASPlayer np = NASPlayer.GetPlayer(p);
