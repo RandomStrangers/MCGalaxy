@@ -86,6 +86,10 @@ namespace MCGalaxy.Util.Imaging
                 {
                     ReadFrameStart(src, bmp);
                 }
+                else if (marker == 0xFFC2)
+                {
+                    Fail("Progressive JPEGs unsupported");
+                }
                 else if (marker == 0xFFDA)
                 {
                     ReadScanStart(src);

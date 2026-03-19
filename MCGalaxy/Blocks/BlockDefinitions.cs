@@ -1,4 +1,4 @@
-/*
+﻿/*
     Copyright 2015-2024 MCGalaxy
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -223,7 +223,7 @@ namespace MCGalaxy
             bool global = defs == GlobalDefs;
             if (global) UpdateGlobalCustom(block, def);
             defs[block] = def;
-            if (global) Block.SetDefaultNames();
+            if (global) BlockNames.UpdateCore();
             if (!global) level.UpdateCustomBlock(block, def);
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
@@ -239,7 +239,7 @@ namespace MCGalaxy
             bool global = defs == GlobalDefs;
             if (global) UpdateGlobalCustom(block, null);
             defs[block] = null;
-            if (global) Block.SetDefaultNames();
+            if (global) BlockNames.UpdateCore();
             if (!global) level.UpdateCustomBlock(block, null);
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)

@@ -1,4 +1,4 @@
-/*
+﻿/*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
     Dual-licensed under the    Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -17,8 +17,7 @@ namespace MCGalaxy
 {
     public static partial class Block
     {
-        static readonly string[] coreNames = new string[CORE_COUNT];
-        public static bool Undefined(ushort block) { return IsPhysicsType(block) && coreNames[block].CaselessEq("unknown"); }
+        public static bool Undefined(ushort block) { return IsPhysicsType(block) && BlockNames.coreNames[block].CaselessEq("unknown"); }
         public static bool ExistsGlobal(ushort b) { return ExistsFor(Player.Console, b); }
         public static bool ExistsFor(Player p, ushort b)
         {
@@ -30,7 +29,7 @@ namespace MCGalaxy
         /// <remarks> Block names can differ depending on the player's level </remarks>
         public static string GetName(Player p, ushort block)
         {
-            if (IsPhysicsType(block)) return coreNames[block];
+            if (IsPhysicsType(block)) return BlockNames.coreNames[block];
             BlockDefinition def;
             if (!p.IsSuper)
             {
@@ -41,7 +40,7 @@ namespace MCGalaxy
                 def = BlockDefinition.GlobalDefs[block];
             }
             if (def != null) return def.Name.Replace(" ", "");
-            return block < CPE_COUNT ? coreNames[block] : ToRaw(block).ToString();
+            return block < CPE_COUNT ? BlockNames.coreNames[block] : ToRaw(block).ToString();
         }
         public static ushort Parse(Player p, string input)
         {
@@ -56,7 +55,7 @@ namespace MCGalaxy
             }
             BlockDefinition def = BlockDefinition.ParseName(input, defs);
             if (def != null) return def.GetBlock();
-            bool success = Aliases.TryGetValue(input.ToLower(), out byte coreID);
+            bool success = BlockNames.Aliases.TryGetValue(input.ToLower(), out byte coreID);
             return success ? coreID : Invalid;
         }
         public static string GetColoredName(Player p, ushort block)

@@ -69,7 +69,6 @@ namespace MCGalaxy
             {
                 props[b] = MakeDefaultProps((ushort)b);
             }
-            SetDefaultNames();
             string propsPath = Paths.BlockPropsPath("default");
             // backwards compatibility with older versions
             if (!File.Exists(propsPath))
