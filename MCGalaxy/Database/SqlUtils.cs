@@ -20,9 +20,7 @@ namespace MCGalaxy.SQL
         public static string QuoteString(string value)
         {
             if (value.IndexOf('\'') >= 0)
-            {
                 value = value.Replace("'", "''");
-            }
             return "'" + value + "'";
         }
         public static string QuoteName(string name)
@@ -40,9 +38,7 @@ namespace MCGalaxy.SQL
             foreach (char c in table)
             {
                 if (ValidNameChar(c))
-                {
                     continue;
-                }
                 throw new ArgumentException("Invalid character '" + c + "' in table name '" + table + "'");
             }
         }

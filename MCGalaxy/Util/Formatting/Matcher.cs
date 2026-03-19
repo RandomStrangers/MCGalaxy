@@ -24,30 +24,30 @@ namespace MCGalaxy
         /// <summary> Finds partial matches of 'color' against the list of colors. </summary>
         public static string FindColor(Player p, string color)
         {
-            ColorDesc desc = Find(p, color, out int matches, Colors.List,
+            ColorDesc desc = Find(p, color, out _, Colors.List,
                                   col => !col.Undefined, col => col.Name, "colors", 20);
             return desc.Undefined ? null : "&" + desc.Code;
         }
         /// <summary> Finds partial matches of 'name' against the list of bots in same level as player. </summary>
-        public static PlayerBot FindBots(Player p, string name) => Find(p, name, out int matches, p.Level.Bots.Items,
+        public static PlayerBot FindBots(Player p, string name) => Find(p, name, out _, p.Level.Bots.Items,
                         null, b => b.name, "bots");
         /// <summary> Find partial matches of 'name' against the list of loaded maps/levels. </summary>
-        public static Level FindLevels(Player p, string name) => Find(p, name, out int matches, LevelInfo.Loaded.Items,
+        public static Level FindLevels(Player p, string name) => Find(p, name, out _, LevelInfo.Loaded.Items,
                         null, l => l.name, l => l.ColoredName, "loaded levels");
         /// <summary> Find partial matches of 'name' against the list of all map files. </summary>
         public static string FindMaps(Player pl, string name) => !Formatter.ValidMapName(pl, name)
                 ? null
-                : Find(pl, name, out int matches, LevelInfo.AllMapNames(),
+                : Find(pl, name, out _, LevelInfo.AllMapNames(),
                         null, l => l, "levels", 10);
         /// <summary> Find partial matches of 'name' against the list of ranks. </summary>
         public static Group FindRanks(Player p, string name)
         {
             Group.MapName(ref name);
-            return Find(p, name, out int matches, Group.GroupList,
+            return Find(p, name, out _, Group.GroupList,
                         null, g => Colors.Strip(g.Name), g => g.ColoredName, "ranks");
         }
         /// <summary> Find partial matches of 'name' against the list of zones in a map. </summary>
-        public static Zone FindZones(Player p, Level lvl, string name) => Find(p, name, out int matches, lvl.Zones.Items,
+        public static Zone FindZones(Player p, Level lvl, string name) => Find(p, name, out _, lvl.Zones.Items,
                         null, z => z.Config.Name, "zones");
         /// <summary> Finds partial matches of 'name' against the names of the items in the 'items' enumerable. </summary>
         /// <returns> If exactly one match, the matching item. </returns>

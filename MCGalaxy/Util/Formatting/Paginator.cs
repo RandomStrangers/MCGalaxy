@@ -28,10 +28,7 @@ namespace MCGalaxy
             List<string> matches = new();
             Regex regex = null;
             if (keyword.Contains("*") || keyword.Contains("?"))
-            {
-                string pattern = "^" + Regex.Escape(keyword).Replace("\\?", ".").Replace("\\*", ".*") + "$";
-                regex = new(pattern, RegexOptions.IgnoreCase);
-            }
+                regex = new("^" + Regex.Escape(keyword).Replace("\\?", ".").Replace("\\*", ".*") + "$", RegexOptions.IgnoreCase);
             foreach (T item in input)
             {
                 if (filter != null && !filter(item))
@@ -66,22 +63,26 @@ namespace MCGalaxy
                               string cmd, string type, string modifier, int perPage)
         {
             int total = items.Count;
-            if (modifier.Length == 0)
+            switch (modifier.Length)
             {
-                OutputPage(p, items, formatter, printer, cmd, type, 1, perPage);
-                if (total <= perPage)
-                    return;
-                p.Message("To see all {0}, use &T/{1} all", type, cmd);
+                case 0:
+                    OutputPage(p, items, formatter, printer, cmd, type, 1, perPage);
+                    if (total <= perPage)
+                        return;
+                    p.Message("To see all {0}, use &T/{1} all", type, cmd);
+                    break;
+                default:
+                    if (modifier.CaselessEq("all"))
+                    {
+                        OutputItems(p, items, 0, items.Count, formatter, printer);
+                        p.Message("Showing {0} 1-{1} (out of {1})", type, items.Count);
+                    }
+                    else if (!NumberUtils.TryParseInt32(modifier, out int page))
+                        p.Message("Input must be either \"all\" or an integer.");
+                    else
+                        OutputPage(p, items, formatter, printer, cmd, type, page, perPage);
+                    break;
             }
-            else if (modifier.CaselessEq("all"))
-            {
-                OutputItems(p, items, 0, items.Count, formatter, printer);
-                p.Message("Showing {0} 1-{1} (out of {1})", type, items.Count);
-            }
-            else if (!NumberUtils.TryParseInt32(modifier, out int page))
-                p.Message("Input must be either \"all\" or an integer.");
-            else
-                OutputPage(p, items, formatter, printer, cmd, type, page, perPage);
         }
         static void OutputPage<T>(Player p, IList<T> items,
                                   StringFormatter<T> formatter, ItemPrinter<T> printer,

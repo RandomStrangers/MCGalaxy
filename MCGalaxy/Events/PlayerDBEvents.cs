@@ -22,17 +22,15 @@ namespace MCGalaxy.Events.PlayerDBEvents
         public static void Call(Player p, ref bool cancel)
         {
             IEvent<OnInfoSave>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
-                try 
-                { 
-                    items[i].method(p, ref cancel); 
+            for (long i = 0; i < items.LongLength; i++)
+                try
+                {
+                    items[i].method(p, ref cancel);
                 }
-                catch (Exception ex) 
-                { 
+                catch (Exception ex)
+                {
                     LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
     public delegate void OnInfoSwap(string src, string dst);

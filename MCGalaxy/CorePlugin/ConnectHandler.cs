@@ -25,8 +25,7 @@ namespace MCGalaxy.Core
         static void LoadReach(Player p)
         {
             string reach = Server.reach.Get(p.name);
-            if (string.IsNullOrEmpty(reach)) return;
-            if (!short.TryParse(reach, out short reachDist)) return;
+            if (string.IsNullOrEmpty(reach) || !short.TryParse(reach, out short reachDist)) return;
             p.ReachDistance = reachDist / 32f;
             p.Session.SendSetReach(p.ReachDistance);
         }

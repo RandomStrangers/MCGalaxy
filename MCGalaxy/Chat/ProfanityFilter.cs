@@ -41,24 +41,18 @@ namespace MCGalaxy
         static bool IsGoodWord(string word)
         {
             foreach (string goodWord in goodWords)
-            {
                 if (Colors.Strip(word).CaselessEq(goodWord))
-                {
                     return true;
-                }
-            }
             return false;
         }
         static void FilterBadWord(int i, string[] words, string[] reduced)
         {
             foreach (string badWord in badWords)
-            {
                 if (reduced[i].Contains(badWord))
                 {
                     words[i] = Censor(Colors.Strip(words[i]).Length);
                     return;
                 }
-            }
         }
         static string Censor(int badWordLength) => Server.Config.ProfanityReplacement.Length == 1 ? new string(Server.Config.ProfanityReplacement[0], badWordLength) : Server.Config.ProfanityReplacement;
         static void InitReduceTable()
@@ -82,9 +76,7 @@ namespace MCGalaxy
             goodWords = goodWordsFile.GetTextWithoutComments();
             badWords = badWordsFile.GetTextWithoutComments();
             for (int i = 0; i < badWords.Count; i++)
-            {
                 badWords[i] = Reduce(badWords[i]);
-            }
         }
         static string Reduce(string text)
         {

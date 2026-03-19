@@ -22,8 +22,7 @@ namespace MCGalaxy.Events.EntityEvents
         public static void Call(Entity e, ref string tabName, ref string tabGroup, Player dst)
         {
             IEvent<OnTabListEntryAdded>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
+            for (long i = 0; i < items.LongLength; i++)
                 try
                 {
                     items[i].method(e, ref tabName, ref tabGroup, dst);
@@ -32,7 +31,6 @@ namespace MCGalaxy.Events.EntityEvents
                 {
                     LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
     public delegate void OnTabListEntryRemoved(Entity e, Player dst);
@@ -42,17 +40,15 @@ namespace MCGalaxy.Events.EntityEvents
         public static void Call(Entity e, Player dst)
         {
             IEvent<OnTabListEntryRemoved>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
-                try 
-                { 
+            for (long i = 0; i < items.LongLength; i++)
+                try
+                {
                     items[i].method(e, dst);
                 }
-                catch (Exception ex) 
-                { 
+                catch (Exception ex)
+                {
                     LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
     public delegate void OnEntitySpawned(Entity e, ref string name, ref string skin, ref string model, Player dst);
@@ -62,8 +58,7 @@ namespace MCGalaxy.Events.EntityEvents
         public static void Call(Entity e, ref string name, ref string skin, ref string model, Player dst)
         {
             IEvent<OnEntitySpawned>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
+            for (long i = 0; i < items.LongLength; i++)
                 try
                 {
                     items[i].method(e, ref name, ref skin, ref model, dst);
@@ -72,7 +67,6 @@ namespace MCGalaxy.Events.EntityEvents
                 {
                     LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
     public delegate void OnEntityDespawned(Entity e, Player dst);
@@ -82,17 +76,15 @@ namespace MCGalaxy.Events.EntityEvents
         public static void Call(Entity e, Player dst)
         {
             IEvent<OnEntityDespawned>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
-                try 
-                { 
-                    items[i].method(e, dst); 
+            for (long i = 0; i < items.LongLength; i++)
+                try
+                {
+                    items[i].method(e, dst);
                 }
-                catch (Exception ex) 
-                { 
-                    LogHandlerException(ex, items[i]); 
+                catch (Exception ex)
+                {
+                    LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
     public delegate void OnSendingModel(Entity e, ref string model, Player dst);
@@ -102,17 +94,15 @@ namespace MCGalaxy.Events.EntityEvents
         public static void Call(Entity e, ref string model, Player dst)
         {
             IEvent<OnSendingModel>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
-                try 
-                { 
-                    items[i].method(e, ref model, dst); 
+            for (long i = 0; i < items.LongLength; i++)
+                try
+                {
+                    items[i].method(e, ref model, dst);
                 }
                 catch (Exception ex)
-                { 
-                    LogHandlerException(ex, items[i]); 
+                {
+                    LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
     public delegate void OnGettingCanSeeEntity(Player p, ref bool canSee, Entity target);
@@ -123,17 +113,15 @@ namespace MCGalaxy.Events.EntityEvents
         public static void Call(Player p, ref bool canSee, Entity target)
         {
             IEvent<OnGettingCanSeeEntity>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
-                try 
-                { 
+            for (long i = 0; i < items.LongLength; i++)
+                try
+                {
                     items[i].method(p, ref canSee, target);
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
-                    LogHandlerException(ex, items[i]); 
+                    LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
 }

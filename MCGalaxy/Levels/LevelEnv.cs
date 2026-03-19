@@ -77,9 +77,7 @@ namespace MCGalaxy
             if (opt.CaselessEq("lampcolor")) opt = "LampLight";
             if (opt.CaselessEq("lighting")) opt = "LightingMode";
             foreach (EnvOption option in Options)
-            {
                 if (option.Name.CaselessEq(opt)) return option;
-            }
             return null;
         }
         static void SetHorizon(Player p, string area, EnvConfig cfg, string value) => SetBlock(p, value, area, "edge block", ref cfg.HorizonBlock);

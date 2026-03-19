@@ -43,50 +43,56 @@ namespace MCGalaxy.Modules.Security
         void HandleConnectionReceived(Socket s, ref bool cancel, ref bool announce)
         {
             IPAddress ip = SocketUtil.GetIP(s);
-            if (!Server.Config.IPSpamCheck || IPAddress.IsLoopback(ip)) return;
-            DateTime now = DateTime.UtcNow;
-            string ipStr = ip.ToString();
-            int failed = 0;
-            lock (ipsLock)
+            if (Server.Config.IPSpamCheck && !IPAddress.IsLoopback(ip))
             {
-                if (!ips.TryGetValue(ipStr, out IPThrottleEntry entry))
+                DateTime now = DateTime.UtcNow;
+                string ipStr = ip.ToString();
+                int failed = 0;
+                lock (ipsLock)
                 {
-                    entry = new();
-                    ips[ipStr] = entry;
+                    if (!ips.TryGetValue(ipStr, out IPThrottleEntry entry))
+                    {
+                        entry = new();
+                        ips[ipStr] = entry;
+                    }
+                    // Check if that IP is repeatedly trying to connect
+                    if (entry.BlockedUntil < now)
+                    {
+                        if (!entry.AddSpamEntry(Server.Config.IPSpamCount, Server.Config.IPSpamInterval))
+                            entry.BlockedUntil = now.Add(Server.Config.IPSpamBlockTime);
+                        return;
+                    }
+                    entry.FailedLogins++;
+                    failed = entry.FailedLogins;
                 }
-                // Check if that IP is repeatedly trying to connect
-                if (entry.BlockedUntil < now)
-                {
-                    if (!entry.AddSpamEntry(Server.Config.IPSpamCount, Server.Config.IPSpamInterval))
-                        entry.BlockedUntil = now.Add(Server.Config.IPSpamBlockTime);
-                    return;
-                }
-                entry.FailedLogins++;
-                failed = entry.FailedLogins;
+                // If still connecting despite getting kick message 15 times,
+                //  treat this as an automated DOS attempt by a bot
+                if (failed > 15) cancel = true;
+                // Log message so host is aware the server is being attacked
+                if ((failed % 1000) == 0) Logger.Log(LogType.SystemActivity, "Blocked {0} from connecting ({1} blocked attempts)", ipStr, failed);
             }
-            // If still connecting despite getting kick message 15 times,
-            //  treat this as an automated DOS attempt by a bot
-            if (failed > 15) cancel = true;
-            // Log message so host is aware the server is being attacked
-            if ((failed % 1000) != 0) return;
-            Logger.Log(LogType.SystemActivity, "Blocked {0} from connecting ({1} blocked attempts)", ipStr, failed);
         }
         void HandleConnecting(Player p, string mppass)
         {
-            if (!Server.Config.IPSpamCheck) return;
-            DateTime now = DateTime.UtcNow;
-            DateTime blockedUntil;
-            // Most of work is done on initial connection
-            lock (ipsLock)
+            if (Server.Config.IPSpamCheck)
             {
-                if (!ips.TryGetValue(p.ip, out IPThrottleEntry entry)) return;
-                blockedUntil = entry.BlockedUntil;
+                DateTime now = DateTime.UtcNow;
+                DateTime blockedUntil;
+                // Most of work is done on initial connection
+                lock (ipsLock)
+                {
+                    if (ips.TryGetValue(p.ip, out IPThrottleEntry entry)) blockedUntil = entry.BlockedUntil;
+                    else
+                        return;
+                }
+                if (blockedUntil >= now)
+                {
+                    // do this outside lock since we want to minimise time spent locked
+                    TimeSpan delta = blockedUntil - now;
+                    p.Leave("Too many connections too quickly! Wait " + delta.Shorten(true) + " before joining");
+                    p.cancelconnecting = true;
+                }
             }
-            if (blockedUntil < now) return;
-            // do this outside lock since we want to minimise time spent locked
-            TimeSpan delta = blockedUntil - now;
-            p.Leave("Too many connections too quickly! Wait " + delta.Shorten(true) + " before joining");
-            p.cancelconnecting = true;
         }
         class IPThrottleEntry : List<DateTime>
         {
@@ -97,10 +103,10 @@ namespace MCGalaxy.Modules.Security
         {
             lock (ipsLock)
             {
-                if (!Server.Config.IPSpamCheck) 
+                if (!Server.Config.IPSpamCheck)
                 {
-                    ips.Clear(); 
-                    return; 
+                    ips.Clear();
+                    return;
                 }
                 // Find all connections which last joined before the connection spam check interval
                 DateTime threshold = DateTime.UtcNow.Add(-Server.Config.IPSpamInterval);
@@ -112,9 +118,8 @@ namespace MCGalaxy.Modules.Security
                     expired ??= new();
                     expired.Add(kvp.Key);
                 }
-                if (expired == null) return;
-                foreach (string ip in expired)
-                    ips.Remove(ip);
+                if (expired != null) foreach (string ip in expired)
+                        ips.Remove(ip);
             }
         }
     }

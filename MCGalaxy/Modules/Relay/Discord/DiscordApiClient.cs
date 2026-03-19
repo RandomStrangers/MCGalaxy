@@ -45,10 +45,8 @@ namespace MCGalaxy.Modules.Relay.Discord
         {
             DiscordApiMessage msg = null;
             WebResponse res = null;
-            lock (queueLock) 
-            { 
+            lock (queueLock)
                 msg = GetNextRequest();
-            }
             if (msg == null)
             { 
                 WaitForWork(); 
@@ -65,13 +63,11 @@ namespace MCGalaxy.Modules.Relay.Discord
                     if (obj != null)
                     {
                         req.ContentType = "application/json";
-                        string data = Json.SerialiseObject(obj);
-                        HttpUtil.SetRequestData(req, Encoding.UTF8.GetBytes(data));
+                        HttpUtil.SetRequestData(req, Encoding.UTF8.GetBytes(Json.SerialiseObject(obj)));
                     }
                     msg.OnRequest(req);
                     res = req.GetResponse();
-                    string resp = HttpUtil.GetResponseText(res);
-                    msg.ProcessResponse(resp);
+                    msg.ProcessResponse(HttpUtil.GetResponseText(res));
                     break;
                 }
                 catch (WebException ex)
@@ -128,18 +124,8 @@ namespace MCGalaxy.Modules.Relay.Discord
         }
         static void SleepForRetryPeriod(WebResponse res)
         {
-            string resetAfter = res.Headers["X-RateLimit-Reset-After"],
-                retryAfter = res.Headers["Retry-After"];
-            if (NumberUtils.TryParseSingle(resetAfter, out float delay) && delay > 0)
-            {
-            }
-            else if (NumberUtils.TryParseSingle(retryAfter, out delay) && delay > 0)
-            {
-            }
-            else
-            {
+            if ((!NumberUtils.TryParseSingle(res.Headers["X-RateLimit-Reset-After"], out float delay) || delay <= 0) && (!NumberUtils.TryParseSingle(res.Headers["Retry-After"], out delay) || delay <= 0))
                 delay = 30;
-            }
             Logger.Log(LogType.SystemActivity, "Discord bot ratelimited! Trying again in {0} seconds..", delay);
             Thread.Sleep(TimeSpan.FromSeconds(delay + 0.5f));
         }

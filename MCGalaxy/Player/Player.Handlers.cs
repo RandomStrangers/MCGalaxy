@@ -140,8 +140,14 @@ namespace MCGalaxy
         {
             ushort old = Level.GetBlock(x, y, z);
             ChangeResult result = Level.TryChangeBlock(this, x, y, z, block);
-            if (result == ChangeResult.Unchanged) return result;
-            if (result == ChangeResult.Modified) Level.BroadcastChange(x, y, z, block);
+            switch (result)
+            {
+                case ChangeResult.Unchanged:
+                    return result;
+                case ChangeResult.Modified:
+                    Level.BroadcastChange(x, y, z, block);
+                    break;
+            }
             ushort flags = 1 << 0;
             if (painting && DefaultSet.IsSolid(Level.CollideType(old)))
                 flags = 1 << 1;
@@ -178,14 +184,11 @@ namespace MCGalaxy
                     RevertBlock(x, y, z); 
                     return;
                 }
-                if (held >= 256)
+                if (held >= 256 && (!Session.hasBlockDefs || Level.CustomBlockDefs[held] == null))
                 {
-                    if (!Session.hasBlockDefs || Level.CustomBlockDefs[held] == null)
-                    {
-                        Message("Invalid block type: " + Block.ToRaw(held));
-                        RevertBlock(x, y, z);
-                        return;
-                    }
+                    Message("Invalid block type: " + Block.ToRaw(held));
+                    RevertBlock(x, y, z);
+                    return;
                 }
                 HandleManualChange(x, y, z, action != 0, held, true);
             }
@@ -206,8 +209,7 @@ namespace MCGalaxy
                 CheckBlocks(Pos, Pos);
                 return;
             }
-            Position next = new(x, y, z);
-            ProcessMovementCore(next, yaw, pitch, true);
+            ProcessMovementCore(new(x, y, z), yaw, pitch, true);
         }
         /// <summary>
         /// Called to update player's position and check blocks and zones.
@@ -283,21 +285,16 @@ namespace MCGalaxy
                     Send(Packet.EnvMapProperty(i, CurrentEnvProp(i, zone)));
             if (Supports(CpeExt.LightingMode))
             {
-                EnvConfig cfg;
-                if (zone != null && zone.Config.LightingMode != LightingMode.None)
-                    cfg = zone.Config;
-                else
-                {
-                    cfg = Level.Config.LightingMode switch
+                EnvConfig cfg = zone != null && zone.Config.LightingMode != LightingMode.None
+                    ? zone.Config
+                    : Level.Config.LightingMode switch
                     {
                         LightingMode.None => Server.Config,
                         _ => Level.Config,
                     };
-                }
                 Send(Packet.SetLightingMode(cfg.LightingMode, cfg.LightingModeLocked));
             }
-            int weather = CurrentEnvProp(EnvProp.Weather, zone);
-            Session.SendSetWeather((byte)weather);
+            Session.SendSetWeather((byte)CurrentEnvProp(EnvProp.Weather, zone));
         }
         void CheckBlocks(Position prev, Position next)
         {
@@ -331,8 +328,7 @@ namespace MCGalaxy
         }
         public bool HandleDeath(ushort block, string customMsg = "", bool explode = false, bool immediate = false)
         {
-            if (!immediate && DateTime.UtcNow < deathCooldown) return false;
-            if (invincible) return false;
+            if (!immediate && DateTime.UtcNow < deathCooldown || invincible) return false;
             bool cancel = false;
             OnPlayerDyingEvent.Call(this, block, ref cancel);
             if (cancel) 
@@ -348,13 +344,16 @@ namespace MCGalaxy
             if (deathMsg != null) AnnounceDeath(deathMsg);
             if (block == 188) Level.MakeExplosion(x, y, z, 0);
             if (block == 231) Level.MakeExplosion(x, y, z, 1);
-            if (block == 1 || block == 4)
+            switch (block)
             {
-                if (explode) Level.MakeExplosion(x, y, z, 1);
-                if (block == 1)
-                    Chat.MessageFrom(this, customMsg.Replace("@p", "λNICK"));
-                else
-                    AnnounceDeath(customMsg);
+                case 1:
+                case 4:
+                    if (explode) Level.MakeExplosion(x, y, z, 1);
+                    if (block == 1)
+                        Chat.MessageFrom(this, customMsg.Replace("@p", "λNICK"));
+                    else
+                        AnnounceDeath(customMsg);
+                    break;
             }
             TimeSpan cooldown = Server.Config.DeathCooldown;
             OnPlayerDiedEvent.Call(this, block, ref cooldown);
@@ -382,12 +381,9 @@ namespace MCGalaxy
                 Message("You are muted.");
                 return; 
             }
-            if (Server.voting)
-            {
-                if (CheckVote(text, this, "y", "yes", ref Server.YesVotes) ||
-                    CheckVote(text, this, "n", "no", ref Server.NoVotes)) return;
-            }
-            if (!CheckCanSpeak("speak")) return;
+            if (Server.voting && (CheckVote(text, this, "y", "yes", ref Server.YesVotes) ||
+                    CheckVote(text, this, "n", "no", ref Server.NoVotes)) || !CheckCanSpeak("speak"))
+                return;
             if (Ignores.All)
             {
                 Message("Your message wasn't sent because you're ignoring all chat.");
@@ -497,11 +493,7 @@ namespace MCGalaxy
                 bool parallel = command.Parallelism == CommandParallelism.Yes
                                     || data.Context == CommandContext.MessageBlock;
                 if (!parallel && !EnqueueSerialCommand(command, args, data)) return;
-                ThreadStart callback;
-                if (parallel)
-                    callback = () => UseCommand(command, args, data);
-                else
-                    callback = ExecuteSerialCommands;
+                ThreadStart callback = parallel ? (() => UseCommand(command, args, data)) : ExecuteSerialCommands;
                 Utils.StartBackgroundThread("CMD_ " + cmd, callback);
             }
             catch (Exception e)
@@ -547,25 +539,27 @@ namespace MCGalaxy
                     Message("&WCancelled {0} queued command{1} because you switched levels.", remaining, remaining == 1 ? "" : "s");
                     return false;
                 }
-                if (!UseCommand(commands[i], messages[i], data)) return false;
-                if (leftServer) return false;
+                if (!UseCommand(commands[i], messages[i], data) || leftServer) return false;
             }
             return true;
         }
         bool CheckMBRecursion(CommandData data)
         {
-            if (data.Context == CommandContext.MessageBlock)
+            switch (data.Context)
             {
-                mbRecursion++;
-                if (mbRecursion >= 100)
-                {
+                case CommandContext.MessageBlock:
+                    mbRecursion++;
+                    if (mbRecursion >= 100)
+                    {
+                        mbRecursion = 0;
+                        Message("&WInfinite message block loop detected, aborting");
+                        return false;
+                    }
+                    break;
+                case CommandContext.Normal:
                     mbRecursion = 0;
-                    Message("&WInfinite message block loop detected, aborting");
-                    return false;
-                }
+                    break;
             }
-            else if (data.Context == CommandContext.Normal)
-                mbRecursion = 0;
             return true;
         }
         bool CheckCommand(string cmd)

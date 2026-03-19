@@ -56,11 +56,7 @@ namespace MCGalaxy
             return message;
         }
         /// <summary> Returns true if the target player is ignoring chat messags by source. </summary>
-        public static bool Ignoring(Player target, Player source)
-        {
-            if (target.Ignores.All) return source != target;
-            return source != null && target.Ignores.Names.CaselessContains(source.name);
-        }
+        public static bool Ignoring(Player target, Player source) => target.Ignores.All ? source != target : source != null && target.Ignores.Names.CaselessContains(source.name);
         public static bool FilterAll(Player pl, object arg) => true;
         public static bool FilterGlobal(Player pl, object arg) => pl.IsSuper || (pl.Level.SeesServerWideChat && !pl.Ignores.All);
         public static bool FilterLevel(Player pl, object arg) => pl.Level == arg && !pl.Ignores.All;
@@ -86,8 +82,7 @@ namespace MCGalaxy
             OnChatSysEvent.Call(scope, ref msg, arg, ref filter, relay);
             foreach (Player pl in players)
             {
-                if (!scopeFilter(pl, arg)) continue;
-                if (filter != null && !filter(pl, arg)) continue;
+                if (!scopeFilter(pl, arg) || filter != null && !filter(pl, arg)) continue;
                 pl.Message(msg);
             }
         }
@@ -97,13 +92,9 @@ namespace MCGalaxy
                                        ChatMessageFilter filter = null, bool relay = false)
         {
             if (source.Level == null || source.Level.SeesServerWideChat)
-            {
                 MessageFrom(ChatScope.Global, source, msg, null, filter, relay);
-            }
             else
-            {
-                MessageFrom(ChatScope.Level, source, (Server.Config.ServerWideChat ? "<Local>" : "") + msg, source.Level , filter);
-            }
+                MessageFrom(ChatScope.Level, source, (Server.Config.ServerWideChat ? "<Local>" : "") + msg, source.Level, filter);
         }
         /// <summary> Sends a message from the given player (e.g. message when requesting a review) </summary>
         /// <remarks> For player chat type messages, Chat.MessageChat is more appropriate to use. </remarks>
@@ -116,9 +107,7 @@ namespace MCGalaxy
             OnChatFromEvent.Call(scope, source, ref msg, arg, ref filter, relay);
             foreach (Player pl in players)
             {
-                if (!scopeFilter(pl, arg)) continue;
-                if (filter != null && !filter(pl, arg)) continue;
-                if (Ignoring(pl, source)) continue;
+                if (!scopeFilter(pl, arg) || filter != null && !filter(pl, arg) || Ignoring(pl, source)) continue;
                 pl.Message(UnescapeMessage(pl, source, msg));
             }
         }
@@ -126,13 +115,9 @@ namespace MCGalaxy
                                        ChatMessageFilter filter = null, bool relay = false)
         {
             if (source.Level == null || source.Level.SeesServerWideChat)
-            {
                 MessageChat(ChatScope.Global, source, msg, null, filter, relay);
-            }
             else
-            {
                 MessageChat(ChatScope.Level, source, (Server.Config.ServerWideChat ? "<Local>" : "") + msg, source.Level, filter);
-            }
         }
         /// <summary> Sends a chat message from the given player (e.g. regular player chat or /me) </summary>
         /// <remarks> Chat messages will increase player's total messages sent in /info,
@@ -151,8 +136,7 @@ namespace MCGalaxy
                 if (Ignoring(pl, source)) continue;
                 if (pl != source)
                 {
-                    if (!scopeFilter(pl, arg)) continue;
-                    if (filter != null && !filter(pl, arg)) continue;
+                    if (!scopeFilter(pl, arg) || filter != null && !filter(pl, arg)) continue;
                     if (!counted) 
                     { 
                         source.TotalMessagesSent++; 
@@ -207,21 +191,17 @@ namespace MCGalaxy
                 }
                 PersistentMessage curMsg = null;
                 foreach (PersistentMessage msg in field)
-                {
-                    if (msg.priority == priority) 
-                    { 
-                        curMsg = msg; 
+                    if (msg.priority == priority)
+                    {
+                        curMsg = msg;
                         break;
                     }
-                }
                 if (string.IsNullOrEmpty(message))
                 {
                     field.Remove(curMsg);
                     PersistentMessage highestRemainingMsg = null;
                     foreach (PersistentMessage msg in field)
-                    {
                         if (highestRemainingMsg == null || msg.priority > highestRemainingMsg.priority) highestRemainingMsg = msg;
-                    }
                     if (highestRemainingMsg != null) message = highestRemainingMsg.message;
                 }
                 else
@@ -237,9 +217,7 @@ namespace MCGalaxy
                     curMsg.message = message;
                 }
                 foreach (PersistentMessage msg in field)
-                {
                     if (msg.priority > priority) return false;
-                }
             }
             return true;
         }

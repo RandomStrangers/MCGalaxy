@@ -29,7 +29,8 @@ namespace MCGalaxy.Core
         {
             if (!LoginAuthenticator.VerifyLogin(p, mppass))
             {
-                p.Leave(null, "Login failed! Close the game and sign in again.", true); return false;
+                p.Leave(null, "Login failed! Close the game and sign in again.", true);
+                return false;
             }
             if (!CheckTempban(p)) return false;
             if (Server.Config.WhitelistedOnly && !Server.whiteList.Contains(p.name))
@@ -78,9 +79,7 @@ namespace MCGalaxy.Core
             online = PlayerInfo.Online.Items;
             int guests = 0;
             foreach (Player pl in online)
-            {
                 if (pl.Rank <= LevelPermission.Guest) guests++;
-            }
             if (guests < Server.Config.MaxGuests) return true;
             if (Server.Config.GuestLimitNotify) Chat.MessageOps("Guest " + p.truename + " couldn't log in - too many guests.");
             Logger.Log(LogType.Warning, "Guest {0} couldn't log in - too many guests.", p.truename);
@@ -99,13 +98,9 @@ namespace MCGalaxy.Core
             if (p.Rank != LevelPermission.Banned) return true;
             Ban.GetBanData(p.name, out string banner, out string reason, out _, out _);
             if (banner != null)
-            {
                 p.Kick(null, "Banned by " + banner + ": " + reason, true);
-            }
             else
-            {
                 p.Kick(null, Server.Config.DefaultBanMessage, true);
-            }
             return false;
         }
     }

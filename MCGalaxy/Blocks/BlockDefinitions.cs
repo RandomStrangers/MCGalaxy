@@ -215,8 +215,7 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                if (!global && pl.Level != level) continue;
-                if (global && pl.Level.CustomBlockDefs[block] != null) continue;
+                if (!global && pl.Level != level || global && pl.Level.CustomBlockDefs[block] != null) continue;
                 pl.Session.SendUndefineBlock(def);
             }
         }
@@ -225,8 +224,7 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
             {
-                if (!global && pl.Level != level) continue;
-                if (!pl.Supports(CpeExt.InventoryOrder) || def.RawID > pl.Session.MaxRawBlock) continue;
+                if (!global && pl.Level != level || !pl.Supports(CpeExt.InventoryOrder) || def.RawID > pl.Session.MaxRawBlock) continue;
                 SendLevelInventoryOrder(pl);
             }
         }

@@ -69,9 +69,7 @@ namespace MCGalaxy
             {
                 dst.WriteLine("# " + kvp.Key + " settings");
                 foreach (ConfigElement elem in kvp.Value)
-                {
                     dst.WriteLine(elem.Format(instance));
-                }
                 dst.WriteLine();
             }
         }

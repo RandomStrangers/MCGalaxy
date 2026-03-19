@@ -132,7 +132,6 @@ namespace MCGalaxy.Tasks
             count--;
             Level[] levels = LevelInfo.Loaded.Items;
             foreach (Level lvl in levels)
-            {
                 try
                 {
                     if (!lvl.Changed || !lvl.SaveChanges)
@@ -152,7 +151,6 @@ namespace MCGalaxy.Tasks
                 {
                     Logger.LogError("Error auto-backing up " + lvl.MapName, ex);
                 }
-            }
             if (count <= 0)
                 count = 15;
             task.State = count;

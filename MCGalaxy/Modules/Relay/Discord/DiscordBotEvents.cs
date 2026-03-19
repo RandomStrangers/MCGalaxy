@@ -24,8 +24,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         public static void Call(DiscordBot bot, RelayUser user, ref ChannelSendEmbed embed)
         {
             IEvent<OnSendingWhoEmbed>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
+            for (long i = 0; i < items.LongLength; i++)
                 try
                 {
                     items[i].method(bot, user, ref embed);
@@ -34,7 +33,6 @@ namespace MCGalaxy.Modules.Relay.Discord
                 {
                     LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
     public delegate void OnGatewayEventReceived(DiscordBot bot, string eventName, JsonObject data);
@@ -44,8 +42,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         public static void Call(DiscordBot bot, string eventName, JsonObject data)
         {
             IEvent<OnGatewayEventReceived>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
+            for (long i = 0; i < items.LongLength; i++)
                 try
                 {
                     items[i].method(bot, eventName, data);
@@ -54,7 +51,6 @@ namespace MCGalaxy.Modules.Relay.Discord
                 {
                     LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
 }

@@ -92,9 +92,7 @@ namespace MCGalaxy.Maths
         {
             Vec3S32 min = bb.BlockMin, max = bb.BlockMax;
             for (int y = min.Y; y <= max.Y; y++)
-            {
                 for (int z = min.Z; z <= max.Z; z++)
-                {
                     for (int x = min.X; x <= max.X; x++)
                     {
                         ushort block = lvl.GetBlock((ushort)x, (ushort)y, (ushort)z);
@@ -115,8 +113,6 @@ namespace MCGalaxy.Maths
                         else if (!Block.Walkthrough(Block.Convert(block)))
                             return true;
                     }
-                }
-            }
             return false;
         }
         public static int FindIntersectingSolids(AABB bb, Level lvl, ref AABB[] aabbs)
@@ -127,9 +123,7 @@ namespace MCGalaxy.Maths
                 aabbs = new AABB[volume];
             int count = 0;
             for (int y = min.Y; y <= max.Y; y++)
-            {
                 for (int z = min.Z; z <= max.Z; z++)
-                {
                     for (int x = min.X; x <= max.X; x++)
                     {
                         ushort block = lvl.GetBlock((ushort)x, (ushort)y, (ushort)z);
@@ -143,18 +137,12 @@ namespace MCGalaxy.Maths
                         if (!Intersects(ref bb, ref blockBB))
                             continue;
                         BlockDefinition def = lvl.GetBlockDef(block);
-                        bool solid;
-                        if (def != null)
-                            solid = DefaultSet.IsSolid(def.CollideType);
-                        else
-                            solid = block == Block.Invalid || !Block.Walkthrough(Block.Convert(block));
+                        bool solid = def != null ? DefaultSet.IsSolid(def.CollideType) : block == Block.Invalid || !Block.Walkthrough(Block.Convert(block));
                         if (!solid)
                             continue;
                         aabbs[count] = blockBB;
                         count++;
                     }
-                }
-            }
             return count;
         }
     }

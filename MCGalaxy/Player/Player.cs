@@ -58,10 +58,10 @@ namespace MCGalaxy
             Socket = socket;
             Session = session;
             SetIP(Socket.IP);
-            EntityList = new EntityList(this, (byte)Session.MaxEntityID);
-            CriticalTasks = new VolatileArray<SchedulerTask>();
-            spamChecker = new SpamChecker(this);
-            partialLog = new List<DateTime>(20);
+            EntityList = new(this, (byte)Session.MaxEntityID);
+            CriticalTasks = new();
+            spamChecker = new(this);
+            partialLog = new(20);
             session.ID = Interlocked.Increment(ref sessionCounter) & ((1 << 20) - 1);
             for (int b = 0; b < BlockBindings.Length; b++)
                 BlockBindings[b] = (ushort)b;
@@ -383,10 +383,15 @@ namespace MCGalaxy
                 selMarkCallback?.Invoke(p, selMarks, selIndex, selState, block);
                 if (selCallback == null) return;
                 selIndex++;
-                if (selIndex == 1 && selTitle != null)
-                    SendCpeMessage(CpeMessageType.BottomRight2, "Mark #1" + FormatSelectionMark(selMarks[0]));
-                else if (selIndex == 2 && selTitle != null)
-                    SendCpeMessage(CpeMessageType.BottomRight1, "Mark #2" + FormatSelectionMark(selMarks[1]));
+                switch (selIndex)
+                {
+                    case 1 when selTitle != null:
+                        SendCpeMessage(CpeMessageType.BottomRight2, "Mark #1" + FormatSelectionMark(selMarks[0]));
+                        break;
+                    case 2 when selTitle != null:
+                        SendCpeMessage(CpeMessageType.BottomRight1, "Mark #2" + FormatSelectionMark(selMarks[1]));
+                        break;
+                }
                 if (selIndex != selMarks.Length) return;
                 string title = selTitle;
                 object state = selState;

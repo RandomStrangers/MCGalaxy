@@ -41,9 +41,7 @@ namespace MCGalaxy.SQL
             sql.WriteLine();
             string[] colNames = new string[record.FieldCount];
             for (int i = 0; i < record.FieldCount; i++)
-            {
                 colNames[i] = record.GetName(i);
-            }
             string columns = colNames.Join(col => "`" + col + "`", ",");
             insertCols = SQLiteBackend.Instance.AddRowSql(table, columns, 0);
             gottenRows = true;

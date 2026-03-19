@@ -24,17 +24,15 @@ namespace MCGalaxy.Events.ServerEvents
         public static void Call(Heartbeat service, ref string name)
         {
             IEvent<OnSendingHeartbeat>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
-                try 
+            for (long i = 0; i < items.LongLength; i++)
+                try
                 {
-                    items[i].method(service, ref name); 
+                    items[i].method(service, ref name);
                 }
-                catch (Exception ex) 
-                { 
-                    LogHandlerException(ex, items[i]); 
+                catch (Exception ex)
+                {
+                    LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
     public delegate void OnShuttingDown(bool restarting, string reason);
@@ -64,17 +62,15 @@ namespace MCGalaxy.Events.ServerEvents
         public static void Call(Socket s, ref bool cancel, ref bool announce)
         {
             IEvent<OnConnectionReceived>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
-                try 
-                { 
-                    items[i].method(s, ref cancel, ref announce); 
+            for (long i = 0; i < items.LongLength; i++)
+                try
+                {
+                    items[i].method(s, ref cancel, ref announce);
                 }
-                catch (Exception ex) 
-                { 
-                    LogHandlerException(ex, items[i]); 
+                catch (Exception ex)
+                {
+                    LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
     public delegate void OnChatSys(ChatScope scope, ref string msg, object arg,
@@ -85,17 +81,15 @@ namespace MCGalaxy.Events.ServerEvents
                                 ref ChatMessageFilter filter, bool relay)
         {
             IEvent<OnChatSys>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
-                try 
-                { 
+            for (long i = 0; i < items.LongLength; i++)
+                try
+                {
                     items[i].method(scope, ref msg, arg, ref filter, relay);
                 }
-                catch (Exception ex) 
-                { 
+                catch (Exception ex)
+                {
                     LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
     public delegate void OnChatFrom(ChatScope scope, Player source, ref string msg,
@@ -106,17 +100,15 @@ namespace MCGalaxy.Events.ServerEvents
                                 object arg, ref ChatMessageFilter filter, bool relay)
         {
             IEvent<OnChatFrom>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
-                try 
+            for (long i = 0; i < items.LongLength; i++)
+                try
                 {
                     items[i].method(scope, source, ref msg, arg, ref filter, relay);
                 }
-                catch (Exception ex) 
-                { 
-                    LogHandlerException(ex, items[i]); 
+                catch (Exception ex)
+                {
+                    LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
     public delegate void OnChat(ChatScope scope, Player source, ref string msg,
@@ -127,17 +119,15 @@ namespace MCGalaxy.Events.ServerEvents
                                 object arg, ref ChatMessageFilter filter, bool relay)
         {
             IEvent<OnChat>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
+            for (long i = 0; i < items.LongLength; i++)
                 try
-                { 
+                {
                     items[i].method(scope, source, ref msg, arg, ref filter, relay);
                 }
-                catch (Exception ex) 
-                { 
-                    LogHandlerException(ex, items[i]); 
+                catch (Exception ex)
+                {
+                    LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
     public delegate void OnPluginMessageReceived(Player p, byte channel, byte[] data);

@@ -128,10 +128,7 @@ namespace MCGalaxy.Tasks
         {
             string str = tasks.Count + " tasks";
             if (curTask != null)
-            {
-                MethodInfo method = curTask.Callback.Method;
-                str += " (currently executing " + method.DeclaringType.FullName + "." + method.Name + ")";
-            }
+                str += " (currently executing " + curTask.Callback.Method.DeclaringType.FullName + "." + curTask.Callback.Method.Name + ")";
             return str;
         }
     }

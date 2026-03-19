@@ -38,10 +38,7 @@ namespace MCGalaxy.Network
         public void Add(int index, ushort block)
         {
             indices[count] = index;
-            if (Block.IsPhysicsType(block))
-                blocks[count] = Block.Convert(block);
-            else
-                blocks[count] = block;
+            blocks[count] = Block.IsPhysicsType(block) ? Block.Convert(block) : block;
             count++;
             if (count == 256) Flush();
         }

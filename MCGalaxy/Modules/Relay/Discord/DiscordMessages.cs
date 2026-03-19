@@ -45,24 +45,20 @@ namespace MCGalaxy.Modules.Relay.Discord
         public ChannelSendMessage(string channelID, string message)
         {
             Path = "/channels/" + channelID + "/messages";
-            content = new StringBuilder(message);
+            content = new(message);
         }
-        public override JsonObject ToJson()
-        {
-            JsonObject allowed = new()
-            {
-                { "parse", Allowed ?? default_allowed }
-            };
-            return new JsonObject()
+        public override JsonObject ToJson() => new()
             {
                 { "content", content.ToString() },
-                { "allowed_mentions", allowed }
+                { "allowed_mentions", new JsonObject()
+                    {
+                        { "parse", Allowed ?? default_allowed }
+                    }
+                }
             };
-        }
         public override bool CombineWith(DiscordApiMessage prior)
         {
-            if (prior is not ChannelSendMessage msg || msg.Path != Path) return false;
-            if (content.Length + msg.content.Length > 1024) return false;
+            if (prior is not ChannelSendMessage msg || msg.Path != Path || content.Length + msg.content.Length > 1024) return false;
             msg.content.Append('\n');
             msg.content.Append(content.ToString());
             content.Length = 0;
@@ -79,14 +75,11 @@ namespace MCGalaxy.Modules.Relay.Discord
         {
             JsonArray arr = new();
             foreach (KeyValuePair<string, string> raw in Fields)
-            {
-                JsonObject field = new()
+                arr.Add(new JsonObject()
                 {
                     { "name",   raw.Key  },
                     { "value", raw.Value }
-                };
-                arr.Add(field);
-            }
+                });
             return arr;
         }
         public override JsonObject ToJson() => new()

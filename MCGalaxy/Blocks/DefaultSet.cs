@@ -69,33 +69,39 @@ namespace MCGalaxy.Blocks
         public static bool BlocksLight(ushort b) => !(b == Block.Glass || b == Block.Leaves
                      || b == Block.Air || Draw(b) == 5);
         /// <summary> Gets the default step sound of a block. </summary>
-        public static SoundType StepSound(ushort b)
+        public static SoundType StepSound(ushort b) => b switch
         {
-            if (b == Block.Glass) return SoundType.Glass;
-            if (b == Block.Rope) return SoundType.Cloth;
-            if (Draw(b) == 5) return SoundType.None;
-            return b switch
+            Block.Glass => SoundType.Glass,
+            _ => b switch
             {
-                >= Block.Red and <= Block.White => SoundType.Cloth,
-                >= Block.LightPink and <= Block.Turquoise => SoundType.Cloth,
-                Block.Iron or Block.Gold => SoundType.Metal,
-                Block.Bookshelf or Block.Wood
-or Block.Log or Block.Crate or Block.Fire => SoundType.Wood,
                 Block.Rope => SoundType.Cloth,
-                Block.Sand => SoundType.Sand,
-                Block.Snow => SoundType.Snow,
-                Block.Glass => SoundType.Glass,
-                Block.Dirt or Block.Gravel => SoundType.Gravel,
-                _ => b == Block.Grass || b == Block.Sapling || b == Block.TNT
-                || b == Block.Leaves || b == Block.Sponge
-                ? SoundType.Grass
-                : b >= Block.Dandelion && b <= Block.RedMushroom
-                ? SoundType.Grass
-                : b >= Block.Water && b <= Block.StillLava
-                ? SoundType.None
-                : b >= Block.Stone && b <= Block.StoneBrick ? SoundType.Stone : SoundType.None
-            };
-        }
+                _ => Draw(b) switch
+                {
+                    5 => SoundType.None,
+                    _ => b switch
+                    {
+                        >= Block.Red and <= Block.White => SoundType.Cloth,
+                        >= Block.LightPink and <= Block.Turquoise => SoundType.Cloth,
+                        Block.Iron or Block.Gold => SoundType.Metal,
+                        Block.Bookshelf or Block.Wood
+        or Block.Log or Block.Crate or Block.Fire => SoundType.Wood,
+                        Block.Rope => SoundType.Cloth,
+                        Block.Sand => SoundType.Sand,
+                        Block.Snow => SoundType.Snow,
+                        Block.Glass => SoundType.Glass,
+                        Block.Dirt or Block.Gravel => SoundType.Gravel,
+                        _ => b == Block.Grass || b == Block.Sapling || b == Block.TNT
+                        || b == Block.Leaves || b == Block.Sponge
+                        ? SoundType.Grass
+                        : b >= Block.Dandelion && b <= Block.RedMushroom
+                        ? SoundType.Grass
+                        : b >= Block.Water && b <= Block.StillLava
+                        ? SoundType.None
+                        : b >= Block.Stone && b <= Block.StoneBrick ? SoundType.Stone : SoundType.None
+                    }
+                }
+            }
+        };
         /// <summary> Gets the default draw type of a block, see DrawType class. </summary>
         public static byte Draw(ushort b) => b switch
         {

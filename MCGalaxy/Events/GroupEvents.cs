@@ -52,17 +52,15 @@ namespace MCGalaxy.Events.GroupEvents
         public static void Call(string player, Group curRank, Group newRank, ref bool cancel)
         {
             IEvent<OnChangingGroup>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
-                try 
-                { 
+            for (long i = 0; i < items.LongLength; i++)
+                try
+                {
                     items[i].method(player, curRank, newRank, ref cancel);
                 }
-                catch (Exception ex) 
-                { 
+                catch (Exception ex)
+                {
                     LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
 }

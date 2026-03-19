@@ -71,7 +71,8 @@ namespace MCGalaxy
                     length += 2;
                     if (lastColor != 'f' && !StartsWithColor(message, messageLen, offset))
                     {
-                        line[2] = '&'; line[3] = lastColor;
+                        line[2] = '&'; 
+                        line[3] = lastColor;
                         length += 2;
                     }
                 }
@@ -80,7 +81,8 @@ namespace MCGalaxy
                     char first = message[0];
                     if (first <= ' ' || first > '~')
                     {
-                        line[0] = '&'; line[1] = 'f';
+                        line[0] = '&'; 
+                        line[1] = 'f';
                         length += 2;
                     }
                 }
@@ -165,9 +167,7 @@ namespace MCGalaxy
                 if (lastColor != col)
                 {
                     if (combinable)
-                    {
                         chars[lastIdx + 1] = col;
-                    }
                     else
                     {
                         lastIdx = len;
@@ -192,8 +192,7 @@ namespace MCGalaxy
                     len--; 
                     continue;
                 }
-                if (chars[len - 2] != '&') break;
-                if (Colors.Lookup(c) == '\0') break;
+                if (chars[len - 2] != '&' || Colors.Lookup(c) == '\0') break;
                 len -= 2;
             }
             return len;

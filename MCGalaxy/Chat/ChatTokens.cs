@@ -67,9 +67,7 @@ namespace MCGalaxy
         static void ApplyCustom(StringBuilder sb)
         {
             foreach (ChatToken token in Custom)
-            {
                 sb.Replace(token.Trigger, token.Description);
-            }
         }
         public static List<ChatToken> Standard = new() {
             new ChatToken("$date", "Current date (year-month-day)", TokenDate),
@@ -113,9 +111,7 @@ namespace MCGalaxy
             Player[] players = PlayerInfo.Online.Items;
             int count = 0;
             foreach (Player pl in players)
-            {
                 if (p.CanSee(pl)) count++;
-            }
             return NumberUtils.StringifyInt(count);
         }
         static string TokenName(Player p) => (Server.Config.DollarNames ? "$" : "") + Colors.StripUsed(p.DisplayName);
@@ -177,8 +173,7 @@ namespace MCGalaxy
         {
             for (int i = offset; i < s.Length; i++)
             {
-                if (s[i] != ':') continue;
-                if (i > 0 && s[i - 1] == '\\') continue;
+                if (s[i] != ':' || i > 0 && s[i - 1] == '\\') continue;
                 return i;
             }
             return -1;

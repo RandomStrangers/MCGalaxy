@@ -203,16 +203,17 @@ namespace MCGalaxy
             }
             else
                 data = PlayerDB.FindExact(name, "*", PlayerData.Parse);
-            if (data == null)
+            switch (data)
             {
-                PlayerData.Create(this);
-                Chat.MessageFrom(this, "λNICK &Shas connected for the first time!");
-                Message("Welcome " + ColoredName + "&S! This is your first visit.");
-            }
-            else
-            {
-                data.ApplyTo(this);
-                Message("Welcome back " + FullName + "&S! You've been here " + TimesVisited + " times!");
+                case null:
+                    PlayerData.Create(this);
+                    Chat.MessageFrom(this, "λNICK &Shas connected for the first time!");
+                    Message("Welcome " + ColoredName + "&S! This is your first visit.");
+                    break;
+                default:
+                    data.ApplyTo(this);
+                    Message("Welcome back " + FullName + "&S! You've been here " + TimesVisited + " times!");
+                    break;
             }
             gotSQLData = true;
         }

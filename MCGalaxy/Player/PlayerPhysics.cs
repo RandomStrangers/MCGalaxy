@@ -23,9 +23,7 @@ namespace MCGalaxy.Blocks.Physics
             Vec3S32 min = bb.BlockMin, max = bb.BlockMax;
             bool hitWalkthrough = false;
             for (int y = min.Y; y <= max.Y; y++)
-            {
                 for (int z = min.Z; z <= max.Z; z++)
-                {
                     for (int x = min.X; x <= max.X; x++)
                     {
                         ushort xP = (ushort)x, yP = (ushort)y, zP = (ushort)z,
@@ -42,12 +40,9 @@ namespace MCGalaxy.Blocks.Physics
                                 hitWalkthrough = true;
                             }
                         }
-                        if (!p.Level.Props[block].KillerBlock) continue;
-                        if (block == 230 && p.trainInvincible) continue;
+                        if (!p.Level.Props[block].KillerBlock || block == 230 && p.trainInvincible) continue;
                         if (p.Level.Config.KillerBlocks) p.HandleDeath(block);
                     }
-                }
-            }
             if (!hitWalkthrough) p.lastWalkthrough = -1;
         }
         internal static void Fall(Player p, AABB bb, bool movingDown)
@@ -63,7 +58,6 @@ namespace MCGalaxy.Blocks.Physics
             Vec3S32 min = bb.BlockMin, max = bb.BlockMax;
             bool allGas = true;
             for (int z = min.Z; z <= max.Z; z++)
-            {
                 for (int x = min.X; x <= max.X; x++)
                 {
                     ushort block = GetSurvivalBlock(p, x, min.Y, z);
@@ -76,7 +70,6 @@ namespace MCGalaxy.Blocks.Physics
                     p.startFallY = -1;
                     return;
                 }
-            }
             if (!allGas) return;
             if (bb.Min.Y > p.lastFallY) p.startFallY = -1;
             p.startFallY = Math.Max(bb.Min.Y, p.startFallY);

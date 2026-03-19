@@ -43,9 +43,7 @@ namespace MCGalaxy.Blocks
             lock (list)
             {
                 if (!Directory.Exists("blockprops"))
-                {
                     Directory.CreateDirectory("blockprops");
-                }
                 SaveCore(group, list, scope);
             }
         }
@@ -126,25 +124,15 @@ namespace MCGalaxy.Blocks
                     list[b].StackBlock = Block.MapOldRaw(list[b].StackBlock);
                 }
                 if (parts.Length > 12)
-                {
                     bool.TryParse(parts[12], out list[b].OPBlock);
-                }
                 if (parts.Length > 13)
-                {
                     ushort.TryParse(parts[13], out list[b].oDoorBlock);
-                }
                 if (parts.Length > 14)
-                {
                     bool.TryParse(parts[14], out list[b].Drownable);
-                }
                 if (parts.Length > 15)
-                {
                     ushort.TryParse(parts[15], out list[b].GrassBlock);
-                }
                 if (parts.Length > 16)
-                {
                     ushort.TryParse(parts[16], out list[b].DirtBlock);
-                }
             }
         }
         public static BlockProps MakeDefault(BlockProps[] scope, Level lvl, ushort block) => scope == Block.Props ? Block.MakeDefaultProps(block) : IsDefaultBlock(lvl, block) ? Block.Props[block] : MakeEmpty();
@@ -159,8 +147,7 @@ namespace MCGalaxy.Blocks
                 Level[] loaded = LevelInfo.Loaded.Items;
                 foreach (Level lvl in loaded)
                 {
-                    if ((lvl.Props[block].ChangedScope & 0x02) != 0) continue;
-                    if (!IsDefaultBlock(lvl, block)) continue;
+                    if ((lvl.Props[block].ChangedScope & 0x02) != 0 || !IsDefaultBlock(lvl, block)) continue;
                     lvl.Props[block] = scope[block];
                     lvl.UpdateBlockHandlers(block);
                 }

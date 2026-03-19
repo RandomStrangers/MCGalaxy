@@ -20,11 +20,7 @@ namespace MCGalaxy.Util
         /// <summary>
         /// Returns the full country name based on the ISO 3166 two-letter country code, or null if code does not exist in the standard.
         /// </summary>
-        public static string GetName(string twoLetterCode)
-        {
-            twoLetterCode = twoLetterCode.ToUpperInvariant();
-            return !CodesToNames.ContainsKey(twoLetterCode) ? null : CodesToNames[twoLetterCode];
-        }
+        public static string GetName(string twoLetterCode) => !CodesToNames.ContainsKey(twoLetterCode.ToUpperInvariant()) ? null : CodesToNames[twoLetterCode.ToUpperInvariant()];
         /// <summary>
         /// Based on https://www.iban.com/country-codes
         /// </summary>

@@ -32,9 +32,7 @@ namespace MCGalaxy.Config
         {
             if (offset + value.Length > Value.Length) return false;
             for (int i = 0; i < value.Length; i++)
-            {
                 if (Value[offset + i] != value[i]) return false;
-            }
             offset += value.Length;
             return true;
         }
@@ -44,9 +42,19 @@ namespace MCGalaxy.Config
             if (offset >= Value.Length) return 0;
             char c = Cur; 
             offset++;
-            if (c == '{' || c == '}') return c;
-            if (c == '[' || c == ']') return c;
-            if (c == ',' || c == '"' || c == ':') return c;
+            switch (c)
+            {
+                case '{':
+                case '}':
+                    return c;
+                case '[':
+                case ']':
+                    return c;
+                case ',':
+                case '"':
+                case ':':
+                    return c;
+            }
             if (IsNumber(c)) return 1;
             offset--;
             if (NextConstant("true")) return 2;
@@ -104,12 +112,15 @@ namespace MCGalaxy.Config
             while (true)
             {
                 int token = NextToken();
-                if (token == ',') continue;
-                if (token == ']') return arr;
-                if (token == 0)
-                { 
-                    Failed = true;
-                    return null; 
+                switch (token)
+                {
+                    case ',':
+                        continue;
+                    case ']':
+                        return arr;
+                    case 0:
+                        Failed = true;
+                        return null;
                 }
                 arr.Add(ParseValue(token));
             }
@@ -130,18 +141,18 @@ namespace MCGalaxy.Config
                 }
                 if (offset >= Value.Length) break;
                 c = Cur; offset++;
-                if (c == '/' || c == '\\' || c == '"') 
-                { 
-                    s.Append(c); 
-                    continue;
+                switch (c)
+                {
+                    case '/':
+                    case '\\':
+                    case '"':
+                        s.Append(c);
+                        continue;
+                    case 'n':
+                        s.Append('\n');
+                        continue;
                 }
-                if (c == 'n') 
-                { 
-                    s.Append('\n'); 
-                    continue;
-                }
-                if (c != 'u') break;
-                if (offset + 4 > Value.Length) break;
+                if (c != 'u' || offset + 4 > Value.Length) break;
                 int aH = Colors.UnHex(Value[offset + 0]),
                     aL = Colors.UnHex(Value[offset + 1]),
                     bH = Colors.UnHex(Value[offset + 2]),
@@ -175,27 +186,25 @@ namespace MCGalaxy.Config
             w.Write('"');
             foreach (char c in value)
             {
-                if (c == '/')
+                switch (c)
                 {
-                    w.Write("\\/");
-                }
-                else if (c == '\\')
-                {
-                    w.Write("\\\\");
-                }
-                else if (c == '"')
-                {
-                    w.Write("\\\"");
-                }
-                else if (c >= ' ' && c <= '~')
-                {
-                    w.Write(c);
-                }
-                else
-                {
-                    w.Write("\\u");
-                    w.Write(Hex(c, 12)); w.Write(Hex(c, 8));
-                    w.Write(Hex(c, 4)); w.Write(Hex(c, 0));
+                    case '/':
+                        w.Write("\\/");
+                        break;
+                    case '\\':
+                        w.Write("\\\\");
+                        break;
+                    case '"':
+                        w.Write("\\\"");
+                        break;
+                    case >= ' ' and <= '~':
+                        w.Write(c);
+                        break;
+                    default:
+                        w.Write("\\u");
+                        w.Write(Hex(c, 12)); w.Write(Hex(c, 8));
+                        w.Write(Hex(c, 4)); w.Write(Hex(c, 0));
+                        break;
                 }
             }
             w.Write('"');
@@ -226,33 +235,28 @@ namespace MCGalaxy.Config
         }
         protected virtual void WriteValue(object value)
         {
-            if (value == null)
+            switch (value)
             {
-                WriteNull();
-            }
-            else if (value is int)
-            {
-                Write(value.ToString());
-            }
-            else if (value is bool val)
-            {
-                Write(val ? "true" : "false");
-            }
-            else if (value is string v)
-            {
-                WriteString(v);
-            }
-            else if (value is JsonArray array)
-            {
-                WriteArray(array);
-            }
-            else if (value is JsonObject)
-            {
-                WriteObject(value);
-            }
-            else
-            {
-                throw new InvalidOperationException("Unknown datatype: " + value.GetType());
+                case null:
+                    WriteNull();
+                    break;
+                case int:
+                    Write(value.ToString());
+                    break;
+                case bool val:
+                    Write(val ? "true" : "false");
+                    break;
+                case string v:
+                    WriteString(v);
+                    break;
+                case JsonArray array:
+                    WriteArray(array);
+                    break;
+                case JsonObject:
+                    WriteObject(value);
+                    break;
+                default:
+                    throw new InvalidOperationException("Unknown datatype: " + value.GetType());
             }
         }
         protected virtual void SerialiseObject(object value)
@@ -276,17 +280,11 @@ namespace MCGalaxy.Config
         void WriteConfigValue(ConfigAttribute a, string value)
         {
             if (string.IsNullOrEmpty(value))
-            {
                 WriteNull();
-            }
             else if (a is ConfigBoolAttribute || a is ConfigIntegerAttribute || a is ConfigRealAttribute)
-            {
                 Write(value);
-            }
             else
-            {
                 WriteString(value);
-            }
         }
         protected override void SerialiseObject(object value)
         {

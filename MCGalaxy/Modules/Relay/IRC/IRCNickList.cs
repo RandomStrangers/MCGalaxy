@@ -21,61 +21,49 @@ namespace MCGalaxy.Modules.Relay.IRC
         readonly Dictionary<string, List<string>> userMap = new();
         public IRCBot bot;
         public void Clear() => userMap.Clear();
-        public void OnLeftChannel(string userNick, string channel)
-        {
-            List<string> chanNicks = GetNicks(channel);
-            RemoveNick(userNick, chanNicks);
-        }
+        public void OnLeftChannel(string userNick, string channel) => RemoveNick(userNick, GetNicks(channel));
         public void OnLeft(string userNick)
         {
             foreach (KeyValuePair<string, List<string>> chans in userMap)
-            {
                 RemoveNick(userNick, chans.Value);
-            }
         }
         public void OnChangedNick(string userNick, string newNick)
         {
             foreach (KeyValuePair<string, List<string>> chans in userMap)
             {
                 int index = GetNickIndex(userNick, chans.Value);
-                if (index >= 0)
+                switch (index)
                 {
-                    string prefix = GetPrefix(chans.Value[index]);
-                    chans.Value[index] = prefix + newNick;
-                }
-                else
-                {
-                    bot.conn.SendNames(chans.Key);
+                    case >= 0:
+                        chans.Value[index] = GetPrefix(chans.Value[index]) + newNick;
+                        break;
+                    default:
+                        bot.conn.SendNames(chans.Key);
+                        break;
                 }
             }
         }
         public void UpdateFor(string channel, string[] nicks)
         {
-            List<string> chanNicks = GetNicks(channel);
             foreach (string n in nicks)
-                UpdateNick(n, chanNicks);
+                UpdateNick(n, GetNicks(channel));
         }
         List<string> GetNicks(string channel)
         {
             foreach (KeyValuePair<string, List<string>> chan in userMap)
-            {
                 if (chan.Key.CaselessEq(channel)) return chan.Value;
-            }
             List<string> nicks = new();
             userMap[channel] = nicks;
             return nicks;
         }
         void UpdateNick(string n, List<string> chanNicks)
         {
-            string unprefixNick = Unprefix(n);
             for (int i = 0; i < chanNicks.Count; i++)
-            {
-                if (unprefixNick == Unprefix(chanNicks[i]))
+                if (Unprefix(n) == Unprefix(chanNicks[i]))
                 {
-                    chanNicks[i] = n; 
+                    chanNicks[i] = n;
                     return;
                 }
-            }
             chanNicks.Add(n);
         }
         void RemoveNick(string n, List<string> chanNicks)
@@ -88,10 +76,8 @@ namespace MCGalaxy.Modules.Relay.IRC
             if (chanNicks == null) return -1;
             string unprefixNick = Unprefix(n);
             for (int i = 0; i < chanNicks.Count; i++)
-            {
                 if (unprefixNick == Unprefix(chanNicks[i]))
                     return i;
-            }
             return -1;
         }
         string Unprefix(string nick) => nick.Substring(GetPrefixLength(nick));
@@ -119,27 +105,30 @@ namespace MCGalaxy.Modules.Relay.IRC
             foundAtAll = true;
             IRCControllerVerify verify = Server.Config.IRCVerify;
             if (verify == IRCControllerVerify.None) return true;
-            if (verify == IRCControllerVerify.HalfOp)
+            switch (verify)
             {
-                string prefix = GetPrefix(chanNicks[index]);
-                if (prefix.Length == 0 || prefix == "+")
-                {
-                    error = "You must be at least a half-op on the channel to use commands from IRC."; 
-                    return false;
-                }
-                return true;
-            }
-            else
-            {
-                foreach (string chan in bot.OpChannels)
-                {
-                    chanNicks = GetNicks(chan);
-                    if (chanNicks.Count == 0) continue;
-                    index = GetNickIndex(userNick, chanNicks);
-                    if (index != -1) return true;
-                }
-                error = "You must have joined the opchannel to use commands from IRC.";
-                return false;
+                case IRCControllerVerify.HalfOp:
+                    {
+                        string prefix = GetPrefix(chanNicks[index]);
+                        if (prefix.Length == 0 || prefix == "+")
+                        {
+                            error = "You must be at least a half-op on the channel to use commands from IRC.";
+                            return false;
+                        }
+                        return true;
+                    }
+                default:
+                    {
+                        foreach (string chan in bot.OpChannels)
+                        {
+                            chanNicks = GetNicks(chan);
+                            if (chanNicks.Count == 0) continue;
+                            index = GetNickIndex(userNick, chanNicks);
+                            if (index != -1) return true;
+                        }
+                        error = "You must have joined the opchannel to use commands from IRC.";
+                        return false;
+                    }
             }
         }
     }

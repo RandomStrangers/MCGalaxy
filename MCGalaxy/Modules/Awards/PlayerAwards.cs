@@ -34,12 +34,11 @@ namespace MCGalaxy.Modules.Awards
             if (awards == null)
             {
                 awards = new();
-                PlayerAward a = new()
+                Awards.Add(new()
                 {
                     Player = player,
                     Awards = awards
-                };
-                Awards.Add(a);
+                });
             }
             if (awards.CaselessContains(award)) return false;
             awards.Add(award);

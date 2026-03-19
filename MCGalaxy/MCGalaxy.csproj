@@ -24,7 +24,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>True</DebugSymbols>
     <DebugType>Full</DebugType>
-    <Optimize>False</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>..\bin\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>Prompt</ErrorReport>
@@ -545,11 +545,6 @@
     <Compile Include="Modules\Relay\RelayBotCmd.cs" />
     <Compile Include="Modules\Relay\RelayBotEvents.cs" />
     <Compile Include="Modules\Security\IPThrottler.cs" />
-    <Compile Include="Modules\Warps\CmdWarp.cs" />
-    <Compile Include="Modules\Warps\CmdWaypoint.cs" />
-    <Compile Include="Modules\Warps\Warp.cs" />
-    <Compile Include="Modules\Warps\WarpCommand.cs" />
-    <Compile Include="Modules\Warps\WarpPlugin.cs" />
     <Compile Include="NAS\NASWayPoint.cs" />
     <Compile Include="Network\BaseWebSocket.cs" />
     <Compile Include="Network\ClassicProtocol.cs" />

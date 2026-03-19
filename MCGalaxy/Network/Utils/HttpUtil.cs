@@ -141,8 +141,7 @@ namespace MCGalaxy.Network
         }
         static bool CheckHttpOrHttps(Player p, string url)
         {
-            if (!url.Contains("://")) return true;
-            if (!Uri.TryCreate(url, UriKind.Absolute, out Uri uri)) return true;
+            if (!url.Contains("://") || !Uri.TryCreate(url, UriKind.Absolute, out Uri uri)) return true;
             string scheme = uri.Scheme;
             if (scheme.CaselessEq("http") || scheme.CaselessEq("https")) return true;
             p.Message("&WOnly http:// or https:// urls are supported, " +
@@ -175,9 +174,7 @@ namespace MCGalaxy.Network
                     Logger.LogError("Error downloading " + url, ex);
                 }
                 else
-                {
                     Logger.Log(LogType.Warning, "Error downloading " + msg + url + Environment.NewLine + ex.Message);
-                }
                 p.Message("&WFailed to download {0}&f{1}", msg, url);
                 return null;
             }

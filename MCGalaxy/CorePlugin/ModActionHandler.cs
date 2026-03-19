@@ -69,16 +69,11 @@ namespace MCGalaxy.Core
         {
             string targetNick = e.Actor.FormatNick(e.Target);
             if (e.Announce)
-            {
-                Player who = PlayerInfo.FindExact(e.Target);
                 Chat.Message(ChatScope.Global, e.FormatMessage(targetNick, action),
                              null, null, true);
-            }
             else
-            {
                 Chat.Message(ChatScope.Perms, "To Ops: " + e.FormatMessage(targetNick, action),
                              Chat.OpchatPerms, null, true);
-            }
             action = Colors.StripUsed(action);
             string suffix = "";
             if (e.Duration.Ticks != 0) suffix = " &Sfor " + e.Duration.Shorten();
@@ -151,18 +146,14 @@ namespace MCGalaxy.Core
             Player who = PlayerInfo.FindExact(e.Target);
             LogAction(e, "&8unbanned");
             if (Server.tempBans.Remove(e.Target))
-            {
                 Server.tempBans.Save();
-            }
             if (!Group.BannedRank.Players.Contains(e.Target)) return;
             Ban.DeleteUnban(e.Target);
             Ban.UnbanPlayer(e.Actor, e.Target, e.Reason);
             ModActionCmd.ChangeRank(e.Target, Group.BannedRank, Group.DefaultRank, who, false);
             string ip = PlayerDB.FindIP(e.Target);
             if (ip != null && Server.bannedIP.Contains(ip))
-            {
                 e.Actor.Message("NOTE: {0} IP is still banned.", Pronouns.GetFor(e.Target)[0].Object);
-            }
         }
         static void LogIPAction(ModAction e, string type)
         {
@@ -195,20 +186,22 @@ namespace MCGalaxy.Core
             if (who != null)
             {
                 LogAction(e, "&ewarned");
-                if (who.warn == 0)
+                switch (who.warn)
                 {
-                    who.Message("Do it again twice and you will get kicked!");
-                }
-                else if (who.warn == 1)
-                {
-                    who.Message("Do it one more time and you will get kicked!");
-                }
-                else if (who.warn == 2)
-                {
-                    Chat.MessageGlobal("{0} &Swas warn-kicked by {1}", who.ColoredName, e.Actor.ColoredName);
-                    string chatMsg = "by " + e.Actor.ColoredName + "&S: " + e.Reason,
-                        kickMsg = "Kicked by " + e.Actor.ColoredName + ": &f" + e.Reason;
-                    who.Kick(chatMsg, kickMsg);
+                    case 0:
+                        who.Message("Do it again twice and you will get kicked!");
+                        break;
+                    case 1:
+                        who.Message("Do it one more time and you will get kicked!");
+                        break;
+                    case 2:
+                        {
+                            Chat.MessageGlobal("{0} &Swas warn-kicked by {1}", who.ColoredName, e.Actor.ColoredName);
+                            string chatMsg = "by " + e.Actor.ColoredName + "&S: " + e.Reason,
+                                kickMsg = "Kicked by " + e.Actor.ColoredName + ": &f" + e.Reason;
+                            who.Kick(chatMsg, kickMsg);
+                            break;
+                        }
                 }
                 who.warn++;
             }
@@ -229,9 +222,7 @@ namespace MCGalaxy.Core
             string action = newRank.Permission >= e.TargetGroup.Permission ? "promoted to " : "demoted to ";
             LogAction(e, action + newRank.ColoredName);
             if (who != null && e.Announce)
-            {
                 who.Message("You are now ranked " + newRank.ColoredName + "&S, type /Help for your new set of commands.");
-            }
             if (Server.tempRanks.Remove(e.Target))
             {
                 ModerationTasks.TemprankCalcNextRun();
@@ -261,7 +252,6 @@ namespace MCGalaxy.Core
             long assign = DateTime.UtcNow.ToUnixTime();
             DateTime end = DateTime.MaxValue.AddYears(-1);
             if (e.Duration != TimeSpan.Zero)
-            {
                 try
                 {
                     end = DateTime.UtcNow.Add(e.Duration);
@@ -269,7 +259,6 @@ namespace MCGalaxy.Core
                 catch (ArgumentOutOfRangeException)
                 {
                 }
-            }
             long expiry = end.ToUnixTime();
             string assigner = e.Actor.name;
             return assigner + " " + assign + " " + expiry;

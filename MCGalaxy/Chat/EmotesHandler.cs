@@ -59,9 +59,7 @@ namespace MCGalaxy
                 if (endIndex == -1) break;
                 bool escaped = false;
                 for (int i = begIndex - 1; i >= 0 && message[i] == '\\'; i--)
-                {
                     escaped = !escaped;
-                }
                 string keyword = message.Substring(begIndex + 1, endIndex - begIndex - 1);
                 if (tokens.TryGetValue(keyword.ToLowerInvariant(), out char substitute))
                 {
@@ -80,9 +78,7 @@ namespace MCGalaxy
                     }
                 }
                 else
-                {
                     begIndex++;
-                }
                 begIndex = message.IndexOf('(', begIndex);
             }
             output.Append(message, lastAppendedIndex, message.Length - lastAppendedIndex);

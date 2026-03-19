@@ -159,8 +159,7 @@ namespace MCGalaxy
             Level lvl = e.Level;
             foreach (Player pl in players)
             {
-                if (pl.Level != lvl || !pl.hasChangeModel) continue;
-                if (!pl.CanSeeEntity(e)) continue;
+                if (pl.Level != lvl || !pl.hasChangeModel || !pl.CanSeeEntity(e)) continue;
                 string model = Chat.Format(m, pl, true, false);
                 pl.EntityList.SendModel(e, model);
                 pl.EntityList.SendScales(e);
@@ -192,8 +191,7 @@ namespace MCGalaxy
             Level lvl = e.Level;
             foreach (Player pl in players)
             {
-                if (pl.Level != lvl || !pl.Supports(CpeExt.EntityProperty)) continue;
-                if (!pl.CanSeeEntity(e)) continue;
+                if (pl.Level != lvl || !pl.Supports(CpeExt.EntityProperty) || !pl.CanSeeEntity(e)) continue;
                 pl.EntityList.SendProp(e, prop, value);
             }
         }

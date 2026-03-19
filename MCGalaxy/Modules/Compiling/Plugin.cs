@@ -19,7 +19,6 @@ using MCGalaxy.Modules.Moderation.Review;
 using MCGalaxy.Modules.Relay.Discord;
 using MCGalaxy.Modules.Relay.IRC;
 using MCGalaxy.Modules.Security;
-using MCGalaxy.Modules.Warps;
 using System;
 using System.Collections.Generic;
 namespace MCGalaxy
@@ -122,7 +121,6 @@ namespace MCGalaxy
             LoadCorePlugin(new DiscordPlugin());
             LoadCorePlugin(new IRCPlugin());
             LoadCorePlugin(new IPThrottler());
-            LoadCorePlugin(new WarpsPlugin());
             LoadCorePlugin(new CompilerPlugin());
             Compiler.AutoloadPlugins();
         }

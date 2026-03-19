@@ -22,51 +22,58 @@ namespace MCGalaxy.Core
         {
             string text = msg.Replace("λFULL", source.name).Replace("λNICK", source.name);
             LogType logType = LogType.PlayerChat;
-            if (scope == ChatScope.Perms)
+            switch (scope)
             {
-                logType = LogType.StaffChat;
-            }
-            else if (scope == ChatScope.Rank)
-            {
-                logType = LogType.RankChat;
+                case ChatScope.Perms:
+                    logType = LogType.StaffChat;
+                    break;
+                case ChatScope.Rank:
+                    logType = LogType.RankChat;
+                    break;
             }
             if (scope != ChatScope.PM) Logger.Log(logType, text);
         }
         internal static void HandleCommand(Player p, string cmd, string _, CommandData __)
         {
-            if (!Server.Config.CoreSecretCommands) return;
-            if (cmd == "pony")
-            {
-                p.cancelcommand = true;
-                if (!MessageCmd.CanSpeak(p, cmd)) return;
-                int used = p.Extras.GetInt("MCG_PONY");
-                if (used < 2)
+            if (Server.Config.CoreSecretCommands) switch (cmd)
                 {
-                    Chat.MessageFrom(p, "λNICK &Sjust so happens to be a proud brony! Everyone give λNICK &Sa brohoof!");
-                    Logger.Log(LogType.CommandUsage, "{0} used /{1}", p.name, cmd);
+                    case "pony":
+                        {
+                            p.cancelcommand = true;
+                            if (!MessageCmd.CanSpeak(p, cmd)) return;
+                            int used = p.Extras.GetInt("MCG_PONY");
+                            switch (used)
+                            {
+                                case < 2:
+                                    Chat.MessageFrom(p, "λNICK &Sjust so happens to be a proud brony! Everyone give λNICK &Sa brohoof!");
+                                    Logger.Log(LogType.CommandUsage, "{0} used /{1}", p.name, cmd);
+                                    break;
+                                default:
+                                    p.Message("You have used this command 2 times. You cannot use it anymore! Sorry, Brony!");
+                                    break;
+                            }
+                            p.Extras["MCG_PONY"] = used + 1;
+                            break;
+                        }
+                    case "rainbowdashlikescoolthings":
+                        {
+                            p.cancelcommand = true;
+                            if (!MessageCmd.CanSpeak(p, cmd)) return;
+                            int used = p.Extras.GetInt("MCG_RD");
+                            switch (used)
+                            {
+                                case < 2:
+                                    Chat.MessageGlobal("&4T&6H&eI&aS&3 S&9E&1R&4V&6E&eR &aJ&3U&9S&1T &4G&6O&eT &a2&30 &9P&1E&4R&6C&eE&aN&3T &9C&1O&4O&6L&eE&aR&3!");
+                                    Logger.Log(LogType.CommandUsage, "{0} used /{1}", p.name, cmd);
+                                    break;
+                                default:
+                                    p.Message("You have used this command 2 times. You cannot use it anymore! Sorry, Brony!");
+                                    break;
+                            }
+                            p.Extras["MCG_RD"] = used + 1;
+                            break;
+                        }
                 }
-                else
-                {
-                    p.Message("You have used this command 2 times. You cannot use it anymore! Sorry, Brony!");
-                }
-                p.Extras["MCG_PONY"] = used + 1;
-            }
-            else if (cmd == "rainbowdashlikescoolthings")
-            {
-                p.cancelcommand = true;
-                if (!MessageCmd.CanSpeak(p, cmd)) return;
-                int used = p.Extras.GetInt("MCG_RD");
-                if (used < 2)
-                {
-                    Chat.MessageGlobal("&4T&6H&eI&aS&3 S&9E&1R&4V&6E&eR &aJ&3U&9S&1T &4G&6O&eT &a2&30 &9P&1E&4R&6C&eE&aN&3T &9C&1O&4O&6L&eE&aR&3!");
-                    Logger.Log(LogType.CommandUsage, "{0} used /{1}", p.name, cmd);
-                }
-                else
-                {
-                    p.Message("You have used this command 2 times. You cannot use it anymore! Sorry, Brony!");
-                }
-                p.Extras["MCG_RD"] = used + 1;
-            }
         }
     }
 }

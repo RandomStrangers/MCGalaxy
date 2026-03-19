@@ -23,8 +23,7 @@ namespace MCGalaxy.Modules.Relay
         public static void Call(RelayBot bot, string channel, RelayUser user, string message, ref bool cancel)
         {
             IEvent<OnDirectMessage>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
+            for (long i = 0; i < items.LongLength; i++)
                 try
                 {
                     items[i].method(bot, channel, user, message, ref cancel);
@@ -33,7 +32,6 @@ namespace MCGalaxy.Modules.Relay
                 {
                     LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
     public delegate void OnChannelMessage(RelayBot bot, string channel, RelayUser user, string message, ref bool cancel);
@@ -43,8 +41,7 @@ namespace MCGalaxy.Modules.Relay
         public static void Call(RelayBot bot, string channel, RelayUser user, string message, ref bool cancel)
         {
             IEvent<OnChannelMessage>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
+            for (long i = 0; i < items.LongLength; i++)
                 try
                 {
                     items[i].method(bot, channel, user, message, ref cancel);
@@ -53,7 +50,6 @@ namespace MCGalaxy.Modules.Relay
                 {
                     LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
 }

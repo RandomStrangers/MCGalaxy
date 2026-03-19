@@ -200,9 +200,7 @@ namespace MCGalaxy
             bool cancel = false;
             OnLevelSaveEvent.Call(this, ref cancel);
             if (cancel)
-            {
                 return false;
-            }
             try
             {
                 if (!Directory.Exists("levels"))

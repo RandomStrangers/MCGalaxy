@@ -57,8 +57,7 @@ namespace MCGalaxy.Config
         {
             foreach (char c in value)
             {
-                if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) continue;
-                if (allowedChars.IndexOf(c) >= 0) continue;
+                if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || allowedChars.IndexOf(c) >= 0) continue;
                 Logger.Log(LogType.Warning, "Config key \"{0}\" contains non-allowed character \"{2}\", using default of {1}",
                            Name, defValue, c);
                 return defValue;

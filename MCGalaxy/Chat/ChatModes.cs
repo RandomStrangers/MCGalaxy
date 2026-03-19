@@ -66,9 +66,7 @@ namespace MCGalaxy
                     return true;
                 }
                 else
-                {
                     p.Message("&HIf you meant to send this to opchat, use &T##" + text.Substring(1));
-                }
             }
             else if (text[0] == '+')
             {
@@ -78,21 +76,17 @@ namespace MCGalaxy
                     return true;
                 }
                 else
-                {
                     p.Message("&HIf you meant to send this to adminchat, use &T++" + text.Substring(1));
-                }
             }
             return false;
         }
         public static void MessageOps(Player p, string message)
         {
-            if (!MessageCmd.CanSpeak(p, "OpChat")) return;
-            MessageStaff(p, message, Chat.OpchatPerms, "Ops");
+            if (MessageCmd.CanSpeak(p, "OpChat")) MessageStaff(p, message, Chat.OpchatPerms, "Ops");
         }
         public static void MessageAdmins(Player p, string message)
         {
-            if (!MessageCmd.CanSpeak(p, "AdminChat")) return;
-            MessageStaff(p, message, Chat.AdminchatPerms, "Admins");
+            if (MessageCmd.CanSpeak(p, "AdminChat")) MessageStaff(p, message, Chat.AdminchatPerms, "Admins");
         }
         public static void MessageStaff(Player p, string message,
                                         ItemPerms perms, string group)
@@ -114,9 +108,7 @@ namespace MCGalaxy
             }
             Logger.Log(LogType.PrivateChat, "{0} @{1}: {2}", p.name, target.name, message);
             if (!p.IsNASConsole)
-            {
                 p.Message("[<] {0}: &f{1}", p.FormatNick(target), message);
-            }
             Chat.MessageChat(ChatScope.PM, p, "&9[>] λNICK: &f" + message, target, null);
         }
     }

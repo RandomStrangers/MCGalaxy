@@ -15,7 +15,6 @@
 using MCGalaxy.Blocks;
 using MCGalaxy.Blocks.Physics;
 using MCGalaxy.Events.LevelEvents;
-using MCGalaxy.Network;
 using System;
 using System.Threading;
 namespace MCGalaxy
@@ -42,8 +41,7 @@ namespace MCGalaxy
         {
             lock (physThreadLock)
             {
-                if (physThread != null && physThread.ThreadState == ThreadState.Running) return;
-                if (ListCheck.Count == 0 || physThreadStarted) return;
+                if (physThread != null && physThread.ThreadState == ThreadState.Running || ListCheck.Count == 0 || physThreadStarted) return;
                 Utils.StartBackgroundThread(out physThread, "Physics_" + name,
                                    PhysicsLoop);
                 physThreadStarted = true;

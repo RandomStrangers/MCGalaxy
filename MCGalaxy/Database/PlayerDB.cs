@@ -56,13 +56,15 @@ namespace MCGalaxy.DB
         static void SetMessage(string path, string msg)
         {
             EnsureDirectoriesExist();
-            if (msg.Length > 0)
+            switch (msg.Length)
             {
-                FileIO.TryWriteAllText(path, msg);
-            }
-            else if (File.Exists(path))
-            {
-                FileIO.TryDelete(path);
+                case > 0:
+                    FileIO.TryWriteAllText(path, msg);
+                    break;
+                default:
+                    if (File.Exists(path))
+                        FileIO.TryDelete(path);
+                    break;
             }
         }
         public static void SetLoginMessage(string name, string msg) => SetMessage(LoginPath(name), msg);

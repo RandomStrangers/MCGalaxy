@@ -38,15 +38,16 @@ namespace MCGalaxy
         public void Update(string name, string data)
         {
             lock (locker)
-            {
-                if (names.CaselessIndexOf(name) == -1)
+                switch (names.CaselessIndexOf(name))
                 {
-                    names.Add(name); 
-                    lines.Add(name + Separator + data);
+                    case -1:
+                        names.Add(name);
+                        lines.Add(name + Separator + data);
+                        break;
+                    default:
+                        lines[names.CaselessIndexOf(name)] = name + Separator + data;
+                        break;
                 }
-                else
-                    lines[names.CaselessIndexOf(name)] = name + Separator + data;
-            }
         }
         /// <summary> Returns whether the given name was removed from this list. </summary>
         public bool Remove(string name)

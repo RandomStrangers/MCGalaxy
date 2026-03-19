@@ -38,9 +38,7 @@ namespace MCGalaxy
         static Colors()
         {
             for (int i = 0; i < List.Length; i++)
-            {
                 List[i] = DefaultCol((char)i);
-            }
         }
         /// <summary> Returns whether the given color code is defined. </summary>
         /// <remarks> NOTE: This returns false for A to F, be warned! </remarks>
@@ -95,17 +93,14 @@ namespace MCGalaxy
             List[color.Index] = color;
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
-            {
                 p.Session.SendSetTextColor(color);
-            }
             Save();
         }
         public static string Parse(string name)
         {
             for (int i = 0; i < List.Length; i++)
             {
-                if (List[i].Undefined) continue;
-                if (!List[i].Name.CaselessEq(name)) continue;
+                if (List[i].Undefined || !List[i].Name.CaselessEq(name)) continue;
                 return "&" + List[i].Code;
             }
             return "";
@@ -145,10 +140,8 @@ namespace MCGalaxy
         {
             if (value.IndexOf('%') == -1) return value;
             char[] chars = new char[value.Length];
-            for (int i = 0; i < chars.Length; i++) 
-            {
-                chars[i] = value[i]; 
-            }
+            for (int i = 0; i < chars.Length; i++)
+                chars[i] = value[i];
             for (int i = 0; i < chars.Length;)
             {
                 int end = value.IndexOf(' ', i);
@@ -166,8 +159,7 @@ namespace MCGalaxy
                 len -= 2; 
                 i += 2; 
             }
-            if (len < 7) return false;
-            if (chars[i] != 'h' || chars[i + 1] != 't' || chars[i + 2] != 't' || chars[i + 3] != 'p') return false;
+            if (len < 7 || chars[i] != 'h' || chars[i + 1] != 't' || chars[i + 2] != 't' || chars[i + 3] != 'p') return false;
             len -= 4;
             i += 4;
             if (chars[i] == 's') 
@@ -201,13 +193,15 @@ namespace MCGalaxy
             for (int i = 0; i < value.Length; i++)
             {
                 char token = value[i];
-                if (token == '%' || token == '&')
+                switch (token)
                 {
-                    i++;
-                }
-                else
-                {
-                    output[usedChars++] = token;
+                    case '%':
+                    case '&':
+                        i++;
+                        break;
+                    default:
+                        output[usedChars++] = token;
+                        break;
                 }
             }
             return new(output, 0, usedChars);
@@ -223,13 +217,9 @@ namespace MCGalaxy
             {
                 char c = message[i];
                 if ((c == '%' || c == '&') && UsedColor(message, i))
-                {
                     i++;
-                }
                 else
-                {
                     output[usedChars++] = c;
-                }
             }
             return new(output, 0, usedChars);
         }
@@ -273,9 +263,7 @@ namespace MCGalaxy
                 col.Code = parts[0][0]; col.Fallback = parts[1][0]; col.Name = parts[2];
                 if (byte.TryParse(parts[3], out col.R) && byte.TryParse(parts[4], out col.G)
                     && byte.TryParse(parts[5], out col.B) && byte.TryParse(parts[6], out col.A))
-                {
                     List[col.Index] = col;
-                }
             }
         }
         /// <summary> Parses an #RRGGBB hex color string. </summary>
@@ -286,24 +274,23 @@ namespace MCGalaxy
             if (hex[0] == '#') hex = hex.Remove(0, 1);
             if (!(hex.Length == 3 || hex.Length == 6)) return false;
             for (int i = 0; i < hex.Length; i++)
-            {
                 if (UnHex(hex[i]) == -1) return false;
-            }
             int R, G, B;
-            if (hex.Length == 6)
+            switch (hex.Length)
             {
-                R = (UnHex(hex[0]) << 4) | UnHex(hex[1]);
-                G = (UnHex(hex[2]) << 4) | UnHex(hex[3]);
-                B = (UnHex(hex[4]) << 4) | UnHex(hex[5]);
-            }
-            else
-            {
-                R = UnHex(hex[0]); 
-                R |= R << 4;
-                G = UnHex(hex[1]); 
-                G |= G << 4;
-                B = UnHex(hex[2]); 
-                B |= B << 4;
+                case 6:
+                    R = UnHex(hex[0]) << 4 | UnHex(hex[1]);
+                    G = UnHex(hex[2]) << 4 | UnHex(hex[3]);
+                    B = UnHex(hex[4]) << 4 | UnHex(hex[5]);
+                    break;
+                default:
+                    R = UnHex(hex[0]);
+                    R |= R << 4;
+                    G = UnHex(hex[1]);
+                    G |= G << 4;
+                    B = UnHex(hex[2]);
+                    B |= B << 4;
+                    break;
             }
             c.R = (byte)R; 
             c.G = (byte)G; 
@@ -339,13 +326,14 @@ namespace MCGalaxy
             Fallback = code;
             Name = name; 
             A = 255;
-            if (code >= '0' && code <= '9')
+            switch (code)
             {
-                HexDecode(code - '0', out R, out G, out B);
-            }
-            else
-            {
-                HexDecode(code - 'a' + 10, out R, out G, out B);
+                case >= '0' and <= '9':
+                    HexDecode(code - '0', out R, out G, out B);
+                    break;
+                default:
+                    HexDecode(code - 'a' + 10, out R, out G, out B);
+                    break;
             }
         }
         static void HexDecode(int hex, out byte r, out byte g, out byte b)

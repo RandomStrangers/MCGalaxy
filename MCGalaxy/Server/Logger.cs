@@ -65,7 +65,6 @@ namespace MCGalaxy
         public static void Log(LogType type, string message)
         {
             lock (logLock)
-            {
                 try
                 {
                     LogHandler?.Invoke(type, message);
@@ -80,7 +79,6 @@ namespace MCGalaxy
                     {
                     }
                 }
-            }
         }
         public static void Log(LogType type, string format, params object[] args) => Log(type, string.Format(format, args));
         public static void LogError(string action, Exception ex)

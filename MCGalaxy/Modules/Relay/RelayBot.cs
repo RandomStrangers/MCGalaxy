@@ -62,17 +62,13 @@ namespace MCGalaxy.Modules.Relay
         public void SendPublicMessage(string message)
         {
             foreach (string chan in Channels)
-            {
                 SendMessage(chan, message);
-            }
         }
         /// <summary> Sends a message to all channels setup for staff chat only </summary>
         public void SendStaffMessage(string message)
         {
             foreach (string chan in OpChannels)
-            {
                 SendMessage(chan, message);
-            }
         }
         /// <summary> Sends a message to the given channel </summary>
         /// <remarks> Channels can specify either group chat or direct messages </remarks>
@@ -117,8 +113,20 @@ namespace MCGalaxy.Modules.Relay
         {
             if (!Connected) return;
             canReconnect = false;
-            try { DoDisconnect(reason); } catch { }
-            try { worker.Join(); } catch { }
+            try 
+            { 
+                DoDisconnect(reason); 
+            } 
+            catch 
+            { 
+            }
+            try 
+            { 
+                worker.Join(); 
+            } 
+            catch 
+            {
+            }
         }
         /// <summary> Disconnects from the external communication service and then connects again </summary>
         public void Reset()
@@ -205,15 +213,11 @@ namespace MCGalaxy.Modules.Relay
         {
             BannedCommands = new List<string>() { "IRCBot", "DiscordBot", "OpRules", "IRCControllers", "DiscordControllers" };
             if (!File.Exists("text/irccmdblacklist.txt"))
-            {
                 FileIO.TryWriteAllLines("text/irccmdblacklist.txt", new string[] {
                                        "# Here you can put commands that cannot be used from the IRC bot.",
                                        "# Lines starting with \"#\" are ignored." });
-            }
             foreach (string line in Utils.ReadAllLinesList("text/irccmdblacklist.txt"))
-            {
                 if (!line.IsCommentLine()) BannedCommands.Add(line);
-            }
         }
         protected virtual void OnStart()
         {
@@ -249,39 +253,29 @@ namespace MCGalaxy.Modules.Relay
             }
             fakeStaff.group = GetControllerRank();
             if (scopeFilter(fakeStaff, arg) && (filter == null || filter(fakeStaff, arg)))
-            {
                 SendStaffMessage(msg);
-            }
         }
         void OnChatSys(ChatScope scope, ref string msg, object arg,
                            ref ChatMessageFilter filter, bool relay)
         {
-            if (!relay) return;
-            string text = PrepareMessage(msg);
-            MessageToRelay(scope, text, arg, filter);
+            if (relay) MessageToRelay(scope, PrepareMessage(msg), arg, filter);
         }
         void OnChatFrom(ChatScope scope, Player source, ref string msg,
                             object arg, ref ChatMessageFilter filter, bool relay)
         {
-            if (!relay) return;
-            string text = PrepareMessage(msg);
-            MessageToRelay(scope, Unescape(source, text), arg, filter);
+            if (relay) MessageToRelay(scope, Unescape(source, PrepareMessage(msg)), arg, filter);
         }
         void OnChat(ChatScope scope, Player source, ref string msg,
                         object arg, ref ChatMessageFilter filter, bool relay)
         {
-            if (!relay) return;
-            string text = PrepareMessage(msg);
-            MessageToRelay(scope, Unescape(source, text), arg, filter);
+            if (relay) MessageToRelay(scope, Unescape(source, PrepareMessage(msg)), arg, filter);
         }
         void OnShutdown(bool restarting, string message) => Disconnect(restarting ? "Server is restarting" : "Server is shutting down");
         /// <summary> Simplifies some fancy characters (e.g. simplifies ” to ") </summary>
         protected void SimplifyCharacters(StringBuilder sb)
         {
-            sb.Replace("“", "\"");
-            sb.Replace("”", "\"");
-            sb.Replace("‘", "'");
-            sb.Replace("’", "'");
+            sb.Replace("“", "\"").Replace("”", "\"")
+                .Replace("‘", "'").Replace("’", "'");
         }
         protected abstract string ParseMessage(string message);
         /// <summary> Handles a direct message written by the given user </summary>
@@ -318,11 +312,7 @@ namespace MCGalaxy.Modules.Relay
             string rawCmd = parts[0].ToLower();
             bool chat = Channels.CaselessContains(channel),
                 opchat = OpChannels.CaselessContains(channel);
-            if ((chat || opchat) && HandleListPlayers(user, channel, rawCmd, opchat)) return;
-            if (rawCmd.CaselessEq(Server.Config.IRCCommandPrefix))
-            {
-                if (!HandleCommand(user, channel, message, parts)) return;
-            }
+            if ((chat || opchat) && HandleListPlayers(user, channel, rawCmd, opchat) || rawCmd.CaselessEq(Server.Config.IRCCommandPrefix) && !HandleCommand(user, channel, message, parts)) return;
             string msg = user.GetMessagePrefix() + message;
             if (opchat)
             {
@@ -344,11 +334,10 @@ namespace MCGalaxy.Modules.Relay
             if (!isWho || (DateTime.UtcNow - last).TotalSeconds <= 5) return false;
             try
             {
-                RelayPlayer p = new(channel, user, this)
+                MessagePlayers(new(channel, user, this)
                 {
                     group = Group.DefaultRank
-                };
-                MessagePlayers(p);
+                });
             }
             catch (Exception e)
             {
@@ -449,9 +438,7 @@ namespace MCGalaxy.Modules.Relay
                 color = "&a";
                 Bot = bot;
                 if (user != null)
-                {
                     DatabaseID = NameConverter.InvalidNameID("(" + bot.RelayName + " " + user.Nick + ")");
-                }
                 SuperName = bot.RelayName;
             }
             public override void Message(string message) => Bot.SendMessage(ChannelID, message);

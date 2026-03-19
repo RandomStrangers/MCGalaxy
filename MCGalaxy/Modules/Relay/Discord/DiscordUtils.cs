@@ -26,10 +26,8 @@ namespace MCGalaxy.Modules.Relay.Discord
         };
         public static string EscapeMarkdown(string message)
         {
-            for (int i = 0; i < markdown_special.Length; i++)
-            {
+            for (long i = 0; i < markdown_special.LongLength; i++)
                 message = message.Replace(markdown_special[i], markdown_escaped[i]);
-            }
             return message;
         }
         public static string MarkdownToSpecial(string input) => input

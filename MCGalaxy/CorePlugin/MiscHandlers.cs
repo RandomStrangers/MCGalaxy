@@ -27,10 +27,8 @@ namespace MCGalaxy.Core
                 movedY = Math.Abs(next.Y - p.Pos.Y) > 40,
                 movedZ = Math.Abs(next.Z - p.Pos.Z) > 4; 
             p.SetYawPitch(yaw, pitch);
-            if (movedX || movedY || movedZ) 
-            {
-                p.SendPosition(p.Pos, p.Rot); 
-            }
+            if (movedX || movedY || movedZ)
+                p.SendPosition(p.Pos, p.Rot);
             cancel = true;
         }
         internal static void HandleSentMap(Player p, Level _, Level level)
@@ -45,15 +43,11 @@ namespace MCGalaxy.Core
             p.SendCurrentTextures();
             p.SendCurrentBlockPermissions();
             Zone[] zones = level.Zones.Items;
-            foreach (Zone zn in zones) 
-            { 
+            foreach (Zone zn in zones)
                 zn.Show(p);
-            }
             if (p.weapon != null && !level.Config.Guns) p.weapon.Disable();
             if (!level.Config.UseBlockDB)
-            {
                 p.Message("BlockDB is disabled here, &Wyou will not be able to /undo or /redo");
-            }
         }
         internal static void HandleChangedZone(Player p)
         {
@@ -68,28 +62,21 @@ namespace MCGalaxy.Core
         internal static void HandlePlayerClick(Player p, MouseButton _, MouseAction action, ushort __, ushort ___,
                                                byte id, ushort x, ushort y, ushort z, TargetBlockFace ____)
         {
-            if (action != MouseAction.Pressed) return;
-            if (id != Entities.SelfID && ClickOnBot(p, id)) return;
-            if (p.Level.Config.Deletable || !p.Level.IsValidPos(x, y, z)) return;
+            if (action != MouseAction.Pressed || id != Entities.SelfID && ClickOnBot(p, id) || p.Level.Config.Deletable || !p.Level.IsValidPos(x, y, z)) return;
             ushort block = p.Level.GetBlock(x, y, z);
             bool isMB = p.Level.Props[block].IsMessageBlock,
                 isPortal = p.Level.Props[block].IsPortal;
-            if (isMB) 
-            { 
+            if (isMB)
                 MessageBlock.Handle(p, x, y, z, true);
-            }
-            if (isPortal) 
-            { 
-                Portal.Handle(p, x, y, z); 
-            }
+            if (isPortal)
+                Portal.Handle(p, x, y, z);
         }
         static bool ClickOnBot(Player p, byte id)
         {
             PlayerBot[] bots = p.Level.Bots.Items;
             for (int i = 0; i < bots.Length; i++)
             {
-                if (!p.EntityList.GetID(bots[i], out byte botID)) continue;
-                if (botID != id) continue;
+                if (!p.EntityList.GetID(bots[i], out byte botID) || botID != id) continue;
                 if (bots[i].ClickedOnText == null && !p.checkingBotInfo) return false;
                 Vec3F32 delta = p.Pos.ToVec3F32() - bots[i].Pos.ToVec3F32();
                 float reachSq = p.ReachDistance * p.ReachDistance;

@@ -39,9 +39,7 @@ namespace MCGalaxy
         }
         public bool CheckBlockSpam()
         {
-            if (p.ignoreGrief || !Server.Config.BlockSpamCheck) return false;
-            if (blockLog.AddSpamEntry(Server.Config.BlockSpamCount, Server.Config.BlockSpamInterval))
-                return false;
+            if (p.ignoreGrief || !Server.Config.BlockSpamCheck || blockLog.AddSpamEntry(Server.Config.BlockSpamCount, Server.Config.BlockSpamInterval)) return false;
             Chat.MessageFromOps(p, "λNICK &Wwas kicked from " + p.Level.name + " for suspected griefing.");
             Logger.Log(LogType.SuspiciousActivity,
                        "{0} was kicked from {1} for block spam ({2} blocks in {3} seconds)",

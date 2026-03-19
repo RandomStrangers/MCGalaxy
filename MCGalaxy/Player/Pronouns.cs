@@ -106,15 +106,11 @@ namespace MCGalaxy
                 Logger.Log(LogType.Warning, "Cannot load pronouns \"{0}\" because it is already defined.", name);
                 return;
             }
-            string tpos;
-            if (words.Length > 5)
-                tpos = words[5];
-            else if (name.CaselessContains("him"))
-                tpos = "him";
-            else if (name.CaselessContains("her"))
-                tpos = "her";
-            else
-                tpos = Default.ThirdPersonObjectiveSingular;
+            string tpos = words.Length switch
+            {
+                > 5 => words[5],
+                _ => name.CaselessContains("him") ? "him" : name.CaselessContains("her") ? "her" : Default.ThirdPersonObjectiveSingular,
+            };
             Loaded.Add(new(name, words[1], words[2], words[3], plural, tpos));
         }
         static string PlayerPath(string playerName) => "text/pronouns/" + playerName + ".txt";
@@ -181,7 +177,7 @@ namespace MCGalaxy
         public static Pronouns FindMatch(Player p, string name)
         {
             lock (locker)
-                return Matcher.Find(p, name, out int matches, Loaded,
+                return Matcher.Find(p, name, out _, Loaded,
                                            null, pro => pro.Name, "pronouns");
         }
         /// <summary>

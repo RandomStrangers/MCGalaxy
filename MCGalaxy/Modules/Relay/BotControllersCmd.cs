@@ -43,9 +43,7 @@ namespace MCGalaxy.Modules.Relay
                         return; 
                     }
                     if (!bot.Controllers.Add(arg))
-                    {
                         p.Message("{0} is already in the {1} controllers list.", arg, bot.RelayName);
-                    }
                     else
                     {
                         bot.Controllers.Save();
@@ -59,9 +57,7 @@ namespace MCGalaxy.Modules.Relay
                         return; 
                     }
                     if (!bot.Controllers.Remove(arg))
-                    {
                         p.Message("{0} is not in the {1} controllers list.", arg, bot.RelayName);
-                    }
                     else
                     {
                         bot.Controllers.Save();

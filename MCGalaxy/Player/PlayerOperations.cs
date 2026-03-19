@@ -41,13 +41,16 @@ namespace MCGalaxy
         /// <remarks> Not allowed when players who cannot speak (e.g. muted) </remarks>
         public static bool SetLoginMessage(Player p, string target, string message)
         {
-            if (message.Length == 0)
-                p.Message("Login message of {0} &Swas removed", p.FormatNick(target));
-            else
+            switch (message.Length)
             {
-                if (!p.CheckCanSpeak("change login messages")) return false;
-                p.Message("Login message of {0} &Swas changed to: {1}",
-                          p.FormatNick(target), message);
+                case 0:
+                    p.Message("Login message of {0} &Swas removed", p.FormatNick(target));
+                    break;
+                default:
+                    if (!p.CheckCanSpeak("change login messages")) return false;
+                    p.Message("Login message of {0} &Swas changed to: {1}",
+                              p.FormatNick(target), message);
+                    break;
             }
             PlayerDB.SetLoginMessage(target, message);
             return true;
@@ -56,13 +59,16 @@ namespace MCGalaxy
         /// <remarks> Not allowed when players who cannot speak (e.g. muted) </remarks>
         public static bool SetLogoutMessage(Player p, string target, string message)
         {
-            if (message.Length == 0)
-                p.Message("Logout message of {0} &Swas removed", p.FormatNick(target));
-            else
+            switch (message.Length)
             {
-                if (!p.CheckCanSpeak("change logout messages")) return false;
-                p.Message("Logout message of {0} &Swas changed to: {1}",
-                          p.FormatNick(target), message);
+                case 0:
+                    p.Message("Logout message of {0} &Swas removed", p.FormatNick(target));
+                    break;
+                default:
+                    if (!p.CheckCanSpeak("change logout messages")) return false;
+                    p.Message("Logout message of {0} &Swas changed to: {1}",
+                              p.FormatNick(target), message);
+                    break;
             }
             PlayerDB.SetLogoutMessage(target, message);
             return true;
@@ -77,16 +83,19 @@ namespace MCGalaxy
                 return false;
             }
             Player who = PlayerInfo.FindExact(target);
-            if (nick.Length == 0)
+            switch (nick.Length)
             {
-                MessageAction(p, target, who, "λACTOR &Sremoved λTARGET nick");
-                nick = Server.ToRawUsername(target);
-            }
-            else
-            {
-                if (!p.CheckCanSpeak("change nicks")) return false;
-                string color = who != null ? who.color : Group.GroupIn(target).Color;
-                MessageAction(p, target, who, "λACTOR &Schanged λTARGET nick to " + color + nick);
+                case 0:
+                    MessageAction(p, target, who, "λACTOR &Sremoved λTARGET nick");
+                    nick = Server.ToRawUsername(target);
+                    break;
+                default:
+                    {
+                        if (!p.CheckCanSpeak("change nicks")) return false;
+                        string color = who != null ? who.color : Group.GroupIn(target).Color;
+                        MessageAction(p, target, who, "λACTOR &Schanged λTARGET nick to " + color + nick);
+                        break;
+                    }
             }
             if (who != null)
             {
@@ -106,12 +115,15 @@ namespace MCGalaxy
                 return false;
             }
             Player who = PlayerInfo.FindExact(target);
-            if (title.Length == 0)
-                MessageAction(p, target, who, "λACTOR &Sremoved λTARGET title");
-            else
+            switch (title.Length)
             {
-                if (!p.CheckCanSpeak("change titles")) return false;
-                MessageAction(p, target, who, "λACTOR &Schanged λTARGET title to &b[" + title + "&b]");
+                case 0:
+                    MessageAction(p, target, who, "λACTOR &Sremoved λTARGET title");
+                    break;
+                default:
+                    if (!p.CheckCanSpeak("change titles")) return false;
+                    MessageAction(p, target, who, "λACTOR &Schanged λTARGET title to &b[" + title + "&b]");
+                    break;
             }
             if (who != null) who.title = title;
             who?.SetPrefix();
@@ -123,13 +135,16 @@ namespace MCGalaxy
         {
             string color = "";
             Player who = PlayerInfo.FindExact(target);
-            if (name.Length == 0)
-                MessageAction(p, target, who, "λACTOR &Sremoved λTARGET title color");
-            else
+            switch (name.Length)
             {
-                color = Matcher.FindColor(p, name);
-                if (color == null) return false;
-                MessageAction(p, target, who, "λACTOR &Schanged λTARGET title color to " + color + Colors.Name(color));
+                case 0:
+                    MessageAction(p, target, who, "λACTOR &Sremoved λTARGET title color");
+                    break;
+                default:
+                    color = Matcher.FindColor(p, name);
+                    if (color == null) return false;
+                    MessageAction(p, target, who, "λACTOR &Schanged λTARGET title color to " + color + Colors.Name(color));
+                    break;
             }
             if (who != null) who.titlecolor = color;
             who?.SetPrefix();
@@ -141,18 +156,19 @@ namespace MCGalaxy
         {
             Player who = PlayerInfo.FindExact(target);
             string color;
-            if (name.Length == 0)
+            switch (name.Length)
             {
-                color = Group.GroupIn(target).Color;
-                PlayerDB.Update(target, PlayerData.ColumnColor, "");
-                MessageAction(p, target, who, "λACTOR &Sremoved λTARGET color");
-            }
-            else
-            {
-                color = Matcher.FindColor(p, name);
-                if (color == null) return false;
-                PlayerDB.Update(target, PlayerData.ColumnColor, color);
-                MessageAction(p, target, who, "λACTOR &Schanged λTARGET color to " + color + Colors.Name(color));
+                case 0:
+                    color = Group.GroupIn(target).Color;
+                    PlayerDB.Update(target, PlayerData.ColumnColor, "");
+                    MessageAction(p, target, who, "λACTOR &Sremoved λTARGET color");
+                    break;
+                default:
+                    color = Matcher.FindColor(p, name);
+                    if (color == null) return false;
+                    PlayerDB.Update(target, PlayerData.ColumnColor, color);
+                    MessageAction(p, target, who, "λACTOR &Schanged λTARGET color to " + color + Colors.Name(color));
+                    break;
             }
             who?.UpdateColor(color);
             return true;

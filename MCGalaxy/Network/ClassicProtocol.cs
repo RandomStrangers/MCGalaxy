@@ -69,11 +69,7 @@ namespace MCGalaxy.Network
         }
         ushort ReadBlock(byte[] buffer, int offset)
         {
-            ushort block;
-            if (hasExtBlocks)
-                block = MemUtils.ReadU16_BE(buffer, offset);
-            else
-                block = buffer[offset];
+            ushort block = hasExtBlocks ? MemUtils.ReadU16_BE(buffer, offset) : buffer[offset];
             if (block > 767) block = 767;
             return Block.FromRaw(block);
         }
@@ -270,47 +266,56 @@ namespace MCGalaxy.Network
             CpeExt ext = FindExtension(extName);
             if (ext == null) return;
             ext.ClientVersion = (byte)version;
-            if (ext.Name == CpeExt.CustomBlocks)
+            switch (ext.Name)
             {
-                if (version == 1) Send(Packet.CustomBlockSupportLevel(1));
-                hasCustomBlocks = true;
-                UpdateFallbackTable();
-                if (MaxRawBlock < 65) MaxRawBlock = 65;
-            }
-            else if (ext.Name == CpeExt.ChangeModel)
-                p.hasChangeModel = true;
-            else if (ext.Name == CpeExt.EmoteFix)
-                hasEmoteFix = true;
-            else if (ext.Name == CpeExt.FullCP437)
-                p.hasCP437 = true;
-            else if (ext.Name == CpeExt.ExtPlayerList)
-                p.hasExtList = true;
-            else if (ext.Name == CpeExt.BlockDefinitions)
-            {
-                hasBlockDefs = true;
-                if (MaxRawBlock < 255) MaxRawBlock = 255;
-            }
-            else if (ext.Name == CpeExt.TextColors)
-            {
-                hasTextColors = true;
-                SendGlobalColors();
-            }
-            else if (ext.Name == CpeExt.ExtEntityPositions)
-                p.hasExtPositions = true;
-            else if (ext.Name == CpeExt.TwoWayPing)
-                hasTwoWayPing = true;
-            else if (ext.Name == CpeExt.BulkBlockUpdate)
-                hasBulkBlockUpdate = true;
-            else if (ext.Name == CpeExt.ExtTextures)
-                hasExtTexs = true;
-            else if (ext.Name == CpeExt.HeldBlock)
-                hasHeldBlock = true;
-            else if (ext.Name == CpeExt.LongerMessages)
-                hasLongerMessages = true;
-            else if (ext.Name == CpeExt.ExtBlocks)
-            {
-                hasExtBlocks = true;
-                if (MaxRawBlock < 767) MaxRawBlock = 767;
+                case CpeExt.CustomBlocks:
+                    if (version == 1) Send(Packet.CustomBlockSupportLevel(1));
+                    hasCustomBlocks = true;
+                    UpdateFallbackTable();
+                    if (MaxRawBlock < 65) MaxRawBlock = 65;
+                    break;
+                case CpeExt.ChangeModel:
+                    p.hasChangeModel = true;
+                    break;
+                case CpeExt.EmoteFix:
+                    hasEmoteFix = true;
+                    break;
+                case CpeExt.FullCP437:
+                    p.hasCP437 = true;
+                    break;
+                case CpeExt.ExtPlayerList:
+                    p.hasExtList = true;
+                    break;
+                case CpeExt.BlockDefinitions:
+                    hasBlockDefs = true;
+                    if (MaxRawBlock < 255) MaxRawBlock = 255;
+                    break;
+                case CpeExt.TextColors:
+                    hasTextColors = true;
+                    SendGlobalColors();
+                    break;
+                case CpeExt.ExtEntityPositions:
+                    p.hasExtPositions = true;
+                    break;
+                case CpeExt.TwoWayPing:
+                    hasTwoWayPing = true;
+                    break;
+                case CpeExt.BulkBlockUpdate:
+                    hasBulkBlockUpdate = true;
+                    break;
+                case CpeExt.ExtTextures:
+                    hasExtTexs = true;
+                    break;
+                case CpeExt.HeldBlock:
+                    hasHeldBlock = true;
+                    break;
+                case CpeExt.LongerMessages:
+                    hasLongerMessages = true;
+                    break;
+                case CpeExt.ExtBlocks:
+                    hasExtBlocks = true;
+                    if (MaxRawBlock < 767) MaxRawBlock = 767;
+                    break;
             }
         }
         void SendGlobalColors()
@@ -417,10 +422,7 @@ namespace MCGalaxy.Network
             if (ushort.TryParse(model, out ushort raw) && raw > MaxRawBlock)
             {
                 ushort block = Block.FromRaw(raw);
-                if (block >= 1024)
-                    model = "humanoid";
-                else
-                    model = ConvertBlock(block).ToString();
+                model = block >= 1024 ? "humanoid" : ConvertBlock(block).ToString();
             }
             Send(Packet.ChangeModel(id, model, player.hasCP437));
         }
@@ -576,17 +578,14 @@ namespace MCGalaxy.Network
                 fallback[b] = hasCustomBlocks ? b : Block.ConvertClassic(b, ProtocolVersion);
         }
         string CleanupColors(string value) => LineWrapper.CleanupColors(value, hasTextColors, hasTextColors);
-        public override string ClientName()
-        {
-            if (!string.IsNullOrEmpty(appName)) return appName;
-            byte version = ProtocolVersion;
-            return version switch
-            {
-                3 => "Classic 0.0.16",
-                4 => "Classic 0.0.17-0.0.18",
-                _ => version == 5 ? "Classic 0.0.19" : version == 6 ? "Classic 0.0.20-0.0.23" : "Classic 0.28-0.30",
-            };
-        }
+        public override string ClientName() => !string.IsNullOrEmpty(appName)
+                ? appName
+                : ProtocolVersion switch
+                {
+                    3 => "Classic 0.0.16",
+                    4 => "Classic 0.0.17-0.0.18",
+                    _ => ProtocolVersion == 5 ? "Classic 0.0.19" : ProtocolVersion == 6 ? "Classic 0.0.20-0.0.23" : "Classic 0.28-0.30",
+                };
         public override unsafe void GetPositionPacket(ref byte* ptr, byte id, bool srcExtPos, bool extPos,
                                                     Position pos, Position oldPos, Orientation rot, Orientation oldRot)
         {

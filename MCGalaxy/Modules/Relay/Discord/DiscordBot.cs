@@ -53,7 +53,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         protected override bool CanReconnect => canReconnect && (socket == null || socket.CanReconnect);
         protected override void DoConnect()
         {
-            socket = new DiscordWebsocket(WSPath)
+            socket = new(WSPath)
             {
                 Session = session,
                 Token = Config.BotToken,
@@ -176,9 +176,7 @@ namespace MCGalaxy.Modules.Relay.Discord
                 if (type == 1) channelTypes[channel] = type;
             }
             if (type == 0)
-            {
                 HandleDirectMessage(user, channel, message);
-            }
             else
             {
                 HandleChannelMessage(user, channel, message);
@@ -187,8 +185,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         }
         void PrintAttachments(RelayUser user, JsonObject data, string channel)
         {
-            if (!data.TryGetValue("attachments", out object raw)) return;
-            if (raw is not JsonArray list) return;
+            if (!data.TryGetValue("attachments", out object raw) || raw is not JsonArray list) return;
             foreach (object entry in list)
             {
                 if (entry is not JsonObject attachment) continue;
@@ -198,9 +195,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         }
         void HandleChannelEvent(JsonObject data)
         {
-            string channel = (string)data["id"],
-                type = (string)data["type"];
-            if (type == "1") channelTypes[channel] = 0;
+            if ((string)data["type"] == "1") channelTypes[(string)data["id"]] = 0;
         }
         byte GuessChannelType(JsonObject data) => data.ContainsKey("member") ? (byte)1 : data.ContainsKey("webhook_id") ? (byte)1 : (byte)0;
         void HandleReadyEvent(JsonObject data)
@@ -231,8 +226,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             int length = sb.Length - 1;
             for (int i = 0; i < length; i++)
             {
-                if (sb[i] != '\\') continue;
-                if (!IsEscaped(sb[i + 1])) continue;
+                if (sb[i] != '\\' || !IsEscaped(sb[i + 1])) continue;
                 sb.Remove(i, 1); 
                 length--;
             }
@@ -275,9 +269,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         string GetStatusMessage()
         {
             fakeGuest.group = Group.DefaultRank;
-            List<Player> online = PlayerInfo.GetOnlineCanSee(fakeGuest, fakeGuest.Rank);
-            string numOnline = NumberUtils.StringifyInt(online.Count);
-            return Config.StatusMessage.Replace("{PLAYERS}", numOnline);
+            return Config.StatusMessage.Replace("{PLAYERS}", NumberUtils.StringifyInt(PlayerInfo.GetOnlineCanSee(fakeGuest, fakeGuest.Rank).Count));
         }
         protected override void OnStart()
         {
@@ -317,15 +309,10 @@ namespace MCGalaxy.Modules.Relay.Discord
         {
             message = ConvertMessage(message);
             for (int offset = 0; offset < message.Length; offset += 2000)
-            {
-                int partLen = Math.Min(message.Length - offset, 2000);
-                string part = message.Substring(offset, partLen);
-                ChannelSendMessage msg = new(channel, part)
+                Send(new ChannelSendMessage(channel, message.Substring(offset, Math.Min(message.Length - offset, 2000)))
                 {
                     Allowed = allowed
-                };
-                Send(msg);
-            }
+                });
         }
         /// <summary> Formats a message for displaying on Discord </summary>
         /// <example> Escapes markdown characters such as _ and * </example>
@@ -340,9 +327,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         protected override string PrepareMessage(string message)
         {
             for (int i = 0; i < filter_triggers.Count; i++)
-            {
                 message = message.Replace(filter_triggers[i], filter_replacements[i]);
-            }
             return message;
         }
         protected override bool CheckController(string userID, ref string error) => true;
@@ -372,15 +357,9 @@ namespace MCGalaxy.Modules.Relay.Discord
         static string FormatNick(Player p, Player pl)
         {
             string flags = OnlineListEntry.GetFlags(pl),
-                format;
-            if (flags.Length > 0)
-            {
-                format = "\uEDC3\uEDC3{0}\uEDC3\uEDC3\uEDC1{2}\uEDC1 (\uEDC4{1}\uEDC4)";
-            }
-            else
-            {
-                format = "\uEDC3\uEDC3{0}\uEDC3\uEDC3 (\uEDC4{1}\uEDC4)";
-            }
+                format = flags.Length > 0
+                ? "\uEDC3\uEDC3{0}\uEDC3\uEDC3\uEDC1{2}\uEDC1 (\uEDC4{1}\uEDC4)"
+                : "\uEDC3\uEDC3{0}\uEDC3\uEDC3 (\uEDC4{1}\uEDC4)";
             return string.Format(format, p.FormatNick(pl), pl.Level.name.Replace('_', '\uEDC1'), flags);
         }
     }

@@ -59,7 +59,6 @@ namespace MCGalaxy.Network
             Exception lastEx = null;
             string lastResp = null;
             for (int i = 0; i < 3; i++)
-            {
                 try
                 {
                     HttpWebRequest req = HttpUtil.CreateRequest(URL);
@@ -80,7 +79,6 @@ namespace MCGalaxy.Network
                     lastEx = ex;
                     continue;
                 }
-            }
             OnFailure(lastResp);
             Logger.Log(LogType.Warning, "Failed to send heartbeat to {0} ({1})", GetHost(), lastEx.Message);
         }
@@ -107,15 +105,11 @@ namespace MCGalaxy.Network
                 lastUrls = urls;
                 Heartbeats.Clear();
                 foreach (string url in urls.SplitComma())
-                {
-                    AuthService service = AuthService.GetOrCreate(url);
-                    Heartbeat beat = new ClassiCubeBeat
+                    Register(new ClassiCubeBeat
                     {
                         URL = url,
-                        Auth = service
-                    };
-                    Register(beat);
-                }
+                        Auth = AuthService.GetOrCreate(url)
+                    });
             }
         }
         protected string EnsureIPv4Url(string hostUrl)

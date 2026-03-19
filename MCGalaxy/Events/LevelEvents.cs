@@ -31,17 +31,15 @@ namespace MCGalaxy.Events.LevelEvents
         public static void Call(string name, string path, ref bool cancel)
         {
             IEvent<OnLevelLoad>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
-                try 
-                { 
-                    items[i].method(name, path, ref cancel); 
+            for (long i = 0; i < items.LongLength; i++)
+                try
+                {
+                    items[i].method(name, path, ref cancel);
                 }
-                catch (Exception ex) 
-                { 
-                    LogHandlerException(ex, items[i]); 
+                catch (Exception ex)
+                {
+                    LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
     public delegate void OnLevelSave(Level lvl, ref bool cancel);
@@ -50,17 +48,15 @@ namespace MCGalaxy.Events.LevelEvents
         public static void Call(Level lvl, ref bool cancel)
         {
             IEvent<OnLevelSave>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
-                try 
+            for (long i = 0; i < items.LongLength; i++)
+                try
                 {
-                    items[i].method(lvl, ref cancel); 
+                    items[i].method(lvl, ref cancel);
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
-                    LogHandlerException(ex, items[i]); 
+                    LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
     public delegate void OnLevelUnload(Level lvl, ref bool cancel);
@@ -69,17 +65,15 @@ namespace MCGalaxy.Events.LevelEvents
         public static void Call(Level lvl, ref bool cancel)
         {
             IEvent<OnLevelUnload>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
+            for (long i = 0; i < items.LongLength; i++)
                 try
-                { 
-                    items[i].method(lvl, ref cancel); 
+                {
+                    items[i].method(lvl, ref cancel);
                 }
-                catch (Exception ex) 
-                { 
-                    LogHandlerException(ex, items[i]); 
+                catch (Exception ex)
+                {
+                    LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
     public delegate void OnLevelAdded(Level lvl);
@@ -169,17 +163,15 @@ namespace MCGalaxy.Events.LevelEvents
         public static void Call(ref string map)
         {
             IEvent<OnMainLevelChanging>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
-            {
-                try 
+            for (long i = 0; i < items.LongLength; i++)
+                try
                 {
                     items[i].method(ref map);
                 }
                 catch (Exception ex)
-                { 
-                    LogHandlerException(ex, items[i]); 
+                {
+                    LogHandlerException(ex, items[i]);
                 }
-            }
         }
     }
 }

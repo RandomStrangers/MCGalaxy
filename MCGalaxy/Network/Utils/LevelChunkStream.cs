@@ -166,25 +166,24 @@ namespace MCGalaxy.Network
                 for (; i < blocks.Length; i++)
                 {
                     byte block = blocks[i];
-                    if (block == 163)
+                    switch (block)
                     {
-                        buffer[bIndex] = lvl.GetExtTile(i);
-                        buffer2[bIndex] = 0;
-                    }
-                    else if (block == 198)
-                    {
-                        buffer[bIndex] = lvl.GetExtTile(i);
-                        buffer2[bIndex] = 1;
-                    }
-                    else if (block == 199)
-                    {
-                        buffer[bIndex] = lvl.GetExtTile(i);
-                        buffer2[bIndex] = 2;
-                    }
-                    else
-                    {
-                        buffer[bIndex] = conv[block];
-                        buffer2[bIndex] = 0;
+                        case 163:
+                            buffer[bIndex] = lvl.GetExtTile(i);
+                            buffer2[bIndex] = 0;
+                            break;
+                        case 198:
+                            buffer[bIndex] = lvl.GetExtTile(i);
+                            buffer2[bIndex] = 1;
+                            break;
+                        case 199:
+                            buffer[bIndex] = lvl.GetExtTile(i);
+                            buffer2[bIndex] = 2;
+                            break;
+                        default:
+                            buffer[bIndex] = conv[block];
+                            buffer2[bIndex] = 0;
+                            break;
                     }
                     bIndex++;
                     if (bIndex == bufferSize)

@@ -56,12 +56,14 @@ namespace MCGalaxy
         public bool CheckDetailed(Player p, LevelPermission plRank)
         {
             AccessResult access = Check(p.name, plRank);
-            if (access == AccessResult.Accepted) return true;
-            if (access == AccessResult.Whitelisted) return true;
-            if (access == AccessResult.Blacklisted)
+            switch (access)
             {
-                p.Message("You are blacklisted from {0} {1}", ActionIng, ColoredName);
-                return false;
+                case AccessResult.Accepted:
+                case AccessResult.Whitelisted:
+                    return true;
+                case AccessResult.Blacklisted:
+                    p.Message("You are blacklisted from {0} {1}", ActionIng, ColoredName);
+                    return false;
             }
             string whitelist = "";
             if (Whitelisted.Count > 0)
@@ -253,8 +255,7 @@ namespace MCGalaxy
         void Update(Level lvl)
         {
             cfg.SaveFor(lvlName);
-            if (lvl == null) return;
-            if (isVisit && lvl == Server.mainLevel) return;
+            if (lvl == null || isVisit && lvl == Server.mainLevel) return;
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player p in players)
             {

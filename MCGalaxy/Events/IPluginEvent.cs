@@ -43,10 +43,7 @@ namespace MCGalaxy.Events
         {
             IEvent<IMethod> handler = Find(method);
             if (handler != null && !bypass)
-            {
-                string msg = MethodFormat("Method {0} already registered as a {1} event handler", method);
-                throw new ArgumentException(msg);
-            }
+                throw new ArgumentException(MethodFormat("Method {0} already registered as a {1} event handler", method));
             handler = new IEvent<IMethod>
             {
                 method = method,
@@ -55,11 +52,7 @@ namespace MCGalaxy.Events
             AddHandler(handler);
         }
         /// <summary> Unregisters the given handler from this event. </summary>
-        public static void Unregister(IMethod method)
-        {
-            IEvent<IMethod> handler = Find(method);
-            handlers.Remove(handler);
-        }
+        public static void Unregister(IMethod method) => handlers.Remove(Find(method));
         public static IEvent<IMethod> Find(IMethod method)
         {
             Delegate methodDel = (Delegate)(object)method;
@@ -77,11 +70,9 @@ namespace MCGalaxy.Events
             lock (handlers.locker)
             {
                 IEvent<IMethod>[] old = handlers.Items;
-                IEvent<IMethod>[] items = new IEvent<IMethod>[old.Length + 1];
-                for (int i = 0; i < old.Length; i++)
-                {
+                IEvent<IMethod>[] items = new IEvent<IMethod>[old.LongLength + 1];
+                for (long i = 0; i < old.LongLength; i++)
                     items[i] = old[i];
-                }
                 items[old.Length] = handler;
                 Array.Sort(items, (a, b) => b.priority.CompareTo(a.priority));
                 handlers.Items = items;
@@ -90,7 +81,7 @@ namespace MCGalaxy.Events
         protected static void CallCommon(Action<IMethod> action)
         {
             IEvent<IMethod>[] items = handlers.Items;
-            for (int i = 0; i < items.Length; i++)
+            for (long i = 0; i < items.LongLength; i++)
             {
                 IEvent<IMethod> handler = items[i];
                 try 

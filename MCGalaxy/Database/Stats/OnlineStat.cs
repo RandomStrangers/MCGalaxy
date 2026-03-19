@@ -44,24 +44,17 @@ namespace MCGalaxy.DB
             p.Message("{0} &S({1}) has:", fullName, name);
             p.Message("  Rank of {0}&S, wrote &a{1} &Smessages", grp.ColoredName, messages);
             List<Pronouns> pros = Pronouns.GetFor(name);
-            if (pros[0] == Pronouns.Default) 
-            { 
-                return;
-            }
-            p.Message("  Pronouns: &a{0}", pros.Join((pro) => pro.Name, ", "));
+            if (pros[0] != Pronouns.Default)
+                p.Message("  Pronouns: &a{0}", pros.Join((pro) => pro.Name, ", "));
         }
         public static void MiscLine(Player p, string name, int deaths, int money)
         {
             if (Economy.Enabled)
-            {
                 p.Message("  &a{0} &cdeaths&S, &a{2} &S{3}, &f{1} &Sawards",
                                deaths, PlayerAwards.Summarise(name), money, Server.Config.Currency);
-            }
             else
-            {
                 p.Message("  &a{0} &cdeaths&S, &f{1} &Sawards",
                                deaths, PlayerAwards.Summarise(name));
-            }
         }
         public static void BlocksModifiedLine(Player p, Player who) => p.Message("  Modified &a{0} &Sblocks, &a{1} &Ssince login", who.TotalModified, who.SessionModified);
         public static void BlockStatsLine(Player p, long placed, long deleted, long drawn) => p.Message("    &a{0} &Splaced, &a{1} &Sdeleted, &a{2} &Sdrawn",
@@ -76,13 +69,9 @@ namespace MCGalaxy.DB
             if (!Group.BannedRank.Players.Contains(name)) return;
             Ban.GetBanData(name, out string banner, out string reason, out _, out _);
             if (banner != null)
-            {
                 p.Message("  Banned for {0} by {1}", reason, p.FormatNick(banner));
-            }
             else
-            {
                 p.Message("  Is banned");
-            }
         }
         public static void SpecialGroupLine(Player p, string name)
         {
@@ -107,30 +96,20 @@ namespace MCGalaxy.DB
         {
             TimeSpan idleTime = DateTime.UtcNow - who.LastAction;
             if (who.afkMessage != null)
-            {
                 p.Message("  Idle for {0} (AFK {1}&S)", idleTime.Shorten(), who.afkMessage);
-            }
             else if (idleTime.TotalMinutes >= 1)
-            {
                 p.Message("  Idle for {0}", idleTime.Shorten());
-            }
         }
         public static void EntityLine(Player p, Player who)
         {
             bool hasSkin = !who.SkinName.CaselessEq(who.truename),
                 hasModel = !(who.Model.CaselessEq("humanoid") || who.Model.CaselessEq("human"));
             if (hasSkin && hasModel)
-            {
                 p.Message("  Skin: &f{0} &Smodel: &f{1}", who.SkinName, who.Model);
-            }
             else if (hasSkin)
-            {
                 p.Message("  Skin: &f{0}", who.SkinName);
-            }
             else if (hasModel)
-            {
                 p.Message("  Model: &f{0}", who.Model);
-            }
         }
     }
 }

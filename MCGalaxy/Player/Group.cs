@@ -113,7 +113,7 @@ namespace MCGalaxy
             return (last2 != "ed" || name.Length <= 3) && last2[1] != 's' ? name + "s" : name;
         }
         public string GetFormattedName() => Color + GetPlural(Name);
-        static void Add(LevelPermission perm, int drawLimit, int undoMins, string name, string color, int volume, int realms) => Register(new Group(perm, drawLimit, TimeSpan.FromMinutes(undoMins), name, color, volume, realms));
+        static void Add(LevelPermission perm, int drawLimit, int undoMins, string name, string color, int volume, int realms) => Register(new(perm, drawLimit, TimeSpan.FromMinutes(undoMins), name, color, volume, realms));
         public static void Register(Group grp)
         {
             GroupList.Add(grp);
@@ -124,7 +124,7 @@ namespace MCGalaxy
         }
         public static void LoadAll()
         {
-            GroupList = new List<Group>();
+            GroupList = new();
             if (File.Exists(Paths.RankPropsFile))
                 LoadFromDisc();
             else
@@ -154,8 +154,7 @@ namespace MCGalaxy
         }
         static void UpdateGroup(Player p)
         {
-            Group grp = Find(p.group.Permission) ?? DefaultRank;
-            p.group = grp;
+            p.group = Find(p.group.Permission) ?? DefaultRank;
             p.UpdateColor(PlayerInfo.DefaultColor(p));
         }
         static readonly object saveLock = new();
@@ -219,10 +218,7 @@ namespace MCGalaxy
             else
             {
                 if (temp == null) return;
-                if (!key.CaselessEq("Prefix"))
-                    value = value.Trim();
-                else
-                    value = value.TrimStart();
+                value = !key.CaselessEq("Prefix") ? value.Trim() : value.TrimStart();
                 ConfigElement.Parse(cfg, temp, key, value);
             }
         }

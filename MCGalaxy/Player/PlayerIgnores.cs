@@ -29,13 +29,38 @@ namespace MCGalaxy
                 string[] lines = FileIO.TryReadAllLines(path);
                 foreach (string line in lines)
                 {
-                    if (line == "&all") { All = true; continue; }
-                    if (line == "&irc") { IRC = true; continue; }
-                    if (line == "&titles") { Titles = true; continue; }
-                    if (line == "&nicks") { Nicks = true; continue; }
-                    if (line == "&8ball") { EightBall = true; continue; }
-                    if (line == "&drawoutput") { DrawOutput = true; continue; }
-                    if (line == "&worldchanges") { WorldChanges = true; continue; }
+                    if (line == "&all") 
+                    { 
+                        All = true; 
+                        continue; }
+                    if (line == "&irc") 
+                    {
+                        IRC = true; 
+                        continue; }
+                    if (line == "&titles") 
+                    {
+                        Titles = true;
+                        continue; 
+                    }
+                    if (line == "&nicks") 
+                    {
+                        Nicks = true;
+                        continue; }
+                    if (line == "&8ball") 
+                    { 
+                        EightBall = true;
+                        continue;
+                    }
+                    if (line == "&drawoutput") 
+                    {
+                        DrawOutput = true;
+                        continue;
+                    }
+                    if (line == "&worldchanges") 
+                    { 
+                        WorldChanges = true;
+                        continue; 
+                    }
                     if (line.StartsWith("&irc_"))
                         IRCNicks.Add(line.Substring("&irc_".Length));
                     else
@@ -88,13 +113,41 @@ namespace MCGalaxy
                 p.Message("&cCurrently ignoring the following IRC nicks:");
                 p.Message(IRCNicks.Join());
             }
-            if (All) { any = true; p.Message("&cIgnoring all chat"); }
-            if (IRC) { any = true; p.Message("&cIgnoring IRC chat"); }
-            if (Titles) { any = true; p.Message("&cPlayer titles do not show before names in chat"); }
-            if (Nicks) { any = true; p.Message("&cCustom player nicks do not show in chat"); }
-            if (EightBall) { any = true; p.Message("&cIgnoring &T/8ball"); }
-            if (DrawOutput) { any = true; p.Message("&cIgnoring draw command output"); }
-            if (WorldChanges) { any = true; p.Message("&cIgnoring world change messages"); }
+            if (All) 
+            { 
+                any = true;
+                p.Message("&cIgnoring all chat"); 
+            }
+            if (IRC) 
+            { 
+                any = true; 
+                p.Message("&cIgnoring IRC chat"); 
+            }
+            if (Titles) 
+            {
+                any = true; 
+                p.Message("&cPlayer titles do not show before names in chat"); 
+            }
+            if (Nicks) 
+            { 
+                any = true; 
+                p.Message("&cCustom player nicks do not show in chat"); 
+            }
+            if (EightBall) 
+            {
+                any = true; 
+                p.Message("&cIgnoring &T/8ball"); 
+            }
+            if (DrawOutput)
+            { 
+                any = true;
+                p.Message("&cIgnoring draw command output"); 
+            }
+            if (WorldChanges) 
+            { 
+                any = true; 
+                p.Message("&cIgnoring world change messages"); 
+            }
             if (!any) p.Message("You are not ignoring anything.");
         }
     }

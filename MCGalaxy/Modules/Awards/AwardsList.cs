@@ -76,8 +76,7 @@ namespace MCGalaxy.Modules.Awards
         }
         static void ProcessLine(string award, string desc)
         {
-            if (desc.Length == 0) return;
-            Add(award, desc);
+            if (desc.Length != 0) Add(award, desc);
         }
         static void WriteHeader(StreamWriter w)
         {

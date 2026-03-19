@@ -66,9 +66,7 @@ namespace MCGalaxy.Blocks
             if (opt.CaselessEq("StackID")) opt = "StackBlock";
             if (opt.CaselessEq("Drown")) opt = "Drownable";
             foreach (BlockOption option in Options)
-            {
                 if (option.Name.CaselessEq(opt)) return option;
-            }
             return null;
         }
         static void SetPortal(Player p, BlockProps[] s, ushort b, string v) => ToggleBehaviour(p, s, b, "a portal", ref s[b].IsPortal);
@@ -84,13 +82,11 @@ namespace MCGalaxy.Blocks
         static void SetGrass(Player p, BlockProps[] s, ushort b, string v) => SetBlock(p, s, b, v, "Grass form", ref s[b].GrassBlock);
         static void SetDirt(Player p, BlockProps[] s, ushort b, string v) => SetBlock(p, s, b, v, "Dirt form", ref s[b].DirtBlock);
         static void SetODoor(Player p, BlockProps[] s, ushort b, string v) => SetBlock(p, s, b, v, "oDoor form", ref s[b].oDoorBlock);
-        static string CheckBehaviour(BlockProps[] props, ushort block)
-        {
-            if (props[block].IsMessageBlock) return "message block";
-            return props[block].IsPortal
+        static string CheckBehaviour(BlockProps[] props, ushort block) => props[block].IsMessageBlock
+                ? "message block"
+                : props[block].IsPortal
                 ? "portal"
                 : props[block].IsTDoor ? "tDoor" : props[block].oDoorBlock != 0xff ? "oDoor" : props[block].IsDoor ? "door" : null;
-        }
         static void ToggleBehaviour(Player p, BlockProps[] scope, ushort block, string type, ref bool on)
         {
             string behaviour;
@@ -133,46 +129,51 @@ namespace MCGalaxy.Blocks
         static void SetStackId(Player p, BlockProps[] scope, ushort block, string msg)
         {
             ushort stackBlock;
-            if (msg.Length == 0)
+            switch (msg.Length)
             {
-                stackBlock = 0;
-            }
-            else
-            {
-                if (!CommandParser.GetBlock(p, msg, out stackBlock)) return;
+                case 0:
+                    stackBlock = 0;
+                    break;
+                default:
+                    if (!CommandParser.GetBlock(p, msg, out stackBlock)) return;
+                    break;
             }
             scope[block].StackBlock = stackBlock;
             string name = BlockProps.ScopedName(scope, p, block);
-            if (stackBlock == 0)
+            switch (stackBlock)
             {
-                p.Message("Removed stack block for {0}", name);
-            }
-            else
-            {
-                p.Message("Stack block for {0} set to: {1}",
-                          name, BlockProps.ScopedName(scope, p, stackBlock));
+                case 0:
+                    p.Message("Removed stack block for {0}", name);
+                    break;
+                default:
+                    p.Message("Stack block for {0} set to: {1}",
+                                              name, BlockProps.ScopedName(scope, p, stackBlock));
+                    break;
             }
         }
         static void SetBlock(Player p, BlockProps[] scope, ushort block,
                              string msg, string type, ref ushort target)
         {
             string name = BlockProps.ScopedName(scope, p, block);
-            if (msg.Length == 0)
+            switch (msg.Length)
             {
-                target = 0xff;
-                p.Message("{1} for {0} removed.", name, type);
-            }
-            else
-            {
-                if (!CommandParser.GetBlockIfAllowed(p, msg, "use", out ushort other)) return;
-                if (other == block) 
-                {
-                    p.Message("ID of {0} must be different.", type);
-                    return; 
-                }
-                target = other;
-                p.Message("{2} for {0} set to: {1}",
-                          name, BlockProps.ScopedName(scope, p, other), type);
+                case 0:
+                    target = 0xff;
+                    p.Message("{1} for {0} removed.", name, type);
+                    break;
+                default:
+                    {
+                        if (!CommandParser.GetBlockIfAllowed(p, msg, "use", out ushort other)) return;
+                        if (other == block)
+                        {
+                            p.Message("ID of {0} must be different.", type);
+                            return;
+                        }
+                        target = other;
+                        p.Message("{2} for {0} set to: {1}",
+                                  name, BlockProps.ScopedName(scope, p, other), type);
+                        break;
+                    }
             }
         }
     }

@@ -41,9 +41,7 @@ namespace MCGalaxy.DB
         public static TopStat Find(string name)
         {
             foreach (TopStat stat in stats)
-            {
                 if (stat.Identifier.CaselessEq(name)) return stat;
-            }
             return null;
         }
         public static void List(Player p) => p.Message("&f" + stats.Join(stat => stat.Identifier));

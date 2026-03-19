@@ -54,14 +54,7 @@ namespace MCGalaxy.DB
             Database.ReadRows("Players", "ID",
                                 record => id = record.GetInt32(0),
                                 "WHERE Name=@0", p.name);
-            if (id != -200)
-            {
-                p.DatabaseID = id;
-            }
-            else
-            {
-                p.DatabaseID = NameConverter.InvalidNameID(p.name);
-            }
+            p.DatabaseID = id != -200 ? id : NameConverter.InvalidNameID(p.name);
         }
         /// <summary> Initialises the given player's stats from this instance. </summary>
         public void ApplyTo(Player p)
@@ -95,8 +88,7 @@ namespace MCGalaxy.DB
             string rawTime = record.GetText(ColumnTimeSpent);
             try
             {
-                long secs = long.Parse(rawTime);
-                data.TotalTime = TimeSpan.FromSeconds(secs);
+                data.TotalTime = TimeSpan.FromSeconds(long.Parse(rawTime));
             }
             catch
             {

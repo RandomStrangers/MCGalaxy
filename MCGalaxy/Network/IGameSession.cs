@@ -118,12 +118,15 @@ namespace MCGalaxy.Network
         {
             ushort raw;
             Player p = player;
-            if (block >= 256)
-                raw = Block.ToRaw(block);
-            else
+            switch (block)
             {
-                raw = Block.Convert(block);
-                if (raw >= 66) raw = 22;
+                case >= 256:
+                    raw = Block.ToRaw(block);
+                    break;
+                default:
+                    raw = Block.Convert(block);
+                    if (raw >= 66) raw = 22;
+                    break;
             }
             if (raw > MaxRawBlock) raw = p.Level.GetFallback(block);
             if (!hasBlockDefs && raw < 66)

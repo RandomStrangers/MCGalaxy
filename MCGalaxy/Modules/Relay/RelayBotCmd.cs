@@ -24,8 +24,9 @@ namespace MCGalaxy.Modules.Relay
             RelayBot bot = Bot;
             if (message.CaselessEq("reset") || message.CaselessEq("reconnect"))
             {
-                if (!bot.Enabled) { p.Message("{0} is not enabled", bot.RelayName); }
-                bot.Reset();
+                if (!bot.Enabled)
+                    p.Message("{0} is not enabled", bot.RelayName);
+                else bot.Reset();
             }
             else if (message.CaselessEq("connect"))
             {
@@ -33,13 +34,9 @@ namespace MCGalaxy.Modules.Relay
                 if (err != null) p.Message("{0} bot {1}", bot.RelayName, err);
             }
             else if (message.CaselessEq("disconnect"))
-            {
                 bot.Disconnect("Disconnecting IRC bot");
-            }
             else
-            {
                 Help(p);
-            }
         }
         public override void Help(Player p)
         {

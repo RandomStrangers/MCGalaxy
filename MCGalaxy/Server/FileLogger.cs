@@ -48,25 +48,22 @@ namespace MCGalaxy
         }
         static void LogMessage(LogType type, string message)
         {
-            if (!string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(message) && Server.Config.FileLogging[(int)type])
             {
-                if (Server.Config.FileLogging[(int)type])
+                if (type == LogType.Error)
                 {
-                    if (type == LogType.Error)
-                    {
-                        StringBuilder sb = new();
-                        sb.AppendLine("----" + DateTime.Now + " ----");
-                        sb.AppendLine(message);
-                        sb.Append('-', 25);
-                        string output = sb.ToString();
-                        lock (logLock)
-                            err.Cache.Enqueue(output);
-                        message = "!!!Error! See " + err.Path + " for more information.";
-                    }
-                    string now = DateTime.Now.ToString("(HH:mm:ss) ");
+                    StringBuilder sb = new();
+                    sb.AppendLine("----" + DateTime.Now + " ----");
+                    sb.AppendLine(message);
+                    sb.Append('-', 25);
+                    string output = sb.ToString();
                     lock (logLock)
-                        msg.Cache.Enqueue(now + message);
+                        err.Cache.Enqueue(output);
+                    message = "!!!Error! See " + err.Path + " for more information.";
                 }
+                string now = DateTime.Now.ToString("(HH:mm:ss) ");
+                lock (logLock)
+                    msg.Cache.Enqueue(now + message);
             }
         }
         public static void Flush(SchedulerTask task)

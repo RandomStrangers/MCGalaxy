@@ -36,12 +36,12 @@ namespace MCGalaxy
         }
         static void Add(ref string time, int amount, char suffix, bool spaces)
         {
-            if (amount == 0)
-                return;
-            if (time.Length == 0)
-                time = "" + amount + suffix;
-            else
-                time = time + (spaces ? " " : "") + amount + suffix;
+            if (amount != 0)
+                time = time.Length switch
+                {
+                    0 => "" + amount + suffix,
+                    _ => time + (spaces ? " " : "") + amount + suffix,
+                };
         }
         public static TimeSpan ParseShort(this string value, string defaultUnit)
         {

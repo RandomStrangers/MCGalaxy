@@ -133,30 +133,27 @@ namespace MCGalaxy.Modules.Relay.Discord
         }
         void DispatchPacket(int opcode, JsonObject obj)
         {
-            if (opcode == 0)
+            switch (opcode)
             {
-                HandleDispatch(obj);
-            }
-            else if (opcode == 10)
-            {
-                HandleHello(obj);
-            }
-            else if (opcode == 9)
-            {
-                Session.ID = null;
-                Session.LastSeq = null;
-                Logger.Log(LogType.Warning, "Discord relay: Resuming failed, trying again in 5 seconds");
-                Thread.Sleep(5 * 1000);
-                Identify();
+                case 0:
+                    HandleDispatch(obj);
+                    break;
+                case 10:
+                    HandleHello(obj);
+                    break;
+                case 9:
+                    Session.ID = null;
+                    Session.LastSeq = null;
+                    Logger.Log(LogType.Warning, "Discord relay: Resuming failed, trying again in 5 seconds");
+                    Thread.Sleep(5 * 1000);
+                    Identify();
+                    break;
             }
         }
         void HandleHello(JsonObject obj)
         {
-            JsonObject data = (JsonObject)obj["d"];
-            string interval = (string)data["heartbeat_interval"];
-            int msInterval = NumberUtils.ParseInt32(interval);
             heartbeat = Server.Heartbeats.QueueRepeat(SendHeartbeat, null,
-                                          TimeSpan.FromMilliseconds(msInterval));
+                                          TimeSpan.FromMilliseconds(NumberUtils.ParseInt32((string)((JsonObject)obj["d"])["heartbeat_interval"])));
             Identify();
         }
         void HandleDispatch(JsonObject obj)
@@ -166,22 +163,21 @@ namespace MCGalaxy.Modules.Relay.Discord
             string eventName = (string)obj["t"];
             obj.TryGetValue("d", out object rawData);
             JsonObject data = rawData as JsonObject;
-            if (eventName == "READY")
+            switch (eventName)
             {
-                HandleReady(data);
-                OnReady(data);
-            }
-            else if (eventName == "RESUMED")
-            {
-                OnResumed(data);
-            }
-            else if (eventName == "MESSAGE_CREATE")
-            {
-                OnMessageCreate(data);
-            }
-            else if (eventName == "CHANNEL_CREATE")
-            {
-                OnChannelCreate(data);
+                case "READY":
+                    HandleReady(data);
+                    OnReady(data);
+                    break;
+                case "RESUMED":
+                    OnResumed(data);
+                    break;
+                case "MESSAGE_CREATE":
+                    OnMessageCreate(data);
+                    break;
+                case "CHANNEL_CREATE":
+                    OnChannelCreate(data);
+                    break;
             }
             OnGatewayEvent(eventName, data);
         }
@@ -206,26 +202,15 @@ namespace MCGalaxy.Modules.Relay.Discord
             {
                 ["op"] = 1
             };
-            if (Session.LastSeq != null)
-            {
-                obj["d"] = NumberUtils.ParseInt32(Session.LastSeq);
-            }
-            else
-            {
-                obj["d"] = null;
-            }
+            obj["d"] = Session.LastSeq != null ? NumberUtils.ParseInt32(Session.LastSeq) : null;
             SendMessage(obj);
         }
         public void Identify()
         {
             if (Session.ID != null && Session.LastSeq != null)
-            {
                 SendMessage(6, MakeResume());
-            }
             else
-            {
                 SendMessage(2, MakeIdentify());
-            }
             SentIdentify = true;
         }
         JsonObject MakeResume() => new()

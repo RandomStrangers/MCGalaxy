@@ -82,10 +82,8 @@ namespace MCGalaxy
             {
                 if (!Server.Config.TablistGlobal) TabList.Add(p, player);
             }
-            else if (e is PlayerBot bot)
-            {
-                if (Server.Config.TablistBots) TabList.Add(p, bot);
-            }
+            else if (e is PlayerBot bot && Server.Config.TablistBots)
+                TabList.Add(p, bot);
         }
         void RemoveTab(Entity e)
         {
@@ -93,10 +91,8 @@ namespace MCGalaxy
             {
                 if (!Server.Config.TablistGlobal) TabList.Remove(p, player);
             }
-            else if (e is PlayerBot bot)
-            {
-                if (Server.Config.TablistBots) TabList.Remove(p, bot);
-            }
+            else if (e is PlayerBot bot && Server.Config.TablistBots)
+                TabList.Remove(p, bot);
         }
         public void SendAddTabEntry(object o, string name, string nick, string group, byte groupRank)
         {
@@ -243,10 +239,7 @@ namespace MCGalaxy
         {
             OnSendingModelEvent.Call(e, ref model, p);
             lock (locker)
-            {
-                if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
-                SendModel(vis, model);
-            }
+                if (visible.TryGetValue(e, out VisibleEntity vis)) SendModel(vis, model);
         }
         void SendModel(VisibleEntity vis, string model)
         {
@@ -264,10 +257,7 @@ namespace MCGalaxy
         public void SendScales(Entity e)
         {
             lock (locker)
-            {
-                if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
-                SendScales(vis);
-            }
+                if (visible.TryGetValue(e, out VisibleEntity vis)) SendScales(vis);
         }
         void SendScales(VisibleEntity vis)
         {
@@ -287,12 +277,8 @@ namespace MCGalaxy
         }
         public void SendProp(Entity e, EntityProp prop, int value)
         {
-            if (!p.Supports(CpeExt.EntityProperty)) return;
-            lock (locker)
-            {
-                if (!visible.TryGetValue(e, out VisibleEntity vis)) return;
-                p.Session.SendEntityProperty(vis.id, prop, value);
-            }
+            if (p.Supports(CpeExt.EntityProperty)) lock (locker)
+                    if (visible.TryGetValue(e, out VisibleEntity vis)) p.Session.SendEntityProperty(vis.id, prop, value);
         }
         public bool GetID(Entity e, out byte id)
         {
@@ -346,13 +332,11 @@ namespace MCGalaxy
                 packet[i] = src[i];
             dst.Send(packet);
             foreach (KeyValuePair<Entity, VisibleEntity> pair in cachedVisible)
-            {
                 if (pair.Key.untracked)
                 {
                     pair.Key._lastPos = pair.Key._positionUpdatePos;
                     pair.Key._lastRot = pair.Key.Rot;
                 }
-            }
         }
         static byte FlippedPitch(byte pitch) => pitch > 64 && pitch < 192 ? pitch : (byte)128;
     }

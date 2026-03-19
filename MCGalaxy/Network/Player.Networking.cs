@@ -58,10 +58,14 @@ namespace MCGalaxy
         public void SendCpeMessage(CpeMessageType type, string message, PersistentMessagePriority priority = PersistentMessagePriority.Normal)
         {
             if (type != CpeMessageType.Normal && !Supports(CpeExt.MessageTypes))
-            {
-                if (type == CpeMessageType.Announcement) type = CpeMessageType.Normal;
-                else return;
-            }
+                switch (type)
+                {
+                    case CpeMessageType.Announcement:
+                        type = CpeMessageType.Normal;
+                        break;
+                    default:
+                        return;
+                }
             message = Chat.Format(message, this);
             if (!persistentMessages.Handle(type, ref message, priority)) return;
             Session.SendMessage(type, message);
@@ -178,8 +182,7 @@ namespace MCGalaxy
         }
         public void SendCurrentBlockPermissions()
         {
-            if (!Supports(CpeExt.BlockPermissions)) return;
-            SendAllBlockPermissions();
+            if (Supports(CpeExt.BlockPermissions)) SendAllBlockPermissions();
         }
         void SendAllBlockPermissions()
         {
@@ -229,12 +232,11 @@ namespace MCGalaxy
             }
             for (id = 0; id < 255; id++)
                 if (used[id] == 0) break;
-            VisibleSelection sel = new()
+            selections.Add(new()
             {
                 data = instance,
                 ID = id
-            };
-            selections.Add(sel);
+            });
             return id;
         }
     }

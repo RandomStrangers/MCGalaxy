@@ -86,11 +86,8 @@ namespace Sharkbite.Irc
         void KeepAlive(string message) => SendPong(message);
         void MyNickChanged(string user, string newNick)
         {
-            string nick = ExtractNick(user);
-            if (Nick == nick)
-            {
+            if (Nick == ExtractNick(user))
                 Nick = newNick;
-            }
         }
         void HandleRegistered()
         {
@@ -100,22 +97,19 @@ namespace Sharkbite.Irc
         string GetNewNick()
         {
             if (Nick.Length < MAX_NICKNAME_LEN)
-            {
                 return Nick + "_";
-            }
             int idx = rnd.Next(MAX_NICKNAME_LEN / 3);
             char val = (char)('A' + rnd.Next(26));
             return Nick.Substring(0, idx) + val + Nick.Substring(idx + 1);
         }
         void HandleNickError(string badNick, string reason)
         {
-            if (Registered)
+            if (!Registered)
             {
-                return;
+                Nick = GetNewNick();
+                SendNick(Nick);
+                SendUser();
             }
-            Nick = GetNewNick();
-            SendNick(Nick);
-            SendUser();
         }
         void RegisterDelegates()
         {
@@ -135,14 +129,8 @@ namespace Sharkbite.Irc
             {
                 while ((line = reader.ReadLine()) != null)
                 {
-                    if (IsDccRequest(line))
-                    {
+                    if (IsDccRequest(line) || IsCtcpMessage(line))
                         continue;
-                    }
-                    if (IsCtcpMessage(line))
-                    {
-                        continue;
-                    }
                     Parse(line);
                 }
             }
@@ -161,9 +149,7 @@ namespace Sharkbite.Irc
             lock (this)
             {
                 if (Connected)
-                {
                     throw new InvalidOperationException("Connection with IRC server already opened.");
-                }
                 client = new();
                 client.Connect(Hostname, Port);
                 Stream s = MakeDataStream();
@@ -201,9 +187,7 @@ namespace Sharkbite.Irc
             try
             {
                 lock (sendLock)
-                {
                     writer.WriteLine(command);
-                }
             }
             catch
             {
@@ -223,14 +207,7 @@ namespace Sharkbite.Irc
             for (int i = 0; i < pieces; i++)
             {
                 int start = i * maxSize;
-                if (i == pieces - 1)
-                {
-                    parts[i] = message.Substring(start);
-                }
-                else
-                {
-                    parts[i] = message.Substring(start, maxSize);
-                }
+                parts[i] = i == pieces - 1 ? message.Substring(start) : message.Substring(start, maxSize);
             }
             return parts;
         }
@@ -238,9 +215,7 @@ namespace Sharkbite.Irc
         void SendQuit(string reason)
         {
             if (IsEmpty(reason))
-            {
                 throw new ArgumentException("Quit reason cannot be null or empty.");
-            }
             SendCommand("QUIT :" + reason);
         }
         void SendPong(string message) => SendCommand("PONG " + message);
@@ -248,76 +223,43 @@ namespace Sharkbite.Irc
         public void SendJoin(string channel)
         {
             if (IsEmpty(channel))
-            {
                 throw new ArgumentException(channel + " is not a valid channel name.");
-            }
             SendCommand("JOIN " + channel);
-        }
-        public void SendJoin(string channel, string password)
-        {
-            if (IsEmpty(password))
-            {
-                throw new ArgumentException("Password cannot be empty or null.");
-            }
-            if (IsEmpty(channel))
-            {
-                throw new ArgumentException("Channel name cannot be empty or null.");
-            }
-            SendCommand("JOIN " + channel + " " + password);
         }
         public void SendNick(string nick)
         {
             if (!IsValidNick(nick))
-            {
                 throw new ArgumentException(nick + " is not a valid nickname.");
-            }
             SendCommand("NICK " + nick);
         }
         public void SendNames(string channel)
         {
             if (IsEmpty(channel))
-            {
                 throw new ArgumentException("Channel name cannot be null or empty.");
-            }
             SendCommand("NAMES " + channel);
         }
         public void SendMessage(string target, string message)
         {
             if (IsEmpty(message))
-            {
                 throw new ArgumentException("Public message cannot be null or empty.");
-            }
             if (IsEmpty(target))
-            {
                 throw new ArgumentException("Channel/Nick name cannot be null or empty.");
-            }
             lock (sendLock)
             {
                 int max = MAX_COMMAND_SIZE - 11 - target.Length - MAX_HOSTNAME_LEN - MAX_NICKNAME_LEN;
                 if (message.Length > max)
-                {
-                    string[] parts = BreakUpMessage(message, max);
-                    foreach (string part in parts)
-                    {
+                    foreach (string part in BreakUpMessage(message, max))
                         SendCommand("PRIVMSG " + target + " :" + part);
-                    }
-                }
                 else
-                {
                     SendCommand("PRIVMSG " + target + " :" + message);
-                }
             }
         }
         public void SendRaw(string message)
         {
             if (IsEmpty(message))
-            {
                 throw new ArgumentException("Message cannot be null or empty.");
-            }
             if (message.Length > MAX_COMMAND_SIZE)
-            {
                 message = message.Substring(0, MAX_COMMAND_SIZE);
-            }
             SendCommand(message);
         }
         #endregion
@@ -407,25 +349,23 @@ namespace Sharkbite.Irc
         void Parse(string message)
         {
             string[] tokens = message.Split(Separator);
-            if (tokens[0] == "PING")
+            switch (tokens[0])
             {
-                OnPing(GetSuffix(tokens, 1));
-            }
-            else if (tokens[0] == "NOTICE")
-            {
-                OnPrivateNotice("", GetSuffix(tokens, 2));
-            }
-            else if (tokens[0] == "ERROR")
-            {
-                OnError(ReplyCode.IrcServerError, GetSuffix(tokens, 1));
-            }
-            else if (replyRegex.IsMatch(message))
-            {
-                ParseReply(tokens);
-            }
-            else
-            {
-                ParseCommand(tokens);
+                case "PING":
+                    OnPing(GetSuffix(tokens, 1));
+                    break;
+                case "NOTICE":
+                    OnPrivateNotice("", GetSuffix(tokens, 2));
+                    break;
+                case "ERROR":
+                    OnError(ReplyCode.IrcServerError, GetSuffix(tokens, 1));
+                    break;
+                default:
+                    if (replyRegex.IsMatch(message))
+                        ParseReply(tokens);
+                    else
+                        ParseCommand(tokens);
+                    break;
             }
         }
         /// <summary>
@@ -439,13 +379,9 @@ namespace Sharkbite.Irc
             {
                 case "NOTICE":
                     if (IsValidChannelName(tokens[2]))
-                    {
                         OnPublicNotice(user, tokens[2], GetSuffix(tokens, 3));
-                    }
                     else
-                    {
                         OnPrivateNotice(user, GetSuffix(tokens, 3));
-                    }
                     break;
                 case "JOIN":
                     OnJoin(user, RemoveLeadingColon(tokens[2]));
@@ -468,13 +404,9 @@ namespace Sharkbite.Irc
                         }
                     }
                     else if (IsValidChannelName(tokens[2]))
-                    {
                         OnPublic(user, tokens[2], CondenseStrings(tokens, 3));
-                    }
                     else
-                    {
                         OnPrivate(user, CondenseStrings(tokens, 3));
-                    }
                     break;
                 case "NICK":
                     OnNick(user, RemoveLeadingColon(tokens[2]));
@@ -493,9 +425,7 @@ namespace Sharkbite.Irc
                     break;
                 case "MODE":
                     if (IsValidChannelName(tokens[2]))
-                    {
                         OnChannelModeChange(tokens[0], tokens[2]);
-                    }
                     break;
                 case "KILL":
                     OnKill(user, tokens[2], GetSuffix(tokens, 3));
@@ -541,13 +471,14 @@ namespace Sharkbite.Irc
         }
         void HandleDefaultReply(ReplyCode code, string[] tokens)
         {
-            if (code >= ReplyCode.ERR_NOSUCHNICK && code <= ReplyCode.ERR_USERSDONTMATCH)
+            switch (code)
             {
-                OnError(code, GetSuffix(tokens, 3));
-            }
-            else
-            {
-                OnReply?.Invoke(code, GetSuffix(tokens, 3));
+                case >= ReplyCode.ERR_NOSUCHNICK and <= ReplyCode.ERR_USERSDONTMATCH:
+                    OnError(code, GetSuffix(tokens, 3));
+                    break;
+                default:
+                    OnReply?.Invoke(code, GetSuffix(tokens, 3));
+                    break;
             }
         }
         /// <summary>
@@ -562,20 +493,9 @@ namespace Sharkbite.Irc
         static string RemoveTrailingQuote(string text) => text.Substring(0, text.Length - 1);
         #endregion
         #region Utilities
-        public static string ExtractNick(string fullUserName)
-        {
-            if (IsEmpty(fullUserName))
-            {
-                return "";
-            }
-            Match match = nameSplitterRegex.Match(fullUserName);
-            if (match.Success)
-            {
-                string[] parts = nameSplitterRegex.Split(fullUserName);
-                return parts[0];
-            }
-            return fullUserName;
-        }
+        public static string ExtractNick(string fullUserName) => IsEmpty(fullUserName)
+                ? ""
+                : nameSplitterRegex.Match(fullUserName).Success ? nameSplitterRegex.Split(fullUserName)[0] : fullUserName;
         static bool IsValidChannelName(string channel) => !IsEmpty(channel) && !HasSpace(channel) && channel.Length > 1 && ChannelPrefix.IndexOf(channel[0]) >= 0;
         static bool IsValidNick(string nick) => !IsEmpty(nick) && !HasSpace(nick) && nickRegex.IsMatch(nick);
         static bool IsEmpty(string str) => str == null || str.Trim().Length == 0;

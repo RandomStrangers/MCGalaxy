@@ -527,7 +527,8 @@ namespace MCGalaxy.Network
         {
             if (extTexs)
             {
-                NetUtils.WriteU16(value, buffer, i); i += 2;
+                NetUtils.WriteU16(value, buffer, i);
+                i += 2;
             }
             else
                 buffer[i++] = (byte)value;

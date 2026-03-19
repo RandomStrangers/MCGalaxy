@@ -46,9 +46,7 @@ namespace MCGalaxy.SQL
         {
             string[] field = new string[record.FieldCount];
             for (int i = 0; i < field.Length; i++)
-            { 
-                field[i] = record.GetStringValue(i); 
-            }
+                field[i] = record.GetStringValue(i);
             return field;
         }
         /// <summary> Returns all columns of all rows read from the given table. </summary>
@@ -157,7 +155,6 @@ namespace MCGalaxy.SQL
             SQLiteBackend db = new();
             Exception e = null;
             for (int i = 0; i < 5; i++)
-            {
                 try
                 {
                     return callback != null ? db.Iterate(sql, args, callback) : db.Execute(sql, args);
@@ -166,7 +163,6 @@ namespace MCGalaxy.SQL
                 {
                     e = ex;
                 }
-            }
             Logger.LogError("Error executing SQL statement: " + sql, e);
             return 0;
         }
