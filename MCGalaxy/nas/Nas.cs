@@ -25,7 +25,7 @@ namespace NotAwesomeSurvival
             SavePath = Path + "playerdata/",
             CoreSavePath = Path + "coredata/",
             EffectsPath = Path + "effects/",
-            NasVersion = "1.0.6.4", 
+            NasVersion = "1.0.6.5", 
             DiscordAccountName = "may.wildflower";
         public static bool LoadedOnStartup = false,
             firstEverPluginLoad = false;

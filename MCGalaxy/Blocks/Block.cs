@@ -14,6 +14,7 @@
  */
 using MCGalaxy.Blocks;
 using MCGalaxy.Maths;
+using System;
 using System.IO;
 namespace MCGalaxy
 {
@@ -64,7 +65,7 @@ namespace MCGalaxy
         }
         public static void SetBlocks()
         {
-            BlockProps[] props = Props;
+            BlockProps[] props = new BlockProps[Props.Length];
             for (int b = 0; b < props.Length; b++)
             {
                 props[b] = MakeDefaultProps((ushort)b);
@@ -73,13 +74,14 @@ namespace MCGalaxy
             // backwards compatibility with older versions
             if (!File.Exists(propsPath))
             {
-                BlockProps.Load("core", Props, 1, false);
-                BlockProps.Load("global", Props, 1, true);
+                BlockProps.Load("core", props, 1, false);
+                BlockProps.Load("global", props, 1, true);
             }
             else
             {
-                BlockProps.Load("default", Props, 1, false);
+                BlockProps.Load("default", props, 1, false);
             }
+            Array.Copy(props, Props, props.Length);
             UpdateLoadedLevels();
         }
         public static void UpdateLoadedLevels()
