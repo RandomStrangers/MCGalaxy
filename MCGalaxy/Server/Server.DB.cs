@@ -19,7 +19,7 @@ namespace MCGalaxy
 {
     public sealed partial class Server
     {
-        static readonly ColumnDesc[] playersTable = new ColumnDesc[]
+        public static readonly ColumnDesc[] playersTable = new ColumnDesc[]
         {
             new("ID", ColumnType.Integer, priKey: true, autoInc: true, notNull: true),
             new("Name", ColumnType.VarChar, 17),
@@ -46,7 +46,7 @@ namespace MCGalaxy
             new("Cmd", ColumnType.VarChar, 40),
             new("Cmdmsg", ColumnType.VarChar, 40),
         };
-        static void InitDatabase()
+        public static void InitDatabase()
         {
             if (!Directory.Exists("blockdb"))
                 Directory.CreateDirectory("blockdb");

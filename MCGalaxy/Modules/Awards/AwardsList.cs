@@ -50,7 +50,7 @@ namespace MCGalaxy.Modules.Awards
         /// <summary> Finds partial matches of 'name' against the list of all awards </summary>
         public static string FindMatch(Player p, string name) => Matcher.Find(p, name, out _, Awards,
                                        null, a => a.Name, "awards")?.Name;
-        static readonly object saveLock = new();
+        public static readonly object saveLock = new();
         public static void Save()
         {
             lock (saveLock)
@@ -74,11 +74,11 @@ namespace MCGalaxy.Modules.Awards
             Awards = new();
             PropertiesFile.Read("text/awardsList.txt", ProcessLine, ':');
         }
-        static void ProcessLine(string award, string desc)
+        public static void ProcessLine(string award, string desc)
         {
             if (desc.Length != 0) Add(award, desc);
         }
-        static void WriteHeader(StreamWriter w)
+        public static void WriteHeader(StreamWriter w)
         {
             w.WriteLine("#This is a full list of awards. The server will load these and they can be awarded as you please");
             w.WriteLine("#Format is:");

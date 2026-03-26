@@ -29,8 +29,8 @@ namespace MCGalaxy.Network
     {
         public INetProtocol protocol;
         public bool Disconnected;
-        byte[] leftData;
-        int leftLen;
+        public byte[] leftData;
+        public int leftLen;
         public abstract IPAddress IP { get; }
         public abstract bool LowLatency { set; }
         public abstract void Init();
@@ -70,7 +70,7 @@ namespace MCGalaxy.Network
         }
         internal static VolatileArray<INetSocket> pending = new();
         public static ProtocolConstructor[] Protocols = new ProtocolConstructor[256];
-        void IdentifyProtocol(byte opcode)
+        public void IdentifyProtocol(byte opcode)
         {
             ProtocolConstructor cons = Protocols[opcode];
             if (cons != null)
@@ -85,8 +85,8 @@ namespace MCGalaxy.Network
             Protocols[0] = ConstructClassic;
             Protocols['G'] = ConstructWebsocket;
         }
-        static INetProtocol ConstructClassic(INetSocket socket) => new ClassicProtocol(socket);
-        static INetProtocol ConstructWebsocket(INetSocket socket) => !Server.Config.WebClient ? null : (INetProtocol)new WebSocket(socket);
+        public static INetProtocol ConstructClassic(INetSocket socket) => new ClassicProtocol(socket);
+        public static INetProtocol ConstructWebsocket(INetSocket socket) => !Server.Config.WebClient ? null : (INetProtocol)new WebSocket(socket);
     }
     public interface INetProtocol
     {
@@ -95,14 +95,14 @@ namespace MCGalaxy.Network
     }
     public sealed class TcpSocket : INetSocket
     {
-        readonly Socket socket;
-        readonly byte[] recvBuffer = new byte[256],
+        public readonly Socket socket;
+        public readonly byte[] recvBuffer = new byte[256],
             sendBuffer = new byte[4096];
-        readonly SocketAsyncEventArgs recvArgs = new(),
+        public readonly SocketAsyncEventArgs recvArgs = new(),
             sendArgs = new();
-        readonly object sendLock = new();
-        readonly Queue<byte[]> sendQueue = new(64);
-        volatile bool sendInProgress;
+        public readonly object sendLock = new();
+        public readonly Queue<byte[]> sendQueue = new(64);
+        public volatile bool sendInProgress;
         public TcpSocket(Socket s)
         {
             socket = s;
@@ -125,13 +125,13 @@ namespace MCGalaxy.Network
                 socket.NoDelay = value; 
             } 
         }
-        static readonly EventHandler<SocketAsyncEventArgs> recvCallback = RecvCallback;
-        void ReceiveNextAsync()
+        public static readonly EventHandler<SocketAsyncEventArgs> recvCallback = RecvCallback;
+        public void ReceiveNextAsync()
         {
             if (!socket.ReceiveAsync(recvArgs))
                 RecvCallback(null, recvArgs);
         }
-        static void RecvCallback(object sender, SocketAsyncEventArgs e)
+        public static void RecvCallback(object sender, SocketAsyncEventArgs e)
         {
             TcpSocket s = (TcpSocket)e.UserToken;
             if (!s.Disconnected)
@@ -162,7 +162,7 @@ namespace MCGalaxy.Network
                 }
             }
         }
-        static readonly EventHandler<SocketAsyncEventArgs> sendCallback = SendCallback;
+        public static readonly EventHandler<SocketAsyncEventArgs> sendCallback = SendCallback;
         public override void Send(byte[] buffer, SendFlags flags)
         {
             if (Disconnected || !socket.Connected)
@@ -190,7 +190,7 @@ namespace MCGalaxy.Network
             {
             }
         }
-        bool TrySendAsync(byte[] buffer)
+        public bool TrySendAsync(byte[] buffer)
         {
             if (buffer.Length <= 16)
                 for (int i = 0; i < buffer.Length; i++)
@@ -200,7 +200,7 @@ namespace MCGalaxy.Network
             sendArgs.SetBuffer(0, buffer.Length);
             return socket.SendAsync(sendArgs);
         }
-        static void SendCallback(object sender, SocketAsyncEventArgs e)
+        public static void SendCallback(object sender, SocketAsyncEventArgs e)
         {
             TcpSocket s = (TcpSocket)e.UserToken;
             try
@@ -241,7 +241,7 @@ namespace MCGalaxy.Network
                 Logger.LogError(ex);
             }
         }
-        void Disconnect()
+        public void Disconnect()
         {
             protocol?.Disconnect();
             Close();
@@ -284,8 +284,8 @@ namespace MCGalaxy.Network
     }
     public sealed class WebSocket : ServerWebSocket
     {
-        readonly INetSocket s;
-        IPAddress clientIP;
+        public readonly INetSocket s;
+        public IPAddress clientIP;
         public WebSocket(INetSocket socket) => s = socket;
         public override void Init() { }
         public override IPAddress IP => clientIP ?? s.IP;
@@ -314,6 +314,6 @@ namespace MCGalaxy.Network
                 IPAddress.TryParse(value, out clientIP);
             }
         }
-        bool IsTrustedForwarderIP() => IPAddress.IsLoopback(IP) || IP.Equals(new IPAddress(0xFA05DF22));
+        public bool IsTrustedForwarderIP() => IPAddress.IsLoopback(IP) || IP.Equals(new IPAddress(0xFA05DF22));
     }
 }

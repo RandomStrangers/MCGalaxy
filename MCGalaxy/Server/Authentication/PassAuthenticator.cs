@@ -41,11 +41,11 @@ namespace MCGalaxy.Authentication
             FileIO.TryDelete(GetHashPath(name));
             return true;
         }
-        static string GetHashPath(string name) => File.Exists(HashPath(name)) ? HashPath(name) : null;
-        static string HashPath(string name) => "extra/passwords/" + Server.ToRawUsername(name).ToLower() + ".pwd";
-        static bool CheckHash(string path, string name, string pass) => FileIO.TryReadBytes(path, out byte[] stored) && ArraysEqual(ComputeHash(name, pass), stored);
-        static byte[] ComputeHash(string name, string pass) => SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes("0bec662b-416f-450c-8f50-664fd4a41d49" + name.ToLower() + " " + pass));
-        static bool ArraysEqual(byte[] a, byte[] b)
+        public static string GetHashPath(string name) => File.Exists(HashPath(name)) ? HashPath(name) : null;
+        public static string HashPath(string name) => "extra/passwords/" + Server.ToRawUsername(name).ToLower() + ".pwd";
+        public static bool CheckHash(string path, string name, string pass) => FileIO.TryReadBytes(path, out byte[] stored) && ArraysEqual(ComputeHash(name, pass), stored);
+        public static byte[] ComputeHash(string name, string pass) => SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes("0bec662b-416f-450c-8f50-664fd4a41d49" + name.ToLower() + " " + pass));
+        public static bool ArraysEqual(byte[] a, byte[] b)
         {
             if (a.Length != b.Length)
                 return false;
@@ -77,14 +77,14 @@ namespace MCGalaxy.Authentication
             OnPlayerHelpEvent.Unregister(OnPlayerHelp);
             OnPlayerCommandEvent.Unregister(OnPlayerCommand);
         }
-        static void OnPlayerHelp(Player p, string target, ref bool cancel)
+        public static void OnPlayerHelp(Player p, string target, ref bool cancel)
         {
             if (!(target.CaselessEq("pass") || target.CaselessEq("password") || target.CaselessEq("setpass")))
                 return;
             PrintHelp(p);
             cancel = true;
         }
-        static void OnPlayerCommand(Player p, string cmd, string args, CommandData data)
+        public static void OnPlayerCommand(Player p, string cmd, string args, CommandData data)
         {
             if (cmd.CaselessEq("pass"))
             {
@@ -102,7 +102,7 @@ namespace MCGalaxy.Authentication
                 p.cancelcommand = true;
             }
         }
-        static void ExecPassCommand(Player p, string message, CommandData data)
+        public static void ExecPassCommand(Player p, string message, CommandData data)
         {
             if (!Server.Config.verifyadmins)
             {
@@ -135,7 +135,7 @@ namespace MCGalaxy.Authentication
                     break;
             }
         }
-        static void DoVerifyPassword(Player p, string password)
+        public static void DoVerifyPassword(Player p, string password)
         {
             if (!p.Unverified)
             {
@@ -167,7 +167,7 @@ namespace MCGalaxy.Authentication
             p.Message("&WWrong Password. &SRemember your password is &Wcase sensitive.");
             p.Message("Forgot your password? Contact &W{0} &Sto &Wreset it.", Server.Config.OwnerName);
         }
-        static void DoSetPassword(Player p, string password)
+        public static void DoSetPassword(Player p, string password)
         {
             if (p.Unverified && HasPassword(p.name))
             {
@@ -183,7 +183,7 @@ namespace MCGalaxy.Authentication
             StorePassword(p.name, password);
             p.Message("Your verification password was &aset to: &c" + password);
         }
-        static void DoResetPassword(Player p, string name, CommandData data)
+        public static void DoResetPassword(Player p, string name, CommandData data)
         {
             string target = PlayerInfo.FindMatchesPreferOnline(p, name);
             if (target == null)
@@ -204,7 +204,7 @@ namespace MCGalaxy.Authentication
             else
                 p.Message("{0} &Sdoes not have a verification password.", p.FormatNick(target));
         }
-        static void PrintHelp(Player p)
+        public static void PrintHelp(Player p)
         {
             p.Message("&T/Pass reset [player] &H- Resets the password for that player");
             p.Message("&H Note that only {0}&S+ can reset passwords",

@@ -16,7 +16,7 @@ using MCGalaxy.Commands;
 using System.IO;
 namespace MCGalaxy.Modules.Compiling
 {
-    class CmdCompile : Command2
+    public class CmdCompile : Command2
     {
         public override string Name => "Compile";
         public override string Type => CommandTypes.Other;
@@ -50,7 +50,7 @@ namespace MCGalaxy.Modules.Compiling
             paths = TryDirectory(Compiler.PLUGINS_DIR, pln, paths);
             Compile(p, "Plugin", paths, dstPath);
         }
-        static void Compile(Player p, string type, string[] srcs, string dst)
+        public static void Compile(Player p, string type, string[] srcs, string dst)
         {
             foreach (string path in srcs)
             {
@@ -88,7 +88,7 @@ namespace MCGalaxy.Modules.Compiling
             paths = TryDirectory(Compiler.COMMANDS_SOURCE_DIR, cmd, paths);
             Compile(p, "Command", paths, dstPath);
         }
-        string[] TryDirectory(string root, string name, string[] srcPaths)
+        public string[] TryDirectory(string root, string name, string[] srcPaths)
         {
             if (File.Exists(srcPaths[0]))
                 return srcPaths;

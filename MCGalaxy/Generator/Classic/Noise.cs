@@ -46,7 +46,7 @@ namespace MCGalaxy.Generator.Classic
     }
     public sealed class OctaveNoise
     {
-        readonly ImprovedNoise[] baseNoise;
+        public readonly ImprovedNoise[] baseNoise;
         public OctaveNoise(int octaves, JavaRandom rnd)
         {
             baseNoise = new ImprovedNoise[octaves];
@@ -68,7 +68,7 @@ namespace MCGalaxy.Generator.Classic
     }
     public sealed class CombinedNoise
     {
-        readonly OctaveNoise noise1, noise2;
+        public readonly OctaveNoise noise1, noise2;
         public CombinedNoise(OctaveNoise noise1, OctaveNoise noise2)
         {
             this.noise1 = noise1;

@@ -143,7 +143,7 @@ namespace MCGalaxy
             PlayerActions.PostSentMap(this, null, Level, false);
             Loading = false;
         }
-        static Player FindClone(string name)
+        public static Player FindClone(string name)
         {
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
@@ -151,7 +151,7 @@ namespace MCGalaxy
                     return pl;
             return null;
         }
-        void ShowWelcome()
+        public void ShowWelcome()
         {
             LastAction = DateTime.UtcNow;
             TextFile welcomeFile = TextFile.Files["Welcome"];
@@ -165,7 +165,7 @@ namespace MCGalaxy
                 Logger.LogError("Error loading welcome text", ex);
             }
         }
-        void LoadCpeData()
+        public void LoadCpeData()
         {
             string skin = Server.skins.Get(name);
             if (!string.IsNullOrEmpty(skin))
@@ -192,7 +192,7 @@ namespace MCGalaxy
             }
             SetModel(Model);
         }
-        void GetPlayerStats()
+        public void GetPlayerStats()
         {
             PlayerData data = null;
             if (verifiedName || Server.Config.VerifyNames)
@@ -217,7 +217,7 @@ namespace MCGalaxy
             }
             gotSQLData = true;
         }
-        void CheckState()
+        public void CheckState()
         {
             if (Server.muted.Contains(name))
             {
@@ -230,7 +230,7 @@ namespace MCGalaxy
                 Chat.MessageFrom(this, "λNICK &Wis still frozen from previously.");
             }
         }
-        static void ShowAltsTask(SchedulerTask task)
+        public static void ShowAltsTask(SchedulerTask task)
         {
             string name = (string)task.State;
             Player p = PlayerInfo.FindExact(name);

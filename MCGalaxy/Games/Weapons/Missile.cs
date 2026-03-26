@@ -41,7 +41,7 @@ namespace MCGalaxy.Games
             p.CriticalTasks.Add(task);
             Disable();
         }
-        protected class MissileData : AmmunitionData
+        public class MissileData : AmmunitionData
         {
             public WeaponType type;
             public Vec3U16 pos;
@@ -52,7 +52,7 @@ namespace MCGalaxy.Games
         protected virtual bool OnHitBlock(MissileData args, Vec3U16 pos, ushort block) => true;
         /// <summary> Called when a missile has collided with a player. </summary>
         protected virtual void OnHitPlayer(MissileData args, Player pl) => pl.HandleDeath(Block.Cobblestone, "@p &Swas hit by a missile from " + p.ColoredName);
-        void MissileCallback(SchedulerTask task)
+        public void MissileCallback(SchedulerTask task)
         {
             MissileData args = (MissileData)task.State;
             if (args.moving) 
@@ -68,7 +68,7 @@ namespace MCGalaxy.Games
             }
             task.Repeating = args.visible.Count > 0;
         }
-        void PerformMove(MissileData args)
+        public void PerformMove(MissileData args)
         {
             while (true)
             {
@@ -80,7 +80,7 @@ namespace MCGalaxy.Games
                 return;
             }
         }
-        Vec3U16 MissileTarget(MissileData args)
+        public Vec3U16 MissileTarget(MissileData args)
         {
             args.start = (Vec3U16)p.Pos.BlockCoords;
             args.dir = DirUtils.GetDirVector(p.Rot.RotY, p.Rot.HeadX);
@@ -96,7 +96,7 @@ namespace MCGalaxy.Games
             }
             return args.PosAt(i - 1);
         }
-        bool MoveMissile(MissileData args, Vec3U16 pos, Vec3U16 target)
+        public bool MoveMissile(MissileData args, Vec3U16 pos, Vec3U16 target)
         {
             ushort block = p.Level.GetBlock(pos.X, pos.Y, pos.Z);
             if (block != Block.Air && !args.all.Contains(pos) && OnHitBlock(args, pos, block))
@@ -118,14 +118,14 @@ namespace MCGalaxy.Games
             }
             return true;
         }
-        bool HitsPlayer(MissileData args, Vec3U16 pos)
+        public bool HitsPlayer(MissileData args, Vec3U16 pos)
         {
             Player pl = PlayerAt(p, pos, true);
             if (pl == null) return false;
             OnHitPlayer(args, pl);
             return true;
         }
-        void FindNext(Vec3U16 lookedAt, ref Vec3U16 pos, List<Vec3S32> buffer)
+        public void FindNext(Vec3U16 lookedAt, ref Vec3U16 pos, List<Vec3S32> buffer)
         {
             LineDrawOp.DrawLine(pos.X, pos.Y, pos.Z, 2, lookedAt.X, lookedAt.Y, lookedAt.Z, buffer);
             Vec3U16 end = (Vec3U16)buffer[buffer.Count - 1];

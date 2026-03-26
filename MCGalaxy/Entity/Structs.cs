@@ -40,7 +40,7 @@ namespace MCGalaxy
             Y = SignExtend(raw >> 21),
             Z = SignExtend(raw >> 42)
         };
-        static int SignExtend(long parts)
+        public static int SignExtend(long parts)
         {
             int value = (int)(parts & 0x1FFFFF);
             value <<= 32 - 21;

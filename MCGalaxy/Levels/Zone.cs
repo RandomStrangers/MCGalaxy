@@ -31,7 +31,7 @@ namespace MCGalaxy
     /// <summary> Encapuslates build access permissions for a zone. </summary>
     public sealed class ZoneAccessController : AccessController
     {
-        readonly ZoneConfig cfg;
+        public readonly ZoneConfig cfg;
         public ZoneAccessController(ZoneConfig cfg) => this.cfg = cfg;
         public override LevelPermission Min
         {

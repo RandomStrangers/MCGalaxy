@@ -46,7 +46,7 @@ namespace MCGalaxy.Modules.Compiling
             Directory.CreateDirectory(PLUGINS_DIR);
             AppDomain.CurrentDomain.AssemblyResolve += ResolveMissingAssembly;
         }
-        static Assembly ResolveMissingAssembly(object sender, ResolveEventArgs args)
+        public static Assembly ResolveMissingAssembly(object sender, ResolveEventArgs args)
         {
             Assembly source = args.RequestingAssembly;
             Assembly match = ResolvePluginAssembly(source, args.Name);
@@ -58,7 +58,7 @@ namespace MCGalaxy.Modules.Compiling
                        args.Name);
             return null;
         }
-        static Assembly ResolvePluginAssembly(Assembly source, string target)
+        public static Assembly ResolvePluginAssembly(Assembly source, string target)
         {
             if (source == null || !IsPluginDLL(source))
                 return null;
@@ -73,7 +73,7 @@ namespace MCGalaxy.Modules.Compiling
             ;
             return null;
         }
-        static bool IsPluginDLL(Assembly a) => string.IsNullOrEmpty(a.Location);
+        public static bool IsPluginDLL(Assembly a) => string.IsNullOrEmpty(a.Location);
         /// <summary> Constructs instances of all types which derive from T in the given assembly. </summary>
         /// <returns> The list of constructed instances. </returns>
         public static List<T> LoadTypes<T>(Assembly lib)
@@ -100,7 +100,7 @@ namespace MCGalaxy.Modules.Compiling
                 return null;
             return loadDebug ? Assembly.Load(data, GetDebugData(path)) : Assembly.Load(data);
         }
-        static byte[] GetDebugData(string path)
+        public static byte[] GetDebugData(string path)
         {
             string pdb_path = Path.ChangeExtension(path, ".pdb");
             byte[] bytes;
@@ -142,7 +142,7 @@ namespace MCGalaxy.Modules.Compiling
             foreach (string path in files)
                 AutoloadCommands(path);
         }
-        static void AutoloadCommands(string path)
+        public static void AutoloadCommands(string path)
         {
             List<Command> cmds;
             try
@@ -348,7 +348,7 @@ namespace MCGalaxy.Modules.Compiling
             return sb.ToString();
         }
         protected static string Quote(string value) => "\"" + value.Trim() + "\"";
-        static int Compile(string path, string args, List<string> output)
+        public static int Compile(string path, string args, List<string> output)
         {
             ProcessStartInfo psi = CreateStartInfo(path, args);
             using Process p = new();
@@ -370,7 +370,7 @@ namespace MCGalaxy.Modules.Compiling
             RedirectStandardOutput = true,
             RedirectStandardError = true
         };
-        static void ProcessCompilerOutputLine(ICompilerErrors errors, string line)
+        public static void ProcessCompilerOutputLine(ICompilerErrors errors, string line)
         {
             Match m = new Regex(@"(^(.*)(\(([0-9]+),([0-9]+)\)): )(error|warning) ([A-Z]+[0-9]+) ?: (.*)").Match(line);
             bool full;
@@ -395,7 +395,7 @@ namespace MCGalaxy.Modules.Compiling
             ce.ErrorText = m.Groups[full ? 8 : 3].Value;
             errors.Add(ce);
         }
-        static readonly string CommandSkeleton = @"//\tAuto-generated command skeleton class
+        public static readonly string CommandSkeleton = @"//\tAuto-generated command skeleton class
 //\tUse this as a basis for custom MCGalaxy commands
 //\tNaming should be kept consistent (e.g. /update command should have a class name of 'CmdUpdate' and a filename of 'CmdUpdate.cs')
 // As a note, MCGalaxy is designed for .NET 4.0
@@ -431,7 +431,7 @@ public class Cmd{0} : Command
 \t\tp.Message(""/{0} - Does stuff. Example command."");
 \t}}
 }}";
-        static readonly string PluginSkeleton = @"//\tAuto-generated plugin skeleton class
+        public static readonly string PluginSkeleton = @"//\tAuto-generated plugin skeleton class
 //\tUse this as a basis for custom MCGalaxy plugins
 // To reference other assemblies, put a ""//reference [assembly filename]"" at the top of the file
 //   e.g. to reference the System.Data assembly, put ""//reference System.Data.dll""
@@ -467,7 +467,7 @@ namespace MCGalaxy
         public static string CommandPath(string name) => COMMANDS_SOURCE_DIR + "Cmd" + name + FileExtension;
         public static string PluginPath(string name) => PLUGINS_DIR + name + FileExtension;
         public static string PluginDLLPath(string name) => PLUGINS_DIR + name + ".dll";
-        static string FormatSource(string source, params string[] args) => string.Format(source.Replace(@"\t", "\t").Replace("\n", "\r\n"), args);
+        public static string FormatSource(string source, params string[] args) => string.Format(source.Replace(@"\t", "\t").Replace("\n", "\r\n"), args);
         /// <summary> Generates source code for an example command,
         /// preformatted with the given command name </summary>
         public static string GenExampleCommand(string cmdName) => FormatSource(CommandSkeleton, cmdName.ToLower().Capitalize());
@@ -521,7 +521,7 @@ namespace MCGalaxy
             referenced.Add(Server.GetPath());
             return referenced;
         }
-        static void AddReferences(string path, string commentPrefix, List<string> referenced)
+        public static void AddReferences(string path, string commentPrefix, List<string> referenced)
         {
             using StreamReader r = new(path);
             string refPrefix = commentPrefix + "reference ",
@@ -550,16 +550,16 @@ namespace MCGalaxy
         public string ErrorNumber, ErrorText, FileName;
         public bool IsWarning;
     }
-    class SourceMap
+    public class SourceMap
     {
-        readonly string[] files;
-        readonly List<string>[] sources;
+        public readonly string[] files;
+        public readonly List<string>[] sources;
         public SourceMap(string[] paths)
         {
             files = paths;
             sources = new List<string>[paths.Length];
         }
-        int FindFile(string file)
+        public int FindFile(string file)
         {
             for (int i = 0; i < files.Length; i++)
                 if (file.CaselessEq(files[i]))

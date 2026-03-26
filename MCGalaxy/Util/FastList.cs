@@ -42,7 +42,7 @@ namespace MCGalaxy.Util
                 Array.Copy(Items, index + 1, Items, index, Count - index);
             Items[Count] = default;
         }
-        void EnsureCapacity(int threshold)
+        public void EnsureCapacity(int threshold)
         {
             if (Items.Length >= threshold)
                 return;

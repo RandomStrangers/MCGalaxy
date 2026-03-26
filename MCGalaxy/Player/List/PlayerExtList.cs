@@ -22,9 +22,9 @@ namespace MCGalaxy
     {
         public char Separator = ' ';
         public string Path;
-        readonly List<string> names = new(), lines = new();
+        public readonly List<string> names = new(), lines = new();
         internal readonly object locker = new();
-        readonly object saveLocker = new();
+        public readonly object saveLocker = new();
         public List<string> AllNames()
         {
             lock (locker) return new(names);
@@ -88,7 +88,7 @@ namespace MCGalaxy
             }
             if (log) Logger.Log(LogType.BackgroundActivity, "SAVED: " + Path);
         }
-        void SaveEntries(StreamWriter w)
+        public void SaveEntries(StreamWriter w)
         {
             lock (locker)
                 foreach (string line in lines) w.WriteLine(line);

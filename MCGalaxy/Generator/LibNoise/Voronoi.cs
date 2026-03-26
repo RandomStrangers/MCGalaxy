@@ -61,7 +61,7 @@ namespace MCGalaxy
                 z0 = zCandidate > 0.0 ? (int)zCandidate : (int)zCandidate - 1;
             return Displacement * ValueNoise(x0, y0, z0, 0);
         }
-        static double ValueNoise(int x, int y, int z, int seed)
+        public static double ValueNoise(int x, int y, int z, int seed)
         {
             int n = (
                 1619 * x

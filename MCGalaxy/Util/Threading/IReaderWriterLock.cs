@@ -18,15 +18,15 @@ namespace MCGalaxy.Util
 {
     public sealed class IReaderWriterLock
     {
-        readonly ReaderWriterLockSlim locker = new();
+        public readonly ReaderWriterLockSlim locker = new();
         public IDisposable AccquireRead() => AccquireRead(-1);
         public IDisposable AccquireWrite() => AccquireWrite(-1);
         public IDisposable AccquireRead(int msTimeout) => !locker.TryEnterReadLock(msTimeout) ? null : (IDisposable)new SlimLock(locker, false);
         public IDisposable AccquireWrite(int msTimeout) => !locker.TryEnterWriteLock(msTimeout) ? null : (IDisposable)new SlimLock(locker, true);
-        class SlimLock : IDisposable
+        public class SlimLock : IDisposable
         {
-            ReaderWriterLockSlim locker;
-            readonly bool writeMode;
+            public ReaderWriterLockSlim locker;
+            public readonly bool writeMode;
             public SlimLock(ReaderWriterLockSlim locker, bool writeMode)
             {
                 this.locker = locker;

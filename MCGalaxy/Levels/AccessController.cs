@@ -99,7 +99,7 @@ namespace MCGalaxy
             perms.Append("&S)");
             return shortened;
         }
-        static void DescribeList(Player p, StringBuilder perms, List<string> list, string format, bool shorten, ref bool shortened)
+        public static void DescribeList(Player p, StringBuilder perms, List<string> list, string format, bool shorten, ref bool shortened)
         {
             int displayCount = list.Count;
             if (shorten && list.Count > 5) displayCount = 5;
@@ -170,7 +170,7 @@ namespace MCGalaxy
             ApplyChanges(p, lvl, msg);
         }
         protected abstract void ApplyChanges(Player p, Level lvl, string msg);
-        bool CheckRank(Player p, LevelPermission plRank, LevelPermission perm, bool max)
+        public bool CheckRank(Player p, LevelPermission plRank, LevelPermission perm, bool max)
         {
             string mode = max ? "max" : "min";
             if (!CheckDetailed(p, plRank))
@@ -183,7 +183,7 @@ namespace MCGalaxy
                       Type, mode, ColoredName);
             return false;
         }
-        bool CheckList(Player p, LevelPermission plRank, string name, bool whitelist)
+        public bool CheckList(Player p, LevelPermission plRank, string name, bool whitelist)
         {
             if (!CheckDetailed(p, plRank))
             {
@@ -210,9 +210,9 @@ namespace MCGalaxy
     /// <summary> Encapuslates access permissions (visit or build) for a level. </summary>
     public sealed class LevelAccessController : AccessController
     {
-        readonly bool isVisit;
-        readonly LevelConfig cfg;
-        readonly string lvlName;
+        public readonly bool isVisit;
+        public readonly LevelConfig cfg;
+        public readonly string lvlName;
         public LevelAccessController(LevelConfig cfg, string levelName, bool isVisit)
         {
             this.cfg = cfg;
@@ -252,7 +252,7 @@ namespace MCGalaxy
             if (p != Player.NASConsole && p.Level != lvl)
                 p.Message("{0} &Son {1} &Sby you.", msg, ColoredName);
         }
-        void Update(Level lvl)
+        public void Update(Level lvl)
         {
             cfg.SaveFor(lvlName);
             if (lvl == null || isVisit && lvl == Server.mainLevel) return;

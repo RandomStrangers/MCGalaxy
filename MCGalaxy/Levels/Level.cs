@@ -113,7 +113,7 @@ namespace MCGalaxy
             }
             return true;
         }
-        void Cleanup()
+        public void Cleanup()
         {
             Physicsint = 0;
             try
@@ -225,7 +225,7 @@ namespace MCGalaxy
             Server.DoGC();
             return true;
         }
-        void SaveCore(string path)
+        public void SaveCore(string path)
         {
             if (blocks == null)
                 return;
@@ -359,9 +359,8 @@ namespace MCGalaxy
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
         public struct UndoPos
         {
-            public int Index;
-            int flags;
-            byte oldRaw, newRaw;
+            public int Index, flags;
+            public byte oldRaw, newRaw;
             public readonly ushort OldBlock => (ushort)(oldRaw | ((flags & 0x03) << 8));
             public readonly ushort NewBlock => (ushort)(newRaw | ((flags & 0xC >> 2) << 8));
             public readonly DateTime Time => Server.StartTime.AddTicks((flags >> 4) * TimeSpan.TicksPerSecond);
@@ -375,7 +374,7 @@ namespace MCGalaxy
                 flags |= (newBlock >> 8) << 2;
             }
         }
-        void LoadDefaultProps()
+        public void LoadDefaultProps()
         {
             for (int b = 0; b < Props.Length; b++)
                 Props[b] = BlockProps.MakeDefault(Props, this, (ushort)b);

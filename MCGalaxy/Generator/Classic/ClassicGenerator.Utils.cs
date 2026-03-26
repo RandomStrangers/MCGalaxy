@@ -4,8 +4,8 @@ namespace MCGalaxy.Generator.Classic
 {
     public sealed partial class ClassicGenerator
     {
-        static int Floor(float value) => value < (int)value ? (int)value - 1 : (int)value;
-        void FillOblateSpheroid(int x, int y, int z, float radius, byte block)
+        public static int Floor(float value) => value < (int)value ? (int)value - 1 : (int)value;
+        public void FillOblateSpheroid(int x, int y, int z, float radius, byte block)
         {
             int xBeg = Floor(Math.Max(x - radius, 0)),
                 xEnd = Floor(Math.Min(x + radius, Width - 1)),
@@ -27,7 +27,7 @@ namespace MCGalaxy.Generator.Classic
                         }
                     }
         }
-        void FloodFill(int startIndex, byte block)
+        public void FloodFill(int startIndex, byte block)
         {
             if (startIndex < 0) return;
             FastIntStack stack = new(4);
@@ -47,7 +47,7 @@ namespace MCGalaxy.Generator.Classic
                 if (y > 0) stack.Push(index - oneY);
             }
         }
-        sealed class FastIntStack
+        public sealed class FastIntStack
         {
             public int[] Values;
             public int Size;
@@ -71,7 +71,7 @@ namespace MCGalaxy.Generator.Classic
     }
     public sealed class JavaRandom
     {
-        long seed;
+        public long seed;
         public JavaRandom(int seed) => SetSeed(seed);
         public void SetSeed(int seed) => this.seed = (seed ^ 0x5DEECE66DL) & ((1L << 48) - 1);
         public int Next(int min, int max) => min + Next(max - min);

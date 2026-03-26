@@ -40,10 +40,10 @@ namespace MCGalaxy.Modules.Relay
         public string[] IgnoredUsers;
         protected readonly Player fakeGuest = new("RelayBot");
         protected readonly Player fakeStaff = new("RelayBot");
-        DateTime lastWho, lastOpWho, lastWarn;
+        public DateTime lastWho, lastOpWho, lastWarn;
         protected bool canReconnect;
         protected byte retries;
-        Thread worker;
+        public Thread worker;
         /// <summary> Whether this relay bot can automatically reconnect </summary>
         protected abstract bool CanReconnect { get; }
         /// <summary> The name of the service this relay bot communicates with </summary>
@@ -139,7 +139,7 @@ namespace MCGalaxy.Modules.Relay
             Logger.Log(LogType.RelayActivity, "Connected to {0}!", RelayName);
             retries = 0;
         }
-        void IOThreadCore()
+        public void IOThreadCore()
         {
             OnStart();
             while (CanReconnect && retries < 3)
@@ -182,7 +182,7 @@ namespace MCGalaxy.Modules.Relay
             }
             OnStop();
         }
-        void IOThread()
+        public void IOThread()
         {
             try
             {
@@ -195,7 +195,7 @@ namespace MCGalaxy.Modules.Relay
             worker = null;
         }
         /// <summary> Starts the read loop in a background thread </summary>
-        void RunAsync() => Utils.StartBackgroundThread(out worker, RelayName + "_RelayBot",
+        public void RunAsync() => Utils.StartBackgroundThread(out worker, RelayName + "_RelayBot",
                                IOThread);
         protected abstract void DoConnect();
         protected abstract void DoReadLoop();
@@ -233,16 +233,16 @@ namespace MCGalaxy.Modules.Relay
             OnChatFromEvent.Unregister(OnChatFrom);
             OnShuttingDownEvent.Unregister(OnShutdown);
         }
-        static bool FilterIRC(Player pl, object arg) => !pl.Ignores.IRC && !pl.Ignores.IRCNicks.Contains((string)arg);
-        static readonly ChatMessageFilter filterIRC = FilterIRC;
+        public static bool FilterIRC(Player pl, object arg) => !pl.Ignores.IRC && !pl.Ignores.IRCNicks.Contains((string)arg);
+        public static readonly ChatMessageFilter filterIRC = FilterIRC;
         public static void MessageInGame(string srcNick, string message) => Chat.Message(ChatScope.Global, message, srcNick, filterIRC);
-        string Unescape(Player p, string msg) => msg
+        public string Unescape(Player p, string msg) => msg
                 .Replace("λFULL", UnescapeFull(p))
                 .Replace("λNICK", UnescapeNick(p));
         protected virtual string UnescapeFull(Player p) => Server.Config.IRCShowPlayerTitles ? p.FullName : p.group.Prefix + p.ColoredName;
         protected virtual string UnescapeNick(Player p) => p.ColoredName;
         protected virtual string PrepareMessage(string msg) => msg;
-        void MessageToRelay(ChatScope scope, string msg, object arg, ChatMessageFilter filter)
+        public void MessageToRelay(ChatScope scope, string msg, object arg, ChatMessageFilter filter)
         {
             ChatMessageFilter scopeFilter = Chat.scopeFilters[(int)scope];
             fakeGuest.group = Group.DefaultRank;
@@ -255,22 +255,22 @@ namespace MCGalaxy.Modules.Relay
             if (scopeFilter(fakeStaff, arg) && (filter == null || filter(fakeStaff, arg)))
                 SendStaffMessage(msg);
         }
-        void OnChatSys(ChatScope scope, ref string msg, object arg,
+        public void OnChatSys(ChatScope scope, ref string msg, object arg,
                            ref ChatMessageFilter filter, bool relay)
         {
             if (relay) MessageToRelay(scope, PrepareMessage(msg), arg, filter);
         }
-        void OnChatFrom(ChatScope scope, Player source, ref string msg,
+        public void OnChatFrom(ChatScope scope, Player source, ref string msg,
                             object arg, ref ChatMessageFilter filter, bool relay)
         {
             if (relay) MessageToRelay(scope, Unescape(source, PrepareMessage(msg)), arg, filter);
         }
-        void OnChat(ChatScope scope, Player source, ref string msg,
+        public void OnChat(ChatScope scope, Player source, ref string msg,
                         object arg, ref ChatMessageFilter filter, bool relay)
         {
             if (relay) MessageToRelay(scope, Unescape(source, PrepareMessage(msg)), arg, filter);
         }
-        void OnShutdown(bool restarting, string message) => Disconnect(restarting ? "Server is restarting" : "Server is shutting down");
+        public void OnShutdown(bool restarting, string message) => Disconnect(restarting ? "Server is restarting" : "Server is shutting down");
         /// <summary> Simplifies some fancy characters (e.g. simplifies ” to ") </summary>
         protected void SimplifyCharacters(StringBuilder sb)
         {
@@ -327,7 +327,7 @@ namespace MCGalaxy.Modules.Relay
                                                        Server.Config.ProfanityFiltering ? ProfanityFilter.Parse(msg) : msg));
             }
         }
-        bool HandleListPlayers(RelayUser user, string channel, string cmd, bool opchat)
+        public bool HandleListPlayers(RelayUser user, string channel, string cmd, bool opchat)
         {
             bool isWho = cmd == ".who" || cmd == ".players" || cmd == "!players";
             DateTime last = opchat ? lastOpWho : lastWho;
@@ -349,7 +349,7 @@ namespace MCGalaxy.Modules.Relay
         }
         /// <summary> Outputs the list of online players to the given user </summary>
         protected virtual void MessagePlayers(RelayPlayer p) => Command.Find("Players").Use(p, "", p.DefaultCmdData);
-        bool HandleCommand(RelayUser user, string channel, string _, string[] parts)
+        public bool HandleCommand(RelayUser user, string channel, string _, string[] parts)
         {
             string cmdName = parts.Length > 1 ? parts[1].ToLower() : "",
                 cmdArgs = parts.Length > 2 ? parts[2].Trim() : "";
@@ -361,7 +361,7 @@ namespace MCGalaxy.Modules.Relay
             }
             return ExecuteCommand(user, channel, cmdName, cmdArgs);
         }
-        bool ExecuteCommand(RelayUser user, string channel, string cmdName, string cmdArgs)
+        public bool ExecuteCommand(RelayUser user, string channel, string cmdName, string cmdArgs)
         {
             Command cmd = Command.Find(cmdName);
             Player p = new RelayPlayer(channel, user, this);

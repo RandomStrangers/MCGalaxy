@@ -76,7 +76,7 @@ namespace MCGalaxy
                 if (p.truename.CaselessEq(name)) return p;
             return null;
         }
-        static void ReadAccounts(ISqlRecord record, List<string> names)
+        public static void ReadAccounts(ISqlRecord record, List<string> names)
         {
             if (!names.CaselessContains(record.GetText(0))) names.Add(record.GetText(0));
         }
@@ -120,7 +120,7 @@ namespace MCGalaxy
             all.Reverse();
             return all;
         }
-        static OnlineListEntry OnlineOfRank(Player p, LevelPermission plRank, Group group)
+        public static OnlineListEntry OnlineOfRank(Player p, LevelPermission plRank, Group group)
         {
             OnlineListEntry entry = new()
             {

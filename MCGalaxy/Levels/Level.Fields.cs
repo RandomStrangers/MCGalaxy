@@ -35,7 +35,6 @@ namespace MCGalaxy
         public BlockProps[] Props = new BlockProps[1024];
         public ExtrasCollection Extras = new();
         public VolatileArray<PlayerBot> Bots = new();
-        bool unloadedBots, physThreadStarted = false;
         public HandleDelete[] DeleteHandlers = new HandleDelete[1024];
         public HandlePlace[] PlaceHandlers = new HandlePlace[1024];
         public HandleWalkthrough[] WalkthroughHandlers = new HandleWalkthrough[1024];
@@ -43,7 +42,8 @@ namespace MCGalaxy
         internal HandlePhysics[] physicsDoorsHandlers = new HandlePhysics[1024];
         internal AABB[] blockAABBs = new AABB[1024];
         public bool IsMuseum, Changed, SaveChanges = true,
-            ChangedSinceBackup, PhysicsPaused, hasPortals, hasMessageBlocks;
+            ChangedSinceBackup, PhysicsPaused, hasPortals, hasMessageBlocks,
+            unloadedBots, physThreadStarted = false;
         public int ReloadThreshold => Math.Max(10000, (int)(Server.Config.DrawReloadThreshold * Width * Height * Length));
         /// <summary> Maximum valid X coordinate (Width - 1) </summary>
         public int MaxX => Width - 1;
@@ -56,20 +56,19 @@ namespace MCGalaxy
         internal readonly object saveLock = new(), botsIOLock = new(),
             physTickLock = new();
         public BlockQueue blockqueue = new();
-        BufferedBlockSender bulkSender;
+        public BufferedBlockSender bulkSender;
         public List<UndoPos> UndoBuffer = new();
         public VolatileArray<Zone> Zones = new();
         public BlockDB BlockDB;
         public LevelAccessController VisitAccess, BuildAccess;
         public int LevelPhysics => Physicsint;
-        int Physicsint;
-        public int currentUndo, lastCheck, lastUpdate;
+        public int Physicsint, currentUndo, lastCheck, lastUpdate;
         internal FastList<Check> ListCheck = new();
         internal FastList<Update> ListUpdate = new();
         internal SparseBitSet listCheckExists, listUpdateExists;
         public Random physRandom = new();
-        Thread physThread;
-        readonly object physThreadLock = new(), dbLock = new();
+        public Thread physThread;
+        public readonly object physThreadLock = new(), dbLock = new();
         internal DateTime lastBackup;
         public List<C4Data> C4list = new();
     }

@@ -21,14 +21,14 @@ namespace MCGalaxy.Eco
     public static partial class Economy
     {
         public static bool Enabled;
-        static readonly Dictionary<string, List<string>> itemCfg = new();
+        public static readonly Dictionary<string, List<string>> itemCfg = new();
         public static bool CheckIsEnabled(Player p, Command cmd)
         {
             if (Enabled) return true;
             p.Message("Cannot use &T/{0} &Scurrently as economy is disabled", cmd.Name);
             return false;
         }
-        static List<string> GetConfig(string item)
+        public static List<string> GetConfig(string item)
         {
             if (itemCfg.TryGetValue(item, out List<string> cfg)) return cfg;
             cfg = new();
@@ -57,7 +57,7 @@ namespace MCGalaxy.Eco
                 }
             }
         }
-        static void ParseLine(string line)
+        public static void ParseLine(string line)
         {
             line.Separate(':', out string name, out string value);
             if (value.Length == 0) return;
@@ -71,7 +71,7 @@ namespace MCGalaxy.Eco
             GetConfig(name).Add(value);
             item?.LoadConfig(value);
         }
-        static readonly object saveLock = new();
+        public static readonly object saveLock = new();
         public static void Save()
         {
             try
@@ -83,7 +83,7 @@ namespace MCGalaxy.Eco
                 Logger.LogError("Error saving " + Paths.EconomyPropsFile, e);
             }
         }
-        static void SaveCore()
+        public static void SaveCore()
         {
             using StreamWriter w = FileIO.CreateGuarded(Paths.EconomyPropsFile);
             w.WriteLine("enabled:" + Enabled);

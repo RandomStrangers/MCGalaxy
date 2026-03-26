@@ -122,13 +122,13 @@ namespace MCGalaxy
             }
             return true;
         }
-        ChangeResult DeleteBlock(ushort old, ushort x, ushort y, ushort z)
+        public ChangeResult DeleteBlock(ushort old, ushort x, ushort y, ushort z)
         {
             if (deleteMode) return ChangeBlock(x, y, z, 0);
             HandleDelete handler = Level.DeleteHandlers[old];
             return handler != null ? handler(this, old, x, y, z) : ChangeBlock(x, y, z, 0);
         }
-        ChangeResult PlaceBlock(ushort _, ushort x, ushort y, ushort z, ushort block)
+        public ChangeResult PlaceBlock(ushort _, ushort x, ushort y, ushort z, ushort block)
         {
             HandlePlace handler = Level.PlaceHandlers[block];
             return handler != null ? handler(this, block, x, y, z) : ChangeBlock(x, y, z, block);
@@ -238,7 +238,7 @@ namespace MCGalaxy
                 if (IsAfk) CmdAfk.ToggleAfk(this, "");
             }
         }
-        void CheckZones(Position pos)
+        public void CheckZones(Position pos)
         {
             Vec3S32 P = pos.BlockCoords;
             Zone zone = ZoneIn;
@@ -255,7 +255,7 @@ namespace MCGalaxy
             ZoneIn = null;
             if (zone != null) OnChangedZoneEvent.Call(this);
         }
-        int CurrentEnvProp(EnvProp i, Zone zone)
+        public int CurrentEnvProp(EnvProp i, Zone zone)
         {
             int value = Server.Config.GetEnvProp(i);
             bool block = i == EnvProp.SidesBlock || i == EnvProp.EdgeBlock;
@@ -296,7 +296,7 @@ namespace MCGalaxy
             }
             Session.SendSetWeather((byte)CurrentEnvProp(EnvProp.Weather, zone));
         }
-        void CheckBlocks(Position prev, Position next)
+        public void CheckBlocks(Position prev, Position next)
         {
             try
             {
@@ -318,7 +318,7 @@ namespace MCGalaxy
                 Logger.LogError(ex);
             }
         }
-        bool Moved() => _lastRot.RotY != Rot.RotY || _lastRot.HeadX != Rot.HeadX;
+        public bool Moved() => _lastRot.RotY != Rot.RotY || _lastRot.HeadX != Rot.HeadX;
         public void AnnounceDeath(string msg)
         {
             if (hidden)
@@ -400,7 +400,7 @@ namespace MCGalaxy
             }
             Chat.MessageChat(this, "λFULL: &f" + text, null, true);
         }
-        bool FilterChat(ref string text, bool continued)
+        public bool FilterChat(ref string text, bool continued)
         {
             if (text.StartsWith("/womid"))
             {
@@ -437,15 +437,15 @@ namespace MCGalaxy
             text = Regex.Replace(text, "  +", " ");
             return text.Length == 0;
         }
-        static bool IsPartialSpaced(string text) => text.EndsWith(" >") || text.EndsWith(" /");
-        static bool IsPartialJoined(string text) => text.EndsWith(" <") || text.EndsWith(" \\");
-        void LimitPartialMessage()
+        public static bool IsPartialSpaced(string text) => text.EndsWith(" >") || text.EndsWith(" /");
+        public static bool IsPartialJoined(string text) => text.EndsWith(" <") || text.EndsWith(" \\");
+        public void LimitPartialMessage()
         {
             if (partialMessage.Length < 100 * 64) return;
             partialMessage = "";
             Message("&WPartial message cleared due to exceeding 100 lines");
         }
-        void AppendPartialMessage(string part)
+        public void AppendPartialMessage(string part)
         {
             if (!partialLog.AddSpamEntry(20, TimeSpan.FromSeconds(1)))
             {
@@ -456,7 +456,7 @@ namespace MCGalaxy
             SendRawMessage("&3Partial message: &f" + partialMessage);
             LimitPartialMessage();
         }
-        void DoCommand(string text)
+        public void DoCommand(string text)
         {
             if (text.Length == 0)
             {
@@ -471,7 +471,7 @@ namespace MCGalaxy
             text.Separate(' ', out string cmd, out string args);
             HandleCommand(cmd, args, DefaultCmdData);
         }
-        string HandleJoker(string text)
+        public string HandleJoker(string text)
         {
             if (!joker) return text;
             Logger.Log(LogType.PlayerChat, "<JOKER>: {0}: {1}", name, text);
@@ -528,7 +528,7 @@ namespace MCGalaxy
                 Message("&WCommand failed.");
             }
         }
-        bool UseCommands(List<Command> commands, List<string> messages, CommandData data)
+        public bool UseCommands(List<Command> commands, List<string> messages, CommandData data)
         {
             Level startingLevel = Level;
             for (int i = 0; i < messages.Count; i++)
@@ -543,7 +543,7 @@ namespace MCGalaxy
             }
             return true;
         }
-        bool CheckMBRecursion(CommandData data)
+        public bool CheckMBRecursion(CommandData data)
         {
             switch (data.Context)
             {
@@ -562,7 +562,7 @@ namespace MCGalaxy
             }
             return true;
         }
-        bool CheckCommand(string cmd)
+        public bool CheckCommand(string cmd)
         {
             if (cmd.Length == 0)
             { 
@@ -587,7 +587,7 @@ namespace MCGalaxy
             }
             return true;
         }
-        Command GetCommand(ref string cmdName, ref string cmdArgs, CommandData data)
+        public Command GetCommand(ref string cmdName, ref string cmdArgs, CommandData data)
         {
             if (!CheckCommand(cmdName)) return null;
             if (CmdBindings.TryGetValue(cmdName, out string bound))
@@ -638,7 +638,7 @@ namespace MCGalaxy
             }
             return command;
         }
-        bool UseCommand(Command command, string args, CommandData data)
+        public bool UseCommand(Command command, string args, CommandData data)
         {
             string cmd = command.Name;
             if (command.UpdatesLastCmd)
@@ -669,7 +669,7 @@ namespace MCGalaxy
             }
             return spamChecker == null || !spamChecker.CheckCommandSpam();
         }
-        bool EnqueueSerialCommand(Command cmd, string args, CommandData data)
+        public bool EnqueueSerialCommand(Command cmd, string args, CommandData data)
         {
             SerialCommand head = default, scmd;
             scmd.cmd = cmd;
@@ -688,7 +688,7 @@ namespace MCGalaxy
             spamChecker.CheckCommandSpam();
             return false;
         }
-        void ExecuteSerialCommands()
+        public void ExecuteSerialCommands()
         {
             for (; ; )
             {
@@ -706,7 +706,7 @@ namespace MCGalaxy
                 }
             }
         }
-        void ClearSerialCommands()
+        public void ClearSerialCommands()
         {
             lock (serialCmdsLock)
                 serialCmds.Clear();

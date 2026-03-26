@@ -23,7 +23,7 @@ namespace MCGalaxy
 {
     public static class GradientNoise
     {
-        static readonly double[] RandomVectors =
+        public static readonly double[] RandomVectors =
         {
             -0.763874, -0.596439, -0.246489,
             0.396055, 0.904518, -0.158073,
@@ -310,7 +310,7 @@ namespace MCGalaxy
             iy1 = LinearInterpolate(ix0, ix1, ys);
             return LinearInterpolate(iy0, iy1, zs);
         }
-        static double GradientRawNoise(double fx, double fy, double fz, int ix, int iy, int iz, int seed)
+        public static double GradientRawNoise(double fx, double fy, double fz, int ix, int iy, int iz, int seed)
         {
             int vectorIndex =
                   1619 * ix
@@ -333,10 +333,10 @@ namespace MCGalaxy
         /// <summary>
         /// Returns the linear interpolation of two values with the given alpha.
         /// </summary>
-        static double LinearInterpolate(double n0, double n1, double a) => ((1.0 - a) * n0) + (a * n1);
+        public static double LinearInterpolate(double n0, double n1, double a) => ((1.0 - a) * n0) + (a * n1);
         /// <summary>
         /// Returns the given value mapped onto a cubic S-curve.
         /// </summary>
-        static double SCurve3(double a) => a * a * (3.0 - 2.0 * a);
+        public static double SCurve3(double a) => a * a * (3.0 - 2.0 * a);
     }
 }

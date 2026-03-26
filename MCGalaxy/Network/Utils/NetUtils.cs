@@ -76,7 +76,7 @@ namespace MCGalaxy
             if (hasCP437) WriteCP437(str, array, offset);
             else WriteAscii(str, array, offset);
         }
-        static void WriteAscii(string str, byte[] array, int offset)
+        public static void WriteAscii(string str, byte[] array, int offset)
         {
             int count = Math.Min(str.Length, 64);
             for (int i = 0; i < count; i++)
@@ -87,7 +87,7 @@ namespace MCGalaxy
             for (int i = count; i < 64; i++)
                 array[offset + i] = (byte)' ';
         }
-        static void WriteCP437(string str, byte[] array, int offset)
+        public static void WriteCP437(string str, byte[] array, int offset)
         {
             int count = Math.Min(str.Length, 64);
             for (int i = 0; i < count; i++)

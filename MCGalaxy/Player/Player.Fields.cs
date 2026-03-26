@@ -28,30 +28,12 @@ namespace MCGalaxy
 {
     public partial class Player : IDisposable
     {
-        int selIndex, mbRecursion;
-        bool leftServer = false, gotSQLData;
-        public PlayerIgnores Ignores = new();
-        public static string lastMSG = "";
-        internal PersistentMessages persistentMessages = new();
-        public Zone ZoneIn;
-        public CinematicGui CinematicGui = new();
-        internal bool Request;
-        internal string senderName = "", currentTpa = "";
-        public string truename, afkMessage, BrushName = Brush.DefaultBrush,
-            DefaultBrushArgs = "", name, DisplayName,
-            prefix = "", title = "", titlecolor = "",
-            ip, color, SuperName, whisperTo = "",
-            following = "", possess = "",
-            prevMsg = "", PreTeleportMap, summonedMap,
-            VerifiedVia, lastCMD = "";
-        public INetSocket Socket;
-        public IGameSession Session;
-        public EntityList EntityList;
-        public DateTime LastAction, AFKCooldown, 
-            NextReviewTime, NextEat, NextTeamInvite,
-            SessionStartTime, FirstLogin, LastLogin, lastCmdTime,
-            drownTime = DateTime.MaxValue, deathCooldown, LastPatrol;
-        public bool hasChangeModel, hasExtList, hasCP437,
+        public int selIndex, mbRecursion, money, TimesVisited, 
+            TimesBeenKicked, TimesDied, TotalMessagesSent, 
+            lastCheckpointIndex = -1, DatabaseID, 
+            CurrentCopySlot, passtries, warn;
+        public bool leftServer = false, gotSQLData, 
+            hasChangeModel, hasExtList, hasCP437,
             IsAfk, AutoAfk, cmdTimer, UsingWom,
             hidden, painting, checkingBotInfo,
             muted, agreed = true, invincible, hasreadrules, hackrank,
@@ -65,6 +47,27 @@ namespace MCGalaxy
             Loading = true, cancelcommand, cancelchat, cancellogin,
             cancelconnecting, loggedIn, verifiedName,
             possessed, AllowBuild = true;
+        public PlayerIgnores Ignores = new();
+        public static string lastMSG = "";
+        internal PersistentMessages persistentMessages = new();
+        public Zone ZoneIn;
+        public CinematicGui CinematicGui = new();
+        internal bool Request;
+        internal string senderName = "", currentTpa = "";
+        public string truename, afkMessage, BrushName = Brush.DefaultBrush,
+            DefaultBrushArgs = "", name, DisplayName,
+            prefix = "", title = "", titlecolor = "",
+            ip, color, SuperName, whisperTo = "",
+            following = "", possess = "",
+            prevMsg = "", PreTeleportMap, summonedMap,
+            VerifiedVia, lastCMD = "", partialMessage = "", selTitle, lastUrl = "";
+        public INetSocket Socket;
+        public IGameSession Session;
+        public EntityList EntityList;
+        public DateTime LastAction, AFKCooldown, 
+            NextReviewTime, NextEat, NextTeamInvite,
+            SessionStartTime, FirstLogin, LastLogin, lastCmdTime,
+            drownTime = DateTime.MaxValue, deathCooldown, LastPatrol, startTime;
         public Transform Transform = Transform.DefaultTransform;
         public Pronouns Pronouns => pronounsList[0];
         internal List<Pronouns> pronounsList = new() { Pronouns.Default };
@@ -77,15 +80,9 @@ namespace MCGalaxy
         public virtual string FullName => color + prefix + DisplayName;
         public string ColoredName => color + DisplayName;
         public string GroupPrefix => group.Prefix.Length == 0 ? "" : "&f" + group.Prefix;
-        string partialMessage = "", selTitle, lastUrl = "";
-        readonly VolatileArray<VisibleSelection> selections = new();
-        public int money, TimesVisited, TimesBeenKicked, TimesDied, 
-            TotalMessagesSent, lastCheckpointIndex = -1, DatabaseID, 
-            CurrentCopySlot, passtries, warn;
-        public long TotalModified, TotalDrawn, TotalPlaced, TotalDeleted;
-        long startModified;
+        public readonly VolatileArray<VisibleSelection> selections = new();
+        public long TotalModified, TotalDrawn, TotalPlaced, TotalDeleted, startModified;
         public long SessionModified => TotalModified - startModified;
-        DateTime startTime;
         public TimeSpan TotalTime
         {
             get { return DateTime.UtcNow - startTime; }
@@ -134,18 +131,18 @@ namespace MCGalaxy
         public Position PreTeleportPos;
         public Orientation PreTeleportRot;
         public ExtrasCollection Extras = new();
-        readonly SpamChecker spamChecker;
-        readonly List<DateTime> partialLog;
+        public readonly SpamChecker spamChecker;
+        public readonly List<DateTime> partialLog;
         public LevelPermission Rank => group.Permission;
-        readonly Queue<SerialCommand> serialCmds = new();
-        readonly object serialCmdsLock = new(),
+        public readonly Queue<SerialCommand> serialCmds = new();
+        public readonly object serialCmdsLock = new(),
             messageLocker = new(), joinLock = new(),
             selLock = new(), blockchangeLock = new();
-        Vec3S32[] selMarks;
-        object selState;
-        SelectionHandler selCallback;
-        SelectionMarkHandler selMarkCallback;
-        struct SerialCommand 
+        public object selState, blockchangeObject;
+        public Vec3S32[] selMarks;
+        public SelectionHandler selCallback;
+        public SelectionMarkHandler selMarkCallback;
+        public struct SerialCommand 
         { 
             public Command cmd; 
             public string args; 
@@ -153,7 +150,6 @@ namespace MCGalaxy
         }
         public event SelectionBlockChange Blockchange;
         public void ClearBlockchange() => ClearSelection();
-        public object blockchangeObject;
         public delegate bool SelectionHandler(Player p, Vec3S32[] marks, object state, ushort block);
         public delegate void SelectionMarkHandler(Player p, Vec3S32[] marks, int i, object state, ushort block);
     }

@@ -77,7 +77,7 @@ namespace MCGalaxy
                 if (option.Name.CaselessEq(opt)) return option;
             return null;
         }
-        static void SetMotd(Player p, Level lvl, string value)
+        public static void SetMotd(Player p, Level lvl, string value)
         {
             lvl.Config.MOTD = value.Length == 0 ? "ignore" : value;
             lvl.Message("Map's MOTD was changed to: &b" + lvl.Config.MOTD);
@@ -90,7 +90,7 @@ namespace MCGalaxy
                     PlayerActions.ReloadMap(pl);
             }
         }
-        static void SetOwner(Player p, Level lvl, string value)
+        public static void SetOwner(Player p, Level lvl, string value)
         {
             if (value.Length == 0)
             {
@@ -109,7 +109,7 @@ namespace MCGalaxy
             lvl.Config.RealmOwner = names.Join(","); ;
             p.Message("Set realm owner/owners of this level to {0}.", names.Join((n) => p.FormatNick(n)));
         }
-        static void SetTree(Player p, Level lvl, string value)
+        public static void SetTree(Player p, Level lvl, string value)
         {
             if (value.Length == 0)
             {
@@ -127,40 +127,40 @@ namespace MCGalaxy
             lvl.Config.TreeType = value.ToLower();
             p.Message("Set tree type that saplings grow into to {0}.", value);
         }
-        static void SetFinite(Player p, Level l, string v) => Toggle(p, l, ref l.Config.FiniteLiquids, "Finite mode");
-        static void SetAI(Player p, Level l, string v) => Toggle(p, l, ref l.Config.AnimalHuntAI, "Animal AI");
-        static void SetEdge(Player p, Level l, string v) => Toggle(p, l, ref l.Config.EdgeWater, "Edge water");
-        static void SetGrass(Player p, Level l, string v) => Toggle(p, l, ref l.Config.GrassGrow, "Growing grass");
-        static void SetDeath(Player p, Level l, string v) => Toggle(p, l, ref l.Config.SurvivalDeath, "Survival death");
-        static void SetKiller(Player p, Level l, string v) => Toggle(p, l, ref l.Config.KillerBlocks, "Killer blocks");
-        static void SetUnload(Player p, Level l, string v) => Toggle(p, l, ref l.Config.AutoUnload, "Auto unload");
-        static void SetGoto(Player p, Level l, string v) => Toggle(p, l, ref l.Config.LoadOnGoto, "Load on goto");
-        static void SetDecay(Player p, Level l, string v) => Toggle(p, l, ref l.Config.LeafDecay, "Leaf decay");
-        static void SetFlow(Player p, Level l, string v) => Toggle(p, l, ref l.Config.RandomFlow, "Random flow");
-        static void SetTrees(Player p, Level l, string v) => Toggle(p, l, ref l.Config.GrowTrees, "Tree growing");
-        static void SetBuildable(Player p, Level l, string v) => TogglePerms(p, l, ref l.Config.Buildable, "Buildable");
-        static void SetDeletable(Player p, Level l, string v) => TogglePerms(p, l, ref l.Config.Deletable, "Deletable");
-        static void SetChat(Player p, Level l, string v)
+        public static void SetFinite(Player p, Level l, string v) => Toggle(p, l, ref l.Config.FiniteLiquids, "Finite mode");
+        public static void SetAI(Player p, Level l, string v) => Toggle(p, l, ref l.Config.AnimalHuntAI, "Animal AI");
+        public static void SetEdge(Player p, Level l, string v) => Toggle(p, l, ref l.Config.EdgeWater, "Edge water");
+        public static void SetGrass(Player p, Level l, string v) => Toggle(p, l, ref l.Config.GrassGrow, "Growing grass");
+        public static void SetDeath(Player p, Level l, string v) => Toggle(p, l, ref l.Config.SurvivalDeath, "Survival death");
+        public static void SetKiller(Player p, Level l, string v) => Toggle(p, l, ref l.Config.KillerBlocks, "Killer blocks");
+        public static void SetUnload(Player p, Level l, string v) => Toggle(p, l, ref l.Config.AutoUnload, "Auto unload");
+        public static void SetGoto(Player p, Level l, string v) => Toggle(p, l, ref l.Config.LoadOnGoto, "Load on goto");
+        public static void SetDecay(Player p, Level l, string v) => Toggle(p, l, ref l.Config.LeafDecay, "Leaf decay");
+        public static void SetFlow(Player p, Level l, string v) => Toggle(p, l, ref l.Config.RandomFlow, "Random flow");
+        public static void SetTrees(Player p, Level l, string v) => Toggle(p, l, ref l.Config.GrowTrees, "Tree growing");
+        public static void SetBuildable(Player p, Level l, string v) => TogglePerms(p, l, ref l.Config.Buildable, "Buildable");
+        public static void SetDeletable(Player p, Level l, string v) => TogglePerms(p, l, ref l.Config.Deletable, "Deletable");
+        public static void SetChat(Player p, Level l, string v)
         {
             Toggle(p, l, ref l.Config.ServerWideChat, "Local level only chat", true);
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)
                 if (pl.Level == l) TabList.Update(pl, true);
         }
-        static void SetDrawing(Player p, Level l, string v) => Toggle(p, l, ref l.Config.Drawing, "Drawing commands");
-        static void SetLoadDelay(Player p, Level l, string value)
+        public static void SetDrawing(Player p, Level l, string v) => Toggle(p, l, ref l.Config.Drawing, "Drawing commands");
+        public static void SetLoadDelay(Player p, Level l, string value)
         {
             int raw = 0;
             if (!CommandParser.GetInt(p, value, "Load delay", ref raw, 0, 2000)) return;
             SetInt(l, raw, ref l.Config.LoadDelay, "Load delay");
         }
-        static void SetSpeed(Player p, Level l, string value)
+        public static void SetSpeed(Player p, Level l, string value)
         {
             int raw = 0;
             if (!CommandParser.GetInt(p, value, "Physics speed", ref raw, 10)) return;
             SetInt(l, raw, ref l.Config.PhysicsSpeed, "Physics speed");
         }
-        static void SetOverload(Player p, Level l, string value)
+        public static void SetOverload(Player p, Level l, string value)
         {
             int raw = 0;
             if (!CommandParser.GetInt(p, value, "Physics overload", ref raw, 500)) return;
@@ -171,24 +171,24 @@ namespace MCGalaxy
             }
             SetInt(l, raw, ref l.Config.PhysicsOverload, "Physics overload");
         }
-        static void SetFall(Player p, Level l, string value)
+        public static void SetFall(Player p, Level l, string value)
         {
             int raw = 0;
             if (!CommandParser.GetInt(p, value, "Fall distance", ref raw)) return;
             SetInt(l, raw, ref l.Config.FallHeight, "Fall distance");
         }
-        static void SetDrown(Player p, Level l, string value)
+        public static void SetDrown(Player p, Level l, string value)
         {
             int raw = 0;
             if (!CommandParser.GetInt(p, value, "Drown time (in tenths of a second)", ref raw)) return;
             SetInt(l, raw, ref l.Config.DrownTime, "Drown time (in tenths of a second)");
         }
-        static void SetInt(Level lvl, int raw, ref int target, string name)
+        public static void SetInt(Level lvl, int raw, ref int target, string name)
         {
             target = raw;
             lvl.Message(name + ": &b" + target);
         }
-        static void SetGuns(Player p, Level lvl, string value)
+        public static void SetGuns(Player p, Level lvl, string value)
         {
             Toggle(p, lvl, ref lvl.Config.Guns, "Guns allowed");
             if (lvl.Config.Guns) return;
@@ -199,12 +199,12 @@ namespace MCGalaxy
                 pl.weapon.Disable();
             }
         }
-        static void TogglePerms(Player p, Level lvl, ref bool target, string name)
+        public static void TogglePerms(Player p, Level lvl, ref bool target, string name)
         {
             Toggle(p, lvl, ref target, name);
             lvl.UpdateBlockPermissions();
         }
-        static void Toggle(Player p, Level lvl, ref bool target, string name, bool not = false)
+        public static void Toggle(Player p, Level lvl, ref bool target, string name, bool not = false)
         {
             target = !target;
             bool display = not ? !target : target;

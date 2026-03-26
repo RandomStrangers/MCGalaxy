@@ -64,7 +64,7 @@ namespace MCGalaxy.Events
             }
             return null;
         }
-        static void AddHandler(IEvent<IMethod> handler)
+        public static void AddHandler(IEvent<IMethod> handler)
         {
             // We want both the add and sorting is in one step
             lock (handlers.locker)
@@ -95,7 +95,7 @@ namespace MCGalaxy.Events
             }
         }
         protected static void LogHandlerException(Exception ex, IEvent<IMethod> handler) => Logger.LogError(MethodFormat("Method {0} errored when calling {1} event", handler.method), ex);
-        static string MethodFormat(string format, IMethod method)
+        public static string MethodFormat(string format, IMethod method)
         {
             Delegate del = (Delegate)(object)method;
             return string.Format(format, del.Method.ReflectedType.FullName + "." + del.Method.Name, typeof(IMethod).Name);

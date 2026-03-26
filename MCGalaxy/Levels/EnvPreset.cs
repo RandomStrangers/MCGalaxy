@@ -31,7 +31,7 @@ namespace MCGalaxy
             LavaLight = args.Length > 5 ? args[5] : "";
             LampLight = args.Length > 6 ? args[6] : "";
         }
-        static readonly Dictionary<string, string> Presets = new() {
+        public static readonly Dictionary<string, string> Presets = new() {
             { "Cartoon",  "00FFFF 1E90FF 00BFFF F5DEB3 F4A460" },
             { "Noir",     "000000 1F1F1F 000000 696969 1F1F1F" },
             { "Watery",   "5F9EA0 008080 008B8B E0FFFF 008B8B" },
@@ -51,7 +51,7 @@ namespace MCGalaxy
                 return new(FileIO.TryReadAllText("presets/" + value.ToLower() + ".env"));
             return null;
         }
-        static EnvPreset FindDefault(string name)
+        public static EnvPreset FindDefault(string name)
         {
             foreach (KeyValuePair<string, string> kvp in Presets)
                 if (kvp.Key.CaselessEq(name)) return new(kvp.Value);

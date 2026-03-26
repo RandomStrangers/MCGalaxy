@@ -47,7 +47,7 @@ namespace MCGalaxy.Generator
             if (type.Length == 0) type = defaultType;
             return Tree.TreeTypes[type]();
         }
-        static MapGenBiome forest = new()
+        public static MapGenBiome forest = new()
         {
             Surface = Block.Grass,
             Ground = Block.Dirt,

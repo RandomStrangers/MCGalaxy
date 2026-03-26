@@ -18,8 +18,8 @@ namespace MCGalaxy
 {
     public abstract class Entity
     {
-        volatile uint _rot;
-        long _pos;
+        public volatile uint _rot;
+        public long _pos;
         public Orientation _lastRot;
         public Position _lastPos;
         /// <summary>

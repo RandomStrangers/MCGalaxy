@@ -32,9 +32,9 @@ namespace MCGalaxy.Authentication
             p.truename += suffix;
             p.DisplayName += suffix;
         }
-        static bool AcceptableSaltChar(char c) => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+        public static bool AcceptableSaltChar(char c) => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
                 || (c >= '0' && c <= '9');
-        static string GenerateSalt()
+        public static string GenerateSalt()
         {
             RandomNumberGenerator rng = RandomNumberGenerator.Create();
             char[] str = new char[32];
@@ -77,7 +77,7 @@ namespace MCGalaxy.Authentication
             AuthService cur = null;
             PropertiesFile.Read(Paths.AuthServicesFile, ref cur, ParseProperty, '=', true);
         }
-        static void ParseProperty(string key, string value, ref AuthService cur)
+        public static void ParseProperty(string key, string value, ref AuthService cur)
         {
             if (key.CaselessEq("URL"))
                 cur = GetOrCreate(value, false);
@@ -94,7 +94,7 @@ namespace MCGalaxy.Authentication
                 cur.SkinPrefix = value;
             }
         }
-        static void SaveServices()
+        public static void SaveServices()
         {
             using StreamWriter w = FileIO.CreateGuarded(Paths.AuthServicesFile);
             w.WriteLine("# Authentication services configuration");

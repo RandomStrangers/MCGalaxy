@@ -19,7 +19,7 @@ namespace MCGalaxy.Generator.Foliage
             size = 2;
             EnsureRNG(rnd);
         }
-        void EnsureRNG(Random rnd) => rng ??= new JavaRandom(rnd.Next());
+        public void EnsureRNG(Random rnd) => rng ??= new JavaRandom(rnd.Next());
         public override void Generate(ushort x, ushort y, ushort z, TreeOutput output)
         {
             int baseHeight = height - 4,

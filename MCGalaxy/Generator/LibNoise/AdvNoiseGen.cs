@@ -28,15 +28,15 @@ namespace MCGalaxy.Generator
             MapGen.Register("Billow3D", GenType.Advanced, GenBillow3D, MapGen.DEFAULT_HELP);
         }
         #region Implementations
-        static bool GenBillow2D(Player p, Level lvl, MapGenArgs args) => Gen2D(p, lvl, new Billow(), args);
-        static bool GenRidged2D(Player p, Level lvl, MapGenArgs args) => Gen2D(p, lvl, new RidgedMultifractal(), args);
-        static bool GenPerlin2D(Player p, Level lvl, MapGenArgs args) => Gen2D(p, lvl, new Perlin(), args);
-        static bool GenVoronoi(Player p, Level lvl, MapGenArgs args) => Gen2D(p, lvl, new Voronoi(), args);
-        static bool GenPerlin3D(Player p, Level lvl, MapGenArgs args) => Gen3D(p, lvl, new Perlin(), args);
-        static bool GenPerlin3DYAdjust(Player p, Level lvl, MapGenArgs args) => Gen3DYAdjust(p, lvl, new Perlin(), args);
-        static bool GenBillow3D(Player p, Level lvl, MapGenArgs args) => Gen3D(p, lvl, new Billow(), args);
+        public static bool GenBillow2D(Player p, Level lvl, MapGenArgs args) => Gen2D(p, lvl, new Billow(), args);
+        public static bool GenRidged2D(Player p, Level lvl, MapGenArgs args) => Gen2D(p, lvl, new RidgedMultifractal(), args);
+        public static bool GenPerlin2D(Player p, Level lvl, MapGenArgs args) => Gen2D(p, lvl, new Perlin(), args);
+        public static bool GenVoronoi(Player p, Level lvl, MapGenArgs args) => Gen2D(p, lvl, new Voronoi(), args);
+        public static bool GenPerlin3D(Player p, Level lvl, MapGenArgs args) => Gen3D(p, lvl, new Perlin(), args);
+        public static bool GenPerlin3DYAdjust(Player p, Level lvl, MapGenArgs args) => Gen3DYAdjust(p, lvl, new Perlin(), args);
+        public static bool GenBillow3D(Player p, Level lvl, MapGenArgs args) => Gen3D(p, lvl, new Billow(), args);
         #endregion
-        static bool Gen2D(Player p, Level lvl, IModule module, MapGenArgs args)
+        public static bool Gen2D(Player p, Level lvl, IModule module, MapGenArgs args)
         {
             int width = lvl.Width, length = lvl.Length, half = lvl.Height / 2,
                 waterHeight = half - 1;
@@ -66,7 +66,7 @@ namespace MCGalaxy.Generator
                 }
             return true;
         }
-        static bool Gen3D(Player p, Level lvl, IModule module, MapGenArgs args)
+        public static bool Gen3D(Player p, Level lvl, IModule module, MapGenArgs args)
         {
             module.Frequency = 1 / 100.0;
             if (!args.ParseArgs(p)) return false;
@@ -83,7 +83,7 @@ namespace MCGalaxy.Generator
                     }
             return true;
         }
-        static bool Gen3DYAdjust(Player p, Level lvl, IModule module, MapGenArgs args)
+        public static bool Gen3DYAdjust(Player p, Level lvl, IModule module, MapGenArgs args)
         {
             module.Frequency = 1 / 100.0;
             if (!args.ParseArgs(p)) return false;

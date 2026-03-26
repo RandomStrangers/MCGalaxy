@@ -52,7 +52,7 @@ namespace MCGalaxy
             p.Message("Backup of (" + (files ? "everything" + (db ? "" : " but database") : "database") + ") complete!");
             Logger.Log(LogType.SystemActivity, "Server backed up!");
         }
-        static List<string> GetAllFiles(bool lite)
+        public static List<string> GetAllFiles(bool lite)
         {
             string[] all = FileIO.TryGetFiles("./", "*", SearchOption.AllDirectories);
             List<string> paths = new();
@@ -71,7 +71,7 @@ namespace MCGalaxy
             }
             return paths;
         }
-        static void SaveFiles(ZipWriter writer, List<string> paths, bool compress)
+        public static void SaveFiles(ZipWriter writer, List<string> paths, bool compress)
         {
             Logger.Log(LogType.SystemActivity, "Compressing {0} files...", paths.Count);
             for (int i = 0; i < paths.Count; i++)
@@ -92,7 +92,7 @@ namespace MCGalaxy
                 Logger.Log(LogType.SystemActivity, "Backed up {0}/{1} files", i, paths.Count);
             }
         }
-        static void SaveDatabase(ZipWriter writer, bool compress)
+        public static void SaveDatabase(ZipWriter writer, bool compress)
         {
             Logger.Log(LogType.SystemActivity, "Compressing Database...");
             using (Stream src = FileIO.TryOpenRead("SQL_NAS.sql"))
@@ -123,7 +123,7 @@ namespace MCGalaxy
             p.Message("Server restored" + (errors > 0 ? " with errors. May be a partial restore" : ""));
             p.Message("It is recommended that you restart the server, although this is not required.");
         }
-        static void Extract(Stream src, string path)
+        public static void Extract(Stream src, string path)
         {
             byte[] buf = new byte[4096];
             int read = 0;
@@ -131,7 +131,7 @@ namespace MCGalaxy
             while ((read = src.Read(buf, 0, buf.Length)) > 0)
                 dst.Write(buf, 0, read);
         }
-        static string ExtractItem(ZipReader reader, int i, ref int errors)
+        public static string ExtractItem(ZipReader reader, int i, ref int errors)
         {
             using Stream part = reader.GetEntry(i, out string path);
             try
@@ -156,7 +156,7 @@ namespace MCGalaxy
                 }
             }
         }
-        static void BackupDatabase(StreamWriter sql)
+        public static void BackupDatabase(StreamWriter sql)
         {
             sql.WriteLine("-- {0} SQL database dump", Server.SoftwareNameVersioned);
             sql.WriteLine("-- Host: {0}", Server.Config.MySQLHost);
@@ -178,7 +178,7 @@ namespace MCGalaxy
             dumper.DumpTable(sql, tableName);
             dumper.sql = null;
         }
-        static void ReplaceDatabase(Stream sql)
+        public static void ReplaceDatabase(Stream sql)
         {
             using (Stream backup = File.Create("NAS_Backup.sql"))
                 BackupDatabase(new StreamWriter(backup));
@@ -192,7 +192,7 @@ namespace MCGalaxy
             using StreamReader reader = new(sql);
             ImportBulk(reader);
         }
-        static void ImportBulk(StreamReader reader)
+        public static void ImportBulk(StreamReader reader)
         {
             SqlTransaction bulk = null;
             List<string> buffer = new();
@@ -223,7 +223,7 @@ namespace MCGalaxy
                 bulk?.Dispose();
             }
         }
-        static string NextStatement(StreamReader r, List<string> buffer)
+        public static string NextStatement(StreamReader r, List<string> buffer)
         {
             buffer.Clear();
             string line;

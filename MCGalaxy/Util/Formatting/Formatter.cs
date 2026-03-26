@@ -33,7 +33,7 @@ namespace MCGalaxy
             foreach (CommandExtraPerms extra in extraPerms)
                 p.Message("{0}) {1} {2}", extra.Num, extra.Describe(), extra.Desc);
         }
-        static void PrintAliases(Player p, Command cmd)
+        public static void PrintAliases(Player p, Command cmd)
         {
             StringBuilder dst = new("Shortcuts: &T");
             if (!string.IsNullOrEmpty(cmd.Shortcut))
@@ -44,7 +44,7 @@ namespace MCGalaxy
                 return;
             p.Message(dst.ToString(0, dst.Length - 2));
         }
-        static void FindAliases(List<Alias> aliases, Command cmd, StringBuilder dst)
+        public static void FindAliases(List<Alias> aliases, Command cmd, StringBuilder dst)
         {
             foreach (Alias a in aliases)
             {
@@ -87,7 +87,7 @@ namespace MCGalaxy
             p.Message("\"{0}\" is not a valid level name.", name);
             return false;
         }
-        static readonly char[] separators = { '/', '\\', ':' },
+        public static readonly char[] separators = { '/', '\\', ':' },
             invalid = { '<', '>', '|', '"', '*', '?' };
         /// <summary> Checks that the input is a valid filename (non-empty and no directory separator) </summary>
         /// <remarks> If the input is invalid, messages the player the reason why </remarks>
@@ -132,7 +132,7 @@ namespace MCGalaxy
         /// <summary>
         /// Returns the digits on the end of the string or -1 if no integer found.
         /// </summary>
-        static int GetDigits(string name, out int nameLength)
+        public static int GetDigits(string name, out int nameLength)
         {
             nameLength = name.Length;
             if (!char.IsDigit(name[name.Length - 1]))

@@ -84,7 +84,7 @@ namespace MCGalaxy
                     break;
             }
         }
-        static void OutputPage<T>(Player p, IList<T> items,
+        public static void OutputPage<T>(Player p, IList<T> items,
                                   StringFormatter<T> formatter, ItemPrinter<T> printer,
                                   string cmd, string type, int start, int perPage)
         {
@@ -106,7 +106,7 @@ namespace MCGalaxy
                     break;
             }
         }
-        static void OutputItems<T>(Player p, IList<T> items, int beg, int end,
+        public static void OutputItems<T>(Player p, IList<T> items, int beg, int end,
                                    StringFormatter<T> formatter, ItemPrinter<T> printer)
         {
             if (printer != null)
@@ -115,7 +115,7 @@ namespace MCGalaxy
             else
                 p.Message(Subset(items, beg, end, formatter).Join());
         }
-        static IEnumerable<string> Subset<T>(IList<T> items, int start, int end,
+        public static IEnumerable<string> Subset<T>(IList<T> items, int start, int end,
                                              StringFormatter<T> formatter)
         {
             for (int i = start; i < end; i++)

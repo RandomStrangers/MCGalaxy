@@ -25,11 +25,11 @@ namespace MCGalaxy
     public delegate string StringFormatter<T>(T value);
     public static class Extensions
     {
-        static readonly char[] space = new char[] { ' ' },
+        public static readonly char[] space = new char[] { ' ' },
             comma = new char[] { ',' };
-        static readonly string[] emptyStrs = new string[0];
+        public static readonly string[] emptyStrs = new string[0];
         public static string EscapeCurlyBraces(this string input) => input.Replace("{", "{{").Replace("}", "}}");
-        static List<string> MatchingKeys<T>(Dictionary<string, T> dict, string keyword) => Paginator.Filter(dict.Keys.ToList(), keyword, key => key);
+        public static List<string> MatchingKeys<T>(Dictionary<string, T> dict, string keyword) => Paginator.Filter(dict.Keys.ToList(), keyword, key => key);
         public static void Clear<T>(this Dictionary<string, T> dict, string matcher)
         {
             if (matcher.Length == 0)

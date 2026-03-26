@@ -38,7 +38,7 @@ namespace fNbt
     /// <summary> A tag containing an array of bytes. </summary>
     public sealed class NbtByteArray : NbtTag
     {
-        static readonly byte[] empty = new byte[0];
+        public static readonly byte[] empty = new byte[0];
         public override NbtTagType TagType => NbtTagType.ByteArray;
         public byte[] Value = empty;
         internal override void ReadTag(NbtBinaryReader reader)
@@ -54,7 +54,7 @@ namespace fNbt
     public sealed class NbtCompound : NbtTag, IEnumerable<NbtTag>
     {
         public override NbtTagType TagType => NbtTagType.Compound;
-        readonly Dictionary<string, NbtTag> tags = new();
+        public readonly Dictionary<string, NbtTag> tags = new();
         public NbtCompound() { }
         public NbtCompound(string tagName) => Name = tagName;
         public override NbtTag this[string tagName] => tags.TryGetValue(tagName, out NbtTag result) ? result : null;
@@ -202,9 +202,9 @@ namespace fNbt
     /// while taking care of endianness, string encoding, and skipping. </summary>
     internal sealed class NbtBinaryReader : BinaryReader
     {
-        readonly byte[] buffer = new byte[sizeof(double)];
-        readonly bool swapNeeded;
-        readonly byte[] strBuffer = new byte[64];
+        public readonly byte[] buffer = new byte[sizeof(double)];
+        public readonly bool swapNeeded;
+        public readonly byte[] strBuffer = new byte[64];
         public NbtBinaryReader(Stream input, bool bigEndian) : base(input) => swapNeeded = BitConverter.IsLittleEndian == bigEndian;
         public NbtTagType ReadTagType()
         {
@@ -258,7 +258,7 @@ namespace fNbt
                 return data.Length < length ? throw new EndOfStreamException() : Encoding.UTF8.GetString(data);
             }
         }
-        new void FillBuffer(int numBytes)
+        public new void FillBuffer(int numBytes)
         {
             int offset = 0;
             do
@@ -268,8 +268,8 @@ namespace fNbt
                 offset += num;
             } while (offset < numBytes);
         }
-        static short Swap(short v) => (short)((v >> 8) & 0x00FF | (v << 8) & 0xFF00);
-        static int Swap(int v)
+        public static short Swap(short v) => (short)((v >> 8) & 0x00FF | (v << 8) & 0xFF00);
+        public static int Swap(int v)
         {
             uint v2 = (uint)v;
             return
@@ -277,7 +277,7 @@ namespace fNbt
                 ((v2 >> 24) & 0x000000FF | (v2 >> 8) & 0x0000FF00 | (v2 << 8) & 0x00FF0000 |
                  (v2 << 24) & 0xFF000000);
         }
-        static long Swap(long v) => (Swap((int)v) & uint.MaxValue) << 32 | Swap((int)(v >> 32)) & uint.MaxValue;
+        public static long Swap(long v) => (Swap((int)v) & uint.MaxValue) << 32 | Swap((int)(v >> 32)) & uint.MaxValue;
     }
     /// <summary> Represents a complete NBT file. </summary>
     public sealed class NbtFile

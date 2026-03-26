@@ -26,8 +26,8 @@ namespace MCGalaxy
 {
     public static class LevelActions
     {
-        static string BlockPropsLvlPath(string map) => Paths.BlockPropsPath("_" + map);
-        static string BlockPropsOldPath(string map) => Paths.BlockPropsPath("lvl_" + map);
+        public static string BlockPropsLvlPath(string map) => Paths.BlockPropsPath("_" + map);
+        public static string BlockPropsOldPath(string map) => Paths.BlockPropsPath("lvl_" + map);
         public static bool Backup(string map, string backupName, string ext = ".lvl")
         {
             if (ext.CaselessContains(".lvl"))
@@ -81,7 +81,7 @@ namespace MCGalaxy
                 PlayerActions.ChangeMap(pl, dst);
             return true;
         }
-        static void RenameDatabaseTables(Player p, string src, string dst)
+        public static void RenameDatabaseTables(Player p, string src, string dst)
         {
             if (Database.TableExists("Block" + src))
                 Database.RenameTable("Block" + src, "Block" + dst);
@@ -157,7 +157,7 @@ namespace MCGalaxy
             FileIO.TryDeleteDirectory(LevelInfo.BackupDirPath(map, backup), true);
             p.Message("Deleted backup {0}.", backup);
         }
-        static void DeleteDatabaseTables(string map)
+        public static void DeleteDatabaseTables(string map)
         {
             Database.DeleteTable("Block" + map);
             object locker = ThreadSafeCache.DBCache.GetLocker(map);
@@ -206,7 +206,7 @@ namespace MCGalaxy
             OnLevelCopiedEvent.Call(src, dst);
             return true;
         }
-        static void CopyDatabaseTables(string src, string dst)
+        public static void CopyDatabaseTables(string src, string dst)
         {
             object srcLocker = ThreadSafeCache.DBCache.GetLocker(src),
                 dstLocker = ThreadSafeCache.DBCache.GetLocker(dst);
@@ -238,7 +238,7 @@ namespace MCGalaxy
                     src.Message("&4Finished reloading for " + src.FormatNick(p));
             }
         }
-        static void DoAll(string src, string dst, byte action)
+        public static void DoAll(string src, string dst, byte action)
         {
             DoAction(LevelInfo.MapPath(src) + ".backup",
                      LevelInfo.MapPath(dst) + ".backup", action);
@@ -255,7 +255,7 @@ namespace MCGalaxy
             DoAction(Paths.BotsPath(src),
                      Paths.BotsPath(dst), action);
         }
-        static bool DoAction(string src, string dst, byte action)
+        public static bool DoAction(string src, string dst, byte action)
         {
             if (!File.Exists(src))
                 return true;
@@ -313,7 +313,7 @@ namespace MCGalaxy
                 Server.DoGC();
             }
         }
-        static Level ReadBackup(Player p, string map, string path, string type)
+        public static Level ReadBackup(Player p, string map, string path, string type)
         {
             Logger.Log(LogType.Warning, "Attempting to load {1} for {0}", map, type);
             Level lvl = Level.Load(map, path);
@@ -322,7 +322,7 @@ namespace MCGalaxy
             p.Message("&WLoading {1} of {0} failed.", map, type);
             return null;
         }
-        static Level ReadLevel(Player p, string map)
+        public static Level ReadLevel(Player p, string map)
         {
             Level lvl = Level.Load(map);
             if (lvl != null)
@@ -363,7 +363,7 @@ namespace MCGalaxy
             lvl.Config.Physics = 0;
             return lvl;
         }
-        static Level GetMuseum(string name, string path)
+        public static Level GetMuseum(string name, string path)
         {
             Player[] players = PlayerInfo.Online.Items;
             foreach (Player pl in players)

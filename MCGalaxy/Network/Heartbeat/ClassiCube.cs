@@ -21,10 +21,10 @@ namespace MCGalaxy.Network
     /// <summary> Heartbeat to ClassiCube.net's web server. </summary>
     public sealed class ClassiCubeBeat : Heartbeat
     {
-        string proxyUrl;
+        public string proxyUrl;
         public string LastResponse;
-        bool checkedAddr;
-        void CheckAddress()
+        public bool checkedAddr;
+        public void CheckAddress()
         {
             string hostUrl = "";
             checkedAddr = true;
@@ -80,20 +80,20 @@ namespace MCGalaxy.Network
         {
             if (NeedsProcessing(response)) OnError(response);
         }
-        bool NeedsProcessing(string text)
+        public bool NeedsProcessing(string text)
         {
             if (string.IsNullOrEmpty(text) || text == LastResponse) return false;
             LastResponse = text;
             return true;
         }
-        static void OnSuccess(string text)
+        public static void OnSuccess(string text)
         {
             text = Truncate(text);
             FileIO.TryWriteAllText("text/externalurl.txt", text);
             Logger.Log(LogType.SystemActivity, "Server URL found: " + text);
         }
-        static void OnError(string error) => Logger.Log(LogType.Warning, Truncate(error));
-        static string GetError(string json)
+        public static void OnError(string error) => Logger.Log(LogType.Warning, Truncate(error));
+        public static string GetError(string json)
         {
             JsonReader reader = new(json);
             if (reader.Parse() is not JsonObject obj || !obj.ContainsKey("errors") || obj["errors"] is not JsonArray errors) return null;
@@ -101,6 +101,6 @@ namespace MCGalaxy.Network
                 if (raw is JsonArray err && err.Count > 0) return (string)err[0];
             return null;
         }
-        static string Truncate(string text) => text.Length < 256 ? text : text.Substring(0, 256) + "..";
+        public static string Truncate(string text) => text.Length < 256 ? text : text.Substring(0, 256) + "..";
     }
 }

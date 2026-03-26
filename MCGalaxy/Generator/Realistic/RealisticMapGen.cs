@@ -26,14 +26,14 @@ namespace MCGalaxy.Generator.Realistic
     public delegate void PreprocessGen(Level lvl, MapGenArgs args);
     public sealed class RealisticMapGen
     {
-        float[] terrain, overlay, overlayT;
-        float treeDens;
-        short treeDist;
-        Random rng;
-        ushort waterHeight;
-        RealisticMapGenArgs args;
-        MapGenBiome biome;
-        Tree tree;
+        public float[] terrain, overlay, overlayT;
+        public float treeDens;
+        public short treeDist;
+        public Random rng;
+        public ushort waterHeight;
+        public RealisticMapGenArgs args;
+        public MapGenBiome biome;
+        public Tree tree;
         public bool Gen(Player p, Level lvl, MapGenArgs gen_args,
                         RealisticMapGenArgs args, PreprocessGen preprocessor)
         {
@@ -84,7 +84,7 @@ namespace MCGalaxy.Generator.Realistic
             }
             return true;
         }
-        void GenAboveWaterColumn(ushort x, ushort height, ushort z, Level lvl, int index)
+        public void GenAboveWaterColumn(ushort x, ushort height, ushort z, Level lvl, int index)
         {
             int pos = x + lvl.Width * (z + height * lvl.Length);
             if (args.SimpleColumns)
@@ -98,7 +98,6 @@ namespace MCGalaxy.Generator.Realistic
                 }
             }
             else if (!args.UseLavaLiquid)
-            {
                 for (ushort yy = 0; height - yy >= 0; yy++)
                 {
                     if (overlay[index] < 0.72f)
@@ -116,7 +115,6 @@ namespace MCGalaxy.Generator.Realistic
                         lvl.blocks[pos] = biome.Cliff;
                     pos -= lvl.Width * lvl.Length;
                 }
-            }
             else
             {
                 byte topBlock = Block.Air;
@@ -131,7 +129,7 @@ namespace MCGalaxy.Generator.Realistic
                 lvl.SetTile(x, height, z, topBlock);
             }
         }
-        void GenFoliage(ushort x, ushort height, ushort z, Level lvl, int index)
+        public void GenFoliage(ushort x, ushort height, ushort z, Level lvl, int index)
         {
             if (args.GenFlowers && overlay[index] < 0.25f)
             {
@@ -157,12 +155,11 @@ namespace MCGalaxy.Generator.Realistic
                 });
             }
         }
-        void GenUnderwaterColumn(ushort x, ushort height, ushort z, Level lvl, int index)
+        public void GenUnderwaterColumn(ushort x, ushort height, ushort z, Level lvl, int index)
         {
             int pos = x + lvl.Width * (z + waterHeight * lvl.Length);
             byte block;
             if (!args.UseLavaLiquid)
-            {
                 for (ushort yy = 0; waterHeight - yy >= 0; yy++)
                 {
                     if (waterHeight - yy > height)
@@ -176,9 +173,7 @@ namespace MCGalaxy.Generator.Realistic
                         lvl.blocks[pos] = biome.Cliff;
                     pos -= lvl.Width * lvl.Length;
                 }
-            }
             else
-            {
                 for (ushort yy = 0; waterHeight - yy >= 0; yy++)
                 {
                     lvl.blocks[pos] = waterHeight - yy > height - 1
@@ -188,17 +183,14 @@ namespace MCGalaxy.Generator.Realistic
                             : biome.Bedrock;
                     pos -= lvl.Width * lvl.Length;
                 }
-            }
         }
-        void GenerateFault(float[] array, Level lvl)
+        public void GenerateFault(float[] array, Level lvl)
         {
             float baseHeight = args.StartHeight,
                 dispMax = args.DisplacementMax,
                 dispStep = args.DisplacementStep;
             for (int i = 0; i < array.Length; i++)
-            {
                 array[i] = baseHeight;
-            }
             float disp = dispMax;
             ushort halfX = (ushort)(lvl.Width / 2), halfZ = (ushort)(lvl.Length / 2);
             float d = (float)Math.Sqrt(halfX * halfX + halfZ * halfZ);
@@ -229,13 +221,13 @@ namespace MCGalaxy.Generator.Realistic
                     disp = dispMax;
             }
         }
-        void GeneratePerlinNoise(float[] array, Level Lvl) => NoiseGen.GenerateNormalized(array, 0.7f, 8, Lvl.Width, Lvl.Length, rng.Next(), 64);
-        static ushort Evaluate(Level lvl, float height)
+        public void GeneratePerlinNoise(float[] array, Level Lvl) => NoiseGen.GenerateNormalized(array, 0.7f, 8, Lvl.Width, Lvl.Length, rng.Next(), 64);
+        public static ushort Evaluate(Level lvl, float height)
         {
             ushort y = (ushort)(height * lvl.Height);
             return y < 0 ? (ushort)0 : y > lvl.Height - 1 ? (ushort)(lvl.Height - 1) : y;
         }
-        void FilterAverage(Level lvl)
+        public void FilterAverage(Level lvl)
         {
             float[] filtered = new float[terrain.Length];
             for (int i = 0; i < filtered.Length; i++)
@@ -245,11 +237,9 @@ namespace MCGalaxy.Generator.Realistic
                 filtered[i] = GetAverage9(x, z, lvl);
             }
             for (int i = 0; i < terrain.Length; i++)
-            {
                 terrain[i] = filtered[i];
-            }
         }
-        float GetAverage9(ushort x, ushort z, Level lvl)
+        public float GetAverage9(ushort x, ushort z, Level lvl)
         {
             int points = 0;
             float sum = GetPixel(ref points, x, z, lvl);
@@ -263,15 +253,15 @@ namespace MCGalaxy.Generator.Realistic
             sum += GetPixel(ref points, (ushort)(x - 1), (ushort)(z - 1), lvl);
             return sum / points;
         }
-        float GetPixel(ref int points, ushort x, ushort z, Level lvl)
+        public float GetPixel(ref int points, ushort x, ushort z, Level lvl)
         {
             if (x < 0 || x >= lvl.Width || z < 0 || z >= lvl.Length)
                 return 0;
             points++;
             return terrain[x + z * lvl.Width];
         }
-        static float Range(float input, float low, float high) => high <= low ? low : low + (input * (high - low));
-        static float NegateEdge(ushort x, ushort z, Level lvl)
+        public static float Range(float input, float low, float high) => high <= low ? low : low + (input * (high - low));
+        public static float NegateEdge(ushort x, ushort z, Level lvl)
         {
             float xAdj = x / (float)lvl.Width * 0.5f,
                 zAdj = z / (float)lvl.Length * 0.5f,
@@ -293,13 +283,13 @@ namespace MCGalaxy.Generator.Realistic
             MapGen.Register("Desert", GenType.Simple, GenDesert, MapGen.DEFAULT_HELP);
             MapGen.Register("Hell", GenType.Simple, GenHell, MapGen.DEFAULT_HELP);
         }
-        static bool GenIsland(Player p, Level lvl, MapGenArgs args) => GenRealistic(p, lvl, args, RealisticMapGenArgs.Island);
-        static bool GenMountains(Player p, Level lvl, MapGenArgs args) => GenRealistic(p, lvl, args, RealisticMapGenArgs.Mountains);
-        static bool GenForest(Player p, Level lvl, MapGenArgs args) => GenRealistic(p, lvl, args, RealisticMapGenArgs.Forest);
-        static bool GenOcean(Player p, Level lvl, MapGenArgs args) => GenRealistic(p, lvl, args, RealisticMapGenArgs.Ocean);
-        static bool GenDesert(Player p, Level lvl, MapGenArgs args) => GenRealistic(p, lvl, args, RealisticMapGenArgs.Desert);
-        static bool GenHell(Player p, Level lvl, MapGenArgs args) => GenRealistic(p, lvl, args, RealisticMapGenArgs.Hell, PreprocessHell);
-        static void PreprocessHell(Level lvl, MapGenArgs args)
+        public static bool GenIsland(Player p, Level lvl, MapGenArgs args) => GenRealistic(p, lvl, args, RealisticMapGenArgs.Island);
+        public static bool GenMountains(Player p, Level lvl, MapGenArgs args) => GenRealistic(p, lvl, args, RealisticMapGenArgs.Mountains);
+        public static bool GenForest(Player p, Level lvl, MapGenArgs args) => GenRealistic(p, lvl, args, RealisticMapGenArgs.Forest);
+        public static bool GenOcean(Player p, Level lvl, MapGenArgs args) => GenRealistic(p, lvl, args, RealisticMapGenArgs.Ocean);
+        public static bool GenDesert(Player p, Level lvl, MapGenArgs args) => GenRealistic(p, lvl, args, RealisticMapGenArgs.Desert);
+        public static bool GenHell(Player p, Level lvl, MapGenArgs args) => GenRealistic(p, lvl, args, RealisticMapGenArgs.Hell, PreprocessHell);
+        public static void PreprocessHell(Level lvl, MapGenArgs args)
         {
             Random rng = new(args.Seed);
             int width = lvl.Width, height = lvl.Height, length = lvl.Length,
@@ -308,34 +298,26 @@ namespace MCGalaxy.Generator.Realistic
             byte[] blocks = lvl.blocks;
             index += oneY;
             for (int y = 1; y < height; ++y)
-            {
                 for (int z = 0; z < length; ++z)
-                {
                     for (int x = 0; x < width; ++x)
                     {
                         if (x == 0 || x == width - 1 || z == 0 || z == length - 1 || y == height - 1)
-                        {
                             blocks[index] = biome.BeachRocky;
-                        }
                         else if (x == 1 || x == width - 2 || z == 1 || z == length - 2)
                         {
-                            if (rng.Next(1000) != 7) 
+                            if (rng.Next(1000) != 7)
                             {
-                                index++; 
+                                index++;
                                 continue;
                             }
                             int colIndex = z * width + x;
                             for (int i = 1; i < (height - y); ++i)
-                            {
                                 blocks[colIndex + (height - i) * oneY] = biome.Water;
-                            }
                         }
                         index++;
                     }
-                }
-            }
         }
-        static bool GenRealistic(Player p, Level lvl, MapGenArgs gen_args,
+        public static bool GenRealistic(Player p, Level lvl, MapGenArgs gen_args,
                                  RealisticMapGenArgs args, PreprocessGen preprocessor = null) => new RealisticMapGen().Gen(p, lvl, gen_args, args, preprocessor);
     }
 }

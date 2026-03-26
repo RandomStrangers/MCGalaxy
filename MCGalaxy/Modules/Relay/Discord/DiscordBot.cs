@@ -22,7 +22,7 @@ using System.IO;
 using System.Text;
 namespace MCGalaxy.Modules.Relay.Discord
 {
-    sealed class DiscordUser : RelayUser
+    public sealed class DiscordUser : RelayUser
     {
         public string ReferencedUser;
         public override string GetMessagePrefix() => string.IsNullOrEmpty(ReferencedUser) ? "" : "@" + ReferencedUser + " ";
@@ -33,15 +33,15 @@ namespace MCGalaxy.Modules.Relay.Discord
         protected DiscordWebsocket socket;
         protected DiscordSession session;
         protected string botUserID;
-        readonly Dictionary<string, byte> channelTypes = new();
-        readonly List<string> filter_triggers = new();
-        readonly List<string> filter_replacements = new();
-        JsonArray allowed;
+        public readonly Dictionary<string, byte> channelTypes = new();
+        public readonly List<string> filter_triggers = new();
+        public readonly List<string> filter_replacements = new();
+        public JsonArray allowed;
         public override string RelayName => "Discord";
         public override bool Enabled => Config.Enabled;
         public override string UserID => botUserID;
         public DiscordConfig Config;
-        readonly TextFile replacementsFile = new("text/discord/replacements.txt",
+        public readonly TextFile replacementsFile = new("text/discord/replacements.txt",
                                         "// This file is used to replace words/phrases sent to Discord",
                                         "// Lines starting with // are ignored",
                                         "// Lines should be formatted like this:",
@@ -70,7 +70,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             };
             socket.Connect();
         }
-        static Exception UnpackError(Exception ex) => ex.InnerException is ObjectDisposedException ? ex.InnerException : ex.InnerException is IOException ? ex.InnerException : null;
+        public static Exception UnpackError(Exception ex) => ex.InnerException is ObjectDisposedException ? ex.InnerException : ex.InnerException is IOException ? ex.InnerException : null;
         protected override void DoReadLoop()
         {
             try
@@ -112,7 +112,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             UpdateAllowed();
             LoadBannedCommands();
         }
-        void UpdateAllowed()
+        public void UpdateAllowed()
         {
             JsonArray mentions = new();
             if (Config.CanMentionUsers) mentions.Add("users");
@@ -120,7 +120,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             if (Config.CanMentionHere) mentions.Add("everyone");
             allowed = mentions;
         }
-        void LoadReplacements()
+        public void LoadReplacements()
         {
             replacementsFile.EnsureExists();
             string[] lines = replacementsFile.GetText();
@@ -133,7 +133,7 @@ namespace MCGalaxy.Modules.Relay.Discord
                                   });
         }
         public override void LoadControllers() => Controllers = PlayerList.Load("text/discord/controllers.txt");
-        DiscordUser ExtractUser(JsonObject data)
+        public DiscordUser ExtractUser(JsonObject data)
         {
             JsonObject author = (JsonObject)data["author"];
             DiscordUser user = new()
@@ -144,7 +144,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             };
             return user;
         }
-        string GetNick(JsonObject data)
+        public string GetNick(JsonObject data)
         {
             if (!Config.UseNicks) return null;
             if (!data.TryGetValue("member", out object raw)) return null;
@@ -152,19 +152,19 @@ namespace MCGalaxy.Modules.Relay.Discord
             member.TryGetValue("nick", out raw);
             return raw as string;
         }
-        string GetUser(JsonObject author)
+        public string GetUser(JsonObject author)
         {
             author.TryGetValue("global_name", out object name);
             return name != null ? (string)name : (string)author["username"];
         }
-        string ExtractReferencedUser(JsonObject data)
+        public string ExtractReferencedUser(JsonObject data)
         {
             data.TryGetValue("referenced_message", out object refMsgRaw);
             if (refMsgRaw is not JsonObject refMsgData) return null;
             refMsgData.TryGetValue("author", out object authorRaw);
             return authorRaw == null ? null : GetUser((JsonObject)authorRaw);
         }
-        void HandleMessageEvent(JsonObject data)
+        public void HandleMessageEvent(JsonObject data)
         {
             DiscordUser user = ExtractUser(data);
             if (user.ID == botUserID) return;
@@ -183,7 +183,7 @@ namespace MCGalaxy.Modules.Relay.Discord
                 PrintAttachments(user, data, channel);
             }
         }
-        void PrintAttachments(RelayUser user, JsonObject data, string channel)
+        public void PrintAttachments(RelayUser user, JsonObject data, string channel)
         {
             if (!data.TryGetValue("attachments", out object raw) || raw is not JsonArray list) return;
             foreach (object entry in list)
@@ -193,17 +193,17 @@ namespace MCGalaxy.Modules.Relay.Discord
                 HandleChannelMessage(user, channel, url);
             }
         }
-        void HandleChannelEvent(JsonObject data)
+        public void HandleChannelEvent(JsonObject data)
         {
             if ((string)data["type"] == "1") channelTypes[(string)data["id"]] = 0;
         }
-        byte GuessChannelType(JsonObject data) => data.ContainsKey("member") ? (byte)1 : data.ContainsKey("webhook_id") ? (byte)1 : (byte)0;
-        void HandleReadyEvent(JsonObject data)
+        public byte GuessChannelType(JsonObject data) => data.ContainsKey("member") ? (byte)1 : data.ContainsKey("webhook_id") ? (byte)1 : (byte)0;
+        public void HandleReadyEvent(JsonObject data)
         {
             botUserID = (string)((JsonObject)data["user"])["id"];
             HandleResumedEvent(data);
         }
-        void HandleResumedEvent(JsonObject data)
+        public void HandleResumedEvent(JsonObject data)
         {
             if (api == null)
             {
@@ -216,8 +216,8 @@ namespace MCGalaxy.Modules.Relay.Discord
             }
             OnReady();
         }
-        void HandleGatewayEvent(string eventName, JsonObject data) => OnGatewayEventReceivedEvent.Call(this, eventName, data);
-        static bool IsEscaped(char c) => (c > ' ' && c <= '/') || (c >= ':' && c <= '@') || (c >= '[' && c <= '`') || (c >= '{' && c <= '~');
+        public void HandleGatewayEvent(string eventName, JsonObject data) => OnGatewayEventReceivedEvent.Call(this, eventName, data);
+        public static bool IsEscaped(char c) => (c > ' ' && c <= '/') || (c >= ':' && c <= '@') || (c >= '[' && c <= '`') || (c >= '{' && c <= '~');
         protected override string ParseMessage(string input)
         {
             StringBuilder sb = new(input);
@@ -233,9 +233,9 @@ namespace MCGalaxy.Modules.Relay.Discord
             sb.Replace("**", "");
             return sb.ToString();
         }
-        readonly object updateLocker = new();
-        volatile bool updateScheduled;
-        DateTime nextUpdate;
+        public readonly object updateLocker = new();
+        public volatile bool updateScheduled;
+        public DateTime nextUpdate;
         public void UpdateDiscordStatus()
         {
             TimeSpan delay = default;
@@ -248,7 +248,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             }
             Server.MainScheduler.QueueOnce(DoUpdateStatus, null, delay);
         }
-        void DoUpdateStatus(SchedulerTask task)
+        public void DoUpdateStatus(SchedulerTask task)
         {
             DateTime now = DateTime.UtcNow;
             lock (updateLocker)
@@ -266,7 +266,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             { 
             }
         }
-        string GetStatusMessage()
+        public string GetStatusMessage()
         {
             fakeGuest.group = Group.DefaultRank;
             return Config.StatusMessage.Replace("{PLAYERS}", NumberUtils.StringifyInt(PlayerInfo.GetOnlineCanSee(fakeGuest, fakeGuest.Rank).Count));
@@ -296,9 +296,9 @@ namespace MCGalaxy.Modules.Relay.Discord
             OnPlayerDisconnectEvent.Unregister(HandlePlayerDisconnect);
             OnPlayerActionEvent.Unregister(HandlePlayerAction);
         }
-        void HandlePlayerConnect(Player p) => UpdateDiscordStatus();
-        void HandlePlayerDisconnect(Player p, string reason) => UpdateDiscordStatus();
-        void HandlePlayerAction(Player p, PlayerAction action, string message, bool stealth)
+        public void HandlePlayerConnect(Player p) => UpdateDiscordStatus();
+        public void HandlePlayerDisconnect(Player p, string reason) => UpdateDiscordStatus();
+        public void HandlePlayerAction(Player p, PlayerAction action, string message, bool stealth)
         {
             if (action != PlayerAction.Hide && action != PlayerAction.Unhide) return;
             UpdateDiscordStatus();
@@ -351,10 +351,10 @@ namespace MCGalaxy.Modules.Relay.Discord
             OnSendingWhoEmbedEvent.Call(this, p.User, ref embed);
             Send(embed);
         }
-        static string FormatPlayers(Player p, OnlineListEntry e) => e.players.Join(pl => FormatNick(p, pl), ", ");
-        static string FormatRank(OnlineListEntry e) => string.Format("\uEDC1\uEDC1{0}\uEDC1\uEDC1 (\uEDC4{1}\uEDC4)",
+        public static string FormatPlayers(Player p, OnlineListEntry e) => e.players.Join(pl => FormatNick(p, pl), ", ");
+        public static string FormatRank(OnlineListEntry e) => string.Format("\uEDC1\uEDC1{0}\uEDC1\uEDC1 (\uEDC4{1}\uEDC4)",
                                  e.group.GetFormattedName(), e.players.Count);
-        static string FormatNick(Player p, Player pl)
+        public static string FormatNick(Player p, Player pl)
         {
             string flags = OnlineListEntry.GetFlags(pl),
                 format = flags.Length > 0

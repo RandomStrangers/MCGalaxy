@@ -16,7 +16,7 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy.Modules.Moderation.Notes
 {
-    class CmdNotes : Command2
+    public class CmdNotes : Command2
     {
         public override string Name => "Notes";
         public override string Type => CommandTypes.Moderation;
@@ -72,7 +72,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
             Paginator.Output(p, visibleNotes, PrintNote,
                              cmd, "Notes", modifier);
         }
-        static void PrintNote(Player p, string line)
+        public static void PrintNote(Player p, string line)
         {
             string[] args = line.SplitSpaces();
             if (args.Length <= 3) return;
@@ -90,7 +90,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
             p.Message("&HNotes are things such as bans, kicks, warns, mutes.");
         }
     }
-    sealed class CmdMyNotes : CmdNotes
+    public sealed class CmdMyNotes : CmdNotes
     {
         public override string Name => "MyNotes";
         public override string Type => CommandTypes.Other;

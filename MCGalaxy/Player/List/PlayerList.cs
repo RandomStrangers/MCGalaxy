@@ -21,9 +21,9 @@ namespace MCGalaxy
     public class PlayerList
     {
         public string Path;
-        readonly List<string> names = new();
+        public readonly List<string> names = new();
         internal readonly object locker = new();
-        readonly object saveLocker = new();
+        public readonly object saveLocker = new();
         public PlayerList() { }
         /// <summary> Returns a copy of all names in the list. </summary>
         public List<string> All()
@@ -111,7 +111,7 @@ namespace MCGalaxy
             }
             if (log) Logger.Log(LogType.BackgroundActivity, "SAVED: " + Path);
         }
-        void SaveEntries(StreamWriter w)
+        public void SaveEntries(StreamWriter w)
         {
             lock (locker)
                 foreach (string p in names) w.WriteLine(p);

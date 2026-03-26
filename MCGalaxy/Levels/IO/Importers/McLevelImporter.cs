@@ -32,7 +32,7 @@ namespace MCGalaxy.Levels.IO
             ReadMetadata(file.RootTag, lvl);
             return lvl;
         }
-        void ReadData(NbtCompound root, string name, out Level lvl)
+        public void ReadData(NbtCompound root, string name, out Level lvl)
         {
             NbtCompound map = (NbtCompound)root["Map"];
             ushort width = (ushort)map["Width"].ShortValue,
@@ -45,7 +45,7 @@ namespace MCGalaxy.Levels.IO
             lvl.spawny = (ushort)spawn.Tags[1].ShortValue;
             lvl.spawnz = (ushort)spawn.Tags[2].ShortValue;
         }
-        void ReadMetadata(NbtCompound root, Level lvl)
+        public void ReadMetadata(NbtCompound root, Level lvl)
         {
             NbtCompound env = (NbtCompound)root["Environment"];
             lvl.Config.SkyColor = env["SkyColor"].IntValue.ToString("X6");

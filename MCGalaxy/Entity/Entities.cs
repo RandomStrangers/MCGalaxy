@@ -121,7 +121,7 @@ namespace MCGalaxy
         /// <summary>
         /// Attempts to spawn and add an entity to p's tab list.
         /// </summary>
-        static void SpawnRaw(Player p, Entity e, Position pos, Orientation rot,
+        public static void SpawnRaw(Player p, Entity e, Position pos, Orientation rot,
                              string skin, string name, string model) => p.EntityList.Add(e, pos, rot, skin, name, model, true);
         /// <summary>
         /// Despawns other to dst and calls OnEntityDespawnedEvent

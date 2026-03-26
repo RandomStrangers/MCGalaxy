@@ -19,7 +19,7 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
-    class VisibleSelection
+    public class VisibleSelection
     {
         public object data;
         public byte ID;
@@ -37,11 +37,12 @@ namespace MCGalaxy
         public virtual void Message(string message)
         {
             if (message.Length > 0 && !(message[0] == '&' || message[0] == '%')) message = "&S" + message;
+            message = message.ReplaceCursive();
             message = Chat.Format(message, this);
             lock (messageLocker)
                 SendRawMessage(message);
         }
-        void SendRawMessage(string message)
+        public void SendRawMessage(string message)
         {
             bool cancel = false;
             OnMessageRecievedEvent.Call(this, ref message, ref cancel);
@@ -89,7 +90,7 @@ namespace MCGalaxy
             lock (joinLock)
                 return SendRawMapCore(oldLevel, level);
         }
-        bool SendRawMapCore(Level prev, Level level)
+        public bool SendRawMapCore(Level prev, Level level)
         {
             bool success = true;
             try
@@ -184,7 +185,7 @@ namespace MCGalaxy
         {
             if (Supports(CpeExt.BlockPermissions)) SendAllBlockPermissions();
         }
-        void SendAllBlockPermissions()
+        public void SendAllBlockPermissions()
         {
             bool extBlocks = Session.hasExtBlocks;
             int count = Session.MaxRawBlock + 1,
@@ -219,7 +220,7 @@ namespace MCGalaxy
             }
             return false;
         }
-        unsafe byte FindOrAddSelection(VisibleSelection[] items, object instance)
+        public unsafe byte FindOrAddSelection(VisibleSelection[] items, object instance)
         {
             byte* used = stackalloc byte[256];
             for (int i = 0; i < 256; i++) used[i] = 0;

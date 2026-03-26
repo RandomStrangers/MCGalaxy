@@ -31,9 +31,7 @@ namespace MCGalaxy.Drawing.Transforms
         public static TransformFactory Find(string name)
         {
             foreach (TransformFactory entry in Transforms)
-            {
                 if (entry.Name.CaselessEq(name)) return entry;
-            }
             return null;
         }
         public static TransformFactory FindMatch(Player p, string name)

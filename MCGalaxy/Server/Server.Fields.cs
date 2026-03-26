@@ -31,10 +31,10 @@ namespace MCGalaxy
             Notes = new("text/notes.txt");
         public static PlayerList whiteList, invalidIds, ignored,
             hidden, agreed, vip, noEmotes, lockdown, reviewlist = new();
-        public const string InternalVersion = "1.0.7.7";
+        public const string InternalVersion = "1.0.7.8";
         public static string Version => InternalVersion;
         public static string SoftwareName = "MCGalaxy-NAS (Standalone)";
-        static string fullName;
+        public static string fullName;
         public static string SoftwareNameVersioned
         {
             get { return fullName ?? SoftwareName + " " + Version; }
@@ -51,7 +51,7 @@ namespace MCGalaxy
             "warn", "mute", "freeze", "setrank"
         };
         public static Level mainLevel;
-        static string[] announcements = new string[0];
+        public static string[] announcements = new string[0];
         public static ExtrasCollection Extras = new();
         public static int YesVotes, NoVotes;
         public static Scheduler MainScheduler = new("MCG_MainScheduler"),

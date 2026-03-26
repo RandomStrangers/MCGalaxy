@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
-    internal sealed class SpamChecker
+    public sealed class SpamChecker
     {
         public SpamChecker(Player p)
         {
@@ -26,9 +26,9 @@ namespace MCGalaxy
             chatLog = new(Server.Config.ChatSpamCount);
             cmdLog = new(Server.Config.CmdSpamCount);
         }
-        readonly Player p;
-        readonly object chatLock = new(), cmdLock = new();
-        readonly List<DateTime> blockLog, chatLog, cmdLog;
+        public readonly Player p;
+        public readonly object chatLock = new(), cmdLock = new();
+        public readonly List<DateTime> blockLog, chatLog, cmdLog;
         public void Clear()
         {
             blockLog.Clear();

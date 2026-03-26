@@ -20,7 +20,7 @@ namespace MCGalaxy
     /// <remarks> This is NOT the list of banned players (ranks/banned.txt) </remarks>
     public static class Ban
     {
-        static readonly PlayerMetaList bans = new("text/bans.txt"),
+        public static readonly PlayerMetaList bans = new("text/bans.txt"),
             unbans = new("text/unbans.txt");
         public static void EnsureExists()
         {
@@ -57,8 +57,8 @@ namespace MCGalaxy
             reason = reason.Replace(" ", "%20");
             AddUnbanEntry(unbanner.name, target.ToLower(), reason);
         }
-        static void AddBanEntry(string pl, string target, string reason, bool stealth, string oldrank) => bans.Append(pl + " " + target + " " + reason + " " + stealth + " " + DateTime.UtcNow.ToUnixTime().ToString() + " " + oldrank);
-        static void AddUnbanEntry(string pl, string target, string reason) => unbans.Append(pl + " " + target + " " + reason + " " + DateTime.UtcNow.ToUnixTime().ToString());
+        public static void AddBanEntry(string pl, string target, string reason, bool stealth, string oldrank) => bans.Append(pl + " " + target + " " + reason + " " + stealth + " " + DateTime.UtcNow.ToUnixTime().ToString() + " " + oldrank);
+        public static void AddUnbanEntry(string pl, string target, string reason) => unbans.Append(pl + " " + target + " " + reason + " " + DateTime.UtcNow.ToUnixTime().ToString());
         /// <summary> Returns info about the current or last ban of a user. </summary>
         public static void GetBanData(string who, out string banner, out string reason,
                                       out DateTime time, out string prevRank)
@@ -99,7 +99,7 @@ namespace MCGalaxy
             reason = null; 
             time = DateTime.MinValue;
         }
-        static DateTime GetDate(string raw)
+        public static DateTime GetDate(string raw)
         {
             raw = raw.Replace("%20", " ").Replace(",", "");
             if (long.TryParse(raw, out long timestap)) return timestap.FromUnixTime();
@@ -114,7 +114,7 @@ namespace MCGalaxy
         }
         public static bool DeleteBan(string name) => DeleteInfo(name, bans);
         public static bool DeleteUnban(string name) => DeleteInfo(name, unbans);
-        static bool DeleteInfo(string name, PlayerMetaList list)
+        public static bool DeleteInfo(string name, PlayerMetaList list)
         {
             name = name.ToLower();
             bool found = false;
@@ -131,7 +131,7 @@ namespace MCGalaxy
             return found;
         }
         public static bool ChangeBanReason(string who, string reason) => ChangeReason(who, reason, bans);
-        static bool ChangeReason(string who, string reason, PlayerMetaList list)
+        public static bool ChangeReason(string who, string reason, PlayerMetaList list)
         {
             who = who.ToLower();
             reason = reason.Replace(" ", "%20");

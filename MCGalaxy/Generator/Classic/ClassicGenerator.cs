@@ -5,11 +5,11 @@ namespace MCGalaxy.Generator.Classic
 {
     public sealed partial class ClassicGenerator
     {
-        int waterLevel, oneY, Width, Length, Height, minHeight;
-        byte[] blocks;
-        short[] heightmap;
-        JavaRandom rnd;
-        MapGenBiome biome;
+        public int waterLevel, oneY, Width, Length, Height, minHeight;
+        public byte[] blocks;
+        public short[] heightmap;
+        public JavaRandom rnd;
+        public MapGenBiome biome;
         public byte[] Generate(Level lvl, MapGenArgs args)
         {
             blocks = lvl.blocks;
@@ -36,7 +36,7 @@ namespace MCGalaxy.Generator.Classic
             PlantTrees();
             return blocks;
         }
-        void CreateHeightmap()
+        public void CreateHeightmap()
         {
             CombinedNoise n1 = new(new(8, rnd), new(8, rnd)),
                 n2 = new(new(8, rnd), new(8, rnd));
@@ -59,7 +59,7 @@ namespace MCGalaxy.Generator.Classic
                 }
             heightmap = hMap;
         }
-        void CreateStrata()
+        public void CreateStrata()
         {
             OctaveNoise n = new(8, rnd);
             int hMapIndex = 0, maxY = Height - 1,
@@ -89,7 +89,7 @@ namespace MCGalaxy.Generator.Classic
                     }
                 }
         }
-        int CreateStrataFast()
+        public int CreateStrataFast()
         {
             int count = Length * Width, 
                 mapIndex = 0;
@@ -103,7 +103,7 @@ namespace MCGalaxy.Generator.Classic
                 blocks[mapIndex++] = cliff;
             return stoneHeight;
         }
-        void CarveCaves()
+        public void CarveCaves()
         {
             int cavesCount = blocks.Length / 8192;
             for (int i = 0; i < cavesCount; i++)
@@ -135,7 +135,7 @@ namespace MCGalaxy.Generator.Classic
                 }
             }
         }
-        void CarveOreVeins(float abundance, byte block)
+        public void CarveOreVeins(float abundance, byte block)
         {
             int numVeins = (int)(blocks.Length * abundance / 16384);
             for (int i = 0; i < numVeins; i++)
@@ -160,7 +160,7 @@ namespace MCGalaxy.Generator.Classic
                 }
             }
         }
-        void FloodFillWaterBorders()
+        public void FloodFillWaterBorders()
         {
             int waterY = waterLevel - 1,
                 index1 = (waterY * Length + 0) * Width + 0,
@@ -183,7 +183,7 @@ namespace MCGalaxy.Generator.Classic
                 index2 += Width;
             }
         }
-        void FloodFillWater()
+        public void FloodFillWater()
         {
             int numSources = Width * Length / 800;
             byte water = biome.Water;
@@ -195,7 +195,7 @@ namespace MCGalaxy.Generator.Classic
                 FloodFill((y * Length + z) * Width + x, water);
             }
         }
-        void FloodFillLava()
+        public void FloodFillLava()
         {
             int numSources = Width * Length / 20000;
             for (int i = 0; i < numSources; i++)
@@ -205,7 +205,7 @@ namespace MCGalaxy.Generator.Classic
                 FloodFill((y * Length + z) * Width + x, Block.StillLava);
             }
         }
-        void CreateSurfaceLayer()
+        public void CreateSurfaceLayer()
         {
             OctaveNoise n1 = new(8, rnd), n2 = new(8, rnd);
             byte surface = biome.Surface,
@@ -226,7 +226,7 @@ namespace MCGalaxy.Generator.Classic
                         blocks[index] = (y <= waterLevel && (n1.Compute(x, z) > 8)) ? sandy : surface;
                 }
         }
-        void PlantFlowers()
+        public void PlantFlowers()
         {
             int numPatches = Width * Length / 3000;
             byte surface = biome.Surface;
@@ -252,7 +252,7 @@ namespace MCGalaxy.Generator.Classic
                 }
             }
         }
-        void PlantMushrooms()
+        public void PlantMushrooms()
         {
             int numPatches = blocks.Length / 2000;
             byte cliff = biome.Cliff;
@@ -281,7 +281,7 @@ namespace MCGalaxy.Generator.Classic
                 }
             }
         }
-        void PlantTrees()
+        public void PlantTrees()
         {
             int numPatches = Width * Length / 4000;
             byte surface = biome.Surface;
@@ -320,8 +320,8 @@ namespace MCGalaxy.Generator.Classic
                 }
             }
         }
-        Tree GetTreeGen() => biome.TreeType == null ? null : biome.TreeType == "" ? new ClassicTree() { rng = rnd } : Tree.TreeTypes[biome.TreeType]();
-        bool CanGrowTree(int treeX, int treeY, int treeZ, int treeHeight)
+        public Tree GetTreeGen() => biome.TreeType == null ? null : biome.TreeType == "" ? new ClassicTree() { rng = rnd } : Tree.TreeTypes[biome.TreeType]();
+        public bool CanGrowTree(int treeX, int treeY, int treeZ, int treeHeight)
         {
             if (treeY < 0 || (treeY + treeHeight - 1) >= Height || treeX - 2 < 0 || treeX + 2 >= Width || treeZ - 2 < 0 || treeZ + 2 >= Length) return false;
             int baseHeight = treeHeight - 4;
@@ -342,7 +342,7 @@ namespace MCGalaxy.Generator.Classic
             return true;
         }
         public static void RegisterGenerators() => MapGen.Register("Classic", GenType.Simple, Gen, MapGen.DEFAULT_HELP);
-        static bool Gen(Player p, Level lvl, MapGenArgs args)
+        public static bool Gen(Player p, Level lvl, MapGenArgs args)
         {
             if (!args.ParseArgs(p)) return false;
             new ClassicGenerator().Generate(lvl, args);

@@ -34,7 +34,7 @@ namespace MCGalaxy
                 time = seconds ? "0s" : "0m";
             return negate ? "-" + time : time;
         }
-        static void Add(ref string time, int amount, char suffix, bool spaces)
+        public static void Add(ref string time, int amount, char suffix, bool spaces)
         {
             if (amount != 0)
                 time = time.Length switch
@@ -66,7 +66,7 @@ namespace MCGalaxy
             total = checked(total + amount);
             return TimeSpan.FromTicks(total);
         }
-        static long GetTicks(int num, string unit) => unit.CaselessEq("s")
+        public static long GetTicks(int num, string unit) => unit.CaselessEq("s")
                 ? num * TimeSpan.TicksPerSecond
                 : unit.CaselessEq("m")
                 ? num * TimeSpan.TicksPerMinute
@@ -77,7 +77,7 @@ namespace MCGalaxy
                 : unit.CaselessEq("w")
                 ? num * TimeSpan.TicksPerDay * 7
                 : unit.CaselessEq("ms") ? num * TimeSpan.TicksPerMillisecond : throw new FormatException(unit);
-        static string GetUnit(string value, int i)
+        public static string GetUnit(string value, int i)
         {
             string unit = "";
             for (; i < value.Length; i++)

@@ -166,7 +166,7 @@ namespace MCGalaxy
             }
             return exts.ToArray();
         }
-        static int supportedCount;
+        public static int supportedCount;
         public static void LoadDisabledList()
         {
             supportedCount = 0;
@@ -183,7 +183,7 @@ namespace MCGalaxy
                 Logger.LogError("Error saving CPE disabled list", ex);
             }
         }
-        static void ParseLine(string name, string value)
+        public static void ParseLine(string name, string value)
         {
             foreach (CpeExtension c in All)
             {
@@ -193,7 +193,7 @@ namespace MCGalaxy
                 return;
             }
         }
-        static void SaveDisabledList()
+        public static void SaveDisabledList()
         {
             using StreamWriter w = FileIO.CreateGuarded(Paths.CPEDisabledFile);
             w.WriteLine("# CPE configuration");

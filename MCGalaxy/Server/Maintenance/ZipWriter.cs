@@ -19,7 +19,7 @@ using System.IO.Compression;
 using System.Text;
 namespace MCGalaxy
 {
-    struct ZipEntry
+    public struct ZipEntry
     {
         public byte[] Filename;
         public long CompressedSize, UncompressedSize, LocalHeaderOffset;
@@ -33,7 +33,7 @@ namespace MCGalaxy
             LocalHeaderOffset = uint.MaxValue;
         }
     }
-    sealed class ZipWriterStream : Stream
+    public sealed class ZipWriterStream : Stream
     {
         public uint Crc32 = uint.MaxValue;
         public long CompressedLen;
@@ -42,7 +42,7 @@ namespace MCGalaxy
         public override bool CanRead => false;
         public override bool CanSeek => false;
         public override bool CanWrite => true;
-        static readonly Exception ex = new NotSupportedException();
+        public static readonly Exception ex = new NotSupportedException();
         public override void Flush() => stream.Flush();
         public override long Length => throw ex;
         public override long Position { get { throw ex; } set { throw ex; } }
@@ -69,7 +69,7 @@ namespace MCGalaxy
             }
             return WriteData(this, src, buffer);
         }
-        long WriteData(Stream dst, Stream src, byte[] buffer)
+        public long WriteData(Stream dst, Stream src, byte[] buffer)
         {
             long totalLen = 0;
             int count;
@@ -82,7 +82,7 @@ namespace MCGalaxy
             }
             return totalLen;
         }
-        static readonly uint[] crc32Table;
+        public static readonly uint[] crc32Table;
         static ZipWriterStream()
         {
             crc32Table = new uint[256];
@@ -103,14 +103,14 @@ namespace MCGalaxy
     /// <summary> Writes entries into a ZIP archive. </summary>
     public sealed class ZipWriter
     {
-        readonly BinaryWriter writer;
-        readonly Stream stream;
-        readonly byte[] buffer = new byte[81920];
-        bool zip64;
-        readonly List<ZipEntry> entries = new();
-        int numEntries;
-        long centralDirOffset, centralDirSize, zip64EndOffset;
-        static readonly byte[] emptyZip64Local = new byte[20];
+        public readonly BinaryWriter writer;
+        public readonly Stream stream;
+        public readonly byte[] buffer = new byte[81920];
+        public bool zip64;
+        public readonly List<ZipEntry> entries = new();
+        public int numEntries;
+        public long centralDirOffset, centralDirSize, zip64EndOffset;
+        public static readonly byte[] emptyZip64Local = new byte[20];
         public ZipWriter(Stream stream)
         {
             this.stream = stream;
@@ -167,7 +167,7 @@ namespace MCGalaxy
                 WriteZip64EndOfCentralDirectory();
             WriteEndOfCentralDirectoryRecord();
         }
-        void WriteZip64EndOfCentralDirectory()
+        public void WriteZip64EndOfCentralDirectory()
         {
             zip64EndOffset = stream.Position;
             WriteZip64EndOfCentralDirectoryRecord();
@@ -176,7 +176,7 @@ namespace MCGalaxy
             centralDirOffset = uint.MaxValue;
             centralDirSize = uint.MaxValue;
         }
-        void WriteLocalFileRecord(ZipEntry entry)
+        public void WriteLocalFileRecord(ZipEntry entry)
         {
             ushort version = zip64 ? (ushort)45 : (ushort)20;
             BinaryWriter w = writer;
@@ -204,7 +204,7 @@ namespace MCGalaxy
             w.Write(copy.UncompressedSize);
             w.Write(copy.CompressedSize);
         }
-        void WriteCentralDirectoryRecord(ZipEntry entry)
+        public void WriteCentralDirectoryRecord(ZipEntry entry)
         {
             ushort extraLen = (ushort)(zip64 ? 28 : 0),
                 version = zip64 ? (ushort)45 : (ushort)20;
@@ -237,14 +237,14 @@ namespace MCGalaxy
             w.Write(copy.CompressedSize);
             w.Write(copy.LocalHeaderOffset);
         }
-        void WriteLastModified(DateTime date)
+        public void WriteLastModified(DateTime date)
         {
             int modTime = (date.Second / 2) | (date.Minute << 5) | (date.Hour << 11),
                 modDate = (date.Day) | (date.Month << 5) | ((date.Year - 1980) << 9);
             writer.Write((ushort)modTime);
             writer.Write((ushort)modDate);
         }
-        void WriteZip64EndOfCentralDirectoryRecord()
+        public void WriteZip64EndOfCentralDirectoryRecord()
         {
             BinaryWriter w = writer;
             w.Write(0x06064b50);
@@ -258,7 +258,7 @@ namespace MCGalaxy
             w.Write(centralDirSize);
             w.Write(centralDirOffset);
         }
-        void WriteZip64EndOfCentralDirectoryLocator()
+        public void WriteZip64EndOfCentralDirectoryLocator()
         {
             BinaryWriter w = writer;
             w.Write(0x07064b50);
@@ -266,7 +266,7 @@ namespace MCGalaxy
             w.Write(zip64EndOffset);
             w.Write(1);
         }
-        void WriteEndOfCentralDirectoryRecord()
+        public void WriteEndOfCentralDirectoryRecord()
         {
             BinaryWriter w = writer;
             w.Write(0x06054b50);

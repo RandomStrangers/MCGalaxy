@@ -50,17 +50,18 @@ namespace MCGalaxy.Levels.IO
                 lvl.blocks[i] = blocks[i * 2];
             return lvl;
         }
-        static Vec3U16 ReadHeader(byte[] header, Stream gs)
+        public static Vec3U16 ReadHeader(byte[] header, Stream gs)
         {
             StreamUtils.ReadFully(gs, header, 0, 2);
             if (MemUtils.ReadU16_LE(header, 0) != 1874)
                 throw new InvalidDataException(".mcf files must have a version of 1874");
             StreamUtils.ReadFully(gs, header, 0, 16);
-            Vec3U16 dims;
-            dims.X = MemUtils.ReadU16_LE(header, 0);
-            dims.Z = MemUtils.ReadU16_LE(header, 2);
-            dims.Y = MemUtils.ReadU16_LE(header, 4);
-            return dims;
+            return new()
+            {
+                X = MemUtils.ReadU16_LE(header, 0),
+                Z = MemUtils.ReadU16_LE(header, 2),
+                Y = MemUtils.ReadU16_LE(header, 4)
+            };
         }
     }
 }

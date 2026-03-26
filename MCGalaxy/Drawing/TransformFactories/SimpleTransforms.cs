@@ -20,7 +20,7 @@ namespace MCGalaxy.Drawing.Transforms
     {
         public override string Name => "None";
         public override string[] Help => HelpString;
-        static readonly string[] HelpString = new string[] {
+        public static readonly string[] HelpString = new string[] {
             "&TArguments: none",
             "&HDoes not affect the output of draw operations.",
         };
@@ -30,7 +30,7 @@ namespace MCGalaxy.Drawing.Transforms
     {
         public override string Name => "Scale";
         public override string[] Help => HelpString;
-        static readonly string[] HelpString = new string[] {
+        public static readonly string[] HelpString = new string[] {
             "&TArguments: [scaleX] [scaleY] [scaleZ] <centre>",
             "&TAlternatively: [scale] <centre>",
             "&H[scale] values can be an integer or a fraction (e.g. 2 or 1/2).",
@@ -79,7 +79,7 @@ namespace MCGalaxy.Drawing.Transforms
             scaler.CentreOrigin = true;
             return scaler;
         }
-        static bool ParseFraction(Player p, string input, string argName, out int mul, out int div)
+        public static bool ParseFraction(Player p, string input, string argName, out int mul, out int div)
         {
             int sep = input.IndexOf('/');
             div = 1; 

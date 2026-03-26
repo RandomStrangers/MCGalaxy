@@ -25,7 +25,7 @@ namespace MCGalaxy.Generator.Foliage
     {
         public Vec3S32 pos;
         protected double Random() => rnd.NextDouble();
-        TreeOutput output;
+        public TreeOutput output;
         public override long EstimateBlocksAffected() => (long)height * height * height;
         public override void SetData(Random rnd, int value) 
         {

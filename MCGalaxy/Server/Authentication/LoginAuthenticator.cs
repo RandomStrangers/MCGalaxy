@@ -25,17 +25,17 @@ namespace MCGalaxy.Authentication
                     return true;
             return false;
         }
-        static readonly System.Text.ASCIIEncoding enc = new();
-        static readonly MD5CryptoServiceProvider md5 = new();
-        static readonly object md5Lock = new();
-        static string CalcMppass(string name, string salt)
+        public static readonly System.Text.ASCIIEncoding enc = new();
+        public static readonly MD5CryptoServiceProvider md5 = new();
+        public static readonly object md5Lock = new();
+        public static string CalcMppass(string name, string salt)
         {
             byte[] hash = null;
             lock (md5Lock)
                 hash = md5.ComputeHash(enc.GetBytes(salt + name));
             return Utils.ToHexString(hash);
         }
-        static bool Authenticate(AuthService auth, Player p, string mppass)
+        public static bool Authenticate(AuthService auth, Player p, string mppass)
         {
             string calc = CalcMppass(p.truename, auth.Salt);
             if (!mppass.CaselessEq(calc))

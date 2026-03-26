@@ -28,7 +28,7 @@ namespace MCGalaxy
             name = Colors.Escape(name);
             dst.EntityList.SendAddTabEntry(p, p.truename, name, group, grpPerm);
         }
-        static void GetEntry(Player p, Player dst, out string name, out string group)
+        public static void GetEntry(Player p, Player dst, out string name, out string group)
         {
             string map = p.Level.name;
             if (!p.Level.SeesServerWideChat) map += " &S<Local chat>";

@@ -90,13 +90,13 @@ namespace MCGalaxy.Network
             OnBeat(null);
             Server.Heartbeats.QueueRepeat(OnBeat, null, TimeSpan.FromSeconds(30));
         }
-        static void OnBeat(SchedulerTask task)
+        public static void OnBeat(SchedulerTask task)
         {
             if (Server.Listener.Listening)
                 foreach (Heartbeat beat in Heartbeats)
                     beat.Pump();
         }
-        static string lastUrls;
+        public static string lastUrls;
         internal static void ReloadDefault()
         {
             string urls = Server.Config.HeartbeatURL;

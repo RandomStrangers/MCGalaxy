@@ -43,7 +43,7 @@ namespace MCGalaxy.Levels.IO
                 _ => throw new InvalidDataException("Invalid .dat map version"),
             };
         }
-        static Level ReadFormat0(Level lvl, Stream s)
+        public static Level ReadFormat0(Level lvl, Stream s)
         {
             lvl.Width = 256;
             lvl.Height = 64;
@@ -60,7 +60,7 @@ namespace MCGalaxy.Levels.IO
             lvl.Config.HorizonBlock = Block.Air;
             return lvl;
         }
-        static Level ReadFormat1(Level lvl, JavaReader r)
+        public static Level ReadFormat1(Level lvl, JavaReader r)
         {
             r.ReadUtf8();
             r.ReadUtf8();
@@ -72,7 +72,7 @@ namespace MCGalaxy.Levels.IO
             SetupClassic013(lvl);
             return lvl;
         }
-        static void SetupClassic013(Level lvl)
+        public static void SetupClassic013(Level lvl)
         {
             lvl.spawnx = (ushort)(lvl.Width / 2);
             lvl.spawny = lvl.Height;
@@ -81,7 +81,7 @@ namespace MCGalaxy.Levels.IO
             lvl.Config.SkyColor = "#7FCCFF";
             lvl.Config.FogColor = "#7FCCFF";
         }
-        static Level ReadFormat2(Level lvl, JavaReader r)
+        public static Level ReadFormat2(Level lvl, JavaReader r)
         {
             if (r.ReadUInt16() != 0xACED)
                 throw new InvalidDataException("Invalid stream magic");
@@ -91,8 +91,8 @@ namespace MCGalaxy.Levels.IO
             ParseRootObject(lvl, obj);
             return lvl;
         }
-        static ushort U16(object o) => (ushort)(int)o;
-        static void ParseRootObject(Level lvl, JObject obj)
+        public static ushort U16(object o) => (ushort)(int)o;
+        public static void ParseRootObject(Level lvl, JObject obj)
         {
             JFieldDesc[] fields = obj.Desc.Fields;
             object[] values = obj.ClassData[0].Values;

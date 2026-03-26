@@ -26,7 +26,7 @@ namespace MCGalaxy.Modules.Awards
     public static class PlayerAwards
     {
         /// <summary> List of all players who have awards </summary>
-        static List<PlayerAward> Awards = new();
+        public static List<PlayerAward> Awards = new();
         /// <summary> Adds the given award to the given player's list of awards </summary>
         public static bool Give(string player, string award)
         {
@@ -69,7 +69,7 @@ namespace MCGalaxy.Modules.Awards
             double percentHas = Math.Round((double)count / total * 100, 2);
             return count + "/" + total + " (" + percentHas + "%)";
         }
-        static readonly object saveLock = new();
+        public static readonly object saveLock = new();
         public static void Save()
         {
             lock (saveLock)
@@ -82,7 +82,7 @@ namespace MCGalaxy.Modules.Awards
             Awards = new();
             PropertiesFile.Read("text/playerAwards.txt", ProcessLine, ':');
         }
-        static void ProcessLine(string key, string value)
+        public static void ProcessLine(string key, string value)
         {
             if (value.Length == 0) return;
             PlayerAward a = new()

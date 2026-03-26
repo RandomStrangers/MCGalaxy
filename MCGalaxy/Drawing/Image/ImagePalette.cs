@@ -24,31 +24,30 @@ namespace MCGalaxy.Drawing
         public PaletteEntry[] Entries;
         public ImagePalette(string name, PaletteEntry[] entries)
         {
-            Name = name; Entries = entries;
+            Name = name; 
+            Entries = entries;
         }
         public static List<ImagePalette> Palettes = new();
         public static ImagePalette Find(string name)
         {
             foreach (ImagePalette entry in Palettes)
-            {
                 if (entry.Name.CaselessEq(name)) return entry;
-            }
             return null;
         }
         public static void Load()
         {
             Palettes.Clear();
-            Palettes.Add(new ImagePalette("Color", Color));
-            Palettes.Add(new ImagePalette("Grayscale", Grayscale));
-            Palettes.Add(new ImagePalette("BlackWhite", BlackWhite));
-            Palettes.Add(new ImagePalette("SimpleGrayscale", GrayscaleSimple));
+            Palettes.Add(new("Color", Color));
+            Palettes.Add(new("Grayscale", Grayscale));
+            Palettes.Add(new("BlackWhite", BlackWhite));
+            Palettes.Add(new("SimpleGrayscale", GrayscaleSimple));
             if (!Directory.Exists("extra/palettes"))
                 Directory.CreateDirectory("extra/palettes");
             string[] files = FileIO.TryGetFiles("extra/palettes");
             foreach (string file in files)
                 LoadPalette(file);
         }
-        static void LoadPalette(string file)
+        public static void LoadPalette(string file)
         {
             string name = Path.GetFileNameWithoutExtension(file);
             ImagePalette palette = Find(name);
@@ -66,7 +65,7 @@ namespace MCGalaxy.Drawing
             palette = new ImagePalette(name, entries.ToArray());
             Palettes.Add(palette);
         }
-        static PaletteEntry ParseEntry(string[] parts)
+        public static PaletteEntry ParseEntry(string[] parts)
         {
             ushort block = ushort.Parse(parts[0]);
             block = Block.MapOldRaw(block);
@@ -96,7 +95,7 @@ namespace MCGalaxy.Drawing
             Palettes.Remove(palette);
             FileIO.TryDelete(palette.FileName);
         }
-        static readonly PaletteEntry[] Color = new PaletteEntry[] {
+        public static readonly PaletteEntry[] Color = new PaletteEntry[] {
             new(128, 86,   57, Block.Dirt),
             new(162, 129,  75, Block.Wood),
             new(244, 237, 174, Block.Sand),
@@ -118,20 +117,20 @@ namespace MCGalaxy.Drawing
             new(230, 240, 225, Block.White),
             new(163, 163, 163, Block.DoubleSlab),
             new(0,    0,    0, Block.Obsidian),
-        };
-        static readonly PaletteEntry[] Grayscale = new PaletteEntry[] {
+        },
+        Grayscale = new PaletteEntry[] {
             new(0,     0,   0, Block.Obsidian),
             new(46,   68,  47, Block.Black),
             new(135, 145, 130, Block.Gray),
             new(230, 240, 225, Block.White),
-        };
-        static readonly PaletteEntry[] GrayscaleSimple = new PaletteEntry[] {
+        },
+        GrayscaleSimple = new PaletteEntry[] {
             new(32,   32,  32, Block.Obsidian),
             new(96,   96,  96, Block.Black),
             new(160, 160, 160, Block.Gray),
             new(224, 224, 224, Block.White),
-        };
-        static readonly PaletteEntry[] BlackWhite = new PaletteEntry[] {
+        },
+        BlackWhite = new PaletteEntry[] {
             new(255, 255, 255, Block.White),
             new(0,     0,   0, Block.Obsidian),
         };

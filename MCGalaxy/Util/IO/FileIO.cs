@@ -18,7 +18,7 @@ namespace MCGalaxy
 {
     public class GuardedWriter : StreamWriter
     {
-        readonly string realPath;
+        public readonly string realPath;
         public GuardedWriter(string path) : base(path + ".tmp") => realPath = path;
         protected override void Dispose(bool disposing)
         {

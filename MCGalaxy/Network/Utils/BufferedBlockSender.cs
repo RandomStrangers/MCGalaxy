@@ -50,7 +50,7 @@ namespace MCGalaxy.Network
             else SendLevel();
             count = 0;
         }
-        void SendLevel()
+        public void SendLevel()
         {
             byte[] bulk = null, normal = null, classic = null, ext = null, extBulk = null;
             Player[] players = PlayerInfo.Online.Items;
@@ -62,7 +62,7 @@ namespace MCGalaxy.Network
                 p.Socket.Send(packet, SendFlags.LowPriority);
             }
         }
-        void SendPlayer()
+        public void SendPlayer()
         {
             byte[] bulk = null, normal = null,
                 classic = null, ext = null, extBulk = null,
@@ -71,7 +71,7 @@ namespace MCGalaxy.Network
             player.Socket.Send(packet, SendFlags.LowPriority);
         }
         #region Packet construction
-        byte[] MakePacket(Player p, ref byte[] bulk, ref byte[] normal,
+        public byte[] MakePacket(Player p, ref byte[] bulk, ref byte[] normal,
                           ref byte[] classic, ref byte[] ext, ref byte[] extBulk)
         {
             IGameSession s = p.Session;
@@ -106,7 +106,7 @@ namespace MCGalaxy.Network
             else
                 return s.MakeBulkBlockchange(this);
         }
-        byte[] MakeBulkExt()
+        public byte[] MakeBulkExt()
         {
             byte[] data = new byte[2 + 256 * 5 + (256 / 4)];
             data[0] = 38;
@@ -132,7 +132,7 @@ namespace MCGalaxy.Network
             }
             return data;
         }
-        byte[] MakeExt()
+        public byte[] MakeExt()
         {
             byte[] data = new byte[count * 9];
             for (int i = 0, j = 0; i < count; i++)

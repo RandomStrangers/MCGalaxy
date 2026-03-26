@@ -17,7 +17,7 @@ namespace MCGalaxy.Generator
 {
     public static class SimpleGen
     {
-        delegate byte NextBlock();
+        public delegate byte NextBlock();
         public static void RegisterGenerators()
         {
             MapGen.Register("Flat", GenType.Simple, GenFlat, "&HSeed specifies grass height (default half of level height)");
@@ -26,7 +26,7 @@ namespace MCGalaxy.Generator
             MapGen.Register("Space", GenType.Simple, GenSpace, MapGen.DEFAULT_HELP);
             MapGen.Register("Rainbow", GenType.Simple, GenRainbow, MapGen.DEFAULT_HELP);
         }
-        static unsafe bool GenFlat(Player p, Level lvl, MapGenArgs args)
+        public static unsafe bool GenFlat(Player p, Level lvl, MapGenArgs args)
         {
             args.RandomDefault = false;
             if (!args.ParseArgs(p)) return false;
@@ -44,14 +44,14 @@ namespace MCGalaxy.Generator
             }
             return true;
         }
-        static unsafe void MapSet(int width, int length, byte* ptr,
+        public static unsafe void MapSet(int width, int length, byte* ptr,
                                   int yBeg, int yEnd, byte block)
         {
             int beg = yBeg * length * width,
                 end = (yEnd * length + (length - 1)) * width + (width - 1);
             MemUtils.Memset((IntPtr)ptr, block, beg, end - beg + 1);
         }
-        static bool GenEmpty(Player p, Level lvl, MapGenArgs args)
+        public static bool GenEmpty(Player p, Level lvl, MapGenArgs args)
         {
             if (!args.ParseArgs(p)) return false;
             int maxX = lvl.Width - 1, maxZ = lvl.Length - 1;
@@ -59,7 +59,7 @@ namespace MCGalaxy.Generator
             lvl.Config.EdgeLevel = 1;
             return true;
         }
-        static bool GenPixel(Player p, Level lvl, MapGenArgs args)
+        public static bool GenPixel(Player p, Level lvl, MapGenArgs args)
         {
             if (!args.ParseArgs(p)) return false;
             int maxX = lvl.Width - 1, maxY = lvl.Height - 1, maxZ = lvl.Length - 1;
@@ -71,7 +71,7 @@ namespace MCGalaxy.Generator
             Cuboid(lvl, 0, 0, 0, maxX, 0, maxZ, () => Block.Bedrock);
             return true;
         }
-        static bool GenSpace(Player p, Level lvl, MapGenArgs args)
+        public static bool GenSpace(Player p, Level lvl, MapGenArgs args)
         {
             args.Biome = MapGenBiome.SPACE;
             if (!args.ParseArgs(p)) return false;
@@ -89,7 +89,7 @@ namespace MCGalaxy.Generator
             lvl.Config.EdgeLevel = 1;
             return true;
         }
-        static bool GenRainbow(Player p, Level lvl, MapGenArgs args)
+        public static bool GenRainbow(Player p, Level lvl, MapGenArgs args)
         {
             if (!args.ParseArgs(p)) return false;
             int maxX = lvl.Width - 1, maxY = lvl.Height - 1, maxZ = lvl.Length - 1;
@@ -103,7 +103,7 @@ namespace MCGalaxy.Generator
             Cuboid(lvl, 0, maxY, 0, maxX, maxY, maxZ, nextBlock);
             return true;
         }
-        static void Cuboid(Level lvl, int minX, int minY, int minZ,
+        public static void Cuboid(Level lvl, int minX, int minY, int minZ,
                            int maxX, int maxY, int maxZ, NextBlock nextBlock)
         {
             int width = lvl.Width, length = lvl.Length;

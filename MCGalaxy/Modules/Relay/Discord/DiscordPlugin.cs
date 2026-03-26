@@ -52,7 +52,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         [ConfigInt("extra-intents", "Intents", 0)]
         public int ExtraIntents;
         public const string PROPS_PATH = "props/discordbot.properties";
-        static ConfigElement[] cfg;
+        public static ConfigElement[] cfg;
         public void Load()
         {
             if (!File.Exists(PROPS_PATH)) Save();
@@ -76,7 +76,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         public override string Name => "DiscordRelay";
         public static DiscordConfig Config = new();
         public static DiscordBot Bot = new();
-        static readonly Command cmdDiscordBot = new CmdDiscordBot(),
+        public static readonly Command cmdDiscordBot = new CmdDiscordBot(),
             cmdDiscordCtrls = new CmdDiscordControllers();
         public override void Load(bool startup)
         {
@@ -93,14 +93,14 @@ namespace MCGalaxy.Modules.Relay.Discord
             OnConfigUpdatedEvent.Unregister(OnConfigUpdated);
             Bot.Disconnect("Disconnecting Discord bot");
         }
-        void OnConfigUpdated() => Bot.ReloadConfig();
+        public void OnConfigUpdated() => Bot.ReloadConfig();
     }
-    sealed class CmdDiscordBot : RelayBotCmd
+    public sealed class CmdDiscordBot : RelayBotCmd
     {
         public override string Name => "DiscordBot";
         protected override RelayBot Bot => DiscordPlugin.Bot;
     }
-    sealed class CmdDiscordControllers : BotControllersCmd
+    public sealed class CmdDiscordControllers : BotControllersCmd
     {
         public override string Name => "DiscordControllers";
         protected override RelayBot Bot => DiscordPlugin.Bot;

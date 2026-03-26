@@ -3,7 +3,7 @@ using MCGalaxy.Generator.Foliage;
 using System;
 namespace MCGalaxy.Generator.fCraft
 {
-    sealed class FCraftTree : Tree
+    public sealed class FCraftTree : Tree
     {
         public override long EstimateBlocksAffected() => height + 66;
         public override int DefaultSize(Random rnd) => rnd.Next(5, 8);

@@ -257,7 +257,7 @@ namespace MCGalaxy.Network
             NetUtils.WriteI16((short)maxFog, buffer, 71);
             return buffer;
         }
-        static void WriteMapAppearance(byte[] buffer, string url, byte side, byte edge,
+        public static void WriteMapAppearance(byte[] buffer, string url, byte side, byte edge,
                                        int sideLevel, bool hasCP437)
         {
             buffer[0] = 30;
@@ -523,7 +523,7 @@ namespace MCGalaxy.Network
             MakeDefineBlockEnd(def, ref i, buffer);
             return buffer;
         }
-        static void WriteTex(byte[] buffer, ref int i, ushort value, bool extTexs)
+        public static void WriteTex(byte[] buffer, ref int i, ushort value, bool extTexs)
         {
             if (extTexs)
             {
@@ -533,7 +533,7 @@ namespace MCGalaxy.Network
             else
                 buffer[i++] = (byte)value;
         }
-        static void MakeDefineBlockStart(BlockDefinition def, byte[] buffer, ref int i, bool uniqueSideTexs,
+        public static void MakeDefineBlockStart(BlockDefinition def, byte[] buffer, ref int i, bool uniqueSideTexs,
                                          bool hasCP437, bool extBlocks, bool extTexs)
         {
             byte rawSpeed = (byte)(64 * Math.Log(def.Speed, 2) + 128);
@@ -566,7 +566,7 @@ namespace MCGalaxy.Network
                 buffer[i++] = brightness;
             }
         }
-        static void MakeDefineBlockEnd(BlockDefinition def, ref int i, byte[] buffer)
+        public static void MakeDefineBlockEnd(BlockDefinition def, ref int i, byte[] buffer)
         {
             buffer[i++] = def.BlockDraw;
             buffer[i++] = def.FogDensity;

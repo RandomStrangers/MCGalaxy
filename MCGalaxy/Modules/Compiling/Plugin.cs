@@ -92,7 +92,7 @@ namespace MCGalaxy
             }
             return success;
         }
-        static bool UnloadPlugin(Plugin pl, bool auto)
+        public static bool UnloadPlugin(Plugin pl, bool auto)
         {
             try
             {
@@ -124,7 +124,7 @@ namespace MCGalaxy
             LoadCorePlugin(new CompilerPlugin());
             Compiler.AutoloadPlugins();
         }
-        static void LoadCorePlugin(Plugin plugin)
+        public static void LoadCorePlugin(Plugin plugin)
         {
             if (!Server.Config.DisabledModules.CaselessContains(plugin.Name))
             {

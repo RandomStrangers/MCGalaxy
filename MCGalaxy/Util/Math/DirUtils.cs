@@ -75,7 +75,7 @@ namespace MCGalaxy.Maths
                     break;
             }
         }
-        static Vec3F32 GetDirVector(double yaw, double pitch) => new((float)(Math.Sin(yaw) * Math.Cos(pitch)), (float)-Math.Sin(pitch), (float)(-Math.Cos(yaw) * Math.Cos(pitch)));
+        public static Vec3F32 GetDirVector(double yaw, double pitch) => new((float)(Math.Sin(yaw) * Math.Cos(pitch)), (float)-Math.Sin(pitch), (float)(-Math.Cos(yaw) * Math.Cos(pitch)));
         public static Vec3F32 GetDirVectorExt(ushort yaw, ushort pitch) => GetDirVector(yaw * (2 * Math.PI / 65536.0), pitch * (2 * Math.PI / 65536.0));
         public static Vec3F32 GetDirVector(byte yaw, byte pitch) => GetDirVector(yaw * (2 * Math.PI / 256.0), pitch * (2 * Math.PI / 256.0));
         public static void GetYawPitch(Vec3F32 dir, out byte yaw, out byte pitch)

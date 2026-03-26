@@ -19,8 +19,8 @@ namespace MCGalaxy.Util
     /// <remarks> Does NOT perform any bounds checking. </remarks>
     public sealed class SparseBitSet
     {
-        readonly int chunksX, chunksY, chunksZ;
-        readonly byte[][] bits;
+        public readonly int chunksX, chunksY, chunksZ;
+        public readonly byte[][] bits;
         /// <summary> Initialises a sparse bit set for the given 3D volume. </summary>
         public SparseBitSet(int width, int height, int length)
         {

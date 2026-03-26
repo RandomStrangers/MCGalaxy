@@ -20,8 +20,8 @@ namespace MCGalaxy
     /// <example> Storing a "lives" value for a player. </example>
     public sealed class ExtrasCollection
     {
-        readonly Dictionary<string, object> dict = new();
-        readonly object locker = new();
+        public readonly Dictionary<string, object> dict = new();
+        public readonly object locker = new();
         public object this[string key]
         {
             get { lock (locker) { return dict[key]; } }

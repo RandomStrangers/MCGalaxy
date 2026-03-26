@@ -47,7 +47,7 @@ namespace MCGalaxy
                 physThreadStarted = true;
             }
         }
-        void PhysicsLoop()
+        public void PhysicsLoop()
         {
             int wait = Config.PhysicsSpeed;
             while (true)
@@ -123,7 +123,7 @@ namespace MCGalaxy
             }
             return default;
         }
-        void PhysicsTick()
+        public void PhysicsTick()
         {
             lastCheck = ListCheck.Count;
             HandlePhysics[] handlers = PhysicsHandlers;
@@ -278,7 +278,7 @@ namespace MCGalaxy
                 return false;
             }
         }
-        void RemoveExpiredChecks()
+        public void RemoveExpiredChecks()
         {
             Check[] items = ListCheck.Items;
             int j = 0, count = ListCheck.Count;
@@ -296,7 +296,7 @@ namespace MCGalaxy
             ListCheck.Items = items;
             ListCheck.Count = j;
         }
-        void RemoveUpdatesAtPos(int b)
+        public void RemoveUpdatesAtPos(int b)
         {
             Update[] items = ListUpdate.Items;
             int j = 0, count = ListUpdate.Count;
@@ -309,7 +309,7 @@ namespace MCGalaxy
             ListUpdate.Items = items;
             ListUpdate.Count = j;
         }
-        void ClearPhysicsLists()
+        public void ClearPhysicsLists()
         {
             ListCheck.Count = 0; 
             listCheckExists.Clear();
@@ -322,7 +322,7 @@ namespace MCGalaxy
                 RevertPhysics(ListCheck.Items[i]);
             ClearPhysicsLists();
         }
-        void RevertPhysics(Check C)
+        public void RevertPhysics(Check C)
         {
             switch (blocks[C.Index])
             {
@@ -400,12 +400,12 @@ namespace MCGalaxy
         /// <summary> Data/State of this tick entry </summary>
         public PhysicsArgs Data;
     }
-    internal struct Check
+    public struct Check
     {
         public int Index;
         public PhysicsArgs data;
     }
-    internal struct Update
+    public struct Update
     {
         public int Index;
         public PhysicsArgs data;

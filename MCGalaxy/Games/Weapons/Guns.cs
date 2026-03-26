@@ -52,7 +52,7 @@ namespace MCGalaxy.Games
                 task.Repeating = TickRevert(task, buffer);
             buffer.Flush();
         }
-        bool TickGun(AmmunitionData args, BufferedBlockSender buffer)
+        public bool TickGun(AmmunitionData args, BufferedBlockSender buffer)
         {
             while (true)
             {

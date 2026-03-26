@@ -19,7 +19,7 @@ namespace MCGalaxy.Drawing.Transforms
     {
         public override string Name => "Rotate";
         public override string[] Help => HelpString;
-        static readonly string[] HelpString = new string[] {
+        public static readonly string[] HelpString = new string[] {
             "&TArguments: [angleX] [angleY] [angleZ]",
             "&HRotates the output of the draw operation around its bottom left corner",
             "&TArguments: [angleX] [angleY] [angleZ] centre",
@@ -49,7 +49,7 @@ namespace MCGalaxy.Drawing.Transforms
             rotater.CentreOrigin = true;
             return rotater;
         }
-        static bool ParseAngle(Player p, string input, ref float angle)
+        public static bool ParseAngle(Player p, string input, ref float angle)
         {
             if (!CommandParser.GetReal(p, input, "Angle", ref angle, -360, 360))
             {
@@ -58,6 +58,6 @@ namespace MCGalaxy.Drawing.Transforms
             }
             return true;
         }
-        static bool IsCentre(string input) => input.CaselessEq("centre") || input.CaselessEq("center");
+        public static bool IsCentre(string input) => input.CaselessEq("centre") || input.CaselessEq("center");
     }
 }

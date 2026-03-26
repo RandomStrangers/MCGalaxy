@@ -15,21 +15,21 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 namespace MCGalaxy
 {
     public static class Program
     {
-        static string lastCMD = "";
-        static void HandleChat(string text)
+        public static string lastCMD = "";
+        public static void HandleChat(string text)
         {
             if (text != null)
                 text = text.Trim();
-            if (string.IsNullOrEmpty(text) || ChatModes.Handle(Player.NASConsole, text))
-                return;
-            Chat.MessageChat(ChatScope.Global, Player.NASConsole, "λFULL: &f" + text, null, null, true);
+            if (!string.IsNullOrEmpty(text) && !ChatModes.Handle(Player.NASConsole, text))
+                Chat.MessageChat(ChatScope.Global, Player.NASConsole, "λFULL: &f" + text, null, null, true);
         }
-        static void RepeatCommand()
+        public static void RepeatCommand()
         {
             if (lastCMD.Length == 0)
             {
@@ -39,7 +39,7 @@ namespace MCGalaxy
             Logger.Log(LogType.CommandUsage, "Repeating &T/" + lastCMD);
             HandleCommand(lastCMD);
         }
-        static void HandleCommand(string text)
+        public static void HandleCommand(string text)
         {
             if (text != null)
                 text = text.Trim();
@@ -89,7 +89,7 @@ namespace MCGalaxy
                     }
                 });
         }
-        static string OutputPart(ref char nextCol, ref int start, string message)
+        public static string OutputPart(ref char nextCol, ref int start, string message)
         {
             int next = NextPart(start, message);
             string part;
@@ -106,7 +106,7 @@ namespace MCGalaxy
             }
             return part;
         }
-        static int NextPart(int start, string message)
+        public static int NextPart(int start, string message)
         {
             for (int i = start; i < message.Length; i++)
             {
@@ -141,6 +141,7 @@ namespace MCGalaxy
                 Server.Start();
                 Console.Title = Server.Config.Name + " - " + Server.SoftwareNameVersioned;
                 Console.CancelKeyPress += OnCancelKeyPress;
+                Console.OutputEncoding = Encoding.Unicode;
                 CheckNameVerification();
                 ConsoleLoop();
             }
@@ -150,7 +151,7 @@ namespace MCGalaxy
                 FileLogger.Flush(null);
             }
         }
-        static void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        public static void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
             switch (e.SpecialKey)
             {
@@ -165,7 +166,7 @@ namespace MCGalaxy
                     break;
             }
         }
-        static void LogAndRestart(Exception ex)
+        public static void LogAndRestart(Exception ex)
         {
             Logger.LogError(ex);
             FileLogger.Flush(null);
@@ -173,8 +174,8 @@ namespace MCGalaxy
             if (Server.Config.restartOnError)
                 Server.Stop(true, "Server restart - unhandled error").Join();
         }
-        static void GlobalExHandler(object sender, UnhandledExceptionEventArgs e) => LogAndRestart((Exception)e.ExceptionObject);
-        static void LogMessage(LogType type, string message)
+        public static void GlobalExHandler(object sender, UnhandledExceptionEventArgs e) => LogAndRestart((Exception)e.ExceptionObject);
+        public static void LogMessage(LogType type, string message)
         {
             if (Server.Config.NASLogging[(int)type])
             {
@@ -195,7 +196,7 @@ namespace MCGalaxy
                 }
             }
         }
-        static string ExtractErrorMessage(string raw)
+        public static string ExtractErrorMessage(string raw)
         {
             int beg = raw.IndexOf(Environment.NewLine + "Message: ");
             if (beg == -1)
@@ -204,7 +205,7 @@ namespace MCGalaxy
             int end = raw.IndexOf(Environment.NewLine, beg);
             return end == -1 ? "" : " (" + raw.Substring(beg, end - beg) + ")";
         }
-        static void CheckNameVerification()
+        public static void CheckNameVerification()
         {
             if (!Server.Config.VerifyNames)
             {
@@ -214,7 +215,7 @@ namespace MCGalaxy
                 Write("&e==============================================");
             }
         }
-        static void ConsoleLoop()
+        public static void ConsoleLoop()
         {
             int eofs = 0;
             while (true)
@@ -233,12 +234,18 @@ namespace MCGalaxy
                         continue;
                     }
                     msg = msg.Trim();
-                    if (msg == "/")
-                        RepeatCommand();
-                    else if (msg.Length > 0 && msg[0] == '/')
-                        HandleCommand(msg.Substring(1));
-                    else
-                        HandleChat(msg);
+                    switch (msg)
+                    {
+                        case "/":
+                            RepeatCommand();
+                            break;
+                        default:
+                            if (msg.Length > 0 && msg[0] == '/')
+                                HandleCommand(msg.Substring(1));
+                            else
+                                HandleChat(msg);
+                            break;
+                    }
                 }
                 catch (UnauthorizedAccessException)
                 {
@@ -252,7 +259,7 @@ namespace MCGalaxy
                 }
             }
         }
-        static void Write(string message)
+        public static void Write(string message)
         {
             int index = 0;
             char col = 'S';
@@ -280,7 +287,7 @@ namespace MCGalaxy
             Console.Out.WriteLine();
             Console.Out.Flush();
         }
-        static ConsoleColor GetConsoleColor(char c)
+        public static ConsoleColor GetConsoleColor(char c)
         {
             if (c == 'S')
                 return ConsoleColor.White;

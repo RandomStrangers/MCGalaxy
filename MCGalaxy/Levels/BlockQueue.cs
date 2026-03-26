@@ -25,9 +25,9 @@ namespace MCGalaxy
         public static int Interval = 100;
         /// <summary> Maximum number of block updates broadcasted in one tick. </summary>
         public static int UpdatesPerTick = 750;
-        static readonly BufferedBlockSender bulkSender = new();
-        const int posShift = 32;
-        readonly object locker = new();
+        public static readonly BufferedBlockSender bulkSender = new();
+        public const int posShift = 32;
+        public readonly object locker = new();
         /// <summary> Flushes the block updates queue for each loaded level. </summary>
         public static void Loop(SchedulerTask task)
         {
@@ -50,7 +50,7 @@ namespace MCGalaxy
         { 
             lock (locker) Clear();
         }
-        void Process(Level lvl)
+        public void Process(Level lvl)
         {
             try
             {

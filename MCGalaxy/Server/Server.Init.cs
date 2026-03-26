@@ -24,7 +24,7 @@ namespace MCGalaxy
 {
     public sealed partial class Server
     {
-        static void LoadMainLevel(SchedulerTask _)
+        public static void LoadMainLevel(SchedulerTask _)
         {
             try
             {
@@ -44,18 +44,18 @@ namespace MCGalaxy
                 Logger.LogError("Error loading main level", ex);
             }
         }
-        static void LoadAllPlugins(SchedulerTask _)
+        public static void LoadAllPlugins(SchedulerTask _)
         {
             Plugin.LoadAll();
             OnPluginsLoadedEvent.Call();
         }
-        static void LoadNAS(SchedulerTask _) => NAS.Load();
-        static void InitPlayerLists(SchedulerTask _)
+        public static void LoadNAS(SchedulerTask _) => NAS.Load();
+        public static void InitPlayerLists(SchedulerTask _)
         {
             LoadPlayerLists();
             ModerationTasks.QueueTasks();
         }
-        internal static void LoadPlayerLists()
+        public static void LoadPlayerLists()
         {
             agreed = PlayerList.Load("ranks/agreed.txt");
             invalidIds = PlayerList.Load("extra/invalidids.txt");
@@ -76,7 +76,7 @@ namespace MCGalaxy
             tempBans = PlayerExtList.Load(Paths.TempBansFile);
             whiteList = PlayerList.Load("ranks/whitelist.txt");
         }
-        static void LoadAutoloadMaps(SchedulerTask _)
+        public static void LoadAutoloadMaps(SchedulerTask _)
         {
             AutoloadMaps = PlayerExtList.Load("text/autoload.txt", '=');
             List<string> maps = AutoloadMaps.AllNames();
@@ -87,7 +87,7 @@ namespace MCGalaxy
                 LevelActions.Load(Player.NASConsole, map, false);
             }
         }
-        static void SetupSocket(SchedulerTask _)
+        public static void SetupSocket(SchedulerTask _)
         {
             if (!IPAddress.TryParse(Config.ListenIP, out IPAddress ip))
             {
@@ -96,15 +96,15 @@ namespace MCGalaxy
             }
             Listener.Listen(ip, Config.Port);
         }
-        static void InitHeartbeat(SchedulerTask _) => Heartbeat.Start();
-        static void InitTimers(SchedulerTask _)
+        public static void InitHeartbeat(SchedulerTask _) => Heartbeat.Start();
+        public static void InitTimers(SchedulerTask _)
         {
             MainScheduler.QueueRepeat(RandomMessage, null,
                                       Config.AnnouncementInterval);
             Critical.QueueRepeat(ServerTasks.UpdateEntityPositions, null,
                                  TimeSpan.FromMilliseconds(Config.PositionUpdateInterval));
         }
-        static void InitRest(SchedulerTask _)
+        public static void InitRest(SchedulerTask _)
         {
             MainScheduler.QueueRepeat(BlockQueue.Loop, null,
                                       TimeSpan.FromMilliseconds(BlockQueue.Interval));

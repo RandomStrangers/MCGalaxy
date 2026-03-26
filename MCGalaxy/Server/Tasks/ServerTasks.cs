@@ -40,7 +40,7 @@ namespace MCGalaxy.Tasks
                     Logger.LogError("Error ticking players", ex);
                 }
         }
-        static void TickPlayer(Player p)
+        public static void TickPlayer(Player p)
         {
             if (p.following.Length > 0)
             {

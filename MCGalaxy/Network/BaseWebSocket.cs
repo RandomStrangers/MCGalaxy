@@ -26,7 +26,7 @@ namespace MCGalaxy.Network
         protected static string ComputeKey(string rawKey) => Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.ASCII.GetBytes(rawKey + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")));
         protected abstract void OnGotAllHeaders();
         protected abstract void OnGotHeader(string name, string value);
-        void ProcessHeader(string raw)
+        public void ProcessHeader(string raw)
         {
             if (raw.Length == 0) OnGotAllHeaders();
             int sep = raw.IndexOf(':');
@@ -40,7 +40,7 @@ namespace MCGalaxy.Network
             else
                 OnGotHeader(name, value);
         }
-        int ReadHeaders(byte[] buffer, int bufferLen)
+        public int ReadHeaders(byte[] buffer, int bufferLen)
         {
             int i;
             for (i = 0; i < bufferLen - 1;)
@@ -59,11 +59,11 @@ namespace MCGalaxy.Network
             }
             return i;
         }
-        int state, opcode, frameLen, maskRead, frameRead;
-        private readonly byte[] mask = new byte[4];
-        private byte[] frame;
-        int GetDisconnectReason() => frameLen < 2 ? 1000 : (frame[0] << 8) | frame[1];
-        void DecodeFrame()
+        public int state, opcode, frameLen, maskRead, frameRead;
+        public readonly byte[] mask = new byte[4];
+        public byte[] frame;
+        public int GetDisconnectReason() => frameLen < 2 ? 1000 : (frame[0] << 8) | frame[1];
+        public void DecodeFrame()
         {
             for (int i = 0; i < frameLen; i++)
                 frame[i] ^= mask[i & 3];
@@ -83,7 +83,7 @@ namespace MCGalaxy.Network
                     break;
             }
         }
-        int ProcessData(byte[] data, int offset, int len)
+        public int ProcessData(byte[] data, int offset, int len)
         {
             switch (state)
             {
@@ -187,9 +187,9 @@ namespace MCGalaxy.Network
     }
     public abstract class ServerWebSocket : BaseWebSocket
     {
-        bool version;
-        string verKey;
-        void AcceptConnection()
+        public bool version;
+        public string verKey;
+        public void AcceptConnection()
         {
             SendRaw(Encoding.ASCII.GetBytes(string.Format("HTTP/1.1 101 Switching Protocols\r\n" +
                 "Upgrade: websocket\r\n" +
@@ -233,8 +233,8 @@ namespace MCGalaxy.Network
     public abstract class ClientWebSocket : BaseWebSocket
     {
         protected string path = "/";
-        string verKey;
-        void AcceptConnection() => readingHeaders = false;
+        public string verKey;
+        public void AcceptConnection() => readingHeaders = false;
         protected override void OnGotAllHeaders()
         {
             if (conn && upgrade && verKey == ComputeKey("xTNDiuZRoMKtxrnJDWyLmA=="))

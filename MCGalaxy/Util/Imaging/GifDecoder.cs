@@ -17,7 +17,7 @@ namespace MCGalaxy.Util.Imaging
 {
     public class GifDecoder : ImageDecoder
     {
-        static readonly byte[] gif87Sig = new byte[]
+        public static readonly byte[] gif87Sig = new byte[]
         {
             0x47, 0x49, 0x46, 0x38, 0x37, 0x61
         },
@@ -25,7 +25,7 @@ namespace MCGalaxy.Util.Imaging
         {
             0x47, 0x49, 0x46, 0x38, 0x39, 0x61
         };
-        Pixel[] globalPal;
+        public Pixel[] globalPal;
         public static bool DetectHeader(byte[] data) => MatchesSignature(data, gif87Sig)
                 || MatchesSignature(data, gif89Sig);
         public override Bitmap2D Decode(byte[] src)
@@ -39,10 +39,10 @@ namespace MCGalaxy.Util.Imaging
             ReadMarkers(src, bmp);
             return bmp;
         }
-        byte curSubBlockLeft;
-        bool subBlocksEnd;
-        int subBlocksOffset;
-        void ReadGlobalHeader(byte[] src, Bitmap2D bmp)
+        public byte curSubBlockLeft;
+        public bool subBlocksEnd;
+        public int subBlocksOffset;
+        public void ReadGlobalHeader(byte[] src, Bitmap2D bmp)
         {
             int offset = AdvanceOffset(7);
             bmp.Width = MemUtils.ReadU16_LE(src, offset + 0);
@@ -54,7 +54,7 @@ namespace MCGalaxy.Util.Imaging
                 globalPal = ReadPalette(src, flags);
             bmp.AllocatePixels();
         }
-        Pixel[] ReadPalette(byte[] src, byte flags)
+        public Pixel[] ReadPalette(byte[] src, byte flags)
         {
             int size = 1 << ((flags & 0x7) + 1);
             Pixel[] pal = new Pixel[size];
@@ -68,7 +68,7 @@ namespace MCGalaxy.Util.Imaging
             }
             return pal;
         }
-        void ReadMarkers(byte[] src, Bitmap2D bmp)
+        public void ReadMarkers(byte[] src, Bitmap2D bmp)
         {
             for (; ; )
             {
@@ -90,7 +90,7 @@ namespace MCGalaxy.Util.Imaging
                 }
             }
         }
-        void ReadExtension(byte[] src)
+        public void ReadExtension(byte[] src)
         {
             int offset = AdvanceOffset(1);
             byte type = src[offset++];
@@ -99,7 +99,7 @@ namespace MCGalaxy.Util.Imaging
             else
                 SkipSubBlocks(src);
         }
-        void ReadGraphicsControl(byte[] src)
+        public void ReadGraphicsControl(byte[] src)
         {
             int offset = AdvanceOffset(1);
             byte length = src[offset];
@@ -118,7 +118,7 @@ namespace MCGalaxy.Util.Imaging
             if (length != 0)
                 Fail("graphics control should be one sub block");
         }
-        void SkipSubBlocks(byte[] src)
+        public void SkipSubBlocks(byte[] src)
         {
             for (; ; )
             {
@@ -129,7 +129,7 @@ namespace MCGalaxy.Util.Imaging
                 AdvanceOffset(length);
             }
         }
-        void ReadImage(byte[] src, Bitmap2D bmp)
+        public void ReadImage(byte[] src, Bitmap2D bmp)
         {
             int offset = AdvanceOffset(2 + 2 + 2 + 2 + 1);
             ushort imageX = MemUtils.ReadU16_LE(src, offset + 0),
@@ -244,12 +244,12 @@ namespace MCGalaxy.Util.Imaging
                 dst_index += chain_len;
             }
         }
-        struct DictEntry
+        public struct DictEntry
         {
             public byte first, value;
             public short prev, len;
         }
-        int ReadNextByte()
+        public int ReadNextByte()
         {
             if (curSubBlockLeft == 0)
             {

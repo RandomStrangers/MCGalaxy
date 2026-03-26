@@ -101,6 +101,6 @@ namespace MCGalaxy.Blocks.Physics
                 p.drownTime = DateTime.MaxValue;
             }
         }
-        static ushort GetSurvivalBlock(Player p, int x, int y, int z) => y < 0 ? (ushort)7 : y >= p.Level.Height ? (ushort)0 : p.Level.GetBlock((ushort)x, (ushort)y, (ushort)z);
+        public static ushort GetSurvivalBlock(Player p, int x, int y, int z) => y < 0 ? (ushort)7 : y >= p.Level.Height ? (ushort)0 : p.Level.GetBlock((ushort)x, (ushort)y, (ushort)z);
     }
 }

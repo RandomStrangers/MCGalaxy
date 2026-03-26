@@ -61,7 +61,7 @@ namespace MCGalaxy
     public static class Logger
     {
         public static LogHandler LogHandler;
-        static readonly object logLock = new();
+        public static readonly object logLock = new();
         public static void Log(LogType type, string message)
         {
             lock (logLock)
@@ -99,7 +99,7 @@ namespace MCGalaxy
             }
             return sb.ToString();
         }
-        static void DescribeError(Exception ex, StringBuilder sb)
+        public static void DescribeError(Exception ex, StringBuilder sb)
         {
             try
             {

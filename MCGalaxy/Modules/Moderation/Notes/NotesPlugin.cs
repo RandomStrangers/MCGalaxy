@@ -19,7 +19,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
     public sealed class NotesPlugin : Plugin
     {
         public override string Name => "Notes";
-        static readonly Command[] cmds = new Command[] 
+        public static readonly Command[] cmds = new Command[] 
         {
             new CmdNotes(), new CmdMyNotes(),
             new CmdNote(), new CmdOpNote(), 
@@ -35,13 +35,13 @@ namespace MCGalaxy.Modules.Moderation.Notes
             OnModActionEvent.Unregister(HandleModerationAction);
             Command.Unregister(cmds);
         }
-        static void HandleModerationAction(ModAction action)
+        public static void HandleModerationAction(ModAction action)
         {
             string acronym = NoteAcronym.GetAcronym(action);
             if (acronym == null) return;
             AddNote(action, acronym);
         }
-        static void AddNote(ModAction e, string type)
+        public static void AddNote(ModAction e, string type)
         {
             if (!Server.Config.LogNotes) return;
             string src = e.Actor.name,
@@ -57,20 +57,20 @@ namespace MCGalaxy.Modules.Moderation.Notes
     public class NoteAcronym
     {
         public readonly string Acronym, Action;
-        private NoteAcronym(string acronym, string action)
+        public NoteAcronym(string acronym, string action)
         {
             Acronym = acronym;
             Action = action;
         }
-        private static readonly NoteAcronym Warned = new("W", "Warned");
-        private static readonly NoteAcronym Kicked = new("K", "Kicked");
-        private static readonly NoteAcronym Muted = new("M", "Muted");
-        private static readonly NoteAcronym Banned = new("B", "Banned");
-        private static readonly NoteAcronym Frozen = new("F", "Frozen");
-        private static readonly NoteAcronym TempBanned = new("T", "Temp-Banned");
-        private static readonly NoteAcronym Noted = new("N", "Noted");
-        public static readonly NoteAcronym OpNoted = new("O", "OpNoted");
-        static NoteAcronym[] All;
+        public static readonly NoteAcronym Warned = new("W", "Warned"),
+            Kicked = new("K", "Kicked"),
+            Muted = new("M", "Muted"),
+            Banned = new("B", "Banned"),
+            Frozen = new("F", "Frozen"),
+            TempBanned = new("T", "Temp-Banned"),
+            Noted = new("N", "Noted"),
+            OpNoted = new("O", "OpNoted");
+        public static NoteAcronym[] All;
         internal static void Init() => All = new NoteAcronym[] { Warned, Kicked, Muted, Banned, Frozen, TempBanned, Noted, OpNoted };
         /// <summary>
         /// Returns the appropriate Acronym to log when a mod action occurs.

@@ -224,7 +224,7 @@ namespace MCGalaxy
             Paginator.Output(p, maps, (file) => FormatMap(p, file, showVisitable),
                              listCmd, itemName, page);
         }
-        static string FormatMap(Player p, string map, bool showVisitable)
+        public static string FormatMap(Player p, string map, bool showVisitable)
         {
             RetrieveProps(map, out LevelPermission visitP, out LevelPermission buildP, out bool loadOnGoto);
             LevelPermission maxPerm = visitP;
@@ -233,7 +233,7 @@ namespace MCGalaxy
             string visit = showVisitable ? loadOnGoto && p.Rank >= visitP ? "" : " &c[no]" : "";
             return Group.GetColor(maxPerm) + map + visit;
         }
-        static void RetrieveProps(string level, out LevelPermission visit,
+        public static void RetrieveProps(string level, out LevelPermission visit,
                                   out LevelPermission build, out bool loadOnGoto)
         {
             visit = LevelPermission.Guest;
@@ -248,7 +248,7 @@ namespace MCGalaxy
             if (!bool.TryParse(args.LoadOnGoto, out loadOnGoto))
                 loadOnGoto = true;
         }
-        static void ProcessLine(string key, string value, ref SearchArgs args)
+        public static void ProcessLine(string key, string value, ref SearchArgs args)
         {
             if (key.CaselessEq("pervisit"))
                 args.Visit = value;

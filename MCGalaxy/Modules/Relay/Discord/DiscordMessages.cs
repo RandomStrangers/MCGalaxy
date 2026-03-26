@@ -39,8 +39,8 @@ namespace MCGalaxy.Modules.Relay.Discord
     /// <summary> Message for sending text to a channel </summary>
     public class ChannelSendMessage : DiscordApiMessage
     {
-        static readonly JsonArray default_allowed = new() { "users", "roles" };
-        readonly StringBuilder content;
+        public static readonly JsonArray default_allowed = new() { "users", "roles" };
+        public readonly StringBuilder content;
         public JsonArray Allowed;
         public ChannelSendMessage(string channelID, string message)
         {
@@ -71,7 +71,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         public Dictionary<string, string> Fields = new();
         public int Color;
         public ChannelSendEmbed(string channelID) => Path = "/channels/" + channelID + "/messages";
-        JsonArray GetFields()
+        public JsonArray GetFields()
         {
             JsonArray arr = new();
             foreach (KeyValuePair<string, string> raw in Fields)

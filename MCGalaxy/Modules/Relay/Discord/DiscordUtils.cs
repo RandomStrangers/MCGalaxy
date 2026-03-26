@@ -16,7 +16,7 @@ namespace MCGalaxy.Modules.Relay.Discord
 {
     public static class DiscordUtils
     {
-        static readonly string[] markdown_special = 
+        public static readonly string[] markdown_special = 
         {
             @"\", @"*", @"_", @"~", @"`", @"|", @"-", @"#" 
         },

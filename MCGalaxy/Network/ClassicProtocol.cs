@@ -22,10 +22,10 @@ namespace MCGalaxy.Network
 {
     public class ClassicProtocol : IGameSession
     {
-        bool hasEmoteFix, hasTwoWayPing, hasExtTexs, hasTextColors,
+        public bool hasEmoteFix, hasTwoWayPing, hasExtTexs, hasTextColors,
             hasHeldBlock, hasLongerMessages, finishedCpeLogin;
-        int extensionCount;
-        CpeExt[] extensions = CpeExtension.Empty;
+        public int extensionCount;
+        public CpeExt[] extensions = CpeExtension.Empty;
         public ClassicProtocol(INetSocket s)
         {
             socket = s;
@@ -67,14 +67,14 @@ namespace MCGalaxy.Network
                     return left;
             }
         }
-        ushort ReadBlock(byte[] buffer, int offset)
+        public ushort ReadBlock(byte[] buffer, int offset)
         {
             ushort block = hasExtBlocks ? MemUtils.ReadU16_BE(buffer, offset) : buffer[offset];
             if (block > 767) block = 767;
             return Block.FromRaw(block);
         }
         #region Classic processing
-        int HandleLogin(byte[] buffer, int offset, int left)
+        public int HandleLogin(byte[] buffer, int offset, int left)
         {
             int old_size = 1 + 1 + 64 + 64,
                 new_size = 1 + 1 + 64 + 64 + 1;
@@ -95,7 +95,7 @@ namespace MCGalaxy.Network
                 player.CompleteLoginProcess();
             return size;
         }
-        int HandleBlockchange(byte[] buffer, int offset, int left)
+        public int HandleBlockchange(byte[] buffer, int offset, int left)
         {
             int size = 1 + 6 + 1 + (hasExtBlocks ? 2 : 1);
             if (left < size) return 0;
@@ -113,7 +113,7 @@ namespace MCGalaxy.Network
             player.ProcessBlockchange(x, y, z, action, held);
             return size;
         }
-        int HandleMovement(byte[] buffer, int offset, int left)
+        public int HandleMovement(byte[] buffer, int offset, int left)
         {
             int size = 1 + 6 + 2 + (player.hasExtPositions ? 6 : 0) + (hasExtBlocks ? 2 : 1);
             if (left < size) return 0;
@@ -143,7 +143,7 @@ namespace MCGalaxy.Network
             player.ProcessMovement(x, y, z, yaw, pitch, held);
             return size;
         }
-        int HandleChat(byte[] buffer, int offset, int left)
+        public int HandleChat(byte[] buffer, int offset, int left)
         {
             int size = 1 + 1 + 64;
             if (left < size) return 0;
@@ -156,13 +156,13 @@ namespace MCGalaxy.Network
         #endregion
         #region CPE processing
         public override bool Supports(string extName, int version = 1) => FindExtension(extName) != null && FindExtension(extName).ClientVersion == version;
-        CpeExt FindExtension(string extName)
+        public CpeExt FindExtension(string extName)
         {
             foreach (CpeExt ext in extensions)
                 if (ext.Name.CaselessEq(extName)) return ext;
             return null;
         }
-        void SendCpeExtensions()
+        public void SendCpeExtensions()
         {
             extensions = CpeExtension.GetAllEnabled();
             Send(Packet.ExtInfo((byte)(extensions.Length + 1)));
@@ -170,7 +170,7 @@ namespace MCGalaxy.Network
             foreach (CpeExt ext in extensions)
                 Send(Packet.ExtEntry(ext.Name, ext.ServerVersion));
         }
-        void CheckReadAllExtensions()
+        public void CheckReadAllExtensions()
         {
             if (extensionCount <= 0 && !finishedCpeLogin)
             {
@@ -178,7 +178,7 @@ namespace MCGalaxy.Network
                 finishedCpeLogin = true;
             }
         }
-        int HandleExtInfo(byte[] buffer, int offset, int left)
+        public int HandleExtInfo(byte[] buffer, int offset, int left)
         {
             int size = 1 + 64 + 2;
             if (left < size) return 0;
@@ -187,7 +187,7 @@ namespace MCGalaxy.Network
             CheckReadAllExtensions();
             return size;
         }
-        int HandleExtEntry(byte[] buffer, int offset, int left)
+        public int HandleExtEntry(byte[] buffer, int offset, int left)
         {
             int size = 1 + 64 + 4;
             if (left < size) return 0;
@@ -203,7 +203,7 @@ namespace MCGalaxy.Network
             CheckReadAllExtensions();
             return size;
         }
-        int HandlePlayerClicked(byte[] buffer, int offset, int left)
+        public int HandlePlayerClicked(byte[] buffer, int offset, int left)
         {
             if (left < 15) return 0;
             MouseButton Button = (MouseButton)buffer[offset + 1];
@@ -219,7 +219,7 @@ namespace MCGalaxy.Network
             OnPlayerClickEvent.Call(player, Button, Action, yaw, pitch, entityID, x, y, z, face);
             return 15;
         }
-        int HandleNotifyAction(byte[] buffer, int offset, int left)
+        public int HandleNotifyAction(byte[] buffer, int offset, int left)
         {
             if (left < 5) return 0;
             NotifyActionType action = (NotifyActionType)buffer[offset + 2];
@@ -227,7 +227,7 @@ namespace MCGalaxy.Network
             OnNotifyActionEvent.Call(player, action, value);
             return 5;
         }
-        int HandleNotifyPositionAction(byte[] buffer, int offset, int left)
+        public int HandleNotifyPositionAction(byte[] buffer, int offset, int left)
         {
             if (left < 9) return 0;
             NotifyActionType action = (NotifyActionType)buffer[offset + 2];
@@ -237,7 +237,7 @@ namespace MCGalaxy.Network
             OnNotifyPositionActionEvent.Call(player, action, x, y, z);
             return 9;
         }
-        int HandleTwoWayPing(byte[] buffer, int offset, int left)
+        public int HandleTwoWayPing(byte[] buffer, int offset, int left)
         {
             if (left < 4) return 0;
             bool serverToClient = buffer[offset + 1] != 0;
@@ -251,7 +251,7 @@ namespace MCGalaxy.Network
             }
             return 4;
         }
-        int HandlePluginMessage(byte[] buffer, int offset, int left)
+        public int HandlePluginMessage(byte[] buffer, int offset, int left)
         {
             if (left < 66) return 0;
             byte channel = buffer[offset + 1];
@@ -260,7 +260,7 @@ namespace MCGalaxy.Network
             OnPluginMessageReceivedEvent.Call(player, channel, data);
             return 66;
         }
-        void AddExtension(string extName, int version)
+        public void AddExtension(string extName, int version)
         {
             Player p = player;
             CpeExt ext = FindExtension(extName);
@@ -318,7 +318,7 @@ namespace MCGalaxy.Network
                     break;
             }
         }
-        void SendGlobalColors()
+        public void SendGlobalColors()
         {
             for (int i = 0; i < Colors.List.Length; i++)
             {
@@ -350,7 +350,7 @@ namespace MCGalaxy.Network
             SendTeleportCore(absoluteSelf, Packet.TeleportExt(id, usePos, moveMode, useOri, interpolateOri, pos, rot, player.hasExtPositions));
             return true;
         }
-        void SendTeleportCore(bool absoluteSelf, byte[] packet)
+        public void SendTeleportCore(bool absoluteSelf, byte[] packet)
         {
             if (!absoluteSelf || !hasTwoWayPing)
             {
@@ -549,7 +549,7 @@ namespace MCGalaxy.Network
                 Thread.Sleep(level.Config.LoadDelay);
             Send(Packet.LevelFinalise(level.Width, level.Height, level.Length));
         }
-        void RemoveOldLevelCustomBlocks(Level oldLevel)
+        public void RemoveOldLevelCustomBlocks(Level oldLevel)
         {
             BlockDefinition[] defs = oldLevel.CustomBlockDefs;
             for (int i = 0; i < defs.Length; i++)
@@ -572,12 +572,12 @@ namespace MCGalaxy.Network
             socket.Send(buffer, SendFlags.LowPriority);
         }
         public override byte[] MakeBulkBlockchange(BufferedBlockSender buffer) => buffer.MakeLimited(fallback);
-        void UpdateFallbackTable()
+        public void UpdateFallbackTable()
         {
             for (byte b = 0; b <= 65; b++)
                 fallback[b] = hasCustomBlocks ? b : Block.ConvertClassic(b, ProtocolVersion);
         }
-        string CleanupColors(string value) => LineWrapper.CleanupColors(value, hasTextColors, hasTextColors);
+        public string CleanupColors(string value) => LineWrapper.CleanupColors(value, hasTextColors, hasTextColors);
         public override string ClientName() => !string.IsNullOrEmpty(appName)
                 ? appName
                 : ProtocolVersion switch
@@ -641,7 +641,7 @@ namespace MCGalaxy.Network
                 ptr++;
             }
         }
-        static unsafe void WriteI32(ref byte* ptr, int value)
+        public static unsafe void WriteI32(ref byte* ptr, int value)
         {
             *ptr = (byte)(value >> 24); 
             ptr++; 
@@ -652,14 +652,14 @@ namespace MCGalaxy.Network
             *ptr = (byte)value;
             ptr++;
         }
-        static unsafe void WriteI16(ref byte* ptr, short value)
+        public static unsafe void WriteI16(ref byte* ptr, short value)
         {
             *ptr = (byte)(value >> 8); 
             ptr++;
             *ptr = (byte)value; 
             ptr++;
         }
-        static Position GetDelta(Position pos, Position old, bool extPositions)
+        public static Position GetDelta(Position pos, Position old, bool extPositions)
         {
             Position delta = new(pos.X - old.X, pos.Y - old.Y, pos.Z - old.Z);
             if (extPositions) return delta;

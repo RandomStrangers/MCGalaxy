@@ -22,9 +22,9 @@ namespace MCGalaxy.Drawing.Transforms
     {
         public override string Name => "Rotate";
         public bool CentreOrigin;
-        Shear2D shearX, shearY, shearZ;
-        Vec3S32 P;
-        struct Shear2D
+        public Shear2D shearX, shearY, shearZ;
+        public Vec3S32 P;
+        public struct Shear2D
         {
             public int xMulX, xMulY, yMulX, yMulY;
             public double alpha, beta;
@@ -35,39 +35,38 @@ namespace MCGalaxy.Drawing.Transforms
             CalcShear2D(yDeg, ref shearY);
             CalcShear2D(zDeg, ref shearZ);
         }
-        void CalcShear2D(double angle, ref Shear2D shear)
+        public void CalcShear2D(double angle, ref Shear2D shear)
         {
             angle %= 360.0;
             if (angle < 0) angle += 360.0;
-            if (angle >= 0 && angle <= 90)
+            switch (angle)
             {
-                shear.xMulX = 1;
-                shear.yMulY = 1;
-            }
-            else if (angle > 90 && angle <= 180)
-            {
-                angle -= 90;
-                shear.xMulY = 1;
-                shear.yMulX = -1;
-            }
-            else if (angle > 180 && angle <= 270)
-            {
-                angle -= 180;
-                shear.xMulX = -1;
-                shear.yMulY = -1;
-            }
-            else
-            {
-                angle -= 270;
-                shear.xMulY = -1;
-                shear.yMulX = 1;
+                case >= 0 and <= 90:
+                    shear.xMulX = 1;
+                    shear.yMulY = 1;
+                    break;
+                case > 90 and <= 180:
+                    angle -= 90;
+                    shear.xMulY = 1;
+                    shear.yMulX = -1;
+                    break;
+                case > 180 and <= 270:
+                    angle -= 180;
+                    shear.xMulX = -1;
+                    shear.yMulY = -1;
+                    break;
+                default:
+                    angle -= 270;
+                    shear.xMulY = -1;
+                    shear.yMulX = 1;
+                    break;
             }
             angle = -angle;
             angle *= Math.PI / 180.0;
             shear.alpha = -Math.Tan(angle / 2);
             shear.beta = Math.Sin(angle);
         }
-        void DoShear2D(ref int x, ref int y, ref Shear2D shear)
+        public void DoShear2D(ref int x, ref int y, ref Shear2D shear)
         {
             int X_ = (int)(x + shear.alpha * (y + 0.5)),
                 Y_ = (int)(y + shear.beta * (X_ + 0.5));
@@ -81,7 +80,7 @@ namespace MCGalaxy.Drawing.Transforms
             if (!CentreOrigin) P = op.Origin;
             op.Perform(marks, brush, b => OutputBlock(b, output));
         }
-        void OutputBlock(DrawOpBlock b, DrawOpOutput output)
+        public void OutputBlock(DrawOpBlock b, DrawOpOutput output)
         {
             int dx = b.X - P.X, dy = b.Y - P.Y, dz = b.Z - P.Z;
             DoShear2D(ref dy, ref dz, ref shearX);

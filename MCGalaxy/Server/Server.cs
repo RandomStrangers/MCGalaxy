@@ -47,7 +47,7 @@ namespace MCGalaxy
             SetMainLevel(Config.MainLevel);
             Save();
         }
-        static readonly object saveLock = new();
+        public static readonly object saveLock = new();
         public static void Save()
         {
             try
@@ -63,7 +63,7 @@ namespace MCGalaxy
                 Logger.LogError("Error saving " + Paths.ServerPropsFile, ex);
             }
         }
-        static void SaveProps(StreamWriter w)
+        public static void SaveProps(StreamWriter w)
         {
             w.WriteLine("# Edit the settings below to modify how your server operates.");
             w.WriteLine("#");
@@ -153,7 +153,7 @@ namespace MCGalaxy
             Background.QueueRepeat(ThreadSafeCache.DBCache.CleanupTask,
                                    null, TimeSpan.FromMinutes(5));
         }
-        static void ForceEnableTLS()
+        public static void ForceEnableTLS()
         {
             try
             {
@@ -170,7 +170,7 @@ namespace MCGalaxy
             {
             }
         }
-        static void EnsureFilesExist()
+        public static void EnsureFilesExist()
         {
             FileIO.TryDeleteDirectory("properties", true);
             EnsureDirectoryExists("props");
@@ -227,8 +227,8 @@ namespace MCGalaxy
             announcements = announcementsFile.GetText();
             OnConfigUpdatedEvent.Call();
         }
-        static readonly object stopLock = new();
-        static volatile Thread stopThread;
+        public static readonly object stopLock = new();
+        public static volatile Thread stopThread;
         public static Thread Stop(bool restart, string msg)
         {
             shuttingDown = true;
@@ -241,7 +241,7 @@ namespace MCGalaxy
                 return stopThread;
             }
         }
-        static void ShutdownThread(bool restarting, string msg)
+        public static void ShutdownThread(bool restarting, string msg)
         {
             try
             {
@@ -321,7 +321,7 @@ namespace MCGalaxy
         public static string GetPath() => Assembly.GetEntryAssembly().Location;
         /// <summary> Returns the full path to the runtime executable </summary>
         public static string GetRuntimeExePath() => Process.GetCurrentProcess().MainModule.FileName;
-        static bool checkedOnMono, runningOnMono;
+        public static bool checkedOnMono, runningOnMono;
         public static bool RunningOnMono()
         {
             if (!checkedOnMono)
@@ -331,7 +331,7 @@ namespace MCGalaxy
             }
             return runningOnMono;
         }
-        static void RandomMessage(SchedulerTask _)
+        public static void RandomMessage(SchedulerTask _)
         {
             if (PlayerInfo.Online.Count > 0 && announcements.Length > 0)
                 Chat.MessageGlobal(announcements[new Random().Next(0, announcements.Length)]);

@@ -137,7 +137,7 @@ namespace MCGalaxy.Eco
             else
                 OnSetupHelp(p);
         }
-        void AddPreset(Player p, string[] args, LevelPreset preset)
+        public void AddPreset(Player p, string[] args, LevelPreset preset)
         {
             if (preset != null) 
             { 
@@ -167,7 +167,7 @@ namespace MCGalaxy.Eco
             p.Message("Map Type: &f" + preset.type);
             p.Message("Map Price: &f" + preset.price + " &3" + Server.Config.Currency);
         }
-        void RemovePreset(Player p, LevelPreset preset)
+        public void RemovePreset(Player p, LevelPreset preset)
         {
             if (preset == null) 
             { 
@@ -177,7 +177,7 @@ namespace MCGalaxy.Eco
             Presets.Remove(preset);
             p.Message("&aSuccessfully removed preset: &f" + preset.name);
         }
-        void EditPreset(Player p, string[] args, LevelPreset preset)
+        public void EditPreset(Player p, string[] args, LevelPreset preset)
         {
             if (preset == null) 
             { 

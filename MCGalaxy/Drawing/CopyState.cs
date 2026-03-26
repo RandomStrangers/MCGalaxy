@@ -20,8 +20,8 @@ namespace MCGalaxy.Drawing
     /// <summary> Represents a copied region/area of blocks plus some additional data </summary>
     public sealed class CopyState
     {
-        byte[] blocks;
-        byte[][] extBlocks;
+        public byte[] blocks;
+        public byte[][] extBlocks;
         public int X, Y, Z, OriginX, OriginY, OriginZ, 
             Width, Height, Length, UsedBlocks;
         public bool PasteAir;
@@ -42,7 +42,7 @@ namespace MCGalaxy.Drawing
             Init(x, y, z, width, height, length);
             CopyTime = DateTime.UtcNow;
         }
-        void Init(int x, int y, int z, int width, int height, int length)
+        public void Init(int x, int y, int z, int width, int height, int length)
         {
             X = x;
             Y = y; 
@@ -90,9 +90,7 @@ namespace MCGalaxy.Drawing
                 chunk[index & 0xFFF] = (byte)block;
             }
             else
-            {
                 blocks[index] = (byte)block;
-            }
         }
         public void Set(ushort block, int x, int y, int z) => Set(block, (y * Length + z) * Width + x);
         /// <summary> Saves this copy state to the given stream. </summary>
@@ -155,7 +153,7 @@ namespace MCGalaxy.Drawing
             Offset.Z = r.ReadInt32();
             PasteAir = stream.ReadByte() == 1;
         }
-        void LoadBlocks(BinaryReader r, int id)
+        public void LoadBlocks(BinaryReader r, int id)
         {
             byte[] allExtBlocks;
             int dataLen;
@@ -183,17 +181,15 @@ namespace MCGalaxy.Drawing
                     UnpackPackedExtBlocks(allExtBlocks);
                 }
                 else
-                {
                     for (int i = 0; i < extBlocks.Length; i++)
                     {
                         if (r.ReadByte() == 0) continue;
                         dataLen = r.ReadUInt16();
                         extBlocks[i] = r.ReadBytes(dataLen).Decompress(0x1000);
                     }
-                }
             }
         }
-        void UnpackExtBlocks(byte[] allExtBlocks)
+        public void UnpackExtBlocks(byte[] allExtBlocks)
         {
             for (int i = 0; i < blocks.Length; i++)
             {
@@ -201,15 +197,13 @@ namespace MCGalaxy.Drawing
                 Set((ushort)(256 | allExtBlocks[i]), i);
             }
         }
-        void UnpackPackedExtBlocks(byte[] allExtBlocks)
+        public void UnpackPackedExtBlocks(byte[] allExtBlocks)
         {
             for (int i = 0; i < blocks.Length; i++)
             {
                 bool isExt = (allExtBlocks[i >> 3] & (1 << (i & 0x7))) != 0;
-                if (isExt) 
-                { 
+                if (isExt)
                     Set((ushort)(256 | blocks[i]), i);
-                }
             }
         }
     }

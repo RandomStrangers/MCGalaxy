@@ -19,9 +19,9 @@ namespace MCGalaxy.Util.Imaging
 {
     public unsafe class PngDecoder : ImageDecoder
     {
-        int bytesPerPixel, scanline_size;
-        RowExpander rowExpander;
-        static readonly byte[] pngSig = new byte[]
+        public int bytesPerPixel, scanline_size;
+        public RowExpander rowExpander;
+        public static readonly byte[] pngSig = new byte[]
         {
             137, 80, 78, 71, 13, 10, 26, 10
         },
@@ -30,7 +30,7 @@ namespace MCGalaxy.Util.Imaging
             1, 0, 3, 1, 2, 0, 4
         };
         public static bool DetectHeader(byte[] data) => MatchesSignature(data, pngSig);
-        static Pixel ExpandRGB(byte bitsPerSample, int r, int g, int b)
+        public static Pixel ExpandRGB(byte bitsPerSample, int r, int g, int b)
         {
             switch (bitsPerSample)
             {
@@ -191,14 +191,14 @@ namespace MCGalaxy.Util.Imaging
                 DecompressImage(comp, bmp, palette, trnsColor);
             return bmp;
         }
-        static Pixel[] CreatePalette()
+        public static Pixel[] CreatePalette()
         {
             Pixel[] pal = new Pixel[256];
             for (int i = 0; i < pal.Length; i++)
                 pal[i] = Pixel.BLACK;
             return pal;
         }
-        void DecompressImage(Stream src, Bitmap2D bmp, Pixel[] palette, Pixel trnsColor)
+        public void DecompressImage(Stream src, Bitmap2D bmp, Pixel[] palette, Pixel trnsColor)
         {
             if (bmp.Pixels == null)
                 Fail("no data");
@@ -227,7 +227,7 @@ namespace MCGalaxy.Util.Imaging
                 MakeTransparent(bmp.Pixels, trnsColor);
             return;
         }
-        static void MakeTransparent(Pixel[] img, Pixel color)
+        public static void MakeTransparent(Pixel[] img, Pixel color)
         {
             for (int i = 0; i < img.Length; i++)
             {
@@ -236,8 +236,8 @@ namespace MCGalaxy.Util.Imaging
                 img[i].A = 0;
             }
         }
-        bool read_zlib_header;
-        void SkipZLibHeader(byte[] src)
+        public bool read_zlib_header;
+        public void SkipZLibHeader(byte[] src)
         {
             int offset = AdvanceOffset(2);
             byte method = src[offset + 0];
@@ -248,7 +248,7 @@ namespace MCGalaxy.Util.Imaging
                 Fail("Zlip flags");
             read_zlib_header = true;
         }
-        static void ReconstructRow(byte type, int bytesPerPixel, byte[] line, byte[] prior, int lineLen)
+        public static void ReconstructRow(byte type, int bytesPerPixel, byte[] line, byte[] prior, int lineLen)
         {
             int i, j;
             switch (type)
@@ -287,11 +287,11 @@ namespace MCGalaxy.Util.Imaging
                     return;
             }
         }
-        delegate void RowExpander(int width, Pixel[] palette, byte[] src, Pixel* dst);
-        static int Get_1BPP(byte[] src, int i) => (src[i >> 3] >> (7 - (i & 7))) & 0x01;
-        static int Get_2BPP(byte[] src, int i) => (src[i >> 2] >> ((3 - (i & 3)) * 2)) & 0x03;
-        static int Get_4BPP(byte[] src, int i) => (src[i >> 1] >> ((1 - (i & 1)) * 4)) & 0x0F;
-        static void Expand_GRAYSCALE_1(int width, Pixel[] palette, byte[] src, Pixel* dst)
+        public delegate void RowExpander(int width, Pixel[] palette, byte[] src, Pixel* dst);
+        public static int Get_1BPP(byte[] src, int i) => (src[i >> 3] >> (7 - (i & 7))) & 0x01;
+        public static int Get_2BPP(byte[] src, int i) => (src[i >> 2] >> ((3 - (i & 3)) * 2)) & 0x03;
+        public static int Get_4BPP(byte[] src, int i) => (src[i >> 1] >> ((1 - (i & 1)) * 4)) & 0x0F;
+        public static void Expand_GRAYSCALE_1(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
             for (int i = 0; i < width; i++)
             {
@@ -299,7 +299,7 @@ namespace MCGalaxy.Util.Imaging
                 dst[i] = new(rgb, rgb, rgb, 255);
             }
         }
-        static void Expand_GRAYSCALE_2(int width, Pixel[] palette, byte[] src, Pixel* dst)
+        public static void Expand_GRAYSCALE_2(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
             for (int i = 0; i < width; i++)
             {
@@ -307,7 +307,7 @@ namespace MCGalaxy.Util.Imaging
                 dst[i] = new(rgb, rgb, rgb, 255);
             }
         }
-        static void Expand_GRAYSCALE_4(int width, Pixel[] palette, byte[] src, Pixel* dst)
+        public static void Expand_GRAYSCALE_4(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
             for (int i = 0; i < width; i++)
             {
@@ -315,7 +315,7 @@ namespace MCGalaxy.Util.Imaging
                 dst[i] = new(rgb, rgb, rgb, 255);
             }
         }
-        static void Expand_GRAYSCALE_8(int width, Pixel[] palette, byte[] src, Pixel* dst)
+        public static void Expand_GRAYSCALE_8(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
             for (int i = 0; i < width; i++)
             {
@@ -323,7 +323,7 @@ namespace MCGalaxy.Util.Imaging
                 dst[i] = new(rgb, rgb, rgb, 255);
             }
         }
-        static void Expand_RGB_8(int width, Pixel[] palette, byte[] src, Pixel* dst)
+        public static void Expand_RGB_8(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
             for (int i = 0; i < width; i++)
             {
@@ -333,27 +333,27 @@ namespace MCGalaxy.Util.Imaging
                 dst[i] = new(r, g, b, 255);
             }
         }
-        static void Expand_INDEXED_1(int width, Pixel[] palette, byte[] src, Pixel* dst)
+        public static void Expand_INDEXED_1(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
             for (int i = 0; i < width; i++)
                 dst[i] = palette[Get_1BPP(src, i)];
         }
-        static void Expand_INDEXED_2(int width, Pixel[] palette, byte[] src, Pixel* dst)
+        public static void Expand_INDEXED_2(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
             for (int i = 0; i < width; i++)
                 dst[i] = palette[Get_2BPP(src, i)];
         }
-        static void Expand_INDEXED_4(int width, Pixel[] palette, byte[] src, Pixel* dst)
+        public static void Expand_INDEXED_4(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
             for (int i = 0; i < width; i++)
                 dst[i] = palette[Get_4BPP(src, i)];
         }
-        static void Expand_INDEXED_8(int width, Pixel[] palette, byte[] src, Pixel* dst)
+        public static void Expand_INDEXED_8(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
             for (int i = 0; i < width; i++)
                 dst[i] = palette[src[i]];
         }
-        static void Expand_GRAYSCALE_A_8(int width, Pixel[] palette, byte[] src, Pixel* dst)
+        public static void Expand_GRAYSCALE_A_8(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
             for (int i = 0; i < width; i++)
             {
@@ -362,7 +362,7 @@ namespace MCGalaxy.Util.Imaging
                 dst[i] = new(rgb, rgb, rgb, a);
             }
         }
-        static void Expand_RGB_A_8(int width, Pixel[] palette, byte[] src, Pixel* dst)
+        public static void Expand_RGB_A_8(int width, Pixel[] palette, byte[] src, Pixel* dst)
         {
             for (int i = 0; i < width; i++)
             {
@@ -373,7 +373,7 @@ namespace MCGalaxy.Util.Imaging
                 dst[i] = new(r, g, b, a);
             }
         }
-        static RowExpander GetRowExpander(byte colorspace, byte bitsPerSample) => colorspace switch
+        public static RowExpander GetRowExpander(byte colorspace, byte bitsPerSample) => colorspace switch
         {
             0 => bitsPerSample switch
             {

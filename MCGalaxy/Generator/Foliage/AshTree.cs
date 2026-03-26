@@ -21,8 +21,8 @@ namespace MCGalaxy.Generator.Foliage
 {
     public sealed class AshTree : Tree
     {
-        int branchBaseHeight, branchAmount;
-        readonly List<Vec3S32> branch = new();
+        public int branchBaseHeight, branchAmount;
+        public readonly List<Vec3S32> branch = new();
         public override long EstimateBlocksAffected() => (long)height * height * height;
         public override int DefaultSize(Random rnd) => rnd.Next(5, 10);
         public override void SetData(Random rnd, int value)
@@ -41,7 +41,7 @@ namespace MCGalaxy.Generator.Foliage
             for (int i = 0; i < branchAmount; i++)
                 DoBranch(x, y, z, output);
         }
-        void DoBranch(int x, int y, int z, TreeOutput output)
+        public void DoBranch(int x, int y, int z, TreeOutput output)
         {
             int dx = rnd.Next(-5, 5),
                 dz = rnd.Next(-5, 5),
@@ -60,7 +60,7 @@ namespace MCGalaxy.Generator.Foliage
             op.SetMarks(marks);
             op.Perform(marks, brush, b => output(b.X, b.Y, b.Z, b.Block));
         }
-        void Line(Vec3S32 p1, Vec3S32 p2, TreeOutput output)
+        public void Line(Vec3S32 p1, Vec3S32 p2, TreeOutput output)
         {
             LineDrawOp.DrawLine(p1.X, p1.Y, p1.Z, 10000, p2.X, p2.Y, p2.Z, branch);
             foreach (Vec3S32 P in branch)

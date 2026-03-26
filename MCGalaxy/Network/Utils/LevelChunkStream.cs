@@ -23,17 +23,17 @@ namespace MCGalaxy.Network
         public override bool CanRead => false;
         public override bool CanSeek => false;
         public override bool CanWrite => true;
-        static readonly Exception ex = new NotSupportedException();
+        public static readonly Exception ex = new NotSupportedException();
         public override void Flush() { }
         public override long Length => throw ex;
         public override long Position { get { throw ex; } set { throw ex; } }
         public override int Read(byte[] buffer, int offset, int count) => throw ex;
         public override long Seek(long offset, SeekOrigin origin) => throw ex;
         public override void SetLength(long length) => throw ex;
-        int index;
-        byte chunkValue;
-        ClassicProtocol session;
-        byte[] data = new byte[1028];
+        public int index;
+        public byte chunkValue;
+        public ClassicProtocol session;
+        public byte[] data = new byte[1028];
         public LevelChunkStream(ClassicProtocol s) => session = s;
         public override void Close()
         {
@@ -67,7 +67,7 @@ namespace MCGalaxy.Network
             WritePacket();
             data = new byte[1028];
         }
-        void WritePacket()
+        public void WritePacket()
         {
             data[0] = 3;
             NetUtils.WriteU16((ushort)index, data, 1);
@@ -84,7 +84,7 @@ namespace MCGalaxy.Network
             else
                 CompressMapSimple(level, stream, dst);
         }
-        Stream CompressMapHeader(int volume)
+        public Stream CompressMapHeader(int volume)
         {
             if (session.Supports(CpeExt.FastMap))
                 return new DeflateStream(this, CompressionMode.Compress, true);
@@ -94,7 +94,7 @@ namespace MCGalaxy.Network
             stream.Write(buffer, 0, 4);
             return stream;
         }
-        static unsafe void CompressMapSimple(Level lvl, Stream stream, LevelChunkStream dst)
+        public static unsafe void CompressMapSimple(Level lvl, Stream stream, LevelChunkStream dst)
         {
             int bufferSize = 64 * 1024;
             byte[] buffer = new byte[bufferSize];
@@ -118,7 +118,7 @@ namespace MCGalaxy.Network
             }
             if (bIndex > 0) stream.Write(buffer, 0, bIndex);
         }
-        static unsafe void CompressMap(Level lvl, Stream stream, LevelChunkStream dst)
+        public static unsafe void CompressMap(Level lvl, Stream stream, LevelChunkStream dst)
         {
             int bufferSize = 64 * 1024;
             byte[] buffer = new byte[bufferSize];

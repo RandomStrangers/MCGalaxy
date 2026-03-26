@@ -49,7 +49,7 @@ namespace MCGalaxy.Drawing.Ops
             Source = null;
             Player.Message("Finished printing image using {0} palette.", Palette.Name);
         }
-        void CalcLayerColors()
+        public void CalcLayerColors()
         {
             PaletteEntry[] front = new PaletteEntry[Palette.Entries.Length],
                 back = new PaletteEntry[Palette.Entries.Length];
@@ -80,7 +80,7 @@ namespace MCGalaxy.Drawing.Ops
             }
             selector.SetPalette(front, back);
         }
-        static PaletteEntry Multiply(PaletteEntry entry, ColorDesc rgb)
+        public static PaletteEntry Multiply(PaletteEntry entry, ColorDesc rgb)
         {
             entry.R = (byte)(entry.R * rgb.R / 255);
             entry.G = (byte)(entry.G * rgb.G / 255);
@@ -128,31 +128,15 @@ namespace MCGalaxy.Drawing.Ops
             dy = default;
             adj = default;
             DualLayer = DualLayer && !LayerMode;
-            int dir;
-            if (Math.Abs(m[1].X - m[0].X) > Math.Abs(m[1].Z - m[0].Z))
-            {
-                dir = m[1].X <= m[0].X ? 1 : 0;
-            }
-            else
-            {
-                dir = m[1].Z <= m[0].Z ? 3 : 2;
-            }
+            int dir = Math.Abs(m[1].X - m[0].X) > Math.Abs(m[1].Z - m[0].Z) ? m[1].X <= m[0].X ? 1 : 0 : m[1].Z <= m[0].Z ? 3 : 2;
             if (dir == 0)
-            {
                 adj.Z = -1;
-            }
             if (dir == 1)
-            {
                 adj.Z = +1;
-            }
             if (dir == 2)
-            {
                 adj.X = +1;
-            }
             if (dir == 3)
-            {
                 adj.X = -1;
-            }
             if (LayerMode)
             {
                 if (dir == 0)
@@ -180,21 +164,13 @@ namespace MCGalaxy.Drawing.Ops
             {
                 dy.Y = 1;
                 if (dir == 0)
-                {
                     dx.X = +1;
-                }
                 if (dir == 1)
-                {
                     dx.X = -1;
-                }
                 if (dir == 2)
-                {
                     dx.Z = +1;
-                }
                 if (dir == 3)
-                {
                     dx.Z = -1;
-                }
             }
         }
     }
@@ -220,29 +196,17 @@ namespace MCGalaxy.Drawing.Ops
                     }
                     Vec3F32 oldPixel = new Vec3F32(P.R, P.G, P.B) + errors[xx, yy];
                     if (oldPixel.X > 255)
-                    {
                         oldPixel.X = 255;
-                    }
                     if (oldPixel.X < 0)
-                    {
                         oldPixel.X = 0;
-                    }
                     if (oldPixel.Y > 255)
-                    {
                         oldPixel.Y = 255;
-                    }
                     if (oldPixel.Y < 0)
-                    {
                         oldPixel.Y = 0;
-                    }
                     if (oldPixel.Z > 255)
-                    {
                         oldPixel.Z = 255;
-                    }
                     if (oldPixel.Z < 0)
-                    {
                         oldPixel.Z = 0;
-                    }
                     P.R = (byte)oldPixel.X;
                     P.G = (byte)oldPixel.Y;
                     P.B = (byte)oldPixel.Z;
@@ -252,21 +216,13 @@ namespace MCGalaxy.Drawing.Ops
                     errors[xx, yy] = newPixel;
                     Vec3F32 quantError = oldPixel - newPixel;
                     if (xx + 1 < width)
-                    {
                         errors[xx + 1, yy] += 7.0f / 16.0f * quantError;
-                    }
                     if (xx - 1 > 0 && yy + 1 < height)
-                    {
                         errors[xx - 1, yy + 1] += 3.0f / 16.0f * quantError;
-                    }
                     if (yy + 1 < height)
-                    {
                         errors[xx, yy + 1] += 5.0f / 16.0f * quantError;
-                    }
                     if (xx + 1 < width && yy + 1 < height)
-                    {
                         errors[xx + 1, yy + 1] += 1.0f / 16.0f * quantError;
-                    }
                 }
             }
         }

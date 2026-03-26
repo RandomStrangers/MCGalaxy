@@ -59,11 +59,11 @@ namespace MCGalaxy.Modules.Relay.Discord
         public Action<JsonObject> OnChannelCreate;
         /// <summary> Callback invoked when a gateway event has been received </summary>
         public GatewayEventCallback OnGatewayEvent;
-        readonly object sendLock = new();
-        SchedulerTask heartbeat;
-        TcpClient client;
-        SslStream stream;
-        bool readable;
+        public readonly object sendLock = new();
+        public SchedulerTask heartbeat;
+        public TcpClient client;
+        public SslStream stream;
+        public bool readable;
         public DiscordWebsocket(string apiPath) => path = apiPath;
         public override bool LowLatency { set { } }
         public override IPAddress IP => null;
@@ -131,7 +131,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             int opcode = NumberUtils.ParseInt32((string)obj["op"]);
             DispatchPacket(opcode, obj);
         }
-        void DispatchPacket(int opcode, JsonObject obj)
+        public void DispatchPacket(int opcode, JsonObject obj)
         {
             switch (opcode)
             {
@@ -150,13 +150,13 @@ namespace MCGalaxy.Modules.Relay.Discord
                     break;
             }
         }
-        void HandleHello(JsonObject obj)
+        public void HandleHello(JsonObject obj)
         {
             heartbeat = Server.Heartbeats.QueueRepeat(SendHeartbeat, null,
                                           TimeSpan.FromMilliseconds(NumberUtils.ParseInt32((string)((JsonObject)obj["d"])["heartbeat_interval"])));
             Identify();
         }
-        void HandleDispatch(JsonObject obj)
+        public void HandleDispatch(JsonObject obj)
         {
             if (obj.TryGetValue("s", out object sequence))
                 Session.LastSeq = (string)sequence;
@@ -181,7 +181,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             }
             OnGatewayEvent(eventName, data);
         }
-        void HandleReady(JsonObject data)
+        public void HandleReady(JsonObject data)
         {
             if (data.TryGetValue("session_id", out object session))
                 Session.ID = (string)session;
@@ -196,7 +196,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         {
             lock (sendLock) stream.Write(data);
         }
-        void SendHeartbeat(SchedulerTask task)
+        public void SendHeartbeat(SchedulerTask task)
         {
             JsonObject obj = new()
             {
@@ -213,13 +213,13 @@ namespace MCGalaxy.Modules.Relay.Discord
                 SendMessage(2, MakeIdentify());
             SentIdentify = true;
         }
-        JsonObject MakeResume() => new()
+        public JsonObject MakeResume() => new()
             {
                 { "token",      Token },
                 { "session_id", Session.ID },
                 { "seq",        NumberUtils.ParseInt32(Session.LastSeq) }
             };
-        JsonObject MakeIdentify() => new()
+        public JsonObject MakeIdentify() => new()
             {
                 { "token",      Token },
                 { "intents",    Session.Intents },

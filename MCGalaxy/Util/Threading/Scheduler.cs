@@ -14,14 +14,13 @@
  */
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
 namespace MCGalaxy.Tasks
 {
     public delegate void SchedulerCallback(SchedulerTask task);
     public sealed class Scheduler
     {
-        static void StartThread(string name, ThreadStart threadFunc)
+        public static void StartThread(string name, ThreadStart threadFunc)
         {
             Thread thread = new(threadFunc);
             try
@@ -33,10 +32,10 @@ namespace MCGalaxy.Tasks
             }
             thread.Start();
         }
-        readonly List<SchedulerTask> tasks = new();
-        readonly AutoResetEvent handle = new(false);
-        readonly object taskLock = new();
-        volatile SchedulerTask curTask;
+        public readonly List<SchedulerTask> tasks = new();
+        public readonly AutoResetEvent handle = new(false);
+        public readonly object taskLock = new();
+        public volatile SchedulerTask curTask;
         public Scheduler(string name) => StartThread(name, Loop);
         /// <summary> Queues an action that is asynchronously executed one time, as soon as possible. </summary>
         public SchedulerTask QueueOnce(SchedulerCallback callback) => EnqueueTask(new SchedulerTask(callback, null, TimeSpan.Zero, false));
@@ -58,7 +57,7 @@ namespace MCGalaxy.Tasks
             lock (taskLock)
                 handle.Set();
         }
-        SchedulerTask EnqueueTask(SchedulerTask task)
+        public SchedulerTask EnqueueTask(SchedulerTask task)
         {
             lock (taskLock)
             {
@@ -67,7 +66,7 @@ namespace MCGalaxy.Tasks
             }
             return task;
         }
-        void Loop()
+        public void Loop()
         {
             while (true)
             {
@@ -77,7 +76,7 @@ namespace MCGalaxy.Tasks
                 handle.WaitOne(GetWaitTime(), false);
             }
         }
-        SchedulerTask GetNextTask()
+        public SchedulerTask GetNextTask()
         {
             DateTime minTime = DateTime.UtcNow.AddMilliseconds(1);
             SchedulerTask minTask = null;
@@ -91,7 +90,7 @@ namespace MCGalaxy.Tasks
                 }
             return minTask;
         }
-        void DoTask(SchedulerTask task)
+        public void DoTask(SchedulerTask task)
         {
             curTask = task;
             try
@@ -109,7 +108,7 @@ namespace MCGalaxy.Tasks
                 lock (taskLock)
                     tasks.Remove(task);
         }
-        int GetWaitTime()
+        public int GetWaitTime()
         {
             long wait = int.MaxValue;
             DateTime now = DateTime.UtcNow;

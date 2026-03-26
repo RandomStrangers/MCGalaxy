@@ -19,7 +19,7 @@ namespace MCGalaxy.Modules.Moderation.Review
     public sealed class ReviewPlugin : Plugin
     {
         public override string Name => "Review";
-        readonly Command cmdReview = new CmdReview();
+        public readonly Command cmdReview = new CmdReview();
         public override void Load(bool startup)
         {
             OnPlayerConnectEvent.Register(CheckReviewList, Priority.Low);
@@ -30,7 +30,7 @@ namespace MCGalaxy.Modules.Moderation.Review
             OnPlayerConnectEvent.Unregister(CheckReviewList);
             Command.Unregister(cmdReview);
         }
-        static void CheckReviewList(Player p)
+        public static void CheckReviewList(Player p)
         {
             if (!p.CanUse("Review")) return;
             ItemPerms checkPerms = CommandExtraPerms.Find("Review", 1);

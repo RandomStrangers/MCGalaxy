@@ -33,7 +33,7 @@ namespace MCGalaxy
             }
             return new(hex);
         }
-        static char HexEncode(int i) => i < 10 ? (char)(i + '0') : (char)(i - 10 + 'a');
+        public static char HexEncode(int i) => i < 10 ? (char)(i + '0') : (char)(i - 10 + 'a');
         public static int Clamp(int value, int lo, int hi) => Math.Max(Math.Min(value, hi), lo);
         /// <summary> Divides x by y, rounding up if there is a remainder. </summary>
         public static int CeilDiv(int x, int y) => (x + (y - 1)) / y;

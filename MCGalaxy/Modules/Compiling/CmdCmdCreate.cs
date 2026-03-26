@@ -16,7 +16,7 @@ using MCGalaxy.Commands;
 using System.IO;
 namespace MCGalaxy.Modules.Compiling
 {
-    sealed class CmdCmdCreate : CmdCompile
+    public sealed class CmdCmdCreate : CmdCompile
     {
         public override string Name => "CmdCreate";
         public override string Shortcut => "";
@@ -31,7 +31,7 @@ namespace MCGalaxy.Modules.Compiling
             foreach (string name in paths)
                 CreateFile(p, name, Compiler.PluginPath(name), "plugin &f", Compiler.GenExamplePlugin(name, p.IsSuper ? Server.Config.Name : p.truename));
         }
-        static bool CreateFile(Player p, string name, string path, string type, string source)
+        public static bool CreateFile(Player p, string name, string path, string type, string source)
         {
             if (File.Exists(path))
             {

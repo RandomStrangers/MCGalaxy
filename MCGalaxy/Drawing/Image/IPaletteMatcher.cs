@@ -18,13 +18,13 @@ namespace MCGalaxy.Drawing
 {
     public interface IPaletteMatcher
     {
-        void SetPalette(PaletteEntry[] front, PaletteEntry[] back);
-        ushort BestMatch(ref Pixel P);
-        ushort BestMatch(byte R, byte G, byte B, out bool backLayer);
+        public void SetPalette(PaletteEntry[] front, PaletteEntry[] back);
+        public ushort BestMatch(ref Pixel P);
+        public ushort BestMatch(byte R, byte G, byte B, out bool backLayer);
     }
     public sealed class RgbPaletteMatcher : IPaletteMatcher
     {
-        PaletteEntry[] front, back;
+        public PaletteEntry[] front, back;
         public void SetPalette(PaletteEntry[] front, PaletteEntry[] back)
         {
             this.front = front;
@@ -45,7 +45,7 @@ namespace MCGalaxy.Drawing
             backLayer = backDist < frontDist;
             return backLayer ? back[backPos].Block : front[frontPos].Block;
         }
-        static int MinDist(byte R, byte G, byte B, PaletteEntry[] entries, out int pos)
+        public static int MinDist(byte R, byte G, byte B, PaletteEntry[] entries, out int pos)
         {
             int minDist = int.MaxValue;
             pos = 0;
@@ -67,8 +67,8 @@ namespace MCGalaxy.Drawing
     }
     public sealed class LabPaletteMatcher : IPaletteMatcher
     {
-        LabColor[] palette;
-        PaletteEntry[] front;
+        public LabColor[] palette;
+        public PaletteEntry[] front;
         public void SetPalette(PaletteEntry[] front, PaletteEntry[] _)
         {
             this.front = front;
@@ -92,7 +92,7 @@ namespace MCGalaxy.Drawing
             MinDist(R, G, B, palette, out int pos);
             return front[pos].Block;
         }
-        static double MinDist(byte R, byte G, byte B, LabColor[] entries, out int pos)
+        public static double MinDist(byte R, byte G, byte B, LabColor[] entries, out int pos)
         {
             double minDist = int.MaxValue;
             pos = 0;
@@ -112,38 +112,41 @@ namespace MCGalaxy.Drawing
             }
             return minDist;
         }
-        struct LabColor
+        public struct LabColor
         {
             public double L, A, B;
         }
-        static LabColor RgbToLab(byte r, byte g, byte b)
+        public static LabColor RgbToLab(byte r, byte g, byte b)
         {
             double R = r / 255.0,
                 G = g / 255.0,
                 B = b / 255.0;
-            if (R > 0.04045)
+            switch (R)
             {
-                R = Math.Pow((R + 0.055) / 1.055, 2.4);
+                case > 0.04045:
+                    R = Math.Pow((R + 0.055) / 1.055, 2.4);
+                    break;
+                default:
+                    R /= 12.92;
+                    break;
             }
-            else
+            switch (G)
             {
-                R /= 12.92;
+                case > 0.04045:
+                    G = Math.Pow((G + 0.055) / 1.055, 2.4);
+                    break;
+                default:
+                    G /= 12.92;
+                    break;
             }
-            if (G > 0.04045)
+            switch (B)
             {
-                G = Math.Pow((G + 0.055) / 1.055, 2.4);
-            }
-            else
-            {
-                G /= 12.92;
-            }
-            if (B > 0.04045)
-            {
-                B = Math.Pow((B + 0.055) / 1.055, 2.4);
-            }
-            else
-            {
-                B /= 12.92;
+                case > 0.04045:
+                    B = Math.Pow((B + 0.055) / 1.055, 2.4);
+                    break;
+                default:
+                    B /= 12.92;
+                    break;
             }
             double X = R * 0.4124 + G * 0.3576 + B * 0.1805,
                 Y = R * 0.2126 + G * 0.7152 + B * 0.0722,
@@ -151,37 +154,15 @@ namespace MCGalaxy.Drawing
             X /= 95.047;
             Y /= 100.0;
             Z /= 108.883;
-            if (X > 0.008856)
-            {
-                X = Math.Pow(X, 1.0 / 3);
-            }
-            else
-            {
-                X = (7.787 * X) + (16.0 / 116);
-            }
-            if (Y > 0.008856)
-            {
-                Y = Math.Pow(Y, 1.0 / 3);
-            }
-            else
-            {
-                Y = (7.787 * Y) + (16.0 / 116);
-            }
-            if (Z > 0.008856)
-            {
-                Z = Math.Pow(Z, 1.0 / 3);
-            }
-            else
-            {
-                Z = (7.787 * Z) + (16.0 / 116);
-            }
-            LabColor lab = new()
+            X = X > 0.008856 ? Math.Pow(X, 1.0 / 3) : (7.787 * X) + (16.0 / 116);
+            Y = Y > 0.008856 ? Math.Pow(Y, 1.0 / 3) : (7.787 * Y) + (16.0 / 116);
+            Z = Z > 0.008856 ? Math.Pow(Z, 1.0 / 3) : (7.787 * Z) + (16.0 / 116);
+            return new()
             {
                 L = 116 * Y - 16,
                 A = 500 * (X - Y),
                 B = 200 * (Y - Z)
             };
-            return lab;
         }
     }
 }

@@ -23,8 +23,8 @@ namespace MCGalaxy.Network
         public IPAddress IP;
         public int Port;
         public bool Listening;
-        Socket socket;
-        void DisableIPV6OnlyListener()
+        public Socket socket;
+        public void DisableIPV6OnlyListener()
         {
             if (socket.AddressFamily != AddressFamily.InterNetworkV6)
                 return;
@@ -37,7 +37,7 @@ namespace MCGalaxy.Network
                 Logger.LogError("Failed to disable IPv6 only listener setting", ex);
             }
         }
-        void EnableAddressReuse()
+        public void EnableAddressReuse()
         {
             if (Server.RunningOnMono())
                 try
@@ -74,7 +74,7 @@ namespace MCGalaxy.Network
             Listening = true;
             Logger.Log(LogType.SystemActivity, "Started listening on port {0}... ", port);
         }
-        void AcceptNextAsync()
+        public void AcceptNextAsync()
         {
             for (int i = 0; i < 3; i++)
                 try
@@ -87,8 +87,8 @@ namespace MCGalaxy.Network
                     Logger.LogError(ex);
                 }
         }
-        static readonly AsyncCallback acceptCallback = new(AcceptCallback);
-        static void AcceptCallback(IAsyncResult result)
+        public static readonly AsyncCallback acceptCallback = new(AcceptCallback);
+        public static void AcceptCallback(IAsyncResult result)
         {
             if (!Server.shuttingDown)
             {

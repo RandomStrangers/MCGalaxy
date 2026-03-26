@@ -15,7 +15,7 @@
 using MCGalaxy.Commands;
 namespace MCGalaxy.Modules.Compiling
 {
-    sealed class CmdCompLoad : CmdCompile
+    public sealed class CmdCompLoad : CmdCompile
     {
         public override string Name => "CompLoad";
         public override string Shortcut => "cml";
@@ -28,7 +28,7 @@ namespace MCGalaxy.Modules.Compiling
             base.CompilePlugin(p, paths);
             Compiler.LoadPlugins(p, dst);
         }
-        static void UnloadPlugin(Player p, string name)
+        public static void UnloadPlugin(Player p, string name)
         {
             Plugin plugin = Plugin.FindCustom(name);
             if (plugin == null)
@@ -43,7 +43,7 @@ namespace MCGalaxy.Modules.Compiling
             base.CompileCommand(p, paths);
             Compiler.LoadCommands(p, dst);
         }
-        static void UnloadCommand(Player p, string cmdName)
+        public static void UnloadCommand(Player p, string cmdName)
         {
             string cmdArgs = "";
             Search(ref cmdName, ref cmdArgs);

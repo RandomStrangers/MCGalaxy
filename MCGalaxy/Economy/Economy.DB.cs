@@ -18,7 +18,7 @@ namespace MCGalaxy.Eco
 {
     public static partial class Economy
     {
-        static readonly ColumnDesc[] ecoTable = new ColumnDesc[] {
+        public static readonly ColumnDesc[] ecoTable = new ColumnDesc[] {
             new("player", ColumnType.VarChar, 20, priKey: true),
             new("money", ColumnType.Int32),
             new("total", ColumnType.Int32),
@@ -50,7 +50,7 @@ namespace MCGalaxy.Eco
         public static void UpdateStats(EcoStats stats) => Database.AddOrReplaceRow("Economy", "player, money, total, purchase, payment, salary, fine",
                                      stats.Player, 0, stats.TotalSpent, stats.Purchase,
                                      stats.Payment, stats.Salary, stats.Fine);
-        static EcoStats ParseStats(ISqlRecord record) => new()
+        public static EcoStats ParseStats(ISqlRecord record) => new()
         {
             Player = record.GetText("player"),
             Payment = Parse(record.GetText("payment")),
@@ -59,7 +59,7 @@ namespace MCGalaxy.Eco
             Fine = Parse(record.GetText("fine")),
             TotalSpent = record.GetInt("total"),
         };
-        static string Parse(string raw) => raw == null || raw.Length == 0 || raw.CaselessEq("NULL") ? null : raw.CaselessEq("%cNone") ? null : raw;
+        public static string Parse(string raw) => raw == null || raw.Length == 0 || raw.CaselessEq("NULL") ? null : raw.CaselessEq("%cNone") ? null : raw;
         public static EcoStats RetrieveStats(string name)
         {
             EcoStats stats = default;

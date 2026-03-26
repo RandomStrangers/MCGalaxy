@@ -60,7 +60,7 @@ namespace MCGalaxy.Eco
             return null;
         }
         public bool Remove(LevelPermission perm) => Ranks.Remove(Find(perm));
-        RankEntry NextRank(Player p)
+        public RankEntry NextRank(Player p)
         {
             if (p.IsSuper) return null;
             foreach (RankEntry rank in Ranks)

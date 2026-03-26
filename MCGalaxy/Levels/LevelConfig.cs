@@ -19,9 +19,9 @@ using System.Collections.Generic;
 using System.IO;
 namespace MCGalaxy
 {
-    class ConfigEnvIntAttribute : ConfigIntegerAttribute
+    public class ConfigEnvIntAttribute : ConfigIntegerAttribute
     {
-        readonly int minValue, maxValue;
+        public readonly int minValue, maxValue;
         public ConfigEnvIntAttribute(string name, int min, int max)
             : base(name, "Env") { minValue = min; maxValue = max; }
         public override object Parse(string value)
@@ -45,7 +45,7 @@ namespace MCGalaxy
             return NumberUtils.StringifyInt(num);
         }
     }
-    class ConfigExpFogAttribute : ConfigEnvIntAttribute
+    public class ConfigExpFogAttribute : ConfigEnvIntAttribute
     {
         public ConfigExpFogAttribute(string name) : base(name, -1, 1) { }
         public override object Parse(string raw) => bool.TryParse(raw, out bool value) ? value ? 1 : 0 : base.Parse(raw);
@@ -53,7 +53,7 @@ namespace MCGalaxy
     public abstract class EnvConfig
     {
         public const int ENV_USE_DEFAULT = int.MaxValue;
-        const int envRange = 0xFFFFFF;
+        public const int envRange = 0xFFFFFF;
         [ConfigEnvInt("Weather", -1, 2)]
         public int Weather = ENV_USE_DEFAULT;
         /// <summary> Elevation of the "ocean" that surrounds maps. Default is map height / 2. </summary>
@@ -266,7 +266,7 @@ namespace MCGalaxy
         public bool KillerBlocks = true;
         [ConfigBool("DrawingAllowed", "Game", true)]
         public bool Drawing = true;
-        readonly object saveLock = new();
+        public readonly object saveLock = new();
         public string Color
         {
             get

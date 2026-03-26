@@ -25,8 +25,8 @@ namespace MCGalaxy
     public sealed class RidgedMultifractal : IModule
     {
         public int OctaveCount;
-        double mLacunarity;
-        readonly double[] SpectralWeights = new double[30];
+        public double mLacunarity;
+        public readonly double[] SpectralWeights = new double[30];
         public RidgedMultifractal()
         {
             Lacunarity = 2.0;
@@ -67,7 +67,7 @@ namespace MCGalaxy
                 CalculateSpectralWeights();
             }
         }
-        void CalculateSpectralWeights()
+        public void CalculateSpectralWeights()
         {
             double h = 1.0, frequency = 1.0;
             for (int i = 0; i < 30; i++)

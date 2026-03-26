@@ -25,9 +25,9 @@ namespace MCGalaxy.Games
     public abstract class Weapon
     {
         public abstract string Name { get; }
-        static bool hookedEvents;
+        public static bool hookedEvents;
         protected Player p;
-        AimBox aimer;
+        public AimBox aimer;
         /// <summary> Applies this weapon to the given player, and sets up necessary state. </summary>
         public virtual void Enable(Player p)
         {
@@ -64,7 +64,7 @@ namespace MCGalaxy.Games
         /// <summary> Called when the player fires this weapon. </summary>
         /// <remarks> Activated by clicking through either PlayerClick or on a glass box around the player. </remarks>
         protected abstract void OnActivated(Vec3F32 dir, ushort block);
-        static void BlockChangingCallback(Player p, ushort x, ushort y, ushort z, ushort block, bool placing, ref bool cancel)
+        public static void BlockChangingCallback(Player p, ushort x, ushort y, ushort z, ushort block, bool placing, ref bool cancel)
         {
             Weapon weapon = p.weapon;
             if (weapon == null) return;
@@ -80,7 +80,7 @@ namespace MCGalaxy.Games
             Vec3F32 dir = DirUtils.GetDirVector(p.Rot.RotY, p.Rot.HeadX);
             weapon.OnActivated(dir, block);
         }
-        static void PlayerClickCallback(Player p, MouseButton btn, MouseAction action,
+        public static void PlayerClickCallback(Player p, MouseButton btn, MouseAction action,
                                         ushort yaw, ushort pitch, byte entity,
                                         ushort x, ushort y, ushort z, TargetBlockFace face)
         {
@@ -149,17 +149,17 @@ namespace MCGalaxy.Games
         }
     }
     /// <summary> Manages the glass box around the player. Adjusts based on where player is looking. </summary>
-    internal sealed class AimBox
+    public sealed class AimBox
     {
-        Player player;
-        readonly List<Vec3U16> lastGlass = new(), curGlass = new();
+        public Player player;
+        public readonly List<Vec3U16> lastGlass = new(), curGlass = new();
         public void Hook(Player p)
         {
             player = p;
             SchedulerTask task = new(AimCallback, null, TimeSpan.Zero, true);
             p.CriticalTasks.Add(task);
         }
-        void AimCallback(SchedulerTask task)
+        public void AimCallback(SchedulerTask task)
         {
             Player p = player;
             if (p.aiming) 
@@ -174,7 +174,7 @@ namespace MCGalaxy.Games
             }
             task.Repeating = false;
         }
-        void Update()
+        public void Update()
         {
             Player p = player;
             Vec3F32 dir = DirUtils.GetDirVector(p.Rot.RotY, p.Rot.HeadX);
@@ -202,7 +202,7 @@ namespace MCGalaxy.Games
             }
             curGlass.Clear();
         }
-        void Check(Level lvl, int x, int y, int z)
+        public void Check(Level lvl, int x, int y, int z)
         {
             Vec3U16 pos = new((ushort)x, (ushort)(y - 1), (ushort)z);
             if (lvl.IsAirAt(pos.X, pos.Y, pos.Z)) curGlass.Add(pos);

@@ -31,7 +31,7 @@ namespace MCGalaxy.Generator.fCraft
             n = (n << 13) ^ n;
             return (float)(1.0 - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7FFFFFFF) / 1073741824d);
         }
-        readonly float[,] points = new float[4, 4];
+        public readonly float[,] points = new float[4, 4];
         public float InterpolatedNoise(float x, float y)
         {
             int xInt = (int)Math.Floor(x);

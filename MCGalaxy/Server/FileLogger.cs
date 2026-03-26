@@ -21,11 +21,11 @@ namespace MCGalaxy
 {
     public static class FileLogger
     {
-        static bool disposed;
-        static DateTime last;
-        static readonly object logLock = new();
+        public static bool disposed;
+        public static DateTime last;
+        public static readonly object logLock = new();
         public static readonly FileLogGroup err = new(), msg = new();
-        static SchedulerTask logTask;
+        public static SchedulerTask logTask;
         public static void Init()
         {
             Server.EnsureDirectoryExists("logs");
@@ -35,7 +35,7 @@ namespace MCGalaxy
             logTask = Server.MainScheduler.QueueRepeat(Flush, null,
                                                        TimeSpan.FromMilliseconds(500));
         }
-        static void UpdatePaths()
+        public static void UpdatePaths()
         {
             DateTime now = DateTime.Now;
             if (now.Year == last.Year && now.Month == last.Month && now.Day == last.Day)
@@ -46,7 +46,7 @@ namespace MCGalaxy
             err.Close();
             msg.Close();
         }
-        static void LogMessage(LogType type, string message)
+        public static void LogMessage(LogType type, string message)
         {
             if (!string.IsNullOrEmpty(message) && Server.Config.FileLogging[(int)type])
             {
@@ -99,8 +99,8 @@ namespace MCGalaxy
     {
         public string Path;
         public Queue<string> Cache = new();
-        Stream stream;
-        StreamWriter writer;
+        public Stream stream;
+        public StreamWriter writer;
         public void FlushCache()
         {
             if (stream == null)

@@ -217,7 +217,7 @@ namespace MCGalaxy
             p.BlockUntilLoad(10);
             p.SendPosition(dst.Pos, dst.Rot);
         }
-        static void SavePreTeleportState(Player p)
+        public static void SavePreTeleportState(Player p)
         {
             p.PreTeleportMap = p.Level.name;
             p.PreTeleportPos = p.Pos;

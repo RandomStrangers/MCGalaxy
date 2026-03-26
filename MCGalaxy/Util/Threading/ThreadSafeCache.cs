@@ -20,9 +20,9 @@ namespace MCGalaxy.Util
     public sealed class ThreadSafeCache
     {
         public static ThreadSafeCache DBCache = new();
-        readonly object locker = new();
-        readonly Dictionary<string, object> items = new();
-        readonly Dictionary<string, DateTime> access = new();
+        public readonly object locker = new();
+        public readonly Dictionary<string, object> items = new();
+        public readonly Dictionary<string, DateTime> access = new();
         public object GetLocker(string key)
         {
             lock (locker)

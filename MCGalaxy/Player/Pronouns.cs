@@ -20,8 +20,8 @@ namespace MCGalaxy
 {
     public class Pronouns
     {
-        static readonly object locker = new();
-        static readonly List<Pronouns> Loaded = new();
+        public static readonly object locker = new();
+        public static readonly List<Pronouns> Loaded = new();
         public static Pronouns Default;
         /// <summary>
         /// Called once to initialize the defaults and write/read the config file as necessary.
@@ -55,7 +55,7 @@ namespace MCGalaxy
             Events.ServerEvents.OnConfigUpdatedEvent.Register(OnConfigUpdated, Priority.Low);
             OnConfigUpdated();
         }
-        static void OnConfigUpdated()
+        public static void OnConfigUpdated()
         {
             lock (locker)
             {
@@ -80,7 +80,7 @@ namespace MCGalaxy
             foreach (Player p in PlayerInfo.Online.Items)
                 p.pronounsList = GetFor(p.name);
         }
-        static void LoadFrom(string line)
+        public static void LoadFrom(string line)
         {
             string[] words = line.ToLower().SplitSpaces();
             if (words.Length < 5)
@@ -113,7 +113,7 @@ namespace MCGalaxy
             };
             Loaded.Add(new(name, words[1], words[2], words[3], plural, tpos));
         }
-        static string PlayerPath(string playerName) => "text/pronouns/" + playerName + ".txt";
+        public static string PlayerPath(string playerName) => "text/pronouns/" + playerName + ".txt";
         /// <summary>
         /// Find the pronouns associated with the playerName. Returns Default pronouns if none were specified.
         /// </summary>
@@ -225,7 +225,7 @@ namespace MCGalaxy
         /// have, has
         /// </summary>
         public readonly string PresentPerfectVerb;
-        private Pronouns(string name, string subject, string obj, string reflexive, bool plural, string thirdPersonObjectiveSingular)
+        public Pronouns(string name, string subject, string obj, string reflexive, bool plural, string thirdPersonObjectiveSingular)
         {
             Name = name;
             Subject = subject;
@@ -237,7 +237,7 @@ namespace MCGalaxy
             PastVerb = Plural ? "were" : "was";
             PresentPerfectVerb = Plural ? "have" : "has";
         }
-        void Write(StreamWriter w)
+        public void Write(StreamWriter w)
         {
             w.WriteLine(string.Format("{0} {1} {2} {3} {4} {5}",
                 Name, Subject, Object, Reflexive, Plural ? "plural" : "singular", ThirdPersonObjectiveSingular));

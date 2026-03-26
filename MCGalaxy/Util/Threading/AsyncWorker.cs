@@ -20,14 +20,14 @@ namespace MCGalaxy
     /// <summary> Asynchronously performs work on a background thread </summary>
     public abstract class AsyncWorker<T>
     {
-        readonly AutoResetEvent handle = new(false);
-        volatile bool terminating;
+        public readonly AutoResetEvent handle = new(false);
+        public volatile bool terminating;
         protected Queue<T> queue = new();
         protected readonly object queueLock = new();
         protected abstract void HandleNext();
         /// <summary> Name to assign the worker thread </summary>
         protected abstract string ThreadName { get; }
-        void SendLoop()
+        public void SendLoop()
         {
             for (; ; )
             {
@@ -52,7 +52,7 @@ namespace MCGalaxy
             {
             }
         }
-        void WakeupWorker()
+        public void WakeupWorker()
         {
             try
             {

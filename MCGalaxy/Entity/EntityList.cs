@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
-    class VisibleEntity
+    public class VisibleEntity
     {
         public readonly Entity e;
         public readonly byte id;
@@ -29,7 +29,7 @@ namespace MCGalaxy
             this.displayName = displayName;
         }
     }
-    class TabObject
+    public class TabObject
     {
         public readonly object o;
         public readonly byte id;
@@ -52,7 +52,7 @@ namespace MCGalaxy
             this.groupRank = groupRank;
         }
     }
-    class WaitingEntity : VisibleEntity
+    public class WaitingEntity : VisibleEntity
     {
         public readonly bool tabList;
         public WaitingEntity(Entity e, byte id, string displayName, bool tabList) : base(e, id, displayName) => this.tabList = tabList;
@@ -62,21 +62,21 @@ namespace MCGalaxy
     /// </summary>
     public sealed class EntityList
     {
-        readonly Player p;
-        readonly Dictionary<Entity, VisibleEntity> visible = new();
-        readonly List<WaitingEntity> invisible = new();
-        WaitingEntity IsWaitingToSpawn(Entity e)
+        public readonly Player p;
+        public readonly Dictionary<Entity, VisibleEntity> visible = new();
+        public readonly List<WaitingEntity> invisible = new();
+        public WaitingEntity IsWaitingToSpawn(Entity e)
         {
             foreach (WaitingEntity vis in invisible)
                 if (vis.e == e) return vis;
             return null;
         }
-        readonly Stack<byte> freeIDs;
-        readonly object locker = new();
+        public readonly Stack<byte> freeIDs;
+        public readonly object locker = new();
         #region TabList
-        readonly Dictionary<object, TabObject> tabObjects = new();
-        readonly bool[] usedTabIDs;
-        void AddTab(Entity e)
+        public readonly Dictionary<object, TabObject> tabObjects = new();
+        public readonly bool[] usedTabIDs;
+        public void AddTab(Entity e)
         {
             if (e is Player player)
             {
@@ -85,7 +85,7 @@ namespace MCGalaxy
             else if (e is PlayerBot bot && Server.Config.TablistBots)
                 TabList.Add(p, bot);
         }
-        void RemoveTab(Entity e)
+        public void RemoveTab(Entity e)
         {
             if (e is Player player)
             {
@@ -113,7 +113,7 @@ namespace MCGalaxy
                 p.Session.SendAddTabEntry(tabby.id, tabby.name, tabby.nick, tabby.group, tabby.groupRank);
             }
         }
-        int FindFreeTabID(object o, bool self)
+        public int FindFreeTabID(object o, bool self)
         {
             if (self) return 0xFF;
             if (o is Entity entity)
@@ -146,7 +146,7 @@ namespace MCGalaxy
                 }
         }
         #endregion
-        readonly byte maxEntityID;
+        public readonly byte maxEntityID;
         public EntityList(Player p, byte maxEntityID)
         {
             this.p = p;
@@ -224,14 +224,14 @@ namespace MCGalaxy
                     return false;
             }
         }
-        void Spawn(VisibleEntity vis, Position pos, Orientation rot, string skin, string name, string model)
+        public void Spawn(VisibleEntity vis, Position pos, Orientation rot, string skin, string name, string model)
         {
             p.Session.SendSpawnEntity(vis.id, name, skin, pos, rot);
             SendModel(vis, model);
             SendRot(vis, rot);
             SendScales(vis);
         }
-        void Despawn(VisibleEntity vis) => p.Session.SendRemoveEntity(vis.id);
+        public void Despawn(VisibleEntity vis) => p.Session.SendRemoveEntity(vis.id);
         /// <summary>
         /// Calls OnSendingModelEvent and changes the model of the given entity.
         /// </summary>
@@ -241,12 +241,12 @@ namespace MCGalaxy
             lock (locker)
                 if (visible.TryGetValue(e, out VisibleEntity vis)) SendModel(vis, model);
         }
-        void SendModel(VisibleEntity vis, string model)
+        public void SendModel(VisibleEntity vis, string model)
         {
             if (p.hasChangeModel)
                 p.Session.SendChangeModel(vis.id, model);
         }
-        void SendRot(VisibleEntity vis, Orientation rot)
+        public void SendRot(VisibleEntity vis, Orientation rot)
         {
             if (p.Supports(CpeExt.EntityProperty))
             {
@@ -259,7 +259,7 @@ namespace MCGalaxy
             lock (locker)
                 if (visible.TryGetValue(e, out VisibleEntity vis)) SendScales(vis);
         }
-        void SendScales(VisibleEntity vis)
+        public void SendScales(VisibleEntity vis)
         {
             if (!p.Supports(CpeExt.EntityProperty)) return;
             float max = ModelInfo.MaxScale(vis.e, vis.e.Model);
@@ -267,7 +267,7 @@ namespace MCGalaxy
             SendScale(vis, EntityProp.ScaleY, vis.e.ScaleY, max);
             SendScale(vis, EntityProp.ScaleZ, vis.e.ScaleZ, max);
         }
-        void SendScale(VisibleEntity vis, EntityProp axis, float value, float max)
+        public void SendScale(VisibleEntity vis, EntityProp axis, float value, float max)
         {
             if (value == 0) return;
             value = Math.Min(value, max);
@@ -291,7 +291,7 @@ namespace MCGalaxy
             id = 0;
             return false;
         }
-        readonly Dictionary<Entity, VisibleEntity> cachedVisible = new(32);
+        public readonly Dictionary<Entity, VisibleEntity> cachedVisible = new(32);
         internal unsafe void BroadcastEntityPositions()
         {
             byte* src = stackalloc byte[16 * 256],
@@ -338,6 +338,6 @@ namespace MCGalaxy
                     pair.Key._lastRot = pair.Key.Rot;
                 }
         }
-        static byte FlippedPitch(byte pitch) => pitch > 64 && pitch < 192 ? pitch : (byte)128;
+        public static byte FlippedPitch(byte pitch) => pitch > 64 && pitch < 192 ? pitch : (byte)128;
     }
 }

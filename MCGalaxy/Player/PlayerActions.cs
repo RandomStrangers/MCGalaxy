@@ -33,7 +33,7 @@ namespace MCGalaxy
         }
         public static bool ChangeMap(Player p, string name) => ChangeMap(p, null, name);
         public static bool ChangeMap(Player p, Level lvl) => ChangeMap(p, lvl, null);
-        static bool ChangeMap(Player p, Level lvl, string name)
+        public static bool ChangeMap(Player p, Level lvl, string name)
         {
             if (Interlocked.CompareExchange(ref p.UsingGoto, 1, 0) == 1)
             {
@@ -55,7 +55,7 @@ namespace MCGalaxy
             oldLevel.AutoUnload();
             return true;
         }
-        static bool GotoMap(Player p, string name)
+        public static bool GotoMap(Player p, string name)
         {
             Level lvl = LevelInfo.FindExact(name);
             if (lvl != null) return GotoLevel(p, lvl);
@@ -78,7 +78,7 @@ namespace MCGalaxy
                 return GotoLevel(p, lvl);
             }
         }
-        static bool LoadOfflineLevel(Player p, string map)
+        public static bool LoadOfflineLevel(Player p, string map)
         {
             string propsPath = LevelInfo.PropsPath(map);
             LevelConfig cfg = new();
@@ -98,7 +98,7 @@ namespace MCGalaxy
             p.Message("Level \"{0}\" failed to be auto-loaded.", map);
             return false;
         }
-        static bool GotoLevel(Player p, Level lvl)
+        public static bool GotoLevel(Player p, Level lvl)
         {
             if (p.Level == lvl) 
             { 
@@ -147,7 +147,7 @@ namespace MCGalaxy
             Chat.MessageFrom(ChatScope.All, p, msg + lvl.ColoredName,
                              null, FilterGoto(p, prev, lvl), announce);
         }
-        static ChatMessageFilter FilterGoto(Player source, Level prev, Level lvl) => (pl, obj) =>
+        public static ChatMessageFilter FilterGoto(Player source, Level prev, Level lvl) => (pl, obj) =>
                                                                                                   pl.CanSee(source) && !pl.Ignores.WorldChanges &&
                                                                                                   (Chat.FilterGlobal(pl, obj) || Chat.FilterLevel(pl, prev) || Chat.FilterLevel(pl, lvl));
         public static void Respawn(Player p)

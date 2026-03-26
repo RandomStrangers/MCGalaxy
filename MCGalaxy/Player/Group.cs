@@ -30,9 +30,9 @@ namespace MCGalaxy
             NASConsoleRank = new(LevelPermission.NASConsole, int.MaxValue, TimeSpan.MaxValue, "NAS", "&0", int.MaxValue, int.MaxValue);
         public static List<Group> GroupList = new();
         public static List<Group> AllRanks = new();
-        static bool reloading;
-        const int GEN_ADMIN = 225 * 1000 * 1000;
-        const int GEN_LIMIT = 30 * 1000 * 1000;
+        public static bool reloading;
+        public const int GEN_ADMIN = 225 * 1000 * 1000,
+            GEN_LIMIT = 30 * 1000 * 1000;
         public string Name;
         [ConfigPerm("Permission", null, LevelPermission.Null)]
         public LevelPermission Permission = LevelPermission.Null;
@@ -63,7 +63,7 @@ namespace MCGalaxy
         public bool[] CanPlace = new bool[1024],
             CanDelete = new bool[1024];
         public Group() { }
-        private Group(LevelPermission perm, int drawLimit, TimeSpan undoMins, string name, string color, int volume, int realms)
+        public Group(LevelPermission perm, int drawLimit, TimeSpan undoMins, string name, string color, int volume, int realms)
         {
             Permission = perm;
             DrawLimit = drawLimit;
@@ -97,7 +97,7 @@ namespace MCGalaxy
         /// <summary> Returns the color of the group with the given permission level </summary>
         /// <remarks> Returns white if no such group exists </remarks>
         public static string GetColor(LevelPermission perm) => Find(perm) != null ? Find(perm).Color : "&f";
-        static bool TryParse(string s, out sbyte result) => sbyte.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
+        public static bool TryParse(string s, out sbyte result) => sbyte.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
         public static LevelPermission ParsePermOrName(string value, LevelPermission defPerm)
         {
             if (value == null) return defPerm;
@@ -106,14 +106,14 @@ namespace MCGalaxy
             Group grp = Find(value);
             return grp != null ? grp.Permission : defPerm;
         }
-        static string GetPlural(string name)
+        public static string GetPlural(string name)
         {
             if (name.Length < 2) return name;
             string last2 = name.Substring(name.Length - 2).ToLower();
             return (last2 != "ed" || name.Length <= 3) && last2[1] != 's' ? name + "s" : name;
         }
         public string GetFormattedName() => Color + GetPlural(Name);
-        static void Add(LevelPermission perm, int drawLimit, int undoMins, string name, string color, int volume, int realms) => Register(new(perm, drawLimit, TimeSpan.FromMinutes(undoMins), name, color, volume, realms));
+        public static void Add(LevelPermission perm, int drawLimit, int undoMins, string name, string color, int volume, int realms) => Register(new(perm, drawLimit, TimeSpan.FromMinutes(undoMins), name, color, volume, realms));
         public static void Register(Group grp)
         {
             GroupList.Add(grp);
@@ -152,26 +152,26 @@ namespace MCGalaxy
             foreach (Player p in players)
                 UpdateGroup(p);
         }
-        static void UpdateGroup(Player p)
+        public static void UpdateGroup(Player p)
         {
             p.group = Find(p.group.Permission) ?? DefaultRank;
             p.UpdateColor(PlayerInfo.DefaultColor(p));
         }
-        static readonly object saveLock = new();
+        public static readonly object saveLock = new();
         public static void SaveAll(List<Group> givenList)
         {
             lock (saveLock)
                 SaveGroups(givenList);
             OnGroupSaveEvent.Call();
         }
-        void LoadPlayers()
+        public void LoadPlayers()
         {
             string desired = NumberUtils.StringifyInt((int)Permission) + "_rank";
             if (filename == null || !filename.StartsWith(desired))
                 MoveToDesired(desired);
             Players = PlayerList.Load("ranks/" + filename);
         }
-        void MoveToDesired(string desired)
+        public void MoveToDesired(string desired)
         {
             if (filename == null || !File.Exists("ranks/" + filename))
                 filename = desired + ".txt";
@@ -182,7 +182,7 @@ namespace MCGalaxy
                 for (char c = 'a'; c <= 'z'; c++)
                     if (MoveToFile(desired + c + ".txt")) return;
         }
-        bool MoveToFile(string newFile)
+        public bool MoveToFile(string newFile)
         {
             if (File.Exists("ranks/" + newFile)) return false;
             try
@@ -197,15 +197,15 @@ namespace MCGalaxy
                 return false;
             }
         }
-        static ConfigElement[] cfg;
-        static void LoadFromDisc()
+        public static ConfigElement[] cfg;
+        public static void LoadFromDisc()
         {
             Group temp = null;
             cfg ??= ConfigElement.GetAll(typeof(Group));
             PropertiesFile.Read(Paths.RankPropsFile, ref temp, ParseProperty, '=', false);
             if (temp != null) AddGroup(temp);
         }
-        static void ParseProperty(string key, string value, ref Group temp)
+        public static void ParseProperty(string key, string value, ref Group temp)
         {
             if (key.CaselessEq("RankName"))
             {
@@ -222,7 +222,7 @@ namespace MCGalaxy
                 ConfigElement.Parse(cfg, temp, key, value);
             }
         }
-        static void AddGroup(Group temp)
+        public static void AddGroup(Group temp)
         {
             string name = temp.Name;
             if (name.CaselessEq("op") || name.CaselessEq("NAS"))
@@ -244,7 +244,7 @@ namespace MCGalaxy
             else
                 Register(temp);
         }
-        static void SaveGroups(List<Group> givenList)
+        public static void SaveGroups(List<Group> givenList)
         {
             cfg ??= ConfigElement.GetAll(typeof(Group));
             using StreamWriter w = FileIO.CreateGuarded(Paths.RankPropsFile);

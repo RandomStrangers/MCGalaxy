@@ -25,8 +25,8 @@ namespace MCGalaxy.Network
     public sealed class PingList
     {
         public PingEntry[] Entries = new PingEntry[10];
-        int pingCounter, nextPingHead;
-        long ignorePositionData = -1;
+        public int pingCounter, nextPingHead;
+        public long ignorePositionData = -1;
         public bool IgnorePosition => Interlocked.Read(ref ignorePositionData) >= 0;
         internal void UnIgnorePosition(ushort data) => Interlocked.CompareExchange(ref ignorePositionData, -1, data);
         public ushort NextTwoWayPingData(bool startIgnoringPosition = false)
@@ -48,7 +48,7 @@ namespace MCGalaxy.Network
                 return;
             }
         }
-        bool Valid(int i) => Entries[i].TimeSent.Ticks != 0 && Entries[i].TimeRecv.Ticks != 0;
+        public bool Valid(int i) => Entries[i].TimeSent.Ticks != 0 && Entries[i].TimeRecv.Ticks != 0;
         public int Measures()
         {
             int measures = 0;

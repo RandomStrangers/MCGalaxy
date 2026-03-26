@@ -21,7 +21,7 @@ namespace MCGalaxy
     public sealed class PlayerMetaList
     {
         public readonly string file;
-        readonly object locker;
+        public readonly object locker;
         public PlayerMetaList(string file)
         {
             this.file = file;

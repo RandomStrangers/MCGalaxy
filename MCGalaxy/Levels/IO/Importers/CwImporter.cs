@@ -34,7 +34,7 @@ namespace MCGalaxy.Levels.IO
                 ReadMetadata((NbtCompound)file.RootTag["Metadata"], lvl);
             return lvl;
         }
-        static void ReadData(NbtCompound root, string name, out Level lvl)
+        public static void ReadData(NbtCompound root, string name, out Level lvl)
         {
             if (root["FormatVersion"].ByteValue > 1)
                 throw new NotSupportedException("Only version 1 of ClassicWorld format is supported.");
@@ -51,7 +51,7 @@ namespace MCGalaxy.Levels.IO
             }
             ConvertCustom(lvl);
         }
-        static void ReadExtBlocks(NbtCompound root, Level lvl)
+        public static void ReadExtBlocks(NbtCompound root, Level lvl)
         {
             byte[] lo = root["BlockArray"].ByteArrayValue,
                 hi = root["BlockArray2"].ByteArrayValue;
@@ -64,7 +64,7 @@ namespace MCGalaxy.Levels.IO
                 lvl.SetBlock(x, y, z, (ushort)b);
             }
         }
-        static void ReadSpawn(NbtCompound root, Level lvl)
+        public static void ReadSpawn(NbtCompound root, Level lvl)
         {
             if (root.Contains("Spawn"))
             {
@@ -76,7 +76,7 @@ namespace MCGalaxy.Levels.IO
                 lvl.roty = spawn["P"].ByteValue;
             }
         }
-        static void ReadMetadata(NbtCompound root, Level lvl)
+        public static void ReadMetadata(NbtCompound root, Level lvl)
         {
             if (root.Contains("CPE"))
             {
@@ -91,7 +91,7 @@ namespace MCGalaxy.Levels.IO
                     ParseBlockDefinitions(cpe, lvl);
             }
         }
-        static void ParseEnvMapAppearance(NbtCompound cpe, Level lvl)
+        public static void ParseEnvMapAppearance(NbtCompound cpe, Level lvl)
         {
             NbtCompound comp = (NbtCompound)cpe["EnvMapAppearance"];
             lvl.Config.HorizonBlock = Block.FromRaw(comp["EdgeBlock"].ByteValue);
@@ -106,7 +106,7 @@ namespace MCGalaxy.Levels.IO
                     lvl.Config.TexturePack = url == Server.Config.DefaultTexture ? "" : url;
             }
         }
-        static void ParseEnvColors(NbtCompound cpe, Level lvl)
+        public static void ParseEnvColors(NbtCompound cpe, Level lvl)
         {
             NbtCompound comp = (NbtCompound)cpe["EnvColors"];
             lvl.Config.SkyColor = GetColor(comp, "Sky");
@@ -115,7 +115,7 @@ namespace MCGalaxy.Levels.IO
             lvl.Config.LightColor = GetColor(comp, "Sunlight");
             lvl.Config.ShadowColor = GetColor(comp, "Ambient");
         }
-        static string GetColor(NbtCompound comp, string type)
+        public static string GetColor(NbtCompound comp, string type)
         {
             if (!comp.Contains(type))
                 return "";
@@ -123,7 +123,7 @@ namespace MCGalaxy.Levels.IO
             short r = rgb["R"].ShortValue, g = rgb["G"].ShortValue, b = rgb["B"].ShortValue;
             return r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255 ? "" : r.ToString("X2") + g.ToString("X2") + b.ToString("X2");
         }
-        static void ParseBlockDefinitions(NbtCompound cpe, Level lvl)
+        public static void ParseBlockDefinitions(NbtCompound cpe, Level lvl)
         {
             NbtCompound blocks = (NbtCompound)cpe["BlockDefinitions"];
             bool hasBlockDefs = false;
@@ -184,7 +184,7 @@ namespace MCGalaxy.Levels.IO
             if (hasBlockDefs)
                 BlockDefinition.Save(false, lvl);
         }
-        static void ImportTexs(BlockDefinition def, byte[] tex, int i)
+        public static void ImportTexs(BlockDefinition def, byte[] tex, int i)
         {
             int s = i == 0 ? 0 : 8;
             def.TopTex |= (ushort)(tex[i + 0] << s);
@@ -194,7 +194,7 @@ namespace MCGalaxy.Levels.IO
             def.FrontTex |= (ushort)(tex[i + 4] << s);
             def.BackTex |= (ushort)(tex[i + 5] << s);
         }
-        static bool PropsEquals(BlockDefinition a, BlockDefinition b) => b != null && b.Name != null && a.Name == b.Name && a.CollideType == b.CollideType && a.Speed == b.Speed && a.TopTex == b.TopTex
+        public static bool PropsEquals(BlockDefinition a, BlockDefinition b) => b != null && b.Name != null && a.Name == b.Name && a.CollideType == b.CollideType && a.Speed == b.Speed && a.TopTex == b.TopTex
                 && a.BottomTex == b.BottomTex && a.BlocksLight == b.BlocksLight && a.WalkSound == b.WalkSound
                 && a.FullBright == b.FullBright && a.Shape == b.Shape && a.BlockDraw == b.BlockDraw
                 && a.FogDensity == b.FogDensity && a.FogR == b.FogR && a.FogG == b.FogG && a.FogB == b.FogB

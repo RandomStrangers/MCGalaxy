@@ -1,4 +1,4 @@
-/*
+﻿/*
     Copyright 2015-2024 MCGalaxy
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -41,6 +41,7 @@ namespace MCGalaxy
         /// <summary> Converts a string consisting of code page 437 indices into unicode. </summary>
         public static string Cp437ToUnicode(this string str)
         {
+            str = str.ReplaceCursive();
             if (!HasSpecial(str))
                 return str;
             char[] c = str.ToCharArray();
@@ -52,6 +53,7 @@ namespace MCGalaxy
         /// <remarks> Unicode characters not in code page 437 are converted to '?'. </remarks>
         public static string UnicodeToCp437(this string str)
         {
+            str = str.ReplaceCursive();
             if (!HasSpecial(str))
                 return str;
             char[] c = str.ToCharArray();
@@ -70,6 +72,58 @@ namespace MCGalaxy
                 return EmotesHandler.ExtendedCharReplacements[c - 0x7F];
             return '?';
         }
+        public static string ReplaceCursive(this string str) => str.Replace("𝓐", "A")
+                .Replace("𝓑", "B")
+                .Replace("𝓒", "C")
+                .Replace("𝓓", "D")
+                .Replace("𝓔", "E")
+                .Replace("𝓕", "F")
+                .Replace("𝓖", "G")
+                .Replace("𝓗", "H")
+                .Replace("𝓘", "I")
+                .Replace("𝓙", "J")
+                .Replace("𝓚", "K")
+                .Replace("𝓛", "L")
+                .Replace("𝓜", "M")
+                .Replace("𝓝", "N")
+                .Replace("𝓞", "O")
+                .Replace("𝓟", "P")
+                .Replace("𝓠", "Q")
+                .Replace("𝓡", "R")
+                .Replace("𝓢", "S")
+                .Replace("𝓣", "T")
+                .Replace("𝓤", "U")
+                .Replace("𝓥", "V")
+                .Replace("𝓦", "W")
+                .Replace("𝓧", "X")
+                .Replace("𝓨", "Y")
+                .Replace("𝓩", "Z")
+                .Replace("𝓪", "a")
+                .Replace("𝓫", "b")
+                .Replace("𝓬", "c")
+                .Replace("𝓭", "d")
+                .Replace("𝓮", "e")
+                .Replace("𝓯", "f")
+                .Replace("𝓰", "g")
+                .Replace("𝓱", "h")
+                .Replace("𝓲", "i")
+                .Replace("𝓳", "j")
+                .Replace("𝓴", "k")
+                .Replace("𝓵", "l")
+                .Replace("𝓶", "m")
+                .Replace("𝓷", "n")
+                .Replace("𝓸", "o")
+                .Replace("𝓹", "p")
+                .Replace("𝓺", "q")
+                .Replace("𝓻", "r")
+                .Replace("𝓼", "s")
+                .Replace("𝓽", "t")
+                .Replace("𝓾", "u")
+                .Replace("𝓿", "v")
+                .Replace("𝔀", "w")
+                .Replace("𝔁", "x")
+                .Replace("𝔂", "y")
+                .Replace("𝔃", "z");
         /// <summary> Converts a unicode character into a code page 437 indice. </summary>
         public static char UnicodeToCp437(this char c)
         {
@@ -87,7 +141,7 @@ namespace MCGalaxy
             }
             return '?';
         }
-        static bool HasSpecial(string str)
+        public static bool HasSpecial(string str)
         {
             if (string.IsNullOrEmpty(str))
                 return false;

@@ -40,7 +40,7 @@ namespace MCGalaxy
             }
             Logger.Log(LogType.BackgroundActivity, "Saved BlockDB changes for: {0}", lvl.name);
         }
-        static Zone ParseZone(ISqlRecord record)
+        public static Zone ParseZone(ISqlRecord record)
         {
             Zone z = new()
             {
@@ -129,8 +129,8 @@ namespace MCGalaxy
             new("ExitX", ColumnType.UInt16),
             new("ExitY", ColumnType.UInt16),
             new("ExitZ", ColumnType.UInt16),
-        };
-        internal static ColumnDesc[] createMessages = new ColumnDesc[] {
+        },
+        createMessages = new ColumnDesc[] {
             new("X", ColumnType.UInt16),
             new("Y", ColumnType.UInt16),
             new("Z", ColumnType.UInt16),

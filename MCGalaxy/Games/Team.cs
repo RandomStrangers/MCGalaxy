@@ -60,7 +60,7 @@ namespace MCGalaxy.Games
                 PlayerInfo.FindExact(name)?.SetPrefix();
         }
         public static List<Team> Teams = new();
-        static readonly object ioLock = new();
+        public static readonly object ioLock = new();
         public static Team TeamIn(Player p)
         {
             foreach (Team team in Teams)
@@ -105,7 +105,7 @@ namespace MCGalaxy.Games
                 if (tmp.Name != null) Add(tmp);
             }
         }
-        static void LineProcessor(string key, string value, ref Team tmp)
+        public static void LineProcessor(string key, string value, ref Team tmp)
         {
             switch (key.ToLower())
             {

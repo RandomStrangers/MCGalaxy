@@ -20,7 +20,7 @@ namespace MCGalaxy.Modules.Relay.IRC
     {
         public override string Name => "IRCRelay";
         public static IRCBot Bot = new();
-        static readonly Command cmdIrcBot = new CmdIRCBot(),
+        public static readonly Command cmdIrcBot = new CmdIRCBot(),
             cmdIrcCtrls = new CmdIrcControllers();
         public override void Load(bool startup)
         {
@@ -35,15 +35,15 @@ namespace MCGalaxy.Modules.Relay.IRC
             OnConfigUpdatedEvent.Unregister(OnConfigUpdated);
             Bot.Disconnect("Disconnecting IRC bot");
         }
-        void OnConfigUpdated() => Bot.ReloadConfig();
+        public void OnConfigUpdated() => Bot.ReloadConfig();
     }
-    sealed class CmdIRCBot : RelayBotCmd
+    public sealed class CmdIRCBot : RelayBotCmd
     {
         public override string Name => "IRCBot";
         public override CommandAlias[] Aliases => new[] { new CommandAlias("ResetBot", "reset"), new CommandAlias("ResetIRC", "reset") };
         protected override RelayBot Bot => IRCPlugin.Bot;
     }
-    sealed class CmdIrcControllers : BotControllersCmd
+    public sealed class CmdIrcControllers : BotControllersCmd
     {
         public override string Name => "IRCControllers";
         public override string Shortcut => "IRCCtrl";

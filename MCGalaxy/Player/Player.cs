@@ -30,7 +30,7 @@ using System.Net;
 using System.Threading;
 namespace MCGalaxy
 {
-    sealed class NASConsolePlayer : Player
+    public sealed class NASConsolePlayer : Player
     {
         public NASConsolePlayer() : base("(NAS)")
         {
@@ -43,7 +43,7 @@ namespace MCGalaxy
     }
     public partial class Player : Entity, IDisposable
     {
-        static int sessionCounter;
+        public static int sessionCounter;
         public static Player NASConsole = new NASConsolePlayer();
         public Player(string playername)
         {
@@ -190,7 +190,7 @@ namespace MCGalaxy
         /// <summary> Disconnects the players from the server,
         /// with the same message shown in chat and in the disconnect packet. </summary>
         public void Leave(string msg, bool sync = false) => LeaveServer(msg, msg, false, sync);
-        void LeaveServer(string chatMsg, string discMsg, bool isKick, bool sync = false)
+        public void LeaveServer(string chatMsg, string discMsg, bool isKick, bool sync = false)
         {
             if (leftServer || IsSuper) return;
             leftServer = true;
@@ -241,7 +241,7 @@ namespace MCGalaxy
                 Socket.Close();
             }
         }
-        void ShowDisconnectInChat(string chatMsg, bool isKick)
+        public void ShowDisconnectInChat(string chatMsg, bool isKick)
         {
             if (chatMsg == null) return;
             if (!isKick)
@@ -373,7 +373,7 @@ namespace MCGalaxy
                 Blockchange = null;
             }
         }
-        void SelectionBlockChange(Player p, ushort x, ushort y, ushort z, ushort block)
+        public void SelectionBlockChange(Player p, ushort x, ushort y, ushort z, ushort block)
         {
             lock (selLock)
             {
@@ -404,14 +404,14 @@ namespace MCGalaxy
                     MakeSelection(selIndex, title, state, callback, markCallback);
             }
         }
-        string FormatSelectionMark(Vec3S32 P) => ": &S(" + P.X + ", " + P.Y + ", " + P.Z + ")";
-        void InitSelectionHUD()
+        public string FormatSelectionMark(Vec3S32 P) => ": &S(" + P.X + ", " + P.Y + ", " + P.Z + ")";
+        public void InitSelectionHUD()
         {
             SendCpeMessage(CpeMessageType.BottomRight3, selTitle);
             SendCpeMessage(CpeMessageType.BottomRight2, "Mark #1: &S(Not yet set)");
             SendCpeMessage(CpeMessageType.BottomRight1, selMarks.Length >= 2 ? "Mark #2: &S(Not yet set)" : "");
         }
-        void ResetSelectionHUD()
+        public void ResetSelectionHUD()
         {
             SendCpeMessage(CpeMessageType.BottomRight3, "");
             SendCpeMessage(CpeMessageType.BottomRight2, "");

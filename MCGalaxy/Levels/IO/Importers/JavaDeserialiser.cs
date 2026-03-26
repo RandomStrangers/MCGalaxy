@@ -66,7 +66,7 @@ namespace MCGalaxy.Levels.IO
         public long ReadInt64() => IPAddress.HostToNetworkOrder(src.ReadInt64());
         public string ReadUtf8() => Encoding.UTF8.GetString(src.ReadBytes(ReadUInt16()));
         public object ReadObject() => ReadObject(ReadUInt8());
-        object ReadObject(byte typeCode) => typeCode switch
+        public object ReadObject(byte typeCode) => typeCode switch
         {
             0x74 => NewString(),
             0x70 => null,
@@ -77,18 +77,18 @@ namespace MCGalaxy.Levels.IO
             0x76 => NewClass(),
             _ => throw new InvalidDataException("Invalid typecode: " + typeCode),
         };
-        string NewString()
+        public string NewString()
         {
             string value = ReadUtf8();
             handles.Add(value);
             return value;
         }
-        object PrevObject()
+        public object PrevObject()
         {
             int handle = ReadInt32() - 0x7E0000;
             return handle >= 0 && handle < handles.Count ? handles[handle] : throw new InvalidDataException("Invalid stream handle: " + handle);
         }
-        JObject NewObject()
+        public JObject NewObject()
         {
             JObject obj = new()
             {
@@ -107,7 +107,7 @@ namespace MCGalaxy.Levels.IO
                 obj.ClassData[i] = ClassData(descs[i]);
             return obj;
         }
-        JArray NewArray()
+        public JArray NewArray()
         {
             JArray array = new()
             {
@@ -132,7 +132,7 @@ namespace MCGalaxy.Levels.IO
             }
             return array;
         }
-        JClassDesc NewClassDesc()
+        public JClassDesc NewClassDesc()
         {
             JClassDesc desc = new()
             {
@@ -148,7 +148,7 @@ namespace MCGalaxy.Levels.IO
             desc.SuperClass = ClassDesc();
             return desc;
         }
-        JEnum NewEnum()
+        public JEnum NewEnum()
         {
             JEnum je = new()
             {
@@ -158,7 +158,7 @@ namespace MCGalaxy.Levels.IO
             je.Name = ReadObject();
             return je;
         }
-        JClass NewClass()
+        public JClass NewClass()
         {
             JClass jc = new()
             {
@@ -167,7 +167,7 @@ namespace MCGalaxy.Levels.IO
             handles.Add(jc);
             return jc;
         }
-        JClassDesc ClassDesc()
+        public JClassDesc ClassDesc()
         {
             byte typeCode = ReadUInt8();
             return typeCode == 0x72
@@ -176,7 +176,7 @@ namespace MCGalaxy.Levels.IO
                 ? null
                 : typeCode == 0x71 ? (JClassDesc)PrevObject() : throw new InvalidDataException("Invalid type code: " + typeCode);
         }
-        JClassData ClassData(JClassDesc desc)
+        public JClassData ClassData(JClassDesc desc)
         {
             if ((desc.Flags & 0x02) == 0)
                 throw new InvalidDataException("Invalid class data flags: " + desc.Flags);
@@ -190,7 +190,7 @@ namespace MCGalaxy.Levels.IO
                 SkipAnnotation();
             return data;
         }
-        unsafe object Value(char type)
+        public unsafe object Value(char type)
         {
             switch (type)
             {
@@ -221,7 +221,7 @@ namespace MCGalaxy.Levels.IO
                     };
             }
         }
-        JFieldDesc FieldDesc()
+        public JFieldDesc FieldDesc()
         {
             JFieldDesc desc = new();
             byte type = ReadUInt8();
@@ -237,7 +237,7 @@ namespace MCGalaxy.Levels.IO
                 throw new InvalidDataException("Invalid field type: " + type);
             return desc;
         }
-        void SkipAnnotation()
+        public void SkipAnnotation()
         {
             byte typeCode;
             while ((typeCode = ReadUInt8()) != 0x78)

@@ -25,9 +25,9 @@ namespace MCGalaxy.Modules.Security
     public sealed class IPThrottler : Plugin
     {
         public override string Name => "IPThrottler";
-        SchedulerTask clearTask;
-        readonly Dictionary<string, IPThrottleEntry> ips = new();
-        readonly object ipsLock = new();
+        public SchedulerTask clearTask;
+        public readonly Dictionary<string, IPThrottleEntry> ips = new();
+        public readonly object ipsLock = new();
         public override void Load(bool startup)
         {
             OnPlayerStartConnectingEvent.Register(HandleConnecting, Priority.System_Level);
@@ -40,7 +40,7 @@ namespace MCGalaxy.Modules.Security
             OnConnectionReceivedEvent.Unregister(HandleConnectionReceived);
             Server.Background.Cancel(clearTask);
         }
-        void HandleConnectionReceived(Socket s, ref bool cancel, ref bool announce)
+        public void HandleConnectionReceived(Socket s, ref bool cancel, ref bool announce)
         {
             IPAddress ip = SocketUtil.GetIP(s);
             if (Server.Config.IPSpamCheck && !IPAddress.IsLoopback(ip))
@@ -72,7 +72,7 @@ namespace MCGalaxy.Modules.Security
                 if ((failed % 1000) == 0) Logger.Log(LogType.SystemActivity, "Blocked {0} from connecting ({1} blocked attempts)", ipStr, failed);
             }
         }
-        void HandleConnecting(Player p, string mppass)
+        public void HandleConnecting(Player p, string mppass)
         {
             if (Server.Config.IPSpamCheck)
             {
@@ -94,12 +94,12 @@ namespace MCGalaxy.Modules.Security
                 }
             }
         }
-        class IPThrottleEntry : List<DateTime>
+        public class IPThrottleEntry : List<DateTime>
         {
             public DateTime BlockedUntil;
             public int FailedLogins;
         }
-        void CleanupTask(SchedulerTask task)
+        public void CleanupTask(SchedulerTask task)
         {
             lock (ipsLock)
             {

@@ -50,7 +50,7 @@ namespace MCGalaxy.Platform
             }
             return info;
         }
-        static bool IsWindowsPlatform(PlatformID platform) => platform switch
+        public static bool IsWindowsPlatform(PlatformID platform) => platform switch
         {
             PlatformID.Win32S => true,
             PlatformID.WinCE => true,
@@ -131,9 +131,9 @@ namespace MCGalaxy.Platform
             }
         }
         [DllImport("libc")]
-        static extern unsafe void uname(sbyte* uname_struct);
+        public static extern unsafe void uname(sbyte* uname_struct);
     }
-    class WindowsOS : IOperatingSystem
+    public class WindowsOS : IOperatingSystem
     {
         public override bool IsWindows => true;
         public override CPUTime MeasureAllCPUTime()
@@ -144,9 +144,9 @@ namespace MCGalaxy.Platform
             return all;
         }
         [DllImport("kernel32.dll")]
-        static extern int GetSystemTimes(out ulong idleTime, out ulong kernelTime, out ulong userTime);
+        public static extern int GetSystemTimes(out ulong idleTime, out ulong kernelTime, out ulong userTime);
     }
-    class UnixOS : IOperatingSystem
+    public class UnixOS : IOperatingSystem
     {
         public override bool IsWindows => false;
         public override void RestartProcess()
@@ -183,7 +183,7 @@ namespace MCGalaxy.Platform
             execvp("mono", new string[] { "mono", Server.GetPath(), null });
             Console.Out.WriteLine("execvp mono failed: {0}", Marshal.GetLastWin32Error());
         }
-        static CPUTime ParseCpuLine(string line)
+        public static CPUTime ParseCpuLine(string line)
         {
             line = line.Replace("  ", " ");
             string[] bits = line.SplitSpaces();
@@ -223,7 +223,7 @@ namespace MCGalaxy.Platform
                 };
             }
         }
-        static string[] GetProcessCommandLineArgs()
+        public static string[] GetProcessCommandLineArgs()
         {
             using StreamReader r = new("/proc/self/cmdline");
             string[] args = r.ReadToEnd().Split('\0');
@@ -231,9 +231,9 @@ namespace MCGalaxy.Platform
             return args;
         }
         [DllImport("libc", SetLastError = true)]
-        static extern int execvp(string path, string[] argv);
+        public static extern int execvp(string path, string[] argv);
     }
-    class LinuxOS : UnixOS
+    public class LinuxOS : UnixOS
     {
         public override CPUTime MeasureAllCPUTime()
         {
@@ -250,7 +250,7 @@ namespace MCGalaxy.Platform
                 UserTime = 2,
             };
         }
-        static CPUTime ParseCpuLine(string line)
+        public static CPUTime ParseCpuLine(string line)
         {
             line = line.Replace("  ", " ");
             string[] bits = line.SplitSpaces();
@@ -286,7 +286,7 @@ namespace MCGalaxy.Platform
             execvp("mono", new string[] { "mono", Server.GetPath(), null });
             Console.Out.WriteLine("execvp mono failed: {0}", Marshal.GetLastWin32Error());
         }
-        static string[] GetProcessCommandLineArgs()
+        public static string[] GetProcessCommandLineArgs()
         {
             using StreamReader r = new("/proc/self/cmdline");
             string[] args = r.ReadToEnd().Split('\0');
@@ -294,7 +294,7 @@ namespace MCGalaxy.Platform
             return args;
         }
     }
-    class FreeBSD_OS : UnixOS
+    public class FreeBSD_OS : UnixOS
     {
         public override unsafe CPUTime MeasureAllCPUTime()
         {
@@ -309,7 +309,7 @@ namespace MCGalaxy.Platform
             };
         }
     }
-    class NetBSD_OS : UnixOS
+    public class NetBSD_OS : UnixOS
     {
         public override unsafe CPUTime MeasureAllCPUTime()
         {
@@ -324,7 +324,7 @@ namespace MCGalaxy.Platform
             };
         }
     }
-    class MacOS : UnixOS
+    public class MacOS : UnixOS
     {
         public override CPUTime MeasureAllCPUTime()
         {
@@ -339,8 +339,8 @@ namespace MCGalaxy.Platform
             };
         }
         [DllImport("libc")]
-        static extern IntPtr mach_host_self();
+        public static extern IntPtr mach_host_self();
         [DllImport("libc")]
-        static extern int host_statistics(IntPtr port, int flavor, uint[] info, ref uint count);
+        public static extern int host_statistics(IntPtr port, int flavor, uint[] info, ref uint count);
     }
 }

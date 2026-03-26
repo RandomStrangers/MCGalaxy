@@ -19,7 +19,7 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy.Modules.Moderation.Review
 {
-    class CmdReview : Command
+    public class CmdReview : Command
     {
         public override string Name => "Review";
         public override string Shortcut => "rvw";
@@ -44,7 +44,7 @@ namespace MCGalaxy.Modules.Moderation.Review
             else
                 Help(p);
         }
-        void HandleEnter(Player p)
+        public void HandleEnter(Player p)
         {
             if (p.IsSuper) 
             { 
@@ -82,7 +82,7 @@ namespace MCGalaxy.Modules.Moderation.Review
                              "λNICK &Srequested a review! &c(Total " + pos + " waiting)", nextPerms, null, true);
             p.NextReviewTime = DateTime.UtcNow.Add(Server.Config.ReviewCooldown);
         }
-        void HandleView(Player p)
+        public void HandleView(Player p)
         {
             if (!CheckExtraPerm(p, 1)) return;
             List<string> inQueue = Server.reviewlist.All();
@@ -100,7 +100,7 @@ namespace MCGalaxy.Modules.Moderation.Review
                 pos++;
             }
         }
-        void HandleLeave(Player p)
+        public void HandleLeave(Player p)
         {
             if (Server.reviewlist.Remove(p.name))
             {
@@ -111,7 +111,7 @@ namespace MCGalaxy.Modules.Moderation.Review
                 p.Message("You weren't in the review queue to begin with.");
 
         }
-        void HandleNext(Player p)
+        public void HandleNext(Player p)
         {
             if (p.IsSuper) 
             { 
@@ -137,13 +137,13 @@ namespace MCGalaxy.Modules.Moderation.Review
             target.Message("Your review request has been answered by {0}.", target.FormatNick(p));
             AnnounceQueueChanged();
         }
-        void HandleClear(Player p)
+        public void HandleClear(Player p)
         {
             if (!CheckExtraPerm(p, 3)) return;
             Server.reviewlist.Clear();
             p.Message("The review queue has been cleared");
         }
-        static void AnnounceQueueChanged()
+        public static void AnnounceQueueChanged()
         {
             List<string> inQueue = Server.reviewlist.All();
             int pos = 1;

@@ -17,7 +17,7 @@ namespace MCGalaxy.Util.Imaging
 {
     public unsafe class JpegDecoder : ImageDecoder
     {
-        static readonly byte[] jfifSig = new byte[]
+        public static readonly byte[] jfifSig = new byte[]
         {
             0xFF, 0xD8, 0xFF, 0xE0
         },
@@ -36,11 +36,11 @@ namespace MCGalaxy.Util.Imaging
             58, 59, 52, 45, 38, 31, 39, 46,
             53, 60, 61, 54, 47, 55, 62, 63,
         };
-        readonly byte[][] quant_tables = new byte[4][];
-        readonly HuffmanTable[] ac_huff_tables = new HuffmanTable[4],
+        public readonly byte[][] quant_tables = new byte[4][];
+        public readonly HuffmanTable[] ac_huff_tables = new HuffmanTable[4],
             dc_huff_tables = new HuffmanTable[4];
-        JpegComponent[] comps;
-        byte lowestHor = 1, lowestVer = 1;
+        public JpegComponent[] comps;
+        public byte lowestHor = 1, lowestVer = 1;
         public static bool DetectHeader(byte[] data) => MatchesSignature(data, jfifSig)
                 || MatchesSignature(data, exifSig);
         public override Bitmap2D Decode(byte[] src)
@@ -50,43 +50,52 @@ namespace MCGalaxy.Util.Imaging
             ReadMarkers(src, bmp);
             return bmp;
         }
-        void ReadMarkers(byte[] src, Bitmap2D bmp)
+        public void ReadMarkers(byte[] src, Bitmap2D bmp)
         {
             for (; ; )
             {
                 int offset = AdvanceOffset(2);
                 ushort marker = MemUtils.ReadU16_BE(src, offset);
-                if (marker == 0xFFD8)
+                switch (marker)
                 {
+                    case 0xFFD8:
+                        break;
+                    case 0xFFD9:
+                        return;
+                    case >= 0xFFE0 and <= 0xFFEF:
+                    case 0xFFFE:
+                    case 0xFFDD:
+                        SkipMarker(src);
+                        break;
+                    case 0xFFC4:
+                        ReadHuffmanTable(src);
+                        break;
+                    case 0xFFDB:
+                        ReadQuantisationTables(src);
+                        break;
+                    case 0xFFC0:
+                        ReadFrameStart(src, bmp);
+                        break;
+                    case 0xFFC2:
+                        Fail("Progressive JPEGs unsupported");
+                        break;
+                    case 0xFFDA:
+                        ReadScanStart(src);
+                        DecodeMCUs(src, bmp);
+                        break;
+                    default:
+                        Fail("unknown marker:" + marker.ToString("X4"));
+                        break;
                 }
-                else if (marker == 0xFFD9)
-                    return;
-                else if (marker >= 0xFFE0 && marker <= 0xFFEF || marker == 0xFFFE || marker == 0xFFDD)
-                    SkipMarker(src);
-                else if (marker == 0xFFC4)
-                    ReadHuffmanTable(src);
-                else if (marker == 0xFFDB)
-                    ReadQuantisationTables(src);
-                else if (marker == 0xFFC0)
-                    ReadFrameStart(src, bmp);
-                else if (marker == 0xFFC2)
-                    Fail("Progressive JPEGs unsupported");
-                else if (marker == 0xFFDA)
-                {
-                    ReadScanStart(src);
-                    DecodeMCUs(src, bmp);
-                }
-                else
-                    Fail("unknown marker:" + marker.ToString("X4"));
             }
         }
-        void SkipMarker(byte[] src)
+        public void SkipMarker(byte[] src)
         {
             int offset = AdvanceOffset(2),
                 length = MemUtils.ReadU16_BE(src, offset);
             AdvanceOffset(length - 2);
         }
-        void ReadQuantisationTables(byte[] src)
+        public void ReadQuantisationTables(byte[] src)
         {
             int offset = AdvanceOffset(2),
                 length = MemUtils.ReadU16_BE(src, offset);
@@ -108,7 +117,7 @@ namespace MCGalaxy.Util.Imaging
                     table[i] = src[offset++];
             }
         }
-        void ReadHuffmanTable(byte[] src)
+        public void ReadHuffmanTable(byte[] src)
         {
             int offset = AdvanceOffset(2),
                 length = MemUtils.ReadU16_BE(src, offset);
@@ -124,7 +133,7 @@ namespace MCGalaxy.Util.Imaging
                 length -= 1 + read;
             }
         }
-        int DecodeHuffmanTable(byte[] src, HuffmanTable table, ref int offset)
+        public int DecodeHuffmanTable(byte[] src, HuffmanTable table, ref int offset)
         {
             table.firstCodewords = new ushort[16];
             table.endCodewords = new ushort[16];
@@ -165,7 +174,7 @@ namespace MCGalaxy.Util.Imaging
                 }
             return 16 + total;
         }
-        void ReadFrameStart(byte[] src, Bitmap2D bmp)
+        public void ReadFrameStart(byte[] src, Bitmap2D bmp)
         {
             int offset = AdvanceOffset(2),
                 length = MemUtils.ReadU16_BE(src, offset);
@@ -204,7 +213,7 @@ namespace MCGalaxy.Util.Imaging
                 comp.OutputBlock = GetBlockOutputFunction(comp);
             }
         }
-        void ReadScanStart(byte[] src)
+        public void ReadScanStart(byte[] src)
         {
             int offset = AdvanceOffset(2),
                 length = MemUtils.ReadU16_BE(src, offset);
@@ -218,7 +227,7 @@ namespace MCGalaxy.Util.Imaging
             }
             offset += 3;
         }
-        void SetHuffTables(byte compID, byte tables)
+        public void SetHuffTables(byte compID, byte tables)
         {
             for (int i = 0; i < comps.Length; i++)
             {
@@ -231,7 +240,7 @@ namespace MCGalaxy.Util.Imaging
             }
             Fail("unknown scan component");
         }
-        void DecodeMCUs(byte[] src, Bitmap2D bmp)
+        public void DecodeMCUs(byte[] src, Bitmap2D bmp)
         {
             int mcu_w = lowestHor * 8,
                 mcu_h = lowestVer * 8,
@@ -286,8 +295,8 @@ namespace MCGalaxy.Util.Imaging
                         }
                 }
         }
-        static byte ByteClamp(float value) => ((int)value) < 0 ? (byte)0 : ((int)value) > 255 ? (byte)255 : (byte)(int)value;
-        void DecodeBlock(JpegComponent comp, byte[] src, int* block)
+        public static byte ByteClamp(float value) => ((int)value) < 0 ? (byte)0 : ((int)value) > 255 ? (byte)255 : (byte)(int)value;
+        public void DecodeBlock(JpegComponent comp, byte[] src, int* block)
         {
             HuffmanTable table = dc_huff_tables[comp.DCHuffTable];
             int dc_code = ReadHuffman(table, src),
@@ -324,7 +333,7 @@ namespace MCGalaxy.Util.Imaging
                 }
             } while (idx < 64);
         }
-        static void IDCT(int* block, float* output)
+        public static void IDCT(int* block, float* output)
         {
             float* tmp = stackalloc float[8 * 8];
             for (int col = 0; col < 8; col++)
@@ -450,10 +459,10 @@ namespace MCGalaxy.Util.Imaging
                 output[row * 8 + 7] = u1 - v1;
             }
         }
-        uint bit_buf;
-        int bit_cnt;
-        bool hit_end, hit_rst;
-        void RefillBits(byte[] src)
+        public uint bit_buf;
+        public int bit_cnt;
+        public bool hit_end, hit_rst;
+        public void RefillBits(byte[] src)
         {
             while (bit_cnt <= 24 && !hit_end)
             {
@@ -480,7 +489,7 @@ namespace MCGalaxy.Util.Imaging
                 bit_cnt += 8;
             }
         }
-        int ReadBits(int count)
+        public int ReadBits(int count)
         {
             int read = bit_cnt - count,
                 bits = (int)(bit_buf >> read);
@@ -488,19 +497,19 @@ namespace MCGalaxy.Util.Imaging
             bit_cnt -= count;
             return bits;
         }
-        int PeekBits(int count)
+        public int PeekBits(int count)
         {
             int read = bit_cnt - count,
                 bits = (int)(bit_buf >> read);
             return bits;
         }
-        void ConsumeBits(int count)
+        public void ConsumeBits(int count)
         {
             int read = bit_cnt - count;
             bit_buf &= (uint)((1 << read) - 1);
             bit_cnt -= count;
         }
-        byte ReadHuffman(HuffmanTable table, byte[] src)
+        public byte ReadHuffman(HuffmanTable table, byte[] src)
         {
             RefillBits(src);
             int codeword = PeekBits(8),
@@ -525,7 +534,7 @@ namespace MCGalaxy.Util.Imaging
             Fail("no huffman code");
             return 0;
         }
-        int ReadBiasedValue(byte[] src, int bits)
+        public int ReadBiasedValue(byte[] src, int bits)
         {
             if (bits == 0)
                 return 0;
@@ -536,7 +545,7 @@ namespace MCGalaxy.Util.Imaging
                 value += (-1 << bits) + 1;
             return value;
         }
-        static JpegBlockOutput GetBlockOutputFunction(JpegComponent comp)
+        public static JpegBlockOutput GetBlockOutputFunction(JpegComponent comp)
         {
             if (comp.SamplesPerBlockX == 1 && comp.SamplesPerBlockY == 1)
                 switch (comp.ID)
@@ -558,7 +567,7 @@ namespace MCGalaxy.Util.Imaging
                 }
             return Generic_BlockOutput;
         }
-        static void Generic_BlockOutput(JpegComponent comp, YCbCr[] colors, int mcu_w,
+        public static void Generic_BlockOutput(JpegComponent comp, YCbCr[] colors, int mcu_w,
                                         int i, float* output, int baseX, int baseY)
         {
             int samplesX = comp.SamplesPerBlockX,
@@ -588,7 +597,7 @@ namespace MCGalaxy.Util.Imaging
                         }
                 }
         }
-        static void Y_1x1Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
+        public static void Y_1x1Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
                                 int i, float* output, int baseX, int baseY)
         {
             for (int y = 0, src = 0; y < 8; y++)
@@ -598,7 +607,7 @@ namespace MCGalaxy.Util.Imaging
                     colors[dst++].Y = output[src++];
             }
         }
-        static void Cb_1x1Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
+        public static void Cb_1x1Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
                                 int i, float* output, int baseX, int baseY)
         {
             for (int y = 0, src = 0; y < 8; y++)
@@ -608,7 +617,7 @@ namespace MCGalaxy.Util.Imaging
                     colors[dst++].Cb = output[src++];
             }
         }
-        static void Cr_1x1Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
+        public static void Cr_1x1Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
                                 int i, float* output, int baseX, int baseY)
         {
             for (int y = 0, src = 0; y < 8; y++)
@@ -618,7 +627,7 @@ namespace MCGalaxy.Util.Imaging
                     colors[dst++].Cr = output[src++];
             }
         }
-        static void Cb_2x2Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
+        public static void Cb_2x2Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
                                  int i, float* output, int baseX, int baseY)
         {
             for (int y = 0, src = 0; y < 8; y++)
@@ -634,7 +643,7 @@ namespace MCGalaxy.Util.Imaging
                 }
             }
         }
-        static void Cr_2x2Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
+        public static void Cr_2x2Output(JpegComponent comp, YCbCr[] colors, int mcu_w,
                                  int i, float* output, int baseX, int baseY)
         {
             for (int y = 0, src = 0; y < 8; y++)
@@ -651,13 +660,13 @@ namespace MCGalaxy.Util.Imaging
             }
         }
     }
-    struct YCbCr
+    public struct YCbCr
     {
         public float Y, Cb, Cr;
     };
-    unsafe delegate void JpegBlockOutput(JpegComponent comp, YCbCr[] colors, int mcu_w,
+    public unsafe delegate void JpegBlockOutput(JpegComponent comp, YCbCr[] colors, int mcu_w,
                                          int i, float* output, int baseX, int baseY);
-    class JpegComponent
+    public class JpegComponent
     {
         public byte ID,
             QuantTable,
@@ -672,7 +681,7 @@ namespace MCGalaxy.Util.Imaging
         public int PredDCValue;
         public JpegBlockOutput OutputBlock;
     }
-    class HuffmanTable
+    public class HuffmanTable
     {
         public ushort[] firstCodewords,
             endCodewords,

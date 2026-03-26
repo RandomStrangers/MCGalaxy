@@ -28,10 +28,10 @@ namespace MCGalaxy.Drawing.Transforms
     {
         public override string Name => "Scale";
         public bool CentreOrigin;
-        public int XMul, XDiv, YMul, YDiv, ZMul, ZDiv;
-        int dirX, dirY, dirZ, signX, signY, signZ,
+        public int XMul, XDiv, YMul, YDiv, ZMul, ZDiv,
+            dirX, dirY, dirZ, signX, signY, signZ,
             width, height, length;
-        Vec3S32 P;
+        public Vec3S32 P;
         public void CheckScales()
         {
             signX = Math.Sign(XMul * XDiv);
@@ -64,26 +64,22 @@ namespace MCGalaxy.Drawing.Transforms
             }
             op.Perform(marks, brush, b => OutputBlock(b, output));
         }
-        void OutputBlock(DrawOpBlock b, DrawOpOutput output)
+        public void OutputBlock(DrawOpBlock b, DrawOpOutput output)
         {
             int dx = (b.X - P.X) * signX, dy = (b.Y - P.Y) * signY, dz = (b.Z - P.Z) * signZ,
                 begX = P.X + dx * XMul / XDiv, endX = P.X + (dx + dirX) * XMul / XDiv,
                 begY = P.Y + dy * YMul / YDiv, endY = P.Y + (dy + dirY) * YMul / YDiv,
                 begZ = P.Z + dz * ZMul / ZDiv, endZ = P.Z + (dz + dirZ) * ZMul / ZDiv;
             for (int y = begY; y != endY; y += dirY)
-            {
                 for (int z = begZ; z != endZ; z += dirZ)
-                {
                     for (int x = begX; x != endX; x += dirX)
                     {
                         if (x < 0 || y < 0 || z < 0 || x >= width || y >= height || z >= length) continue;
-                        b.X = (ushort)x; 
-                        b.Y = (ushort)y; 
+                        b.X = (ushort)x;
+                        b.Y = (ushort)y;
                         b.Z = (ushort)z;
                         output(b);
                     }
-                }
-            }
         }
     }
 }

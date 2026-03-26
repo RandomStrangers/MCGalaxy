@@ -13,14 +13,14 @@ namespace MCGalaxy.Generator.fCraft
     /// <summary> Provides functionality for generating map files. </summary>
     public sealed class FCraftMapGen
     {
-        readonly FCraftMapGenArgs args;
-        readonly Random rand;
-        readonly Noise noise;
-        float[] heightmap, slopemap;
-        ushort[] surfaceMap;
-        int _width, _length, groundThickness = 5;
-        byte bGroundSurface, bWater, bGround, bSeaFloor, bBedrock, bCliff;
-        Tree tree;
+        public readonly FCraftMapGenArgs args;
+        public readonly Random rand;
+        public readonly Noise noise;
+        public float[] heightmap, slopemap;
+        public ushort[] surfaceMap;
+        public int _width, _length, groundThickness = 5;
+        public byte bGroundSurface, bWater, bGround, bSeaFloor, bBedrock, bCliff;
+        public Tree tree;
         public FCraftMapGen(FCraftMapGenArgs generatorArgs)
         {
             args = generatorArgs;
@@ -35,8 +35,8 @@ namespace MCGalaxy.Generator.fCraft
             GenerateHeightmap();
             GenerateMap(map);
         }
-        void ReportProgress(string message) => Logger.Log(LogType.SystemActivity, message);
-        void ApplyBiome()
+        public void ReportProgress(string message) => Logger.Log(LogType.SystemActivity, message);
+        public void ApplyBiome()
         {
             MapGenBiome biome = MapGenBiome.Get(args.Biome);
             bGroundSurface = biome.Surface;
@@ -51,7 +51,7 @@ namespace MCGalaxy.Generator.fCraft
             tree = biome.GetTreeGen("fCraft");
         }
         #region Heightmap Processing
-        void GenerateHeightmap()
+        public void GenerateHeightmap()
         {
             ReportProgress("Heightmap: Priming");
             heightmap = new float[_width * _length];
@@ -83,7 +83,7 @@ namespace MCGalaxy.Generator.fCraft
             }
             Noise.Normalize(heightmap);
         }
-        void ApplyBias()
+        public void ApplyBias()
         {
             float[] corners = new float[4];
             int c = 0;
@@ -101,7 +101,7 @@ namespace MCGalaxy.Generator.fCraft
         }
         #endregion
         #region Map Processing
-        void GenerateMap(Level map)
+        public void GenerateMap(Level map)
         {
             float desiredWaterLevel = .5f;
             if (args.MatchWaterCoverage)
@@ -144,7 +144,7 @@ namespace MCGalaxy.Generator.fCraft
                 GenerateTrees(map);
             }
         }
-        void Fill(Level map, float desiredWaterLevel, float aboveWaterMultiplier, float[] altmap)
+        public void Fill(Level map, float desiredWaterLevel, float aboveWaterMultiplier, float[] altmap)
         {
             int width = map.Width, length = map.Length, mapHeight = map.Height,
                 snowStartThreshold = args.SnowAltitude - args.SnowTransition,
@@ -217,7 +217,7 @@ namespace MCGalaxy.Generator.fCraft
                     }
                 }
         }
-        void AddBeaches(Level map)
+        public void AddBeaches(Level map)
         {
             int beachExtentSqr = (args.BeachExtent + 1) * (args.BeachExtent + 1);
             for (int x = 0; x < map.Width; x++)
@@ -248,7 +248,7 @@ namespace MCGalaxy.Generator.fCraft
                         }
                     }
         }
-        void GenerateTrees(Level map)
+        public void GenerateTrees(Level map)
         {
             int minTrunkPadding = args.TreeSpacingMin,
                 maxTrunkPadding = args.TreeSpacingMax;
@@ -288,7 +288,7 @@ namespace MCGalaxy.Generator.fCraft
                                 (p, lvl, args) => Gen(p, lvl, args, type_), desc);
             }
         }
-        static bool Gen(Player p, Level lvl, MapGenArgs gen_args, MapGenTemplate type)
+        public static bool Gen(Player p, Level lvl, MapGenArgs gen_args, MapGenTemplate type)
         {
             FCraftMapGenArgs args = FCraftMapGenArgs.MakeTemplate(type);
             gen_args.Biome = args.Biome;

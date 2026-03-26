@@ -19,7 +19,7 @@ using System.IO.Compression;
 using System.Text;
 namespace MCGalaxy
 {
-    sealed class ZipReaderStream : Stream
+    public sealed class ZipReaderStream : Stream
     {
         public long CompressedLen;
         public Stream stream;
@@ -27,7 +27,7 @@ namespace MCGalaxy
         public override bool CanRead => true;
         public override bool CanSeek => false;
         public override bool CanWrite => false;
-        static readonly Exception ex = new NotSupportedException();
+        public static readonly Exception ex = new NotSupportedException();
         public override void Flush() => stream.Flush();
         public override long Length => throw ex;
         public override long Position { get { throw ex; } set { throw ex; } }
@@ -57,11 +57,11 @@ namespace MCGalaxy
     /// <summary> Reads entries from a ZIP archive. </summary>
     public sealed class ZipReader
     {
-        readonly BinaryReader reader;
-        readonly Stream stream;
-        readonly List<ZipEntry> entries = new();
-        int numEntries;
-        long centralDirOffset, zip64EndOffset;
+        public readonly BinaryReader reader;
+        public readonly Stream stream;
+        public readonly List<ZipEntry> entries = new();
+        public int numEntries;
+        public long centralDirOffset, zip64EndOffset;
         public ZipReader(Stream stream)
         {
             this.stream = stream;
@@ -140,7 +140,7 @@ namespace MCGalaxy
             }
             ReadZip64EndOfCentralDirectoryRecord();
         }
-        ZipEntry ReadLocalFileRecord()
+        public ZipEntry ReadLocalFileRecord()
         {
             BinaryReader r = reader;
             ZipEntry entry = default;
@@ -168,7 +168,7 @@ namespace MCGalaxy
             stream.Seek(extraEnd, SeekOrigin.Begin);
             return entry;
         }
-        ZipEntry ReadCentralDirectoryRecord()
+        public ZipEntry ReadCentralDirectoryRecord()
         {
             BinaryReader r = reader;
             ZipEntry entry = default;
@@ -204,7 +204,7 @@ namespace MCGalaxy
             stream.Seek(extraEnd, SeekOrigin.Begin);
             return entry;
         }
-        void ReadZip64EndOfCentralDirectoryRecord()
+        public void ReadZip64EndOfCentralDirectoryRecord()
         {
             BinaryReader r = reader;
             r.ReadInt64();
@@ -217,14 +217,14 @@ namespace MCGalaxy
             r.ReadInt64();
             centralDirOffset = r.ReadInt64();
         }
-        void ReadZip64EndOfCentralDirectoryLocator()
+        public void ReadZip64EndOfCentralDirectoryLocator()
         {
             BinaryReader r = reader;
             r.ReadUInt32();
             zip64EndOffset = reader.ReadInt64();
             r.ReadUInt32();
         }
-        void ReadEndOfCentralDirectoryRecord()
+        public void ReadEndOfCentralDirectoryRecord()
         {
             BinaryReader r = reader;
             r.ReadUInt16();

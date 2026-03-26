@@ -49,7 +49,7 @@ namespace MCGalaxy.Modules.Awards
             Paginator.Output(p, awards, printer,
                              cmd, "Awards", modifier);
         }
-        static void PrintAward(Player p, Award award, List<string> awards)
+        public static void PrintAward(Player p, Award award, List<string> awards)
         {
             bool has = awards != null && awards.CaselessContains(award.Name);
             p.Message("  {0}{1}: &7{2}",

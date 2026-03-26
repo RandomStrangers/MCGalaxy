@@ -45,14 +45,14 @@ namespace MCGalaxy.Generator.Realistic
             for (int i = 0; i < array.Length; ++i)
                 array[i] = (array[i] - min) / range;
         }
-        static float Interpolate(float a, float b, float x) => a * (1 - ((float)(1 - Math.Cos(x * 3.1415927f)) * 0.5f)) + b * ((float)(1 - Math.Cos(x * 3.1415927f)) * 0.5f);
-        static float Noise(int x, int y, int seed)
+        public static float Interpolate(float a, float b, float x) => a * (1 - ((float)(1 - Math.Cos(x * 3.1415927f)) * 0.5f)) + b * ((float)(1 - Math.Cos(x * 3.1415927f)) * 0.5f);
+        public static float Noise(int x, int y, int seed)
         {
             int n = x + y * 57 + seed;
             n = (n << 13) ^ n;
             return (float)(1.0 - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
         }
-        static unsafe float InterpolatedNoise(float x, float y, int seed)
+        public static unsafe float InterpolatedNoise(float x, float y, int seed)
         {
             int wholeX = (int)x, wholeY = (int)y, i = 0;
             float fracX = x - wholeX, fracY = y - wholeY;
@@ -69,7 +69,7 @@ namespace MCGalaxy.Generator.Realistic
             return Interpolate(N0, N1, fracY);
         }
         /// <summary> Calculates smoothed noise across the given cell and its 8 neighbours </summary>
-        static unsafe float SmoothNoise(float* noise, int i)
+        public static unsafe float SmoothNoise(float* noise, int i)
         {
             float corners = (noise[i - 5] + noise[i - 3] + noise[i + 3] + noise[i + 5]) / 16,
                 sides = noise[i - 1] + noise[i + 1] + noise[i - 4] + noise[i + 4] / 8,

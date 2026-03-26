@@ -36,7 +36,7 @@ namespace MCGalaxy.Util.Imaging
                 return null;
             }
         }
-        static void OnDecodeError(Player p)
+        public static void OnDecodeError(Player p)
         {
             p.Message("&WThere was an error reading the downloaded image.");
             p.Message("&WThe url may need to end with its extension (such as .jpg).");

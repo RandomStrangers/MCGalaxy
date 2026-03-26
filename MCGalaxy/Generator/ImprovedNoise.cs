@@ -23,7 +23,7 @@ namespace MCGalaxy.Generator
             Lacunarity = 2,
             Persistence = 2;
         public int Octaves = 1;
-        readonly byte[] p = new byte[512];
+        public readonly byte[] p = new byte[512];
         public ImprovedNoise(Random rnd)
         {
             for (int i = 0; i < 256; i++)
@@ -96,8 +96,8 @@ namespace MCGalaxy.Generator
                     v),
                 w);
         }
-        static float Fade(float t) => t * t * t * (t * (t * 6 - 15) + 10);
-        static float Grad(int hash, float x, float y, float z) => (hash & 0xF) switch
+        public static float Fade(float t) => t * t * t * (t * (t * 6 - 15) + 10);
+        public static float Grad(int hash, float x, float y, float z) => (hash & 0xF) switch
         {
             0x0 => x + y,
             0x1 => -x + y,
@@ -117,6 +117,6 @@ namespace MCGalaxy.Generator
             0xF => -y - z,
             _ => 0,
         };
-        static float Lerp(float a, float b, float t) => a + t * (b - a);
+        public static float Lerp(float a, float b, float t) => a + t * (b - a);
     }
 }

@@ -63,7 +63,7 @@ namespace MCGalaxy.Network
             }
             catch { }
         }
-        class CustomWebClient : WebClient
+        public class CustomWebClient : WebClient
         {
             protected override WebRequest GetWebRequest(Uri address)
             {
@@ -73,7 +73,7 @@ namespace MCGalaxy.Network
                 return req;
             }
         }
-        static IPEndPoint BindIPEndPointCallback(ServicePoint servicePoint, IPEndPoint remoteEP, int retryCount)
+        public static IPEndPoint BindIPEndPointCallback(ServicePoint servicePoint, IPEndPoint remoteEP, int retryCount)
         {
             IPAddress localIP;
             if (Server.Listener.IP != null)
@@ -117,7 +117,7 @@ namespace MCGalaxy.Network
                 url = AdjustDropbox(url, "https://www.dropbox".Length);
             url = url.Replace("dl.dropboxusercontent.com", "dl.dropbox.com");
         }
-        static string AdjustDropbox(string url, int prefixLen)
+        public static string AdjustDropbox(string url, int prefixLen)
         {
             url = "https://dl.dropbox" + url.Substring(prefixLen);
             return url
@@ -139,7 +139,7 @@ namespace MCGalaxy.Network
             }
             return uri;
         }
-        static bool CheckHttpOrHttps(Player p, string url)
+        public static bool CheckHttpOrHttps(Player p, string url)
         {
             if (!url.Contains("://") || !Uri.TryCreate(url, UriKind.Absolute, out Uri uri)) return true;
             string scheme = uri.Scheme;
@@ -153,7 +153,7 @@ namespace MCGalaxy.Network
             Uri uri = GetUrl(p, ref url);
             return uri == null ? null : DownloadData(p, url, uri);
         }
-        static byte[] DownloadData(Player p, string url, Uri uri)
+        public static byte[] DownloadData(Player p, string url, Uri uri)
         {
             byte[] data = null;
             try
@@ -188,7 +188,7 @@ namespace MCGalaxy.Network
             if (data == null) p.Message("&WThe url may need to end with its extension (such as .jpg).");
             return data;
         }
-        static string DescribeError(Exception ex)
+        public static string DescribeError(Exception ex)
         {
             try
             {

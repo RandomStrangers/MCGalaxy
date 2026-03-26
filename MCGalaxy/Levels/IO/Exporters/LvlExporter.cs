@@ -34,12 +34,12 @@ namespace MCGalaxy.Levels.IO
             }
             WriteZonesSection(lvl, gs, buffer);
         }
-        static void WriteU16(byte[] dst, int idx, ushort value)
+        public static void WriteU16(byte[] dst, int idx, ushort value)
         {
             dst[idx] = (byte)value;
             dst[idx + 1] = (byte)(value >> 8);
         }
-        static void WriteHeader(Level lvl, Stream gs, byte[] header)
+        public static void WriteHeader(Level lvl, Stream gs, byte[] header)
         {
             WriteU16(header, 0, 1874);
             WriteU16(header, 2, lvl.Width);
@@ -54,7 +54,7 @@ namespace MCGalaxy.Levels.IO
             header[17] = (byte)lvl.BuildAccess.Min;
             gs.Write(header, 0, 18);
         }
-        static void WriteBlocksSection(Level lvl, Stream gs, byte[] buffer)
+        public static void WriteBlocksSection(Level lvl, Stream gs, byte[] buffer)
         {
             byte[] blocks = lvl.blocks;
             for (int i = 0; i < blocks.Length; i += 65536)
@@ -64,7 +64,7 @@ namespace MCGalaxy.Levels.IO
                 gs.Write(buffer, 0, len);
             }
         }
-        static void WriteBlockDefsSection(Level lvl, Stream gs, byte[] buffer)
+        public static void WriteBlockDefsSection(Level lvl, Stream gs, byte[] buffer)
         {
             gs.WriteByte(0xBD);
             int index = 0;
@@ -87,7 +87,7 @@ namespace MCGalaxy.Levels.IO
                         index++;
                     }
         }
-        static void WritePhysicsSection(Level lvl, Stream gs, byte[] buffer)
+        public static void WritePhysicsSection(Level lvl, Stream gs, byte[] buffer)
         {
             int count = lvl.ListCheck.Count;
             Check[] checks = lvl.ListCheck.Items;
@@ -116,7 +116,7 @@ namespace MCGalaxy.Levels.IO
                 gs.Write(buffer, 0, entries * 8);
             }
         }
-        static void WriteZonesSection(Level lvl, Stream gs, byte[] buffer)
+        public static void WriteZonesSection(Level lvl, Stream gs, byte[] buffer)
         {
             Zone[] zones = lvl.Zones.Items;
             if (zones.Length == 0) return;
