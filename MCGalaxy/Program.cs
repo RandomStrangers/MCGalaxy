@@ -15,7 +15,6 @@
 using System;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 namespace MCGalaxy
 {
@@ -141,7 +140,6 @@ namespace MCGalaxy
                 Server.Start();
                 Console.Title = Server.Config.Name + " - " + Server.SoftwareNameVersioned;
                 Console.CancelKeyPress += OnCancelKeyPress;
-                Console.OutputEncoding = Encoding.Unicode;
                 CheckNameVerification();
                 ConsoleLoop();
             }

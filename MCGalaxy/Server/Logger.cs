@@ -64,6 +64,7 @@ namespace MCGalaxy
         public static readonly object logLock = new();
         public static void Log(LogType type, string message)
         {
+            message = message.ReplaceCursive();
             lock (logLock)
                 try
                 {
