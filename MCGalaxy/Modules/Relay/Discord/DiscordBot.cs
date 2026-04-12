@@ -22,11 +22,6 @@ using System.IO;
 using System.Text;
 namespace MCGalaxy.Modules.Relay.Discord
 {
-    public sealed class DiscordUser : RelayUser
-    {
-        public string ReferencedUser;
-        public override string GetMessagePrefix() => string.IsNullOrEmpty(ReferencedUser) ? "" : "@" + ReferencedUser + " ";
-    }
     public class DiscordBot : RelayBot
     {
         protected DiscordApiClient api;
@@ -34,9 +29,11 @@ namespace MCGalaxy.Modules.Relay.Discord
         protected DiscordSession session;
         protected string botUserID;
         public readonly Dictionary<string, byte> channelTypes = new();
-        public readonly List<string> filter_triggers = new();
-        public readonly List<string> filter_replacements = new();
+        public readonly List<string> filter_triggers = new(), 
+            filter_replacements = new();
         public JsonArray allowed;
+        public List<string> PKUsers, PKPrefixes;
+        static readonly Dictionary<string, bool> ReadOriginals = new();
         public override string RelayName => "Discord";
         public override bool Enabled => Config.Enabled;
         public override string UserID => botUserID;
@@ -99,8 +96,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             Config.Load();
             base.ReloadConfig();
             LoadReplacements();
-            if (!Config.CanMentionHere) return;
-            Logger.Log(LogType.Warning, "can-mention-everyone option is enabled in {0}, " +
+            if (Config.CanMentionHere) Logger.Log(LogType.Warning, "can-mention-everyone option is enabled in {0}, " +
                        "which allows pinging all users on Discord from in-game. " +
                        "It is recommended that this option be disabled.", DiscordConfig.PROPS_PATH);
         }
@@ -133,22 +129,21 @@ namespace MCGalaxy.Modules.Relay.Discord
                                   });
         }
         public override void LoadControllers() => Controllers = PlayerList.Load("text/discord/controllers.txt");
-        public DiscordUser ExtractUser(JsonObject data)
+        public RelayUser ExtractUser(JsonObject data)
         {
             JsonObject author = (JsonObject)data["author"];
-            DiscordUser user = new()
+            return new()
             {
                 Nick = GetNick(data) ?? GetUser(author),
+                GlobalName = GetUser(author),
                 ID = (string)author["id"],
                 ReferencedUser = ExtractReferencedUser(data)
             };
-            return user;
         }
         public string GetNick(JsonObject data)
         {
-            if (!Config.UseNicks) return null;
-            if (!data.TryGetValue("member", out object raw)) return null;
-            if (raw is not JsonObject member) return null;
+            if (!Config.UseNicks || !data.TryGetValue("member", out object raw) || raw is not JsonObject member)
+                return null;
             member.TryGetValue("nick", out raw);
             return raw as string;
         }
@@ -166,7 +161,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         }
         public void HandleMessageEvent(JsonObject data)
         {
-            DiscordUser user = ExtractUser(data);
+            RelayUser user = ExtractUser(data);
             if (user.ID == botUserID) return;
             string channel = (string)data["channel_id"],
                 message = (string)data["content"];
@@ -248,6 +243,127 @@ namespace MCGalaxy.Modules.Relay.Discord
             }
             Server.MainScheduler.QueueOnce(DoUpdateStatus, null, delay);
         }
+        static bool IsPKProxyDisabled(string message) => message.CaselessContains("system proxy off")
+            || message.CaselessContains("s proxy off")
+            || message.CaselessContains("autoproxy off")
+            || message.CaselessContains("ap off")
+            || message.CaselessContains("autoproxy stop")
+            || message.CaselessContains("ap stop")
+            || message.CaselessContains("autoproxy cancel")
+            || message.CaselessContains("ap cancel")
+            || message.CaselessContains("autoproxy no")
+            || message.CaselessContains("ap no")
+            || message.CaselessContains("autoproxy disable")
+            || message.CaselessContains("ap disable")
+            || message.CaselessContains("autoproxy remove")
+            || message.CaselessContains("ap remove");
+        static bool IsPKProxyEnabled(string message) => message.CaselessContains("system proxy on")
+                || message.CaselessContains("s proxy on")
+                || message.CaselessContains("autoproxy latch")
+                || message.CaselessContains("ap latch")
+                || message.CaselessContains("autoproxy last")
+                || message.CaselessContains("ap last")
+                || message.CaselessContains("autoproxy proxy")
+                || message.CaselessContains("ap proxy")
+                || message.CaselessContains("autoproxy stick")
+                || message.CaselessContains("ap stick")
+                || message.CaselessContains("autoproxy sticky")
+                || message.CaselessContains("ap sticky")
+                || message.CaselessContains("autoproxy l")
+                || message.CaselessContains("ap l");
+        protected override void HandleChannelMessage(RelayUser user, string channel, string message)
+        {
+            if (IgnoredUsers.CaselessContains(user.ID)) return;
+            if (PKUsers.CaselessContains(user.ID))
+            {
+                string pkdir = "text/discord/PK",
+                    globalPath = pkdir + "/" + user.GlobalName + ".properties",
+                    path = pkdir + "/" + user.Nick + ".properties";
+                if (!Directory.Exists(pkdir))
+                    Directory.CreateDirectory(pkdir);
+                if (!File.Exists(path))
+                {
+                    if (File.Exists(globalPath))
+                    {
+                        string txt = FileIO.TryReadAllText(globalPath),
+                            fileID = "";
+                        if (!string.IsNullOrEmpty(txt))
+                        {
+                            string[] lines = txt.Split(':');
+                            if (lines != null)
+                                fileID = lines[0];
+                        }
+                        if (fileID.CaselessEq(user.ID))
+                            FileIO.TryMove(globalPath, path);
+                        else
+                        {
+                            File.Create(path).Close();
+                            FileIO.TryWriteAllText(path, user.ID + ":" + false);
+                        }
+                    }
+                    else
+                    {
+                        File.Create(path).Close();
+                        FileIO.TryWriteAllText(path, user.ID + ":" + false);
+                    }
+                }
+                string text = FileIO.TryReadAllText(path);
+                if (!string.IsNullOrEmpty(text))
+                {
+                    string[] lines = text.Split(':');
+                    if (lines != null)
+                        ReadOriginals[lines[0]] = bool.Parse(lines[1]);
+                }
+                bool isPK = false;
+                foreach (string prefix in PKPrefixes)
+                    if (message.CaselessStarts(prefix))
+                    {
+                        isPK = true;
+                        break;
+                    }
+                if (isPK)
+                {
+                    if (IsPKProxyDisabled(message))
+                    {
+                        if (ReadOriginals.ContainsKey(user.ID))
+                        {
+                            ReadOriginals[user.ID] = true;
+                            FileIO.TryWriteAllText(path, user.ID + ":" + true);
+                        }
+                    }
+                    else if (IsPKProxyEnabled(message) && ReadOriginals.ContainsKey(user.ID))
+                    {
+                        ReadOriginals[user.ID] = false;
+                        FileIO.TryWriteAllText(path, user.ID + ":" + false);
+                    }
+                }
+                if (ReadOriginals.ContainsKey(user.ID) && !isPK && !ReadOriginals[user.ID])
+                    return;
+            }
+            message = ParseMessage(message).TrimEnd();
+            if (message.Length == 0) return;
+            bool cancel = false;
+            OnChannelMessageEvent.Call(this, channel, user, message, ref cancel);
+            if (cancel) return;
+            string[] parts = message.SplitSpaces(3);
+            string rawCmd = parts[0].ToLower();
+            bool chat = Channels.CaselessContains(channel),
+                opchat = OpChannels.CaselessContains(channel);
+            if ((chat || opchat) && HandleListPlayers(user, channel, rawCmd, opchat) || rawCmd.CaselessEq(Server.Config.IRCCommandPrefix) && !HandleCommand(user, channel, message, parts)) return;
+            string msg = user.GetMessagePrefix() + message;
+            if (opchat)
+            {
+                Logger.Log(LogType.RelayChat, "(OPs): ({0}) {1}: {2}", RelayName, user.Nick, msg);
+                Chat.MessageOps(string.Format("To Ops &f-&I({0}) {1}&f- {2}", RelayName, user.Nick,
+                                              Server.Config.ProfanityFiltering ? ProfanityFilter.Parse(msg) : msg));
+            }
+            else if (chat)
+            {
+                Logger.Log(LogType.RelayChat, "({0}) {1}: {2}", RelayName, user.Nick, msg);
+                MessageInGame(user.Nick, string.Format("&I({0}) {1}: &f{2}", RelayName, user.Nick,
+                                                       Server.Config.ProfanityFiltering ? ProfanityFilter.Parse(msg) : msg));
+            }
+        }
         public void DoUpdateStatus(SchedulerTask task)
         {
             DateTime now = DateTime.UtcNow;
@@ -257,14 +373,14 @@ namespace MCGalaxy.Modules.Relay.Discord
                 nextUpdate = now.AddSeconds(0.5);
             }
             DiscordWebsocket s = socket;
-            if (s == null || !s.SentIdentify) return;
-            try 
-            { 
-                s.SendMessage(3, s.MakePresence()); 
-            }
-            catch 
-            { 
-            }
+            if (s != null && s.SentIdentify) 
+                try
+                {
+                    s.SendMessage(3, s.MakePresence());
+                }
+                catch
+                {
+                }
         }
         public string GetStatusMessage()
         {
@@ -300,10 +416,8 @@ namespace MCGalaxy.Modules.Relay.Discord
         public void HandlePlayerDisconnect(Player p, string reason) => UpdateDiscordStatus();
         public void HandlePlayerAction(Player p, PlayerAction action, string message, bool stealth)
         {
-            if (action != PlayerAction.Hide && action != PlayerAction.Unhide) return;
-            UpdateDiscordStatus();
+            if (action == PlayerAction.Hide || action == PlayerAction.Unhide) UpdateDiscordStatus();
         }
-        /// <summary> Asynchronously sends a message to the discord API </summary>
         public void Send(DiscordApiMessage msg) => api?.QueueAsync(msg);
         protected override void DoSendMessage(string channel, string message)
         {
@@ -314,8 +428,6 @@ namespace MCGalaxy.Modules.Relay.Discord
                     Allowed = allowed
                 });
         }
-        /// <summary> Formats a message for displaying on Discord </summary>
-        /// <example> Escapes markdown characters such as _ and * </example>
         protected string ConvertMessage(string message)
         {
             message = ConvertMessageCommon(message);

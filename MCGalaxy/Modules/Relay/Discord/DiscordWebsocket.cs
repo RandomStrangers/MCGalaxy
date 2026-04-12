@@ -49,15 +49,8 @@ namespace MCGalaxy.Modules.Relay.Discord
         public PresenceActivity Activity;
         /// <summary> Callback function to retrieve the activity status message </summary>
         public DiscordGetStatus GetStatus;
-        /// <summary> Callback invoked when a ready event has been received </summary>
-        public Action<JsonObject> OnReady;
-        /// <summary> Callback invoked when a resumed event has been received </summary>
-        public Action<JsonObject> OnResumed;
-        /// <summary> Callback invoked when a message created event has been received </summary>
-        public Action<JsonObject> OnMessageCreate;
-        /// <summary> Callback invoked when a channel created event has been received </summary>
-        public Action<JsonObject> OnChannelCreate;
-        /// <summary> Callback invoked when a gateway event has been received </summary>
+        public Action<JsonObject> OnReady, OnResumed, 
+            OnMessageCreate, OnChannelCreate;
         public GatewayEventCallback OnGatewayEvent;
         public readonly object sendLock = new();
         public SchedulerTask heartbeat;

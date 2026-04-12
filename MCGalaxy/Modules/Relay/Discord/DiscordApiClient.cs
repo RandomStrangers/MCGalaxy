@@ -30,15 +30,18 @@ namespace MCGalaxy.Modules.Relay.Discord
         public string Host;
         public DiscordApiMessage GetNextRequest()
         {
-            if (queue.Count == 0) return null;
-            DiscordApiMessage first = queue.Dequeue();
-            while (queue.Count > 0)
+            if (queue.Count != 0)
             {
-                DiscordApiMessage next = queue.Peek();
-                if (!next.CombineWith(first)) break;
-                queue.Dequeue();
+                DiscordApiMessage first = queue.Dequeue();
+                while (queue.Count > 0)
+                {
+                    DiscordApiMessage next = queue.Peek();
+                    if (!next.CombineWith(first)) break;
+                    queue.Dequeue();
+                }
+                return first;
             }
-            return first;
+            return null;
         }
         protected override string ThreadName => "Discord-ApiClient";
         protected override void HandleNext()
@@ -53,7 +56,6 @@ namespace MCGalaxy.Modules.Relay.Discord
                 return;
             }
             for (int retry = 0; retry < 10; retry++)
-            {
                 try
                 {
                     HttpWebRequest req = HttpUtil.CreateRequest(Host + msg.Path);
@@ -81,7 +83,6 @@ namespace MCGalaxy.Modules.Relay.Discord
                     LogError(ex, msg);
                     return;
                 }
-            }
             if (res.Headers["X-RateLimit-Remaining"] == "1") SleepForRetryPeriod(res);
         }
         public static bool HandleErrorResponse(WebException ex, DiscordApiMessage msg, int retry)
@@ -118,9 +119,11 @@ namespace MCGalaxy.Modules.Relay.Discord
         public static void LogWarning(Exception ex) => Logger.Log(LogType.Warning, "Error sending request to Discord API - " + ex.Message);
         public static void LogResponse(string err)
         {
-            if (string.IsNullOrEmpty(err)) return;
-            if (err.Length > 200) err = err.Substring(0, 200) + "...";
-            Logger.Log(LogType.Warning, "Discord API returned: " + err);
+            if (!string.IsNullOrEmpty(err))
+            {
+                if (err.Length > 200) err = err.Substring(0, 200) + "...";
+                Logger.Log(LogType.Warning, "Discord API returned: " + err);
+            }
         }
         public static void SleepForRetryPeriod(WebResponse res)
         {

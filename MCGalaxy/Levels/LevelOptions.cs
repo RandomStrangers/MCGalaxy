@@ -13,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Commands;
-using MCGalaxy.Generator.Foliage;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
@@ -31,7 +30,7 @@ namespace MCGalaxy
     public static class LevelOptions
     {
         public delegate void OptionSetter(Player p, Level lvl, string value);
-        public const string MOTD = "motd", RealmOwner = "RealmOwner", TreeType = "TreeType", Speed = "Speed";
+        public const string MOTD = "motd", RealmOwner = "RealmOwner", Speed = "Speed";
         public const string Overload = "Overload", Fall = "Fall", Drown = "Drown", Finite = "Finite", AI = "AI";
         public const string Edge = "Edge", Grass = "Grass", Death = "Death", Killer = "Killer", Unload = "Unload";
         public const string Goto = "LoadOnGoto", Decay = "LeafDecay", Flow = "RandomFlow", Trees = "GrowTrees";
@@ -40,7 +39,6 @@ namespace MCGalaxy
         public static List<LevelOption> Options = new() {
              new LevelOption(MOTD,       SetMotd,  "&HSets the motd for this map. (leave blank to use default motd)"),
              new LevelOption(RealmOwner, SetOwner, "&HSets the players allowed to use /realm on this map."),
-             new LevelOption(TreeType,   SetTree,  "&HSets the type of trees saplings grow into."),
              new LevelOption(Speed,      SetSpeed, "&HSets the delay (in milliseconds) between physics ticks. " +
                              "E.g. a delay of 250 milliseconds means 4 ticks per second."),
              new LevelOption(Overload, SetOverload, "&HSets how long (in milliseconds) a physics tick can run over before physics shuts off. " +
@@ -108,24 +106,6 @@ namespace MCGalaxy
             }
             lvl.Config.RealmOwner = names.Join(","); ;
             p.Message("Set realm owner/owners of this level to {0}.", names.Join((n) => p.FormatNick(n)));
-        }
-        public static void SetTree(Player p, Level lvl, string value)
-        {
-            if (value.Length == 0)
-            {
-                p.Message("Reset tree type to default.");
-                lvl.Config.TreeType = "fern";
-                return;
-            }
-            Tree tree = Tree.Find(value);
-            if (tree == null)
-            {
-                p.Message("Tree type {0} not found.", value);
-                p.Message("Tree types: {0}", Tree.TreeTypes.Join(t => t.Key));
-                return;
-            }
-            lvl.Config.TreeType = value.ToLower();
-            p.Message("Set tree type that saplings grow into to {0}.", value);
         }
         public static void SetFinite(Player p, Level l, string v) => Toggle(p, l, ref l.Config.FiniteLiquids, "Finite mode");
         public static void SetAI(Player p, Level l, string v) => Toggle(p, l, ref l.Config.AnimalHuntAI, "Animal AI");

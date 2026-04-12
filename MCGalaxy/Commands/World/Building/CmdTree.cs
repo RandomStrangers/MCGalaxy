@@ -14,6 +14,7 @@
  */
 using MCGalaxy.Drawing.Ops;
 using MCGalaxy.Generator.Foliage;
+using System.Collections.Generic;
 namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdTree : DrawCmd
@@ -26,39 +27,38 @@ namespace MCGalaxy.Commands.Building
         protected override DrawOp GetDrawOp(DrawArgs dArgs)
         {
             string[] args = dArgs.Message.SplitSpaces(3);
-            Tree tree = Tree.Find(args[0]) ?? new NormalTree();
+            Tree tree = FindTree(args[0]);
             if (args.Length > 1 && NumberUtils.TryParseInt32(args[1], out int size))
             {
                 Player p = dArgs.Player;
                 string opt = args[0] + " tree size";
-                if (!CommandParser.GetInt(p, args[1], opt, ref size, tree.MinSize, tree.MaxSize)) return null;
+                if (!CommandParser.GetInt(p, args[1], opt, ref size, tree.MinSize, 4096)) return null;
             }
             else
             {
                 size = -1;
             }
-            TreeDrawOp op = new()
+            return new TreeDrawOp()
             {
                 Tree = tree,
                 Size = size
             };
-            return op;
+        }
+        public static Tree FindTree(string name)
+        {
+            foreach (KeyValuePair<string, TreeConstructor> entry in Tree.TreeTypes)
+                if (entry.Key.CaselessEq(name)) return entry.Value();
+            return new NormalTree();
         }
         protected override void GetBrush(DrawArgs dArgs)
         {
             TreeDrawOp op = (TreeDrawOp)dArgs.Op;
             if (op.Size != -1)
-            {
                 dArgs.BrushArgs = dArgs.Message.Splice(2, 0);
-            }
             else
-            {
                 dArgs.BrushArgs = dArgs.Message.Splice(1, 0);
-            }
             if (dArgs.BrushName.CaselessEq("Normal") && dArgs.BrushArgs.Length == 0)
-            {
                 dArgs.BrushArgs = Block.Leaves.ToString();
-            }
         }
         public override void Help(Player p)
         {

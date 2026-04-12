@@ -81,7 +81,7 @@ namespace MCGalaxy.Commands.World
             int argsCount = HasArgument(opt.Name) ? 2 : 1;
             return args.Length == argsCount;
         }
-        static bool HasArgument(string opt) => opt == LevelOptions.Speed || opt == LevelOptions.Overload || opt == LevelOptions.TreeType ||
+        static bool HasArgument(string opt) => opt == LevelOptions.Speed || opt == LevelOptions.Overload ||
                 opt == LevelOptions.Fall || opt == LevelOptions.Drown || opt == LevelOptions.RealmOwner || opt == LevelOptions.LoadDelay;
         static void PrintMapInfo(Player p, LevelConfig cfg)
         {
@@ -90,8 +90,8 @@ namespace MCGalaxy.Commands.World
                            GetBool(cfg.FiniteLiquids), GetBool(cfg.RandomFlow));
             p.Message("  Animal hunt AI: {0}&S, Edge water: {1}",
                            GetBool(cfg.AnimalHuntAI), GetBool(cfg.EdgeWater));
-            p.Message("  Grass growing: {0}&S, {1} tree growing: {2}",
-                           GetBool(cfg.GrassGrow), cfg.TreeType.Capitalize(), GetBool(cfg.GrowTrees));
+            p.Message("  Grass growing: {0}&S, Fern tree growing: {1}",
+                           GetBool(cfg.GrassGrow), GetBool(cfg.GrowTrees));
             p.Message("  Leaf decay: {0}&S, Physics overload: {1}",
                            GetBool(cfg.LeafDecay), cfg.PhysicsOverload);
             p.Message("  Physics speed: &b{0} &Smilliseconds between ticks",

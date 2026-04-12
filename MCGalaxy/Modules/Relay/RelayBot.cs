@@ -24,8 +24,8 @@ namespace MCGalaxy.Modules.Relay
 {
     public class RelayUser
     {
-        public string ID, Nick;
-        public virtual string GetMessagePrefix() => "";
+        public string ID, Nick, ReferencedUser, GlobalName;
+        public virtual string GetMessagePrefix() => string.IsNullOrEmpty(ReferencedUser) ? "" : "@" + ReferencedUser + " ";
     }
     /// <summary> Manages a connection to an external communication service </summary>
     public abstract class RelayBot
@@ -300,7 +300,7 @@ namespace MCGalaxy.Modules.Relay
             ExecuteCommand(user, channel, cmdName, cmdArgs);
         }
         /// <summary> Handles a message written by the given user on the given channel </summary>
-        protected void HandleChannelMessage(RelayUser user, string channel, string message)
+        protected virtual void HandleChannelMessage(RelayUser user, string channel, string message)
         {
             if (IgnoredUsers.CaselessContains(user.ID)) return;
             message = ParseMessage(message).TrimEnd();

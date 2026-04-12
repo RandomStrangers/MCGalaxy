@@ -21,17 +21,11 @@
 //
 namespace MCGalaxy
 {
-    public sealed class Perlin : IModule
+    public sealed class Perlin
     {
-        public double Persistence, Lacunarity;
-        public int OctaveCount;
-        public Perlin()
-        {
-            Lacunarity = 2.0;
-            OctaveCount = 6;
-            Persistence = 0.5;
-        }
-        public override double GetValue(double x, double y, double z)
+        public double Persistence = 0.5, Frequency = 1.0;
+        public int OctaveCount = 6, Seed;
+        public double GetValue(double x, double y, double z)
         {
             double value = 0.0, curPersistence = 1.0;
             x *= Frequency;
@@ -41,9 +35,9 @@ namespace MCGalaxy
             {
                 double signal = GradientNoise.GradientCoherentNoise(x, y, z, Seed + octave);
                 value += signal * curPersistence;
-                x *= Lacunarity;
-                y *= Lacunarity;
-                z *= Lacunarity;
+                x *= 2;
+                y *= 2;
+                z *= 2;
                 curPersistence *= Persistence;
             }
             return value;

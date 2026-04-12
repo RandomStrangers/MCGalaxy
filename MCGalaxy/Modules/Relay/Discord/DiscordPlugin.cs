@@ -51,6 +51,10 @@ namespace MCGalaxy.Modules.Relay.Discord
         public bool EmbedGameStatuses = true;
         [ConfigInt("extra-intents", "Intents", 0)]
         public int ExtraIntents;
+        [ConfigString("pluralkit-prefixes", "PluralKit", "pk;,rs;,se;,mw;", false)]
+        public string PKPrefixes = "pk;,rs;,se;,mw;";
+        [ConfigString("pluralkit-users", "PluralKit", "", true)]
+        public string PKUsers = "";
         public const string PROPS_PATH = "props/discordbot.properties";
         public static ConfigElement[] cfg;
         public void Load()
@@ -81,6 +85,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         public override void Load(bool startup)
         {
             Server.EnsureDirectoryExists("text/discord");
+            Server.EnsureDirectoryExists("text/discord/PK");
             Command.Register(cmdDiscordBot, cmdDiscordCtrls);
             Bot.Config = Config;
             Bot.ReloadConfig();

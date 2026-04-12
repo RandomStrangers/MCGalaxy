@@ -13,44 +13,25 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Commands;
-using MCGalaxy.Generator.Classic;
-using MCGalaxy.Generator.fCraft;
-using MCGalaxy.Generator.Realistic;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 namespace MCGalaxy.Generator
 {
     public delegate bool MapGenFunc(Player p, Level lvl, MapGenArgs args);
-    public delegate bool MapGenArgSelector(string arg);
-    public enum GenType 
-    { 
-        Simple, fCraft, Advanced 
-    };
     public class MapGenArgs
     {
-        public string Args, Biome = Server.Config.DefaultMapGenBiome;
+        public string Args;
         public int Seed;
         public bool RandomDefault = true;
-        public MapGenArgSelector ArgFilter = (Args) => false;
-        public MapGenArgSelector ArgParser = null;
-        public bool ParseArgs(Player p)
+        public bool ParseArgs()
         {
             bool gotSeed = false;
             foreach (string arg in Args.SplitSpaces())
             {
                 if (arg.Length == 0) continue;
-                if (ArgFilter(arg))
-                {
-                    if (!ArgParser(arg)) return false;
-                }
                 else if (NumberUtils.TryParseInt32(arg, out Seed))
                     gotSeed = true;
-                else
-                {
-                    Biome = MapGenBiome.FindMatch(p, arg);
-                    if (Biome == null) return false;
-                }
             }
             if (!gotSeed) Seed = RandomDefault ? new Random().Next() : -1;
             return true;
@@ -61,7 +42,6 @@ namespace MCGalaxy.Generator
     public sealed class MapGen
     {
         public string Theme, Desc;
-        public GenType Type;
         public MapGenFunc GenFunc;
         /// <summary> Applies this map generator to the given level. </summary>
         /// <returns> Whether generation was actually successful. </returns>
@@ -73,17 +53,7 @@ namespace MCGalaxy.Generator
             {
                 Args = seed
             };
-            bool success = GenFunc(p, lvl, args);
-            MapGenBiome.Get(args.Biome).ApplyEnv(lvl.Config);
-            return success;
-        }
-        /// <summary> Creates an RNG initialised with the given seed. </summary>
-        public static Random MakeRng(string seed)
-        {
-            if (seed.Length == 0) return new Random();
-            if (!NumberUtils.TryParseInt32(seed, out int value))
-                value = seed.GetHashCode();
-            return new Random(value);
+            return GenFunc(p, lvl, args);
         }
         public static List<MapGen> Generators = new();
         public static MapGen Find(string theme)
@@ -92,31 +62,54 @@ namespace MCGalaxy.Generator
                 if (gen.Theme.CaselessEq(theme)) return gen;
             return null;
         }
-        public static string FilterThemes(GenType type) => Generators.Join(g => g.Type == type ? g.Theme : null);
-        public static void PrintThemes(Player p)
-        {
-            p.Message("&HStandard themes: &f" + FilterThemes(GenType.Simple));
-            p.Message("&HfCraft themes: &f" + FilterThemes(GenType.fCraft));
-            p.Message("&HAdvanced themes: &f" + FilterThemes(GenType.Advanced));
-        }
-        public const string DEFAULT_HELP = "&HSeed affects how terrain is generated. If seed is the same, the generated level will be the same.";
         /// <summary> Adds a new map generator to the list of generators. </summary>
-        public static void Register(string theme, GenType type, MapGenFunc func, string desc) => Generators.Add(new()
+        public static void Register(string theme, MapGenFunc func, string desc) => Generators.Add(new()
         {
             Theme = theme,
             GenFunc = func,
             Desc = desc,
-            Type = type
         });
         static MapGen()
         {
-            RealisticMapGen.RegisterGenerators();
-            SimpleGen.RegisterGenerators();
-            FCraftMapGen.RegisterGenerators();
-            AdvNoiseGen.RegisterGenerators();
-            ClassicGenerator.RegisterGenerators();
-            Register("Heightmap", GenType.Advanced, HeightmapGen.Generate,
-                     "&HSeed specifies the URL of the heightmap image");
+            Register("Flat", GenFlat, "&HSeed specifies grass height (default half of level height)");
+            Register("Empty", GenEmpty, "&HSeed does nothing");
+        }
+        public static unsafe bool GenFlat(Player _, Level lvl, MapGenArgs args)
+        {
+            args.RandomDefault = false;
+            if (!args.ParseArgs()) return false;
+            int grassHeight = lvl.Height / 2;
+            if (args.Seed >= 0 && args.Seed <= lvl.Height) grassHeight = args.Seed;
+            lvl.Config.EdgeLevel = grassHeight;
+            int grassY = grassHeight - 1;
+            fixed (byte* ptr = lvl.blocks)
+            {
+                if (grassY > 0)
+                    MapSet(lvl.Width, lvl.Length, ptr, 0, grassY - 1, Block.Dirt);
+                if (grassY >= 0 && grassY < lvl.Height)
+                    MapSet(lvl.Width, lvl.Length, ptr, grassY, grassY, Block.Grass);
+            }
+            return true;
+        }
+        public static unsafe void MapSet(int width, int length, byte* ptr,
+                                  int yBeg, int yEnd, byte block)
+        {
+            int beg = yBeg * length * width,
+                end = (yEnd * length + (length - 1)) * width + (width - 1);
+            MemUtils.Memset((IntPtr)ptr, block, beg, end - beg + 1);
+        }
+        public static bool GenEmpty(Player _, Level lvl, MapGenArgs args)
+        {
+            if (!args.ParseArgs()) return false;
+            int maxX = lvl.Width - 1, maxZ = lvl.Length - 1;
+            int width = lvl.Width, length = lvl.Length;
+            byte[] blocks = lvl.blocks;
+            for (int y = 0; y <= Math.Min(0, lvl.MaxY); y++)
+                for (int z = 0; z <= maxZ; z++)
+                    for (int x = 0; x <= maxX; x++)
+                        blocks[x + width * (z + y * length)] = Block.Bedrock;
+            lvl.Config.EdgeLevel = 1;
+            return true;
         }
         public static Level Generate(Player p, MapGen gen, string name,
                                      ushort x, ushort y, ushort z, string seed)
@@ -124,7 +117,7 @@ namespace MCGalaxy.Generator
             name = name.ToLower();
             if (gen == null) 
             {
-                PrintThemes(p);
+                p.Message("Themes: &f " + Generators.Join(g => g.Theme));
                 return null; 
             }
             if (!Formatter.ValidMapName(p, name)) return null;

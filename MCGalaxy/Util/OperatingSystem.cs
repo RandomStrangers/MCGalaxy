@@ -59,49 +59,24 @@ namespace MCGalaxy.Platform
             PlatformID.Xbox => true,
             _ => false,
         };
-        public static string Get()
+        public static string Get() => DetectOS() switch
         {
-            string bitType = " unknown bit type (IntPtr size is " + IntPtr.Size + ")",
-                name = "Unix";
-            switch (IntPtr.Size)
-            {
-                case 8:
-                    bitType = " 64-bit";
-                    break;
-                case 4:
-                    bitType = " 32-bit";
-                    break;
-                case 2:
-                    bitType = " 16-bit";
-                    break;
-            }
-            IOperatingSystem operatingSystem = DetectOS();
-            switch (operatingSystem)
-            {
-                case MonoOS:
-                    name = "Mono";
-                    break;
-                case WindowsOS:
-                    name = "Windows";
-                    break;
-                case MacOS:
-                    name = "Mac";
-                    break;
-                case LinuxOS:
-                    name = "Linux";
-                    break;
-                case FreeBSD_OS:
-                    name = "FreeBSD";
-                    break;
-                case NetBSD_OS:
-                    name = "NetBSD";
-                    break;
-                case UnixOS:
-                    name = "Unix";
-                    break;
-            }
-            return name + bitType;
+            MonoOS => "Mono",
+            WindowsOS => "Windows",
+            MacOS => "Mac",
+            LinuxOS => "Linux",
+            FreeBSD_OS => "FreeBSD",
+            NetBSD_OS => "NetBSD",
+            UnixOS => "Unix",
+            _ => "Unix",
         }
+        + IntPtr.Size switch
+        {
+            8 => " 64-bit",
+            4 => " 32-bit",
+            2 => " 16-bit",
+            _ => " unknown bit type (IntPtr size is " + IntPtr.Size + ")",
+        };
         public static unsafe IOperatingSystem DetectOS()
         {
             if (Server.RunningOnMono())
@@ -155,11 +130,7 @@ namespace MCGalaxy.Platform
                 exePath = Server.GetPath();
             execvp(runtime, new string[] { runtime, exePath, null });
             Console.Out.WriteLine("execvp {0} failed: {1}", runtime, Marshal.GetLastWin32Error());
-            if (Server.RunningOnMono())
-            {
-                execvp("mono", new string[] { "mono", exePath, null });
-                Console.Out.WriteLine("execvp mono failed: {0}", Marshal.GetLastWin32Error());
-            }
+            Console.Out.Flush();
         }
         [DllImport("libc", SetLastError = true)]
         protected static extern int execvp(string path, string[] argv);
@@ -182,6 +153,7 @@ namespace MCGalaxy.Platform
             }
             execvp("mono", new string[] { "mono", Server.GetPath(), null });
             Console.Out.WriteLine("execvp mono failed: {0}", Marshal.GetLastWin32Error());
+            Console.Out.Flush();
         }
         public static CPUTime ParseCpuLine(string line)
         {
@@ -283,8 +255,6 @@ namespace MCGalaxy.Platform
             {
                 Logger.LogError("Restarting process", ex);
             }
-            execvp("mono", new string[] { "mono", Server.GetPath(), null });
-            Console.Out.WriteLine("execvp mono failed: {0}", Marshal.GetLastWin32Error());
         }
         public static string[] GetProcessCommandLineArgs()
         {

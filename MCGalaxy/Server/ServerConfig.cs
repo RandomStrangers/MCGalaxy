@@ -13,7 +13,6 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Config;
-using MCGalaxy.Generator;
 using MCGalaxy.Modules.Relay.IRC;
 using System;
 using System.Collections.Generic;
@@ -91,6 +90,8 @@ namespace MCGalaxy
         public int PhysicsRestartNormLimit = 10000;
         [ConfigBool("physicsrestart", "Other", true)]
         public bool PhysicsRestart = true;
+        [ConfigBool("relay-commands", "Other", true)]
+        public bool RelayCommands = true;
         [ConfigInt("physics-undo-max", "Other", 50000)]
         public int PhysicsUndo = 50000;
         [ConfigTimespan("backup-time", "Backup", 300, false)]
@@ -237,8 +238,6 @@ namespace MCGalaxy
         public string DefaultLogoutMessage = "disconnected";
         [ConfigString("default-mapgen-theme", "Mapgen", "flat")]
         public string DefaultMapGenTheme = "flat";
-        [ConfigString("default-mapgen-biome", "Mapgen", MapGenBiome.FOREST)]
-        public string DefaultMapGenBiome = MapGenBiome.FOREST;
         public static readonly bool[] defLogLevels = new bool[]
         {
             true, true, true, true, true, true, true, true,

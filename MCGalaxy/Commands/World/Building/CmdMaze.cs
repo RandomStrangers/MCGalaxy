@@ -13,19 +13,22 @@
     permissions and limitations under the Licenses.
  */
 using MCGalaxy.Drawing.Ops;
-using MCGalaxy.Generator;
+using System;
 namespace MCGalaxy.Commands.Building
 {
     public sealed class CmdMaze : DrawCmd
     {
         public override string Name => "Maze";
-        protected override DrawOp GetDrawOp(DrawArgs dArgs)
+        protected override DrawOp GetDrawOp(DrawArgs dArgs) => new MazeDrawOp()
         {
-            MazeDrawOp op = new()
-            {
-                rng = MapGen.MakeRng(dArgs.Message)
-            };
-            return op;
+            rng = MakeRng(dArgs.Message)
+        };
+        public static Random MakeRng(string seed)
+        {
+            if (seed.Length == 0) return new();
+            if (!NumberUtils.TryParseInt32(seed, out int value))
+                value = seed.GetHashCode();
+            return new(value);
         }
         protected override void GetBrush(DrawArgs dArgs) => dArgs.BrushName = "Normal";
         public override void Help(Player p)

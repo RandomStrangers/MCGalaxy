@@ -155,7 +155,7 @@ namespace MCGalaxy.Eco
             preset.z = args[5];
             if (MapGen.Find(args[6]) == null)
             {
-                MapGen.PrintThemes(p);
+                p.Message("Themes: &f " + MapGen.Generators.Join(g => g.Theme));
                 return;
             }
             preset.type = args[6];
@@ -209,7 +209,7 @@ namespace MCGalaxy.Eco
             {
                 if (MapGen.Find(args[4]) == null) 
                 {
-                    MapGen.PrintThemes(p);
+                    p.Message("Themes: &f " + MapGen.Generators.Join(g => g.Theme));
                     return; 
                 }
                 preset.type = args[4];

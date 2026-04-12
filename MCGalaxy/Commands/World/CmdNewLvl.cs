@@ -41,14 +41,10 @@ namespace MCGalaxy.Commands.World
                 args[6] = "";
             }
             if (!ext.StartsWith("."))
-            {
                 ext = "." + ext;
-            }
             List<string> list = new();
             foreach (Levels.IO.IMapExporter exporter in Levels.IO.IMapExporter.Formats)
-            {
                 list.Add(exporter.Extension);
-            }
             if (!list.CaselessContains(ext))
             {
                 p.Message("Unsupported extension {0}, using .lvl instead.", ext);
@@ -58,11 +54,7 @@ namespace MCGalaxy.Commands.World
             try
             {
                 lvl = GenerateMap(p, args);
-                if (lvl == null)
-                {
-                    return;
-                }
-                lvl.Save(true, ext);
+                lvl?.Save(true, ext);
             }
             finally
             {
@@ -72,17 +64,17 @@ namespace MCGalaxy.Commands.World
         }
         internal Level GenerateMap(Player p, string[] args)
         {
-            if (args.Length < 4)
+            if (args.Length >= 4)
             {
-                return null;
+                string theme = args.Length > 4 ? args[4] : Server.Config.DefaultMapGenTheme,
+                    seed = args.Length > 5 ? args[5] : "";
+                MapGen gen = MapGen.Find(theme);
+                ushort x = 0, y = 0, z = 0;
+                return !MapGen.GetDimensions(p, args, 1, ref x, ref y, ref z)
+                    ? null
+                    : MapGen.Generate(p, gen, args[0], x, y, z, seed);
             }
-            string theme = args.Length > 4 ? args[4] : Server.Config.DefaultMapGenTheme,
-                seed = args.Length > 5 ? args[5] : "";
-            MapGen gen = MapGen.Find(theme);
-            ushort x = 0, y = 0, z = 0;
-            return !MapGen.GetDimensions(p, args, 1, ref x, ref y, ref z)
-                ? null
-                : gen != null && gen.Type == GenType.Advanced && !CheckExtraPerm(p, 1) ? null : MapGen.Generate(p, gen, args[0], x, y, z, seed);
+            return null;
         }
         public override void Help(Player p)
         {
@@ -97,18 +89,14 @@ namespace MCGalaxy.Commands.World
         {
             MapGen gen = MapGen.Find(message);
             if (message.CaselessEq("theme") || message.CaselessEq("themes"))
-            {
-                MapGen.PrintThemes(p);
-            }
+                p.Message("Themes: &f " + MapGen.Generators.Join(g => g.Theme));
             else if (gen == null)
             {
                 p.Message("No theme found with name \"{0}\".", message);
                 p.Message("&HUse &T/Help NewLvl themes &Hfor a list of themes.");
             }
             else
-            {
                 p.Message(gen.Desc);
-            }
         }
     }
 }

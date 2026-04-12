@@ -40,7 +40,7 @@ namespace MCGalaxy.Eco
             if (actions.Length > 0)
                 action = actions[new Random().Next(actions.Length)];
             if (!p.CheckCanSpeak("eat a snack")) return;
-            Chat.MessageFrom(p, "λNICK &S" + action, null);
+            Chat.MessageFrom(p, "λNICK &S" + action, null, Server.Config.RelayCommands);
             p.CheckForMessageSpam();
             p.NextEat = DateTime.UtcNow.AddSeconds(10);
             p.SetMoney(p.money - Price);

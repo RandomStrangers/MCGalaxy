@@ -46,7 +46,7 @@ namespace MCGalaxy
         public static void Setup()
         {
             genScheduler ??= new("MapGenScheduler");
-            MapGen.Register("NASGen", GenType.Advanced, Gen, "hello?");
+            MapGen.Register("NASGen", Gen, "hello?");
             string coalFog = "#BCC9E8",
                 ironFog = "#A1A3A8",
                 goldFog = "#7A706A",

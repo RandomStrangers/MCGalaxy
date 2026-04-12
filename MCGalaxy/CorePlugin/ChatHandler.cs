@@ -45,7 +45,7 @@ namespace MCGalaxy.Core
                             switch (used)
                             {
                                 case < 2:
-                                    Chat.MessageFrom(p, "λNICK &Sjust so happens to be a proud brony! Everyone give λNICK &Sa brohoof!");
+                                    Chat.MessageFrom(p, "λNICK &Sjust so happens to be a proud brony! Everyone give λNICK &Sa brohoof!", null, Server.Config.RelayCommands);
                                     Logger.Log(LogType.CommandUsage, "{0} used /{1}", p.name, cmd);
                                     break;
                                 default:
@@ -63,7 +63,7 @@ namespace MCGalaxy.Core
                             switch (used)
                             {
                                 case < 2:
-                                    Chat.MessageGlobal("&4T&6H&eI&aS&3 S&9E&1R&4V&6E&eR &aJ&3U&9S&1T &4G&6O&eT &a2&30 &9P&1E&4R&6C&eE&aN&3T &9C&1O&4O&6L&eE&aR&3!");
+                                    Chat.MessageGlobal("&4T&6H&eI&aS&3 S&9E&1R&4V&6E&eR &aJ&3U&9S&1T &4G&6O&eT &a2&30 &9P&1E&4R&6C&eE&aN&3T &9C&1O&4O&6L&eE&aR&3!", null, Server.Config.RelayCommands);
                                     Logger.Log(LogType.CommandUsage, "{0} used /{1}", p.name, cmd);
                                     break;
                                 default:
