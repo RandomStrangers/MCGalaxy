@@ -62,7 +62,7 @@ namespace MCGalaxy
         public PlayerList Players;
         public bool[] CanPlace = new bool[1024],
             CanDelete = new bool[1024];
-        public Group() { }
+        internal Group() { } //Unfortunately needed to prevent data corruption.
         public Group(LevelPermission perm, int drawLimit, TimeSpan undoMins, string name, string color, int volume, int realms)
         {
             Permission = perm;

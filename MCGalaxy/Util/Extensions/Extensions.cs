@@ -171,16 +171,18 @@ namespace MCGalaxy
         public static bool CaselessContains(this string a, string b) => a.IndexOf(b, StringComparison.OrdinalIgnoreCase) >= 0;
         public static bool CaselessContains(this List<string> items, string value)
         {
-            foreach (string item in items)
-                if (item.Equals(value, StringComparison.OrdinalIgnoreCase))
-                    return true;
+            if (!string.IsNullOrEmpty(value) && items != null && items.Count > 0)
+                foreach (string item in items)
+                    if (!string.IsNullOrEmpty(item) && item.Equals(value, StringComparison.OrdinalIgnoreCase))
+                        return true;
             return false;
         }
         public static bool CaselessContains(this string[] items, string value)
         {
-            for (int i = 0; i < items.Length; i++)
-                if (items[i].Equals(value, StringComparison.OrdinalIgnoreCase))
-                    return true;
+            if (!string.IsNullOrEmpty(value) && items != null && items.Length > 0)
+                for (int i = 0; i < items.Length; i++)
+                    if (!string.IsNullOrEmpty(items[i]) && items[i].Equals(value, StringComparison.OrdinalIgnoreCase))
+                        return true;
             return false;
         }
         public static bool CaselessRemove(this List<string> items, string value)
