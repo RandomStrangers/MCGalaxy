@@ -53,7 +53,7 @@ namespace MCGalaxy
         public bool Load(string effectName)
         {
             cfg ??= ConfigElement.GetAll(typeof(NASEffect));
-            if (!ConfigElement.ParseFile(cfg, Path + effectName + ".properties", this))
+            if (!ConfigElement.ParseFile(cfg, Path + effectName + Paths.PropertiesFileExt, this))
             {
                 Logger.Log(LogType.Warning, "NAS: Could not find required effect file {0}", effectName);
                 return false;

@@ -181,7 +181,7 @@ namespace MCGalaxy
             {
                 NASBlock nasBlock = NASBlock.blocksIndexedByServerushort[p.Level.GetBlock(x, y, z)];
                 nasBlock.existAction?.Invoke(NASPlayer.GetPlayer(p), nasBlock, true, x, y, z);
-                NASLevel.Get(p.Level.name)?.SimulateSetBlock(x, y, z);
+                NASLevel.Get(p?.Level?.name)?.SimulateSetBlock(x, y, z);
             }
         }
         public static void BreakTask(SchedulerTask task)

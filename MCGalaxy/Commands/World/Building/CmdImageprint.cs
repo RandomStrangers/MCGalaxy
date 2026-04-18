@@ -33,11 +33,8 @@ namespace MCGalaxy.Commands.Building
                     new CommandAlias("ImgDraw"), new CommandAlias("DrawImg"),
                     new CommandAlias("DrawImage"), new CommandAlias("PrintImage") };
         public override void Use(Player p, string message, CommandData data)
-        {
-            if (!Directory.Exists("extra/images/"))
-            {
-                Directory.CreateDirectory("extra/images/");
-            }
+        {                
+            Server.EnsureDirectoryExists("extra/images/");
             if (message.Length == 0)
             {
                 Help(p);

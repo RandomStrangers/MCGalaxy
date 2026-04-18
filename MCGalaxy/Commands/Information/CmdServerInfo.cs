@@ -33,7 +33,7 @@ namespace MCGalaxy.Commands.Info
             p.Message("  &a{0} &Splayers total. (&a{1} &Sonline, &8{2} banned&S)",
                       Database.CountRows("Players"), PlayerInfo.GetOnlineCanSee(p, p.Rank).Count, Group.BannedRank.Players.Count);
             p.Message("  &a{0} &Slevels total (&a{1} &Sloaded). Currency is &3{2}&S.",
-                      LevelInfo.AllMapFiles().Length, LevelInfo.Loaded.Count, Server.Config.Currency);
+                      LevelInfo.AllMapFiles().Count, LevelInfo.Loaded.Count, Server.Config.Currency);
             TimeSpan up = DateTime.UtcNow - Server.StartTime;
             p.Message("  Been up for &a{0}&S, running &b{1} &a{2}",
                       up.Shorten(true), Server.SoftwareName, Server.Version);

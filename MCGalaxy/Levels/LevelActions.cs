@@ -33,12 +33,11 @@ namespace MCGalaxy
             if (ext.CaselessContains(".lvl"))
                 ext = LevelInfo.GetExt(map);
             string basePath = LevelInfo.BackupBasePath(map);
-            if (!Directory.Exists(basePath))
-                Directory.CreateDirectory(basePath);
+            Server.EnsureDirectoryExists(basePath);
             string path = Path.Combine(basePath, backupName);
-            Directory.CreateDirectory(path);
+            Server.EnsureDirectoryExists(path);
             bool lvl = DoAction(LevelInfo.MapPath(map, ext), Path.Combine(path, map + ext), 2),
-                props = DoAction(LevelInfo.PropsPath(map), Path.Combine(path, "map.properties"), 2),
+                props = DoAction(LevelInfo.PropsPath(map), Path.Combine(path, "map" + Paths.PropertiesFileExt), 2),
                 defs = DoAction(Paths.MapBlockDefs(map), Path.Combine(path, "blockdefs.json"), 2),
                 blkOld = DoAction(BlockPropsOldPath(map), Path.Combine(path, "blockprops.txt"), 2),
                 blkCur = DoAction(BlockPropsLvlPath(map), Path.Combine(path, "blockprops.txt"), 2),
@@ -123,8 +122,7 @@ namespace MCGalaxy
                 return false;
             }
             p.Message("Created backup.");
-            if (!Directory.Exists("levels/deleted"))
-                Directory.CreateDirectory("levels/deleted");
+            Server.EnsureDirectoryExists("levels/deleted");
             if (File.Exists(Paths.DeletedMapFile(map)))
             {
                 int num = 0;

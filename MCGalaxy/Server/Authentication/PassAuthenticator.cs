@@ -31,7 +31,7 @@ namespace MCGalaxy.Authentication
         public static bool VerifyPassword(string name, string password) => GetHashPath(name) != null && CheckHash(GetHashPath(name), name, password);
         public static void StorePassword(string name, string password)
         {
-            Directory.CreateDirectory("extra/passwords/");
+            Server.EnsureDirectoryExists("extra/passwords/");
             FileIO.TryWriteAllBytes(HashPath(name), ComputeHash(name, password));
         }
         public static bool ResetPassword(string name)

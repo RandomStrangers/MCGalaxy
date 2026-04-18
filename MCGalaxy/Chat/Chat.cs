@@ -70,7 +70,7 @@ namespace MCGalaxy
         /// <summary> Filters chat to only players that can see the source player. </summary>
         public static ChatMessageFilter FilterVisible(Player source) => (pl, obj) => pl.CanSee(source);
         public static void MessageAll(string msg) => Message(ChatScope.All, msg, null, null);
-        public static void MessageGlobal(string msg) => Message(ChatScope.Global, msg, null, null, Server.Config.RelayCommands);
+        public static void MessageGlobal(string msg) => Message(ChatScope.Global, msg, null, null);
         public static void MessageOps(string msg) => Message(ChatScope.Perms, msg, OpchatPerms, null);
         public static void MessageGlobal(string message, object a0) => MessageGlobal(string.Format(message, a0));
         public static void MessageGlobal(string message, object a0, object a1) => MessageGlobal(string.Format(message, a0, a1));
@@ -82,7 +82,7 @@ namespace MCGalaxy
             OnChatSysEvent.Call(scope, ref msg, arg, ref filter, relay);
             foreach (Player pl in players)
             {
-                if (!scopeFilter(pl, arg) || filter != null && !filter(pl, arg)) continue;
+                if (!scopeFilter(pl, arg) || (filter != null && !filter(pl, arg))) continue;
                 pl.Message(msg);
             }
         }

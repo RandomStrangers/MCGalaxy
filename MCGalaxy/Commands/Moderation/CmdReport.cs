@@ -34,8 +34,7 @@ namespace MCGalaxy.Commands.Moderation
                 return; 
             }
             string[] args = message.SplitSpaces(2);
-            if (!Directory.Exists("extra/reported"))
-                Directory.CreateDirectory("extra/reported");
+            Server.EnsureDirectoryExists("extra/reported");
             string cmd = args[0];
             if (IsListAction(cmd))
             {
@@ -111,8 +110,7 @@ namespace MCGalaxy.Commands.Moderation
                 p.Message("{0} &Shas not been reported.", nick); 
                 return;
             }
-            if (!Directory.Exists("extra/reportedbackups"))
-                Directory.CreateDirectory("extra/reportedbackups");
+            Server.EnsureDirectoryExists("extra/reportedbackups");
             DeleteReport(target);
             p.Message("Reports on {0} &Swere deleted.", nick);
             Chat.MessageFromOps(p, "λNICK &Sdeleted reports on " + nick);
@@ -121,8 +119,7 @@ namespace MCGalaxy.Commands.Moderation
         void HandleClear(Player p)
         {
             if (!CheckExtraPerm(p, 1)) return;
-            if (!Directory.Exists("extra/reportedbackups"))
-                Directory.CreateDirectory("extra/reportedbackups");
+            Server.EnsureDirectoryExists("extra/reportedbackups");
             string[] users = GetReportedUsers();
             foreach (string user in users) 
             { 

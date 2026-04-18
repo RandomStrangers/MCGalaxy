@@ -29,11 +29,8 @@ namespace MCGalaxy.Commands.World
             {
                 Help(p);
                 return;
-            }
-            if (!Directory.Exists(Paths.ImportsDir))
-            {
-                Directory.CreateDirectory(Paths.ImportsDir);
-            }
+            }                
+            Server.EnsureDirectoryExists(Paths.ImportsDir);
             if (message.CaselessEq("all"))
             {
                 string[] paths = FileIO.TryGetFiles(Paths.ImportsDir);

@@ -47,17 +47,17 @@ namespace MCGalaxy
             Loaded.Remove(lvl);
             OnLevelRemovedEvent.Call(lvl);
         }
-        public static string[] AllMapFiles()
+        public static List<string> AllMapFiles()
         {
             List<string> Files = new();
             Files.AddRange(FileIO.TryGetFiles("levels", "*.lvl"));
             Files.AddRange(FileIO.TryGetFiles("levels", "*.mcf"));
-            return Files.ToArray();
+            return Files;
         }
-        public static string[] AllMapNames()
+        public static List<string> AllMapNames()
         {
-            string[] files = AllMapFiles();
-            for (int i = 0; i < files.Length; i++)
+            List<string> files = AllMapFiles();
+            for (int i = 0; i < files.Count; i++)
                 files[i] = Path.GetFileNameWithoutExtension(files[i]);
             return files;
         }
@@ -96,7 +96,7 @@ namespace MCGalaxy
         public static string NextBackup(string map)
         {
             string root = BackupBasePath(map);
-            Directory.CreateDirectory(root);
+            Server.EnsureDirectoryExists(root);
             return (LatestBackup(map) + 1).ToString();
         }
         /// <summary>
@@ -132,7 +132,7 @@ namespace MCGalaxy
             return true;
         }
         /// <summary> Relative path of a level's property file </summary>
-        public static string PropsPath(string name) => "levels/level properties/" + name + ".properties";
+        public static string PropsPath(string name) => "levels/level properties/" + name + Paths.PropertiesFileExt;
         public static LevelConfig GetConfig(string map) => GetConfig(map, out _);
         internal static LevelConfig GetConfig(string map, out Level lvl)
         {
@@ -210,8 +210,8 @@ namespace MCGalaxy
         /// </summary>
         public static List<string> AllPersonalRealms(string playerName)
         {
-            string[] allMaps = AllMapNames();
-            List<string> owned = new();
+            List<string> allMaps = AllMapNames(),
+                owned = new();
             foreach (string lvlName in allMaps)
                 if (IsPersonalRealmOwner(playerName, lvlName))
                     owned.Add(lvlName);

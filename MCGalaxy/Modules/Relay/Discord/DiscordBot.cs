@@ -277,10 +277,10 @@ namespace MCGalaxy.Modules.Relay.Discord
             if (PKUsers.CaselessContains(user.ID))
             {
                 string pkdir = "text/discord/PK",
-                    globalPath = pkdir + "/" + user.GlobalName + ".properties",
-                    path = pkdir + "/" + user.Nick + ".properties";
+                    globalPath = pkdir + "/" + user.GlobalName + Paths.PropertiesFileExt,
+                    path = pkdir + "/" + user.Nick + Paths.PropertiesFileExt;
                 if (!Directory.Exists(pkdir))
-                    Directory.CreateDirectory(pkdir);
+                    Server.EnsureDirectoryExists(pkdir);
                 if (!File.Exists(path))
                 {
                     if (File.Exists(globalPath))

@@ -105,7 +105,7 @@ namespace MCGalaxy
         static string TokenServerName(Player p) => Server.Config.Name;
         static string TokenServerMOTD(Player p) => Server.Config.MOTD;
         static string TokenLoaded(Player p) => NumberUtils.StringifyInt(LevelInfo.Loaded.Count);
-        static string TokenWorlds(Player p) => NumberUtils.StringifyInt(LevelInfo.AllMapFiles().Length);
+        static string TokenWorlds(Player p) => NumberUtils.StringifyInt(LevelInfo.AllMapFiles().Count);
         static string TokenOnline(Player p)
         {
             Player[] players = PlayerInfo.Online.Items;

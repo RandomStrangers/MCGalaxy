@@ -65,8 +65,7 @@ namespace MCGalaxy.Commands.Bots
         }
         void HandleDelete(Player p, string ai, string[] args)
         {
-            if (!Directory.Exists("bots/deleted"))
-                Directory.CreateDirectory("bots/deleted");
+            Server.EnsureDirectoryExists("bots/deleted");
             if (!File.Exists("bots/" + ai))
             {
                 p.Message("Could not find specified bot AI.");

@@ -13,6 +13,7 @@
     permissions and limitations under the Licenses.
  */
 using System;
+using System.Collections.Generic;
 namespace MCGalaxy.Commands.Info
 {
     public sealed class CmdLevels : Command2
@@ -24,8 +25,8 @@ namespace MCGalaxy.Commands.Info
         public override CommandAlias[] Aliases => new[] { new CommandAlias("Maps") };
         public override void Use(Player p, string message, CommandData data)
         {
-            string[] files = LevelInfo.AllMapNames();
-            Array.Sort(files, new AlphanumComparator());
+            List<string> files = LevelInfo.AllMapNames();
+            Array.Sort(files.ToArray(), new AlphanumComparator());
             LevelInfo.ListMaps(p, files, "Levels", "Levels", "levels", message);
         }
         public override void Help(Player p)

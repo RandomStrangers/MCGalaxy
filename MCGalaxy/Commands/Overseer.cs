@@ -35,7 +35,7 @@ namespace MCGalaxy.Commands.World
         static string GetLevelName(Player p, string mapSubName) => p.name.ToLower() + mapSubName;
         static string NextLevel(Player p)
         {
-            string[] allMaps = LevelInfo.AllMapNames();
+            List<string> allMaps = LevelInfo.AllMapNames();
             int realmsOwned = 0;
             foreach (string lvlName in allMaps)
             {

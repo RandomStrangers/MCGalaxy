@@ -22,8 +22,7 @@ namespace MCGalaxy.Commands.Info
         public override bool UseableWhenFrozen => true;
         public override void Use(Player p, string message, CommandData data)
         {
-            if (!Directory.Exists("extra/text/"))
-                Directory.CreateDirectory("extra/text");
+            Server.EnsureDirectoryExists("extra/text");
             if (message.Length == 0)
             {
                 string[] files = FileIO.TryGetFiles("extra/text", "*.txt");

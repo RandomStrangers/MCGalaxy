@@ -232,17 +232,16 @@ namespace MCGalaxy.Commands.Building
         }
         void SaveCopy(Player p, string file)
         {
-            if (!Directory.Exists("extra/savecopy"))
+            Server.EnsureDirectoryExists("extra/savecopy");
+            Server.EnsureDirectoryExists("extra/savecopy/" + p.name);
+            if (FileIO.TryGetFiles("extra/savecopy/" + p.name).Length > p.group.CopySlots)
             {
-                Directory.CreateDirectory("extra/savecopy");
-            }
-            if (!Directory.Exists("extra/savecopy/" + p.name))
-            {
-                Directory.CreateDirectory("extra/savecopy/" + p.name);
-            }
-            if (FileIO.TryGetFiles("extra/savecopy/" + p.name).Length > 15)
-            {
-                p.Message("You can only save a maxmium of 15 copies. /copy delete some.");
+                string msg = "You can only save a maxmium of " + p.group.CopySlots + " copy. /copy delete some.";
+                if (p.group.CopySlots != 1)
+                {
+                    msg = "You can only save a maxmium of " + p.group.CopySlots + " copies. /copy delete some.";
+                }
+                p.Message(msg);
                 return;
             }
             CopyState cState = p.CurrentCopy;

@@ -15,7 +15,6 @@
 using System.IO;
 namespace MCGalaxy
 {
-    /// <summary> Provides a centralised list of files and paths used. </summary>
     public static class Paths
     {
         public const string CustomColorsFile = "text/customcolors.txt";
@@ -34,29 +33,25 @@ namespace MCGalaxy
         public const string WelcomeFile = "text/welcome.txt";
         public const string JokerFile = "text/joker.txt";
         public const string EightBallFile = "text/8ball.txt";
-        public const string BlockPermsFile = "props/block.properties";
-        public const string PlacePermsFile = "props/place.properties";
-        public const string DeletePermsFile = "props/delete.properties";
-        public const string CmdPermsFile = "props/command.properties";
-        public const string CmdExtraPermsFile = "props/ExtraCommandPermissions.properties";
-        public const string EconomyPropsFile = "props/economy.properties";
-        public const string ServerPropsFile = "props/server.properties";
-        public const string RankPropsFile = "props/ranks.properties";
-        public const string AuthServicesFile = "props/authservices.properties";
-        public const string CPEDisabledFile = "props/cpe.properties";
+        public const string BlockPermsFile = "props/block" + PropertiesFileExt;
+        public const string PlacePermsFile = "props/place" + PropertiesFileExt;
+        public const string DeletePermsFile = "props/delete" + PropertiesFileExt;
+        public const string CmdPermsFile = "props/command" + PropertiesFileExt;
+        public const string CmdExtraPermsFile = "props/ExtraCommandPermissions" + PropertiesFileExt;
+        public const string EconomyPropsFile = "props/economy" + PropertiesFileExt;
+        public const string ServerPropsFile = "props/server" + PropertiesFileExt;
+        public const string RankPropsFile = "props/ranks" + PropertiesFileExt;
+        public const string AuthServicesFile = "props/authservices" + PropertiesFileExt;
+        public const string CPEDisabledFile = "props/cpe" + PropertiesFileExt;
         public const string ImportsDir = "extra/import/";
         public const string WAYPOINTS_DIR = "extra/Waypoints/";
-        /// <summary> Relative path of the file containing a map's bots. </summary>
+        public const string PropertiesFileExt = ".properties";
         public static string BotsPath(string map) => "extra/bots/" + map + ".json";
-        /// <summary> Relative path of the file containing a map's block definitions. </summary>
         public static string MapBlockDefs(string map) => "blockdefs/lvl_" + map + ".json";
-        /// <summary> Relative path of a deleted level's map file. </summary>
         public static string DeletedMapFile(string level) => File.Exists("levels/deleted/" + level.ToLower() + ".mcf")
                 ? "levels/deleted/" + level + ".mcf"
                 : "levels/deleted/" + level + ".lvl";
-        /// <summary> Relative path of a level's previous save map file. </summary>
         public static string PrevMapFile(string level) => File.Exists("levels/" + level.ToLower() + ".mcf") ? "levels/prev/" + level.ToLower() + ".mcf.prev" : "levels/prev/" + level.ToLower() + ".lvl.prev";
-        /// <summary> Relative path of a block properties file. </summary>
         public static string BlockPropsPath(string group) => "blockprops/" + group + ".txt";
     }
 }

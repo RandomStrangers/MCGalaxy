@@ -40,18 +40,27 @@ namespace MCGalaxy.Tasks
         }
         internal static void FreezeCheckTask(SchedulerTask task) => DoTask(task, Server.frozen, FreezeCallback);
         internal static void FreezeCalcNextRun() => CalcNextRun(freezeTask, Server.frozen);
-        public static void FreezeCallback(string[] args) => OnModActionEvent.Call(new(args[0], Player.NASConsole, ModActionType.Unfrozen, "auto unfreeze"));
+        public static void FreezeCallback(string[] args)
+        {
+            ModAction action = new(args[0], Player.NASConsole, ModActionType.Unfrozen, "auto unfreeze");
+            OnModActionEvent.Call(action);
+        }
         internal static void MuteCheckTask(SchedulerTask task) => DoTask(task, Server.muted, MuteCallback);
         internal static void MuteCalcNextRun() => CalcNextRun(muteTask, Server.muted);
-        public static void MuteCallback(string[] args) => OnModActionEvent.Call(new(args[0], Player.NASConsole, ModActionType.Unmuted, "auto unmute"));
+        public static void MuteCallback(string[] args)
+        {
+            ModAction action = new(args[0], Player.NASConsole, ModActionType.Unmuted, "auto unmute");
+            OnModActionEvent.Call(action);
+        }
         public static void DoTask(SchedulerTask task, PlayerExtList list, Action<string[]> callback)
         {
             List<string> lines = list.AllLines();
             foreach (string line in lines)
             {
                 string[] args = line.SplitSpaces();
-                if (args.Length < 4 || !long.TryParse(args[3], out long expiry) || DateTime.UtcNow < expiry.FromUnixTime())
-                    continue;
+                if (args.Length < 4) continue;
+                if (!long.TryParse(args[3], out long expiry)) continue;
+                if (DateTime.UtcNow < expiry.FromUnixTime()) continue;
                 callback(args);
             }
             task.Delay = NextRun(list);
@@ -71,8 +80,8 @@ namespace MCGalaxy.Tasks
                 foreach (string line in lines)
                 {
                     string[] args = line.SplitSpaces();
-                    if (args.Length < 4 || !long.TryParse(args[3], out long expiry))
-                        continue;
+                    if (args.Length < 4) continue;
+                    if (!long.TryParse(args[3], out long expiry)) continue;
                     DateTime expireTime = expiry.FromUnixTime();
                     if (expireTime < nextRun)
                         nextRun = expireTime;

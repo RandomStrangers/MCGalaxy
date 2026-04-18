@@ -28,15 +28,14 @@ namespace MCGalaxy
         /// </summary>
         public static void Init(SchedulerTask _)
         {
-            if (!Directory.Exists("text/pronouns/"))
-                Directory.CreateDirectory("text/pronouns/");
+            Server.EnsureDirectoryExists("text/pronouns/");
             Default = new("default", "they", "their", "themselves", true, "them");
-            if (!File.Exists("props/pronouns.properties"))
+            if (!File.Exists("props/pronouns" + Paths.PropertiesFileExt))
             {
                 Loaded.Add(new("they/them", "they", "their", "themselves", true, "them"));
                 Loaded.Add(new("he/him", "he", "his", "himself", false, "him"));
                 Loaded.Add(new("she/her", "she", "her", "herself", false, "her"));
-                using (StreamWriter w = new("props/pronouns.properties"))
+                using (StreamWriter w = new("props/pronouns" + Paths.PropertiesFileExt))
                 {
                     w.WriteLine("# Below are the pronouns that players may choose from by using /pronouns");
                     w.WriteLine("# Lines starting with # are ignored");
@@ -50,7 +49,7 @@ namespace MCGalaxy
                     foreach (Pronouns p in Loaded)
                         p.Write(w);
                 }
-                Logger.Log(LogType.SystemActivity, "CREATED NEW: props/pronouns.properties");
+                Logger.Log(LogType.SystemActivity, "CREATED NEW: props/pronouns" + Paths.PropertiesFileExt);
             }
             Events.ServerEvents.OnConfigUpdatedEvent.Register(OnConfigUpdated, Priority.Low);
             OnConfigUpdated();
@@ -63,7 +62,7 @@ namespace MCGalaxy
                 Loaded.Add(Default);
                 try
                 {
-                    using StreamReader r = new("props/pronouns.properties");
+                    using StreamReader r = new("props/pronouns" + Paths.PropertiesFileExt);
                     while (!r.EndOfStream)
                     {
                         string line = r.ReadLine();

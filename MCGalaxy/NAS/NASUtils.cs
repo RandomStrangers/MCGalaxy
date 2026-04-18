@@ -61,8 +61,7 @@ namespace MCGalaxy
         public static void EnsureDirectoriesExist(params string[] paths)
         {
             foreach (string path in paths)
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(path);
+                Server.EnsureDirectoryExists(path);
         }
         public static string GetSavePath(Player p) => NASPlayer.Path + p.name + ".json";
         public static string GetDeathPath(string name) => NASPlayer.DeathsPath + name + ".txt";

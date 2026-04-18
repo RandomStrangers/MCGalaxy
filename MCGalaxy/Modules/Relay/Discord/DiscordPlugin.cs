@@ -55,7 +55,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         public string PKPrefixes = "pk;,rs;,se;,mw;";
         [ConfigString("pluralkit-users", "PluralKit", "", true)]
         public string PKUsers = "";
-        public const string PROPS_PATH = "props/discordbot.properties";
+        public const string PROPS_PATH = "props/discordbot" + Paths.PropertiesFileExt;
         public static ConfigElement[] cfg;
         public void Load()
         {

@@ -21,7 +21,6 @@ using System.Globalization;
 using System.IO;
 namespace MCGalaxy
 {
-    /// <summary> This is the group object, where ranks and their data are stored </summary>
     public sealed class Group
     {
         public static Group BannedRank => Find(LevelPermission.Banned);
@@ -94,8 +93,6 @@ namespace MCGalaxy
         }
         public static string GetColoredName(LevelPermission perm) => Find(perm) != null ? Find(perm).ColoredName : "&f" + NumberUtils.StringifyInt((int)perm);
         public static string GetColoredName(string rankName) => Find(rankName) != null ? Find(rankName).ColoredName : "&f" + rankName;
-        /// <summary> Returns the color of the group with the given permission level </summary>
-        /// <remarks> Returns white if no such group exists </remarks>
         public static string GetColor(LevelPermission perm) => Find(perm) != null ? Find(perm).Color : "&f";
         public static bool TryParse(string s, out sbyte result) => sbyte.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
         public static LevelPermission ParsePermOrName(string value, LevelPermission defPerm)
@@ -129,11 +126,11 @@ namespace MCGalaxy
                 LoadFromDisc();
             else
             {
-                Add(LevelPermission.Builder, 4096, 5, "Builder", "&2", GEN_LIMIT, 3); // 16^3 draw volume
-                Add(LevelPermission.AdvBuilder, 262144, 15, "AdvBuilder", "&3", GEN_LIMIT, 5); // 64^3
-                Add(LevelPermission.Operator, 2097152, 90, "Operator", "&c", GEN_LIMIT, 8); // 128^3
-                Add(LevelPermission.Admin, 16777216, 21024000, "Admin", "&e", GEN_ADMIN, 32); // 256^3
-                Add(LevelPermission.Owner, 134217728, 21024000, "Owner", "&4", GEN_ADMIN, 256); // 512^3
+                Add(LevelPermission.Builder, 4096, 5, "Builder", "&2", GEN_LIMIT, 3);
+                Add(LevelPermission.AdvBuilder, 262144, 15, "AdvBuilder", "&3", GEN_LIMIT, 5);
+                Add(LevelPermission.Operator, 2097152, 90, "Operator", "&c", GEN_LIMIT, 8);
+                Add(LevelPermission.Admin, 16777216, 21024000, "Admin", "&e", GEN_ADMIN, 32); 
+                Add(LevelPermission.Owner, 134217728, 21024000, "Owner", "&4", GEN_ADMIN, 256);
             }
             if (BannedRank == null)
                 Add(LevelPermission.Banned, 1, 0, "Banned", "&8", GEN_LIMIT, 0);

@@ -77,6 +77,52 @@ namespace MCGalaxy
             Block.FromRaw(613),
             Block.FromRaw(614),
         };
+        public static void Write(NASLevel nl)
+        {
+            try
+            {
+                using StreamWriter streamWriter = new(File.Create(GetFileName(nl.lvl.name)));
+                streamWriter.Write(JsonConvert.SerializeObject(nl, Formatting.Indented));
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogType.Warning, "Error saving NASLevel {0}", nl.lvl.name);
+                Logger.LogError(ex);
+            }
+        }
+        public static NASLevel Read(string name)
+        {
+            try
+            {
+                if (File.Exists(GetFileName(name)))
+                {
+                    using StreamReader streamReader = new(FileIO.TryOpenRead(GetFileName(name)));
+                    string data = streamReader.ReadToEnd();
+                    return JsonConvert.DeserializeObject<NASLevel>(data);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogType.Warning, "Error reading NASLevel {0}", name);
+                Logger.LogError(ex);
+            }
+            return all.ContainsKey(name) ? all[name] : File.Exists(GetFileName(name)) ? JsonConvert.DeserializeObject<NASLevel>(FileIO.TryReadAllText(GetFileName(name))) : new();
+        }
+        public static NASLevel Read(Level lvl)
+        {
+            try
+            {
+                using StreamReader streamReader = new(FileIO.TryOpenRead(GetFileName(lvl.name)));
+                string data = streamReader.ReadToEnd();
+                return JsonConvert.DeserializeObject<NASLevel>(data);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogType.Warning, "Error reading NASLevel {0}", lvl.name);
+                Logger.LogError(ex);
+                return null;
+            }
+        }
         public static Level GenerateMap(Player p, string mapName, string width, string height, string length, string seed)
         {
             string[] args = new string[] { mapName, width, height, length, seed };
@@ -85,7 +131,7 @@ namespace MCGalaxy
             return !MapGen.GetDimensions(p, args, 1, ref x, ref y, ref z, false) ? null : MapGen.Generate(p, gen, mapName, x, y, z, seed);
         }
         public static bool IsNASLevel(Level lvl) => (!lvl.Config.Deletable || !lvl.Config.Buildable) && Get(lvl) != null;
-        public static NASLevel Get(Level lvl) => all.ContainsKey(lvl.name) ? all[lvl.name] : null;
+        public static NASLevel Get(Level lvl) => Read(lvl);
         public static void Setup()
         {
             OnLevelLoadedEvent.Register(OnLevelLoaded, Priority.High);
@@ -114,14 +160,12 @@ namespace MCGalaxy
                 name = lvl.name;
             EndTickTask();
             lvl.Save(true);
-            string jsonString = JsonConvert.SerializeObject(this, Formatting.Indented),
-                fileName = GetFileName(name);
-            FileIO.TryWriteAllText(fileName, jsonString);
+            Write(this);
             all.Remove(name);
             Server.DoGC();
             return true;
         }
-        public static NASLevel Get(string name) => all.ContainsKey(name)
+        public static NASLevel Get(string name) => Read(name) == null ? Read(name) : all.ContainsKey(name)
                 ? all[name]
                 : File.Exists(GetFileName(name)) ? JsonConvert.DeserializeObject<NASLevel>(FileIO.TryReadAllText(GetFileName(name))) : new();
         public static void Unload(string name, NASLevel nl) => nl.Save(name);
@@ -137,11 +181,8 @@ namespace MCGalaxy
         {
             if (NASBlock.blocksIndexedByServerushort == null)
                 return;
-            NASLevel nl;
-            string fileName = GetFileName(lvl.name);
-            if (File.Exists(fileName))
+            NASLevel nl = Read(lvl);
             {
-                nl = JsonConvert.DeserializeObject<NASLevel>(FileIO.TryReadAllText(fileName));
                 nl.lvl = lvl;
                 if (!all.ContainsKey(lvl.name))
                     all.Add(lvl.name, nl);

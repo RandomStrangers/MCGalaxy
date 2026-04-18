@@ -14,7 +14,6 @@
  */
 using MCGalaxy.SQL;
 using System.Collections.Generic;
-using System.IO;
 namespace MCGalaxy
 {
     public sealed partial class Server
@@ -48,8 +47,7 @@ namespace MCGalaxy
         };
         public static void InitDatabase()
         {
-            if (!Directory.Exists("blockdb"))
-                Directory.CreateDirectory("blockdb");
+            EnsureDirectoryExists("blockdb");
             Database.CreateTable("Opstats", opstatsTable);
             Database.CreateTable("Players", playersTable);
             List<string> columns = SQLiteBackend.Instance.ColumnNames("Players");

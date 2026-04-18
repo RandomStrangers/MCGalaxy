@@ -36,8 +36,8 @@ namespace MCGalaxy.Commands.World
             if (message.CaselessStarts("-random"))
             {
                 Random r = new();
-                string[] files = LevelInfo.AllMapFiles(),
-                    args = message.SplitSpaces(2);
+                List<string> files = LevelInfo.AllMapFiles();
+                string[] args = message.SplitSpaces(2);
                 int attempts = 0;
                 GrResult res;
                 do
@@ -59,7 +59,7 @@ namespace MCGalaxy.Commands.World
         {
             NoLevels, NoPermission, Success 
         }
-        static GrResult TryGotoRandom(Player p, Random r, string[] files, string[] args)
+        static GrResult TryGotoRandom(Player p, Random r, List<string> files, string[] args)
         {
             string map;
             if (args.Length > 1)
@@ -75,7 +75,7 @@ namespace MCGalaxy.Commands.World
             }
             else
             {
-                map = files[r.Next(files.Length)];
+                map = files[r.Next(files.Count)];
                 map = Path.GetFileNameWithoutExtension(map);
             }
             if (p.Level.name == map)

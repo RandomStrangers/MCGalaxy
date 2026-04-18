@@ -115,12 +115,9 @@ namespace MCGalaxy.DB
         }
         public static void EnsureDirectoriesExist()
         {
-            if (!Directory.Exists("text/login"))
-                Directory.CreateDirectory("text/login");
-            if (!Directory.Exists("text/logout"))
-                Directory.CreateDirectory("text/logout");
-            if (!Directory.Exists("players"))
-                Directory.CreateDirectory("players");
+            Server.EnsureDirectoryExists("text/login");
+            Server.EnsureDirectoryExists("text/logout");
+            Server.EnsureDirectoryExists("players");
         }
     }
 }

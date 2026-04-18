@@ -42,8 +42,8 @@ namespace MCGalaxy.Modules.Compiling
         public static string CommandDLLPath(string name) => COMMANDS_DLL_DIR + "Cmd" + name + ".dll";
         public static void Init()
         {
-            Directory.CreateDirectory(COMMANDS_DLL_DIR);
-            Directory.CreateDirectory(PLUGINS_DIR);
+            Server.EnsureDirectoryExists(COMMANDS_DLL_DIR);
+            Server.EnsureDirectoryExists(PLUGINS_DIR);
             AppDomain.CurrentDomain.AssemblyResolve += ResolveMissingAssembly;
         }
         public static Assembly ResolveMissingAssembly(object sender, ResolveEventArgs args)

@@ -203,12 +203,9 @@ namespace MCGalaxy
                 return false;
             try
             {
-                if (!Directory.Exists("levels"))
-                    Directory.CreateDirectory("levels");
-                if (!Directory.Exists("levels/level properties"))
-                    Directory.CreateDirectory("levels/level properties");
-                if (!Directory.Exists("levels/prev"))
-                    Directory.CreateDirectory("levels/prev");
+                Server.EnsureDirectoryExists("levels");
+                Server.EnsureDirectoryExists("levels/level properties");
+                Server.EnsureDirectoryExists("levels/prev");
                 if (Changed || force || !File.Exists(path))
                     lock (saveLock)
                         SaveCore(path);
@@ -305,7 +302,7 @@ namespace MCGalaxy
                 if (lvl.Config.Load(propsPath))
                     lvl.SetPhysics(lvl.Config.Physics);
                 else
-                    Logger.Log(LogType.NASConsoleMessage, ".properties file for level {0} was not found.", lvl.MapName);
+                    Logger.Log(LogType.NASConsoleMessage, Paths.PropertiesFileExt + " file for level {0} was not found.", lvl.MapName);
             }
             catch (Exception e)
             {

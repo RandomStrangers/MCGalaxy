@@ -27,16 +27,16 @@ namespace MCGalaxy.Commands.Moderation
             if (message.Length == 0) 
             { 
                 Help(p); 
-                return;
+                return; 
             }
             string[] args = message.SplitSpaces(3);
             string target;
             if (args[0].CaselessEq("-unmute"))
             {
-                if (args.Length == 1) 
+                if (args.LongLength == 1) 
                 { 
-                    Help(p);
-                    return;
+                    Help(p); 
+                    return; 
                 }
                 target = PlayerInfo.FindMatchesPreferOnline(p, args[1]);
                 if (target == null) return;
@@ -45,7 +45,7 @@ namespace MCGalaxy.Commands.Moderation
                     p.Message("{0}&S is not muted.", p.FormatNick(target));
                     return;
                 }
-                DoUnmute(p, target, args.Length > 2 ? args[2] : "");
+                DoUnmute(p, target, args.LongLength > 2 ? args[2] : "");
                 return;
             }
             target = PlayerInfo.FindMatchesPreferOnline(p, args[0]);
@@ -65,11 +65,9 @@ namespace MCGalaxy.Commands.Moderation
         void DoMute(Player p, string target, string[] args)
         {
             TimeSpan duration = Server.Config.ChatSpamMuteTime;
-            if (args.Length > 1)
-            {
+            if (args.LongLength > 1)
                 if (!CommandParser.GetTimespan(p, args[1], ref duration, "mute for", "s")) return;
-            }
-            string reason = args.Length > 2 ? args[2] : "";
+            string reason = args.LongLength > 2 ? args[2] : "";
             reason = ModActionCmd.ExpandReason(p, reason);
             if (reason == null) return;
             ModAction action = new(target, p, ModActionType.Muted, reason, duration);
@@ -81,8 +79,8 @@ namespace MCGalaxy.Commands.Moderation
             if (reason == null) return;
             if (p.name == target) 
             { 
-                p.Message("You cannot unmute yourself.");
-                return; 
+                p.Message("You cannot unmute yourself."); 
+                return;
             }
             ModAction action = new(target, p, ModActionType.Unmuted, reason);
             OnModActionEvent.Call(action);
