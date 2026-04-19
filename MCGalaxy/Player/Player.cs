@@ -23,7 +23,6 @@ using MCGalaxy.Games;
 using MCGalaxy.Maths;
 using MCGalaxy.Network;
 using MCGalaxy.SQL;
-using MCGalaxy.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Net;

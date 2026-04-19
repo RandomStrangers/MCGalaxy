@@ -107,7 +107,7 @@ namespace MCGalaxy
             OnChatFromEvent.Call(scope, source, ref msg, arg, ref filter, relay);
             foreach (Player pl in players)
             {
-                if (!scopeFilter(pl, arg) || filter != null && !filter(pl, arg) || Ignoring(pl, source)) continue;
+                if (!scopeFilter(pl, arg) || (filter != null && !filter(pl, arg)) || Ignoring(pl, source)) continue;
                 pl.Message(UnescapeMessage(pl, source, msg));
             }
         }
@@ -136,7 +136,7 @@ namespace MCGalaxy
                 if (Ignoring(pl, source)) continue;
                 if (pl != source)
                 {
-                    if (!scopeFilter(pl, arg) || filter != null && !filter(pl, arg)) continue;
+                    if (!scopeFilter(pl, arg) || (filter != null && !filter(pl, arg))) continue;
                     if (!counted) 
                     { 
                         source.TotalMessagesSent++; 

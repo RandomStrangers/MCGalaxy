@@ -38,25 +38,29 @@ namespace MCGalaxy
         public void Update(string name, string data)
         {
             lock (locker)
-                switch (names.CaselessIndexOf(name))
+            {
+                int idx = names.CaselessIndexOf(name);
+                switch (idx)
                 {
                     case -1:
-                        names.Add(name);
+                        names.Add(name); 
                         lines.Add(name + Separator + data);
                         break;
                     default:
-                        lines[names.CaselessIndexOf(name)] = name + Separator + data;
+                        lines[idx] = name + Separator + data;
                         break;
                 }
+            }
         }
         /// <summary> Returns whether the given name was removed from this list. </summary>
         public bool Remove(string name)
         {
             lock (locker)
             {
-                if (names.CaselessIndexOf(name) == -1) return false;
-                names.RemoveAt(names.CaselessIndexOf(name));
-                lines.RemoveAt(names.CaselessIndexOf(name));
+                int idx = names.CaselessIndexOf(name);
+                if (idx == -1) return false;
+                names.RemoveAt(idx);
+                lines.RemoveAt(idx);
                 return true;
             }
         }
@@ -112,7 +116,9 @@ namespace MCGalaxy
                 while ((line = r.ReadLine()) != null)
                 {
                     list.lines.Add(line);
-                    list.names.Add(line.IndexOf(separator) >= 0 ? line.Substring(0, line.IndexOf(separator)) : line);
+                    int sepIndex = line.IndexOf(separator);
+                    string name = sepIndex >= 0 ? line.Substring(0, sepIndex) : line;
+                    list.names.Add(name);
                 }
             }
             return list;
