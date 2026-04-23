@@ -28,7 +28,7 @@ namespace MCGalaxy.Drawing.Ops
 {
     public class TreeDrawOp : DrawOp
     {
-        public override string Name { get { return "Tree"; } }
+        public override string Name => "Tree";
         public Random random = new();
         public Tree Tree;
         public int Size = -1;

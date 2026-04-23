@@ -516,10 +516,10 @@
     <Compile Include="Modules\Relay\Discord\DiscordPlugin.cs" />
     <Compile Include="Modules\Relay\Discord\DiscordUtils.cs" />
     <Compile Include="Modules\Relay\Discord\DiscordWebsocket.cs" />
+    <Compile Include="Modules\Relay\IRC\IRCCmds.cs" />
     <Compile Include="Modules\Relay\IRC\IRCNickList.cs" />
     <Compile Include="Modules\Relay\IRC\IRCPlugin.cs" />
-    <Compile Include="Modules\Relay\IRC\Connection.cs" />
-    <Compile Include="Modules\Relay\IRC\Utils.cs" />
+    <Compile Include="Modules\Relay\IRC\IRCUtils.cs" />
     <Compile Include="Modules\Relay\RelayBot.cs" />
     <Compile Include="Modules\Relay\RelayBotCmd.cs" />
     <Compile Include="Modules\Relay\RelayBotEvents.cs" />

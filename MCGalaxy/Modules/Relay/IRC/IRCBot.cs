@@ -12,76 +12,110 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
-using Sharkbite.Irc;
 using System;
+using System.IO;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
+using MCGalaxy.Network;
 namespace MCGalaxy.Modules.Relay.IRC
 {
     public enum IRCControllerVerify { None, HalfOp, OpChannel };
-    /// <summary> Manages a connection to an IRC server, and handles associated events. </summary>
     public class IRCBot : RelayBot
     {
-        internal Connection conn;
-        public string botNick;
+        TcpClient client;
+        StreamReader reader;
+        StreamWriter writer;
+        string botNick, curNick;
         readonly IRCNickList nicks;
-        public bool ready;
+        bool ready, registered;
+        readonly Random rnd = new();
         public override string RelayName => "IRC";
         public override bool Enabled => Server.Config.UseIRC;
-        public override string UserID => conn?.Nick;
+        public override string UserID => curNick;
         public override void LoadControllers() => Controllers = PlayerList.Load("ranks/IRC_Controllers.txt");
-        public IRCBot() => nicks = new IRCNickList
+        public IRCBot() => nicks = new()
         {
             bot = this
         };
-        public static readonly char[] newline = { '\n' };
         protected override void DoSendMessage(string channel, string message)
         {
             if (!ready) return;
             message = ConvertMessage(message);
             if (message.IndexOf('\n') == -1)
             {
-                conn.SendMessage(channel, message);
+                SendPrivMsg(channel, message);
                 return;
             }
-            string[] parts = message.Split(newline, StringSplitOptions.RemoveEmptyEntries);
+            string[] parts = message.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string part in parts)
-                conn.SendMessage(channel, part.Replace("\r", ""));
+                SendPrivMsg(channel, part.Replace("\r", ""));
         }
-        public void Join(string channel)
+        public void Raw(string message)
+        {
+            if (!Enabled || !Connected) return;
+            SendRaw(message);
+        }
+        void Join(string channel)
         {
             if (string.IsNullOrEmpty(channel)) return;
-            conn.SendJoin(channel);
+            SendRaw(IRCCmds.Join(channel));
         }
         protected override bool CanReconnect => canReconnect;
         protected override void DoConnect()
         {
             ready = false;
             botNick = Server.Config.IRCNick.Replace(" ", "");
-            conn ??= new(new UTF8Encoding(false));
-            conn.Hostname = Server.Config.IRCServer;
-            conn.Port = Server.Config.IRCPort;
-            conn.UseSSL = Server.Config.IRCSSL;
-            conn.Nick = botNick;
-            conn.UserName = botNick;
-            conn.RealName = Server.SoftwareNameVersioned;
-            HookIRCEvents();
+            string host = Server.Config.IRCServer;
+            int port = Server.Config.IRCPort;
+            bool useSSL = Server.Config.IRCSSL;
+            if (port == 6697) useSSL = true;
+            curNick = botNick;
             bool usePass = Server.Config.IRCIdentify && Server.Config.IRCPassword.Length > 0;
-            conn.ServerPassword = usePass ? Server.Config.IRCPassword : "*";
-            conn.Connect();
+            string serverPass = usePass ? Server.Config.IRCPassword : "*";
+            client = new();
+            client.Connect(host, port);
+            Stream s = client.GetStream();
+            if (useSSL) s = HttpUtil.WrapSSLStream(s, host);
+            Encoding encoding = new UTF8Encoding(false);
+            registered = false;
+            writer = new(s, encoding)
+            {
+                AutoFlush = true
+            };
+            reader = new(s, encoding);
+            SendRaw(IRCCmds.Pass(serverPass));
+            SendRaw(IRCCmds.User(botNick, Server.SoftwareNameVersioned));
+            SendRaw(IRCCmds.Nick(curNick));
         }
-        protected override void DoReadLoop() => conn.ReceiveIRCMessages();
+        protected override void DoReadLoop()
+        {
+            string line;
+
+            try
+            {
+                while ((line = reader.ReadLine()) != null) 
+                { 
+                    ParseLine(line); 
+                }
+            }
+            finally
+            {
+                client.Close();
+            }
+        }
         protected override void DoDisconnect(string reason)
         {
             nicks.Clear();
+
             try
             {
-                conn.Disconnect(reason);
+                SendRaw(IRCCmds.Quit(reason));
+                client.Close();
             }
             catch
             {
             }
-            UnhookIRCEvents();
         }
         protected override void UpdateConfig()
         {
@@ -90,20 +124,23 @@ namespace MCGalaxy.Modules.Relay.IRC
             IgnoredUsers = Server.Config.IRCIgnored.SplitComma();
             LoadBannedCommands();
         }
-        public static readonly string[] ircColors = new string[] {
+        static readonly string[] ircColors = new string[] 
+        {
             "\u000300", "\u000301", "\u000302", "\u000303", "\u000304", "\u000305",
             "\u000306", "\u000307", "\u000308", "\u000309", "\u000310", "\u000311",
             "\u000312", "\u000313", "\u000314", "\u000315",
         },
-        ircSingle = new string[] {
+        ircSingle = new string[] 
+        {
             "\u00030", "\u00031", "\u00032", "\u00033", "\u00034", "\u00035",
             "\u00036", "\u00037", "\u00038", "\u00039",
         },
-        ircReplacements = new string[] {
+        ircReplacements = new string[]
+        {
             "&f", "&0", "&1", "&2", "&c", "&4", "&5", "&6",
             "&e", "&a", "&3", "&b", "&9", "&d", "&8", "&7",
         };
-        public static readonly Regex ircTwoColorCode = new("(\x03\\d{1,2}),\\d{1,2}");
+        static readonly Regex ircTwoColorCode = new("(\x03\\d{1,2}),\\d{1,2}");
         protected override string ParseMessage(string input)
         {
             input = ircTwoColorCode.Replace(input, "$1");
@@ -113,26 +150,24 @@ namespace MCGalaxy.Modules.Relay.IRC
             for (long i = 0; i < ircSingle.LongLength; i++)
                 sb.Replace(ircSingle[i], ircReplacements[i]);
             SimplifyCharacters(sb);
-            sb.Replace(BOLD, "");
-            sb.Replace(ITALIC, "");
-            sb.Replace(UNDERLINE, "");
+            sb.Replace("\x02", "");
+            sb.Replace("\x1D", "");
+            sb.Replace("\x1F", "");
             sb.Replace("\x03", "&f");
             sb.Replace("\x0f", "&f");
             return sb.ToString();
         }
-        /// <summary> Formats a message for displaying on IRC </summary>
-        /// <example> Converts colors such as &amp;0 into IRC color codes </example>
-        public string ConvertMessage(string message)
+        string ConvertMessage(string message)
         {
             if (string.IsNullOrEmpty(message.Trim())) message = ".";
             message = ConvertMessageCommon(message);
-            message = message.Replace("%S", "&f"); 
+            message = message.Replace("%S", "&f");
             message = message.Replace("&S", "&f");
             message = message.Replace("&f", "\x03\x0F");
             message = ToIRCColors(message);
             return message;
         }
-        public static string ToIRCColors(string input)
+        static string ToIRCColors(string input)
         {
             input = Colors.Escape(input);
             input = LineWrapper.CleanupColors(input, true, false);
@@ -149,94 +184,23 @@ namespace MCGalaxy.Modules.Relay.IRC
             foreach (string chan in OpChannels)
                 if (nicks.VerifyNick(chan, userID, ref error, ref foundAtAll)) return true;
             if (!foundAtAll)
-            {
                 error = "You are not on the bot's list of known users for some reason, please leave and rejoin.";
-            }
             return false;
         }
-        public void HookIRCEvents()
-        {
-            conn.OnNick += OnNick;
-            conn.OnRegistered += OnRegistered;
-            conn.OnAction += OnAction;
-            conn.OnPublic += OnPublic;
-            conn.OnPrivate += OnPrivate;
-            conn.OnError += OnError;
-            conn.OnQuit += OnQuit;
-            conn.OnJoin += OnJoin;
-            conn.OnPart += OnPart;
-            conn.OnChannelModeChange += OnChannelModeChange;
-            conn.OnNames += OnNames;
-            conn.OnKick += OnKick;
-            conn.OnKill += OnKill;
-            conn.OnPublicNotice += OnPublicNotice;
-            conn.OnPrivateNotice += OnPrivateNotice;
-            conn.OnPrivateAction += OnPrivateAction;
-        }
-        public void UnhookIRCEvents()
-        {
-            conn.OnNick -= OnNick;
-            conn.OnRegistered -= OnRegistered;
-            conn.OnAction -= OnAction;
-            conn.OnPublic -= OnPublic;
-            conn.OnPrivate -= OnPrivate;
-            conn.OnError -= OnError;
-            conn.OnQuit -= OnQuit;
-            conn.OnJoin -= OnJoin;
-            conn.OnPart -= OnPart;
-            conn.OnChannelModeChange -= OnChannelModeChange;
-            conn.OnNames -= OnNames;
-            conn.OnKick -= OnKick;
-            conn.OnKill -= OnKill;
-            conn.OnPublicNotice -= OnPublicNotice;
-            conn.OnPrivateNotice -= OnPrivateNotice;
-            conn.OnPrivateAction -= OnPrivateAction;
-        }
-        public void OnAction(string user, string channel, string description) => MessageInGame(Connection.ExtractNick(user), string.Format("&I(IRC) * {0} {1}", Connection.ExtractNick(user), description));
-        public void OnJoin(string user, string channel)
-        {
-            conn.SendNames(channel);
-            AnnounceJoinLeave(Connection.ExtractNick(user), "joined", channel);
-        }
-        public void OnPart(string user, string channel, string reason)
-        {
-            string nick = Connection.ExtractNick(user);
-            nicks.OnLeftChannel(nick, channel);
-            if (nick == botNick) return;
-            AnnounceJoinLeave(nick, "left", channel);
-        }
-        public void AnnounceJoinLeave(string nick, string verb, string channel)
+        void AnnounceJoinLeave(string nick, string verb, string channel)
         {
             Logger.Log(LogType.RelayActivity, "{0} {1} channel {2}", nick, verb, channel);
             MessageInGame(nick, string.Format("&I(IRC) {0} {1} the{2} channel", nick, verb, OpChannels.CaselessContains(channel) ? " operator" : ""));
         }
-        public void OnQuit(string user, string reason)
+        static RelayUser NickToUser(string nick)
         {
-            string nick = Connection.ExtractNick(user);
-            if (nick == botNick) conn.SendNick(botNick);
-            nicks.OnLeft(nick);
-            if (nick == botNick) return;
-            Logger.Log(LogType.RelayActivity, nick + " left IRC");
-            MessageInGame(nick, "&I(IRC) " + nick + " left");
+            return new()
+            {
+                ID = nick,
+                Nick = nick
+            };
         }
-        public void OnError(ReplyCode code, string message) => Logger.Log(LogType.RelayActivity, "IRC Error: " + message);
-        public void OnPrivate(string user, string message) => HandleDirectMessage(new()
-        {
-            ID = Connection.ExtractNick(user),
-            Nick = Connection.ExtractNick(user)
-        }, Connection.ExtractNick(user), message);
-        public void OnPublic(string user, string channel, string message) => HandleChannelMessage(new()
-        {
-            ID = Connection.ExtractNick(user),
-            Nick = Connection.ExtractNick(user)
-        }, channel, message);
-        public void OnRegistered()
-        {
-            OnReady();
-            Authenticate();
-            JoinChannels();
-        }
-        public void JoinChannels()
+        void JoinChannels()
         {
             Logger.Log(LogType.RelayActivity, "Joining IRC channels...");
             foreach (string chan in Channels)
@@ -245,52 +209,188 @@ namespace MCGalaxy.Modules.Relay.IRC
                 Join(chan);
             ready = true;
         }
-        public void OnPublicNotice(string user, string channel, string notice)
-        {
-        }
-        public void OnPrivateNotice(string user, string notice)
-        {
-            if (!notice.CaselessStarts("You are now identified")) return;
-            JoinChannels();
-        }
-        public void OnPrivateAction(string user, string message)
-        {
-        }
-        public void Authenticate()
+        void Authenticate()
         {
             string nickServ = Server.Config.IRCNickServName;
             if (nickServ.Length == 0) return;
             if (Server.Config.IRCIdentify && Server.Config.IRCPassword.Length > 0)
             {
                 Logger.Log(LogType.RelayActivity, "Identifying with " + nickServ);
-                conn.SendMessage(nickServ, "IDENTIFY " + Server.Config.IRCPassword);
+                SendPrivMsg(nickServ, "IDENTIFY " + Server.Config.IRCPassword);
             }
         }
-        public void OnNick(string user, string newNick)
+        string GenNewNick()
         {
-            string nick = Connection.ExtractNick(user);
-            if (newNick == botNick) Authenticate();
-            if (newNick.Trim().Length == 0) return;
-            nicks.OnChangedNick(nick, newNick);
-            MessageInGame(nick, "&I(IRC) " + nick + " &Sis now known as &I" + newNick);
+            if (curNick.Length < 30) return curNick + "_";
+            int idx = rnd.Next(30 / 3);
+            char val = (char)('A' + rnd.Next(26));
+            return curNick.Substring(0, idx) + val + curNick.Substring(idx + 1);
         }
-        public void OnNames(string channel, string[] _nicks, bool last) => nicks.UpdateFor(channel, _nicks);
-        public void OnChannelModeChange(string who, string channel) => conn.SendNames(channel);
-        public void OnKick(string user, string channel, string kickee, string reason)
+        readonly object sendLock = new();
+        public void SendRaw(string msg)
         {
-            string nick = Connection.ExtractNick(user);
-            nicks.OnLeftChannel(nick, channel);
-            if (reason.Length > 0) reason = " (" + reason + ")";
-            Logger.Log(LogType.RelayActivity, "{0} kicked {1} from IRC{2}", nick, kickee, reason);
-            MessageInGame(nick, "&I(IRC) " + nick + " kicked " + kickee + reason);
+            if (msg.Length > 510)
+                msg = msg.Substring(0, 510);
+
+            try
+            {
+                lock (sendLock)
+                    writer.WriteLine(msg);
+            }
+            catch 
+            {
+            }
         }
-        public void OnKill(string user, string killer, string reason)
+        void SendPrivMsg(string target, string message)
         {
-            string nick = Connection.ExtractNick(user);
-            nicks.OnLeft(nick);
+            string cmd = "PRIVMSG " + target + " :";
+            int maxLen = 512 - 63 - 30 - cmd.Length - 2;
+            lock (sendLock)
+                for (int idx = 0; idx < message.Length;)
+                {
+                    int partLen = Math.Min(maxLen, message.Length - idx);
+                    string part = message.Substring(idx, partLen);
+
+                    SendRaw(cmd + part);
+                    idx += partLen;
+                }
         }
-        public const string BOLD = "\x02";
-        public const string ITALIC = "\x1D";
-        public const string UNDERLINE = "\x1F";
+        void ParseLine(string line)
+        {
+            int index = 0;
+            string prefix = IRCUtils.ExtractPrefix(line, ref index),
+                cmd = IRCUtils.NextParam(line, ref index);
+            if (int.TryParse(cmd, out int code))
+                ParseReply(code, line, index);
+            else
+                ParseCommand(prefix, cmd, line, index);
+        }
+        void ParseCommand(string user, string cmd, string line, int index)
+        {
+            string nick = IRCUtils.ExtractNick(user),
+                msg, channel, target, newNick;
+            switch (cmd)
+            {
+                case "PING":
+                    msg = IRCUtils.NextAll(line, ref index);
+                    SendRaw(IRCCmds.Pong(msg));
+                    break;
+                case "ERROR":
+                    msg = IRCUtils.NextAll(line, ref index);
+                    Logger.Log(LogType.RelayActivity, "IRC Error: " + msg);
+                    break;
+                case "NOTICE":
+                    target = IRCUtils.NextParam(line, ref index);
+                    msg = IRCUtils.NextAll(line, ref index);
+                    if (IRCUtils.IsValidChannel(target))
+                    {
+                    }
+                    else if (msg.CaselessStarts("You are now identified"))
+                        JoinChannels();
+                    break;
+                case "JOIN":
+                    channel = IRCUtils.NextParam(line, ref index);
+                    SendRaw(IRCCmds.Names(channel));
+                    AnnounceJoinLeave(nick, "joined", channel);
+                    break;
+                case "PRIVMSG":
+                    target = IRCUtils.NextParam(line, ref index);
+                    msg = IRCUtils.NextAll(line, ref index);
+
+                    if (msg.StartsWith("\u0001ACTION"))
+                    {
+                        msg = msg.Replace("\x01", "");
+                        if (IRCUtils.IsValidChannel(target))
+                            MessageInGame(nick, string.Format("&I(IRC) * {0} {1}", nick, msg));
+                    }
+                    else if (msg.StartsWith("\u0001"))
+                    {
+                    }
+                    else if (IRCUtils.IsValidChannel(target))
+                        HandleChannelMessage(NickToUser(nick), target, msg);
+                    else
+                        HandleDirectMessage(NickToUser(nick), nick, msg);
+                    break;
+                case "NICK":
+                    newNick = IRCUtils.NextParam(line, ref index);
+                    if (curNick == nick) curNick = newNick;
+                    if (newNick == botNick) Authenticate();
+                    nicks.OnChangedNick(nick, newNick);
+                    MessageInGame(nick, "&I(IRC) " + nick + " &Sis now known as &I" + newNick);
+                    break;
+                case "PART":
+                    channel = IRCUtils.NextParam(line, ref index);
+                    nicks.OnLeftChannel(nick, channel);
+                    if (nick == botNick) return;
+                    AnnounceJoinLeave(nick, "left", channel);
+                    break;
+                case "QUIT":
+                    nicks.OnLeft(nick);
+                    if (nick == botNick)
+                    {
+                        SendRaw(IRCCmds.Nick(nick));
+                    }
+                    else
+                    {
+                        Logger.Log(LogType.RelayActivity, nick + " left IRC");
+                        MessageInGame(nick, "&I(IRC) " + nick + " left");
+                    }
+                    break;
+                case "KICK":
+                    channel = IRCUtils.NextParam(line, ref index);
+                    target = IRCUtils.NextParam(line, ref index);
+                    msg = IRCUtils.NextAll(line, ref index);
+                    nicks.OnLeftChannel(nick, channel);
+                    if (msg.Length > 0) msg = " (" + msg + ")";
+                    Logger.Log(LogType.RelayActivity, "{0} kicked {1} from IRC{2}", nick, target, msg);
+                    MessageInGame(nick, "&I(IRC) " + nick + " kicked " + target + msg);
+                    break;
+                case "MODE":
+                    target = IRCUtils.NextParam(line, ref index);
+                    if (IRCUtils.IsValidChannel(target))
+                        SendRaw(IRCCmds.Names(target));
+                    break;
+                case "KILL":
+                    target = IRCUtils.NextParam(line, ref index);
+                    nicks.OnLeft(target);
+                    break;
+            }
+        }
+        void ParseReply(int code, string line, int index)
+        {
+            string channel, chanType,
+                target = IRCUtils.NextParam(line, ref index);
+            string[] names;
+            switch (code)
+            {
+                case 001:
+                    registered = true;
+                    OnReady();
+                    Authenticate();
+                    JoinChannels();
+                    break;
+                case 353:
+                    chanType = IRCUtils.NextParam(line, ref index);
+                    channel = IRCUtils.NextParam(line, ref index);
+                    names = IRCUtils.NextAll(line, ref index).Split(new char[] { ' ' });
+                    nicks.UpdateFor(channel, names);
+                    break;
+                case 366:
+                    break;
+                case 432:
+                    canReconnect = false;
+                    throw new InvalidOperationException("Invalid characters in IRC bot nickname");
+                case 433:
+                case 436:
+                    if (registered) return;
+                    curNick = GenNewNick();
+                    SendRaw(IRCCmds.Nick(curNick));
+                    break;
+                case >= 401 and <= 599:
+                    Logger.Log(LogType.RelayActivity, "IRC Error #{0}: {1}", code,
+                                   IRCUtils.NextAll(line, ref index));
+                    break;
+            }
+        }
     }
 }

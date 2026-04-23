@@ -272,11 +272,8 @@ namespace MCGalaxy.Modules.Relay
         }
         public void OnShutdown(bool restarting, string message) => Disconnect(restarting ? "Server is restarting" : "Server is shutting down");
         /// <summary> Simplifies some fancy characters (e.g. simplifies ” to ") </summary>
-        protected void SimplifyCharacters(StringBuilder sb)
-        {
-            sb.Replace("“", "\"").Replace("”", "\"")
+        protected void SimplifyCharacters(StringBuilder sb) => sb.Replace("“", "\"").Replace("”", "\"")
                 .Replace("‘", "'").Replace("’", "'");
-        }
         protected abstract string ParseMessage(string message);
         /// <summary> Handles a direct message written by the given user </summary>
         protected void HandleDirectMessage(RelayUser user, string channel, string message)
