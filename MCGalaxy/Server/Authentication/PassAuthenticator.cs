@@ -67,12 +67,12 @@ namespace MCGalaxy.Authentication
             if (HasPassword(p.name) && VerifyPassword(p.name, mppass))
                 Verify(p);
         }
-        protected static void Activate()
+        public static void Activate()
         {
             OnPlayerHelpEvent.Register(OnPlayerHelp, Priority.Low);
             OnPlayerCommandEvent.Register(OnPlayerCommand, Priority.Low);
         }
-        protected static void Deactivate()
+        public static void Deactivate()
         {
             OnPlayerHelpEvent.Unregister(OnPlayerHelp);
             OnPlayerCommandEvent.Unregister(OnPlayerCommand);
@@ -216,7 +216,7 @@ namespace MCGalaxy.Authentication
                       Group.GetColoredName(Server.Config.VerifyAdminsRank));
             p.Message("&H You must be verified to use commands, modify blocks, and chat");
         }
-        protected static void Verify(Player p)
+        public static void Verify(Player p)
         {
             p.Message("You are now &averified &Sand can now &ause commands, modify blocks, and chat.");
             p.verifiedPass = true;

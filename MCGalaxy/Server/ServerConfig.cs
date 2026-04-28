@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
-    public sealed class ServerConfig : EnvConfig
+    public class ServerConfig : EnvConfig
     {
         [ConfigString("server-name", "Server", "[MCGalaxy] Default", false, " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~" + 
             "\xC7\xFC\xE9\xE2\xE4\xE0\xE5\xE7\xEA\xEB\xE8\xEF\xEE\xEC\xC4\xC5" +
@@ -43,7 +43,6 @@ namespace MCGalaxy
         public string OwnerName = "the owner";
         [ConfigBool("autoload", "Level", true)]
         public bool AutoLoadMaps = true;
-        /// <summary> true if maps sees server-wide chat, false if maps have level-only/isolated chat </summary>
         [ConfigBool("world-chat", "Level", true)]
         public bool ServerWideChat = true;
         [ConfigString("main-name", "Level", "main", false, "()._+,-")]

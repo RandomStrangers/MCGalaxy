@@ -21,8 +21,8 @@ namespace MCGalaxy.Modules.Moderation.Notes
         public override string Name => "Note";
         public override string Type => CommandTypes.Moderation;
         public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
-        protected virtual bool Announce => true;
-        protected virtual ModActionType ModActionType => ModActionType.Noted;
+        public virtual bool Announce => true;
+        public virtual ModActionType ModActionType => ModActionType.Noted;
         public override void Use(Player p, string message, CommandData data)
         {
             if (!Server.Config.LogNotes)
@@ -65,8 +65,8 @@ namespace MCGalaxy.Modules.Moderation.Notes
     {
         public override string Name => "OpNote";
         public override LevelPermission DefaultRank => LevelPermission.Operator;
-        protected override bool Announce => false;
-        protected override ModActionType ModActionType => ModActionType.OpNoted;
+        public override bool Announce => false;
+        public override ModActionType ModActionType => ModActionType.OpNoted;
         public override void Help(Player p)
         {
             p.Message("&T/OpNote [player] [text]");

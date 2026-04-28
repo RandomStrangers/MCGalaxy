@@ -22,13 +22,13 @@ namespace MCGalaxy.Network
         public ushort Data;
         public readonly double Latency => (TimeRecv - TimeSent).TotalMilliseconds * 0.5;
     }
-    public sealed class PingList
+    public class PingList
     {
         public PingEntry[] Entries = new PingEntry[10];
         public int pingCounter, nextPingHead;
         public long ignorePositionData = -1;
         public bool IgnorePosition => Interlocked.Read(ref ignorePositionData) >= 0;
-        internal void UnIgnorePosition(ushort data) => Interlocked.CompareExchange(ref ignorePositionData, -1, data);
+        public void UnIgnorePosition(ushort data) => Interlocked.CompareExchange(ref ignorePositionData, -1, data);
         public ushort NextTwoWayPingData(bool startIgnoringPosition = false)
         {
             int pingValue = Interlocked.Increment(ref pingCounter),

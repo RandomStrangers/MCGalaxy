@@ -16,9 +16,9 @@ using MCGalaxy.Maths;
 using System;
 namespace MCGalaxy.Blocks.Physics
 {
-    internal static class PlayerPhysics
+    public static class PlayerPhysics
     {
-        internal static void Walkthrough(Player p, AABB bb)
+        public static void Walkthrough(Player p, AABB bb)
         {
             Vec3S32 min = bb.BlockMin, max = bb.BlockMax;
             bool hitWalkthrough = false;
@@ -45,7 +45,7 @@ namespace MCGalaxy.Blocks.Physics
                     }
             if (!hitWalkthrough) p.lastWalkthrough = -1;
         }
-        internal static void Fall(Player p, AABB bb, bool movingDown)
+        public static void Fall(Player p, AABB bb, bool movingDown)
         {
             if (!movingDown)
             {
@@ -74,7 +74,7 @@ namespace MCGalaxy.Blocks.Physics
             if (bb.Min.Y > p.lastFallY) p.startFallY = -1;
             p.startFallY = Math.Max(bb.Min.Y, p.startFallY);
         }
-        internal static void Drown(Player p, AABB bb)
+        public static void Drown(Player p, AABB bb)
         {
             bb.Max.X -= (bb.Max.X - bb.Min.X) / 2;
             bb.Max.Z -= (bb.Max.Z - bb.Min.Z) / 2;

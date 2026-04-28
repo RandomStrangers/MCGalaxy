@@ -15,12 +15,12 @@
 using MCGalaxy.Commands;
 namespace MCGalaxy.Modules.Compiling
 {
-    public sealed class CmdCompLoad : CmdCompile
+    public class CmdCompLoad : CmdCompile
     {
         public override string Name => "CompLoad";
         public override string Shortcut => "cml";
         public override CommandAlias[] Aliases => null;
-        protected override void CompilePlugin(Player p, string[] paths)
+        public override void CompilePlugin(Player p, string[] paths)
         {
             string pln = paths[0],
                 dst = Compiler.PluginDLLPath(pln);
@@ -35,7 +35,7 @@ namespace MCGalaxy.Modules.Compiling
                 return;
             Compiler.UnloadPlugin(p, plugin);
         }
-        protected override void CompileCommand(Player p, string[] paths)
+        public override void CompileCommand(Player p, string[] paths)
         {
             string cmd = paths[0],
                 dst = Compiler.CommandDLLPath(cmd);

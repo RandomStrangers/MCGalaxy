@@ -16,7 +16,7 @@ using System;
 using System.Threading;
 namespace MCGalaxy.Util
 {
-    public sealed class IReaderWriterLock
+    public class IReaderWriterLock
     {
         public readonly ReaderWriterLockSlim locker = new();
         public IDisposable AccquireRead() => AccquireRead(-1);

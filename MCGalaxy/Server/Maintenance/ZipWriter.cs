@@ -33,7 +33,7 @@ namespace MCGalaxy
             LocalHeaderOffset = uint.MaxValue;
         }
     }
-    public sealed class ZipWriterStream : Stream
+    public class ZipWriterStream : Stream
     {
         public uint Crc32 = uint.MaxValue;
         public long CompressedLen;
@@ -101,7 +101,7 @@ namespace MCGalaxy
         }
     }
     /// <summary> Writes entries into a ZIP archive. </summary>
-    public sealed class ZipWriter
+    public class ZipWriter
     {
         public readonly BinaryWriter writer;
         public readonly Stream stream;

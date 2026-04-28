@@ -22,11 +22,11 @@ namespace MCGalaxy
     {
         public readonly AutoResetEvent handle = new(false);
         public volatile bool terminating;
-        protected Queue<T> queue = new();
-        protected readonly object queueLock = new();
-        protected abstract void HandleNext();
+        public Queue<T> queue = new();
+        public readonly object queueLock = new();
+        public abstract void HandleNext();
         /// <summary> Name to assign the worker thread </summary>
-        protected abstract string ThreadName { get; }
+        public abstract string ThreadName { get; }
         public void SendLoop()
         {
             for (; ; )
@@ -62,7 +62,7 @@ namespace MCGalaxy
             {
             }
         }
-        protected void WaitForWork() => handle.WaitOne();
+        public void WaitForWork() => handle.WaitOne();
         /// <summary> Starts the background worker thread </summary>
         public void RunAsync() => Utils.StartBackgroundThread(ThreadName, SendLoop);
         public void StopAsync()

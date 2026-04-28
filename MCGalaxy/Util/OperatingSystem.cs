@@ -133,10 +133,10 @@ namespace MCGalaxy.Platform
             Console.Out.Flush();
         }
         [DllImport("libc", SetLastError = true)]
-        protected static extern int execvp(string path, string[] argv);
+        public static extern int execvp(string path, string[] argv);
         public override CPUTime MeasureAllCPUTime() => default;
         [DllImport("libc", SetLastError = true)]
-        protected static extern unsafe int sysctlbyname(string name, void* oldp, IntPtr* oldlenp, IntPtr newp, IntPtr newlen);
+        public static extern unsafe int sysctlbyname(string name, void* oldp, IntPtr* oldlenp, IntPtr newp, IntPtr newlen);
     }
     public class MonoOS : IOperatingSystem
     {

@@ -25,7 +25,7 @@ namespace MCGalaxy.Modules.Compiling
 {
     /// <summary> Exception raised when attempting to load a new command/plugin
     /// that has the same name as an already loaded command/plugin </summary>
-    public sealed class AlreadyLoadedException : Exception
+    public class AlreadyLoadedException : Exception
     {
         public AlreadyLoadedException(string msg) : base(msg)
         {
@@ -285,7 +285,7 @@ namespace MCGalaxy.Modules.Compiling
             return true;
         }
         public static string FileExtension = ".cs";
-        protected static void AddCoreAssembly(StringBuilder sb)
+        public static void AddCoreAssembly(StringBuilder sb)
         {
             if (Server.RunningOnMono())
                 return;
@@ -296,12 +296,12 @@ namespace MCGalaxy.Modules.Compiling
                 sb.AppendFormat("/R:{0} ", Quote(coreAssemblyFileName));
             }
         }
-        protected static void AddReferencedAssemblies(StringBuilder sb, List<string> referenced)
+        public static void AddReferencedAssemblies(StringBuilder sb, List<string> referenced)
         {
             foreach (string path in referenced)
                 sb.AppendFormat("/R:{0} ", Quote(path));
         }
-        protected static string GetExecutable()
+        public static string GetExecutable()
         {
             string root = RuntimeEnvironment.GetRuntimeDirectory();
             string[] paths = new string[]
@@ -331,7 +331,7 @@ namespace MCGalaxy.Modules.Compiling
                     ProcessCompilerOutputLine(errors, line);
             return errors;
         }
-        protected static string GetCommandLineArguments(string[] srcPaths, string dstPath,
+        public static string GetCommandLineArguments(string[] srcPaths, string dstPath,
                                                          List<string> referencedAssemblies)
         {
             StringBuilder sb = new();
@@ -347,7 +347,7 @@ namespace MCGalaxy.Modules.Compiling
                 sb.AppendFormat("{0} ", Quote(path));
             return sb.ToString();
         }
-        protected static string Quote(string value) => "\"" + value.Trim() + "\"";
+        public static string Quote(string value) => "\"" + value.Trim() + "\"";
         public static int Compile(string path, string args, List<string> output)
         {
             ProcessStartInfo psi = CreateStartInfo(path, args);
@@ -362,7 +362,7 @@ namespace MCGalaxy.Modules.Compiling
                 ? throw new InvalidOperationException("C# compiler ran for over two minutes! Giving up..")
                 : p.ExitCode;
         }
-        protected static ProcessStartInfo CreateStartInfo(string path, string args) => new(path, args)
+        public static ProcessStartInfo CreateStartInfo(string path, string args) => new(path, args)
         {
             WorkingDirectory = Environment.CurrentDirectory,
             UseShellExecute = false,
@@ -509,7 +509,7 @@ namespace MCGalaxy
                                  srcs.Length > 1 ? " in " + Path.GetFileName(err.FileName) : "");
         /// <summary> Converts source file paths to full paths,
         /// then returns list of parsed referenced assemblies </summary>
-        protected static List<string> ProcessInput(string[] srcPaths, string commentPrefix)
+        public static List<string> ProcessInput(string[] srcPaths, string commentPrefix)
         {
             List<string> referenced = new();
             for (int i = 0; i < srcPaths.Length; i++)
@@ -538,7 +538,7 @@ namespace MCGalaxy
                 }
             }
         }
-        protected static string GetDLL(string line) => line.Substring(line.IndexOf(' ') + 1).Replace(";", "");
+        public static string GetDLL(string line) => line.Substring(line.IndexOf(' ') + 1).Replace(";", "");
     }
     public class ICompilerErrors : List<ICompilerError>
     {

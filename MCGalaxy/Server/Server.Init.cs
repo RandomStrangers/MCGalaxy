@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.Net;
 namespace MCGalaxy
 {
-    public sealed partial class Server
+    public partial class Server
     {
         public static void LoadMainLevel(SchedulerTask _)
         {

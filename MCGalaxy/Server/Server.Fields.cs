@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
-    public sealed partial class Server
+    public partial class Server
     {
         public static bool cancelcommand, SetupFinished,
             chatmod, flipHead, shuttingDown, voting;
@@ -31,7 +31,7 @@ namespace MCGalaxy
             Notes = new("text/notes.txt");
         public static PlayerList whiteList, invalidIds, ignored,
             hidden, agreed, vip, noEmotes, lockdown, reviewlist = new();
-        public const string InternalVersion = "1.0.8.4";
+        public const string InternalVersion = "1.0.8.5";
         public static string Version => InternalVersion;
         public static string SoftwareName = "MCGalaxy-NAS (Standalone)";
         public static string fullName;

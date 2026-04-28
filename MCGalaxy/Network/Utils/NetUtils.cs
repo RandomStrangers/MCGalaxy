@@ -35,7 +35,7 @@ namespace MCGalaxy
             array[index++] = (byte)(value >> 8);
             array[index++] = (byte)value;
         }
-        internal static int WritePos(Position pos, byte[] arr, int offset, bool extPos)
+        public static int WritePos(Position pos, byte[] arr, int offset, bool extPos)
         {
             if (!extPos)
             {

@@ -16,17 +16,17 @@ using MCGalaxy.Commands;
 using System.IO;
 namespace MCGalaxy.Modules.Compiling
 {
-    public sealed class CmdCmdCreate : CmdCompile
+    public class CmdCmdCreate : CmdCompile
     {
         public override string Name => "CmdCreate";
         public override string Shortcut => "";
         public override CommandAlias[] Aliases => new[] { new CommandAlias("PCreate", "plugin") };
-        protected override void CompileCommand(Player p, string[] paths)
+        public override void CompileCommand(Player p, string[] paths)
         {
             foreach (string cmd in paths)
                 CreateFile(p, cmd, Compiler.CommandPath(cmd), "command &fCmd", Compiler.GenExampleCommand(cmd));
         }
-        protected override void CompilePlugin(Player p, string[] paths)
+        public override void CompilePlugin(Player p, string[] paths)
         {
             foreach (string name in paths)
                 CreateFile(p, name, Compiler.PluginPath(name), "plugin &f", Compiler.GenExamplePlugin(name, p.IsSuper ? Server.Config.Name : p.truename));

@@ -27,8 +27,8 @@ namespace MCGalaxy.Network
         public bool hasCpe, hasCustomBlocks, hasExtBlocks,
             hasBlockDefs, hasBulkBlockUpdate;
         public string appName;
-        protected INetSocket socket;
-        protected Player player;
+        public INetSocket socket;
+        public Player player;
         /// <summary> Temporary unique ID for this network session </summary>
         public int ID;
         public PingList Ping = new();
@@ -59,7 +59,7 @@ namespace MCGalaxy.Network
         /// <summary> Attempts to process the next packet received from the client </summary>
         /// <returns> 0 if insufficient data left to fully process the next packet,
         /// otherwise returns the number of bytes processed </returns>
-        protected abstract int HandlePacket(byte[] buffer, int offset, int left);
+        public abstract int HandlePacket(byte[] buffer, int offset, int left);
         /// <summary> Sends a ping packet to the client </summary>
         public abstract void SendPing();
         public abstract void SendMotd(string motd);

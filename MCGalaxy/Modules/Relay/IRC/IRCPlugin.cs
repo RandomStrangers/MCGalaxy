@@ -16,7 +16,7 @@ using MCGalaxy.Commands;
 using MCGalaxy.Events.ServerEvents;
 namespace MCGalaxy.Modules.Relay.IRC
 {
-    public sealed class IRCPlugin : Plugin
+    public class IRCPlugin : Plugin
     {
         public override string Name => "IRCRelay";
         public static IRCBot Bot = new();
@@ -37,16 +37,16 @@ namespace MCGalaxy.Modules.Relay.IRC
         }
         public void OnConfigUpdated() => Bot.ReloadConfig();
     }
-    public sealed class CmdIRCBot : RelayBotCmd
+    public class CmdIRCBot : RelayBotCmd
     {
         public override string Name => "IRCBot";
         public override CommandAlias[] Aliases => new[] { new CommandAlias("ResetBot", "reset"), new CommandAlias("ResetIRC", "reset") };
-        protected override RelayBot Bot => IRCPlugin.Bot;
+        public override RelayBot Bot => IRCPlugin.Bot;
     }
-    public sealed class CmdIrcControllers : BotControllersCmd
+    public class CmdIrcControllers : BotControllersCmd
     {
         public override string Name => "IRCControllers";
         public override string Shortcut => "IRCCtrl";
-        protected override RelayBot Bot => IRCPlugin.Bot;
+        public override RelayBot Bot => IRCPlugin.Bot;
     }
 }

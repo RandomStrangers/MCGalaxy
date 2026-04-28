@@ -86,7 +86,7 @@ namespace MCGalaxy
         public const string NotifyAction = "NotifyAction";
         public const string ToggleBlockList = "ToggleBlockList";
     }
-    public sealed class CpeExtension
+    public class CpeExtension
     {
         /// <summary> Name of the CPE extension (e.g. ExtPlayerList) </summary>
         public string Name;
@@ -151,7 +151,7 @@ namespace MCGalaxy
             new(CpeExt.NotifyAction,        "Allows server to be notified of certain client events"),
             new(CpeExt.ExtBlocks,           "Allows using block IDs over 255 in block definitions"),
         };
-        internal static CpeExt[] Empty = new CpeExt[0];
+        public static CpeExt[] Empty = new CpeExt[0];
         /// <summary> Retrieves a list of all supported and enabled CPE extensions </summary>
         public static CpeExt[] GetAllEnabled()
         {

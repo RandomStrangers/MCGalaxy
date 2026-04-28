@@ -21,11 +21,11 @@ namespace MCGalaxy.Network
     /// <remarks> See RFC 6455 for websocket specification </remarks>
     public abstract class BaseWebSocket : INetSocket, INetProtocol
     {
-        protected bool conn, upgrade, readingHeaders = true;
+        public bool conn, upgrade, readingHeaders = true;
         /// <summary> Computes a base64-encoded handshake verification key </summary>
-        protected static string ComputeKey(string rawKey) => Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.ASCII.GetBytes(rawKey + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")));
-        protected abstract void OnGotAllHeaders();
-        protected abstract void OnGotHeader(string name, string value);
+        public static string ComputeKey(string rawKey) => Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.ASCII.GetBytes(rawKey + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")));
+        public abstract void OnGotAllHeaders();
+        public abstract void OnGotHeader(string name, string value);
         public void ProcessHeader(string raw)
         {
             if (raw.Length == 0) OnGotAllHeaders();
@@ -160,7 +160,7 @@ namespace MCGalaxy.Network
                 offset = ProcessData(buffer, offset, bufferLen);
             return offset;
         }
-        protected static byte[] WrapDisconnect(int reason)
+        public static byte[] WrapDisconnect(int reason)
         {
             byte[] packet = new byte[4];
             packet[0] = 8 | 0x80;
@@ -170,7 +170,7 @@ namespace MCGalaxy.Network
             return packet;
         }
         public void Disconnect() => Disconnect(1000);
-        protected void Disconnect(int reason)
+        public void Disconnect(int reason)
         {
             try
             {
@@ -181,9 +181,9 @@ namespace MCGalaxy.Network
             }
             OnDisconnected(reason);
         }
-        protected abstract void OnDisconnected(int reason);
-        protected abstract void HandleData(byte[] data, int len);
-        protected abstract void SendRaw(byte[] data, SendFlags flags);
+        public abstract void OnDisconnected(int reason);
+        public abstract void HandleData(byte[] data, int len);
+        public abstract void SendRaw(byte[] data, SendFlags flags);
     }
     public abstract class ServerWebSocket : BaseWebSocket
     {
@@ -199,21 +199,21 @@ namespace MCGalaxy.Network
                 "\r\n", ComputeKey(verKey))), SendFlags.None);
             readingHeaders = false;
         }
-        protected override void OnGotAllHeaders()
+        public override void OnGotAllHeaders()
         {
             if (conn && upgrade && version && verKey != null)
                 AcceptConnection();
             else
                 Close();
         }
-        protected override void OnGotHeader(string name, string value)
+        public override void OnGotHeader(string name, string value)
         {
             if (name.CaselessEq("Sec-WebSocket-Version"))
                 version = value.CaselessEq("13");
             else if (name.CaselessEq("Sec-WebSocket-Key"))
                 verKey = value;
         }
-        protected static byte[] WrapData(byte[] data)
+        public static byte[] WrapData(byte[] data)
         {
             int headerLen = data.Length >= 126 ? 4 : 2;
             byte[] packet = new byte[headerLen + data.Length];
@@ -232,22 +232,21 @@ namespace MCGalaxy.Network
     }
     public abstract class ClientWebSocket : BaseWebSocket
     {
-        protected string path = "/";
-        public string verKey;
+        public string path = "/", verKey;
         public void AcceptConnection() => readingHeaders = false;
-        protected override void OnGotAllHeaders()
+        public override void OnGotAllHeaders()
         {
             if (conn && upgrade && verKey == ComputeKey("xTNDiuZRoMKtxrnJDWyLmA=="))
                 AcceptConnection();
             else
                 Close();
         }
-        protected override void OnGotHeader(string name, string value)
+        public override void OnGotHeader(string name, string value)
         {
             if (name.CaselessEq("Sec-WebSocket-Accept"))
                 verKey = value;
         }
-        protected static byte[] WrapData(byte[] data)
+        public static byte[] WrapData(byte[] data)
         {
             int headerLen = data.Length >= 126 ? 4 : 2;
             byte[] packet = new byte[headerLen + 4 + data.Length];
@@ -265,8 +264,8 @@ namespace MCGalaxy.Network
             return packet;
         }
         public override void Send(byte[] buffer, SendFlags flags) => SendRaw(WrapData(buffer), flags);
-        protected void WriteHeader(string header) => SendRaw(Encoding.ASCII.GetBytes(header + "\r\n"), SendFlags.None);
-        protected virtual void WriteCustomHeaders() { }
+        public void WriteHeader(string header) => SendRaw(Encoding.ASCII.GetBytes(header + "\r\n"), SendFlags.None);
+        public virtual void WriteCustomHeaders() { }
         public override void Init()
         {
             WriteHeader("GET " + path + " HTTP/1.1");

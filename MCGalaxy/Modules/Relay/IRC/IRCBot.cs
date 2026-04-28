@@ -23,13 +23,13 @@ namespace MCGalaxy.Modules.Relay.IRC
     public enum IRCControllerVerify { None, HalfOp, OpChannel };
     public class IRCBot : RelayBot
     {
-        TcpClient client;
-        StreamReader reader;
-        StreamWriter writer;
-        string botNick, curNick;
-        readonly IRCNickList nicks;
-        bool ready, registered;
-        readonly Random rnd = new();
+        public TcpClient client;
+        public StreamReader reader;
+        public StreamWriter writer;
+        public string botNick, curNick;
+        public readonly IRCNickList nicks;
+        public bool ready, registered;
+        public readonly Random rnd = new();
         public override string RelayName => "IRC";
         public override bool Enabled => Server.Config.UseIRC;
         public override string UserID => curNick;
@@ -38,7 +38,7 @@ namespace MCGalaxy.Modules.Relay.IRC
         {
             bot = this
         };
-        protected override void DoSendMessage(string channel, string message)
+        public override void DoSendMessage(string channel, string message)
         {
             if (!ready) return;
             message = ConvertMessage(message);
@@ -56,13 +56,13 @@ namespace MCGalaxy.Modules.Relay.IRC
             if (!Enabled || !Connected) return;
             SendRaw(message);
         }
-        void Join(string channel)
+        public void Join(string channel)
         {
             if (string.IsNullOrEmpty(channel)) return;
             SendRaw(IRCCmds.Join(channel));
         }
-        protected override bool CanReconnect => canReconnect;
-        protected override void DoConnect()
+        public override bool CanReconnect => canReconnect;
+        public override void DoConnect()
         {
             ready = false;
             botNick = Server.Config.IRCNick.Replace(" ", "");
@@ -88,7 +88,7 @@ namespace MCGalaxy.Modules.Relay.IRC
             SendRaw(IRCCmds.User(botNick, Server.SoftwareNameVersioned));
             SendRaw(IRCCmds.Nick(curNick));
         }
-        protected override void DoReadLoop()
+        public override void DoReadLoop()
         {
             string line;
 
@@ -104,7 +104,7 @@ namespace MCGalaxy.Modules.Relay.IRC
                 client.Close();
             }
         }
-        protected override void DoDisconnect(string reason)
+        public override void DoDisconnect(string reason)
         {
             nicks.Clear();
 
@@ -117,14 +117,14 @@ namespace MCGalaxy.Modules.Relay.IRC
             {
             }
         }
-        protected override void UpdateConfig()
+        public override void UpdateConfig()
         {
             Channels = Server.Config.IRCChannels.SplitComma();
             OpChannels = Server.Config.IRCOpChannels.SplitComma();
             IgnoredUsers = Server.Config.IRCIgnored.SplitComma();
             LoadBannedCommands();
         }
-        static readonly string[] ircColors = new string[] 
+        public static readonly string[] ircColors = new string[] 
         {
             "\u000300", "\u000301", "\u000302", "\u000303", "\u000304", "\u000305",
             "\u000306", "\u000307", "\u000308", "\u000309", "\u000310", "\u000311",
@@ -140,8 +140,8 @@ namespace MCGalaxy.Modules.Relay.IRC
             "&f", "&0", "&1", "&2", "&c", "&4", "&5", "&6",
             "&e", "&a", "&3", "&b", "&9", "&d", "&8", "&7",
         };
-        static readonly Regex ircTwoColorCode = new("(\x03\\d{1,2}),\\d{1,2}");
-        protected override string ParseMessage(string input)
+        public static readonly Regex ircTwoColorCode = new("(\x03\\d{1,2}),\\d{1,2}");
+        public override string ParseMessage(string input)
         {
             input = ircTwoColorCode.Replace(input, "$1");
             StringBuilder sb = new(input);
@@ -157,7 +157,7 @@ namespace MCGalaxy.Modules.Relay.IRC
             sb.Replace("\x0f", "&f");
             return sb.ToString();
         }
-        string ConvertMessage(string message)
+        public string ConvertMessage(string message)
         {
             if (string.IsNullOrEmpty(message.Trim())) message = ".";
             message = ConvertMessageCommon(message);
@@ -167,7 +167,7 @@ namespace MCGalaxy.Modules.Relay.IRC
             message = ToIRCColors(message);
             return message;
         }
-        static string ToIRCColors(string input)
+        public static string ToIRCColors(string input)
         {
             input = Colors.Escape(input);
             input = LineWrapper.CleanupColors(input, true, false);
@@ -176,7 +176,7 @@ namespace MCGalaxy.Modules.Relay.IRC
                 sb.Replace(ircReplacements[i], ircColors[i]);
             return sb.ToString();
         }
-        protected override bool CheckController(string userID, ref string error)
+        public override bool CheckController(string userID, ref string error)
         {
             bool foundAtAll = false;
             foreach (string chan in Channels)
@@ -187,20 +187,17 @@ namespace MCGalaxy.Modules.Relay.IRC
                 error = "You are not on the bot's list of known users for some reason, please leave and rejoin.";
             return false;
         }
-        void AnnounceJoinLeave(string nick, string verb, string channel)
+        public void AnnounceJoinLeave(string nick, string verb, string channel)
         {
             Logger.Log(LogType.RelayActivity, "{0} {1} channel {2}", nick, verb, channel);
             MessageInGame(nick, string.Format("&I(IRC) {0} {1} the{2} channel", nick, verb, OpChannels.CaselessContains(channel) ? " operator" : ""));
         }
-        static RelayUser NickToUser(string nick)
+        public static RelayUser NickToUser(string nick) => new()
         {
-            return new()
-            {
-                ID = nick,
-                Nick = nick
-            };
-        }
-        void JoinChannels()
+            ID = nick,
+            Nick = nick
+        };
+        public void JoinChannels()
         {
             Logger.Log(LogType.RelayActivity, "Joining IRC channels...");
             foreach (string chan in Channels)
@@ -209,7 +206,7 @@ namespace MCGalaxy.Modules.Relay.IRC
                 Join(chan);
             ready = true;
         }
-        void Authenticate()
+        public void Authenticate()
         {
             string nickServ = Server.Config.IRCNickServName;
             if (nickServ.Length == 0) return;
@@ -219,14 +216,14 @@ namespace MCGalaxy.Modules.Relay.IRC
                 SendPrivMsg(nickServ, "IDENTIFY " + Server.Config.IRCPassword);
             }
         }
-        string GenNewNick()
+        public string GenNewNick()
         {
             if (curNick.Length < 30) return curNick + "_";
             int idx = rnd.Next(30 / 3);
             char val = (char)('A' + rnd.Next(26));
             return curNick.Substring(0, idx) + val + curNick.Substring(idx + 1);
         }
-        readonly object sendLock = new();
+        public readonly object sendLock = new();
         public void SendRaw(string msg)
         {
             if (msg.Length > 510)
@@ -241,7 +238,7 @@ namespace MCGalaxy.Modules.Relay.IRC
             {
             }
         }
-        void SendPrivMsg(string target, string message)
+        public void SendPrivMsg(string target, string message)
         {
             string cmd = "PRIVMSG " + target + " :";
             int maxLen = 512 - 63 - 30 - cmd.Length - 2;
@@ -255,7 +252,7 @@ namespace MCGalaxy.Modules.Relay.IRC
                     idx += partLen;
                 }
         }
-        void ParseLine(string line)
+        public void ParseLine(string line)
         {
             int index = 0;
             string prefix = IRCUtils.ExtractPrefix(line, ref index),
@@ -265,7 +262,7 @@ namespace MCGalaxy.Modules.Relay.IRC
             else
                 ParseCommand(prefix, cmd, line, index);
         }
-        void ParseCommand(string user, string cmd, string line, int index)
+        public void ParseCommand(string user, string cmd, string line, int index)
         {
             string nick = IRCUtils.ExtractNick(user),
                 msg, channel, target, newNick;
@@ -327,9 +324,7 @@ namespace MCGalaxy.Modules.Relay.IRC
                 case "QUIT":
                     nicks.OnLeft(nick);
                     if (nick == botNick)
-                    {
                         SendRaw(IRCCmds.Nick(nick));
-                    }
                     else
                     {
                         Logger.Log(LogType.RelayActivity, nick + " left IRC");
@@ -356,10 +351,10 @@ namespace MCGalaxy.Modules.Relay.IRC
                     break;
             }
         }
-        void ParseReply(int code, string line, int index)
+        public void ParseReply(int code, string line, int index)
         {
-            string channel, chanType,
-                target = IRCUtils.NextParam(line, ref index);
+            string channel;
+            IRCUtils.NextParam(line, ref index);
             string[] names;
             switch (code)
             {
@@ -370,7 +365,7 @@ namespace MCGalaxy.Modules.Relay.IRC
                     JoinChannels();
                     break;
                 case 353:
-                    chanType = IRCUtils.NextParam(line, ref index);
+                    IRCUtils.NextParam(line, ref index);
                     channel = IRCUtils.NextParam(line, ref index);
                     names = IRCUtils.NextAll(line, ref index).Split(new char[] { ' ' });
                     nicks.UpdateFor(channel, names);

@@ -38,14 +38,14 @@ namespace MCGalaxy.Modules.Relay
         public string[] OpChannels;
         /// <summary> List of user IDs that all chat from is ignored </summary>
         public string[] IgnoredUsers;
-        protected readonly Player fakeGuest = new("RelayBot");
-        protected readonly Player fakeStaff = new("RelayBot");
+        public readonly Player fakeGuest = new("RelayBot"),
+            fakeStaff = new("RelayBot");
         public DateTime lastWho, lastOpWho, lastWarn;
-        protected bool canReconnect;
-        protected byte retries;
+        public bool canReconnect;
+        public byte retries;
         public Thread worker;
         /// <summary> Whether this relay bot can automatically reconnect </summary>
-        protected abstract bool CanReconnect { get; }
+        public abstract bool CanReconnect { get; }
         /// <summary> The name of the service this relay bot communicates with </summary>
         /// <example> IRC, Discord </example>
         public abstract string RelayName { get; }
@@ -77,8 +77,8 @@ namespace MCGalaxy.Modules.Relay
             if (!Enabled || !Connected) return;
             DoSendMessage(channel, message);
         }
-        protected abstract void DoSendMessage(string channel, string message);
-        protected string ConvertMessageCommon(string message)
+        public abstract void DoSendMessage(string channel, string message);
+        public string ConvertMessageCommon(string message)
         {
             message = EmotesHandler.Replace(message);
             message = ChatTokens.ApplyCustom(message);
@@ -134,7 +134,7 @@ namespace MCGalaxy.Modules.Relay
             Disconnect(RelayName + " Bot resetting...");
             Connect();
         }
-        protected void OnReady()
+        public void OnReady()
         {
             Logger.Log(LogType.RelayActivity, "Connected to {0}!", RelayName);
             retries = 0;
@@ -197,9 +197,9 @@ namespace MCGalaxy.Modules.Relay
         /// <summary> Starts the read loop in a background thread </summary>
         public void RunAsync() => Utils.StartBackgroundThread(out worker, RelayName + "_RelayBot",
                                IOThread);
-        protected abstract void DoConnect();
-        protected abstract void DoReadLoop();
-        protected abstract void DoDisconnect(string reason);
+        public abstract void DoConnect();
+        public abstract void DoReadLoop();
+        public abstract void DoDisconnect(string reason);
         /// <summary> Loads the list of controller users from disc </summary>
         public abstract void LoadControllers();
         /// <summary> Reloads all configuration (including controllers list) </summary>
@@ -208,8 +208,8 @@ namespace MCGalaxy.Modules.Relay
             UpdateConfig();
             LoadControllers();
         }
-        protected abstract void UpdateConfig();
-        protected void LoadBannedCommands()
+        public abstract void UpdateConfig();
+        public void LoadBannedCommands()
         {
             BannedCommands = new List<string>() { "IRCBot", "DiscordBot", "OpRules", "IRCControllers", "DiscordControllers" };
             if (!File.Exists("text/irccmdblacklist.txt"))
@@ -219,14 +219,14 @@ namespace MCGalaxy.Modules.Relay
             foreach (string line in Utils.ReadAllLinesList("text/irccmdblacklist.txt"))
                 if (!line.IsCommentLine()) BannedCommands.Add(line);
         }
-        protected virtual void OnStart()
+        public virtual void OnStart()
         {
             OnChatEvent.Register(OnChat, Priority.Low);
             OnChatSysEvent.Register(OnChatSys, Priority.Low);
             OnChatFromEvent.Register(OnChatFrom, Priority.Low);
             OnShuttingDownEvent.Register(OnShutdown, Priority.Low);
         }
-        protected virtual void OnStop()
+        public virtual void OnStop()
         {
             OnChatEvent.Unregister(OnChat);
             OnChatSysEvent.Unregister(OnChatSys);
@@ -239,9 +239,9 @@ namespace MCGalaxy.Modules.Relay
         public string Unescape(Player p, string msg) => msg
                 .Replace("λFULL", UnescapeFull(p))
                 .Replace("λNICK", UnescapeNick(p));
-        protected virtual string UnescapeFull(Player p) => Server.Config.IRCShowPlayerTitles ? p.FullName : p.group.Prefix + p.ColoredName;
-        protected virtual string UnescapeNick(Player p) => p.ColoredName;
-        protected virtual string PrepareMessage(string msg) => msg;
+        public virtual string UnescapeFull(Player p) => Server.Config.IRCShowPlayerTitles ? p.FullName : p.group.Prefix + p.ColoredName;
+        public virtual string UnescapeNick(Player p) => p.ColoredName;
+        public virtual string PrepareMessage(string msg) => msg;
         public void MessageToRelay(ChatScope scope, string msg, object arg, ChatMessageFilter filter)
         {
             ChatMessageFilter scopeFilter = Chat.scopeFilters[(int)scope];
@@ -272,11 +272,11 @@ namespace MCGalaxy.Modules.Relay
         }
         public void OnShutdown(bool restarting, string message) => Disconnect(restarting ? "Server is restarting" : "Server is shutting down");
         /// <summary> Simplifies some fancy characters (e.g. simplifies ” to ") </summary>
-        protected void SimplifyCharacters(StringBuilder sb) => sb.Replace("“", "\"").Replace("”", "\"")
+        public void SimplifyCharacters(StringBuilder sb) => sb.Replace("“", "\"").Replace("”", "\"")
                 .Replace("‘", "'").Replace("’", "'");
-        protected abstract string ParseMessage(string message);
+        public abstract string ParseMessage(string message);
         /// <summary> Handles a direct message written by the given user </summary>
-        protected void HandleDirectMessage(RelayUser user, string channel, string message)
+        public void HandleDirectMessage(RelayUser user, string channel, string message)
         {
             if (IgnoredUsers.CaselessContains(user.ID)) return;
             message = ParseMessage(message).TrimEnd();
@@ -297,7 +297,7 @@ namespace MCGalaxy.Modules.Relay
             ExecuteCommand(user, channel, cmdName, cmdArgs);
         }
         /// <summary> Handles a message written by the given user on the given channel </summary>
-        protected virtual void HandleChannelMessage(RelayUser user, string channel, string message)
+        public virtual void HandleChannelMessage(RelayUser user, string channel, string message)
         {
             if (IgnoredUsers.CaselessContains(user.ID)) return;
             message = ParseMessage(message).TrimEnd();
@@ -345,7 +345,7 @@ namespace MCGalaxy.Modules.Relay
             return true;
         }
         /// <summary> Outputs the list of online players to the given user </summary>
-        protected virtual void MessagePlayers(RelayPlayer p) => Command.Find("Players").Use(p, "", p.DefaultCmdData);
+        public virtual void MessagePlayers(RelayPlayer p) => Command.Find("Players").Use(p, "", p.DefaultCmdData);
         public bool HandleCommand(RelayUser user, string channel, string _, string[] parts)
         {
             string cmdName = parts.Length > 1 ? parts[1].ToLower() : "",
@@ -391,7 +391,7 @@ namespace MCGalaxy.Modules.Relay
             return true;
         }
         /// <summary> Returns whether the given relay user is allowed to execute the given command </summary>
-        protected bool CanUseCommand(RelayUser user, string cmd, out string error)
+        public bool CanUseCommand(RelayUser user, string cmd, out string error)
         {
             error = null;
             if (!Controllers.Contains(user.ID))
@@ -411,8 +411,8 @@ namespace MCGalaxy.Modules.Relay
         }
         /// <summary> Returns whether the given controller is currently allowed to execute commands </summary>
         /// <remarks> e.g. a user may have to login before they are allowed to execute commands </remarks>
-        protected abstract bool CheckController(string userID, ref string error);
-        protected Group GetControllerRank()
+        public abstract bool CheckController(string userID, ref string error);
+        public Group GetControllerRank()
         {
             LevelPermission perm = Server.Config.IRCControllerRank;
             for (int i = Group.GroupList.Count - 1; i >= 0; i--)
@@ -422,7 +422,7 @@ namespace MCGalaxy.Modules.Relay
             }
             return Group.DefaultRank;
         }
-        protected sealed class RelayPlayer : Player
+        public class RelayPlayer : Player
         {
             public readonly string ChannelID;
             public readonly RelayUser User;

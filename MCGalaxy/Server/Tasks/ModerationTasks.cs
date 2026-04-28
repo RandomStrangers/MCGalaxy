@@ -18,10 +18,10 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy.Tasks
 {
-    internal static class ModerationTasks
+    public static class ModerationTasks
     {
         public static SchedulerTask temprankTask, freezeTask, muteTask;
-        internal static void QueueTasks()
+        public static void QueueTasks()
         {
             temprankTask = Server.MainScheduler.QueueRepeat(
                 TemprankCheckTask, null, NextRun(Server.tempRanks));
@@ -30,28 +30,20 @@ namespace MCGalaxy.Tasks
             muteTask = Server.MainScheduler.QueueRepeat(
                 MuteCheckTask, null, NextRun(Server.muted));
         }
-        internal static void TemprankCheckTask(SchedulerTask task) => DoTask(task, Server.tempRanks, TemprankCallback);
-        internal static void TemprankCalcNextRun() => CalcNextRun(temprankTask, Server.tempRanks);
+        public static void TemprankCheckTask(SchedulerTask task) => DoTask(task, Server.tempRanks, TemprankCallback);
+        public static void TemprankCalcNextRun() => CalcNextRun(temprankTask, Server.tempRanks);
         public static void TemprankCallback(string[] args)
         {
             CmdTempRank.Delete(Player.NASConsole, args[0], Player.NASConsole.DefaultCmdData);
             if (Server.tempRanks.Remove(args[0]))
                 Server.tempRanks.Save();
         }
-        internal static void FreezeCheckTask(SchedulerTask task) => DoTask(task, Server.frozen, FreezeCallback);
-        internal static void FreezeCalcNextRun() => CalcNextRun(freezeTask, Server.frozen);
-        public static void FreezeCallback(string[] args)
-        {
-            ModAction action = new(args[0], Player.NASConsole, ModActionType.Unfrozen, "auto unfreeze");
-            OnModActionEvent.Call(action);
-        }
-        internal static void MuteCheckTask(SchedulerTask task) => DoTask(task, Server.muted, MuteCallback);
-        internal static void MuteCalcNextRun() => CalcNextRun(muteTask, Server.muted);
-        public static void MuteCallback(string[] args)
-        {
-            ModAction action = new(args[0], Player.NASConsole, ModActionType.Unmuted, "auto unmute");
-            OnModActionEvent.Call(action);
-        }
+        public static void FreezeCheckTask(SchedulerTask task) => DoTask(task, Server.frozen, FreezeCallback);
+        public static void FreezeCalcNextRun() => CalcNextRun(freezeTask, Server.frozen);
+        public static void FreezeCallback(string[] args) => OnModActionEvent.Call(new(args[0], Player.NASConsole, ModActionType.Unfrozen, "auto unfreeze"));
+        public static void MuteCheckTask(SchedulerTask task) => DoTask(task, Server.muted, MuteCallback);
+        public static void MuteCalcNextRun() => CalcNextRun(muteTask, Server.muted);
+        public static void MuteCallback(string[] args) => OnModActionEvent.Call(new(args[0], Player.NASConsole, ModActionType.Unmuted, "auto unmute"));
         public static void DoTask(SchedulerTask task, PlayerExtList list, Action<string[]> callback)
         {
             List<string> lines = list.AllLines();

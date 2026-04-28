@@ -15,9 +15,9 @@
 using System.Collections.Generic;
 namespace MCGalaxy.Modules.Relay.IRC
 {
-    sealed class IRCNickList
+    public class IRCNickList
     {
-        readonly Dictionary<string, List<string>> userMap = new();
+        public readonly Dictionary<string, List<string>> userMap = new();
         public IRCBot bot;
         public void Clear() => userMap.Clear();
         public void OnLeftChannel(string userNick, string channel) => RemoveNick(userNick, GetNicks(channel));
@@ -43,7 +43,7 @@ namespace MCGalaxy.Modules.Relay.IRC
             foreach (string n in nicks)
                 UpdateNick(n, chanNicks);
         }
-        List<string> GetNicks(string channel)
+        public List<string> GetNicks(string channel)
         {
             foreach (KeyValuePair<string, List<string>> chan in userMap)
                 if (chan.Key.CaselessEq(channel)) return chan.Value;
@@ -83,21 +83,20 @@ namespace MCGalaxy.Modules.Relay.IRC
                 return false;
             }
         }
-        static void UpdateNick(string n, List<string> chanNicks)
+        public static void UpdateNick(string n, List<string> chanNicks)
         {
             int index = FindNick(n, chanNicks);
-
             if (index >= 0)
                 chanNicks[index] = n;
             else
                 chanNicks.Add(n);
         }
-        static void RemoveNick(string n, List<string> chanNicks)
+        public static void RemoveNick(string n, List<string> chanNicks)
         {
             int index = FindNick(n, chanNicks);
             if (index >= 0) chanNicks.RemoveAt(index);
         }
-        static int FindNick(string n, List<string> chanNicks)
+        public static int FindNick(string n, List<string> chanNicks)
         {
             if (chanNicks == null) return -1;
             string unprefixNick = Unprefix(n);
@@ -106,9 +105,9 @@ namespace MCGalaxy.Modules.Relay.IRC
                     return i;
             return -1;
         }
-        static string Unprefix(string nick) => nick.Substring(GetPrefixLength(nick));
-        static string GetPrefix(string nick) => nick.Substring(0, GetPrefixLength(nick));
-        static int GetPrefixLength(string nick)
+        public static string Unprefix(string nick) => nick.Substring(GetPrefixLength(nick));
+        public static string GetPrefix(string nick) => nick.Substring(0, GetPrefixLength(nick));
+        public static int GetPrefixLength(string nick)
         {
             int prefixChars = 0;
             for (int i = 0; i < nick.Length; i++)
@@ -120,7 +119,7 @@ namespace MCGalaxy.Modules.Relay.IRC
             }
             return prefixChars;
         }
-        static bool IsNickChar(char c) => (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
+        public static bool IsNickChar(char c) => (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
                 c == '[' || c == ']' || c == '{' || c == '}' || c == '^' || c == '`' || c == '_' || c == '|';
     }
 }

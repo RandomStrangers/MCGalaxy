@@ -47,8 +47,8 @@ namespace MCGalaxy.Util.Imaging
             int offset = AdvanceOffset(7);
             bmp.Width = MemUtils.ReadU16_LE(src, offset + 0);
             bmp.Height = MemUtils.ReadU16_LE(src, offset + 2);
-            byte flags = src[offset + 4],
-                bgIndex = src[offset + 5];
+            byte flags = src[offset + 4];
+            _ = src[offset + 5];
             bool hasGlobalPal = (flags & 0x80) != 0;
             if (hasGlobalPal)
                 globalPal = ReadPalette(src, flags);
@@ -110,9 +110,7 @@ namespace MCGalaxy.Util.Imaging
             byte tcIndex = src[offset + 3];
             Pixel[] pal = globalPal;
             if (hasTrans && pal != null && tcIndex < pal.Length)
-            {
                 pal[tcIndex].A = 0;
-            }
             offset = AdvanceOffset(1);
             length = src[offset];
             if (length != 0)

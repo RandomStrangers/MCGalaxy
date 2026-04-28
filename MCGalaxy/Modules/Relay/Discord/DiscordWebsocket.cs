@@ -39,10 +39,8 @@ namespace MCGalaxy.Modules.Relay.Discord
     {
         /// <summary> Authorisation token for the bot account </summary>
         public string Token, Host;
-        public bool CanReconnect = true, SentIdentify;
+        public bool CanReconnect = true, SentIdentify, readable, Presence = true;
         public DiscordSession Session;
-        /// <summary> Whether presence support is enabled </summary>
-        public bool Presence = true;
         /// <summary> Presence status (E.g. online) </summary>
         public PresenceStatus Status;
         /// <summary> Presence activity (e.g. Playing) </summary>
@@ -56,7 +54,6 @@ namespace MCGalaxy.Modules.Relay.Discord
         public SchedulerTask heartbeat;
         public TcpClient client;
         public SslStream stream;
-        public bool readable;
         public DiscordWebsocket(string apiPath) => path = apiPath;
         public override bool LowLatency { set { } }
         public override IPAddress IP => null;
@@ -69,7 +66,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             protocol = this;
             Init();
         }
-        protected override void WriteCustomHeaders()
+        public override void WriteCustomHeaders()
         {
             WriteHeader("Authorization: Bot " + Token);
             WriteHeader("Host: " + Host);
@@ -86,7 +83,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             {
             }
         }
-        protected override void OnDisconnected(int reason)
+        public override void OnDisconnected(int reason)
         {
             SentIdentify = false;
             if (readable) Logger.Log(LogType.SystemActivity, "Discord relay bot closing: " + reason);
@@ -115,7 +112,7 @@ namespace MCGalaxy.Modules.Relay.Discord
                 HandleReceived(data, len);
             }
         }
-        protected override void HandleData(byte[] data, int len)
+        public override void HandleData(byte[] data, int len)
         {
             string value = Encoding.UTF8.GetString(data, 0, len);
             JsonReader ctx = new(value);
@@ -185,7 +182,7 @@ namespace MCGalaxy.Modules.Relay.Discord
                 { "d",  data }
             });
         public void SendMessage(JsonObject obj) => Send(Encoding.UTF8.GetBytes(Json.SerialiseObject(obj)), SendFlags.None);
-        protected override void SendRaw(byte[] data, SendFlags flags)
+        public override void SendRaw(byte[] data, SendFlags flags)
         {
             lock (sendLock) stream.Write(data);
         }

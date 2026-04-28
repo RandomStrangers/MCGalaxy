@@ -17,7 +17,7 @@ using MCGalaxy.Events.ServerEvents;
 using System.IO;
 namespace MCGalaxy.Modules.Relay.Discord
 {
-    public sealed class DiscordConfig
+    public class DiscordConfig
     {
         [ConfigBool("enabled", "General", false)]
         public bool Enabled;
@@ -75,7 +75,7 @@ namespace MCGalaxy.Modules.Relay.Discord
     }
     public enum PresenceStatus { online, dnd, idle, invisible }
     public enum PresenceActivity { Playing = 0, Listening = 2, Watching = 3, Custom = 4, Competing = 5 }
-    public sealed class DiscordPlugin : Plugin
+    public class DiscordPlugin : Plugin
     {
         public override string Name => "DiscordRelay";
         public static DiscordConfig Config = new();
@@ -100,14 +100,14 @@ namespace MCGalaxy.Modules.Relay.Discord
         }
         public void OnConfigUpdated() => Bot.ReloadConfig();
     }
-    public sealed class CmdDiscordBot : RelayBotCmd
+    public class CmdDiscordBot : RelayBotCmd
     {
         public override string Name => "DiscordBot";
-        protected override RelayBot Bot => DiscordPlugin.Bot;
+        public override RelayBot Bot => DiscordPlugin.Bot;
     }
-    public sealed class CmdDiscordControllers : BotControllersCmd
+    public class CmdDiscordControllers : BotControllersCmd
     {
         public override string Name => "DiscordControllers";
-        protected override RelayBot Bot => DiscordPlugin.Bot;
+        public override RelayBot Bot => DiscordPlugin.Bot;
     }
 }

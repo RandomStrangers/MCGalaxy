@@ -15,7 +15,7 @@
 using System.Collections.Generic;
 namespace MCGalaxy.Modules.Awards
 {
-    public sealed class CmdAwards : Command2
+    public class CmdAwards : Command2
     {
         public override string Name => "Awards";
         public override string Type => CommandTypes.Economy;

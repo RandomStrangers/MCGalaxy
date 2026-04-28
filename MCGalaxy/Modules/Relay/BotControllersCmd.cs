@@ -18,7 +18,7 @@ namespace MCGalaxy.Modules.Relay
     {
         public override string Type => CommandTypes.Moderation;
         public override LevelPermission DefaultRank => LevelPermission.Admin;
-        protected abstract RelayBot Bot { get; }
+        public abstract RelayBot Bot { get; }
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.Length == 0) 
@@ -99,8 +99,7 @@ namespace MCGalaxy.Modules.Relay
         }
         public override void Help(Player p)
         {
-            string cmd = Name;
-            string relay = Bot.RelayName;
+            string cmd = Name, relay = Bot.RelayName;
             p.Message("&T/{0} add/remove [name]", cmd);
             p.Message("&HAdds or removes [name] from list of {0} controllers", relay);
             p.Message("&T/{0} reload/list", cmd);

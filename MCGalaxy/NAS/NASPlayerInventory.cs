@@ -23,7 +23,6 @@ namespace MCGalaxy
         public void Setup(Player p)
         {
             this.p = p;
-            NASPlayer np = NASPlayer.GetPlayer(p);
             for (ushort clientushort = 1; clientushort <= 767; clientushort++)
             {
                 Send(Packet.BlockPermission(clientushort, false, false, true));

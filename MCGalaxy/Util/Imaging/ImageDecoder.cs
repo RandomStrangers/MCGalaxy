@@ -18,22 +18,22 @@ namespace MCGalaxy.Util.Imaging
 {
     public abstract class ImageDecoder
     {
-        protected byte[] buf_data;
-        protected int buf_offset, buf_length;
-        protected int AdvanceOffset(int amount)
+        public byte[] buf_data;
+        public int buf_offset, buf_length;
+        public int AdvanceOffset(int amount)
         {
             int offset = buf_offset;
             buf_offset += amount;
             return buf_offset > buf_length ? throw new EndOfStreamException("End of stream reading data") : offset;
         }
-        protected void SetBuffer(byte[] src)
+        public void SetBuffer(byte[] src)
         {
             buf_data = src;
             buf_offset = 0;
             buf_length = src.Length;
         }
-        protected static void Fail(string reason) => throw new InvalidDataException(reason);
-        protected static bool MatchesSignature(byte[] data, byte[] sig)
+        public static void Fail(string reason) => throw new InvalidDataException(reason);
+        public static bool MatchesSignature(byte[] data, byte[] sig)
         {
             if (data.Length < sig.Length)
                 return false;

@@ -36,7 +36,7 @@ namespace MCGalaxy.Network
         public abstract void Init();
         public abstract void Send(byte[] buffer, SendFlags flags);
         public abstract void Close();
-        protected void HandleReceived(byte[] data, int len)
+        public void HandleReceived(byte[] data, int len)
         {
             if (protocol == null)
             {
@@ -68,7 +68,7 @@ namespace MCGalaxy.Network
             for (int i = 0; i < leftLen; i++)
                 leftData[i] = src[processedLen + i];
         }
-        internal static VolatileArray<INetSocket> pending = new();
+        public static VolatileArray<INetSocket> pending = new();
         public static ProtocolConstructor[] Protocols = new ProtocolConstructor[256];
         public void IdentifyProtocol(byte opcode)
         {
@@ -93,7 +93,7 @@ namespace MCGalaxy.Network
         int ProcessReceived(byte[] buffer, int length);
         void Disconnect();
     }
-    public sealed class TcpSocket : INetSocket
+    public class TcpSocket : INetSocket
     {
         public readonly Socket socket;
         public readonly byte[] recvBuffer = new byte[256],
@@ -282,7 +282,7 @@ namespace MCGalaxy.Network
             }
         }
     }
-    public sealed class WebSocket : ServerWebSocket
+    public class WebSocket : ServerWebSocket
     {
         public readonly INetSocket s;
         public IPAddress clientIP;
@@ -296,16 +296,16 @@ namespace MCGalaxy.Network
                 s.LowLatency = value; 
             } 
         }
-        protected override void SendRaw(byte[] data, SendFlags flags) => s.Send(data, flags);
+        public override void SendRaw(byte[] data, SendFlags flags) => s.Send(data, flags);
         public override void Send(byte[] buffer, SendFlags flags) => s.Send(WrapData(buffer), flags);
-        protected override void HandleData(byte[] data, int len) => HandleReceived(data, len);
-        protected override void OnDisconnected(int reason)
+        public override void HandleData(byte[] data, int len) => HandleReceived(data, len);
+        public override void OnDisconnected(int reason)
         {
             protocol?.Disconnect();
             s.Close();
         }
         public override void Close() => s.Close();
-        protected override void OnGotHeader(string name, string value)
+        public override void OnGotHeader(string name, string value)
         {
             base.OnGotHeader(name, value);
             if (name == "X-Real-IP" && Server.Config.AllowIPForwarding && IsTrustedForwarderIP())

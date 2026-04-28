@@ -32,7 +32,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
             string modifier = args.Length > 1 ? args[1] : "";
             PrintNotes(p, "Notes " + name, name, modifier);
         }
-        protected static void PrintNotes(Player p, string cmd, string name, string modifier)
+        public static void PrintNotes(Player p, string cmd, string name, string modifier)
         {
             if (!Server.Config.LogNotes)
             {
@@ -90,7 +90,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
             p.Message("&HNotes are things such as bans, kicks, warns, mutes.");
         }
     }
-    public sealed class CmdMyNotes : CmdNotes
+    public class CmdMyNotes : CmdNotes
     {
         public override string Name => "MyNotes";
         public override string Type => CommandTypes.Other;

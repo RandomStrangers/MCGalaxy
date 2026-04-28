@@ -27,7 +27,7 @@ namespace MCGalaxy.Util.Imaging
         public static Pixel BLACK = new(0, 0, 0, 255);
         public override readonly string ToString() => string.Format("R={0}, G={1}, B={2}, A={3}", R, G, B, A);
     }
-    public sealed class Bitmap2D
+    public class Bitmap2D
     {
         public int Width, Height;
         public Pixel[] Pixels;

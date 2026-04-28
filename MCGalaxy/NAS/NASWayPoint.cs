@@ -20,8 +20,7 @@ namespace MCGalaxy
     {
         public Position Pos;
         public byte Yaw, Pitch;
-        public string Name;
-        public string Level;
+        public string Name, Level;
     }
     public class NASWayPointList
     {
@@ -41,7 +40,7 @@ namespace MCGalaxy
             Items.Add(nwp);
             Save(np);
         }
-        void Make(NASWayPoint nwp, string name, NASPlayer np)
+        public void Make(NASWayPoint nwp, string name, NASPlayer np)
         {
             nwp.Pos = np.p.Pos;
             nwp.Name = name;

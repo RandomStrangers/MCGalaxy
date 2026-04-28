@@ -32,7 +32,7 @@ namespace MCGalaxy.Network
             player = new Player(s, this);
         }
         public override int MaxEntityID => 254;
-        protected override int HandlePacket(byte[] buffer, int offset, int left)
+        public override int HandlePacket(byte[] buffer, int offset, int left)
         {
             switch (buffer[offset])
             {

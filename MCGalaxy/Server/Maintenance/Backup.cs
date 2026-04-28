@@ -187,7 +187,7 @@ namespace MCGalaxy
                 Database.DeleteTable(table);
             ImportSql(sql);
         }
-        internal static void ImportSql(Stream sql)
+        public static void ImportSql(Stream sql)
         {
             using StreamReader reader = new(sql);
             ImportBulk(reader);

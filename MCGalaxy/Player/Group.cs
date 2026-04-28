@@ -21,7 +21,7 @@ using System.Globalization;
 using System.IO;
 namespace MCGalaxy
 {
-    public sealed class Group
+    public class Group
     {
         public static Group BannedRank => Find(LevelPermission.Banned);
         public static Group GuestRank => Find(LevelPermission.Guest);
@@ -57,7 +57,7 @@ namespace MCGalaxy
         [ConfigInt("CopySlots", null, 1, 1)]
         public int CopySlots = 1;
         [ConfigString("Filename", null, "", true, ".,_-+=")]
-        internal string filename;
+        public string filename;
         public PlayerList Players;
         public bool[] CanPlace = new bool[1024],
             CanDelete = new bool[1024];
@@ -80,7 +80,7 @@ namespace MCGalaxy
                 if (grp.Name.CaselessEq(name)) return grp;
             return null;
         }
-        internal static void MapName(ref string name)
+        public static void MapName(ref string name)
         {
             if (name.CaselessEq("op")) name = "operator";
         }

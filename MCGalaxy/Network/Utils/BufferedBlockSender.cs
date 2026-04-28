@@ -17,7 +17,7 @@ namespace MCGalaxy.Network
     /// <summary> Helper class for efficiently sending many block changes. </summary>
     /// <remarks> Sends block changes as either a single CPE BulkBlockUpdate packet,
     /// or 256 SetBlock packets combined as a single byte array to reduce overhead. </remarks>
-    public sealed class BufferedBlockSender
+    public class BufferedBlockSender
     {
         public Level level;
         public Player player;
@@ -154,7 +154,7 @@ namespace MCGalaxy.Network
             }
             return data;
         }
-        internal byte[] MakeBulk()
+        public byte[] MakeBulk()
         {
             byte[] data = new byte[2 + 256 * 5];
             data[0] = 38;
@@ -174,7 +174,7 @@ namespace MCGalaxy.Network
             }
             return data;
         }
-        internal byte[] MakeNormal()
+        public byte[] MakeNormal()
         {
             byte[] data = new byte[count * 8];
             for (int i = 0, j = 0; i < count; i++)
@@ -195,7 +195,7 @@ namespace MCGalaxy.Network
             }
             return data;
         }
-        internal byte[] MakeLimited(byte[] fallback)
+        public byte[] MakeLimited(byte[] fallback)
         {
             byte[] data = new byte[count * 8];
             for (int i = 0, j = 0; i < count; i++)

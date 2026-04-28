@@ -19,7 +19,7 @@ namespace MCGalaxy.Modules.Relay.Discord
 {
     public delegate void OnSendingWhoEmbed(DiscordBot bot, RelayUser user, ref ChannelSendEmbed embed);
     /// <summary> Called when sending an embed response to a .who message from Discord </summary>
-    public sealed class OnSendingWhoEmbedEvent : IEvent<OnSendingWhoEmbed>
+    public class OnSendingWhoEmbedEvent : IEvent<OnSendingWhoEmbed>
     {
         public static void Call(DiscordBot bot, RelayUser user, ref ChannelSendEmbed embed)
         {
@@ -37,7 +37,7 @@ namespace MCGalaxy.Modules.Relay.Discord
     }
     public delegate void OnGatewayEventReceived(DiscordBot bot, string eventName, JsonObject data);
     /// <summary> Called when a gateway event has been received from Discord </summary>
-    public sealed class OnGatewayEventReceivedEvent : IEvent<OnGatewayEventReceived>
+    public class OnGatewayEventReceivedEvent : IEvent<OnGatewayEventReceived>
     {
         public static void Call(DiscordBot bot, string eventName, JsonObject data)
         {

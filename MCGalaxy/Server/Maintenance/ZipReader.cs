@@ -19,7 +19,7 @@ using System.IO.Compression;
 using System.Text;
 namespace MCGalaxy
 {
-    public sealed class ZipReaderStream : Stream
+    public class ZipReaderStream : Stream
     {
         public long CompressedLen;
         public Stream stream;
@@ -55,7 +55,7 @@ namespace MCGalaxy
         public override void Close() => stream = null;
     }
     /// <summary> Reads entries from a ZIP archive. </summary>
-    public sealed class ZipReader
+    public class ZipReader
     {
         public readonly BinaryReader reader;
         public readonly Stream stream;

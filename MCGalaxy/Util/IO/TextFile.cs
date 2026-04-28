@@ -18,7 +18,7 @@ namespace MCGalaxy.Util
 {
     public delegate void TextFileChanged();
     /// <summary> Represents a text file and associated data for it </summary>
-    public sealed class TextFile
+    public class TextFile
     {
         public readonly string Filename;
         public readonly string[] DefaultText;

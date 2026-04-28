@@ -31,7 +31,10 @@ namespace MCGalaxy
         public int selIndex, mbRecursion, money, TimesVisited, 
             TimesBeenKicked, TimesDied, TotalMessagesSent, 
             lastCheckpointIndex = -1, DatabaseID, 
-            CurrentCopySlot, passtries, warn;
+            CurrentCopySlot, passtries, warn, 
+            gbStep, lbStep, oldIndex = -1, lastWalkthrough = -1,
+            startFallY = -1, lastFallY = -1,
+            UsingGoto, GeneratingMap, LoadingMuseum;
         public bool leftServer = false, gotSQLData, 
             hasChangeModel, hasExtList, hasCP437,
             IsAfk, AutoAfk, cmdTimer, UsingWom,
@@ -46,21 +49,21 @@ namespace MCGalaxy
             voted, flipHead, infected, showPortals, showMBs,
             Loading = true, cancelcommand, cancelchat, cancellogin,
             cancelconnecting, loggedIn, verifiedName,
-            possessed, AllowBuild = true;
+            possessed, AllowBuild = true, Request;
         public PlayerIgnores Ignores = new();
         public static string lastMSG = "";
-        internal PersistentMessages persistentMessages = new();
+        public PersistentMessages persistentMessages = new();
         public Zone ZoneIn;
         public CinematicGui CinematicGui = new();
-        internal bool Request;
-        internal string senderName = "", currentTpa = "";
-        public string truename, afkMessage, BrushName = Brush.DefaultBrush,
+        public string senderName = "", currentTpa = "",
+            truename, afkMessage, BrushName = Brush.DefaultBrush,
             DefaultBrushArgs = "", name, DisplayName,
             prefix = "", title = "", titlecolor = "",
             ip, color, SuperName, whisperTo = "",
             following = "", possess = "",
             prevMsg = "", PreTeleportMap, summonedMap,
-            VerifiedVia, lastCMD = "", partialMessage = "", selTitle, lastUrl = "";
+            VerifiedVia, lastCMD = "", partialMessage = "", 
+            selTitle, lastUrl = "";
         public INetSocket Socket;
         public IGameSession Session;
         public EntityList EntityList;
@@ -70,7 +73,7 @@ namespace MCGalaxy
             drownTime = DateTime.MaxValue, deathCooldown, LastPatrol, startTime;
         public Transform Transform = Transform.DefaultTransform;
         public Pronouns Pronouns => pronounsList[0];
-        internal List<Pronouns> pronounsList = new() { Pronouns.Default };
+        public List<Pronouns> pronounsList = new() { Pronouns.Default };
         public IPAddress IP;
         public Group group;
         public LevelPermission hideRank = LevelPermission.Banned;
@@ -88,10 +91,10 @@ namespace MCGalaxy
             get { return DateTime.UtcNow - startTime; }
             set { startTime = DateTime.UtcNow.Subtract(value); }
         }
-        internal DateTime lastAccessStatus, cmdUnblocked;
+        public DateTime lastAccessStatus, cmdUnblocked;
         public VolatileArray<SchedulerTask> CriticalTasks;
         public Weapon weapon;
-        internal BufferedBlockSender weaponBuffer;
+        public BufferedBlockSender weaponBuffer;
         public CommandData DefaultCmdData
         {
             get
@@ -116,13 +119,10 @@ namespace MCGalaxy
                 CopySlots[CurrentCopySlot] = value;
             }
         }
-        internal BlockDefinition gbBlock, lbBlock;
+        public BlockDefinition gbBlock, lbBlock;
         public VolatileArray<UndoDrawOpEntry> DrawOps = new();
-        internal readonly object pendingDrawOpsLock = new();
-        internal List<PendingDrawOp> PendingDrawOps = new();
-        internal int gbStep, lbStep, oldIndex = -1, lastWalkthrough = -1, 
-            startFallY = -1, lastFallY = -1,
-            UsingGoto, GeneratingMap, LoadingMuseum;
+        public readonly object pendingDrawOpsLock = new();
+        public List<PendingDrawOp> PendingDrawOps = new();
         public ushort[] BlockBindings = new ushort[1024];
         public Dictionary<string, string> CmdBindings = new(StringComparer.OrdinalIgnoreCase);
         public sbyte c4circuitNumber = -1;

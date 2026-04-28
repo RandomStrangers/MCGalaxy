@@ -42,7 +42,7 @@ namespace MCGalaxy
                 return;
             last = now;
             msg.Path = "logs/" + now.ToString("yyyy-MM-dd") + ".txt";
-            err.Path = "logs/errors/" + now.ToString("yyyy-MM-dd") + "error.txt";
+            err.Path = "logs/errors/" + now.ToString("yyyy-MM-dd") + ".txt";
             err.Close();
             msg.Close();
         }

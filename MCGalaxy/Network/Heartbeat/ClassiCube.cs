@@ -19,10 +19,9 @@ using System.Net;
 namespace MCGalaxy.Network
 {
     /// <summary> Heartbeat to ClassiCube.net's web server. </summary>
-    public sealed class ClassiCubeBeat : Heartbeat
+    public class ClassiCubeBeat : Heartbeat
     {
-        public string proxyUrl;
-        public string LastResponse;
+        public string proxyUrl, LastResponse;
         public bool checkedAddr;
         public void CheckAddress()
         {
@@ -40,7 +39,7 @@ namespace MCGalaxy.Network
             hostUrl = hostUrl.Replace("www.", "");
             Logger.Log(LogType.SystemActivity, "Finding " + hostUrl + " url..");
         }
-        protected override string GetHeartbeatData()
+        public override string GetHeartbeatData()
         {
             string name = Server.Config.Name;
             OnSendingHeartbeatEvent.Call(this, ref name);
@@ -56,13 +55,13 @@ namespace MCGalaxy.Network
                 "&software=" + Uri.EscapeDataString(Server.SoftwareNameVersioned) +
                 "&web=" + Server.Config.WebClient;
         }
-        protected override void OnRequest(HttpWebRequest request)
+        public override void OnRequest(HttpWebRequest request)
         {
             if (!checkedAddr) CheckAddress();
             if (proxyUrl != null)
                 request.Proxy = new WebProxy(proxyUrl);
         }
-        protected override void OnResponse(WebResponse response)
+        public override void OnResponse(WebResponse response)
         {
             string text = HttpUtil.GetResponseText(response);
             if (NeedsProcessing(text))
@@ -76,7 +75,7 @@ namespace MCGalaxy.Network
                 }
             }
         }
-        protected override void OnFailure(string response)
+        public override void OnFailure(string response)
         {
             if (NeedsProcessing(response)) OnError(response);
         }

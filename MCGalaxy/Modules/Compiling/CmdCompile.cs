@@ -41,7 +41,7 @@ namespace MCGalaxy.Modules.Compiling
             else
                 CompileCommand(p, paths);
         }
-        protected virtual void CompilePlugin(Player p, string[] paths)
+        public virtual void CompilePlugin(Player p, string[] paths)
         {
             string pln = paths[0],
                 dstPath = Compiler.PluginDLLPath(pln);
@@ -79,7 +79,7 @@ namespace MCGalaxy.Modules.Compiling
                 p.Message(" &W.. and {0} more", errors.Count - logged);
             p.Message("&WCompiling failed. See " + Compiler.ERROR_LOG_PATH + " for more detail");
         }
-        protected virtual void CompileCommand(Player p, string[] paths)
+        public virtual void CompileCommand(Player p, string[] paths)
         {
             string cmd = paths[0],
                 dstPath = Compiler.CommandDLLPath(cmd);

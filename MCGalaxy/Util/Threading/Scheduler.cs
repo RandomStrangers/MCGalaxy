@@ -18,7 +18,7 @@ using System.Threading;
 namespace MCGalaxy.Tasks
 {
     public delegate void SchedulerCallback(SchedulerTask task);
-    public sealed class Scheduler
+    public class Scheduler
     {
         public static void StartThread(string name, ThreadStart threadFunc)
         {

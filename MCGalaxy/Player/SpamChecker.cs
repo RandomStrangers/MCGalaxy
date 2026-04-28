@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
-    public sealed class SpamChecker
+    public class SpamChecker
     {
         public SpamChecker(Player p)
         {

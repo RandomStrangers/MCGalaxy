@@ -20,7 +20,7 @@ using MCGalaxy.Undo;
 using System;
 namespace MCGalaxy.Drawing
 {
-    internal struct PendingDrawOp
+    public struct PendingDrawOp
     {
         public DrawOp Op;
         public Brush Brush;
@@ -31,7 +31,7 @@ namespace MCGalaxy.Drawing.Ops
 {
     public static class DrawOpPerformer
     {
-        static bool CannotBuildIn(Player p, Level lvl)
+        public static bool CannotBuildIn(Player p, Level lvl)
         {
             Zone[] zones = lvl.Zones.Items;
             for (int i = 0; i < zones.Length; i++)
@@ -72,7 +72,7 @@ namespace MCGalaxy.Drawing.Ops
             DoQueuedDrawOp(p, op, brush, marks);
             return true;
         }
-        static void DoQueuedDrawOp(Player p, DrawOp op, Brush brush, Vec3S32[] marks)
+        public static void DoQueuedDrawOp(Player p, DrawOp op, Brush brush, Vec3S32[] marks)
         {
             PendingDrawOp item = new()
             {
@@ -87,7 +87,7 @@ namespace MCGalaxy.Drawing.Ops
             }
             ProcessDrawOps(p);
         }
-        static void ProcessDrawOps(Player p)
+        public static void ProcessDrawOps(Player p)
         {
             while (true)
             {
@@ -106,7 +106,7 @@ namespace MCGalaxy.Drawing.Ops
                 Execute(p, item.Op, item.Brush, item.Marks);
             }
         }
-        internal static void Execute(Player p, DrawOp op, Brush brush, Vec3S32[] marks)
+        public static void Execute(Player p, DrawOp op, Brush brush, Vec3S32[] marks)
         {
             UndoDrawOpEntry entry = new();
             entry.Init(op.Name, op.Level.name);
@@ -125,15 +125,15 @@ namespace MCGalaxy.Drawing.Ops
             if (needsReload) DoReload(p, op.Level);
             op.TotalModified = 0;
         }
-        static void DoReload(Player p, Level lvl)
+        public static void DoReload(Player p, Level lvl)
         {
             LevelActions.ReloadAll(lvl, p, true);
             Server.DoGC();
         }
-        class DrawOpOutputter
+        public class DrawOpOutputter
         {
-            readonly DrawOp op;
-            internal readonly int reloadThreshold;
+            public readonly DrawOp op;
+            public readonly int reloadThreshold;
             public DrawOpOutputter(DrawOp op)
             {
                 this.op = op;

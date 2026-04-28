@@ -23,8 +23,7 @@ namespace MCGalaxy
         public char Separator = ' ';
         public string Path;
         public readonly List<string> names = new(), lines = new();
-        internal readonly object locker = new();
-        public readonly object saveLocker = new();
+        public readonly object locker = new(), saveLocker = new();
         public List<string> AllNames()
         {
             lock (locker) return new(names);

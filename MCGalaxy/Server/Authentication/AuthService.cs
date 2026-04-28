@@ -47,7 +47,7 @@ namespace MCGalaxy.Authentication
                 str[i] = (char)one[0]; 
                 i++;
             }
-            return new string(str);
+            return new(str);
         }
         public static AuthService GetOrCreate(string url, bool canSave = true)
         {
@@ -72,7 +72,7 @@ namespace MCGalaxy.Authentication
             return service;
         }
         /// <summary> Updates list of authentication services from authservices.properties </summary>
-        internal static void UpdateList()
+        public static void UpdateList()
         {
             AuthService cur = null;
             PropertiesFile.Read(Paths.AuthServicesFile, ref cur, ParseProperty, '=', true);

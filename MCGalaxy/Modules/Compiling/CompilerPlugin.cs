@@ -14,7 +14,7 @@
 */
 namespace MCGalaxy.Modules.Compiling
 {
-    public sealed class CompilerPlugin : Plugin
+    public class CompilerPlugin : Plugin
     {
         public override string Name => "Compiler";
         public readonly Command cmdCreate = new CmdCmdCreate(),

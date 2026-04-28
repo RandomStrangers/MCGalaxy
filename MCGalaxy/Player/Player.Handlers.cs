@@ -30,8 +30,8 @@ namespace MCGalaxy
 {
     public partial class Player : IDisposable
     {
-        internal bool HasBlockChange() => Blockchange != null;
-        internal bool DoBlockchangeCallback(ushort x, ushort y, ushort z, ushort block)
+        public bool HasBlockChange() => Blockchange != null;
+        public bool DoBlockchangeCallback(ushort x, ushort y, ushort z, ushort block)
         {
             lock (blockchangeLock)
             {
@@ -113,7 +113,7 @@ namespace MCGalaxy
                 RevertBlock(x, y, z);
             OnBlockChangedEvent.Call(this, x, y, z, result);
         }
-        internal bool CheckManualChange(ushort old, bool deleteMode)
+        public bool CheckManualChange(ushort old, bool deleteMode)
         {
             if (!group.CanDelete[old] && !Block.AllowBreak(old))
             {
@@ -215,7 +215,7 @@ namespace MCGalaxy
         /// Called to update player's position and check blocks and zones.
         /// If fromClient is true, calls OnPlayerMove event and updates AFK status.
         /// </summary>
-        internal void ProcessMovementCore(Position next, byte yaw, byte pitch, bool fromClient)
+        public void ProcessMovementCore(Position next, byte yaw, byte pitch, bool fromClient)
         {
             CheckBlocks(Pos, next);
             if (fromClient)

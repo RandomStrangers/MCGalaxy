@@ -29,7 +29,7 @@ using System.Net;
 using System.Threading;
 namespace MCGalaxy
 {
-    public sealed class NASConsolePlayer : Player
+    public class NASConsolePlayer : Player
     {
         public NASConsolePlayer() : base("(NAS)")
         {
@@ -120,7 +120,7 @@ namespace MCGalaxy
             OnSettingPrefixEvent.Call(this, prefixes);
             prefix = prefixes.Join("");
         }
-        internal string MakeTitle(string title, string titleCol) => color + "[" + titleCol + title + color + "] ";
+        public string MakeTitle(string title, string titleCol) => color + "[" + titleCol + title + color + "] ";
         /// <summary> Raises OnSettingColorEvent then sets color. </summary>
         public void SetColor(string col)
         {
@@ -268,7 +268,7 @@ namespace MCGalaxy
         #endregion
         #region == OTHER ==
         public const string USERNAME_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890._";
-        internal byte UserType() => group.CanPlace[7] ? (byte)100 : (byte)0;
+        public byte UserType() => group.CanPlace[7] ? (byte)100 : (byte)0;
         #endregion
         /// <summary> Returns whether the player is currently allowed to talk. </summary>
         public bool CanSpeak() => IsNASConsole || (!muted && !Unverified && (voice || !Server.chatmod));
@@ -323,7 +323,7 @@ namespace MCGalaxy
             money = amount;
             OnMoneyChangedEvent.Call(this);
         }
-        internal static bool CheckVote(string msg, Player p, string a, string b, ref int totalVotes)
+        public static bool CheckVote(string msg, Player p, string a, string b, ref int totalVotes)
         {
             if (!(msg.CaselessEq(a) || msg.CaselessEq(b))) return false;
             if (p.voted)
@@ -337,7 +337,7 @@ namespace MCGalaxy
             return true;
         }
         public void CheckForMessageSpam() => spamChecker?.CheckChatSpam();
-        internal void SetBaseTotalModified(long modified)
+        public void SetBaseTotalModified(long modified)
         {
             long adjust = modified - TotalModified;
             TotalModified = modified;

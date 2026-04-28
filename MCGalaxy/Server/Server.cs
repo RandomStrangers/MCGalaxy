@@ -36,9 +36,9 @@ using System.Reflection;
 using System.Threading;
 namespace MCGalaxy
 {
-    public sealed partial class Server
+    public partial class Server
     {
-        internal static ConfigElement[] serverConfig, levelConfig, zoneConfig;
+        public static ConfigElement[] serverConfig, levelConfig, zoneConfig;
         public static void Load()
         {
             PropertiesFile.Read(Paths.ServerPropsFile, (key, value) => ConfigElement.Parse(serverConfig, Config, key, value));
@@ -317,9 +317,7 @@ namespace MCGalaxy
             }
             return autoload;
         }
-        /// <summary> Returns the full path to the server executable </summary>
         public static string GetPath() => Assembly.GetEntryAssembly().Location;
-        /// <summary> Returns the full path to the runtime executable </summary>
         public static string GetRuntimeExePath() => Process.GetCurrentProcess().MainModule.FileName;
         public static bool checkedOnMono, runningOnMono;
         public static bool RunningOnMono()
@@ -367,11 +365,7 @@ namespace MCGalaxy
             Logger.Log(LogType.BackgroundActivity, "GC performed in {0:F2} ms (tracking {1:F2} KB, freed {2:F2} KB)",
                        sw.Elapsed.TotalMilliseconds, end / 1024.0, deltaKB);
         }
-        /// <summary> Converts a formatted username into its original username </summary>
-        /// <remarks> If ClassiCubeAccountPlus option is set, removes + </remarks>
         public static string ToRawUsername(string name) => Config.ClassicubeAccountPlus ? name.Replace("+", "") : name;
-        /// <summary> Converts a username into its formatted username </summary>
-        /// <remarks> If ClassiCubeAccountPlus option is set, adds trailing + </remarks>
         public static string FromRawUsername(string name)
         {
             if (!Config.ClassicubeAccountPlus)

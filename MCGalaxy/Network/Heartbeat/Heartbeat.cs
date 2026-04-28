@@ -45,13 +45,13 @@ namespace MCGalaxy.Network
             }
         }
         /// <summary> Gets the data to be sent for the next heartbeat </summary>
-        protected abstract string GetHeartbeatData();
+        public abstract string GetHeartbeatData();
         /// <summary> Called when a heartbeat is about to be sent to the web server </summary>
-        protected abstract void OnRequest(HttpWebRequest request);
+        public abstract void OnRequest(HttpWebRequest request);
         /// <summary> Called when a response is received from the web server </summary>
-        protected abstract void OnResponse(WebResponse response);
+        public abstract void OnResponse(WebResponse response);
         /// <summary> Called when a failure HTTP response is received from the web server </summary>
-        protected abstract void OnFailure(string response);
+        public abstract void OnFailure(string response);
         /// <summary> Sends a heartbeat to the web server and then reads the response </summary>
         public void Pump()
         {
@@ -97,7 +97,7 @@ namespace MCGalaxy.Network
                     beat.Pump();
         }
         public static string lastUrls;
-        internal static void ReloadDefault()
+        public static void ReloadDefault()
         {
             string urls = Server.Config.HeartbeatURL;
             if (urls != lastUrls)
@@ -112,7 +112,7 @@ namespace MCGalaxy.Network
                     });
             }
         }
-        protected string EnsureIPv4Url(string hostUrl)
+        public string EnsureIPv4Url(string hostUrl)
         {
             bool hasIPv6 = false;
             IPAddress firstIPv4 = null;

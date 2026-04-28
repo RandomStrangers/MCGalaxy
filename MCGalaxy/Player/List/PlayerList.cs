@@ -22,8 +22,7 @@ namespace MCGalaxy
     {
         public string Path;
         public readonly List<string> names = new();
-        internal readonly object locker = new();
-        public readonly object saveLocker = new();
+        public readonly object locker = new(), saveLocker = new();
         public PlayerList() { }
         /// <summary> Returns a copy of all names in the list. </summary>
         public List<string> All()
@@ -58,11 +57,11 @@ namespace MCGalaxy
         {
             lock (locker) names.Clear();
         }
-        internal int IndexOf(string name)
+        public int IndexOf(string name)
         {
             lock (locker) return names.CaselessIndexOf(name);
         }
-        internal string GetAt(int index)
+        public string GetAt(int index)
         {
             lock (locker)
                 return index < 0 || index >= names.Count ? null : names[index];

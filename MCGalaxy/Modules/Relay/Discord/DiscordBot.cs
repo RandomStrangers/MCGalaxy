@@ -24,16 +24,15 @@ namespace MCGalaxy.Modules.Relay.Discord
 {
     public class DiscordBot : RelayBot
     {
-        protected DiscordApiClient api;
-        protected DiscordWebsocket socket;
-        protected DiscordSession session;
-        protected string botUserID;
+        public DiscordApiClient api;
+        public DiscordWebsocket socket;
+        public DiscordSession session;
         public readonly Dictionary<string, byte> channelTypes = new();
         public readonly List<string> filter_triggers = new(), 
             filter_replacements = new();
         public JsonArray allowed;
         public List<string> PKUsers, PKPrefixes;
-        static readonly Dictionary<string, bool> ReadOriginals = new();
+        public static readonly Dictionary<string, bool> ReadOriginals = new();
         public override string RelayName => "Discord";
         public override bool Enabled => Config.Enabled;
         public override string UserID => botUserID;
@@ -44,11 +43,12 @@ namespace MCGalaxy.Modules.Relay.Discord
                                         "// Lines should be formatted like this:",
                                         "// example:http://example.org",
                                         "// That would replace 'example' in messages sent to Discord with 'http://example.org'");
-        public string APIHost = "https://discord.com/api/v10";
-        public string WSHost = "gateway.discord.gg";
-        public string WSPath = "/?v=10&encoding=json";
-        protected override bool CanReconnect => canReconnect && (socket == null || socket.CanReconnect);
-        protected override void DoConnect()
+        public string APIHost = "https://discord.com/api/v10",
+            WSHost = "gateway.discord.gg",
+            WSPath = "/?v=10&encoding=json", 
+            botUserID;
+        public override bool CanReconnect => canReconnect && (socket == null || socket.CanReconnect);
+        public override void DoConnect()
         {
             socket = new(WSPath)
             {
@@ -68,7 +68,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             socket.Connect();
         }
         public static Exception UnpackError(Exception ex) => ex.InnerException is ObjectDisposedException ? ex.InnerException : ex.InnerException is IOException ? ex.InnerException : null;
-        protected override void DoReadLoop()
+        public override void DoReadLoop()
         {
             try
             {
@@ -81,7 +81,7 @@ namespace MCGalaxy.Modules.Relay.Discord
                 throw;
             }
         }
-        protected override void DoDisconnect(string reason)
+        public override void DoDisconnect(string reason)
         {
             try
             {
@@ -100,7 +100,7 @@ namespace MCGalaxy.Modules.Relay.Discord
                        "which allows pinging all users on Discord from in-game. " +
                        "It is recommended that this option be disabled.", DiscordConfig.PROPS_PATH);
         }
-        protected override void UpdateConfig()
+        public override void UpdateConfig()
         {
             Channels = Config.Channels.SplitComma();
             OpChannels = Config.OpChannels.SplitComma();
@@ -213,7 +213,7 @@ namespace MCGalaxy.Modules.Relay.Discord
         }
         public void HandleGatewayEvent(string eventName, JsonObject data) => OnGatewayEventReceivedEvent.Call(this, eventName, data);
         public static bool IsEscaped(char c) => (c > ' ' && c <= '/') || (c >= ':' && c <= '@') || (c >= '[' && c <= '`') || (c >= '{' && c <= '~');
-        protected override string ParseMessage(string input)
+        public override string ParseMessage(string input)
         {
             StringBuilder sb = new(input);
             SimplifyCharacters(sb);
@@ -243,7 +243,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             }
             Server.MainScheduler.QueueOnce(DoUpdateStatus, null, delay);
         }
-        static bool IsPKProxyDisabled(string message) => message.CaselessContains("system proxy off")
+        public static bool IsPKProxyDisabled(string message) => message.CaselessContains("system proxy off")
             || message.CaselessContains("s proxy off")
             || message.CaselessContains("autoproxy off")
             || message.CaselessContains("ap off")
@@ -257,7 +257,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             || message.CaselessContains("ap disable")
             || message.CaselessContains("autoproxy remove")
             || message.CaselessContains("ap remove");
-        static bool IsPKProxyEnabled(string message) => message.CaselessContains("system proxy on")
+        public static bool IsPKProxyEnabled(string message) => message.CaselessContains("system proxy on")
                 || message.CaselessContains("s proxy on")
                 || message.CaselessContains("autoproxy latch")
                 || message.CaselessContains("ap latch")
@@ -271,7 +271,7 @@ namespace MCGalaxy.Modules.Relay.Discord
                 || message.CaselessContains("ap sticky")
                 || message.CaselessContains("autoproxy l")
                 || message.CaselessContains("ap l");
-        protected override void HandleChannelMessage(RelayUser user, string channel, string message)
+        public override void HandleChannelMessage(RelayUser user, string channel, string message)
         {
             if (IgnoredUsers.CaselessContains(user.ID)) return;
             if (PKUsers.CaselessContains(user.ID))
@@ -387,7 +387,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             fakeGuest.group = Group.DefaultRank;
             return Config.StatusMessage.Replace("{PLAYERS}", NumberUtils.StringifyInt(PlayerInfo.GetOnlineCanSee(fakeGuest, fakeGuest.Rank).Count));
         }
-        protected override void OnStart()
+        public override void OnStart()
         {
             DiscordSession s = new()
             {
@@ -399,7 +399,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             OnPlayerDisconnectEvent.Register(HandlePlayerDisconnect, Priority.Low);
             OnPlayerActionEvent.Register(HandlePlayerAction, Priority.Low);
         }
-        protected override void OnStop()
+        public override void OnStop()
         {
             socket = null;
             if (api != null)
@@ -419,7 +419,7 @@ namespace MCGalaxy.Modules.Relay.Discord
             if (action == PlayerAction.Hide || action == PlayerAction.Unhide) UpdateDiscordStatus();
         }
         public void Send(DiscordApiMessage msg) => api?.QueueAsync(msg);
-        protected override void DoSendMessage(string channel, string message)
+        public override void DoSendMessage(string channel, string message)
         {
             message = ConvertMessage(message);
             for (int offset = 0; offset < message.Length; offset += 2000)
@@ -428,7 +428,7 @@ namespace MCGalaxy.Modules.Relay.Discord
                     Allowed = allowed
                 });
         }
-        protected string ConvertMessage(string message)
+        public string ConvertMessage(string message)
         {
             message = ConvertMessageCommon(message);
             message = Colors.StripUsed(message);
@@ -436,16 +436,16 @@ namespace MCGalaxy.Modules.Relay.Discord
             message = DiscordUtils.SpecialToMarkdown(message);
             return message;
         }
-        protected override string PrepareMessage(string message)
+        public override string PrepareMessage(string message)
         {
             for (int i = 0; i < filter_triggers.Count; i++)
                 message = message.Replace(filter_triggers[i], filter_replacements[i]);
             return message;
         }
-        protected override bool CheckController(string userID, ref string error) => true;
-        protected override string UnescapeFull(Player p) => "\uEDC3\uEDC3" + base.UnescapeFull(p) + "\uEDC3\uEDC3";
-        protected override string UnescapeNick(Player p) => "\uEDC3\uEDC3" + base.UnescapeNick(p) + "\uEDC3\uEDC3";
-        protected override void MessagePlayers(RelayPlayer p)
+        public override bool CheckController(string userID, ref string error) => true;
+        public override string UnescapeFull(Player p) => "\uEDC3\uEDC3" + base.UnescapeFull(p) + "\uEDC3\uEDC3";
+        public override string UnescapeNick(Player p) => "\uEDC3\uEDC3" + base.UnescapeNick(p) + "\uEDC3\uEDC3";
+        public override void MessagePlayers(RelayPlayer p)
         {
             ChannelSendEmbed embed = new(p.ChannelID);
             List<OnlineListEntry> entries = PlayerInfo.GetOnlineList(p, p.Rank, out int total);

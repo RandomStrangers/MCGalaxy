@@ -14,7 +14,7 @@
 */
 namespace MCGalaxy.Modules.Awards
 {
-    public sealed class CmdAwardMod : Command2
+    public class CmdAwardMod : Command2
     {
         public override string Name => "AwardMod";
         public override string Type => CommandTypes.Economy;

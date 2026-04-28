@@ -20,8 +20,7 @@ namespace MCGalaxy.Modules.Relay.IRC
 {
     public static class IRCUtils
     {
-
-        const string CHAN_PREFIXES = "#!+&";
+        public const string CHAN_PREFIXES = "#!+&";
         public static bool IsValidChannel(string channel) => !IsEmptyOrWhitespace(channel)
                 && CHAN_PREFIXES.IndexOf(channel[0]) >= 0;
         public static bool IsEmptyOrWhitespace(string str) => str == null || str.Length == 0
@@ -34,7 +33,7 @@ namespace MCGalaxy.Modules.Relay.IRC
                 nickEnd = Math.Min(userBeg, hostBeg);
             return fullUserName.Substring(0, nickEnd);
         }
-        static int TryFindPrefix(string str, char c)
+        public static int TryFindPrefix(string str, char c)
         {
             int index = str.IndexOf(c);
             return index == -1 ? str.Length : index;
@@ -62,11 +61,11 @@ namespace MCGalaxy.Modules.Relay.IRC
             if (str[index] == ':') index++;
             return EatToEnd(str, ref index);
         }
-        static void EatWhitespace(string str, ref int index)
+        public static void EatWhitespace(string str, ref int index)
         {
             while (index < str.Length && str[index] == ' ') index++;
         }
-        static string EatWord(string str, ref int index)
+        public static string EatWord(string str, ref int index)
         {
             int spaceIdx = str.IndexOf(' ', index);
             if (spaceIdx == -1) spaceIdx = str.Length;
@@ -74,7 +73,7 @@ namespace MCGalaxy.Modules.Relay.IRC
             index = spaceIdx;
             return part;
         }
-        static string EatToEnd(string str, ref int index)
+        public static string EatToEnd(string str, ref int index)
         {
             string rest = str.Substring(index);
             index = str.Length;

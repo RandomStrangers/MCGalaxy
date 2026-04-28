@@ -16,7 +16,7 @@ using MCGalaxy.Commands;
 using MCGalaxy.Events.PlayerEvents;
 namespace MCGalaxy.Modules.Moderation.Review
 {
-    public sealed class ReviewPlugin : Plugin
+    public class ReviewPlugin : Plugin
     {
         public override string Name => "Review";
         public readonly Command cmdReview = new CmdReview();

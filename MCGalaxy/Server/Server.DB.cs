@@ -16,7 +16,7 @@ using MCGalaxy.SQL;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
-    public sealed partial class Server
+    public partial class Server
     {
         public static readonly ColumnDesc[] playersTable = new ColumnDesc[]
         {

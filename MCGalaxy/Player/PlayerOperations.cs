@@ -176,7 +176,7 @@ namespace MCGalaxy
         /// <remarks> λACTOR is replaced with nick of player performing the action.
         /// λTARGET is replaced with either "their" or "[target nick]'s", depending
         /// on whether the actor is the same player as the target or not </remarks>
-        internal static void MessageAction(Player actor, string target, Player who, string message)
+        public static void MessageAction(Player actor, string target, Player who, string message)
         {
             bool global = who == null || actor.IsSuper
                             || (!actor.Level.SeesServerWideChat && actor.Level != who.Level);

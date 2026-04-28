@@ -16,7 +16,7 @@ using MCGalaxy.Events;
 using System;
 namespace MCGalaxy.Modules.Moderation.Notes
 {
-    public sealed class NotesPlugin : Plugin
+    public class NotesPlugin : Plugin
     {
         public override string Name => "Notes";
         public static readonly Command[] cmds = new Command[] 
@@ -71,7 +71,7 @@ namespace MCGalaxy.Modules.Moderation.Notes
             Noted = new("N", "Noted"),
             OpNoted = new("O", "OpNoted");
         public static NoteAcronym[] All;
-        internal static void Init() => All = new NoteAcronym[] { Warned, Kicked, Muted, Banned, Frozen, TempBanned, Noted, OpNoted };
+        public static void Init() => All = new NoteAcronym[] { Warned, Kicked, Muted, Banned, Frozen, TempBanned, Noted, OpNoted };
         /// <summary>
         /// Returns the appropriate Acronym to log when a mod action occurs.
         /// </summary>

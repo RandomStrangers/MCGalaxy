@@ -3,12 +3,12 @@ description: Sends a notification that compiling a build has failed
 inputs:
   BOT_USERNAME:
     description: 'Username to use for the discord bot message'
-    default: 'CC BuildBot'
+    default: 'MCGalaxy BuildBot'
     required: false
     type: string
   BOT_AVATAR:
     description: 'URL to use for the avatar of the discord bot message'
-    default: 'https://static.classicube.net/img/cc-cube-small.png'
+    default: 'https://raw.githubusercontent.com/ClassiCube/MCGalaxy/master/GUI/Galaxy.jpg'
     required: false
     type: string
   NOTIFY_MESSAGE:

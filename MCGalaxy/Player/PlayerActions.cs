@@ -127,7 +127,7 @@ namespace MCGalaxy
             Entities.SpawnEntities(p, p.Pos, p.Rot);
             p.Loading = false;
         }
-        internal static void PostSentMap(Player p, Level prev, Level lvl, bool announce)
+        public static void PostSentMap(Player p, Level prev, Level lvl, bool announce)
         {
             Position pos = lvl.SpawnPos;
             Orientation rot = p.Rot;

@@ -151,7 +151,7 @@ namespace MCGalaxy
             }
             source.CheckForMessageSpam();
         }
-        static string UnescapeMessage(Player pl, Player src, string msg)
+        public static string UnescapeMessage(Player pl, Player src, string msg)
         {
             string nick = pl.FormatNick(src);
             msg = msg.Replace("λNICK", nick);
@@ -159,7 +159,7 @@ namespace MCGalaxy
                 ? msg.Replace("λFULL", src.GroupPrefix + nick)
                 : pl.Ignores.Nicks ? msg.Replace("λFULL", src.color + src.prefix + src.truename) : msg.Replace("λFULL", src.FullName);
         }
-        internal static string ParseInput(string text, out bool isCommand)
+        public static string ParseInput(string text, out bool isCommand)
         {
             isCommand = false;
             if (text.StartsWith("//")) return text.Substring(1);
@@ -168,15 +168,15 @@ namespace MCGalaxy
             return text.Substring(1);
         }
     }
-    class PersistentMessage
+    public class PersistentMessage
     {
         public string message;
         public PersistentMessagePriority priority;
     }
-    internal class PersistentMessages
+    public class PersistentMessages
     {
-        readonly object locker = new();
-        readonly Dictionary<CpeMessageType, List<PersistentMessage>> persistentMsgs =
+        public readonly object locker = new();
+        public readonly Dictionary<CpeMessageType, List<PersistentMessage>> persistentMsgs =
             new();
         /// <returns> false if there is currently a higher priority persistent message set for the given type </returns>
         public bool Handle(CpeMessageType type, ref string message, PersistentMessagePriority priority)
@@ -221,7 +221,7 @@ namespace MCGalaxy
             }
             return true;
         }
-        static bool IsPersistent(CpeMessageType type) => type == CpeMessageType.Status1 || type == CpeMessageType.Status2 || type == CpeMessageType.Status3 ||
+        public static bool IsPersistent(CpeMessageType type) => type == CpeMessageType.Status1 || type == CpeMessageType.Status2 || type == CpeMessageType.Status3 ||
                 type == CpeMessageType.BottomRight1 || type == CpeMessageType.BottomRight2 || type == CpeMessageType.BottomRight3;
     }
     public enum PersistentMessagePriority
