@@ -212,7 +212,7 @@ namespace MCGalaxy
                     return;
                 NASPlayer nw = NASPlayer.GetPlayer(PlayerInfo.FindMatches(p, message));
                 nw.lastAttackedPlayer = p;
-                nw.TakeDamage(50, NASDamageSource.Entity, "@p &fwas smote by " + p.ColoredName);
+                nw.TakeDamage(int.MaxValue, NASDamageSource.Entity, "@p &fwas smote by " + p.ColoredName);
                 return;
             }
             if (!name.CaselessEq("NAS"))

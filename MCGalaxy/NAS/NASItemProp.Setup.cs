@@ -41,12 +41,8 @@ namespace MCGalaxy
         public static NASItemProp bedrockPick,etheriumPick,
             bedrockSword, etheriumHelmet, etheriumChest, 
             etheriumLegs, etheriumBoots, etheriumSword;
-        public static void Setup()
+        public static void SetupDevItems()
         {
-            int ironBaseHP = 200 * 8,
-                goldBaseHP = 200 * 64,
-                diamondBaseHP = 200 * 128,
-                emeraldBaseHP = 200 * 192;
             bedrockPick = new("Bedrock Pickaxe|m|╟", nothing, NASMaterial.None, -1f, 5)
             {
                 baseHP = int.MaxValue
@@ -99,6 +95,14 @@ namespace MCGalaxy
                 baseHP = int.MaxValue,
                 armor = int.MaxValue
             };
+        }
+        public static void Setup()
+        {
+            SetupDevItems();
+            int ironBaseHP = 200 * 8,
+                goldBaseHP = 200 * 64,
+                diamondBaseHP = 200 * 128,
+                emeraldBaseHP = 200 * 192;
             NASItemProp fist = new("Fist|f|¬", nothing, NASMaterial.None, 0, 0)
             {
                 baseHP = int.MaxValue

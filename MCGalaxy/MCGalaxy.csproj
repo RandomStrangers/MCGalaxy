@@ -524,6 +524,7 @@
     <Compile Include="Modules\Relay\RelayBotCmd.cs" />
     <Compile Include="Modules\Relay\RelayBotEvents.cs" />
     <Compile Include="Modules\Security\IPThrottler.cs" />
+    <Compile Include="NAS\NASMob.cs" />
     <Compile Include="NAS\NASWayPoint.cs" />
     <Compile Include="Network\BaseWebSocket.cs" />
     <Compile Include="Network\ClassicProtocol.cs" />

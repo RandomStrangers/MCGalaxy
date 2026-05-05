@@ -37,9 +37,25 @@ namespace MCGalaxy.DB
             (p, who) => IPLine(p, who.name, who.ip),
             IdleLine,
             EntityLine,
+            PvP,
+            Kills,
+            Dev,
         };
+        public static void PvP(Player p, Player target)
+        {
+            if (NASPlayer.GetPlayer(target).pvpEnabled)
+                p.Message("&S  " + target.Pronouns.Subject.Capitalize() + " " + target.Pronouns.PresentPerfectVerb + " PVP &2enabled&S.");
+            else
+                p.Message("&S  " + target.Pronouns.Subject.Capitalize() + " " + target.Pronouns.PresentPerfectVerb + " PVP &cdisabled&S.");
+        }
+        public static void Dev(Player p, Player target)
+        {
+            if (NAS.Devs.CaselessContains(target.truename))
+                p.Message("&S  NAS developer.");
+        }
+        public static void Kills(Player p, Player target) => p.Message("&S  " + target.Pronouns.Subject.Capitalize() + " " + target.Pronouns.PresentPerfectVerb + " " + NASPlayer.GetPlayer(target).kills + " kills.");
         public static void CoreLine(Player p, Player who) => CommonCoreLine(p, (who.title.Length == 0 ? "" : who.MakeTitle(who.title, who.titlecolor)) + who.ColoredName, who.name, who.group, who.TotalMessagesSent);
-        internal static void CommonCoreLine(Player p, string fullName, string name, Group grp, int messages)
+        public static void CommonCoreLine(Player p, string fullName, string name, Group grp, int messages)
         {
             p.Message("{0} &S({1}) has:", fullName, name);
             p.Message("  Rank of {0}&S, wrote &a{1} &Smessages", grp.ColoredName, messages);
@@ -75,11 +91,10 @@ namespace MCGalaxy.DB
         }
         public static void SpecialGroupLine(Player p, string name)
         {
-            string owner = Server.ToRawUsername(Server.Config.OwnerName);
             name = Server.ToRawUsername(name);
             if (Server.Devs.CaselessContains(name))
                 p.Message("  Player is a developer of &9{0}", Server.SoftwareName);
-            if (owner.CaselessEq(name))
+            if (Server.ToRawUsername(Server.Config.OwnerName).CaselessEq(name))
                 p.Message("  Player is the &cServer owner");
         }
         public static void IPLine(Player p, string name, string ip)
@@ -103,12 +118,19 @@ namespace MCGalaxy.DB
         public static void EntityLine(Player p, Player who)
         {
             bool hasSkin = !who.SkinName.CaselessEq(who.truename),
-                hasModel = !(who.Model.CaselessEq("humanoid") || who.Model.CaselessEq("human"));
+                hasModel = Server.models.Contains(who.truename);
             if (hasSkin && hasModel)
-                p.Message("  Skin: &f{0} &Smodel: &f{1}", who.SkinName, who.Model);
-            else if (hasSkin)
+            {
+                string format = string.Format("  Skin: &f{0} &SModel: &f{1}", who.SkinName, who.Model);
+                if (format.Length <= 62)
+                {
+                    p.Message(format);
+                    return;
+                }
+            }
+            if (hasSkin)
                 p.Message("  Skin: &f{0}", who.SkinName);
-            else if (hasModel)
+            if (hasModel)
                 p.Message("  Model: &f{0}", who.Model);
         }
     }

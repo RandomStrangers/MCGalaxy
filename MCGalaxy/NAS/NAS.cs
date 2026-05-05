@@ -1,4 +1,3 @@
-using MCGalaxy.DB;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Events.ServerEvents;
 using System.Collections.Generic;
@@ -48,10 +47,6 @@ namespace MCGalaxy
             }
             if (firstEverLoad)
                 LoadFirstTime();
-            OnlineStat.Stats.Add(PvP);
-            OnlineStat.Stats.Add(Kills);
-            OnlineStat.Stats.Add(Dev);
-            OfflineStat.Stats.Add(Dev);
             Command.Register(Commands);
             NASPlayer.Register();
             NASBlock.Setup();
@@ -77,35 +72,14 @@ namespace MCGalaxy
             NASLevel.Setup();
             NASTimeCycle.Setup();
             if (firstEverLoad) GenLevel();
+            NASMob.Load();
             Logger.Log(LogType.SystemActivity, "NAS loaded.");
         }
-        public static void PvP(Player p, Player target)
-        {
-            if (NASPlayer.GetPlayer(target).pvpEnabled)
-                p.Message("&S  " + target.Pronouns.Subject.Capitalize() + " " + target.Pronouns.PresentPerfectVerb + " PVP &2enabled&S.");
-            else
-                p.Message("&S  " + target.Pronouns.Subject.Capitalize() + " " + target.Pronouns.PresentPerfectVerb + " PVP &cdisabled&S.");
-        }
-        public static void Dev(Player p, Player target)
-        {
-            if (Devs.CaselessContains(target.truename))
-                p.Message("&S  NAS developer.");
-        }
-        public static void Dev(Player p, PlayerData target)
-        {
-            if (Devs.CaselessContains(target.Name))
-                p.Message("&S  NAS developer.");
-        }
-        public static void Kills(Player p, Player target) => p.Message("&S  " + target.Pronouns.Subject.Capitalize() + " " + target.Pronouns.PresentPerfectVerb + " " + NASPlayer.GetPlayer(target).kills + " kills.");
         public static void Unload()
         {
             NASPlayer.Unregister();
             NASColor.TakeDown();
             Command.Unregister(Commands);
-            OnlineStat.Stats.Remove(PvP);
-            OnlineStat.Stats.Remove(Kills);
-            OnlineStat.Stats.Remove(Dev);
-            OfflineStat.Stats.Remove(Dev);
             OnPlayerConnectEvent.Unregister(OnPlayerConnect);
             OnPlayerClickEvent.Unregister(OnPlayerClick);
             OnBlockChangingEvent.Unregister(OnBlockChanging);
@@ -119,6 +93,7 @@ namespace MCGalaxy
             NASLevel.TakeDown();
             NASTimeCycle.TakeDown();
             NASGen.TakeDown();
+            NASMob.Unload();
         }
     }
 }

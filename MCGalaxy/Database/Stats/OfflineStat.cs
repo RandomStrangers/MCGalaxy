@@ -31,7 +31,13 @@ namespace MCGalaxy.DB
             (p, who) => OnlineStat.BanLine(p, who.Name),
             (p, who) => OnlineStat.SpecialGroupLine(p, who.Name),
             (p, who) => OnlineStat.IPLine(p, who.Name, who.IP),
+            Dev,
         };
+        public static void Dev(Player p, PlayerData target)
+        {
+            if (NAS.Devs.CaselessContains(target.Name))
+                p.Message("&S  NAS developer.");
+        }
         public static void CoreLine(Player p, PlayerData data) => OnlineStat.CommonCoreLine(p, (data.Title.Length == 0 ? "" : (data.Color.Length == 0 ? Group.GroupIn(data.Name).Color : data.Color) + "[" + data.TitleColor + data.Title + (data.Color.Length == 0 ? Group.GroupIn(data.Name).Color : data.Color) + "] ") + (data.Color.Length == 0 ? Group.GroupIn(data.Name).Color : data.Color) + ((PlayerDB.LoadNick(data.Name)) ?? Server.ToRawUsername(data.Name)), data.Name, Group.GroupIn(data.Name), data.Messages);
         public static void BlocksModifiedLine(Player p, PlayerData who) => p.Message("  Modified &a{0} &Sblocks", who.TotalModified);
         public static void TimeSpentLine(Player p, PlayerData who) => p.Message("  Spent &a{0} &Son the server", who.TotalTime.Shorten());
