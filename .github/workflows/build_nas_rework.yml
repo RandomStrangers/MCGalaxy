@@ -5,11 +5,9 @@ on:
     branches:
       - nas-rework
   workflow_dispatch:
-
 concurrency:
   group: ${{ github.ref }}-nas-rework
   cancel-in-progress: true
-
 jobs:
 #============================================
 # ============== .NET 2.0 BUILD =============
@@ -17,13 +15,12 @@ jobs:
   build-mono2:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Compile MCGalaxy using mono
         shell: bash
         id: compile
         run: |
           msbuild MCGalaxy.sln /p:Configuration=Release /p:TargetFrameworkVersion=v2.0 /p:DefineConstants="NET_20%3BTEN_BIT_BLOCKS%3BNAS"
-          
       - uses: ./.github/actions/notify_success_old
         if: ${{ always() && steps.compile.outcome == 'success' }}
         with:
@@ -31,27 +28,24 @@ jobs:
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
           SOURCE_FILE: 'bin/Release'
           DEST_NAME: 'MCGalaxy-net20-NAS'
-          
       - uses: ./.github/actions/notify_failure
         if: failure()
         with:
           NOTIFY_MESSAGE: 'Failed to produce MCGalaxy .NET 2.0 NAS build! <@1197175943119245432>'
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
-   
 #============================================
 # ============== .NET 4.0 BUILD =============
 # ===========================================
   build-mono4:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Compile MCGalaxy using mono
         shell: bash
         id: compile
         run: |
           msbuild MCGalaxy.sln /p:Configuration=Release
           msbuild MCGalaxy/MCGalaxy_.csproj /p:Configuration=Release /p:DefineConstants="TEN_BIT_BLOCKS%3BNAS"
-          
       - uses: ./.github/actions/notify_success_old
         if: ${{ always() && steps.compile.outcome == 'success' }}
         with:
@@ -59,21 +53,18 @@ jobs:
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
           SOURCE_FILE: 'bin/Release'
           DEST_NAME: 'MCGalaxy-net40-NAS'
-          
       - uses: ./.github/actions/notify_failure
         if: failure()
         with:
           NOTIFY_MESSAGE: 'Failed to produce MCGalaxy .NET 4.0 NAS build! <@1197175943119245432>'
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
-
 #============================================
 # ============== .NET 6.0 BUILD =============
 # ===========================================
   build-dotnet6:
     runs-on: ubuntu-latest
-    
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -84,8 +75,6 @@ jobs:
         id: compile
         run: |
           dotnet build CLI/MCGalaxyCLI_dotnet6.csproj --no-restore -p:DefineConstants=TEN_BIT_BLOCKS%3BNAS
-        
-          
       - uses: ./.github/actions/notify_success_old
         if: ${{ always() && steps.compile.outcome == 'success' }}
         with:
@@ -93,12 +82,10 @@ jobs:
           DEST_NAME: 'MCGalaxy-net6.0-NAS'
           NOTIFY_MESSAGE: 'Successfully compiled MCGalaxy dotnet6.0 NAS build.'
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
-          
       # publish standalone windows binaries
       - name: Publish-win64
         id: publishWin64
         run: dotnet publish CLI/MCGalaxyCLI_standalone6.csproj -r win-x64 --self-contained -p:DefineConstants=TEN_BIT_BLOCKS%3BNAS
-          
       - uses: ./.github/actions/notify_success_old
         if: ${{ always() && steps.publishWin64.outcome == 'success' }}
         with:
@@ -106,12 +93,10 @@ jobs:
           DEST_NAME: 'MCGalaxy-win64-standalone-NAS'
           NOTIFY_MESSAGE: 'Successfully compiled MCGalaxy Windows 64-bit standalone NAS build.'
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
-          
       # publish standalone linux binaries
       - name: Publish-linux64
         id: publishLinux64
         run: dotnet publish CLI/MCGalaxyCLI_standalone6.csproj -r linux-x64 --self-contained -p:DefineConstants=TEN_BIT_BLOCKS%3BNAS
-        
       - uses: ./.github/actions/notify_success_old
         if: ${{ always() && steps.publishLinux64.outcome == 'success' }}
         with:
@@ -119,21 +104,18 @@ jobs:
           DEST_NAME: 'MCGalaxy-linux64-standalone-NAS'
           NOTIFY_MESSAGE: 'Successfully compiled MCGalaxy Linux 64-bit standalone NAS build.'
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
-
       - uses: ./.github/actions/notify_failure
         if: failure()
         with:
           NOTIFY_MESSAGE: 'Failed to produce MCGalaxy dotnet6.0 NAS build! <@1197175943119245432>'
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
-
 #============================================
 # ============== .NET 8.0 BUILD =============
 # ===========================================
   build-dotnet8:
     runs-on: ubuntu-latest
-    
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -144,7 +126,6 @@ jobs:
         id: compile
         run: |
           dotnet build CLI/MCGalaxyCLI_dotnet8.csproj --no-restore -p:DefineConstants=TEN_BIT_BLOCKS%3BNAS
-          
       - uses: ./.github/actions/notify_success_old
         if: ${{ always() && steps.compile.outcome == 'success' }}
         with:
@@ -152,7 +133,6 @@ jobs:
           WEBHOOK_URL: '${{ secrets.WEBHOOK_URL }}'
           SOURCE_FILE: 'CLI/bin/Debug/net8.0'
           DEST_NAME: 'MCGalaxy-net8.0-NAS'
-
       - uses: ./.github/actions/notify_failure
         if: failure()
         with:

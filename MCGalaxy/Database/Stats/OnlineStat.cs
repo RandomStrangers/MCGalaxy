@@ -136,18 +136,22 @@ namespace MCGalaxy.DB
         }
         public static void EntityLine(Player p, Player who)
         {
-            bool hasSkin = !who.SkinName.CaselessEq(who.truename);
-            // TODO remove hardcoding
-            bool hasModel = !(who.Model.CaselessEq("humanoid") || who.Model.CaselessEq("human"));
+            bool hasSkin = !who.SkinName.CaselessEq(who.truename),
+                hasModel = !(who.Model.CaselessEq("humanoid") || who.Model.CaselessEq("human"));
             if (hasSkin && hasModel)
             {
-                p.Message("  Skin: &f{0} &Smodel: &f{1}", who.SkinName, who.Model);
+                string format = string.Format("  Skin: &f{0} &SModel: &f{1}", who.SkinName, who.Model);
+                if (format.Length <= NetUtils.StringSize - 2)
+                {
+                    p.Message(format);
+                    return;
+                }
             }
-            else if (hasSkin)
+            if (hasSkin)
             {
                 p.Message("  Skin: &f{0}", who.SkinName);
             }
-            else if (hasModel)
+            if (hasModel)
             {
                 p.Message("  Model: &f{0}", who.Model);
             }

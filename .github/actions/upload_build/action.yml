@@ -9,11 +9,10 @@ inputs:
     description: 'Name to use for the uploaded artifact'
     required: true
     type: string
-
 runs:
   using: "composite"
   steps:
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       with:
         name: ${{ inputs.DEST_NAME }}
         path: ${{ inputs.SOURCE_FILE }}

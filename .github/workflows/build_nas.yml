@@ -17,7 +17,7 @@ jobs:
   build-mono2:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Use rework branch
         shell: bash
         id: Notice
@@ -30,7 +30,7 @@ jobs:
   build-mono4:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Use rework branch
         shell: bash
         id: Notice
@@ -44,7 +44,7 @@ jobs:
   build-dotnet6:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Use rework branch
         shell: bash
         id: Notice
