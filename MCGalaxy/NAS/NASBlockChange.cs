@@ -80,9 +80,17 @@ namespace MCGalaxy
             ushort here = np.p.Level.GetBlock(x, y, z);
             if (here != serverushort || nasBlock.container != null &&
                 np.nl.blockEntities.ContainsKey(x + " " + y + " " + z) &&
-                (np.nl.blockEntities[x + " " + y + " " + z].drop != null || !np.nl.blockEntities[x + " " + y + " " + z].CanAccess(np))
-)
+                (np.nl.blockEntities[x + " " + y + " " + z].drop != null || !np.nl.blockEntities[x + " " + y + " " + z].CanAccess(np)))
                 return;
+            int dx = np.p.Pos.BlockX - x, dy = np.p.Pos.BlockY - y, dz = np.p.Pos.BlockZ - z,
+                diff = (int)Math.Sqrt(dx * dx + dy * dy + dz * dz);
+            if (diff > np.p.ReachDistance + 4)
+            {
+                np.Message("You can't build that far away.");
+                bool cancel = true;
+                CancelPlacedBlock(np.p, x, y, z, np, ref cancel);
+                return;
+            }
             if (np.isInserting)
             {
                 np.Message("&ePlease insert items into the container before breaking blocks.");
@@ -132,6 +140,14 @@ namespace MCGalaxy
             NASPlayer np = NASPlayer.GetPlayer(p);
             ushort clientushort = np.ConvertBlock(serverushort);
             NASBlock nasBlock = NASBlock.Get(clientushort);
+            int dx = p.Pos.BlockX - x, dy = p.Pos.BlockY - y, dz = p.Pos.BlockZ - z,
+                diff = (int)Math.Sqrt(dx * dx + dy * dy + dz * dz);
+            if (diff > p.ReachDistance + 4)
+            {
+                p.Message("You can't build that far away.");
+                CancelPlacedBlock(p, x, y, z, np, ref cancel);
+                return;
+            }
             if (nasBlock.parentID == 0)
             {
                 np.Message("You can't place undefined blocks.");
