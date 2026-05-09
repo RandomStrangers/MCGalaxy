@@ -18,11 +18,13 @@ namespace MCGalaxy
         public static BotInstruction NAShostile, NASroam;
         public static SchedulerTask mobSpawningTask;
         public static readonly Random rnd = new();
+        public const int mobCapPerPlayer = 8;
         public static PlayerBot[] GetMobsInLevel(Level lvl)
         {
             List<PlayerBot> players = new();
             foreach (PlayerBot bot in lvl.Bots.Items)
             {
+                if (bot == null) continue;
                 if (bot.DisplayName != "" || !bot.name.Contains("NASMob"))
                     continue;
                 players.Add(bot);
@@ -33,6 +35,7 @@ namespace MCGalaxy
         {
             foreach (PlayerBot bot in level.Bots.Items)
             {
+                if (bot == null) continue;
                 if (bot.DisplayName != "" || !bot.name.Contains("NASMob"))
                     continue;
                 if (GetPlayersInLevel(level).Count < 1)
@@ -42,6 +45,7 @@ namespace MCGalaxy
                 }
                 if (bot.AIName == "NASHostile" && NASTimeCycle.globalCurrentDayCycle == NASDayCycles.Day)
                 {
+                    if (!mobHealth.ContainsKey(bot)) PlayerBot.Remove(bot);
                     mobHealth[bot] = mobHealth[bot] - 10;
                     if (mobHealth[bot] <= 0)
                     {
@@ -81,6 +85,7 @@ namespace MCGalaxy
             List<Player> players = new();
             foreach (Player p in PlayerInfo.Online.Items)
             {
+                if (p == null) continue;
                 if (p.Level == lvl)
                     players.Add(p);
             }
@@ -100,7 +105,7 @@ namespace MCGalaxy
             {
                 CheckDespawn(lvl);
                 List<Player> players = GetPlayersInLevel(lvl);
-                if (GetMobsInLevel(lvl).Length >= (12 * players.Count))
+                if (GetMobsInLevel(lvl).Length >= (mobCapPerPlayer * players.Count))
                     continue;
                 Player selectedPlayer = players[rnd.Next(players.Count)];
                 if (selectedPlayer == null)
@@ -228,7 +233,7 @@ namespace MCGalaxy
                 }
             }
         }
-        public static bool CanHitMob(Player p, PlayerBot victim) => (p.Pos.ToVec3F32() - victim.Pos.ToVec3F32()).LengthSquared switch
+        public static bool CanHitMob(Player p, PlayerBot victim) => (p.Pos.ToVec3F32() - victim?.Pos.ToVec3F32() ?? new(0,0,0)).LengthSquared switch
         {
             > 12f + 1 => false,
             _ => true
@@ -240,6 +245,7 @@ namespace MCGalaxy
             float bestDist = float.MaxValue;
             foreach (PlayerBot b in p.Level.Bots.Items)
             {
+                if (b == null) continue;
                 if (!CanHitMob(p, b)) continue;
                 float dist = (p.Pos.ToVec3F32() - b.Pos.ToVec3F32()).LengthSquared;
                 if (dist < bestDist)
@@ -403,7 +409,7 @@ namespace MCGalaxy
         public NASHostileInstruction() => Name = "NASHostile";
         public static bool MoveTowards(PlayerBot bot, Player p)
         {
-            if (p == null) return false;
+            if (bot == null || p == null) return false;
             int dx = p.Pos.X - bot.Pos.X, dy = p.Pos.Y - bot.Pos.Y, dz = p.Pos.Z - bot.Pos.Z;
             bot.TargetPos = p.Pos;
             Vec3F32 dir = new(dx, dy, dz);
@@ -426,6 +432,7 @@ namespace MCGalaxy
         }
         public static void HitPlayer(PlayerBot bot, Player p, Orientation rot)
         {
+            if (bot == null || p == null) return;
             rot.RotY = (byte)(p.Rot.RotY + 128);
             bot.Rot = rot;
             int srcHeight = ModelInfo.CalcEyeHeight(bot),
@@ -459,6 +466,7 @@ namespace MCGalaxy
         public int RandomNumber(int min, int max) => _random.Next(min, max);
         public void DoStuff(PlayerBot bot, NASMobMetadata meta)
         {
+            if (bot == null) return;
             int stillChance = RandomNumber(0, 5),
                 walkTime = RandomNumber(4, 8) * 5,
                 waitTime = RandomNumber(2, 5) * 5,
@@ -496,6 +504,7 @@ namespace MCGalaxy
         }
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
+            if (bot == null) return false;
             NASMobMetadata meta = (NASMobMetadata)data.Metadata;
             switch (bot.Model)
             {
@@ -563,6 +572,7 @@ namespace MCGalaxy
         public int RandomNumber(int min, int max) => _random.Next(min, max);
         public void DoStuff(PlayerBot bot, NASMobMetadata meta)
         {
+            if (bot == null) return;
             int stillChance = RandomNumber(0, 5),
                 walkTime = RandomNumber(4, 8) * 5,
                 waitTime = RandomNumber(2, 4) * 5,
@@ -613,6 +623,7 @@ namespace MCGalaxy
         }
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
+            if (bot == null) return false;
             NASMobMetadata meta = (NASMobMetadata)data.Metadata;
             if (meta.walkTime > 0)
             {

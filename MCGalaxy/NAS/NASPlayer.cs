@@ -636,13 +636,8 @@ namespace MCGalaxy
         }
         public override bool CanTakeDamage(NASDamageSource source)
         {
-            if (!pvpEnabled && (source == NASDamageSource.Murder || source == NASDamageSource.Entity) || p.invincible || p.Game.Referee || headingToBed || p.Pos.FeetBlockCoords.X == bedCoords[0] && p.Pos.FeetBlockCoords.Y == bedCoords[1] && p.Pos.FeetBlockCoords.Z == bedCoords[2])
+            if (!pvpEnabled && (source == NASDamageSource.Murder || source == NASDamageSource.Entity) || p.invincible || p.Game.Referee || headingToBed || p.Pos.FeetBlockCoords.X == bedCoords[0] && p.Pos.FeetBlockCoords.Y == bedCoords[1] && p.Pos.FeetBlockCoords.Z == bedCoords[2] || !hasBeenSpawned)
                 return false;
-            if (!hasBeenSpawned)
-            {
-                Message("If you get this message for more than 5 seconds, rejoin.");
-                return false;
-            }
             if (source == NASDamageSource.Suffocating)
             {
                 TimeSpan timeSinceSuffocation = DateTime.UtcNow.Subtract(lastSuffocationDate);
