@@ -73,7 +73,6 @@ namespace MCGalaxy
                     mobHealth[bot] = mobHealth[bot] - 10;
                     if (mobHealth[bot] <= 0)
                     {
-                        PlaceLoot(bot, level);
                         mobHealth.Remove(bot);
                         PlayerBot.Remove(bot);
                     }
@@ -305,6 +304,7 @@ namespace MCGalaxy
             mobHealth[mob] = mobHealth[mob] - (np.inventory.HeldItem.Prop.damage + added);
             if (mobHealth[mob] <= 0)
             {
+                PlaceLoot(mob, p.Level);
                 mobHealth.Remove(mob);
                 PlayerBot.Remove(mob);
             }
