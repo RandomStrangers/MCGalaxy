@@ -33,25 +33,25 @@ namespace MCGalaxy
         }
         public static void PlaceLoot(PlayerBot bot, Level level)
         {
-            ushort x = (ushort)bot.Pos.FeetBlockCoords.X,
-                y = (ushort)bot.Pos.FeetBlockCoords.Y,
-                z = (ushort)bot.Pos.FeetBlockCoords.Z;
-            if (level.IsAirAt(x,y,z))
+            ushort x = (ushort)bot.Pos.BlockX,
+                y = (ushort)bot.Pos.BlockY,
+                z = (ushort)bot.Pos.BlockZ;
+            if (level.IsAirAt(x, y, z))
                 switch (bot.Model.ToLower())
                 {
                     case "skeleton":
-                        level.SetBlock(x, y, z, Block.FromRaw(478));
+                        level.Blockchange(x, y, z, Block.FromRaw(478));
                         break;
                     case "zombie":
-                        level.SetBlock(x, y, z, Block.FromRaw(148));
+                        level.Blockchange(x, y, z, Block.FromRaw(148));
                         break;
                     case "spider":
                     case "sheep":
-                        level.SetBlock(x, y, z, Block.FromRaw(36));
+                        level.Blockchange(x, y, z, Block.FromRaw(36));
                         break;
                     case "pig":
                     case "chicken":
-                        level.SetBlock(x, y, z, Block.FromRaw(648));
+                        level.Blockchange(x, y, z, Block.FromRaw(648));
                         break;
                 }
         }
