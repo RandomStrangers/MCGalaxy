@@ -1,4 +1,4 @@
-/*
+﻿/*
     Copyright 2015-2024 MCGalaxy
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -23,7 +23,10 @@ namespace MCGalaxy.Commands.Chatting
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can change the nick of others"),
                     new CommandPerm(LevelPermission.Operator, "can change the nick of bots") };
-        public override CommandAlias[] Aliases => new CommandAlias[] { new("xnick", "-own") };
+        public override CommandAlias[] Aliases => new[] {
+                new CommandAlias("XNick"),
+                new CommandAlias("ONick", "-other")
+            };
         public override void Use(Player p, string message, CommandData data) => UseBotOrPlayer(p, data, message, "nick");
         protected override void SetBotData(Player p, PlayerBot bot, string nick)
         {
@@ -36,9 +39,9 @@ namespace MCGalaxy.Commands.Chatting
             else
             {
                 string nameTag = nick.CaselessEq("empty") ? "" : nick;
-                if (Colors.StripUsed(nick).Length > 62) 
+                if (nick.Length > 62)
                 { 
-                    p.Message("Name must be 62 or fewer letters.");
+                    p.Message("Name must be 62 or fewer letters."); 
                     return; 
                 }
                 p.Message("You changed the name of bot " + bot.ColoredName + " &Sto &c" + nameTag);
@@ -46,16 +49,18 @@ namespace MCGalaxy.Commands.Chatting
             }
             bot.GlobalDespawn();
             bot.GlobalSpawn();
-            BotsFile.Save(p.Level);
+            BotsFile.Save(p.level);
         }
         protected override void SetPlayerData(Player p, string target, string nick) => PlayerOperations.SetNick(p, target, nick);
         public override void Help(Player p)
         {
-            p.Message("&T/Nick [player] [nick]");
-            p.Message("&HSets the nick of that player.");
-            p.Message("&H  If [nick] is not given, reverts [player]'s nick to their account name.");
-            p.Message("&T/Nick bot [bot] [name]");
-            p.Message("&HSets the name shown above that bot in game.");
+            p.Message("&T/Nick <nick>");
+            p.Message("&H Sets your nickname");
+            p.Message("&T/ONick [player] <nick>");
+            p.Message("&H Sets the nickname of other player");
+            p.Message("&T/Nick bot [bot] <nick>");
+            p.Message("&H Sets the nickname of that bot.");
+            p.Message("&H  Leave <nick> blank to remove it.");
             p.Message("&H  If [name] is \"empty\", the bot will not have a name shown.");
         }
     }

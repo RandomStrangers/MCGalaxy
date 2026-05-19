@@ -31,6 +31,25 @@ namespace MCGalaxy
             }
             return players.ToArray();
         }
+        public static void PlaceLoot(PlayerBot bot, Level level)
+        {
+            ushort x = (ushort)bot.Pos.BlockX,
+                y = (ushort)bot.Pos.BlockY,
+                z = (ushort)bot.Pos.BlockZ;
+            if (level.GetBlock(x, y, z) == Block.Air)
+                switch (bot.Model.ToLower())
+                {
+                    case "skeleton":
+                        level.SetBlock(x, y, z, 478);
+                        break;
+                    case "zombie":
+                        level.SetBlock(x, y, z, 148);
+                        break;
+                    case "spider":
+                        level.SetBlock(x, y, z, Block.White);
+                        break;
+                }
+        }
         public static void CheckDespawn(Level level)
         {
             foreach (PlayerBot bot in level.Bots.Items)
@@ -50,6 +69,7 @@ namespace MCGalaxy
                     if (mobHealth[bot] <= 0)
                     {
                         mobHealth.Remove(bot);
+                        PlaceLoot(bot, level);
                         PlayerBot.Remove(bot);
                     }
                     PlayerBot.Remove(bot);

@@ -1,4 +1,4 @@
-/*
+﻿/*
     Copyright 2010 MCSharp team (Modified for use with MCZall/MCLawl/MCForge)
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -22,7 +22,11 @@ namespace MCGalaxy.Commands.Chatting
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can change the color of others"),
                     new CommandPerm(LevelPermission.Operator, "can change the color of bots") };
-        public override CommandAlias[] Aliases => new[] { new CommandAlias("Colour"), new CommandAlias("XColor", "-own") };
+        public override CommandAlias[] Aliases => new[] {
+                new CommandAlias("Colour"),
+                new CommandAlias("XColor"),
+                new CommandAlias("OColor", "-other")
+            };
         public override void Use(Player p, string message, CommandData data) => UseBotOrPlayer(p, data, message, "color");
         protected override void SetBotData(Player p, PlayerBot bot, string colName)
         {
@@ -33,16 +37,18 @@ namespace MCGalaxy.Commands.Chatting
             bot.color = color;
             bot.GlobalDespawn();
             bot.GlobalSpawn();
-            BotsFile.Save(p.Level);
+            BotsFile.Save(p.level);
         }
         protected override void SetPlayerData(Player p, string target, string colName) => PlayerOperations.SetColor(p, target, colName);
         public override void Help(Player p)
         {
-            p.Message("&T/Color [player] [color]");
-            p.Message("&HSets the nick color of that player");
-            p.Message("&H  If [color] is not given, reverts to player's rank color.");
-            p.Message("&T/Color bot [bot] [color]");
-            p.Message("&HSets the name color of that bot.");
+            p.Message("&T/Color <color>");
+            p.Message("&H Sets your nick color");
+            p.Message("&T/OColor [player] <color>");
+            p.Message("&H Sets the nick color of other player");
+            p.Message("&T/Color bot [bot] <color>");
+            p.Message("&H Sets the name color of that bot.");
+            p.Message("&H  Leave <color> blank to reset it.");
             p.Message("&HTo see a list of all colors, use /Help colors.");
         }
     }

@@ -1,4 +1,4 @@
-/*
+﻿/*
     Copyright 2015-2024 MCGalaxy
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -25,9 +25,9 @@ namespace MCGalaxy
             p.Message("Usable by: " + cmd.Permissions.Describe());
             PrintAliases(p, cmd);
             List<CommandExtraPerms> extraPerms = CommandExtraPerms.FindAll(cmd.Name);
-            if (cmd.ExtraPerms == null)
+            if (cmd.ExtraPerms == null) 
                 extraPerms.Clear();
-            if (extraPerms.Count == 0)
+            if (extraPerms.Count == 0) 
                 return;
             p.Message("&TExtra permissions:");
             foreach (CommandExtraPerms extra in extraPerms)
@@ -40,7 +40,7 @@ namespace MCGalaxy
                 dst.Append('/').Append(cmd.Shortcut).Append(", ");
             FindAliases(Alias.coreAliases, cmd, dst);
             FindAliases(Alias.aliases, cmd, dst);
-            if (dst.Length == "Shortcuts: &T".Length)
+            if (dst.Length == "Shortcuts: &T".Length) 
                 return;
             p.Message(dst.ToString(0, dst.Length - 2));
         }
@@ -48,16 +48,16 @@ namespace MCGalaxy
         {
             foreach (Alias a in aliases)
             {
-                if (!a.Target.CaselessEq(cmd.Name))
+                if (!a.Target.CaselessEq(cmd.Name)) 
                     continue;
                 dst.Append('/').Append(a.Trigger);
-                if (a.Format == null)
+                if (a.Format == null) 
                 {
                     dst.Append(", ");
-                    continue;
+                    continue; 
                 }
                 string name = string.IsNullOrEmpty(cmd.Shortcut) ? cmd.Name : cmd.Shortcut;
-                if (name.Length > cmd.Name.Length)
+                if (name.Length > cmd.Name.Length) 
                     name = cmd.Name;
                 string args = a.Format.Replace("{args}", "[args]");
                 dst.Append(" for /").Append(name + " " + args);
@@ -66,29 +66,26 @@ namespace MCGalaxy
         }
         public static void MessageNeedMinPerm(Player p, string action, LevelPermission perm) => p.Message("Only {0}&S{1}", Group.GetColoredName(perm), action);
         public static bool ValidName(Player p, string name, string type) => IsValidName(p, name, type, Player.USERNAME_ALPHABET + "+");
-        public static bool ValidPlayerName(Player p, string name)
+        public static bool ValidPlayerName(Player p, string name, bool feedback = true)
         {
             string alphabet = Player.USERNAME_ALPHABET + "+";
             foreach (AuthService service in AuthService.Services)
                 alphabet += service.NameSuffix;
-            return IsValidName(p, name, "player", alphabet);
+            return IsValidName(p, name, "player", alphabet, feedback);
         }
-        public static bool IsValidName(Player p, string name, string type, string alphabet)
+        public static bool IsValidName(Player p, string name, string type, string alphabet, bool feedback = true)
         {
-            if (name.Length > 0 && name.ContainsAllIn(alphabet))
-                return true;
-            p.Message("\"{0}\" is not a valid {1} name.", name, type);
+            if (name.Length > 0 && name.ContainsAllIn(alphabet)) return true;
+            if (feedback) p.Message("\"{0}\" is not a valid {1} name.", name, type);
             return false;
         }
         public static bool ValidMapName(Player p, string name)
         {
-            if (LevelInfo.ValidName(name))
-                return true;
+            if (LevelInfo.ValidName(name)) return true;
             p.Message("\"{0}\" is not a valid level name.", name);
             return false;
         }
-        public static readonly char[] separators = { '/', '\\', ':' },
-            invalid = { '<', '>', '|', '"', '*', '?' };
+        static readonly char[] separators = { '/', '\\', ':' }, invalid = { '<', '>', '|', '"', '*', '?' };
         /// <summary> Checks that the input is a valid filename (non-empty and no directory separator) </summary>
         /// <remarks> If the input is invalid, messages the player the reason why </remarks>
         public static bool ValidFilename(Player p, string name)
@@ -127,7 +124,9 @@ namespace MCGalaxy
                 bDigit = GetDigits(b, out int bLen);
             string aName = a.Substring(0, aLen),
                 bName = b.Substring(0, bLen);
-            return aName.Length != bName.Length || (aDigit == -1 && bDigit == -1) ? aName.CompareTo(bName) : aDigit.CompareTo(bDigit);
+            if (aName.Length != bName.Length || (aDigit == -1 && bDigit == -1))
+                return aName.CompareTo(bName);
+            return aDigit.CompareTo(bDigit);
         }
         /// <summary>
         /// Returns the digits on the end of the string or -1 if no integer found.
@@ -135,12 +134,12 @@ namespace MCGalaxy
         public static int GetDigits(string name, out int nameLength)
         {
             nameLength = name.Length;
-            if (!char.IsDigit(name[name.Length - 1]))
+            if (!char.IsDigit(name[name.Length - 1])) 
                 return -1;
             int decimalShift = 1, number = 0;
             for (int i = name.Length - 1; i >= 0; i--)
             {
-                if (!char.IsDigit(name[i]))
+                if (!char.IsDigit(name[i])) 
                     return number;
                 nameLength--;
                 int digit = name[i] - '0';

@@ -1,4 +1,4 @@
-/*
+﻿/*
     Copyright 2015-2024 MCGalaxy
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -22,7 +22,10 @@ namespace MCGalaxy.Commands.CPE
         public override LevelPermission DefaultRank => LevelPermission.AdvBuilder;
         public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can change the model of others"),
                     new CommandPerm(LevelPermission.Operator, "can change the model of bots") };
-        public override CommandAlias[] Aliases => new[] { new CommandAlias("XModel", "-own") };
+        public override CommandAlias[] Aliases => new[] {
+                new CommandAlias("XModel"),
+                new CommandAlias("OModel", "-other")
+            };
         public override void Use(Player p, string message, CommandData data)
         {
             if (message.IndexOf(' ') == -1)
@@ -38,7 +41,7 @@ namespace MCGalaxy.Commands.CPE
             if (model == null) return;
             bot.UpdateModel(model);
             p.Message("You changed the model of bot {0} &Sto a &c{1}", bot.ColoredName, model);
-            BotsFile.Save(p.Level);
+            BotsFile.Save(p.level);
         }
         protected override void SetOnlineData(Player p, Player who, string model)
         {
@@ -69,7 +72,9 @@ namespace MCGalaxy.Commands.CPE
         {
             if (model.Length == 0)
             {
-                e.ScaleX = 0; e.ScaleY = 0; e.ScaleZ = 0;
+                e.ScaleX = 0; 
+                e.ScaleY = 0; 
+                e.ScaleZ = 0;
                 return "humanoid";
             }
             model = model.ToLower();
@@ -85,10 +90,12 @@ namespace MCGalaxy.Commands.CPE
         }
         public override void Help(Player p)
         {
-            p.Message("&T/Model [name] [model] &H- Sets the model of that player.");
-            p.Message("&T/Model bot [name] [model] &H- Sets the model of that bot.");
-            p.Message("&HUse &T/Help Model models &Hfor a list of models.");
-            p.Message("&HUse &T/Help Model scale &Hfor how to scale a model.");
+            p.Message("&T/Model <model> &H- Sets your own model.");
+            p.Message("&T/OModel [name] <model> &H- Sets the model of other player.");
+            p.Message("&T/Model bot [name] <model> &H- Sets the model of that bot.");
+            p.Message("&H Leave <model> blank to reset it.");
+            p.Message("&H  Use &T/Help Model models &Hfor a list of models.");
+            p.Message("&H  Use &T/Help Model scale &Hfor how to scale a model.");
         }
         public override void Help(Player p, string message)
         {

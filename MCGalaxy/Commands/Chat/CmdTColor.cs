@@ -1,4 +1,4 @@
-/*
+﻿/*
     Copyright 2010 MCLawl Team - Written by Valek (Modified for use with MCForge)
    Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -20,15 +20,20 @@ namespace MCGalaxy.Commands.Chatting
         public override string Type => CommandTypes.Chat;
         public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can change the title color of others") };
-        public override CommandAlias[] Aliases => new[] { new CommandAlias("TColour"), new CommandAlias("XTColor", "-own") };
+        public override CommandAlias[] Aliases => new[] {
+                new CommandAlias("XTColor"),
+                new CommandAlias("OTColor", "-other")
+            };
         public override void Use(Player p, string message, CommandData data) => UsePlayer(p, data, message, "title color");
         protected override void SetPlayerData(Player p, string target, string colName) => PlayerOperations.SetTitleColor(p, target, colName);
         public override void Help(Player p)
         {
-            p.Message("&T/TColor [player] [color]");
-            p.Message("&HSets the title color of [player]");
-            p.Message("&H  If [color] is not given, title color is removed.");
-            p.Message("&HTo see a list of all colors, use &T/Help colors.");
+            p.Message("&T/TColor <color>");
+            p.Message("&H Sets your title color");
+            p.Message("&T/OTColor [player] <color>");
+            p.Message("&H Sets the title color of other player");
+            p.Message("&H  Leave color blank to reset it.");
+            p.Message("&H  To see a list of all colors, use &T/Help colors.");
         }
     }
 }

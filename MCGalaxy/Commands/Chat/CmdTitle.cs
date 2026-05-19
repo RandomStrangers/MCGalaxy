@@ -1,4 +1,4 @@
-/*
+﻿/*
     Copyright 2011 MCForge
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -20,14 +20,19 @@ namespace MCGalaxy.Commands.Chatting
         public override string Type => CommandTypes.Chat;
         public override LevelPermission DefaultRank => LevelPermission.Admin;
         public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Admin, "can change the title of others") };
-        public override CommandAlias[] Aliases => new[] { new CommandAlias("XTitle", "-own") };
+        public override CommandAlias[] Aliases => new[] {
+                new CommandAlias("XTitle"),
+                new CommandAlias("OTitle", "-other")
+            };
         public override void Use(Player p, string message, CommandData data) => UsePlayer(p, data, message, "title");
         protected override void SetPlayerData(Player p, string target, string title) => PlayerOperations.SetTitle(p, target, title);
         public override void Help(Player p)
         {
-            p.Message("&T/Title [player] [title]");
-            p.Message("&HSets the title of [player]");
-            p.Message("&H  If [title] is not given, removes [player]'s title.");
+            p.Message("&T/Title <title>");
+            p.Message("&H Sets your title");
+            p.Message("&T/OTitle [player] <title>");
+            p.Message("&H Sets the title of other player");
+            p.Message("&H  Leave title blank to remove it.");
         }
     }
 }

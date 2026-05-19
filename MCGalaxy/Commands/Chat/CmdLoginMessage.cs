@@ -14,19 +14,25 @@
  */
 namespace MCGalaxy.Commands.Chatting
 {
-    public sealed class CmdLoginMessage : EntityPropertyCmd
+    public class CmdLoginMessage : EntityPropertyCmd
     {
         public override string Name => "LoginMessage";
         public override string Shortcut => "LoginMsg";
         public override string Type => CommandTypes.Chat;
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can change the login message of others") };
+        public override CommandAlias[] Aliases => new[] {
+                new CommandAlias("OLoginMessage", "-other")
+            };
         public override void Use(Player p, string message, CommandData data) => UsePlayer(p, data, message, "login message");
         protected override void SetPlayerData(Player p, string target, string msg) => PlayerOperations.SetLoginMessage(p, target, msg);
         public override void Help(Player p)
         {
-            p.Message("&T/LoginMessage [player] [message]");
-            p.Message("&HSets the login message shown for that player.");
+            p.Message("&T/LoginMessage <message>");
+            p.Message("&H Sets your login message");
+            p.Message("&T/OLoginMessage [player] <message>");
+            p.Message("&H Sets the login message of another player");
+            p.Message("&H  Leave <message> blank to reset it.");
             p.Message("&HYour login message is currently: &S{0}", PlayerInfo.GetLoginMessage(p));
         }
     }

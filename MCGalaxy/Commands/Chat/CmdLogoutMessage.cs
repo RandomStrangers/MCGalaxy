@@ -21,12 +21,18 @@ namespace MCGalaxy.Commands.Chatting
         public override string Type => CommandTypes.Chat;
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandPerm[] ExtraPerms => new[] { new CommandPerm(LevelPermission.Operator, "can change the logout message of others") };
+        public override CommandAlias[] Aliases => new[] {
+                new CommandAlias("OLogoutMessage", "-other")
+            };
         public override void Use(Player p, string message, CommandData data) => UsePlayer(p, data, message, "logout message");
         protected override void SetPlayerData(Player p, string target, string msg) => PlayerOperations.SetLogoutMessage(p, target, msg);
         public override void Help(Player p)
         {
-            p.Message("&T/LogoutMessage [player] [message]");
-            p.Message("&HSets the logout message shown for that player.");
+            p.Message("&T/LogoutMessage <message>");
+            p.Message("&H Sets your logout message");
+            p.Message("&T/OLogoutMessage [player] <message>");
+            p.Message("&H Sets the logout message of another player");
+            p.Message("&H  Leave <message> blank to reset it.");
             p.Message("&HYour logout message is currently: &S{0}", PlayerInfo.GetLogoutMessage(p));
         }
     }
