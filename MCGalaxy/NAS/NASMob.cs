@@ -33,20 +33,25 @@ namespace MCGalaxy
         }
         public static void PlaceLoot(PlayerBot bot, Level level)
         {
-            ushort x = (ushort)bot.Pos.BlockX,
-                y = (ushort)bot.Pos.BlockY,
-                z = (ushort)bot.Pos.BlockZ;
-            if (level.GetBlock(x, y, z) == Block.Air)
+            ushort x = (ushort)bot.Pos.FeetBlockCoords.X,
+                y = (ushort)bot.Pos.FeetBlockCoords.Y,
+                z = (ushort)bot.Pos.FeetBlockCoords.Z;
+            if (level.IsAirAt(x,y,z))
                 switch (bot.Model.ToLower())
                 {
                     case "skeleton":
-                        level.SetBlock(x, y, z, 478);
+                        level.SetBlock(x, y, z, Block.FromRaw(478));
                         break;
                     case "zombie":
-                        level.SetBlock(x, y, z, 148);
+                        level.SetBlock(x, y, z, Block.FromRaw(148));
                         break;
                     case "spider":
-                        level.SetBlock(x, y, z, Block.White);
+                    case "sheep":
+                        level.SetBlock(x, y, z, Block.FromRaw(36));
+                        break;
+                    case "pig":
+                    case "chicken":
+                        level.SetBlock(x, y, z, Block.FromRaw(648));
                         break;
                 }
         }
@@ -68,8 +73,8 @@ namespace MCGalaxy
                     mobHealth[bot] = mobHealth[bot] - 10;
                     if (mobHealth[bot] <= 0)
                     {
-                        mobHealth.Remove(bot);
                         PlaceLoot(bot, level);
+                        mobHealth.Remove(bot);
                         PlayerBot.Remove(bot);
                     }
                     PlayerBot.Remove(bot);
