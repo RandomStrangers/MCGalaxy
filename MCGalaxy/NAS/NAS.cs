@@ -8,7 +8,7 @@ namespace MCGalaxy
     {
         public static List<string> Devs = new()
         {
-            "JuneSolis",
+            "JuneSolis", "MayWildflower"
         };
         public const string PlayerKey = "NAS_NASPlayer",
             Path = "NAS/", DiscordAccountName = "may.wildflower";
