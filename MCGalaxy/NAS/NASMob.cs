@@ -128,6 +128,7 @@ namespace MCGalaxy
             foreach (Level lvl in levels)
             {
                 CheckDespawn(lvl);
+                if (lvl.name.CaselessContains("nether")) continue;
                 List<Player> players = GetPlayersInLevel(lvl);
                 if (GetMobsInLevel(lvl).Length >= (mobCapPerPlayer * players.Count))
                     continue;

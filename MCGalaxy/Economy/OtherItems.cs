@@ -12,6 +12,7 @@
     or implied. See the Licenses for the specific language governing
     permissions and limitations under the Licenses.
  */
+using MCGalaxy.Modules.Relay;
 using MCGalaxy.Util;
 using System;
 namespace MCGalaxy.Eco
@@ -40,7 +41,11 @@ namespace MCGalaxy.Eco
             if (actions.Length > 0)
                 action = actions[new Random().Next(actions.Length)];
             if (!p.CheckCanSpeak("eat a snack")) return;
-            Chat.MessageFrom(p, "λNICK &S" + action, null, Server.Config.RelayCommands);
+            string nick = "λNICK &S";
+            bool relay = Server.Config.RelayCommands || p is RelayBot.RelayPlayer;
+            if (p is RelayBot.RelayPlayer rPlayer)
+                nick = rPlayer.User.Nick.ReplaceCursive() + " &S";
+            Chat.MessageFrom(p, nick + action, null, relay);
             p.CheckForMessageSpam();
             p.NextEat = DateTime.UtcNow.AddSeconds(10);
             p.SetMoney(p.money - Price);
