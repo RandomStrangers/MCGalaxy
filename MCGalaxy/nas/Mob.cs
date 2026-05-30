@@ -1,13 +1,13 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
-using System;
-using System.Collections.Generic;
-using System.IO;
-using MCGalaxy;
 using MCGalaxy.Bots;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Maths;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
+using MCGalaxy;
+using System;
+using System.Collections.Generic;
+using System.IO;
 namespace NotAwesomeSurvival
 {
     public struct Coords
@@ -59,6 +59,7 @@ namespace NotAwesomeSurvival
         }
         public static void CheckDespawn(Level level)
         {
+            if (level.Bots.Items.Length == 0 || !NasLevel.IsNasLevel(level)) return;
             foreach (PlayerBot bot in level.Bots.Items)
             {
                 if (bot == null) continue;
@@ -270,6 +271,7 @@ namespace NotAwesomeSurvival
         {
             PlayerBot mob = null;
             float bestDist = float.MaxValue;
+            if (p.Level.Bots.Items.Length == 0 || !NasLevel.IsNasLevel(p.Level)) return;
             foreach (PlayerBot b in p.Level.Bots.Items)
             {
                 if (b == null) continue;
@@ -335,6 +337,7 @@ namespace NotAwesomeSurvival
         }
         public static void SpawnEntity(Level level, string model, string ai, ushort x, ushort y, ushort z)
         {
+            if (!NasLevel.IsNasLevel(level)) return;
             int uniqueMobId = level.Bots.Items.Length + 1;
             string uniqueName = "NASMob" + uniqueMobId;
             PlayerBot bot = new(uniqueName, level)
@@ -364,7 +367,7 @@ namespace NotAwesomeSurvival
                     return (ushort)(i + 1);
             return (ushort)y;
         }
-        public static void Load()
+        public static void Setup()
         {
             NAShostile = new NASHostileInstruction();
             NASroam = new NASRoamInstruction();
@@ -376,7 +379,7 @@ namespace NotAwesomeSurvival
             AddAi("NASRoam", new string[] { "", "NASRoam", "NASRoam" });
             mobHealth.Clear();
         }
-        public static void Unload()
+        public static void TakeDown()
         {
             OnPlayerClickEvent.Unregister(HandleBlockClicked);
             Server.MainScheduler.Cancel(mobSpawningTask);

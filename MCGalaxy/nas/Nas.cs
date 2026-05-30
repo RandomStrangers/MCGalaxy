@@ -24,7 +24,7 @@ namespace NotAwesomeSurvival
             SavePath = Path + "playerdata/",
             CoreSavePath = Path + "coredata/",
             EffectsPath = Path + "effects/",
-            NasVersion = "1.0.6.8",
+            NasVersion = "1.0.6.9",
             DiscordAccountName = "may.wildflower";
         public static bool LoadedOnStartup = false,
             firstEverPluginLoad = false;
@@ -121,7 +121,7 @@ namespace NotAwesomeSurvival
             NasGen.Setup();
             NasLevel.Setup();
             NasTimeCycle.Setup();
-            Mob.Load();
+            Mob.Setup();
             if (firstEverPluginLoad)
                 GenLevel();
         }
@@ -175,7 +175,7 @@ namespace NotAwesomeSurvival
             NasLevel.TakeDown();
             NasTimeCycle.TakeDown();
             NasGen.TakeDown();
-            Mob.Unload();
+            Mob.TakeDown();
         }
     }
 }
