@@ -8,7 +8,7 @@ namespace MCGalaxy
     {
         public static List<string> Devs = new()
         {
-            "JuneSolis", "MayWildflower"
+            "MayWildflower"
         };
         public const string PlayerKey = "NAS_NASPlayer",
             Path = "NAS/", DiscordAccountName = "may.wildflower";
@@ -72,7 +72,7 @@ namespace MCGalaxy
             NASLevel.Setup();
             NASTimeCycle.Setup();
             if (firstEverLoad) GenLevel();
-            NASMob.Load();
+            NASMob.Setup();
             Logger.Log(LogType.SystemActivity, "NAS loaded.");
         }
         public static void Unload()
@@ -93,7 +93,7 @@ namespace MCGalaxy
             NASLevel.TakeDown();
             NASTimeCycle.TakeDown();
             NASGen.TakeDown();
-            NASMob.Unload();
+            NASMob.TakeDown();
         }
     }
 }
