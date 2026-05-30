@@ -12,11 +12,10 @@ namespace NotAwesomeSurvival
     {
         public override string name => "NAS";
         public override string MCGalaxy_Version => "1.9.5.3";
-        public override string creator => "JuneSolis";
+        public override string creator => "MayWildflower";
         public static List<string> Devs = new()
         {
-            "JuneSolis",
-            "HarmonyNetwork"
+            "MayWildflower"
         };
         public const string textureURL = "https://github.com/RandomStrangers/MCGalaxy/raw/nas-rework/Uploads/nas/texturepack.zip",
             KeyPrefix = "nas_",
@@ -25,7 +24,7 @@ namespace NotAwesomeSurvival
             SavePath = Path + "playerdata/",
             CoreSavePath = Path + "coredata/",
             EffectsPath = Path + "effects/",
-            NasVersion = "1.0.6.7", 
+            NasVersion = "1.0.6.8",
             DiscordAccountName = "may.wildflower";
         public static bool LoadedOnStartup = false,
             firstEverPluginLoad = false;
@@ -53,9 +52,7 @@ namespace NotAwesomeSurvival
         public override void Load(bool startup)
         {
             if (startup)
-            {
                 LoadedOnStartup = true;
-            }
             EnsureDirectoriesExists(Path, SavePath,
                 CoreSavePath, EffectsPath,
                 NasLevel.Path, NasBlock.Path,
@@ -74,18 +71,14 @@ namespace NotAwesomeSurvival
                 return;
             }
             if (File.Exists("nas/loaded.txt"))
-            {
                 firstEverPluginLoad = false;
-            }
             else
             {
                 firstEverPluginLoad = true;
                 FileUtils.TryWriteAllText("nas/loaded.txt", "Do not delete this file unless you are using the plugin for the first time!");
             }
             if (firstEverPluginLoad)
-            {
                 LoadFirstTime();
-            }
             NASUpdater.Setup();
             OnlineStat.Stats.Add(PvP);
             OnlineStat.Stats.Add(Kills);
@@ -98,19 +91,19 @@ namespace NotAwesomeSurvival
             NasBlock.Setup();
             if (!NasEffect.Setup())
             {
-                FailedLoad();
+                Log("NAS: FAILED to load plugin. Please report this to " + DiscordAccountName + " on Discord!");
                 return;
             }
             if (!NasBlockChange.Setup())
             {
-                FailedLoad();
+                Log("NAS: FAILED to load plugin. Please report this to " + DiscordAccountName + " on Discord!");
                 return;
             }
             ItemProp.Setup();
             Crafting.Setup();
             if (!DynamicColor.Setup())
             {
-                FailedLoad();
+                Log("NAS: FAILED to load plugin. Please report this to " + DiscordAccountName + " on Discord!");
                 return;
             }
             Collision.Setup();
@@ -130,60 +123,41 @@ namespace NotAwesomeSurvival
             NasTimeCycle.Setup();
             Mob.Load();
             if (firstEverPluginLoad)
-            {
                 GenLevel();
-            }
         }
         public void PvP(Player p, Player target)
         {
             if (NasPlayer.GetNasPlayer(target).pvpEnabled)
-            {
                 p.Message("&S  " + target.pronouns.Subject.Capitalize() + " " + target.pronouns.PresentPerfectVerb + " PVP &2enabled&S.");
-            }
             else
-            {
                 p.Message("&S  " + target.pronouns.Subject.Capitalize() + " " + target.pronouns.PresentPerfectVerb + " PVP &cdisabled&S.");
-            }
         }
         public void Dev(Player p, Player target)
         {
             if (IsDev(target))
-            {
                 p.Message("&S  {0} developer.", name.Capitalize());
-            }
         }
         public void Dev(Player p, PlayerData target)
         {
             if (IsDev(target))
-            {
                 p.Message("&S  {0} developer.", name.Capitalize());
-            }
         }
         public void Kills(Player p, Player target)
         {
             NasPlayer np = NasPlayer.GetNasPlayer(target);
             p.Message("&S  " + target.pronouns.Subject.Capitalize() + " " + target.pronouns.PresentPerfectVerb + " " + np.kills + " kills.");
         }
-        public static void FailedLoad()
-        {
-            Log("NAS: FAILED to load plugin. Please report this to " + DiscordAccountName + " on Discord!");
-        }
         public override void Unload(bool shutdown)
         {
             Chat.MessageAll("Attempting to unload NAS.");
             if (!shutdown && LoadedOnStartup)
-            {
-                InvalidOperationException ioex = new("You cannot unload NAS manually, it can only be unloaded on server shutdown.");
-                throw ioex;
-            }
+                throw new InvalidOperationException("You cannot unload NAS manually, it can only be unloaded on server shutdown.");
             NASUpdater.TakeDown();
             NasPlayer.Unregister();
             DynamicColor.TakeDown();
             Command.Unregister(Commands);
             if (ServerInfoCommand != null)
-            {
                 Command.Register(ServerInfoCommand);
-            }
             OnlineStat.Stats.Remove(PvP);
             OnlineStat.Stats.Remove(Kills);
             OnlineStat.Stats.Remove(Dev);

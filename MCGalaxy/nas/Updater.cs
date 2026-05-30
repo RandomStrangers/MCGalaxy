@@ -12,7 +12,7 @@ namespace NotAwesomeSurvival
         public static string BaseURL = "https://raw.githubusercontent.com/RandomStrangers/MCGalaxy/nas-rework/Uploads/",
             ActionsURL = "https://github.com/RandomStrangers/MCGalaxy/actions",
             CurrentVersionURL = BaseURL + "nas_version.txt",
-            SourceURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas-rework", 
+            SourceURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas-rework",
             UploadsURL = "https://github.com/RandomStrangers/MCGalaxy/tree/nas-rework/Uploads",
             DLL = BaseURL + "MCGalaxy_nas", NetVer, GUI, CLI, Latest;
         public static Command UpdateCommand = new CmdNASUpdate();

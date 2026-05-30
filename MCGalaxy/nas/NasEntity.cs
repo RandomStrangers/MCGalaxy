@@ -6,9 +6,9 @@ using System;
 using System.Text;
 namespace NotAwesomeSurvival
 {
+    public enum NasDamageSource { Falling, Suffocating, Drowning, Entity, None, Murder }
     public partial class NasEntity
     {
-        public enum DamageSource { Falling, Suffocating, Drowning, Entity, None, Murder }
         [JsonIgnore] public float AirPrev;
         [JsonIgnore] public NasLevel nl;
         [JsonIgnore] public AABB bounds = AABB.Make(new(0, 0, 0), new(16, 26 * 2, 16));
@@ -21,15 +21,15 @@ namespace NotAwesomeSurvival
         public string levelName;
         public Vec3S32 location, lastGroundedLocation;
         public byte yaw, pitch;
-        public static string DeathReason(DamageSource source, Player p) => source switch
+        public static string DeathReason(NasDamageSource source, Player p) => source switch
         {
-            DamageSource.Entity => "@p &cdied.",
-            DamageSource.Falling => "@p &cfell to " + p.pronouns.Object + " death.",
-            DamageSource.Suffocating => "@p &esuffocated.",
-            DamageSource.Drowning => "@p &rdrowned.",
-            DamageSource.None => "@p &adied from unknown causes.",
-            DamageSource.Murder => "@p &8" + p.pronouns.PastVerb + "&8 murdered by &S@s",
-            _ => Enum.GetName(typeof(DamageSource), source).ToLower(),
+            NasDamageSource.Entity => "@p &cdied.",
+            NasDamageSource.Falling => "@p &cfell to " + p.pronouns.Object + " death.",
+            NasDamageSource.Suffocating => "@p &esuffocated.",
+            NasDamageSource.Drowning => "@p &rdrowned.",
+            NasDamageSource.None => "@p &adied from unknown causes.",
+            NasDamageSource.Murder => "@p &8" + p.pronouns.PastVerb + "&8 murdered by &S@s",
+            _ => Enum.GetName(typeof(NasDamageSource), source).ToLower(),
         };
         public static void SetLocation(NasEntity ne, string levelName, Position pos, Orientation rot)
         {
@@ -71,8 +71,8 @@ namespace NotAwesomeSurvival
             final = builder.ToString();
             return final;
         }
-        public virtual bool CanTakeDamage(DamageSource source) => true;
-        public virtual bool TakeDamage(float damage, DamageSource source, string customDeathReason = "")
+        public virtual bool CanTakeDamage(NasDamageSource source) => true;
+        public virtual bool TakeDamage(float damage, NasDamageSource source, string customDeathReason = "")
         {
             if (!CanTakeDamage(source))
             {
@@ -101,7 +101,7 @@ namespace NotAwesomeSurvival
             }
             if (Air == 0)
             {
-                TakeDamage(0.125f, DamageSource.Drowning);
+                TakeDamage(0.125f, NasDamageSource.Drowning);
             }
         }
         public void DoNasBlockCollideActions(Position entityPos)

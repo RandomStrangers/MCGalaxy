@@ -1,13 +1,13 @@
 ﻿#if NAS && TEN_BIT_BLOCKS
+using System;
+using System.Collections.Generic;
+using System.IO;
 using MCGalaxy;
 using MCGalaxy.Bots;
 using MCGalaxy.Events.PlayerEvents;
 using MCGalaxy.Maths;
 using MCGalaxy.Network;
 using MCGalaxy.Tasks;
-using System;
-using System.Collections.Generic;
-using System.IO;
 namespace NotAwesomeSurvival
 {
     public struct Coords
@@ -17,33 +17,61 @@ namespace NotAwesomeSurvival
     }
     public class Mob
     {
-        public static BotInstruction hostile, roam;
+        public static BotInstruction NAShostile, NASroam;
         public static SchedulerTask mobSpawningTask;
         public static readonly Random rnd = new();
+        public const int mobCapPerPlayer = 8;
         public static PlayerBot[] GetMobsInLevel(Level lvl)
         {
             List<PlayerBot> players = new();
             foreach (PlayerBot bot in lvl.Bots.Items)
             {
-                if (bot.DisplayName != "" || !bot.name.Contains("nasMob"))
+                if (bot == null) continue;
+                if (bot.DisplayName != "" || !bot.name.Contains("NASMob"))
                     continue;
                 players.Add(bot);
             }
             return players.ToArray();
         }
+        public static void PlaceLoot(PlayerBot bot, Level level)
+        {
+            ushort x = (ushort)bot.Pos.BlockX,
+                y = (ushort)bot.Pos.BlockY,
+                z = (ushort)bot.Pos.BlockZ;
+            if (level.IsAirAt(x, y, z))
+                switch (bot.Model.ToLower())
+                {
+                    case "skeleton":
+                        level.Blockchange(x, y, z, Block.FromRaw(478));
+                        break;
+                    case "zombie":
+                        level.Blockchange(x, y, z, Block.FromRaw(148));
+                        break;
+                    case "spider":
+                    case "sheep":
+                        level.Blockchange(x, y, z, Block.FromRaw(36));
+                        break;
+                    case "pig":
+                    case "chicken":
+                        level.Blockchange(x, y, z, Block.FromRaw(648));
+                        break;
+                }
+        }
         public static void CheckDespawn(Level level)
         {
             foreach (PlayerBot bot in level.Bots.Items)
             {
-                if (bot.DisplayName != "" || !bot.name.Contains("nasMob"))
+                if (bot == null) continue;
+                if (bot.DisplayName != "" || !bot.name.Contains("NASMob"))
                     continue;
                 if (GetPlayersInLevel(level).Count < 1)
                 {
                     PlayerBot.Remove(bot);
                     continue;
                 }
-                if (bot.AIName == "hostile" && NasTimeCycle.globalCurrentDayCycle == NasTimeCycle.DayCycles.Day)
+                if (bot.AIName == "NASHostile" && NasTimeCycle.globalCurrentDayCycle == NasDayCycles.Day)
                 {
+                    if (!mobHealth.ContainsKey(bot)) PlayerBot.Remove(bot);
                     mobHealth[bot] = mobHealth[bot] - 10;
                     if (mobHealth[bot] <= 0)
                     {
@@ -83,6 +111,7 @@ namespace NotAwesomeSurvival
             List<Player> players = new();
             foreach (Player p in PlayerInfo.Online.Items)
             {
+                if (p == null) continue;
                 if (p.Level == lvl)
                     players.Add(p);
             }
@@ -101,8 +130,9 @@ namespace NotAwesomeSurvival
             foreach (Level lvl in levels)
             {
                 CheckDespawn(lvl);
+                if (lvl.name.CaselessContains("nether")) continue;
                 List<Player> players = GetPlayersInLevel(lvl);
-                if (GetMobsInLevel(lvl).Length >= (12 * players.Count))
+                if (GetMobsInLevel(lvl).Length >= (mobCapPerPlayer * players.Count))
                     continue;
                 Player selectedPlayer = players[rnd.Next(players.Count)];
                 if (selectedPlayer == null)
@@ -134,75 +164,75 @@ namespace NotAwesomeSurvival
                 }
                 switch (NasTimeCycle.globalCurrentDayCycle)
                 {
-                    case NasTimeCycle.DayCycles.Night:
+                    case NasDayCycles.Night:
                         switch (rnd.Next(7))
                         {
                             case 1:
                             case 2:
-                                SpawnEntity(lvl, "zombie", "hostile", x, y, z);
+                                SpawnEntity(lvl, "zombie", "NASHostile", x, y, z);
                                 break;
                             case 3:
                             case 4:
-                                SpawnEntity(lvl, "spider", "hostile", x, y, z);
+                                SpawnEntity(lvl, "spider", "NASHostile", x, y, z);
                                 break;
                             case 5:
                             case 6:
-                                SpawnEntity(lvl, "skeleton", "hostile", x, y, z);
+                                SpawnEntity(lvl, "skeleton", "NASHostile", x, y, z);
                                 break;
                             default:
                                 break;
                         }
                         break;
-                    case NasTimeCycle.DayCycles.Midnight:
+                    case NasDayCycles.Midnight:
                         switch (rnd.Next(8))
                         {
                             case 1:
                             case 2:
                             case 3:
-                                SpawnEntity(lvl, "zombie", "hostile", x, y, z);
+                                SpawnEntity(lvl, "zombie", "NASHostile", x, y, z);
                                 break;
                             case 4:
-                                SpawnEntity(lvl, "spider", "hostile", x, y, z);
+                                SpawnEntity(lvl, "spider", "NASHostile", x, y, z);
                                 break;
                             case 5:
                             case 6:
                             case 7:
-                                SpawnEntity(lvl, "skeleton", "hostile", x, y, z);
+                                SpawnEntity(lvl, "skeleton", "NASHostile", x, y, z);
                                 break;
                             default:
                                 break;
                         }
                         break;
-                    case NasTimeCycle.DayCycles.Sunrise:
+                    case NasDayCycles.Sunrise:
                         switch (rnd.Next(5))
                         {
                             case 1:
-                                SpawnEntity(lvl, "sheep", "roam", x, y, z);
+                                SpawnEntity(lvl, "sheep", "NASRoam", x, y, z);
                                 break;
                             case 2:
-                                SpawnEntity(lvl, "chicken", "roam", x, y, z);
+                                SpawnEntity(lvl, "chicken", "NASRoam", x, y, z);
                                 break;
                             case 3:
-                                SpawnEntity(lvl, "spider", "hostile", x, y, z);
+                                SpawnEntity(lvl, "spider", "NASHostile", x, y, z);
                                 break;
                             case 4:
-                                SpawnEntity(lvl, "pig", "roam", x, y, z);
+                                SpawnEntity(lvl, "pig", "NASRoam", x, y, z);
                                 break;
                             default:
                                 break;
                         }
                         break;
-                    case NasTimeCycle.DayCycles.Sunset:
+                    case NasDayCycles.Sunset:
                         switch (rnd.Next(4))
                         {
                             case 1:
-                                SpawnEntity(lvl, "zombie", "hostile", x, y, z);
+                                SpawnEntity(lvl, "zombie", "NASHostile", x, y, z);
                                 break;
                             case 2:
-                                SpawnEntity(lvl, "sheep", "roam", x, y, z);
+                                SpawnEntity(lvl, "sheep", "NASRoam", x, y, z);
                                 break;
                             case 3:
-                                SpawnEntity(lvl, "spider", "hostile", x, y, z);
+                                SpawnEntity(lvl, "spider", "NASHostile", x, y, z);
                                 break;
                             default:
                                 break;
@@ -213,15 +243,15 @@ namespace NotAwesomeSurvival
                         {
                             case 1:
                             case 2:
-                                SpawnEntity(lvl, "sheep", "roam", x, y, z);
+                                SpawnEntity(lvl, "sheep", "NASRoam", x, y, z);
                                 break;
                             case 3:
                             case 4:
-                                SpawnEntity(lvl, "pig", "roam", x, y, z);
+                                SpawnEntity(lvl, "pig", "NASRoam", x, y, z);
                                 break;
                             case 5:
                             case 6:
-                                SpawnEntity(lvl, "chicken", "roam", x, y, z);
+                                SpawnEntity(lvl, "chicken", "NASRoam", x, y, z);
                                 break;
                             default:
                                 break;
@@ -230,7 +260,7 @@ namespace NotAwesomeSurvival
                 }
             }
         }
-        public static bool CanHitMob(Player p, PlayerBot victim) => (p.Pos.ToVec3F32() - victim.Pos.ToVec3F32()).LengthSquared switch
+        public static bool CanHitMob(Player p, PlayerBot victim) => (p.Pos.ToVec3F32() - victim?.Pos.ToVec3F32() ?? new(0, 0, 0)).LengthSquared switch
         {
             > 12f + 1 => false,
             _ => true
@@ -242,6 +272,7 @@ namespace NotAwesomeSurvival
             float bestDist = float.MaxValue;
             foreach (PlayerBot b in p.Level.Bots.Items)
             {
+                if (b == null) continue;
                 if (!CanHitMob(p, b)) continue;
                 float dist = (p.Pos.ToVec3F32() - b.Pos.ToVec3F32()).LengthSquared;
                 if (dist < bestDist)
@@ -276,6 +307,7 @@ namespace NotAwesomeSurvival
             mobHealth[mob] = mobHealth[mob] - (np.inventory.HeldItem.Prop.damage + added);
             if (mobHealth[mob] <= 0)
             {
+                PlaceLoot(mob, p.Level);
                 mobHealth.Remove(mob);
                 PlayerBot.Remove(mob);
             }
@@ -304,7 +336,7 @@ namespace NotAwesomeSurvival
         public static void SpawnEntity(Level level, string model, string ai, ushort x, ushort y, ushort z)
         {
             int uniqueMobId = level.Bots.Items.Length + 1;
-            string uniqueName = "nasMob" + uniqueMobId;
+            string uniqueName = "NASMob" + uniqueMobId;
             PlayerBot bot = new(uniqueName, level)
             {
                 DisplayName = "",
@@ -334,14 +366,14 @@ namespace NotAwesomeSurvival
         }
         public static void Load()
         {
-            hostile = new HostileInstruction();
-            roam = new RoamInstruction();
-            BotInstruction.Instructions.Add(hostile);
-            BotInstruction.Instructions.Add(roam);
+            NAShostile = new NASHostileInstruction();
+            NASroam = new NASRoamInstruction();
+            BotInstruction.Instructions.Add(NAShostile);
+            BotInstruction.Instructions.Add(NASroam);
             OnPlayerClickEvent.Register(HandleBlockClicked, Priority.Low);
             Server.MainScheduler.QueueRepeat(HandleMobSpawning, null, TimeSpan.FromSeconds(1));
-            AddAi("hostile", new string[] { "", "hostile", "hostile" });
-            AddAi("roam", new string[] { "", "roam", "roam" });
+            AddAi("NASHostile", new string[] { "", "NASHostile", "NASHostile" });
+            AddAi("NASRoam", new string[] { "", "NASRoam", "NASRoam" });
             mobHealth.Clear();
         }
         public static void Unload()
@@ -349,8 +381,8 @@ namespace NotAwesomeSurvival
             OnPlayerClickEvent.Unregister(HandleBlockClicked);
             Server.MainScheduler.Cancel(mobSpawningTask);
             mobHealth.Clear();
-            BotInstruction.Instructions.Remove(hostile);
-            BotInstruction.Instructions.Remove(roam);
+            BotInstruction.Instructions.Remove(NAShostile);
+            BotInstruction.Instructions.Remove(NASroam);
         }
         public static string CalculateCardinal(PlayerBot bot) => Orientation.PackedToDegrees(bot.Rot.RotY) switch
         {
@@ -373,7 +405,7 @@ namespace NotAwesomeSurvival
             foreach (Player p in players)
             {
                 NasPlayer np = NasPlayer.GetNasPlayer(p);
-                if (p.Level != bot.Level || !np.CanTakeDamage(NasEntity.DamageSource.Entity)) continue;
+                if (p.Level != bot.Level) continue;
                 int dx = p.Pos.X - bot.Pos.X, dy = p.Pos.Y - bot.Pos.Y, dz = p.Pos.Z - bot.Pos.Z,
                     playerDist = Math.Abs(dx) + Math.Abs(dy) + Math.Abs(dz);
                 if (playerDist >= maxDist) continue;
@@ -395,17 +427,17 @@ namespace NotAwesomeSurvival
             bot.Rot = rot;
         }
     }
-    public class MobMetadata
+    public class NASMobMetadata
     {
         public int waitTime, walkTime, lookTime, search;
         public Player chasing;
     }
-    public class HostileInstruction : BotInstruction
+    public class NASHostileInstruction : BotInstruction
     {
-        public HostileInstruction() => Name = "hostile";
+        public NASHostileInstruction() => Name = "NASHostile";
         public static bool MoveTowards(PlayerBot bot, Player p)
         {
-            if (p == null) return false;
+            if (bot == null || p == null) return false;
             int dx = p.Pos.X - bot.Pos.X, dy = p.Pos.Y - bot.Pos.Y, dz = p.Pos.Z - bot.Pos.Z;
             bot.TargetPos = p.Pos;
             Vec3F32 dir = new(dx, dy, dz);
@@ -428,6 +460,7 @@ namespace NotAwesomeSurvival
         }
         public static void HitPlayer(PlayerBot bot, Player p, Orientation rot)
         {
+            if (bot == null || p == null) return;
             rot.RotY = (byte)(p.Rot.RotY + 128);
             bot.Rot = rot;
             int srcHeight = ModelInfo.CalcEyeHeight(bot),
@@ -455,12 +488,13 @@ namespace NotAwesomeSurvival
                     break;
             }
             NasPlayer np = NasPlayer.GetNasPlayer(p);
-            np.TakeDamage(damage, NasEntity.DamageSource.Entity);
+            np.TakeDamage(damage, NasDamageSource.Entity);
         }
         public readonly Random _random = new();
         public int RandomNumber(int min, int max) => _random.Next(min, max);
-        public void DoStuff(PlayerBot bot, MobMetadata meta)
+        public void DoStuff(PlayerBot bot, NASMobMetadata meta)
         {
+            if (bot == null) return;
             int stillChance = RandomNumber(0, 5),
                 walkTime = RandomNumber(4, 8) * 5,
                 waitTime = RandomNumber(2, 5) * 5,
@@ -498,7 +532,8 @@ namespace NotAwesomeSurvival
         }
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
-            MobMetadata meta = (MobMetadata)data.Metadata;
+            if (bot == null) return false;
+            NASMobMetadata meta = (NASMobMetadata)data.Metadata;
             switch (bot.Model)
             {
                 case "zombie":
@@ -550,21 +585,22 @@ namespace NotAwesomeSurvival
         public override InstructionData Parse(string[] args)
         {
             InstructionData data = default;
-            data.Metadata = new MobMetadata();
-            MobMetadata meta = (MobMetadata)data.Metadata;
+            data.Metadata = new NASMobMetadata();
+            NASMobMetadata meta = (NASMobMetadata)data.Metadata;
             if (args.Length > 1)
                 meta.search = int.Parse(args[1]);
             return data;
         }
         public override string[] Help => new string[] { };
     }
-    public class RoamInstruction : BotInstruction
+    public class NASRoamInstruction : BotInstruction
     {
-        public RoamInstruction() => Name = "roam";
+        public NASRoamInstruction() => Name = "NASRoam";
         public readonly Random _random = new();
         public int RandomNumber(int min, int max) => _random.Next(min, max);
-        public void DoStuff(PlayerBot bot, MobMetadata meta)
+        public void DoStuff(PlayerBot bot, NASMobMetadata meta)
         {
+            if (bot == null) return;
             int stillChance = RandomNumber(0, 5),
                 walkTime = RandomNumber(4, 8) * 5,
                 waitTime = RandomNumber(2, 4) * 5,
@@ -615,7 +651,8 @@ namespace NotAwesomeSurvival
         }
         public override bool Execute(PlayerBot bot, InstructionData data)
         {
-            MobMetadata meta = (MobMetadata)data.Metadata;
+            if (bot == null) return false;
+            NASMobMetadata meta = (NASMobMetadata)data.Metadata;
             if (meta.walkTime > 0)
             {
                 meta.walkTime--;
@@ -681,7 +718,7 @@ namespace NotAwesomeSurvival
         public override InstructionData Parse(string[] _)
         {
             InstructionData data = default;
-            data.Metadata = new MobMetadata();
+            data.Metadata = new NASMobMetadata();
             return data;
         }
         public override string[] Help => new string[] { };

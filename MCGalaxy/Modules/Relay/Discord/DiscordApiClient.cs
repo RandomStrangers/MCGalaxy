@@ -51,9 +51,9 @@ namespace MCGalaxy.Modules.Relay.Discord
         }
         public void SendNow(DiscordApiMessage msg)
         {
-            lock (msgLock) 
-            { 
-                ProcessMessage(msg); 
+            lock (msgLock)
+            {
+                ProcessMessage(msg);
             }
         }
         void ProcessMessage(DiscordApiMessage msg)

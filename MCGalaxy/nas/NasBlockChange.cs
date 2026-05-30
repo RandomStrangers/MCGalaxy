@@ -50,7 +50,7 @@ namespace NotAwesomeSurvival
                 }
                 if (def == null)
                 {
-                    blockColors[blockID] = new(255,255,255,255);
+                    blockColors[blockID] = new(255, 255, 255, 255);
                     continue;
                 }
                 int x = def.BackTex % 16,
@@ -241,7 +241,7 @@ namespace NotAwesomeSurvival
             Player p = info.p;
             int millisecs = info.milliseconds;
             millisecs -= 100;
-            NasEffect.Define(p, BreakMeterID, NasEffect.breakMeter, new(255,255,255,255), (float)(millisecs / 1000.0f));
+            NasEffect.Define(p, BreakMeterID, NasEffect.breakMeter, new(255, 255, 255, 255), (float)(millisecs / 1000.0f));
             NasEffect.Spawn(p, BreakMeterID, NasEffect.breakMeter, info.x, info.y, info.z, info.x, info.y, info.z);
         }
         public class BreakInfo

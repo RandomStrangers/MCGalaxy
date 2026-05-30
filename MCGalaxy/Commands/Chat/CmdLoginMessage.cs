@@ -24,6 +24,10 @@ namespace MCGalaxy.Commands.Chatting
         {
             get { return new[] { new CommandPerm(LevelPermission.Operator, "can change the login message of others") }; }
         }
+        public override CommandAlias[] Aliases
+        {
+            get { return new[] { new CommandAlias("OLoginMessage", OTHER_FLAG) }; }
+        }
         public override void Use(Player p, string message, CommandData data)
         {
             UsePlayer(p, data, message, "login message");
@@ -34,8 +38,11 @@ namespace MCGalaxy.Commands.Chatting
         }
         public override void Help(Player p)
         {
-            p.Message("&T/LoginMessage [player] [message]");
-            p.Message("&HSets the login message shown for that player.");
+            p.Message("&T/LoginMessage <message>");
+            p.Message("&H Sets your login message");
+            p.Message("&T/OLoginMessage [player] <message>");
+            p.Message("&H Sets the login message of another player");
+            p.Message("&H  Leave <message> blank to reset it.");
             p.Message("&HYour login message is currently: &S{0}", PlayerInfo.GetLoginMessage(p));
         }
     }

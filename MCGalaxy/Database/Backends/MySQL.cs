@@ -162,9 +162,9 @@ namespace MCGalaxy.SQL
     sealed class MySQLConnection : ISqlConnection
     {
         public readonly MySqlConnection conn;
-        public MySQLConnection(MySqlConnection conn) 
-        { 
-            this.conn = conn; 
+        public MySQLConnection(MySqlConnection conn)
+        {
+            this.conn = conn;
         }
         public ISqlTransaction BeginTransaction()
         {
@@ -174,19 +174,19 @@ namespace MCGalaxy.SQL
         {
             return new MySQLCommand(new(sql, conn));
         }
-        public void Open() 
-        { 
+        public void Open()
+        {
             conn.Open();
         }
-        public void ChangeDatabase(string name) 
+        public void ChangeDatabase(string name)
         {
             conn.ChangeDatabase(name);
         }
-        public void Close() 
+        public void Close()
         {
             conn.Close();
         }
-        public void Dispose() 
+        public void Dispose()
         {
             conn.Dispose();
         }
@@ -194,9 +194,9 @@ namespace MCGalaxy.SQL
     sealed class MySQLCommand : ISqlCommand
     {
         readonly MySqlCommand cmd;
-        public MySQLCommand(MySqlCommand cmd) 
+        public MySQLCommand(MySqlCommand cmd)
         {
-            this.cmd = cmd; 
+            this.cmd = cmd;
         }
         public void SetParameters(SqlArgument[] args)
         {
@@ -210,17 +210,17 @@ namespace MCGalaxy.SQL
                 cmd.Parameters.AddWithValue(args[i].Name, args[i].Value);
             }
         }
-        public void Dispose() 
+        public void Dispose()
         {
-            cmd.Dispose(); 
+            cmd.Dispose();
         }
-        public void Prepare() 
-        { 
-            cmd.Prepare(); 
-        }
-        public int ExecuteNonQuery() 
+        public void Prepare()
         {
-            return cmd.ExecuteNonQuery(); 
+            cmd.Prepare();
+        }
+        public int ExecuteNonQuery()
+        {
+            return cmd.ExecuteNonQuery();
         }
         public ISqlReader ExecuteReader()
         {
@@ -230,91 +230,91 @@ namespace MCGalaxy.SQL
     sealed class MySQLTransaction : ISqlTransaction
     {
         readonly MySqlTransaction trn;
-        public MySQLTransaction(MySqlTransaction trn) 
-        { 
-            this.trn = trn; 
+        public MySQLTransaction(MySqlTransaction trn)
+        {
+            this.trn = trn;
         }
-        public void Commit() 
-        { 
+        public void Commit()
+        {
             trn.Commit();
         }
-        public void Rollback() 
-        { 
-            trn.Rollback(); 
-        }
-        public void Dispose() 
+        public void Rollback()
         {
-            trn.Dispose(); 
+            trn.Rollback();
+        }
+        public void Dispose()
+        {
+            trn.Dispose();
         }
     }
     sealed class MySQLReader : ISqlReader
     {
         readonly MySqlDataReader rdr;
-        public MySQLReader(MySqlDataReader rdr) 
+        public MySQLReader(MySqlDataReader rdr)
         {
-            this.rdr = rdr; 
+            this.rdr = rdr;
         }
         public override int RowsAffected { get { return rdr.RecordsAffected; } }
-        public override void Close() 
+        public override void Close()
         {
-            rdr.Close(); 
+            rdr.Close();
         }
-        public override void Dispose() 
-        { 
-            rdr.Dispose(); 
-        }
-        public bool NextResult() 
+        public override void Dispose()
         {
-            return rdr.NextResult(); 
+            rdr.Dispose();
+        }
+        public bool NextResult()
+        {
+            return rdr.NextResult();
         } // TODO do we need to call this?
-        public override bool Read() 
+        public override bool Read()
         {
-            return rdr.Read(); 
+            return rdr.Read();
         }
         public override int FieldCount { get { return rdr.FieldCount; } }
         public override string GetName(int i)
         {
-            return rdr.GetName(i); 
+            return rdr.GetName(i);
         }
-        public override int GetOrdinal(string name) 
-        { 
-            return rdr.GetOrdinal(name); 
+        public override int GetOrdinal(string name)
+        {
+            return rdr.GetOrdinal(name);
         }
-        public override bool GetBoolean(int i) 
-        { 
-            return rdr.GetBoolean(i); 
+        public override bool GetBoolean(int i)
+        {
+            return rdr.GetBoolean(i);
         }
-        public override byte[] GetBytes(int i) 
+        public override byte[] GetBytes(int i)
         {
             return (byte[])GetValue(i);
         }
-        public override int GetInt32(int i) 
-        { 
+        public override int GetInt32(int i)
+        {
             return rdr.GetInt32(i);
         }
-        public override long GetInt64(int i) 
+        public override long GetInt64(int i)
         {
-            return rdr.GetInt64(i); 
+            return rdr.GetInt64(i);
         }
-        public override double GetDouble(int i) 
+        public override double GetDouble(int i)
         {
             return rdr.GetDouble(i);
         }
-        public override string GetString(int i) 
+        public override string GetString(int i)
         {
             return rdr.GetString(i);
         }
-        public override DateTime GetDateTime(int i) 
-        { 
-            return rdr.GetDateTime(i); 
+        public override DateTime GetDateTime(int i)
+        {
+            return rdr.GetDateTime(i);
         }
-        public override bool IsDBNull(int i) 
-        { 
+        public override bool IsDBNull(int i)
+        {
             return rdr.IsDBNull(i);
         }
         public override object GetValue(int i)
         {
-            return rdr.GetValue(i); 
+            return rdr.GetValue(i);
         }
         string RawGetDateTime(int col)
         {

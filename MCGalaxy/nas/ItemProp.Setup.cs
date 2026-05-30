@@ -24,7 +24,7 @@ namespace NotAwesomeSurvival
                 {"Protection",true},
                 {"Thorns",true},
                 {"Unbreaking",true},
-            }, 
+            },
             helmetEnchants = new(){
                 {"Aqua Affinity",true},
                 {"Mending",true},
@@ -39,8 +39,8 @@ namespace NotAwesomeSurvival
                 {"Thorns",true},
                 {"Unbreaking",true},
             };
-        public static ItemProp bedrockPick,etheriumPick,
-            bedrockSword, etheriumHelmet, etheriumChest, 
+        public static ItemProp bedrockPick, etheriumPick,
+            bedrockSword, etheriumHelmet, etheriumChest,
             etheriumLegs, etheriumBoots, etheriumSword;
         public static void Setup()
         {

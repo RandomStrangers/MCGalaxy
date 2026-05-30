@@ -132,7 +132,7 @@ namespace NotAwesomeSurvival
                 p2 = new(x + num, y + num5, z + num2);
             Line(p, p2, output);
             int num6 = num3;
-            Vec3S32[] marks = new Vec3S32[] 
+            Vec3S32[] marks = new Vec3S32[]
             {
                 new(x + num - num6, y + num5 - num6, z + num2 - num6),
                 new(x + num + num6, y + num5 + num6, z + num2 + num6)

@@ -46,7 +46,7 @@ namespace NotAwesomeSurvival
         [JsonIgnore] public Player lastAttackedPlayer = null;
         [JsonIgnore] public string reason = null;
         [JsonIgnore] public CpeMessageType whereHealthIsDisplayed = CpeMessageType.BottomRight2;
-        public bool bigUpdate = false, 
+        public bool bigUpdate = false,
             oldBarrel = true,
             pvpEnabled = false;
         public Inventory inventory;
@@ -56,7 +56,7 @@ namespace NotAwesomeSurvival
         public DateTime pvpCooldown;
         public int kills = 0,
             exp = 0,
-            levels = 0, 
+            levels = 0,
             resetCount = 0;
         public static Dictionary<string, DateTime> cooldowns = new();
         public void Message(string message, params object[] args) => p.Message(string.Format(message, args));
@@ -348,7 +348,7 @@ namespace NotAwesomeSurvival
                 np.inventory.UpdateItemDisplay();
                 NasPlayer w = GetNasPlayer(who);
                 w.lastAttackedPlayer = p;
-                if (!w.CanTakeDamage(DamageSource.Murder) || !w.CanTakeDamage(DamageSource.Entity))
+                if (!w.CanTakeDamage(NasDamageSource.Murder) || !w.CanTakeDamage(NasDamageSource.Entity))
                 {
                     string reason = "";
                     if (w.p.Game.Referee)
@@ -393,7 +393,7 @@ namespace NotAwesomeSurvival
                         added += 1;
                     }
                     added += np.inventory.HeldItem.Enchant("Sharpness") * 0.5f;
-                    w.TakeDamage(np.inventory.HeldItem.Prop.damage + added, DamageSource.Entity, "@p %f" + who.pronouns.PastVerb + " slain by " + p.ColoredName + " %fusing " + np.inventory.HeldItem.displayName);
+                    w.TakeDamage(np.inventory.HeldItem.Prop.damage + added, NasDamageSource.Entity, "@p %f" + who.pronouns.PastVerb + " slain by " + p.ColoredName + " %fusing " + np.inventory.HeldItem.displayName);
                     NasBlockChange.FishingInfo info = new()
                     {
                         p = p,
@@ -497,9 +497,9 @@ namespace NotAwesomeSurvival
             }
             return saved;
         }
-        public override bool CanTakeDamage(DamageSource source)
+        public override bool CanTakeDamage(NasDamageSource source)
         {
-            if (!pvpEnabled && (source == DamageSource.Murder || source == DamageSource.Entity))
+            if (!pvpEnabled && (source == NasDamageSource.Murder || source == NasDamageSource.Entity))
             {
                 return false;
             }
@@ -520,7 +520,7 @@ namespace NotAwesomeSurvival
                 Message("If you get this message for more than 5 seconds, rejoin.");
                 return false;
             }
-            if (source == DamageSource.Suffocating)
+            if (source == NasDamageSource.Suffocating)
             {
                 TimeSpan timeSinceSuffocation = DateTime.UtcNow.Subtract(lastSuffocationDate);
                 if (timeSinceSuffocation.TotalMilliseconds < SuffocationMilliseconds)
@@ -531,7 +531,7 @@ namespace NotAwesomeSurvival
             }
             return true;
         }
-        public override bool TakeDamage(float damage, DamageSource source, string customDeathReason = "")
+        public override bool TakeDamage(float damage, NasDamageSource source, string customDeathReason = "")
         {
             if (HP > maxHP)
             {
@@ -545,7 +545,7 @@ namespace NotAwesomeSurvival
             {
                 return false;
             }
-            if (source != DamageSource.Drowning)
+            if (source != NasDamageSource.Drowning)
             {
                 damage *= 1 - ((1 - (damage / 50)) * (DamageSaved(true) * 0.04f));
                 damage *= 1 - (EnchantLevels("Protection") * 0.04f);
@@ -554,7 +554,7 @@ namespace NotAwesomeSurvival
                     damage = (float)Math.Round(damage * 2f) / 2f;
                 }
             }
-            if (source == DamageSource.Falling && EnchantLevels("Feather Falling") > 0)
+            if (source == NasDamageSource.Falling && EnchantLevels("Feather Falling") > 0)
             {
                 damage = Math.Max(0, damage - EnchantLevels("Feather Falling"));
             }
@@ -601,7 +601,7 @@ namespace NotAwesomeSurvival
                 {
                     customDeathReason = DeathReason(source, p);
                 }
-                if (source == DamageSource.Entity)
+                if (source == NasDamageSource.Entity)
                 {
                     GetNasPlayer(lastAttackedPlayer).kills++;
                     GetNasPlayer(lastAttackedPlayer).GiveLevels(levels / 2);

@@ -48,8 +48,8 @@ namespace NotAwesomeSurvival
                 goldFog = "#7A706A",
                 diamondFog = "#605854",
                 emeraldFog = "#605854";
-            coalFogColor = new(Convert.ToByte(coalFog.Substring(1, 2), 16), 
-                Convert.ToByte(coalFog.Substring(3, 2), 16), 
+            coalFogColor = new(Convert.ToByte(coalFog.Substring(1, 2), 16),
+                Convert.ToByte(coalFog.Substring(3, 2), 16),
                 Convert.ToByte(coalFog.Substring(5, 2), 16), 255);
             ironFogColor = new(Convert.ToByte(ironFog.Substring(1, 2), 16),
                 Convert.ToByte(ironFog.Substring(3, 2), 16),
@@ -110,9 +110,9 @@ namespace NotAwesomeSurvival
         public static bool Gen(Player p, Level lvl, MapGenArgs args) => Gen(p, lvl, args.Seed.ToString());
         public static bool Gen(Player p, Level lvl, string seed)
         {
-            if (File.Exists("levels/" + lvl.name + ".lvl") 
-                || File.Exists("levels/" + lvl.name + ".mcf") 
-                || File.Exists("levels/" + lvl.name + ".map") 
+            if (File.Exists("levels/" + lvl.name + ".lvl")
+                || File.Exists("levels/" + lvl.name + ".mcf")
+                || File.Exists("levels/" + lvl.name + ".map")
                 || File.Exists("levels/" + lvl.name + ".ucl"))
             {
                 p.Message("Something weird happened, try going into the map again");

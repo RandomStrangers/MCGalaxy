@@ -8,7 +8,7 @@ namespace NotAwesomeSurvival
     {
         public static NasTimeCycle cyc = new();
         public static void Log(string format, params object[] args) => Logger.Log(LogType.Debug, string.Format(format, args));
-        public static void StoreTimeData(int day, int minutes, DayCycles cycle)
+        public static void StoreTimeData(int day, int minutes, NasDayCycles cycle)
         {
             cyc.day = day;
             cyc.minutes = minutes;

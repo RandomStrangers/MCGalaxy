@@ -22,12 +22,12 @@ namespace NotAwesomeSurvival
             Command cmd = Command.Find(name);
             if (cmd == null)
             {
-                Logger.Log(LogType.CommandUsage, "{0}: Unknown command \"{1}\"", NasConsole.name, name); 
+                Logger.Log(LogType.CommandUsage, "{0}: Unknown command \"{1}\"", NasConsole.name, name);
                 return;
             }
             if (!cmd.SuperUseable)
             {
-                Logger.Log(LogType.CommandUsage, "{0}: /{1} can only be used in-game.", NasConsole.name, cmd.name); 
+                Logger.Log(LogType.CommandUsage, "{0}: /{1} can only be used in-game.", NasConsole.name, cmd.name);
                 return;
             }
             Server.StartThread(out Thread thread, "NASCMD_" + name,
@@ -299,7 +299,7 @@ namespace NotAwesomeSurvival
                 }
                 NasPlayer nw = NasPlayer.GetNasPlayer(PlayerInfo.FindMatches(p, message));
                 nw.lastAttackedPlayer = p;
-                nw.TakeDamage(50, NasEntity.DamageSource.Entity, "@p &fwas smote by " + p.ColoredName);
+                nw.TakeDamage(50, NasDamageSource.Entity, "@p &fwas smote by " + p.ColoredName);
                 return;
             }
             if (!name.CaselessEq("nas"))

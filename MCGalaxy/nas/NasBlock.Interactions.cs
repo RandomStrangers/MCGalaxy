@@ -48,7 +48,7 @@ namespace NotAwesomeSurvival
         {
             public string lockedBy = "",
                 blockText = "";
-            public int strength = 0, 
+            public int strength = 0,
                 type = 0,
                 direction = 0;
             public Drop drop = null;
@@ -70,10 +70,10 @@ namespace NotAwesomeSurvival
         public class Container
         {
             public const int ToolLimit = 15, BlockStackLimit = 15;
-            public enum Type 
+            public enum Type
             {
-                Chest, Barrel, Crate, 
-                Gravestone, AutoCraft, Dispenser 
+                Chest, Barrel, Crate,
+                Gravestone, AutoCraft, Dispenser
             }
             public Type type;
             public string name => Enum.GetName(typeof(Type), type);
@@ -708,9 +708,9 @@ namespace NotAwesomeSurvival
                     fullInv = false;
                 }
             }
-            if (!fullInv) 
-            { 
-                bEntity.drop.items.RemoveAt(bEntity.drop.items.Count - 1); 
+            if (!fullInv)
+            {
+                bEntity.drop.items.RemoveAt(bEntity.drop.items.Count - 1);
             }
             np.inventory.GetDrop(taken, true);
             if (bEntity.drop.items.Count == 0)
@@ -998,7 +998,7 @@ namespace NotAwesomeSurvival
             }
             if (healthRestored < 0)
             {
-                np.TakeDamage(-healthRestored, NasEntity.DamageSource.None);
+                np.TakeDamage(-healthRestored, NasDamageSource.None);
             }
             else
             {

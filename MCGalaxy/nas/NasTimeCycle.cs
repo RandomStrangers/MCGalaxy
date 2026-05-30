@@ -6,32 +6,32 @@ using Newtonsoft.Json;
 using System.IO;
 namespace NotAwesomeSurvival
 {
+    public enum NasDayCycles
+    {
+        Sunrise, Day, Sunset, Night, Midnight
+    }
     public partial class NasTimeCycle
     {
         public static float globalCurrentTime;
-        public static DayCycles globalCurrentDayCycle;
+        public static NasDayCycles globalCurrentDayCycle;
         public static JsonSerializer serializer = new();
         public static Scheduler weatherScheduler;
         public static SchedulerTask task;
         public static string globalSkyColor, globalCloudColor,
-            globalSunColor, globalShadowColor, 
+            globalSunColor, globalShadowColor,
             TimeFilePath = Nas.CoreSavePath + "time.json";
-        public static DayCycles dayCycle = DayCycles.Sunrise;
-        public DayCycles cycle = DayCycles.Sunrise;
+        public static NasDayCycles dayCycle = NasDayCycles.Sunrise;
+        public NasDayCycles cycle = NasDayCycles.Sunrise;
         public static int cycleCurrentTime = 0,
             cycleMaxTime = 14400,
             hourMinutes = 600,
             gameday = 0;
         public int day = 0, minutes = 7 * hourMinutes;
-        public enum DayCycles
-        {
-            Sunrise, Day, Sunset, Night, Midnight
-        }
         public static void Setup()
         {
             weatherScheduler ??= new("WeatherScheduler");
             task = weatherScheduler.QueueRepeat(Update, null, new(0, 0, 7));
-            dayCycle = DayCycles.Sunrise;
+            dayCycle = NasDayCycles.Sunrise;
             if (!File.Exists(TimeFilePath))
             {
                 File.Create(TimeFilePath).Dispose();
@@ -63,51 +63,51 @@ namespace NotAwesomeSurvival
             }
             if (cycleCurrentTime >= 7 * hourMinutes & cycleCurrentTime < 8 * hourMinutes)
             {
-                dayCycle = DayCycles.Sunrise;
+                dayCycle = NasDayCycles.Sunrise;
             }
             if (cycleCurrentTime >= 8 * hourMinutes & cycleCurrentTime < 19 * hourMinutes)
             {
-                dayCycle = DayCycles.Day;
+                dayCycle = NasDayCycles.Day;
             }
             if (cycleCurrentTime >= 19 * hourMinutes & cycleCurrentTime < 20 * hourMinutes)
             {
-                dayCycle = DayCycles.Sunset;
+                dayCycle = NasDayCycles.Sunset;
             }
             if (cycleCurrentTime >= 20 * hourMinutes & cycleCurrentTime < 24 * hourMinutes)
             {
-                dayCycle = DayCycles.Night;
+                dayCycle = NasDayCycles.Night;
             }
             if (cycleCurrentTime == 24 * hourMinutes | cycleCurrentTime == 0 | cycleCurrentTime < 7 * hourMinutes)
             {
-                dayCycle = DayCycles.Midnight;
+                dayCycle = NasDayCycles.Midnight;
             }
             switch (dayCycle)
             {
-                case DayCycles.Sunrise:
+                case NasDayCycles.Sunrise:
                     globalCloudColor = "#ff8c00";
                     globalSkyColor = "#FFA500";
                     globalSunColor = "#a9a9a9";
                     globalShadowColor = "#828282";
                     break;
-                case DayCycles.Day:
+                case NasDayCycles.Day:
                     globalCloudColor = "#ffffff";
                     globalSkyColor = "#ADD8E6";
                     globalSunColor = "#ffffff";
                     globalShadowColor = "#9B9B9B";
                     break;
-                case DayCycles.Sunset:
+                case NasDayCycles.Sunset:
                     globalCloudColor = "#cf5c00";
                     globalSkyColor = "#FFB500";
                     globalSunColor = "#a9a9a9";
                     globalShadowColor = "#828282";
                     break;
-                case DayCycles.Night:
+                case NasDayCycles.Night:
                     globalCloudColor = "#808080";
                     globalSkyColor = "#404040";
                     globalSunColor = "#808080";
                     globalShadowColor = "#595959";
                     break;
-                case DayCycles.Midnight:
+                case NasDayCycles.Midnight:
                     globalCloudColor = "#404040";
                     globalSkyColor = "#000000";
                     globalSunColor = "#404040";

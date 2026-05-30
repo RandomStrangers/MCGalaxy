@@ -270,7 +270,7 @@ namespace NotAwesomeSurvival
                     {
                         float damage = (int)fallHeight * 2;
                         damage /= 4;
-                        TakeDamage(damage * fallDamageMultiplier, DamageSource.Falling);
+                        TakeDamage(damage * fallDamageMultiplier, NasDamageSource.Falling);
                     }
                 }
                 lastGroundedLocation = new(next.X, next.Y, next.Z);
@@ -352,9 +352,9 @@ namespace NotAwesomeSurvival
             atBorder = true;
             int chunkOffsetX = 0, chunkOffsetZ = 0;
             string seed = "DEFAULT";
-            if (!NasGen.GetSeedAndChunkOffset(p.Level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ)) 
-            { 
-                return false; 
+            if (!NasGen.GetSeedAndChunkOffset(p.Level.name, ref seed, ref chunkOffsetX, ref chunkOffsetZ))
+            {
+                return false;
             }
             string mapName;
             mapName = map;

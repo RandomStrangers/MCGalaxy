@@ -10,27 +10,27 @@ namespace NotAwesomeSurvival
                                                                                     {
                                                                                         if (headSurrounded)
                                                                                         {
-                                                                                            ne.TakeDamage(1.5f, NasEntity.DamageSource.Suffocating);
+                                                                                            ne.TakeDamage(1.5f, NasDamageSource.Suffocating);
                                                                                         }
                                                                                     };
         public static NasBlockCollideAction LavaCollideAction() => (ne, nasBlock, headSurrounded, x, y, z) =>
                                                                             {
                                                                                 if (headSurrounded)
                                                                                 {
-                                                                                    if (ne.CanTakeDamage(NasEntity.DamageSource.Drowning))
+                                                                                    if (ne.CanTakeDamage(NasDamageSource.Drowning))
                                                                                     {
                                                                                         ne.holdingBreath = true;
                                                                                     }
                                                                                 }
-                                                                                ne.TakeDamage(1.5f, NasEntity.DamageSource.Suffocating, "@p &cmelted in lava.");
+                                                                                ne.TakeDamage(1.5f, NasDamageSource.Suffocating, "@p &cmelted in lava.");
                                                                             };
         public static NasBlockCollideAction FireCollideAction() => (ne, nasBlock, headSurrounded, x, y, z) =>
                                                                             {
-                                                                                ne.TakeDamage(0.25f, NasEntity.DamageSource.None, "@p &cburned up");
+                                                                                ne.TakeDamage(0.25f, NasDamageSource.None, "@p &cburned up");
                                                                             };
         public static NasBlockCollideAction SpikeCollideAction() => (ne, nasBlock, headSurrounded, x, y, z) =>
                                                                              {
-                                                                                 ne.TakeDamage(3f, NasEntity.DamageSource.None, "@p &cgot impaled");
+                                                                                 ne.TakeDamage(3f, NasDamageSource.None, "@p &cgot impaled");
                                                                              };
         public static NasBlockCollideAction PressureCollideAction() => (ne, nasBlock, headSurrounded, x, y, z) =>
                                                                                 {
@@ -45,7 +45,7 @@ namespace NotAwesomeSurvival
                                                                               {
                                                                                   if (headSurrounded)
                                                                                   {
-                                                                                      if (ne.CanTakeDamage(NasEntity.DamageSource.Drowning))
+                                                                                      if (ne.CanTakeDamage(NasDamageSource.Drowning))
                                                                                       {
                                                                                           ne.holdingBreath = true;
                                                                                       }

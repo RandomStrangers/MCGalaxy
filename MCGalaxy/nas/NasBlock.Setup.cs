@@ -371,7 +371,7 @@ namespace NotAwesomeSurvival
             {
                 collideAction = AirCollideAction()
             };
-            i = 4; 
+            i = 4;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
             i = 50;
             blocks[i] = new(i, Material.Stone, DefaultDurabilities[(int)Material.Stone], 1);
@@ -737,7 +737,7 @@ namespace NotAwesomeSurvival
                 {
                     Drop drop = new(18, 1);
                     if (r.Next(0, 8) == 0)
-                    { 
+                    {
                         drop.blockStacks.Add(new(6, 1));
                     }
                     else

@@ -105,11 +105,11 @@ namespace NotAwesomeSurvival
             else
             {
                 PlatformID platform = Environment.OSVersion.Platform;
-                if (platform == PlatformID.Win32S 
+                if (platform == PlatformID.Win32S
                     || platform == PlatformID.Win32Windows
                     || platform == PlatformID.Win32NT
                     || platform == PlatformID.WinCE
-                    || platform == PlatformID.Xbox) 
+                    || platform == PlatformID.Xbox)
                 {
                     name = "Windows";
                 }
@@ -468,7 +468,7 @@ namespace NotAwesomeSurvival
             NasLevel nl = NasLevel.Get(lvl.name);
             string jsonString = JsonConvert.SerializeObject(nl, Formatting.Indented),
                 fileName = NasLevel.GetFileName(nl.lvl.name);
-            bool saved = lvl.Save(true) && FileUtils.TryWriteAllText(fileName, jsonString);            
+            bool saved = lvl.Save(true) && FileUtils.TryWriteAllText(fileName, jsonString);
             if (!saved)
             {
                 p.Message("Saving of level {0} &Swas cancelled", lvl.ColoredName);
@@ -534,8 +534,8 @@ namespace NotAwesomeSurvival
                     webEx.Response.Close();
                 }
             }
-            catch 
-            { 
+            catch
+            {
             }
         }
         public static bool EnsureFileExists(string url, string file)
@@ -590,8 +590,8 @@ namespace NotAwesomeSurvival
                     return new StreamReader(webEx.Response.GetResponseStream()).ReadToEnd().Trim();
                 }
             }
-            catch 
-            { 
+            catch
+            {
             }
             return null;
         }

@@ -95,12 +95,12 @@ namespace MCGalaxy.SQL
         {
             return new SQLiteTransaction(this);
         }
-        public void ChangeDatabase(string databaseName) 
-        { 
+        public void ChangeDatabase(string databaseName)
+        {
         }
-        public ISqlCommand CreateCommand(string sql) 
-        { 
-            return new SQLiteCommand(sql, this); 
+        public ISqlCommand CreateCommand(string sql)
+        {
+            return new SQLiteCommand(sql, this);
         }
         public long LastInsertRowId
         {
@@ -244,13 +244,13 @@ namespace MCGalaxy.SQL
                                                      IntPtr.Zero, IntPtr.Zero, ref stmt);
             return n == SQLiteErrorCodes.Ok || (canThrow ? throw new SQLiteException(n, GetLastError()) : false);
         }
-        public void Dispose() 
-        { 
-            Close(false); 
-        }
-        public void Close() 
+        public void Dispose()
         {
-            Close(true); 
+            Close(false);
+        }
+        public void Close()
+        {
+            Close(true);
         }
         void Close(bool canThrow)
         {
@@ -347,8 +347,8 @@ namespace MCGalaxy.SQL
             stmt?.BindAll(sqlArgs);
             return stmt;
         }
-        public void Prepare() 
-        { 
+        public void Prepare()
+        {
         }
         public void SetParameters(SqlArgument[] args)
         {
@@ -364,8 +364,8 @@ namespace MCGalaxy.SQL
         public int ExecuteNonQuery()
         {
             using ISqlReader reader = ExecuteReader();
-            while (reader.Read()) 
-            { 
+            while (reader.Read())
+            {
             }
             return reader.RowsAffected;
         }
@@ -395,9 +395,9 @@ namespace MCGalaxy.SQL
             if (len < 0)
             {
                 len = 0;
-                while (Marshal.ReadByte(ptr, len) != 0) 
-                { 
-                    len++; 
+                while (Marshal.ReadByte(ptr, len) != 0)
+                {
+                    len++;
                 }
             }
             if (len == 0)
@@ -452,9 +452,9 @@ namespace MCGalaxy.SQL
         {
             _command = cmd;
         }
-        public override void Dispose() 
-        { 
-            Close(); 
+        public override void Dispose()
+        {
+            Close();
         }
         public override void Close()
         {
@@ -484,8 +484,8 @@ namespace MCGalaxy.SQL
             return stmt.ColumnAffinity(i);
         }
         public override bool GetBoolean(int i)
-        { 
-            return GetInt32(i) != 0; 
+        {
+            return GetInt32(i) != 0;
         }
         public override byte[] GetBytes(int i)
         {
@@ -507,7 +507,7 @@ namespace MCGalaxy.SQL
         {
             return GetAffinity(i) == TypeAffinity.Int64 ? stmt.GetInt64(i) : throw new InvalidCastException();
         }
-        public override string GetString(int i) 
+        public override string GetString(int i)
         {
             return stmt.GetText(i);
         }
@@ -537,9 +537,9 @@ namespace MCGalaxy.SQL
             }
             return value;
         }
-        public override string GetName(int i) 
-        { 
-            return stmt.ColumnName(i); 
+        public override string GetName(int i)
+        {
+            return stmt.ColumnName(i);
         }
         public override int GetOrdinal(string name)
         {
@@ -595,7 +595,7 @@ namespace MCGalaxy.SQL
             CheckClosed();
             if (readState == -1)
             {
-                readState = 0; 
+                readState = 0;
                 return true;
             }
             else if (readState == 0)
@@ -740,7 +740,7 @@ namespace MCGalaxy.SQL
                 }
             }
         }
-        internal int ColumnCount() 
+        internal int ColumnCount()
         {
             return Interop.sqlite3_column_count(handle);
         }

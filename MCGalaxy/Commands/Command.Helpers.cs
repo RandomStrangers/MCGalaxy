@@ -1,4 +1,4 @@
-/*
+﻿/*
     Copyright 2015-2024 MCGalaxy
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -66,7 +66,7 @@ namespace MCGalaxy
         }
         public string CheckOwn(Player p, string name, string type)
         {
-            if (name.CaselessEq("-own"))
+            if (name.CaselessEq(EntityPropertyCmd.OWN_FLAG))
             {
                 if (p.IsSuper) { SuperRequiresArgs(p, type); return null; }
                 return p.name;
@@ -75,7 +75,7 @@ namespace MCGalaxy
         }
         public static bool IsListModifier(string str)
         {
-            return str.CaselessEq("all") || NumberUtils.TryParseInt32(str, out _);
+            return str.CaselessEq("all") || NumberUtils.TryParseInt32(str, out int ignored);
         }
         public static bool IsCreateAction(string str)
         {

@@ -1,4 +1,4 @@
-/*
+﻿/*
     Copyright 2015-2024 MCGalaxy
     Dual-licensed under the Educational Community License, Version 2.0 and
     the GNU General Public License, Version 3 (the "Licenses"); you may
@@ -43,10 +43,7 @@ namespace MCGalaxy
         /// <summary> Find partial matches of 'name' against the list of all map files. </summary>
         public static string FindMaps(Player pl, string name)
         {
-            if (!Formatter.ValidMapName(pl, name))
-            {
-                return null;
-            }
+            if (!Formatter.ValidMapName(pl, name)) return null;
             return Find(pl, name, out int matches, LevelInfo.AllMapNames(),
                         null, l => l, "levels", 10);
         }
@@ -70,54 +67,51 @@ namespace MCGalaxy
         {
             return Find(p, name, out matches, items, filter, nameGetter, nameGetter, group, limit);
         }
-        /// <summary> Finds partial matches of 'name' against the names of the items in the 'items' enumerable. </summary>
-        /// <returns> If exactly one match, the matching item. </returns>
+        /// <summary>
+        /// Binary compatibility with plugins before feedback was introduced
+        /// </summary>
         public static T Find<T>(Player p, string name, out int matches, IEnumerable<T> items,
                                 Predicate<T> filter, StringFormatter<T> nameGetter,
                                 StringFormatter<T> itemFormatter, string group, int limit = 5)
         {
-            T match = default; matches = 0;
+            return Find(p, name, out matches, items, filter, nameGetter, itemFormatter, group, limit, true);
+        }
+        /// <summary> Finds partial matches of 'name' against the names of the items in the 'items' enumerable. </summary>
+        /// <returns> If exactly one match, the matching item. </returns>
+        public static T Find<T>(Player p, string name, out int matches, IEnumerable<T> items,
+                                Predicate<T> filter, StringFormatter<T> nameGetter,
+                                StringFormatter<T> itemFormatter, string group, int limit, bool feedback)
+        {
+            T match = default;
+            matches = 0;
             StringBuilder output = new();
             const StringComparison comp = StringComparison.OrdinalIgnoreCase;
             foreach (T item in items)
             {
-                if (filter != null && !filter(item))
-                {
-                    continue;
-                }
+                if (filter != null && !filter(item)) continue;
                 string itemName = nameGetter(item);
-                if (itemName.Equals(name, comp))
+                if (itemName.Equals(name, comp)) 
                 {
-                    matches = 1;
-                    return item;
+                    matches = 1; 
+                    return item; 
                 }
-                if (itemName.IndexOf(name, comp) < 0)
-                {
-                    continue;
-                }
+                if (itemName.IndexOf(name, comp) < 0) continue;
                 match = item; matches++;
                 if (matches <= limit)
-                {
                     output.Append(itemFormatter(item)).Append("&S, ");
-                }
                 else if (matches == limit + 1)
-                {
                     output.Append("(and more), ");
-                }
             }
-            if (matches == 1)
-            {
-                return match;
-            }
+            if (matches == 1) return match;
             if (matches == 0)
             {
-                p.Message("No {0} match \"{1}\".", group, name);
+                if (feedback) p.Message("No {0} match \"{1}\".", group, name); 
                 return default;
             }
             string count = matches > limit ? limit + "+ " : matches + " ",
                 names = output.ToString(0, output.Length - 2);
-            p.Message("{0}{1} match \"{2}\":", count, group, name);
-            p.Message(names);
+            if (feedback) p.Message("{0}{1} match \"{2}\":", count, group, name);
+            if (feedback) p.Message(names);
             return default;
         }
     }

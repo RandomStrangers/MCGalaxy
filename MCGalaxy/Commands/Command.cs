@@ -159,7 +159,7 @@ namespace MCGalaxy
         }
         public static void Register(params Command[] commands)
         {
-            foreach(Command cmd in commands)
+            foreach (Command cmd in commands)
             {
                 Register(cmd);
             }
