@@ -335,7 +335,7 @@ namespace MCGalaxy
         }
         public static void SpawnEntity(Level level, string model, string ai, ushort x, ushort y, ushort z)
         {
-            if (level.Bots.Items.Length == 0 || !NASLevel.IsNASLevel(level)) return;
+            if (!NASLevel.IsNASLevel(level)) return;
             int uniqueMobId = level.Bots.Items.Length + 1;
             string uniqueName = "NASMob" + uniqueMobId;
             PlayerBot bot = new(uniqueName, level)
