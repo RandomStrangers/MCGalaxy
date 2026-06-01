@@ -57,7 +57,7 @@ namespace MCGalaxy
         }
         public static void CheckDespawn(Level level)
         {
-            if (level.Bots.Items.Length == 0 || !NASLevel.IsNASLevel(level)) return;
+            if (level == null || level.Bots.Items.Length == 0 || !NASLevel.IsNASLevel(level)) return;
             foreach (PlayerBot bot in level.Bots.Items)
             {
                 if (bot == null) continue;
@@ -80,7 +80,16 @@ namespace MCGalaxy
                     PlayerBot.Remove(bot);
                     continue;
                 }
-                ushort gb = level.FastGetBlock((ushort)bot.Pos.BlockX, (ushort)(bot.Pos.BlockY + 1), (ushort)bot.Pos.BlockZ);
+                ushort botY = (ushort)(bot.Pos.BlockY + 1);
+                ushort botX = (ushort)bot.Pos.BlockX;
+                ushort botZ = (ushort)bot.Pos.BlockZ;
+                if (botX >= level.Width)
+                    botX = level.spawnx;
+                if (botY >= level.Height)
+                    botY = level.spawny;
+                if (botZ >= level.Length)
+                    botZ = level.spawnz;
+                ushort gb = level.FastGetBlock(botX, botY, botZ);
                 switch (gb)
                 {
                     case 8:
@@ -143,15 +152,18 @@ namespace MCGalaxy
                 if (z >= lvl.Length)
                     z = (ushort)(lvl.Length - 1);
                 if (x < 0)
-                    x = 0;
+                    x = 1;
                 if (z < 0)
-                    z = 0;
+                    z = 1;
                 ushort y = FindGround(lvl, x, lvl.Height, z);
                 if (y < 0)
-                    y = 0;
+                    y = 1;
                 if (y > 1)
                 {
-                    ushort gb = lvl.FastGetBlock(x, (ushort)(y - 1), z);
+                    ushort y2 = (ushort)(y - 1);
+                    if (y2 == 0)
+                        y = 1;
+                    ushort gb = lvl.FastGetBlock(x, y2, z);
                     switch (gb)
                     {
                         case 8:
