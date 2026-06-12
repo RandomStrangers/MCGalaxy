@@ -31,7 +31,7 @@ namespace MCGalaxy
             Notes = new("text/notes.txt");
         public static PlayerList whiteList, invalidIds, ignored,
             hidden, agreed, vip, noEmotes, lockdown, reviewlist = new();
-        public const string InternalVersion = "1.0.9.7";
+        public const string InternalVersion = "1.0.9.8";
         public static string Version => InternalVersion;
         public static string SoftwareName = "MCGalaxy-NAS (Standalone)";
         public static string fullName;

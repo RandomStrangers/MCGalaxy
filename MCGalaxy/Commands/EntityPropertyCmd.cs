@@ -26,22 +26,17 @@ namespace MCGalaxy.Commands
         protected void UseBotOrPlayer(Player p, CommandData data, string message, string type)
         {
             if (message.CaselessStarts("bot "))
-            {
                 UseBot(p, data, message, type);
-            }
             else
-            {
                 UsePlayer(p, data, message, type);
-            }
         }
         public void UseBot(Player p, CommandData data, string message, string type)
         {
             string[] args = message.SplitSpaces(3);
             PlayerBot bot = Matcher.FindBots(p, args[1]);
-            if (bot == null) return;
-            if (!CheckExtraPerm(p, 2)) return;
-            if (!LevelInfo.Check(p, data.Rank, p.level, "change the " + type + " of that bot")) return;
-            if (!bot.EditableBy(p, "change the " + type + " of")) { return; }
+            if (bot == null || !CheckExtraPerm(p, 2) 
+                || !LevelInfo.Check(p, data.Rank, p.level, "change the " + type + " of that bot")
+                || !bot.EditableBy(p, "change the " + type + " of")) return;
             SetBotData(p, bot, args.Length > 2 ? args[2] : "");
         }
         bool ProcessArgs(Player p, string message, string dataType, out string target, out string value)
@@ -51,7 +46,8 @@ namespace MCGalaxy.Commands
             {
                 if (args.Length == 1)
                 {
-                    target = null; value = null;
+                    target = null;
+                    value = null;
                     p.Message("You must provide the name of the player that are you are changing the {0} of.", dataType);
                     return false;
                 }
@@ -76,10 +72,10 @@ namespace MCGalaxy.Commands
                 target = p.name;
                 value = message;
             }
-            string firstWord = value.SplitSpaces(2)[0];
+            /*string firstWord = value.SplitSpaces(2)[0];
             if (value.Length > 1)
             {
-                Player maybe = PlayerInfo.FindMatches(p, firstWord, out int matches, false);
+                Player maybe = firstWord.Length < 3 ? null : PlayerInfo.FindMatches(p, firstWord, out _, false);
                 if (maybe != null)
                 {
                     string tipModel = args.Length > 1 ? args[1] : "",
@@ -98,24 +94,22 @@ namespace MCGalaxy.Commands
                         }
                     }
                 }
-            }
+            }*/
             return true;
         }
         protected void UseOnline(Player p, CommandData data, string message, string type)
         {
             if (!ProcessArgs(p, message, type, out string target, out string value)) return;
             Player who = PlayerInfo.FindMatches(p, target);
-            if (who == null) return;
-            if (p != who && !CheckExtraPerm(p, 1)) return;
-            if (!CheckRank(p, data, who, "change the " + type + " of", true)) return;
+            if (who == null || p != who && !CheckExtraPerm(p, 1) 
+                || !CheckRank(p, data, who, "change the " + type + " of", true)) return;
             SetOnlineData(p, who, value);
         }
         protected void UsePlayer(Player p, CommandData data, string message, string type)
         {
             if (!ProcessArgs(p, message, type, out string target, out string value)) return;
             target = PlayerInfo.FindMatchesPreferOnline(p, target);
-            if (target == null) return;
-            if (p.name != target && !CheckExtraPerm(p, 1)) return;
+            if (target == null || p.name != target && !CheckExtraPerm(p, 1)) return;
             LevelPermission rank = Group.GroupIn(target).Permission;
             if (!CheckRank(p, data, target, rank, "change the " + type + " of", true)) return;
             SetPlayerData(p, target, value);

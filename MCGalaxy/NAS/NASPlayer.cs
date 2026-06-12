@@ -748,8 +748,10 @@ namespace MCGalaxy
                 drop = deathDrop
             };
             nl.blockEntities.Add(x + " " + y + " " + z, blockEntity);
-            Message("You dropped a gravestone at {0} {1} {2} in {3}", x, y, z, p.Level.name);
-            FileIO.TryAppendAllText(NAS.GetDeathPath(p.name), x + " " + y + " " + z + " in " + p.Level.name);
+            string text = x + " " + y + " " + z + " in " + p.Level.name;
+            Message(text);
+            string fileText = text+ "\n"; //Unfortunately neccessary
+            FileIO.TryAppendAllText(NAS.GetDeathPath(p.name), fileText); 
             nl.blockEntities[x + " " + y + " " + z].lockedBy = p.name;
             nl.blockEntities[x + " " + y + " " + z].drop.exp = GetExp();
         }

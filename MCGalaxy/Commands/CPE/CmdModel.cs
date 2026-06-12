@@ -26,15 +26,7 @@ namespace MCGalaxy.Commands.CPE
                 new CommandAlias("XModel"),
                 new CommandAlias("OModel", "-other")
             };
-        public override void Use(Player p, string message, CommandData data)
-        {
-            if (message.IndexOf(' ') == -1)
-            {
-                message = "-own " + message;
-                message = message.TrimEnd();
-            }
-            UseBotOrOnline(p, data, message, "model");
-        }
+        public override void Use(Player p, string message, CommandData data) => UseBotOrOnline(p, data, message, "model");
         protected override void SetBotData(Player p, PlayerBot bot, string model)
         {
             model = ParseModel(p, bot, model);
@@ -50,21 +42,13 @@ namespace MCGalaxy.Commands.CPE
             if (model == null) return;
             who.UpdateModel(model);
             if (p != who)
-            {
-                Chat.MessageFrom(who, "λNICK &Shad " + who.Pronouns.Object + " model changed to &c" + model);
-            }
+                PlayerOperations.MessageAction(p, who.name, who, "λACTOR &Schanged λTARGET's model to &c" + model);
             else
-            {
                 who.Message("Changed your own model to &c" + model);
-            }
             if (!model.CaselessEq("humanoid"))
-            {
                 Server.models.Update(who.name, model);
-            }
             else
-            {
                 Server.models.Remove(who.name);
-            }
             Server.models.Save();
             if (orig.Length == 0) CmdModelScale.UpdateSavedScale(who);
         }
@@ -111,9 +95,7 @@ namespace MCGalaxy.Commands.CPE
                 p.Message("&H  e.g. pig|0.5, chibi|3");
             }
             else
-            {
                 Help(p);
-            }
         }
     }
 }
