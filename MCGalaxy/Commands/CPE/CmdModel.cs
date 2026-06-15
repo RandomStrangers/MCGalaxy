@@ -29,49 +29,13 @@ namespace MCGalaxy.Commands.CPE
         public override void Use(Player p, string message, CommandData data) => UseBotOrOnline(p, data, message, "model");
         protected override void SetBotData(Player p, PlayerBot bot, string model)
         {
-            model = ParseModel(p, bot, model);
+            model = PlayerOperations.ParseModel(p, bot, model);
             if (model == null) return;
             bot.UpdateModel(model);
             p.Message("You changed the model of bot {0} &Sto a &c{1}", bot.ColoredName, model);
             BotsFile.Save(p.level);
         }
-        protected override void SetOnlineData(Player p, Player who, string model)
-        {
-            string orig = model;
-            model = ParseModel(p, who, model);
-            if (model == null) return;
-            who.UpdateModel(model);
-            if (p != who)
-                PlayerOperations.MessageAction(p, who.name, who, "λACTOR &Schanged λTARGET's model to &c" + model);
-            else
-                who.Message("Changed your own model to &c" + model);
-            if (!model.CaselessEq("humanoid"))
-                Server.models.Update(who.name, model);
-            else
-                Server.models.Remove(who.name);
-            Server.models.Save();
-            if (orig.Length == 0) CmdModelScale.UpdateSavedScale(who);
-        }
-        static string ParseModel(Player dst, Entity e, string model)
-        {
-            if (model.Length == 0)
-            {
-                e.ScaleX = 0; 
-                e.ScaleY = 0; 
-                e.ScaleZ = 0;
-                return "humanoid";
-            }
-            model = model.ToLower();
-            model = model.Replace(':', '|');
-            float max = ModelInfo.MaxScale(e, model);
-            if (ModelInfo.GetRawScale(model) > max)
-            {
-                dst.Message("&WScale must be {0} or less for {1} model",
-                            max, ModelInfo.GetRawModel(model));
-                return null;
-            }
-            return model;
-        }
+        protected override void SetOnlineData(Player p, Player who, string model) => PlayerOperations.SetModel(p, who, model);
         public override void Help(Player p)
         {
             p.Message("&T/Model <model> &H- Sets your own model.");

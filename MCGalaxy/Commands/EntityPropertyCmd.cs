@@ -72,29 +72,6 @@ namespace MCGalaxy.Commands
                 target = p.name;
                 value = message;
             }
-            /*string firstWord = value.SplitSpaces(2)[0];
-            if (value.Length > 1)
-            {
-                Player maybe = firstWord.Length < 3 ? null : PlayerInfo.FindMatches(p, firstWord, out _, false);
-                if (maybe != null)
-                {
-                    string tipModel = args.Length > 1 ? args[1] : "",
-                        action = tipModel == "" ? "remove" : "change";
-                    if (maybe == p)
-                    {
-                        p.Message("&WTIP:");
-                        p.Message("&H  To " + action + " your own {0}, use /{1} {2}", dataType, Name.ToLower(), tipModel);
-                    }
-                    else
-                    {
-                        if (HasExtraPerm(p.Rank, 1))
-                        {
-                            p.Message("&WTIP:");
-                            p.Message("&H  To " + action + " &Wother&H player's {0}, use /O{1} [player] {2}", dataType, Name, tipModel);
-                        }
-                    }
-                }
-            }*/
             return true;
         }
         protected void UseOnline(Player p, CommandData data, string message, string type)
