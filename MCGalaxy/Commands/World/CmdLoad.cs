@@ -16,7 +16,7 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdLoad : Command2
     {
-        public override string Name => "Load";
+        public override string Name => "Setup";
         public override string Type => CommandTypes.World;
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override CommandAlias[] Aliases => new[] { new CommandAlias("MapLoad"), new CommandAlias("WLoad") };
@@ -37,7 +37,7 @@ namespace MCGalaxy.Commands.World
         }
         public override void Help(Player p)
         {
-            p.Message("&T/Load [level]");
+            p.Message("&T/Setup [level]");
             p.Message("&HLoads a level.");
         }
     }

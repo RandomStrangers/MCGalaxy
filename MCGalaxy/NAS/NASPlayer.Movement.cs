@@ -35,8 +35,8 @@ namespace MCGalaxy
     }
     public partial class NASPlayer
     {
-        public static void Register() => OnPlayerSpawningEvent.Register(OnPlayerSpawning, Priority.High);
-        public static void Unregister() => OnPlayerSpawningEvent.Unregister(OnPlayerSpawning);
+        public static void Setup() => OnPlayerSpawningEvent.Register(OnPlayerSpawning, Priority.High);
+        public static void TakeDown() => OnPlayerSpawningEvent.Unregister(OnPlayerSpawning);
         public static void OnPlayerSpawning(Player p, ref Position pos, ref byte yaw, ref byte pitch, bool respawning)
         {
             NASPlayer np = GetPlayer(p);

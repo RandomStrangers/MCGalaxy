@@ -5,13 +5,6 @@ using Newtonsoft.Json;
 using System;
 namespace MCGalaxy
 {
-    public class NASDisplayInfo
-    {
-        public NASInventory inv;
-        public NASBlock nasBlock;
-        public int amountChanged;
-        public bool showToNormalChat;
-    }
     public partial class NASInventory
     {
         [JsonIgnore] public Player p;

@@ -448,12 +448,12 @@ namespace MCGalaxy
 \t\t// Who created/authored this plugin
 \t\tpublic override string Creator {{ get {{ return ""{1}""; }} }}
 \t\t// Called when this plugin is being loaded (e.g. on server startup)
-\t\tpublic override void Load(bool startup)
+\t\tpublic override void Setup(bool startup)
 \t\t{{
 \t\t\t//code to hook into events, load state/resources etc goes here
 \t\t}}
 \t\t// Called when this plugin is being unloaded (e.g. on server shutdown)
-\t\tpublic override void Unload(bool shutdown)
+\t\tpublic override void TakeDown(bool shutdown)
 \t\t{{
 \t\t\t//code to unhook from events, dispose of state/resources etc goes here
 \t\t}}

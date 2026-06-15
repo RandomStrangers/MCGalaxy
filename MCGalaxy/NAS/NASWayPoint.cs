@@ -16,12 +16,6 @@ using System.Collections.Generic;
 using System.IO;
 namespace MCGalaxy
 {
-    public class NASWayPoint
-    {
-        public Position Pos;
-        public byte Yaw, Pitch;
-        public string Name, Level;
-    }
     public class NASWayPointList
     {
         public const string Path = NASPlayer.Path + "WayPoints/";

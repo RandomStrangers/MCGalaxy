@@ -68,15 +68,15 @@ namespace MCGalaxy
                 || str.CaselessEq("check");
         public static bool IsListAction(string str) => str.CaselessEq("list") || str.CaselessEq("view");
     }
-    public sealed class CommandTypes
+    public class CommandTypes
     {
-        public const string Building = "Building";
-        public const string Chat = "Chat";
-        public const string Economy = "Economy";
-        public const string Games = "Games";
-        public const string Information = "Info";
-        public const string Moderation = "Moderation";
-        public const string Other = "Other";
-        public const string World = "World";
+        public const string Building = "Building",
+            Chat = "Chat",
+            Economy = "Economy",
+            Games = "Games",
+            Information = "Info",
+            Moderation = "Moderation",
+            Other = "Other",
+            World = "World";
     }
 }

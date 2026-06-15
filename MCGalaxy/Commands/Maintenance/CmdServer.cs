@@ -181,8 +181,6 @@ namespace MCGalaxy.Commands.Maintenance
             p.Message("&T/Server backup &H- Make a backup. See &T/help server backup");
             p.Message("&T/Server backup table [name] &H- Backups that database table");
             p.Message("&T/Server import [name] &H- Imports a backed up database table");
-            p.Message("&T/Server upgradeblockdb &H- Dumps BlockDB tables from database");
-            p.Message("&HOnly useful when upgrading from a very old {0} version", Server.SoftwareName);
         }
     }
 }

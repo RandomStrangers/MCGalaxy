@@ -5,39 +5,14 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using NASBlockAction = MCGalaxy.NASAction<MCGalaxy.NASLevel, MCGalaxy.NASBlock, int, int, int>;
 namespace MCGalaxy
 {
-    public class NASBlockLocation
-    {
-        public int X, Y, Z;
-        public NASBlockLocation() { }
-        public NASBlockLocation(NASQueuedBlockUpdate qb)
-        {
-            X = qb.x;
-            Y = qb.y;
-            Z = qb.z;
-        }
-        public NASBlockLocation(int x, int y, int z)
-        {
-            X = x;
-            Y = y;
-            Z = z;
-        }
-    }
-    public struct NASQueuedBlockUpdate
-    {
-        public int x, y, z;
-        public NASBlock nb;
-        public DateTime date;
-        public NASBlockAction da;
-    }
     public class NASLevel
     {
         [JsonIgnore] public static Dictionary<string, NASLevel> all = new();
         [JsonIgnore] public Level lvl;
         [JsonIgnore] public ushort[,] heightmap = new ushort[0, 0];
-        [JsonIgnore] public SimplePriorityQueue<NASQueuedBlockUpdate, DateTime> tickQueue = new();
+        [JsonIgnore] public NASSimplePriorityQueue<NASQueuedBlockUpdate, DateTime> tickQueue = new();
         [JsonIgnore] public SchedulerTask schedulerTask;
         public int biome;
         public bool dungeons = false,

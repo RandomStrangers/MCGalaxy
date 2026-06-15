@@ -209,7 +209,7 @@ namespace MCGalaxy
         public string Theme = "Normal";
         [ConfigString("Seed", "General", "", true)]
         public string Seed = "";
-        [ConfigBool("Unload", "General", true)]
+        [ConfigBool("TakeDown", "General", true)]
         public bool AutoUnload = true;
         /// <summary> true if this map may see server-wide chat, false if this map has level-only/isolated chat </summary>
         [ConfigBool("WorldChat", "General", true)]

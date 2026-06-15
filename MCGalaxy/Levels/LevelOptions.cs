@@ -32,7 +32,7 @@ namespace MCGalaxy
         public delegate void OptionSetter(Player p, Level lvl, string value);
         public const string MOTD = "motd", RealmOwner = "RealmOwner", Speed = "Speed";
         public const string Overload = "Overload", Fall = "Fall", Drown = "Drown", Finite = "Finite", AI = "AI";
-        public const string Edge = "Edge", Grass = "Grass", Death = "Death", Killer = "Killer", Unload = "Unload";
+        public const string Edge = "Edge", Grass = "Grass", Death = "Death", Killer = "Killer", Unload = "TakeDown";
         public const string Goto = "LoadOnGoto", Decay = "LeafDecay", Flow = "RandomFlow", Trees = "GrowTrees";
         public const string Chat = "Chat", Guns = "Guns", Buildable = "Buildable", Deletable = "Deletable";
         public const string LoadDelay = "LoadDelay", Drawing = "Drawing", Authors = "Authors";
@@ -114,7 +114,7 @@ namespace MCGalaxy
         public static void SetDeath(Player p, Level l, string v) => Toggle(p, l, ref l.Config.SurvivalDeath, "Survival death");
         public static void SetKiller(Player p, Level l, string v) => Toggle(p, l, ref l.Config.KillerBlocks, "Killer blocks");
         public static void SetUnload(Player p, Level l, string v) => Toggle(p, l, ref l.Config.AutoUnload, "Auto unload");
-        public static void SetGoto(Player p, Level l, string v) => Toggle(p, l, ref l.Config.LoadOnGoto, "Load on goto");
+        public static void SetGoto(Player p, Level l, string v) => Toggle(p, l, ref l.Config.LoadOnGoto, "Setup on goto");
         public static void SetDecay(Player p, Level l, string v) => Toggle(p, l, ref l.Config.LeafDecay, "Leaf decay");
         public static void SetFlow(Player p, Level l, string v) => Toggle(p, l, ref l.Config.RandomFlow, "Random flow");
         public static void SetTrees(Player p, Level l, string v) => Toggle(p, l, ref l.Config.GrowTrees, "Tree growing");
@@ -131,8 +131,8 @@ namespace MCGalaxy
         public static void SetLoadDelay(Player p, Level l, string value)
         {
             int raw = 0;
-            if (!CommandParser.GetInt(p, value, "Load delay", ref raw, 0, 2000)) return;
-            SetInt(l, raw, ref l.Config.LoadDelay, "Load delay");
+            if (!CommandParser.GetInt(p, value, "Setup delay", ref raw, 0, 2000)) return;
+            SetInt(l, raw, ref l.Config.LoadDelay, "Setup delay");
         }
         public static void SetSpeed(Player p, Level l, string value)
         {

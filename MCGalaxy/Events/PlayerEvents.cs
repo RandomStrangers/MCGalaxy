@@ -103,8 +103,7 @@ namespace MCGalaxy.Events.PlayerEvents
     {
         public static void Call(Player p)
         {
-            if (handlers.Count == 0) return;
-            CallCommon(pl => pl(p));
+            if (handlers.Count != 0) CallCommon(pl => pl(p));
         }
     }
     public delegate void OnPlayerOperation(Player p, PlayerOperation operation, string targetName, Player target, ref string value, ref bool cancel);
@@ -133,8 +132,7 @@ namespace MCGalaxy.Events.PlayerEvents
     {
         public static void Call(Player p, string mppass)
         {
-            if (handlers.Count == 0) return;
-            CallCommon(pl => pl(p, mppass));
+            if (handlers.Count != 0) CallCommon(pl => pl(p, mppass));
         }
     }
     public delegate void OnPlayerFinishConnecting(Player p);
@@ -144,8 +142,7 @@ namespace MCGalaxy.Events.PlayerEvents
     {
         public static void Call(Player p)
         {
-            if (handlers.Count == 0) return;
-            CallCommon(pl => pl(p));
+            if (handlers.Count != 0) CallCommon(pl => pl(p));
         }
     }
     public delegate void OnPlayerDying(Player p, ushort cause, ref bool cancel);
@@ -192,8 +189,7 @@ namespace MCGalaxy.Events.PlayerEvents
     {
         public static void Call(Player p, string reason)
         {
-            if (handlers.Count == 0) return;
-            CallCommon(pl => pl(p, reason));
+            if (handlers.Count != 0) CallCommon(pl => pl(p, reason));
         }
     }
     public delegate void SelectionBlockChange(Player p, ushort x, ushort y, ushort z, ushort block);
@@ -317,8 +313,7 @@ namespace MCGalaxy.Events.PlayerEvents
     {
         public static void Call(Player p, Level prevLevl, Level level)
         {
-            if (handlers.Count == 0) return;
-            CallCommon(pl => pl(p, prevLevl, level));
+            if (handlers.Count != 0) CallCommon(pl => pl(p, prevLevl, level));
         }
     }
     public delegate void OnJoiningLevel(Player p, Level lvl, ref bool canJoin);
@@ -366,8 +361,7 @@ namespace MCGalaxy.Events.PlayerEvents
         public static void Call(Player p, PlayerAction action,
                                 string message = null, bool stealth = false)
         {
-            if (handlers.Count == 0) return;
-            CallCommon(pl => pl(p, action, message, stealth));
+            if (handlers.Count != 0) CallCommon(pl => pl(p, action, message, stealth));
         }
     }
     public delegate void OnSettingPrefix(Player p, List<string> prefixes);
@@ -376,8 +370,7 @@ namespace MCGalaxy.Events.PlayerEvents
     {
         public static void Call(Player p, List<string> prefixes)
         {
-            if (handlers.Count == 0) return;
-            CallCommon(pl => pl(p, prefixes));
+            if (handlers.Count != 0) CallCommon(pl => pl(p, prefixes));
         }
     }
     public delegate void OnSettingColor(Player p, ref string color);
@@ -462,8 +455,7 @@ namespace MCGalaxy.Events.PlayerEvents
     {
         public static void Call(Player p)
         {
-            if (handlers.Count == 0) return;
-            CallCommon(pl => pl(p));
+            if (handlers.Count != 0) CallCommon(pl => pl(p));
         }
     }
     public delegate void OnGettingCanSee(Player p, LevelPermission plRank, ref bool canSee, Player target);

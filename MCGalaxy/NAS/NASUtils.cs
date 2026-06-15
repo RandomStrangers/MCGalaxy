@@ -5,8 +5,97 @@ using System;
 using System.IO;
 using System.Net;
 using System.Threading;
+using NASBlockAction = MCGalaxy.NASAction<MCGalaxy.NASLevel, MCGalaxy.NASBlock, int, int, int>;
 namespace MCGalaxy
 {
+    public enum NASDayCycles
+    {
+        Sunrise, Day, Sunset, Night, Midnight
+    }
+    public enum NASContainerType
+    {
+        Chest, Barrel, Crate,
+        Gravestone, AutoCraft, Dispenser
+    }
+    public enum NASMaterial
+    {
+        None,
+        Gas,
+        Stone,
+        Earth,
+        Wood,
+        Plant,
+        Leaves,
+        Organic,
+        Glass,
+        Metal,
+        Liquid,
+        Lava,
+        Count
+    }
+    public class NASWayPoint
+    {
+        public Position Pos;
+        public byte Yaw, Pitch;
+        public string Name, Level;
+    }
+    public class NASDisplayInfo
+    {
+        public NASInventory inv;
+        public NASBlock nasBlock;
+        public int amountChanged;
+        public bool showToNormalChat;
+    }
+    public class NASBlockStack
+    {
+        public int amount;
+        public ushort ID;
+        public NASBlockStack(ushort ID, int amount = 1)
+        {
+            this.ID = ID;
+            this.amount = amount;
+        }
+    }
+    public class NASBlockLocation
+    {
+        public int X, Y, Z;
+        public NASBlockLocation() { }
+        public NASBlockLocation(NASQueuedBlockUpdate qb)
+        {
+            X = qb.x;
+            Y = qb.y;
+            Z = qb.z;
+        }
+        public NASBlockLocation(int x, int y, int z)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+        }
+    }
+    public class NASMobMetadata
+    {
+        public int waitTime, walkTime, lookTime, search;
+        public Player chasing;
+    }
+    public class NASQueueException : InvalidOperationException
+    {
+        public NASQueueException(string message) : base(message)
+        {
+        }
+    }
+    public struct NASCoords
+    {
+        public int X, Y, Z;
+        public byte RotX, RotY;
+    }
+    public struct NASQueuedBlockUpdate
+    {
+        public int x, y, z;
+        public NASBlock nb;
+        public DateTime date;
+        public NASBlockAction da;
+    }
     public partial class NAS
     {
         public static bool HasExtraPerm(NASPlayer np, string cmd, int num) => CommandExtraPerms.Find(cmd, num).UsableBy(np.p.Rank);
@@ -132,12 +221,12 @@ namespace MCGalaxy
         }
         public static void Sleep() => Thread.Sleep(TimeSpan.FromSeconds(30 + 0.5f));
     }
-    public delegate void NASAction<T1>(T1 arg1);
-    public delegate void NASAction<T1, T2>(T1 arg1, T2 arg2);
-    public delegate void NASAction<T1, T2, T3>(T1 arg1, T2 arg2, T3 arg3);
-    public delegate void NASAction<T1, T2, T3, T4>(T1 arg1, T2 arg2, T3 arg3, T4 arg4);
-    public delegate void NASAction<T1, T2, T3, T4, T5>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5);
-    public delegate void NASAction<T1, T2, T3, T4, T5, T6>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6);
-    public delegate void NASAction<T1, T2, T3, T4, T5, T6, T7>(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7);
-    public delegate TResult NASFunc<T1, T2, out TResult>(T1 arg1, T2 arg2);
+    public delegate void NASAction<NAS1>(NAS1 arg1);
+    public delegate void NASAction<NAS1, NAS2>(NAS1 arg1, NAS2 arg2);
+    public delegate void NASAction<NAS1, NAS2, NAS3>(NAS1 arg1, NAS2 arg2, NAS3 arg3);
+    public delegate void NASAction<NAS1, NAS2, NAS3, NAS4>(NAS1 arg1, NAS2 arg2, NAS3 arg3, NAS4 arg4);
+    public delegate void NASAction<NAS1, NAS2, NAS3, NAS4, NAS5>(NAS1 arg1, NAS2 arg2, NAS3 arg3, NAS4 arg4, NAS5 arg5);
+    public delegate void NASAction<NAS1, NAS2, NAS3, NAS4, NAS5, NAS6>(NAS1 arg1, NAS2 arg2, NAS3 arg3, NAS4 arg4, NAS5 arg5, NAS6 arg6);
+    public delegate void NASAction<NAS1, NAS2, NAS3, NAS4, NAS5, NAS6, NAS7>(NAS1 arg1, NAS2 arg2, NAS3 arg3, NAS4 arg4, NAS5 arg5, NAS6 arg6, NAS7 arg7);
+    public delegate NASResult NASFunc<NAS1, NAS2, out NASResult>(NAS1 arg1, NAS2 arg2);
 }

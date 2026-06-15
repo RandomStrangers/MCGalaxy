@@ -32,7 +32,7 @@ namespace MCGalaxy
             EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/NAS/Uploads/global.json", "blockdefs/global.json");
             EnsureFileExists("https://github.com/RandomStrangers/MCGalaxy/raw/NAS/Newtonsoft.Json.dll", "Newtonsoft.Json.dll");
         }
-        public static void Load()
+        public static void Setup()
         {
             EnsureDirectoriesExist(Path, NASPlayer.Path,
                 NASTimeCycle.Path, NASEffect.Path,
@@ -40,44 +40,43 @@ namespace MCGalaxy
                 NASPlayer.DeathsPath, NASWayPointList.Path,
                 "blockprops", "blockdefs", "text");
             EnsureNASFilesExist();
-            if (!File.Exists("NAS/Loaded.txt"))
-            {
-                firstEverLoad = true;
-                FileIO.TryWriteAllText("NAS/Loaded.txt", "Do not delete this file unless you are using NAS for the first time!");
-            }
+            firstEverLoad = !File.Exists("NAS/Loaded.txt");
             if (firstEverLoad)
+            {
+                FileIO.TryWriteAllText("NAS/Loaded.txt", "Do not delete this file unless you are using NAS for the first time!");
                 LoadFirstTime();
+            }
             Command.Register(Commands);
-            NASPlayer.Register();
+            NASPlayer.Setup();
             NASBlock.Setup();
             if (!NASEffect.Setup() || !NASBlockChange.Setup() || !NASColor.Setup())
-            {
                 Log("NAS: FAILED to load. Please report this to " + DiscordAccountName + " on Discord!");
-                return;
+            else
+            {
+                NASItemProp.Setup();
+                NASCrafting.Setup();
+                NASCollision.Setup();
+                OnPlayerConnectEvent.Register(OnPlayerConnect, Priority.High);
+                OnPlayerClickEvent.Register(OnPlayerClick, Priority.High);
+                OnBlockChangingEvent.Register(OnBlockChanging, Priority.High);
+                OnBlockChangedEvent.Register(OnBlockChanged, Priority.High);
+                OnPlayerMoveEvent.Register(OnPlayerMove, Priority.High);
+                OnPlayerChatEvent.Register(OnPlayerMessage, Priority.Normal);
+                OnPlayerDisconnectEvent.Register(OnPlayerDisconnect, Priority.Low);
+                OnPlayerCommandEvent.Register(OnPlayerCommand, Priority.High);
+                OnShuttingDownEvent.Register(OnShutdown, Priority.Low);
+                OnSentMapEvent.Register(HandleSentMap, Priority.Critical);
+                NASGen.Setup();
+                NASLevel.Setup();
+                NASTimeCycle.Setup();
+                if (firstEverLoad) GenLevel();
+                NASMob.Setup();
+                Logger.Log(LogType.SystemActivity, "NAS loaded.");
             }
-            NASItemProp.Setup();
-            NASCrafting.Setup();
-            NASCollision.Setup();
-            OnPlayerConnectEvent.Register(OnPlayerConnect, Priority.High);
-            OnPlayerClickEvent.Register(OnPlayerClick, Priority.High);
-            OnBlockChangingEvent.Register(OnBlockChanging, Priority.High);
-            OnBlockChangedEvent.Register(OnBlockChanged, Priority.High);
-            OnPlayerMoveEvent.Register(OnPlayerMove, Priority.High);
-            OnPlayerChatEvent.Register(OnPlayerMessage, Priority.Normal);
-            OnPlayerDisconnectEvent.Register(OnPlayerDisconnect, Priority.Low);
-            OnPlayerCommandEvent.Register(OnPlayerCommand, Priority.High);
-            OnShuttingDownEvent.Register(OnShutdown, Priority.Low);
-            OnSentMapEvent.Register(HandleSentMap, Priority.Critical);
-            NASGen.Setup();
-            NASLevel.Setup();
-            NASTimeCycle.Setup();
-            if (firstEverLoad) GenLevel();
-            NASMob.Setup();
-            Logger.Log(LogType.SystemActivity, "NAS loaded.");
         }
-        public static void Unload()
+        public static void TakeDown()
         {
-            NASPlayer.Unregister();
+            NASPlayer.TakeDown();
             NASColor.TakeDown();
             Command.Unregister(Commands);
             OnPlayerConnectEvent.Unregister(OnPlayerConnect);

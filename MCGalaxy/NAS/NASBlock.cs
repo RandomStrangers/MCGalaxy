@@ -13,22 +13,6 @@ using NASBlockInteraction =
     MCGalaxy.NASBlock, ushort, ushort, ushort>;
 namespace MCGalaxy
 {
-    public enum NASMaterial
-    {
-        None,
-        Gas,
-        Stone,
-        Earth,
-        Wood,
-        Plant,
-        Leaves,
-        Organic,
-        Glass,
-        Metal,
-        Liquid,
-        Lava,
-        Count
-    }
     public partial class NASBlock
     {
         public static NASBlock[] blocks = new NASBlock[768], blocksIndexedByServerushort;

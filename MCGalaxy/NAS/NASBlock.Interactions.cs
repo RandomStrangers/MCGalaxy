@@ -14,11 +14,6 @@ using NASBlockInteraction =
     MCGalaxy.NASBlock, ushort, ushort, ushort>;
 namespace MCGalaxy
 {
-    public enum NASContainerType
-    {
-        Chest, Barrel, Crate,
-        Gravestone, AutoCraft, Dispenser
-    }
     public class NASContainer
     {
         public const int ToolLimit = 27, BlockStackLimit = 27;

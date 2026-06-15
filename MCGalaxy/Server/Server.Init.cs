@@ -49,7 +49,7 @@ namespace MCGalaxy
             Plugin.LoadAll();
             OnPluginsLoadedEvent.Call();
         }
-        public static void LoadNAS(SchedulerTask _) => NAS.Load();
+        public static void LoadNAS(SchedulerTask _) => NAS.Setup();
         public static void InitPlayerLists(SchedulerTask _)
         {
             LoadPlayerLists();

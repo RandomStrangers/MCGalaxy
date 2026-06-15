@@ -30,17 +30,13 @@ namespace MCGalaxy.Commands.Maintenance
                 string latest = new WebClient().DownloadString("https://raw.githubusercontent.com/RandomStrangers/MCGalaxy/NAS/Uploads/version.txt");
                 bool needsUpdate = true;
                 if (!string.IsNullOrEmpty(latest))
-                {
                     needsUpdate = new Version(latest) > new Version(Server.Version);
-                }
                 p.Message("Server {0}", needsUpdate ? "&cneeds updating" : "&ais up to date");
                 if (needsUpdate)
                 {
                     p.Message("Current version: {0}.", Server.Version);
                     if (!string.IsNullOrEmpty(latest))
-                    {
                         p.Message("Latest version: {0}.", latest);
-                    }
                 }
             }
             else if (message.CaselessEq("latest"))
@@ -79,9 +75,7 @@ namespace MCGalaxy.Commands.Maintenance
                 }
             }
             else
-            {
                 Help(p);
-            }
         }
         public override void Help(Player p)
         {

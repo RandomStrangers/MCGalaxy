@@ -4,10 +4,6 @@ using Newtonsoft.Json;
 using System.IO;
 namespace MCGalaxy
 {
-    public enum NASDayCycles
-    {
-        Sunrise, Day, Sunset, Night, Midnight
-    }
     public class NASTimeCycle
     {
         public static float globalCurrentTime;

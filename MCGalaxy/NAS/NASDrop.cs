@@ -54,14 +54,4 @@ namespace MCGalaxy
                 items = null;
         }
     }
-    public class NASBlockStack
-    {
-        public int amount;
-        public ushort ID;
-        public NASBlockStack(ushort ID, int amount = 1)
-        {
-            this.ID = ID;
-            this.amount = amount;
-        }
-    }
 }

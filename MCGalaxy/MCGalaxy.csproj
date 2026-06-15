@@ -644,9 +644,9 @@
     <Compile Include="NAS\NAS.cs" />
     <Compile Include="NAS\NASPlayer.cs" />
     <Compile Include="NAS\NASTree.cs" />
-    <Compile Include="NAS\Priority Queue\GenericPriorityQueue.cs" />
-    <Compile Include="NAS\Priority Queue\IPriorityQueue.cs" />
-    <Compile Include="NAS\Priority Queue\SimplePriorityQueue.cs" />
+    <Compile Include="NAS\NASGenericPriorityQueue.cs" />
+    <Compile Include="NAS\NASIPriorityQueue.cs" />
+    <Compile Include="NAS\NASSimplePriorityQueue.cs" />
     <Compile Include="NAS\NASPlayerInventory.Items.cs" />
   </ItemGroup>
   <ItemGroup>

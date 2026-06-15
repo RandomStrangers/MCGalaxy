@@ -16,7 +16,7 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdUnload : Command2
     {
-        public override string Name => "Unload";
+        public override string Name => "TakeDown";
         public override string Type => CommandTypes.World;
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
@@ -51,7 +51,7 @@ namespace MCGalaxy.Commands.World
         }
         public override void Help(Player p)
         {
-            p.Message("&T/Unload [map name]");
+            p.Message("&T/TakeDown [map name]");
             p.Message("&HUnloads the given map.");
             p.Message("&H  If map name is \"empty\", unloads all maps with no players in them.");
             p.Message("&H  If no map name is given, unloads the current map.");

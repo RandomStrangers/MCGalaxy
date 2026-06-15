@@ -272,7 +272,7 @@ namespace MCGalaxy
             }
             OnShuttingDownEvent.Call(restarting, msg);
             Plugin.UnloadAll();
-            NAS.Unload();
+            NAS.TakeDown();
             try
             {
                 if (SetupFinished && !Config.AutoLoadMaps)

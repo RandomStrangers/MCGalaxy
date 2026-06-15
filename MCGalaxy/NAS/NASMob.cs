@@ -8,11 +8,6 @@ using MCGalaxy.Network;
 using MCGalaxy.Tasks;
 namespace MCGalaxy
 {
-    public struct NASCoords
-    {
-        public int X, Y, Z;
-        public byte RotX, RotY;
-    }
     public class NASMob
     {
         public static BotInstruction NAShostile, NASroam;
@@ -57,218 +52,237 @@ namespace MCGalaxy
         }
         public static void CheckDespawn(Level level)
         {
-            if (level == null || level.Bots.Items.Length == 0 || !NASLevel.IsNASLevel(level)) return;
-            foreach (PlayerBot bot in level.Bots.Items)
+            try
             {
-                if (bot == null) continue;
-                if (bot.DisplayName != "" || !bot.name.Contains("NASMob"))
-                    continue;
-                if (GetPlayersInLevel(level).Count < 1)
+                if (level == null || level.Bots.Items.Length == 0 || !NASLevel.IsNASLevel(level)) return;
+                foreach (PlayerBot bot in level.Bots.Items)
                 {
-                    PlayerBot.Remove(bot);
-                    continue;
-                }
-                if (bot.AIName == "NASHostile" && NASTimeCycle.globalCurrentDayCycle == NASDayCycles.Day)
-                {
-                    if (!mobHealth.ContainsKey(bot)) PlayerBot.Remove(bot);
-                    mobHealth[bot] = mobHealth[bot] - 10;
-                    if (mobHealth[bot] <= 0)
+                    if (bot == null) continue;
+                    if (bot.DisplayName != "" || !bot.name.Contains("NASMob"))
+                        continue;
+                    if (GetPlayersInLevel(level).Count < 1)
                     {
-                        mobHealth.Remove(bot);
-                        PlayerBot.Remove(bot);
-                    }
-                    PlayerBot.Remove(bot);
-                    continue;
-                }
-                ushort botY = (ushort)(bot.Pos.BlockY + 1);
-                ushort botX = (ushort)bot.Pos.BlockX;
-                ushort botZ = (ushort)bot.Pos.BlockZ;
-                if (botX >= level.Width)
-                    botX = level.spawnx;
-                if (botY >= level.Height)
-                    botY = level.spawny;
-                if (botZ >= level.Length)
-                    botZ = level.spawnz;
-                ushort gb = level.FastGetBlock(botX, botY, botZ);
-                switch (gb)
-                {
-                    case 8:
-                    case 9:
-                    case 10:
-                    case 11:
                         PlayerBot.Remove(bot);
                         continue;
-                }
-                int shortestDist = 650;
-                foreach (Player p in GetPlayersInLevel(level))
-                {
-                    int x = bot.Pos.BlockX,
-                        y = bot.Pos.BlockY,
-                        z = bot.Pos.BlockZ,
-                        dx = p.Pos.BlockX - x, dy = p.Pos.BlockY - y, dz = p.Pos.BlockZ - z,
-                        playerDist = Math.Abs(dx) + Math.Abs(dz);
-                    if (playerDist < shortestDist)
-                        shortestDist = playerDist;
-                }
-                if (shortestDist >= 210)
-                    PlayerBot.Remove(bot);
-            }
-        }
-        public static List<Player> GetPlayersInLevel(Level lvl)
-        {
-            List<Player> players = new();
-            foreach (Player p in PlayerInfo.Online.Items)
-            {
-                if (p == null) continue;
-                if (p.Level == lvl)
-                    players.Add(p);
-            }
-            return players;
-        }
-        public static void HandleMobSpawning(SchedulerTask task)
-        {
-            mobSpawningTask = task;
-            Level[] levels = LevelInfo.Loaded.Items;
-            if (PlayerInfo.Online.Items.Length < 1)
-            {
-                foreach (Level lvl in levels)
-                    CheckDespawn(lvl);
-                return;
-            }
-            foreach (Level lvl in levels)
-            {
-                CheckDespawn(lvl);
-                if (lvl.name.CaselessContains("nether")) continue;
-                List<Player> players = GetPlayersInLevel(lvl);
-                if (GetMobsInLevel(lvl).Length >= (mobCapPerPlayer * players.Count))
-                    continue;
-                Player selectedPlayer = players[rnd.Next(players.Count)];
-                if (selectedPlayer == null)
-                    continue;
-                ushort x = (ushort)(selectedPlayer.Pos.BlockX + (rnd.Next(25, 128) * (rnd.Next(2) == 1 ? 1 : -1))),
-                    z = (ushort)(selectedPlayer.Pos.BlockZ + (rnd.Next(25, 128) * (rnd.Next(2) == 1 ? 1 : -1)));
-                if (x >= lvl.Width)
-                    x = (ushort)(lvl.Width - 1);
-                if (z >= lvl.Length)
-                    z = (ushort)(lvl.Length - 1);
-                if (x < 0)
-                    x = 1;
-                if (z < 0)
-                    z = 1;
-                ushort y = FindGround(lvl, x, lvl.Height, z);
-                if (y < 0)
-                    y = 1;
-                if (y > 1)
-                {
-                    ushort y2 = (ushort)(y - 1);
-                    if (y2 == 0)
-                        y = 1;
-                    ushort gb = lvl.FastGetBlock(x, y2, z);
+                    }
+                    if (bot.AIName == "NASHostile" && NASTimeCycle.globalCurrentDayCycle == NASDayCycles.Day)
+                    {
+                        if (!mobHealth.ContainsKey(bot)) PlayerBot.Remove(bot);
+                        mobHealth[bot] = mobHealth[bot] - 10;
+                        if (mobHealth[bot] <= 0)
+                        {
+                            mobHealth.Remove(bot);
+                            PlayerBot.Remove(bot);
+                        }
+                        PlayerBot.Remove(bot);
+                        continue;
+                    }
+                    ushort botY = (ushort)(bot.Pos.BlockY + 1);
+                    ushort botX = (ushort)bot.Pos.BlockX;
+                    ushort botZ = (ushort)bot.Pos.BlockZ;
+                    if (botX >= level.Width)
+                        botX = level.spawnx;
+                    if (botY >= level.Height)
+                        botY = level.spawny;
+                    if (botZ >= level.Length)
+                        botZ = level.spawnz;
+                    ushort gb = level.FastGetBlock(botX, botY, botZ);
                     switch (gb)
                     {
                         case 8:
                         case 9:
                         case 10:
                         case 11:
+                            PlayerBot.Remove(bot);
                             continue;
                     }
+                    int shortestDist = 650;
+                    foreach (Player p in GetPlayersInLevel(level))
+                    {
+                        int x = bot.Pos.BlockX,
+                            y = bot.Pos.BlockY,
+                            z = bot.Pos.BlockZ,
+                            dx = p.Pos.BlockX - x, dy = p.Pos.BlockY - y, dz = p.Pos.BlockZ - z,
+                            playerDist = Math.Abs(dx) + Math.Abs(dz);
+                        if (playerDist < shortestDist)
+                            shortestDist = playerDist;
+                    }
+                    if (shortestDist >= 210)
+                        PlayerBot.Remove(bot);
                 }
-                switch (NASTimeCycle.globalCurrentDayCycle)
+            }
+            catch
+            {
+            }
+        }
+        public static List<Player> GetPlayersInLevel(Level lvl)
+        {
+            try
+            {
+                List<Player> players = new();
+                foreach (Player p in PlayerInfo.Online.Items)
                 {
-                    case NASDayCycles.Night:
-                        switch (rnd.Next(7))
-                        {
-                            case 1:
-                            case 2:
-                                SpawnEntity(lvl, "zombie", "NASHostile", x, y, z);
-                                break;
-                            case 3:
-                            case 4:
-                                SpawnEntity(lvl, "spider", "NASHostile", x, y, z);
-                                break;
-                            case 5:
-                            case 6:
-                                SpawnEntity(lvl, "skeleton", "NASHostile", x, y, z);
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
-                    case NASDayCycles.Midnight:
-                        switch (rnd.Next(8))
-                        {
-                            case 1:
-                            case 2:
-                            case 3:
-                                SpawnEntity(lvl, "zombie", "NASHostile", x, y, z);
-                                break;
-                            case 4:
-                                SpawnEntity(lvl, "spider", "NASHostile", x, y, z);
-                                break;
-                            case 5:
-                            case 6:
-                            case 7:
-                                SpawnEntity(lvl, "skeleton", "NASHostile", x, y, z);
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
-                    case NASDayCycles.Sunrise:
-                        switch (rnd.Next(5))
-                        {
-                            case 1:
-                                SpawnEntity(lvl, "sheep", "NASRoam", x, y, z);
-                                break;
-                            case 2:
-                                SpawnEntity(lvl, "chicken", "NASRoam", x, y, z);
-                                break;
-                            case 3:
-                                SpawnEntity(lvl, "spider", "NASHostile", x, y, z);
-                                break;
-                            case 4:
-                                SpawnEntity(lvl, "pig", "NASRoam", x, y, z);
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
-                    case NASDayCycles.Sunset:
-                        switch (rnd.Next(4))
-                        {
-                            case 1:
-                                SpawnEntity(lvl, "zombie", "NASHostile", x, y, z);
-                                break;
-                            case 2:
-                                SpawnEntity(lvl, "sheep", "NASRoam", x, y, z);
-                                break;
-                            case 3:
-                                SpawnEntity(lvl, "spider", "NASHostile", x, y, z);
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
-                    default:
-                        switch (rnd.Next(7))
-                        {
-                            case 1:
-                            case 2:
-                                SpawnEntity(lvl, "sheep", "NASRoam", x, y, z);
-                                break;
-                            case 3:
-                            case 4:
-                                SpawnEntity(lvl, "pig", "NASRoam", x, y, z);
-                                break;
-                            case 5:
-                            case 6:
-                                SpawnEntity(lvl, "chicken", "NASRoam", x, y, z);
-                                break;
-                            default:
-                                break;
-                        }
-                        break;
+                    if (p == null) continue;
+                    if (p.Level == lvl)
+                        players.Add(p);
                 }
+                return players;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        public static void HandleMobSpawning(SchedulerTask task)
+        {
+            try
+            {
+                mobSpawningTask = task;
+                Level[] levels = LevelInfo.Loaded.Items;
+                if (PlayerInfo.Online.Items.Length < 1)
+                {
+                    foreach (Level lvl in levels)
+                        CheckDespawn(lvl);
+                    return;
+                }
+                foreach (Level lvl in levels)
+                {
+                    CheckDespawn(lvl);
+                    if (lvl.name.CaselessContains("nether")) continue;
+                    List<Player> players = GetPlayersInLevel(lvl);
+                    if (GetMobsInLevel(lvl).Length >= (mobCapPerPlayer * players.Count))
+                        continue;
+                    Player selectedPlayer = players[rnd.Next(players.Count)];
+                    if (selectedPlayer == null)
+                        continue;
+                    ushort x = (ushort)(selectedPlayer.Pos.BlockX + (rnd.Next(25, 128) * (rnd.Next(2) == 1 ? 1 : -1))),
+                        z = (ushort)(selectedPlayer.Pos.BlockZ + (rnd.Next(25, 128) * (rnd.Next(2) == 1 ? 1 : -1)));
+                    if (x >= lvl.Width)
+                        x = (ushort)(lvl.Width - 1);
+                    if (z >= lvl.Length)
+                        z = (ushort)(lvl.Length - 1);
+                    if (x < 0)
+                        x = 1;
+                    if (z < 0)
+                        z = 1;
+                    ushort y = FindGround(lvl, x, lvl.Height, z);
+                    if (y < 0)
+                        y = 1;
+                    if (y > 1)
+                    {
+                        ushort y2 = (ushort)(y - 1);
+                        if (y2 == 0)
+                            y = 1;
+                        ushort gb = lvl.FastGetBlock(x, y2, z);
+                        switch (gb)
+                        {
+                            case 8:
+                            case 9:
+                            case 10:
+                            case 11:
+                                continue;
+                        }
+                    }
+                    switch (NASTimeCycle.globalCurrentDayCycle)
+                    {
+                        case NASDayCycles.Night:
+                            switch (rnd.Next(7))
+                            {
+                                case 1:
+                                case 2:
+                                    SpawnEntity(lvl, "zombie", "NASHostile", x, y, z);
+                                    break;
+                                case 3:
+                                case 4:
+                                    SpawnEntity(lvl, "spider", "NASHostile", x, y, z);
+                                    break;
+                                case 5:
+                                case 6:
+                                    SpawnEntity(lvl, "skeleton", "NASHostile", x, y, z);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        case NASDayCycles.Midnight:
+                            switch (rnd.Next(8))
+                            {
+                                case 1:
+                                case 2:
+                                case 3:
+                                    SpawnEntity(lvl, "zombie", "NASHostile", x, y, z);
+                                    break;
+                                case 4:
+                                    SpawnEntity(lvl, "spider", "NASHostile", x, y, z);
+                                    break;
+                                case 5:
+                                case 6:
+                                case 7:
+                                    SpawnEntity(lvl, "skeleton", "NASHostile", x, y, z);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        case NASDayCycles.Sunrise:
+                            switch (rnd.Next(5))
+                            {
+                                case 1:
+                                    SpawnEntity(lvl, "sheep", "NASRoam", x, y, z);
+                                    break;
+                                case 2:
+                                    SpawnEntity(lvl, "chicken", "NASRoam", x, y, z);
+                                    break;
+                                case 3:
+                                    SpawnEntity(lvl, "spider", "NASHostile", x, y, z);
+                                    break;
+                                case 4:
+                                    SpawnEntity(lvl, "pig", "NASRoam", x, y, z);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        case NASDayCycles.Sunset:
+                            switch (rnd.Next(4))
+                            {
+                                case 1:
+                                    SpawnEntity(lvl, "zombie", "NASHostile", x, y, z);
+                                    break;
+                                case 2:
+                                    SpawnEntity(lvl, "sheep", "NASRoam", x, y, z);
+                                    break;
+                                case 3:
+                                    SpawnEntity(lvl, "spider", "NASHostile", x, y, z);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        default:
+                            switch (rnd.Next(7))
+                            {
+                                case 1:
+                                case 2:
+                                    SpawnEntity(lvl, "sheep", "NASRoam", x, y, z);
+                                    break;
+                                case 3:
+                                case 4:
+                                    SpawnEntity(lvl, "pig", "NASRoam", x, y, z);
+                                    break;
+                                case 5:
+                                case 6:
+                                    SpawnEntity(lvl, "chicken", "NASRoam", x, y, z);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                    }
+                }
+            }
+            catch 
+            { 
             }
         }
         public static bool CanHitMob(Player p, PlayerBot victim) => (p.Pos.ToVec3F32() - victim?.Pos.ToVec3F32() ?? new(0,0,0)).LengthSquared switch
@@ -279,49 +293,56 @@ namespace MCGalaxy
         public static readonly Dictionary<PlayerBot, float> mobHealth = new();
         public static void HandleAttackMob(Player p)
         {
-            PlayerBot mob = null;
-            float bestDist = float.MaxValue;
-            if (p.Level.Bots.Items.Length == 0 || !NASLevel.IsNASLevel(p.Level)) return;
-            foreach (PlayerBot b in p.Level.Bots.Items)
+            try
             {
-                if (b == null) continue;
-                if (!CanHitMob(p, b)) continue;
-                float dist = (p.Pos.ToVec3F32() - b.Pos.ToVec3F32()).LengthSquared;
-                if (dist < bestDist)
+                PlayerBot mob = null;
+                float bestDist = float.MaxValue;
+                if (p.Level.Bots.Items.Length == 0 || !NASLevel.IsNASLevel(p.Level)) return;
+                foreach (PlayerBot b in p.Level.Bots.Items)
                 {
-                    bestDist = dist;
-                    mob = b;
+                    if (b == null) continue;
+                    if (!CanHitMob(p, b)) continue;
+                    float dist = (p.Pos.ToVec3F32() - b.Pos.ToVec3F32()).LengthSquared;
+                    if (dist < bestDist)
+                    {
+                        bestDist = dist;
+                        mob = b;
+                    }
+                }
+                if (mob == null)
+                    return;
+                if (!mobHealth.ContainsKey(mob))
+                    switch (mob.Model)
+                    {
+                        case "zombie":
+                            mobHealth.Add(mob, 10);
+                            break;
+                        case "skeleton":
+                            mobHealth.Add(mob, 15);
+                            break;
+                        case "spider":
+                            mobHealth.Add(mob, 7);
+                            break;
+                        default:
+                            mobHealth.Add(mob, 5);
+                            break;
+                    }
+                NASPlayer np = NASPlayer.GetPlayer(p);
+                float added = 0;
+                if (np.inventory.HeldItem.Enchant("Sharpness") != 0)
+                    added += 1;
+                added += np.inventory.HeldItem.Enchant("Sharpness") * 0.5f;
+                mobHealth[mob] = mobHealth[mob] - (np.inventory.HeldItem.Prop.damage + added);
+                if (mobHealth[mob] <= 0)
+                {
+                    PlaceLoot(mob, p.Level);
+                    mobHealth.Remove(mob);
+                    PlayerBot.Remove(mob);
                 }
             }
-            if (mob == null)
-                return;
-            if (!mobHealth.ContainsKey(mob))
-                switch (mob.Model)
-                {
-                    case "zombie":
-                        mobHealth.Add(mob, 10);
-                        break;
-                    case "skeleton":
-                        mobHealth.Add(mob, 15);
-                        break;
-                    case "spider":
-                        mobHealth.Add(mob, 7);
-                        break;
-                    default:
-                        mobHealth.Add(mob, 5);
-                        break;
-                }
-            NASPlayer np = NASPlayer.GetPlayer(p);
-            float added = 0;
-            if (np.inventory.HeldItem.Enchant("Sharpness") != 0)
-                added += 1;
-            added += np.inventory.HeldItem.Enchant("Sharpness") * 0.5f;
-            mobHealth[mob] = mobHealth[mob] - (np.inventory.HeldItem.Prop.damage + added);
-            if (mobHealth[mob] <= 0)
+            catch
             {
-                PlaceLoot(mob, p.Level);
-                mobHealth.Remove(mob);
-                PlayerBot.Remove(mob);
+
             }
         }
         public static void HandleBlockClicked(Player p, MouseButton button, MouseAction action, ushort yaw, ushort pitch, byte entity, ushort x, ushort y, ushort z, TargetBlockFace face)
@@ -347,20 +368,26 @@ namespace MCGalaxy
         }
         public static void SpawnEntity(Level level, string model, string ai, ushort x, ushort y, ushort z)
         {
-            if (!NASLevel.IsNASLevel(level)) return;
-            int uniqueMobId = level.Bots.Items.Length + 1;
-            string uniqueName = "NASMob" + uniqueMobId;
-            PlayerBot bot = new(uniqueName, level)
+            try
             {
-                DisplayName = "",
-                Model = model
-            };
-            Position pos = Position.FromFeet(x * 32 + 16, y * 32, z * 32 + 16);
-            bot.SetInitialPos(pos);
-            bot.AIName = ai;
-            PlayerBot.Add(bot);
-            ScriptFile.Parse(Player.NASConsole, bot, ai);
-            BotsFile.Save(level);
+                if (!NASLevel.IsNASLevel(level)) return;
+                int uniqueMobId = level.Bots.Items.Length + 1;
+                string uniqueName = "NASMob" + uniqueMobId;
+                PlayerBot bot = new(uniqueName, level)
+                {
+                    DisplayName = "",
+                    Model = model
+                };
+                Position pos = Position.FromFeet(x * 32 + 16, y * 32, z * 32 + 16);
+                bot.SetInitialPos(pos);
+                bot.AIName = ai;
+                PlayerBot.Add(bot);
+                ScriptFile.Parse(Player.NASConsole, bot, ai);
+                BotsFile.Save(level);
+            }
+            catch
+            {
+            }
         }
         public static ushort FindGround(Level level, int x, int y, int z)
         {
@@ -412,20 +439,27 @@ namespace MCGalaxy
         };
         public static Player ClosestPlayer(PlayerBot bot, int search)
         {
-            int maxDist = search * 32;
-            Player[] players = PlayerInfo.Online.Items;
-            Player closest = null;
-            foreach (Player p in players)
+            try
             {
-                NASPlayer np = NASPlayer.GetPlayer(p);
-                if (p.Level != bot.Level) continue;
-                int dx = p.Pos.X - bot.Pos.X, dy = p.Pos.Y - bot.Pos.Y, dz = p.Pos.Z - bot.Pos.Z,
-                    playerDist = Math.Abs(dx) + Math.Abs(dy) + Math.Abs(dz);
-                if (playerDist >= maxDist) continue;
-                closest = p;
-                maxDist = playerDist;
+                int maxDist = search * 32;
+                Player[] players = PlayerInfo.Online.Items;
+                Player closest = null;
+                foreach (Player p in players)
+                {
+                    NASPlayer np = NASPlayer.GetPlayer(p);
+                    if (p.Level != bot.Level) continue;
+                    int dx = p.Pos.X - bot.Pos.X, dy = p.Pos.Y - bot.Pos.Y, dz = p.Pos.Z - bot.Pos.Z,
+                        playerDist = Math.Abs(dx) + Math.Abs(dy) + Math.Abs(dz);
+                    if (playerDist >= maxDist) continue;
+                    closest = p;
+                    maxDist = playerDist;
+                }
+                return closest;
             }
-            return closest;
+            catch
+            {
+                return null;
+            }
         }
         public static void FaceTowards(PlayerBot bot)
         {
@@ -439,11 +473,6 @@ namespace MCGalaxy
             DirUtils.GetYawPitch(dir, out rot.RotY, out rot.HeadX);
             bot.Rot = rot;
         }
-    }
-    public class NASMobMetadata
-    {
-        public int waitTime, walkTime, lookTime, search;
-        public Player chasing;
     }
     public class NASHostileInstruction : BotInstruction
     {
