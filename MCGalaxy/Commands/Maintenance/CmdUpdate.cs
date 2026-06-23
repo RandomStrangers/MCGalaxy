@@ -59,11 +59,10 @@ namespace MCGalaxy.Commands.Maintenance
                             "https://raw.githubusercontent.com/RandomStrangers/MCGalaxy/NAS/Uploads/MCGalaxy.exe", Path.GetFileName("MCGalaxy.update"));
                         client.DownloadFile("https://raw.githubusercontent.com/RandomStrangers/MCGalaxy/NAS/Uploads/MCGalaxy.exe", "MCGalaxy.update");
                         Server.SaveAllLevels();
-                        Player[] players = PlayerInfo.Online.Items;
-                        foreach (Player pl in players)
-                        {
-                            pl.SaveStats();
-                        }
+                        Player[] players = PlayerInfo.Online?.Items;
+                        if (players != null)
+                            foreach (Player pl in players)
+                                pl?.SaveStats();
                         FileIO.TryMove("MCGalaxy.exe", "Prev_MCGalaxy.exe");
                         FileIO.TryMove("MCGalaxy.update", "MCGalaxy.exe");
                         Server.Stop(true, "Updating server.");

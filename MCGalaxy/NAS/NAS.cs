@@ -37,8 +37,9 @@ namespace MCGalaxy
             EnsureDirectoriesExist(Path, NASPlayer.Path,
                 NASTimeCycle.Path, NASEffect.Path,
                 NASLevel.Path, NASBlock.Path,
-                NASPlayer.DeathsPath, NASWayPointList.Path,
-                "blockprops", "blockdefs", "text");
+                NASPlayer.DeathsPath, NASWayPointList.Path, 
+                NASLevel.BackupPath, "blockprops", 
+                "blockdefs", "text");
             EnsureNASFilesExist();
             firstEverLoad = !File.Exists("NAS/Loaded.txt");
             if (firstEverLoad)

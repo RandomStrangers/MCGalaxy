@@ -98,20 +98,18 @@ namespace MCGalaxy
     }
     public partial class NAS
     {
-        public static bool HasExtraPerm(NASPlayer np, string cmd, int num) => CommandExtraPerms.Find(cmd, num).UsableBy(np.p.Rank);
-        public static void SaveAll(Player p)
+        public static void ForceSave()
         {
-            Level[] loaded = LevelInfo.Loaded.Items;
-            foreach (Level lvl in loaded)
-            {
-                if (!lvl.SaveChanges)
-                    continue;
-                NASLevel nl = NASLevel.Get(lvl.name);
-                if (!lvl.Save(true) && FileIO.TryWriteAllText(NASLevel.GetFileName(nl.lvl.name), JsonConvert.SerializeObject(nl, Formatting.Indented)))
-                    p.Message("Saving of level {0} &Swas cancelled", lvl.ColoredName);
-            }
-            Chat.MessageGlobal("All levels have been saved.");
+            Level[] levels = LevelInfo.Loaded?.Items;
+            Player[] players = PlayerInfo.Online?.Items;
+            if (levels != null)
+                foreach (Level lvl in levels)
+                    NASLevel.Get(lvl.name)?.Save();
+            if (players != null)
+                foreach (Player p in players)
+                    NASPlayer.GetPlayer(p)?.Save();
         }
+        public static bool HasExtraPerm(NASPlayer np, string cmd, int num) => CommandExtraPerms.Find(cmd, num).UsableBy(np.p.Rank);
         public static void GenLevel()
         {
             int chunkOffsetX = 0, chunkOffsetZ = 0;

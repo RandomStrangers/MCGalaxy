@@ -16,42 +16,42 @@ namespace MCGalaxy.Commands.World
 {
     public sealed class CmdUnload : Command2
     {
-        public override string Name => "TakeDown";
+        public override string Name => "Unload";
         public override string Type => CommandTypes.World;
         public override LevelPermission DefaultRank => LevelPermission.Operator;
         public override void Use(Player p, string message, CommandData data)
         {
             if (CheckSuper(p, message, "level name")) return;
-            if (message.Length == 0)
+            switch (message.Length)
             {
-                if (!p.Level.Unload())
-                {
-                    p.Message("You cannot unload this level.");
-                }
-            }
-            else if (message.CaselessEq("empty"))
-            {
-                Level[] loaded = LevelInfo.Loaded.Items;
-                for (int i = 0; i < loaded.Length; i++)
-                {
-                    Level lvl = loaded[i];
-                    if (lvl.HasPlayers()) continue;
-                    lvl.Unload(true);
-                }
-            }
-            else
-            {
-                Level level = Matcher.FindLevels(p, message);
-                if (level == null) return;
-                if (!level.Unload())
-                {
-                    p.Message("You cannot unload this level.");
-                }
+                case 0:
+                    if (!p.Level.Unload())
+                        p.Message("You cannot unload this level.");
+                    break;
+                default:
+                    if (message.CaselessEq("empty"))
+                    {
+                        Level[] loaded = LevelInfo.Loaded.Items;
+                        for (int i = 0; i < loaded.Length; i++)
+                        {
+                            Level lvl = loaded[i];
+                            if (lvl.HasPlayers()) continue;
+                            lvl.Unload(true);
+                        }
+                    }
+                    else
+                    {
+                        Level level = Matcher.FindLevels(p, message);
+                        if (level == null) return;
+                        if (!level.Unload())
+                            p.Message("You cannot unload this level.");
+                    }
+                    break;
             }
         }
         public override void Help(Player p)
         {
-            p.Message("&T/TakeDown [map name]");
+            p.Message("&T/Unload [map name]");
             p.Message("&HUnloads the given map.");
             p.Message("&H  If map name is \"empty\", unloads all maps with no players in them.");
             p.Message("&H  If no map name is given, unloads the current map.");

@@ -24,7 +24,7 @@ namespace MCGalaxy
         public List<NASBlockLocation> blocksThatMustBeDisturbed = new();
         public Dictionary<string, NASBlockEntity> blockEntities = new();
         public const string Path = NAS.Path + "LevelData/",
-            Extension = ".json";
+            BackupPath = Path + "Backups/", Extension = ".json";
         public ushort[] observers =
         {
             Block.FromRaw(415),
@@ -95,7 +95,24 @@ namespace MCGalaxy
             {
                 Logger.Log(LogType.Warning, "Error reading NASLevel {0}", lvl.name);
                 Logger.LogError(ex);
-                return null;
+                try
+                {
+                    using StreamReader streamReader = new(FileIO.TryOpenRead(BackupPath + lvl.name + ".txt"));
+                    string data = streamReader.ReadToEnd();
+                    NASLevel nl = JsonConvert.DeserializeObject<NASLevel>(data);
+                    if (nl != null)
+                    {
+                        FileIO.TryMove(BackupPath + lvl.name + ".txt", GetFileName(lvl.name));
+                        return nl;
+                    }
+                    return null;
+                }
+                catch (Exception exc)
+                {
+                    Logger.Log(LogType.Warning, "Error reading NASLevel backup {0}", lvl.name);
+                    Logger.LogError(exc);
+                    return null;
+                }
             }
         }
         public static Level GenerateMap(Player p, string mapName, string width, string height, string length, string seed)
@@ -135,6 +152,8 @@ namespace MCGalaxy
                 name = lvl.name;
             EndTickTask();
             lvl.Save(true);
+            FileIO.TryCopy(GetFileName(lvl.name), BackupPath + lvl.name + ".txt", true);
+            //Backup in case write fails, unfortunately neccessary.
             Write(this);
             all.Remove(name);
             Server.DoGC();
