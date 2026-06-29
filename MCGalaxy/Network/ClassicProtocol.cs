@@ -23,7 +23,7 @@ namespace MCGalaxy.Network
     public class ClassicProtocol : IGameSession
     {
         public bool hasEmoteFix, hasTwoWayPing, hasExtTexs, hasTextColors,
-            hasHeldBlock, hasLongerMessages, finishedCpeLogin;
+            hasHeldBlock, hasLongerMessages, finishedCpeLogin, hasAmpersand;
         public int extensionCount;
         public CpeExt[] extensions = CpeExtension.Empty;
         public ClassicProtocol(INetSocket s)
@@ -312,6 +312,9 @@ namespace MCGalaxy.Network
                 case CpeExt.LongerMessages:
                     hasLongerMessages = true;
                     break;
+                case CpeExt.AmpersandSupport:
+                    hasAmpersand = true;
+                    break;
                 case CpeExt.ExtBlocks:
                     hasExtBlocks = true;
                     if (MaxRawBlock < 767) MaxRawBlock = 767;
@@ -367,7 +370,7 @@ namespace MCGalaxy.Network
         public override void SendChat(string message)
         {
             char[] buffer = LineWrapper.CleanupColors(message, out int bufferLen,
-                                                      hasTextColors, hasTextColors);
+                                                      hasAmpersand || hasTextColors, hasTextColors);
             List<string> lines = LineWrapper.Wordwrap(buffer, bufferLen, hasEmoteFix);
             for (int i = 0; i < lines.Count;)
             {
@@ -577,7 +580,7 @@ namespace MCGalaxy.Network
             for (byte b = 0; b <= 65; b++)
                 fallback[b] = hasCustomBlocks ? b : Block.ConvertClassic(b, ProtocolVersion);
         }
-        public string CleanupColors(string value) => LineWrapper.CleanupColors(value, hasTextColors, hasTextColors);
+        public string CleanupColors(string value) => LineWrapper.CleanupColors(value, hasAmpersand || hasTextColors, hasTextColors);
         public override string ClientName() => !string.IsNullOrEmpty(appName)
                 ? appName
                 : ProtocolVersion switch

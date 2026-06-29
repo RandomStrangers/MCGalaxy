@@ -8,6 +8,24 @@ namespace MCGalaxy
 {
     public partial class NAS
     {
+        static readonly string[] NASMobileHelp = 
+        {
+            "1. Mobile is not supported.",
+            "2. You can still use commands by typing them manually, however.",
+            "3. /NAS hotbar left &H- Moves selection left",
+            "4. /NAS hotbar right &H- Moves selection right",
+            "5. /NAS hotbar up &H- Moves selection up",
+            "6. /NAS hotbar down &H- Moves selection down",
+            "7. /NAS bagopen left &H- Moves selection left while bag is open",
+            "8. /NAS bagopen right &H- Moves selection right while bag is open",
+            "9. /NAS bagopen up &H- Moves selection up while bag is open",
+            "10. /NAS bagopen down &H- Moves selection down while bag is open",
+            "11. /NAS confirmdelete &H- Confirms item deletion",
+            "12. /NAS inv &H- Opens the inventory",
+            "13. /NAS toolinfo &H- Shows tool information",
+            "14. /NAS delete &H- Deletes an item",
+            "15. To view this list again, use /NAS Mobilehelp"
+        };
         public static void OnPlayerCommand(Player p, string name, string message, CommandData data)
         {
             if (name.CaselessEq("setall"))
@@ -202,6 +220,7 @@ namespace MCGalaxy
                 else
                 {
                     FileIO.TryWriteAllText(NASBlock.GetTextPath(p), message);
+                    p.Message("Middle click a sign to write the text to it.");
                     return;
                 }
             }
@@ -233,6 +252,28 @@ namespace MCGalaxy
                 return;
             }
             string[] words = message.Split(' ');
+            if (words.Length > 1 && words[0].CaselessEq("mobilehelp"))
+            {
+                bool sucess = int.TryParse(words[1], out int line);
+                if (sucess)
+                {
+                    line--;
+                    if (line > 14) line = 14;
+                    if (line < 0) line = 0;
+                    np.Message(NASMobileHelp[line]);
+                }
+                else
+                {
+                    np.MessageLines(NASMobileHelp);
+                    np.Message("To view a specific line, use /NAS Mobilehelp (line)");
+                }
+                return;
+            }
+            else if (message.CaselessEq("mobilehelp"))
+            {
+                np.MessageLines(NASMobileHelp);
+                return;
+            }
             if (words.Length > 1 && words[0].CaselessEq("hotbar"))
             {
                 string hotbarFunc = words[1];
@@ -434,6 +475,16 @@ namespace MCGalaxy
             np.Send(Packet.TextHotKey("NASHotkey", "/NAS hotbar toolinfo◙", 23, 0, true));
             np.PlayerSavingScheduler ??= new("SavingScheduler" + p.name);
             np.PlayerSaveTask = np.PlayerSavingScheduler.QueueRepeat(np.SaveStatsTask, null, TimeSpan.FromSeconds(5));
+        }
+        public static void OnPlayerFinishConnecting(Player p)
+        {
+            NASPlayer np = NASPlayer.GetPlayer(p);
+            string app = np.p.Session.ClientName();
+            if (app.CaselessContains("alpha") || app.CaselessContains("mobile"))
+            {
+                np.MessageLines(NASMobileHelp);
+                np.Message("To view a specific line, use /NAS Mobilehelp (line)");
+            }
         }
         public static void OnShutdown(bool restarting, string reason) => ForceSave();
         public static void OnPlayerDisconnect(Player p, string reason)

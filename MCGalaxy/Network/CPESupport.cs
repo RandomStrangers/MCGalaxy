@@ -85,6 +85,7 @@ namespace MCGalaxy
         public const string CinematicGui = "CinematicGui";
         public const string NotifyAction = "NotifyAction";
         public const string ToggleBlockList = "ToggleBlockList";
+        public const string AmpersandSupport = "AmpersandSupport";
     }
     public class CpeExtension
     {
@@ -149,6 +150,7 @@ namespace MCGalaxy
             new(CpeExt.LightingMode,        "Allows changing how the client lights worlds"),
             new(CpeExt.CinematicGui,        "Allows changing the visibility of some GUI components"),
             new(CpeExt.NotifyAction,        "Allows server to be notified of certain client events"),
+            new(CpeExt.AmpersandSupport,    "Allows literal '&' in chat messages without escaping to '%'"),
             new(CpeExt.ExtBlocks,           "Allows using block IDs over 255 in block definitions"),
         };
         public static CpeExt[] Empty = new CpeExt[0];

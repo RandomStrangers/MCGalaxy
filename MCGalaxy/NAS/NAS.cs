@@ -58,6 +58,7 @@ namespace MCGalaxy
                 NASCrafting.Setup();
                 NASCollision.Setup();
                 OnPlayerConnectEvent.Register(OnPlayerConnect, Priority.High);
+                OnPlayerFinishConnectingEvent.Register(OnPlayerFinishConnecting, Priority.High);
                 OnPlayerClickEvent.Register(OnPlayerClick, Priority.High);
                 OnBlockChangingEvent.Register(OnBlockChanging, Priority.High);
                 OnBlockChangedEvent.Register(OnBlockChanged, Priority.High);
@@ -81,6 +82,7 @@ namespace MCGalaxy
             NASColor.TakeDown();
             Command.Unregister(Commands);
             OnPlayerConnectEvent.Unregister(OnPlayerConnect);
+            OnPlayerFinishConnectingEvent.Unregister(OnPlayerFinishConnecting);
             OnPlayerClickEvent.Unregister(OnPlayerClick);
             OnBlockChangingEvent.Unregister(OnBlockChanging);
             OnBlockChangedEvent.Unregister(OnBlockChanged);
