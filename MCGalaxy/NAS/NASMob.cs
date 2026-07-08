@@ -77,9 +77,9 @@ namespace MCGalaxy
                         PlayerBot.Remove(bot);
                         continue;
                     }
-                    ushort botY = (ushort)(bot.Pos.BlockY + 1);
-                    ushort botX = (ushort)bot.Pos.BlockX;
-                    ushort botZ = (ushort)bot.Pos.BlockZ;
+                    ushort botY = (ushort)(bot.Pos.BlockY + 1),
+                        botX = (ushort)bot.Pos.BlockX,
+                        botZ = (ushort)bot.Pos.BlockZ;
                     if (botX >= level.Width)
                         botX = level.spawnx;
                     if (botY >= level.Height)
@@ -511,7 +511,6 @@ namespace MCGalaxy
             Vec3F32 dir2 = new(dx2, dy2, dz2);
             if (dir2.Length > 0) dir2 = Vec3F32.Normalise(dir2);
             float mult = 1 / ModelInfo.GetRawScale(p.Model),
-                plScale = ModelInfo.GetRawScale(p.Model),
                 VelocityY = 1.0117f * mult;
             if (dir2.Length <= 0) VelocityY = 0;
             if (p.Supports(CpeExt.VelocityControl))

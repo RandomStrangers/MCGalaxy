@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
-    public class NASSimplePriorityQueue<NASTItem, NASTPriority> : NASIPriorityQueue<NASTItem, NASTPriority>
+    public class NASSimplePriorityQueue<NASTItem, NASTPriority> : INASPriorityQueue<NASTItem, NASTPriority>
         where NASTPriority : IComparable<NASTPriority>
     {
         public class NASSimpleNode : NASPriorityQueueNode<NASTPriority>

@@ -46,7 +46,7 @@ namespace MCGalaxy.Commands
             {
                 if (args.Length == 1)
                 {
-                    target = null;
+                    target = null; 
                     value = null;
                     p.Message("You must provide the name of the player that are you are changing the {0} of.", dataType);
                     return false;
@@ -72,6 +72,10 @@ namespace MCGalaxy.Commands
                 target = p.name;
                 value = message;
             }
+            string firstWord = value.SplitSpaces(2)[0];
+            if (value.Length <= 1 || firstWord.Length < 3) return true;
+            System.Collections.Generic.List<Player> matches = PlayerInfo.GetMatches(p, firstWord);
+            if (matches.Count != 1) return true;
             return true;
         }
         protected void UseOnline(Player p, CommandData data, string message, string type)

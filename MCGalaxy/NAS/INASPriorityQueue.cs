@@ -9,14 +9,14 @@ namespace MCGalaxy
         public long InsertionIndex { get; set; }
         public object Queue { get; set; }
     }
-    public interface NASIFixedSizePriorityQueue<NASTItem, in NASTPriority> : NASIPriorityQueue<NASTItem, NASTPriority>
+    public interface INASFixedSizePriorityQueue<NASTItem, in NASTPriority> : INASPriorityQueue<NASTItem, NASTPriority>
         where NASTPriority : IComparable<NASTPriority>
     {
         void Resize(int maxNodes);
         int MaxSize { get; }
         void ResetNode(NASTItem node);
     }
-    public interface NASIPriorityQueue<NASTItem, in NASTPriority> : IEnumerable<NASTItem>
+    public interface INASPriorityQueue<NASTItem, in NASTPriority> : IEnumerable<NASTItem>
         where NASTPriority : IComparable<NASTPriority>
     {
         void Enqueue(NASTItem node, NASTPriority priority);

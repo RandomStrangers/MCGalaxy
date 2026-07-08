@@ -59,43 +59,57 @@ namespace MCGalaxy
         /// <returns> If exactly one match, the matching item. </returns>
         public static T Find<T>(Player p, string name, out int matches, IEnumerable<T> items,
                                 Predicate<T> filter, StringFormatter<T> nameGetter,
-                                StringFormatter<T> itemFormatter, string group, int limit = 5, bool feedback = true)
+                                StringFormatter<T> itemFormatter, string group, int limit = 5)
         {
-            T match = default;
-            matches = 0;
-            StringBuilder output = new();
-            const StringComparison comp = StringComparison.OrdinalIgnoreCase;
+            List<T> results = GetMatches(name, items, filter, nameGetter, limit);
+            PrintMatches(p, name, results, itemFormatter, group, limit);
+            matches = results.Count;
+            return matches == 1 ? results[0] : default;
+        }
+        /// <summary> Finds partial matches of 'name' against the names of the items in the 'items' enumerable. </summary>
+        /// <returns> Matching items, with exact match taking priority </returns>
+        public static List<T> GetMatches<T>(string name, IEnumerable<T> items, Predicate<T> filter,
+                                            StringFormatter<T> nameGetter, int limit)
+        {
+            List<T> matches = new(limit + 1);
             foreach (T item in items)
             {
                 if (filter != null && !filter(item)) continue;
                 string itemName = nameGetter(item);
-                if (itemName.Equals(name, comp))
+                if (itemName.IndexOf(name, StringComparison.OrdinalIgnoreCase) < 0) continue;
+                if (itemName.Equals(name, StringComparison.OrdinalIgnoreCase))
                 {
-                    matches = 1;
-                    return item;
+                    matches.Clear();
+                    matches.Add(item);
+                    return matches;
                 }
-                if (itemName.IndexOf(name, comp) < 0) continue;
-                match = item; matches++;
-                if (matches <= limit)
-                {
-                    output.Append(itemFormatter(item)).Append("&S, ");
-                }
-                else if (matches == limit + 1)
-                {
-                    output.Append("(and more), ");
-                }
+                if (matches.Count <= limit) matches.Add(item);
             }
-            if (matches == 1) return match;
+            return matches;
+        }
+        public static void PrintMatches<T>(Player p, string name, List<T> results,
+                                           StringFormatter<T> itemFormatter, string group, int limit)
+        {
+            int matches = results.Count;
             if (matches == 0)
             {
-                if (feedback) p.Message("No {0} match \"{1}\".", group, name); 
-                return default;
+                p.Message("No {0} match \"{1}\".", group, name);
+                return;
+            }
+            if (matches == 1) return;
+            StringBuilder output = new();
+            for (int i = 0; i < matches; i++)
+            {
+                T item = results[i];
+                if (i < limit)
+                    output.Append(itemFormatter(item)).Append("&S, ");
+                else
+                    output.Append("(and more), ");
             }
             string count = matches > limit ? limit + "+ " : matches + " ",
                 names = output.ToString(0, output.Length - 2);
-            if (feedback) p.Message("{0}{1} match \"{2}\":", count, group, name);
-            if (feedback) p.Message(names);
-            return default;
+            p.Message("{0}{1} match \"{2}\":", count, group, name);
+            p.Message(names);
         }
     }
 }

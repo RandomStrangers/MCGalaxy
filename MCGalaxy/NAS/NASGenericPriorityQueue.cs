@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 namespace MCGalaxy
 {
-    public class NASPriorityQueue<NASTItem, NASTPriority> : NASIFixedSizePriorityQueue<NASTItem, NASTPriority>
+    public class NASPriorityQueue<NASTItem, NASTPriority> : INASFixedSizePriorityQueue<NASTItem, NASTPriority>
         where NASTItem : NASPriorityQueueNode<NASTPriority>
         where NASTPriority : IComparable<NASTPriority>
     {

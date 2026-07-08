@@ -152,10 +152,8 @@ namespace MCGalaxy
         }
         public static void Register(params Command[] commands)
         {
-            foreach(Command cmd in commands)
-            {
+            foreach (Command cmd in commands)
                 Register(cmd);
-            }
         }
         public static void Register(Command cmd)
         {
@@ -195,9 +193,7 @@ namespace MCGalaxy
         public static Command Find(string name)
         {
             foreach (Command cmd in allCmds)
-            {
                 if (cmd.Name.CaselessEq(name)) return cmd;
-            }
             return null;
         }
         public static void Search(ref string cmdName, ref string cmdArgs)
@@ -218,13 +214,9 @@ namespace MCGalaxy
             string format = alias.Format;
             if (format == null) return;
             if (format.Contains("{args}"))
-            {
                 cmdArgs = format.Replace("{args}", cmdArgs);
-            }
             else
-            {
                 cmdArgs = format + " " + cmdArgs;
-            }
             cmdArgs = cmdArgs.Trim();
         }
     }

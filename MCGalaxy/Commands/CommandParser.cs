@@ -86,7 +86,6 @@ namespace MCGalaxy.Commands
         public static bool CheckRange(Player p, int value, string argName, int min, int max)
         {
             if (value >= min && value <= max) return true;
-            // Try to provide more helpful range messages
             if (max == int.MaxValue)
             {
                 p.Message("&W{0} must be {1} or greater", argName, min);

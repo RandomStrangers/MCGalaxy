@@ -24,6 +24,8 @@ namespace MCGalaxy.Commands.Maintenance
         public override LevelPermission DefaultRank => LevelPermission.Owner;
         public override void Use(Player p, string message)
         {
+            if (string.IsNullOrEmpty(message))
+                message = "check";
             if (message.CaselessEq("check"))
             {
                 p.Message("Checking for updates..");

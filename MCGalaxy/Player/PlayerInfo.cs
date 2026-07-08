@@ -22,9 +22,17 @@ namespace MCGalaxy
         /// <summary> Array of all currently online players. </summary>
         /// <remarks> Note this field is highly volatile, you should cache references to the items array. </remarks>
         public static VolatileArray<Player> Online = new();
-        public static Group GetGroup(string name) => FindExact(name) != null ? FindExact(name).group : Group.GroupIn(name);
+        public static Group GetGroup(string name)
+        {
+            Player target = FindExact(name);
+            return target != null ? target.group : Group.GroupIn(name);
+        }
         /// <summary> Calculates default color for the given player. </summary>
-        public static string DefaultColor(Player p) => PlayerDB.FindColor(p).Length > 0 ? PlayerDB.FindColor(p) : p.group.Color;
+        public static string DefaultColor(Player p)
+        {
+            string col = PlayerDB.FindColor(p);
+            return col.Length > 0 ? col : p.group.Color;
+        }
         public static int NonHiddenUniqueIPCount()
         {
             Player[] players = Online.Items;
@@ -39,18 +47,25 @@ namespace MCGalaxy
         /// <summary> Matches given name against the names of all online players that the given player can see </summary>
         /// <param name="matches"> Outputs the number of matching players </param>
         /// <returns> A Player instance if exactly one match was found </returns>
-        public static Player FindMatches(Player pl, string name, out int matches, bool feedback = true)
+        public static Player FindMatches(Player p, string name, out int matches)
         {
             matches = 0;
-            if (!Formatter.ValidPlayerName(pl, name, feedback)) return null;
+            if (!Formatter.ValidPlayerName(p, name)) return null;
+            List<Player> results = GetMatches(p, name);
+            Matcher.PrintMatches(p, name, results,
+                                 m => m.color + m.name, "online players", 5);
+            matches = results.Count;
+            return matches == 1 ? results[0] : null;
+        }
+        public static List<Player> GetMatches(Player p, string name)
+        {
             Player exact = FindExact(name);
-            if (exact != null && pl.CanSee(exact)) 
-            {
-                matches = 1;
-                return exact;
-            }
-            return Matcher.Find(pl, name, out matches, Online.Items,
-                                p => pl.CanSee(p), p => p.name, p => p.color + p.name, "online players", 5, feedback);
+            if (exact != null && p.CanSee(exact)) return new(1) 
+            { 
+                exact 
+            };
+            return Matcher.GetMatches(name, Online.Items,
+                                m => p.CanSee(m), m => m.name, 5);
         }
         /// <summary>
         /// Matches given name against the names of all online players that the given player can see.
@@ -78,7 +93,8 @@ namespace MCGalaxy
         }
         public static void ReadAccounts(ISqlRecord record, List<string> names)
         {
-            if (!names.CaselessContains(record.GetText(0))) names.Add(record.GetText(0));
+            string name = record.GetText(0);
+            if (!names.CaselessContains(name)) names.Add(name);
         }
         /// <summary> Retrieves names of all players whose IP address matches the given IP address. </summary>
         /// <remarks> This is current IP for online players, last IP for offline players from the database. </remarks>
@@ -135,7 +151,11 @@ namespace MCGalaxy
             }
             return entry;
         }
-        public static string GetLoginMessage(Player p) => string.IsNullOrEmpty(PlayerDB.GetLoginMessage(p.name)) ? Server.Config.DefaultLoginMessage : PlayerDB.GetLoginMessage(p.name);
+        public static string GetLoginMessage(Player p)
+        {
+            string msg = PlayerDB.GetLoginMessage(p.name);
+            return string.IsNullOrEmpty(msg) ? Server.Config.DefaultLoginMessage : msg;
+        }
         public static string GetLogoutMessage(Player p)
         {
             if (p.name == null) return "disconnected";

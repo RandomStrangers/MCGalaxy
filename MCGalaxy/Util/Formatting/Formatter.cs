@@ -66,17 +66,17 @@ namespace MCGalaxy
         }
         public static void MessageNeedMinPerm(Player p, string action, LevelPermission perm) => p.Message("Only {0}&S{1}", Group.GetColoredName(perm), action);
         public static bool ValidName(Player p, string name, string type) => IsValidName(p, name, type, Player.USERNAME_ALPHABET + "+");
-        public static bool ValidPlayerName(Player p, string name, bool feedback = true)
+        public static bool ValidPlayerName(Player p, string name)
         {
             string alphabet = Player.USERNAME_ALPHABET + "+";
             foreach (AuthService service in AuthService.Services)
                 alphabet += service.NameSuffix;
-            return IsValidName(p, name, "player", alphabet, feedback);
+            return IsValidName(p, name, "player", alphabet);
         }
-        public static bool IsValidName(Player p, string name, string type, string alphabet, bool feedback = true)
+        public static bool IsValidName(Player p, string name, string type, string alphabet)
         {
             if (name.Length > 0 && name.ContainsAllIn(alphabet)) return true;
-            if (feedback) p.Message("\"{0}\" is not a valid {1} name.", name, type);
+            p.Message("\"{0}\" is not a valid {1} name.", name, type);
             return false;
         }
         public static bool ValidMapName(Player p, string name)
